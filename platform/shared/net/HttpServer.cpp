@@ -756,13 +756,14 @@ bool CHttpServer::receive_request(ByteVector &request)
 	} //end of solution =1
 	else if(nSolution == 2) //Alternative solution 2
 	{
-		if (verbose) RAWTRACE("Executing Method 1");
+#if defined(WINDOWS_PLATFORM)
+		if (verbose) RAWTRACE("Executing Method 2");
 		fd_set fds;
 		int nSuccess =0;
 		DWORD dwIndex;
-#if defined(OS_WINDOWS_DESKTOP)
+
 		WSANETWORKEVENTS NetworkEvents;
-		
+
 		for(;;) 
 		{
 
@@ -790,7 +791,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 					break;
 				}
 				// Read data from the socket
-				
+
 
 				if (verbose) RAWTRACE("Read portion of data from socket...");
 				int n = recv(m_sock, &buf[0], sizeof(buf), 0);
@@ -803,7 +804,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 					if(232==e)
 					{
 						if (verbose) RAWTRACE("breaking due no data);
-						break;
+							break;
 					}
 					if (e == WSAEINTR)
 						continue;
@@ -815,7 +816,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 							if (verbose) RAWTRACE("breaking due to r is empty");
 							break;
 						}
-					
+
 					} // end of (e == EAGAIN || e == WSAEWOULDBLOCK)
 
 					RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
@@ -834,17 +835,19 @@ bool CHttpServer::receive_request(ByteVector &request)
 						RAWLOG_ERROR("Connection gracefully closed before we receive any data");
 						return false;
 					}
-				}
+				} //if /else of n ==0
 				else 
 				{
 					if (verbose) RAWTRACE1("Actually read %d bytes", n);
 					r.insert(r.end(), &buf[0], &buf[0] + n);
 				} //end of (n==0)
 
+			}//end of network event
 
-			}
-	  } //end of for loop
-	} //end of solution =2
+		}//end of for loop
+#endif
+	}//end of solution 2 
+
 	if (!r.empty()) 
 	{
 		request.insert(request.end(), r.begin(), r.end());
@@ -855,7 +858,6 @@ bool CHttpServer::receive_request(ByteVector &request)
 		}
 	}
 
-#endif
     return true;
 }
 
