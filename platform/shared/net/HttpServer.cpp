@@ -756,98 +756,65 @@ bool CHttpServer::receive_request(ByteVector &request)
 	} //end of solution =1
 	else if(nSolution == 2) //Alternative solution 2
 	{
-#if defined(WINDOWS_PLATFORM)
 		if (verbose) RAWTRACE("Executing Method 2");
-		fd_set fds;
-		int nSuccess =0;
-		DWORD dwIndex;
-
-		WSANETWORKEVENTS NetworkEvents;
-
-		for(;;) 
-		{
-
-			if (verbose) RAWTRACE("Start of for loop on Windows Desktop platform");
-			WSAEVENT ReadEvent = WSACreateEvent();
-			RAWTRACE1("WinSock Error(WSACreateEvent): %d", WSAGetLastError());
-			if (verbose) RAWTRACE("event set");
-			WSAEventSelect(m_sock,ReadEvent,FD_READ|FD_CLOSE);
-			RAWTRACE1("WinSock Error(WSAEventSelect): %d", WSAGetLastError());
-			if (verbose) RAWTRACE("wsaeventselect done");
-			if (verbose) RAWTRACE("waiting for events");
-			dwIndex=WSAWaitForMultipleEvents(1,ReadEvent,FALSE,WSA_INFINITE,FALSE);
-			RAWTRACE1("WinSock Error(WSAWaitForMultipleEvents): %d", WSAGetLastError());
-			if (verbose) RAWTRACE("waiting for events done");
-			dwIndex = dwIndex - WSA_WAIT_EVENT_0;
-
-			WSAEnumNetworkEvents(m_sock, ReadEvent, &NetworkEvents);
-			RAWTRACE1("WinSock Error(WSAEnumNetworkEvents): %d", WSAGetLastError());
-
-			if (NetworkEvents.lNetworkEvents & FD_READ)
-			{
-				if (NetworkEvents.iErrorCode[FD_READ_BIT] != 0)
-				{
-					RAWTRACE1("FD_READ failed with error %d\n",NetworkEvents.iErrorCode[FD_READ_BIT]);
-					break;
-				}
-				// Read data from the socket
-
-
-				if (verbose) RAWTRACE("Read portion of data from socket...");
-				int n = recv(m_sock, &buf[0], sizeof(buf), 0);
-				RAWTRACE1("RECV: %d", n);
-
-				if (n == -1) 
-				{
-					int e = RHO_NET_ERROR_CODE;
-					RAWTRACE1("RECV ERROR: %d", e);
-					if(232==e)
-					{
-						if (verbose) RAWTRACE("breaking due no data);
-							break;
-					}
-					if (e == WSAEINTR)
-						continue;
-					if (e == EAGAIN || e == WSAEWOULDBLOCK)
-					{
-
-						if (!r.empty())
-						{
-							if (verbose) RAWTRACE("breaking due to r is empty");
-							break;
-						}
-
-					} // end of (e == EAGAIN || e == WSAEWOULDBLOCK)
-
-					RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
-					return false;
-				} //end of n==-1
-
-				if (n == 0) 
-				{
-					if(!r.empty()) 
-					{
-						if (verbose) RAWTRACE("Client closed connection gracefully");
-						break;
-					} 
-					else 
-					{
-						RAWLOG_ERROR("Connection gracefully closed before we receive any data");
-						return false;
-					}
-				} //if /else of n ==0
-				else 
-				{
-					if (verbose) RAWTRACE1("Actually read %d bytes", n);
-					r.insert(r.end(), &buf[0], &buf[0] + n);
-				} //end of (n==0)
-
-			}//end of network event
-
-		}//end of for loop
+    for(;;) {
+        if (verbose) RAWTRACE("Read portion of data from socket...");
+        int n = recv(m_sock, &buf[0], sizeof(buf), 0);
+        //RAWTRACE1("RECV: %d", n);
+        if (n == -1) {
+            int e = RHO_NET_ERROR_CODE;
+            RAWTRACE1("RECV ERROR: %d", e);
+#if !defined(WINDOWS_PLATFORM)
+            if (e == EINTR)
+                continue;
+#else
+			if (e == WSAEINTR)
+				continue;
 #endif
-	}//end of solution 2 
 
+#if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)) || defined(OS_WINCE)
+            if (e == EAGAIN || e == WSAEWOULDBLOCK) {
+			if (verbose) RAWTRACE("No Data ");
+				break;
+#else
+            if (e == EAGAIN) {
+#endif
+                if (!r.empty())
+                    break;
+         /*       
+                if(++attempts > nMaxAttempts)
+                {
+                    RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
+                    return false;
+                }*/
+
+                fd_set fds;
+                FD_ZERO(&fds);
+                FD_SET(m_sock, &fds);
+                timeval tv = {0};
+				tv.tv_usec = 100000;//100 MS
+                select(m_sock + 1, &fds, 0, 0, &tv);
+                continue;
+            } // end of (e == EAGAIN || e == WSAEWOULDBLOCK)
+            
+            RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
+            return false;
+        } //end of n==-1
+        
+        if (n == 0) {
+            if(!r.empty()) {
+                if (verbose) RAWTRACE("Client closed connection gracefully");
+                break;
+            } else {
+                RAWLOG_ERROR("Connection gracefully closed before we receive any data");
+                return false;
+            }
+        } else {
+            if (verbose) RAWTRACE1("Actually read %d bytes", n);
+            r.insert(r.end(), &buf[0], &buf[0] + n);
+        } //end of (n==0)
+    } //end of for loop
+	} //end of solution 2
 	if (!r.empty()) 
 	{
 		request.insert(request.end(), r.begin(), r.end());
