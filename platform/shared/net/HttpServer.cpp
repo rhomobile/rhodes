@@ -655,6 +655,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 	{
 		if (verbose) RAWTRACE("Executing Method 1");
 		fd_set fds;
+		int nSuccess =0;
 		for(;;) 
 		{
 			if (verbose) RAWTRACE("Start of for loop");
@@ -672,10 +673,14 @@ bool CHttpServer::receive_request(ByteVector &request)
 			if (verbose) RAWTRACE("Select call completed");
 
 			//if (FD_ISSET(m_sock, &fds))
-			int nSuccess= ioctlsocket(m_sock, FIONREAD, &nread);
+#if defined(WINDOWS_PLATFORM)
+			nSuccess= ioctlsocket(m_sock, FIONREAD, &nread);
 			RAWLOG_ERROR1("ioctlsocket return value  %d", nSuccess);
 			RAWLOG_ERROR1("ioctlsocket error value  %d", errno);
 			RAWLOG_ERROR1("ioctlsocket bytes %d", nread);
+#else
+			nSuccess = FD_ISSET(m_sock, &fds);
+#endif
 			if( nSuccess == 0)
 			{
 				if (verbose) RAWTRACE("Read portion of data from socket...");
