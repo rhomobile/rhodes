@@ -498,6 +498,7 @@ bool CHttpServer::run()
                 }
 #endif
                 m_sock = conn;
+				RAWTRACE1("m_sock: %d", m_sock);		
                 bProcessed = process(m_sock);
 #ifndef RHO_NO_RUBY_API
                 if (rho_ruby_is_started())
@@ -589,6 +590,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 	 if(nMaxAttempts <= 0 )
 		nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
 	 RAWTRACE1("nMaxAttempts : %d", nMaxAttempts);
+	 RAWTRACE1("m_sock: %d", m_sock);
 
 	if(nSolution == 0)
 	{
@@ -658,7 +660,8 @@ bool CHttpServer::receive_request(ByteVector &request)
 			FD_ZERO(&fds);
 			FD_SET(m_sock, &fds);
 			timeval tv = {0};
-			tv.tv_usec = 100000;//100 MS
+			//tv.tv_usec = 100000;//100 MS
+			tv.tv_sec=5;
 			int ret = select(m_sock + 1, &fds, 0, 0, &tv);
 
 			RAWLOG_ERROR1("return value of select call: %d", ret);
@@ -731,7 +734,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 			else
 			{
 				if (verbose) RAWTRACE("FDISset failed");
-				if (verbose) RAWTRACE1("Error in FDisset", errno);
+				if (verbose) RAWTRACE1("Error in FDisset : %d", errno);
 			}
 	
 		} //end of for loop
