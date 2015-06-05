@@ -593,6 +593,20 @@ bool CHttpServer::receive_request(ByteVector &request)
 	 RAWTRACE1("nMaxAttempts : %d", nMaxAttempts);
 	 RAWTRACE1("m_sock: %d", m_sock);
 
+		int recvbuff;
+		int optlen;
+		int res = 0;
+		optlen = sizeof(recvbuff);
+		res = getsockopt(m_sock, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuff, &optlen);
+		RAWTRACE1("Current Receive Buffer Size is : %d",recvbuff);
+		recvbuff = 256 * 1024;
+		res = setsockopt(m_sock, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuff, sizeof(recvbuff));
+		RAWTRACE1("return value of  : setsockopt %d",res);
+		RAWTRACE1("error value of  : setsockopt %d",GetLastError());
+		optlen = sizeof(recvbuff);
+		res = getsockopt(m_sock, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuff, &optlen);
+		RAWTRACE1("Updated Receive Buffer Size is : %d",recvbuff);
+
 	if(nSolution == 0)
 	{
 		if (verbose) RAWTRACE("Executing Method 0");
