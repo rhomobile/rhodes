@@ -209,7 +209,12 @@ public class BaseActivity extends Activity implements ServiceConnection {
     @Override
     protected void onResume() {
         super.onResume();
-        setFullScreen(sFullScreen);
+       if(RhoConf.isExist("full_screen") ? RhoConf.getBool("full_screen") : false){
+        	 setFullScreen(true);
+        }else{
+        	setFullScreen(false);
+        }
+        //setFullScreen(sFullScreen);
         if (sScreenAutoRotate) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         }
