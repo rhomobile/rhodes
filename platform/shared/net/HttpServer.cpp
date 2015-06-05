@@ -585,7 +585,7 @@ bool CHttpServer::receive_request(ByteVector &request)
     int attempts = 0;
 
 	int nSolution = RHOCONF().getInt("Method");
-	int nRetry = RHOCONF().getInt("Retry");
+	//int nRetry = RHOCONF().getInt("Retry");
 	int nMaxAttempts = RHOCONF().getInt("Attempts");
 	 RAWTRACE1("Method: %d", nSolution);
 	 
@@ -602,8 +602,8 @@ bool CHttpServer::receive_request(ByteVector &request)
 		RAWTRACE1("Current Receive Buffer Size is : %d",recvbuff);
 		recvbuff = 256 * 1024;
 		res = setsockopt(m_sock, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuff, sizeof(recvbuff));
-		RAWTRACE1("return value of  : setsockopt %d",res);
-		RAWTRACE1("error value of  : setsockopt %d",GetLastError());
+		RAWTRACE1("return value of recvbuffer  : setsockopt %d",res);
+		RAWTRACE1("error value of recvbuffer  : setsockopt %d",errno);
 		optlen = sizeof(recvbuff);
 		res = getsockopt(m_sock, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuff, &optlen);
 		RAWTRACE1("Updated Receive Buffer Size is : %d",recvbuff);
@@ -702,13 +702,13 @@ bool CHttpServer::receive_request(ByteVector &request)
 				if (verbose) RAWTRACE("Read portion of data from socket...");
 				int n = recv(m_sock, &buf[0], sizeof(buf), 0);
 				RAWTRACE1("RECV: %d", n);
+				int e = RHO_NET_ERROR_CODE;
+				RAWTRACE1("RECV ERROR: %d", e);
+				if(232==e) //No data received
+					break;
 
 				if (n == -1) 
 				{
-					int e = RHO_NET_ERROR_CODE;
-					RAWTRACE1("RECV ERROR: %d", e);
-					if(232==e)
-						break;
 #if !defined(WINDOWS_PLATFORM)
 					if (e == EINTR)
 						continue;
@@ -726,7 +726,8 @@ bool CHttpServer::receive_request(ByteVector &request)
 #endif
 						if (!r.empty())
 							break;
-						if(nRetry==0)
+						break; //due to no data available
+	/*					if(nRetry==0)
 						{
 							if (verbose) RAWTRACE("Continuing");
 							continue;
@@ -735,7 +736,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 						{
 							if (verbose) RAWTRACE("returning to parent");
 							return false;
-						}
+						}*/
 					} // end of (e == EAGAIN || e == WSAEWOULDBLOCK)
 
 					RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
@@ -869,8 +870,8 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
 		RAWTRACE1("Current Send Buffer Size is : %d",sendbuff);
 		sendbuff = 256 * 1024;
 		res = setsockopt(m_sock, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuff, sizeof(sendbuff));
-		RAWTRACE1("return value of  : setsockopt %d",res);
-		RAWTRACE1("error value of  : setsockopt %d",GetLastError());
+		RAWTRACE1("return value of send buffer : setsockopt %d",res);
+		RAWTRACE1("error value of  send buffer: setsockopt %d",errno);
 		optlen = sizeof(sendbuff);
 		res = getsockopt(m_sock, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuff, &optlen);
 		RAWTRACE1("Updated Send Buffer Size is : %d",sendbuff);
