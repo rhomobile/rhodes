@@ -578,6 +578,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 {
 	if (verbose) RAWTRACE("Receiving request...");
 
+	RAWTRACE("Test Edition");
 	ByteVector r;
     char buf[BUF_SIZE];
     int attempts = 0;
@@ -844,6 +845,22 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
         RAWLOG_ERROR1("Can not set blocking socket mode: %d", RHO_NET_ERROR_CODE);
         return false;
     }
+		// Get buffer size
+		int sendbuff;
+		int optlen;
+		int res = 0;
+		optlen = sizeof(sendbuff);
+		res = getsockopt(m_sock, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuff, &optlen);
+		RAWTRACE1("Current Send Buffer Size is : %d",sendbuff);
+		sendbuff = 256 * 1024;
+		res = setsockopt(m_sock, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuff, sizeof(sendbuff));
+		RAWTRACE1("return value of  : setsockopt %d",res);
+		RAWTRACE1("error value of  : setsockopt %d",GetLastError());
+		optlen = sizeof(sendbuff);
+		res = getsockopt(m_sock, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuff, &optlen);
+		RAWTRACE1("Updated Send Buffer Size is : %d",sendbuff);
+
+		
 #else
     int flags = fcntl(m_sock, F_GETFL);
     if (flags == -1) {
