@@ -89,7 +89,8 @@ using namespace rho::common;
 IMPLEMENT_LOGCLASS(CHttpServer, "HttpServer");
 
 #if defined(WINDOWS_PLATFORM)
-static size_t const FILE_BUF_SIZE = 64*1024;
+//static size_t const FILE_BUF_SIZE = 64*1024;
+static size_t const FILE_BUF_SIZE = 256*1024;
 #else
 static size_t const FILE_BUF_SIZE = 256*1024;
 #endif
@@ -592,7 +593,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 		nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
 	 RAWTRACE1("nMaxAttempts : %d", nMaxAttempts);
 	 RAWTRACE1("m_sock: %d", m_sock);
-
+#if defined(WINDOWS_PLATFORM)
 		int recvbuff;
 		int optlen;
 		int res = 0;
@@ -606,7 +607,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 		optlen = sizeof(recvbuff);
 		res = getsockopt(m_sock, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuff, &optlen);
 		RAWTRACE1("Updated Receive Buffer Size is : %d",recvbuff);
-
+#endif
 	if(nSolution == 0)
 	{
 		if (verbose) RAWTRACE("Executing Method 0");
