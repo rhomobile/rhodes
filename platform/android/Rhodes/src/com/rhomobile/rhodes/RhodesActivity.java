@@ -167,7 +167,19 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		RhoConf.setString("PageZoom", pageZoom);
             else
             	RhoConf.setString("PageZoom", "1.0");
-            	
+            String sFullScreen = null;
+			try {
+				sFullScreen = config.getValue("FullScreen");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+            if (sFullScreen != null && sFullScreen.length() > 0){
+            	if(sFullScreen.contains("1")){
+            		 RhoConf.setBoolean("full_screen", true);
+            	}else{
+            		 RhoConf.setBoolean("full_screen", false);
+            	}
+            }	
             	
             
             
