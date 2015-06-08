@@ -1465,6 +1465,25 @@ public class RhodesService extends Service {
         srv.startActivity(intent);
     }
     
+     public static void bringToFront(String url) {
+        if (RhodesApplication.canHandleNow(RhodesApplication.UiState.MainActivityResumed)) {
+            Logger.T(TAG, "Main activity is already at front, do nothing");
+            return;
+        }
+
+        RhodesService srv = RhodesService.getInstance();
+        if (srv == null)
+            throw new IllegalStateException("No rhodes service instance at this moment");
+
+        Logger.T(TAG, "Bring main activity to front");
+
+        Intent intent = new Intent("android.intent.action.VIEW", Uri.parse(url)); 
+        intent.setClassName(srv.getPackageName(), RhodesActivity.class.getCanonicalName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        
+        srv.startActivity(intent);
+    }
+    
     public static void minimize() {
         if (!RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated)) {
             Logger.T(TAG, "Application is already deactivated, do nothing");
