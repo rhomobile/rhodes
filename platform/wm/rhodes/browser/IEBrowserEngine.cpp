@@ -296,7 +296,7 @@ BOOL CIEBrowserEngine::StopOnTab(UINT iTab)
 
 BOOL CIEBrowserEngine::ZoomPageOnTab(float fZoom, UINT iTab)
 {
-    return SendMessage(m_hwndTabHTML, DTM_ZOOMLEVEL, 0, fZoom);
+    return SendMessage(m_hwndTabHTML, DTM_ZOOMLEVEL, 0, (LPARAM)(DWORD)m_textZoomValue);
 }
 
 BOOL CIEBrowserEngine::GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab)
