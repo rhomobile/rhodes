@@ -27,6 +27,12 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
+/**
+*  Converts a Hexadecimal string to an Integer
+*  \param value String representation of a hex number
+*/
+int _httoi(const TCHAR *value);
+
 void   UnixTimeToFileTime (const time_t unixTime, LPFILETIME pFileTime);
 
 time_t SystemTimeToUnixTime (const LPSYSTEMTIME sysTime);
