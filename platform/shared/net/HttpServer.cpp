@@ -587,7 +587,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 	int nSolution = RHOCONF().getInt("Method");
 	//int nRetry = RHOCONF().getInt("Retry");
 	int nMaxAttempts = RHOCONF().getInt("Attempts");
-	 RAWTRACE1("Method: %d", nSolution);
+	RAWTRACE1("Method: %d", nSolution);
 	 
 	 if(nMaxAttempts <= 0 )
 		nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
@@ -614,7 +614,8 @@ bool CHttpServer::receive_request(ByteVector &request)
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
-        //RAWTRACE1("RECV: %d", n);
+        RAWTRACE1("RECV: %d", n);
+		RAWTRACE1("Received buf:%s", buf);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
             RAWTRACE1("RECV ERROR: %d", e);
@@ -835,6 +836,8 @@ bool CHttpServer::receive_request(ByteVector &request)
 	if (!r.empty()) 
 	{
 		request.insert(request.end(), r.begin(), r.end());
+		String strRequest1(request.begin(),request.end());
+		RAWTRACE1("Received List:\n%s", strRequest1.c_str());
 		if ( !rho_conf_getBool("log_skip_post") )
 		{
 			String strRequest(request.begin(),request.end());
@@ -911,6 +914,7 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
     
     //String dbg_response = response.size() > 100 ? response.substr(0, 100) : response;
     //RAWTRACE2("Sent response:\n%s%s", dbg_response.c_str(), response.size() > 100 ? "..." : "   ");
+	RAWTRACE1("Sent response debug :%s", data.c_str());
     if (continuation)
         RAWTRACE1("Sent response body: %d bytes", data.size());
     else if ( !rho_conf_getBool("log_skip_post") )
