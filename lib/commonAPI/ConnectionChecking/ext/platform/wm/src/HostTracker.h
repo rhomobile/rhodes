@@ -3,7 +3,7 @@
 
 #include "..\..\..\..\..\coreapi\ext\platform\wm\src\NetworkDetect.h"
 
-const UINT WM_ON_CONNECTION_BOX   = WM_USER + 201;
+
 
 typedef enum 
 {
@@ -37,7 +37,6 @@ public:
 	virtual bool SetNavigatedUrl(const wchar_t* navigatedUrl);
 	virtual bool isFeatureEnabled() { return m_bIsFeatureEnabled;}
 	virtual void fireEvent(eEventIndex eventIdx);
-	virtual bool onWndMsg(MSG& oMsg);
 	rho::String getHostURL();
     int getDailogTimeout();
     int getPollInterval();
@@ -47,6 +46,7 @@ private:
 	static HBRUSH m_hbrBackground;
     static rho::StringW m_szConnectionDlgMsg;
     static BOOL CALLBACK ConnectDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
+	static void CreateNoConnectionDialog(int unused);
     static void GenerateConnectionBoxCoordinates(HWND hwnd, LONG& lLeft, LONG& lTop, LONG& lRight, LONG& lBottom);
     void TimeoutProcHandler(bool bStartThread);
     static DWORD TimeoutProc (LPVOID pparam);
