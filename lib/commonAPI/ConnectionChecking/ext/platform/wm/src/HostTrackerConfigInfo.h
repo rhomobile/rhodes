@@ -9,7 +9,7 @@ typedef struct hostTrackerConfigInfo{
 	int iPollInterval; //Thread Interval
 	int iPingTimeout; //Socket Connection Timeout
 	rho::String szHostName; //Host URL or IP Address
-	TCHAR szHostMessage[30]; ; //Host Message during tracking.
+	//TCHAR szHostMessage[30]; ; //Host Message during tracking.
 	TCHAR szBadLinkURL[MAX_PATH + 1];//Badlink URL
 	
 }stHostTrackerConfigInfo;
