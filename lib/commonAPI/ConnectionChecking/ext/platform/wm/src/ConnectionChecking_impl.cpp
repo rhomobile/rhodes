@@ -82,20 +82,7 @@ namespace rho {
 
 				}
 			}
-		}
-
-		virtual bool onWndMsg(MSG& oMsg)
-		{
-			if(m_pHostTracker)
-			{
-				if(m_pHostTracker->isFeatureEnabled())
-				{
-					return m_pHostTracker->onWndMsg(oMsg);
-				}
-
-			}
-			return false;			
-		}
+		}	
 		
 	};
 
