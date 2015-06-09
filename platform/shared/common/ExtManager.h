@@ -45,6 +45,23 @@ extern "C" void rho_qt_sys_restore_window();
 namespace rho {
 namespace common {
 
+struct CZoomKeyDataType
+{
+    bool isValidZoomKeyIn;	///< Check whether ZoomKeyIn value is valid. Any function key but not same as ZoomKeyOut value.
+    bool isValidZoomKeyOut;	///< Check whether ZoomKeyOut value is valid. Any function key but not same as ZoomKeyIn value.
+	int iZoomIn;			///< Stores the ZoomKeyIn value. If the function key is valid, the decimal number of the function key is set, else the value is set to 0.
+	int iZoomOut;			///< Stores the ZoomKeyOut value. If the function key is valid, the decimal number of the function key is set, else the value is set to 0.
+	bool isSameZoomValueSet; ///< Check whether the same value is set for ZoomKeyIn or ZoomKeyOut.
+
+	bool isKeyBlockingRequired; ///< Check whether the key should be blocked for further processing. This by default is set to true as currently the requirement is to block the key.
+								///< Later if the requirement changes then it will be changed dynamically by reading the value from config.xml and setting the value appropriately.
+public:	
+	CZoomKeyDataType();
+
+	//Function used to retrieve Zoom-In & Zoom-Out Key Info
+	void RetrieveZoomInZoomOutKeyInfo();
+};
+
 struct CRhoExtData
 {
 	HWND	    m_hWnd;
@@ -155,6 +172,9 @@ public:
 
     CRhoExtData makeExtData();
     void close();
+
+	// This function performs Zoom In or Zoom Out Operation
+	INT onZoomTextWndMsg(MSG& oMsg);
 
     //IRhoExtManager
     virtual void onUnhandledProperty( const wchar_t* pModuleName, const wchar_t* pName, const wchar_t* pValue, const CRhoExtData& oExtData );
