@@ -301,8 +301,11 @@ public class RhodesService extends Service {
 	         String startPathName = "start_path";
 		 String externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
 		 StringBuffer str = new StringBuffer(startPath);
-		 int index=7;
+		 if(startPath.contains("file"))
+		 {
+		 	int index=7;
 		 str = str.insert(7,externalSharedPath);
+		 }
 		 if(startPath != null)
           		RhoConf.setString(startPathName, str.toString());
 	}
