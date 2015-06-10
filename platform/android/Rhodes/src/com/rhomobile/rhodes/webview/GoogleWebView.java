@@ -72,13 +72,7 @@ public class GoogleWebView implements IRhoWebView {
 //            @Override
 //            public void run() {
                 Logger.I(TAG, "Web settings is applying now  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                try{
-                WebSettings webSettings = mWebView.getSettings();				
-		webSettings.setStandardFontFamily(RhoConf.getString("fontFamily"));								
-                }
-                catch(Exception excp){
-                	
-                }
+                
                 double z = getConfig().getDouble(WebViewConfig.PAGE_ZOOM);
                 mWebView.setInitialScale((int)(z * 100));
                 mWebView.setVerticalScrollBarEnabled(true);
