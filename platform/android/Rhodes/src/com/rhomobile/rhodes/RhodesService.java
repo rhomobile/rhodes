@@ -310,6 +310,13 @@ public class RhodesService extends Service {
           		RhoConf.setString(startPathName, str.toString());
 	}
 	
+	public static void setUserAgent(String userAgent) {
+		     String user_agent = "user_agent";
+			 if(userAgent != null) {
+				 RhoConf.setString(user_agent, userAgent);
+			 }
+	}
+	
 	public class LocalBinder extends Binder {
 		RhodesService getService() {
 			return RhodesService.this;
