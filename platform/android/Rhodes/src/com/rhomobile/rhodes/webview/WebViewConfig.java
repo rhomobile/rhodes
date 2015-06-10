@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.extmanager.IRhoConfig;
 
 public class WebViewConfig implements IRhoConfig {
@@ -15,12 +16,14 @@ public class WebViewConfig implements IRhoConfig {
     public static final String ENABLE_WEB_PLUGINS = "enableWebPlugins";
     public static final String ENABLE_CACHE = "enableCache";
     public static final String PAGE_ZOOM = "pageZoom";
+    public static final String USER_AGENT = "UserAgent";
 
     public static final boolean ENABLE_PAGE_LOADING_INDICATION_DEF = true;
     public static final boolean ENABLE_ZOOM_DEF = true;
     public static final boolean ENABLE_WEB_PLUGINS_DEF = true;
     public static final boolean ENABLE_CACHE_DEF = true;
     public static final double  PAGE_ZOOM_DEF = 1.0;
+    public static final String USER_AGENT_DEF = RhoConf.getString("user_agent");
 
     Map<String, String> mConfigMap;
     
@@ -31,6 +34,7 @@ public class WebViewConfig implements IRhoConfig {
         mConfigMap.put(PAGE_ZOOM, String.valueOf(PAGE_ZOOM_DEF));
         mConfigMap.put(ENABLE_WEB_PLUGINS, String.valueOf(ENABLE_WEB_PLUGINS_DEF));
         mConfigMap.put(ENABLE_CACHE, String.valueOf(ENABLE_CACHE_DEF));
+        mConfigMap.put(USER_AGENT, USER_AGENT_DEF);
     }
     
     public void set(String name, boolean val) {
