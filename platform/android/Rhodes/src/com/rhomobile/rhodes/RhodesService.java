@@ -293,6 +293,16 @@ public class RhodesService extends Service {
 
 	    return phoneId;
 	}
+		public static void setStartPath(String startPath)
+	{
+	         String startPathName = "start_path";
+		 String externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
+		 StringBuffer str = new StringBuffer(startPath);
+		 int index=7;
+		 str = str.insert(7,externalSharedPath);
+		 if(startPath != null)
+          		RhoConf.setString(startPathName, str.toString());
+	}
 	
 	public class LocalBinder extends Binder {
 		RhodesService getService() {
