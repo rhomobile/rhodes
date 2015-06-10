@@ -114,6 +114,9 @@ import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.RemoteViews;
+import android.os.Environment;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 
 
 import java.util.Enumeration;
