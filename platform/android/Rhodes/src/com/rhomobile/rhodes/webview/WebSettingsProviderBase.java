@@ -7,6 +7,7 @@ import android.webkit.WebSettings;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.extmanager.IRhoConfig;
+import com.rhomobile.rhodes.RhoConf;
 
 public class WebSettingsProviderBase implements IWebSettingsProvider {
     protected static final String TAG = "WebSettingsProvider";
@@ -23,6 +24,7 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
         settings.setJavaScriptCanOpenWindowsAutomatically(false);
         settings.setSupportZoom(enableZoom);
         settings.setBuiltInZoomControls(enableZoom);
+        settings.setStandardFontFamily(RhoConf.getString("fontFamily"));
         
         Logger.T(TAG, "Enable Zoom: " + enableZoom);
         
