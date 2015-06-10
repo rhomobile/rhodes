@@ -301,7 +301,7 @@ public class RhodesService extends Service {
 	         String startPathName = "start_path";
 		 String externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
 		 StringBuffer str = new StringBuffer(startPath);
-		 if(startPath.contains("file"))
+		 if(startPath.contains("file") && !startPath.contains("sdcard") && !startPath.contains("internal"))
 		 {
 		 	int index=7;
 		 str = str.insert(7,externalSharedPath);
