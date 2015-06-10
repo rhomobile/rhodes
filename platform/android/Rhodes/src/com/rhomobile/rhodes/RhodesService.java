@@ -114,6 +114,9 @@ import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.RemoteViews;
+import android.os.Environment;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 
 
 import java.util.Enumeration;
@@ -292,6 +295,19 @@ public class RhodesService extends Service {
 	        RhoConf.setString(CONF_PHONE_ID, phoneId.toString());
 
 	    return phoneId;
+	}
+		public static void setStartPath(String startPath)
+	{
+	         String startPathName = "start_path";
+		 String externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() ;
+		 StringBuffer str = new StringBuffer(startPath);
+		 if(startPath.contains("file"))
+		 {
+		 	int index=7;
+		 str = str.insert(7,externalSharedPath);
+		 }
+		 if(startPath != null)
+          		RhoConf.setString(startPathName, str.toString());
 	}
 	
 	public class LocalBinder extends Binder {
