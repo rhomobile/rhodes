@@ -17,6 +17,9 @@ extern "C" LRESULT rho_wm_appmanager_ProcessOnTopMostWnd( WPARAM wParam, LPARAM 
 extern "C" void rho_wmimpl_create_ieBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 extern "C" bool rho_wmimpl_get_textselectionenabled();
 
+//Default Text Zoom Value
+#define ZOOM_TEXT_MEDIUM 2 ///< The text zoom value is in the range 0 to 4.
+
 //////////////////////////////////////////////////////////////////////////
 
 #define NM_PIE_TITLE            (WM_USER + 104)  ///< Message ID indicating the associated message defines the page title.
@@ -65,6 +68,8 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
     m_parentHWND = hParentWnd;    
     m_hparentInst = hInstance;
     m_tabID = 0; //tabID;
+
+	m_textZoomValue = ZOOM_TEXT_MEDIUM; //By default the text zoom value is set to ZOOM_TEXT_MEDIUM
 
     GetWindowRect(hParentWnd, &m_rcViewSize);
 
@@ -291,7 +296,7 @@ BOOL CIEBrowserEngine::StopOnTab(UINT iTab)
 
 BOOL CIEBrowserEngine::ZoomPageOnTab(float fZoom, UINT iTab)
 {
-    return SendMessage(m_hwndTabHTML, DTM_ZOOMLEVEL, 0, fZoom);
+    return SendMessage(m_hwndTabHTML, DTM_ZOOMLEVEL, 0, (LPARAM)(DWORD)m_textZoomValue);
 }
 
 BOOL CIEBrowserEngine::GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab)
@@ -304,6 +309,14 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
+		// Used for Zoom-In Or Zoom-Out, if the return value is true then 
+		// the message will be pushed further so that the remaining action 
+		// on that function key can be processed.
+		// For Ex: After Zoom In or Zoom Out, the same key may be used by JavaScript
+		// or KeyCapture Module to perform other task from the html page.
+		if ( !RHODESAPP().getExtManager().onZoomTextWndMsg(msg) )
+            continue;
+
 		if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
 
@@ -803,9 +816,13 @@ UINT CIEBrowserEngine::BackListSize()
 	}
 	return iHistoryCounter;
 }
-
+int CIEBrowserEngine::GetTextZoomOnTab(UINT iTab)
+{
+	return m_textZoomValue;
+}
 BOOL CIEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab)
 {
+	m_textZoomValue = nZoom;
 	BOOL bRetVal = PostMessage(m_hwndTabHTML, DTM_ZOOMLEVEL, 0, 
 								(LPARAM)(DWORD) nZoom);
 

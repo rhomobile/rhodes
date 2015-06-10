@@ -39,6 +39,8 @@ private:
     int             m_dwNavigationTimeout;
 	CHistoryElement* m_urlList;				///< List of all URLs visited by the browser
 	CHistoryElement* m_currentPage;			///< Pointer to current position in the History List
+
+	int				m_textZoomValue;		///< The text zoom value of an html page.
 	
 private:
     //
@@ -108,7 +110,7 @@ public:
     virtual void executeJavascript(const wchar_t* szJSFunction, int index);
     virtual BOOL ZoomPageOnTab(float fZoom, UINT iTab);
     virtual BOOL ZoomTextOnTab(int nZoom, UINT iTab);
-    virtual int GetTextZoomOnTab(UINT iTab){return 2;}
+    virtual int GetTextZoomOnTab(UINT iTab);
     virtual BOOL GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab);
     virtual void OnDocumentComplete(LPCTSTR url);
     virtual void setBrowserGesturing(bool bEnableGesturing) {}

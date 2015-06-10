@@ -32,6 +32,7 @@
 
 #ifndef RHODES_QT_PLATFORM
 #include "MainWindow.h"
+#include "Utils.h"
 #endif
 
 #include "common/app_build_capabilities.h"
@@ -53,12 +54,84 @@ extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 extern "C" void rho_sys_app_exit();
 #ifndef RHODES_QT_PLATFORM
 extern "C" WCHAR* rho_wmimpl_get_configfilepath();
+extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
 #endif
 
 namespace rho {
 namespace common {
 
 IMPLEMENT_LOGCLASS(CExtManager, "ExtManager");
+
+// Creating zoomKeyVal object of type CZoomKeyDataType
+// This object is used for Zoom In & Zoom Out Operation
+#ifndef RHODES_QT_PLATFORM
+CZoomKeyDataType zoomKeyVal;
+#endif
+
+CZoomKeyDataType::CZoomKeyDataType()
+{
+#ifndef RHODES_QT_PLATFORM
+	RetrieveZoomInZoomOutKeyInfo();
+#endif
+}
+
+void CZoomKeyDataType::RetrieveZoomInZoomOutKeyInfo()
+{
+#ifndef RHODES_QT_PLATFORM
+	LPCTSTR pZoomKeyInVal, pZoomKeyOutVal;
+	//  By default, we will block the Zoom In or Zoom Out Function Key to process further.
+	isKeyBlockingRequired = true;
+
+	//Read the ZoomKeyIn value from config.xml
+	pZoomKeyInVal = rho_wmimpl_sharedconfig_getvalue(L"ZoomKey\\ZoomKeyIn");
+	if(pZoomKeyInVal)
+	{
+		iZoomIn = _httoi(pZoomKeyInVal);
+		if( iZoomIn >= VK_F1 && iZoomIn <= VK_F24 )
+		{
+			LOG(INFO) + "Valid ZoomKeyIn set in config.xml.";
+			isValidZoomKeyIn = true;
+		}
+		else
+		{
+			LOG(ERROR) + "Invalid ZoomKeyIn set in config.xml.";
+			isValidZoomKeyIn = false;
+		}
+	}
+
+	//Read the ZoomKeyOut value from config.xml
+	pZoomKeyOutVal = rho_wmimpl_sharedconfig_getvalue(L"ZoomKey\\ZoomKeyOut");
+	if(pZoomKeyOutVal)
+	{
+		iZoomOut = _httoi(pZoomKeyOutVal);
+		if( iZoomOut >= VK_F1 && iZoomOut <= VK_F24 )
+		{
+			LOG(INFO) + "Valid ZoomKeyOut set in config.xml.";
+			isValidZoomKeyOut = true;
+		}
+		else
+		{
+			LOG(ERROR) + "Invalid ZoomKeyOut set in config.xml.";
+			isValidZoomKeyOut = false;
+		}
+	}
+	if( iZoomIn == iZoomOut)
+	{
+		 LOG(ERROR) + "Same value set for ZoomKeyIn & ZoomKeyOut in config.xml. Please set different function key value for ZoomKeyIn & ZoomKeyOut in config.xml.";
+		 isSameZoomValueSet = true;
+		 // Since Keys for both Zoom In & Zoom Out is same.
+		 // We will not do zoom in or zoom out but we will
+		 // not block the key to process further.
+		 isKeyBlockingRequired = false;
+	}
+	else
+	{
+		LOG(INFO) + "Different function key value is set for ZoomKeyIn & ZoomKeyOut in config.xml.";
+		isSameZoomValueSet = false;
+	}
+#endif
+}
+
 
 void CExtManager::registerExtension(const String& strName, IRhoExtension* pExt)
 {
@@ -330,6 +403,53 @@ void CExtManager::zoomPage(float fZoom)
 #ifndef RHODES_QT_PLATFORM
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_ZOOMPAGE, (LPARAM)new CRhoFloatData(fZoom) );
 #endif
+}
+
+INT CExtManager::onZoomTextWndMsg(MSG& oMsg)
+{
+	BOOL retVal = TRUE;
+#ifndef RHODES_QT_PLATFORM
+	if( ( ( oMsg.message == WM_KEYDOWN )&& (oMsg.wParam >= VK_F1) && ( oMsg.wParam <= VK_F24 ) ) && !zoomKeyVal.isSameZoomValueSet )
+	{
+		int getZoomVal = getTextZoom(); // Get the last text zoom value of an html page
+		int setZoomVal;
+		
+		// Check & set whether to block the key.
+		// However if the  function key is not valid the 
+		// function key will not be blocked.
+		if( zoomKeyVal.isKeyBlockingRequired )
+		{
+			retVal = FALSE;
+		}
+
+		if ( ( zoomKeyVal.isValidZoomKeyIn ) && (oMsg.wParam == zoomKeyVal.iZoomIn ) )
+		{
+			// Zoom In the text of an html page
+			if( getZoomVal < 4 ) //Zoom Value range is in between 0 to 4
+			{
+				setZoomVal = getZoomVal + 1;
+				zoomText(setZoomVal);
+			}
+		}
+		else if( ( zoomKeyVal.isValidZoomKeyOut ) && (oMsg.wParam == zoomKeyVal.iZoomOut ) )
+		{
+			// Zoom Out the text of an html page
+			if( getZoomVal > 0 ) //Zoom Value range is in between 0 to 4
+			{
+				setZoomVal = getZoomVal - 1;
+				zoomText(setZoomVal);
+			}
+		}
+		else
+		{
+			// It will reach here only if the clicked key is not valid function key
+			// We will not block the key as any one of the functionality
+			// i.e. Zoom In or Zoom Out is invalid function key
+			retVal = TRUE;
+		}
+	}
+#endif
+	return retVal;
 }
 
 void CExtManager::zoomText(int nZoom)

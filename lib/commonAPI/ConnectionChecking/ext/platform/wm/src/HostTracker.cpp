@@ -12,6 +12,8 @@ extern "C" stHostTrackerConfigInfo* rho_wmimpl_get_hostTrackerInfo();
 extern "C" WCHAR* rho_wmimpl_get_BadLinkURLPath();
 extern "C" WCHAR* rho_wmimpl_get_HostTrackerDlgMsg();
 
+using namespace rho::apiGenerator;
+using namespace rho::common;
 
 CHostTracker* HostTrackerFactory::createHostTracker() {
     return new CHostTracker();
@@ -426,6 +428,20 @@ void CHostTracker::GenerateConnectionBoxCoordinates(HWND hwnd, LONG& lLeft, LONG
 	lRight = rcParent.right-40; //width is parent width-40 (20 used for margins on both side)
 	lBottom = rcDlg.bottom;
 }
+void CHostTracker::CreateNoConnectionDialog(int unused)
+{
+	m_hConnectDlg = CreateDialog(rho_wmimpl_get_appinstance(), MAKEINTRESOURCE(IDD_CONNECTION_DLG),
+		getMainWnd(), &CHostTracker::ConnectDlgProc);
+	if(m_hConnectDlg != NULL)
+	{
+		ShowWindow(m_hConnectDlg, SW_SHOW);		
+		UpdateWindow(m_hConnectDlg);
+	}
+	else
+	{
+		LOG(ERROR) + "CreateDialog failed"; 
+	}  				
+}
 void CHostTracker::HandleConnectionBox(eConnectionBoxMode mode)
 {
 	switch(mode)
@@ -435,8 +451,16 @@ void CHostTracker::HandleConnectionBox(eConnectionBoxMode mode)
 			LOG(INFO) + "inside show connection box";
 			if(NULL == m_hConnectDlg)//if dlg not present create
 			{
-				LOG(INFO) + "inside create dialog, posting message";
-				PostMessage(getMainWnd(), WM_ON_CONNECTION_BOX, 1, 0);  				
+				LOG(INFO) + "inside create dialog";
+				typedef void (*CREATE_NO_CONNECT_DIALOG)(int);
+				CStaticClassFunctor<CREATE_NO_CONNECT_DIALOG, int>* FunPtr = new CStaticClassFunctor<CREATE_NO_CONNECT_DIALOG, int>(&CHostTracker::CreateNoConnectionDialog, 0);
+				// Key blocking only has to be done once
+				if(FunPtr != NULL)
+				{
+					//create the dialog box in ui thread
+					rho_os_impl_performOnUiThread( FunPtr );
+				}				
+				
 			}
 			break;
 		}
@@ -444,8 +468,9 @@ void CHostTracker::HandleConnectionBox(eConnectionBoxMode mode)
 		{			
 			if(NULL != m_hConnectDlg)//if dlg present kill it
 			{
-				LOG(INFO) + "inside hide connection box, posting message";
-				PostMessage(getMainWnd(), WM_ON_CONNECTION_BOX, 0, 0);  				
+                LOG(INFO) + "inside hide connection box";
+                DestroyWindow(m_hConnectDlg);
+                m_hConnectDlg = NULL;				
 			}
 			break;
 		}
@@ -493,45 +518,6 @@ void CHostTracker::fireEvent(eEventIndex eventIdx)
 			break;
 		}
 	}
-}
-bool CHostTracker::onWndMsg(MSG& oMsg)
-{
-	bool retStatus = false;
-	if(oMsg.message == WM_ON_CONNECTION_BOX)
-	{
-		int bCreate = (int)(oMsg.wParam);
-		if(bCreate)
-		{
-			if(NULL == m_hConnectDlg)
-			{
-				LOG(INFO) + "inside onwndmsg create dialog";
-				m_hConnectDlg = CreateDialog(rho_wmimpl_get_appinstance(), MAKEINTRESOURCE(IDD_CONNECTION_DLG),
-					oMsg.hwnd, &CHostTracker::ConnectDlgProc);
-				if(m_hConnectDlg != NULL)
-				{
-					ShowWindow(m_hConnectDlg, SW_SHOW);		
-					UpdateWindow(m_hConnectDlg);
-				}
-				else
-				{
-					LOG(ERROR) + "CreateDialog failed"; 
-				}  
-			}
-		}
-		else
-		{
-			LOG(INFO) + "inside onwndmsg destroy";
-			if(NULL != m_hConnectDlg)//if dlg present kill it
-			{
-				LOG(INFO) + "inside destroy dialog";
-				DestroyWindow(m_hConnectDlg);
-				m_hConnectDlg = NULL;
-
-			}
-		}
-		retStatus = true;
-	}
-	return retStatus;
 }
 void CHostTracker::closeAllEvents()
 {
