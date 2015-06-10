@@ -82,42 +82,42 @@ void CZoomKeyDataType::RetrieveZoomInZoomOutKeyInfo()
 	//  By default, we will block the Zoom In or Zoom Out Function Key to process further.
 	isKeyBlockingRequired = true;
 
-	//Read the ZoomKeyIn value from config.xml
-	pZoomKeyInVal = rho_wmimpl_sharedconfig_getvalue(L"ZoomKey\\ZoomKeyIn");
+	//Read the ZoomInKey value from config.xml
+	pZoomKeyInVal = rho_wmimpl_sharedconfig_getvalue(L"ZoomKey\\ZoomInKey");
 	if(pZoomKeyInVal)
 	{
 		iZoomIn = _httoi(pZoomKeyInVal);
 		if( iZoomIn >= VK_F1 && iZoomIn <= VK_F24 )
 		{
-			LOG(INFO) + "Valid ZoomKeyIn set in config.xml.";
+			LOG(INFO) + "Valid ZoomInKey set in config.xml.";
 			isValidZoomKeyIn = true;
 		}
 		else
 		{
-			LOG(ERROR) + "Invalid ZoomKeyIn set in config.xml.";
+			LOG(ERROR) + "Invalid ZoomInKey set in config.xml.";
 			isValidZoomKeyIn = false;
 		}
 	}
 
-	//Read the ZoomKeyOut value from config.xml
-	pZoomKeyOutVal = rho_wmimpl_sharedconfig_getvalue(L"ZoomKey\\ZoomKeyOut");
+	//Read the ZoomOutKey value from config.xml
+	pZoomKeyOutVal = rho_wmimpl_sharedconfig_getvalue(L"ZoomKey\\ZoomOutKey");
 	if(pZoomKeyOutVal)
 	{
 		iZoomOut = _httoi(pZoomKeyOutVal);
 		if( iZoomOut >= VK_F1 && iZoomOut <= VK_F24 )
 		{
-			LOG(INFO) + "Valid ZoomKeyOut set in config.xml.";
+			LOG(INFO) + "Valid ZoomOutKey set in config.xml.";
 			isValidZoomKeyOut = true;
 		}
 		else
 		{
-			LOG(ERROR) + "Invalid ZoomKeyOut set in config.xml.";
+			LOG(ERROR) + "Invalid ZoomOutKey set in config.xml.";
 			isValidZoomKeyOut = false;
 		}
 	}
 	if( iZoomIn == iZoomOut)
 	{
-		 LOG(ERROR) + "Same value set for ZoomKeyIn & ZoomKeyOut in config.xml. Please set different function key value for ZoomKeyIn & ZoomKeyOut in config.xml.";
+		 LOG(ERROR) + "Same value set for ZoomInKey & ZoomOutKey in config.xml. Please set different function key value for ZoomInKey & ZoomOutKey in config.xml.";
 		 isSameZoomValueSet = true;
 		 // Since Keys for both Zoom In & Zoom Out is same.
 		 // We will not do zoom in or zoom out but we will
@@ -126,7 +126,7 @@ void CZoomKeyDataType::RetrieveZoomInZoomOutKeyInfo()
 	}
 	else
 	{
-		LOG(INFO) + "Different function key value is set for ZoomKeyIn & ZoomKeyOut in config.xml.";
+		LOG(INFO) + "Different function key value is set for ZoomInKey & ZoomOutKey in config.xml.";
 		isSameZoomValueSet = false;
 	}
 #endif
