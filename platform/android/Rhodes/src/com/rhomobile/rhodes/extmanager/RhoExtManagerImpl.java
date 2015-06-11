@@ -589,7 +589,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             passPrompt.setText("Password:");
             passPrompt.setPadding(0, 0, 10, 0);
             final EditText passField = new EditText(ContextFactory.getUiContext());
-            passField.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            passField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             passField.setTransformationMethod(PasswordTransformationMethod.getInstance());
             
             passRow.addView(passPrompt);
