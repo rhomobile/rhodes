@@ -726,7 +726,22 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	}
 
 	m_isMinimized = true;
-
+	
+	//Title bar was seen when application was minimized at the top in WM device
+	if(RHO_IS_WMDEVICE)
+	{
+		INPUT ip; 
+		POINT pos;
+		GetCursorPos(&pos);
+		// Set up a generic mouse event.
+		ip.type = INPUT_MOUSE;
+		ip.mi.dx = pos.x;
+		ip.mi.dy = pos.y;
+		ip.mi.dwFlags = MOUSEEVENTF_RIGHTUP|MOUSEEVENTF_RIGHTDOWN;
+		ip.mi.time = 0;
+		SendInput(1, &ip, sizeof(INPUT));
+	}
+	
     return 0;
 }
 
