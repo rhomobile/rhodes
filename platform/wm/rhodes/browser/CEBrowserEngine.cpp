@@ -913,7 +913,10 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 			getEditableFocusWnd = NULL;
 			ZeroMemory(getEditableWndClassName,MAX_PATH);
 			getEditableFocusWnd = GetFocus();
-			GetClassName(getEditableFocusWnd,getEditableWndClassName,MAX_PATH);
+			if(getEditableFocusWnd != NULL)
+			{
+				GetClassName(getEditableFocusWnd,getEditableWndClassName,MAX_PATH);
+			}
 			
 			bool m_bFullScreen = RHOCONF().getBool("full_screen");
 
@@ -927,12 +930,15 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 		if ((msg.message == WM_KEYDOWN || msg.message == WM_KEYUP) && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
 		{
 			//Setting foucs back to the editable window if the focus is lost
-			if( _tcsicmp(getEditableWndClassName,TEXT("Internet Explorer_Server")) ==0 )
+			if( _tcsicmp(getEditableWndClassName,TEXT("Internet Explorer_Server")) == 0 )
 			{
 				HWND checkFocusWnd = GetFocus();
-				if((checkFocusWnd != getEditableFocusWnd) && (msg.message == WM_KEYDOWN))
+				if((getEditableFocusWnd != NULL) && (checkFocusWnd != NULL))
 				{
-					SetFocus(getEditableFocusWnd);
+					if((checkFocusWnd != getEditableFocusWnd) && (msg.message == WM_KEYDOWN))
+					{
+						SetFocus(getEditableFocusWnd);
+					}
 				}
 			}
 			
