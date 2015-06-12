@@ -890,6 +890,10 @@ LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPara
 void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd) 
 {
 	MSG msg;
+	//This is used for checking the editable window focus. If the focus is lost on key down then we set the focus back to the screen
+	TCHAR getEditableWndClassName[MAX_PATH];
+	HWND getEditableFocusWnd = NULL;
+	
     while (GetMessage(&msg, NULL, 0, 0))
     {
 		// Used for Zoom-In Or Zoom-Out, if the return value is true then 
@@ -905,6 +909,12 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 
 		if (msg.message == WM_MOUSEFIRST)
 		{
+			//Get the details of the editable window, this will be used if the focus is lost on key down
+			getEditableFocusWnd = NULL;
+			ZeroMemory(getEditableWndClassName,MAX_PATH);
+			getEditableFocusWnd = GetFocus();
+			GetClassName(getEditableFocusWnd,getEditableWndClassName,MAX_PATH);
+			
 			bool m_bFullScreen = RHOCONF().getBool("full_screen");
 
 			if (m_bFullScreen)
@@ -916,6 +926,16 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 		
 		if ((msg.message == WM_KEYDOWN || msg.message == WM_KEYUP) && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
 		{
+			//Setting foucs back to the editable window if the focus is lost
+			if( _tcsicmp(getEditableWndClassName,TEXT("Internet Explorer_Server")) ==0 )
+			{
+				HWND checkFocusWnd = GetFocus();
+				if((checkFocusWnd != getEditableFocusWnd) && (msg.message == WM_KEYDOWN))
+				{
+					SetFocus(getEditableFocusWnd);
+				}
+			}
+			
 			IDispatch* pDisp;
 			m_pBrowser->get_Document(&pDisp);
 			if (pDisp != NULL)
