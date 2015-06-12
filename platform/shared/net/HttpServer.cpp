@@ -89,8 +89,7 @@ using namespace rho::common;
 IMPLEMENT_LOGCLASS(CHttpServer, "HttpServer");
 
 #if defined(WINDOWS_PLATFORM)
-//static size_t const FILE_BUF_SIZE = 64*1024;
-static size_t const FILE_BUF_SIZE = 256*1024;
+static size_t const FILE_BUF_SIZE = 64*1024;
 #else
 static size_t const FILE_BUF_SIZE = 256*1024;
 #endif
@@ -499,7 +498,6 @@ bool CHttpServer::run()
                 }
 #endif
                 m_sock = conn;
-				RAWTRACE1("m_sock: %d", m_sock);		
                 bProcessed = process(m_sock);
 #ifndef RHO_NO_RUBY_API
                 if (rho_ruby_is_started())
@@ -579,43 +577,24 @@ bool CHttpServer::receive_request(ByteVector &request)
 {
 	if (verbose) RAWTRACE("Receiving request...");
 
-	RAWTRACE("Test Edition");
 	ByteVector r;
     char buf[BUF_SIZE];
     int attempts = 0;
-
-	int nSolution = RHOCONF().getInt("Method");
-	//int nRetry = RHOCONF().getInt("Retry");
 	int nMaxAttempts = RHOCONF().getInt("Attempts");
-	RAWTRACE1("Method: %d", nSolution);
 	 
 	 if(nMaxAttempts <= 0 )
 		nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
 	 RAWTRACE1("nMaxAttempts : %d", nMaxAttempts);
-	 RAWTRACE1("m_sock: %d", m_sock);
-#if defined(WINDOWS_PLATFORM)
-		int recvbuff;
-		int optlen;
-		int res = 0;
-		optlen = sizeof(recvbuff);
-		res = getsockopt(m_sock, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuff, &optlen);
-		RAWTRACE1("Current Receive Buffer Size is : %d",recvbuff);
-		recvbuff = 256 * 1024;
-		res = setsockopt(m_sock, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuff, sizeof(recvbuff));
-		RAWTRACE1("return value of recvbuffer  : setsockopt %d",res);
-		RAWTRACE1("error value of recvbuffer  : setsockopt %d",errno);
-		optlen = sizeof(recvbuff);
-		res = getsockopt(m_sock, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuff, &optlen);
-		RAWTRACE1("Updated Receive Buffer Size is : %d",recvbuff);
-#endif
-	if(nSolution == 0)
-	{
-		if (verbose) RAWTRACE("Executing Method 0");
+	 
+	 long lMicroseconds = RHOCONF().getInt("Interval");
+	 RAWTRACE1("Interval : %d", lMicroseconds);
+	 if(lMicroseconds <= 0 )
+		 lMicroseconds = 100000;//100 MS
+	 
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
-        RAWTRACE1("RECV: %d", n);
-		RAWTRACE1("Received buf:%s", buf);
+        //RAWTRACE1("RECV: %d", n);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
             RAWTRACE1("RECV ERROR: %d", e);
@@ -645,14 +624,14 @@ bool CHttpServer::receive_request(ByteVector &request)
                 FD_ZERO(&fds);
                 FD_SET(m_sock, &fds);
                 timeval tv = {0};
-				tv.tv_usec = 100000;//100 MS
+				tv.tv_usec = lMicroseconds;
                 select(m_sock + 1, &fds, 0, 0, &tv);
                 continue;
-            } // end of (e == EAGAIN || e == WSAEWOULDBLOCK)
+            }
             
             RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
             return false;
-        } //end of n==-1
+        }
         
         if (n == 0) {
             if(!r.empty()) {
@@ -665,186 +644,16 @@ bool CHttpServer::receive_request(ByteVector &request)
         } else {
             if (verbose) RAWTRACE1("Actually read %d bytes", n);
             r.insert(r.end(), &buf[0], &buf[0] + n);
-        } //end of (n==0)
-    } //end of for loop
-	}
-	else if(nSolution == 1) //Alternative solution
-	{
-		if (verbose) RAWTRACE("Executing Method 1");
-		fd_set fds;
-		int nSuccess =0;
-		for(;;) 
-		{
-			if (verbose) RAWTRACE("Start of for loop");
-			
-			FD_ZERO(&fds);
-			FD_SET(m_sock, &fds);
-			timeval tv = {0};
-			tv.tv_usec = 100000;//100 MS
-			//tv.tv_sec=5;
-			u_long nread =0;
-			int ret = select(m_sock + 1, &fds, 0, 0, &tv);
-
-			RAWLOG_ERROR1("return value of select call: %d", ret);
-			RAWLOG_ERROR1("err value of select call: %d", errno);
-			if (verbose) RAWTRACE("Select call completed");
-
-			//if (FD_ISSET(m_sock, &fds))
-#if defined(WINDOWS_PLATFORM)
-			nSuccess= ioctlsocket(m_sock, FIONREAD, &nread);
-			RAWLOG_ERROR1("ioctlsocket return value  %d", nSuccess);
-			RAWLOG_ERROR1("ioctlsocket error value  %d", errno);
-			RAWLOG_ERROR1("ioctlsocket bytes %d", nread);
-#else
-			nSuccess = FD_ISSET(m_sock, &fds);
-#endif
-			if( nSuccess == 0)
-			{
-				if (verbose) RAWTRACE("Read portion of data from socket...");
-				int n = recv(m_sock, &buf[0], sizeof(buf), 0);
-				RAWTRACE1("RECV: %d", n);
-				int e = RHO_NET_ERROR_CODE;
-				RAWTRACE1("RECV ERROR: %d", e);
-				if(232==e) //No data received
-					break;
-
-				if (n == -1) 
-				{
-#if !defined(WINDOWS_PLATFORM)
-					if (e == EINTR)
-						continue;
-#else
-					if (e == WSAEINTR)
-						continue;
-#endif
-
-#if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)) || defined(OS_WINCE)
-					if (e == EAGAIN || e == WSAEWOULDBLOCK)
-					{
-#else
-					if (e == EAGAIN) 
-					{
-#endif
-						if (!r.empty())
-							break;
-						break; //due to no data available
-	/*					if(nRetry==0)
-						{
-							if (verbose) RAWTRACE("Continuing");
-							continue;
-						}
-						else
-						{
-							if (verbose) RAWTRACE("returning to parent");
-							return false;
-						}*/
-					} // end of (e == EAGAIN || e == WSAEWOULDBLOCK)
-
-					RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
-					return false;
-				} //end of n==-1
-
-				if (n == 0) 
-				{
-					if(!r.empty()) 
-					{
-						if (verbose) RAWTRACE("Client closed connection gracefully");
-						break;
-					} 
-					else 
-					{
-						RAWLOG_ERROR("Connection gracefully closed before we receive any data");
-						return false;
-					}
-				}
-				else 
-				{
-					if (verbose) RAWTRACE1("Actually read %d bytes", n);
-					r.insert(r.end(), &buf[0], &buf[0] + n);
-				} //end of (n==0)
-
-
-			} //end of FD_ISSET(m_sock, &fds)
-			else
-			{
-				if (verbose) RAWTRACE("ioctlsocket failed");
-				if (verbose) RAWTRACE1("Error in ioctlsocket : %d", errno);
-			}
-		} //end of for loop
-	} //end of solution =1
-	else if(nSolution == 2) //Alternative solution 2
-	{
-		if (verbose) RAWTRACE("Executing Method 2");
-    for(;;) {
-        if (verbose) RAWTRACE("Read portion of data from socket...");
-        int n = recv(m_sock, &buf[0], sizeof(buf), 0);
-        //RAWTRACE1("RECV: %d", n);
-        if (n == -1) {
-            int e = RHO_NET_ERROR_CODE;
-            RAWTRACE1("RECV ERROR: %d", e);
-#if !defined(WINDOWS_PLATFORM)
-            if (e == EINTR)
-                continue;
-#else
-			if (e == WSAEINTR)
-				continue;
-#endif
-
-#if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)) || defined(OS_WINCE)
-            if (e == EAGAIN || e == WSAEWOULDBLOCK) {
-			if (verbose) RAWTRACE("No Data ");
-				break;
-#else
-            if (e == EAGAIN) {
-#endif
-                if (!r.empty())
-                    break;
-         /*       
-                if(++attempts > nMaxAttempts)
-                {
-                    RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
-                    return false;
-                }*/
-
-                fd_set fds;
-                FD_ZERO(&fds);
-                FD_SET(m_sock, &fds);
-                timeval tv = {0};
-				tv.tv_usec = 100000;//100 MS
-                select(m_sock + 1, &fds, 0, 0, &tv);
-                continue;
-            } // end of (e == EAGAIN || e == WSAEWOULDBLOCK)
-            
-            RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
-            return false;
-        } //end of n==-1
-        
-        if (n == 0) {
-            if(!r.empty()) {
-                if (verbose) RAWTRACE("Client closed connection gracefully");
-                break;
-            } else {
-                RAWLOG_ERROR("Connection gracefully closed before we receive any data");
-                return false;
-            }
-        } else {
-            if (verbose) RAWTRACE1("Actually read %d bytes", n);
-            r.insert(r.end(), &buf[0], &buf[0] + n);
-        } //end of (n==0)
-    } //end of for loop
-	} //end of solution 2
-	if (!r.empty()) 
-	{
-		request.insert(request.end(), r.begin(), r.end());
-		String strRequest1(request.begin(),request.end());
-		RAWTRACE1("Received List:\n%s", strRequest1.c_str());
-		if ( !rho_conf_getBool("log_skip_post") )
-		{
-			String strRequest(request.begin(),request.end());
-			RAWTRACE1("Received request:\n%s", strRequest.c_str());
-		}
-	}
-
+        }
+    }
+    
+    if (!r.empty()) {
+        request.insert(request.end(), r.begin(), r.end());
+        if ( !rho_conf_getBool("log_skip_post") ) {
+            String strRequest(request.begin(),request.end());
+            RAWTRACE1("Received request:\n%s", strRequest.c_str());
+        }
+    }
     return true;
 }
 
@@ -864,22 +673,6 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
         RAWLOG_ERROR1("Can not set blocking socket mode: %d", RHO_NET_ERROR_CODE);
         return false;
     }
-		// Get buffer size
-		int sendbuff;
-		int optlen;
-		int res = 0;
-		optlen = sizeof(sendbuff);
-		res = getsockopt(m_sock, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuff, &optlen);
-		RAWTRACE1("Current Send Buffer Size is : %d",sendbuff);
-		sendbuff = 256 * 1024;
-		res = setsockopt(m_sock, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuff, sizeof(sendbuff));
-		RAWTRACE1("return value of send buffer : setsockopt %d",res);
-		RAWTRACE1("error value of  send buffer: setsockopt %d",errno);
-		optlen = sizeof(sendbuff);
-		res = getsockopt(m_sock, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuff, &optlen);
-		RAWTRACE1("Updated Send Buffer Size is : %d",sendbuff);
-
-		
 #else
     int flags = fcntl(m_sock, F_GETFL);
     if (flags == -1) {
@@ -914,7 +707,6 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
     
     //String dbg_response = response.size() > 100 ? response.substr(0, 100) : response;
     //RAWTRACE2("Sent response:\n%s%s", dbg_response.c_str(), response.size() > 100 ? "..." : "   ");
-	RAWTRACE1("Sent response debug :%s", data.c_str());
     if (continuation)
         RAWTRACE1("Sent response body: %d bytes", data.size());
     else if ( !rho_conf_getBool("log_skip_post") )
