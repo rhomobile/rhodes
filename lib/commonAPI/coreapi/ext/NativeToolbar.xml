@@ -81,7 +81,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                         <VALUE value ="close">
                                             <DESC>Exit the application.</DESC>
                                         </VALUE>
-                                        <VALUE value ="options">
+                                        <VALUE value ="options"  productException="eb">
                                             <DESC>Navigate to Settings page, defined in configuration file.</DESC>
                                         </VALUE>
                                         <VALUE value ="home">
@@ -103,7 +103,7 @@ The ebapi.js file is necessary for all single API inclusions.
                                             <PLATFORM>WM, CE, Win32, Android, WP8</PLATFORM>
                                             <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
                                         </VALUE>
-                                        <VALUE value ="sync">
+                                        <VALUE value ="sync"  productException="eb">
                                             <DESC>Run full sync command.</DESC>
                                         </VALUE>
                                         <VALUE value ="minimize">
