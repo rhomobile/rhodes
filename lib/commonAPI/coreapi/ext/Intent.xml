@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Intent" parent="Rho">
+    <MODULE name="Intent" parent="Rho"  productException='eb'>
         <HELP_OVERVIEW>The Intent API provides an inter-application broadcast message-passing framework.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API
