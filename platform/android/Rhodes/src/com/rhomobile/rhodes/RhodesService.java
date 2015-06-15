@@ -89,7 +89,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -1602,7 +1601,7 @@ public class RhodesService extends Service {
         getInstance().getMainView().removeSplashScreen();
     }
     
-    public static SharedPreferences pref = RhodesActivity.safeGetInstance().getApplicationContext().getSharedPreferences("RhodesSharedPreference", RhodesActivity.getContext().MODE_PRIVATE);
+    /*public static SharedPreferences pref = RhodesActivity.safeGetInstance().getApplicationContext().getSharedPreferences("RhodesSharedPreference", RhodesActivity.getContext().MODE_PRIVATE);
     public static String getDecodeWav(){
     	 String decodeWavPath = null;
 				decodeWavPath =pref.getString("scandecodewavkey", "");
@@ -1612,5 +1611,5 @@ public class RhodesService extends Service {
     
     public static void setDecodeWav(String string){
     	pref.edit().putString("scandecodewavkey", string).commit();
-    }
+    }*/
 }
