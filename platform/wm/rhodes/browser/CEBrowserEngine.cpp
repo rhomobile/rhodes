@@ -37,7 +37,9 @@ UINT WM_BROWSER_ONALERTPOPUP            = ::RegisterWindowMessage(L"WM_BROWSER_O
 UINT WM_BROWSER_ONAUTHENTICATIONREQUEST = ::RegisterWindowMessage(L"WM_BROWSER_ONAUTHENTICATIONREQUEST");
 
 //////////////////////////////////////////////////////////////////////////
-
+WNDPROC OldWndProc;
+BOOL isCancelButtonPressed=false;
+//////////////////////////////////////////////////////////////////////////
 CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
     : m_ulRefs(0)
     , m_bInPlaceActive(true)
@@ -616,13 +618,17 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
 	switch (dispidMember) 
 	{
-	case DISPID_NAVIGATEERROR:
-        LOG(INFO) + "DISPID_NAVIGATEERROR";
-		m_bNavigationError=TRUE;
-		SetEvent(m_hNavigated);
-		CloseHandle(m_hNavigated);
-		m_hNavigated = NULL;
-
+		case DISPID_NAVIGATEERROR:
+        	LOG(INFO) + "DISPID_NAVIGATEERROR";
+        	if(!isCancelButtonPressed)
+		{
+			m_bNavigationError=TRUE;
+			SetEvent(m_hNavigated);
+			CloseHandle(m_hNavigated);
+			m_hNavigated = NULL;
+		}
+		else 
+			isCancelButtonPressed=false;
 		//get the URL which failed
 		if (pdparams && pdparams->rgvarg[0].vt == VT_BSTR)
 			wcsncpy(tcURL, pdparams->rgvarg[3].pvarVal->bstrVal, MAX_URL-1);
@@ -1343,7 +1349,19 @@ BOOL CEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab)
 	return S_OK;
 }
 
+LRESULT CALLBACK NewWndProc (HWND hWnd, UINT msg,WPARAM wParam, LPARAM lParam)
+{
 
+        if(msg == WM_COMMAND)
+        {
+
+                if((LOWORD(wParam) == IDCANCEL) && (HIWORD(wParam) == BN_CLICKED) )
+                {
+			isCancelButtonPressed=true;
+                }
+        }
+        return CallWindowProc(OldWndProc, hWnd, msg, wParam, lParam); 
+}
 DWORD WINAPI CEBrowserEngine::NetworkWindowThread( LPVOID lpParameter )
 {
 
@@ -1361,6 +1379,7 @@ DWORD WINAPI CEBrowserEngine::NetworkWindowThread( LPVOID lpParameter )
 		HWND hCurrentWindow=FindWindow(TEXT("Dialog"),TEXT("Enter Network Password"));
 		if(hCurrentWindow != NULL)
 		{
+			OldWndProc = (WNDPROC)SetWindowLongPtr (hCurrentWindow,GWLP_WNDPROC, (LONG_PTR)NewWndProc);
 			GetWindowText(hCurrentWindow,szWindowText,MAX_PATH);
 			ZeroMemory(szWindowClass,MAX_PATH);
 			GetClassName(hCurrentWindow,szWindowClass,MAX_PATH);
