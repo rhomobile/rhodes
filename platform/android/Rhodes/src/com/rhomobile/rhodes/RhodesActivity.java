@@ -48,6 +48,7 @@ import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -83,6 +84,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	private RhoMenu mAppMenu;
 
 	private long uiThreadId = 0;
+	public static SharedPreferences pref = null;
 	
 	public static interface GestureListener {
 		void onTripleTap();
@@ -215,7 +217,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         uiThreadId = ct.getId();
 
         sInstance = this;
-
+        pref = sInstance.getApplicationContext().getSharedPreferences("RhodesSharedPreference", RhodesActivity.getContext().MODE_PRIVATE);
         super.onCreate(savedInstanceState);
 
         if ((RhoConf.isExist("android_title") && !RhoConf.getBool("android_title"))
@@ -647,5 +649,15 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		}
 	}
 
+        public static String getDecodeWav(){
+    	        String decodeWavPath = null;
+		decodeWavPath =pref.getString("scandecodewavkey", "");
+		pref.getString("scandecodewavkey", "");
+		return decodeWavPath;
+	}
+    
+        public static void setDecodeWav(String string){
+    	        pref.edit().putString("scandecodewavkey", string).commit();
+    }
 
 }
