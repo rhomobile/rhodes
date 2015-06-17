@@ -1594,15 +1594,4 @@ public class RhodesService extends Service {
         getInstance().getMainView().removeSplashScreen();
     }
     
-    /*public static SharedPreferences pref = RhodesActivity.safeGetInstance().getApplicationContext().getSharedPreferences("RhodesSharedPreference", RhodesActivity.getContext().MODE_PRIVATE);
-    public static String getDecodeWav(){
-    	 String decodeWavPath = null;
-				decodeWavPath =pref.getString("scandecodewavkey", "");
-			pref.getString("scandecodewavkey", "");
-		return decodeWavPath;
-	}
-    
-    public static void setDecodeWav(String string){
-    	pref.edit().putString("scandecodewavkey", string).commit();
-    }*/
 }
