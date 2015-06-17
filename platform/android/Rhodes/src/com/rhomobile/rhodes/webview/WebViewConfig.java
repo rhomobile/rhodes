@@ -16,14 +16,14 @@ public class WebViewConfig implements IRhoConfig {
     public static final String ENABLE_WEB_PLUGINS = "enableWebPlugins";
     public static final String ENABLE_CACHE = "enableCache";
     public static final String PAGE_ZOOM = "pageZoom";
-    public static final String USER_AGENT = "UserAgent";
+    public static final String USER_AGENT = "useragent";
 
     public static final boolean ENABLE_PAGE_LOADING_INDICATION_DEF = true;
     public static final boolean ENABLE_ZOOM_DEF = true;
     public static final boolean ENABLE_WEB_PLUGINS_DEF = true;
     public static final boolean ENABLE_CACHE_DEF = true;
     public static final double  PAGE_ZOOM_DEF = 1.0;
-    public static final String USER_AGENT_DEF = RhoConf.getString("user_agent");
+    public static final String USER_AGENT_DEF = RhoConf.getString("useragent");
 
     Map<String, String> mConfigMap;
     
