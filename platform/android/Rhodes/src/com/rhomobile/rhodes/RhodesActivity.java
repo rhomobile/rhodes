@@ -287,7 +287,10 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         super.onNewIntent(intent);
 
         Logger.T(TAG, "onNewIntent");
-
+	String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
+    	intent.setAction("android.intent.action.VIEW");
+    	intent.setData(Uri.parse(url));
+        
         handleStartParams(intent);
 
         RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
