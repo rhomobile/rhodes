@@ -151,7 +151,11 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
     {
         return strUrl;
     }
-
+	//Don't append localhost if URL starts with "www."	
+    if (String_startsWith(strUrl, "www."))
+    {
+        return strUrl;
+    }
     if (String_startsWith(strUrl, "file:"))
     {
         const rho::String appRootTag = "%APP_PATH%";
