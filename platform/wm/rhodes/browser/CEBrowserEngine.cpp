@@ -738,6 +738,22 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		{
 				break;
 		}
+		
+		//EMBPD00163219- To Append "file://" in  URL
+		TCHAR *strFile = new TCHAR[MAX_URL];
+		memset(strFile, NULL, sizeof(TCHAR) * MAX_URL);
+		if(memcmp(tcURL, L"\\", 1) == 0)
+		{
+			wcscpy(strFile,L"file://");
+			wcscat(strFile,tcURL);
+			LOG(INFO) + "CEBrowserEngine tcURL "+tcURL;
+			LOG(INFO) + "CEBrowserEngine strFile "+strFile;
+
+		}
+		else
+		{
+			wcscpy(strFile,tcURL);
+		}
 
 		//  Test if the user has attempted to navigate back in the history
 		if (wcsicmp(tcURL, L"history:back") == 0)
