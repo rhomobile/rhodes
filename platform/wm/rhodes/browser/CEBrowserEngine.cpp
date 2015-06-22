@@ -740,7 +740,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		}
 		
 		//EMBPD00163219- To Append "file://" in  URL
-		TCHAR *strFile = new TCHAR[MAX_URL];
+		TCHAR strFile[MAX_URL];
 		memset(strFile, NULL, sizeof(TCHAR) * MAX_URL);
 		if(memcmp(tcURL, L"\\", 1) == 0)
 		{
