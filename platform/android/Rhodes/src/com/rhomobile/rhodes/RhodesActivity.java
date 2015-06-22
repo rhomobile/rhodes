@@ -71,6 +71,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	
 	private static final boolean DEBUG = false;
 	
+	public static boolean IS_WINDOWS_KEY = false;
+	
 	public static int MAX_PROGRESS = 10000;
 	
 	private static RhodesActivity sInstance = null;
@@ -149,6 +151,10 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 Logger.I(TAG, "Loading Config.xml from resources");
                 configIs = getResources().openRawResource(RhoExtManager.getResourceId("raw", "config"));
                 config.load(configIs, externalSharedPath);
+            }
+            
+            if(Integer.parseInt(config.getValue("isWindowsKey")) == 1) {
+            	IS_WINDOWS_KEY = true;
             }
 
             String CAFile = config.getValue("CAFile");
