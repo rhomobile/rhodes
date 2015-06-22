@@ -738,9 +738,25 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		{
 				break;
 		}
+		
+		//EMBPD00163219- To Append "file://" in  URL
+		TCHAR strFile[MAX_URL];
+		memset(strFile, NULL, sizeof(TCHAR) * MAX_URL);
+		if(memcmp(tcURL, L"\\", 1) == 0)
+		{
+			wcscpy(strFile,L"file://");
+			wcscat(strFile,tcURL);
+			LOG(INFO) + "CEBrowserEngine tcURL "+tcURL;
+			LOG(INFO) + "CEBrowserEngine strFile "+strFile;
+
+		}
+		else
+		{
+			wcscpy(strFile,tcURL);
+		}
 
 		//  Test if the user has attempted to navigate back in the history
-		if (wcsicmp(tcURL, L"history:back") == 0)
+		if (wcsicmp(strFile, L"history:back") == 0)
 		{
             		m_pBrowser->GoBack();
         		 *(pdparams->rgvarg[0].pboolVal) = VARIANT_TRUE;
@@ -754,7 +770,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		// EMBPD00158491
 		m_bNavigationComplete = FALSE;
 		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NetworkWindowThread, (LPVOID)this, 0, NULL));
-		wcscpy(m_tcNavigatedURL, tcURL);
+		wcscpy(m_tcNavigatedURL, strFile);
 
 #ifdef SCROLL_NOTIFY
 		// Stop any checking for scroll changes during navigation
@@ -764,13 +780,13 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 			pScrollNotify = NULL;
 		}
 #endif
-        PostMessage(m_hwndParent, WM_BROWSER_ONBEFORENAVIGATE, (WPARAM)m_tabID, (LPARAM)_tcsdup(tcURL));
+        PostMessage(m_hwndParent, WM_BROWSER_ONBEFORENAVIGATE, (WPARAM)m_tabID, (LPARAM)_tcsdup(strFile));
 
 		retVal = S_OK;
 		break;
 	}
 
-	//delete[] tcURL;
+	delete[] tcURL;
 	//tcURL = NULL;
 
 	return retVal;
