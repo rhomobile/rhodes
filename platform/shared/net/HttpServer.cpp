@@ -584,7 +584,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 	float fSeconds = 0;
 	
 	 
-	 if(nMaxAttempts <= 0 )
+	 if(nMaxAttempts == 0 )
 		nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
 	 RAWTRACE1("nMaxAttempts : %d", nMaxAttempts);
 	 
@@ -605,6 +605,8 @@ bool CHttpServer::receive_request(ByteVector &request)
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
             RAWTRACE1("RECV ERROR: %d", e);
+			
+			RAWTRACE1("RECV Buffer: %s", buf);
 #if !defined(WINDOWS_PLATFORM)
             if (e == EINTR)
                 continue;
@@ -614,19 +616,27 @@ bool CHttpServer::receive_request(ByteVector &request)
 #endif
 
 #if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)) || defined(OS_WINCE)
-            if (e == EAGAIN || e == WSAEWOULDBLOCK) {
+            if (e == EAGAIN || e == WSAEWOULDBLOCK|| e== WSAEISCONN) {
 #else
             if (e == EAGAIN) {
 #endif
                 if (!r.empty())
                     break;
                 
-                if(++attempts > nMaxAttempts)
-                {
-                    //RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
-                    RAWLOG_ERROR1("Error when receiving data from socket. Client does not send data for  %f sec. Cancel Receive", fSeconds);
-                    return false;
-                }
+				if(nMaxAttempts != -1)
+				{
+					if(++attempts > nMaxAttempts)
+					{
+						//RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
+						RAWLOG_ERROR1("Error when receiving data from socket. Client does not send data for  %f sec. Cancel Receive", fSeconds);
+						return false;
+					}
+				}
+				else
+				{
+					RAWTRACE("Ignoring,because of WSAEWOULDBLOCK calls");
+					break;	
+				}
 
                 fd_set fds;
                 FD_ZERO(&fds);
@@ -662,6 +672,8 @@ bool CHttpServer::receive_request(ByteVector &request)
             RAWTRACE1("Received request:\n%s", strRequest.c_str());
         }
     }
+	if(nMaxAttempts == -1)
+		RAWTRACE("Returning to parent");
     return true;
 }
 
