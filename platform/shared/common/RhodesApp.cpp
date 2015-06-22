@@ -444,7 +444,9 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 
 void CRhodesApp::startApp()
 {
-    start(epNormal);
+    //start(epNormal);
+	start(epHigh);
+	
 }
 
 extern "C" void Init_Extensions(void);

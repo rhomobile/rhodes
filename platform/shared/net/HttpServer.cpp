@@ -79,7 +79,7 @@ typedef unsigned __int16 uint16_t;
 #define DEFAULT_LOGCATEGORY "HttpServer"
 
 //extern "C" void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
-
+#define MICROSECONDS_PER_SECOND 1000000
 namespace rho
 {
 namespace net
@@ -581,15 +581,22 @@ bool CHttpServer::receive_request(ByteVector &request)
     char buf[BUF_SIZE];
     int attempts = 0;
 	int nMaxAttempts = RHOCONF().getInt("Attempts");
+	float fSeconds = 0;
+	
 	 
 	 if(nMaxAttempts <= 0 )
 		nMaxAttempts = (HTTP_EAGAIN_TIMEOUT*10);
 	 RAWTRACE1("nMaxAttempts : %d", nMaxAttempts);
 	 
 	 long lMicroseconds = RHOCONF().getInt("Interval");
+	 //One second equal to 1000000
+	 
 	 RAWTRACE1("Interval : %d", lMicroseconds);
 	 if(lMicroseconds <= 0 )
 		 lMicroseconds = 100000;//100 MS
+	 
+	 fSeconds = lMicroseconds / MICROSECONDS_PER_SECOND;
+	 fSeconds = nMaxAttempts;
 	 
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
@@ -616,7 +623,8 @@ bool CHttpServer::receive_request(ByteVector &request)
                 
                 if(++attempts > nMaxAttempts)
                 {
-                    RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
+                    //RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
+                    RAWLOG_ERROR1("Error when receiving data from socket. Client does not send data for  %f sec. Cancel Receive", fSeconds);
                     return false;
                 }
 
