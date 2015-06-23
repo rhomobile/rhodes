@@ -580,11 +580,13 @@ bool CHttpServer::receive_request(ByteVector &request)
 	ByteVector r;
     char buf[BUF_SIZE];
     int attempts = 0;
+#if (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP))	
 	DWORD dwMilliSeconds = 50;
 	//Duration between consecutive receive calls  can be configured through the parameter "RetryInterval"
 	dwMilliSeconds = RHOCONF().getInt("RetryInterval");
 	if(dwMilliSeconds <=0)
 		dwMilliSeconds = 50;
+#endif	
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
