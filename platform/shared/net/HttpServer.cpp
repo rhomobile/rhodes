@@ -580,8 +580,9 @@ bool CHttpServer::receive_request(ByteVector &request)
 	ByteVector r;
     char buf[BUF_SIZE];
     int attempts = 0;
-	DWORD dwMilliseconds = 50;
-	dwMilliseconds = RHOCONF().getInt("Delay");
+	DWORD dwMilliSeconds = 50;
+	//Duration between consecutive receive calls  can be configured through the parameter "RetryInternal"
+	dwMilliSeconds = RHOCONF().getInt("RetryInternal");
 	if(dwMilliSeconds <=0)
 		dwMilliSeconds = 50;
     for(;;) {
@@ -613,6 +614,8 @@ bool CHttpServer::receive_request(ByteVector &request)
                     return false;
                 }
 #if (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP))
+					//The Winsock select() API might fail to block on a nonblocking socket and return WSAEWOULDBLOCK as an error code when either send() or recv() is subsequently called. For example, select() may return indicating there is data to read, yet a call to recv() returns with the error code WSAEWOULDBLOCK, indicating there is no data immediately available
+					// Bug has been described here https://support.microsoft.com/en-us/kb/177346 Due to the bug present in select call on windows, implementing the alternative solution as sleep api. //Duration of Sleep alo made configurable via rhoconfig.txt "RetryInternal"
 				RAWTRACE1("Sleeping for  %d Milliseconds",dwMilliSeconds);
 				Sleep(dwMilliSeconds);
 #else	
