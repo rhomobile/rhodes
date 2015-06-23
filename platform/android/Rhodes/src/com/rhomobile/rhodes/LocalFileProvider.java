@@ -103,7 +103,9 @@ public class LocalFileProvider extends ContentProvider
     @Override
    public ParcelFileDescriptor openFile(Uri uri, String mode)
             throws FileNotFoundException, SecurityException
-      {
+      { 
+         Log.d(TAG, "openFile LocalFileProvider Zebra Log URI>>>: " + uri);
+    	 Log.d(TAG, "openFile LocalFileProvider Zebra Log  mode>>>: " + mode);
         if(mode.compareTo("r") != 0)
         {
             throw new SecurityException("Unacceptable openFile mode: " + mode);
@@ -112,7 +114,7 @@ public class LocalFileProvider extends ContentProvider
         	            File path = fileFromUri(uri);
         	            
         	           Logger.D(TAG, "Opening content file: " + path.getPath());
-        	            
+        	           Log.d(TAG, "openFile LocalFileProvider Zebra Log getPath >>>>>>" + path.getPath()); 
         	            ParcelFileDescriptor fd = RhoFileApi.openParcelFd(path.getPath());
         	           if(fd == null)
         	                throw new IllegalArgumentException();
