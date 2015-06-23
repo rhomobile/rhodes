@@ -580,6 +580,10 @@ bool CHttpServer::receive_request(ByteVector &request)
 	ByteVector r;
     char buf[BUF_SIZE];
     int attempts = 0;
+	DWORD dwMilliseconds = 50;
+	dwMilliseconds = RHOCONF().getInt("Delay");
+	if(dwMilliSeconds <=0)
+		dwMilliSeconds = 50;
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
@@ -608,13 +612,17 @@ bool CHttpServer::receive_request(ByteVector &request)
                     RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for " HTTP_EAGAIN_TIMEOUT_STR " sec. Cancel recieve.");
                     return false;
                 }
-
+#if (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP))
+				RAWTRACE1("Sleeping for  %d Milliseconds",dwMilliSeconds);
+				Sleep(dwMilliSeconds);
+#else	
                 fd_set fds;
                 FD_ZERO(&fds);
                 FD_SET(m_sock, &fds);
                 timeval tv = {0};
 				tv.tv_usec = 100000;//100 MS
                 select(m_sock + 1, &fds, 0, 0, &tv);
+#endif
                 continue;
             }
             
