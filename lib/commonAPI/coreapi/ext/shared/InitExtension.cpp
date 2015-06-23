@@ -74,7 +74,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Intent();
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_WINCE) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR)) || defined(OS_WP8)
+#if defined(OS_ANDROID) || defined(OS_WINCE) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR)) || defined(OS_WP8)|| defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
     Init_Timer_extension();
 #endif
 
