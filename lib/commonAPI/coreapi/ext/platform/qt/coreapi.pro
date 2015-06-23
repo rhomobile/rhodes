@@ -100,7 +100,6 @@ HEADERS += \
 ../../shared/generated/cpp/RhoFileBase.h\
 ../../shared/generated/cpp/SQLite3Base.h\
 ../../shared/generated/cpp/SystemBase.h\
-../../shared/generated/cpp/WebViewBase.h
 ../../shared/generated/cpp/WebViewBase.h\
 ..\..\shared\generated\cpp\ITimer.h\
 ..\..\shared\generated\cpp\TimerBase.h
