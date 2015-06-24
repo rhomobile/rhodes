@@ -39,7 +39,8 @@
 
 enum E_CONFIG_TYPE
 { 	
-	KEEP_ALIVE=0,		//Keep Alive Configurations
+	UNDEFINED_CONFIG_TYPE=0,//Unknown type of Configuration
+	KEEP_ALIVE,		//Keep Alive Configurations
 	FACE_DOWN,			//Face down Configurations
 	WAKE_UP,			//Wake Up Confuguration including sensitivity and reason and status
 	AUTO_ORIENTATION,	//Auto Orientation Configurations
@@ -65,6 +66,12 @@ typedef struct ISTSystemConfig
 	BOOL				blActive;	//Status of the specified configuration.
 	ISTCONFIGPARAM		configParam;//Parameter for the specified configuration type
 	BOOL				bPersist;	//Enable Persist Configuration setting
+	ISTSystemConfig():	eConfigType(UNDEFINED_CONFIG_TYPE),
+						blActive(FALSE),
+						bPersist(FALSE){StructInfo.dwAllocated=sizeof(ISTSYSTEMCONFIG);
+										StructInfo.dwUsed=0;
+										configParam.wLevel=0;
+										configParam.bLogGPSLocationEnable=FALSE;}
 }ISTSYSTEMCONFIG, *pISTSYSTEMCONFIG;
 
 namespace ScreenOrientationExt
