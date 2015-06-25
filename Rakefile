@@ -2822,7 +2822,13 @@ namespace "config" do
       if $current_platform == "wp8"
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
       end
-      
+   end
+	 if $current_platform == "android"
+      if $app_config['extensions'].index('barcode') 
+        $app_config['extensions'].delete('barcode')
+        $app_config['extensions'] |= ['emdk3-manager']
+        $app_config['extensions'] |= ['barcode']
+      end
     end
 
     #if $app_config['extensions'].index('rhoelementsext')

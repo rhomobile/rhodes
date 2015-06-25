@@ -391,8 +391,8 @@
             str_result = fullname;
         }
         else {
-            str_result_old = [str_result stringByAppendingString:@"db%2Fdb-files%2F"];
-            str_result_old = [str_result stringByAppendingString:filename];
+            str_result_old = [str_result_old stringByAppendingString:@"db/db-files/"];
+            str_result_old = [str_result_old stringByAppendingString:filename];
             str_result = fullname;
         }
     }
@@ -412,7 +412,7 @@
         [dict setObject:@"ok" forKey:@"status"];
         
 
-        [dict setObject:str_result forKey:@"image_uri"];
+        [dict setObject:str_result_old forKey:@"image_uri"];
         [dict setObject:str_result forKey:@"imageUri"];
         
 
