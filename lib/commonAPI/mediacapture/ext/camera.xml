@@ -892,6 +892,12 @@ alert(reslnArray[1].height);
             <REMARK title="takepicture Resolution Issue on Low Memory Device WP8">
             <DESC>In devices having low processor, lower resolution image capture may show a small area of preview on black background at the time of transition back to application.</DESC>
             </REMARK>
+             <REMARK title="Android Choose Picture List">
+            <DESC>Choose picture List must contain atleast 4 Images Name to show the list.</DESC>
+            </REMARK>
+            <REMARK title="Android  Black Image in Gallery for kitkat">
+            <DESC>Whenever an image is taken from Rho camera,on opening galery or choose picture, we can see a black image, when system refreshes the gallery this will be gone.</DESC>
+            </REMARK>
         </REMARKS>
     </MODULE>
 </API>
