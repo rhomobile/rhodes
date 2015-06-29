@@ -440,7 +440,7 @@ def load_app_and_run(device_flag, apkfile, pkgname)
     end
 
     if theoutput.to_s.match(/INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES/)
-      raise "Inconsistent sertificates: please, uninstall application signed with another sertificate from #{device} first"
+      raise "Inconsistent certificates: please, uninstall application signed with another sertificate from #{device} first"
     end
     if theoutput.to_s.match(/INSTALL_FAILED_MISSING_SHARED_LIBRARY/)
       raise "Missing shared library: application is not compatible with #{device} due to lack of required libraries"
