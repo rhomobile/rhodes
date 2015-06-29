@@ -55,9 +55,10 @@ class MethodResultJni
     static jfieldID s_fidMap;
 
     static JNIEnv* jniInit(JNIEnv*);
-    JNIEnv* jniInit() const { return m_env = jniInit(m_env ? m_env : jnienv()); }
+    
 
 public:
+    JNIEnv* jniInit() const { return m_env = jniInit(m_env ? m_env : jnienv()); }
     enum ResultType { typeNone = 0, typeBoolean, typeInteger, typeDouble, typeString, typeList, typeMap, typeError, typeArgError };
 
 private:
@@ -366,9 +367,10 @@ public:
         if (hasObjectClass())
         {
             CHoldRubyValue valHash(rho_ruby_createHash());
+            
             HStringMap pHash = rho_cast<HStringMap>(m_oResult.getMapResult());
-
-            for(HStringMap::element_type::const_iterator it = pHash->begin(); it != pHash->end(); ++it)
+            
+        for(HStringMap::element_type::const_iterator it = pHash->begin(); it != pHash->end(); ++it)
             {
                 RAWTRACEC2("CRubyResultConvertor", "getHash(): %s->%s", it->first.c_str(), it->second.c_str());
                 addHashToHash(valHash, it->first.c_str(), getObjectOrString(it->second));
@@ -376,8 +378,19 @@ public:
             res = valHash;
         } else
         {
-            res = rho_cast<VALUE>(m_oResult.getMapResult());
-        }
+        //SPR 27852 fix- Delete local refernece for HshMap created for each callback fired.
+           jobject j_hashmapJobject =m_oResult.getMapResult();
+	   res = rho_cast<VALUE>(j_hashmapJobject);
+            
+           JNIEnv* env = m_oResult.jniInit();
+		if (!env) 
+		{
+        	    RAWLOG_ERROR( "JNI initialization failed in getHash");
+            	    return 0;
+        	}
+	   env->DeleteLocalRef(j_hashmapJobject);
+	   RAWTRACEC("CRubyResultConvertor", "HashMap local reference deleted");
+	}
 
         return res;
     }
