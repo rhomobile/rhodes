@@ -335,11 +335,14 @@ MethodResultJni::MethodResultJni(bool isRuby) : m_bhasLocalFrame(false), m_env(0
         return;
     }
 
+    //SPR 27852 fix-Pushforlocalframe is not needed as actual local reference has to be deleted.Pushforlocal frame only allows 256 references to be
+    //created in one application instance. 
+    /*
     if(m_env->PushLocalFrame(256) >= 0)
     {
         m_bhasLocalFrame = true;
     }
-
+    */
     m_jResult = m_env->NewObject(s_methodResultClass, s_midMethodResult, static_cast<jboolean>(isRuby));
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -375,11 +378,14 @@ MethodResultJni::~MethodResultJni()
 {
     jniInit();
 
-    if(m_bhasLocalFrame)
+   //SPR27852 fix
+   /*
+   if(m_bhasLocalFrame)
     {
         m_env->PopLocalFrame(NULL);
     }
-
+    */
+    
     if(m_bGlobalRef)
     {
         if(!m_bSlaveRef)
@@ -388,10 +394,11 @@ MethodResultJni::~MethodResultJni()
             m_env->DeleteGlobalRef(m_jResult);
         }
     } else {
-        if (!m_bhasLocalFrame) {
+        //SPR27852 fix
+        //if (!m_bhasLocalFrame) {
             RAWTRACE1("Deleting MethodResult local JNI reference: 0x%.8x ==========================================", m_jResult);
             m_env->DeleteLocalRef(m_jResult);
-        }
+        //}
     }
 }
 //----------------------------------------------------------------------------------------------------------------------
