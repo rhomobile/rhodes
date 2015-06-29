@@ -1254,7 +1254,7 @@ public class RhodesService extends Service {
             //FIXME: Use common URI handling
             Context ctx = RhodesService.getContext();
             LocalFileHandler fileHandler = new LocalFileHandler(ctx);
-            if(!fileHandler.handle(url))
+            if(!fileHandler.handle(url,0))
             {
                 Logger.D(TAG, "Handling URI: " + url);
 
