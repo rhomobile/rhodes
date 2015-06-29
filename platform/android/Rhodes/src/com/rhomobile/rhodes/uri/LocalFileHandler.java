@@ -84,5 +84,31 @@ public class LocalFileHandler implements UriHandler
 
         return true;
     }
+    public boolean handle(String url) throws URISyntaxException {
+
+        if (!URLUtil.isFileUrl(url))
+            return false;
+        
+        String noAnchorUrl = URLUtil.stripAnchor(url);
+        if (isHtmlUrl(noAnchorUrl)) {
+            return false;
+        }
+
+        Logger.D(TAG, "Handle URI externally: " + url);
+
+        int intentFlags = 0;
+        Uri path = Uri.parse(url);
+
+        Uri newUri = LocalFileProvider.overrideSystemUri(path);
+        if(newUri != null) {
+            intentFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+            url = Uri.decode(newUri.toString());
+        }
+
+        Intent intent = Intent.parseUri(url, intentFlags);
+        ctx.startActivity(Intent.createChooser(intent, "Open in..."));
+
+        return true;
+    }
     
 }
