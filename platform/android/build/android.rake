@@ -394,13 +394,24 @@ namespace "config" do
 
     if !$skip_checking_Android_SDK
       if File.exist?(File.join($androidsdkpath, "build-tools"))
-        build_tools_path = []
+        build_tools = {}
         Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
           next if entry == '.' or entry == '..'
-          build_tools_path << entry
+
+          #Lets read source.properties file to get highest available build-tools
+          src_prop_path = File.join($androidsdkpath, "build-tools",entry,"source.properties")
+          next unless File.file?(src_prop_path)
+
+          File.open(src_prop_path) do |f|
+            f.each_line do |line|
+              build_tools[entry] = line.split('=')[1].gsub("\n",'') if line.match(/^Pkg.Revision=/)
+            end
+          end
+
         end
-        build_tools_path.sort!
-        build_tools_path = build_tools_path.last
+
+        latest_build_tools = build_tools.sort_by{|folder_name,sdk_version| sdk_version}.last
+        build_tools_path = latest_build_tools[0]
       end
 
       if build_tools_path
