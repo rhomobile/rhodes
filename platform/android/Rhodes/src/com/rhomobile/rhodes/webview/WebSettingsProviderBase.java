@@ -28,8 +28,8 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
         settings.setSupportZoom(enableZoom);
         settings.setBuiltInZoomControls(enableZoom);
         settings.setStandardFontFamily(RhoConf.getString("fontFamily"));
-        customUA = updateRevesionOfCustomUA(settings.getUserAgentString(), customUA);
-        settings.setUserAgentString(customUA);
+        //customUA = updateRevesionOfCustomUA(settings.getUserAgentString(), customUA);
+        //settings.setUserAgentString(customUA);
         
         Logger.T(TAG, "Enable Zoom: " + enableZoom);
         
