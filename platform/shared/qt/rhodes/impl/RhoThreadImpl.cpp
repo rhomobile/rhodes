@@ -83,9 +83,9 @@ int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
         LOG(INFO) + "qt-CRhoThreadImpl wait ." + nTimeoutMs;
     if (m_waitThread)
         {
-        OG(INFO) + "qt-inside m_waitThread" ;
+        LOG(INFO) + "qt-inside m_waitThread" ;
         stopWait();
-        LOG(INFO) + "qt-stpoWait called" ;
+        LOG(INFO) + "qt-stopWait called" ;
         }
     m_waitThread = new QThread();
     m_waitThread->start();
