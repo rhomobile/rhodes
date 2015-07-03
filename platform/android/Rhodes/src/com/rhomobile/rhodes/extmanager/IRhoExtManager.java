@@ -72,7 +72,7 @@ public interface IRhoExtManager {
 	 * @return True if the listener has consumed the event, false to let it bubble to other views. 
 	 */
 	boolean onKey(int keyCode, KeyEvent event);
-	
+	boolean onTouchEvent (MotionEvent event);
     /**
      * Stops the input IRhoListener from receiving keyEvents.
      * @param listener the listener to de-register
