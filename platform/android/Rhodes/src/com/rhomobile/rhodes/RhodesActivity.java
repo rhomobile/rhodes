@@ -41,6 +41,7 @@ import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.util.Config;
 
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -56,6 +57,7 @@ import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -575,11 +577,28 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	public boolean dispatchKeyEvent(KeyEvent event)
 	{
 		 IRhoExtManager extManager = RhoExtManager.getInstance();
+		 if(ActivityManager.isUserAMonkey())
+	        {
+	            return true;
+	        }
 		 if(extManager.onKey(event.getKeyCode(), event))
 		 {
 			 return true;
 		 }
 		 return super.dispatchKeyEvent(event);
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+        IRhoExtManager extManager = RhoExtManager.getInstance(); 
+        if(ActivityManager.isUserAMonkey())
+        {
+            return true;
+        }
+		if(extManager.onTouchEvent(ev)){
+			 return true;
+		}
+		return super.dispatchTouchEvent(ev);
 	}
 
 	public static Context getContext() {
