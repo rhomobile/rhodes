@@ -33,6 +33,7 @@ namespace common{
 CRhoTimer::CTimerItem::CTimerItem(int nInterval, const char* szCallback, const char* szCallbackData): 
     m_nInterval(nInterval), m_strCallback(szCallback), m_strCallbackData(szCallbackData)
 {
+	RAWTRACE("CRhoTimer::CRhoTimer() 0 ");
 	m_oFireTime = CTimeInterval::getCurrentTime();
 	m_overflow = m_oFireTime.addMillis(nInterval);
 }
@@ -40,12 +41,14 @@ CRhoTimer::CTimerItem::CTimerItem(int nInterval, const char* szCallback, const c
 CRhoTimer::CNativeTimerItem::CNativeTimerItem(int nInterval, CRhoTimer::ICallback* callback):
     m_nInterval(nInterval), m_pCallback(callback)
 {
+	RAWTRACE("CRhoTimer::CRhoTimer() 1 ");
 	m_oFireTime = CTimeInterval::getCurrentTime();
     m_overflow = m_oFireTime.addMillis(nInterval);
 }
 
 CRhoTimer::CRhoTimer() : m_checkerThread(*this)
 {
+	RAWTRACE("CRhoTimer::CRhoTimer() ");
   m_checkerThread.start(IRhoRunnable::epNormal);
 }
 
@@ -68,10 +71,12 @@ void CRhoTimer::addTimer(int nInterval, const char* szCallback, const char* szCa
 void CRhoTimer::addNativeTimer(int nInterval, CRhoTimer::ICallback* callback)
 {
     RAWTRACE1("CRhoTimer::addNativeTimer %d", nInterval);
+	RAWTRACE1("CRhoTimer::addNativeTimer(i) m_arNativeItems size %d", m_arNativeItems.size());
 
     synchronized(m_mxAccess)
     {
       m_arNativeItems.addElement(CNativeTimerItem(nInterval, callback));
+	  RAWTRACE1("CRhoTimer::addNativeTimer(ii) m_arNativeItems size %d", m_arNativeItems.size());
       m_checkerThread.stopWait();
     }
 }
@@ -103,9 +108,16 @@ unsigned long CRhoTimer::getNextTimeout()
             nMinInterval = nInterval;
     }
 
+	RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems size : %d", m_arNativeItems.size());
     for( int i = 0; i < (int)m_arNativeItems.size(); i++ )
     {
         unsigned long nInterval = 0;
+		RAWTRACE("getNextTimeout------------------------------------------");
+		RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems Index %d", i);
+		RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems Firetime : %d ", m_arNativeItems.elementAt(i).m_oFireTime.toULong() );
+		RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems curTime : %d ", curTime.toULong() );
+		RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems Calc : %d ", (m_arNativeItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong()) );
+		RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems Index %d", i);
         if ( m_arNativeItems.elementAt(i).m_oFireTime.toULong() > curTime.toULong() )
     		{
             nInterval = m_arNativeItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
@@ -117,6 +129,7 @@ unsigned long CRhoTimer::getNextTimeout()
 
         if ( nInterval < nMinInterval )
             nMinInterval = nInterval;
+		RAWTRACE("getNextTimeout------------------------------------------");
     }
 
 
@@ -167,16 +180,24 @@ boolean CRhoTimer::checkTimers()
 
 		}
     }
-
-    for( int i = (int)m_arNativeItems.size()-1; i >= 0; i--)
+	RAWTRACE1("CRhoTimer::checkTimers m_arNativeItems size : %d", m_arNativeItems.size());
+	RAWTRACE1("CRhoTimer::checkTimers m_arNativeItems size(-1) : %d", m_arNativeItems.size() -1);
+	for( int i = (int)m_arNativeItems.size()-1; i >= 0; i--)
     {
+		RAWTRACE("checkTimers------------------------------------------for loop entry");
+		RAWTRACE1("CRhoTimer::checkTimers m_arNativeItems Index : %d", i);
         CNativeTimerItem oItem = m_arNativeItems.elementAt(i);
+		RAWTRACE1("CRhoTimer::checkTimers m_arNativeItems Index Overflow : %d", oItem.m_overflow);
+		RAWTRACE1("CRhoTimer::checkTimers m_arNativeItems Index curTime : %d", curTime.toULong());
+		RAWTRACE1("CRhoTimer::checkTimers m_arNativeItems Index m_oFireTime : %d", oItem.m_oFireTime.toULong());
+		RAWTRACE1("CRhoTimer::checkTimers m_arNativeItems Index Calcultion : %d", (oItem.m_oFireTime.toULong() - curTime.toULong()) );
+		RAWTRACE1("CRhoTimer::checkTimers m_arNativeItems Index Interval : %d", oItem.m_nInterval);
         
         if(oItem.m_overflow==false)
 		{
             if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
             {
-                RAWTRACE("CRhoTimer::checkTimers: firing native timer");
+                RAWTRACE("(i)CRhoTimer::checkTimers: firing native timer");
                 m_arNativeItems.removeElementAt(i);
                 if ( oItem.m_pCallback->onTimer() )
                     bRet = true;
@@ -188,7 +209,7 @@ boolean CRhoTimer::checkTimers()
 			{
 				if((curTime.toULong()-oItem.m_oFireTime.toULong())<=oItem.m_nInterval)
 				{
-                    RAWTRACE("CRhoTimer::checkTimers: firing native timer");
+                    RAWTRACE("(ii)CRhoTimer::checkTimers: firing native timer");
                     m_arNativeItems.removeElementAt(i);
                     if ( oItem.m_pCallback->onTimer() )
                         bRet = true;
@@ -196,8 +217,9 @@ boolean CRhoTimer::checkTimers()
 
 			}
         }
+		RAWTRACE("checkTimers------------------------------------------for loop exit");
     }
-
+	
 
     return bRet;
 }
@@ -226,17 +248,21 @@ void CRhoTimer::stopNativeTimer(CRhoTimer::ICallback* callback)
   RAWTRACE("CRhoTimer::stopNativeTimer");
 
   synchronized(m_mxAccess);
+  
+  RAWTRACE1("CRhoTimer::stopTimer m_arNativeItems(i) size : %d", m_arNativeItems.size());
 
   if ( 0 == callback )
   {
     m_arNativeItems.removeAllElements();
   }
-
+	RAWTRACE1("CRhoTimer::stopTimer m_arNativeItems (ii)size : %d", m_arNativeItems.size());
   for( int i = (int)m_arNativeItems.size()-1; i >= 0; i--)
   {
+	  RAWTRACE1("CRhoTimer::stopTimer m_arNativeItems Index  : %d", i);
     CNativeTimerItem oItem = m_arNativeItems.elementAt(i);
     if ( oItem.m_pCallback == callback )
     {
+		RAWTRACE1("CRhoTimer::stopTimer m_arNativeItems removing item   : %d", i);
       m_arNativeItems.removeElementAt(i);
     }
   }

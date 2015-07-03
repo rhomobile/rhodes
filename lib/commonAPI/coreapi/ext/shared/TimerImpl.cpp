@@ -27,8 +27,10 @@ namespace rho
         //methods
         // create Create a timers objects. 
         virtual void create(rho::apiGenerator::CMethodResult& oResult) 
-		{
+        {
+            RAWTRACE1("CTimerSingletonImpl::create(i) : %d",createdTimers);
 			++createdTimers;
+            RAWTRACE1("CTimerSingletonImpl::create (ii): %d",createdTimers);
 
 			char buf[10];
             sprintf(buf, "%d", createdTimers);
@@ -73,6 +75,7 @@ namespace rho
         //methods
         virtual void start( int interval, rho::apiGenerator::CMethodResult& oResult) 
 		{
+            RAWTRACE1("CTimerImpl::start %d", interval);
 			if (interval <= 0)
 			{
 				oResult.setError("invalid interval");
@@ -86,13 +89,16 @@ namespace rho
 
         virtual void stop(rho::apiGenerator::CMethodResult& oResult)
 		{
+            RAWTRACE("CTimerImpl::stop");
 			common::CRhoTimer& timerManager = RHODESAPP().getTimer();
 			timerManager.stopNativeTimer(this);
         } 
 
         virtual void isAlive(rho::apiGenerator::CMethodResult& oResult) 
 		{
+            RAWTRACE("CTimerImpl::isAlive ");
 			common::CRhoTimer& timerManager = RHODESAPP().getTimer();
+            RAWTRACE1("CTimerImpl::isAlive : %d",timerManager.isNativeTimerExist(this));
 			oResult.set(timerManager.isNativeTimerExist(this));
         } 
 
@@ -134,6 +140,7 @@ namespace rho
 
 extern "C" void Init_Timer_extension()
 {
+    RAWTRACE("Init_Timer_extension:  called");
     rho::CTimerFactory::setInstance( new rho::CTimerFactory() );
     rho::Init_Timer_API();
 #ifndef RHO_NO_RUBY_API

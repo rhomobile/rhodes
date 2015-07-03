@@ -72,7 +72,7 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
             m_Thread->terminate();
             m_Thread->wait();
         }
-        LOG(INFO) + "Terminate thread.";
+        LOG(INFO) + "qt-Terminate thread.";
         delete m_Thread;
         m_Thread = 0;
     }
@@ -80,11 +80,18 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
 
 int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 {
+        LOG(INFO) + "qt-CRhoThreadImpl wait ." + nTimeoutMs;
     if (m_waitThread)
+        {
+        OG(INFO) + "qt-inside m_waitThread" ;
         stopWait();
+        LOG(INFO) + "qt-stpoWait called" ;
+        }
     m_waitThread = new QThread();
     m_waitThread->start();
-    bool result = m_waitThread->wait(1000UL*nTimeoutMs) ? 0 : 1;
+        LOG(INFO) + "qt-before m_waitThread->wait" ;
+	bool result = m_waitThread->wait(nTimeoutMs) ? 0 : 1;
+        LOG(INFO) + "qt-after m_waitThread->wait" + result;
     delete m_waitThread;
     m_waitThread = 0;
     return result;
@@ -92,11 +99,19 @@ int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 
 void CRhoThreadImpl::stopWait()
 {
-    if (m_waitThread) {
-        m_waitThread->terminate(); // quit();
+        LOG(INFO) + "qt-CRhoThreadImpl::stopWait Entry" ;
+       if (m_waitThread) 
+        {
+            LOG(INFO) + "qt-CRhoThreadImpl::stopWait if m_waitThread" ;
+             m_waitThread->terminate(); // quit();
         if (m_waitThread)
+        {
+        LOG(INFO) + "qt-CRhoThreadImpl::stopWait if m_waitThread(2)" ;
             m_waitThread->wait();
+        LOG(INFO) + "qt-CRhoThreadImpl::stopWait if m_waitThread(2.1)" ;
+        }
     }
+        LOG(INFO) + "qt-CRhoThreadImpl::stopWait Exit" ;
 }
 
 void CRhoThreadImpl::sleep(unsigned int nTimeout)
