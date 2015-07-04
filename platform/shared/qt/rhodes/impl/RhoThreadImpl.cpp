@@ -80,38 +80,39 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
 
 int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 {
-        LOG(INFO) + "qt-CRhoThreadImpl wait ." + nTimeoutMs;
+    RAWTRACE1("qt-CRhoThreadImpl wait : %d",nTimeoutMs);
     if (m_waitThread)
-        {
-        LOG(INFO) + "qt-inside m_waitThread" ;
-        stopWait();
-        LOG(INFO) + "qt-stopWait called" ;
-        }
+    {
+            RAWTRACE("qt-inside m_waitThread") ;
+            stopWait();
+            RAWTRACE( "qt-stopWait called");
+    }
     m_waitThread = new QThread();
     m_waitThread->start();
-        LOG(INFO) + "qt-before m_waitThread->wait" ;
+    RAWTRACE1("qt-before m_waitThread->wait : isRunning() :  %d",m_waitThread->isRunning());
+    RAWTRACE1("qt-before m_waitThread->wait : isFinished():  %d",m_waitThread->isFinished());
 	bool result = m_waitThread->wait(nTimeoutMs) ? 0 : 1;
-        LOG(INFO) + "qt-after m_waitThread->wait" + result;
+    RAWTRACE1("(ii)qt-after m_waitThread->wait : isRunning() : %d ", m_waitThread->isRunning());
+    RAWTRACE1("(ii)qt-after m_waitThread->wait : isFinished(): %d ",  m_waitThread->isFinished());
+    
+    RAWTRACE1("qt-after m_waitThread->wait : %d", result);
+    m_waitThread->quit();
     delete m_waitThread;
+    RAWTRACE("m_waitThread: destroyed");
     m_waitThread = 0;
     return result;
 }
 
 void CRhoThreadImpl::stopWait()
 {
-        LOG(INFO) + "qt-CRhoThreadImpl::stopWait Entry" ;
-       if (m_waitThread) 
-        {
-            LOG(INFO) + "qt-CRhoThreadImpl::stopWait if m_waitThread" ;
-             m_waitThread->terminate(); // quit();
-        if (m_waitThread)
-        {
-        LOG(INFO) + "qt-CRhoThreadImpl::stopWait if m_waitThread(2)" ;
-            m_waitThread->wait();
-        LOG(INFO) + "qt-CRhoThreadImpl::stopWait if m_waitThread(2.1)" ;
-        }
+    RAWTRACE( "qt-CRhoThreadImpl::stopWait Entry" );
+    if (m_waitThread) 
+    {
+        RAWTRACE("qt-CRhoThreadImpl::stopWait if m_waitThread" );
+        m_waitThread->terminate(); // quit();
+       RAWTRACE("qt-CRhoThreadImpl::stopWait if m_waitThread Terminated") ;
     }
-        LOG(INFO) + "qt-CRhoThreadImpl::stopWait Exit" ;
+   RAWTRACE( "qt-CRhoThreadImpl::stopWait Exit" );
 }
 
 void CRhoThreadImpl::sleep(unsigned int nTimeout)
