@@ -33,6 +33,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.os.Bundle;
 
 public interface IRhoListener {
@@ -59,7 +60,7 @@ public interface IRhoListener {
 	 * @return True if the listener has consumed the event, false to let it bubble to other listeners/views. 
 	 */
 	boolean onKey(int keyCode, KeyEvent event);
-	
+	boolean onTouchEvent (MotionEvent event);
 	/**
 	 * Called whenever the Enterprise Browser License Screen becomes visible 
 	 * @author Ben Kennedy (NCVT73)
