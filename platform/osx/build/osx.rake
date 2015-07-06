@@ -37,8 +37,8 @@ namespace "config" do
     $remove = "rm"
     $qt_project_dir = File.join( $startdir, 'platform/shared/qt/' )
     $build_dir = File.join( $startdir, 'platform/osx/bin/' )
-
-    $devroot = '/Applications/Xcode.app/Contents/Developer'
+    xcode_app_path = $config['env']['paths']['xcode-app'] || '/Applications/XCode.app'
+    $devroot = "#{xcode_app_path}/Contents/Developer"
     $devbin = $devroot + '/usr/bin'
     $xcodebuild = $devbin + '/xcodebuild'
     if !File.exists? $xcodebuild

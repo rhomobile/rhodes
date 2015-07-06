@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+require 'cfpropertylist'
+require 'highline/import'
+require 'yaml'
+
+def get_available_xcode_on_machine
+	application_folder = "/Applications"
+	available_xcode = []
+
+	Dir.foreach(application_folder) do |item|
+  		next if item == '.' or item == '..'
+  		# do work on real items
+
+  		next unless File.file?(File.join(application_folder,item,"Contents","version.plist"))
+		
+		plist = CFPropertyList::List.new(:file => "#{File.join(application_folder,item,'Contents','version.plist')}")
+  		data = CFPropertyList.native_types(plist.value)
+
+  		puts File.join(application_folder,item,"Contents","version.plist") if data['ProjectName'] == "IDEFrameworks"
+
+  		if data['ProjectName'] == "IDEFrameworks"
+  			available_xcode << {:path => "#{File.join(application_folder,item)}", :display_name => "#{item} Version #{data['CFBundleShortVersionString']} (#{data['ProductBuildVersion']})"}
+  		end
+	end
+
+	choose do |menu|
+		menu.prompt = "Please choose your preferred xcode application"
+			available_xcode.each do |xcode|
+				menu.choice(xcode[:display_name]) { set_xcode_version(xcode[:path]) }
+			end
+		menu.choice(:Quit, "Exit program.") { exit }
+	end
+end
+
+def set_xcode_version(path="/Applications/Xcode.app")
+	puts "xcode app path set to #{path}"
+	rhobuild_yml_config = YAML.load_file(File.join(File.dirname(__FILE__),'..','rhobuild.yml'))
+	rhobuild_yml_config['env']['paths']['xcode-app'] = "#{path}"
+	File.open(File.join(File.dirname(__FILE__),'..','rhobuild.yml'), 'w') {|f| f.write rhobuild_yml_config.to_yaml }
+end
+
+get_available_xcode_on_machine

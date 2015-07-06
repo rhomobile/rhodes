@@ -558,7 +558,8 @@ end
 
 
 def get_xcode_version
-  info_path = '/Applications/XCode.app/Contents/version.plist'
+  xcode_app_path = $config['env']['paths']['xcode-app'] || '/Applications/XCode.app'
+  info_path = "#{xcode_app_path}/Contents/version.plist"
   ret_value = '0.0'
   if File.exists? info_path
     hash = load_plist(info_path)
@@ -632,7 +633,8 @@ namespace "config" do
         end
     end
 
-    $devroot = '/Applications/Xcode.app/Contents/Developer' if $devroot.nil?
+    xcode_app_path = $config['env']['paths']['xcode-app'] || '/Applications/XCode.app'
+    $devroot = "#{xcode_app_path}/Contents/Developer" if $devroot.nil?
     $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_51') if $iphonesim.nil?
 
     #check for XCode 6
@@ -649,7 +651,8 @@ namespace "config" do
         $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
     else
         #additional checking for iphonesimulator version
-      if !File.exists? '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/DVTiPhoneSimulatorRemoteClient.framework'
+        xcode_app_path = $config['env']['paths']['xcode-app'] || '/Applications/XCode.app'
+      if !File.exists? "#{xcode_app_path}/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/DVTiPhoneSimulatorRemoteClient.framework"
         #check for XCode 6
         xcode_version = get_xcode_version
         if xcode_version[0].to_i >= 6

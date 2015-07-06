@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
   s.add_dependency('CFPropertyList', '>= 2.2.0')
   s.add_dependency('listen', '>= 2.8.5')
   s.add_dependency('rubyzip', '>= 1.1.7')
+  s.add_dependency('highline','>= 1.7.2')
   #s.add_dependency('rdoc', '~> 3.6.1')
   s.executables << 'rhogen'
   s.executables << 'rhodes'
@@ -36,6 +37,7 @@ Gem::Specification.new do |s|
   s.executables << 'set-rhodes-sdk'
   s.executables << 'migrate-rhodes-app'
   s.executables << 'get-rhodes-info'
+  s.executables << 'set-xcode-path'
   #this is a hack, we dont have an extension, but we want to run postinstall code. It's done via the 'building' of an extension
   s.extensions << 'ext/extconf.rb'
   s.summary = %q{The Rhodes framework is the easiest way to develop NATIVE apps with full device capabilities (GPS, PIM, camera, etc.) for any smartphone.}
