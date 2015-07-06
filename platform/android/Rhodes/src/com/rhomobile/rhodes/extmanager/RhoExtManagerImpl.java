@@ -16,6 +16,7 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
@@ -236,6 +237,16 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     	return false;
     }
 
+    @Override
+	public boolean onTouchEvent(MotionEvent event) {
+		// TODO Auto-generated method stub
+    	for(IRhoListener listener: mKeyListeners){
+    		if(listener.onTouchEvent(event)){
+    			return true;
+    		}
+    	}
+		return false;
+	}
     @Override
     public void refreshPage(boolean bFromCache) {
         WebView.refresh(WebView.activeTab());
