@@ -2,6 +2,7 @@ package com.rhomobile.rhodes.extmanager;
 
 import android.content.Context;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 
 public interface IRhoExtManager {
