@@ -491,7 +491,20 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 		}
 	}
 */
+
+
+//SPR28015fix-Duplicate accelerator key fix start
+	if (lpMsg && (lpMsg->message == WM_KEYDOWN))
+	{
+		if (lpMsg->wParam == VK_LEFT ||	lpMsg->wParam == VK_RIGHT || lpMsg->wParam == VK_UP || lpMsg->wParam == VK_DOWN || lpMsg->wParam == VK_RETURN)
+		{
+			//EMBPD00174595 - Prevent duplicate left, right, up, down & enter keys
+			return S_OK;
+		}
+	}
 	return S_FALSE;
+	
+//SPR28015fix-Duplicate accelerator key fix end	
 }
 
 HRESULT CEBrowserEngine::QueryInterface (REFIID riid, LPVOID * ppv)
