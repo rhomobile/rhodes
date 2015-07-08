@@ -58,6 +58,7 @@ public class LocalFileHandler implements UriHandler
         return mImagePattern.matcher(url).matches();
     }
 
+  
     public boolean handle(String url) throws URISyntaxException {
 
         if (!URLUtil.isFileUrl(url))
@@ -73,7 +74,7 @@ public class LocalFileHandler implements UriHandler
         int intentFlags = 0;
         Uri path = Uri.parse(url);
 
-        Uri newUri = LocalFileProvider.overrideUri(path);
+        Uri newUri = LocalFileProvider.overrideSystemUri(path);
         if(newUri != null) {
             intentFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
             url = Uri.decode(newUri.toString());
