@@ -312,6 +312,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
     }
 
     public void setFullScreen(boolean enable) {
+    	sFullScreen = enable;
         Window window = getWindow();
         if (enable) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
