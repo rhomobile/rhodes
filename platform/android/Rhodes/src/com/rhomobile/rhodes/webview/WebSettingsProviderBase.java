@@ -27,6 +27,7 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
         settings.setJavaScriptCanOpenWindowsAutomatically(false);
         settings.setSupportZoom(enableZoom);
         settings.setBuiltInZoomControls(enableZoom);
+        if(!RhoConf.getString("fontFamily").isEmpty())
         settings.setStandardFontFamily(RhoConf.getString("fontFamily"));
         //customUA = updateRevesionOfCustomUA(settings.getUserAgentString(), customUA);
         //settings.setUserAgentString(customUA);
