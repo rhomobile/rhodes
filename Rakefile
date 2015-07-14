@@ -2823,12 +2823,17 @@ namespace "config" do
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
       end
    end
-	 if $current_platform == "android"
+   if $current_platform == "android"
       if $app_config['extensions'].index('barcode') 
         $app_config['extensions'].delete('barcode')
         $app_config['extensions'] |= ['emdk3-manager']
         $app_config['extensions'] |= ['barcode']
       end
+      if $app_config['extensions'].index('indicators')
+         $app_config['extensions'].delete('indicators')
+         $app_config['extensions'] |= ['indicators']
+      end
+
     end
 
     #if $app_config['extensions'].index('rhoelementsext')
