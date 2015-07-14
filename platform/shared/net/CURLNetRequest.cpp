@@ -833,6 +833,14 @@ CURLcode CURLNetRequest::CURLHolder::perform()
                 FD_ZERO(&efd);
                 err = curl_multi_fdset(m_curlm, &rfd, &wfd, &efd, &n);
                 if (err == CURLM_OK) {
+#if defined(OS_MACOSX) || defined(OS_IPHONE)
+                    if (n > 0) {
+                        RAWTRACE("sleep(1) for OS_IPHONE and OS_MACOSX");
+                        sleep(1);
+                        noactivity = 0;
+                        continue;
+                    }
+#else
                     if (n > 0) {
                         timeval tv;
                         tv.tv_sec = CHUNK;
@@ -850,6 +858,7 @@ CURLcode CURLNetRequest::CURLHolder::perform()
                             continue;
                         }
                     }
+#endif
                 }
                 else {
                     RAWLOG_ERROR1("curl_multi_fdset error: %d", (int)err);
