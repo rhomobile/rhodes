@@ -5015,7 +5015,7 @@ end
 
 desc "Selects android sdk path based on rhodes version"
 task :select_android_sdk, :rhodes_ver do
-  if args.rhodes_ver <= 5.1.0
+  if args.rhodes_ver <= 5.1
     $androidsdkpath = #custom sdk path to be added
     unless File.exists? $androidsdkpath
       puts "Missing or invalid android sdk path '#{$androidsdkpath}'"
