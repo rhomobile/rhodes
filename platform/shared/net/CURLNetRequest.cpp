@@ -831,16 +831,20 @@ CURLcode CURLNetRequest::CURLHolder::perform()
                 FD_ZERO(&rfd);
                 FD_ZERO(&wfd);
                 FD_ZERO(&efd);
-                err = curl_multi_fdset(m_curlm, &rfd, &wfd, &efd, &n);
-                if (err == CURLM_OK) {
+// Wait for 100 milliseconds after curl_multi_perform and before calling curl_multi_fdset.
+// This may ensure that we have valid fd_set got set by curl_multi_fdset
 #if defined(OS_MACOSX) || defined(OS_IPHONE)
-                    if (n > 0) {
-                        RAWTRACE("sleep(1) for OS_IPHONE and OS_MACOSX");
-                        sleep(1);
-                        noactivity = 0;
-                        continue;
-                    }
-#else
+                long timew;
+                timeval tvwait;
+                timew = 100; // a 100 millisecond wait.
+                tvwait.tv_sec = timew / 1000;
+                tvwait.tv_usec = (timew % 1000) * 1000;
+                select(n+1, NULL, NULL, NULL, &tvwait);
+#endif
+                err = curl_multi_fdset(m_curlm, &rfd, &wfd, &efd, &n);
+
+                if (err == CURLM_OK) {
+
                     if (n > 0) {
                         timeval tv;
                         tv.tv_sec = CHUNK;
@@ -858,7 +862,6 @@ CURLcode CURLNetRequest::CURLHolder::perform()
                             continue;
                         }
                     }
-#endif
                 }
                 else {
                     RAWLOG_ERROR1("curl_multi_fdset error: %d", (int)err);
