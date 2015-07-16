@@ -96,8 +96,8 @@ int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
     RAWTRACE1("(ii)qt-after m_waitThread->wait : isFinished(): %d ",  m_waitThread->isFinished());
     
     RAWTRACE1("qt-after m_waitThread->wait : %d", result);
-    m_waitThread->quit();
-    delete m_waitThread;
+    if(m_waitThread)
+        delete m_waitThread;
     RAWTRACE("m_waitThread: destroyed");
     m_waitThread = 0;
     return result;
@@ -112,6 +112,23 @@ void CRhoThreadImpl::stopWait()
         m_waitThread->terminate(); // quit();
        RAWTRACE("qt-CRhoThreadImpl::stopWait if m_waitThread Terminated") ;
     }
+     if (m_waitThread)
+     {
+            RAWTRACE("qt-CRhoThreadImpl::stopWait if m_waitThread for wait call" );
+            RAWTRACE1("qt-CRhoThreadImpl::stopWait if m_waitThread for wait call : null check : %d" ,(m_waitThread!=NULL));
+            
+            try
+            {
+                if(m_waitThread!=NULL)
+                    m_waitThread->wait();
+                RAWTRACE("qt-CRhoThreadImpl::stopWait if m_waitThread for wait call completed in try") ;
+            }
+            catch (std::exception &e)
+            {
+                RAWTRACE1("qt-CRhoThreadImpl::stopWait if m_waitThread for wait call thrown exception %s",e.what()) ;
+            }
+            RAWTRACE("qt-CRhoThreadImpl::stopWait if m_waitThread for wait call completed") ;
+     }
    RAWTRACE( "qt-CRhoThreadImpl::stopWait Exit" );
 }
 
