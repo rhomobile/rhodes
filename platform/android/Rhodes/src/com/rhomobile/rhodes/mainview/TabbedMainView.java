@@ -79,6 +79,7 @@ public class TabbedMainView implements MainView {
 	
 	private int mBackgroundColor = 0;
 	private boolean mBackgroundColorEnable = false;
+	private boolean[] isTabLoaded;
 	
 	//private String mChangeTabCallback = null;
 	IMethodResult mChangeTabCallback = null;
@@ -526,7 +527,7 @@ public class TabbedMainView implements MainView {
 		Object[] tabs_array = tabs.toArray();
 		
 		int size = tabs_array.length;
-		
+		isTabLoaded = new boolean[size];
 		host = new TabHost(ctx, null);
 		
 		tabData = new Vector<TabData>(size);
@@ -571,6 +572,7 @@ public class TabbedMainView implements MainView {
 
 		for (int i = 0; i < size; ++i) {
 			Object param = tabs_array[i];
+			isTabLoaded[i] = false;
 			if (!(param instanceof Map<?,?>))
 				throw new IllegalArgumentException("Hash expected");
 			
@@ -828,7 +830,7 @@ public class TabbedMainView implements MainView {
 				callChangeTabCallback(tabIndex);
 			}
 			
-			if ((data.reload /*|| real_change*/) || !data.loaded ) {
+			if (((data.reload /*|| real_change*/) || !data.loaded) && !isTabLoaded[tabIndex] ) {
 				if (mIsReallyOnScreen) {
 					RhodesService.loadUrl(data.url);
 					data.loaded = true;
@@ -1024,6 +1026,10 @@ public class TabbedMainView implements MainView {
 	public void navigate(String url, int index) {
         if ( !isValidIndex(index) ) {
             return;
+        }
+        
+        if(index > -1) {
+        	isTabLoaded[index] = true;
         }
 
 		getTabMainView(index).navigate(url, 0);
