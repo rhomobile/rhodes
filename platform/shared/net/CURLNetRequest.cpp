@@ -831,21 +831,24 @@ CURLcode CURLNetRequest::CURLHolder::perform()
                 FD_ZERO(&rfd);
                 FD_ZERO(&wfd);
                 FD_ZERO(&efd);
-// Wait for 100 milliseconds after curl_multi_perform and before calling curl_multi_fdset.
-// This may ensure that we have valid fd_set got set by curl_multi_fdset
-#if defined(OS_MACOSX) || defined(OS_IPHONE)
-                long timew;
-                timeval tvwait;
-                timew = 100; // a 100 millisecond wait.
-                tvwait.tv_sec = timew / 1000;
-                tvwait.tv_usec = (timew % 1000) * 1000;
-                select(n+1, NULL, NULL, NULL, &tvwait);
-#endif
+
                 err = curl_multi_fdset(m_curlm, &rfd, &wfd, &efd, &n);
 
                 if (err == CURLM_OK) {
 
                     if (n > 0) {
+
+#if defined(OS_MACOSX) || defined(OS_IPHONE)
+                        if(!RHODESAPP().isBaseUrl(mStrUrl.c_str())){
+                            long timew;
+                            timeval tvwait;
+                            timew = 1000; // a 1000 millisecond wait.
+                            tvwait.tv_sec = timew / 1000;
+                            tvwait.tv_usec = (timew % 1000) * 1000;
+                            select(n+1, NULL, NULL, NULL, &tvwait);
+                        }
+#endif
+                        
                         timeval tv;
                         tv.tv_sec = CHUNK;
                         tv.tv_usec = 0;
