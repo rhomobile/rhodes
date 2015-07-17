@@ -110,8 +110,12 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						}else{
 							imgPath = getFilePath(curUri);
 							mBitmap = BitmapFactory.decodeFile(imgPath);
+							//[PT 98935816]Fixing the extra black image issue in KitKat devices.
+							fixTheGalleryIssue(imgPath);
 							File f= new File(imgPath);
 							imgPath = copyImg(imgPath);
+							//[PT 98935816]Fixing the extra black image issue in KitKat devices.
+							fixTheGalleryIssue(imgPath);
 							f.renameTo(new File(f.getParentFile(), rename));
 							String pathAfterRename = f.getParentFile().getAbsolutePath() +"/"+rename;
 							fixTheGalleryIssue(pathAfterRename);
