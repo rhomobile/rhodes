@@ -35,6 +35,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import com.rhomobile.rhodes.mainview.TabbedMainView;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -178,7 +179,10 @@ public class RhoWebViewClient extends WebViewClient
         } catch (Throwable ex) {
             //Do nothing. Just for case if activity has been destroyed in between.
         }
-
+        if(url.trim().equalsIgnoreCase("data:text/html,") && view.getTitle().equalsIgnoreCase("data:text/html,")) {
+        	url = TabbedMainView.defaultUrl;
+        	view.loadUrl(url);
+        }
         RhoExtManager.getImplementationInstance().onNavigateComplete(view, url);
         //CookieSyncManager.getInstance().sync();
 
