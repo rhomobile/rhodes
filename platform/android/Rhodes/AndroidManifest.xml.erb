@@ -20,6 +20,7 @@
   <!-- Uses permissions -->
   <% @usesPermissions.each do |name| %>
   <uses-permission android:name='<%=name%>'/>
+  <uses-permission android:name="android.permission.INJECT_EVENTS"/>
   <% end %>
 
   <supports-screens android:smallScreens='true' android:normalScreens='true' android:largeScreens='true' android:xlargeScreens='true'/>
