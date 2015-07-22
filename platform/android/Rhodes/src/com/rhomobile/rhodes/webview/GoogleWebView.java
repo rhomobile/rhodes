@@ -81,13 +81,15 @@ public class GoogleWebView implements IRhoWebView {
                 	Logger.E(TAG, "NumberFormatException,message="+ex.getMessage());
                 	z = (float) 0.0;
                 }
-                mWebView.setInitialScale((int)(z*150));
-                //mWebView.setInitialScale(0);
+                //mWebView.setInitialScale((int)(z*150));
+                mWebView.setInitialScale(0);
                 mWebView.setVerticalScrollBarEnabled(true);
                 mWebView.setHorizontalScrollBarEnabled(true);
                 mWebView.setVerticalScrollbarOverlay(true);
                 mWebView.setHorizontalScrollbarOverlay(true);
                 mWebView.setFocusableInTouchMode(true);
+                mWebView.getSettings().setLoadWithOverviewMode(true);
+                mWebView.getSettings().setUseWideViewPort(true);
 
                 IWebSettingsProvider provider = OsVersionManager.getFeature(IWebSettingsProvider.class);
                 provider.fillSettings(mWebView.getSettings(), mConfig);
