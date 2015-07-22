@@ -615,7 +615,10 @@ public class RhodesApplication extends Application{
             Logger.T(TAG, "Running UiState handler immediately: " + state.TAG);
             handler.run();
             if (handler.isRunOnce())
-                return;
+                {
+                	Logger.I(TAG, "Inside runwhen before return");
+                	return;
+                }	
         }
         state.addHandler(handler);
         Logger.T(TAG, "UiState handler added: " + state.TAG);
