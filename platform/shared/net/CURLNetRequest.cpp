@@ -836,19 +836,7 @@ CURLcode CURLNetRequest::CURLHolder::perform()
 
                 if (err == CURLM_OK) {
 
-                    if (n > 0) {
-
-#if defined(OS_MACOSX) || defined(OS_IPHONE)
-                        if(!RHODESAPP().isBaseUrl(mStrUrl.c_str())){
-                            long timew;
-                            timeval tvwait;
-                            timew = 1000; // a 1000 millisecond wait.
-                            tvwait.tv_sec = timew / 1000;
-                            tvwait.tv_usec = (timew % 1000) * 1000;
-                            select(n+1, NULL, NULL, NULL, &tvwait);
-                        }
-#endif
-                        
+                    if (n > 0) {                        
                         timeval tv;
                         tv.tv_sec = CHUNK;
                         tv.tv_usec = 0;

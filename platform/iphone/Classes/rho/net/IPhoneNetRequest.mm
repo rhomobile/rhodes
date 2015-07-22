@@ -13,6 +13,8 @@
 #import "common/StringConverter.h"
 #import "common/RhoConf.h"
 
+extern "C" void rho_net_impl_network_indicator(int active);
+
 @interface NetRequestDelegateContext : NSObject
 {
     NSCondition* netDelegateThreadStartCond;
@@ -639,6 +641,7 @@ public:
     [m_pPerformCond lock];
 
     //start();
+      rho_net_impl_network_indicator(1);
     
     [m_pConnDelegate performSelector:@selector(startAsyncRequest) onThread:[[NetRequestDelegateContext sharedInstance] netRequestDelegateThread] withObject:nil waitUntilDone:NO];
 
@@ -721,7 +724,7 @@ public:
         m_pCallback->didFinishLoading();
       }
     }
-    
+      rho_net_impl_network_indicator(0);
     return ret;
     
   }
