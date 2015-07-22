@@ -85,6 +85,7 @@ public class TabbedMainView implements MainView {
 	IMethodResult mChangeTabCallback = null;
 	
 	private boolean mIsReallyOnScreen = false;
+	public static String defaultUrl = "";
 	//private String mLoadUrlAfterLoadToScreen = null;
 	
 	//private static native void onTabBarChangeTabCallback(String callback_url, String body);
@@ -658,7 +659,7 @@ public class TabbedMainView implements MainView {
 				}
 				host.setBackgroundColor(web_bkg_color);
 			}
-			
+			defaultUrl = action;
 			TabData data = new TabData();
 			data.view = view;
 			data.url = action;
@@ -1073,7 +1074,10 @@ public class TabbedMainView implements MainView {
 	}
 
 	public void goBack() {
-		getTabMainView(activeTab()).goBack();
+		if (activeTab() == 0
+				|| !getWebView(activeTab()).getUrl().equals(defaultUrl)) {
+			getTabMainView(activeTab()).goBack();
+		}
 	}
 
 	public void loadData(String data, int index) {
