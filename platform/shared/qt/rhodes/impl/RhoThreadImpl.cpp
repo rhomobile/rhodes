@@ -72,7 +72,7 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
             m_Thread->terminate();
             m_Thread->wait();
         }
-        LOG(INFO) + "qt-Terminate thread.";
+        LOG(INFO) + "Terminate thread.";
         delete m_Thread;
         m_Thread = 0;
     }
@@ -80,56 +80,23 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
 
 int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 {
-    RAWTRACE1("qt-CRhoThreadImpl wait : %d",nTimeoutMs);
     if (m_waitThread)
-    {
-            RAWTRACE("qt-inside m_waitThread") ;
-            stopWait();
-            RAWTRACE( "qt-stopWait called");
-    }
+        stopWait();
     m_waitThread = new QThread();
     m_waitThread->start();
-    RAWTRACE1("qt-before m_waitThread->wait : isRunning() :  %d",m_waitThread->isRunning());
-    RAWTRACE1("qt-before m_waitThread->wait : isFinished():  %d",m_waitThread->isFinished());
-	bool result = m_waitThread->wait(nTimeoutMs) ? 0 : 1;
-    RAWTRACE1("(ii)qt-after m_waitThread->wait : isRunning() : %d ", m_waitThread->isRunning());
-    RAWTRACE1("(ii)qt-after m_waitThread->wait : isFinished(): %d ",  m_waitThread->isFinished());
-    
-    RAWTRACE1("qt-after m_waitThread->wait : %d", result);
-    if(m_waitThread)
-        delete m_waitThread;
-    RAWTRACE("m_waitThread: destroyed");
+    bool result = m_waitThread->wait(1000UL*nTimeoutMs) ? 0 : 1;
+    delete m_waitThread;
     m_waitThread = 0;
     return result;
 }
 
 void CRhoThreadImpl::stopWait()
 {
-    RAWTRACE( "qt-CRhoThreadImpl::stopWait Entry" );
-    if (m_waitThread) 
-    {
-        RAWTRACE("qt-CRhoThreadImpl::stopWait if m_waitThread" );
+    if (m_waitThread) {
         m_waitThread->terminate(); // quit();
-       RAWTRACE("qt-CRhoThreadImpl::stopWait if m_waitThread Terminated") ;
+        if (m_waitThread)
+            m_waitThread->wait();
     }
-     if (m_waitThread)
-     {
-            RAWTRACE("qt-CRhoThreadImpl::stopWait if m_waitThread for wait call" );
-            RAWTRACE1("qt-CRhoThreadImpl::stopWait if m_waitThread for wait call : null check : %d" ,(m_waitThread!=NULL));
-            
-            try
-            {
-                if(m_waitThread!=NULL)
-                    m_waitThread->wait();
-                RAWTRACE("qt-CRhoThreadImpl::stopWait if m_waitThread for wait call completed in try") ;
-            }
-            catch (std::exception &e)
-            {
-                RAWTRACE1("qt-CRhoThreadImpl::stopWait if m_waitThread for wait call thrown exception %s",e.what()) ;
-            }
-            RAWTRACE("qt-CRhoThreadImpl::stopWait if m_waitThread for wait call completed") ;
-     }
-   RAWTRACE( "qt-CRhoThreadImpl::stopWait Exit" );
 }
 
 void CRhoThreadImpl::sleep(unsigned int nTimeout)
