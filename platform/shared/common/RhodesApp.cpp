@@ -841,7 +841,7 @@ void CRhodesApp::callBarcodeCallback(String strCallbackUrl, const String& strBar
     runCallbackInThread(strCallbackUrl, strBody);
 }
 //Due to the Multithreading issue callback was causing problem. That has been fixed in this.
-#if ( defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR) )
+#if (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP) )
 String g_strCallbackUrl;
 String g_strBody;
 
@@ -870,17 +870,14 @@ void CRhodesApp::callCallbackWithData(String strCallbackUrl, String strBody, con
         strBody += strCallbackData;
     }
 
-#if ( defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR) )
-	g_strCallbackUrl = strCallbackUrl;
-	g_strBody = strBody;
-#endif
-
     if (bWaitForResponse)
         getNetRequest().pushData( strCallbackUrl, strBody, null );
     else
 	{
-#if ( defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR) )
+#if (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP) )
 		LOG(INFO) + strCallbackUrl + "in a Windows Specific Thread";
+		g_strCallbackUrl = strCallbackUrl;
+	    g_strBody = strBody;
 		CloseHandle(::CreateThread(NULL,0,CallbackExecThread,NULL,0,NULL));
 #else
 		runCallbackInThread(strCallbackUrl, strBody);
