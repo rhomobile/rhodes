@@ -868,7 +868,7 @@ namespace 'token' do
         BuildOutput.put_log( BuildOutput::WARNING, "Cloud not check token online", "Token check" );
       else
         BuildOutput.put_log( BuildOutput::ERROR, "Cloud build server API token is not valid!", 'Token check');
-        exit 1
+        #exit 1
       end
     end
 
@@ -2662,7 +2662,7 @@ namespace "config" do
     Jake.set_bbver($app_config["bbver"].to_s)
   end
 
-  task :common => ["token:setup", :initialize] do
+  task :common => [:initialize] do
     puts "Starting rhodes build system using ruby version: #{RUBY_VERSION}"
     print_timestamp('config:common')
 
@@ -2906,29 +2906,29 @@ namespace "config" do
     end
 
     if $re_app || $rhoelements_features.length() > 0
-      if $user_acc.subscription_level < 1
-        Rake::Task["token:read"].reenable
-        Rake::Task["token:read"].invoke("true")
-      end
-      if $user_acc.subscription_level < 1
-        if !$user_acc.is_valid_subscription?
-          BuildOutput.error([
-                                'Your subscription information is outdated or not downloaded. Please verify your internet connection and run build command again.'],
-                            'Could not build licensed features.')
-        else
-          msg = ["You have free subscription on #{$selected_server}. RhoElements features are available only for paid accounts."]
-          if $rhoelements_features.length() > 0
-            msg.concat(['The following features are only available in RhoElements v2 and above:',
-                        $rhoelements_features,
-                        'For more information go to http://www.rhomobile.com '])
-          end
-          msg.concat(
-              ["In order to upgrade your account please log in to #{$selected_server}",
-               'Select "change plan" menu item in your profile settings.'])
-          BuildOutput.error(msg, 'Could not build licensed features.')
-        end
-        raise Exception.new("Could not build licensed features")
-      end
+      #if $user_acc.subscription_level < 1
+      #  Rake::Task["token:read"].reenable
+      #  Rake::Task["token:read"].invoke("true")
+      #end
+      #if $user_acc.subscription_level < 1
+      #  if !$user_acc.is_valid_subscription?
+      #    BuildOutput.error([
+      #                          'Your subscription information is outdated or not downloaded. Please verify your internet connection and run build command again.'],
+      #                      'Could not build licensed features.')
+      #  else
+      #    msg = ["You have free subscription on #{$selected_server}. RhoElements features are available only for paid accounts."]
+      #    if $rhoelements_features.length() > 0
+      #      msg.concat(['The following features are only available in RhoElements v2 and above:',
+      #                  $rhoelements_features,
+      #                  'For more information go to http://www.rhomobile.com '])
+      #    end
+      #    msg.concat(
+      #        ["In order to upgrade your account please log in to #{$selected_server}",
+      #         'Select "change plan" menu item in your profile settings.'])
+      #    BuildOutput.error(msg, 'Could not build licensed features.')
+      #  end
+      #  raise Exception.new("Could not build licensed features")
+      #end
     end
 
     if $rhoelements_features.length() > 0
