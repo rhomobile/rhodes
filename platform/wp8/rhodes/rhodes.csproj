@@ -20,7 +20,7 @@
     </SupportedCultures>
     <XapOutputs>true</XapOutputs>
     <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
-    <XapFilename>rhodes_$(Configuration)_$(Platform).xap</XapFilename>
+    <XapFilename>rhodes.xap</XapFilename>
     <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
     <SilverlightAppEntry>rhodes.App</SilverlightAppEntry>
     <ValidateXaml>true</ValidateXaml>
@@ -62,7 +62,7 @@
     <Optimize>false</Optimize>
     <BaseIntermediateOutputPath>..\bin\Win32\$(RootNamespace)</BaseIntermediateOutputPath>
     <IntermediateOutputPath>..\bin\Win32\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
-    <OutputPath>Bin\x86\Debug</OutputPath>
+    <OutputPath>..\bin\Win32\rhodes\debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -75,7 +75,7 @@
     <Optimize>true</Optimize>
     <BaseIntermediateOutputPath>..\bin\Win32\$(RootNamespace)</BaseIntermediateOutputPath>
     <IntermediateOutputPath>..\bin\Win32\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
-    <OutputPath>Bin\x86\Release</OutputPath>
+    <OutputPath>..\bin\Win32\rhodes\release\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -89,7 +89,7 @@
     <Optimize>false</Optimize>
     <BaseIntermediateOutputPath>..\bin\arm\$(RootNamespace)</BaseIntermediateOutputPath>
     <IntermediateOutputPath>..\bin\arm\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
-    <OutputPath>Bin\ARM\Debug</OutputPath>
+    <OutputPath>..\bin\arm\rhodes\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -102,7 +102,7 @@
     <Optimize>true</Optimize>
     <BaseIntermediateOutputPath>..\bin\arm\$(RootNamespace)</BaseIntermediateOutputPath>
     <IntermediateOutputPath>..\bin\arm\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
-    <OutputPath>Bin\ARM\Release</OutputPath>
+    <OutputPath>..\bin\arm\rhodes\Release\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
