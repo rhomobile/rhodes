@@ -283,7 +283,10 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         Logger.T(TAG, "onStart");
         mIsInsideStartStop = true;
-
+        //SPR28083 fix-SIP overlap the input textbox
+	if(getFullScreenMode())	{
+			KeypadShift.assistActivity(this);
+	}
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityStarted);
         RhoExtManager.getImplementationInstance().onStartActivity(this);
     }
