@@ -193,9 +193,9 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
         next unless classpath
 
         found_classpath = classpath
-        #following two lines are commented because manifest.ini and corrsponding code was changed.
-       # found_classpath += $path_separator
-	#	found_classpath += File.join($androidsdkpath, 'add-ons', 'symbol','com.symbol.scanner.jar')
+        
+        found_classpath += $path_separator
+		found_classpath += File.join($androidsdkpath, 'add-ons', 'symbol','com.symbol.scanner.jar')
         puts "classpath: #{found_classpath}, API level: #{found_apilevel}" if USE_TRACES
 
     end
