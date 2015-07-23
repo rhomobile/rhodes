@@ -120,9 +120,10 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
 			m_strErrFunction = L"InternetCrackUrl";
 			break;
 		}
-            int timeout = rho_conf_getInt("net_timeout")*1000;
-            if (timeout == 0 )
-             timeout = 30000;
+
+        int timeout = rho_conf_getInt("net_timeout")*1000;
+        if (timeout == 0 )
+            timeout = 30000;
 
         InternetSetOption( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout) ); 
         m_hConnection = InternetConnect( m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), 
