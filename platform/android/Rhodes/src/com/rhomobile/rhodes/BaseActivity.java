@@ -51,6 +51,8 @@ public class BaseActivity extends Activity implements ServiceConnection {
 	
 	private static final boolean DEBUG = false;
 	
+	private static boolean setFullScreenFlag = false;
+	
 	public static final String INTENT_SOURCE = BaseActivity.class.getName();
 	
 	public boolean mEnableScreenOrientationOverride = false;
@@ -209,10 +211,12 @@ public class BaseActivity extends Activity implements ServiceConnection {
     @Override
     protected void onResume() {
         super.onResume();
-       if(RhoConf.isExist("full_screen") ? RhoConf.getBool("full_screen") : false){
+        if((RhoConf.isExist("full_screen") ? RhoConf.getBool("full_screen") : false ) && setFullScreenFlag ==false){
         	 setFullScreen(true);
+        }else if(sFullScreen){
+        	setFullScreen(true);	
         }else{
-        	setFullScreen(false);
+    		setFullScreen(false);
         }
         //setFullScreen(sFullScreen);
         if (sScreenAutoRotate) {
@@ -285,6 +289,7 @@ public class BaseActivity extends Activity implements ServiceConnection {
 
     public static void setFullScreenMode(final boolean mode) {
         sFullScreen = mode;
+        setFullScreenFlag = true;
         PerformOnUiThread.exec(new Runnable() {
             @Override public void run() {
                 if (sTopActivity != null) {
