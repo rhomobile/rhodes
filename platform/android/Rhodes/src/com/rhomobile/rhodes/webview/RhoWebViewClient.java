@@ -172,7 +172,7 @@ public class RhoWebViewClient extends WebViewClient
         // Set title
         String title = view.getTitle();
         try {
-            RhodesActivity.safeGetInstance().setTitle(title);
+            //RhodesActivity.safeGetInstance().setTitle(title);
 
             if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION))
                 RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
