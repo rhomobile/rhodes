@@ -113,7 +113,7 @@ public class TabbedMainView implements MainView {
 		public String url;
 		public boolean reload;
 		public boolean loaded;
-		
+		public String title;
 		public int selected_color;
 		public boolean selected_color_enabled;
 		public boolean disabled;
@@ -122,6 +122,7 @@ public class TabbedMainView implements MainView {
 			loaded = false;
 			selected_color_enabled = false;
 			disabled = false;
+			title = null;
 		}
 	};
 	
@@ -664,12 +665,12 @@ public class TabbedMainView implements MainView {
 			data.view = view;
 			data.url = action;
 			data.reload = reload;
-			
+			data.title = label;
 			if (use_current_view_for_tab) {
 				data.loaded = true;
 				tabIndex = i;
 			}
-			
+			RhodesActivity.safeGetInstance().setTitle(data.title);
 			data.selected_color = selected_color;
 			data.selected_color_enabled = selected_color_enable;
 			data.disabled = disabled;
@@ -830,7 +831,7 @@ public class TabbedMainView implements MainView {
 			if (real_change) {
 				callChangeTabCallback(tabIndex);
 			}
-			
+			RhodesActivity.safeGetInstance().setTitle(data.title);
 			if (((data.reload /*|| real_change*/) || !data.loaded) && !isTabLoaded[tabIndex] ) {
 				if (mIsReallyOnScreen) {
 					RhodesService.loadUrl(data.url);
