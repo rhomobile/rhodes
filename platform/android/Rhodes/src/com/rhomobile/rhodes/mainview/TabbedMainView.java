@@ -669,8 +669,9 @@ public class TabbedMainView implements MainView {
 			if (use_current_view_for_tab) {
 				data.loaded = true;
 				tabIndex = i;
+				RhodesActivity.safeGetInstance().setTitle(data.title);
 			}
-			RhodesActivity.safeGetInstance().setTitle(data.title);
+			
 			data.selected_color = selected_color;
 			data.selected_color_enabled = selected_color_enable;
 			data.disabled = disabled;
