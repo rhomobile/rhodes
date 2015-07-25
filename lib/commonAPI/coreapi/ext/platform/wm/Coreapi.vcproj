@@ -19,7 +19,7 @@
 			Name="Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 		/>
 		<Platform
-			Name="MC3000c50b (ARMV4I)"
+			Name="STANDARDSDK_500 (ARMV4I)"
 		/>
 	</Platforms>
 	<ToolFiles>
@@ -251,7 +251,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|MC3000c50b (ARMV4I)"
+			Name="Debug|STANDARDSDK_500 (ARMV4I)"
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -553,7 +553,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|MC3000c50b (ARMV4I)"
+			Name="Release|STANDARDSDK_500 (ARMV4I)"
 			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -841,9 +841,9 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="SimulatorDebug|MC3000c50b (ARMV4I)"
-			OutputDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
-			IntermediateDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
+			Name="SimulatorDebug|STANDARDSDK_500 (ARMV4I)"
+			OutputDirectory="STANDARDSDK_500 (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="STANDARDSDK_500 (ARMV4I)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets=".\CoreAPI.vsprops"
 			CharacterSet="1"
@@ -1127,9 +1127,9 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="SimulatorRelease|MC3000c50b (ARMV4I)"
-			OutputDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
-			IntermediateDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
+			Name="SimulatorRelease|STANDARDSDK_500 (ARMV4I)"
+			OutputDirectory="STANDARDSDK_500 (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="STANDARDSDK_500 (ARMV4I)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets=".\CoreAPI.vsprops"
 			CharacterSet="1"
@@ -1341,7 +1341,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|MC3000c50b (ARMV4I)"
+						Name="Debug|STANDARDSDK_500 (ARMV4I)"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1449,7 +1449,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1555,7 +1555,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1570,7 +1570,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|MC3000c50b (ARMV4I)"
+					Name="Release|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCustomBuildTool"

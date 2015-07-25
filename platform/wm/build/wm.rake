@@ -36,10 +36,10 @@ module WM
   def self.config
     unless $sdk
       #$sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
-      #$sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
+      $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
       #value = ENV['rho_wm_sdk']
       #$sdk = value if value
-      $sdk = "MC3000c50b (ARMV4I)"
+      #$sdk = "MC3000c50b (ARMV4I)"
     end
 
     $rubypath = get_ruby_path #"res/build-tools/RhoRuby.exe" #path to RubyMac

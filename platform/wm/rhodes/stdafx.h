@@ -96,6 +96,8 @@
 #define SHELL_AYGSHELL
 #endif
 
+#define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA
+
 #if !defined(RHODES_QT_PLATFORM)
 #include <atlbase.h>
 #include <atlcom.h>

@@ -22,7 +22,7 @@
 			Name="Smartphone 2003 (ARMV4)"
 		/>
 		<Platform
-			Name="MC3000c50b (ARMV4I)"
+			Name="STANDARDSDK_500 (ARMV4I)"
 		/>
 		<Platform
 			Name="Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
@@ -351,7 +351,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|MC3000c50b (ARMV4I)"
+			Name="Debug|STANDARDSDK_500 (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -894,7 +894,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|MC3000c50b (ARMV4I)"
+			Name="Release|STANDARDSDK_500 (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -2014,7 +2014,7 @@
 				RelativePath="..\..\shared\unzip\adler32.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2026,7 +2026,7 @@
 				RelativePath="..\..\shared\unzip\crc32.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2042,7 +2042,7 @@
 				RelativePath="..\..\shared\unzip\deflate.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2058,7 +2058,7 @@
 				RelativePath="..\..\shared\unzip\gunzip.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2074,7 +2074,7 @@
 				RelativePath="..\..\shared\unzip\gzclose.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2090,7 +2090,7 @@
 				RelativePath="..\..\shared\unzip\gzlib.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2102,7 +2102,7 @@
 				RelativePath="..\..\shared\unzip\gzread.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2114,7 +2114,7 @@
 				RelativePath="..\..\shared\unzip\gzwrite.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2126,7 +2126,7 @@
 				RelativePath="..\..\shared\unzip\infback.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2138,7 +2138,7 @@
 				RelativePath="..\..\shared\unzip\inffast.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2158,7 +2158,7 @@
 				RelativePath="..\..\shared\unzip\inflate.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2174,7 +2174,7 @@
 				RelativePath="..\..\shared\unzip\inftrees.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2190,7 +2190,7 @@
 				RelativePath="..\..\shared\unzip\trees.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2206,7 +2206,7 @@
 				RelativePath="..\..\shared\unzip\unzip.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2226,7 +2226,7 @@
 				RelativePath="..\..\shared\unzip\zip.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2246,7 +2246,7 @@
 				RelativePath="..\..\shared\unzip\zutil.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
+					Name="Debug|STANDARDSDK_500 (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
