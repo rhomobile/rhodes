@@ -431,6 +431,28 @@ module Rhogen
     def rhodes_root_path
       return rhodes_root
     end
+    
+    def load_plist(fname)
+       require 'cfpropertylist'
+       plist = CFPropertyList::List.new(:file => fname)
+       data = CFPropertyList.native_types(plist.value)
+       data
+    end    
+    
+	def get_xcode_version
+  		info_path = '/Applications/XCode.app/Contents/version.plist'
+  		ret_value = '0.0'
+  		if File.exists? info_path
+    		hash = load_plist(info_path)
+    		ret_value = hash['CFBundleShortVersionString'] if hash.has_key?('CFBundleShortVersionString')
+  		else
+    		puts '$$$ can not find XCode version file ['+info_path+']'
+  		end
+  		puts '$$$ XCode version is '+ret_value
+  		return ret_value
+	end    
+    
+    
 
     directory :root do |directory|
       @options[:force] = true
@@ -472,6 +494,10 @@ module Rhogen
       #@options[:force] = true
       #@options[:skip] = true
       template.source = 'Bremen.xcodeproj/project.pbxproj'
+      xcode_version = get_xcode_version
+	  if xcode_version[0].to_i >= 7
+        template.source = 'Bremen7.xcodeproj/project.pbxproj'
+      end
       template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
       if File.exists?(template.destination)
         #puts '$$$$$$$$$$$$$$$$ EXIST'+template.destination
@@ -500,7 +526,7 @@ module Rhogen
     template :rhodes_project do |template|
       @options[:force] = true
       template.source = 'Rhodes/Rhodes.xcodeproj/project.pbxproj'
-      template.destination = "project/iphone/Rhodes/Rhodes.xcodeproj/project.pbxproj"
+	  template.destination = "project/iphone/Rhodes/Rhodes.xcodeproj/project.pbxproj"
     end
 
     template :rhodes_project_01 do |template|
