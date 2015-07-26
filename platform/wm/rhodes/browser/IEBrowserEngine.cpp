@@ -74,7 +74,8 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
     GetWindowRect(hParentWnd, &m_rcViewSize);
 
     m_tcNavigatedURL[0] = 0;
-	convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
+	//TODO TAU
+	//convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
 	if(m_dwNavigationTimeout<=0)
 	{
 		LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_dwNavigationTimeout;
@@ -146,8 +147,11 @@ LRESULT CIEBrowserEngine::CreateEngine()
     }
 
 	DWORD dwTextSelectionStyle = 0;
-    if(!rho_wmimpl_get_textselectionenabled()) 
-		dwTextSelectionStyle = HS_NOSELECTION;
+    
+	//TODO TAU
+	//if(!rho_wmimpl_get_textselectionenabled()) 
+	//	dwTextSelectionStyle = HS_NOSELECTION;
+	dwTextSelectionStyle = HS_NOSELECTION;
 
     m_hwndTabHTML = CreateWindow(WC_HTML, NULL, 
         WS_POPUP | WS_VISIBLE | dwTextSelectionStyle, 
@@ -385,7 +389,8 @@ HWND CIEBrowserEngine::GetHTMLWND(int /*iTabID*/)
 
 LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    bHandled = TRUE;
+    //TODO TAU
+	/*bHandled = TRUE;
 
     switch (uMsg) 
     {
@@ -416,7 +421,7 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
         return rtRes;
         break;
     }
-
+*/
     return 0;
 }
 

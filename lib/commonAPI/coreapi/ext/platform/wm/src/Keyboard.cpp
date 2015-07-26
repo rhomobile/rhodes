@@ -441,13 +441,16 @@ void CSIP::ToggleSIP()
 	sipinfo.cbSize = sizeof(SIPINFO);
 	sipinfo.dwImDataSize = 0;
 
-	SipGetInfo(&sipinfo);
+	//TODO TAU
+	//SipGetInfo(&sipinfo);
 
 	if(sipinfo.fdwFlags & SIPF_ON){
-		SipShowIM(SIPF_OFF);				
+		//TODO TAU
+		//SipShowIM(SIPF_OFF);				
 	}
 	else{
-		SipShowIM(SIPF_ON);
+		//TODO TAU
+		//SipShowIM(SIPF_ON);
 	}
 }
 
@@ -489,7 +492,8 @@ bool CSIP::MoveSip(int x, int y)
 	sipinfo.cbSize = sizeof(SIPINFO);
 	sipinfo.dwImDataSize = 0;
 
-	SipGetInfo(&sipinfo);
+	//TODO TAU
+	//SipGetInfo(&sipinfo);
 	
 	if (!hSipWnd)
 		return false;
@@ -519,7 +523,8 @@ bool CSIP::MoveSip(int x, int y)
 
 	sipinfo.rcSipRect = m_rcPosition;
 
-	SipSetInfo(&sipinfo);
+	//TODO TAU
+	//SipSetInfo(&sipinfo);
 
 	return true;
 }

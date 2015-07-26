@@ -480,8 +480,11 @@ int getSIPVisibleTop() {
 	memset(&pSipInfo, 0, sizeof(SIPINFO));
 	pSipInfo.cbSize = sizeof(SIPINFO);
 	pSipInfo.dwImDataSize = 0;
-	if (SipGetInfo(&pSipInfo))
-		return (pSipInfo.fdwFlags & SIPF_ON) ? pSipInfo.rcSipRect.top : -1;
+
+	//TODO TAU
+	//if (SipGetInfo(&pSipInfo))
+		//return (pSipInfo.fdwFlags & SIPF_ON) ? pSipInfo.rcSipRect.top : -1;
+
 	return -1;
 }
 #endif
@@ -1035,7 +1038,9 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 		memset(&pSipInfo, 0, sizeof(SIPINFO));
 		pSipInfo.cbSize = sizeof(SIPINFO);
 		pSipInfo.dwImDataSize = 0;
-		if (SipGetInfo(&pSipInfo)) {
+
+		//TODO TAU
+		/*if (SipGetInfo(&pSipInfo)) {
 			bool isHiding = (pSipInfo.fdwFlags & SIPF_ON) == 0;
 
             if ( isHiding && !m_bFullScreen )
@@ -1097,7 +1102,8 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 
             if ( m_bFullScreen && isHiding )
                 hideSIPButton();
-		}
+		}*/
+
 	}
 	
 	// Notify shell of our WM_SETTINGCHANGE message
@@ -1690,7 +1696,8 @@ void CMainWindow::ProcessNavigateComplete(LPCTSTR url)
     RAWLOGC_INFO("WebView", "Page load complete." );
 
     PROF_STOP("BROWSER_PAGE");
-	RHODESAPP().getExtManager().zoomPage( (float)rho_wmimpl_get_pagezoom());
+	//TODO TAU
+	//RHODESAPP().getExtManager().zoomPage( (float)rho_wmimpl_get_pagezoom());
     RHODESAPP().getExtManager().onNavigateComplete(url);
 }
 

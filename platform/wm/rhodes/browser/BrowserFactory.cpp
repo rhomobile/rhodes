@@ -45,7 +45,9 @@ IBrowserFactory* BrowserFactory::getInstance()
 
 IBrowserEngine* BrowserFactory::createWebkit(HWND hwndParent)
 {
-    return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
+    return NULL;
+	//TODO TAU webkit engine
+	//rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 }
 
 IBrowserEngine* BrowserFactory::createIE(HWND hwndParent)
@@ -103,7 +105,11 @@ IBrowserEngine* BrowserFactory::create(HWND hwndParent)
 {    
     EBrowserEngineType selBrowserType  = eNone;
     String             buildConfigType = ""; 
-    String             xmlConfigType   = rho_wmimpl_get_webengine();
+
+	//TODO TAU
+    //String             xmlConfigType   = rho_wmimpl_get_webengine();
+	String             xmlConfigType;
+
     String             rhoConfigType   = RHOCONF().getString("webengine");  
     
     if (get_app_build_config_item("webengine"))

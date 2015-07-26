@@ -74,13 +74,16 @@ void CEditSIP::ToggleSIP()
 	sipinfo.cbSize = sizeof(SIPINFO);
 	sipinfo.dwImDataSize = 0;
 
-	SipGetInfo(&sipinfo);
+	//TODO TAU
+	//SipGetInfo(&sipinfo);
 
 	if(sipinfo.fdwFlags & SIPF_ON){
-		SipShowIM(SIPF_OFF);				
+		//TODO TAU
+		//SipShowIM(SIPF_OFF);				
 	}
 	else{
-		SipShowIM(SIPF_ON);
+		//TODO TAU
+		//SipShowIM(SIPF_ON);
 	}
 }
 

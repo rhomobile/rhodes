@@ -7,7 +7,7 @@ var stdout = WScript.StdOut;
 var settings = new Object();
 settings['wm6'] = ['Windows Mobile 6 Professional SDK (ARMV4I)','VersionMin=5.02','VersionMax=7.99'];
 settings['wm653'] = ['Windows Mobile 6.5.3 Professional DTK (ARMV4I)','VersionMin=5.02','VersionMax=7.99'];
-settings['ce5'] = ['MC3000c50b (ARMV4I)','VersionMin=5.00','VersionMax=7.99'];
+settings['ce5'] = ['STANDARDSDK_500 (ARMV4I)', 'VersionMin=5.00', 'VersionMax=7.99'];
 settings['ce7'] = ['WT41N0c70PSDK (ARMV4I)','VersionMin=5.00','VersionMax=7.99'];
 
 var each_file = function(path, f) {
@@ -357,7 +357,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     else 
     {
         p("2=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
-        p("3=,\"\",," + rhogempath + "\"\\\"");
+        //p("3=,\"\",," + rhogempath + "\"\\\"");
         
         if (webkit_mode != 'none')
         {            
@@ -372,7 +372,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             }
         }
 
-        p("6=,\"\",," + rhogempath + "\"\\Plugin\\\"");
+        //p("6=,\"\",," + rhogempath + "\"\\Plugin\\\"");
     }
     get_source_disks_names(es);
     p("");
@@ -391,7 +391,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
 
         p("\"" + name + ".exe\"=2");
         p("\"" + "RhoLaunch" + ".exe\"=2");
-        p("\"prtlib.dll\"=3");
+        //p("\"prtlib.dll\"=3");
         
         if (webkit_mode != 'none') 
         {
@@ -421,9 +421,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("\"RegEx.xml\"=4");
             }
         }
-        each_file(rhogempath + "\\Plugin", function(f) {
+        /*each_file(rhogempath + "\\Plugin", function(f) {
             p("\"" + f +"\"=6");
-        });
+        });*/
     }
     fill_extensions_source_disk_files(exts);
     var f = get_source_disks_files(es);
@@ -513,9 +513,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         p("\"license_rc.dll\",\"license_rc.dll\",,0");
         
         p("[" + (is_persistent ? "CopyBrowserPluginsPers" : "CopyBrowserPlugins") + "]");
-        each_file(rhogempath + "\\Plugin", function(f) {
+        /*each_file(rhogempath + "\\Plugin", function(f) {
             p("\"" + f +"\",\"" + f +"\",,0");
-        });
+        });*/
         p("");
 
         if (webkit_mode != 'none') {

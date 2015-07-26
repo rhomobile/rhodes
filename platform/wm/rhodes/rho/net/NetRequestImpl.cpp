@@ -255,7 +255,11 @@ boolean CNetRequestImpl::checkSslCertError()
 				wpwd = rho::common::convertToStringW((RHOCONF().getString("clientSSLCertificatePassword")));
 				pwd = wpwd.c_str();
 			}
-			HCERTSTORE hCertStore = PFXImportCertStore(&data, pwd, 0);
+			
+			//TODO TAU
+			//HCERTSTORE hCertStore = PFXImportCertStore(&data, pwd, 0);
+            HCERTSTORE hCertStore;
+
 			PCCERT_CONTEXT hContext = NULL;
 			if(hCertStore)
 				hContext = CertFindCertificateInStore (hCertStore, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, CERT_FIND_ANY, NULL, NULL);
