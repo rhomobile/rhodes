@@ -154,6 +154,8 @@ typedef HRESULT (WINAPI* LPFN_SND_CLOSE_T)(__in HSOUND);
 typedef HRESULT (WINAPI* LPFN_SND_PLAYASYNC_T)(__in HSOUND, DWORD);
 typedef HRESULT (WINAPI* LPFN_SND_OPEN_T)(__in LPCTSTR,  __out HSOUND*);
 typedef HRESULT (WINAPI* LPFN_SND_GETSOUNDFILELIST_T)(SND_EVENT, DWORD, SNDFILEINFO**, int*);
+typedef HRESULT (WINAPI* LPFN_LED_SET_DEVICE_T)(UINT nDeviceId, void *pInput);
+typedef HRESULT (WINAPI* LPFN_LED_GET_DEVICE_INFO_T)(UINT nInfoId, void *pOutput);
 
 
 extern "C" LPFN_SND_STOP_T lpfn_snd_stop = NULL;
@@ -161,6 +163,8 @@ extern "C" LPFN_SND_CLOSE_T lpfn_snd_close = NULL;
 extern "C" LPFN_SND_PLAYASYNC_T lpfn_snd_playasync = NULL;
 extern "C" LPFN_SND_OPEN_T lpfn_snd_open = NULL;
 extern "C" LPFN_SND_GETSOUNDFILELIST_T lpfn_snd_getsndflist = NULL;
+extern "C" LPFN_LED_SET_DEVICE_T lpfn_led_set_device = NULL;
+extern "C" LPFN_LED_GET_DEVICE_INFO_T lpfn_led_get_device_info = NULL;
 LPFN_REGISTRY_CLOSENOTIFICATION_T	lpfn_Registry_CloseNotification = NULL;
 LPFN_REGISTRY_NOTIFYWINDOW_T		lpfn_Registry_NotifyWindow = NULL;		
 LPFN_REGISTRY_GETSTRING_T			lpfn_Registry_GetString = NULL;			
@@ -171,6 +175,8 @@ HMODULE g_hAygShellDLL = NULL;
 extern "C" BOOL LoadAYGShell();
 HMODULE g_hSndDLL = NULL;	
 extern "C" BOOL LoadSoundDll();
+HMODULE g_hLedDLL = NULL;	
+extern "C" BOOL LoadLedDll();
 
 #endif
 
@@ -783,6 +789,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 		winversion = 2;*/
 	LoadAYGShell();
 	LoadSoundDll();
+	LoadLedDll();
 #endif
 
 	//Required to use datetime picker controls.
@@ -1024,6 +1031,28 @@ extern "C" BOOL LoadAYGShell()
 	}
 
 	return bReturnValue;	
+}
+
+extern "C" BOOL LoadLedDll()
+{
+	bool bReturnValue = FALSE;
+	g_hLedDLL = LoadLibrary(L"coredll.dll");
+	if (!g_hLedDLL)
+	{
+		LOG(INFO) + "Failed to coredll.dll";
+	}
+	else
+	{
+		lpfn_led_set_device = 
+			(LPFN_LED_SET_DEVICE_T)GetProcAddress(g_hLedDLL, _T("NLedSetDevice"));
+		lpfn_led_get_device_info = 
+			(LPFN_LED_GET_DEVICE_INFO_T)GetProcAddress(g_hLedDLL, _T("NLedGetDeviceInfo"));
+
+	
+		bReturnValue = TRUE;
+	}
+
+	return bReturnValue;
 }
 
 extern "C" BOOL LoadSoundDll()

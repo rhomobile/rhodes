@@ -31,6 +31,14 @@
 #include "Vibrate.h"
 #include <common/RhodesApp.h>
 
+typedef HRESULT (WINAPI* LPFN_LED_SET_DEVICE_T)(UINT nDeviceId, void *pInput);
+typedef HRESULT (WINAPI* LPFN_LED_GET_DEVICE_INFO_T)(UINT nInfoId, void *pOutput);
+
+extern "C" LPFN_LED_SET_DEVICE_T lpfn_led_set_device;
+extern "C" LPFN_LED_GET_DEVICE_INFO_T lpfn_led_get_device_info;
+
+//TODO capability checker in common api/native ext. Check if function pointer is not NULL.
+
 IMPLEMENT_LOGCLASS(CVibrate, "Vibrate");
 
 CVibrate *CVibrate::m_pInstance = NULL;
@@ -74,7 +82,7 @@ void CVibrate::untoggle()
     NLED_SETTINGS_INFO settings;
     settings.LedNum= 1; 
     settings.OffOnBlink= 0; 
-    NLedSetDevice (NLED_SETTINGS_INFO_ID, &settings);
+    lpfn_led_set_device(NLED_SETTINGS_INFO_ID, &settings);
     m_bToggled = false;
 	stop(0);
 }
@@ -84,14 +92,14 @@ void CVibrate::run()
     NLED_SETTINGS_INFO settings;
 
     settings.LedNum= 1;
-    NLedGetDeviceInfo(NLED_SETTINGS_INFO_ID,  &settings);
+    lpfn_led_get_device_info(NLED_SETTINGS_INFO_ID,  &settings);
 
     if (!m_bToggled && settings.OffOnBlink == 0) {
         settings.LedNum= 1; 
         settings.OffOnBlink= 1;
-        NLedSetDevice (NLED_SETTINGS_INFO_ID, &settings);
+        lpfn_led_set_device(NLED_SETTINGS_INFO_ID, &settings);
         m_bToggled = true;        
-        wait (m_nDuration_ms/1000);
+        wait(m_nDuration_ms/1000);
 		untoggle();
     }
 }
