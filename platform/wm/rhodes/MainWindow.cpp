@@ -73,6 +73,9 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd);
 
 extern "C" double rho_wmimpl_get_pagezoom();
 
+//Reads the "SplashScreenPath" path value from config.xml
+extern "C" const wchar_t* rho_wmimpl_getSplashScreenPathVal();
+
 bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 bool m_SuspendedThroughPowerButton = false;
 
@@ -2138,9 +2141,32 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
     PAINTSTRUCT ps;
 	HDC hDC = BeginPaint(hWnd, &ps);
 
-    StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
+    StringW pathW;
+
+	LPCTSTR szSplashScreenPath = rho_wmimpl_getSplashScreenPathVal();
+	if (szSplashScreenPath)
+	{
+		pathW = szSplashScreenPath;
+		if (pathW.substr(0,7).compare(_T("file://"))==0)
+		{
+			pathW.erase(0,7);
+		}
+	}
+	else
+	{
+		pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
+	}
 
 	HBITMAP hbitmap = SHLoadImageFile(pathW.c_str());
+
+	if(!hbitmap)
+	{
+		pathW.clear();
+		DeleteObject(hbitmap);
+		LOG(WARNING) + "Specified splashscreen image is not found or supported. Setting the default splashscreen image.";
+		pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
+		hbitmap = SHLoadImageFile(pathW.c_str());
+	}
 		
 	if (hbitmap)
     {
