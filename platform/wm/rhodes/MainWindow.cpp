@@ -2163,7 +2163,7 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 	{
 		pathW.clear();
 		DeleteObject(hbitmap);
-		LOG(WARNING) + "Specified splashscreen image is not found. Setting the default splashscreen image.";
+		LOG(WARNING) + "Specified splashscreen image is not found or supported. Setting the default splashscreen image.";
 		pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
 		hbitmap = SHLoadImageFile(pathW.c_str());
 	}
