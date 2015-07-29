@@ -9,7 +9,7 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
 
-## JavaScript Usage
+## JavaScript Usages
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
@@ -339,7 +339,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 </CALLBACK>
             </METHOD>
 
-            <METHOD name="stopDetectingConnection" hasCallback="optional">
+            <METHOD name="stopDetectingConnection" hasCallback="mandatory">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <DESC>Ceases the network detection identified by the given callback.</DESC>
             </METHOD>
