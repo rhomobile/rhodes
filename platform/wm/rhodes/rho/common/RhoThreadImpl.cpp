@@ -56,6 +56,7 @@ static DWORD WINAPI runProc(void* pv) throw()
 
 void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority)
 {
+LOG(INFO) + "wm rhothread start calle";
     m_hThread = ::CreateThread(NULL, 0, runProc, pRunnable, 0, NULL);
     setThreadPriority(ePriority);
 }
