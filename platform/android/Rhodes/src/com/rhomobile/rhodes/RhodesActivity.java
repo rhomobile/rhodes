@@ -73,6 +73,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	
 	public static boolean IS_WINDOWS_KEY = false;
 	
+	public static boolean isShownSplashScreenFirstTime = false;//Used to display the splash screen only once during launch of an application
+	
 	public static int MAX_PROGRESS = 10000;
 	
 	private static RhodesActivity sInstance = null;
@@ -245,11 +247,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         SimpleMainView simpleMainView = new SimpleMainView();
         setMainView(simpleMainView);
         
-        Logger.T(TAG, "Creating splash screen");
-        
-        mSplashScreen = new SplashScreen(this, mMainView, this);
-        mMainView = mSplashScreen;
-        
         mAppMenu = new RhoMenu();
 
         readRhoElementsConfig();
@@ -335,6 +332,14 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     @Override
     public void onResume() {
         Logger.T(TAG, "onResume");
+        
+        if(!isShownSplashScreenFirstTime){
+	        Logger.T(TAG, "Creating splash screen");
+	        mSplashScreen = new SplashScreen(this, mMainView, this);
+	        mMainView = mSplashScreen;
+	        isShownSplashScreenFirstTime = true;
+        }
+        
         mIsForeground = true;
         pauseWebViews(false);
         super.onResume();
