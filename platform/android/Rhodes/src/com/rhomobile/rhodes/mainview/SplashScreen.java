@@ -26,14 +26,18 @@
 
 package com.rhomobile.rhodes.mainview;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.lang.Thread;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.view.View;
 import android.webkit.WebView;
@@ -42,12 +46,15 @@ import android.widget.LinearLayout;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
+import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.extmanager.AbstractRhoExtension;
+import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.webview.WebViewConfig;
 
 public class SplashScreen implements MainView{
     
@@ -62,8 +69,26 @@ public class SplashScreen implements MainView{
         public boolean onNavigateComplete(IRhoExtManager extManager, String urlOfDocument, IRhoWebView ext, boolean res) {
             
             if (mIsActive) {
-                activateHideTimer();
-                mIsActive = false;
+			try {
+				long  mSplashScreenDurationValue = 0; //By default the splash screen duration is set to 0
+				IRhoConfig rhoelementsGetConfig=  RhoExtManager.getInstance().getConfig("rhoelementsext");
+				//Get Duration of Splash Screen from Config.xml in milli seconds.
+				String mGetLoadingPNGDurationValue = rhoelementsGetConfig.getString(WebViewConfig.SETTING_SPLASHSCREEN_DURATION);
+				if(mGetLoadingPNGDurationValue != null)
+				{
+					try {
+						mSplashScreenDurationValue = Long.parseLong(mGetLoadingPNGDurationValue, 10); 							
+					}catch (NumberFormatException nfe) {
+						Logger.I(TAG, "NumberFormatException: " + nfe.getMessage());
+				    }
+				}
+				Thread.currentThread().sleep(mSplashScreenDurationValue);					
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	                activateHideTimer();
+			mIsActive = false;
             }
             return res;
         }
@@ -147,7 +172,54 @@ public class SplashScreen implements MainView{
                 
                 ImageView imageView = new ImageView(activity);
                 imageView.setBackgroundColor(mBackgroundColor);
-                imageView.setImageBitmap(BitmapFactory.decodeStream(am.open(fn[type])));
+                
+                String actualSplashScreenPathValue="";
+                String appendSDCardPathToActualSplashScreenPathValue="";
+                boolean isDefaultSplashScreenLoading = true;                
+                IRhoConfig rhoelementsConfig=  RhoExtManager.getInstance().getConfig("rhoelementsext");
+                String mGetSplashScreenPathValue = rhoelementsConfig.getString(WebViewConfig.SETTING_SPLASHSCREEN_PATH); 
+                
+                if(mGetSplashScreenPathValue != null){
+	                if(mGetSplashScreenPathValue.startsWith("file://", 0)){
+	                	actualSplashScreenPathValue = mGetSplashScreenPathValue.substring(7);
+	                	appendSDCardPathToActualSplashScreenPathValue = Environment.getExternalStorageDirectory() + actualSplashScreenPathValue;
+	                	isDefaultSplashScreenLoading = false;
+	                }
+	                else if(mGetSplashScreenPathValue.startsWith("http://", 0) || mGetSplashScreenPathValue.startsWith("https://", 0)){
+	                	isDefaultSplashScreenLoading = true;
+	                }
+	                else if(mGetSplashScreenPathValue.startsWith("/", 0)){
+	                	actualSplashScreenPathValue = mGetSplashScreenPathValue;
+	                	appendSDCardPathToActualSplashScreenPathValue = Environment.getExternalStorageDirectory() + actualSplashScreenPathValue;
+	                	isDefaultSplashScreenLoading = false;
+	                }
+	                else if(!mGetSplashScreenPathValue.startsWith("/", 0)){
+	                	actualSplashScreenPathValue = "/" + mGetSplashScreenPathValue;
+	                	appendSDCardPathToActualSplashScreenPathValue = Environment.getExternalStorageDirectory() + actualSplashScreenPathValue;
+	                	isDefaultSplashScreenLoading = false;
+	                }	
+	                
+	                if(!actualSplashScreenPathValue.startsWith("/", 0) && !isDefaultSplashScreenLoading){
+	                	actualSplashScreenPathValue = "/" + actualSplashScreenPathValue;
+	                	appendSDCardPathToActualSplashScreenPathValue = Environment.getExternalStorageDirectory() + actualSplashScreenPathValue;
+	                }
+	                
+	                if(!isDefaultSplashScreenLoading){ 
+	                	File file = new File(appendSDCardPathToActualSplashScreenPathValue.toString());	                 
+	                	boolean featureDemoFileExists = file.exists();	                 
+		                if (featureDemoFileExists)              
+		                {
+		                 	InputStream fileInputStream = new FileInputStream(file);                 
+		                 	imageView.setImageBitmap(BitmapFactory.decodeStream(fileInputStream));	                 
+		                }
+	                }
+                }                 
+                
+                if(isDefaultSplashScreenLoading){                	 
+                	Logger.I(TAG, "Specified splashscreen image is not found or supported. Setting the default splashscreen image.");                	 
+                	imageView.setImageBitmap(BitmapFactory.decodeStream(am.open(fn[type])));                 
+                } 
+                
                 imageView.setAdjustViewBounds(true);
                 imageView.setScaleType(mScaleType);
                 mView = imageView;
