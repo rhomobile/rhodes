@@ -212,11 +212,15 @@ public class SplashScreen implements MainView{
 		                 	InputStream fileInputStream = new FileInputStream(file);                 
 		                 	imageView.setImageBitmap(BitmapFactory.decodeStream(fileInputStream));	                 
 		                }
+		                else
+		                {
+					Logger.I(TAG, "Specified splashscreen image is not found or supported. Setting the default splashscreen image.");    
+					isDefaultSplashScreenLoading = true;
+		                }
 	                }
                 }                 
                 
-                if(isDefaultSplashScreenLoading){                	 
-                	Logger.I(TAG, "Specified splashscreen image is not found or supported. Setting the default splashscreen image.");                	 
+                if(isDefaultSplashScreenLoading){
                 	imageView.setImageBitmap(BitmapFactory.decodeStream(am.open(fn[type])));                 
                 } 
                 
