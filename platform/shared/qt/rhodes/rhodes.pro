@@ -129,7 +129,7 @@ impl/NativeTabbarImpl.h\
 DateTimeDialog.h\
 impl/DateTimePickerImpl.h\
 impl/AlertImpl.h\
-../../../wm/rhodes/rho/common/RhoThreadImpl.h \
+impl/RhoThreadImpl.h \
 RhoSimulator.h\
 RhoNativeApiCall.h
 
@@ -152,7 +152,7 @@ impl/RhoClassFactoryImpl.cpp\
 impl/RhodesImpl.cpp\
 impl/RhoFileImpl.cpp\
 impl/RhoNativeViewManagerImpl.cpp\
-../../../wm/rhodes/rho/common/RhoThreadImpl.cpp \
+impl/RhoThreadImpl.cpp \
 impl/RingtoneManagerImpl.cpp\
 impl/SignatureImpl.cpp\
 impl/QtSystemImpl.cpp\
