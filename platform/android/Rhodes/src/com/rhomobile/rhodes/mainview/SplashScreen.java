@@ -214,13 +214,13 @@ public class SplashScreen implements MainView{
 		                }
 		                else
 		                {
-					Logger.I(TAG, "Specified splashscreen image is not found or supported. Setting the default splashscreen image.");    
 					isDefaultSplashScreenLoading = true;
 		                }
 	                }
                 }                 
                 
                 if(isDefaultSplashScreenLoading){
+                	Logger.I(TAG, "Specified splashscreen image is not found or supported. Setting the default splashscreen image.");    
                 	imageView.setImageBitmap(BitmapFactory.decodeStream(am.open(fn[type])));                 
                 } 
                 
