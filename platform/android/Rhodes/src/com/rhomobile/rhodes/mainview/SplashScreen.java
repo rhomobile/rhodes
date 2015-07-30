@@ -69,25 +69,19 @@ public class SplashScreen implements MainView{
         public boolean onNavigateComplete(IRhoExtManager extManager, String urlOfDocument, IRhoWebView ext, boolean res) {
             
             if (mIsActive) {
-			try {
-				long  mSplashScreenDurationValue = 0; //By default the splash screen duration is set to 0
-				IRhoConfig rhoelementsGetConfig=  RhoExtManager.getInstance().getConfig("rhoelementsext");
-				//Get Duration of Splash Screen from Config.xml in milli seconds.
-				String mGetLoadingPNGDurationValue = rhoelementsGetConfig.getString(WebViewConfig.SETTING_SPLASHSCREEN_DURATION);
-				if(mGetLoadingPNGDurationValue != null)
-				{
-					try {
-						mSplashScreenDurationValue = Long.parseLong(mGetLoadingPNGDurationValue, 10); 							
-					}catch (NumberFormatException nfe) {
-						Logger.I(TAG, "NumberFormatException: " + nfe.getMessage());
-				    }
-				}
-				Thread.currentThread().sleep(mSplashScreenDurationValue);					
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			long  mSplashScreenDurationValue = 0; //By default the splash screen duration is set to 0
+			IRhoConfig rhoelementsGetConfig=  RhoExtManager.getInstance().getConfig("rhoelementsext");
+			//Get Duration of Splash Screen from Config.xml in milli seconds.
+			String mGetLoadingPNGDurationValue = rhoelementsGetConfig.getString(WebViewConfig.SETTING_SPLASHSCREEN_DURATION);
+			if(mGetLoadingPNGDurationValue != null)
+			{
+				try {
+					mSplashScreenDurationValue = Long.parseLong(mGetLoadingPNGDurationValue, 10); 							
+				}catch (NumberFormatException nfe) {
+					Logger.I(TAG, "NumberFormatException: " + nfe.getMessage());
+			    }
 			}
-	                activateHideTimer();
+	                activateHideTimer(mSplashScreenDurationValue);
 			mIsActive = false;
             }
             return res;
@@ -330,12 +324,15 @@ public class SplashScreen implements MainView{
         mBackendView.navigate(url, index);
         
         if (mDocCompleteListener == null) {
-            activateHideTimer();
+            activateHideTimer(0);
         }
 	}
 
-    private void activateHideTimer() {
-        long delay = howLongWaitMs();
+    private void activateHideTimer(long mSplashScreenDurationValue) {
+        long delay = mSplashScreenDurationValue;
+        if(delay == 0){
+        	delay = howLongWaitMs();
+        }
         if (delay < 0) {
             return;
         }
