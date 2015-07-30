@@ -30,9 +30,11 @@ public:
 	virtual bool IsChecking();
 	virtual void SetCallback(rho::apiGenerator::CMethodResult pCallback);
 	virtual rho::apiGenerator::CMethodResult GetCallback() {return m_pDetectCallback;}
+	virtual bool CheckConnectivity() = 0;
+	int getPollInterval(){return m_iNetworkPollInterval;}
 
 protected:  //  Methods
-	virtual bool CheckConnectivity() = 0;
+	
     
     virtual void Startup() = 0;
     virtual void Cleanup() = 0;
