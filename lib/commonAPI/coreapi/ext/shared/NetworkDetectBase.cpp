@@ -115,8 +115,7 @@ bool CNetworkDetectionBase::StartNetworkChecking()
 {
 	m_NetworkState = NETWORK_INITIALISING;
 #if defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)
-
-	StopNetworkChecking();	
+	
 	g_hStopEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
 	g_hThread = ::CreateThread(NULL, 0, runProc, this, 0, NULL);
 
