@@ -16,6 +16,8 @@ public class WebViewConfig implements IRhoConfig {
     public static final String ENABLE_WEB_PLUGINS = "enableWebPlugins";
     public static final String ENABLE_CACHE = "enableCache";
     public static final String PAGE_ZOOM = "pageZoom";
+    public static final String SETTING_SPLASHSCREEN_PATH = "splashscreenpath";
+    public static final String SETTING_SPLASHSCREEN_DURATION = "splashscreenduration";
     public static final String USER_AGENT = "useragent";
 
     public static final boolean ENABLE_PAGE_LOADING_INDICATION_DEF = true;
@@ -23,6 +25,8 @@ public class WebViewConfig implements IRhoConfig {
     public static final boolean ENABLE_WEB_PLUGINS_DEF = true;
     public static final boolean ENABLE_CACHE_DEF = true;
     public static final double  PAGE_ZOOM_DEF = 1.0;
+    public static final String SETTING_SPLASHSCREEN_PATH_DEF = "apps/app/loading.png";
+    public static final long SETTING_SPLASHSCREEN_DURATION_DEF = 0;
     public static final String USER_AGENT_DEF = RhoConf.getString("useragent");
 
     Map<String, String> mConfigMap;
@@ -32,6 +36,8 @@ public class WebViewConfig implements IRhoConfig {
         mConfigMap.put(ENABLE_PAGE_LOADING_INDICATION, String.valueOf(ENABLE_PAGE_LOADING_INDICATION_DEF));
         mConfigMap.put(ENABLE_ZOOM, String.valueOf(ENABLE_ZOOM_DEF));
         mConfigMap.put(PAGE_ZOOM, String.valueOf(PAGE_ZOOM_DEF));
+        mConfigMap.put(SETTING_SPLASHSCREEN_PATH, SETTING_SPLASHSCREEN_PATH_DEF);
+        mConfigMap.put(SETTING_SPLASHSCREEN_DURATION, String.valueOf(SETTING_SPLASHSCREEN_DURATION_DEF));
         mConfigMap.put(ENABLE_WEB_PLUGINS, String.valueOf(ENABLE_WEB_PLUGINS_DEF));
         mConfigMap.put(ENABLE_CACHE, String.valueOf(ENABLE_CACHE_DEF));
         mConfigMap.put(USER_AGENT, USER_AGENT_DEF);

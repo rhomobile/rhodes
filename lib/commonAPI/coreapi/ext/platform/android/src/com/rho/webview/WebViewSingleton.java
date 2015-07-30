@@ -431,6 +431,21 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
          
             mConfig.set(WebViewConfig.ENABLE_CACHE, cacheInt!=0);
         }
+        
+        if(config.isExist("splashscreenpath")){
+        	String splashscreenpathValue = config.getString("splashscreenpath");
+        	if(splashscreenpathValue != null){
+        		mConfig.set(WebViewConfig.SETTING_SPLASHSCREEN_PATH, splashscreenpathValue);
+        	}
+        }
+        
+        if(config.isExist("splashscreenduration")){
+        	String splashscreendurationValue = config.getString("splashscreenduration");
+        	if(splashscreendurationValue != null){
+        		mConfig.set(WebViewConfig.SETTING_SPLASHSCREEN_DURATION, splashscreendurationValue);
+        	}
+        }
+        
     }
     
     private void readRhoConfig(IRhoConfig config) {
