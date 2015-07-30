@@ -595,6 +595,9 @@ void CNetworkImpl::detectConnection( const rho::Hashtable<rho::String, rho::Stri
   {
     m_networkPoller->CleanupAndDeleteSelf();
     m_networkPoller = 0;
+#if defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)
+	delete m_networkPoller;//network_fix
+#endif
   }
 
     m_networkPoller = pNetworkDetection;

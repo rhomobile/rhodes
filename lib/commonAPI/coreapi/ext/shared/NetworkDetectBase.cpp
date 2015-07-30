@@ -81,6 +81,31 @@ bool CNetworkDetectionBase::SetNetworkPollInterval(int iInterval)
 		return false;
 	}
 }
+#if defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)
+HANDLE g_hThread =NULL;
+HANDLE g_hStopEvent = NULL;
+
+DWORD WINAPI runProc(LPVOID detectionObjPtr)
+{
+
+	CNetworkDetectionBase* ptr = (CNetworkDetectionBase*)detectionObjPtr;
+
+	while( 1 )    
+	{
+		if(ptr->CheckConnectivity())
+		{
+			break;
+		}
+		DWORD dwRes = ::WaitForSingleObject( g_hStopEvent, ptr->getPollInterval() );
+		if(dwRes == WAIT_OBJECT_0)
+		{
+			break;
+		}		
+
+	}
+	return 0;
+}
+#endif
 
 /**
 * \author	Darryn Campbell (DCC, JRQ768)
@@ -89,7 +114,16 @@ bool CNetworkDetectionBase::SetNetworkPollInterval(int iInterval)
 bool CNetworkDetectionBase::StartNetworkChecking()
 {
 	m_NetworkState = NETWORK_INITIALISING;
+#if defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)
+
+	StopNetworkChecking();	
+	g_hStopEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+	g_hThread = ::CreateThread(NULL, 0, runProc, this, 0, NULL);
+
+#else
 	start(epNormal);
+#endif	
+
 	return true;
 }
 
@@ -100,7 +134,23 @@ bool CNetworkDetectionBase::StartNetworkChecking()
 bool CNetworkDetectionBase::StopNetworkChecking()
 {
 	//  Only stop the network checking if it is currently running
+
+#if defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)
+	if(g_hStopEvent && g_hThread)
+	{
+		::SetEvent(g_hStopEvent);
+		::WaitForSingleObject( g_hThread, INFINITE );
+		CloseHandle(g_hThread);
+		CloseHandle(g_hStopEvent);
+	}
+	g_hThread = NULL;
+	g_hStopEvent = NULL;
+
+#else
 	stop(60000);
+#endif
+
+
 	return true;
 }
 
