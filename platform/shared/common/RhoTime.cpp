@@ -64,7 +64,12 @@ void CRhoTimer::addTimer(int nInterval, const char* szCallback, const char* szCa
     synchronized(m_mxAccess)
     {
       m_arItems.addElement(CTimerItem(nInterval, szCallback, szCallbackData));
+// Multiple Timer blocking case fix
+#if defined(OS_MACOSX) || defined(OS_IPHONE)
+    //Nothing to do
+#else
       m_checkerThread.stopWait();
+#endif
     }
 }
 
@@ -77,7 +82,12 @@ void CRhoTimer::addNativeTimer(int nInterval, CRhoTimer::ICallback* callback)
     {
       m_arNativeItems.addElement(CNativeTimerItem(nInterval, callback));
 	  RAWTRACE1("CRhoTimer::addNativeTimer(ii) m_arNativeItems size %d", m_arNativeItems.size());
+// Multiple Timer blocking case fix
+#if defined(OS_MACOSX) || defined(OS_IPHONE)
+        //Nothing to do
+#else
       m_checkerThread.stopWait();
+#endif
     }
 }
 
