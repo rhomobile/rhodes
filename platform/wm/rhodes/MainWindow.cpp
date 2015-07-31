@@ -73,8 +73,9 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd);
 
 extern "C" double rho_wmimpl_get_pagezoom();
 
-//Reads the "SplashScreenPath" path value from config.xml
+//Reads the "SplashScreenPath" & "SplashScreenDuration" value from config.xml
 extern "C" const wchar_t* rho_wmimpl_getSplashScreenPathVal();
+extern "C" const wchar_t* rho_wmimpl_getSplashScreenDuration();
 
 bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 bool m_SuspendedThroughPowerButton = false;
@@ -2135,7 +2136,12 @@ LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID
 
 extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 {
-  	CSplashScreen& splash = RHODESAPP().getSplashScreen();
+  	long lSplashScreenDuration = 0;  		
+	convertFromStringW(rho_wmimpl_getSplashScreenDuration(),lSplashScreenDuration);
+	CSplashScreen& splash = RHODESAPP().getSplashScreen();	
+	if(lSplashScreenDuration != 0 ){
+		splash.setDuration(lSplashScreenDuration,TRUE);	
+	}
     splash.start();
 
     PAINTSTRUCT ps;
@@ -2194,6 +2200,8 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 	    StretchBlt(hDC, nLeft, nTop, nWidth, nHeight,
 		    hdcMem, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
 	    //BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
+	    
+	    splash.hide();
 
         SelectObject(hdcMem, resObj);
 	    DeleteObject(hbitmap);
