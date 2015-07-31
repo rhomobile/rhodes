@@ -2140,7 +2140,7 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 	convertFromStringW(rho_wmimpl_getSplashScreenDuration(),lSplashScreenDuration);
 	CSplashScreen& splash = RHODESAPP().getSplashScreen();	
 	if(lSplashScreenDuration != 0 ){
-		splash.setDuration(lSplashScreenDuration);	
+		splash.setDuration(lSplashScreenDuration,TRUE);	
 	}
     splash.start();
 
