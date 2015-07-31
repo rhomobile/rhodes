@@ -39,14 +39,17 @@ class CSplashScreen
     long m_nDelay;
     CTimeInterval m_startTime;
    	int m_nFlags;
+   	int m_isInMilliSecond;
 
 public: 
     static const int NONE = 0, VZOOM = 1, HZOOM = 2, VCENTER = 4, HCENTER = 8;
+    static const int DURATION_IN_MSEC = 1, DURATION_NOT_IN_MSEC = 0;
    	
     CSplashScreen()
     {
   	    m_nDelay = 0;
    	    m_nFlags = NONE;
+   	    m_isInMilliSecond = DURATION_NOT_IN_MSEC;
     }
 
    	boolean isFlag(int nFlag)
@@ -57,6 +60,7 @@ public:
    	void start();
   	void hide();
     void init();
+    void setDuration(long lDuration, int isInMilliSecond);
 
     long howLongWaitMs();
    
