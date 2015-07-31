@@ -57,6 +57,7 @@ public:
    	void start();
   	void hide();
     void init();
+    void setDuration(long lDuration);
 
     long howLongWaitMs();
    
