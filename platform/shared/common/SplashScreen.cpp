@@ -53,6 +53,11 @@ long CSplashScreen::howLongWaitMs()
    return (timeToWait > 0) ? timeToWait : 0;
 }
 
+void CSplashScreen::setDuration(long lDuration)
+{
+	m_nDelay = (long)(lDuration/1000);
+}
+
 void CSplashScreen::hide()
 {
 	if (m_nDelay<=0 || m_startTime.toULong() == 0)
