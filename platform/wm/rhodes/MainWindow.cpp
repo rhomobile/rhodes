@@ -2136,12 +2136,15 @@ LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID
 
 extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 {
-  	long lSplashScreenDuration = 0;  		
-	convertFromStringW(rho_wmimpl_getSplashScreenDuration(),lSplashScreenDuration);
-	CSplashScreen& splash = RHODESAPP().getSplashScreen();	
-	if(lSplashScreenDuration != 0 ){
-		splash.setDuration(lSplashScreenDuration,TRUE);	
-	}
+	//Commented this portion as we are not claiming support for Splash Screen Duration on WM/CE platform
+	//May be we can claim in future if required. As of now it will not be supported.
+  	//long lSplashScreenDuration = 0;  		
+	//convertFromStringW(rho_wmimpl_getSplashScreenDuration(),lSplashScreenDuration);
+	//CSplashScreen& splash = RHODESAPP().getSplashScreen();	
+	//if(lSplashScreenDuration != 0 ){
+	//	splash.setDuration(lSplashScreenDuration,TRUE);	
+	//}
+    CSplashScreen& splash = RHODESAPP().getSplashScreen();	
     splash.start();
 
     PAINTSTRUCT ps;
@@ -2201,7 +2204,11 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 		    hdcMem, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
 	    //BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
 	    
-	    splash.hide();
+	    //Commented this portion as we donot want to show the splash screen for specified duration
+	    //In WM/CE device, with webkit engine, the splash screen remains for around 4 sec(minimum)
+	    //depending on all the dll's which are required for the browser to work normally.
+	    //Hence this portion of the code has been commented and not claiming support for splash screen duration.
+	    //splash.hide();
 
         SelectObject(hdcMem, resObj);
 	    DeleteObject(hbitmap);
