@@ -2200,6 +2200,8 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 	    StretchBlt(hDC, nLeft, nTop, nWidth, nHeight,
 		    hdcMem, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
 	    //BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
+	    
+	    splash.hide();
 
         SelectObject(hdcMem, resObj);
 	    DeleteObject(hbitmap);
