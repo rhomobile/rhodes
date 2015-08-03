@@ -31,10 +31,11 @@
 
 namespace rho{
 namespace common{
-IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThread");
+IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThreadWM");
 
 CRhoThreadImpl::CRhoThreadImpl() : m_hAwakeEvent(0), m_hThread(0)
 {
+	LOG(INFO) + " JDP create CRhoThreadImpl(WM) object";
 	m_hAwakeEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
