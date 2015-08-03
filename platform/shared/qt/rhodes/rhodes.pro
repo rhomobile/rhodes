@@ -38,6 +38,7 @@ macx {
 
 win32 {
   CONFIG += embed_manifest_exe
+  CONFIG += no_batch
   DESTDIR = ../../../win32/bin/RhoSimulator
   MOC_DIR = ../../../win32/bin/RhoSimulator/generated_files
   UI_DIR = ../../../win32/bin/RhoSimulator/generated_files
