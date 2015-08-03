@@ -33,7 +33,7 @@
 
 using namespace rho::common;
 
-IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThread");
+IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThreadQT");
 
 CRhoThreadImpl::CRhoThreadImpl(): m_Thread(0), m_waitThread(0) {}
 
@@ -45,6 +45,7 @@ CRhoThreadImpl::~CRhoThreadImpl()
 
 void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority)
 {
+    LOG(INFO) + "CRhoThreadImpl(QT) start";
     if (m_Thread)
         stop(0);
     m_Thread = new QRhoThread(pRunnable);
@@ -68,11 +69,17 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
     if ( m_Thread ) {
         m_Thread->quit();
         //m_Thread->wait(nTimeoutToKill);
-        if (!m_Thread->isRunning()) {
+        if (!m_Thread->isRunning())
+        {
+           LOG(INFO) + "Terminate thread and wait after quit";
             m_Thread->terminate();
             m_Thread->wait();
         }
-        LOG(INFO) + "Terminate thread.";
+        else
+        {
+            LOG(INFO) + "Wait after quit";
+            m_Thread->wait();
+        }
         delete m_Thread;
         m_Thread = 0;
     }
@@ -80,22 +87,51 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
 
 int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 {
+    bool isVeyBigTimeoutvalue = false;
+    
+    if(nTimeoutMs == 4294966296)
+	{
+		isVeyBigTimeoutvalue = true;
+	}
+	else if(nTimeoutMs == 4294966295)
+	{
+		isVeyBigTimeoutvalue = true;
+	}
+
+    
     if (m_waitThread)
         stopWait();
+
     m_waitThread = new QThread();
     m_waitThread->start();
-    bool result = m_waitThread->wait(1000UL*nTimeoutMs) ? 0 : 1;
+
+	bool result;
+	
+	if(isVeyBigTimeoutvalue)
+	{
+	result = m_waitThread->wait(1000UL*nTimeoutMs) ? 0 : 1;
+	LOG(INFO) + "CRhoThreadImpl wait for a long time Result:-  "+result;
+	}
+	else
+	{
+	result = m_waitThread->wait(1UL*nTimeoutMs) ? 0 : 1;
+	LOG(INFO) + "CRhoThreadImpl wait- Result:-  "+result;
+	}
+
     delete m_waitThread;
     m_waitThread = 0;
+    LOG(INFO) + "CRhoThreadImpl wait thread deleted";
     return result;
 }
 
 void CRhoThreadImpl::stopWait()
 {
-    if (m_waitThread) {
+    QRhoThread::msleep(100);
+    LOG(INFO) + "CRhoThreadImpl stopWait after 100 ms sleep";
+    if (m_waitThread) 
+    {
+       LOG(INFO) + "CRhoThreadImpl stopWait-Terminate waitthread";
         m_waitThread->terminate(); // quit();
-        if (m_waitThread)
-            m_waitThread->wait();
     }
 }
 
