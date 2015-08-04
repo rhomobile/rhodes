@@ -189,7 +189,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         super.onCreate(savedInstanceState);
 
-        if (!RhodesService.isTitleEnabled()) {
+        if ((RhoConf.isExist("android_title") && !RhoConf.getBool("android_title"))
+            || !RhodesService.isTitleEnabled()) {
+
             requestWindowFeature(Window.FEATURE_NO_TITLE);
         }
 
