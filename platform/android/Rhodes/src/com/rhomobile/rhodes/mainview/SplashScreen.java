@@ -72,7 +72,10 @@ public class SplashScreen implements MainView{
 			long  mSplashScreenDurationValue = 0; //By default the splash screen duration is set to 0
 			IRhoConfig rhoelementsGetConfig=  RhoExtManager.getInstance().getConfig("rhoelementsext");
 			//Get Duration of Splash Screen from Config.xml in milli seconds.
-			String mGetLoadingPNGDurationValue = rhoelementsGetConfig.getString(WebViewConfig.SETTING_SPLASHSCREEN_DURATION);
+			String mGetLoadingPNGDurationValue = null;
+			if(rhoelementsGetConfig != null){
+			 mGetLoadingPNGDurationValue = rhoelementsGetConfig.getString(WebViewConfig.SETTING_SPLASHSCREEN_DURATION);
+			}
 			if(mGetLoadingPNGDurationValue != null)
 			{
 				try {
@@ -169,9 +172,11 @@ public class SplashScreen implements MainView{
                 
                 String actualSplashScreenPathValue="";
                 String appendSDCardPathToActualSplashScreenPathValue="";
+                String mGetSplashScreenPathValue=null;
                 boolean isDefaultSplashScreenLoading = true;                
                 IRhoConfig rhoelementsConfig=  RhoExtManager.getInstance().getConfig("rhoelementsext");
-                String mGetSplashScreenPathValue = rhoelementsConfig.getString(WebViewConfig.SETTING_SPLASHSCREEN_PATH); 
+                if(rhoelementsConfig!=null)
+                	mGetSplashScreenPathValue = rhoelementsConfig.getString(WebViewConfig.SETTING_SPLASHSCREEN_PATH); 
                 
                 if(mGetSplashScreenPathValue != null){
 	                if(mGetSplashScreenPathValue.startsWith("file://", 0)){
