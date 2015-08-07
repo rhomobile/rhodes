@@ -47,3 +47,4 @@ platform/shared/unzip/gunzip.cpp
 platform/shared/api_generator/js_helpers.cpp
 platform/shared/api_generator/MethodResult.cpp
 platform/shared/api_generator/StringifyHelper.cpp
+platform/shared/tinyxml2/tinyxml2.cpp
