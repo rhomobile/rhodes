@@ -111,7 +111,17 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
         @Override public int D2() { return width * width + height * height; }
         @Override public String toString() { return "" + width + "X" + height; }
     }
-
+    
+     @Override
+	public void getAllProperties(IMethodResult result) {
+		// TODO Auto-generated method stub
+    	Map<String, Object> props = new HashMap<String, Object>();
+    	for (String key: getPropertiesMap().keySet()) {
+    		 props.put(key, cameraPropGet(key));
+        }
+    	result.set(props);
+	}
+	
     protected class TakePictureCallback implements Camera.PictureCallback {
         private Activity mPreviewActivity;
         MediaPlayer mp;
