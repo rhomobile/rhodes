@@ -647,11 +647,23 @@ void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oRe
 		LOG(WARNING) + "Unable to stop detecting network connection, could not find specified callback";
     */
     if ( m_networkPoller != 0) {
-        if ( m_networkPoller->IsChecking() ) {
+        if ( m_networkPoller->IsChecking() ) 
+        {
             m_networkPoller->StopNetworkChecking();
         }
+        //Check again existence of m_networkPoller before calling CleanupAndDeleteSelf,as in some conditions it becomes null by other threads
+        if(m_networkPoller!=0)
+	{
+	LOG(INFO)+"CleanupAndDeleteSelf";	
         m_networkPoller->CleanupAndDeleteSelf();
-        m_networkPoller = 0;
+	m_networkPoller = 0;
+		
+	}
+	else
+	{
+	LOG(INFO)+"NetworkPoler object does not exist.No nedd to cleanup";
+	}
+        
     }
 }
 
