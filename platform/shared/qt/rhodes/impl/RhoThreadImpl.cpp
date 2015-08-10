@@ -35,10 +35,21 @@ using namespace rho::common;
 
 IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThreadQT");
 
-CRhoThreadImpl::CRhoThreadImpl(): m_Thread(0), m_waitThread(0) {}
+CRhoThreadImpl::CRhoThreadImpl(): m_Thread(0), m_waitThread(0) 
+{
+#if defined(OS_WINDOWS_DESKTOP)
+	LOG(INFO) + "InitializeCriticalSection";
+	InitializeCriticalSection(&gCS);
+#endif	
+}
 
 CRhoThreadImpl::~CRhoThreadImpl()
 {
+    	
+#if defined(OS_WINDOWS_DESKTOP)
+	LOG(INFO) + "DeleteCriticalSection";
+	DeleteCriticalSection(&gCS);
+#endif
     if (m_Thread) delete m_Thread;
     if (m_waitThread) delete m_waitThread;
 }
@@ -65,6 +76,11 @@ void CRhoThreadImpl::setThreadPriority(IRhoRunnable::EPriority ePriority)
 
 void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
 {
+ LOG(INFO) + "Stopping the thread-try to enter Crticalsection";
+ #if defined(OS_WINDOWS_DESKTOP)	
+	EnterCriticalSection(&gCS);
+	LOG(INFO) + "Inside Crticalsection";
+#endif
     stopWait();
     if ( m_Thread ) {
         m_Thread->quit();
@@ -83,6 +99,12 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
         delete m_Thread;
         m_Thread = 0;
     }
+    
+#if defined(OS_WINDOWS_DESKTOP)
+	LOG(INFO) + "LeaveCriticalSection";
+	LeaveCriticalSection(&gCS);
+#endif
+LOG(INFO) + "JDP thread stopped successfully";
 }
 
 int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
@@ -118,9 +140,11 @@ int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 	LOG(INFO) + "CRhoThreadImpl wait- Result:-  "+result;
 	}
 
-    delete m_waitThread;
-    m_waitThread = 0;
-    LOG(INFO) + "CRhoThreadImpl wait thread deleted";
+    //Delete m_waitThread in stopWait instead of deleting it from wait.as how much time terminate inside stop takes is not guranteed 
+    //delete m_waitThread;
+    //m_waitThread = 0;
+    //LOG(INFO) + "CRhoThreadImpl wait thread deleted";
+    
     return result;
 }
 
@@ -133,6 +157,15 @@ void CRhoThreadImpl::stopWait()
        LOG(INFO) + "CRhoThreadImpl stopWait-Terminate waitthread";
         m_waitThread->terminate(); // quit();
     }
+    
+    	//Delete m_waitThread here instead of deleting it from wait.as how much time terminate takes is not guranteed 
+    	if(m_waitThread)
+	{
+	LOG(INFO) + "stopWait:-Delete m_waitThread";
+	delete m_waitThread;
+   	m_waitThread = 0;
+	}
+
 }
 
 void CRhoThreadImpl::sleep(unsigned int nTimeout)
