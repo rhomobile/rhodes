@@ -25,6 +25,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Coreapi", "..\..\lib\common
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rhoconnect-client", "..\..\..\rhoconnect-client\ext\rhoconnect-client\ext\platform\wm\Rhoconnect-client.vcproj", "{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml2", "tinyxml2\tinyxml2.vcproj", "{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|MC3000c50b (ARMV4I) = Debug|MC3000c50b (ARMV4I)
@@ -341,6 +343,30 @@ Global
 		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).ActiveCfg = Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
 		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).Build.0 = Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
 		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}.Release|WT41N0c70PSDK (ARMv4I).ActiveCfg = Release|Win32
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|MC3000c50b (ARMV4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|MC3000c50b (ARMV4I).Build.0 = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|MC3000c50b (ARMV4I).Deploy.0 = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|Pocket PC 2003 (ARMV4).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|Smartphone 2003 (ARMV4).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|Win32.ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|Windows Mobile 5.0 Smartphone SDK (ARMV4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|Windows Mobile 6 Standard SDK (ARMV4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Debug|WT41N0c70PSDK (ARMv4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|MC3000c50b (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|MC3000c50b (ARMV4I).Build.0 = Release|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|MC3000c50b (ARMV4I).Deploy.0 = Release|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|Pocket PC 2003 (ARMV4).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|Smartphone 2003 (ARMV4).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|Win32.ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|Windows Mobile 5.0 Smartphone SDK (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|Windows Mobile 6 Standard SDK (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}.Release|WT41N0c70PSDK (ARMv4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
