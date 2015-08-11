@@ -138,7 +138,11 @@ public class CameraRhoListener extends AbstractRhoListener implements
 					}
 					picChoosen_imagewidth = mBitmap.getWidth();
 					picChoosen_imageheight = mBitmap.getHeight();
-					if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){				
+					if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){	
+						if(picChoosen_imagewidth > 1000 || picChoosen_imageheight >1000){
+							intent.putExtra("error", "Image resolution is too high. Please use ImageUri instead of DataUri");
+						}
+						else{
 						stream = new ByteArrayOutputStream();
 						mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 						byte[] byteArray = stream.toByteArray();
@@ -159,6 +163,7 @@ public class CameraRhoListener extends AbstractRhoListener implements
 						}
 						getActualPropertyMap().put("curUri", dataBuilder.toString());						
 						curUri=Uri.parse(dataBuilder.toString());
+					   }
 					}
 					Logger.T(TAG, "Photo is captured: " + curUri);					
 					mBitmap.recycle();
