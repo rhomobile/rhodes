@@ -62,7 +62,8 @@ private:
     QThread* m_waitThread;
     #if defined(OS_WINDOWS_DESKTOP)
 	CRITICAL_SECTION gCS;
-	#endif
+	CRITICAL_SECTION gCSstopwait;
+    #endif
 };
 
 }
