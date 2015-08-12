@@ -19,11 +19,11 @@ namespace rho
 		{
 			return m_eEngType;
 		}
-		void CEngineEventMngr::notifyDOMInjector()
+		void CEngineEventMngr::injectDOMElements()
 		{
 			for ( HashtablePtr<String, IEngineEventListner*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
 			{
-				(it->second)->notifyDOMInjector();
+				(it->second)->injectDOMElements();
 			}
 		}
 		void CEngineEventMngr::setEngineInterface(IDOMInjectorEngineInterface* pEngineIf)
@@ -39,7 +39,18 @@ namespace rho
 			}
 
 		}
-		void CEngineEventListner::notifyDOMInjector()
+		void CEngineEventMngr::onBeforeNavigate(const wchar_t* onBeforeNavigate)
+		{
+			for ( HashtablePtr<String, IEngineEventListner*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+			{
+				(it->second)->onBeforeNavigate(onBeforeNavigate);
+			}
+		}
+		void CEngineEventListner::injectDOMElements()
+		{
+			//default implementation
+		}
+		void CEngineEventListner::onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo)
 		{
 			//default implementation
 		}
