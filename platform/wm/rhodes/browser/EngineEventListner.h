@@ -18,7 +18,8 @@ namespace rho
 		struct IEngineEventListner
 		{
 			//virtual void notifyEngineCreate(eEngineType eEngType)=0;	
-			virtual void notifyDOMInjector()=0;
+			virtual void injectDOMElements()=0;
+			virtual void onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo)=0;
 		};
 		class CEngineEventMngr : public IEngineEventListner
 		{
@@ -33,13 +34,15 @@ namespace rho
 			void setEngineInterface(IDOMInjectorEngineInterface* pEngineIf);
 			void registerExtension(const String& strName, IEngineEventListner* pExt);
 			void executAnonymousJs(wchar_t* szFunctionText);
-			virtual void notifyDOMInjector();
+			virtual void injectDOMElements();
+			void onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo);
 
 		};
 		class CEngineEventListner : public IEngineEventListner
 		{
 		public:
-			virtual void notifyDOMInjector();
+			virtual void injectDOMElements();
+			void onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo);
 		};
 		
 	}
