@@ -334,11 +334,12 @@ MethodResultJni::MethodResultJni(bool isRuby) : m_bhasLocalFrame(false), m_env(0
         RAWLOG_ERROR("ctor - JNI initialization failed");
         return;
     }
-
-    if(m_env->PushLocalFrame(256) >= 0)
+    //SPR 27852 fix...We don't need to push or pop localframe.
+   /* if(m_env->PushLocalFrame(256) >= 0)
     {
         m_bhasLocalFrame = true;
     }
+    */
 
     m_jResult = m_env->NewObject(s_methodResultClass, s_midMethodResult, static_cast<jboolean>(isRuby));
 }
@@ -375,10 +376,12 @@ MethodResultJni::~MethodResultJni()
 {
     jniInit();
 
-    if(m_bhasLocalFrame)
+    //SPR 27852...
+    /*if(m_bhasLocalFrame)
     {
         m_env->PopLocalFrame(NULL);
     }
+    */
 
     if(m_bGlobalRef)
     {
@@ -388,10 +391,10 @@ MethodResultJni::~MethodResultJni()
             m_env->DeleteGlobalRef(m_jResult);
         }
     } else {
-        if (!m_bhasLocalFrame) {
+       // if (!m_bhasLocalFrame) {
             RAWTRACE1("Deleting MethodResult local JNI reference: 0x%.8x ==========================================", m_jResult);
             m_env->DeleteLocalRef(m_jResult);
-        }
+       //  }
     }
 }
 //----------------------------------------------------------------------------------------------------------------------
