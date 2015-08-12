@@ -47,7 +47,7 @@ IBrowserFactory* BrowserFactory::getInstance()
 
 IBrowserEngine* BrowserFactory::createWebkit(HWND hwndParent)
 {
-	RHODESAPP().getExtManager().getEngineEventMngr().notifyEngineCreate(rho::engineeventlistner::eWebkit);
+	RHODESAPP().getExtManager().getEngineEventMngr().setEngineType(rho::engineeventlistner::eWebkit);
     return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 }
 
@@ -55,12 +55,12 @@ IBrowserEngine* BrowserFactory::createIE(HWND hwndParent)
 {
     if (RHO_IS_WMDEVICE)
     {
-		RHODESAPP().getExtManager().getEngineEventMngr().notifyEngineCreate(rho::engineeventlistner::eWmIe);
+		RHODESAPP().getExtManager().getEngineEventMngr().setEngineType(rho::engineeventlistner::eWmIe);
         return CIEBrowserEngine::getInstance(hwndParent, rho_wmimpl_get_appinstance());
     }
     else
     {
-		RHODESAPP().getExtManager().getEngineEventMngr().notifyEngineCreate(rho::engineeventlistner::eCeIe);
+		RHODESAPP().getExtManager().getEngineEventMngr().setEngineType(rho::engineeventlistner::eCeIe);
         return new CEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
     }
 }
