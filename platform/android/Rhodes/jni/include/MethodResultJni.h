@@ -338,7 +338,18 @@ public:
         } else
         {
             RAWTRACEC("CRubyResultConvertor", "getString(): create string");
-            res = rho_cast<VALUE>(m_oResult.getStringResult());
+            // res = rho_cast<VALUE>(m_oResult.getStringResult());
+            //SPR 27852 tavleoverflow crash fix.......
+            jstring j_stringobject =m_oResult.getStringResult();
+	    res = rho_cast<VALUE>(j_stringobject);
+	    JNIEnv* env = m_oResult.jniInit();
+	    if (!env) 
+	    {
+	    	RAWLOG_ERROR( "JNI initialization failed in getHash");
+		return 0;
+	     }
+	     jobject j_tempobject=(jobject)j_stringobject;
+	     env->DeleteLocalRef(j_tempobject);
         }
 
         return res;
@@ -362,7 +373,17 @@ public:
             res = valArray;
         } else
         {
-            res = rho_cast<VALUE>(m_oResult.getListResult());
+           // res = rho_cast<VALUE>(m_oResult.getListResult());
+           ////SPR 27852 tavleoverflow crash fix.......
+           jobject j_listJobject =m_oResult.getListResult();
+	   res = rho_cast<VALUE>(j_listJobject);
+           JNIEnv* env = m_oResult.jniInit();
+	   if (!env) 
+	   {
+	   	RAWLOG_ERROR( "JNI initialization failed in getHash");
+           	    return 0;
+	   }
+	   env->DeleteLocalRef(j_listJobject);
         }
         return res;
     }
