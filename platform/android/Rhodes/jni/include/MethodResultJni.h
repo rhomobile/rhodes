@@ -55,9 +55,10 @@ class MethodResultJni
     static jfieldID s_fidMap;
 
     static JNIEnv* jniInit(JNIEnv*);
-    JNIEnv* jniInit() const { return m_env = jniInit(m_env ? m_env : jnienv()); }
+    //JNIEnv* jniInit() const { return m_env = jniInit(m_env ? m_env : jnienv()); }
 
 public:
+    JNIEnv* jniInit() const { return m_env = jniInit(m_env ? m_env : jnienv()); }
     enum ResultType { typeNone = 0, typeBoolean, typeInteger, typeDouble, typeString, typeList, typeMap, typeError, typeArgError };
 
 private:
@@ -151,7 +152,15 @@ public:
             RAWLOGC_ERROR("MethodResultJNI", "JNI initialization failed");
             return rho::String();
         }
-        return rho_cast<rho::String>(env, getResultParamName(env));
+        //return rho_cast<rho::String>(env, getResultParamName(env));
+        //This is because in callback(boolean,string,int,float) "result" is leaked....
+        rho::String res;
+	jstring tempstr=getResultParamName(env);
+	res=rho_cast<rho::String>(env, tempstr);
+	jobject tempJObj=(jobject)tempstr;
+	env->DeleteLocalRef(tempJObj);
+		
+	return res;
     }
 
     void setRubyObjectClass(unsigned long klass)
@@ -329,7 +338,18 @@ public:
         } else
         {
             RAWTRACEC("CRubyResultConvertor", "getString(): create string");
-            res = rho_cast<VALUE>(m_oResult.getStringResult());
+            // res = rho_cast<VALUE>(m_oResult.getStringResult());
+            //SPR 27852 tavleoverflow crash fix.......
+            jstring j_stringobject =m_oResult.getStringResult();
+	    res = rho_cast<VALUE>(j_stringobject);
+	    JNIEnv* env = m_oResult.jniInit();
+	    if (!env) 
+	    {
+	    	RAWLOG_ERROR( "JNI initialization failed in getHash");
+		return 0;
+	     }
+	     jobject j_tempobject=(jobject)j_stringobject;
+	     env->DeleteLocalRef(j_tempobject);
         }
 
         return res;
@@ -353,7 +373,17 @@ public:
             res = valArray;
         } else
         {
-            res = rho_cast<VALUE>(m_oResult.getListResult());
+           // res = rho_cast<VALUE>(m_oResult.getListResult());
+           ////SPR 27852 tavleoverflow crash fix.......
+           jobject j_listJobject =m_oResult.getListResult();
+	   res = rho_cast<VALUE>(j_listJobject);
+           JNIEnv* env = m_oResult.jniInit();
+	   if (!env) 
+	   {
+	   	RAWLOG_ERROR( "JNI initialization failed in getHash");
+           	    return 0;
+	   }
+	   env->DeleteLocalRef(j_listJobject);
         }
         return res;
     }
@@ -376,7 +406,17 @@ public:
             res = valHash;
         } else
         {
-            res = rho_cast<VALUE>(m_oResult.getMapResult());
+            //res = rho_cast<VALUE>(m_oResult.getMapResult());
+            //SPR 27852 fix...table overflow
+	    jobject j_hashmapJobject =m_oResult.getMapResult();
+	    res = rho_cast<VALUE>(j_hashmapJobject);
+            JNIEnv* env = m_oResult.jniInit();
+	    if (!env) 
+	    {
+		RAWLOG_ERROR( "JNI initialization failed in getHash");
+           	return 0;
+	    }
+            env->DeleteLocalRef(j_hashmapJobject);
         }
 
         return res;
