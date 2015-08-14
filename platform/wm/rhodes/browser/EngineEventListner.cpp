@@ -30,12 +30,12 @@ namespace rho
 		{
 			m_pEngineIf = pEngineIf;
 		}
-		void CEngineEventMngr::executAnonymousJs(wchar_t* szFunctionText)
+		bool CEngineEventMngr::executAnonymousJs(wchar_t* szFunctionText)
 		{
 			int nTabID = RHODESAPP().getExtManager().getCurrentTabID();
 			if(m_pEngineIf)
 			{
-				m_pEngineIf->executAnonymousJs(szFunctionText, nTabID);
+				return m_pEngineIf->executAnonymousJs(szFunctionText, nTabID);
 			}
 
 		}
