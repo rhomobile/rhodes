@@ -78,6 +78,79 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                 <DESC>Returns newly generated unique object Id.</DESC>
                 <RETURN type="INTEGER"/>    
             </METHOD>
+			
+			<METHOD name="addModel" generateAPI="false">
+                <DESC>Creates an ORM model reference.</DESC>
+                <APPLIES jsOnly="true"/>
+                <PARAMS>
+                    <PARAM name="Anoynomous Function methods" type="">
+                        <PARAMS>
+                            <PARAM name='enable("value")' type='STRING'>
+                                <DESC>Enables Model Properties.</DESC>
+                                <VALUES>
+                                    <VALUE value ="sync">
+                                        <DESC>If set then model is set for RhoConnect Sync.</DESC>
+                                    </VALUE>
+                                    <VALUE value ="propertyBag">
+                                        <DESC>(Default) Model will be of type propertyBag.</DESC>
+                                    </VALUE>
+                                    <VALUE value ="fixedSchema">
+                                        <DESC>Model will be of type fixedSchema.</DESC>
+                                    </VALUE>
+                                </VALUES>
+                                <CAN_BE_NIL>
+                                </CAN_BE_NIL>
+                            </PARAM>
+                            <PARAM name='property("name","type")' type='STRING,STRING'>
+                                <DESC>Used to create properties on your model.</DESC>
+                                <PARAMS>
+                                    <PARAM name="name" type="STRING">
+                                        <DESC>The name of the property.</DESC>
+                                    </PARAM>
+                                    <PARAM name="type" type="STRING">
+                                        <DESC>The type of property value: String, Float, integer, Varchar, Blob - String is default.</DESC>
+                                    </PARAM>
+                                </PARAMS>
+                                <CAN_BE_NIL>
+                                </CAN_BE_NIL>
+                            </PARAM>
+                            <PARAM name='set(property,value)' type='STRING,VALUE'>
+                                <DESC>Set Behavior of this model. Possible `property` options and corresponding values.</DESC>
+                                <CAN_BE_NIL>
+                                </CAN_BE_NIL>
+                                <PARAMS>
+                                    <PARAM name="partition" type="STRING">
+                                        <DESC>The partition to use for this model. Partitions can be used to segment the data and keep non-synched data separate from synched models. Possible `values`.</DESC>
+                                        <VALUES>
+                                            <VALUE value ="local">
+                                                <DESC>This partition is used automatically if the model is not a sync model.</DESC>
+                                            </VALUE>
+                                            <VALUE value ="user">
+                                                <DESC>This partition is used automatically if the model is a sync model.</DESC>
+                                            </VALUE>
+                                        </VALUES>
+                                    </PARAM>
+                                    <PARAM name="sync_type" type="STRING">
+                                        <DESC>Sets the type of sync it will be. </DESC>
+                                        <VALUES>
+                                            <VALUE value ="none">
+                                                <DESC>If data model is not a sync model.</DESC>
+                                            </VALUE>
+                                            <VALUE value ="incremental">
+                                                <DESC>Used when the data model is a sync model. Just syncs changes.</DESC>
+                                            </VALUE>
+                                        </VALUES>
+                                    </PARAM>
+                                    <PARAM name="sync_priority" type="INTEGER">
+                                        <DESC>This number determines the order in which the models are processed and synchronised. Priority starts from lower value 1. Lower the number, higher is the priority. Default value is 1000. </DESC>
+                                    </PARAM>
+                                </PARAMS>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="Model"/>
+            </METHOD>
 
         </METHODS>
 
