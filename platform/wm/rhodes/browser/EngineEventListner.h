@@ -12,7 +12,7 @@ namespace rho
 		};
 		struct IDOMInjectorEngineInterface
 		{
-			virtual void executAnonymousJs(wchar_t* szFunctionText, int nTabID)=0;
+			virtual bool executAnonymousJs(wchar_t* szFunctionText, int nTabID)=0;
 		};
 
 		struct IEngineEventListner
@@ -33,7 +33,7 @@ namespace rho
 			void setEngineType(eEngineType eEngType);
 			void setEngineInterface(IDOMInjectorEngineInterface* pEngineIf);
 			void registerExtension(const String& strName, IEngineEventListner* pExt);
-			void executAnonymousJs(wchar_t* szFunctionText);
+			bool executAnonymousJs(wchar_t* szFunctionText);
 			virtual void injectDOMElements();
 			void onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo);
 
