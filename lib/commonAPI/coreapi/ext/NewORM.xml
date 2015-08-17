@@ -142,8 +142,8 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                                             <VALUE value ="incremental">
                                                 <DESC>Used when the data model is a sync model. Just syncs changes.</DESC>
                                             </VALUE>
-											<VALUE value ="bulk_only">
-                                                <DESC>Used to sync bulk data.</DESC>
+					    <VALUE value ="bulk_only">
+                                                <DESC>If the model is used only for bulk sync.</DESC>
                                             </VALUE>
                                         </VALUES>
                                     </PARAM>
