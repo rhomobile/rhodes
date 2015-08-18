@@ -160,7 +160,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         Logger.T(TAG, "onCreate");
-
+	//sprfix28185- To set flag to call splashscreen:start function
+		if(RhodesService.getInstance()!=null)
+        	{
+			Logger.T(TAG, "RhodesService.getInstance() called");
+			RhodesService.isSplashViewed=true;
+	        }
         Thread ct = Thread.currentThread();
         //ct.setPriority(Thread.MAX_PRIORITY);
         uiThreadId = ct.getId();
