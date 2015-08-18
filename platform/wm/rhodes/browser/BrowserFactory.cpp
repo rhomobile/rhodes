@@ -7,6 +7,8 @@
 #include "BrowserFactory.h"
 #include "CEBrowserEngine.h"
 #include "IEBrowserEngine.h"
+#include "EngineEventListner.h"
+#include <common/RhodesApp.h>
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -45,6 +47,7 @@ IBrowserFactory* BrowserFactory::getInstance()
 
 IBrowserEngine* BrowserFactory::createWebkit(HWND hwndParent)
 {
+	RHODESAPP().getExtManager().getEngineEventMngr().setEngineType(rho::engineeventlistner::eWebkit);
     return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 }
 
@@ -52,10 +55,12 @@ IBrowserEngine* BrowserFactory::createIE(HWND hwndParent)
 {
     if (RHO_IS_WMDEVICE)
     {
+		RHODESAPP().getExtManager().getEngineEventMngr().setEngineType(rho::engineeventlistner::eWmIe);
         return CIEBrowserEngine::getInstance(hwndParent, rho_wmimpl_get_appinstance());
     }
     else
     {
+		RHODESAPP().getExtManager().getEngineEventMngr().setEngineType(rho::engineeventlistner::eCeIe);
         return new CEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
     }
 }

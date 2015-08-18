@@ -2823,17 +2823,16 @@ namespace "config" do
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
       end
    end
-   if $current_platform == "android"
-      if $app_config['extensions'].index('barcode') 
-        $app_config['extensions'].delete('barcode')
-        $app_config['extensions'] |= ['emdk3-manager']
-        $app_config['extensions'] |= ['barcode']
-      end
-      if $app_config['extensions'].index('indicators')
-         $app_config['extensions'].delete('indicators')
-         $app_config['extensions'] |= ['indicators']
-      end
 
+   if $current_platform == "android"
+        if $app_config['extensions'].index('rhoelementsext')
+          $app_config['extensions'].delete('rhoelementsext')
+          $app_config['extensions'].unshift('rhoelementsext')
+        end
+        if $app_config['extensions'].index('emdk3-manager')
+          $app_config['extensions'].delete('emdk3-manager')
+          $app_config['extensions'].unshift('emdk3-manager')
+        end
     end
 
     #if $app_config['extensions'].index('rhoelementsext')
@@ -3346,14 +3345,14 @@ def init_extensions(dest, mode = "")
           end
 
           if entry && entry.length() > 0
-            if xml_api_paths.nil? #&& !("rhoelementsext" == extname && ($config["platform"] == "wm"||$config["platform"] == "android"))
+            if xml_api_paths.nil? #&& !(("rhoelementsext" == extname || "dominjector" == extname ) && ($config["platform"] == "wm"||$config["platform"] == "android"))
 
               $ruby_only_extensions_list = [] unless $ruby_only_extensions_list
               $ruby_only_extensions_list << extname
 
-              if ("rhoelementsext" == extname && ($config["platform"] == "wm"||$config["platform"] == "android"))
+              if (("rhoelementsext" == extname || "dominjector" == extname) && ($config["platform"] == "wm"||$config["platform"] == "android"))
                 extentries << entry
-                extentries_init << entry
+                extentries_init << entry             
               elsif !$js_application
                 extentries << entry
                 entry =  "if (rho_ruby_is_started()) #{entry}"
