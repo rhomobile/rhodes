@@ -31,6 +31,10 @@
 
 #include "logging/RhoLog.h"
 
+#ifdef OS_WINCE
+#include "..\..\wm\rhodes\browser\EngineEventListner.h"
+#endif
+
 #ifdef OS_ANDROID
 extern "C" void rho_sys_bring_to_front();
 extern "C" void rho_sys_minimize();
@@ -145,6 +149,9 @@ class CExtManager : public IRhoExtManager
 	DEFINE_LOGCLASS;
 
     rho::Hashtable/*Ptr*/<String, IRhoExtension*> m_hashExtensions;
+#ifdef OS_WINCE
+	engineeventlistner::CEngineEventMngr m_oEngineEvntMngr;
+#endif
 
 public:
     void registerExtension(const String& strName, IRhoExtension* pExt);
@@ -210,6 +217,9 @@ public:
 	virtual bool DeRegisterForPrimaryBrowserMessage(unsigned int iMsgId);
 
     virtual int getCurrentTabID();
+#ifdef OS_WINCE
+	engineeventlistner::CEngineEventMngr&  getEngineEventMngr(){ return m_oEngineEvntMngr; }
+#endif
 };
 	
 } //namespace common
