@@ -71,6 +71,7 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
 
 	GetWindowRect(hwndParent, &m_rcViewSize);
     CreateEngine();
+	RHODESAPP().getExtManager().getEngineEventMngr().setEngineInterface(this);
 }
 
 CEBrowserEngine::~CEBrowserEngine(void)
@@ -682,7 +683,9 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
 	case DISPID_DOCUMENTCOMPLETE:
 		//Validate that there is an event handler
-        LOG(INFO) + "DISPID_DOCUMENTCOMPLETE";
+		LOG(INFO) + "DISPID_DOCUMENTCOMPLETE";
+		LOG(INFO) + "before calling dominjector after document complete";
+		RHODESAPP().getExtManager().getEngineEventMngr().injectDOMElements();
 
         SetEvent(m_hDocComp);
         CloseHandle(m_hDocComp);
@@ -1407,6 +1410,12 @@ DWORD WINAPI CEBrowserEngine::NetworkWindowThread( LPVOID lpParameter )
 		}
 	}
 	return 0;
+}
+bool CEBrowserEngine::executAnonymousJs(wchar_t* szFunctionText, int nTabID)
+{
+	bool bRetStatus = true;
+	InvokeJs(szFunctionText, nTabID);
+	return bRetStatus;
 }
 
 // EMBPD00158491 - [SAP-ITS][CE5/MK4000]-Sip is not shown while trying to enter text in fields of Authentication screen
