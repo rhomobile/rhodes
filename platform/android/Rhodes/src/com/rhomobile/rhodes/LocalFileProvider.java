@@ -38,7 +38,11 @@ import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
+import android.os.ParcelFileDescriptor;
+import java.io.FileNotFoundException;
+
 
 
 public class LocalFileProvider extends ContentProvider
@@ -79,6 +83,26 @@ public class LocalFileProvider extends ContentProvider
         }
         return null;
     }
+        public static Uri overrideSystemUri(Uri uri)
+    {
+        
+            String scheme = uri.getScheme();
+            if (scheme != null && scheme.equals("file")) {
+                String ssp = uri.getSchemeSpecificPart();//.getAbsolutePath();
+    
+                String sspPrefix = "//" + getPathPrefix();
+                if(ssp.startsWith(sspPrefix)) {
+                    ssp = "//" + ssp.substring(("//"+PATH_PREFIX).length(), ssp.length());
+                    Logger.T(TAG, "Overriding URI: " + uri.toString());
+    
+                    return Uri.fromParts(PROTOCOL_PREFIX, ssp, uri.getFragment());
+                }
+            }
+        
+        return null;
+    }
+    
+    
     
     public static void revokeUriPermissions(Context ctx)
     {
@@ -98,19 +122,32 @@ public class LocalFileProvider extends ContentProvider
     }
     
     @Override
-    public AssetFileDescriptor openAssetFile(Uri uri, String mode) {
-        Logger.T(TAG, "Opening asset: " + uri);
-        
+   public ParcelFileDescriptor openFile(Uri uri, String mode)
+            throws FileNotFoundException, SecurityException
+      { 
+         Log.d(TAG, "openFile LocalFileProvider Zebra Log URI>>>: " + uri);
+    	 Log.d(TAG, "openFile LocalFileProvider Zebra Log  mode>>>: " + mode);
         if(mode.compareTo("r") != 0)
         {
-            Logger.E(TAG, uri + " unacceptable mode: " + mode);
             throw new SecurityException("Unacceptable openFile mode: " + mode);
         }
-        File path = fileFromUri(uri);
+        try {
+        	            File path = fileFromUri(uri);
+        	            
+        	           Logger.D(TAG, "Opening content file: " + path.getPath());
+        	           Log.d(TAG, "openFile LocalFileProvider Zebra Log getPath >>>>>>" + path.getPath()); 
+        	            ParcelFileDescriptor fd = RhoFileApi.openParcelFd(path.getPath());
+        	           if(fd == null)
+        	                throw new IllegalArgumentException();
+        	            
+        	            return fd;
+        	        } catch(IllegalArgumentException error)
+        	        {
+        	            FileNotFoundException fileError = new FileNotFoundException("Cannot assign file for URI: " + uri.toString());
+        	            fileError.initCause(error);
+        	            throw fileError;
+        	        }
         
-        AssetFileDescriptor fd = RhoFileApi.openAssetFd(path.getPath());
-        
-        return fd;
     }
 
     @Override
