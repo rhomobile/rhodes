@@ -179,7 +179,10 @@ void CExtManager::onUnhandledProperty( const wchar_t* pModuleName, const wchar_t
 
 void CExtManager::onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo)
 {
-	m_oEngineEvntMngr.onBeforeNavigate(szUrlBeingNavigatedTo);//sabir: priority for DOMInjector
+    #ifdef OS_WINCE
+        m_oEngineEvntMngr.onBeforeNavigate(szUrlBeingNavigatedTo);//sabir: priority for DOMInjector
+    #endif
+
     for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
     {
         (it->second)->onBeforeNavigate( szUrlBeingNavigatedTo, makeExtData() );
