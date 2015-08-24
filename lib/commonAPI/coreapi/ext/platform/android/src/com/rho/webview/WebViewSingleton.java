@@ -18,6 +18,23 @@ import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.webview.WebViewConfig;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.HashMap; 
+
+import android.util.*;
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Proxy;
+import android.os.Build;
+import android.os.Parcelable;
+import java.util.*;
+import org.apache.http.HttpHost;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+
+
 public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     private static final String TAG = WebViewSingleton.class.getSimpleName();
@@ -26,7 +43,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     private static final String ENABLE_ZOOM = "enable_screen_zoom";
     private static final String ENABLE_WEB_PLUGINS = "enable_web_plugins";
     private static final String ENABLE_CACHE = "WebView.enableCache";
-    
+    public final int PROXY_CHANGED = 193;
     private WebViewConfig mConfig = new WebViewConfig();
 
     public WebViewSingleton() {
@@ -446,6 +463,183 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
         	}
         }
         
+        if(config.isExist("http_proxy")){
+    		String httpProxy = config.getString("http_proxy");
+    		if(httpProxy.length()!=0){
+	    		int index = httpProxy.lastIndexOf(":");
+	    		if(index > -1)
+	    		{
+		    		String portNumber = httpProxy.substring(index + 1, httpProxy.length());
+		    		String hostURL = httpProxy.substring(0, index);
+		    		int port = Integer.parseInt(portNumber);
+		    		setProxy(RhodesActivity.getContext(),hostURL,port);
+	    		}
+	    	}
+    	}
+    	if(config.isExist("https_proxy")){
+    		String httpsProxy = config.getString("https_proxy");
+    		if(httpsProxy.length()!=0){
+	    		int index = httpsProxy.lastIndexOf(":");
+	    		if(index > -1)
+	    		{	      		
+	    			String portNumber = httpsProxy.substring(index + 1, httpsProxy.length());
+	    			String hostURL = httpsProxy.substring(0, index);
+	    			int port = Integer.parseInt(portNumber);
+	    		
+	    			setProxy(RhodesActivity.getContext(),hostURL,port);
+	    		}
+	    	}
+    	}
+        
+    }
+    
+    /**
+     * Override WebKit Proxy settings
+     *
+     * @param ctx  Android ApplicationContext
+     * @param host
+     * @param port
+     * @return true if Proxy was successfully set
+     */
+    public boolean setProxy(Context ctx, String host, int port) {
+        boolean ret = false;
+        setSystemProperties(host, port);
+
+        try {
+            if (Build.VERSION.SDK_INT > 18) {
+                ret = setKitKatProxy(ctx, host, port);
+            } else if (Build.VERSION.SDK_INT > 13) {
+                ret = setICSProxy(host, port);
+            } else {
+                Object requestQueueObject = getRequestQueue(ctx);
+                if (requestQueueObject != null) {
+                    // Create Proxy config object and set it into request Q
+                    HttpHost httpHost = new HttpHost(host, port, "http");
+
+                    setDeclaredField(requestQueueObject, "mProxyHost", httpHost);
+                    ret = true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
+    
+    private void setDeclaredField(Object obj, String name, Object value)
+            throws SecurityException, NoSuchFieldException, IllegalArgumentException,
+            IllegalAccessException {
+        Field f = obj.getClass().getDeclaredField(name);
+        f.setAccessible(true);
+        f.set(obj, value);
+    }
+
+    public  Object getRequestQueue(Context ctx) throws Exception {
+        Object ret = null;
+        Class networkClass = Class.forName("android.webkit.Network");
+        if (networkClass != null) {
+            Object networkObj = invokeMethod(networkClass, "getInstance", new Object[]{ctx},
+                    Context.class);
+            if (networkObj != null) {
+                ret = getDeclaredField(networkObj, "mRequestQueue");
+            }
+        }	
+        return ret;
+    }
+    
+    private  Object getDeclaredField(Object obj, String name) throws SecurityException,
+    NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    	Field f = obj.getClass().getDeclaredField(name);
+    	f.setAccessible(true);
+    	// System.out.println(obj.getClass().getName() + "." + name + " = "+
+    	// out);
+    	return f.get(obj);
+    }
+
+
+    private Object invokeMethod(Object object, String methodName, Object[] params,
+    		Class... types) throws Exception {
+    	Object out = null;
+    	Class c = object instanceof Class ? (Class) object : object.getClass();
+    	if (types != null) {
+    		Method method = c.getMethod(methodName, types);
+    		out = method.invoke(object, params);
+    	} else {
+    		Method method = c.getMethod(methodName);
+    		out = method.invoke(object);
+    	}
+    	// System.out.println(object.getClass().getName() + "." + methodName +
+    	// "() = "+ out);
+    	return out;
+    }
+    private  boolean setICSProxy(String host, int port) throws ClassNotFoundException,
+            NoSuchMethodException, IllegalArgumentException, InstantiationException,
+            IllegalAccessException, InvocationTargetException {
+        Class webViewCoreClass = Class.forName("android.webkit.WebViewCore");
+        Class proxyPropertiesClass = Class.forName("android.net.ProxyProperties");
+        if (webViewCoreClass != null && proxyPropertiesClass != null) {
+            Method m = webViewCoreClass.getDeclaredMethod("sendStaticMessage", Integer.TYPE,
+                    Object.class);
+            Constructor c = proxyPropertiesClass.getConstructor(String.class, Integer.TYPE,
+                    String.class);
+            m.setAccessible(true);
+            c.setAccessible(true);
+            Object properties = c.newInstance(host, port, null);
+            m.invoke(null, PROXY_CHANGED, properties);
+            return true;
+        }
+        return false;
+
+    }
+
+ 
+    private  boolean setKitKatProxy(Context context, String host, int port) {
+        Context appContext = context.getApplicationContext();
+        try {
+            Class applictionCls = appContext.getClass();
+            Field loadedApkField = applictionCls.getField("mLoadedApk");
+            loadedApkField.setAccessible(true);
+            Object loadedApk = loadedApkField.get(appContext);
+            Class loadedApkCls = Class.forName("android.app.LoadedApk");
+            Field receiversField = loadedApkCls.getDeclaredField("mReceivers");
+            receiversField.setAccessible(true);
+            ArrayMap receivers = (ArrayMap) receiversField.get(loadedApk);
+            for (Object receiverMap : receivers.values()) {
+                for (Object rec : ((ArrayMap) receiverMap).keySet()) {
+                    Class clazz = rec.getClass();
+                    if (clazz.getName().contains("ProxyChangeListener")) {
+                        Method onReceiveMethod = clazz.getDeclaredMethod("onReceive", Context.class, Intent.class);
+                        Intent intent = new Intent(Proxy.PROXY_CHANGE_ACTION);
+
+                        /*********** optional, may be need in future *************/
+                        final String CLASS_NAME = "android.net.ProxyProperties";
+                        Class cls = Class.forName(CLASS_NAME);
+                        Constructor constructor = cls.getConstructor(String.class, Integer.TYPE, String.class);
+                        constructor.setAccessible(true);
+                        Object proxyProperties = constructor.newInstance(host, port, null);
+                        intent.putExtra("proxy", (Parcelable) proxyProperties);
+                        /*********** optional, may be need in future *************/
+
+                        onReceiveMethod.invoke(rec, appContext, intent);
+                    }
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private  void setSystemProperties(String host, int port) {
+
+        System.setProperty("http.proxyHost", host);
+        System.setProperty("http.proxyPort", port + "");
+        
+        System.setProperty("https.proxyHost", host);
+        System.setProperty("https.proxyPort", port + "");
+
+
     }
     
     private void readRhoConfig(IRhoConfig config) {
