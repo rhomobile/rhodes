@@ -445,6 +445,34 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
         		mConfig.set(WebViewConfig.SETTING_SPLASHSCREEN_DURATION, splashscreendurationValue);
         	}
         }
+        if(config.isExist("http_proxy")){
+    		String httpProxy = config.getString("http_proxy");
+    		if(httpProxy.length()!=0){
+	    		int index = httpProxy.lastIndexOf(":");
+	    		if(index > -1)
+	    		{
+		    		String portNumber = httpProxy.substring(index + 1, httpProxy.length());
+		    		String hostURL = httpProxy.substring(0, index);
+		    		int port = Integer.parseInt(portNumber);
+		    		
+		    		ProxySettings.setProxy(RhodesActivity.getContext(),hostURL,port);
+		  		}
+	    	}
+    	}
+    	if(config.isExist("https_proxy")){
+    		String httpsProxy = config.getString("https_proxy");
+    		if(httpsProxy.length()!=0){
+	    		int index = httpsProxy.lastIndexOf(":");
+	    		if(index > -1)
+	    		{	      		
+	    			String portNumber = httpsProxy.substring(index + 1, httpsProxy.length());
+	    			String hostURL = httpsProxy.substring(0, index);
+	    			int port = Integer.parseInt(portNumber);
+	    		
+	    			ProxySettings.setProxy(RhodesActivity.getContext(),hostURL,port);
+	    		}
+	    	}
+    	}
         
     }
     
