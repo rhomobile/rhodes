@@ -2832,6 +2832,9 @@ namespace "config" do
         if $app_config['extensions'].index('emdk3-manager')
           $app_config['extensions'].delete('emdk3-manager')
           $app_config['extensions'].unshift('emdk3-manager')
+        elsif $app_config['extensions'].index('barcode') || $app_config['extensions'].index('indicators') || $app_config['extensions'].index('mobile_payment') || $app_config['extensions'].index('smartCradle')
+		      #Barcode has dependency on emdk3-manager. So load it if barcode is present
+		      $app_config['extensions'].unshift('emdk3-manager')
         end
     end
 
