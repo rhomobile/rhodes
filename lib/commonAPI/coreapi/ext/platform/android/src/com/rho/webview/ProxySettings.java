@@ -137,18 +137,18 @@ public class ProxySettings {
     private static boolean setKitKatProxy(Context context, String host, int port) {
         Context appContext = context.getApplicationContext();
         try {
-        	System.out.println("http_proxy setKitKatProxy 1");
+        	
             Class applictionCls = appContext.getClass();
-            System.out.println("http_proxy setKitKatProxy 2");
+           
             Field loadedApkField = applictionCls.getField("mLoadedApk");
             loadedApkField.setAccessible(true);
             Object loadedApk = loadedApkField.get(appContext);
             Class loadedApkCls = Class.forName("android.app.LoadedApk");
             Field receiversField = loadedApkCls.getDeclaredField("mReceivers");
             receiversField.setAccessible(true);
-            System.out.println("http_proxy setKitKatProxy 4");
+            
             ArrayMap receivers = (ArrayMap) receiversField.get(loadedApk);
-            System.out.println("http_proxy setKitKatProxy 5");
+           
             for (Object receiverMap : receivers.values()) {
                 for (Object rec : ((ArrayMap) receiverMap).keySet()) {
                     Class clazz = rec.getClass();
@@ -164,15 +164,15 @@ public class ProxySettings {
                         Object proxyProperties = constructor.newInstance(host, port, null);
                         intent.putExtra("proxy", (Parcelable) proxyProperties);
                         /*********** optional, may be need in future *************/
-                        System.out.println("http_proxy setKitKatProxy 6");
+                      
                         onReceiveMethod.invoke(rec, appContext, intent);
                     }
                 }
             }
-            System.out.println("http_proxy setKitKatProxy 2");
+          
             return true;
         } catch (Exception e) {
-        	  System.out.println("http_proxy setKitKatProxy cattch");
+        	
             e.printStackTrace();
         }
         return false;
