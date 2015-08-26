@@ -79,6 +79,26 @@ public class LocalFileProvider extends ContentProvider
         }
         return null;
     }
+    public static Uri overrideSystemUri(Uri uri)
+    {
+    
+       //IF clause is commented out.....
+            String scheme = uri.getScheme();
+            
+            if (scheme != null && scheme.equals("file")) {
+                String ssp = uri.getSchemeSpecificPart();//.getAbsolutePath();
+                String sspPrefix = "//" + getPathPrefix();
+                if(ssp.startsWith(sspPrefix)) {
+                    ssp = "//" + ssp.substring(("//"+PATH_PREFIX).length(), ssp.length());
+                    Logger.T(TAG, "Overriding URI: " + uri.toString());
+                    
+                    return Uri.fromParts(PROTOCOL_PREFIX, ssp, uri.getFragment());
+                }
+            }
+     
+        return null;
+    }
+    
     
     public static void revokeUriPermissions(Context ctx)
     {
@@ -97,7 +117,7 @@ public class LocalFileProvider extends ContentProvider
         else throw new IllegalArgumentException("Unknown URI authority: " + authority);
     }
     
-    @Override
+   /* @Override
     public AssetFileDescriptor openAssetFile(Uri uri, String mode) {
         Logger.T(TAG, "Opening asset: " + uri);
         
@@ -112,6 +132,34 @@ public class LocalFileProvider extends ContentProvider
         
         return fd;
     }
+    */
+     @Override
+    public ParcelFileDescriptor openFile(Uri uri, String mode)
+             throws FileNotFoundException, SecurityException
+       {
+    	
+         if(mode.compareTo("r") != 0)
+         {
+             throw new SecurityException("Unacceptable openFile mode: " + mode);
+         }
+         try {
+         	            File path = fileFromUri(uri);
+         	            
+         	           Logger.D(TAG, "Opening content file: " + path.getPath());
+         	            
+         	            ParcelFileDescriptor fd = RhoFileApi.openParcelFd(path.getPath());
+         	           if(fd == null)
+         	                throw new IllegalArgumentException();
+         	            
+         	            return fd;
+         	        } catch(IllegalArgumentException error)
+         	        {
+         	            FileNotFoundException fileError = new FileNotFoundException("Cannot assign file for URI: " + uri.toString());
+         	            fileError.initCause(error);
+         	            throw fileError;
+         	        }
+         
+     }
 
     @Override
     public boolean onCreate() {
