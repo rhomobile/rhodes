@@ -39,6 +39,8 @@ import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
+import android.os.ParcelFileDescriptor;
+import java.io.FileNotFoundException;
 
 
 public class LocalFileProvider extends ContentProvider
