@@ -1906,6 +1906,12 @@ namespace "build" do
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       classpath += $path_separator + $v4support_classpath
 
+      javalibsdir = Jake.get_absolute("platform/android/lib")
+
+      Dir.glob( File.join(javalibsdir,"*.jar" )) do |filepath|
+        classpath += $path_separator + filepath
+      end
+
       javafilelists = [srclist]
 
       extlist = File.join $app_builddir, "ext_build.files"
