@@ -73,13 +73,19 @@ public class LocalFileHandler implements UriHandler
         int intentFlags = 0;
         Uri path = Uri.parse(url);
 
-        Uri newUri = LocalFileProvider.overrideUri(path);
+        //Uri newUri = LocalFileProvider.overrideUri(path);
+        Uri newUri = LocalFileProvider.overrideSystemUri(path);
         if(newUri != null) {
             intentFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
             url = Uri.decode(newUri.toString());
         }
-
+        intentFlags=Intent.FLAG_GRANT_READ_URI_PERMISSION;
         Intent intent = Intent.parseUri(url, intentFlags);
+        if(newUri==null && url.contains("file://"))
+       {
+    	   intent.setAction(Intent.ACTION_VIEW);
+    	   intent.setDataAndType(path, "*/*");
+   	   }
         ctx.startActivity(Intent.createChooser(intent, "Open in..."));
 
         return true;
