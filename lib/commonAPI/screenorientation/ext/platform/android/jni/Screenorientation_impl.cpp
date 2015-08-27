@@ -1,5 +1,5 @@
 #include "rhodes.h"
-#include "Screenorientation.h"
+#include "ScreenOrientation.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
