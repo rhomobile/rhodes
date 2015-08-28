@@ -1,5 +1,6 @@
 #pragma once
 #include "ibrowserengine.h"
+#include "EngineEventListner.h"
 
 #include "logging/RhoLog.h"
 
@@ -40,7 +41,8 @@ class CEBrowserEngine :
 	public IOleInPlaceSite,
 	public IDocHostUIHandler2,
 	public DWebBrowserEvents2,
-	public IDocHostShowUI
+	public IDocHostShowUI,
+	public rho::engineeventlistner::IDOMInjectorEngineInterface
 {
     DEFINE_LOGCLASS;
 
@@ -112,6 +114,9 @@ private:
     virtual int NewTab();//returns	the new tab ID 
 	virtual int SwitchTab(int iTabID);//returns the previous tab ID
 	virtual BOOL CloseTab(int iTabID);//returns TRUE if successful
+
+    //IDOMInjectorEngineInterface implementation
+    virtual bool executAnonymousJs(wchar_t* szFunctionText, int nTabID);
 
 #pragma region not_implemented_virtual_functions
     virtual BOOL    NavigateToHtml(LPCTSTR szHtml) { return FALSE; }
