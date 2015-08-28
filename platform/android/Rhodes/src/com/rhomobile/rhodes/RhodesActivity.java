@@ -84,7 +84,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	private FrameLayout mTopLayout;
 	private SplashScreen mSplashScreen;
 	private MainView mMainView;
-	
+	private String lastIntent ="android.intent.action.MAIN";
 	private RhoMenu mAppMenu;
 
 	private long uiThreadId = 0;
@@ -286,17 +286,25 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	}
 	
 	@Override
-    protected void onNewIntent(Intent intent) {
+     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
         Logger.T(TAG, "onNewIntent");
-	String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
-    	intent.setAction("android.intent.action.VIEW");
-    	intent.setData(Uri.parse(url));
-        
+        if(intent !=null && intent.getAction() !=null){
+         if((intent.getAction().compareTo(intent.ACTION_MAIN) == 0) && ( intent.getAction().compareTo(lastIntent) == 0)){
+	        	String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
+	        	intent.setAction("android.intent.action.VIEW");
+	        	intent.setData(Uri.parse(url));
+	       }
+        }else{
+        	String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
+        	intent.setAction("android.intent.action.VIEW");
+        	intent.setData(Uri.parse(url));
+        }
         handleStartParams(intent);
 
         RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
+        lastIntent = intent.getAction();
     }
     
     @Override
