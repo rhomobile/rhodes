@@ -1,1 +1,0 @@
-@ruby %~dp0rhogen %*

@@ -4474,7 +4474,7 @@ end
 
 task :gem do
   puts "Removing old gem"
-  rm_rf Dir.glob("rhodes*.gem")
+  rm_rf Dir.glob("tauplatform*.gem")
   puts "Copying Rakefile"
   cp "Rakefile", "rakefile.rb"
 
@@ -4492,7 +4492,7 @@ task :gem do
   File.open("Manifest.txt",'w') {|f| f.write(out)}
 
   puts "Building gem"
-  Jake.run3('gem build rhodes.gemspec')
+  Jake.run3('gem build tauplatform.gemspec')
 end
 
 namespace "rhomobile-debug" do

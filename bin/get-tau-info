@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-if ARGV && ARGV.size > 0 && ARGV[0] == "--rhodes-path"
+if ARGV && ARGV.size > 0 && ARGV[0] == "--tau-path"
     currDir = File.dirname(__FILE__)
     Dir.chdir(currDir)
     Dir.chdir("..")
@@ -10,7 +10,7 @@ end
 
 require File.join(File.dirname(__FILE__), '..', 'lib', 'rhodes')
 
-params = ["--rhodes-ver"]
+params = ["--tau-ver"]
 
 def findParam(paramArray, paramId)
    i=0

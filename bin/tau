@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+# TODO: deprecate taugen
+load File.expand_path(File.join(File.dirname(__FILE__),'taugen'))
