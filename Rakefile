@@ -3407,9 +3407,9 @@ def init_extensions(dest, mode = "")
                 #api generator
                 if File.exist? xml_path
                   if gen_checker.check(xml_path)
-                    puts 'start running rhogen with api key'
+                    puts 'start running taugen with api key'
                     if !$skip_build_extensions
-                      Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+                      Jake.run3("\"#{$startdir}/bin/taugen\" api \"#{xml_path}\"")
                     end
                   end
                 end
@@ -4726,7 +4726,7 @@ namespace "run" do
                 #TODO checker check
                 if gen_checker.check(xml_path)
                   #                      puts 'ruuuuuuuun generatooooooooooooor'
-                  cmd_line = "#{$startdir}/bin/rhogen api #{xml_path}"
+                  cmd_line = "#{$startdir}/bin/taugen api #{xml_path}"
                   puts "cmd_line: #{cmd_line}"
                   system "#{cmd_line}"
                 end
@@ -4978,7 +4978,7 @@ namespace :dev do
         exts = xmls.reject{|f| !File.exists?(File.join(File.split(f)[0],'..','ext.yml'))}
         exts.each do |ext|
           puts "Processing #{ext}"
-          result = Jake.run2('"'+File.join($startdir,'bin','rhogen')+'"',['api',"\"#{ext}\""],{:hide_output=>true})
+          result = Jake.run2('"'+File.join($startdir,'bin','taugen')+'"',['api',"\"#{ext}\""],{:hide_output=>true})
           if $?.exitstatus != 0
             puts result.red
             fail "probem with extension #{ext}"
