@@ -10,13 +10,13 @@ cp File.dirname(__FILE__) +"/../rhobuild.yml.example", File.dirname(__FILE__) +"
 chmod_R 0777, File.dirname(__FILE__) + "/.."
 
 =begin
-File.chmod 0755, File.dirname(__FILE__) + "/../bin/get-rhodes-info"
-File.chmod 0755, File.dirname(__FILE__) + "/../bin/migrate-rhodes-app"
-File.chmod 0755, File.dirname(__FILE__) + "/../bin/rhodes"
-File.chmod 0755, File.dirname(__FILE__) + "/../bin/rhodes-setup"
-File.chmod 0755, File.dirname(__FILE__) + "/../bin/rhogen"
-File.chmod 0755, File.dirname(__FILE__) + "/../bin/set-rhodes-sdk"
-File.chmod 0755, File.dirname(__FILE__) + "/../bin/upgrade-rhodes-app"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/get-tau-info"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/migrate-tau-app"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/tau"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/tau-setup"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/taugen"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/set-tau-sdk"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/upgrade-tau-app"
 =end
 
 #This is the hack, we make all the things to make it look like an extension has compiled

@@ -29,7 +29,7 @@ if File.file?(cfgfilename)
 end
 
 unless $rho_root
-	$rho_root = `get-rhodes-info --rhodes-path`.chomp
+	$rho_root = `get-tau-info --tau-path`.chomp
 end
 
 puts "$rho_root is #{$rho_root}"

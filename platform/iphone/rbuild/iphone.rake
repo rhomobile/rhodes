@@ -1683,7 +1683,7 @@ namespace "build" do
         chdir $app_path
 
         puts '$ prepare iphone XCode project for application'
-        rhogenpath = File.join($startdir, 'bin', 'rhogen')
+        rhogenpath = File.join($startdir, 'bin', 'taugen')
         Jake.run3("\"#{rhogenpath}\" iphone_project #{appname_fixed} \"#{$startdir}\"")
 
         Rake::Task['build:iphone:update_plist'].invoke
@@ -1780,7 +1780,7 @@ namespace "build" do
       rm_rf File.join('project','iphone')
 
       puts 'prepare iphone XCode project for application'
-      rhogenpath = File.join($startdir, 'bin', 'rhogen')
+      rhogenpath = File.join($startdir, 'bin', 'taugen')
       if $use_prebuild_data
         Jake.run3("\"#{rhogenpath}\" iphone_project_prebuild #{appname_fixed} \"#{$startdir}\"")
       else
@@ -1792,7 +1792,7 @@ namespace "build" do
 
       #fix issue with Application Base generated file - hardcoded !!!
       #xml_path = File.join($startdir, "/lib/commonAPI/coreapi/ext/Application.xml")
-      #Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+      #Jake.run3("\"#{$startdir}/bin/taugen\" api \"#{xml_path}\"")
 
       vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
       bundle_identifier = "com.#{vendor}.#{appname}"

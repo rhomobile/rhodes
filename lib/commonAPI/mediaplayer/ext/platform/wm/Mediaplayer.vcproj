@@ -648,7 +648,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Generate API"
-						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+						CommandLine="$(RHO_ROOT)\bin\taugen api $(InputPath)&#x0D;&#x0A;"
 						Outputs="$(InputDir)shared/generated"
 					/>
 				</FileConfiguration>
@@ -658,7 +658,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Generate API"
-						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+						CommandLine="$(RHO_ROOT)\bin\taugen api $(InputPath)&#x0D;&#x0A;"
 						Outputs="$(InputDir)shared/generated"
 					/>
 				</FileConfiguration>
@@ -668,7 +668,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Generate API"
-						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+						CommandLine="$(RHO_ROOT)\bin\taugen api $(InputPath)&#x0D;&#x0A;"
 						Outputs="$(InputDir)shared/generated"
 					/>
 				</FileConfiguration>
@@ -678,7 +678,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Generate API"
-						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+						CommandLine="$(RHO_ROOT)\bin\taugen api $(InputPath)&#x0D;&#x0A;"
 						Outputs="$(InputDir)shared/generated"
 					/>
 				</FileConfiguration>

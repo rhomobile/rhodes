@@ -14,22 +14,22 @@ if ENV["RHO_HOME"].nil?
     rakefilepath = File.join(File.expand_path($app_config['sdk']), 'Rakefile')
   else
     begin
-      rakefilepath = `get-rhodes-info --rhodes-path`.chomp
+      rakefilepath = `get-tau-info --tau-path`.chomp
       rakefilepath  = File.join(rakefilepath, "Rakefile")
     rescue
       rakefilepath  = ""	
     end
   end  
 else
-  rakefilepath = "#{ENV["RHO_HOME"]}/Rakefile"
+  rakefilepath = "#{ENV["TAU_HOME"]}/Rakefile"
 end
 
 unless File.exists? rakefilepath
-  puts "\nCannot find your Rhodes gem or source path: #{rakefilepath}"
+  puts "\nCannot find your TAU gem or source path: #{rakefilepath}"
   puts "\nIf you have the sdk on your path or have installed the gem this"
-  puts "can be resolved by running 'set-rhodes-sdk'"
+  puts "can be resolved by running 'set-tau-sdk'"
   puts "\nYou can also set this manually by modifying your build.yml or"
-  puts "setting the environment variable RHO_HOME"
+  puts "setting the environment variable TAU_HOME"
   exit 1
 end
 

@@ -724,7 +724,7 @@ module Rhogen
       args = []
       args << 'api'
       args << Dir.pwd+"/#{namecamelcase}.xml"
-      Jake.run(source_root+'/../../../../bin/rhogen', args)
+      Jake.run(source_root+'/../../../../bin/taugen', args)
     end
 
     def callback_after_delete_testapp(template)
