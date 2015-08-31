@@ -1235,7 +1235,7 @@ def show_build_information(build_hash, platforms, opts = {})
     target = ", target platform: " + find_platform_by_command(platforms, build_hash["target_device"]).blue
   end
   if build_hash["rhodes_version"] && build_hash["version"]
-    message = "Rhodes version: #{build_hash["rhodes_version"].cyan}, app version: #{build_hash["version"].cyan}"
+    message = "TAU Platform version: #{build_hash["rhodes_version"].cyan}, app version: #{build_hash["version"].cyan}"
   end
 
   puts "Build ##{build_hash["id"]}: #{label}#{target}"
@@ -2667,7 +2667,7 @@ namespace "config" do
     print_timestamp('config:common')
 
     if $app_config && !$app_config["sdk"].nil?
-      BuildOutput.note('To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.','You use sdk parameter in build.yml')
+      BuildOutput.note('To use latest TAU Platform gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.','You use sdk parameter in build.yml')
     end
 
     $bindir = File.join($app_path, "bin")
@@ -2786,52 +2786,52 @@ namespace "config" do
       # add audiocapture extensions for rhoelements app
       if !$app_config['extensions'].index('rhoelementsext')
         if $current_platform == "iphone" || $current_platform == "android"
-          $app_config['extensions'] = $app_config['extensions'] | ['audiocapture']
+          #$app_config['extensions'] = $app_config['extensions'] | ['audiocapture']
         end
       end
 
       if $current_platform == "wm"
-        $app_config['extensions'] = $app_config['extensions'] | ['symboldevice']
-        $app_config['extensions'] = $app_config['extensions'] | ['barcode']
-        $app_config['extensions'] = $app_config['extensions'] | ['indicators']
-        $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
-        $app_config['extensions'] = $app_config['extensions'] | ['signature']
-        $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
-        $app_config['extensions'] = $app_config['extensions'] | ['sensor']
+        #$app_config['extensions'] = $app_config['extensions'] | ['symboldevice']
+        #$app_config['extensions'] = $app_config['extensions'] | ['barcode']
+        #$app_config['extensions'] = $app_config['extensions'] | ['indicators']
+        #$app_config['extensions'] = $app_config['extensions'] | ['cardreader']
+        #$app_config['extensions'] = $app_config['extensions'] | ['signature']
+        #$app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
+        #$app_config['extensions'] = $app_config['extensions'] | ['sensor']
       end
 
       if $current_platform == "iphone"
-        $app_config['extensions'] = $app_config['extensions'] | ['barcode']
-        $app_config['extensions'] = $app_config['extensions'] | ['signature']
-        $app_config['extensions'] = $app_config['extensions'] | ['indicators']
-        $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
-        $app_config['extensions'] = $app_config['extensions'] | ['sensor']
+        #$app_config['extensions'] = $app_config['extensions'] | ['barcode']
+        #$app_config['extensions'] = $app_config['extensions'] | ['signature']
+        #$app_config['extensions'] = $app_config['extensions'] | ['indicators']
+        #$app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
+        #$app_config['extensions'] = $app_config['extensions'] | ['sensor']
       end
 
       if $current_platform == "android"
-        $app_config['extensions'] = $app_config['extensions'] | ['symboldevice']
-        $app_config['extensions'] = $app_config['extensions'] | ['emdk3-manager']
-        $app_config['extensions'] = $app_config['extensions'] | ['barcode']
-        $app_config['extensions'] = $app_config['extensions'] | ['signature']
-        $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
-        $app_config['extensions'] = $app_config['extensions'] | ['indicators']
-        $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
-        $app_config['extensions'] = $app_config['extensions'] | ['sensor']
+        #$app_config['extensions'] = $app_config['extensions'] | ['symboldevice']
+        #$app_config['extensions'] = $app_config['extensions'] | ['emdk3-manager']
+        #$app_config['extensions'] = $app_config['extensions'] | ['barcode']
+        #$app_config['extensions'] = $app_config['extensions'] | ['signature']
+        #$app_config['extensions'] = $app_config['extensions'] | ['cardreader']
+        #$app_config['extensions'] = $app_config['extensions'] | ['indicators']
+        #$app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
+        #$app_config['extensions'] = $app_config['extensions'] | ['sensor']
       end
       
       if $current_platform == "wp8"
-        $app_config['extensions'] = $app_config['extensions'] | ['barcode']
+        #$app_config['extensions'] = $app_config['extensions'] | ['barcode']
       end
    end
    if $current_platform == "android"
       if $app_config['extensions'].index('barcode') 
-        $app_config['extensions'].delete('barcode')
-        $app_config['extensions'] |= ['emdk3-manager']
-        $app_config['extensions'] |= ['barcode']
+        #$app_config['extensions'].delete('barcode')
+        #$app_config['extensions'] |= ['emdk3-manager']
+        #$app_config['extensions'] |= ['barcode']
       end
       if $app_config['extensions'].index('indicators')
-         $app_config['extensions'].delete('indicators')
-         $app_config['extensions'] |= ['indicators']
+         #$app_config['extensions'].delete('indicators')
+         #$app_config['extensions'] |= ['indicators']
       end
 
     end
@@ -2947,12 +2947,12 @@ namespace "config" do
     end
 
 
-    if (!$rhoelements_features.nil?) && ($rhoelements_features.length() > 0)
-      BuildOutput.warning([
-                            'The following features are only available in RhoElements v2 and above:',
-                            $rhoelements_features,
-      'For more information go to http://www.rhomobile.com '])
-    end
+    #if (!$rhoelements_features.nil?) && ($rhoelements_features.length() > 0)
+    #  BuildOutput.warning([
+    #                        'The following features are only available in RhoElements v2 and above:',
+    #                        $rhoelements_features,
+    #  'For more information go to http://www.rhomobile.com '])
+    #end
 
     if $current_platform == "win32" && $winxpe_build
       $app_config['capabilities'] << 'winxpe'
@@ -4213,9 +4213,9 @@ namespace "build" do
       $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
       $tmpdir = File.join($bindir, 'tmp')
       $appname = $app_config['name']
-      $appname = 'Rhodes' if $appname.nil?
+      $appname = 'TAU' if $appname.nil?
       $vendor = $app_config['vendor']
-      $vendor = 'rhomobile' if $vendor.nil?
+      $vendor = 'tau' if $vendor.nil?
       $vendor = $vendor.gsub(/^[^A-Za-z]/, '_').gsub(/[^A-Za-z0-9]/, '_').gsub(/_+/, '_').downcase
       $appincdir = (File.join $tmpdir, 'include')
 
@@ -4387,7 +4387,7 @@ task :get_version do
   #puts "  WinMo:            " + wmver
   puts "  Android:          " + androidver
   puts "  Gem:              " + gemver
-  puts "  Rhodes:           " + rhodesver
+  puts "  TAU Platform:           " + rhodesver
   puts "  Framework:        " + frameworkver
 end
 
@@ -4627,7 +4627,7 @@ namespace "run" do
 
       puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
 
-      $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
+      $appname = $app_config["name"].nil? ? "TAU" : $app_config["name"]
 
       sim_conf = "rhodes_path='#{$startdir}'\r\n"
       sim_conf += "app_version='#{$app_config["version"]}'\r\n"
@@ -4875,7 +4875,7 @@ namespace "run" do
           puts "Check 'env:paths:rhosimulator' path in '<rhodes>/rhobuild.yml' OR"
         end
 
-        puts "Install Rhodes gem OR"
+        puts "Install TAU Platform gem OR"
         puts "Install RhoSimulator and modify 'env:paths:rhosimulator' section in '<rhodes>/rhobuild.yml'"
         exit 1
       end

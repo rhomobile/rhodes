@@ -19,7 +19,7 @@ package com.google.zxing.client.android;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.camera.CameraManager;
 
-import com.rhomobile.rhodes.R;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -63,11 +63,11 @@ public final class ViewfinderView extends View {
     // Initialize these once for performance rather than calling them every time in onDraw().
     paint = new Paint();
     Resources resources = getResources();
-    maskColor = resources.getColor(R.color.viewfinder_mask);
-    resultColor = resources.getColor(R.color.result_view);
-    frameColor = resources.getColor(R.color.viewfinder_frame);
-    laserColor = resources.getColor(R.color.viewfinder_laser);
-    resultPointColor = resources.getColor(R.color.possible_result_points);
+    maskColor = resources.getColor(RhoExtManager.getResourceId("color", "viewfinder_mask"));
+    resultColor = resources.getColor(RhoExtManager.getResourceId("color", "result_view"));
+    frameColor = resources.getColor(RhoExtManager.getResourceId("color", "viewfinder_frame"));
+    laserColor = resources.getColor(RhoExtManager.getResourceId("color", "viewfinder_laser"));
+    resultPointColor = resources.getColor(RhoExtManager.getResourceId("color", "possible_result_points"));
     scannerAlpha = 0;
     possibleResultPoints = new HashSet<ResultPoint>(5);
   }

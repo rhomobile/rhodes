@@ -23,8 +23,7 @@ import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.camera.CameraManager;
 
 import com.rhomobile.rhodes.BaseActivity;
-import com.rhomobile.rhodes.R;
-
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -171,7 +170,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
 
     Window window = getWindow();
     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    setContentView(R.layout.capture);
+    setContentView(RhoExtManager.getResourceId("layout", "capture"));
 
     int camera_index = 0;
     Intent intent = getIntent();
@@ -180,8 +179,8 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     }
     
     CameraManager.init(getApplication(), camera_index);
-    viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
-    resultView = findViewById(R.id.result_view);
+    viewfinderView = (ViewfinderView) findViewById(RhoExtManager.getResourceId("id", "viewfinder_view"));
+    resultView = findViewById(RhoExtManager.getResourceId("id", "result_view"));
     //statusView = (TextView) findViewById(R.id.status_view);
     handler = null;
     lastResult = null;
@@ -190,10 +189,10 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     //historyManager.trimHistory();
     inactivityTimer = new InactivityTimer(this);
 
-    mCancelButton2 = (Button)findViewById(R.id.cancel_button_a);
-    mCancelButton = (Button)findViewById(R.id.cancel_button);
-    mRetakeButton = (Button)findViewById(R.id.retake_button);
-    mOKButton = (Button)findViewById(R.id.ok_button);
+    mCancelButton2 = (Button)findViewById(RhoExtManager.getResourceId("id", "cancel_button_a"));
+    mCancelButton = (Button)findViewById(RhoExtManager.getResourceId("id", "cancel_button"));
+    mRetakeButton = (Button)findViewById(RhoExtManager.getResourceId("id", "retake_button"));
+    mOKButton = (Button)findViewById(RhoExtManager.getResourceId("id", "ok_button"));
     
     mCancelButton2.setOnClickListener( new OnClickListener() {
 		public void onClick(View v) {
@@ -226,7 +225,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
   public void onRetake() {
       resetStatusView();
 	  if (handler != null) {
-        handler.sendEmptyMessage(R.id.restart_preview);
+        handler.sendEmptyMessage(RhoExtManager.getResourceId("id", "restart_preview"));
       }
   }
   
@@ -246,7 +245,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     super.onResume();
     resetStatusView();
 
-    SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+    SurfaceView surfaceView = (SurfaceView) findViewById(RhoExtManager.getResourceId("id", "preview_view"));
     SurfaceHolder surfaceHolder = surfaceView.getHolder();
     if (hasSurface) {
       // The activity was paused but not stopped, so the surface still exists. Therefore
@@ -366,13 +365,13 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     if (points != null && points.length > 0) {
       Canvas canvas = new Canvas(barcode);
       Paint paint = new Paint();
-      paint.setColor(getResources().getColor(R.color.result_image_border));
+      paint.setColor(getResources().getColor(RhoExtManager.getResourceId("color", "result_image_border")));
       paint.setStrokeWidth(3.0f);
       paint.setStyle(Paint.Style.STROKE);
       Rect border = new Rect(2, 2, barcode.getWidth() - 2, barcode.getHeight() - 2);
       canvas.drawRect(border, paint);
 
-      paint.setColor(getResources().getColor(R.color.result_points));
+      paint.setColor(getResources().getColor(RhoExtManager.getResourceId("color", "result_points")));
       if (points.length == 2) {
         paint.setStrokeWidth(4.0f);
         drawLine(canvas, paint, points[0], points[1]);
@@ -401,12 +400,12 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     viewfinderView.setVisibility(View.GONE);
     resultView.setVisibility(View.VISIBLE);
 
-    ImageView barcodeImageView = (ImageView) findViewById(R.id.barcode_image_view);
+    ImageView barcodeImageView = (ImageView) findViewById(RhoExtManager.getResourceId("id", "barcode_image_view"));
     if (barcode != null) {
       barcodeImageView.setImageBitmap(barcode);
     }
 
-    TextView contentsTextView = (TextView) findViewById(R.id.contents_text_view);
+    TextView contentsTextView = (TextView) findViewById(RhoExtManager.getResourceId("id", "contents_text_view"));
     CharSequence displayContents = rawResult.getText();// resultHandler.getDisplayContents();
     contentsTextView.setText(displayContents);
     // Crudely scale betweeen 22 and 32 -- bigger font for shorter text
@@ -446,7 +445,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
       mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
       mediaPlayer.setOnCompletionListener(beepListener);
 
-      AssetFileDescriptor file = getResources().openRawResourceFd(R.raw.beep);
+      AssetFileDescriptor file = getResources().openRawResourceFd(RhoExtManager.getResourceId("raw", "beep"));
       try {
         mediaPlayer.setDataSource(file.getFileDescriptor(), file.getStartOffset(),
             file.getLength());

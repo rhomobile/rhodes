@@ -127,7 +127,7 @@ public final class CameraManager {
     	  camera = Camera.open();
       }
       else {
-    	  camera = com.rhomobile.rhodes.camera.Camera.getCameraService().getFrontCamera();  
+    	  camera = Camera.open();//com.rhomobile.rhodes.camera.Camera.getCameraService().getFrontCamera();  
       }
       if (camera == null) {
         throw new IOException();
