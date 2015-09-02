@@ -31,12 +31,18 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
         settings.setStandardFontFamily(RhoConf.getString("fontFamily"));
         //customUA = updateRevesionOfCustomUA(settings.getUserAgentString(), customUA);
         //settings.setUserAgentString(customUA);
-        if(!RhoConf.getString("ApplicationCachePath").isEmpty())
-		settings.setAppCachePath(RhoConf.getString("ApplicationCachePath"));
-		
-	if(!RhoConf.getString("ApplicationCacheQuota").isEmpty())
-		settings.setAppCacheMaxSize(Long.valueOf(RhoConf.getString("ApplicationCacheQuota")).longValue()); 
-		
+        if(RhoConf.isExist("ApplicationCachePath")){
+        	if(!RhoConf.getString("ApplicationCachePath").isEmpty())
+        		settings.setAppCachePath(RhoConf.getString("ApplicationCachePath"));
+        }
+        if(RhoConf.isExist("ApplicationCacheQuota")){
+        	if(!RhoConf.getString("ApplicationCacheQuota").isEmpty())
+        		try{
+        		settings.setAppCacheMaxSize(Long.valueOf(RhoConf.getString("ApplicationCacheQuota")).longValue()); 
+        		}
+        		catch(NumberFormatException exp){
+        		}
+        }	
         Logger.T(TAG, "Enable Zoom: " + enableZoom);
         
         if (enableCache) {
