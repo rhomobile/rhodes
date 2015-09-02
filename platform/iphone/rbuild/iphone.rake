@@ -2867,6 +2867,9 @@ namespace "device" do
 
       print_timestamp('device:iphone:production_with_prebuild_binary START')
 
+      #Support build.yml settings on cloud by copying to rhoconfig.txt
+      Rake::Task['config:common:ymlsetup'].invoke
+
       currentdir = Dir.pwd()
 
       $skip_build_rhodes_main = true

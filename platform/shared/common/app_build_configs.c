@@ -1,7 +1,7 @@
 // WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!
 
 #include <string.h>
-
+#include "common/RhoConf.h"
 //#include "app_build_configs.h"
 
 static const char* keys[] = { ""
@@ -18,6 +18,12 @@ const char* get_app_build_config_item(const char* key) {
     if (strcmp(key, keys[i]) == 0) {
       return values[i];
     }
+    else {
+	  //If value is not provided in build.yml then look for rhoconfig.txt
+	  const char* szValue;
+	  szValue = rho_conf_getString(key);
+	  return szValue;
+  	}
   }
   return 0;
 }
