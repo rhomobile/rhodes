@@ -189,16 +189,15 @@ def make_application_build_config_header_file
     f.puts '    return rho_simconf_getString("security_token");'
     f.puts '  }'
   end
-  f.puts '  for (i = 0; i < APP_BUILD_CONFIG_COUNT; i++) {'
+  f.puts ""
+  f.puts '  const char* szValue;'
+  f.puts '  szValue = rho_conf_getString(key);'
+  f.puts '  if (strcmp(szValue, "") != 0)'
+  f.puts '    return szValue;'
+  f.puts ""
+  f.puts '  for (i = 1; i < APP_BUILD_CONFIG_COUNT; i++) {'
   f.puts '    if (strcmp(key, keys[i]) == 0) {'
   f.puts '      return values[i];'
-  f.puts '    }'
-  f.puts '    else {'
-  f.puts '      //Adding this in else block given priority to rhoconfig.txt config content.'
-  f.puts '      const char* szValue;'
-  f.puts '      szValue = rho_conf_getString(key);'
-  f.puts '      if (strcmp(szValue, "") != 0)'
-  f.puts '        return szValue;'
   f.puts '    }'
   f.puts '  }'
   f.puts '  return 0;'
