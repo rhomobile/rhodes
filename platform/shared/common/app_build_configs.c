@@ -15,16 +15,15 @@ static const char* values[] = { ""
 
 const char* get_app_build_config_item(const char* key) {
   int i;
-  for (i = 0; i < APP_BUILD_CONFIG_COUNT; i++) {
+
+  const char* szValue;
+  szValue = rho_conf_getString(key);
+  if (strcmp(szValue, "") != 0)
+    return szValue;
+
+  for (i = 1; i < APP_BUILD_CONFIG_COUNT; i++) {
     if (strcmp(key, keys[i]) == 0) {
       return values[i];
-    }
-    else {
-      //Adding this in else block given priority to rhoconfig.txt config content.
-      const char* szValue;
-      szValue = rho_conf_getString(key);
-      if (strcmp(szValue, "") != 0)
-        return szValue;
     }
   }
   return 0;
