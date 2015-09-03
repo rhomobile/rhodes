@@ -20,7 +20,7 @@ const char* get_app_build_config_item(const char* key) {
       return values[i];
     }
     else {
-      //If value is not provided in build.yml then look for rhoconfig.txt
+      //Adding this in else block given priority to rhoconfig.txt config content.
       const char* szValue;
       szValue = rho_conf_getString(key);
       if (strcmp(szValue, "") != 0)
