@@ -88,7 +88,7 @@ namespace rho {
 				(osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1);		
 			if(bRunningOnWM)
 			{
-				eImageOutputFormat eFormat = eImageUri;
+				eImageOutputFormat eFormat = eImagePath;
 				//get output format
 				typedef std::map<rho::String, rho::String>::const_iterator it_type;
 				for (it_type iterator = propertyMap.begin(); iterator != propertyMap.end(); iterator++)
@@ -98,6 +98,14 @@ namespace rho {
 						if(cmp(convertToStringW(iterator->second).c_str(), L"dataUri"))
 						{
 							eFormat = eDataUri;
+						}
+						else if(cmp(convertToStringW(iterator->second).c_str(), L"image"))
+						{
+							eFormat = eImageUri;
+						}
+						else if(cmp(convertToStringW(iterator->second).c_str(), L"imagePath"))
+						{
+							eFormat = eImagePath;
 						}
 						break;
 							
@@ -259,7 +267,7 @@ namespace rho {
 				UpdateErrorStatus(dwResult);
 			}
 		}
-		void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri, eImageOutputFormat eFormat =eImageUri, int nImageWidth =0, int nImageHeight =0)
+		void UpdateCallbackStatus(rho::String status, rho::String message, rho::String imageUri, eImageOutputFormat eFormat =eImagePath, int nImageWidth =0, int nImageHeight =0)
 		{		
 			char imageHeight[6];
 			char imageWidth[6];

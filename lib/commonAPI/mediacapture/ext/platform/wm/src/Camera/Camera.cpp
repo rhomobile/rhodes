@@ -23,7 +23,7 @@ CCamera::CCamera(LPCTSTR szDeviceName)
 	LOG(INFO) + __FUNCTION__ + "Device name set as " + m_szDeviceName; 
 	m_PreviewOn = false;
 	m_FlashMode = FALSE;
-	m_eOutputFormat = eImageUri;
+	m_eOutputFormat = eImagePath;
 	m_FileName = DEFAULT_FILENAME;
 	m_DesiredHeight = -1;
 	m_DesiredWidth =-1;
@@ -107,6 +107,10 @@ BOOL CCamera::getProperty(LPCTSTR szParameterName, WCHAR* szParameterValue)
 		{
 			wcscpy(szParameterValue, L"image");
 		}
+        else if(m_eOutputFormat == eImagePath)
+        {
+            wcscpy(szParameterValue, L"imagePath");
+        }
 		else
 		{
 			wcscpy(szParameterValue, L"dataUri");
@@ -213,13 +217,14 @@ BOOL CCamera::setProperty(LPCTSTR szPropertyName, LPCTSTR szPropertyValue)
 		{
 			m_eOutputFormat = eImageUri;
 		}
-		else
+		else if(cmp(szPropertyValue, L"dataUri"))
 		{
-			if(cmp(szPropertyValue, L"dataUri"))
-			{
-				m_eOutputFormat = eDataUri;
-			}
-		}		
+			m_eOutputFormat = eDataUri;		
+		}
+		else if(cmp(szPropertyValue, L"imagePath"))
+		{
+			m_eOutputFormat = eImagePath;
+		}
 	}
 	else
 	{
