@@ -194,7 +194,7 @@ def make_application_build_config_header_file
   f.puts '      return values[i];'
   f.puts '    }'
   f.puts '    else {'
-  f.puts '      //If value is not provided in build.yml then look for rhoconfig.txt'
+  f.puts '      //Adding this in else block given priority to rhoconfig.txt config content.'
   f.puts '      const char* szValue;'
   f.puts '      szValue = rho_conf_getString(key);'
   f.puts '      if (strcmp(szValue, "") != 0)'
