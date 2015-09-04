@@ -862,7 +862,62 @@ alert(reslnArray[1].height);
               </SECTION>
             </SECTIONS>
           </EXAMPLE>
-        </EXAMPLES>
+          <EXAMPLE title="Transfering an image to HTTP server">
+            <SECTIONS>
+              <SECTION>
+                <DESC>This example demonstrate how user can transfer an image to http server. This will be useful when application is running on a remote server.</DESC>
+                <CODE>
+                  <JAVASCRIPT>
+                    <![CDATA[
+//enumerate the available cameras on the device
+var camArray = EB.Camera.enumerate();
+
+//below is the callback fired by network api after image upload to the server is completed
+var upload_file_callback = function (args){
+        status = args['status'];
+		//a status ok indicates image transferred successfully
+        alert(status);
+       }
+
+//below is the camera call back fired after takePicture is called
+var camera_callbackFunc = function(cbData){ 
+  alert(cbData.imageUri); 
+  //set the upload file properties; Refer network module for more details
+  var uploadfileProps = {
+           url: 'http://10.233.82.51:8081/upload_image_file',
+          //authType: "basic",
+          //authUser: "admin",
+          //authPassword: "password",
+          filename: cbData.imageUri,
+          body: "uploading file",
+          fileContentType: "image/jpeg"
+        };
+   
+   //below is the network module API used for uploading images when camera fire the callback
+   EB.Network.uploadFile(uploadfileProps, upload_file_callback);      
+ };
+ 
+ //below is the test function which is used for capturing an image with outputFormat set as imagePath
+function Test_image_transfer1()
+{ 
+  //invoke takePicture API with outputFormat as imagePath and set the callback method
+  camArray[0].takePicture({'fileName' : '/Application/Test/myImagename', 'outputFormat': 'imagePath'}, camera_callbackFunc);
+}
+ //below is the test function which is used for choosing a picture from device with outputFormat set as imagePath
+function Test_image_transfer2()
+{ 
+  //invoke takePicture API with outputFormat as imagePath and set the callback method
+  camArray[0].takePicture({'outputFormat': 'imagePath'}, camera_callbackFunc);
+}
+      
+
+                   ]]>
+                  </JAVASCRIPT>
+                </CODE>
+              </SECTION>
+            </SECTIONS>
+          </EXAMPLE>
+		</EXAMPLES>
         <REMARKS>
             <REMARK title="SDCard Access">
                 <DESC>The capability for SDCard has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
