@@ -80,7 +80,7 @@ The ebapi.js file is necessary for all single API inclusions.
 			</CONSTANT>
 			 <!-- Camera Output Image Format -->
 			<CONSTANT name="OUTPUT_FORMAT_IMAGE" value="image" type="STRING">
-				<DESC>This shall provide the image path. This is supported only on native application when page is running locally on the device. Hence EB does not support this value.</DESC>
+				<DESC>This shall provide the image uri. This can be used to display image directly on the page. An example is shown in the example section</DESC>
 			</CONSTANT>
 			<CONSTANT name="OUTPUT_FORMAT_DATAURI" value="dataUri" type="STRING">
 				<DESC>This is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database. On some consumer devices, captured image will be rotated 90 degrees while displaying.</DESC>
@@ -343,7 +343,7 @@ The ebapi.js file is necessary for all single API inclusions.
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                             <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                             <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device.On wp8,wm when 'outputFormat' is 'image' then imageUri shall have only Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image', this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri. If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http. </DESC>
-							<DESC_EB>If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http.</DESC_EB>
+							<DESC_EB>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http.</DESC_EB>
                         </PARAM>
                         <PARAM name="imageHeight" type="INTEGER">
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
@@ -369,7 +369,7 @@ The ebapi.js file is necessary for all single API inclusions.
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                             <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                             <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device.On wp8,wm when 'outputFormat' is 'image' then imageUri shall have only Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image', this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri. If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http. </DESC>
-							<DESC_EB>If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http.</DESC_EB>
+							<DESC_EB>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http.</DESC_EB>
                         </PARAM>
                         <PARAM name="image_height" type="INTEGER" deprecated="true">
 						    <PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
@@ -418,7 +418,7 @@ The ebapi.js file is necessary for all single API inclusions.
                         </PARAM>
                         <PARAM name="imageUri" type="STRING">
                             <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri. If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http. </DESC>
-							<DESC_EB>If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http.</DESC_EB>
+							<DESC_EB>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http.</DESC_EB>
                         </PARAM>
                         <PARAM name="imageHeight" type="INTEGER">
                             <DESC>The actual height of the image that was captured, this may differ from the requested height as the Camera will only support a finite resolutions.</DESC>
@@ -458,7 +458,7 @@ The ebapi.js file is necessary for all single API inclusions.
 						<PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                         <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                             <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device.On wp8,wm when 'outputFormat' is 'image' then imageUri shall have only Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image', this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri. If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http. </DESC>
-							<DESC_EB>If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http.</DESC_EB>
+							<DESC_EB>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http.</DESC_EB>
                         </PARAM>
                         <PARAM name="imageHeight" type="INTEGER">
                             <DESC>The height of the image.</DESC>
@@ -476,7 +476,7 @@ The ebapi.js file is necessary for all single API inclusions.
 						<PLATFORM>Android, WM, CE, iOS, WP8</PLATFORM>
                         <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                            <DESC>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device.On wp8,wm when 'outputFormat' is 'image' then imageUri shall have only Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image', this image will have an auto-generated name. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, In Wp8 dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri. If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http. </DESC>
-						   <DESC_EB>If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http.</DESC_EB>
+						   <DESC_EB>If the specified 'outputFormat' was 'image' then this field is the URI to the taken image stored on the device. If the specified 'outputFormat' was 'dataUri' then this field will be the image encoded as a Data URI, If the specified 'outputFormat' was 'imagePath' then this field will have the image path on the device. User can use image path to transfer image over http.</DESC_EB>
                         </PARAM>
                         <PARAM name="image_height" type="INTEGER" deprecated="true">
                             <DESC>It is recommended to use imageHeight in preference to this parameter.</DESC>
@@ -906,8 +906,45 @@ function Test_image_transfer1()
  //below is the test function which is used for choosing a picture from device with outputFormat set as imagePath
 function Test_image_transfer2()
 { 
-  //invoke takePicture API with outputFormat as imagePath and set the callback method
-  camArray[0].takePicture({'outputFormat': 'imagePath'}, camera_callbackFunc);
+  //invoke choosePicture API with outputFormat as imagePath and set the callback method
+  EB.Camera.choosePicture({'outputFormat': 'image'}, camera_callbackFunc);
+}
+      
+
+                   ]]>
+                  </JAVASCRIPT>
+                </CODE>
+              </SECTION>
+            </SECTIONS>
+          </EXAMPLE>
+		            <EXAMPLE title="Dispalying an image using image uri.">
+            <SECTIONS>
+              <SECTION>
+                <DESC>This example demonstrate how user can dispaly an image using image uri. The callback will return a image uri when outputFormat is set to 'image'</DESC>
+                <CODE>
+                  <JAVASCRIPT>
+                    <![CDATA[
+//enumerate the available cameras on the device
+var camArray = EB.Camera.enumerate();
+
+
+
+//below is the camera call back fired after takePicture is called
+var camera_callbackFunc = function(cbData){ 
+
+  //uri will have relative path info only
+  //user has to form the absolute local server path as shown below
+  uri = 'http://localhost:'+EB.System.localServerPort + cbData.imageUri;
+  //set the image uri to the image element
+  document.getElementById('imageUri').src = uri ;
+  
+ };
+ 
+ //below is the test function which is used for capturing an image with outputFormat set as image
+function Test_image_uri()
+{ 
+  //invoke takePicture API with outputFormat as image and set the callback method
+  camArray[0].takePicture({'outputFormat': 'image'}, camera_callbackFunc);
 }
       
 
