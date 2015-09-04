@@ -26,7 +26,8 @@ enum eTriggerEvents
 };
 typedef enum 
 {
-	eImageUri=0,
+	eImagePath=0,
+	eImageUri,
 	eDataUri	
 }eImageOutputFormat;
 enum eImageFilePathErrorType
