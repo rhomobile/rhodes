@@ -15,8 +15,8 @@ static const char* values[] = { ""
 
 const char* get_app_build_config_item(const char* key) {
   int i;
-
   const char* szValue;
+
   szValue = rho_conf_getString(key);
   if (strcmp(szValue, "") != 0)
     return szValue;

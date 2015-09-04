@@ -184,13 +184,13 @@ def make_application_build_config_header_file
   f.puts ''
   f.puts 'const char* get_app_build_config_item(const char* key) {'
   f.puts '  int i;'
+  f.puts '  const char* szValue;'
   if $rhosimulator_build
     f.puts '  if (strcmp(key, "security_token") == 0) {'
     f.puts '    return rho_simconf_getString("security_token");'
     f.puts '  }'
   end
   f.puts ""
-  f.puts '  const char* szValue;'
   f.puts '  szValue = rho_conf_getString(key);'
   f.puts '  if (strcmp(szValue, "") != 0)'
   f.puts '    return szValue;'
