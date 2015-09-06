@@ -24,62 +24,45 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#pragma once
+#ifndef RHOTHREADIMPL_H
+#define RHOTHREADIMPL_H
 
-#include "common/RhoPort.h"
-#include "common/RhoDefs.h"
-#include "common/IRhoClassFactory.h"
-#ifdef OS_WINDOWS_DESKTOP
-#ifdef RHO_SYMBIAN
-#include "rho/common/RhoThreadImpl.h"
-#else // RHO_SYMBIAN 
-#include "../../../../wm/rhodes/rho/common/RhoThreadImpl.h"
-#endif // RHO_SYMBIAN
-#include "rho/net/NetRequestImpl.h"
-#define CNETREQUESTIMPL new net::CNetRequestImpl()
-#define CRHOTHREADIMPL new CRhoThreadImpl()
-#define CRHOCRYPTIMPL NULL
-#else
-#include "net/CURLNetRequest.h"
-#include "common/PosixThreadImpl.h"
-#include "SSLImpl.h"
-#define CNETREQUESTIMPL new net::CURLNetRequest()
-#define CRHOTHREADIMPL new CPosixThreadImpl()
-#define CRHOCRYPTIMPL NULL
-#endif
-// #include "RhoCryptImpl.h"
+#include <QThread>
+#include "common/IRhoThreadImpl.h"
+#include "logging/RhoLog.h"
 
-namespace rho {
-namespace common {
-		
-class CRhoClassFactory : public common::IRhoClassFactory
+namespace rho{
+namespace common{
+
+class CRhoThreadImpl : public IRhoThreadImpl
 {
+    DEFINE_LOGCLASS
+
 public:
-    net::INetRequestImpl* createNetRequestImpl()
+    CRhoThreadImpl();
+    virtual ~CRhoThreadImpl();
+    virtual void start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority);
+    virtual void stop(unsigned int nTimeoutToKill);
+    virtual int wait(unsigned int nTimeout);
+    virtual void stopWait();
+    virtual void sleep(unsigned int nTimeout);
+private:
+    void setThreadPriority(IRhoRunnable::EPriority ePriority);
+private:
+    class QRhoThread: public QThread
     {
-        return CNETREQUESTIMPL;
-    }
-
-    common::IRhoThreadImpl* createThreadImpl()
-    {
-        return CRHOTHREADIMPL;
-    }
-
-    net::ISSL* createSSLEngine()
-    {
-#ifdef OS_WINDOWS_DESKTOP
-        return NULL;
-#else
-        return new net::SSLImpl();
-#endif
-    }
-
-    IRhoCrypt* createRhoCrypt()
-    {
-        //TODO: createRhoCrypt
-        return CRHOCRYPTIMPL;
-    }
+    public:
+        QRhoThread(IRhoRunnable* pRunnable): QThread(), m_Runnable(pRunnable) {}
+        void run() { m_Runnable->runObject(); }
+        static void sleep(unsigned long timeout) { QThread::sleep(timeout); }
+    private:
+        IRhoRunnable* m_Runnable;
+    };
+    QRhoThread* m_Thread;
+    QThread* m_waitThread;
 };
 
 }
 }
+
+#endif // RHOTHREADIMPL_H
