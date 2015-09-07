@@ -153,6 +153,7 @@ def make_application_build_config_header_file
   #f.puts "// Generated #{Time.now.to_s}"
   f.puts ""
   f.puts "#include <string.h>"
+  f.puts "#include <common/RhoConf.h>"
   f.puts ""
   f.puts '//#include "app_build_configs.h"'
   if $rhosimulator_build
@@ -183,11 +184,17 @@ def make_application_build_config_header_file
   f.puts ''
   f.puts 'const char* get_app_build_config_item(const char* key) {'
   f.puts '  int i;'
+  f.puts '  const char* szValue;'
   if $rhosimulator_build
     f.puts '  if (strcmp(key, "security_token") == 0) {'
     f.puts '    return rho_simconf_getString("security_token");'
     f.puts '  }'
   end
+  f.puts ""
+  f.puts '  szValue = rho_conf_getString(key);'
+  f.puts '  if (strcmp(szValue, "") != 0)'
+  f.puts '    return szValue;'
+  f.puts ""
   f.puts '  for (i = 1; i < APP_BUILD_CONFIG_COUNT; i++) {'
   f.puts '    if (strcmp(key, keys[i]) == 0) {'
   f.puts '      return values[i];'
@@ -4991,6 +4998,23 @@ namespace :dev do
   end
 
 end
+
+
+namespace :config do
+  namespace :common do
+    task :ymlsetup do
+      #Setting build.yml configs in rhoconfig.txt for cloud
+      File.open("#{$app_path}/rhoconfig.txt", "a") do |f|
+        f << "\n\n# Settings for cloud from build.yml\n"
+        $application_build_configs.each do |k,v|
+          f << "#{k}=\"#{v}\"\n"
+        end
+        f << "\n"
+      end
+    end
+  end
+end
+
 
 $running_time = []
 
