@@ -1438,6 +1438,8 @@ namespace "device" do
 
     task :production_with_prebuild_binary => ['config:wm'] do
       print_timestamp('device:wm:production_with_prebuild_binary START')
+      #Support build.yml settings on cloud by copying to rhoconfig.txt
+      Rake::Task['config:common:ymlsetup'].invoke
       container_path = determine_prebuild_path_win('wm', $app_config)
       $skip_build_extensions = true
       $skip_build_js_api_files = true
@@ -1562,6 +1564,10 @@ namespace "device" do
     end
     task :build_with_prebuild_binary => ["build:win32:set_release_config", "build:win32:rhobundle", "config:win32:application"] do
       container_path = determine_prebuild_path_win('win32', $app_config)
+      
+      #Support build.yml settings on cloud by copying to rhoconfig.txt
+      Rake::Task['config:common:ymlsetup'].invoke
+
       Rake::Task['device:win32:apply_container'].invoke(container_path)
       createWin32Production(true,false)
     end

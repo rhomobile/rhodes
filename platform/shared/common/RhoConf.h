@@ -100,7 +100,10 @@ void  rho_conf_Init(const char* szRootPath);
 void  rho_conf_Init_with_separate_user_path(const char* szRootPath, const char* szUserPath);
 void  rho_conf_Init_from_shared_path(const char* szSharedRootPath);
 int  rho_conf_getBool(const char* szName);
+#ifdef __cplusplus
+//In c bool is not available without loading standard library #include <stdbool.h> (C99)
 void  rho_conf_setBool(const char* szName, bool value);
+#endif //__cplusplus
 int   rho_conf_getInt(const char* szName);
 void  rho_conf_setInt(const char* szName, int value);
 char* rho_conf_getString(const char* szName);

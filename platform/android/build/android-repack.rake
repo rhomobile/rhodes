@@ -549,6 +549,9 @@ namespace 'device' do
       print_timestamp('AndroidPrebuild.production_with_prebuild_binary START')
       Rake::Task['config:android'].invoke
 
+      #Support build.yml settings on cloud by copying to rhoconfig.txt
+      Rake::Task['config:common:ymlsetup'].invoke
+
       prebuilt_path = determine_prebuild_path($app_config)
 
       bundle_path = make_app_bundle
