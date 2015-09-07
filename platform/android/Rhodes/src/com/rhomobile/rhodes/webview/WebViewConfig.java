@@ -19,7 +19,9 @@ public class WebViewConfig implements IRhoConfig {
     public static final String SETTING_SPLASHSCREEN_PATH = "splashscreenpath";
     public static final String SETTING_SPLASHSCREEN_DURATION = "splashscreenduration";
     public static final String USER_AGENT = "useragent";
+    public static final String ENABLE_SCAN = "LowBatteryScan";
 
+    public static final boolean ENABLE_SCAN_DEF = true;
     public static final boolean ENABLE_PAGE_LOADING_INDICATION_DEF = true;
     public static final boolean ENABLE_ZOOM_DEF = true;
     public static final boolean ENABLE_WEB_PLUGINS_DEF = true;
@@ -41,6 +43,7 @@ public class WebViewConfig implements IRhoConfig {
         mConfigMap.put(ENABLE_WEB_PLUGINS, String.valueOf(ENABLE_WEB_PLUGINS_DEF));
         mConfigMap.put(ENABLE_CACHE, String.valueOf(ENABLE_CACHE_DEF));
         mConfigMap.put(USER_AGENT, USER_AGENT_DEF);
+        mConfigMap.put(ENABLE_SCAN,  String.valueOf(ENABLE_SCAN_DEF));
     }
     
     public void set(String name, boolean val) {
