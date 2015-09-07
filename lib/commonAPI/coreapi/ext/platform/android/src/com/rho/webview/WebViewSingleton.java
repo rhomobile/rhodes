@@ -445,6 +445,14 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
         		mConfig.set(WebViewConfig.SETTING_SPLASHSCREEN_DURATION, splashscreendurationValue);
         	}
         }
+        
+        if(config.isExist("lowbatteryscan")){
+        	String lowBatScan = config.getString("lowbatteryscan");
+        	if(lowBatScan != null){
+        		mConfig.set(WebViewConfig.ENABLE_SCAN, lowBatScan);
+        	}
+        }
+        
         if(config.isExist("http_proxy")){
     		String httpProxy = config.getString("http_proxy");
     		if(httpProxy.length()!=0){
