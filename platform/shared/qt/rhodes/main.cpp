@@ -44,6 +44,7 @@
 #include <QMessageBox>
 #include <QDir>
 #include "impl/MainWindowImpl.h"
+#include "QtLogView.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -111,6 +112,8 @@ char* parseToken(const char* start)
 
 int main(int argc, char *argv[])
 {
+LOG(INFO) + "Running on   " + QtLogView::getOsDetails().toStdString().c_str() + " "  + " with QT compiled with  " + QT_VERSION_STR " Running QT Version " + qVersion();
+
 #ifdef RHODES_EMULATOR
     bool isJSApp = false;
 #endif
@@ -237,14 +240,14 @@ int main(int argc, char *argv[])
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRootPath);
 
     RHODESAPP().setJSApplication(m_isJSApplication);
-
+    string strAppTitle;
     // Create the main application window
 #ifdef RHODES_EMULATOR
-    m_appWindow->Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
+    strAppTitle= RHOSIMCONF().getString("app_name")+ "- " + " [RhoSimulator] (" + RHOSIMCONF().getString( "platform") + ")" ;
 #else
-    m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
+    strAppTitle= RHODESAPP().getAppTitle() + "- " + " [Win32] " ;
 #endif
-
+    m_appWindow->Initialize(convertToStringW(strAppTitle).c_str());
     RHODESAPP().startApp();
 
     // Navigate to the "loading..." page
