@@ -662,7 +662,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	}
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
 	HWND hGetMainWnd = GetMainWindow();
-	PostMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
+	SendMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
 #endif
     return S_OK;
 }
