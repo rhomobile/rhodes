@@ -657,7 +657,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		    &g_hNotifyCell);
     }
 #endif
-
+	if(rho::BrowserFactory::getCurrentBrowserType() == eIE){
+		Sleep(50);
+	}
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
 	HWND hGetMainWnd = GetMainWindow();
 	PostMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
