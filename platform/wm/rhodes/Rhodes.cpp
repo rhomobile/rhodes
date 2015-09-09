@@ -657,18 +657,27 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		    &g_hNotifyCell);
     }
 #endif
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
 	if(rho::BrowserFactory::getCurrentBrowserType() == eIE){
 		Sleep(50);
 	}
+#endif
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
 	HWND hGetMainWnd = GetMainWindow();
-	if(rho::BrowserFactory::getCurrentBrowserType() != eIE)
+	if(RHO_IS_CEDEVICE)
 	{
-		PostMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
+		if(rho::BrowserFactory::getCurrentBrowserType() != eIE)
+		{
+			PostMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
+		}
+		else
+		{
+			SendMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
+		}
 	}
 	else
 	{
-		SendMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
+		PostMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);	
 	}
 #endif
     return S_OK;
