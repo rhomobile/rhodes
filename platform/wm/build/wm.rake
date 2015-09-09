@@ -1646,6 +1646,11 @@ namespace "device" do
 
       # custumize install script for application
       $appdisplay_version=$app_version + '.0.0'
+      if $app_config.has_key?('vendor')
+       $vendorname = $app_config["vendor"]
+       else
+       $vendorname = "Zebra Technologies"
+       end
       install_script = File.read(script_name)
       install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
       install_script = install_script.gsub(/%APPNAME%/, $appname)
@@ -1656,14 +1661,14 @@ namespace "device" do
       install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
       install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
       install_script = install_script.gsub(/%APPICON%/, "icon.ico")
-      install_script = install_script.gsub(/%GROUP_NAME%/, $app_config["vendor"])
+      install_script = install_script.gsub(/%GROUP_NAME%/, $vendorname)
       install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
       install_script = install_script.gsub(/%LICENSE_FILE%/, license_line)
       install_script = install_script.gsub(/%LICENSE_PRESENT%/, license_present)
       install_script = install_script.gsub(/%README_FILE%/, readme_line)
       install_script = install_script.gsub(/%README_PRESENT%/, readme_present)
       install_script = install_script.gsub(/%QT_VSPEC_FILES%/, vspec_files)
-      install_script = install_script.gsub(/%VENDOR%/, $app_config["vendor"])
+      install_script = install_script.gsub(/%VENDOR%/, $vendorname)
       File.open(app_script_name, "w") { |file| file.puts install_script }
     end
 
@@ -1673,7 +1678,7 @@ namespace "device" do
     cp $qt_icon_path, $tmpdir + "/icon.png"
 
     if !skip_nsis
-      File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + "/" + $appname + "/" + $appname + ".exe") }
+      File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $vendorname + "/" + $appname + "/" + $appname + ".exe") }
     end
 
     chdir $tmpdir
