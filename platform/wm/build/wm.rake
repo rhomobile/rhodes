@@ -23,6 +23,64 @@
 #
 # http://rhomobile.com
 #------------------------------------------------------------------------
+ VS_FIXEDFILEINFO = Struct.new("VS_FIXEDFILEINFO", :Signature, :StrucVersion, :FileVersionMS, :FileVersionLS, :ProductVersionMS, :ProductVersionLS, :FileFlagsMask, :FileFlags, :FileOS, :FileType, :FileSubtype, :FileDateMS, :FileDateLS)
+ 
+ 
+def GetFileVersion(vfilename)
+    require 'Win32API' 
+    apiGetFileVersionInfo = Win32API.new("version", "GetFileVersionInfo",['P','L','L','P'], 'L') 
+    apiGetFileVersionInfoSize = Win32API.new("version", "GetFileVersionInfoSize",['P','P'], 'L') 
+    apiGetInfoFromVersion = Win32API.new("version", "VerQueryValue",['P','P','P','P'], 'L') 
+    memcpy = Win32API.new('msvcrt','memcpy','PLL','P') 
+    size = apiGetFileVersionInfoSize.call(vfilename,nil) 
+    infoVersion = "\0" * size 
+    apiGetFileVersionInfo.call(vfilename,0,size,infoVersion) 
+    lplpBuffer = "\0" * 4 
+    pLen = "\0" * 4 
+    apiGetInfoFromVersion.call(infoVersion,"\\",lplpBuffer,pLen) 
+    lpBuffer = lplpBuffer.unpack("L")[0] 
+    bufSize = pLen.unpack("L*")[0] 
+    rbuf = "\0" * bufSize 
+    memcpy.call(rbuf,lpBuffer,bufSize) 
+    vs_fixedfileinfo = VS_FIXEDFILEINFO.new(*rbuf.unpack("L*"))
+    info = rbuf.unpack('LSSSSSSSSSSLLLLLLL')
+    file_version = [ info[4], info[3], info[6], info[5] ]
+    product_version = [ info[8], info[7], info[10], info[9] ]
+    return  product_version.join(".")
+end
+
+def is_equal(minimum,current)
+  m = minimum.split(".")
+  c = current.split(".")
+  [m.size,c.size].min.times do|e|
+    next if m[e].to_i == c[e].to_i
+    return m[e].to_i == c[e].to_i
+  end
+  return true
+end
+
+def QTInfo(qtcurrentversion)
+      value =0 # default value
+      
+      eqstatus = is_equal("4.7.4.0",qtcurrentversion)
+      puts "Checking for 4.7.4.0 - #{eqstatus}"
+      if(eqstatus)
+          value =1 # 4.7.4.0
+      end
+      
+      eqstatus = is_equal("5.1.1.0",qtcurrentversion)
+      puts "Checking for 5.1.1.0 - #{eqstatus}"
+      if(eqstatus)
+          value =2 # for 5.1.1.0
+      end
+      
+      eqstatus = is_equal("5.5.0.0",qtcurrentversion)
+      puts "Checking for 5.5.0.0 - #{eqstatus}"
+       if(eqstatus)
+          value =3 # 5.5.0.0
+      end
+      return value
+end
 
 def get_ruby_path()
   if RUBY_PLATFORM =~ /(win|w)32$/
@@ -624,9 +682,6 @@ namespace "config" do
       $vscommontools = ENV['VS110COMNTOOLS']
       $qmake_makespec = 'win32-msvc2012'
 
-      # use Qt 5 by default
-      $qt_version = 5
-
       # if win32:msvc is not defined in build.yml, then automatically detect installed Visual Studio
       if $msvc_version.nil?
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
@@ -667,13 +722,45 @@ namespace "config" do
         puts "\nPlease, set QTDIR environment variable to Qt root directory path"
         exit 1
       end
-      unless File.exists?(File.join($qtdir, "bin/Qt5Core.dll"))
-        $qt_version = 4
-        unless File.exists?(File.join($qtdir, "bin/QtCore4.dll"))
-          puts "\nPlease, set QTDIR environment variable to root directory path of Qt5 or Qt4 for Visual Studio #{$vs_version}"
+       
+       
+     # Search for QT 5 or QT 4 files
+     qt5corefile =File.join($qtdir, "bin/Qt5Core.dll");
+     qt4corefile =File.join($qtdir, "bin/QtCore4.dll");
+     if File.exists?(qt5corefile)
+          qtcorefile=qt5corefile
+     elsif  File.exists?(qt4corefile)
+          qtcorefile=qt4corefile
+     end
+     
+     if qtcorefile.nil?
+          puts "\nNo QT File exists in #{$qtdir}"
           exit 1
-        end
-      end
+     end
+     
+          $QVersion=GetFileVersion(qtcorefile)
+          puts "Current QT Version Found : #{$QVersion}"
+          $qtversionindex = QTInfo($QVersion)
+          puts "QT Version Found and Index for further checking is #{$qtversionindex}"
+          
+          case $qtversionindex
+               when 1
+                    format= "Found QT Version : #{$QVersion}"
+               when 2     
+                    format ="Found QT Version : #{$QVersion}"
+               when 3
+                    format ="Found QT Version : #{$QVersion}"
+               else
+                    format ="Unknown QT Version : #{$QVersion}"
+          end
+          puts format
+          puts "Visual Studio Found/Default for build.yml is #{$vs_version} , Code will be Compiled against Visual Studio #{$vs_version}"
+          
+         if $vs_version == 2008 &&  $qtversionindex == 3
+               puts "\n Visual Studio 2008 is not currently supported for this QT version "
+          exit 1
+       end
+       
       $qt_project_dir = File.join( $startdir, 'platform/shared/qt/' )
     end
 
@@ -1043,7 +1130,11 @@ namespace "build" do
       FileUtils.rm_rf(Dir.glob(File.join($target_path, 'Microsoft.VC*.manifest')), {:secure => true})
 
       deploymsvc = Jake.getBuildBoolProp('deploymsvc', $app_config, true)
-
+       if(deploymsvc)
+            puts "Microsoft Visual C++ Runtime Binaries for #{$vs_version} included in App Setup Bundle"
+       else
+          puts "Microsoft Visual C++ Runtime Binaries for #{$vs_version} Excluded in App Setup Bundle"
+       end 
       if $vs_version == 2008
         # Visual Studio 2008
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.CRT")
@@ -1085,72 +1176,129 @@ namespace "build" do
       FileUtils.rm_rf(target_platforms_path, {:secure => true})
 
       deployqt = Jake.getBuildBoolProp('deployqt', $app_config, true)
+      if(deployqt)
+          puts "QT  Binaries for #{$vs_version} included in App Setup Bundle"
+      else
+          puts "QT Binaries for #{$vs_version} Excluded in App Setup Bundle"      
+      end    
       next unless deployqt
 
-      if $qt_version == 4
-        # Qt 4
-        cp File.join($qtdir, "bin/phonon4.dll"), $target_path
-        cp File.join($qtdir, "bin/QtCore4.dll"), $target_path
-        cp File.join($qtdir, "bin/QtGui4.dll"), $target_path
-        cp File.join($qtdir, "bin/QtNetwork4.dll"), $target_path
-        cp File.join($qtdir, "bin/QtWebKit4.dll"), $target_path
-        if not File.directory?(target_if_path)
-          Dir.mkdir(target_if_path)
-        end
-        cp File.join($qtdir, "plugins/imageformats/qgif4.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qico4.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qjpeg4.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qmng4.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qsvg4.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
-      else
-        # Qt 5
-        if File.exists?(File.join($qtdir, "bin/icudt53.dll"))
-          cp File.join($qtdir, "bin/icudt53.dll"), $target_path
-          cp File.join($qtdir, "bin/icuuc53.dll"), $target_path
-          cp File.join($qtdir, "bin/icuin53.dll"), $target_path
-        elsif File.exists?(File.join($qtdir, "bin/icudt52.dll"))
-          cp File.join($qtdir, "bin/icudt52.dll"), $target_path
-          cp File.join($qtdir, "bin/icuuc52.dll"), $target_path
-          cp File.join($qtdir, "bin/icuin52.dll"), $target_path
-        else
-          cp File.join($qtdir, "bin/icudt51.dll"), $target_path
-          cp File.join($qtdir, "bin/icuuc51.dll"), $target_path
-          cp File.join($qtdir, "bin/icuin51.dll"), $target_path
-        end
-        cp File.join($qtdir, "bin/libEGL.dll"), $target_path
-        cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5Gui.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5Network.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5Widgets.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5WebKit.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5Multimedia.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5MultimediaWidgets.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5OpenGL.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5PrintSupport.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5Quick.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5Qml.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5Sql.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5Sensors.dll"), $target_path
-        cp File.join($qtdir, "bin/Qt5V8.dll"), $target_path
-        if not File.directory?(target_platforms_path)
-          Dir.mkdir(target_platforms_path)
-        end
-        cp File.join($qtdir, "plugins/platforms/qwindows.dll"), target_platforms_path
-        if not File.directory?(target_if_path)
-          Dir.mkdir(target_if_path)
-        end
-        cp File.join($qtdir, "plugins/imageformats/qgif.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qico.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qjpeg.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qmng.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qsvg.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qtga.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qtiff.dll"), target_if_path
-        cp File.join($qtdir, "plugins/imageformats/qwbmp.dll"), target_if_path
-      end
+       #check the QT versions here for build purpose
+       format = "Qt version now is #{$QVersion} and index is #{$qtversionindex}"
+       puts format
+     
+     #1 - 4.7.4.0     
+     #2- 5.1.1.0 
+     #3 - 5.5.0.0
+       case $qtversionindex
+                 when 1 # 4.7.4.0
+                    format ="Found QT Version : #{$QVersion}"
+                    cp File.join($qtdir, "bin/phonon4.dll"), $target_path
+                    cp File.join($qtdir, "bin/QtCore4.dll"), $target_path
+                    cp File.join($qtdir, "bin/QtGui4.dll"), $target_path
+                    cp File.join($qtdir, "bin/QtNetwork4.dll"), $target_path
+                    cp File.join($qtdir, "bin/QtWebKit4.dll"), $target_path
+                    if not File.directory?(target_if_path)
+                    Dir.mkdir(target_if_path)
+                    end
+                    cp File.join($qtdir, "plugins/imageformats/qgif4.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qico4.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qjpeg4.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qmng4.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qsvg4.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
+
+               when 2 # 5.1.1.0
+                    format= "Found QT Version : #{$QVersion}"
+                    if File.exists?(File.join($qtdir, "bin/icudt53.dll"))
+                      cp File.join($qtdir, "bin/icudt53.dll"), $target_path
+                      cp File.join($qtdir, "bin/icuuc53.dll"), $target_path
+                      cp File.join($qtdir, "bin/icuin53.dll"), $target_path
+                    elsif File.exists?(File.join($qtdir, "bin/icudt52.dll"))
+                      cp File.join($qtdir, "bin/icudt52.dll"), $target_path
+                      cp File.join($qtdir, "bin/icuuc52.dll"), $target_path
+                      cp File.join($qtdir, "bin/icuin52.dll"), $target_path
+                    else
+                      cp File.join($qtdir, "bin/icudt51.dll"), $target_path
+                      cp File.join($qtdir, "bin/icuuc51.dll"), $target_path
+                      cp File.join($qtdir, "bin/icuin51.dll"), $target_path
+                    end
+                    cp File.join($qtdir, "bin/libEGL.dll"), $target_path
+                    cp File.join($qtdir, "bin/libGLESv2.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Gui.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Network.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Widgets.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5WebKit.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Multimedia.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5MultimediaWidgets.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5OpenGL.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5PrintSupport.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Quick.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Qml.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Sql.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Sensors.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5V8.dll"), $target_path
+                    if not File.directory?(target_platforms_path)
+                      Dir.mkdir(target_platforms_path)
+                    end
+                    cp File.join($qtdir, "plugins/platforms/qwindows.dll"), target_platforms_path
+                    if not File.directory?(target_if_path)
+                      Dir.mkdir(target_if_path)
+                    end
+                    cp File.join($qtdir, "plugins/imageformats/qgif.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qico.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qjpeg.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qmng.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qsvg.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qtga.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qtiff.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qwbmp.dll"), target_if_path
+                    
+               when 3 # 5.5.0.0
+                    format ="Found QT Version : #{$QVersion}"
+                    cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Widgets.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Gui.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5WebKit.dll"), $target_path
+                    cp File.join($qtdir, "bin/icuin54.dll"), $target_path
+                    cp File.join($qtdir, "bin/icuuc54.dll"), $target_path
+                    cp File.join($qtdir, "bin/icudt54.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Sensors.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Positioning.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Quick.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Qml.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Network.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Multimedia.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5WebChannel.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5Sql.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5MultimediaWidgets.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5OpenGL.dll"), $target_path
+                    cp File.join($qtdir, "bin/Qt5PrintSupport.dll"), $target_path
+                    if not File.directory?(target_platforms_path)
+                      Dir.mkdir(target_platforms_path)
+                    end
+                    cp File.join($qtdir, "plugins/platforms/qwindows.dll"), target_platforms_path
+                    if not File.directory?(target_if_path)
+                      Dir.mkdir(target_if_path)
+                    end
+                    
+                    
+                    cp File.join($qtdir, "plugins/imageformats/qgif.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qico.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qjpeg.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qmng.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qsvg.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qtga.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qtiff.dll"), target_if_path
+                    cp File.join($qtdir, "plugins/imageformats/qwbmp.dll"), target_if_path
+                    
+               else
+                    format ="Unknown QT Version : #{$QVersion}"
+          end
+          puts format
     end
 
     task :extensions => "config:wm" do
@@ -1486,10 +1634,12 @@ namespace "device" do
 
     if !skip_nsis
       vspec_files = ''
-      if Jake.getBuildBoolProp('deployqt', $app_config, true)
-        vspec_files += "  File /r \"imageformats\"\n"
-        vspec_files += "  File /r \"platforms\"\n" if $qt_version.nil? || $qt_version > 4
-      end
+       if Jake.getBuildBoolProp('deployqt', $app_config, true)
+         vspec_files += "  File /r \"imageformats\"\n"
+           if($qtversionindex > 1)
+               vspec_files += "  File /r \"platforms\"\n"
+          end
+       end
       if Jake.getBuildBoolProp('deploymsvc', $app_config, true) && ($vs_version == 2008)
         vspec_files += "  File *.manifest\n"
       end
