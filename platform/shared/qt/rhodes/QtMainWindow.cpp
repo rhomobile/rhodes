@@ -34,7 +34,9 @@
 #include "RhoSimulator.h"
 #include <sstream>
 #include "QtWebPage.h"
-#include "QtCustomStyle.h"
+#if QT_VERSION > QT_VERSION_CHECK(4, 8, 0)
+    #include "QtCustomStyle.h"
+#endif
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -99,7 +101,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 #if !defined(RHODES_EMULATOR)
     QPixmap icon(QCoreApplication::applicationDirPath().append(QDir::separator()).append("icon.png"));
     QApplication::setWindowIcon(icon);
-    QApplication::setApplicationDisplayName(QString::fromStdString(RHOCONF().getString("title_text")));
+    #if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
+        QApplication::setApplicationDisplayName(QString::fromStdString(RHOCONF().getString("title_text")));
+    #endif
     QApplication::setApplicationName(QString::fromStdString(RHOCONF().getString("app_name")));
     QApplication::setApplicationVersion(QString::fromStdString(RHOCONF().getString("app_version")));
     QApplication::setOrganizationName(QString::fromStdString(RHOCONF().getString("org_name")));
@@ -107,7 +111,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     QPixmap icon(":/images/rho.png");
     QApplication::setWindowIcon(icon);
 #endif
-    QApplication::setStyle(new QtCustomStyle());
+    #if QT_VERSION > QT_VERSION_CHECK(4, 8, 0)
+        QApplication::setStyle(new QtCustomStyle());
+   #endif
 
     ui->setupUi(this);
 
