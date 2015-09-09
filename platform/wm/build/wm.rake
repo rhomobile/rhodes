@@ -1645,10 +1645,12 @@ namespace "device" do
       end
 
       # custumize install script for application
+      $appdisplay_version=$app_version + '.0.0'
       install_script = File.read(script_name)
       install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
       install_script = install_script.gsub(/%APPNAME%/, $appname)
       install_script = install_script.gsub(/%APPVERSION%/, $app_version)
+      install_script = install_script.gsub(/%APPDISPLAYVERSION%/, $appdisplay_version)
       install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
       install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
       install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
