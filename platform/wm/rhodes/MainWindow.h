@@ -103,7 +103,7 @@ static UINT WM_SHOW_LICENSE_WARNING	   = ::RegisterWindowMessage(L"RHOELEMENTS_W
 static UINT WM_WINDOW_SWITCHTAB		   = ::RegisterWindowMessage(L"RHODES_WM_SWITCHTAB");
 extern UINT WM_LICENSE_SCREEN;
 extern UINT WM_INTENTMSG;
-
+extern UINT WM_CREATE_SHORTCUT;
 
 namespace rho
 {
@@ -233,6 +233,7 @@ public:
 		MESSAGE_HANDLER(WM_INTENTMSG, OnIntentMsg);
         MESSAGE_HANDLER(WM_SHOW_LICENSE_WARNING, OnLicenseWarning);
 		MESSAGE_HANDLER(WM_LICENSE_SCREEN, OnLicenseScreen);
+		MESSAGE_HANDLER(WM_CREATE_SHORTCUT, OnCreateShortcutViaXML);
         MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
         MESSAGE_HANDLER(WM_HOTKEY, OnHotKey);
         MESSAGE_HANDLER(WM_TIMER, OnTimer);
@@ -303,6 +304,7 @@ private:
 	LRESULT OnIntentMsg (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnLicenseWarning (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnLicenseScreen (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnCreateShortcutViaXML(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnSetFocus (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnHotKey (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnTimer (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);

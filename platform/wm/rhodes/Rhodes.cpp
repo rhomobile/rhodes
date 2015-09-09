@@ -50,6 +50,8 @@ using namespace stdext;
 
 int winversion = 0;
 
+extern UINT WM_CREATE_SHORTCUT;
+
 #ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
@@ -656,6 +658,10 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 #endif
 
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+	HWND hGetMainWnd = GetMainWindow();
+	PostMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
+#endif
     return S_OK;
 }
 
