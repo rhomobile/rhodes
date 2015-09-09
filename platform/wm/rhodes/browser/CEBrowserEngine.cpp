@@ -680,13 +680,23 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
         retVal = S_OK;
 
 		break;
+    case DISPID_PROGRESSCHANGE:
+        {
+            LOG(INFO) + "progress change";	
+            if (pdparams && pdparams->rgvarg[1].vt == VT_I4) 
+            { 
+                if(0 == pdparams->rgvarg[1].iVal)//if progress completed
+                {
+                    LOG(INFO) + "before calling dominjector ";
+                    RHODESAPP().getExtManager().getEngineEventMngr().injectDOMElements();
+                }
+            }
+            break;
+        }
 
 	case DISPID_DOCUMENTCOMPLETE:
 		//Validate that there is an event handler
-		LOG(INFO) + "DISPID_DOCUMENTCOMPLETE";
-		LOG(INFO) + "before calling dominjector after document complete";
-		RHODESAPP().getExtManager().getEngineEventMngr().injectDOMElements();
-
+		LOG(INFO) + "DISPID_DOCUMENTCOMPLETE";		
         SetEvent(m_hDocComp);
         CloseHandle(m_hDocComp);
         m_hDocComp = NULL;
