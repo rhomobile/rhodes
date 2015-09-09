@@ -298,13 +298,21 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         super.onNewIntent(intent);
 
         Logger.T(TAG, "onNewIntent");
-        if(intent !=null && intent.getAction() !=null){
-         if((intent.getAction().compareTo(intent.ACTION_MAIN) == 0) && ( intent.getAction().compareTo(lastIntent) == 0)){
+         if(intent !=null && intent.getAction() !=null){
+        	 if(!(intent.getAction().compareTo("com.rho.rhoelements.SHORTCUT_ACTION") == 0) && ( intent.getAction().compareTo(lastIntent) == 0)){
 	        	String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
+	        	intent.setAction("android.intent.action.VIEW");
+	        	intent.setData(Uri.parse(url));
+	       }else if((intent.getAction().compareTo("android.intent.action.MAIN") == 0) && (!(lastIntent.compareTo("com.rho.rhoelements.SHORTCUT_ACTION") == 0))){
+	    	   //This Else for :- If user click on launch the EB through Shortcut and second time launch the EB through the proper
+	    	   //App that time for handle the Start page , we added this else.
+	    	    String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
 	        	intent.setAction("android.intent.action.VIEW");
 	        	intent.setData(Uri.parse(url));
 	       }
         }else{
+        	//This Else for :- If user Call Restore API that time to maintain the same Page when App resumed back
+        	//Because when user click on restore API that time our intent value is NULL.
         	String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
         	intent.setAction("android.intent.action.VIEW");
         	intent.setData(Uri.parse(url));
