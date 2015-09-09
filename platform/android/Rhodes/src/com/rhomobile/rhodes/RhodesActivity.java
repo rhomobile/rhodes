@@ -153,9 +153,17 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 config.load(configIs, externalSharedPath);
             }
             
-            if(Integer.parseInt(config.getValue("isWindowsKey")) == 1) {
-            	IS_WINDOWS_KEY = true;
-            }
+             String isWindowKey = null;
+		try {
+			isWindowKey = config.getValue("isWindowsKey");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+            if (isWindowKey != null && isWindowKey.length() > 0){
+            	if(isWindowKey.contains("1")){
+            		IS_WINDOWS_KEY = true;
+            	}
+            }	
 
             String CAFile = config.getValue("CAFile");
             if (CAFile != null && CAFile.length() > 0)
