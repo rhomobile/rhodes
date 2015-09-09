@@ -643,6 +643,13 @@ void CExtManager::OnLicenseScreen(bool bActivate)
 		(it->second)->OnLicenseScreen( bActivate, makeExtData() );
 	}
 }
+void CExtManager::OnCreateShortcutViaXML(bool bIsWMDevice)
+{
+	for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+	{
+		(it->second)->OnCreateShortcutViaXML(bIsWMDevice);
+	}
+}
 void CExtManager::OnAppActivate(bool bActivate)
 {
     for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )

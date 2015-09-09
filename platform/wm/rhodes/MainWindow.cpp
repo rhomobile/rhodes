@@ -60,9 +60,9 @@
 #endif
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
-UINT WM_LICENSE_SCREEN = ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
-
-UINT WM_INTENTMSG		   = ::RegisterWindowMessage(L"RHODES_WM_INTENTMSG");
+UINT WM_LICENSE_SCREEN		= ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
+UINT WM_INTENTMSG			= ::RegisterWindowMessage(L"RHODES_WM_INTENTMSG");
+UINT WM_CREATE_SHORTCUT		= ::RegisterWindowMessage(L"RHODES_WM_CREATE_SHORTCUT");	
 
 #include "DateTimePicker.h"
 
@@ -1507,15 +1507,24 @@ LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 	}
 	return 0;
 }	
-
-
 LRESULT CMainWindow::OnLicenseWarning (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     ::MessageBoxW( m_hWnd, L"Please provide RhoElements license key.", L"Symbol License", MB_ICONERROR | MB_OK);
 
     return 0;
 }
-
+LRESULT CMainWindow::OnCreateShortcutViaXML(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if(RHO_IS_WMDEVICE)
+	{
+		RHODESAPP().getExtManager().OnCreateShortcutViaXML(true);
+	}
+	else if(RHO_IS_CEDEVICE)
+	{
+		RHODESAPP().getExtManager().OnCreateShortcutViaXML(false);
+	}
+	return 0;
+}
 LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LOG(INFO) + "OnLicenseScreen";
