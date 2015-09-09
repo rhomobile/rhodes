@@ -11,6 +11,19 @@
   OutFile "%OUTPUTFILE%"
   InstallDir %APPINSTALLDIR%
   BrandingText " "
+  Caption "%APPNAME% - RhoMobile Suite Windows Application"
+  ShowInstDetails show
+  VIProductVersion "%APPDISPLAYVERSION%"
+  VIAddVersionKey  "ProductName" "%APPNAME%"
+  VIAddVersionKey  "Comments" "RhoMobile Suite Windows Application"
+  VIAddVersionKey  "CompanyName" "%GROUP_NAME%"
+  VIAddVersionKey  "LegalTrademarks" "RhoMobile Suite Windows Application is a trademark of Zebra Technologies"
+  VIAddVersionKey  "LegalCopyright" "© %GROUP_NAME%"
+  VIAddVersionKey  "FileDescription" "%APPNAME% - RhoMobile Suite Windows Application"
+  VIAddVersionKey  "FileVersion" "%APPDISPLAYVERSION%"
+  VIAddVersionKey  "ProductVersion" "%APPDISPLAYVERSION%"
+
+
 
 ;======================================================
 ; Modern Interface Configuration
@@ -79,7 +92,14 @@ section
                  "NoModify" 1
     WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\%APPNAME%" \
                  "NoRepair" 1
-
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\%APPNAME%" \
+                 "DisplayVersion" "%APPDISPLAYVERSION%"    
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\%APPNAME%" \
+                 "Comments" "%APPNAME% - RhoMobile Suite Windows Application"   
+    WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\%APPNAME%" \
+                 "VersionMajor" 1                 
+    WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\%APPNAME%" \
+                 "VersionMinor" 0  
     # update installed rhodes applications catalogue
     #WriteRegStr HKCU "Software\Rhomobile\%APPNAME%" "" ""
     WriteRegStr HKCU "Software\%VENDOR%\%APPNAME%" "InstallDir" "$INSTDIR"
