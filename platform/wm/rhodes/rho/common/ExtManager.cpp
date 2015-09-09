@@ -650,6 +650,13 @@ void CExtManager::OnCreateShortcutViaXML(bool bIsWMDevice)
 		(it->second)->OnCreateShortcutViaXML(bIsWMDevice);
 	}
 }
+void CExtManager::OnQuittingTheApplication()
+{
+	for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+	{
+		(it->second)->OnQuittingTheApplication();
+	}
+}
 void CExtManager::OnAppActivate(bool bActivate)
 {
     for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
