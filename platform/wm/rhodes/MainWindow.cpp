@@ -446,7 +446,9 @@ void CMainWindow::showWebView()
 
 LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
 	RHODESAPP().getExtManager().OnQuittingTheApplication();
+#endif
 
 	rho_rhodesapp_callUiDestroyedCallback();
 
