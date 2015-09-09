@@ -446,6 +446,8 @@ void CMainWindow::showWebView()
 
 LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+	RHODESAPP().getExtManager().OnQuittingTheApplication();
+
 	rho_rhodesapp_callUiDestroyedCallback();
 
 #if defined (_WIN32_WCE)
@@ -464,7 +466,7 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
         delete m_pBrowserEng;
 
     m_pBrowserEng = NULL;
-
+	
     PostQuitMessage(0);
 
     bHandled = FALSE; // Allow ATL's default processing (e.g. NULLing m_hWnd)
