@@ -102,6 +102,8 @@ struct IRhoExtension
     virtual void OnWindowChanged(LPVOID lparam){}
     virtual bool onHTMLWndMsg(MSG& oMsg){return false;}
 	virtual void OnLicenseScreen(bool bActivate, const CRhoExtData& oExtData){}
+	virtual void OnCreateShortcutViaXML(bool bIsWMDevice){}
+	virtual void OnQuittingTheApplication(){}
 };
 
 struct IRhoExtManager
@@ -172,6 +174,8 @@ public:
     long OnNavigateError(const wchar_t* szUrlBeingNavigatedTo);
     long OnLicenseError(const wchar_t* szUrlBeingNavigatedTo);
 	void OnLicenseScreen(bool bActivate);
+	void OnCreateShortcutViaXML(bool bIsWMDevice);
+	void OnQuittingTheApplication();
     void OnAppActivate(bool bActivate);
 	void OnPowerButton(bool bPowerOn);
     void OnWindowChanged(LPVOID lparam);
