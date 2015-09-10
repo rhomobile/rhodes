@@ -659,7 +659,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
 	if(rho::BrowserFactory::getCurrentBrowserType() == eIE){
-		Sleep(50);
+		if(RHO_IS_WMDEVICE)
+		{
+			Sleep(500);
+		}
+		else
+		{
+			Sleep(50);
+		}
 	}
 #endif
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
