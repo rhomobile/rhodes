@@ -44,6 +44,7 @@
 #include <QMessageBox>
 #include <QDir>
 #include "impl/MainWindowImpl.h"
+#include "QtLogView.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -111,6 +112,8 @@ char* parseToken(const char* start)
 
 int main(int argc, char *argv[])
 {
+    LOG(INFO) + "Running on   " + QtLogView::getOsDetails().toStdString().c_str() + " "  + " with QT compiled with  " + QT_VERSION_STR " Running QT Version " + qVersion();
+
 #ifdef RHODES_EMULATOR
     bool isJSApp = false;
 #endif
