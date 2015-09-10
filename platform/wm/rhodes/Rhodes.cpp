@@ -664,20 +664,13 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
 	HWND hGetMainWnd = GetMainWindow();
-	if(RHO_IS_CEDEVICE)
+	if(rho::BrowserFactory::getCurrentBrowserType() != eIE)
 	{
-		if(rho::BrowserFactory::getCurrentBrowserType() != eIE)
-		{
-			PostMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
-		}
-		else
-		{
-			SendMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
-		}
+		PostMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
 	}
 	else
 	{
-		PostMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);	
+		SendMessage( hGetMainWnd, WM_CREATE_SHORTCUT, NULL, NULL);
 	}
 #endif
     return S_OK;
