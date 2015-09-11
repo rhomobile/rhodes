@@ -2,7 +2,6 @@ package com.rho.intent;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,10 +21,10 @@ import com.rhomobile.rhodes.extmanager.AbstractRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 
-public class IntentListener extends AbstractRhoExtension{
+public class IntentRhoExtension extends AbstractRhoExtension{
 
-	public static HashMap mapAction = new HashMap();
-	public static HashMap mapCategory = new HashMap();
+	public static int RECEIVER_REGISTER_STATUS = 0;
+	
 	@Override
 	public boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config,
 			String name, boolean res) {
@@ -55,20 +54,18 @@ public class IntentListener extends AbstractRhoExtension{
 					}
                     doc.getDocumentElement().normalize();
                     NodeList nList = doc.getElementsByTagName("IntentAction");
-                    mapAction.clear();
-                    mapCategory.clear();
                     for (int temp = 0; temp < nList.getLength(); temp++) {
-                    	mapAction.put(temp, nList.item(temp).getAttributes().getNamedItem("value").getTextContent());
                     	intentfilter.addAction(nList.item(temp).getAttributes().getNamedItem("value").getTextContent());
                     	RhodesActivity.getContext().registerReceiver(mReceiver, intentfilter);
                     	RhodesActivity.getContext().sendBroadcast(new Intent(nList.item(temp).getAttributes().getNamedItem("value").getTextContent()));
+                    	RECEIVER_REGISTER_STATUS = 1;
                     }
                     NodeList nList_cat = doc.getElementsByTagName("IntentCategory");
                     for (int i = 0; i < nList_cat.getLength(); i++) {
-                    	mapCategory.put(i, nList_cat.item(i).getAttributes().getNamedItem("value").getTextContent());
                     	intentfilter.addCategory(nList_cat.item(i).getAttributes().getNamedItem("value").getTextContent());
                     	RhodesActivity.getContext().registerReceiver(mReceiver, intentfilter);
                     	RhodesActivity.getContext().sendBroadcast(new Intent(nList_cat.item(i).getAttributes().getNamedItem("value").getTextContent()));
+                    	RECEIVER_REGISTER_STATUS = 1;
 					}
 				}
 			}
