@@ -11,6 +11,7 @@ import java.util.Set;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
@@ -30,6 +31,9 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     private static final String TAG = IntentSingleton.class.getSimpleName();
     
     private IMethodResult methodResult;
+    private IntentFilter mIntentFilter = new IntentFilter();
+    private IntentReceiver mReceiver = new IntentReceiver();
+    private IntentListener mIntentListner = new IntentListener();
     
     private List<Map.Entry<Integer, IMethodResult>> localMethodResults = new ArrayList<Map.Entry<Integer, IMethodResult>>();
 
@@ -251,6 +255,39 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     }
     
     @Override
+    public void onStart(RhodesActivity activity) {
+    	super.onStart(activity);
+    	if(!IntentListener.mapAction.isEmpty()){
+    		for(int i = 0;i<IntentListener.mapAction.size();i++){
+        		mIntentFilter.addAction(IntentListener.mapAction.get(i).toString());
+        		RhodesActivity.getContext().registerReceiver(mReceiver, mIntentFilter);
+            	RhodesActivity.getContext().sendBroadcast(new Intent(IntentListener.mapAction.get(i).toString()));
+        	}
+    	}
+    	
+    	if(!IntentListener.mapCategory.isEmpty()){
+    		for(int i = 0;i<IntentListener.mapCategory.size();i++){
+        		mIntentFilter.addCategory(IntentListener.mapCategory.get(i).toString());
+        		RhodesActivity.getContext().registerReceiver(mReceiver, mIntentFilter);
+            	RhodesActivity.getContext().sendBroadcast(new Intent(IntentListener.mapCategory.get(i).toString()));
+        	}
+    	}
+    	
+    }
+    
+    @Override
+    public void onStop(RhodesActivity activity) {
+    	super.onStop(activity);
+    	RhodesActivity.getContext().unregisterReceiver(mReceiver);
+    }
+    
+    @Override
+    public void onDestroy(RhodesActivity activity) {
+    	super.onDestroy(activity);
+    	RhodesActivity.getContext().unregisterReceiver(mReceiver);
+    }
+    
+    @Override
     public void send(Map<String, Object> params, final IMethodResult result) {
         Intent intent = makeIntent(params);
         Object type = params.get(HK_INTENT_TYPE);
@@ -332,6 +369,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     public void onCreateApplication(IRhoExtManager extManager) {
         IntentFactorySingleton.setInstance(this);
         extManager.addRhoListener(this);
+        extManager.registerExtension("IntentListener", mIntentListner);
     }
 
     @Override
