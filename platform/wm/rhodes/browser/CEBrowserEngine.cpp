@@ -687,6 +687,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
             { 
                 if(0 == pdparams->rgvarg[1].iVal)//if progress completed
                 {
+					ParseTags();//moved from doc complete as we won't get doc complete notification on page refresh.
                     LOG(INFO) + "before calling dominjector ";
                     RHODESAPP().getExtManager().getEngineEventMngr().injectDOMElements();
                 }
@@ -715,8 +716,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		PostMessage(m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)_tcsdup(tcURL));
 
         m_bLoadingComplete = true;
-        InvalidateRect(GetHTMLWND(0), NULL, FALSE);
-        ParseTags();
+        InvalidateRect(GetHTMLWND(0), NULL, FALSE);       
 
 		retVal = S_OK;
         m_bNavigationComplete = TRUE;
@@ -1425,6 +1425,7 @@ bool CEBrowserEngine::executAnonymousJs(wchar_t* szFunctionText, int nTabID)
 {
 	bool bRetStatus = true;
 	InvokeJs(szFunctionText, nTabID);
+	//LOG(INFO) + szFunctionText;
 	return bRetStatus;
 }
 
