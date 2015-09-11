@@ -345,7 +345,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     public void onCreateApplication(IRhoExtManager extManager) {
         IntentFactorySingleton.setInstance(this);
         extManager.addRhoListener(this);
-        extManager.registerExtension("IntentListener", mIntentExt);
+        extManager.registerExtension("IntentRhoExtension", mIntentExt);
     }
 
     @Override
