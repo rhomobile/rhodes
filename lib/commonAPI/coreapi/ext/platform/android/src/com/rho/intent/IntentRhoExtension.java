@@ -28,7 +28,7 @@ public class IntentRhoExtension extends AbstractRhoExtension{
 	@Override
 	public boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config,
 			String name, boolean res) {
-		if (config.isExist("enablereceiver")) {
+		if (config.isExist("enablereceiver") && name.equalsIgnoreCase("rhoelementsext")) {
 			String EnableReceiver = config.getString("enablereceiver");
 			int reg_receiver = 0;
 			IntentFilter intentfilter = new IntentFilter();
