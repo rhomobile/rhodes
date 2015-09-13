@@ -178,7 +178,7 @@ public class SplashScreen implements MainView{
                 if(rhoelementsConfig!=null)
                 	mGetSplashScreenPathValue = rhoelementsConfig.getString(WebViewConfig.SETTING_SPLASHSCREEN_PATH); 
                 
-                if(mGetSplashScreenPathValue != null){
+                if(mGetSplashScreenPathValue != null && !(mGetSplashScreenPathValue.isEmpty())){
 	                if(mGetSplashScreenPathValue.startsWith("file://", 0)){
 	                	actualSplashScreenPathValue = mGetSplashScreenPathValue.substring(7);
 	                	appendSDCardPathToActualSplashScreenPathValue = Environment.getExternalStorageDirectory() + actualSplashScreenPathValue;
