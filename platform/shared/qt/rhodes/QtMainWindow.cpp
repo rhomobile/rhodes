@@ -34,7 +34,9 @@
 #include "RhoSimulator.h"
 #include <sstream>
 #include "QtWebPage.h"
+#if QT_VERSION > QT_VERSION_CHECK(4, 8, 0)
 #include "QtCustomStyle.h"
+#endif
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -99,7 +101,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 #if !defined(RHODES_EMULATOR)
     QPixmap icon(QCoreApplication::applicationDirPath().append(QDir::separator()).append("icon.png"));
     QApplication::setWindowIcon(icon);
+    #if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
     QApplication::setApplicationDisplayName(QString::fromStdString(RHOCONF().getString("title_text")));
+    #endif
     QApplication::setApplicationName(QString::fromStdString(RHOCONF().getString("app_name")));
     QApplication::setApplicationVersion(QString::fromStdString(RHOCONF().getString("app_version")));
     QApplication::setOrganizationName(QString::fromStdString(RHOCONF().getString("org_name")));
@@ -107,7 +111,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     QPixmap icon(":/images/rho.png");
     QApplication::setWindowIcon(icon);
 #endif
+#if QT_VERSION > QT_VERSION_CHECK(4, 8, 0)
     QApplication::setStyle(new QtCustomStyle());
+#endif
 
     ui->setupUi(this);
 
@@ -858,13 +864,20 @@ void QtMainWindow::menuActionEvent(bool checked)
 
 void QtMainWindow::on_actionAbout_triggered()
 {
+QString OSDetails= QString("\nOS  : %1  \nApp Compiled with QT Version :  %2 \nRunning with QT Version %3")
+    .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
 #ifndef RHO_SYMBIAN
 #ifdef RHODES_EMULATOR
-    QMessageBox::about(this, RHOSIMULATOR_NAME, QString(RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebKit v" QTWEBKIT_VERSION_STR ")\n(WebKit v%1)").arg(qWebKitVersion()));
+    QMessageBox::about(this, RHOSIMULATOR_NAME, QString(RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebKit v" QTWEBKIT_VERSION_STR ")\n(WebKit v%1) \nPlatform : %2 %3").arg(qWebKitVersion())
+       .arg(RHOSIMCONF().getString( "platform").c_str())
+       .arg(OSDetails)
+       );
 #else
-    QMessageBox::about(this, QString::fromStdString(RHOCONF().getString("title_text")), QString("%1 v%2")
+    QMessageBox::about(this, QString::fromStdString(RHOCONF().getString("title_text")), QString("%1 v%2 %3")
         .arg(QString::fromStdString(RHOCONF().getString("app_name")))
-        .arg(QString::fromStdString(RHOCONF().getString("app_version"))));
+        .arg(QString::fromStdString(RHOCONF().getString("app_version")))
+        .arg(OSDetails)
+        );
 #endif
 
 #endif
