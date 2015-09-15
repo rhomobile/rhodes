@@ -445,6 +445,90 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
         		mConfig.set(WebViewConfig.SETTING_SPLASHSCREEN_DURATION, splashscreendurationValue);
         	}
         }
+        if(config.isExist("enablefunctionkey_f1")){
+        	String enablefuncKeyF1Value = config.getString("enablefunctionkey_f1");
+        	if(enablefuncKeyF1Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F1, enablefuncKeyF1Value);
+        	}
+        }
+        
+        if(config.isExist("enablefunctionkey_f2")){
+        	String enablefuncKeyF2Value = config.getString("enablefunctionkey_f2");
+        	if(enablefuncKeyF2Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F2, enablefuncKeyF2Value);
+        	}
+        }
+        
+        if(config.isExist("enablefunctionkey_f3")){
+        	String enablefuncKeyF3Value = config.getString("enablefunctionkey_f3");
+        	if(enablefuncKeyF3Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F3, enablefuncKeyF3Value);
+        	}
+        }
+        
+        if(config.isExist("enablefunctionkey_f4")){
+        	String enablefuncKeyF4Value = config.getString("enablefunctionkey_f4");
+        	if(enablefuncKeyF4Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F4, enablefuncKeyF4Value);
+        	}
+        }
+        
+        if(config.isExist("enablefunctionkey_f5")){
+        	String enablefuncKeyF5Value = config.getString("enablefunctionkey_f5");
+        	if(enablefuncKeyF5Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F5, enablefuncKeyF5Value);
+        	}
+        }
+        
+        if(config.isExist("enablefunctionkey_f6")){
+        	String enablefuncKeyF6Value = config.getString("enablefunctionkey_f6");
+        	if(enablefuncKeyF6Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F6, enablefuncKeyF6Value);
+        	}
+        }
+        
+        if(config.isExist("enablefunctionkey_f7")){
+        	String enablefuncKeyF7Value = config.getString("enablefunctionkey_f7");
+        	if(enablefuncKeyF7Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F7, enablefuncKeyF7Value);
+        	}
+        }
+        
+        if(config.isExist("enablefunctionkey_f8")){
+        	String enablefuncKeyF8Value = config.getString("enablefunctionkey_f8");
+        	if(enablefuncKeyF8Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F8, enablefuncKeyF8Value);
+        	}
+        }
+        
+        if(config.isExist("enablefunctionkey_f9")){
+        	String enablefuncKeyF9Value = config.getString("enablefunctionkey_f9");
+        	if(enablefuncKeyF9Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F9, enablefuncKeyF9Value);
+        	}
+        }
+        
+        if(config.isExist("enablefunctionkey_f10")){
+        	String enablefuncKeyF10Value = config.getString("enablefunctionkey_f10");
+        	if(enablefuncKeyF10Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F10, enablefuncKeyF10Value);
+        	}
+        }
+        
+        if(config.isExist("enablefunctionkey_f11")){
+        	String enablefuncKeyF11Value = config.getString("enablefunctionkey_f11");
+        	if(enablefuncKeyF11Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F11, enablefuncKeyF11Value);
+        	}
+        }
+        
+        if(config.isExist("enablefunctionkey_f12")){
+        	String enablefuncKeyF12Value = config.getString("enablefunctionkey_f12");
+        	if(enablefuncKeyF12Value != null){
+        		mConfig.set(WebViewConfig.ENABLE_FUNCTION_KEY_F12, enablefuncKeyF12Value);
+        	}
+        }
+        
         if(config.isExist("http_proxy")){
     		String httpProxy = config.getString("http_proxy");
     		if(httpProxy.length()!=0){

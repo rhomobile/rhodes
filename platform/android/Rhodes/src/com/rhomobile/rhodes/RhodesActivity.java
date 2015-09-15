@@ -73,6 +73,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	
 	public static boolean IS_WINDOWS_KEY = false;
 	
+	public static boolean IS_FUNCTIONS_KEY = false;
+	
 	public static boolean isShownSplashScreenFirstTime = false;//Used to display the splash screen only once during launch of an application
 	
 	public static int MAX_PROGRESS = 10000;
@@ -166,7 +168,20 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             		IS_WINDOWS_KEY = true;
             	}
             }	
-
+	String isFuncKeyConf =  null;
+            try{
+            	isFuncKeyConf = config.getValue("FunctionKeysCapturable");
+            }
+            catch(Exception e){
+            	e.printStackTrace();
+            }
+            
+            if (isFuncKeyConf != null && isFuncKeyConf.length() > 0){
+            	if(isFuncKeyConf.contains("1")){
+            		IS_FUNCTIONS_KEY = true;
+            	}
+            }
+            
             String CAFile = config.getValue("CAFile");
             if (CAFile != null && CAFile.length() > 0)
                 RhoConf.setString("CAFile", CAFile);
