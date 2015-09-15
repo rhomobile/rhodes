@@ -19,7 +19,31 @@ public class WebViewConfig implements IRhoConfig {
     public static final String SETTING_SPLASHSCREEN_PATH = "splashscreenpath";
     public static final String SETTING_SPLASHSCREEN_DURATION = "splashscreenduration";
     public static final String USER_AGENT = "useragent";
+    public static final String ENABLE_FUNCTION_KEY_F1 = "EnableFunctionKey_F1";
+    public static final String ENABLE_FUNCTION_KEY_F2 = "EnableFunctionKey_F2";
+    public static final String ENABLE_FUNCTION_KEY_F3 = "EnableFunctionKey_F3";
+    public static final String ENABLE_FUNCTION_KEY_F4 = "EnableFunctionKey_F4";
+    public static final String ENABLE_FUNCTION_KEY_F5 = "EnableFunctionKey_F5";
+    public static final String ENABLE_FUNCTION_KEY_F6 = "EnableFunctionKey_F6";
+    public static final String ENABLE_FUNCTION_KEY_F7 = "EnableFunctionKey_F7";
+    public static final String ENABLE_FUNCTION_KEY_F8 = "EnableFunctionKey_F8";
+    public static final String ENABLE_FUNCTION_KEY_F9 = "EnableFunctionKey_F9";
+    public static final String ENABLE_FUNCTION_KEY_F10 = "EnableFunctionKey_F10";
+    public static final String ENABLE_FUNCTION_KEY_F11 = "EnableFunctionKey_F11";
+    public static final String ENABLE_FUNCTION_KEY_F12 = "EnableFunctionKey_F12";
 
+	public static final boolean ENABLE_FUNCTION_KEY_F1_DEF = true;
+	public static final boolean ENABLE_FUNCTION_KEY_F2_DEF = true;
+	public static final boolean ENABLE_FUNCTION_KEY_F3_DEF = true;
+	public static final boolean ENABLE_FUNCTION_KEY_F4_DEF = true;
+	public static final boolean ENABLE_FUNCTION_KEY_F5_DEF = true;
+	public static final boolean ENABLE_FUNCTION_KEY_F6_DEF = true;
+	public static final boolean ENABLE_FUNCTION_KEY_F7_DEF = true;
+	public static final boolean ENABLE_FUNCTION_KEY_F8_DEF = true;
+	public static final boolean ENABLE_FUNCTION_KEY_F9_DEF = true;
+	public static final boolean ENABLE_FUNCTION_KEY_F10_DEF = true;
+	public static final boolean ENABLE_FUNCTION_KEY_F11_DEF = true;
+	public static final boolean ENABLE_FUNCTION_KEY_F12_DEF = true;
     public static final boolean ENABLE_PAGE_LOADING_INDICATION_DEF = true;
     public static final boolean ENABLE_ZOOM_DEF = true;
     public static final boolean ENABLE_WEB_PLUGINS_DEF = true;
@@ -41,6 +65,18 @@ public class WebViewConfig implements IRhoConfig {
         mConfigMap.put(ENABLE_WEB_PLUGINS, String.valueOf(ENABLE_WEB_PLUGINS_DEF));
         mConfigMap.put(ENABLE_CACHE, String.valueOf(ENABLE_CACHE_DEF));
         mConfigMap.put(USER_AGENT, USER_AGENT_DEF);
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F1, String.valueOf(ENABLE_FUNCTION_KEY_F1_DEF));
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F2, String.valueOf(ENABLE_FUNCTION_KEY_F2_DEF));
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F3, String.valueOf(ENABLE_FUNCTION_KEY_F3_DEF));
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F4, String.valueOf(ENABLE_FUNCTION_KEY_F4_DEF));
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F5, String.valueOf(ENABLE_FUNCTION_KEY_F5_DEF));
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F6, String.valueOf(ENABLE_FUNCTION_KEY_F6_DEF));
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F7, String.valueOf(ENABLE_FUNCTION_KEY_F7_DEF));
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F8, String.valueOf(ENABLE_FUNCTION_KEY_F8_DEF));
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F9, String.valueOf(ENABLE_FUNCTION_KEY_F9_DEF));
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F10, String.valueOf(ENABLE_FUNCTION_KEY_F10_DEF));
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F11, String.valueOf(ENABLE_FUNCTION_KEY_F11_DEF));
+        mConfigMap.put(ENABLE_FUNCTION_KEY_F12, String.valueOf(ENABLE_FUNCTION_KEY_F12_DEF));
     }
     
     public void set(String name, boolean val) {
