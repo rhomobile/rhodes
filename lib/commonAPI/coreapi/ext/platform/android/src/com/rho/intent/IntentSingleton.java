@@ -1,7 +1,6 @@
 package com.rho.intent;
 
 import java.lang.reflect.Field;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +29,8 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     private static final String TAG = IntentSingleton.class.getSimpleName();
     
     private IMethodResult methodResult;
+    private IntentReceiver mReceiver = new IntentReceiver();
+    private IntentRhoExtension mIntentExt = new IntentRhoExtension();
     
     private List<Map.Entry<Integer, IMethodResult>> localMethodResults = new ArrayList<Map.Entry<Integer, IMethodResult>>();
 
@@ -251,6 +252,18 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     }
     
     @Override
+    public void onDestroy(RhodesActivity activity) {
+    	super.onDestroy(activity);
+    	if(IntentRhoExtension.RECEIVER_REGISTER_STATUS == 1){
+    		try {
+        		RhodesActivity.safeGetInstance().getApplicationContext().unregisterReceiver(mReceiver);
+        		IntentRhoExtension.RECEIVER_REGISTER_STATUS =0;
+    		} catch (IllegalArgumentException e) {
+    		}
+    	}
+    }
+    
+    @Override
     public void send(Map<String, Object> params, final IMethodResult result) {
         Intent intent = makeIntent(params);
         Object type = params.get(HK_INTENT_TYPE);
@@ -332,6 +345,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     public void onCreateApplication(IRhoExtManager extManager) {
         IntentFactorySingleton.setInstance(this);
         extManager.addRhoListener(this);
+        extManager.registerExtension("IntentRhoExtension", mIntentExt);
     }
 
     @Override

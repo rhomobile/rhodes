@@ -45,3 +45,4 @@ ext/platform/android/generated/src/com/rho/intent/IIntentFactory.java
 ext/platform/android/generated/src/com/rho/intent/IIntentSingleton.java
 ext/platform/android/src/com/rho/intent/IntentSingleton.java
 ext/platform/android/src/com/rho/intent/IntentReceiver.java
+ext/platform/android/src/com/rho/intent/IntentRhoExtension.java
