@@ -1074,6 +1074,12 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
     else 
     {
         rho::String limit_str = "";
+        if (select_attr.size() == 0) {
+            RAWLOG_ERROR("specify :select_attr parameter when use sql queries!");
+            rho::String errStr("specify :select_attr parameter when use sql queries!");
+            oResult.setArgError(errStr);
+            return;
+        }
         if(what != "count") 
         {
             if(where_str.size())
