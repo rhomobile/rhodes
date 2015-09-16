@@ -36,6 +36,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.webkit.URLUtil;
+import android.webkit.MimeTypeMap;
 
 public class LocalFileHandler implements UriHandler
 {
