@@ -62,12 +62,6 @@ namespace common {
 
 IMPLEMENT_LOGCLASS(CExtManager, "ExtManager");
 
-// Creating zoomKeyVal object of type CZoomKeyDataType
-// This object is used for Zoom In & Zoom Out Operation
-#ifndef RHODES_QT_PLATFORM
-CZoomKeyDataType zoomKeyVal;
-#endif
-
 CZoomKeyDataType::CZoomKeyDataType()
 {
 #ifndef RHODES_QT_PLATFORM
@@ -407,6 +401,11 @@ void CExtManager::zoomPage(float fZoom)
 
 INT CExtManager::onZoomTextWndMsg(MSG& oMsg)
 {
+	// Creating zoomKeyVal object of type CZoomKeyDataType
+	// This object is used for Zoom In & Zoom Out Operation
+#ifndef RHODES_QT_PLATFORM
+	static CZoomKeyDataType zoomKeyVal;
+#endif
 	BOOL retVal = TRUE;
 #ifndef RHODES_QT_PLATFORM
 	if( ( ( oMsg.message == WM_KEYDOWN )&& (oMsg.wParam >= VK_F1) && ( oMsg.wParam <= VK_F24 ) ) && !zoomKeyVal.isSameZoomValueSet )
