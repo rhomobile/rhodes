@@ -840,7 +840,20 @@ void CRhodesApp::callBarcodeCallback(String strCallbackUrl, const String& strBar
 
     runCallbackInThread(strCallbackUrl, strBody);
 }
+//Due to the Multithreading issue callback was causing problem. That has been fixed in this.
+#if ( defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR) )
+String g_strCallbackUrl;
+String g_strBody;
 
+	DWORD WINAPI CallbackExecThread( LPVOID lpParam ) 
+	{
+		 if ( !rho_ruby_is_started() )
+	            return 0;
+		 getNetRequest().pushData( g_strCallbackUrl, g_strBody, null );
+		 return 0;
+	}
+
+#endif
 void CRhodesApp::callCallbackWithData(String strCallbackUrl, String strBody, const String& strCallbackData, bool bWaitForResponse) 
 {
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
@@ -857,10 +870,22 @@ void CRhodesApp::callCallbackWithData(String strCallbackUrl, String strBody, con
         strBody += strCallbackData;
     }
 
+#if ( defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR) )
+	g_strCallbackUrl = strCallbackUrl;
+	g_strBody = strBody;
+#endif
+
     if (bWaitForResponse)
         getNetRequest().pushData( strCallbackUrl, strBody, null );
     else
-        runCallbackInThread(strCallbackUrl, strBody);
+	{
+#if ( defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR) )
+		LOG(INFO) + strCallbackUrl + "in a Windows Specific Thread";
+		CloseHandle(::CreateThread(NULL,0,CallbackExecThread,NULL,0,NULL));
+#else
+		runCallbackInThread(strCallbackUrl, strBody);
+#endif
+	}
 }
 
 void CRhodesApp::callCallbackProcWithData(unsigned long oRubyCallbackProc, String strBody, const String& strCallbackData, bool bWaitForResponse) 
