@@ -66,18 +66,6 @@ public class WebViewConfig implements IRhoConfig {
         mConfigMap.put(ENABLE_WEB_PLUGINS, String.valueOf(ENABLE_WEB_PLUGINS_DEF));
         mConfigMap.put(ENABLE_CACHE, String.valueOf(ENABLE_CACHE_DEF));
         mConfigMap.put(USER_AGENT, USER_AGENT_DEF);
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F1, String.valueOf(ENABLE_FUNCTION_KEY_F1_DEF));
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F2, String.valueOf(ENABLE_FUNCTION_KEY_F2_DEF));
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F3, String.valueOf(ENABLE_FUNCTION_KEY_F3_DEF));
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F4, String.valueOf(ENABLE_FUNCTION_KEY_F4_DEF));
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F5, String.valueOf(ENABLE_FUNCTION_KEY_F5_DEF));
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F6, String.valueOf(ENABLE_FUNCTION_KEY_F6_DEF));
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F7, String.valueOf(ENABLE_FUNCTION_KEY_F7_DEF));
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F8, String.valueOf(ENABLE_FUNCTION_KEY_F8_DEF));
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F9, String.valueOf(ENABLE_FUNCTION_KEY_F9_DEF));
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F10, String.valueOf(ENABLE_FUNCTION_KEY_F10_DEF));
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F11, String.valueOf(ENABLE_FUNCTION_KEY_F11_DEF));
-        mConfigMap.put(ENABLE_FUNCTION_KEY_F12, String.valueOf(ENABLE_FUNCTION_KEY_F12_DEF));
     }
     
     public void set(String name, boolean val) {
