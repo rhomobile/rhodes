@@ -651,6 +651,7 @@ void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondHash(const Hashtable<r
 void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondArray(const rho::String& conditions,
                                     const Vector<rho::String>& quests,
                                     const Hashtable<rho::String, rho::String>& strOptions,
+                                    const Vector<rho::String>& attribNamesUsedInCond,
                                     rho::apiGenerator::CMethodResult& oResult)
 {
     getProperty("source_id", oResult);
@@ -659,8 +660,7 @@ void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondArray(const rho::Strin
     bool is_sync_source = (oResult.getString() != "none");
     db::CDBAdapter& db = _get_db(oResult);
     db.startTransaction();
-    Vector<rho::String> selectAttrs;
-    findObjectsPropertyBagByCondArray("all", conditions, quests, strOptions, selectAttrs, oResult);
+    findObjectsPropertyBagByCondArray("all", conditions, quests, strOptions, attribNamesUsedInCond, oResult);
     if(oResult.isError()) {
         db.rollback();
         return;

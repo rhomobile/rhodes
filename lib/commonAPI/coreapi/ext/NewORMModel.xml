@@ -221,6 +221,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                     <PARAM name="conditions" type="STRING"/>
                     <PARAM name="quests" type="ARRAY"/>
                     <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="attribNamesUsedInCond" type="ARRAY"/>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
