@@ -5,6 +5,23 @@
         <HELP_OVERVIEW>NewORM CoreAPI module</HELP_OVERVIEW>
         <MORE_HELP>New implementation of the RHOM.
 NOTE: BETA VERSION - This API has not been officially released. It should not be used in a production environment.
+## Enabling the API
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+If you are going to be using the JS ORM API, you'll also need to include these lines in any files that will be using it:
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORM.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORMHelper.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-Ruby-RunTime.js"&gt;&lt;/script&gt;
+
+## Ruby Usage
+For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/rhom-api).
 </MORE_HELP>
 
         <METHODS>
@@ -142,7 +159,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                                             <VALUE value ="incremental">
                                                 <DESC>Used when the data model is a sync model. Just syncs changes.</DESC>
                                             </VALUE>
-					    <VALUE value ="bulk_only">
+											<VALUE value ="bulk_only">
                                                 <DESC>If the model is used only for bulk sync.</DESC>
                                             </VALUE>
                                         </VALUES>
@@ -170,5 +187,55 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>
          </PLATFORM>
+		 
+		 <EXAMPLES>
+			<EXAMPLE title="addModel">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>This example describes creating model and adding model object.</DESC>
+                        <CODE>
+                            <JAVASCRIPT>
+                <![CDATA[				
+var Customer = function(model){
+  model.enable("sync");
+  model.setModelProperty("name","string","");
+  model.setModelProperty("brand","string","");
+  model.setModelProperty("price","float","");
+  model.set("partition","user");
+};
+var custobj = Rho.ORM.addModel("Customer", Customer);
+
+// create model object and save it to database
+var customer = custobj.createObject({
+  brand: 'Apple',
+  name: 'iPhone5',
+  price: 199.99});
+
+]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+			</EXAMPLE>
+			<EXAMPLE title="databaseFullResetEx">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>This example clears the local model's passed through the array only. It doesn't reset the client_info table.</DESC>
+                        <CODE>
+                            <JAVASCRIPT>
+                <![CDATA[
+var ary = ['Product','Product2'];				
+Rho.ORM.databaseFullResetEx(ary, false, true);]]>
+                            </JAVASCRIPT>
+							<RUBY>
+				<![CDATA[
+ary = ['Product','Product2']				
+Rho.ORM.databaseFullResetEx(ary, false, true) ]]>			
+							</RUBY>	
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+			</EXAMPLE>
+		 </EXAMPLES>
     </MODULE>
 </API>
