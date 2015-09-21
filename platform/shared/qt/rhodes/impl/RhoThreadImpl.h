@@ -60,6 +60,10 @@ private:
     };
     QRhoThread* m_Thread;
     QThread* m_waitThread;
+    #if defined(OS_WINDOWS_DESKTOP)
+	CRITICAL_SECTION gCS;
+	CRITICAL_SECTION gCSstopwait;
+    #endif
 };
 
 }

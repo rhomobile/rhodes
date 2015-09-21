@@ -33,23 +33,69 @@
 
 using namespace rho::common;
 
-IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThread");
+IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThreadQT");
 
-CRhoThreadImpl::CRhoThreadImpl(): m_Thread(0), m_waitThread(0) {}
+CRhoThreadImpl::CRhoThreadImpl(): m_Thread(0), m_waitThread(0) 
+{
+#if defined(OS_WINDOWS_DESKTOP)
+	LOG(INFO) + "RHOQT CRhoThreadImpl cons-before InitializeCriticalSections";
+	InitializeCriticalSection(&gCS);
+	InitializeCriticalSection(&gCSstopwait);
+	LOG(TRACE) + "RHOQT CRhoThreadImpl cons-after InitializeCriticalSections";
+#endif	
+}
 
 CRhoThreadImpl::~CRhoThreadImpl()
 {
-    if (m_Thread) delete m_Thread;
-    if (m_waitThread) delete m_waitThread;
+
+	LOG(INFO) + "RHOQT CRhoThreadImpl destructor";
+	    
+
+    if (m_Thread) 
+	{
+		LOG(TRACE) + "RHOQT CRhoThreadImpl destructor before delete m_Thread";
+		delete m_Thread;
+		LOG(TRACE) + "RHOQT CRhoThreadImpl destructor after delete m_Thread";
+	}
+    if (m_waitThread)
+	{
+		LOG(TRACE) + "RHOQT CRhoThreadImpl destructor before delete m_waitThread ";
+		delete m_waitThread;
+		LOG(TRACE) + "RHOQT CRhoThreadImpl destructor before after m_waitThread ";
+	}
+
+
+
+#if defined(OS_WINDOWS_DESKTOP)
+	LOG(TRACE) + "RHOQT CRhoThreadImpl destructor-before DeleteCriticalSection stopwait";
+	DeleteCriticalSection(&gCSstopwait);
+	LOG(TRACE) + "RHOQT CRhoThreadImpl destructor-after DeleteCriticalSection stopwait";
+	LOG(TRACE) + "RHOQT CRhoThreadImpl destructor-before DeleteCriticalSection stop";
+	DeleteCriticalSection(&gCS);
+	LOG(TRACE) + "RHOQT CRhoThreadImpl destructor-after DeleteCriticalSection stop";
+
+#endif
 }
 
 void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority)
 {
+    LOG(TRACE) + "RHOQT start";
     if (m_Thread)
-        stop(0);
+	{
+        LOG(TRACE) + "RHOQT start-m_Thread exists before calling stop";
+		stop(0);
+		LOG(TRACE) + "RHOQT start-m_Thread exists after calling stop";
+	}
+	else
+	{
+	LOG(TRACE) + "RHOQT start-m_Thread does not exist do not call stop";
+	}
+	 LOG(TRACE) + "RHOQT start-before Qthread start";
     m_Thread = new QRhoThread(pRunnable);
     m_Thread->start();
+	 LOG(TRACE) + "RHOQT start-after Qthread start";
     setThreadPriority(ePriority);
+	 LOG(TRACE) + "RHOQT start-finish aftersetThreadPriority";
 }
 
 void CRhoThreadImpl::setThreadPriority(IRhoRunnable::EPriority ePriority)
@@ -64,39 +110,176 @@ void CRhoThreadImpl::setThreadPriority(IRhoRunnable::EPriority ePriority)
 
 void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
 {
-    stopWait();
-    if ( m_Thread ) {
-        m_Thread->quit();
+ LOG(INFO) + "RHOQT stop";
+	
+ 
+ #if defined(OS_WINDOWS_DESKTOP)	
+ LOG(TRACE) + "RHOQT stop-before enter Crticalsection";
+ EnterCriticalSection(&gCS);
+LOG(TRACE) + "RHOQT stop-after enter Crticalsection";
+#endif
+     LOG(TRACE) + "RHOQT stop-before calling stopWait";
+	stopWait();
+	 LOG(TRACE) + "RHOQT stop-after calling stopWait";
+    
+	if ( m_Thread ) 
+	{
+        LOG(TRACE) + "RHOQT stop-m_Thread exists before m_Thread->quit()";
+		m_Thread->quit();
+		 LOG(TRACE) + "RHOQT stop-m_Thread exists after m_Thread->quit()";
         //m_Thread->wait(nTimeoutToKill);
-        if (!m_Thread->isRunning()) {
+        if (!m_Thread->isRunning())
+        {
+           LOG(TRACE) + "RHOQT stop-m_Thread not running before m_Thread->terminate();";
             m_Thread->terminate();
+			LOG(TRACE) + "RHOQT stop-m_Thread not running after m_Thread->terminate()";
+			LOG(TRACE) + "RHOQT stop-m_Thread not running before  m_Thread->wait()";
             m_Thread->wait();
+			LOG(TRACE) + "RHOQT stop-m_Thread not running after  m_Thread->wait()";
         }
-        LOG(INFO) + "Terminate thread.";
+        else
+        {
+            LOG(TRACE) + "RHOQT stop-m_Thread running-before  m_Thread->wait()";
+            m_Thread->wait();
+			 LOG(TRACE) + "RHOQT stop-m_Thread running-after  m_Thread->wait()";
+        }
+		LOG(TRACE) + "RHOQT stop-before  delete m_Thread";
         delete m_Thread;
+		LOG(TRACE) + "RHOQT stop-after delete m_Thread";
         m_Thread = 0;
+		
     }
+    
+#if defined(OS_WINDOWS_DESKTOP)
+	LOG(TRACE) + "RHOQT stop-before LeaveCriticalSection";
+	LeaveCriticalSection(&gCS);
+	LOG(TRACE) + "RHOQT stop-after LeaveCriticalSection";
+#endif
+LOG(TRACE) + "RHOQT stop-finish";
 }
 
 int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 {
+   LOG(INFO) + "RHOQT wait";
+	bool isVeyBigTimeoutvalue = false;
+    
+    if(nTimeoutMs == 4294966296)
+	{
+		isVeyBigTimeoutvalue = true;
+	}
+	else if(nTimeoutMs == 4294967295)
+						  
+	{
+		isVeyBigTimeoutvalue = true;
+	}
+
+    
     if (m_waitThread)
-        stopWait();
+	{
+    LOG(INFO) + "RHOQT wait-m_waitThread exists before calling stopWait";
+	stopWait();
+	LOG(TRACE) + "RHOQT wait-m_waitThread exists after calling stopWait";
+	}
+	else
+	{
+	LOG(TRACE) + "RHOQT wait-m_waitThread does not existdo not call stopWait";
+	}
+
+	LOG(TRACE) + "RHOQT wait-before m_waitThread->start";
     m_waitThread = new QThread();
     m_waitThread->start();
-    bool result = m_waitThread->wait(1000UL*nTimeoutMs) ? 0 : 1;
-    delete m_waitThread;
-    m_waitThread = 0;
+	LOG(INFO) + "RHOQT wait-after m_waitThread->start";
+	
+	bool result;
+	
+	if(isVeyBigTimeoutvalue)
+	{
+	LOG(INFO) + "RHOQT wait-before wait for a long time nTimeoutMs:-  "+nTimeoutMs;
+	result = m_waitThread->wait(1000UL*nTimeoutMs) ? 0 : 1;
+	LOG(INFO) + "RHOQT wait-after wait for a long time Result:-  "+result;
+	}
+	else
+	{
+	LOG(INFO) + "RHOQT wait-before wait for a short time nTimeoutMs:-  "+nTimeoutMs;
+	result = m_waitThread->wait(1UL*nTimeoutMs) ? 0 : 1;
+	LOG(INFO) + "RHOQT wait-after wait for a short time Result:-  "+result;
+	}
+
+
+    if(m_waitThread)
+	{
+	LOG(INFO) + "RHOQT wait-m_waitThread exists again-before EnterCriticalSection";
+#if defined(OS_WINDOWS_DESKTOP)	
+	EnterCriticalSection(&gCSstopwait);
+	LOG(TRACE) + "RHOQT wait-m_waitThread exists again-after EnterCriticalSection";
+#endif
+	 if(m_waitThread)
+	{
+	LOG(INFO) + "RHOQT wait:-m_waitThread exists again 2-before Delete m_waitThread";
+	delete m_waitThread;
+	LOG(INFO) + "RHOQT wait:-m_waitThread exists again 2-after Delete m_waitThread";
+   	m_waitThread = 0;
+	 }
+	 else
+	 {
+	 LOG(INFO) + "RHOQT wait:-m_waitThread does not exist again 2-do not Delete m_waitThread";
+	 }
+#if defined(OS_WINDOWS_DESKTOP)
+	 LOG(TRACE) + "RHOQT wait-m_waitThread exists again-before LeaveCriticalSection";
+	LeaveCriticalSection(&gCSstopwait);
+	 LOG(TRACE) + "RHOQT wait-m_waitThread exists again-after LeaveCriticalSection";
+#endif
+
+	}
+
+	
+	LOG(TRACE) + "RHOQT wait-finish before return ";
     return result;
 }
 
 void CRhoThreadImpl::stopWait()
 {
-    if (m_waitThread) {
-        m_waitThread->terminate(); // quit();
-        if (m_waitThread)
-            m_waitThread->wait();
+
+    LOG(INFO) + "RHOQT stopWait"; 
+	LOG(INFO) + "RHOQT stopWait- before 100 ms sleep";
+	QRhoThread::msleep(100);
+    LOG(TRACE) + "RHOQT stopWait- after 100 ms sleep";
+    
+	if (m_waitThread) 
+    {
+      
+       
+#if defined(OS_WINDOWS_DESKTOP)	
+	LOG(INFO) + "RHOQT stopWait-m_waitThread exists -before EnterCriticalSection";
+	EnterCriticalSection(&gCSstopwait);
+	LOG(TRACE) + "RHOQT stopWait-m_waitThread exists -after EnterCriticalSection";
+#endif
+	if (m_waitThread) 
+    {
+	LOG(INFO) + "RHOQT stopWait-m_waitThread exists again- before Terminate waitthread";
+	 m_waitThread->terminate();
+	 LOG(TRACE) + "RHOQT stopWait-m_waitThread exists again- after Terminate waitthread";
+	}
+	else
+	{
+	LOG(INFO) + "RHOQT stopWait-m_waitThread does not exist now- do not Terminate waitthread";
+	}
+
+#if defined(OS_WINDOWS_DESKTOP)
+	 LOG(TRACE) + "RHOQT stopWait-m_waitThread exists-before LeaveCriticalSection";
+	LeaveCriticalSection(&gCSstopwait);
+	 LOG(TRACE) + "RHOQT stopWait-m_waitThread exists-after LeaveCriticalSection";
+#endif
+
     }
+
+	else
+	{
+	 LOG(TRACE) + "RHOQT stopWait-m_waitThread does not exist-do not try to terminate";
+	}
+    
+
+
 }
 
 void CRhoThreadImpl::sleep(unsigned int nTimeout)
