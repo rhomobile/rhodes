@@ -963,9 +963,13 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
     //Function Name - initConnection(rho::boolean bLocalHost, LPCTSTR url)
     //Date - 10/07/2014
     /****************************************/
+    
+    //InternetCloseHandle should not be called when connection is alive. This creates issues as handle is being closed here. 
+    
     if (m_hInternet){
-	 InternetCloseHandle(m_hInternet);
-	 m_hInternet = NULL;
+	 LOG(INFO) + "initConnection-Internet handle present";
+	 //InternetCloseHandle(m_hInternet);
+	 //m_hInternet = NULL;
     } 
 
     if (RHOCONF().isExist("http_proxy_host")) {

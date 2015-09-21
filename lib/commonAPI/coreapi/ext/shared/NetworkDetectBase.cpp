@@ -133,11 +133,16 @@ void CNetworkDetectionBase::run()
 			CheckConnectivity();
 		}     
     }
-	LOG(INFO) + "Stopping Network Detection Thread";
+	LOG(INFO) + "Stopping Network Detection Thread..";
   
   if ( m_deleteSelf )
   {
+#if defined(OS_WINDOWS_DESKTOP)
+    LOG(INFO) + "Stopping Network Detection Thread-do not delete ";
+ #else
+     LOG(INFO) + "Stopping Network Detection Thread- delete this";
     delete this;
+ #endif
   }
 }
 
