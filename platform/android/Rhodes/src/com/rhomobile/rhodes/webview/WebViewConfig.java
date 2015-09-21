@@ -53,6 +53,9 @@ public class WebViewConfig implements IRhoConfig {
     public static final String SETTING_SPLASHSCREEN_PATH_DEF = "apps/app/loading.png";
     public static final long SETTING_SPLASHSCREEN_DURATION_DEF = 0;
     public static final String USER_AGENT_DEF = RhoConf.getString("useragent");
+    public static  int ZOOM_IN_KEY = 0;
+    public static  int ZOOM_OUT_KEY = 0;
+    public static boolean ZOOM_KEY_ENABLE = false;
 
     Map<String, String> mConfigMap;
     
