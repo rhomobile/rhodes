@@ -50,6 +50,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
@@ -62,6 +63,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.FrameLayout;
 
@@ -80,6 +82,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	private static RhodesActivity sInstance = null;
 	
 	private Handler mHandler;
+	
+	private View mChild;
+	private int oldHeight;
+	private FrameLayout.LayoutParams frameLayoutParams;
+	
+	public static boolean IS_RESIZE_SIP = false;
 	
 	private FrameLayout mTopLayout;
 	private SplashScreen mSplashScreen;
@@ -261,6 +269,16 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
 
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
+        
+        if (RhoConf.isExist("resize_sip")) {
+			String resizeSIP = RhoConf.getString("resize_sip");
+			if (resizeSIP != null && resizeSIP.contains("1")) {
+				IS_RESIZE_SIP = true;
+				resizeSIP();
+			} else {
+				IS_RESIZE_SIP = false;
+			}
+	}
     }
 
     public MainView switchToSimpleMainView(MainView currentView) {
@@ -697,5 +715,43 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         public static void setDecodeWav(String string){
     	        pref.edit().putString("scandecodewavkey", string).commit();
     }
+    
+    public void resizeSIP() {
+		FrameLayout mLayout = (FrameLayout) this
+				.findViewById(android.R.id.content);
+		if(mLayout != null && mLayout.getChildAt(0) != null) {
+			mChild = mLayout.getChildAt(0);
+			mChild.getViewTreeObserver().addOnGlobalLayoutListener(
+					new ViewTreeObserver.OnGlobalLayoutListener() {
+						public void onGlobalLayout() {
+							resizeChildOfContent();
+						}
+					});
+			frameLayoutParams = (FrameLayout.LayoutParams) mChild.getLayoutParams();
+		}
+	}
+
+	private void resizeChildOfContent() {
+		int newHeight = calculateUsedHeight();
+		if (newHeight != oldHeight && mChild != null && frameLayoutParams != null) {
+			int sipHeight = mChild.getRootView().getHeight();
+			int heightDiff = sipHeight - newHeight;
+			if (heightDiff > (sipHeight / 4)) {
+				// keyboard probably just became visible
+				frameLayoutParams.height = sipHeight - heightDiff;
+			} else {
+				// keyboard probably just became hidden
+				frameLayoutParams.height = sipHeight;
+			}
+			mChild.requestLayout();
+			oldHeight = newHeight;
+		}
+	}
+
+	private int calculateUsedHeight() {
+		Rect r = new Rect();
+		mChild.getWindowVisibleDisplayFrame(r);
+		return (r.bottom - r.top);
+	}
 
 }
