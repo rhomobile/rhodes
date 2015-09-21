@@ -129,5 +129,9 @@
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
     	<string>application tracks your position</string>
+	<key>NSAppTransportSecurity</key>  
+     <dict>  
+          <key>NSAllowsArbitraryLoads</key><true/>  
+     </dict>
 </dict>
 </plist>
