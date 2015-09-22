@@ -756,5 +756,6 @@ prdobjData = model.setBelongsTo("itemName", "Product") ]]>
                     </SECTION>
                 </SECTIONS>
             </EXAMPLE>
+          </EXAMPLES>  
     </MODULE>
 </API>
