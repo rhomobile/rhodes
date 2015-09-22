@@ -127,11 +127,17 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                     <PARAM name="type" type="STRING">
                                         <DESC>The type of property value: String, Float, integer, Varchar, Blob - String is default.</DESC>
                                     </PARAM>
+									<PARAM name="option" type="STRING" default="">
+										<CAN_BE_NIL/>
+										<VALUE value ="overwrite">
+											<DESC>Overwrite client copy of blob with the new copy from server. This is useful when RhoConnect modifies images sent from Rhodes, for example zooming or cropping.</DESC>
+										</VALUE>
+                                    </PARAM>
                                 </PARAMS>
                                 <CAN_BE_NIL>
                                 </CAN_BE_NIL>
                             </PARAM>
-							<PARAM name='setProperty(property,value)' type='STRING,VALUE'>
+							<PARAM name='set(property,value)' type='STRING,VALUE'>
                                 <DESC>Set Behavior of this model. Possible `property` options and corresponding values.</DESC>
                                 <CAN_BE_NIL>
                                 </CAN_BE_NIL>
@@ -167,6 +173,12 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                     <PARAM name="sync_priority" type="INTEGER">
                                         <DESC>This number determines the order in which the models are processed and synchronised. Priority starts from lower value 1. Lower the number, higher is the priority. Default value is 1000. </DESC>
                                     </PARAM>
+									<PARAM name="freezed" type="BOOLEAN">
+                                        <DESC>To make the model Freezed.</DESC>
+                                    </PARAM>
+									<PARAM name="schema_version" type="float">
+                                        <DESC>This is used for data migration of the application.</DESC>
+                                    </PARAM>
                                 </PARAMS>
                             </PARAM>
                         </PARAMS>
@@ -185,11 +197,11 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
         </USER_OVERVIEW>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>
-         </PLATFORM>
+        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
 		 
 		 <EXAMPLES>
-			<EXAMPLE title="addModel">
+		 <EXAMPLE title="addModel">
                 <SECTIONS>
                     <SECTION>
                         <DESC>This example describes creating model and adding model object.</DESC>
@@ -202,13 +214,14 @@ var Customer = function(model){
   model.setModelProperty("brand","string","");
   model.setModelProperty("price","float","");
   model.set("partition","user");
+  model.set("schema_version",'1.1');
 };
 var custobj = Rho.ORM.addModel("Customer", Customer);
 
 // create model object and save it to database
 var customer = custobj.createObject({
-  brand: 'Apple',
-  name: 'iPhone5',
+  brand: "Apple",
+  name: "iPhone5",
   price: 199.99});
 
 ]]>
@@ -216,8 +229,8 @@ var customer = custobj.createObject({
                         </CODE>
                     </SECTION>
                 </SECTIONS>
-			</EXAMPLE>
-			<EXAMPLE title="databaseFullResetEx">
+         </EXAMPLE>
+		 <EXAMPLE title="databaseFullResetEx">
                 <SECTIONS>
                     <SECTION>
                         <DESC>This example clears the local model's passed through the array only. It doesn't reset the client_info table.</DESC>
@@ -235,7 +248,6 @@ Rho.ORM.databaseFullResetEx(ary, false, true) ]]>
                         </CODE>
                     </SECTION>
                 </SECTIONS>
-			</EXAMPLE>
-		 </EXAMPLES>
+         </EXAMPLE>
     </MODULE>
 </API>
