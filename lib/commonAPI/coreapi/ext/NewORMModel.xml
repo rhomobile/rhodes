@@ -112,11 +112,53 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 
             <METHOD name="set">
                 <DESC>Sets model's property to value with additional processing for :sync property.</DESC>
+				<CAN_BE_NIL>
+                </CAN_BE_NIL>
                 <PARAMS>
-                    <PARAM name="propertyName" type="STRING"/>
-                    <PARAM name="propertyValue" type="STRING"/>
+                    <PARAM name='"propertyName","propertyValue"' type='STRING,STRING'>
+						<PARAMS>
+							<PARAM name="partition" type="STRING">
+                                <DESC>The partition to use for this model. Partitions can be used to segment the data and keep non-synched data separate from synched models. Possible `values`.</DESC>
+								<VALUES>
+                                    <VALUE value ="local">
+                                        <DESC>This partition is used automatically if the model is not a sync model.</DESC>
+                                    </VALUE>
+                                    <VALUE value ="user">
+                                        <DESC>This partition is used automatically if the model is a sync model.</DESC>
+                                    </VALUE>
+									<VALUE value ="app">
+                                        <DESC>This partition is used to store the application related information.</DESC>
+                                    </VALUE>
+                                </VALUES>
+                            </PARAM>
+							<PARAM name="sync_type" type="STRING">
+                                <DESC>Sets the type of sync it will be. </DESC>
+                                <VALUES>
+                                    <VALUE value ="none">
+										<DESC>If data model is not a sync model.</DESC>
+                                    </VALUE>
+                                    <VALUE value ="incremental">
+                                        <DESC>Used when the data model is a sync model. Just syncs changes.</DESC>
+									</VALUE>
+									<VALUE value ="bulk_only">
+                                        <DESC>If the model is used only for bulk sync.</DESC>
+                                    </VALUE>
+                                </VALUES>
+                            </PARAM>
+							<PARAM name="sync_priority" type="INTEGER">
+                                <DESC>This number determines the order in which the models are processed and synchronised. Priority starts from lower value 1. Lower the number, higher is the priority. Default value is 1000. </DESC>
+                            </PARAM>
+							<PARAM name="freezed" type="BOOLEAN">
+                                <DESC>To make the model Freezed.</DESC>
+                            </PARAM>
+							<PARAM name="schema_version" type="float">
+                                <DESC>This is used for data migration of the application.</DESC>
+                            </PARAM>
+						</PARAMS>
+					</PARAM>	
                 </PARAMS>
             </METHOD>
+			
 
             <METHOD name="enable">
                 <DESC>Sets model's Boolean property to true (enables model's property)</DESC>
@@ -129,9 +171,6 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 						<VALUE value = "loaded">
 							<DESC>To load the model.</DESC>
 						</VALUE>
-						<VALUE value = "freezed">
-							<DESC>To make the model Freezed.</DESC>
-						</VALUE>
 						<VALUE value = "sync">
 							<DESC>To make the model as user model.</DESC>
 						</VALUE>
@@ -141,7 +180,6 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 						<VALUE value = "pass_through">
 							<DESC>To keep the sensitive data out of redis server.</DESC>
 						</VALUE>
-						
 					</VALUES>
                 </PARAMS>
             </METHOD>
@@ -149,10 +187,17 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="setModelProperty">
                 <DESC>Initializes new model's field property.</DESC>
                 <PARAMS>
-                    <PARAM name="propertyName" type="STRING"/>
-                    <PARAM name="propertyType" type="STRING"/>
+                    <PARAM name="propertyName" type="STRING">
+						<DESC>The name of the property.</DESC>
+                    </PARAM>
+                    <PARAM name="propertyType" type="STRING">
+						<DESC>The type of property value: String, Float, integer, Varchar, Blob - String is default.</DESC>
+                    </PARAM>
                     <PARAM name="propOption" type="STRING" default="">
                         <CAN_BE_NIL/>
+						<VALUE value ="overwrite">
+							<DESC>Overwrite client copy of blob with the new copy from server. This is useful when RhoConnect modifies images sent from Rhodes, for example zooming or cropping.</DESC>
+						</VALUE>
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -507,8 +552,8 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
         </USER_OVERVIEW>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>
-         </PLATFORM>
+        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
 		 
 		 <EXAMPLES>
             <EXAMPLE title="deleteObjects">
@@ -711,6 +756,5 @@ prdobjData = model.setBelongsTo("itemName", "Product") ]]>
                     </SECTION>
                 </SECTIONS>
             </EXAMPLE>
-		</EXAMPLES>	
     </MODULE>
 </API>
