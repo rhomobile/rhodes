@@ -811,11 +811,12 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 {
     pushReceiver = receiver;
 
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-     (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
-    
-    UIRemoteNotificationType nt = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-    NSLog(@"Enabled notification types: %i", (int)nt);
+//    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+//     (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
+//    
+//    UIRemoteNotificationType nt = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
+//    NSLog(@"Enabled notification types: %i", (int)nt);
+    [self registerForRemoteNotification];
 
 }
 
@@ -1011,6 +1012,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     {
 #ifdef APP_BUILD_CAPABILITY_PUSH
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+            UIRemoteNotificationType nt = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
+            NSLog(@"Enabled notification types: %i", (int)nt);
 #else
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge)];
 #endif
