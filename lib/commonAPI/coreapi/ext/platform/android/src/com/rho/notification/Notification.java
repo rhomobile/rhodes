@@ -245,7 +245,13 @@ public class Notification {
                 button.setText(btn.title);
                 button.setTag(btn);
                 button.setOnClickListener(clickListener);
+                //Button text cutoff on Notification pop up
+                if(actions.size() > 3){
                 button.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
+                }
+                else{
+                	button.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1));
+                }
                 bottom.addView(button);
             }
         }
