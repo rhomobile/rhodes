@@ -242,7 +242,12 @@ public class Notification {
             {
                 Button button = new Button(ctx);
                 OnClickListener clickListener = new DialogActionListener(dialog);
-                button.setText(btn.title);
+                if(btn.title.length()>16 && actions.size() <= 3 ){
+                	button.setText((btn.title).substring(0, 15));
+                }
+                else{
+                    button.setText(btn.title);
+                }
                 button.setTag(btn);
                 button.setOnClickListener(clickListener);
                 //Button text cutoff on Notification pop up
