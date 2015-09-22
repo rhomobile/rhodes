@@ -168,13 +168,13 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="setSchemaIndex">
                 <DESC>Initializes new model's schema index.</DESC>
                 <PARAMS>
-                    <PARAM name="indexName" type="STRING"/>
+                    <PARAM name="indexName" type="STRING">
 						<DESC>To define a named index on a set of attributes.</DESC>
 					</PARAM>	
-                    <PARAM name="indexCols" type="ARRAY"/>
+                    <PARAM name="indexCols" type="ARRAY">
 						<DESC>A set of attributes which need a indexName are passed through this array.</DESC>
 					</PARAM>
-                    <PARAM name="is_unique" type="BOOLEAN"/>
+                    <PARAM name="is_unique" type="BOOLEAN">
 						<DESC>To make the indexCols as unique column is_unique is set to true. This will prevent inserting duplicate records.</DESC>
 					</PARAM>
                 </PARAMS>
@@ -250,10 +250,10 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="deleteObjects">
                 <DESC>Deletes all object's according to the specified conditions.It is applicable only for Fixed_schema Model.</DESC>
                 <PARAMS>
-                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH">
 						<DESC>This HASH takes only one key-value pair for which the key is `conditions` and the value is the attribute name. For multiple attribute names, OR/AND/IN operator is used.</DESC> 
                     </PARAM>
-					<PARAM name="quests" type="ARRAY"/>
+					<PARAM name="quests" type="ARRAY">
 						<DESC>This Array takes the values as String for the attribute names passed in the "strOptions" parameter.</DESC>
 					</PARAM>	
                 </PARAMS>
@@ -262,10 +262,10 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="deleteObjectsPropertyBagByCondHash">
                 <DESC>Deletes all objects for the given Property Bag model according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
-                    <PARAM name="conditions" type="HASH"/>
+                    <PARAM name="conditions" type="HASH">
 						<DESC>The attribute names and its respective values are passed as a key-value pair in this HASH.</DESC>
            			</PARAM>	
-					<PARAM name="strOptions" type="HASH"/>
+					<PARAM name="strOptions" type="HASH">
 						<DESC>This HASH is passed as an empty HASH.</DESC>
 					</PARAM>	
                 </PARAMS>
@@ -275,16 +275,16 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="deleteObjectsPropertyBagByCondArray">
                 <DESC>Deletes all objects for the given Property Bag model according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
-                    <PARAM name="conditions" type="STRING"/>
+                    <PARAM name="conditions" type="STRING">
 						<DESC>The attribute names are passed as a string.</DESC>
 					</PARAM>
-                    <PARAM name="quests" type="ARRAY"/>
+                    <PARAM name="quests" type="ARRAY">
 						<DESC>This Array takes the values as String for the attribute names passed in the "conditions" parameter.</DESC>
 					</PARAM>
-                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH">
 						<DESC>This HASH is passed as an empty HASH.</DESC>
 					</PARAM>
-					<PARAM name="attribNamesUsedInCond" type="ARRAY"/>
+					<PARAM name="attribNamesUsedInCond" type="ARRAY">
 						<DESC>This Array takes the attribute names as string. Note: You must include the column name which is there in condition string and others.</DESC>
 					</PARAM>
 				</PARAMS>
@@ -304,7 +304,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="findObjects">
                 <DESC>Returns array of objects for the given model queried according to the specified conditions.</DESC>
                 <PARAMS>
-                    <PARAM name="whatParam" type="STRING"/>
+                    <PARAM name="whatParam" type="STRING">
 						<DESC>It defines the type of find operation to be performed.</DESC>
 						<VALUES>
 							<VALUE value = "all">
@@ -318,16 +318,16 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 							</VALUE>
 						</VALUES>	
 					</PARAM>					
-                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH">
 						<DESC>This HASH takes only one key-value pair for which the key is `conditions` and the value is the attribute name. For multiple attribute names, OR/AND/IN operator is used.</DESC> 
                     </PARAM>
-					<PARAM name="quests" type="ARRAY"/>
+					<PARAM name="quests" type="ARRAY">
 						<DESC>This Array takes the values as String for the attribute names passed in the "strOptions" parameter.</DESC>
 					</PARAM>
-					<PARAM name="selectAttrs" type="ARRAY"/>
+					<PARAM name="selectAttrs" type="ARRAY">
 						<DESC>This Array takes the attribute names as string.Useful if the model has many attributes and your query only needs a few of them.</DESC>
                     </PARAM>
-					<PARAM name="orderAttrs" type="ARRAY"/>
+					<PARAM name="orderAttrs" type="ARRAY">
 						<DESC>This Array is formed using attribute name followed by Order direction for that attribute. Order direction: 'ASC' ascending, 'DESC' descending. Default = 'ASC'.</DESC>
 					</PARAM>
 				</PARAMS>
@@ -337,7 +337,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="findObjectsPropertyBagByCondHash">
                 <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions.</DESC>
                 <PARAMS>
-                    <PARAM name="whatParam" type="STRING"/>
+                    <PARAM name="whatParam" type="STRING">
 						<DESC>It defines the type of find operation to be performed.</DESC>
 						<VALUES>
 							<VALUE value = "all">
@@ -351,13 +351,13 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 							</VALUE>
 						</VALUES>
 					</PARAM>	
-                    <PARAM name="conditions" type="HASH"/>
+                    <PARAM name="conditions" type="HASH">
 						<DESC>The attribute names and its respective values are passed as a key-value pair in this HASH.</DESC>
 					</PARAM>	
-                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH">
 						<DESC>This HASH is passed as an empty HASH.</DESC>
 					</PARAM>
-                    <PARAM name="selectAttrs" type="ARRAY"/>
+                    <PARAM name="selectAttrs" type="ARRAY">
 						<DESC>This Array takes the attribute names as string. Note: You must include the column name which is there in condition string and others.</DESC>
                     </PARAM>
                 </PARAMS>
@@ -367,7 +367,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="findObjectsPropertyBagByCondArray">
                 <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions.</DESC>
                 <PARAMS>
-                    <PARAM name="whatParam" type="STRING"/>
+                    <PARAM name="whatParam" type="STRING">
 						<DESC>It defines the type of find operation to be performed.</DESC>
 						<VALUES>
 							<VALUE value = "all">
@@ -381,16 +381,16 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 							</VALUE>
 						</VALUES>
 					</PARAM>	
-                    <PARAM name="conditions" type="STRING"/>
+                    <PARAM name="conditions" type="STRING">
 						<DESC>The attribute names are passed as a string.</DESC>
 					</PARAM>
-                    <PARAM name="quests" type="ARRAY"/>
+                    <PARAM name="quests" type="ARRAY">
 						<DESC>This Array takes the values as String for the attribute names passed in the "conditions" parameter.</DESC>
 					</PARAM>
-                    <PARAM name="strOptions" type="HASH"/>
+                    <PARAM name="strOptions" type="HASH">
 						<DESC>This HASH is passed as an empty HASH.</DESC>
 					</PARAM>
-                    <PARAM name="selectAttrs" type="ARRAY"/>
+                    <PARAM name="selectAttrs" type="ARRAY">
 						<DESC>This Array takes the attribute names as string. Note: You must include the column name which is there in condition string and others.</DESC>
                     </PARAM>
                 </PARAMS>
