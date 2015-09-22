@@ -156,7 +156,8 @@ namespace rho {
                     rho::apiGenerator::CMethodResult& oResult);
         void deleteObjectsPropertyBagByCondArray(const rho::String& conditions,
                     const Vector<rho::String>& quests, 
-                    const Hashtable<rho::String, rho::String>& strOptions, 
+                    const Hashtable<rho::String, rho::String>& strOptions,
+                    const Vector<rho::String>& attribNamesUsedInCond, 
                     rho::apiGenerator::CMethodResult& oResult);
 
         // Aux methods
