@@ -115,7 +115,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 				<CAN_BE_NIL>
                 </CAN_BE_NIL>
                 <PARAMS>
-                    <PARAM name='"propertyName","propertyValue"' type='STRING,STRING'>
+                    <PARAM name="propertyName" type="STRING" name="propertyValue" type="STRING">
 						<PARAMS>
 							<PARAM name="partition" type="STRING">
                                 <DESC>The partition to use for this model. Partitions can be used to segment the data and keep non-synched data separate from synched models. Possible `values`.</DESC>
@@ -151,7 +151,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 							<PARAM name="freezed" type="BOOLEAN">
                                 <DESC>To make the model Freezed.</DESC>
                             </PARAM>
-							<PARAM name="schema_version" type="float">
+							<PARAM name="schema_version" type="FLOAT">
                                 <DESC>This is used for data migration of the application.</DESC>
                             </PARAM>
 						</PARAMS>
@@ -163,7 +163,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="enable">
                 <DESC>Sets model's Boolean property to true (enables model's property)</DESC>
                 <PARAMS>
-                    <PARAM name="propertyName" type="STRING"/>
+                    <PARAM name="propertyName" type="STRING">
 					<VALUES>
 						<VALUE value = "fixed_schema">
 							<DESC>To set the type of model as Fixed_schema.</DESC>
@@ -181,6 +181,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 							<DESC>To keep the sensitive data out of redis server.</DESC>
 						</VALUE>
 					</VALUES>
+					</PARAM>
                 </PARAMS>
             </METHOD>
 
@@ -232,7 +233,9 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="createObject">
                 <DESC>Initializes model's object and stores it in the DB.</DESC>
                 <PARAMS>
-                    <PARAM name="attrs" type="HASH"/>
+                    <PARAM name="attrs" type="HASH">
+						<DESC>The attribute names and its respective values are passed as a key-value pair through this HASH.</DESC>
+					</PARAM>	
                 </PARAMS>
                 <RETURN type="HASH"/>
             </METHOD>
@@ -240,7 +243,9 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="createInstance">
                 <DESC>Creates model's instance and initializes model's object but doesn't store it in DB.</DESC>
                 <PARAMS>
-                    <PARAM name="attrs" type="HASH"/>
+                    <PARAM name="attrs" type="HASH">
+						<DESC>The attribute names and its respective values are passed as a key-value pair through this HASH.</DESC>
+					</PARAM>
                 </PARAMS>
                 <RETURN type="HASH"/>
             </METHOD>
@@ -549,6 +554,8 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
         </METHODS>
 
         <USER_OVERVIEW>
+			<!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+			<![CDATA[]]>
         </USER_OVERVIEW>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
@@ -756,6 +763,6 @@ prdobjData = model.setBelongsTo("itemName", "Product") ]]>
                     </SECTION>
                 </SECTIONS>
             </EXAMPLE>
-          </EXAMPLES>  
+		</EXAMPLES>	
     </MODULE>
 </API>
