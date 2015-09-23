@@ -101,6 +101,7 @@ public class RhoWebViewClient extends WebViewClient
     
     private final String TAG = RhoWebViewClient.class.getSimpleName();
     private GoogleWebView mWebView;
+    private String webviewUrlRms = "";
 
     public RhoWebViewClient(GoogleWebView webView) {
         mWebView = webView;
@@ -179,10 +180,22 @@ public class RhoWebViewClient extends WebViewClient
         } catch (Throwable ex) {
             //Do nothing. Just for case if activity has been destroyed in between.
         }
-        if(url.trim().equalsIgnoreCase("data:text/html,") && view.getTitle().equalsIgnoreCase("data:text/html,")) {
+        
+        if(view.getTitle() != null && view.getTitle().equalsIgnoreCase("EB.WebView")) {
+        	webviewUrlRms = url;
+        }
+        
+        // added condition to avoid white screen on back press in EB
+        if(url.trim().equalsIgnoreCase("data:text/html,") && view.getTitle() != null && view.getTitle().equalsIgnoreCase("data:text/html,")) {
         	url = TabbedMainView.defaultUrl;
         	view.loadUrl(url);
         }
+        
+        // added condition to avoid white screen on back press in RMS
+        if(url.trim().equalsIgnoreCase("data:,") && view.getTitle() == null) {
+        	view.loadUrl(webviewUrlRms);
+        }
+        
         RhoExtManager.getImplementationInstance().onNavigateComplete(view, url);
         //CookieSyncManager.getInstance().sync();
 
