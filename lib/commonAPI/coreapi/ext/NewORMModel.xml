@@ -194,11 +194,13 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                     <PARAM name="propertyType" type="STRING">
 						<DESC>The type of property value: String, Float, integer, Varchar, Blob - String is default.</DESC>
                     </PARAM>
-                    <PARAM name="propOption" type="STRING" default="">
+                    <PARAM name="propOption" type="STRING" default="Null">
                         <CAN_BE_NIL/>
+                        	<VALUES>
 						<VALUE value ="overwrite">
 							<DESC>Overwrite client copy of blob with the new copy from server. This is useful when RhoConnect modifies images sent from Rhodes, for example zooming or cropping.</DESC>
 						</VALUE>
+				</VALUES>		
                     </PARAM>
                 </PARAMS>
             </METHOD>
