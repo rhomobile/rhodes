@@ -251,7 +251,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
         return params;
     }
     
-    @Override
+   /* @Override
     public void onDestroy(RhodesActivity activity) {
     	super.onDestroy(activity);
     	if(IntentRhoExtension.RECEIVER_REGISTER_STATUS == 1){
@@ -262,6 +262,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     		}
     	}
     }
+    */
     
     @Override
     public void send(Map<String, Object> params, final IMethodResult result) {
