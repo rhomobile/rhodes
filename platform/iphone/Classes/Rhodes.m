@@ -1237,6 +1237,13 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+    if(syncBackgroundTask != UIBackgroundTaskInvalid)
+     {
+         RAWLOG_INFO("Application receive Memory Warning !!!");
+         [application endBackgroundTask:syncBackgroundTask];
+         syncBackgroundTask = UIBackgroundTaskInvalid ;
+         
+     }
     [self registerForNotifications];
 }
 #endif
