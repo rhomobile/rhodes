@@ -127,7 +127,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                     <PARAM name="type" type="STRING">
                                         <DESC>The type of property value: String, Float, integer, Varchar, Blob - String is default.</DESC>
                                     </PARAM>
-									<PARAM name="option" type="STRING" default="""">
+									<PARAM name="option" type="STRING" default="Null">
 										<CAN_BE_NIL/>
 										<VALUES>
 											<VALUE value ="overwrite">
