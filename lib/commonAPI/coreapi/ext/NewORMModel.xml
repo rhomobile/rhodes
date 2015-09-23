@@ -195,7 +195,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 						<DESC>The name of the property.</DESC>
                     </PARAM>
                     <PARAM name="propertyType" type="STRING">
-						<DESC>The type of property value: String, Float, integer, Varchar, Blob - String is default.</DESC>
+						<DESC>The type of property. Possible values are: String, Float, integer, Varchar, Blob - String is default.</DESC>
                     </PARAM>
                     <PARAM name="propOption" type="STRING" default="Null">
                         <CAN_BE_NIL/>
@@ -211,9 +211,13 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="getModelProperty">
                 <DESC>Returns info about model's field property.</DESC>
                 <PARAMS>
-                    <PARAM name="propertyName" type="STRING"/>
+                    <PARAM name="propertyName" type="STRING">
+						<DESC>The name of the property.</DESC>
+					</PARAM>	
                 </PARAMS>
-                <RETURN type="HASH"/>
+                <RETURN type="HASH">
+					<DESC>Returns property name,type and option in the form of an HASH.</DESC>
+				</RETURN>	
             </METHOD>
 
             <METHOD name="setSchemaIndex">
@@ -261,7 +265,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             </METHOD>
 
             <METHOD name="hasChanges">
-                <DESC>Checks whether the object has any changes.</DESC>
+                <DESC>Checks whether the object has any changes. Returns true when an object is created or updated.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                 </PARAMS>
