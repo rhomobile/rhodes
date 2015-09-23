@@ -115,10 +115,10 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 				<CAN_BE_NIL>
                 </CAN_BE_NIL>
                 <PARAMS>
-                    <PARAM name="propertyName" type="STRING" name="propertyValue" type="STRING">
+                    <PARAM name="propertyName" type="STRING">
 						<PARAMS>
 							<PARAM name="partition" type="STRING">
-                                <DESC>The partition to use for this model. Partitions can be used to segment the data and keep non-synched data separate from synched models. Possible `values`.</DESC>
+                                <DESC>The partition to use for this model. Partitions can be used to segment the data and keep non-synched data separate from synched models.</DESC>
 								<VALUES>
                                     <VALUE value ="local">
                                         <DESC>This partition is used automatically if the model is not a sync model.</DESC>
@@ -155,7 +155,10 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                                 <DESC>This is used for data migration of the application.</DESC>
                             </PARAM>
 						</PARAMS>
-					</PARAM>	
+					</PARAM>
+					<PARAM name="propertyValue" type="STRING">
+						<DESC>The property names takes the corresponding property values, as mentioned above .</DESC>
+					</PARAM>
                 </PARAMS>
             </METHOD>
 			
