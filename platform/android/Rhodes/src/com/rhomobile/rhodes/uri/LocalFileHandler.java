@@ -90,6 +90,10 @@ public class LocalFileHandler implements UriHandler
         	   String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         	    if(mimeType!=null && mimeType.contains("image"))
         	    	intent.setDataAndType(path, "image/*");
+        	    else if(mimeType!=null && mimeType.contains("audio"))
+        	    	intent.setDataAndType(path, "audio/*");
+				else if(mimeType!=null && mimeType.contains("video"))
+        	    	intent.setDataAndType(path, "video/*");	
         	    else
         	    	intent.setDataAndType(path, "*/*");
         	   }
