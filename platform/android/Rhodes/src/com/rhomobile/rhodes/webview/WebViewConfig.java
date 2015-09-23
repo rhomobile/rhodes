@@ -32,6 +32,23 @@ public class WebViewConfig implements IRhoConfig {
     public static final String ENABLE_FUNCTION_KEY_F11 = "EnableFunctionKey_F11";
     public static final String ENABLE_FUNCTION_KEY_F12 = "EnableFunctionKey_F12";
 
+    public static final String ENABLE_APPLICATION_KEY_A1 = "EnableApplicationKey_A1";
+    public static final String ENABLE_APPLICATION_KEY_A2 = "EnableApplicationKey_A2";
+    public static final String ENABLE_APPLICATION_KEY_A3 = "EnableApplicationKey_A3";
+    public static final String ENABLE_APPLICATION_KEY_A4 = "EnableApplicationKey_A4";
+    public static final String ENABLE_APPLICATION_KEY_A5 = "EnableApplicationKey_A5";
+    public static final String ENABLE_APPLICATION_KEY_A6 = "EnableApplicationKey_A6";
+    public static final String ENABLE_APPLICATION_KEY_A7 = "EnableApplicationKey_A7";
+    public static final String ENABLE_APPLICATION_KEY_A8 = "EnableApplicationKey_A8";
+    public static final String ENABLE_APPLICATION_KEY_A9 = "EnableApplicationKey_A9";
+    public static final String ENABLE_APPLICATION_KEY_A10 = "EnableApplicationKey_A10";
+    public static final String ENABLE_APPLICATION_KEY_A11 = "EnableApplicationKey_A11";
+    public static final String ENABLE_APPLICATION_KEY_A12 = "EnableApplicationKey_A12";
+    public static final String ENABLE_APPLICATION_KEY_A13 = "EnableApplicationKey_A13";
+    public static final String ENABLE_APPLICATION_KEY_A14 = "EnableApplicationKey_A14";
+    public static final String ENABLE_APPLICATION_KEY_A15 = "EnableApplicationKey_A15";
+    public static final String ENABLE_APPLICATION_KEY_A16 = "EnableApplicationKey_A16";
+    
 	public static final boolean ENABLE_FUNCTION_KEY_F1_DEF = true;
 	public static final boolean ENABLE_FUNCTION_KEY_F2_DEF = true;
 	public static final boolean ENABLE_FUNCTION_KEY_F3_DEF = true;
