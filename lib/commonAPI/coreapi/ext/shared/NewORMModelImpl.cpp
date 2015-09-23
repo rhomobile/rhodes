@@ -1038,6 +1038,12 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
     rho::Vector<rho::String> questParams(quests);
     // count returns an integer
     rho::String strSQL;
+    
+    if(what.empty()) {
+        oResult.setArgError("findObjectsPropertyBagByCondArray: Invalid Empty First Argument passed.");
+        return;
+    }
+    
     if(what == "count")
     {
         strSQL = "SELECT COUNT(DISTINCT object)";
