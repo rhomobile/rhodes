@@ -2843,6 +2843,7 @@ namespace "config" do
 		      #Barcode has dependency on emdk3-manager. So load it if barcode is present
 		      $app_config['extensions'].unshift('emdk3-manager')
         end
+        $app_config['extensions'].unshift('coreapi')
     end
 
     #if $app_config['extensions'].index('rhoelementsext')
