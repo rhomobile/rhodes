@@ -90,7 +90,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             <METHOD name="databaseFullclientResetAndLogout" access="STATIC">
                 <DESC>Resets sync models, client info and local models and does the user logout.</DESC>
             </METHOD>
-			<METHOD name="addModel" generateAPI="false">
+			<METHOD name="addModel" generateAPI="false" access="STATIC">
                 <DESC>Creates an ORM model reference.</DESC>
                 <APPLIES jsOnly="true"/>
                 <PARAMS>
@@ -127,11 +127,13 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                     <PARAM name="type" type="STRING">
                                         <DESC>The type of property value: String, Float, integer, Varchar, Blob - String is default.</DESC>
                                     </PARAM>
-									<PARAM name="option" type="STRING" default="">
+									<PARAM name="option" type="STRING" default="""">
 										<CAN_BE_NIL/>
-										<VALUE value ="overwrite">
-											<DESC>Overwrite client copy of blob with the new copy from server. This is useful when RhoConnect modifies images sent from Rhodes, for example zooming or cropping.</DESC>
-										</VALUE>
+										<VALUES>
+											<VALUE value ="overwrite">
+												<DESC>Overwrite client copy of blob with the new copy from server. This is useful when RhoConnect modifies images sent from Rhodes, for example zooming or cropping.</DESC>
+											</VALUE>
+										</VALUES>	
                                     </PARAM>
                                 </PARAMS>
                                 <CAN_BE_NIL>
@@ -176,7 +178,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
 									<PARAM name="freezed" type="BOOLEAN">
                                         <DESC>To make the model Freezed.</DESC>
                                     </PARAM>
-									<PARAM name="schema_version" type="float">
+									<PARAM name="schema_version" type="FLOAT">
                                         <DESC>This is used for data migration of the application.</DESC>
                                     </PARAM>
                                 </PARAMS>
@@ -194,14 +196,16 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
         </METHODS>
 
         <USER_OVERVIEW>
-        </USER_OVERVIEW>
+          <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+          <![CDATA[]]>
+		</USER_OVERVIEW>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
         <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
 		 
-	<EXAMPLES>
-       	 <EXAMPLE title="addModel">
+		 <EXAMPLES>
+		 <EXAMPLE title="addModel">
                 <SECTIONS>
                     <SECTION>
                         <DESC>This example describes creating model and adding model object.</DESC>
@@ -249,6 +253,6 @@ Rho.ORM.databaseFullResetEx(ary, false, true) ]]>
                     </SECTION>
                 </SECTIONS>
          </EXAMPLE>
-        </EXAMPLES> 
+		</EXAMPLES> 
     </MODULE>
 </API>
