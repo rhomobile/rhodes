@@ -707,11 +707,11 @@ model.setSchemaIndex("p1", ["name","price"], false) ]]>
                         <CODE>
                             <JAVASCRIPT>
                 <![CDATA[
-var empobjData = empObj.findObjects("all",{"name":"John", "age":"20"},{},['name','age','salary']); ]]>
+var empobjData = empObj.findObjectsPropertyBagByCondHash("all",{"name":"John", "age":"20"},{},['name','age','salary']); ]]>
                             </JAVASCRIPT>
 							<RUBY>
 				<![CDATA[
-empobjData = empObj.findObjects("all",{:name=>"John", :age=>"20"},{},['name','age','salary']) ]]>
+empobjData = empObj.findObjectsPropertyBagByCondHash("all",{:name=>"John", :age=>"20"},{},['name','age','salary']) ]]>
 							</RUBY>
                         </CODE>
                     </SECTION>
@@ -724,12 +724,12 @@ empobjData = empObj.findObjects("all",{:name=>"John", :age=>"20"},{},['name','ag
                         <CODE>
                             <JAVASCRIPT>
                 <![CDATA[
-var empobjData = employee.findObjectsPropertyBagByCondArray("all","name = ? OR age = ?",['Ken','34'],{},['name','age’]);
+var empobjData = employee.findObjectsPropertyBagByCondArray("all","name = ? OR age = ?",['Ken','34'],{},['name','age']);
  ]]>
                             </JAVASCRIPT>
 							<RUBY>
 				<![CDATA[
-empobjData = employee.findObjectsPropertyBagByCondArray("all","name = ? OR age = ?",['Ken','34'],{},['name','age’])
+empobjData = employee.findObjectsPropertyBagByCondArray("all","name = ? OR age = ?",['Ken','34'],{},['name','age'])
  ]]>
 							</RUBY>
                         </CODE>
