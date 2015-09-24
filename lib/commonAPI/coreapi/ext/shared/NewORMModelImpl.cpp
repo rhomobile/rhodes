@@ -1645,6 +1645,14 @@ void rho::CNewORMModelImpl::onSyncUpdateError(const rho::String& objId,
         {
             const rho::String& attrName = cIt -> first;
             const rho::String& attrValue = cIt -> second;
+            Vector<rho::String> quests;
+            rho::String sqlScript = _make_insert_or_update_attr_sql_script(source_id, objId, attrName, attrValue, quests);
+            IDBResult res = db.executeSQLEx(sqlScript.c_str(), quests);
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                db.rollback();
+                return;
+            }
         }
     }
     else
