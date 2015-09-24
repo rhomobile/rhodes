@@ -57,6 +57,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Environment;
 import android.view.KeyEvent;
+import android.app.ActivityManager;
+import android.view.MotionEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -600,12 +602,30 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	public boolean dispatchKeyEvent(KeyEvent event)
 	{
 		 IRhoExtManager extManager = RhoExtManager.getInstance();
+          if(ActivityManager.isUserAMonkey())
+            {
+                return true;
+            }
 		 if(extManager.onKey(event.getKeyCode(), event))
 		 {
 			 return true;
 		 }
 		 return super.dispatchKeyEvent(event);
 	}
+    
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        IRhoExtManager extManager = RhoExtManager.getInstance();
+        if(ActivityManager.isUserAMonkey())
+        {
+            return true;
+        }
+        /*  if(extManager.onTouchEvent(ev)){
+                            return true;
+            } */
+        return super.dispatchTouchEvent(ev);
+    }
+
 
 	public static Context getContext() {
 		RhodesActivity ra = RhodesActivity.getInstance();
