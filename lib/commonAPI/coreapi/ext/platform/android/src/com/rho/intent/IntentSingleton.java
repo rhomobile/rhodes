@@ -30,7 +30,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     
     private IMethodResult methodResult;
     private IntentReceiver mReceiver = new IntentReceiver();
-    private IntentRhoExtension mIntentExt = new IntentRhoExtension();
+   
     
     private List<Map.Entry<Integer, IMethodResult>> localMethodResults = new ArrayList<Map.Entry<Integer, IMethodResult>>();
 
@@ -346,7 +346,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     public void onCreateApplication(IRhoExtManager extManager) {
         IntentFactorySingleton.setInstance(this);
         extManager.addRhoListener(this);
-        extManager.registerExtension("IntentRhoExtension", mIntentExt);
+       
     }
 
     @Override
