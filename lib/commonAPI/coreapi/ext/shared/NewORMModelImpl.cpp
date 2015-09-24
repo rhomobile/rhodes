@@ -651,6 +651,7 @@ void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondHash(const Hashtable<r
 void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondArray(const rho::String& conditions,
                                     const Vector<rho::String>& quests,
                                     const Hashtable<rho::String, rho::String>& strOptions,
+                                    const Vector<rho::String>& attribNamesUsedInCond,
                                     rho::apiGenerator::CMethodResult& oResult)
 {
     getProperty("source_id", oResult);
@@ -659,8 +660,7 @@ void rho::CNewORMModelImpl::deleteObjectsPropertyBagByCondArray(const rho::Strin
     bool is_sync_source = (oResult.getString() != "none");
     db::CDBAdapter& db = _get_db(oResult);
     db.startTransaction();
-    Vector<rho::String> selectAttrs;
-    findObjectsPropertyBagByCondArray("all", conditions, quests, strOptions, selectAttrs, oResult);
+    findObjectsPropertyBagByCondArray("all", conditions, quests, strOptions, attribNamesUsedInCond, oResult);
     if(oResult.isError()) {
         db.rollback();
         return;
@@ -1038,6 +1038,12 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
     rho::Vector<rho::String> questParams(quests);
     // count returns an integer
     rho::String strSQL;
+    
+    if(what.empty()) {
+        oResult.setArgError("findObjectsPropertyBagByCondArray: Invalid Empty First Argument passed.");
+        return;
+    }
+    
     if(what == "count")
     {
         strSQL = "SELECT COUNT(DISTINCT object)";
@@ -1074,6 +1080,12 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
     else 
     {
         rho::String limit_str = "";
+        if (select_attr.size() == 0) {
+            RAWLOG_ERROR("specify :select_attr parameter when use sql queries!");
+            rho::String errStr("specify :select_attr parameter when use sql queries!");
+            oResult.setArgError(errStr);
+            return;
+        }
         if(what != "count") 
         {
             if(where_str.size())
@@ -1633,6 +1645,14 @@ void rho::CNewORMModelImpl::onSyncUpdateError(const rho::String& objId,
         {
             const rho::String& attrName = cIt -> first;
             const rho::String& attrValue = cIt -> second;
+            Vector<rho::String> quests;
+            rho::String sqlScript = _make_insert_or_update_attr_sql_script(source_id, objId, attrName, attrValue, quests);
+            IDBResult res = db.executeSQLEx(sqlScript.c_str(), quests);
+            if(!res.getDBError().isOK()) {
+                oResult.setError(res.getDBError().getError());
+                db.rollback();
+                return;
+            }
         }
     }
     else

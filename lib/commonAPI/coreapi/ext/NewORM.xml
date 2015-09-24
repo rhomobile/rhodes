@@ -5,6 +5,23 @@
         <HELP_OVERVIEW>NewORM CoreAPI module</HELP_OVERVIEW>
         <MORE_HELP>New implementation of the RHOM.
 NOTE: BETA VERSION - This API has not been officially released. It should not be used in a production environment.
+## Enabling the API
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+If you are going to be using the JS ORM API, you'll also need to include these lines in any files that will be using it:
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORM.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORMHelper.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-Ruby-RunTime.js"&gt;&lt;/script&gt;
+
+## Ruby Usage
+For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/rhom-api).
 </MORE_HELP>
 
         <METHODS>
@@ -73,7 +90,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             <METHOD name="databaseFullclientResetAndLogout" access="STATIC">
                 <DESC>Resets sync models, client info and local models and does the user logout.</DESC>
             </METHOD>
-			<METHOD name="addModel" generateAPI="false">
+			<METHOD name="addModel" generateAPI="false" access="STATIC">
                 <DESC>Creates an ORM model reference.</DESC>
                 <APPLIES jsOnly="true"/>
                 <PARAMS>
@@ -101,26 +118,34 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                                 <CAN_BE_NIL>
                                 </CAN_BE_NIL>
                             </PARAM>
-                            <PARAM name='setModelproperty("name","type")' type='STRING,STRING'>
+                            <PARAM name='setModelproperty("name","type","option")' type='STRING,STRING,STRING'>
                                 <DESC>Used to create properties on your model.</DESC>
                                 <PARAMS>
                                     <PARAM name="name" type="STRING">
                                         <DESC>The name of the property.</DESC>
                                     </PARAM>
                                     <PARAM name="type" type="STRING">
-                                        <DESC>The type of property value: String, Float, integer, Varchar, Blob - String is default.</DESC>
+                                        <DESC>The type of property. Possible values are: String, Float, integer, Varchar, Blob. String is default.</DESC>
+                                    </PARAM>
+									<PARAM name="option" type="STRING" default="Null">
+										<CAN_BE_NIL/>
+										<VALUES>
+											<VALUE value ="overwrite">
+												<DESC>Overwrite client copy of blob with the new copy from server. This is useful when RhoConnect modifies images sent from Rhodes, for example zooming or cropping.</DESC>
+											</VALUE>
+										</VALUES>	
                                     </PARAM>
                                 </PARAMS>
                                 <CAN_BE_NIL>
                                 </CAN_BE_NIL>
                             </PARAM>
-							<PARAM name='setProperty(property,value)' type='STRING,VALUE'>
-                                <DESC>Set Behavior of this model. Possible `property` options and corresponding values.</DESC>
+							<PARAM name='set("property","value")' type='STRING,VALUE'>
+                                <DESC>Sets the Behavior of this model. Possible 'property' options and the corresponding 'value's are passed as the parameter.</DESC>
                                 <CAN_BE_NIL>
                                 </CAN_BE_NIL>
                                 <PARAMS>
                                     <PARAM name="partition" type="STRING">
-                                        <DESC>The partition to use for this model. Partitions can be used to segment the data and keep non-synched data separate from synched models. Possible `values`.</DESC>
+                                        <DESC>The partition to use for this model. Partitions can be used to segment the data and keep non-synched data separate from synched models.</DESC>
                                         <VALUES>
                                             <VALUE value ="local">
                                                 <DESC>This partition is used automatically if the model is not a sync model.</DESC>
@@ -142,13 +167,19 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                                             <VALUE value ="incremental">
                                                 <DESC>Used when the data model is a sync model. Just syncs changes.</DESC>
                                             </VALUE>
-					    <VALUE value ="bulk_only">
+											<VALUE value ="bulk_only">
                                                 <DESC>If the model is used only for bulk sync.</DESC>
                                             </VALUE>
                                         </VALUES>
                                     </PARAM>
                                     <PARAM name="sync_priority" type="INTEGER">
                                         <DESC>This number determines the order in which the models are processed and synchronised. Priority starts from lower value 1. Lower the number, higher is the priority. Default value is 1000. </DESC>
+                                    </PARAM>
+									<PARAM name="freezed" type="BOOLEAN">
+                                        <DESC>To make the model Freezed.</DESC>
+                                    </PARAM>
+									<PARAM name="schema_version" type="FLOAT">
+                                        <DESC>This is used for data migration of the application.</DESC>
                                     </PARAM>
                                 </PARAMS>
                             </PARAM>
@@ -165,10 +196,61 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
         </METHODS>
 
         <USER_OVERVIEW>
-        </USER_OVERVIEW>
+          <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+          <![CDATA[]]>
+		</USER_OVERVIEW>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-        <PLATFORM>
-         </PLATFORM>
+        <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
+        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
+		 
+		 <EXAMPLES>
+		 <EXAMPLE title="addModel">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>This example describes creating model and adding model object.</DESC>
+                        <CODE>
+                            <JAVASCRIPT>
+                <![CDATA[				
+var Customer = function(model){
+  model.enable("sync");
+  model.setModelProperty("name","string","");
+  model.setModelProperty("brand","string","");
+  model.setModelProperty("price","float","");
+  model.set("partition","user");
+  model.set("schema_version",'1.1');
+};
+var custobj = Rho.ORM.addModel("Customer", Customer);
+// create model object and save it to database
+var customer = custobj.createObject({
+  brand: "Apple",
+  name: "iPhone5",
+  price: 199.99});
+]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+         </EXAMPLE>
+		 <EXAMPLE title="databaseFullResetEx">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>This example clears the local model's passed through the array only. It doesn't reset the client_info table.</DESC>
+                        <CODE>
+                            <JAVASCRIPT>
+                <![CDATA[
+var ary = ['Product','Product2'];				
+Rho.ORM.databaseFullResetEx(ary, false, true);]]>
+                            </JAVASCRIPT>
+							<RUBY>
+				<![CDATA[
+ary = ['Product','Product2']				
+Rho.ORM.databaseFullResetEx(ary, false, true) ]]>			
+							</RUBY>	
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+         </EXAMPLE>
+		</EXAMPLES> 
     </MODULE>
 </API>
