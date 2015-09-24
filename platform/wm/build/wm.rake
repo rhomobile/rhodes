@@ -1636,7 +1636,7 @@ namespace "device" do
       vspec_files = ''
        if Jake.getBuildBoolProp('deployqt', $app_config, true)
          vspec_files += "  File /r \"imageformats\"\n"
-           if($qtversionindex > 1)
+           if($qtversionindex.nil? || $qtversionindex > 1)
                vspec_files += "  File /r \"platforms\"\n"
           end
        end
