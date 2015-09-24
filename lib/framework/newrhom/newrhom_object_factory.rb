@@ -337,7 +337,7 @@ module Rhom
                 quests = conditions[1..-1]
                 conditions = conditions[0]
               end
-              retVal = klass_model.deleteObjectsPropertyBagByCondArray(conditions, quests, normalized_string_args)
+              retVal = klass_model.deleteObjectsPropertyBagByCondArray(conditions, quests, normalized_string_args, attribNamesUsedInCond=[])
             end
           end
           retVal
