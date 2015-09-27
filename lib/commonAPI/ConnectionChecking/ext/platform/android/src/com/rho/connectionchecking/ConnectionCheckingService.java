@@ -30,6 +30,7 @@ import android.webkit.URLUtil;
 public class ConnectionCheckingService extends Service{
 
 	static final String TAG="ConnectionCheckingService";
+	private static final String[] selfLicensedDeviceList = {"mc18"};
 	ConThread conThread=null;
 	
 	static ConnectionCheckingService sInstance=null;
@@ -118,7 +119,7 @@ public void onCreate() {
 		ConnectionCheckingDialogue.createBuilder(RhodesActivity.safeGetInstance());
 		sInstance=this;
 	
-		if(!isLicensePopupComing())
+		if( (!isLicensePopupComing()) || isSelfLicensedDevice())// for self licensed device notification from license  screen won't come for starting thread...
 		{
 			conThread=new ConThread();
 			conThread.start();
@@ -130,6 +131,18 @@ public void onCreate() {
 		stopSelf();
 	}
 }
+private boolean isSelfLicensedDevice()
+{
+	boolean selfLicense=false;
+	for(String exemptDevice: selfLicensedDeviceList)
+	{
+		if(android.os.Build.MODEL.toLowerCase().contains(exemptDevice)) 
+			selfLicense=true;
+		 					
+	}
+	
+	return selfLicense;
+	}
 private void showDialogue()
 {
 	PerformOnUiThread.exec(new Runnable(){
