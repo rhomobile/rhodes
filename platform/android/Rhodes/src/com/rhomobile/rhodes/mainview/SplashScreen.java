@@ -79,7 +79,9 @@ public class SplashScreen implements MainView{
 			if(mGetLoadingPNGDurationValue != null)
 			{
 				try {
-					mSplashScreenDurationValue = Long.parseLong(mGetLoadingPNGDurationValue, 10); 							
+					mSplashScreenDurationValue = Long.parseLong(mGetLoadingPNGDurationValue, 10); 	
+					if(mSplashScreenDurationValue<0)
+						mSplashScreenDurationValue=0;
 				}catch (NumberFormatException nfe) {
 					Logger.I(TAG, "NumberFormatException: " + nfe.getMessage());
 			    }
