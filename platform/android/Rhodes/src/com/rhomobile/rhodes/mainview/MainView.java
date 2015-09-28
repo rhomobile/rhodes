@@ -65,7 +65,7 @@ public interface MainView {
 	public void switchTab(int index);
 	public int activeTab();
 	public int getTabsCount();
-	
+	public String getTabDefaultUrl();
 	public void loadData(String data, int index);
 	
 	public void addNavBar(String title, Map<Object,Object> left, Map<Object,Object> right);
