@@ -80,12 +80,12 @@ public class TabbedMainView implements MainView {
 	private int mBackgroundColor = 0;
 	private boolean mBackgroundColorEnable = false;
 	private boolean[] isTabLoaded;
-	
+	private String[] tabDefaultUrl;
 	//private String mChangeTabCallback = null;
 	IMethodResult mChangeTabCallback = null;
 	
 	private boolean mIsReallyOnScreen = false;
-	public static String defaultUrl = "";
+	
 	//private String mLoadUrlAfterLoadToScreen = null;
 	
 	//private static native void onTabBarChangeTabCallback(String callback_url, String body);
@@ -531,7 +531,7 @@ public class TabbedMainView implements MainView {
 		int size = tabs_array.length;
 		isTabLoaded = new boolean[size];
 		host = new TabHost(ctx, null);
-		
+		tabDefaultUrl = new String[size];
 		tabData = new Vector<TabData>(size);
 		tabIndex = 0;
 		
@@ -660,7 +660,7 @@ public class TabbedMainView implements MainView {
 				}
 				host.setBackgroundColor(web_bkg_color);
 			}
-			defaultUrl = action;
+			tabDefaultUrl[i] = action;
 			TabData data = new TabData();
 			data.view = view;
 			data.url = action;
@@ -1074,10 +1074,15 @@ public class TabbedMainView implements MainView {
 	public int activeTab() {
 		return tabIndex;
 	}
+	
+	public String getTabDefaultUrl() {
+		return getWebView(activeTab()).getUrl();
+		
+	}
 
 	public void goBack() {
 		if (activeTab() == 0
-				|| !getWebView(activeTab()).getUrl().equals(defaultUrl)) {
+				|| !getWebView(activeTab()).getUrl().contains(tabDefaultUrl[activeTab()])) {
 			getTabMainView(activeTab()).goBack();
 		}
 	}
