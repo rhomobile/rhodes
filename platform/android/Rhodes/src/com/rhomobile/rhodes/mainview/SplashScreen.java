@@ -449,5 +449,11 @@ public class SplashScreen implements MainView{
     
 	public String get_current_url(int tab_index) {
 		return mBackendView.get_current_url(tab_index);
-	}    
+	}
+	
+	@Override
+	public String getTabDefaultUrl() {
+		// TODO Auto-generated method stub
+		return "";
+	}
 }
