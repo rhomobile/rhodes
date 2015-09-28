@@ -903,5 +903,11 @@ public class SimpleMainView implements MainView {
     @Override
     public void removeSplashScreen() {
     }
+    
+    @Override
+	public String getTabDefaultUrl() {
+		// TODO Auto-generated method stub
+		return "";
+	}
 
 }
