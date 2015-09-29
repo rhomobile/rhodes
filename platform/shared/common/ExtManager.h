@@ -108,7 +108,7 @@ struct IRhoExtension
 
 struct IRhoExtManager
 {
-    enum ELogExtLevels { eLogError = 0, eLogWarning, eLogInfo, eLogUser, eLogDebug, eLogLevelsCount };
+    enum ELogExtLevels { eLogError = 0, eLogWarning, eLogInfo,eLogTrace, eLogUser, eLogDebug, eLogLevelsCount };
 
     virtual ~IRhoExtManager(){}
 
