@@ -45,6 +45,7 @@
 #include <QDir>
 #include "impl/MainWindowImpl.h"
 #include "QtLogView.h"
+#include "../../platform/shared/qt/rhodes/RhoSimulator.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -194,6 +195,7 @@ LOG(INFO) + "Running on   " + QtLogView::getOsDetails().toStdString().c_str() + 
         RHOSIMCONF().setString("rhodes_path", m_strRhodesPath, false );
     RHOCONF().setString( "rhosim_platform", RHOSIMCONF().getString( "platform"), false);
     RHOCONF().setString( "app_version", RHOSIMCONF().getString( "app_version"), false);
+    RHOSIMCONF().setString("os_version",String(RHOSIMULATOR_VERSION),false);
     String start_path = RHOSIMCONF().getString("start_path");
     if ( start_path.length() > 0 )
         RHOCONF().setString("start_path", start_path, false);
