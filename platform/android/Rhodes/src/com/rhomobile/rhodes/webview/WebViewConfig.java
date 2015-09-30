@@ -19,6 +19,7 @@ public class WebViewConfig implements IRhoConfig {
     public static final String SETTING_SPLASHSCREEN_PATH = "splashscreenpath";
     public static final String SETTING_SPLASHSCREEN_DURATION = "splashscreenduration";
     public static final String USER_AGENT = "useragent";
+    public static final String ENABLE_SCAN = "LowBatteryScan";
     public static final String ENABLE_FUNCTION_KEY_F1 = "EnableFunctionKey_F1";
     public static final String ENABLE_FUNCTION_KEY_F2 = "EnableFunctionKey_F2";
     public static final String ENABLE_FUNCTION_KEY_F3 = "EnableFunctionKey_F3";
