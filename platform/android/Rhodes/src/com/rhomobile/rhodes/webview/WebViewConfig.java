@@ -71,7 +71,8 @@ public class WebViewConfig implements IRhoConfig {
     public static final String SETTING_SPLASHSCREEN_PATH_DEF = "apps/app/loading.png";
     public static final long SETTING_SPLASHSCREEN_DURATION_DEF = 0;
     public static final String USER_AGENT_DEF = RhoConf.getString("useragent");
-
+   public static String AUTH_USERNAME ="username";
+    public static String AUTH_PASSWORD = "password";
     Map<String, String> mConfigMap;
     
     public WebViewConfig() {
