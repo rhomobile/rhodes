@@ -732,7 +732,7 @@ rho::String rho::CNewORMModelImpl::_make_order_str(const Vector<rho::String>& or
 rho::String rho::CNewORMModelImpl::_make_limit_str(const Hashtable<rho::String, rho::String>& options)
 {
     rho::String limit_str;
-    int limit = -1, offset = -1;
+    int limit = -1, offset = 0;
     Hashtable<rho::String, rho::String>::const_iterator cIt = options.find("per_page");
     if(cIt != options.end()) {
         rho::common::convertFromStringA(cIt -> second.c_str(), limit);
@@ -742,7 +742,7 @@ rho::String rho::CNewORMModelImpl::_make_limit_str(const Hashtable<rho::String, 
         rho::common::convertFromStringA(cIt -> second.c_str(), offset);
     }
 
-    if(limit > -1 && offset > -1)
+    if(limit > -1)
         limit_str = rho::String(" LIMIT " ) + rho::common::convertToStringA(limit) + " OFFSET " + rho::common::convertToStringA(offset);
     return limit_str;
 }
@@ -1057,8 +1057,48 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
             questParams.clear();
             questParams.push_back(what);
         }
+
+        else if(what == "all" || what == "first"){
+            int limit = -1;
+            rho::String limit_str;
+
+            if(what == "all"){
+                limit_str = _make_limit_str(strOptions);
+            }
+            else if(what == "first"){
+                limit_str = rho::String(" LIMIT 1 OFFSET 0");
+            }
+
+            if(limit_str.size()){
+                rho::String sql = "SELECT distinct(object) FROM object_values WHERE source_id=";
+                sql += source_id;
+                sql += limit_str;
+
+                db::CDBAdapter& db = _get_db(oResult);
+                IDBResult res = db.executeSQL(sql.c_str());
+                if(!res.getDBError().isOK()) {
+                    oResult.setError(res.getDBError().getError());
+                    return;
+                }
+                // now , we got objects, time to retrive all attribs
+                Vector<Hashtable<rho::String, rho::String> > retVals;
+                Hashtable<rho::String, Hashtable<rho::String, rho::String> > obj_hashes;
+                for(; !res.isEnd(); res.next()) {
+                    Hashtable<rho::String, rho::String> objHash;
+                    rho::String objId = res.getStringByIdx(0);
+                    objHash["source_id"] = source_id;
+                    objHash["object"] = objId;
+                    _get_object_attrs(objId, objHash, attrSet, oResult);
+                    if(oResult.isError()) {
+                        return;
+                    }
+                    retVals.push_back(objHash);
+                }
+                oResult.set(retVals);
+                return;
+            }
+        }
         rho::String order_str = "";
-        rho::String limit_str = "";
         rho::String attrs_str = "object,attrib,value";
         if(!strSQL.size()) 
         {
@@ -1070,8 +1110,7 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
         strSQL += source_id;
         if(where_str.size())
             strSQL += rho::String(" AND ") + where_str;
-        if(limit_str.size())
-            strSQL += limit_str;
+
         db::CDBAdapter& db = _get_db(oResult);
         IDBResult res = db.executeSQLEx(strSQL.c_str(), questParams);
         _processDbResult(res, what, attrSet, false, oResult);
@@ -1080,6 +1119,8 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
     else 
     {
         rho::String limit_str = "";
+        limit_str = _make_limit_str(strOptions);
+
         if (select_attr.size() == 0) {
             RAWLOG_ERROR("specify :select_attr parameter when use sql queries!");
             rho::String errStr("specify :select_attr parameter when use sql queries!");
@@ -1088,6 +1129,9 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
         }
         if(what != "count") 
         {
+            if(what == "first")
+                limit_str = rho::String(" LIMIT 1 OFFSET 0");
+
             if(where_str.size())
                 strSQL = "SELECT * FROM (\n";
         }
@@ -1117,6 +1161,7 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
         strSQL += where_str;
         if(limit_str.size())
             strSQL += limit_str;
+
         db::CDBAdapter& db = _get_db(oResult);
         IDBResult res = db.executeSQLEx(strSQL.c_str(), questParams);
         _processDbResult(res, what, attrSet, true, oResult);
