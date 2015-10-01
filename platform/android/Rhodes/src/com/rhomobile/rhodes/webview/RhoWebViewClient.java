@@ -34,8 +34,10 @@ import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.extmanager.IRhoExtension;
+import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.mainview.TabbedMainView;
+import com.rhomobile.rhodes.webview.WebViewConfig;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -236,9 +238,27 @@ public class RhoWebViewClient extends WebViewClient
     
     @Override
     public void onReceivedHttpAuthRequest (WebView view, HttpAuthHandler handler, String host, String realm) {
-        HttpAuthResult authResult = new HttpAuthResult(handler, host, realm);
-        RhoExtManager.getImplementationInstance().onAuthRequest(view, authResult);
-    }
+    	IRhoConfig rhoelementsGetConfig =  RhoExtManager.getInstance().getConfig("rhoelementsext");
+		if(rhoelementsGetConfig != null){
+			HttpAuthResult authResult = new HttpAuthResult(handler, host, realm);
+    		String password = rhoelementsGetConfig.getString(WebViewConfig.AUTH_PASSWORD);
+    		String username = rhoelementsGetConfig.getString(WebViewConfig.AUTH_USERNAME);
+    		if(username != null && password !=null){
+				if(password.length() > 0 &&  username.length() > 0){
+		    		 username = rhoelementsGetConfig.getString(WebViewConfig.AUTH_USERNAME);
+		    		 password = rhoelementsGetConfig.getString(WebViewConfig.AUTH_PASSWORD);
+		    		  authResult.proceed(username,password);
+				}else{
+					  RhoExtManager.getImplementationInstance().onAuthRequest(view, authResult);
+				}
+	    	}else{
+	    		  RhoExtManager.getImplementationInstance().onAuthRequest(view, authResult);
+	    	}
+		}else{
+			HttpAuthResult authResult = new HttpAuthResult(handler, host, realm);
+			RhoExtManager.getImplementationInstance().onAuthRequest(view, authResult);
+		}
+      }
     
     
 }
