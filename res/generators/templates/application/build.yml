@@ -2,12 +2,12 @@
 sdkversion: <%=Rhodes::VERSION%>
 name: <%=@app_name%>
 version: 1.0
-vendor: rhomobile
+vendor: tau
 build: debug
 applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator8.2
+  sdk: iphonesimulator9.0
   provisionprofile:
   codesignidentity: iPhone Developer
   entitlements: ""
