@@ -473,6 +473,16 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 	    		}
 	    	}
     	}
+    	 if(config.isExist("username") && config.isExist("password") ){
+	        	String username = config.getString("username");
+				String password = config.getString("password");
+	        	if(username != null && password !=null){
+					if(username.length() > 0 && password.length()> 0){
+						mConfig.set(WebViewConfig.AUTH_USERNAME,username);
+						mConfig.set(WebViewConfig.AUTH_PASSWORD,password);
+					}
+				}
+			}
         
     }
     
