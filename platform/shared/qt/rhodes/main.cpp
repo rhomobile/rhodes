@@ -113,8 +113,8 @@ char* parseToken(const char* start)
 
 int main(int argc, char *argv[])
 {
-LOG(INFO) + "Running on   " + QtLogView::getOsDetails().toStdString().c_str() + " "  + " with QT compiled with  " + QT_VERSION_STR " Running QT Version " + qVersion();
-
+        QString OSDetailsString= QString("Running on : %1 Application Compiled with QT Version :  %2 Running with QT Version %3")
+    .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
 #ifdef RHODES_EMULATOR
     bool isJSApp = false;
 #endif
@@ -137,14 +137,14 @@ LOG(INFO) + "Running on   " + QtLogView::getOsDetails().toStdString().c_str() + 
                 m_strHttpProxy = proxy;
                 free(proxy);
             } else
-                RAWLOGC_INFO("Main", "invalid value for \"http_proxy_url\" cmd parameter");
+                RAWLOGC_INFO("QTMain", "invalid value for \"http_proxy_url\" cmd parameter");
         } else if (strncasecmp("-http_proxy_uri",argv[i],15)==0) {
             char *proxy = parseToken(argv[i]);
             if (proxy) {
                 m_strHttpProxy = proxy;
                 free(proxy);
             } else
-                RAWLOGC_INFO("Main", "invalid value for \"http_proxy_uri\" cmd parameter");
+                RAWLOGC_INFO("QTMain", "invalid value for \"http_proxy_uri\" cmd parameter");
 #ifdef RHODES_EMULATOR
         } else if ((strncasecmp("-approot",argv[i],8)==0) || (isJSApp = (strncasecmp("-jsapproot",argv[i],10)==0))) {
             char* path = parseToken(argv[i]);
@@ -172,7 +172,7 @@ LOG(INFO) + "Running on   " + QtLogView::getOsDetails().toStdString().c_str() + 
             }
 #endif
         } else {
-            RAWLOGC_INFO1("Main", "wrong cmd parameter: %s", argv[i]);
+            RAWLOGC_INFO1("QTMain", "wrong cmd parameter: %s", argv[i]);
         }
     }
 
@@ -209,12 +209,12 @@ LOG(INFO) + "Running on   " + QtLogView::getOsDetails().toStdString().c_str() + 
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
         QMessageBox::critical(0,QString("This is hidden app and can be started only with security key."), QString("Security Token Verification Failed"));
-        RAWLOGC_INFO("Main", "This is hidden app and can be started only with security key.");
+        RAWLOGC_INFO("QTMain", "This is hidden app and can be started only with security key.");
         if (RHOCONF().getString("invalid_security_token_start_path").length() <= 0)
             return 1;
     }
-
-    RAWLOGC_INFO("Main", "Rhodes started");
+    RAWLOGC_INFO("QTMain" ,OSDetailsString.toStdString().c_str());
+    RAWLOGC_INFO("QTMain", "Rhodes started");
     if (m_strHttpProxy.length() > 0) {
         parseHttpProxyURI(m_strHttpProxy);
     } else {
