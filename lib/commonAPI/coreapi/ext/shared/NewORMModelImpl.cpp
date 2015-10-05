@@ -1119,6 +1119,16 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
     else 
     {
         rho::String limit_str = "";
+        rho::String order_str;
+        rho::String order_attr_sql;
+
+        Hashtable<rho::String, rho::String>::const_iterator cIt = strOptions.find("order");
+        if(cIt != strOptions.end())
+            order_attr_sql = cIt -> second;
+
+        if(order_attr_sql.size())
+            order_str = rho::String(" ORDER BY ") + order_attr_sql;
+
         limit_str = _make_limit_str(strOptions);
 
         if (select_attr.size() == 0) {
@@ -1159,6 +1169,9 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
         strSQL += "GROUP BY object\n";
         strSQL += ") WHERE ";
         strSQL += where_str;
+
+        if(order_str.size())
+            strSQL += order_str;
         if(limit_str.size())
             strSQL += limit_str;
 
