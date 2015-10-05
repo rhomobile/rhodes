@@ -447,7 +447,7 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 						<DESC>This Array takes the values as String for the attribute names passed in the "conditions" parameter.</DESC>
 					</PARAM>
                     <PARAM name="strOptions" type="HASH">
-						<DESC>This HASH takes only two key-value pairs for which the first key is `per_page` and the value is an integer which specifies number of records to be returned. The second key is `offset` and the value is an integer which indicates the number of records to skip before returning.</DESC> 
+						<DESC>This HASH takes only three key-value pairs for which the first key is `per_page` and the value is an integer which specifies number of records to be returned. The second key is `offset` and the value is an integer which indicates the number of records to skip before returning. The third key is `order` and the value is the attribute name followed by Order direction for that attribute. Order direction: 'ASC' ascending, 'DESC' descending. Default = 'ASC'. The attribute names present under the `order` key should be present in the selectAttrs parameter. Also `order` key is applicable only when the parameter `conditions` exists.</DESC> 
 					</PARAM>
                     <PARAM name="selectAttrs" type="ARRAY">
 						<DESC>This Array takes the attribute names as string. Note: You must include the column name which is there in condition string and others.</DESC>
@@ -724,12 +724,12 @@ empobjData = empObj.findObjectsPropertyBagByCondHash("all",{:name=>"John", :age=
                         <CODE>
                             <JAVASCRIPT>
                 <![CDATA[
-var empobjData = employee.findObjectsPropertyBagByCondArray("all","name = ? OR age = ?",['Ken','34'],{"per_page":5, "offset":0},['name','age']);
+var empobjData = employee.findObjectsPropertyBagByCondArray("all","name = ? OR age = ?",['Ken','34'],{"per_page":5, "offset":0, "order":"name DESC, age ASC"},['name','age']);
  ]]>
                             </JAVASCRIPT>
 							<RUBY>
 				<![CDATA[
-empobjData = employee.findObjectsPropertyBagByCondArray("all","name = ? OR age = ?",['Ken','34'],{:per_page => 5, :offset => 0},['name','age'])
+empobjData = employee.findObjectsPropertyBagByCondArray("all","name = ? OR age = ?",['Ken','34'],{:per_page => 5, :offset => 0, :order => "name DESC, age ASC"},['name','age'])
  ]]>
 							</RUBY>
                         </CODE>
