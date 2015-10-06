@@ -102,7 +102,7 @@ void rho::CNewORMModelImpl::init(const rho::String& modelName, rho::apiGenerator
 void rho::CNewORMModelImpl::destroy(rho::apiGenerator::CMethodResult& oResult)
 {
     LOG(INFO) + "Destroying Model: " + name_;
-    models_.remove(name_);
+    models_.erase(name_);
     name_ = "";
     id_ = "";
     modelProperties_.clear();
