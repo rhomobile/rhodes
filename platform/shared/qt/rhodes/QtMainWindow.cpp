@@ -1008,7 +1008,11 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
             QString::fromWCharArray(rho::common::convertToStringW(params->m_title).c_str()),
             QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
         m_alertDialog->setStandardButtons(QMessageBox::Cancel);
-        m_alertDialog->exec();
+
+        //exec() is Modal popup and show() is modeless popup
+        //m_alertDialog->exec();
+        m_alertDialog->show();
+        
     } else if (params->m_dlgType == CAlertParams::DLG_DEFAULT) {
         QMessageBox::warning(0, QString::fromWCharArray(strAppName.c_str()),
             QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
