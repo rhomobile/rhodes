@@ -1003,12 +1003,24 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
 {
     rho::StringW strAppName = RHODESAPP().getAppNameW();
 
+    //In some scenarios m_alertDialog variable is not cleaned properly now the following code will ensure the proper cleanup
+
+    if (m_alertDialog!=NULL)
+    {
+        delete m_alertDialog;
+        m_alertDialog=NULL;
+    }
+
     if (params->m_dlgType == CAlertParams::DLG_STATUS) {
         m_alertDialog = new QMessageBox(QMessageBox::NoIcon,
             QString::fromWCharArray(rho::common::convertToStringW(params->m_title).c_str()),
             QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
         m_alertDialog->setStandardButtons(QMessageBox::Cancel);
-        m_alertDialog->exec();
+
+        //exec() is model popup and show() is modeless popup
+        //m_alertDialog->exec();
+        m_alertDialog->show();
+        
     } else if (params->m_dlgType == CAlertParams::DLG_DEFAULT) {
         QMessageBox::warning(0, QString::fromWCharArray(strAppName.c_str()),
             QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
