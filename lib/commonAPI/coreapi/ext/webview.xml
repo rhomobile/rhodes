@@ -149,13 +149,13 @@ From RhoElements 2.1 onwards the default value was changed to work out of the bo
                 <APPLIES>WebKit</APPLIES>
             </PROPERTY>
             <PROPERTY name="zoomPage" type="FLOAT">
-                <DESC>Sets the zoom factor of the page. Factor 1.0 is no zoom, values less than 1.0 are zoomed out and values greater than 1.0 are zoomed in. In Windows, it is recommended to not to use the zoom value less than 1.0 because the page doesn't look in readable format.</DESC>
-                <PLATFORM>WM</PLATFORM>
+                <DESC>Sets the zoom factor of the page. Factor 1.0 is no zoom, values less than 1.0 are zoomed out and values greater than 1.0 are zoomed in.It is recommended to not to use the zoom value less than 1.0 because the page doesn't look in readable format.In Android new Zoom value takes effect on current page, Previous page has to be revisited for the new zoom values to take effect </DESC>
+                <PLATFORM>WM, Android</PLATFORM>
                 <APPLIES>WebKit</APPLIES>
             </PROPERTY>
             <PROPERTY name="textZoomLevel" type="INTEGER">
                 <DESC>Sets the font size to be displayed on the page, set to 0 for the smallest font and 4 for the largest font.</DESC>
-                <PLATFORM>WM</PLATFORM>
+                <PLATFORM>WM, Android</PLATFORM>
                 <APPLIES>WebKit</APPLIES>
             </PROPERTY>
             <PROPERTY name="activeTab" type="INTEGER" readOnly="true">
