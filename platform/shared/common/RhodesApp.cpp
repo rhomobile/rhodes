@@ -1895,6 +1895,10 @@ String CRhodesApp::getAppName()
 
 #if (defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)) && !defined(RHODES_EMULATOR) && !defined(RHODES_QT_PLATFORM)
     strAppName = rho_native_get_appname();
+
+#elif(defined(RHODES_EMULATOR))
+        strAppName = RHOSIMCONF().getString("app_name");
+
 #else
     //TODO: Android - get app name for shared runtime app
     strAppName = RHOCONF().getString("app_name");
