@@ -276,10 +276,6 @@ Rho.ScreenOrientation.autoRotate=false;
                 </SECTIONS>
             </EXAMPLE>
         </EXAMPLES_EB>
-       <REMARKS>
-            <REMARK title="MC18 Screen Orientation">
-                <DESC>ScreenOrientation callback is not getting fired on MC18 Device ("RightHanded", "LeftHanded",  "upsideDown" and "Normal")</DESC>
-            </REMARK>
-		</REMARKS>
+      
     </MODULE>
 </API>
