@@ -305,6 +305,17 @@ namespace "config" do
       android_api_levels = AndroidTools.get_installed_api_levels
       android_api_levels.sort!
       $found_api_level = android_api_levels.last
+
+      #If user has mentioned version under android, then select that particular api level.
+      if $app_config["android"]["version"]
+        apilevel = AndroidTools.get_api_level $app_config["android"]["version"]
+        if(apilevel)
+          $androidplatform = AndroidTools.get_platform apilevel
+          $found_api_level = apilevel
+        else
+          puts "No Android platform found of version #{$app_config['android']['version']}. Picking the latest one Android #{AndroidTools.get_market_version $found_api_level} available in machine"
+        end
+      end
     end
 
 
