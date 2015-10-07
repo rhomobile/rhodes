@@ -36,6 +36,7 @@ module AndroidTools
 def fill_api_levels(sdkpath)
     $api_levels = Hash.new
     $market_versions = Hash.new
+    $platforms = Hash.new
     max_apilevel = 0
     max_platform = nil
 
@@ -60,6 +61,7 @@ def fill_api_levels(sdkpath)
       if apilevel != 0
         $api_levels[marketversion] = apilevel
         $market_versions[apilevel] = marketversion
+        $platforms[apilevel] = File.basename platform
         if apilevel > max_apilevel
           max_apilevel = apilevel
           max_platform = File.basename platform
@@ -90,6 +92,11 @@ def get_api_level(marketversion)
     $api_levels[marketversion]
 end
 module_function :get_api_level
+
+def get_platform(apilevel)
+    $platforms[apilevel]
+end
+module_function :get_platform
 
 def get_addon_classpath(addon_pattern, apilevel = nil)
 
