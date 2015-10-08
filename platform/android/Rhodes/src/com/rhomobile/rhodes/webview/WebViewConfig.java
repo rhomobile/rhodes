@@ -62,7 +62,7 @@ public class WebViewConfig implements IRhoConfig {
 	public static final boolean ENABLE_FUNCTION_KEY_F10_DEF = true;
 	public static final boolean ENABLE_FUNCTION_KEY_F11_DEF = true;
 	public static final boolean ENABLE_FUNCTION_KEY_F12_DEF = true;
-	public static boolean IS_FUNCTIONS_KEY_DEF = false;
+	public static boolean IS_FUNCTIONS_KEY_DEF = true;
     public static final boolean ENABLE_PAGE_LOADING_INDICATION_DEF = true;
     public static final boolean ENABLE_ZOOM_DEF = true;
     public static final boolean ENABLE_WEB_PLUGINS_DEF = true;
