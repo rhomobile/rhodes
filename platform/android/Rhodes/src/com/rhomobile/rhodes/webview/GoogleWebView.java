@@ -80,7 +80,12 @@ public class GoogleWebView implements IRhoWebView {
                 mWebView.setVerticalScrollbarOverlay(true);
                 mWebView.setHorizontalScrollbarOverlay(true);
                 mWebView.setFocusableInTouchMode(true);
-
+		int sdkVersion = Build.VERSION.SDK_INT;
+    		    if(sdkVersion <19){
+    		    	  mWebView.getSettings().setLoadWithOverviewMode(true);
+    		    	  mWebView.getSettings().setUseWideViewPort(true);
+    		    }
+    		    
                 IWebSettingsProvider provider = OsVersionManager.getFeature(IWebSettingsProvider.class);
                 provider.fillSettings(mWebView.getSettings(), mConfig);
                 
