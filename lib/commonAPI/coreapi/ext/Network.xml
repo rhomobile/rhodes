@@ -339,9 +339,9 @@ The ebapi.js file is necessary for all single API inclusions.
                 </CALLBACK>
             </METHOD>
 
-            <METHOD name="stopDetectingConnection" hasCallback="mandatory">
+            <METHOD name="stopDetectingConnection" hasCallback="optional">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <DESC>Ceases the network detection identified by the given callback.</DESC>
+                <DESC>Ceases the network detection. Callback is no more supported.</DESC>
             </METHOD>
 
             <METHOD name="connectWan" hasCallback="mandatory">
