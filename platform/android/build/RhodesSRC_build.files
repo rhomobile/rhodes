@@ -16,6 +16,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesActivity.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesAppOptions.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesApplication.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesService.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/PasswordDialog.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/WebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/IMethodResult.java
