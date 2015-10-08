@@ -2403,7 +2403,7 @@ void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
         // UIDestroyed is called when app is terminating or going to background mode
         // UICreated is called only when app is created
         // Events should be sent in any case
-        //if (m_ui_state != newState)
+        if (m_ui_state != newState)
         {
             m_ui_state = newState;
             if (m_result.hasCallback())
