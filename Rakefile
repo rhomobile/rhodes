@@ -2824,6 +2824,7 @@ namespace "config" do
         $app_config['extensions'] = $app_config['extensions'] | ['indicators']
         $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
         $app_config['extensions'] = $app_config['extensions'] | ['sensor']
+         $app_config['extensions'] = $app_config['extensions'] | ['sip']
       end
       
       if $current_platform == "wp8"
