@@ -281,7 +281,7 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                 }
             }
             Logger.T(TAG, "Send broadcast: " + intent);
-            ContextFactory.getContext().sendBroadcast(intent, permission);
+            ContextFactory.getAppContext().sendBroadcast(intent, permission);
         }
         else if (START_ACTIVITY.equals(type)) {
             if (result.hasCallback()) {
