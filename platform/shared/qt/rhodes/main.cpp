@@ -214,6 +214,14 @@ int main(int argc, char *argv[])
             return 1;
     }
     RAWLOGC_INFO("QTMain" ,OSDetailsString.toStdString().c_str());
+    //Identify QT is hardcoded path . hardcoded by compiler paths will be displayed.
+    for(int nCounter = 0; nCounter <QCoreApplication::libraryPaths().size(); nCounter ++)
+    {
+         QString path = QCoreApplication::libraryPaths().at(nCounter);
+         RAWLOGC_INFO1("QTMain", "%d Paths",nCounter);
+         RAWLOGC_INFO("QTMain", path.toStdString().c_str());
+    }
+
     RAWLOGC_INFO("QTMain", "Rhodes started");
     if (m_strHttpProxy.length() > 0) {
         parseHttpProxyURI(m_strHttpProxy);
