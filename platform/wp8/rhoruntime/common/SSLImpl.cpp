@@ -183,7 +183,7 @@ namespace rho
 				}
 
 			}).wait();
-
+			reader->DetachStream();
 			*wouldblock = (retCode > 0) ? 0 : 1;
 
 			return retCode;
