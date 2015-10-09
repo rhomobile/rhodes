@@ -635,6 +635,8 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     mStrUrl = strUrl;
     mStrBody = strBody;
     
+    // SPR 28165
+    curl_easy_setopt(m_curl, CURLOPT_NOSIGNAL, 1);
     curl_easy_setopt(m_curl, CURLOPT_BUFFERSIZE, CURL_MAX_WRITE_SIZE-1);
 
     if (strcasecmp(method, "GET") == 0)
