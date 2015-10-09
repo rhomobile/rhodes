@@ -60,6 +60,8 @@ public class BaseActivity extends Activity implements ServiceConnection {
     public static class ScreenProperties {
         private int mScreenWidth;
         private int mScreenHeight;
+        private int mRealScreenWidth;
+        private int mRealScreenHeight;
         private int mScreenOrientation;
         private float mScreenPpiX;
         private float mScreenPpiY;
@@ -75,10 +77,14 @@ public class BaseActivity extends Activity implements ServiceConnection {
             WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
 
             Display d = wm.getDefaultDisplay();
-
+	    float dpr = RhodesActivity.getContext().getResources().getDisplayMetrics().density;
+            
             mScreenWidth = d.getWidth();
             mScreenHeight = d.getHeight();
-
+            
+            mRealScreenWidth = (int) (d.getWidth() / dpr);
+            mRealScreenHeight = (int) (d.getHeight() / dpr);
+	
             DisplayMetrics metrics = new DisplayMetrics();
             d.getMetrics(metrics);
 
@@ -92,6 +98,8 @@ public class BaseActivity extends Activity implements ServiceConnection {
         
         public int getWidth() { return mScreenWidth; }
         public int getHeight() { return mScreenHeight; }
+        public int getRealWidth() { return mRealScreenWidth; }
+        public int getRealHeight() { return mRealScreenHeight; }
         public int getOrientation() { return mScreenOrientation; }
         public float getPpiX() { return mScreenPpiX; }
         public float getPpiY() { return mScreenPpiY; }
