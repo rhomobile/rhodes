@@ -45,6 +45,7 @@
 #include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "MainWindow.h"
+#include "PasswordPopUp/pwdPopUp.h"
 
 #if defined(OS_WINDOWS_DESKTOP)
 #undef null
@@ -65,6 +66,11 @@ using namespace rho::common;
 
 extern "C"
 {
+
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+const wchar_t* rho_wmimpl_getExitPasswordEnabled();
+const wchar_t* rho_wmimpl_getExitPasswordValue();
+#endif
 
 #if defined(OS_WINDOWS_DESKTOP)
 const char* rho_sys_qt_getWebviewFramework();
@@ -142,7 +148,35 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
 
 void rho_sys_app_exit()
 {
-	::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+	LPCTSTR szCheckPasswordRequired = rho_wmimpl_getExitPasswordEnabled();
+	if (szCheckPasswordRequired)
+	{	
+		if (*szCheckPasswordRequired == L'1')
+		{
+			LPCTSTR szPasswordValue = rho_wmimpl_getExitPasswordValue();
+			if(szPasswordValue)
+			{
+				int iPasswordLength = _tcslen(szPasswordValue);
+				if(iPasswordLength > 0)
+				{
+					if(ShowPasswordDialog(RHO_IS_WMDEVICE, true, GetForegroundWindow(), NULL, L"Enterprise Browser", L"Enter Exit Password", szPasswordValue))
+					{
+						::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
+					}	
+				}
+			}
+		}
+		else
+		{
+			::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
+		}
+	}
+	else
+#endif
+	{
+		::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
+	}
 }
 
 void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
