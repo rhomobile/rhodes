@@ -20,7 +20,7 @@ public class PasswordDialog {
 	{
 		wrongPassword= new AlertDialog.Builder(RhodesActivity.getContext());
 		wrongPassword.setCancelable(true);
-		wrongPassword.setMessage("Password Wrong")
+		wrongPassword.setMessage("Invalid Password")
 				.setTitle("Alert");
 		wrongPassword.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
