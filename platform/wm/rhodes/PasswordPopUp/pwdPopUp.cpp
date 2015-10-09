@@ -200,10 +200,26 @@ LRESULT CALLBACK PwdMainWndProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
  } 
 VOID PwdInitialiseCoordinates()
 {	
+	bool isCheckCoordinatesDifferent = false;
 	pwdCoordinates.width  = GetSystemMetrics(SM_CXVIRTUALSCREEN);
 	pwdCoordinates.height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	if(pwdCoordinates.width <480 && isWMDevice){
+		isCheckCoordinatesDifferent = true;
+		pwdCoordinates.width = 380;
+	}
+	if(pwdCoordinates.height <480 && isWMDevice){
+		isCheckCoordinatesDifferent = true;
+		pwdCoordinates.height = 440;
+	}
 	pwdCoordinates.xCenter = (pwdCoordinates.width/2);
-	pwdCoordinates.yCenter = (pwdCoordinates.height/2);
+	if(pwdCoordinates.height <480 && isWMDevice)
+	{
+		pwdCoordinates.yCenter = (pwdCoordinates.height/2) - 50;
+	}
+	else
+	{
+		pwdCoordinates.yCenter = (pwdCoordinates.height/2);
+	}
 	if(IsDeviceInPortrait())
 	{
 		pwdCoordinates.mainWndXpos = (pwdCoordinates.width * 8)/10;
