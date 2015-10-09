@@ -757,6 +757,20 @@ public class RhodesService extends Service {
         else
             return 0;
     }
+    
+    public static int getRealScreenWidth() {
+        if (BaseActivity.getScreenProperties() != null)
+            return BaseActivity.getScreenProperties().getRealWidth();
+        else
+            return 0;
+    }
+	
+    public static int getRealScreenHeight() {
+        if (BaseActivity.getScreenProperties() != null)
+            return BaseActivity.getScreenProperties().getRealHeight();
+        else
+            return 0;
+    }
 
     public static float getScreenPpiX() {
         if (BaseActivity.getScreenProperties() != null)
@@ -791,15 +805,18 @@ public class RhodesService extends Service {
 				return Integer.valueOf(getScreenWidth());
 			else if (name.equalsIgnoreCase("screen_height"))
 				return Integer.valueOf(getScreenHeight());
+			else if (name.equalsIgnoreCase("real_screen_width"))
+				return Integer.valueOf(getRealScreenWidth());
+			else if (name.equalsIgnoreCase("real_screen_height"))
+				return Integer.valueOf(getRealScreenHeight());
 			else if (name.equalsIgnoreCase("screen_orientation")) {
-			    int orientation = getScreenOrientation();
+				int orientation = getScreenOrientation();
 				if ((orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-				 || (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE))
+						|| (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE))
 					return "landscape";
 				else
 					return "portrait";
-			}
-			else if (name.equalsIgnoreCase("has_network"))
+			} else if (name.equalsIgnoreCase("has_network"))
 				return Boolean.valueOf(hasNetwork());
 			else if (name.equalsIgnoreCase("has_wifi_network"))
 				return Boolean.valueOf(hasWiFiNetwork());
@@ -810,84 +827,72 @@ public class RhodesService extends Service {
 			else if (name.equalsIgnoreCase("ppi_y"))
 				return Float.valueOf(getScreenPpiY());
 			else if (name.equalsIgnoreCase("phone_number")) {
-                Context context = ContextFactory.getContext();
-                String number = "";
-                if (context != null) {
-                    TelephonyManager manager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
-                    number = manager.getLine1Number();
-                    Logger.I(TAG, "Phone number: " + number);
-                }
+				Context context = ContextFactory.getContext();
+				String number = "";
+				if (context != null) {
+					TelephonyManager manager = (TelephonyManager) context
+							.getSystemService(Context.TELEPHONY_SERVICE);
+					number = manager.getLine1Number();
+					Logger.I(TAG, "Phone number: " + number);
+				}
 				return number;
-			}
-			else if (name.equalsIgnoreCase("device_owner_name")) {
-				return AndroidFunctionalityManager.getAndroidFunctionality().AccessOwnerInfo_getUsername(getContext());
-			}
-			else if (name.equalsIgnoreCase("device_owner_email")) {
-				return AndroidFunctionalityManager.getAndroidFunctionality().AccessOwnerInfo_getEmail(getContext());
-			}
-			else if (name.equalsIgnoreCase("device_name")) {
+			} else if (name.equalsIgnoreCase("device_owner_name")) {
+				return AndroidFunctionalityManager.getAndroidFunctionality()
+						.AccessOwnerInfo_getUsername(getContext());
+			} else if (name.equalsIgnoreCase("device_owner_email")) {
+				return AndroidFunctionalityManager.getAndroidFunctionality()
+						.AccessOwnerInfo_getEmail(getContext());
+			} else if (name.equalsIgnoreCase("device_name")) {
 				return Build.MANUFACTURER + " " + Build.DEVICE;
-			}
-			else if (name.equalsIgnoreCase("is_emulator")) {
-			    String strDevice = Build.DEVICE;
-				return Boolean.valueOf(strDevice != null && strDevice.equalsIgnoreCase("generic"));
-			}
-			else if (name.equalsIgnoreCase("os_version")) {
+			} else if (name.equalsIgnoreCase("is_emulator")) {
+				String strDevice = Build.DEVICE;
+				return Boolean.valueOf(strDevice != null
+						&& strDevice.equalsIgnoreCase("generic"));
+			} else if (name.equalsIgnoreCase("os_version")) {
 				return Build.VERSION.RELEASE;
-			}
-			else if (name.equalsIgnoreCase("has_calendar")) {
+			} else if (name.equalsIgnoreCase("has_calendar")) {
 				return Boolean.valueOf(EventStore.hasCalendar());
+			} else if (name.equalsIgnoreCase("phone_id")) {
+				RhodesService service = RhodesService.getInstance();
+				if (service != null) {
+					PhoneId phoneId = service.getPhoneId();
+					return phoneId.toString();
+				} else {
+					return "";
+				}
+			} else if (name.equalsIgnoreCase("webview_framework")) {
+				return RhodesActivity.safeGetInstance().getMainView()
+						.getWebView(-1).getEngineId();
+			} else if (name.equalsIgnoreCase("is_symbol_device")
+					|| name.equalsIgnoreCase("is_motorola_device")) {
+				return isSymbolDevice();
+			} else if (name.equalsIgnoreCase("oem_info")) {
+				return Build.PRODUCT;
+			} else if (name.equalsIgnoreCase("uuid")) {
+				return fetchUUID();
+			} else if (name.equalsIgnoreCase("has_camera")) {
+				boolean hasCamera = false;
+				/*
+				 * try { if (Camera.getCameraService() != null) { if
+				 * ((Camera.getCameraService().getMainCamera() != null) ||
+				 * (Camera.getCameraService().getFrontCamera() != null)) {
+				 * hasCamera = true; } } } catch (Throwable e) {
+				 * e.printStackTrace(); Logger.E(TAG,
+				 * "Exception during detect Camera for has_camera"); }
+				 */
+				int noofCameras = Camera.getNumberOfCameras();
+				hasCamera = noofCameras == 0 ? false : true;
+				return hasCamera;// Boolean.TRUE;
+			} else {
+				return RhoExtManager.getImplementationInstance().getProperty(
+						name);
 			}
-			else if (name.equalsIgnoreCase("phone_id")) {
-                RhodesService service = RhodesService.getInstance();
-                if (service != null) {
-                    PhoneId phoneId = service.getPhoneId();
-                    return phoneId.toString();
-                } else {
-                    return "";
-                }
-            }
-            else if (name.equalsIgnoreCase("webview_framework")) {
-                return RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId();
-            }
-            else if (name.equalsIgnoreCase("is_symbol_device") ||
-                    name.equalsIgnoreCase("is_motorola_device")) {
-                return isSymbolDevice();
-            }
-            else if (name.equalsIgnoreCase("oem_info")) {
-                return Build.PRODUCT;
-            }
-            else if (name.equalsIgnoreCase("uuid")) {
-                return fetchUUID();
-            }
-            else if (name.equalsIgnoreCase("has_camera")) {
-            	boolean hasCamera = false;
-            	/*try {
-            		if (Camera.getCameraService() != null) {
-            			if ((Camera.getCameraService().getMainCamera() != null) || (Camera.getCameraService().getFrontCamera() != null)) {
-            				hasCamera = true;
-            			}
-            		}
-            	}
-            	catch (Throwable e) {
-            		e.printStackTrace();
-            		Logger.E(TAG, "Exception during detect Camera for has_camera");
-            	}
-				*/
-            	int noofCameras=Camera.getNumberOfCameras();
-            	hasCamera=noofCameras==0?false:true;
-                return hasCamera;//Boolean.TRUE;
-            }
-            else {
-                return RhoExtManager.getImplementationInstance().getProperty(name);
-            }
-        }
-		catch (Exception e) {
+		} catch (Exception e) {
 			Logger.E(TAG, "Can't get property \"" + name + "\": " + e);
 		}
-		
+
 		return null;
-	}
+    }
     
     public static Boolean isSymbolDevice() {
         Boolean res = false;
