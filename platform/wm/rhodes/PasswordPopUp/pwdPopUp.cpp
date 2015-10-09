@@ -225,6 +225,11 @@ VOID PwdInitialiseCoordinates()
 		pwdCoordinates.mainWndXpos = (pwdCoordinates.width * 8)/10;
 		pwdCoordinates.mainWndYpos = (pwdCoordinates.height * 3)/10;	
 	}
+	else if(isCheckCoordinatesDifferent && isWMDevice)
+	{
+		pwdCoordinates.mainWndXpos = (pwdCoordinates.width * 8)/10;
+		pwdCoordinates.mainWndYpos = (pwdCoordinates.height * 3)/10;	
+	}
 	else
 	{
 		pwdCoordinates.mainWndXpos = ((pwdCoordinates.width * 8)/10) - 80;
