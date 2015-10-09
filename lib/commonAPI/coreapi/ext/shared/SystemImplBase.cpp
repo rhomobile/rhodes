@@ -174,12 +174,20 @@ void CSystemImplBase::getHasSqlite(rho::apiGenerator::CMethodResult& oResult)
 
 void CSystemImplBase::getRealScreenWidth(CMethodResult& oResult)
 {
-    getScreenWidth(oResult);
+    #if defined(OS_ANDROID)
+		getRealScreenWidth(oResult);
+    #else
+		getScreenWidth(oResult);
+    #endif
 }
 
 void CSystemImplBase::getRealScreenHeight(CMethodResult& oResult)
 {
-    getScreenHeight(oResult);
+    #if defined(OS_ANDROID)
+		getRealScreenHeight(oResult);
+    #else
+		getScreenHeight(oResult);
+    #endif
 }
 
 void CSystemImplBase::getDeviceOwnerEmail(CMethodResult& oResult)
