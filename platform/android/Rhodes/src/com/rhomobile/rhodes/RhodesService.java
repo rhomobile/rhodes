@@ -77,6 +77,7 @@ import com.rhomobile.rhodes.util.PhoneId;
 import com.rhomobile.rhodes.util.Utils;
 //import com.rhomobile.rhodes.camera.Camera;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -108,12 +109,14 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.Process;
+import android.text.InputType;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.RemoteViews;
+import android.widget.EditText;
 import android.os.Environment;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -171,6 +174,29 @@ public class RhodesService extends Service {
 	
 	private boolean mNeedGeoLocationRestart = false;
 	
+	public static String               m_Text                      = "";
+	private static String				ExitPasswordEnabled         = "";
+	private static String				ExitPasswordValue           = "";
+	
+	public static  void setExitPasswordEnabled(String exitPasswordEnabled)
+	{ 
+	  ExitPasswordEnabled=exitPasswordEnabled;
+	}
+	
+	public static  void setExitPasswordValue(String exitPasswordValue)
+	{
+		ExitPasswordValue=exitPasswordValue;
+	}
+	
+	public static  String getExitPasswordEnabled()
+	{
+		return ExitPasswordEnabled;
+	}
+	
+	public static  String getExitPasswordValue()
+	{
+		return ExitPasswordValue;
+	}
 	class PowerWakeLock {
 	    private PowerManager.WakeLock wakeLockObject = null;
 	    private boolean wakeLockEnabled = false;
@@ -560,32 +586,57 @@ public class RhodesService extends Service {
 		Logger.I(TAG, "kkkill !!!");
 		Process.killProcess(Process.myPid());
 	}
-	
+	private static void displayAlertForPassword()
+	{
+		PerformOnUiThread.exec(new Runnable(){
+			
+			/*private void display()
+			{
+				
+			}*/
+
+			@Override
+			public void run() {
+				PasswordDialog.createDialog();						
+				PasswordDialog.show();
+				
+			}
+		});
+	}
+	public static void PerformRealExit()
+	{
+		  PerformOnUiThread.exec(new Runnable() {
+		        @Override
+		        public void run() {
+	                Logger.I(TAG, "Exit application");
+	                try {
+	                    // Do this fake state change in order to make processing before server is stopped
+	                    RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
+	        
+	                    RhodesService service = RhodesService.getInstance();
+	                    if (service != null)
+	                    {
+	                        Logger.I(TAG, "stop RhodesService");
+	                        service.wakeLock.reset();
+	                        service.stopSelf();
+	                    }
+	                    
+	                    Logger.I(TAG, "stop RhodesApplication");
+	                    RhodesApplication.stop();
+	                }
+	                catch (Exception e) {
+	                    Logger.E(TAG, e);
+	                }
+		        }
+		    });
+	}
 	public static void exit() {
-	    PerformOnUiThread.exec(new Runnable() {
-	        @Override
-	        public void run() {
-                Logger.I(TAG, "Exit application");
-                try {
-                    // Do this fake state change in order to make processing before server is stopped
-                    RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
-        
-                    RhodesService service = RhodesService.getInstance();
-                    if (service != null)
-                    {
-                        Logger.I(TAG, "stop RhodesService");
-                        service.wakeLock.reset();
-                        service.stopSelf();
-                    }
-                    
-                    Logger.I(TAG, "stop RhodesApplication");
-                    RhodesApplication.stop();
-                }
-                catch (Exception e) {
-                    Logger.E(TAG, e);
-                }
-	        }
-	    });
+		if(getExitPasswordEnabled().equals("1"))
+		{
+			displayAlertForPassword();
+		}
+		else
+			PerformRealExit();
 	}
 	
 	public static void showAboutDialog() {
