@@ -27,6 +27,8 @@ public:
 
     virtual void getScreenWidth(rho::apiGenerator::CMethodResult& result);
     virtual void getScreenHeight(rho::apiGenerator::CMethodResult& result);
+    virtual void getRealScreenWidth(rho::apiGenerator::CMethodResult& result);
+    virtual void getRealScreenHeight(rho::apiGenerator::CMethodResult& result);
     virtual void getScreenOrientation(rho::apiGenerator::CMethodResult& result);
     virtual void getPpiX(rho::apiGenerator::CMethodResult& result);
     virtual void getPpiY(rho::apiGenerator::CMethodResult& result);
@@ -88,6 +90,18 @@ void CSystemImpl::getScreenWidth(rho::apiGenerator::CMethodResult& result)
 void CSystemImpl::getScreenHeight(rho::apiGenerator::CMethodResult& result)
 {
     rho_sysimpl_get_property("screen_height", result);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+void CSystemImpl::getRealScreenWidth(rho::apiGenerator::CMethodResult& result)
+{
+    rho_sysimpl_get_property("real_screen_width", result);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+void CSystemImpl::getRealScreenHeight(rho::apiGenerator::CMethodResult& result)
+{
+    rho_sysimpl_get_property("real_screen_height", result);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
