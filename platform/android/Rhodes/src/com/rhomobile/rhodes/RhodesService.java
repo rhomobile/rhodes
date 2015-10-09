@@ -632,7 +632,10 @@ public class RhodesService extends Service {
 	}
 	public static void exit() {
 		if(getExitPasswordEnabled().equals("1"))
-		{
+		{      
+	                if(getExitPasswordValue().equals(""))
+                 	PerformRealExit();		
+			else
 			displayAlertForPassword();
 		}
 		else
