@@ -603,7 +603,7 @@ public class RhodesService extends Service {
 			}
 		});
 	}
-	public static void PerformRealExit()
+	private static void PerformRealExit()
 	{
 		  PerformOnUiThread.exec(new Runnable() {
 		        @Override
