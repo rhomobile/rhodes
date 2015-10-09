@@ -191,13 +191,17 @@ CLogSocketSink::CLogSocketSink(const LogSettings& oSettings)
 
     CThreadQueue::setLogCategory(LogCategory("NO_LOGGING"));
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
+#if !defined( OS_WINDOWS_DESKTOP )
     start(epLow);
+#endif
 }
 
 CLogSocketSink::~CLogSocketSink()
 {
 	//wait till all commands will be sent to server
+#if !defined( OS_WINDOWS_DESKTOP )    
     CRhoThread::stop(2000);
+#endif    
 }
 
 void CLogSocketSink::setUrl(String url)
