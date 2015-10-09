@@ -2824,6 +2824,18 @@
 			</Filter>
 		</Filter>
 		<Filter
+			Name="PasswordPopUp"
+			>
+			<File
+				RelativePath=".\PasswordPopUp\pwdPopUp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PasswordPopUp\pwdPopUp.h"
+				>
+			</File>
+		</Filter>
+		<Filter
 			Name="phonebook"
 			>
 			<File
