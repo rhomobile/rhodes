@@ -204,7 +204,12 @@ public class BaseActivity extends Activity implements ServiceConnection {
 	@Override
 	protected void onDestroy() {
 		if (mBoundToService) {
+			Logger.T(TAG, "unbindService and stopService");
 			unbindService(this);
+			//SPR28363fix Start
+			Intent stopServiceIntent=new Intent(this,RhodesService.class);
+			this.stopService(stopServiceIntent);
+			//SPR28363fix End
 			mBoundToService = false;
 		}
 		super.onDestroy();
