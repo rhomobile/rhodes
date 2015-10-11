@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		C04F28E019CAF3CA003E34BD /* RunnableWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C04F28DE19CAF3CA003E34BD /* RunnableWrapper.h */; };
 		C04F28E119CAF3CA003E34BD /* RunnableWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */; };
-		C5BA525F1A93ADF90095DE4A /* NetRequestImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5BA525E1A93ADF90095DE4A /* NetRequestImpl.mm */; };
 		C5BA525F1A93ADF90095DE4A /* IPhoneNetRequest.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */; };
 		C5DFBB31185B6FB400DB6BDB /* IAppMessageReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */; };
 		FA11F249192121BF00FB1301 /* IRhoExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F248192121BF00FB1301 /* IRhoExtension.h */; };
@@ -112,19 +111,18 @@
 		FA20C313182B08080036D304 /* IPushNotificationsReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C29A182B04140036D304 /* IPushNotificationsReceiver.h */; };
 		FA87B5DC1A82A1AD0073EE44 /* PickImageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C22E182B04140036D304 /* PickImageDelegate.h */; };
 		FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C22F182B04140036D304 /* PickImageDelegate.m */; };
-		FA89817818917EA900AF5E39 /* SignatureView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C281182B04140036D304 /* SignatureView.h */; };
-		FA89817918917EAD00AF5E39 /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C282182B04140036D304 /* SignatureView.m */; };
-		FA89817A18917EAF00AF5E39 /* SignatureDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C283182B04140036D304 /* SignatureDelegate.h */; };
-		FA89817B18917EB200AF5E39 /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C284182B04140036D304 /* SignatureDelegate.m */; };
-		FA89817C18917EB400AF5E39 /* SignatureViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C285182B04140036D304 /* SignatureViewController.h */; };
-		FA89817D18917EB700AF5E39 /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C286182B04140036D304 /* SignatureViewController.m */; };
-		FA89817E18917EBA00AF5E39 /* SignatureParam.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C287182B04140036D304 /* SignatureParam.h */; };
+		FA97EEC91BCB1F79005596ED /* SignatureDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C215182B04140036D304 /* SignatureDelegate.h */; settings = {ASSET_TAGS = (); }; };
+		FA97EECA1BCB1F79005596ED /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C216182B04140036D304 /* SignatureDelegate.m */; settings = {ASSET_TAGS = (); }; };
+		FA97EECB1BCB1F79005596ED /* SignatureView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C217182B04140036D304 /* SignatureView.h */; settings = {ASSET_TAGS = (); }; };
+		FA97EECC1BCB1F79005596ED /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C218182B04140036D304 /* SignatureView.m */; settings = {ASSET_TAGS = (); }; };
+		FA97EECD1BCB1F79005596ED /* SignatureViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C219182B04140036D304 /* SignatureViewController.h */; settings = {ASSET_TAGS = (); }; };
+		FA97EECE1BCB1F79005596ED /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C21A182B04140036D304 /* SignatureViewController.m */; settings = {ASSET_TAGS = (); }; };
 		FAA5A5AE182B0E9B00590B1F /* rhorunner_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAA5A5AD182B0E9B00590B1F /* rhorunner_Prefix.pch */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		C04F28DE19CAF3CA003E34BD /* RunnableWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RunnableWrapper.h; sourceTree = "<group>"; };
-		C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RunnableWrapper.mm; sourceTree = "<group>"; };		
+		C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RunnableWrapper.mm; sourceTree = "<group>"; };
 		C5BA525D1A93AD6D0095DE4A /* IPhoneNetRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IPhoneNetRequest.h; path = rho/net/IPhoneNetRequest.h; sourceTree = "<group>"; };
 		C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = IPhoneNetRequest.mm; path = rho/net/IPhoneNetRequest.mm; sourceTree = "<group>"; };
 		C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAppMessageReceiver.h; sourceTree = "<group>"; };
@@ -636,7 +634,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA20C2D6182B07CB0036D304 /* RightViewController.h in Headers */,
-				FA89817C18917EB400AF5E39 /* SignatureViewController.h in Headers */,
 				FA20C2C8182B07B60036D304 /* DateTimePickerViewController.h in Headers */,
 				C04F28E019CAF3CA003E34BD /* RunnableWrapper.h in Headers */,
 				FA20C2DA182B07CB0036D304 /* SplitViewDelegate.h in Headers */,
@@ -644,6 +641,7 @@
 				FA87B5DC1A82A1AD0073EE44 /* PickImageDelegate.h in Headers */,
 				FA20C2D4182B07CB0036D304 /* LeftViewController.h in Headers */,
 				FA20C2EE182B07DA0036D304 /* RhoNativeViewManagerOC.h in Headers */,
+				FA97EECD1BCB1F79005596ED /* SignatureViewController.h in Headers */,
 				FA20C2E1182B07D10036D304 /* RhoMapViewController.h in Headers */,
 				FA20C2BA182B07A50036D304 /* RhoAlert.h in Headers */,
 				FA20C300182B07EE0036D304 /* sslimpl.h in Headers */,
@@ -661,22 +659,21 @@
 				FA20C2FD182B07EB0036D304 /* SplashScreenImpl.h in Headers */,
 				FA20C311182B08080036D304 /* SplashViewController.h in Headers */,
 				FA20C30F182B08080036D304 /* RhoViewController.h in Headers */,
+				FA97EECB1BCB1F79005596ED /* SignatureView.h in Headers */,
 				FA20C2C5182B07B60036D304 /* DateTime.h in Headers */,
 				FA20C2E9182B07D10036D304 /* MapAnnotation.h in Headers */,
-				FA89817818917EA900AF5E39 /* SignatureView.h in Headers */,
 				FA20C2E3182B07D10036D304 /* MapViewManager.h in Headers */,
 				FA20C2D8182B07CB0036D304 /* SplittedMainView.h in Headers */,
 				FA11F249192121BF00FB1301 /* IRhoExtension.h in Headers */,
+				FA97EEC91BCB1F79005596ED /* SignatureDelegate.h in Headers */,
 				FA20C2E5182B07D10036D304 /* GoogleGeocoder.h in Headers */,
 				FA20C2C1182B07AE0036D304 /* Bluetooth.h in Headers */,
 				FAA5A5AE182B0E9B00590B1F /* rhorunner_Prefix.pch in Headers */,
 				FA20C2CC182B07BE0036D304 /* LocationController.h in Headers */,
-				FA89817A18917EAF00AF5E39 /* SignatureDelegate.h in Headers */,
 				FA20C2D1182B07C50036D304 /* LogViewController.h in Headers */,
 				FA20C2F3182B07DE0036D304 /* NavBar.h in Headers */,
 				FA20C2F5182B07E20036D304 /* phonebook.h in Headers */,
 				FA11F24B192121F200FB1301 /* IRhoExtManager.h in Headers */,
-				FA89817E18917EBA00AF5E39 /* SignatureParam.h in Headers */,
 				FA20C30D182B08080036D304 /* Rhodes.h in Headers */,
 				FA11F24E1921221E00FB1301 /* RhoExtManagerImpl.h in Headers */,
 				FA20C304182B08000036D304 /* ParamsWrapper.h in Headers */,
@@ -750,7 +747,7 @@
 				FA20C2C9182B07B60036D304 /* DateTimePickerViewController.m in Sources */,
 				FA11F2531921224400FB1301 /* RhoExtManagerSingletone.m in Sources */,
 				FA11F24F1921221E00FB1301 /* RhoExtManagerImpl.m in Sources */,
-        FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */,
+				FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */,
 				FA20C303182B07F20036D304 /* RingtoneManager.m in Sources */,
 				FA20C2EC182B07D50036D304 /* NativeBar.m in Sources */,
 				FA20C2CE182B07C40036D304 /* InitMemoryInfoCollector.mm in Sources */,
@@ -761,25 +758,25 @@
 				FA20C305182B08000036D304 /* ParamsWrapper.m in Sources */,
 				FA20C30A182B08080036D304 /* Reachability.m in Sources */,
 				FA20C2E0182B07CB0036D304 /* TabbedMainView.m in Sources */,
+				FA97EECE1BCB1F79005596ED /* SignatureViewController.m in Sources */,
 				FA20C30C182B08080036D304 /* RhoDelegate.m in Sources */,
 				FA20C2F8182B07EB0036D304 /* RhoCryptImpl.mm in Sources */,
 				FA20C2C7182B07B60036D304 /* DateTimePicker.m in Sources */,
 				FA20C2FE182B07EB0036D304 /* SplashScreenImpl.cpp in Sources */,
-				FA89817918917EAD00AF5E39 /* SignatureView.m in Sources */,
 				FA20C2D7182B07CB0036D304 /* RightViewController.m in Sources */,
-				FA89817D18917EB700AF5E39 /* SignatureViewController.m in Sources */,
 				FA20C2FF182B07EE0036D304 /* sslimpl.cpp in Sources */,
 				FA20C2F6182B07E20036D304 /* phonebook.m in Sources */,
+				FA97EECC1BCB1F79005596ED /* SignatureView.m in Sources */,
 				FA20C2D0182B07C50036D304 /* LogViewController.m in Sources */,
 				FA20C2C6182B07B60036D304 /* DateTime.m in Sources */,
 				FA20C2CD182B07BE0036D304 /* LocationController.m in Sources */,
 				FA20C2EA182B07D10036D304 /* MapAnnotation.m in Sources */,
+				FA97EECA1BCB1F79005596ED /* SignatureDelegate.m in Sources */,
 				FA20C2E4182B07D10036D304 /* MapViewManager.m in Sources */,
 				FA20C2D5182B07CB0036D304 /* LeftViewController.m in Sources */,
 				FA20C2F2182B07DA0036D304 /* RhoNativeViewManager.mm in Sources */,
 				FA20C2F1182B07DA0036D304 /* NVViewController.m in Sources */,
 				FA20C2E2182B07D10036D304 /* RhoMapViewController.m in Sources */,
-				FA89817B18917EB200AF5E39 /* SignatureDelegate.m in Sources */,
 				FA20C2F4182B07DE0036D304 /* NavBar.m in Sources */,
 				FA20C2BD182B07AA0036D304 /* AppLoader.m in Sources */,
 				FA20C306182B08040036D304 /* WebView.m in Sources */,

@@ -145,6 +145,7 @@
 		FA5AC04E14681D5900B147A2 /* encdb.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04B14681D5900B147A2 /* encdb.c */; };
 		FA5AC04F14681D5900B147A2 /* iso_8859_9.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04C14681D5900B147A2 /* iso_8859_9.c */; };
 		FA5AC05014681D5900B147A2 /* iso_8859_1.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04D14681D5900B147A2 /* iso_8859_1.c */; };
+		FA97EECF1BCB206A005596ED /* signature_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FA291E8811FF2BF90096AC39 /* signature_wrap.c */; settings = {ASSET_TAGS = (); }; };
 		FACC2099123A5F300088A447 /* bluetooth_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FACC2098123A5F300088A447 /* bluetooth_wrap.c */; };
 /* End PBXBuildFile section */
 
@@ -862,6 +863,7 @@
 				F5E360730EB6A62A00226287 /* dir.c in Sources */,
 				F5E360740EB6A62A00226287 /* dln.c in Sources */,
 				F5E360760EB6A62A00226287 /* dmyencoding.c in Sources */,
+				FA97EECF1BCB206A005596ED /* signature_wrap.c in Sources */,
 				F5E360770EB6A62A00226287 /* dmyext.c in Sources */,
 				C51D2AB6197E6097001965A7 /* unixserver.c in Sources */,
 				F5E360780EB6A62A00226287 /* enum.c in Sources */,

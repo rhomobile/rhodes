@@ -8,7 +8,7 @@
  * interface file instead. 
  * ----------------------------------------------------------------------------- */
 
-#ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
+//#ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
 
 #include "common/app_build_capabilities.h"
 
@@ -2397,7 +2397,7 @@ SWIG_PropagateClientData(void) {
 extern "C"
 #endif
 SWIGEXPORT void Init_SignatureCapture(void) {
-#ifdef APP_BUILD_CAPABILITY_SIGNATURE
+//#ifdef APP_BUILD_CAPABILITY_SIGNATURE
   size_t i;
   
   SWIG_InitRuntime();
@@ -2414,8 +2414,8 @@ SWIGEXPORT void Init_SignatureCapture(void) {
   rb_define_module_function(mSignatureCapture, "visible", _wrap_visible, -1);
   rb_define_module_function(mSignatureCapture, "capture", _wrap_capture, -1);
   rb_define_module_function(mSignatureCapture, "clear", _wrap_clear, -1);
-#endif
+//#endif
 }
 
-#endif //RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
+//#endif //RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
 

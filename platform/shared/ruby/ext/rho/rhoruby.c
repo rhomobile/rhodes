@@ -286,17 +286,17 @@ void RhoRubyStart()
 //#endif
         
 #if defined(OS_MACOSX)
-#ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
+//#ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
         //Init_Camera();
-//        Init_SignatureCapture();
-#endif
+        Init_SignatureCapture();
+//#endif
 #endif
         
-//#if defined(OS_ANDROID)
+#if defined(OS_ANDROID)
 //#ifndef RHO_DISABLE_OLD_CAMERA_SIGNATURE_API
-//        Init_SignatureCapture();
+        Init_SignatureCapture();
 //#endif
-//#endif
+#endif
         
 //TODO: RhoSimulator  - load extensions dll dynamically
 #if !defined(RHO_SYMBIAN)
