@@ -342,7 +342,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
     }
     
     [toolbar removeFromSuperview];
-    assert(!toolbar || [toolbar retainCount] == 1);
+    //MOHUS
+    //assert(!toolbar || [toolbar retainCount] == 1);
     self.toolbar = nil;
 }
 
