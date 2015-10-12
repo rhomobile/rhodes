@@ -3,6 +3,7 @@ package com.rhomobile.rhodes;
 
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.app.Activity;
 import android.R;
@@ -66,7 +67,3 @@ public class PasswordDialog  {
 
 	 
 }    
-
-
-	
-
