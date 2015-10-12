@@ -282,7 +282,7 @@ static LocationController *sharedLC = nil;
 		res =   _locationManager && 
                 _locationManager.locationServicesEnabled && 
                 [CLLocationManager locationServicesEnabled] && 
-                ( ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized ) || ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined ) );
+                ( ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized ) || ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined )||([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse ) );
 	}
 	return res;
 }
