@@ -590,15 +590,10 @@ public class RhodesService extends Service {
 	{
 		PerformOnUiThread.exec(new Runnable(){
 			
-			/*private void display()
-			{
-				
-			}*/
-
 			@Override
 			public void run() {
-				PasswordDialog.createDialog();						
-				PasswordDialog.show();
+				PasswordDialog.createpopup();						
+				
 				
 			}
 		});
