@@ -17,10 +17,10 @@ import android.widget.TextView;
 
 public class PasswordDialog  {
 	
-	public static EditText        mEditText;
-	public static TextView            text;
-	public static Button dialogOKButton;
-	public static Button dialogCancelButton;
+	private static EditText        mEditText;
+	private static TextView        text;
+	private static Button          dialogOKButton;
+	private static Button          dialogCancelButton;
 	
 	public static void createpopup() {
 		
