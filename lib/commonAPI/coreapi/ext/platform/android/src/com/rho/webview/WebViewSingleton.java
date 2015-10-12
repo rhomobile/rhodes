@@ -26,7 +26,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     private static final String ENABLE_ZOOM = "enable_screen_zoom";
     private static final String ENABLE_WEB_PLUGINS = "enable_web_plugins";
     private static final String ENABLE_CACHE = "WebView.enableCache";
-    
+    private static final String DISABLE_SCANNER_NAVIGATION = "disable_scanner_navigation";
     private WebViewConfig mConfig = new WebViewConfig();
 
     public WebViewSingleton() {
@@ -483,6 +483,15 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 					}
 				}
 			}
+			
+	if(config.isExist("disablescannerduringnavigation")){
+	        String disablescanner = config.getString("disablescannerduringnavigation");
+	        if(disablescanner != null){
+				if(disablescanner.length() > 0){
+						mConfig.set(WebViewConfig.DISABLE_SCANNER_ON_NAVIGATION,disablescanner);
+					}
+			}
+	}
         
     }
     
@@ -499,6 +508,9 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
         if (RhoConf.isExist(ENABLE_CACHE))
             mConfig.set(WebViewConfig.ENABLE_CACHE, RhoConf.getBool(ENABLE_CACHE));
+            
+        if (RhoConf.isExist(DISABLE_SCANNER_NAVIGATION))
+            mConfig.set(WebViewConfig.DISABLE_SCANNER_ON_NAVIGATION, RhoConf.getString(DISABLE_SCANNER_NAVIGATION));
     }
 
 }
