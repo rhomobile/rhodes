@@ -1590,7 +1590,7 @@ namespace "device" do
       Rake::Task['config:common:ymlsetup'].invoke
       container_path = determine_prebuild_path_win('wm', $app_config)
       $skip_build_extensions = true
-      $skip_build_js_api_files = true
+      $skip_build_js_api_files = false
       Rake::Task['device:wm:apply_container'].invoke(container_path)
       Rake::Task['build:bundle:noxruby'].invoke
       Rake::Task['device:wm:cab'].invoke
