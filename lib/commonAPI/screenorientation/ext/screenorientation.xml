@@ -84,7 +84,7 @@ With the old PocketBrowser APIs, any events, such as `screenOrientationEvent` we
                 <PLATFORM>iOS, Android, WM</PLATFORM>
                 <PLATFORM_EB>Android, WM</PLATFORM_EB>
                 <CALLBACK type="STRING">
-                    <DESC>Current orientation of the screen. The orientation is reported as normal, leftHanded, rightHanded or upsideDown. If auto rotation is disabled - real rotating of device do not produce an event. The event occurs only for real changing of screen orientation, also "upsideDown" Method shall behave like "normal" Method. </DESC>
+                    <DESC>Current orientation of the screen. The orientation is reported as normal, leftHanded, rightHanded or upsideDown. If auto rotation is disabled in the device - real rotating of device do not produce an event. The event occurs only for real changing of screen orientation, also "upsideDown" Method shall behave like "normal" Method. </DESC>
                 </CALLBACK>
             </METHOD>
         </METHODS>
