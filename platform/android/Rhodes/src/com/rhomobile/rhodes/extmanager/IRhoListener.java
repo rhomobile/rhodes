@@ -83,6 +83,4 @@ public interface IRhoListener {
 	void onEBLicenseDestroyed();
 
 	void onSaveInstanceState(Bundle outState);
-	
-	void disableScannerOnNavigate();
 }
