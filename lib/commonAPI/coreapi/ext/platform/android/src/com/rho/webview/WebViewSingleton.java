@@ -26,7 +26,7 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     private static final String ENABLE_ZOOM = "enable_screen_zoom";
     private static final String ENABLE_WEB_PLUGINS = "enable_web_plugins";
     private static final String ENABLE_CACHE = "WebView.enableCache";
-    private static final String DISABLE_SCANNER_NAVIGATION = "disable_scanner_navigation";
+    private static final String DISABLE_SCANNER_NAVIGATION = "disable_scanner_during_navigation";
     private WebViewConfig mConfig = new WebViewConfig();
 
     public WebViewSingleton() {
