@@ -41,9 +41,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.GradientDrawable.Orientation;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -114,12 +116,18 @@ public class FileList extends BaseActivity implements OnClickListener{
 				try {
 					String file = files.get(position);
 					Logger.D(TAG, "Selected file: " + file);
-					
+					int intDividerforwidth= getWindowManager().getDefaultDisplay().getWidth()/3;
+					int intDividerforHeight=getWindowManager().getDefaultDisplay().getHeight()/4;
+					if( getWindowManager().getDefaultDisplay().getHeight()<= getWindowManager().getDefaultDisplay().getWidth())
+					{	
+						intDividerforHeight=getWindowManager().getDefaultDisplay().getWidth()/4;
+						intDividerforwidth=getWindowManager().getDefaultDisplay().getHeight()/3;
+					}
 					BitmapFactory.Options options = new BitmapFactory.Options();
 					options.inSampleSize = 10;
 					Bitmap bm = BitmapFactory.decodeFile(file, options);
 					if (bm != null)
-						bm = Bitmap.createScaledBitmap(bm, 176, 144, true);
+						bm = Bitmap.createScaledBitmap(bm, intDividerforHeight, intDividerforwidth, true);
 					if (bm != null) {
 						imagePreview.setImageBitmap(bm);
 						selectedFile = file;
