@@ -58,7 +58,4 @@ public abstract class AbstractRhoListener implements IRhoListener {
     
     @Override
     public void onEBLicenseDestroyed() { }
-    
-    @Override
-    public void disableScannerOnNavigate(){ }
 }
