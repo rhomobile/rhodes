@@ -73,6 +73,8 @@ public class WebViewConfig implements IRhoConfig {
     public static final String USER_AGENT_DEF = RhoConf.getString("useragent");
    public static String AUTH_USERNAME ="username";
     public static String AUTH_PASSWORD = "password";
+    public static String DISABLE_SCANNER_ON_NAVIGATION = "disablescanneronnavigation";
+    public static int DISABLE_SCANNER_ON_NAVIGATION_DEFAULT = 1;
     Map<String, String> mConfigMap;
     
     public WebViewConfig() {
@@ -85,6 +87,7 @@ public class WebViewConfig implements IRhoConfig {
         mConfigMap.put(ENABLE_WEB_PLUGINS, String.valueOf(ENABLE_WEB_PLUGINS_DEF));
         mConfigMap.put(ENABLE_CACHE, String.valueOf(ENABLE_CACHE_DEF));
         mConfigMap.put(USER_AGENT, USER_AGENT_DEF);
+        mConfigMap.put(DISABLE_SCANNER_ON_NAVIGATION, String.valueOf(DISABLE_SCANNER_ON_NAVIGATION_DEFAULT));
     }
     
     public void set(String name, boolean val) {
