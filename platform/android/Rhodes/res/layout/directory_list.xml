@@ -28,7 +28,8 @@
     android:id="@+id/filesList"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_weight="2"
+    android:layout_weight="20"
+    android:layout_marginTop="20dp"
     android:padding="5dp"
     android:scrollbarStyle="insideOverlay" >
 
