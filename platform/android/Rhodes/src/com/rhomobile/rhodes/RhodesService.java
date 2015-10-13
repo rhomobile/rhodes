@@ -447,7 +447,9 @@ public class RhodesService extends Service {
             Logger.E(TAG, "Can't handle service command");
             Logger.E(TAG, e);
 		}
-		return Service.START_STICKY;
+		// From start_sticky yo start_not_sticky is done because we dont want OS to start service incase of low memory and recovery. Anyways it is started
+		//by the BaseActivity so to maintain the same state it is better if OS does NOT restart.SR EMBPD00183300
+		return Service.START_NOT_STICKY;
 	}
 	
 	private void handleCommand(Intent intent, int startId) {
