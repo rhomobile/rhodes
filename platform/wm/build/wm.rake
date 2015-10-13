@@ -241,6 +241,10 @@ def unpack_7z(where, archive)
   Jake.run3(get_7z_path()+" x \"#{archive}\" -bd -y", where)
 end
 
+def unpack_7z_path(where, archive, path_inside_archive)
+  Jake.run3(get_7z_path()+" x \"#{archive}\" \"#{path_inside_archive}\" -bd -y", where)
+end
+
 def determine_prebuild_path_win(platform,config)
   RhoPackages.request 'rhodes-containers'
   require 'rhodes/containers'
@@ -1542,6 +1546,13 @@ namespace "device" do
       print_timestamp('device:wm:apply_container FINISH')
     end
 
+    task :apply_container_jsapi, [:container_prefix_path] do |t, args|
+      print_timestamp('device:wm:apply_container_jsapi START')
+      container_prefix_path = args[:container_prefix_path]
+      unpack_7z_path($app_path, File.join(container_prefix_path, 'application_override.7z'), "bin/RhoBundle/apps/public/api")
+      print_timestamp('device:wm:apply_container_jsapi END')
+    end
+
     desc 'Build cab'
     task :cab => ['config:wm'] do
       print_timestamp('device:wm:cab START')
@@ -1590,9 +1601,10 @@ namespace "device" do
       Rake::Task['config:common:ymlsetup'].invoke
       container_path = determine_prebuild_path_win('wm', $app_config)
       $skip_build_extensions = true
-      $skip_build_js_api_files = false
+      $skip_build_js_api_files = true
       Rake::Task['device:wm:apply_container'].invoke(container_path)
       Rake::Task['build:bundle:noxruby'].invoke
+      Rake::Task['device:wm:apply_container_jsapi'].invoke(container_path)
       Rake::Task['device:wm:cab'].invoke
       print_timestamp('device:wm:production_with_prebuild_binary FINISH')
     end
