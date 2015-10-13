@@ -28,7 +28,8 @@ void CEditSIP::InitSIP()
 		pfnSetKeyState = (LPFNSETKEYSTATE)GetProcAddress(hKeybdDriver, SETKEYSTATE);
 		if (pfnSetKeyState)
 		{
-			pfnSetKeyState(UN_SHIFTED, 0, true);
+			//EMBPD00180707
+			//pfnSetKeyState(UN_SHIFTED, 0, true);
 		}
 	}
 }
@@ -42,7 +43,8 @@ BOOL CEditSIP::ToggleSystemSIP()
 	{
 		if (pfnSetKeyState)
 		{
-			pfnSetKeyState(UN_SHIFTED, 0, true);
+			//EMBPD00180707
+			//pfnSetKeyState(UN_SHIFTED, 0, true);
 		}
 	}
 
