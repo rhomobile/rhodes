@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -174,6 +175,9 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                 BitmapFactory.Options options=new BitmapFactory.Options();
 		options.inPurgeable = true;
                 bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+                Matrix m = new Matrix();
+                m.postRotate(CameraActivity.mRotation);
+                bitmap = Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
                     Logger.T(TAG, "outputFormat: " + outputFormat);   
                     filePath = getTemporaryPath(filePath)+ ".jpg";
