@@ -36,8 +36,10 @@ import java.util.Map;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.R;
+import com.rhomobile.rhodes.RhodesActivity;
 
 import android.content.Context;
+ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
@@ -56,7 +58,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     private static final String TAG = CameraActivity.class.getSimpleName();
     private CameraPreview mPreview;
     private OrientationEventListener mOrientationListener;
-    private int mRotation = 0;
+    public static int mRotation = 0;
     private Camera mCamera = null;
     private ICameraObject camera = null;
     private Button button = null;
@@ -67,9 +69,16 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
         super.onCreate(extras);
         Logger.T(TAG, "onCreate");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.camera);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().setFormat(PixelFormat.TRANSLUCENT);        
+        RhodesActivity.safeGetInstance().setScreenAutoRotateMode(false);
+        RhodesActivity.safeGetInstance().setFullScreenMode(true);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+    	   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    	   setContentView(R.layout.camera_port);
+        }
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+    	   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    	   setContentView(R.layout.camera_land);
+        }        
         id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");        
         camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
         button =(Button)findViewById(R.id.cameraButton);
@@ -137,7 +146,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
         try{
         if (view.getId() == R.id.cameraButton) {
             Logger.T(TAG, "cameraButton");            
-            camera.doTakePicture(this, (mRotation + 45)/90 * 90);
+            camera.doTakePicture(this,0);
             button.setEnabled(false);
           }
         }
