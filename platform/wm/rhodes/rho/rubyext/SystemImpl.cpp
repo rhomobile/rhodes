@@ -160,7 +160,8 @@ void rho_sys_app_exit()
 				int iPasswordLength = _tcslen(szPasswordValue);
 				if(iPasswordLength > 0)
 				{
-					if(ShowPasswordDialog(RHO_IS_WMDEVICE, true, GetForegroundWindow(), NULL, L"Enterprise Browser", L"Enter Exit Password", szPasswordValue))
+					HWND hwndForeGroundWindow = RHODESAPP().getExtManager().makeExtData().m_hBrowserWnd;
+					if(ShowPasswordDialog(RHO_IS_WMDEVICE, true, hwndForeGroundWindow, NULL, L"Enterprise Browser", L"Enter Exit Password", szPasswordValue))
 					{
 						::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
 					}	
