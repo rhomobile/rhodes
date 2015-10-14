@@ -172,10 +172,10 @@ public class RhoWebViewClient extends WebViewClient
         Logger.profStop("BROWSER_PAGE");
 
         // Set title
-        String title = view.getTitle();
+       // String title = view.getTitle();
         try {
             //RhodesActivity.safeGetInstance().setTitle(title);
-
+	checkTitleDataContain(view);
             if (mWebView.getConfig() != null && mWebView.getConfig().getBool(WebViewConfig.ENABLE_PAGE_LOADING_INDICATION))
                 RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
         } catch (Throwable ex) {
@@ -259,6 +259,13 @@ public class RhoWebViewClient extends WebViewClient
 			RhoExtManager.getImplementationInstance().onAuthRequest(view, authResult);
 		}
       }
-    
+     private void checkTitleDataContain(WebView view){
+    	// Set title
+        String title = view.getTitle();
+    	if(! (title.equalsIgnoreCase("data:text/html,") || title.equalsIgnoreCase("data:,") 
+    			|| title.contains("about:blank"))){
+    		RhodesActivity.safeGetInstance().setTitle(title);
+    	}
+    }
     
 }
