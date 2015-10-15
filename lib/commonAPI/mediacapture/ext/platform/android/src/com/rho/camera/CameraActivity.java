@@ -39,7 +39,8 @@ import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhodesActivity;
 
 import android.content.Context;
- import android.content.pm.ActivityInfo;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
@@ -57,8 +58,6 @@ import android.widget.FrameLayout;
 public class CameraActivity extends BaseActivity implements OnClickListener {
     private static final String TAG = CameraActivity.class.getSimpleName();
     private CameraPreview mPreview;
-    private OrientationEventListener mOrientationListener;
-    public static int mRotation = 0;
     private Camera mCamera = null;
     private ICameraObject camera = null;
     private Button button = null;
@@ -84,13 +83,6 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
         button =(Button)findViewById(R.id.cameraButton);
         button.setOnClickListener(this);
         mPreview = new CameraPreview((SurfaceView)findViewById(R.id.previewSurface));
-        mOrientationListener = new OrientationEventListener(this) {
-            @Override public void onOrientationChanged(int rotation) {
-                Logger.T(TAG, "Rotation: " + rotation);
-                mRotation = rotation;
-            }
-        };
-        
 
     }
     
@@ -98,9 +90,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     protected void onResume() {
         super.onResume();
         Logger.T(TAG, "onResume");        
-        if (mOrientationListener.canDetectOrientation()) {
-            mOrientationListener.enable();
-        }
+        startOrientationService();
         try{
           mPreview.startPreview(camera, this);
           // Setting focus if supported by camera of the device after camera previewing
@@ -126,9 +116,9 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     
     @Override
     protected void onStop() {
-	// TODO Auto-generated method stub
+    	super.onStop();
+	stopService(new Intent(CameraActivity.this,OrientationListnerService.class));
 	button.setEnabled(true);
-	super.onStop();    	
     }
     
     @Override
@@ -153,5 +143,11 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
         catch(Exception e){
         	e.printStackTrace();
         }
+    }
+    
+    private void startOrientationService()
+    {
+    	Intent i=new Intent(this,OrientationListnerService.class);
+    	startService(i);
     }
 }
