@@ -241,7 +241,7 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                     mPreviewActivity.setResult(Activity.RESULT_OK, intent);                    
                 } else
                 if (outputFormat.equalsIgnoreCase("image")) {
-                    filePath = getTemporaryPath(filePath)+ ".jpg";
+                //    filePath = getTemporaryPath(filePath)+ ".jpg";
                     Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);                    
                     if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) 
                     {                        
