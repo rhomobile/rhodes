@@ -176,7 +176,7 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                 bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
                     Logger.T(TAG, "outputFormat: " + outputFormat);   
-                    filePath = getTemporaryPath(filePath)+ ".jpg";
+                //    filePath = getTemporaryPath(filePath)+ ".jpg";
                     if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) 
                     {                        
                         ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
