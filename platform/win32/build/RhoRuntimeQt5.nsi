@@ -9,9 +9,9 @@
 ;======================================================
 ; Installer Information
  
-  Name RhoRuntimeQt5
+  Name RhoRuntimeQt5-VS2012
   OutFile "RhoRuntimeQt5-setup.exe"
-  InstallDir C:\RhoRuntimeQt5
+  InstallDir C:\RhoRuntimeQt5-VS2012
   BrandingText " "
 
 ;======================================================
@@ -25,7 +25,7 @@
   !define MUI_HEADERIMAGE_BITMAP_NOSTRETCH
   #!define MUI_FINISHPAGE_SHOWREADME $INSTDIR\README.html
   !define MUI_FINISHPAGE
-  !define MUI_FINISHPAGE_TEXT "Thank you for installing RhoRuntimeQt5 \r\n\n\n"
+  !define MUI_FINISHPAGE_TEXT "Thank you for installing RhoRuntimeQt5-VS2012 \r\n\n\n"
   
 ;======================================================
 ; Pages
@@ -63,25 +63,26 @@ section
  
     SetOutPath "$SMPROGRAMS\rhomobile"
     # create shortcuts
-    createShortCut "$SMPROGRAMS\rhomobile\Uninstall RhoRuntimeQt5.lnk" "$INSTDIR\uninstall.exe"
+    createShortCut "$SMPROGRAMS\rhomobile\Uninstall RhoRuntimeQt5-VS2012.lnk" "$INSTDIR\uninstall.exe"
 
     # added information in 'unistall programs' in contorol panel
-    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5" \
-                 "DisplayName" "RhoRuntimeQt5"
-    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5" \
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5-VS2012" \
+                 "DisplayName" "RhoRuntimeQt5-VS2012"
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5-VS2012" \
                  "DisplayVersion" "5.1.1"
-    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5" \
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5-VS2012" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5" \
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5-VS2012" \
                  "DisplayIcon" "$\"$INSTDIR\uninstall.exe$\""
-    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5" \
-                 "Publisher" "rhomobile"
-    WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5" \
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5-VS2012" \
+                 "Publisher" "Zebra Technologies"
+    WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5-VS2012" \
                  "NoModify" 1
-    WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5" \
+    WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5-VS2012" \
                  "NoRepair" 1
 
     ${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR"
+    ${EnvVarUpdate} $0 "QT_PLUGIN_PATH" "A" "HKLM" "$INSTDIR" 
 
 sectionEnd
  
@@ -90,19 +91,20 @@ section "uninstall"
     SetShellVarContext all
 
     # confirmation dialog
-    MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to uninstall RhoRuntimeQt5?" IDNO NoUninstallLabel
+    MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to uninstall RhoRuntimeQt5-VS2012?" IDNO NoUninstallLabel
 
     # first, delete the uninstaller
     delete "$INSTDIR\uninstall.exe"
  
     # second, remove the link from the start menu    
-    delete "$SMPROGRAMS\rhomobile\Uninstall RhoRuntimeQt5.lnk"
+    delete "$SMPROGRAMS\rhomobile\Uninstall RhoRuntimeQt5-VS2012.lnk"
     RMDir "$SMPROGRAMS\rhomobile"
 
     # remove information in 'unistall programs' in contorol panel
-    DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5"
+    DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5-VS2012"
 
     ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR"
+    ${un.EnvVarUpdate} $0 "QT_PLUGIN_PATH" "R" "HKLM" "$INSTDIR" 
 
     # remove $INSTDIR
     RMDir /r /REBOOTOK $INSTDIR
@@ -113,7 +115,7 @@ section "uninstall"
 sectionEnd
 
 
-Section "RhoRuntimeQt5" appSection
+Section "RhoRuntimeQt5-VS2012" appSection
   SetOutPath $INSTDIR
 
   File D3Dcompiler_46.dll
@@ -151,7 +153,7 @@ SectionEnd
 ;Descriptions
  
   ;Language strings
-  LangString DESC_InstallApp ${LANG_ENGLISH} "This installs RhoRuntimeQt5"
+  LangString DESC_InstallApp ${LANG_ENGLISH} "This installs RhoRuntimeQt5-VS2012"
   
   ;Assign language strings to sections
   

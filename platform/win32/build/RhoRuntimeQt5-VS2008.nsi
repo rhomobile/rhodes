@@ -104,7 +104,7 @@ section "uninstall"
     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoRuntimeQt5-VS2008"
 
     ${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR"
-	${un.EnvVarUpdate} $0 "QT_PLUGIN_PATH " "R" "HKLM" "$INSTDIR" 
+	${un.EnvVarUpdate} $0 "QT_PLUGIN_PATH" "R" "HKLM" "$INSTDIR" 
 
     # remove $INSTDIR
     RMDir /r /REBOOTOK $INSTDIR
