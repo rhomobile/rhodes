@@ -111,7 +111,6 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
           mCamera.release();
           mCamera = null;
         }
-        mOrientationListener.disable();
     }
     
     @Override
