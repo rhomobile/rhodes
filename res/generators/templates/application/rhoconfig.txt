@@ -87,6 +87,9 @@ sync_poll_interval=0
 # hides forward button and animates back button transition
 jqtouch_mode=1
 
+# disables barcode on page navigation on android, default value is 1, means barcode will be disabled on page navigation
+#disable_scanner_during_navigation = 1
+
 splash_screen='zoom'
 
 use_bb_full_browser=6
