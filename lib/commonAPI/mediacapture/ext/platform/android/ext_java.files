@@ -6,6 +6,7 @@ ext/platform/android/generated/src/com/rho/camera/CameraBase.java
 ext/platform/android/generated/src/com/rho/camera/CameraSingletonBase.java
 ext/platform/android/generated/src/com/rho/camera/CameraFactorySingleton.java
 ext/platform/android/src/com/rho/camera/CameraActivity.java
+ext/platform/android/src/com/rho/camera/OrientationListnerService.java
 ext/platform/android/src/com/rho/camera/CameraPreview.java
 ext/platform/android/src/com/rho/camera/ICameraObject.java
 ext/platform/android/src/com/rho/camera/ICameraSingletonObject.java

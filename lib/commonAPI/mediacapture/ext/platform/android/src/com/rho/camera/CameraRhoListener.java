@@ -394,6 +394,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
+			RhodesActivity.safeGetInstance().setScreenAutoRotateMode(true);
+			RhodesActivity.safeGetInstance().setFullScreenMode(false);
 			inMethodRes.set(inResultMap);
 			releaseMethodResult();
 		}

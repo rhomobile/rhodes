@@ -54,7 +54,7 @@ public class CameraPreview implements SurfaceHolder.Callback {
         }
     }
     
-	public String getDeviceOrientation(int right,int bottom,int curentRotation )
+	public static String getDeviceOrientation(int right,int bottom,int curentRotation )
 	{
 
 	Logger.I(TAG, "getDeviceOrientation right:- "+right);
@@ -147,20 +147,24 @@ public class CameraPreview implements SurfaceHolder.Callback {
         
         double previewRatio = (double) size.getWidth() / size.getHeight();
         double dR = previewRatio - (double) surfaceRect.right / surfaceRect.bottom;
-        int marginX = 0;
-        int marginY = 0;
+        int marginX = -4;
+        int marginY = -4;
         if (dR > 0) {
-            marginY = (int)(((double)surfaceRect.bottom - surfaceRect.right / previewRatio) / 2);
+            marginY = (int)(((double)surfaceRect.bottom - surfaceRect.right / previewRatio) / 4);
         } else if (dR < 1.0) {
-            marginX = (int)(((double)surfaceRect.right - surfaceRect.bottom * previewRatio) / 2);
+            marginX = (int)(((double)surfaceRect.right - surfaceRect.bottom * previewRatio) / 4);
         }
         
 
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)mSurfaceView.getLayoutParams();
-        layoutParams.leftMargin = layoutParams.FILL_PARENT;
+        layoutParams.leftMargin = marginX;
+        layoutParams.rightMargin = marginX;
+        layoutParams.topMargin = marginY;
+        layoutParams.bottomMargin = marginY; 
+        /*layoutParams.leftMargin = layoutParams.FILL_PARENT;
         layoutParams.rightMargin = layoutParams.FILL_PARENT;
         layoutParams.topMargin = layoutParams.FILL_PARENT;
-        layoutParams.bottomMargin = layoutParams.FILL_PARENT;
+        layoutParams.bottomMargin = layoutParams.FILL_PARENT;*/
         mSurfaceView.setLayoutParams(layoutParams);
         mSurfaceView.requestLayout();
     }
