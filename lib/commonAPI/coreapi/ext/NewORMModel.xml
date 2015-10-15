@@ -2,10 +2,19 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="NewORMModel" parent="Rho" productException="eb">
-        <HELP_OVERVIEW>NewORMModel CoreAPI module</HELP_OVERVIEW>
-        <MORE_HELP>New implementation of the RHOM Model.
-NOTE: BETA VERSION - This API has not been officially released. It should not be used in a production environment.
-</MORE_HELP>
+        <HELP_OVERVIEW>NewORMModel CoreAPI module.</HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API
+This API is part of the `coreapi` extension that is included automatically.
+    :::ruby
+    extensions: ["coreapi"]
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+## Ruby Usage
+For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/rhom-api).
+        </MORE_HELP>
 
         <TEMPLATES>
             <PROPERTY_BAG/>
@@ -21,14 +30,14 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             </PROPERTY>
             <PROPERTY name="sync_type" type="STRING" usePropertyBag="accessorsViaPropertyBag" default="none" >
                 <DESC>Returns model's Sync type.</DESC>
-				<VALUES>
+                <VALUES>
                     <VALUE value ="none">
                         <DESC>If data model is not a sync model.</DESC>
                     </VALUE>
                     <VALUE value ="incremental">
                         <DESC>Used when the data model is a sync model. Just syncs changes.</DESC>
                     </VALUE>
-					<VALUE value ="bulk_only">
+                    <VALUE value ="bulk_only">
                         <DESC>If the model is used only for bulk sync.</DESC>
                     </VALUE>
                 </VALUES>
@@ -38,14 +47,14 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
             </PROPERTY>
             <PROPERTY name="partition" type="STRING" usePropertyBag="accessorsViaPropertyBag" >
                 <DESC>Returns model's Db partition.</DESC>
-				<VALUES>
-					<VALUE value ="local">
-						<DESC>This partition is used automatically if the model is not a sync model.</DESC>
-					</VALUE>
+                <VALUES>
+                    <VALUE value ="local">
+                        <DESC>This partition is used automatically if the model is not a sync model.</DESC>
+                    </VALUE>
                     <VALUE value ="user">
                         <DESC>This partition is used automatically if the model is a sync model.</DESC>
                     </VALUE>
-					<VALUE value ="app">
+                    <VALUE value ="app">
                         <DESC>This partition is used to store the application related information.</DESC>
                     </VALUE>
                 </VALUES>
@@ -66,12 +75,14 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 
         <METHODS>
             <METHOD name="enumerate" access="STATIC">
+                <DESC>enumerate method returns array of ORMModel objects.</DESC>
                 <RETURN type="ARRAY">
-                    <DESC>Array of NewORMModel objects.</DESC>
+                    <DESC>Array of ORMModel objects.</DESC>
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
-            <METHOD name="getModel" access="STATIC">
+            <METHOD name="getModel" access="STATIC" >
+                <DESC>getModel method returns instance of the ORMModel.</DESC>
                 <PARAMS>
                     <PARAM name="modelName" type="STRING">
                         <DESC>Name of the model you want returned.</DESC>
@@ -82,16 +93,28 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
-
-            <METHOD name="init" constructor="true">
+            
+            <METHOD name="init" generateDoc= "false">
                 <DESC>Initializes new model's instance.</DESC>
                 <PARAMS>
                     <PARAM name="modelName" type="STRING"/>
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="initModel">
+            <METHOD name="initModel" generateDoc= "false">
                 <DESC>Initializes model's internal DB.</DESC>
+            </METHOD>
+
+            <METHOD name="make" generateAPI= "false">
+                <DESC>Create a new Rhodes model object JavaScript reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method.</DESC>
+                <APPLIES jsOnly="true"/>
+            </METHOD>
+
+            <METHOD name="new" generateAPI= "false">
+                <DESC>Initializes new model's instance.</DESC>
+                <PARAMS>
+                    <PARAM name="modelName" type="STRING"/>
+                </PARAMS>
             </METHOD>
 
             <METHOD name="setBelongsTo">
@@ -112,79 +135,79 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 
             <METHOD name="set">
                 <DESC>Sets model's property to value with additional processing for :sync property.</DESC>
-				<CAN_BE_NIL>
+                <CAN_BE_NIL>
                 </CAN_BE_NIL>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING">
-						<PARAMS>
-							<PARAM name="partition" type="STRING">
+                        <PARAMS>
+                            <PARAM name="partition" type="STRING">
                                 <DESC>The partition to use for this model. Partitions can be used to segment the data and keep non-synched data separate from synched models.</DESC>
-								<VALUES>
+                                <VALUES>
                                     <VALUE value ="local">
                                         <DESC>This partition is used automatically if the model is not a sync model.</DESC>
                                     </VALUE>
                                     <VALUE value ="user">
                                         <DESC>This partition is used automatically if the model is a sync model.</DESC>
                                     </VALUE>
-									<VALUE value ="app">
+                                    <VALUE value ="app">
                                         <DESC>This partition is used to store the application related information.</DESC>
                                     </VALUE>
                                 </VALUES>
                             </PARAM>
-							<PARAM name="sync_type" type="STRING">
+                            <PARAM name="sync_type" type="STRING">
                                 <DESC>Sets the type of sync it will be. </DESC>
                                 <VALUES>
                                     <VALUE value ="none">
-										<DESC>If data model is not a sync model.</DESC>
+                                        <DESC>If data model is not a sync model.</DESC>
                                     </VALUE>
                                     <VALUE value ="incremental">
                                         <DESC>Used when the data model is a sync model. Just syncs changes.</DESC>
-									</VALUE>
-									<VALUE value ="bulk_only">
+                                    </VALUE>
+                                    <VALUE value ="bulk_only">
                                         <DESC>If the model is used only for bulk sync.</DESC>
                                     </VALUE>
                                 </VALUES>
                             </PARAM>
-							<PARAM name="sync_priority" type="INTEGER">
+                            <PARAM name="sync_priority" type="INTEGER">
                                 <DESC>This number determines the order in which the models are processed and synchronised. Priority starts from lower value 1. Lower the number, higher is the priority. Default value is 1000. </DESC>
                             </PARAM>
-							<PARAM name="freezed" type="BOOLEAN">
+                            <PARAM name="freezed" type="BOOLEAN">
                                 <DESC>To make the model Freezed.</DESC>
                             </PARAM>
-							<PARAM name="schema_version" type="FLOAT">
+                            <PARAM name="schema_version" type="FLOAT">
                                 <DESC>This is used for data migration of the application.</DESC>
                             </PARAM>
-						</PARAMS>
-					</PARAM>
-					<PARAM name="propertyValue" type="STRING">
-						<DESC>The property names takes the corresponding property values, as mentioned above .</DESC>
-					</PARAM>
+                        </PARAMS>
+                    </PARAM>
+                    <PARAM name="propertyValue" type="STRING">
+                        <DESC>The property names takes the corresponding property values, as mentioned above .</DESC>
+                    </PARAM>
                 </PARAMS>
             </METHOD>
-			
+            
 
             <METHOD name="enable">
-                <DESC>Sets model's Boolean property to true (enables model's property)</DESC>
+                <DESC>Sets model's Boolean property to true (enables model's property).</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING">
-					<VALUES>
-						<VALUE value = "fixed_schema">
-							<DESC>To set the type of model as Fixed_schema.</DESC>
-						</VALUE>
-						<VALUE value = "loaded">
-							<DESC>To load the model.</DESC>
-						</VALUE>
-						<VALUE value = "sync">
-							<DESC>To make the model as user model.</DESC>
-						</VALUE>
-						<VALUE value = "full_update">
-							<DESC>To send all the attributes(changed/unchanged) to Rhoconnect when an object is updated.</DESC>
-						</VALUE>
-						<VALUE value = "pass_through">
-							<DESC>To keep the sensitive data out of redis server.</DESC>
-						</VALUE>
-					</VALUES>
-					</PARAM>
+                    <VALUES>
+                        <VALUE value = "fixed_schema">
+                            <DESC>To set the type of model as Fixed_schema.</DESC>
+                        </VALUE>
+                        <VALUE value = "loaded">
+                            <DESC>To load the model.</DESC>
+                        </VALUE>
+                        <VALUE value = "sync">
+                            <DESC>To make the model as user model.</DESC>
+                        </VALUE>
+                        <VALUE value = "full_update">
+                            <DESC>To send all the attributes(changed/unchanged) to Rhoconnect when an object is updated.</DESC>
+                        </VALUE>
+                        <VALUE value = "pass_through">
+                            <DESC>To keep the sensitive data out of redis server.</DESC>
+                        </VALUE>
+                    </VALUES>
+                    </PARAM>
                 </PARAMS>
             </METHOD>
 
@@ -192,18 +215,18 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                 <DESC>Initializes new model's field property.</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING">
-						<DESC>The name of the property.</DESC>
+                        <DESC>The name of the property.</DESC>
                     </PARAM>
                     <PARAM name="propertyType" type="STRING">
-						<DESC>The type of property. Possible values are: String, Float, integer, Boolean, Varchar, Blob. String is default.</DESC>
+                        <DESC>The type of property. Possible values are: String, Float, integer, Boolean, Varchar, Blob. String is default.</DESC>
                     </PARAM>
                     <PARAM name="propOption" type="STRING" default="Null">
                         <CAN_BE_NIL/>
-                        	<VALUES>
-						<VALUE value ="overwrite">
-							<DESC>Overwrite client copy of blob with the new copy from server. This is useful when RhoConnect modifies images sent from Rhodes, for example zooming or cropping.</DESC>
-						</VALUE>
-				</VALUES>		
+                            <VALUES>
+                        <VALUE value ="overwrite">
+                            <DESC>Overwrite client copy of blob with the new copy from server. This is useful when RhoConnect modifies images sent from Rhodes, for example zooming or cropping.</DESC>
+                        </VALUE>
+                </VALUES>       
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -212,57 +235,94 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                 <DESC>Returns info about model's field property.</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING">
-						<DESC>The name of the property.</DESC>
-					</PARAM>	
+                        <DESC>The name of the property.</DESC>
+                    </PARAM>    
                 </PARAMS>
                 <RETURN type="HASH">
-					<DESC>Returns property name,type and option in the form of an HASH.</DESC>
-				</RETURN>	
+                    <DESC>Returns property name,type and option in the form of an HASH.</DESC>
+                </RETURN>   
             </METHOD>
 
             <METHOD name="setSchemaIndex">
                 <DESC>Initializes new model's schema index.</DESC>
                 <PARAMS>
                     <PARAM name="indexName" type="STRING">
-						<DESC>To define a named index on a set of attributes.</DESC>
-					</PARAM>	
+                        <DESC>To define a named index on a set of attributes.</DESC>
+                    </PARAM>    
                     <PARAM name="indexCols" type="ARRAY">
-						<DESC>A set of attributes which need a indexName are passed through this array.</DESC>
-					</PARAM>
+                        <DESC>A set of attributes which need a indexName are passed through this array.</DESC>
+                    </PARAM>
                     <PARAM name="is_unique" type="BOOLEAN">
-						<DESC>To make the indexCols as unique column is_unique is set to true. This will prevent inserting duplicate records.</DESC>
-					</PARAM>
+                        <DESC>To make the indexCols as unique column is_unique is set to true. This will prevent inserting duplicate records.</DESC>
+                    </PARAM>
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="destroy" destructor="true">
-                <DESC>Destroys model's instance.</DESC>
+            <METHOD name="destroy" destructor="true" generateDoc= "false">
+                <DESC>Destroys model's instance. This method is used to destroy only a single record.</DESC>
             </METHOD>
 
-            <METHOD name="createObject">
+            <METHOD name="destroy" generateAPI= "false">
+                <DESC>Destroy a Rhodes model object.</DESC>
+            </METHOD>
+
+            <METHOD name="createObject" generateDoc = "false">
                 <DESC>Initializes model's object and stores it in the DB.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH">
-						<DESC>The attribute names and its respective values are passed as a key-value pair through this HASH.</DESC>
-					</PARAM>	
+                        <DESC>The attribute names and its respective values are passed as a key-value pair through this HASH.</DESC>
+                    </PARAM>    
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+            
+            <METHOD name="create" generateAPI= "false">
+                <DESC>Initializes model's object and stores it in the DB.</DESC>
+                <PARAMS>
+                    <PARAM name="attrs" type="HASH">
+                        <DESC>The attribute names and its respective values are passed as a key-value pair through this HASH.</DESC>
+                    </PARAM>    
                 </PARAMS>
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="createInstance">
+            <METHOD name="createInstance" generateDoc= "false">
                 <DESC>Creates model's instance and initializes model's object but doesn't store it in DB.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH">
-						<DESC>The attribute names and its respective values are passed as a key-value pair through this HASH.</DESC>
-					</PARAM>
+                        <DESC>The attribute names and its respective values are passed as a key-value pair through this HASH.</DESC>
+                    </PARAM>
                 </PARAMS>
                 <RETURN type="HASH"/>
             </METHOD>
 
             <METHOD name="anyChangedObjects">
-					<DESC>Checks whether the model has any changed objects.</DESC>
+                    <DESC>Checks whether the model has any changed objects.</DESC>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
+
+            <METHOD name="changed?" generateAPI="false" deprecated="true" >
+                    <DESC>Returns true if a Rhodes model object has local database changes that need to be synchronized, false otherwise.</DESC>
+                    <APPLIES rubyOnly="true"/>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="clear" access="STATIC" generateDoc= "false">
+                <DESC>This method clears all the models and the associated tables with the models. It is used only for testing purpose and not for the developing.</DESC>
+            </METHOD>
+
+            <METHOD name="client_id" generateAPI="false" deprecated="true" >
+                    <DESC>Returns the current sync client id.</DESC>
+                    <APPLIES rubyOnly="true"/>
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="count" generateAPI="false" deprecated="true" >
+                    <DESC>Returns the number of objects in the named model.</DESC>
+                    <APPLIES rubyOnly="true"/>
+                <RETURN type="STRING"/>
+            </METHOD>
+
 
             <METHOD name="hasChanges">
                 <DESC>Checks whether the object has any changes. Returns true when an object is created or updated.</DESC>
@@ -280,7 +340,16 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="updateObject">
+            <METHOD name="can_modify" deprecated="true">
+                <DESC>Checks whether the object can be modified.</DESC>
+                <APPLIES rubyOnly="true"/>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="updateObject" generateDoc = "false">
                 <DESC>Updates object's attributes in the DB.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
@@ -289,64 +358,138 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                 </PARAMS>
                 <RETURN type="HASH"/>
             </METHOD>
-
-            <METHOD name="saveObject">
-                <DESC>Saves (creates if necessary or updates if already exists) object's attributes in the DB.</DESC>
+            
+            <METHOD name="updateAttributes" generateAPI="false" deprecated="true">
+                <DESC>Updates the current Rho model object attributes and saves it to the database. This is the fastest way to add or update model attributes.</DESC>
+                <APPLIES jsOnly="true"/>
                 <PARAMS>
-                    <PARAM name="objId" type="STRING"/>
-                    <PARAM name="attrs" type="HASH"/>
+                    <PARAM name="attributes" type="HASH">
+                        <DESC>List of attributes and their updated values are passed as a key-value pair in this HASH.</DESC>
+                    </PARAM>
                 </PARAMS>
-                <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="deleteObject">
+            <METHOD name="update_attributes" generateAPI="false">
+                <DESC>Updates the current Rho model object attributes and saves it to the database. This is the fastest way to add or update model attributes.</DESC>
+                <PARAMS>
+                    <PARAM name="attributes" type="HASH">
+                        <DESC>List of attributes and their updated values are passed as a key-value pair in this HASH.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+            
+            <METHOD name="paginate" generateAPI="false">
+                <DESC> The paginate method takes care of setting the proper page limit and offset when a large number of records are fetched. This method accepts parameters as key-value pairs. It accepts 5 keys- page, per_page, conditions, order, select.</DESC>
+                <PARAMS>
+                    <PARAM name="params" type="HASH">
+                        <DESC>A hash-map with paginate arguments.</DESC>
+                        <PARAMS>
+                            <PARAM name="page" type="INTEGER">
+                                <DESC>This value is an offset which indicates the prevailing page number.</DESC>
+                            <CAN_BE_NIL/>   
+                            </PARAM>
+                            <PARAM name="per_page" type="INTEGER">
+                                <DESC>This value specifies number of records to be returned. The default value of per_page is 10.</DESC>
+                            <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="order" type="STRING">
+                                <DESC>The attribute names to order the list.</DESC>
+                            <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="select" type="STRING">
+                                <DESC>The array of string attributes to return with the object.</DESC>
+                            <CAN_BE_NIL/>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="find_all" deprecated="true" generateAPI= "false">
+                <DESC>find('all') replaces the legacy ruby method find_all.</DESC>
+                <APPLIES rubyOnly="true"/>
+                <RETURN type="HASH"/>
+            </METHOD>
+            
+            <METHOD name="saveObject" generateDoc = "false">
+                <DESC>Saves (creates if necessary or updates if already exists) object's attributes in the DB.</DESC>
+                <RETURN type="HASH"/>
+            </METHOD>
+            
+            
+            <METHOD name="save" generateAPI= "false">
+                <DESC>Saves the object's attributes in the DB.</DESC>
+            </METHOD>
+
+            <METHOD name="deleteObject" generateDoc = "false">
                 <DESC>Deletes object's attributes from the DB.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="deleteObjects">
-                <DESC>Deletes all object's according to the specified conditions.It is applicable only for Fixed_schema Model.</DESC>
+            <METHOD name="deleteAll" generateAPI="false" deprecated="true" >
+                <DESC>Delete all Rhodes model objects for a source filtering by conditions. This method accepts parameters as key-value pairs. It accepts 2 keys- conditions and op.</DESC>
+                <APPLIES jsOnly="true"/>
                 <PARAMS>
-                    <PARAM name="strOptions" type="HASH">
-						<DESC>This HASH takes only one key-value pair for which the key is `conditions` and the value is the attribute name. For multiple attribute names, OR/AND/IN operator is used.</DESC> 
+                    <PARAM name="params" type="HASH">
+                        <DESC>A hash-map with deleteAll arguments.</DESC>
+                        <PARAMS>
+                            <PARAM name="conditions" type="HASH">
+                                <DESC>The attribute names and its respective values are passed as a key-value pair in this HASH. This will delete only the objects matching the criteria passed in the HASH.</DESC>
+                            <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="op" type="BOOLEAN OPERATOR">
+                                <DESC>It accepts operators such as "OR" or "IN". This allows you to have more than one set of conditions.</DESC>
+                            <CAN_BE_NIL/>
+                            </PARAM>
+                        </PARAMS>
                     </PARAM>
-					<PARAM name="quests" type="ARRAY">
-						<DESC>This Array takes the values as String for the attribute names passed in the "strOptions" parameter.</DESC>
-					</PARAM>	
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="deleteObjectsPropertyBagByCondHash">
+            <METHOD name="deleteObjects" generateDoc= "false">
+                <DESC>Deletes all object's according to the specified conditions.It is applicable only for Fixed_schema Model.</DESC>
+                <PARAMS>
+                    <PARAM name="strOptions" type="HASH">
+                        <DESC>This HASH takes only one key-value pair for which the key is `conditions` and the value is the attribute name. For multiple attribute names, OR/AND/IN operator is used.</DESC> 
+                    </PARAM>
+                    <PARAM name="quests" type="ARRAY">
+                        <DESC>This Array takes the values as String for the attribute names passed in the "strOptions" parameter.</DESC>
+                    </PARAM>    
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="deleteObjectsPropertyBagByCondHash" generateDoc = "false">
                 <DESC>Deletes all objects for the given Property Bag model according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
                     <PARAM name="conditions" type="HASH">
-						<DESC>The attribute names and its respective values are passed as a key-value pair in this HASH.</DESC>
-           			</PARAM>	
-					<PARAM name="strOptions" type="HASH">
-						<DESC>This HASH is passed as an empty HASH.</DESC>
-					</PARAM>	
+                        <DESC>The attribute names and its respective values are passed as a key-value pair in this HASH.</DESC>
+                    </PARAM>    
+                    <PARAM name="strOptions" type="HASH">
+                        <DESC>This HASH is passed as an empty HASH.</DESC>
+                    </PARAM>    
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="deleteObjectsPropertyBagByCondArray">
+            <METHOD name="deleteObjectsPropertyBagByCondArray" generateDoc = "false">
                 <DESC>Deletes all objects for the given Property Bag model according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
                     <PARAM name="conditions" type="STRING">
-						<DESC>The attribute names are passed as a string.</DESC>
-					</PARAM>
+                        <DESC>The attribute names are passed as a string.</DESC>
+                    </PARAM>
                     <PARAM name="quests" type="ARRAY">
-						<DESC>This Array takes the values as String for the attribute names passed in the "conditions" parameter.</DESC>
-					</PARAM>
+                        <DESC>This Array takes the values as String for the attribute names passed in the "conditions" parameter.</DESC>
+                    </PARAM>
                     <PARAM name="strOptions" type="HASH">
-						<DESC>This HASH is passed as an empty HASH.</DESC>
-					</PARAM>
-					<PARAM name="attribNamesUsedInCond" type="ARRAY">
-						<DESC>This Array takes the attribute names as string. Note: You must include the column name which is there in condition string and others.</DESC>
-					</PARAM>
-				</PARAMS>
+                        <DESC>This HASH is passed as an empty HASH.</DESC>
+                    </PARAM>
+                    <PARAM name="attribNamesUsedInCond" type="ARRAY">
+                        <DESC>This Array takes the attribute names as string. Note: You must include the column name which is there in condition string and others.</DESC>
+                    </PARAM>
+                </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
 
@@ -360,108 +503,152 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                 <RETURN type="STRING"/>
             </METHOD>
 
-            <METHOD name="findObjects">
+            <METHOD name="findObjects" generateDoc= "false">
                 <DESC>Returns array of objects for the given model queried according to the specified conditions. It is applicable only for Fixed_schema Model.</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING">
-						<DESC>It defines the type of find operation to be performed.</DESC>
-						<VALUES>
-							<VALUE value = "all">
-								<DESC>Finds all Objects matching the 'conditions' for a specific Model.</DESC>
-							</VALUE>	
-							<VALUE value = "count">
-								<DESC>Returns the number of Objects matching the 'conditions' in a specific Model.</DESC>
-							</VALUE>
-							<VALUE value = "first">
-								<DESC>Returns the first Object matching the 'conditions' in a specific Model.</DESC>
-							</VALUE>
-						</VALUES>	
-					</PARAM>					
+                        <DESC>It defines the type of find operation to be performed.</DESC>
+                        <VALUES>
+                            <VALUE value = "all">
+                                <DESC>Finds all Objects matching the 'conditions' for a specific Model.</DESC>
+                            </VALUE>    
+                            <VALUE value = "count">
+                                <DESC>Returns the number of Objects matching the 'conditions' in a specific Model.</DESC>
+                            </VALUE>
+                            <VALUE value = "first">
+                                <DESC>Returns the first Object matching the 'conditions' in a specific Model.</DESC>
+                            </VALUE>
+                        </VALUES>   
+                    </PARAM>                    
                     <PARAM name="strOptions" type="HASH">
-						<DESC>This HASH takes only three key-value pairs for which the first key is `conditions` and the value is the attribute name. For multiple attribute names, OR/AND/IN operator is used. The second key is `offset` and the value is an integer which indicates the number of records to skip before returning. The third key is `per_page` and the value is an integer which specifies number of records to be returned.</DESC> 
+                        <DESC>This HASH takes only three key-value pairs for which the first key is `conditions` and the value is the attribute name. For multiple attribute names, OR/AND/IN operator is used. The second key is `offset` and the value is an integer which indicates the number of records to skip before returning. The third key is `per_page` and the value is an integer which specifies number of records to be returned.</DESC> 
                     </PARAM>
-					<PARAM name="quests" type="ARRAY">
-						<DESC>This Array takes the values as String for the attribute names passed in the "strOptions" parameter.</DESC>
-					</PARAM>
-					<PARAM name="selectAttrs" type="ARRAY">
-						<DESC>This Array takes the attribute names as string.Useful if the model has many attributes and your query only needs a few of them.</DESC>
+                    <PARAM name="quests" type="ARRAY">
+                        <DESC>This Array takes the values as String for the attribute names passed in the "strOptions" parameter.</DESC>
                     </PARAM>
-					<PARAM name="orderAttrs" type="ARRAY">
-						<DESC>This Array is formed using attribute name followed by Order direction for that attribute. Order direction: 'ASC' ascending, 'DESC' descending. Default = 'ASC'.</DESC>
-					</PARAM>
-				</PARAMS>
-                <RETURN type="ARRAY"/>
-            </METHOD>
-
-            <METHOD name="findObjectsPropertyBagByCondHash">
-                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions. It is applicable only for Property bag Model.</DESC>
-                <PARAMS>
-                    <PARAM name="whatParam" type="STRING">
-						<DESC>It defines the type of find operation to be performed.</DESC>
-						<VALUES>
-							<VALUE value = "all">
-								<DESC>Finds all Objects matching the 'conditions' for a specific Model.</DESC>
-							</VALUE>	
-							<VALUE value = "count">
-								<DESC>Returns the number of Objects matching the 'conditions' in a specific Model.</DESC>
-							</VALUE>
-							<VALUE value = "first">
-								<DESC>Returns the first Object matching the 'conditions' in a specific Model.</DESC>
-							</VALUE>
-						</VALUES>
-					</PARAM>	
-                    <PARAM name="conditions" type="HASH">
-						<DESC>The attribute names and its respective values are passed as a key-value pair in this HASH.</DESC>
-					</PARAM>	
-                    <PARAM name="strOptions" type="HASH">
-						<DESC>This HASH is passed as an empty HASH.</DESC>
-					</PARAM>
                     <PARAM name="selectAttrs" type="ARRAY">
-						<DESC>This Array takes the attribute names as string. Note: You must include the column name which is there in condition string and others.</DESC>
+                        <DESC>This Array takes the attribute names as string.Useful if the model has many attributes and your query only needs a few of them.</DESC>
+                    </PARAM>
+                    <PARAM name="orderAttrs" type="ARRAY">
+                        <DESC>This Array is formed using attribute name followed by Order direction for that attribute. Order direction: 'ASC' ascending, 'DESC' descending. Default = 'ASC'.</DESC>
                     </PARAM>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="findObjectsPropertyBagByCondArray">
+            <METHOD name="findObjectsPropertyBagByCondHash" generateDoc= "false">
                 <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING">
-						<DESC>It defines the type of find operation to be performed.</DESC>
-						<VALUES>
-							<VALUE value = "all">
-								<DESC>Finds all Objects matching the 'conditions' for a specific Model.</DESC>
-							</VALUE>	
-							<VALUE value = "count">
-								<DESC>Returns the number of Objects matching the 'conditions' in a specific Model.</DESC>
-							</VALUE>
-							<VALUE value = "first">
-								<DESC>Returns the first Object matching the 'conditions' in a specific Model.</DESC>
-							</VALUE>
-						</VALUES>
-					</PARAM>	
-                    <PARAM name="conditions" type="STRING">
-						<DESC>The attribute names are passed as a string.</DESC>
-					</PARAM>
-                    <PARAM name="quests" type="ARRAY">
-						<DESC>This Array takes the values as String for the attribute names passed in the "conditions" parameter.</DESC>
-					</PARAM>
+                        <DESC>It defines the type of find operation to be performed.</DESC>
+                        <VALUES>
+                            <VALUE value = "all">
+                                <DESC>Finds all Objects matching the 'conditions' for a specific Model.</DESC>
+                            </VALUE>    
+                            <VALUE value = "count">
+                                <DESC>Returns the number of Objects matching the 'conditions' in a specific Model.</DESC>
+                            </VALUE>
+                            <VALUE value = "first">
+                                <DESC>Returns the first Object matching the 'conditions' in a specific Model.</DESC>
+                            </VALUE>
+                        </VALUES>
+                    </PARAM>    
+                    <PARAM name="conditions" type="HASH">
+                        <DESC>The attribute names and its respective values are passed as a key-value pair in this HASH.</DESC>
+                    </PARAM>    
                     <PARAM name="strOptions" type="HASH">
-						<DESC>This HASH is passed as an empty HASH.</DESC>
-					</PARAM>
+                        <DESC>This HASH is passed as an empty HASH.</DESC>
+                    </PARAM>
                     <PARAM name="selectAttrs" type="ARRAY">
-						<DESC>This Array takes the attribute names as string. Note: You must include the column name which is there in condition string and others.</DESC>
+                        <DESC>This Array takes the attribute names as string. Note: You must include the column name which is there in condition string and others.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="findObjectsPropertyBagByCondArray" generateDoc= "false">
+                <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions. It is applicable only for Property bag Model.</DESC>
+                <PARAMS>
+                    <PARAM name="whatParam" type="STRING">
+                        <DESC>It defines the type of find operation to be performed.</DESC>
+                        <VALUES>
+                            <VALUE value = "all">
+                                <DESC>Finds all Objects matching the 'conditions' for a specific Model.</DESC>
+                            </VALUE>    
+                            <VALUE value = "count">
+                                <DESC>Returns the number of Objects matching the 'conditions' in a specific Model.</DESC>
+                            </VALUE>
+                            <VALUE value = "first">
+                                <DESC>Returns the first Object matching the 'conditions' in a specific Model.</DESC>
+                            </VALUE>
+                        </VALUES>
+                    </PARAM>    
+                    <PARAM name="conditions" type="STRING">
+                        <DESC>The attribute names are passed as a string.</DESC>
+                    </PARAM>
+                    <PARAM name="quests" type="ARRAY">
+                        <DESC>This Array takes the values as String for the attribute names passed in the "conditions" parameter.</DESC>
+                    </PARAM>
+                    <PARAM name="strOptions" type="HASH">
+                        <DESC>This HASH is passed as an empty HASH.</DESC>
+                    </PARAM>
+                    <PARAM name="selectAttrs" type="ARRAY">
+                        <DESC>This Array takes the attribute names as string. Note: You must include the column name which is there in condition string and others.</DESC>
                     </PARAM>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
 
             <METHOD name="find_by_sql">
-                <DESC>Returns array of objects for the given model queried according to the specified SQL.</DESC>
+                <DESC>Returns array of objects for the given model queried according to the specified SQL. It is applicable only for Fixed Schema model.</DESC>
                 <PARAMS>
                     <PARAM name="sqlQuery" type="STRING"/>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
+            </METHOD>
+            
+            <METHOD name="has" generateAPI="false">
+                <DESC>Returns true if the model has the propertyName given.</DESC>
+                <APPLIES jsOnly="true"/>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING">
+                        <DESC>The name of the property you are checking for its existence.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+            
+            <METHOD name="vars" generateAPI="false">
+                <DESC>Returns an object containing all propertyName and values for the model. You can use myModel.vars().name instead of myModel.get('name').</DESC>
+                <APPLIES jsOnly="true"/>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="get_source_id" deprecated="true" generateAPI="false">
+                <DESC>Returns the source id number for this Rhodes model object.
+                    Please use the model property source_id.</DESC>
+                <APPLIES rubyOnly="true"/>
+                <RETURN type="HASH"/>
+            </METHOD>
+            
+            <METHOD name="get_source_name" deprecated="true" generateAPI="false">
+                <DESC>Returns the source name for this Rhodes model object.
+                    Please use the model property model_name.</DESC>
+                <APPLIES rubyOnly="true"/>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="get" generateAPI="false">
+                <DESC>Get the value of a property of the current model.</DESC>                
+                <APPLIES jsOnly="true"/>
+                <PARAMS>
+                    <PARAM name="propertyName" type="STRING">
+                        <DESC>The name of the property you are trying to retrieve.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING">
+                    <DESC>Value of the specified property from the database.</DESC>
+                </RETURN>
             </METHOD>
 
             <METHOD name="validateFreezedAttribute" generateDoc = "false">
@@ -518,13 +705,9 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="clear" access="STATIC">
-                <DESC>Very, very dangerous method - only to be used in specs!!!</DESC>
-            </METHOD>
 
-            <METHOD name="onSyncDeleteError">
+            <METHOD name="onSyncDeleteError" >
                 <DESC>Handles sync delete errors for the object.</DESC>
-                <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="attrHash" type="HASH"/>
@@ -532,9 +715,8 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="onSyncUpdateError">
+            <METHOD name="onSyncUpdateError" >
                 <DESC>Handles sync update errors for the object.</DESC>
-                <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
                     <PARAM name="attrHash" type="HASH"/>
@@ -543,13 +725,17 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="onSyncCreateError">
+            <METHOD name="onSyncCreateError" >
                 <DESC>Handles sync create errors.</DESC>
-                <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="objects" type="ARRAY"/>
                     <PARAM name="action" type="STRING"/>
                 </PARAMS>
+            </METHOD>
+
+            <METHOD name="push_changes" generateAPI= "false" deprecated="true">
+                <DESC>Pushes all changes for the source.</DESC>
+                <APPLIES rubyOnly="true"/>
             </METHOD>
 
             <METHOD name="pushChanges">
@@ -563,127 +749,50 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
         </METHODS>
 
         <USER_OVERVIEW>
-			<!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-			<![CDATA[]]>
+            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+            <![CDATA[]]>
         </USER_OVERVIEW>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
         <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
-		 
-		 <EXAMPLES>
-            <EXAMPLE title="deleteObjects">
+         
+         <EXAMPLES>
+            <EXAMPLE title="find_by_sql">
                 <SECTIONS>
                     <SECTION>
-                        <DESC>Use method deleteObjects for deleting multiple Objects matching the conditions using OR operator in a specific Model.</DESC>
-                        <CODE>
-                            <JAVASCRIPT>
-                <![CDATA[
-var empobjData = empObj.deleteObjects({"conditions": "Name = ? OR Department = ?"},['Mathew','Sales']); ]]>
-                            </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
-empObj.deleteObjects({:conditions=> "Name = ? OR Department = ?"},['Mathew','Sales']) ]]>			
-							</RUBY>
-                        </CODE>
-                    </SECTION>
-                    <SECTION>
-                        <DESC>Use method deleteObjects for deleting multiple Objects matching the conditions using IN operator in a specific Model.</DESC>
-                        <CODE>
-                            <JAVASCRIPT>
-                <![CDATA[
-var emobj = empObj.deleteObjects({"conditions": "Name IN (?)"},['Mathew','Morris','Chris']);  ]]>
-                            </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
-empObj.deleteObjects({:conditions=> "Name IN (?)"},['Mathew','Morris','Chris'])  ]]>			
-							</RUBY>
-                        </CODE>
-                    </SECTION>
-                </SECTIONS>
-            </EXAMPLE>
-			<EXAMPLE title="findObjects">
-                <SECTIONS>
-                    <SECTION>
-                        <DESC>Use method findObjects for finding the Objects matching the conditions using OR/AND operator in a specific Model.</DESC>
-                        <CODE>
-                            <JAVASCRIPT>
-                <![CDATA[
-var empobjData = empObj.findObjects("all",{"conditions": "Name = ? OR Department = ?","offset":20,"per_page":15},['James','Production'],['Name','Salary','Department'],['Name','ASC','Salary','DESC']); ]]>
-                            </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
-res = empObj.findObjects("all",{:conditions => "Name = ? OR Department = ?",:offset => 20,:per_page => 15},['James','Production'],['Name','Salary','Department'],['Name','ASC','Salary','DESC']) ]]>
-							</RUBY>
-                        </CODE>
-                    </SECTION>
-                    <SECTION>
-                        <DESC>Use method findObjects for finding the number of Objects matching the conditions using OR/AND operator in a specific Model.</DESC>
-                        <CODE>
-                            <JAVASCRIPT>
-                <![CDATA[
-var empobjData = empObj.findObjects("count",{"conditions": "Name = ? OR Department = ?","offset":15,"per_page":10},['Fred','Supply'],['Name','Salary','Department'],['Name','ASC','Salary','DESC']);  ]]>
-                            </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
-res = empObj.findObjects("count",{:conditions => "Name = ? OR Department = ?",:offset => 15,:per_page => 10},['Fred','Supply'],['Name','Salary','Department'],['Name','ASC','Salary','DESC'])  ]]>
-							</RUBY>
-                        </CODE>
-                    </SECTION>
-                </SECTIONS>
-            </EXAMPLE>
-			<EXAMPLE title="find_by_sql">
-                <SECTIONS>
-                    <SECTION>
-                        <DESC>Finding the objects of a specific model using SQL query statements. It is applicable only for Fixed Schema model.</DESC>
+                        <DESC>Finds the objects of a specific model using the SQL query statements.</DESC>
                         <CODE>
                             <JAVASCRIPT>
                 <![CDATA[
 var stdobjData = stdObj.find_by_sql("SELECT * FROM Student WHERE department = 'Mechanical'");  ]]>
                             </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
+                            <RUBY>
+                <![CDATA[
 result = stdObj.find_by_sql("SELECT * FROM Student WHERE department = 'Electronics'")  ]]>
-							</RUBY>
+                            </RUBY>
                         </CODE>
                     </SECTION>
                 </SECTIONS>
             </EXAMPLE>
-			<EXAMPLE title="createObject">
+            <EXAMPLE title="create">
                 <SECTIONS>
                     <SECTION>
                         <DESC>To create a model's object including initialization.</DESC>
                         <CODE>
                             <JAVASCRIPT>
                 <![CDATA[
-var objData = CustObj.createObject({"name":"Craig", "age":"20"}); ]]>
+var accounts = Account.create({"name":"Craig", "age":"20"}); ]]>
                             </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
-objData = CustObj.createObject({:name=>"Craig", :age=>"20"}) ]]>
-							</RUBY>
-                        </CODE>
-                    </SECTION>
-                </SECTIONS>
-            </EXAMPLE>
-			<EXAMPLE title="deleteObjectsPropertyBagByCondHash">
-                <SECTIONS>
-                    <SECTION>
-                        <DESC>To delete multiple objects by constructing an HASH of attribute and it's value.</DESC>
-                        <CODE>
-                            <JAVASCRIPT>
+                            <RUBY>
                 <![CDATA[
-var custobjData = CustObj.deleteObjectsPropertyBagByCondHash({"name":"John", "age":"20"},{}); ]]>
-                            </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
-CustObj.deleteObjectsPropertyBagByCondHash({({:name=>"John", :age=>"20"},{}) ]]>
-							</RUBY>
+accounts = Account.create({"name"=>"Craig","age"=>"20"}) ]]>
+                            </RUBY>
                         </CODE>
                     </SECTION>
                 </SECTIONS>
             </EXAMPLE>
-			<EXAMPLE title="setSchemaIndex">
+            <EXAMPLE title="setSchemaIndex">
                 <SECTIONS>
                     <SECTION>
                         <DESC>To set an index name to a set of attributes and indicating whether it is unique or not.</DESC>
@@ -692,70 +801,15 @@ CustObj.deleteObjectsPropertyBagByCondHash({({:name=>"John", :age=>"20"},{}) ]]>
                 <![CDATA[
 model.setSchemaIndex("p1", ["name","price"], false); ]]>
                             </JAVASCRIPT>
-							<RUBY>
-				 <![CDATA[
-model.setSchemaIndex("p1", ["name","price"], false) ]]>			
-							</RUBY>
+                            <RUBY>
+                 <![CDATA[
+model.setSchemaIndex("p1", ["name","price"], false) ]]>         
+                            </RUBY>
                         </CODE>
                     </SECTION>
                 </SECTIONS>
-            </EXAMPLE>	
-			<EXAMPLE title="findObjectsPropertyBagByCondHash">
-                <SECTIONS>
-                    <SECTION>
-                        <DESC>Use method findObjectsPropertyBagByCondHash for finding the Objects matching the conditions given in the HASH for a specific Model.</DESC>
-                        <CODE>
-                            <JAVASCRIPT>
-                <![CDATA[
-var empobjData = empObj.findObjectsPropertyBagByCondHash("all",{"name":"John", "age":"20"},{},['name','age','salary']); ]]>
-                            </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
-empobjData = empObj.findObjectsPropertyBagByCondHash("all",{:name=>"John", :age=>"20"},{},['name','age','salary']) ]]>
-							</RUBY>
-                        </CODE>
-                    </SECTION>
-                </SECTIONS>
-            </EXAMPLE>
-			<EXAMPLE title="findObjectsPropertyBagByCondArray">
-                <SECTIONS>
-                    <SECTION>
-                        <DESC>Use method findObjectsPropertyBagByCondArray for finding the Objects matching the conditions given in the array for a specific Model.</DESC>
-                        <CODE>
-                            <JAVASCRIPT>
-                <![CDATA[
-var empobjData = employee.findObjectsPropertyBagByCondArray("all","name = ? OR age = ?",['Ken','34'],{},['name','age']);
- ]]>
-                            </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
-empobjData = employee.findObjectsPropertyBagByCondArray("all","name = ? OR age = ?",['Ken','34'],{},['name','age'])
- ]]>
-							</RUBY>
-                        </CODE>
-                    </SECTION>
-                </SECTIONS>
-            </EXAMPLE>
-			<EXAMPLE title="deleteObjectsPropertyBagByCondArray">
-                <SECTIONS>
-                    <SECTION>
-                        <DESC>Use method deleteObjectsPropertyBagByCondArray for deleting the Objects matching the conditions given in the array for a specific Model.</DESC>
-                        <CODE>
-                            <JAVASCRIPT>
-                <![CDATA[
-var empobjData = employee.deleteObjectsPropertyBagByCondArray("name = ? OR age = ?",['George','26'],{},['name','age']});
- ]]>
-                            </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
-empobjData = employee.deleteObjectsPropertyBagByCondArray("name = ? OR age = ?",['George','26'],{},['name','age']})
- ]]>
-							</RUBY>
-                        </CODE>
-                    </SECTION>
-                </SECTIONS>
-            </EXAMPLE>
-			<EXAMPLE title="setBelongsTo">
+            </EXAMPLE>  
+            <EXAMPLE title="setBelongsTo">
                 <SECTIONS>
                     <SECTION>
                         <DESC>Use method setBelongsTo for establishing a relationship with the other model. It also prioritizes the synchronization of models based on the relationship established in the setBelongsTo method.</DESC>
@@ -764,37 +818,161 @@ empobjData = employee.deleteObjectsPropertyBagByCondArray("name = ? OR age = ?",
                 <![CDATA[
 var prdobjData = model.setBelongsTo("itemName", "Product");]]>
                             </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
+                            <RUBY>
+                <![CDATA[
 prdobjData = model.setBelongsTo("itemName", "Product") ]]>
-							</RUBY>
+                            </RUBY>
                         </CODE>
                     </SECTION>
                 </SECTIONS>
             </EXAMPLE>
-            <EXAMPLE title="updateObject">
+            <EXAMPLE title="paginate Method Examples">
                 <SECTIONS>
                     <SECTION>
-                        <DESC>Use method updateObject for updating the attributes of an object.</DESC>
+                        <DESC>To fetch the first 10 records.</DESC>
                         <CODE>
                             <JAVASCRIPT>
                 <![CDATA[
-var objData = CustObj.createObject({"name":"Chris", "age": 30, "height":170.5});
-CustObj.updateObject(objData.object,{"name":"Chris", "age": 30, "height":170.5}, {"name":"Samuel", "age":40, "height":180.5}); // "objData.object contains the object_Id" ]]> 
+var accounts = Account.paginate({page:0});  ]]>
                             </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
-customer.createObject({:name=>"Chris", :age=>30, :height=>170.5})
-customer.createObject({:name=>"Tom", :age=>37, :height=>158.5})
-data = customer.findObjectsPropertyBagByCondHash("all",{:name => "Chris"},{},[])
-new_name = "Galvin"
-customer.updateObject(data[0]['object'], data[0], {:name => "#{new_name}"}) #objData.object contains the object_Id
- ]]>
-							</RUBY>
+                            <RUBY>
+                <![CDATA[
+accounts = Account.paginate({:page=>0})  ]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>To fetch the records numbered 21-40.</DESC>
+                        <CODE>
+                            <JAVASCRIPT>
+                <![CDATA[
+var accounts = Account.paginate({page:1,per_page:20});  ]]>
+                            </JAVASCRIPT>
+                            <RUBY>
+                <![CDATA[
+accounts = Account.paginate({:page=>1,:per_page=>20})  ]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>To fetch the records based on some conditions and ordering them as well.</DESC>
+                        <CODE>
+                            <JAVASCRIPT>
+                <![CDATA[
+var accounts = Account.paginate({ page:5,
+                    conditions:{'name':'Fred','salary':4000},
+                    order: 'salary'
+                    });  ]]>
+                            </JAVASCRIPT>
+                            <RUBY>
+                <![CDATA[
+accounts = Account.paginate({ :page=>5,
+                    :conditions=>{'name'=>'Fred','salary'=>4000},
+                    :order=> 'salary'
+                    })  ]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS> 
+                </EXAMPLE>
+                <EXAMPLE title="save">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>Saves the current model object to the database.</DESC>
+                                <CODE>
+                                    <JAVASCRIPT>
+                <![CDATA[           
+var account = Account.make({"name": "Motorola", "industry": "electronics"});
+                account.save(); ]]>
+                                    </JAVASCRIPT>
+                                    <RUBY>
+                <![CDATA[           
+account = Account.make({"name"=>"Motorola", "industry"=>"electronics"});
+                account.save() ]]>
+                                    </RUBY>
+                                </CODE>
+                        </SECTION>
+                    </SECTIONS>
+                </EXAMPLE>
+                
+                <EXAMPLE title="update_attributes">
+                    <SECTIONS>
+                        <SECTION>
+                            <DESC>Updates the current model object's attributes and saves it to the database.</DESC>
+                                <CODE>
+                                    <JAVASCRIPT>
+                <![CDATA[           
+var account = Account.create({'name': 'Motorola', 'industry': 'electronics'});
+            account.update_attributes({'name':'ABB','industry':'robotics'});
+            account.get("industry"); //"robotics"   ]]>
+                                    </JAVASCRIPT>
+                                    <RUBY>
+                <![CDATA[           
+account = Account.create({'name'=> 'Motorola', 'industry'=> 'electronics'})
+            account.update_attributes({'name'=>'ABB','industry'=>'robotics'})
+            account.get("industry") //"robotics"    ]]>
+                                    </RUBY>
+                                </CODE>
+                        </SECTION>
+                    </SECTIONS>
+                </EXAMPLE>
+                <EXAMPLE title="destroy">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>Destroy a model object from database.</DESC>
+                        <CODE>
+                            <JAVASCRIPT>
+                <![CDATA[
+var account = Account.find('first');
+            account.destroy(); ]]>
+                            </JAVASCRIPT>
+                             <RUBY>
+                <![CDATA[
+account = Account.find(:first)
+            account.destroy() ]]>
+                            </RUBY>
                         </CODE>
                     </SECTION>
                 </SECTIONS>
-            </EXAMPLE>
-		</EXAMPLES>	
+                </EXAMPLE>
+                <EXAMPLE title="has">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>Checks whether the propertyName exists in the model.</DESC>
+                        <CODE>
+                            <JAVASCRIPT>
+                <![CDATA[
+var account = Account.find('first');
+            account.has('salary'); ]]>
+                            </JAVASCRIPT>
+                            <RUBY>
+                <![CDATA[
+account = Account.find(:first)
+            account.has('salary') ]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+                </EXAMPLE>
+                <EXAMPLE title="vars">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>Returns all the propertyNames and it's values for the model.</DESC>
+                        <CODE>
+                            <JAVASCRIPT>
+                <![CDATA[
+var accounts = Account.create({"name":"Craig", "age":20});
+            account.vars(); ]]>
+                            </JAVASCRIPT>
+                            <RUBY>
+                <![CDATA[
+accounts = Account.create({"name"=>"Craig", "age"=>20})
+            account.vars() ]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+                </EXAMPLE>
+        </EXAMPLES> 
     </MODULE>
 </API>

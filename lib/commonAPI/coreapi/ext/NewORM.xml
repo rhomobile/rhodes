@@ -2,9 +2,8 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="NewORM" parent="Rho" productException="eb">
-        <HELP_OVERVIEW>NewORM CoreAPI module</HELP_OVERVIEW>
-        <MORE_HELP>New implementation of the RHOM.
-NOTE: BETA VERSION - This API has not been officially released. It should not be used in a production environment.
+        <HELP_OVERVIEW>NewORM CoreAPI module.</HELP_OVERVIEW>
+        <MORE_HELP>
 ## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
     :::ruby
@@ -26,71 +25,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
 
         <METHODS>
 
-            <METHOD name="useNewOrm" access="STATIC">
-                <DESC>Returns TRUE if NewORM is enabled in rhoconfig.txt.</DESC>
-                <RETURN type="BOOLEAN"/>
-            </METHOD>
-
-            <METHOD name="getClientId" access="STATIC">
-                <DESC>Returns current Client Id.</DESC>
-                <RETURN type="STRING"/>
-            </METHOD>
-
-            <METHOD name="haveLocalChanges" access="STATIC">
-                <DESC>Returns TRUE whenever there are any local (non-synced) changes.</DESC>
-                <RETURN type="BOOLEAN"/>
-            </METHOD>
-
-            <METHOD name="databaseLocalReset" access="STATIC">
-                <DESC>Resets local database.</DESC>
-            </METHOD>
-
-            <METHOD name="databaseClientReset" access="STATIC">
-                <PARAMS>
-                    <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
-                        <DESC>Whether or not to reset Local Models.</DESC>
-                    </PARAM>
-                </PARAMS>
-                <DESC>Resets client info and sync models (optionally, local models as well)</DESC>
-            </METHOD>
-
-            <METHOD name="databaseFullResetEx" access="STATIC">
-                <PARAMS>
-                    <PARAM name="models" type="ARRAY">
-                        <DESC>List of models to reset.</DESC>
-                    </PARAM>
-                    <PARAM name="resetClientInfo" type="BOOLEAN">
-                        <DESC>Whether or not to reset Client Info.</DESC>
-                    </PARAM>
-                    <PARAM name="resetLocalModels" type="BOOLEAN">
-                        <DESC>Whether or not to reset Local Models.</DESC>
-                    </PARAM>
-                </PARAMS>
-                <DESC>Resets selected models, client info and local models.</DESC>
-            </METHOD>
-
-            <METHOD name="databaseFullReset" access="STATIC">
-                <PARAMS>
-                    <PARAM name="resetClientInfo" type="BOOLEAN" default="false">
-                        <CAN_BE_NIL/>
-                        <DESC>Whether or not to reset Client Info.</DESC>
-                    </PARAM>
-                    <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
-                        <CAN_BE_NIL/>
-                        <DESC>Whether or not to reset Local Models.</DESC>
-                    </PARAM>
-                </PARAMS>
-                <DESC>Resets selected models, client info and local models.</DESC>
-            </METHOD>
-
-            <METHOD name="databaseFullResetAndLogout" access="STATIC">
-                <DESC>Resets sync models, client info and local models and does the user logout.</DESC>
-            </METHOD>
-
-            <METHOD name="databaseFullclientResetAndLogout" access="STATIC">
-                <DESC>Resets sync models, client info and local models and does the user logout.</DESC>
-            </METHOD>
-			<METHOD name="addModel" generateAPI="false" access="STATIC">
+            <METHOD name="addModel" generateAPI="false" access="STATIC">
                 <DESC>Creates an ORM model reference.</DESC>
                 <APPLIES jsOnly="true"/>
                 <PARAMS>
@@ -108,10 +43,10 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                     <VALUE value ="fixedSchema">
                                         <DESC>Model will be of type fixedSchema.</DESC>
                                     </VALUE>
-									<VALUE value ="full_update">
+                                    <VALUE value ="full_update">
                                         <DESC>Instruct ORM to send all attributes to RhoConnect when an object is updated. By Default it is disabled.</DESC>
                                     </VALUE>
-									<VALUE value ="pass_through">
+                                    <VALUE value ="pass_through">
                                         <DESC>RhoConnect provides a simple way to keep data out of redis. If you have sensitive data that you do not want saved in redis, add the pass_through option in settings/settings.yml for each source.</DESC>
                                     </VALUE>
                                 </VALUES>
@@ -127,19 +62,19 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                     <PARAM name="type" type="STRING">
                                         <DESC>The type of property. Possible values are: String, Float, integer, Varchar, Blob. String is default.</DESC>
                                     </PARAM>
-									<PARAM name="option" type="STRING" default="Null">
-										<CAN_BE_NIL/>
-										<VALUES>
-											<VALUE value ="overwrite">
-												<DESC>Overwrite client copy of blob with the new copy from server. This is useful when RhoConnect modifies images sent from Rhodes, for example zooming or cropping.</DESC>
-											</VALUE>
-										</VALUES>	
+                                    <PARAM name="option" type="STRING" default="Null">
+                                        <CAN_BE_NIL/>
+                                        <VALUES>
+                                            <VALUE value ="overwrite">
+                                                <DESC>Overwrite client copy of blob with the new copy from server. This is useful when RhoConnect modifies images sent from Rhodes, for example zooming or cropping.</DESC>
+                                            </VALUE>
+                                        </VALUES>   
                                     </PARAM>
                                 </PARAMS>
                                 <CAN_BE_NIL>
                                 </CAN_BE_NIL>
                             </PARAM>
-							<PARAM name='set("property","value")' type='STRING,VALUE'>
+                            <PARAM name='set("property","value")' type='STRING,VALUE'>
                                 <DESC>Sets the Behavior of this model. Possible 'property' options and the corresponding 'value's are passed as the parameter.</DESC>
                                 <CAN_BE_NIL>
                                 </CAN_BE_NIL>
@@ -153,7 +88,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                             <VALUE value ="user">
                                                 <DESC>This partition is used automatically if the model is a sync model.</DESC>
                                             </VALUE>
-											<VALUE value ="app">
+                                            <VALUE value ="app">
                                                 <DESC>This partition is used to store the application related information.</DESC>
                                             </VALUE>
                                         </VALUES>
@@ -167,7 +102,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                             <VALUE value ="incremental">
                                                 <DESC>Used when the data model is a sync model. Just syncs changes.</DESC>
                                             </VALUE>
-											<VALUE value ="bulk_only">
+                                            <VALUE value ="bulk_only">
                                                 <DESC>If the model is used only for bulk sync.</DESC>
                                             </VALUE>
                                         </VALUES>
@@ -175,10 +110,10 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                                     <PARAM name="sync_priority" type="INTEGER">
                                         <DESC>This number determines the order in which the models are processed and synchronised. Priority starts from lower value 1. Lower the number, higher is the priority. Default value is 1000. </DESC>
                                     </PARAM>
-									<PARAM name="freezed" type="BOOLEAN">
+                                    <PARAM name="freezed" type="BOOLEAN">
                                         <DESC>To make the model Freezed.</DESC>
                                     </PARAM>
-									<PARAM name="schema_version" type="FLOAT">
+                                    <PARAM name="schema_version" type="FLOAT">
                                         <DESC>This is used for data migration of the application.</DESC>
                                     </PARAM>
                                 </PARAMS>
@@ -188,30 +123,108 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 </PARAMS>
                 <RETURN type="Model"/>
             </METHOD>
-            <METHOD name="generateId" access="STATIC">
+
+            <METHOD name="databaseClientReset" access="STATIC" generateDoc = "true">
+                <PARAMS>
+                    <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
+                        <DESC>Whether or not to reset Local Models.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC>Resets client info and sync models (optionally, local models as well).</DESC>
+            </METHOD>
+
+             <METHOD name="databaseFullclientResetAndLogout" access="STATIC">
+                <DESC>Resets sync models, client info and local models and does the user logout.</DESC>
+            </METHOD>
+
+             <METHOD name="databaseFullReset" access="STATIC">
+                <PARAMS>
+                    <PARAM name="resetClientInfo" type="BOOLEAN" default="false">
+                        <CAN_BE_NIL/>
+                        <DESC>Whether or not to reset Client Info.</DESC>
+                    </PARAM>
+                    <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
+                        <CAN_BE_NIL/>
+                        <DESC>Whether or not to reset Local Models.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC>Resets selected models, client info and local models.</DESC>
+            </METHOD>
+
+            <METHOD name="databaseFullResetAndLogout" access="STATIC">
+                <DESC>Resets sync models, client info and local models and does the user logout.</DESC>
+            </METHOD>
+
+            <METHOD name="databaseFullResetEx" access="STATIC" generateDoc= "true">
+                <PARAMS>
+                    <PARAM name="models" type="ARRAY">
+                        <DESC>List of models to reset.</DESC>
+                    </PARAM>
+                    <PARAM name="resetClientInfo" type="BOOLEAN">
+                        <DESC>Whether or not to reset Client Info.</DESC>
+                    </PARAM>
+                    <PARAM name="resetLocalModels" type="BOOLEAN">
+                        <DESC>Whether or not to reset Local Models.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <DESC>Resets selected models, client info and local models.</DESC>
+            </METHOD>
+
+            <METHOD name="databaseLocalReset" access="STATIC">
+                <DESC>Resets local database.</DESC>
+            </METHOD>
+
+            <METHOD name="generateId" access="STATIC" generateDoc = "false">
                 <DESC>Returns newly generated unique object Id.</DESC>
                 <RETURN type="INTEGER"/>    
             </METHOD>
-				
+
+            <METHOD name="getClientId" access="STATIC">
+                <DESC>Returns current Client Id.</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="getModel" access="STATIC" generateDoc = "true" generateAPI="false" deprecated="true">
+                <PARAMS>
+                    <PARAM name="modelName" type="STRING">
+                        <DESC>Name of the model you want returned.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING">
+                    <DESC>NewORMModel object.</DESC>
+                    <PARAM type="SELF_INSTANCE"/>
+                </RETURN>
+            </METHOD>
+
+             <METHOD name="haveLocalChanges" access="STATIC" generateDoc = "true">
+                <DESC>Returns TRUE whenever there are any local (non-synced) changes.</DESC>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="useNewOrm" access="STATIC" generateDoc = "true">
+                <DESC>Returns TRUE if NewORM is enabled in rhoconfig.txt.</DESC>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>  
+                
         </METHODS>
 
         <USER_OVERVIEW>
           <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
           <![CDATA[]]>
-		</USER_OVERVIEW>
+        </USER_OVERVIEW>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
         <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
-		 
-		 <EXAMPLES>
-		 <EXAMPLE title="addModel">
+         
+         <EXAMPLES>
+         <EXAMPLE title="addModel">
                 <SECTIONS>
                     <SECTION>
                         <DESC>This example describes creating model and adding model object.</DESC>
                         <CODE>
                             <JAVASCRIPT>
-                <![CDATA[				
+                <![CDATA[               
 var Customer = function(model){
   model.enable("sync");
   model.setModelProperty("name","string","");
@@ -232,25 +245,6 @@ var customer = custobj.createObject({
                     </SECTION>
                 </SECTIONS>
          </EXAMPLE>
-		 <EXAMPLE title="databaseFullResetEx">
-                <SECTIONS>
-                    <SECTION>
-                        <DESC>This example clears the local model's passed through the array only. It doesn't reset the client_info table.</DESC>
-                        <CODE>
-                            <JAVASCRIPT>
-                <![CDATA[
-var ary = ['Product','Product2'];				
-Rho.ORM.databaseFullResetEx(ary, false, true);]]>
-                            </JAVASCRIPT>
-							<RUBY>
-				<![CDATA[
-ary = ['Product','Product2']				
-Rho.ORM.databaseFullResetEx(ary, false, true) ]]>			
-							</RUBY>	
-                        </CODE>
-                    </SECTION>
-                </SECTIONS>
-         </EXAMPLE>
-		</EXAMPLES> 
+        </EXAMPLES> 
     </MODULE>
 </API>
