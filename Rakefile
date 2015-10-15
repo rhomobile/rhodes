@@ -3526,7 +3526,8 @@ def init_extensions(dest, mode = "")
         puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
         write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
 
-        if $use_shared_runtime || $shared_rt_js_appliction
+        $ebfiles_shared_rt_js_appliction = ($js_application and ($current_platform == "wm" or $current_platform == "android") and $app_config["capabilities"].index('shared_runtime'))
+        if $use_shared_runtime || $ebfiles_shared_rt_js_appliction
           start_path = Dir.pwd
           chdir rhoapi_js_folder
 
