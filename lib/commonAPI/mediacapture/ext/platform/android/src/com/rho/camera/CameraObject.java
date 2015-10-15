@@ -176,7 +176,7 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
 		options.inPurgeable = true;
                 bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
                 Matrix m = new Matrix();
-                m.postRotate(CameraActivity.mRotation);
+                m.postRotate(OrientationListnerService.mRotation);
                 bitmap = Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
                     Logger.T(TAG, "outputFormat: " + outputFormat);   
