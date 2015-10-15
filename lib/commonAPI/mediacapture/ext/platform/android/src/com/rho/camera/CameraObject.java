@@ -180,7 +180,7 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                 bitmap = Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
                     Logger.T(TAG, "outputFormat: " + outputFormat);   
-                    filePath = getTemporaryPath(filePath)+ ".jpg";
+                //    filePath = getTemporaryPath(filePath)+ ".jpg";
                     if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) 
                     {                        
                         ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
@@ -245,7 +245,7 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                     mPreviewActivity.setResult(Activity.RESULT_OK, intent);                    
                 } else
                 if (outputFormat.equalsIgnoreCase("image")) {
-                    filePath = getTemporaryPath(filePath)+ ".jpg";
+                //    filePath = getTemporaryPath(filePath)+ ".jpg";
                     Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);                    
                     if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) 
                     {                        
