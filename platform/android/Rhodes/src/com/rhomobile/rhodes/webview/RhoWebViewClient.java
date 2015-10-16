@@ -125,7 +125,15 @@ public class RhoWebViewClient extends WebViewClient
         
         //RhoElements implementation of "history:back"
         if(url.equalsIgnoreCase("history:back")) {
+        	Logger.I(TAG, "history:back");
         	view.goBack();
+        	return true;
+        }
+        else if(url.equalsIgnoreCase("history:twiceback")) 
+        {
+            Logger.I(TAG, "history:twiceback");
+        	view.goBack();
+		view.goBack();
         	return true;
         }
         
