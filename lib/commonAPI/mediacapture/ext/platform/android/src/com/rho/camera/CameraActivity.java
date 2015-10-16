@@ -62,11 +62,15 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     private ICameraObject camera = null;
     private Button button = null;
     private String id = null;
+    public static boolean CURRENT_SCREEN_AUTO_ROTATE_MODE;
+    public static boolean CURRENT_FULL_SCREEN_MODE;
     
     @Override
     protected void onCreate(Bundle extras) {
         super.onCreate(extras);
         Logger.T(TAG, "onCreate");
+        CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
+        CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         RhodesActivity.safeGetInstance().setScreenAutoRotateMode(false);
         RhodesActivity.safeGetInstance().setFullScreenMode(true);
