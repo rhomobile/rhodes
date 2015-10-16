@@ -1139,6 +1139,10 @@ namespace "build" do
        else
           puts "Microsoft Visual C++ Runtime Binaries for #{$vs_version} Excluded in App Setup Bundle"
        end 
+       if($rhosimulator_build)
+           puts "Build for Rhosimulator...msvc"
+            deploymsvc = true;
+      end
       if $vs_version == 2008
         # Visual Studio 2008
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.CRT")
@@ -1180,6 +1184,10 @@ namespace "build" do
       FileUtils.rm_rf(target_platforms_path, {:secure => true})
 
       deployqt = Jake.getBuildBoolProp('deployqt', $app_config, true)
+      if($rhosimulator_build)
+            puts "Build for Rhosimulator...deployqt"
+            deployqt = true;
+      end
       if(deployqt)
           puts "QT  Binaries for #{$vs_version} included in App Setup Bundle"
       else
