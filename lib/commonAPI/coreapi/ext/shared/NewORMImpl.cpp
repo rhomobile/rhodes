@@ -193,18 +193,17 @@ public:
         }
     }
 
-    void databaseFullResetEx(const Vector<rho::String>& modelNames,
-                             const bool resetClientInfo,
+    void databaseFullResetEx(const Vector<rho::String>& modelNames,                             
                              const bool resetLocalModels,
                              rho::apiGenerator::CMethodResult& oResult)
     {
         LOG(INFO) + "calling databaseFullResetEx";
         if(modelNames.empty()) {
-            databaseFullReset(resetClientInfo, resetLocalModels, oResult);
+            databaseFullReset(false, resetLocalModels, oResult);
             return;
         }
         
-        if(modelNames.size() && resetClientInfo) {
+        if(modelNames.size() ) {
             oResult.setError("reset_client_info should not be true if reset selected models");
             return;
         }
