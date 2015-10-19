@@ -250,14 +250,14 @@ int main(int argc, char *argv[])
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRootPath);
 
     RHODESAPP().setJSApplication(m_isJSApplication);
-    string strAppTitle;
+
     // Create the main application window
 #ifdef RHODES_EMULATOR
-    strAppTitle= RHOSIMCONF().getString("app_name")+ "- " + " [RhoSimulator] (" + RHOSIMCONF().getString( "platform") + ")" ;
+    m_appWindow->Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
 #else
-    strAppTitle= RHODESAPP().getAppTitle() + "- " + " [Win32] " ;
+    m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
 #endif
-    m_appWindow->Initialize(convertToStringW(strAppTitle).c_str());
+
     RHODESAPP().startApp();
 
     // Navigate to the "loading..." page
