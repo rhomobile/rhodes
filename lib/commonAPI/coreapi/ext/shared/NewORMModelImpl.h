@@ -171,6 +171,9 @@ namespace rho {
         void buildFindOrder(const Vector<rho::String>& orderAttrs,
                             const Vector<rho::String>& orderOps,
                             rho::apiGenerator::CMethodResult& oResult);
+        void buildFindOrderString(const Vector<rho::String>& orderAttrs,
+                    const Vector<rho::String>& orderOps,
+                    rho::apiGenerator::CMethodResult& oResult);
         void buildSimpleWhereCond(const rho::String& what,
                                   const rho::Vector<rho::String>& conditions,
                                   rho::apiGenerator::CMethodResult& oResult);
