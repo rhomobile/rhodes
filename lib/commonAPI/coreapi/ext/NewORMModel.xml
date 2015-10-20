@@ -377,7 +377,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
             
             <METHOD name="paginate" generateAPI="false">
-                <DESC> The paginate method takes care of setting the proper page limit and offset when a large number of records are fetched. This method accepts parameters as key-value pairs. It accepts 5 keys- page, per_page, conditions, order, select.</DESC>
+                <DESC> The paginate method takes care of setting the proper page limit and offset when a large number of records are fetched. This method accepts parameters as key-value pairs.
+                </DESC>
                 <PARAMS>
                     <PARAM name="params" type="HASH">
                         <DESC>A hash-map with paginate arguments.</DESC>
@@ -390,8 +391,16 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 <DESC>This value specifies number of records to be returned. The default value of per_page is 10.</DESC>
                             <CAN_BE_NIL/>
                             </PARAM>
-                            <PARAM name="order" type="STRING">
+                            <PARAM name="conditions" type="ARRAY or HASH">
+                                <DESC>hash of attribute/values. Also supports sql fragment with binding(i.e. ["name=?", "company_name"]).</DESC>
+                            <CAN_BE_NIL/>
+                            </PARAM>                            
+                            <PARAM name="order" type="STRING or ARRAY">
                                 <DESC>The attribute names to order the list.</DESC>
+                            <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="orderdir" type="STRING or ARRAY">
+                                <DESC>Order direction: 'ASC' ascending, 'DESC' descending. Default = 'ASC'.</DESC>
                             <CAN_BE_NIL/>
                             </PARAM>
                             <PARAM name="select" type="STRING">
@@ -436,10 +445,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         <PARAMS>
                             <PARAM name="conditions" type="HASH">
                                 <DESC>The attribute names and its respective values are passed as a key-value pair in this HASH. This will delete only the objects matching the criteria passed in the HASH.</DESC>
-                            <CAN_BE_NIL/>
-                            </PARAM>
-                            <PARAM name="op" type="BOOLEAN OPERATOR">
-                                <DESC>It accepts operators such as "OR" or "IN". This allows you to have more than one set of conditions.</DESC>
                             <CAN_BE_NIL/>
                             </PARAM>
                         </PARAMS>
@@ -745,7 +750,75 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="pushChanges">
-                <DESC>Pushes all changes for the source.</DESC>
+                <DESC>Pushes all changes for the source. For details [push_changes](api/rhom-api#pushchanges)</DESC>
+            </METHOD>
+
+            <METHOD name="delete_all" generateAPI="false">
+                <DESC>Delete all Rhodes model objects for a source filtering by conditions. This method accepts parameters as key-value pairs. It accepts 2 keys- conditions and op.</DESC>
+                <PARAMS>
+                    <PARAM name="params" type="HASH">
+                        <DESC>A hash-map with deleteAll arguments.</DESC>
+                        <PARAMS>
+                            <PARAM name="conditions" type="HASH or ARRAY">
+                                <DESC>The attribute names and its respective values are passed as a key-value pair in this HASH. This will delete only the objects matching the criteria passed in the HASH.Also supports sql fragment with binding(i.e. ["name=?", "company_name"]</DESC>
+                            <CAN_BE_NIL/>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+            
+            <METHOD name="find" generateAPI="false">
+                <DESC>Find model objects.</DESC>
+                <PARAMS>
+                    <PARAM name="queryType" type="STRING">
+                        <VALUES>
+                            <VALUE value="all" type="STRING">
+                                <DESC>returns all objects; can use optional :conditions.</DESC>
+                            </VALUE>
+                            <VALUE value="first" type="STRING">
+                                <DESC>returns first object matching :conditions.</DESC>
+                            </VALUE>
+                            <VALUE value="count" type="STRING">
+                                <DESC>returns the number of objects matching these :conditions.</DESC>
+                            </VALUE>
+                        </VALUES>
+                    </PARAM>
+                    <PARAM name="queryOptions" type="HASH">
+                        <DESC>An object of selection options</DESC>
+                        <PARAMS>
+                            <PARAM name="conditions" type="HASH or ARRAY">
+                                <DESC>The attribute names and its respective values are passed as a key-value pair in this HASH that is required to find. Ex: conditions { name:'Symbol'}. Also supports sql fragment with binding(i.e. ["name=?", "company_name"]).</DESC>
+                                <PARAMS>
+                                    <PARAM name="propertyName" type=""></PARAM>
+                                    <PARAM name="propertyValue" type=""></PARAM>
+                                </PARAMS>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="order" type="STRING or ARRAY">
+                                <DESC>Attribute(s) to order the list.</DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="orderdir" type="STRING or ARRAY">
+                                <DESC>Order direction.</DESC>
+                                <VALUES>
+                                    <VALUE value="ASC" type="STRING">
+                                        <DESC>Ascending order. (Default)</DESC>
+                                    </VALUE>
+                                    <VALUE value="DESC" type="STRING">
+                                        <DESC>Descending Order</DESC>
+                                    </VALUE>
+                                </VALUES>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="select" type="ARRAY">
+                                <DESC>Array of string attributes to return with the object. Useful if your model has many attributes and your query only needs a few of them.</DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="ARRAY"/>
             </METHOD>
 
             <ALIASES>
