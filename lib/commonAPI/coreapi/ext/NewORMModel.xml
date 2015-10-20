@@ -5,15 +5,18 @@
         <HELP_OVERVIEW>NewORMModel CoreAPI module.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API
-This API is part of the `coreapi` extension that is included automatically.
+This API is part of the `coreapi` extension that is included automatically. 
     :::ruby
     extensions: ["coreapi"]
+To use common api ORM and ORMModel, make sure use_new_orm=1 mentioned in rhoconfig.txt.
+    :::ruby
+    use_new_orm=1
 
 ## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/rhom-api).
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
 
         <TEMPLATES>
@@ -84,33 +87,31 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             <METHOD name="getModel" access="STATIC" >
                 <DESC>getModel method returns instance of the ORMModel.</DESC>
                 <PARAMS>
-                    <PARAM name="modelName" type="STRING">
-                        <DESC>Name of the model you want returned.</DESC>
-                    </PARAM>
+                    <PARAM name="modelName" type="STRING"/>                
                 </PARAMS>
-                <RETURN type="STRING">
-                    <DESC>NewORMModel object.</DESC>
+                <RETURN type="OBJECT">
+                    <DESC>ORMModel object.</DESC>
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
             
-            <METHOD name="init" generateDoc= "false">
+            <METHOD name="init" generateDoc="false">
                 <DESC>Initializes new model's instance.</DESC>
                 <PARAMS>
                     <PARAM name="modelName" type="STRING"/>
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="initModel" generateDoc= "false">
+            <METHOD name="initModel" generateDoc="false">
                 <DESC>Initializes model's internal DB.</DESC>
             </METHOD>
 
-            <METHOD name="make" generateAPI= "false">
-                <DESC>Create a new Rhodes model object JavaScript reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method.</DESC>
+            <METHOD name="make" generateAPI="false">
+                <DESC>Create a new ORM model object JavaScript reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method.</DESC>
                 <APPLIES jsOnly="true"/>
             </METHOD>
 
-            <METHOD name="new" generateAPI= "false">
+            <METHOD name="new" generateAPI="false">
                 <DESC>Initializes new model's instance.</DESC>
                 <PARAMS>
                     <PARAM name="modelName" type="STRING"/>
@@ -118,7 +119,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             </METHOD>
 
             <METHOD name="setBelongsTo">
-                <DESC>Adds 'belongs_to' relationship for the model. As belongs_to method doesn't work in NewORM, Using this method the relationship can be established.</DESC>
+                <DESC>Using this method, you can set sync association between models. For details [Associations](guide/rhom_ruby#associations)</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="sourceName" type="STRING"/>
@@ -192,10 +193,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                     <PARAM name="propertyName" type="STRING">
                     <VALUES>
                         <VALUE value = "fixed_schema">
-                            <DESC>To set the type of model as Fixed_schema.</DESC>
-                        </VALUE>
-                        <VALUE value = "loaded">
-                            <DESC>To load the model.</DESC>
+                            <DESC>To set the type of model as FixedSchema.</DESC>
                         </VALUE>
                         <VALUE value = "sync">
                             <DESC>To make the model as user model.</DESC>
@@ -258,15 +256,15 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="destroy" destructor="true" generateDoc= "false">
+            <METHOD name="destroy" destructor="true" generateDoc="false">
                 <DESC>Destroys model's instance. This method is used to destroy only a single record.</DESC>
             </METHOD>
 
-            <METHOD name="destroy" generateAPI= "false">
-                <DESC>Destroy a Rhodes model object.</DESC>
+            <METHOD name="destroy" generateAPI="false">
+                <DESC>Destroy a Rhodes model object and removes the record from the database.</DESC>
             </METHOD>
 
-            <METHOD name="createObject" generateDoc = "false">
+            <METHOD name="createObject" generateDoc="false">
                 <DESC>Initializes model's object and stores it in the DB.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH">
@@ -276,17 +274,17 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="HASH"/>
             </METHOD>
             
-            <METHOD name="create" generateAPI= "false">
-                <DESC>Initializes model's object and stores it in the DB.</DESC>
+            <METHOD name="create" generateAPI="false">
+                <DESC>Create a new Rhodes model object and save it to the database. This is the fastest way to insert a single item into the database.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH">
-                        <DESC>The attribute names and its respective values are passed as a key-value pair through this HASH.</DESC>
+                        <DESC>List of attributes assigned to the new model object, such as {name : "ABC Inc.",address: "555 5th St."}.</DESC>
                     </PARAM>    
                 </PARAMS>
-                <RETURN type="HASH"/>
+                <RETURN type="OBJECT"/>
             </METHOD>
 
-            <METHOD name="createInstance" generateDoc= "false">
+            <METHOD name="createInstance" generateDoc="false">
                 <DESC>Creates model's instance and initializes model's object but doesn't store it in DB.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH">
@@ -307,7 +305,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="clear" access="STATIC" generateDoc= "false">
+            <METHOD name="clear" access="STATIC" generateDoc="false">
                 <DESC>This method clears all the models and the associated tables with the models. It is used only for testing purpose and not for the developing.</DESC>
             </METHOD>
 
@@ -349,7 +347,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="updateObject" generateDoc = "false">
+            <METHOD name="updateObject" generateDoc="false">
                 <DESC>Updates object's attributes in the DB.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
@@ -406,23 +404,23 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="find_all" deprecated="true" generateAPI= "false">
+            <METHOD name="find_all" deprecated="true" generateAPI="false">
                 <DESC>find('all') replaces the legacy ruby method find_all.</DESC>
                 <APPLIES rubyOnly="true"/>
                 <RETURN type="HASH"/>
             </METHOD>
             
-            <METHOD name="saveObject" generateDoc = "false">
+            <METHOD name="saveObject" generateDoc="false">
                 <DESC>Saves (creates if necessary or updates if already exists) object's attributes in the DB.</DESC>
                 <RETURN type="HASH"/>
             </METHOD>
             
             
-            <METHOD name="save" generateAPI= "false">
+            <METHOD name="save" generateAPI="false">
                 <DESC>Saves the object's attributes in the DB.</DESC>
             </METHOD>
 
-            <METHOD name="deleteObject" generateDoc = "false">
+            <METHOD name="deleteObject" generateDoc="false">
                 <DESC>Deletes object's attributes from the DB.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
@@ -449,7 +447,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="deleteObjects" generateDoc= "false">
+            <METHOD name="deleteObjects" generateDoc="false">
                 <DESC>Deletes all object's according to the specified conditions.It is applicable only for Fixed_schema Model.</DESC>
                 <PARAMS>
                     <PARAM name="strOptions" type="HASH">
@@ -461,7 +459,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="deleteObjectsPropertyBagByCondHash" generateDoc = "false">
+            <METHOD name="deleteObjectsPropertyBagByCondHash" generateDoc="false">
                 <DESC>Deletes all objects for the given Property Bag model according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
                     <PARAM name="conditions" type="HASH">
@@ -474,7 +472,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="deleteObjectsPropertyBagByCondArray" generateDoc = "false">
+            <METHOD name="deleteObjectsPropertyBagByCondArray" generateDoc="false">
                 <DESC>Deletes all objects for the given Property Bag model according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
                     <PARAM name="conditions" type="STRING">
@@ -500,7 +498,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="STRING"/>
             </METHOD>
 
-            <METHOD name="findObjects" generateDoc= "false">
+            <METHOD name="findObjects" generateDoc="false">
                 <DESC>Returns array of objects for the given model queried according to the specified conditions. It is applicable only for Fixed_schema Model.</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING">
@@ -533,7 +531,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="findObjectsPropertyBagByCondHash" generateDoc= "false">
+            <METHOD name="findObjectsPropertyBagByCondHash" generateDoc="false">
                 <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING">
@@ -563,7 +561,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="findObjectsPropertyBagByCondArray" generateDoc= "false">
+            <METHOD name="findObjectsPropertyBagByCondArray" generateDoc="false">
                 <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING">
@@ -597,9 +595,11 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             </METHOD>
 
             <METHOD name="find_by_sql">
-                <DESC>Returns array of objects for the given model queried according to the specified SQL. It is applicable only for Fixed Schema model.</DESC>
+                <DESC>Returns Rhodes model object(s) based on sql_query. It is applicable only for FixedSchema model.</DESC>
                 <PARAMS>
-                    <PARAM name="sqlQuery" type="STRING"/>
+                    <PARAM name="sqlQuery" type="STRING">
+                    <DESC>An sql query, such as "SELECT * FROM Account".</DESC>
+                </PARAM>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
@@ -636,7 +636,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             </METHOD>
 
             <METHOD name="get" generateAPI="false">
-                <DESC>Get the value of a property of the current model.</DESC>                
+                <DESC>Get the value of a property of the current model.Ex: myModel.get('name'); See also the vars() method.</DESC>                
                 <APPLIES jsOnly="true"/>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING">
@@ -648,7 +648,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 </RETURN>
             </METHOD>
 
-            <METHOD name="validateFreezedAttribute" generateDoc = "false">
+            <METHOD name="validateFreezedAttribute" generateDoc="false">
                 <DESC>Validates object's frozen attribute.</DESC>
                 <PARAMS>
                     <PARAM name="attrName" type="STRING"/>
@@ -656,7 +656,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="validateFreezedAttributes" generateDoc = "false">
+            <METHOD name="validateFreezedAttributes" generateDoc="false">
                 <DESC>Validates all object's frozen attributes.</DESC>
                 <PARAMS>
                     <PARAM name="attrHash" type="HASH"/>
@@ -664,7 +664,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="buildComplexWhereCond" generateDoc = "false">
+            <METHOD name="buildComplexWhereCond" generateDoc="false">
                 <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="attrKey" type="STRING"/>
@@ -675,7 +675,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="buildFindLimits" generateDoc = "false">
+            <METHOD name="buildFindLimits" generateDoc="false">
                 <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="whatArg" type="STRING"/>
@@ -684,7 +684,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="buildFindOrder" generateDoc = "false">
+            <METHOD name="buildFindOrder" generateDoc="false">
                 <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="order_attrs" type="ARRAY"/>
@@ -693,7 +693,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="buildFindOrderString" generateDoc = "false">
+            <METHOD name="buildFindOrderString" generateDoc="false">
                 <DESC>Aux function. Internally used to make order string.</DESC>
                 <PARAMS>
                     <PARAM name="order_attrs" type="ARRAY"/>
@@ -702,7 +702,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="buildSimpleWhereCond" generateDoc = "false">
+            <METHOD name="buildSimpleWhereCond" generateDoc="false">
                 <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="what" type="STRING"/>
@@ -739,7 +739,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="push_changes" generateAPI= "false" deprecated="true">
+            <METHOD name="push_changes" generateAPI="false" deprecated="true">
                 <DESC>Pushes all changes for the source.</DESC>
                 <APPLIES rubyOnly="true"/>
             </METHOD>
@@ -818,7 +818,7 @@ model.setSchemaIndex("p1", ["name","price"], false) ]]>
             <EXAMPLE title="setBelongsTo">
                 <SECTIONS>
                     <SECTION>
-                        <DESC>Use method setBelongsTo for establishing a relationship with the other model. It also prioritizes the synchronization of models based on the relationship established in the setBelongsTo method.</DESC>
+                        <DESC>Using this method, you can set sync association between models.</DESC>
                         <CODE>
                             <JAVASCRIPT>
                 <![CDATA[

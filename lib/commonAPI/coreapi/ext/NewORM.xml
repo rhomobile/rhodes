@@ -124,7 +124,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="Model"/>
             </METHOD>
 
-            <METHOD name="databaseClientReset" access="STATIC" generateDoc = "true">
+            <METHOD name="databaseClientReset" access="STATIC">
                 <PARAMS>
                     <PARAM name="resetLocalModels" type="BOOLEAN" default="true">
                         <DESC>Whether or not to reset Local Models.</DESC>
@@ -155,7 +155,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <DESC>Resets sync models, client info and local models and does the user logout.</DESC>
             </METHOD>
 
-            <METHOD name="databaseFullResetEx" access="STATIC" generateDoc= "true">
+            <METHOD name="databaseFullResetEx" access="STATIC">
                 <PARAMS>
                     <PARAM name="models" type="ARRAY">
                         <DESC>List of models to reset.</DESC>
@@ -174,7 +174,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <DESC>Resets local database.</DESC>
             </METHOD>
 
-            <METHOD name="generateId" access="STATIC" generateDoc = "false">
+            <METHOD name="generateId" access="STATIC" generateDoc="false">
                 <DESC>Returns newly generated unique object Id.</DESC>
                 <RETURN type="INTEGER"/>    
             </METHOD>
@@ -184,7 +184,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <RETURN type="STRING"/>
             </METHOD>
 
-            <METHOD name="getModel" access="STATIC" generateDoc = "true" generateAPI="false" deprecated="true">
+            <METHOD name="getModel" access="STATIC" generateAPI="false" deprecated="true">
                 <PARAMS>
                     <PARAM name="modelName" type="STRING">
                         <DESC>Name of the model you want returned.</DESC>
@@ -196,12 +196,12 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 </RETURN>
             </METHOD>
 
-             <METHOD name="haveLocalChanges" access="STATIC" generateDoc = "true">
+             <METHOD name="haveLocalChanges" access="STATIC">
                 <DESC>Returns TRUE whenever there are any local (non-synced) changes.</DESC>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="useNewOrm" access="STATIC" generateDoc = "true">
+            <METHOD name="useNewOrm" access="STATIC">
                 <DESC>Returns TRUE if NewORM is enabled in rhoconfig.txt.</DESC>
                 <RETURN type="BOOLEAN"/>
             </METHOD>  
