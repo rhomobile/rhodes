@@ -343,9 +343,6 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                     <PARAM name="strOptions" type="HASH">
 						<DESC>This HASH is passed as an empty HASH.</DESC>
 					</PARAM>
-					<PARAM name="attribNamesUsedInCond" type="ARRAY">
-						<DESC>This Array takes the attribute names as string. Note: You must include the column name which is there in condition string and others.</DESC>
-					</PARAM>
 				</PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
@@ -502,6 +499,15 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 
             <METHOD name="buildFindOrder" generateDoc = "false">
                 <DESC>Aux function.</DESC>
+                <PARAMS>
+                    <PARAM name="order_attrs" type="ARRAY"/>
+                    <PARAM name="order_ops" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
+            <METHOD name="buildFindOrderString" generateDoc = "false">
+                <DESC>Aux function. Internally used to make order string.</DESC>
                 <PARAMS>
                     <PARAM name="order_attrs" type="ARRAY"/>
                     <PARAM name="order_ops" type="ARRAY"/>
