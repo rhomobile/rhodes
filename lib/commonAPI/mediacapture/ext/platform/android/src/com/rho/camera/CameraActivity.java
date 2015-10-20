@@ -36,8 +36,11 @@ import java.util.Map;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.R;
+import com.rhomobile.rhodes.RhodesActivity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
@@ -55,33 +58,35 @@ import android.widget.FrameLayout;
 public class CameraActivity extends BaseActivity implements OnClickListener {
     private static final String TAG = CameraActivity.class.getSimpleName();
     private CameraPreview mPreview;
-    private OrientationEventListener mOrientationListener;
-    private int mRotation = 0;
     private Camera mCamera = null;
     private ICameraObject camera = null;
     private Button button = null;
     private String id = null;
+    public static boolean CURRENT_SCREEN_AUTO_ROTATE_MODE;
+    public static boolean CURRENT_FULL_SCREEN_MODE;
     
     @Override
     protected void onCreate(Bundle extras) {
         super.onCreate(extras);
         Logger.T(TAG, "onCreate");
+        CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
+        CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.camera);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().setFormat(PixelFormat.TRANSLUCENT);        
+        RhodesActivity.safeGetInstance().setScreenAutoRotateMode(false);
+        RhodesActivity.safeGetInstance().setFullScreenMode(true);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+    	   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    	   setContentView(R.layout.camera_port);
+        }
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+    	   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    	   setContentView(R.layout.camera_land);
+        }        
         id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");        
         camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
         button =(Button)findViewById(R.id.cameraButton);
         button.setOnClickListener(this);
         mPreview = new CameraPreview((SurfaceView)findViewById(R.id.previewSurface));
-        mOrientationListener = new OrientationEventListener(this) {
-            @Override public void onOrientationChanged(int rotation) {
-                Logger.T(TAG, "Rotation: " + rotation);
-                mRotation = rotation;
-            }
-        };
-        
 
     }
     
@@ -89,9 +94,7 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
     protected void onResume() {
         super.onResume();
         Logger.T(TAG, "onResume");        
-        if (mOrientationListener.canDetectOrientation()) {
-            mOrientationListener.enable();
-        }
+        startOrientationService();
         try{
           mPreview.startPreview(camera, this);
           // Setting focus if supported by camera of the device after camera previewing
@@ -112,14 +115,13 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
           mCamera.release();
           mCamera = null;
         }
-        mOrientationListener.disable();
     }
     
     @Override
     protected void onStop() {
-	// TODO Auto-generated method stub
+    	super.onStop();
+	stopService(new Intent(CameraActivity.this,OrientationListnerService.class));
 	button.setEnabled(true);
-	super.onStop();    	
     }
     
     @Override
@@ -137,12 +139,18 @@ public class CameraActivity extends BaseActivity implements OnClickListener {
         try{
         if (view.getId() == R.id.cameraButton) {
             Logger.T(TAG, "cameraButton");            
-            camera.doTakePicture(this, (mRotation + 45)/90 * 90);
+            camera.doTakePicture(this,0);
             button.setEnabled(false);
           }
         }
         catch(Exception e){
         	e.printStackTrace();
         }
+    }
+    
+    private void startOrientationService()
+    {
+    	Intent i=new Intent(this,OrientationListnerService.class);
+    	startService(i);
     }
 }

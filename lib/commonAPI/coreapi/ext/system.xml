@@ -82,6 +82,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </PROPERTY>
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if there is a camera available on the device.</DESC>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="screenWidth" type="INTEGER" readOnly="true">
                 <DESC>Screen width in logical pixels (used for set coordinates).</DESC>
@@ -170,7 +171,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
-                <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri (or http_proxy_host, http_proxy_port, http_proxy_user, http_proxy_password). To set proxy for WebKit for Windows Mobile/CE use config.xml settings.</DESC>
+                <DESC>Set HTTP proxy parameters for using by Network module. Example: user:password@url:port . Support only basic authentication. Setting the property overrides http_proxy_uri (or http_proxy_host, http_proxy_port, http_proxy_user, http_proxy_password). Donot include 'http://' while setting the proxy uri. To set proxy for WebKit for Windows Mobile/CE use config.xml settings.</DESC>
                 <PLATFORM>Android, iOS, WM, Win32</PLATFORM>
                 <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
             </PROPERTY>

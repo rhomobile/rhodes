@@ -125,7 +125,15 @@ public class RhoWebViewClient extends WebViewClient
         
         //RhoElements implementation of "history:back"
         if(url.equalsIgnoreCase("history:back")) {
+        	Logger.I(TAG, "history:back");
         	view.goBack();
+        	return true;
+        }
+        else if(url.equalsIgnoreCase("history:twiceback")) 
+        {
+            Logger.I(TAG, "history:twiceback");
+        	view.goBack();
+		view.goBack();
         	return true;
         }
         
@@ -181,11 +189,16 @@ public class RhoWebViewClient extends WebViewClient
         } catch (Throwable ex) {
             //Do nothing. Just for case if activity has been destroyed in between.
         }
-        /*if((url.trim().equalsIgnoreCase("data:text/html,") && view.getTitle() != null && view.getTitle().equalsIgnoreCase("data:text/html,")) ||
-        		(url.trim().equalsIgnoreCase("data:,") && view.getTitle() == null)) {
-        	url = RhodesActivity.safeGetInstance().getMainView().getTabDefaultUrl();
-        	view.loadUrl(url);
-        }*/
+        if ((url.trim().equalsIgnoreCase("data:text/html,")
+				&& view.getTitle() != null && view.getTitle().equalsIgnoreCase(
+				"data:text/html,"))
+				|| (url.trim().equalsIgnoreCase("data:,") && view.getTitle() == null)) {
+			String temp = RhodesActivity.safeGetInstance().getMainView().getTabDefaultUrl();
+			if(temp != null && !temp.isEmpty()) {
+				url = temp;
+				view.loadUrl(url);
+			}
+        }
         RhoExtManager.getImplementationInstance().onNavigateComplete(view, url);
         //CookieSyncManager.getInstance().sync();
 

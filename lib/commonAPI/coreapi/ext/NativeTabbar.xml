@@ -180,7 +180,7 @@ The ebapi.js file is necessary for all single API inclusions.
             </METHOD>
 
             <METHOD name="remove" runInThread="ui">
-                <DESC>Removes the current tabbar. Does nothing if there is no active tabbar.</DESC>
+                <DESC>Removes all tabbar except the default tabbar whose index value is 0. Does nothing if there is no active tabbar other than tab 0.</DESC>
             </METHOD>
 
             <METHOD name="removeTab" runInThread="ui">

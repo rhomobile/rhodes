@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -174,6 +175,9 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                 BitmapFactory.Options options=new BitmapFactory.Options();
 		options.inPurgeable = true;
                 bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+                Matrix m = new Matrix();
+                m.postRotate(OrientationListnerService.mRotation);
+                bitmap = Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
                     Logger.T(TAG, "outputFormat: " + outputFormat);   
                 //    filePath = getTemporaryPath(filePath)+ ".jpg";
@@ -418,7 +422,16 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                  parameters.setPreviewSize(previewSize.width, previewSize.height);
         	}
         	else if(desired_width > maxSize.width || desired_height > maxSize.height){        		
-        		parameters.setPreviewSize(maxSize.width , maxSize.height);       
+        		final Camera.Parameters newParam=parameters;
+        		final android.hardware.Camera.Size newMaxSize = sizes.get(0);
+        		RhodesActivity.safeGetInstance().runOnUiThread(new Runnable() {  			
+        						
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						newParam.setPreviewSize(newMaxSize.width , newMaxSize.height);
+					}
+				});       
         	}
         	else{ 
         		parameters.setPreviewSize(320, 240);
