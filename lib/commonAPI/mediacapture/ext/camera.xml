@@ -86,7 +86,7 @@ The ebapi.js file is necessary for all single API inclusions.
 				<DESC>This is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database. On some consumer devices, captured image will be rotated 90 degrees while displaying.</DESC>
 			</CONSTANT>
 			<CONSTANT name="OUTPUT_FORMAT_IMAGE_PATH" value="imagePath" type="STRING">
-				<DESC>If this value used for setting the outputFormat property, the takePicture or capture API will return imageUri as the path to the saved image in the device. User can use this image path to transfer the file to an http server if required. An example is given to demonstrate, transferring a file to http server.</DESC>
+				<DESC>If this value used for setting the outputFormat property, the takePicture or capture API will return imageUri as the path to the saved image in the device. User can use this image path to transfer the file to an http server if required. An example is given to demonstrate, transferring a file to http server.This property is not applicable for Android and windows phone 8.</DESC>
 			</CONSTANT>
 			<!-- Camera Color Model -->
 			<CONSTANT name="COLOR_MODEL_RGB" value="rgb" type="STRING">
@@ -870,7 +870,7 @@ alert(reslnArray[1].height);
                   <JAVASCRIPT>
                     <![CDATA[
 //enumerate the available cameras on the device
-var camArray = EB.Camera.enumerate();
+var camArray = Rho.Camera.enumerate();
 
 //below is the callback fired by network api after image upload to the server is completed
 var upload_file_callback = function (args){
@@ -894,7 +894,7 @@ var camera_callbackFunc = function(cbData){
         };
    
    //below is the network module API used for uploading images when camera fire the callback
-   EB.Network.uploadFile(uploadfileProps, upload_file_callback);      
+   Rho.Network.uploadFile(uploadfileProps, upload_file_callback);      
  };
  
  //below is the test function which is used for capturing an image with outputFormat set as imagePath
@@ -907,7 +907,7 @@ function Test_image_transfer1()
 function Test_image_transfer2()
 { 
   //invoke choosePicture API with outputFormat as imagePath and set the callback method
-  EB.Camera.choosePicture({'outputFormat': 'image'}, camera_callbackFunc);
+  Rho.Camera.choosePicture({'outputFormat': 'image'}, camera_callbackFunc);
 }
       
 
@@ -925,7 +925,7 @@ function Test_image_transfer2()
                   <JAVASCRIPT>
                     <![CDATA[
 //enumerate the available cameras on the device
-var camArray = EB.Camera.enumerate();
+var camArray = Rho.Camera.enumerate();
 
 
 
@@ -934,7 +934,7 @@ var camera_callbackFunc = function(cbData){
 
   //uri will have relative path info only
   //user has to form the absolute local server path as shown below
-  uri = 'http://localhost:'+EB.System.localServerPort + cbData.imageUri;
+  uri = 'http://localhost:'+Rho.System.localServerPort + cbData.imageUri;
   //set the image uri to the image element
   document.getElementById('imageUri').src = uri ;
   

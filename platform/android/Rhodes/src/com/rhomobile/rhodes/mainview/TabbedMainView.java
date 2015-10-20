@@ -1000,6 +1000,8 @@ public class TabbedMainView implements MainView {
 
     @Override
     public IRhoWebView detachWebView() {
+    	//switch to main tab then detach web view
+    	switchTab(0);
         return getTabMainView(activeTab()).detachWebView();
     }
 
