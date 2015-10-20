@@ -134,7 +134,7 @@ LRESULT CALLBACK PwdMainWndProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
 		    break;
 		
 		case WM_ACTIVATE:
-			ShowWindow(pwdHandles.mainParentWnd,SW_SHOW);
+			//ShowWindow(pwdHandles.mainParentWnd,SW_SHOW);
 			break;
 
 		case WM_PAINT:
