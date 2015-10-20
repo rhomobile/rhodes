@@ -506,6 +506,15 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
                 <RETURN type="HASH"/>
             </METHOD>
 
+            <METHOD name="buildFindOrderString" generateDoc = "false">
+                <DESC>Aux function. Internally used to make order string.</DESC>
+                <PARAMS>
+                    <PARAM name="order_attrs" type="ARRAY"/>
+                    <PARAM name="order_ops" type="ARRAY"/>
+                </PARAMS>
+                <RETURN type="HASH"/>
+            </METHOD>
+
             <METHOD name="buildSimpleWhereCond" generateDoc = "false">
                 <DESC>Aux function.</DESC>
                 <PARAMS>

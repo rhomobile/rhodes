@@ -234,6 +234,13 @@ module Rhom
             normalized_string_args = {};
             normalized_vector_args = {}
             _normalize_args_for_find(args[0], args[1], normalized_string_args, normalized_vector_args)
+            # 2) Normalize ORDER BY
+            order_dir = args[1][:orderdir] || []
+            order_attr = args[1][:order] || []
+            # normalize ORDER BY attrs for PropertyBag Model
+            order_attr = [order_attr] if(order_attr.is_a?String)
+            order_dir = [order_dir] if(order_dir.is_a?String)
+            normalized_string_args[:order] = self.klass_model.buildFindOrderString(order_attr, order_dir)
             normalized_string_args[:op] = args[1] || 'AND';
             if args[1][:conditions].is_a?Hash
               retVal = klass_model.findObjectsPropertyBagByCondHash(args[0],

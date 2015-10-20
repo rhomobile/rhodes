@@ -794,6 +794,17 @@ void rho::CNewORMModelImpl::buildFindOrder(const Vector<rho::String>& orderAttrs
     oResult.set(retVals);
 }
 
+void rho::CNewORMModelImpl::buildFindOrderString(const Vector<rho::String>& orderAttrs,
+                    const Vector<rho::String>& orderOps,
+                    rho::apiGenerator::CMethodResult& oResult)
+{
+    buildFindOrder(orderAttrs, orderOps, oResult);
+    rho::Vector<rho::String> orderArr = oResult.getStringArray();
+    rho::String order_str = _make_order_str(orderArr);
+    oResult.set(order_str);
+}
+
+
 void rho::CNewORMModelImpl::buildSimpleWhereCond(const rho::String& what,
                           const rho::Vector<rho::String>& conditions,
                           rho::apiGenerator::CMethodResult& oResult)
@@ -1126,10 +1137,7 @@ void rho::CNewORMModelImpl::findObjectsPropertyBagByCondArray(const rho::String&
 
         Hashtable<rho::String, rho::String>::const_iterator cIt = strOptions.find("order");
         if(cIt != strOptions.end())
-            order_attr_sql = cIt -> second;
-
-        if(order_attr_sql.size())
-            order_str = rho::String(" ORDER BY ") + order_attr_sql;
+            order_str = cIt -> second;
 
         limit_str = _make_limit_str(strOptions);
 
