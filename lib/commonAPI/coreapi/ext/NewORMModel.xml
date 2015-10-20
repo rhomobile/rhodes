@@ -260,10 +260,6 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Destroys model's instance. This method is used to destroy only a single record.</DESC>
             </METHOD>
 
-            <METHOD name="destroy" generateAPI="false">
-                <DESC>Destroy a Rhodes model object and removes the record from the database.</DESC>
-            </METHOD>
-
             <METHOD name="createObject" generateDoc="false">
                 <DESC>Initializes model's object and stores it in the DB.</DESC>
                 <PARAMS>
@@ -338,7 +334,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="can_modify" deprecated="true">
+            <METHOD name="can_modify" deprecated="true" generateAPI="false">
                 <DESC>Checks whether the object can be modified.</DESC>
                 <APPLIES rubyOnly="true"/>
                 <PARAMS>
@@ -421,9 +417,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             
             <METHOD name="saveObject" generateDoc="false">
                 <DESC>Saves (creates if necessary or updates if already exists) object's attributes in the DB.</DESC>
+                <PARAMS>
+                    <PARAM name="objId" type="STRING"/>
+                    <PARAM name="attrs" type="HASH"/>
+                </PARAMS>
                 <RETURN type="HASH"/>
+
             </METHOD>
-            
             
             <METHOD name="save" generateAPI="false">
                 <DESC>Saves the object's attributes in the DB.</DESC>
