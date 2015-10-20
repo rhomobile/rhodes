@@ -745,7 +745,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </METHOD>
 
             <METHOD name="pushChanges">
-                <DESC>Pushes all changes for the source.</DESC>
+                <DESC>Pushes all changes for the source. For details [push_changes](api/rhom-api#pushchanges)</DESC>
             </METHOD>
 
             <ALIASES>
