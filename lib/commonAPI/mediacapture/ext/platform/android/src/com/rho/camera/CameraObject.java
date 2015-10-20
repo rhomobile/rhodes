@@ -165,7 +165,7 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                    userFilePath = filePath;
          	}
          	else{
-                   filePath = propertyMap.get("fileName");
+                   filePath = propertyMap.get("fileName")+ ".jpg";
                    userFilePath = filePath;
 				   if(filePath.contains("\\")){
 						intent.putExtra("error", "Invalid file path");
