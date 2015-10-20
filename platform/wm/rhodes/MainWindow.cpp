@@ -1895,17 +1895,17 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     CWindow control = ::GetFocus();
 
 	// workaround for backspace key in text fields:
-	if (control.m_hWnd && (pMsg->message == WM_KEYUP) && (pMsg->wParam == VK_BACK))
-	{
-		if(RHO_IS_CEDEVICE)
-		{
-			control.SendMessage(WM_KEYDOWN, VK_BACK, 0);
-			control.SendMessage(WM_KEYUP, VK_BACK, 0);
-		}
-		else
-			control.SendMessage(WM_CHAR, VK_BACK, 1);
+	//if (control.m_hWnd && (pMsg->message == WM_KEYUP) && (pMsg->wParam == VK_BACK))
+	//{
+	//	if(RHO_IS_CEDEVICE)
+	//	{
+	//		control.SendMessage(WM_KEYDOWN, VK_BACK, 0);
+	//		control.SendMessage(WM_KEYUP, VK_BACK, 0);
+	//	}
+	//	else
+	//			control.SendMessage(WM_CHAR, VK_BACK, 1);
 		//return TRUE;
-	}
+	//}
 
     if (IsChild(control) && m_hWnd != control.GetParent())
     {
