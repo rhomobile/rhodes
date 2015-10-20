@@ -95,23 +95,23 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </RETURN>
             </METHOD>
             
-            <METHOD name="init" generateDoc= "false">
+            <METHOD name="init" generateDoc="false">
                 <DESC>Initializes new model's instance.</DESC>
                 <PARAMS>
                     <PARAM name="modelName" type="STRING"/>
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="initModel" generateDoc= "false">
+            <METHOD name="initModel" generateDoc="false">
                 <DESC>Initializes model's internal DB.</DESC>
             </METHOD>
 
-            <METHOD name="make" generateAPI= "false">
+            <METHOD name="make" generateAPI="false">
                 <DESC>Create a new ORM model object JavaScript reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method.</DESC>
                 <APPLIES jsOnly="true"/>
             </METHOD>
 
-            <METHOD name="new" generateAPI= "false">
+            <METHOD name="new" generateAPI="false">
                 <DESC>Initializes new model's instance.</DESC>
                 <PARAMS>
                     <PARAM name="modelName" type="STRING"/>
@@ -256,15 +256,15 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="destroy" destructor="true" generateDoc= "false">
+            <METHOD name="destroy" destructor="true" generateDoc="false">
                 <DESC>Destroys model's instance. This method is used to destroy only a single record.</DESC>
             </METHOD>
 
-            <METHOD name="destroy" generateAPI= "false">
+            <METHOD name="destroy" generateAPI="false">
                 <DESC>Destroy a Rhodes model object and removes the record from the database.</DESC>
             </METHOD>
 
-            <METHOD name="createObject" generateDoc = "false">
+            <METHOD name="createObject" generateDoc="false">
                 <DESC>Initializes model's object and stores it in the DB.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH">
@@ -274,7 +274,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="HASH"/>
             </METHOD>
             
-            <METHOD name="create" generateAPI= "false">
+            <METHOD name="create" generateAPI="false">
                 <DESC>Create a new Rhodes model object and save it to the database. This is the fastest way to insert a single item into the database.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH">
@@ -284,7 +284,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="OBJECT"/>
             </METHOD>
 
-            <METHOD name="createInstance" generateDoc= "false">
+            <METHOD name="createInstance" generateDoc="false">
                 <DESC>Creates model's instance and initializes model's object but doesn't store it in DB.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH">
@@ -305,7 +305,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="clear" access="STATIC" generateDoc= "false">
+            <METHOD name="clear" access="STATIC" generateDoc="false">
                 <DESC>This method clears all the models and the associated tables with the models. It is used only for testing purpose and not for the developing.</DESC>
             </METHOD>
 
@@ -347,7 +347,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="updateObject" generateDoc = "false">
+            <METHOD name="updateObject" generateDoc="false">
                 <DESC>Updates object's attributes in the DB.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
@@ -404,23 +404,23 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="find_all" deprecated="true" generateAPI= "false">
+            <METHOD name="find_all" deprecated="true" generateAPI="false">
                 <DESC>find('all') replaces the legacy ruby method find_all.</DESC>
                 <APPLIES rubyOnly="true"/>
                 <RETURN type="HASH"/>
             </METHOD>
             
-            <METHOD name="saveObject" generateDoc = "false">
+            <METHOD name="saveObject" generateDoc="false">
                 <DESC>Saves (creates if necessary or updates if already exists) object's attributes in the DB.</DESC>
                 <RETURN type="HASH"/>
             </METHOD>
             
             
-            <METHOD name="save" generateAPI= "false">
+            <METHOD name="save" generateAPI="false">
                 <DESC>Saves the object's attributes in the DB.</DESC>
             </METHOD>
 
-            <METHOD name="deleteObject" generateDoc = "false">
+            <METHOD name="deleteObject" generateDoc="false">
                 <DESC>Deletes object's attributes from the DB.</DESC>
                 <PARAMS>
                     <PARAM name="objId" type="STRING"/>
@@ -447,7 +447,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="deleteObjects" generateDoc= "false">
+            <METHOD name="deleteObjects" generateDoc="false">
                 <DESC>Deletes all object's according to the specified conditions.It is applicable only for Fixed_schema Model.</DESC>
                 <PARAMS>
                     <PARAM name="strOptions" type="HASH">
@@ -459,7 +459,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="deleteObjectsPropertyBagByCondHash" generateDoc = "false">
+            <METHOD name="deleteObjectsPropertyBagByCondHash" generateDoc="false">
                 <DESC>Deletes all objects for the given Property Bag model according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
                     <PARAM name="conditions" type="HASH">
@@ -472,7 +472,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="deleteObjectsPropertyBagByCondArray" generateDoc = "false">
+            <METHOD name="deleteObjectsPropertyBagByCondArray" generateDoc="false">
                 <DESC>Deletes all objects for the given Property Bag model according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
                     <PARAM name="conditions" type="STRING">
@@ -498,7 +498,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="STRING"/>
             </METHOD>
 
-            <METHOD name="findObjects" generateDoc= "false">
+            <METHOD name="findObjects" generateDoc="false">
                 <DESC>Returns array of objects for the given model queried according to the specified conditions. It is applicable only for Fixed_schema Model.</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING">
@@ -531,7 +531,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="findObjectsPropertyBagByCondHash" generateDoc= "false">
+            <METHOD name="findObjectsPropertyBagByCondHash" generateDoc="false">
                 <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING">
@@ -561,7 +561,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="findObjectsPropertyBagByCondArray" generateDoc= "false">
+            <METHOD name="findObjectsPropertyBagByCondArray" generateDoc="false">
                 <DESC>Returns array of objects for the given Property Bag model queried according to the specified conditions. It is applicable only for Property bag Model.</DESC>
                 <PARAMS>
                     <PARAM name="whatParam" type="STRING">
@@ -648,7 +648,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </RETURN>
             </METHOD>
 
-            <METHOD name="validateFreezedAttribute" generateDoc = "false">
+            <METHOD name="validateFreezedAttribute" generateDoc="false">
                 <DESC>Validates object's frozen attribute.</DESC>
                 <PARAMS>
                     <PARAM name="attrName" type="STRING"/>
@@ -656,7 +656,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="validateFreezedAttributes" generateDoc = "false">
+            <METHOD name="validateFreezedAttributes" generateDoc="false">
                 <DESC>Validates all object's frozen attributes.</DESC>
                 <PARAMS>
                     <PARAM name="attrHash" type="HASH"/>
@@ -664,7 +664,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
-            <METHOD name="buildComplexWhereCond" generateDoc = "false">
+            <METHOD name="buildComplexWhereCond" generateDoc="false">
                 <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="attrKey" type="STRING"/>
@@ -675,7 +675,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="ARRAY"/>
             </METHOD>
 
-            <METHOD name="buildFindLimits" generateDoc = "false">
+            <METHOD name="buildFindLimits" generateDoc="false">
                 <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="whatArg" type="STRING"/>
@@ -684,7 +684,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="buildFindOrder" generateDoc = "false">
+            <METHOD name="buildFindOrder" generateDoc="false">
                 <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="order_attrs" type="ARRAY"/>
@@ -693,7 +693,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="buildFindOrderString" generateDoc = "false">
+            <METHOD name="buildFindOrderString" generateDoc="false">
                 <DESC>Aux function. Internally used to make order string.</DESC>
                 <PARAMS>
                     <PARAM name="order_attrs" type="ARRAY"/>
@@ -702,7 +702,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="HASH"/>
             </METHOD>
 
-            <METHOD name="buildSimpleWhereCond" generateDoc = "false">
+            <METHOD name="buildSimpleWhereCond" generateDoc="false">
                 <DESC>Aux function.</DESC>
                 <PARAMS>
                     <PARAM name="what" type="STRING"/>
@@ -739,7 +739,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="push_changes" generateAPI= "false" deprecated="true">
+            <METHOD name="push_changes" generateAPI="false" deprecated="true">
                 <DESC>Pushes all changes for the source.</DESC>
                 <APPLIES rubyOnly="true"/>
             </METHOD>
