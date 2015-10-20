@@ -5,15 +5,18 @@
         <HELP_OVERVIEW>NewORMModel CoreAPI module.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API
-This API is part of the `coreapi` extension that is included automatically.
+This API is part of the `coreapi` extension that is included automatically. 
     :::ruby
     extensions: ["coreapi"]
+To use common api ORM and ORMModel, make sure use_new_orm=1 mentioned in rhoconfig.txt.
+    :::ruby
+    use_new_orm=1
 
 ## JavaScript Usage
 Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
 
 ## Ruby Usage
-For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/rhom-api).
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
 
         <TEMPLATES>
@@ -84,12 +87,10 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             <METHOD name="getModel" access="STATIC" >
                 <DESC>getModel method returns instance of the ORMModel.</DESC>
                 <PARAMS>
-                    <PARAM name="modelName" type="STRING">
-                        <DESC>Name of the model you want returned.</DESC>
-                    </PARAM>
+                    <PARAM name="modelName" type="STRING"/>                
                 </PARAMS>
-                <RETURN type="STRING">
-                    <DESC>NewORMModel object.</DESC>
+                <RETURN type="OBJECT">
+                    <DESC>ORMModel object.</DESC>
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
@@ -106,7 +107,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             </METHOD>
 
             <METHOD name="make" generateAPI= "false">
-                <DESC>Create a new Rhodes model object JavaScript reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method.</DESC>
+                <DESC>Create a new ORM model object JavaScript reference but does not save it to the database. To save this reference to the database, you will need to execute the .save() method.</DESC>
                 <APPLIES jsOnly="true"/>
             </METHOD>
 
@@ -118,7 +119,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             </METHOD>
 
             <METHOD name="setBelongsTo">
-                <DESC>Adds 'belongs_to' relationship for the model. As belongs_to method doesn't work in NewORM, Using this method the relationship can be established.</DESC>
+                <DESC>Using this method, you can set sync association between models. For details [Associations](guide/rhom_ruby#associations)</DESC>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING"/>
                     <PARAM name="sourceName" type="STRING"/>
@@ -192,10 +193,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                     <PARAM name="propertyName" type="STRING">
                     <VALUES>
                         <VALUE value = "fixed_schema">
-                            <DESC>To set the type of model as Fixed_schema.</DESC>
-                        </VALUE>
-                        <VALUE value = "loaded">
-                            <DESC>To load the model.</DESC>
+                            <DESC>To set the type of model as FixedSchema.</DESC>
                         </VALUE>
                         <VALUE value = "sync">
                             <DESC>To make the model as user model.</DESC>
@@ -263,7 +261,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             </METHOD>
 
             <METHOD name="destroy" generateAPI= "false">
-                <DESC>Destroy a Rhodes model object.</DESC>
+                <DESC>Destroy a Rhodes model object and removes the record from the database.</DESC>
             </METHOD>
 
             <METHOD name="createObject" generateDoc = "false">
@@ -277,13 +275,13 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             </METHOD>
             
             <METHOD name="create" generateAPI= "false">
-                <DESC>Initializes model's object and stores it in the DB.</DESC>
+                <DESC>Create a new Rhodes model object and save it to the database. This is the fastest way to insert a single item into the database.</DESC>
                 <PARAMS>
                     <PARAM name="attrs" type="HASH">
-                        <DESC>The attribute names and its respective values are passed as a key-value pair through this HASH.</DESC>
+                        <DESC>List of attributes assigned to the new model object, such as {name : "ABC Inc.",address: "555 5th St."}.</DESC>
                     </PARAM>    
                 </PARAMS>
-                <RETURN type="HASH"/>
+                <RETURN type="OBJECT"/>
             </METHOD>
 
             <METHOD name="createInstance" generateDoc= "false">
@@ -597,9 +595,11 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             </METHOD>
 
             <METHOD name="find_by_sql">
-                <DESC>Returns array of objects for the given model queried according to the specified SQL. It is applicable only for Fixed Schema model.</DESC>
+                <DESC>Returns Rhodes model object(s) based on sql_query. It is applicable only for FixedSchema model.</DESC>
                 <PARAMS>
-                    <PARAM name="sqlQuery" type="STRING"/>
+                    <PARAM name="sqlQuery" type="STRING">
+                    <DESC>An sql query, such as "SELECT * FROM Account".</DESC>
+                </PARAM>
                 </PARAMS>
                 <RETURN type="ARRAY"/>
             </METHOD>
@@ -636,7 +636,7 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
             </METHOD>
 
             <METHOD name="get" generateAPI="false">
-                <DESC>Get the value of a property of the current model.</DESC>                
+                <DESC>Get the value of a property of the current model.Ex: myModel.get('name'); See also the vars() method.</DESC>                
                 <APPLIES jsOnly="true"/>
                 <PARAMS>
                     <PARAM name="propertyName" type="STRING">
@@ -818,7 +818,7 @@ model.setSchemaIndex("p1", ["name","price"], false) ]]>
             <EXAMPLE title="setBelongsTo">
                 <SECTIONS>
                     <SECTION>
-                        <DESC>Use method setBelongsTo for establishing a relationship with the other model. It also prioritizes the synchronization of models based on the relationship established in the setBelongsTo method.</DESC>
+                        <DESC>Using this method, you can set sync association between models.</DESC>
                         <CODE>
                             <JAVASCRIPT>
                 <![CDATA[
