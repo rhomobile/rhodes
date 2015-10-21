@@ -1,5 +1,6 @@
 package com.rho.camera;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -126,6 +127,7 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
     protected class TakePictureCallback implements Camera.PictureCallback {
         private Activity mPreviewActivity;
         MediaPlayer mp;
+        Bitmap bitmap = null;
         TakePictureCallback(Activity previewActivity) {
             mPreviewActivity = previewActivity;
         }
@@ -133,7 +135,6 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
         public void onPictureTaken(byte[] data, Camera camera) {        	
             Intent intent = new Intent();
             OutputStream stream = null;
-            Bitmap bitmap = null;
             try {
             	
                 final Map<String, String> propertyMap = getActualPropertyMap();
@@ -228,9 +229,15 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                       }else{
   	                    stream = new FileOutputStream(filePath);                        
   	                    resultUri = Uri.fromFile(new File(filePath));                         
-	                    stream.write(data);    
-	                    stream.flush();                        
-	                    stream.close();
+	                    byte[] byteArray = null;
+  	                    if(bitmap != null){
+  	                    	ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+  	                    	bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
+  	                    	byteArray = bytestream.toByteArray();
+  	                    	stream.write(byteArray);    
+  		                stream.flush();                        
+  		                stream.close();
+  	                    }
                       }
 	                    //CameraRhoListener.getInstance().copyImgAsUserChoice(filePath);
                     }
@@ -267,9 +274,15 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                     {                    	
                         stream = new FileOutputStream(filePath);                        
                         resultUri = Uri.fromFile(new File(filePath));                        
-                        stream.write(data);                       
-                        stream.flush();                        
-                        stream.close();                       
+                        byte[] byteArray = null;
+  	                    if(bitmap != null){
+  	                    	ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+  	                    	bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
+  	                    	byteArray = bytestream.toByteArray();
+  	                    	stream.write(byteArray);                       
+  	                        stream.flush();                        
+  	                        stream.close();
+  	                 }                       
                     }
                        
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, resultUri);
