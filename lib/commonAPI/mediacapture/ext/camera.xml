@@ -870,7 +870,7 @@ alert(reslnArray[1].height);
                   <JAVASCRIPT>
                     <![CDATA[
 //enumerate the available cameras on the device
-var camArray = Rho.Camera.enumerate();
+var camArray = EB.Camera.enumerate();
 
 //below is the callback fired by network api after image upload to the server is completed
 var upload_file_callback = function (args){
@@ -894,7 +894,7 @@ var camera_callbackFunc = function(cbData){
         };
    
    //below is the network module API used for uploading images when camera fire the callback
-   Rho.Network.uploadFile(uploadfileProps, upload_file_callback);      
+   EB.Network.uploadFile(uploadfileProps, upload_file_callback);      
  };
  
  //below is the test function which is used for capturing an image with outputFormat set as imagePath
@@ -907,7 +907,7 @@ function Test_image_transfer1()
 function Test_image_transfer2()
 { 
   //invoke choosePicture API with outputFormat as imagePath and set the callback method
-  Rho.Camera.choosePicture({'outputFormat': 'image'}, camera_callbackFunc);
+  EB.Camera.choosePicture({'outputFormat': 'image'}, camera_callbackFunc);
 }
       
 
@@ -925,7 +925,7 @@ function Test_image_transfer2()
                   <JAVASCRIPT>
                     <![CDATA[
 //enumerate the available cameras on the device
-var camArray = Rho.Camera.enumerate();
+var camArray = EB.Camera.enumerate();
 
 
 
@@ -934,7 +934,7 @@ var camera_callbackFunc = function(cbData){
 
   //uri will have relative path info only
   //user has to form the absolute local server path as shown below
-  uri = 'http://localhost:'+Rho.System.localServerPort + cbData.imageUri;
+  uri = 'http://localhost:'+EB.System.localServerPort + cbData.imageUri;
   //set the image uri to the image element
   document.getElementById('imageUri').src = uri ;
   
