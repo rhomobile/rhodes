@@ -209,6 +209,7 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
 
                     				if(isSDPresent)
                     				{
+                    					byte[] byteArray = null;
                     					int lastIndex = userFilePath.lastIndexOf("/");
                     					
                     					String subfolderName = userFilePath.replaceAll("/sdcard", "");
@@ -222,9 +223,14 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                     					
                     					stream = new FileOutputStream(directory +File.separator  + file_name+".jpg");                        
                 	                    resultUri = Uri.fromFile(new File(directory +File.separator  + file_name+".jpg"));                        
-                	                    stream.write(data);    
-                	                    stream.flush();                        
-                	                    stream.close();
+                	                    if(bitmap != null){
+                  	                    	ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+                  	                    	bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
+                  	                    	byteArray = bytestream.toByteArray();
+                  	                    	stream.write(byteArray);    
+                  		                stream.flush();                        
+                  		                stream.close();
+                  	                    }
                     			}
                       }else{
   	                    stream = new FileOutputStream(filePath);                        
@@ -241,9 +247,19 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                       }
 	                    //CameraRhoListener.getInstance().copyImgAsUserChoice(filePath);
                     }
+                    byte[] byteArray = null;
+                    stream = new FileOutputStream(filePath);
+	                    if(bitmap != null){
+	                    	ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+	                    	bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
+	                    	byteArray = bytestream.toByteArray();
+	                    	stream.write(byteArray);    
+		                stream.flush();                        
+		                stream.close();
+	                    }
                     StringBuilder dataBuilder = new StringBuilder();
                     dataBuilder.append("data:image/jpeg;base64,");
-                    dataBuilder.append(Base64.encodeToString(data, false));
+                    dataBuilder.append(Base64.encodeToString(byteArray, false));
                     propertyMap.put("captureUri", dataBuilder.toString());
                     propertyMap.put("dataURI", "datauri_value");
                     Logger.T(TAG, dataBuilder.toString());
