@@ -38,6 +38,8 @@ To include individual APIs, you must first include the `ebapi.js` in your HTML, 
     &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
     &lt;script type="text/javascript" charset="utf-8" src="eb.timer.js"&gt;&lt;/script&gt;
 
+&gt; In the code lines above, notice that `ebapi.js` is included first, followed by `eb.timer.js`, which is the Timer API for Enterprise Browser. **This coding is required on each HTML page whenever an individual API will be called from that page**.
+
         </MORE_HELP_EB>
         <PLATFORM>WM, CE, Android, WP8, iOS, Win32</PLATFORM>
         <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
