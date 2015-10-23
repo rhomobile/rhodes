@@ -413,11 +413,11 @@ Receiving phone calls or texts whilst running RhoElements will cause the start b
             </REMARK>
             <REMARK title="SSL Connection Failure in iOS Platform">
                 <DESC><![CDATA[
-SSL connection issue can occur because there is a limitation in curl for iOS platform where appropriate timeout is not used in 'select' system calls for curl SSL conection. For further details refer <a href="https://developer.apple.com/library/ios/documentation/NetworkingInternetWeb/Conceptual/NetworkingOverview/CommonPitfalls/CommonPitfalls.html">Avoiding Common Networking Mistakes</a> in iOS platform.
+Due to a limitation in curl for iOS, an appropriate timeout is not used in 'select' system calls for a curl SSL conection. To avoid this SSL connection issue, it is recommended that the iOS native Network library be used instead of curl. To do this, add the two lines below to the rhoconfig.txt file. 
+
+For more information, please refer to <a href="https://developer.apple.com/library/ios/documentation/NetworkingInternetWeb/Conceptual/NetworkingOverview/CommonPitfalls/CommonPitfalls.html">Avoiding Common Networking Mistakes</a> in the Apple developer reference.
 
 <pre>
-It is advisable to  use IOS native Network library instead of CURL  by setting  adding  below two lines to the rhoconfig.txt file.
-
 ios_net_curl = 0
 ios_direct_local_requests = 0
 </pre>
