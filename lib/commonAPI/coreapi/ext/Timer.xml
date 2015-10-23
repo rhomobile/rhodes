@@ -11,6 +11,37 @@ This API is part of the `coreapi` extension that is included automatically.
         </MORE_HELP>
          <MORE_HELP_EB>
 ## Enabling the API
+
+There are two methods of enabling the Timer API:
+
+* Include all 'ebapi' modules
+* Include only the API modules you need
+
+Both methods are explained below. 
+
+Either way, the included files will be found in: 
+`/Enterprise Browser/JavaScript Files/Enterprise Browser`,
+a directory on the computer that contains the Enterprise Browser installation.
+
+### Include all JS API modules
+To include all JavaScript APIs, copy the `ebapi-modules.js` file to a location accessible by your app's files and include the JavaScript modules file in your app. For instance, to include the modules file in your `index.html`, copy the file to the same directory as your index.html and add the following line to the HEAD section of your index.html file:
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
+
+&gt; This will define the EB class within the page. **Note that the path for this file is relative to the current page** (index.html). Any page on which the modules are required will need to have the required .js file(s) included in this fashion.
+
+### Include only the modules you need
+To include individual APIs, you must first include the `ebapi.js` in your HTML, and then the additional required API file(s). For instance, to use the Timer API, add the following code to the HTML file(s). Again, this assumes that relevant API files have been copied to the same directory as the HTML.
+
+    :::html
+    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" charset="utf-8" src="eb.timer.js"&gt;&lt;/script&gt;
+
+&gt; In the code lines above, notice that `ebapi.js` is included first, followed by `eb.timer.js`, which is the Timer API for Enterprise Browser. **This coding is required on each HTML page whenever an individual API will be called from that page**.
+
+
+## Enabling the API
 There are two methods of enabling the Timer API:
 
 * Include all ebapi modules or
