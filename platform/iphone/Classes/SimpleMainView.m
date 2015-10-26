@@ -342,7 +342,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     }
     
     [toolbar removeFromSuperview];
-    assert(!toolbar || [toolbar retainCount] == 1);
+    //assert(!toolbar || [toolbar retainCount] == 1);
     self.toolbar = nil;
 }
 
