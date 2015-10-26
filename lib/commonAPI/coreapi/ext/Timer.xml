@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="Timer" parent="Rho" productException="">
-        <HELP_OVERVIEW>The Timer API is used to create, start, stop and check the existance of timers.</HELP_OVERVIEW>
+        <HELP_OVERVIEW>The Timer API is used to create, start, stop and check the existence of timers.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API
 This API is part of the `coreapi` extension that is included automatically.
