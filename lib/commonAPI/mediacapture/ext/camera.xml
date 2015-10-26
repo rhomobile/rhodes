@@ -990,11 +990,11 @@ function Test_image_uri()
             <REMARK title="Image saving while take picture">
               <DESC>Image captured in few devices(eg: Samsung), irrespective of picture taken (Landscape/Portrait) , will always save in Landscape Mode, Even though on the device it appears as captured(landscape/Portrait), when the same is copied to Desktop, you can see that it will be in Landscape Mode.This is default behaviour of the device</DESC>
             </REMARK>
-			<REMARK title="Devices lacking support">
+			<REMARK title="WM/CE devices lacking support">
             <DESC>Due to platform limitation devices such as ES400, MC65 and MC67 does not support color camera.</DESC>
             </REMARK>
             <REMARK title="takepicture Resolution Issue on Low Memory Device WP8">
-            <DESC>In devices having low processor, lower resolution image capture may show a small area of preview on black background at the time of transition back to application.</DESC>
+            <DESC>Due to platform limitation devices such as ES400, MC65 and MC67 does not support color camera. On MC55 WM device, imager with Fullscreen window is not supported(eg:takePicture ). However user can still go ahead with following parameters such as previewLeft, previewWidth, previewTop, previewHeight to setup a user defined viewer window which can be supported by the device.</DESC>
             </REMARK>
             <REMARK title="Android  Black Image in Gallery for kitkat">
             <DESC>Whenever an image is taken from Rho camera,on opening galery or choose picture, we can see a black image, when system refreshes the gallery this will be gone.</DESC>
