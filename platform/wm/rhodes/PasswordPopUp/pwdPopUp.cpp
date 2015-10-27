@@ -131,6 +131,7 @@ LRESULT CALLBACK PwdMainWndProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
 		case WM_CREATE:		
 			PwdCreateButtons(hwnd);	
 			PwdCreateInputFieldWindow(hwnd);
+			SetFocus(pwdHandles.inputField);
 		    break;
 		
 		case WM_ACTIVATE:
