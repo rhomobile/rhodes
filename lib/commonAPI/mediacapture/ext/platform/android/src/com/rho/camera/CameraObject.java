@@ -177,7 +177,15 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
 		options.inPurgeable = true;
                 bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
                 Matrix m = new Matrix();
-                m.postRotate(OrientationListnerService.mRotation);
+                android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+                android.hardware.Camera.getCameraInfo(getCameraIndex(), info);
+                if (info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT && OrientationListnerService.mRotation == 90) {
+                    		m.postRotate(270);
+                	}else if(info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT && OrientationListnerService.mRotation == 270){
+              			m.postRotate(90);
+                	}else{
+              			m.postRotate(OrientationListnerService.mRotation);
+                	}
                 bitmap = Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
                     Logger.T(TAG, "outputFormat: " + outputFormat);   
