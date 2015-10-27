@@ -166,6 +166,14 @@ void rho_sys_app_exit()
 						::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
 					}	
 				}
+				else
+				{
+					::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
+				}
+			}
+			else
+			{
+				::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
 			}
 		}
 		else
