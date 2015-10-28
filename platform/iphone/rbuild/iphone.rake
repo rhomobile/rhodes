@@ -663,7 +663,6 @@ namespace "config" do
         else
           $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43')
         end
-        puts "BHAKTA: #{$iphonesim}"
       end
     end
 
@@ -2857,7 +2856,7 @@ namespace "device" do
       print_timestamp('device:iphone:production FINISH')
       puts '************************************'
       puts '*'
-      puts "SUCCESS ! Production package builded and placed into : "+ipapath
+      puts "SUCCESS ! Production package built and placed into : "+ipapath
       puts '*'
       puts '************************************'
     end
