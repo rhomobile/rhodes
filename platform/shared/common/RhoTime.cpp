@@ -92,65 +92,71 @@ void CRhoTimer::addNativeTimer(int nInterval, CRhoTimer::ICallback* callback)
 }
 
 
-unsigned long CRhoTimer::getNextTimeout()
-{
-    synchronized(m_mxAccess);
-
-    if ( (m_arItems.size() == 0) && (m_arNativeItems.size() == 0) )
-        return 0;
-
-    CTimeInterval curTime = CTimeInterval::getCurrentTime();
-    unsigned long nMinInterval = ((unsigned long)-1);
-
-    for( int i = 0; i < (int)m_arItems.size(); i++ )
+    unsigned long CRhoTimer::getNextTimeout()
     {
-        unsigned long nInterval = 0;
-        if ( m_arItems.elementAt(i).m_oFireTime.toULong() > curTime.toULong() )
-    		{
-            nInterval = m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
-    		}
-    		else
-    		{	
-        		nInterval=nMinInterval+m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
-    		}
+        synchronized(m_mxAccess);
+        
+        if ( (m_arItems.size() == 0) && (m_arNativeItems.size() == 0) )
+            return 0;
+        
+        CTimeInterval curTime = CTimeInterval::getCurrentTime();
+        unsigned long nMinInterval = ((unsigned long)-1);
+        
+        for( int i = 0; i < (int)m_arItems.size(); i++ )
+        {
+            unsigned long nInterval = 0;
+            if ( m_arItems.elementAt(i).m_oFireTime.toULong() > curTime.toULong() )
+            {
+                nInterval = m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+                RAWTRACE3("CRhoTimer::nInterval: %lu,m_oFireTime.toULong: %lu,curTime.toULong: %lu,",nInterval,m_arItems.elementAt(i).m_oFireTime.toULong(),curTime.toULong());
+            }
+            else
+            {
+                nInterval=nMinInterval+m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+                RAWTRACE1("CRhoTimer::nMinInterval: %lu",nMinInterval);
+                RAWTRACE3("CRhoTimer::nInterval: %lu,m_oFireTime.toULong: %lu,curTime.toULong: %lu,",nInterval,m_arItems.elementAt(i).m_oFireTime.toULong(),curTime.toULong());
+            }
+            
+            if ( nInterval < nMinInterval )
+                nMinInterval = nInterval;
+        }
+        
+        for( int i = 0; i < (int)m_arNativeItems.size(); i++ )
+        {
+            unsigned long nInterval = 0;
+            if ( m_arNativeItems.elementAt(i).m_oFireTime.toULong() > curTime.toULong() )
+            {
+                nInterval = m_arNativeItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+                RAWTRACE3("CRhoTimer::nInterval: %lu,m_oFireTime.toULong: %lu,curTime.toULong: %lu,",nInterval,m_arNativeItems.elementAt(i).m_oFireTime.toULong(),curTime.toULong());
+                
+            }
+            else
+            {
+                nInterval=nMinInterval+m_arNativeItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+                RAWTRACE1("CRhoTimer::nMinInterval: %lu",nMinInterval);
+                RAWTRACE3("CRhoTimer::nInterval: %lu,m_oFireTime.toULong: %lu,curTime.toULong: %lu,",nInterval,m_arNativeItems.elementAt(i).m_oFireTime.toULong(),curTime.toULong());
+            }
+            
+            if ( nInterval < nMinInterval )
+                nMinInterval = nInterval;
+        }
+        
+        if ( nMinInterval < 100 )
+            nMinInterval = 100;
+#if defined(OS_MACOSX) || defined(OS_IPHONE)
 
-        if ( nInterval < nMinInterval )
-            nMinInterval = nInterval;
+        int sign=(nMinInterval>>(sizeof(unsigned long)*CHAR_BIT -1));
+        RAWTRACE1("CRhoTimer::getNextTimeout:sign= %d,%d",sign);
+       
+        if(sign)
+            nMinInterval = 100;
+ #endif
+       
+        RAWTRACE1("CRhoTimer::getNextTimeout:nMinInterval=  %d",nMinInterval);
+        RAWTRACE1("CRhoTimer::getNextTimeout:nMinInterval= %lu",nMinInterval);
+        
+        return nMinInterval;
     }
-
-	RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems size : %d", m_arNativeItems.size());
-    for( int i = 0; i < (int)m_arNativeItems.size(); i++ )
-    {
-        unsigned long nInterval = 0;
-		RAWTRACE("getNextTimeout------------------------------------------");
-		RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems Index %d", i);
-		RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems Firetime : %d ", m_arNativeItems.elementAt(i).m_oFireTime.toULong() );
-		RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems curTime : %d ", curTime.toULong() );
-		RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems Calc : %d ", (m_arNativeItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong()) );
-		RAWTRACE1("CRhoTimer::getNextTimeout m_arNativeItems Index %d", i);
-        if ( m_arNativeItems.elementAt(i).m_oFireTime.toULong() > curTime.toULong() )
-    		{
-            nInterval = m_arNativeItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
-    		}
-    		else
-    		{	
-        		nInterval=nMinInterval+m_arNativeItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
-    		}
-
-        if ( nInterval < nMinInterval )
-            nMinInterval = nInterval;
-		RAWTRACE("getNextTimeout------------------------------------------");
-    }
-
-
-    if ( nMinInterval < 100 )
-        nMinInterval = 100;
-
-    RAWTRACE1("CRhoTimer::getNextTimeout: %d",nMinInterval);
-
-    return nMinInterval;
-}
-
 boolean CRhoTimer::checkTimers()
 {
     RAWTRACE("CRhoTimer::checkTimers");
