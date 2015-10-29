@@ -960,8 +960,8 @@ function Test_image_uri()
           </EXAMPLE>
 		</EXAMPLES>
         <REMARKS>
-            <REMARK title="SDCard Access">
-                <DESC>SDCard access is eabled by default; grants of additional access will be ignored. The following extensions are able to write to the SD card by default.</DESC>
+            <REMARK title="SD Card Access">
+                <DESC>SD Card access is enabled by default; grants of additional access will be ignored. The following extensions are able to write to the SD card by default.</DESC>
             </REMARK>
 			<REMARK title="Camera Preview">
                 <DESC>Despite a user-selected full screen mode, preview rendering size will be overridden by the driver on some WM/CE devices.</DESC>
@@ -970,13 +970,13 @@ function Test_image_uri()
                 <DESC>DataUri output is dependent on availability of virtual space. DataUri may fail, be unresponsive, cause reboot, degraded performance or fail to load in certain devices. In such cases, image path is recommended.</DESC>
             </REMARK>
 			<REMARK title="ImageUri">
-                <DESC>Image uri display is dependent on browser capability.</DESC>
+                <DESC>Image Uri display is dependent on browser capability.</DESC>
             </REMARK>
 			<REMARK title="GetSupportedProperties in WP8">
                 <DESC>WP8 does not support getSupportedProperties or SetSupportedProperties.</DESC>
             </REMARK>
 		    <REMARK title="colorModel as Grayscale in Android">
-                <DESC>Grayscale is supported only in consumer Android devices for the front camera.</DESC>
+                <DESC>Grayscale is supported only in the front camera of Android consumer devices.</DESC>
             </REMARK>
             <REMARK title="Invalid/Null values for properties in Android and iOS">
                 <DESC>Only valid and non-empty values for properties are supported in Android and iOS.</DESC>
@@ -987,23 +987,23 @@ function Test_image_uri()
             <REMARK title="Camera in Suspend mode">
               <DESC>All WM and CE7 devices automatically turn off both color and imager cameras when the device is suspended. User must restart the camera to resume. Whereas CE5 (eg: MC9000) and CE6 (eg: MC31) devices retain the preview on resuming from suspend state.</DESC>
             </REMARK>
-            <REMARK title="Image saving while take picture">
-              <DESC>In some devices (eg: Samsung), an image will be saved in landscape mode even if captured in portrait mode. This behavior is determined by device default settings.</DESC>
+            <REMARK title="Image saving after taking picture">
+              <DESC>In some devices (eg: Samsung), an image will be saved in landscape mode even if captured in portrait mode. This behavior is determined by the device's default settings.</DESC>
             </REMARK>
 			<REMARK title="WM/CE devices lacking support">
             <DESC>Due to platform limitations, the ES400, MC65 and MC67 do not support the color camera.</DESC>
             </REMARK>
-            <REMARK title="takePicture resolution issue on low memory device with WM">
-            <DESC>Due to platform limitations, the ES400, MC65 and MC67 do not support a color camera. The imager on the MC55 with WM does not support the Fullscreen window (eg: takePicture). Parameters such as previewLeft, previewWidth, previewTop, previewHeight are supported by the device to setup a user-defined viewer window.</DESC>
+            <REMARK title="takePicture resolution issue on low-memory devices with WM">
+            <DESC>Due to platform limitations, the ES400, MC65 and MC67 do not support a color camera. The imager on the MC55 with WM does not support the Fullscreen window (eg: takePicture). Parameters such as previewLeft, previewWidth, previewTop and previewHeight are supported by the device to set up a user-defined viewer window.</DESC>
             </REMARK>
-            <REMARK title="takePicture resolution issue on low memory device with WP8">
-            <DESC>In devices having low processor, lower resolution image capture may show a small area of preview on black background at the time of transition back to application.</DESC>
+            <REMARK title="takePicture resolution issue on low-memory devices with WM">
+            <DESC>Processor limitations of some devices may cause a low-resolution image captures to appear as a small preview with a black background when transitioning back to the application.</DESC>
             </REMARK>
             <REMARK title="Android KitKat gallery displays black image">
-            <DESC>For images captured with the camera using a Rho app, the image might initially appear black. Refreshing the view corrects the problem.</DESC>
+            <DESC>For images captured with the camera using a Rho app, the image might initially appear black. Refresh the view to correct the problem.</DESC>
             </REMARK>
             <REMARK title="Android preview">
-            <DESC>On low memory devices it is recommended NOT to set high resolutions. Preview on tablet devices may appear bit stretched or shrinked.</DESC>
+            <DESC>High-resolution settings are not recommended for low-memory devices. Image previews on tablet devices might appear stretched or shrunken.</DESC>
             </REMARK>
            
         </REMARKS>
