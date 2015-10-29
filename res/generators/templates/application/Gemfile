@@ -1,0 +1,7 @@
+source "https://rubygems.org"
+ruby '<%=RUBY_VERSION%>'
+
+gem 'rhodes','<%=Rhodes::VERSION%>'
+gem 'rhoconnect-client','<%=Rhodes::VERSION%>'
+gem 'rhoelements','<%=Rhodes::VERSION%>'
+gem 'rhodes-containers','<%=Rhodes::VERSION%>'
