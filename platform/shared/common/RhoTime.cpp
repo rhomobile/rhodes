@@ -61,12 +61,9 @@ void CRhoTimer::addTimer(int nInterval, const char* szCallback, const char* szCa
     synchronized(m_mxAccess)
     {
       m_arItems.addElement(CTimerItem(nInterval, szCallback, szCallbackData));
-// Multiple Timer blocking case fix
-#if defined(OS_MACOSX) || defined(OS_IPHONE)
-    //Nothing to do
-#else
+
       m_checkerThread.stopWait();
-#endif
+
     }
 }
 
@@ -77,11 +74,9 @@ void CRhoTimer::addNativeTimer(int nInterval, CRhoTimer::ICallback* callback)
     synchronized(m_mxAccess)
     {
       m_arNativeItems.addElement(CNativeTimerItem(nInterval, callback));
-#if defined(OS_MACOSX) || defined(OS_IPHONE)
-        //Nothing to do
-#else
+
       m_checkerThread.stopWait();
-#endif
+
     }
 }
 
