@@ -128,7 +128,7 @@ import java.net.SocketException;
 public class RhodesService extends Service {
 	
 	private static final String TAG = RhodesService.class.getSimpleName();
-	
+	public static boolean isSplashViewed = false;
 	private static final boolean DEBUG = false;
 	
 	public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes";
@@ -414,6 +414,19 @@ public class RhodesService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Logger.D(TAG, "onStartCommand");
+		//spr28185fix-- Initialize application start time After the application killed due to low memory
+		if(isSplashViewed)
+	        {
+	        	Logger.T(TAG, "isSplashViewed is true");
+	        	RhodesActivity ra = RhodesActivity.getInstance();
+	                if (ra != null) {
+	            	Logger.T(TAG, "splashScreen.start() called");
+	                // Show splash screen only if we have active activity
+	                SplashScreen splashScreen = ra.getSplashScreen();
+	                splashScreen.start();	               
+	                isSplashViewed=false;
+	                }  	      	
+	        }
 		try {
 			handleCommand(intent, startId);
 		}
