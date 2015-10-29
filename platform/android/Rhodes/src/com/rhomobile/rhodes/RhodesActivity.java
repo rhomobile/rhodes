@@ -73,6 +73,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	
 	public static boolean IS_WINDOWS_KEY = false;
 	
+	public static boolean isShownSplashScreenFirstTime = false;//Used to display the splash screen only once during launch of an application
+	
 	public static int MAX_PROGRESS = 10000;
 	
 	private static RhodesActivity sInstance = null;
@@ -82,7 +84,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	private FrameLayout mTopLayout;
 	private SplashScreen mSplashScreen;
 	private MainView mMainView;
-	
+	private String lastIntent ="android.intent.action.MAIN";
 	private RhoMenu mAppMenu;
 
 	private long uiThreadId = 0;
@@ -217,7 +219,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         Logger.T(TAG, "onCreate");
-
+		//sprfix28185- setting flag to call splashscreen:start function
+		if(RhodesService.getInstance()!=null)
+        	{
+			Logger.T(TAG, "RhodesService.getInstance() called");
+			RhodesService.isSplashViewed=true;
+	        }
         Thread ct = Thread.currentThread();
         //ct.setPriority(Thread.MAX_PRIORITY);
         uiThreadId = ct.getId();
@@ -293,13 +300,29 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         super.onNewIntent(intent);
 
         Logger.T(TAG, "onNewIntent");
+        if(intent !=null && intent.getAction() !=null){
+        if(!(intent.getAction().compareTo("com.rho.rhoelements.SHORTCUT_ACTION") == 0) && ( intent.getAction().compareTo(lastIntent) == 0) && (RhoExtManager.getInstance().getWebView().getUrl()!=null/*..Double CLick Crash...*/)){
 	String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
     	intent.setAction("android.intent.action.VIEW");
     	intent.setData(Uri.parse(url));
-        
+        }else if((intent.getAction().compareTo("android.intent.action.MAIN") == 0) && (!(lastIntent.compareTo("com.rho.rhoelements.SHORTCUT_ACTION") == 0)) && (RhoExtManager.getInstance().getWebView().getUrl()!=null/*..Double CLick Crash...*/) ){
+	    	   //This Else for :- If user click on launch the EB through Shortcut and second time launch the EB through the proper
+	    	   //App that time for handle the Start page , we added this else.
+	    	    String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
+	        	intent.setAction("android.intent.action.VIEW");
+	        	intent.setData(Uri.parse(url));
+	       }
+        }else{
+        	//This Else for :- If user Call Restore API that time to maintain the same Page when App resumed back
+        	//Because when user click on restore API that time our intent value is NULL.
+        	String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
+        	intent.setAction("android.intent.action.VIEW");
+        	intent.setData(Uri.parse(url));
+        }
         handleStartParams(intent);
 
         RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
+        lastIntent = intent.getAction();
     }
     
     @Override
