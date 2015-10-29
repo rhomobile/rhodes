@@ -114,6 +114,16 @@ module Rhogen
       template.destination = "#{name}/.gitignore"
     end
 
+    template :rubyversion do |template|
+      template.source = 'ruby-version'
+      template.destination = "#{name}/.ruby-version"
+    end
+
+    template :gemfile do |template|
+      template.source = 'Gemfile'
+      template.destination = "#{name}/Gemfile"
+    end
+
     template :application do |template|
       template.source = 'app/application.rb'
       template.destination = "#{name}/app/application.rb"
