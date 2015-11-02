@@ -81,7 +81,7 @@ The ebapi.js file is necessary for all single API inclusions.
       </METHOD>
 
       <METHOD name="close" destructor="true">
-        <DESC>Closes file. once Close method is invoked, no file object will be alive </DESC>
+        <DESC>Closes file. Once Close method is invoked, no file object will be alive.</DESC>
       </METHOD>
 
       <METHOD name="isOpened">
