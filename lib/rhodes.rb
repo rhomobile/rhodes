@@ -1,6 +1,6 @@
 module Rhodes
   unless defined? Rhodes::VERSION
-    VERSION = '5.3.3'
+    VERSION = File.read(File.expand_path('../../version', __FILE__)).strip rescue '5.3.0'
   end
   unless defined? Rhodes::DBVERSION
     DBVERSION = '2.2.0'
