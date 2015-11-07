@@ -302,8 +302,8 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     , m_localResponseWriter(0)
     , m_pQueue(0)
 #endif
-{
-    m_enable_external_access = false;
+{    
+    m_enable_external_access = RHOCONF().getBool("enable_external_server_access");
     m_started_as_separated_simple_server = false;
     m_root = CFilePath::normalizePath(root);
 #ifdef RHODES_EMULATOR
