@@ -22,6 +22,8 @@ module RhoDevelopment
             cmd = "start \"development webserver\" /d \"#{Configuration::application_root}\" rake dev:webserver:privateStart"
           when /darwin/i
             cmd = "osascript -e 'tell app \"Terminal\" \n do script \" cd #{Configuration::application_root}; rake dev:webserver:privateStart\" \n end tell'"
+          when /linux/i
+            cmd = "cd #{Configuration::application_root} && rake dev:webserver:privateStart &"
         end
         system cmd
         until self.alive? do
