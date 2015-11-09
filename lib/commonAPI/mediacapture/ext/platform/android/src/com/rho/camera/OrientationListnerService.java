@@ -14,6 +14,7 @@ public class OrientationListnerService extends Service{
 		mOrientationListener = new OrientationEventListener(this) {
 			@Override
 			public void onOrientationChanged(int rotation) {
+			if(rotation != -1){
 				if(rotation >=315 && rotation < 45){
 					mRotation = 0;
 				}else if(rotation >=45 && rotation < 135){
@@ -26,6 +27,7 @@ public class OrientationListnerService extends Service{
 					mRotation = 0;
 				}
 			}
+		}
 		};
 	}
 	@Override
