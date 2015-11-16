@@ -198,7 +198,7 @@ Notice that this looks very similar to a standard AndroidManifest.XML file secti
                 </CALLBACK>
                 <PLATFORM_EB>WM</PLATFORM_EB>
             </METHOD>
-            <METHOD name="stopListening" hasCallback="none" productException="eb">
+            <METHOD name="stopListening" hasCallback="none" productException="">
                 <DESC>Stop listening for custom intents.</DESC>
             </METHOD>
         </METHODS>
