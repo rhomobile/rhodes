@@ -3527,7 +3527,9 @@ def init_extensions(dest, mode = "")
         write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
 
         $ebfiles_shared_rt_js_appliction = ($js_application and ($current_platform == "wm" or $current_platform == "android") and $app_config["capabilities"].index('shared_runtime'))
-        if $use_shared_runtime || $ebfiles_shared_rt_js_appliction
+        $check_eb_instance = Jake.getBuildBoolProp("check_eb_instance")
+        $check_pr_instance = ($check_eb_instance and $use_shared_runtime)
+        if $check_pr_instance || $ebfiles_shared_rt_js_appliction
           start_path = Dir.pwd
           chdir rhoapi_js_folder
 
