@@ -210,9 +210,14 @@ Notice that this looks very similar to a standard AndroidManifest.XML file secti
             <REMARK title="Registering Intent Receiver">
                 <DESC>
                     <![CDATA[
-For an Android app to receive intent data, the Intent receiver must be registered in the app's `Config.xml` file. Please refer to the <a href="#guide-configreference?Intent">Intent section of the EB Config Reference</a> for more information. 
+For an Android app to receive intent data, the Intent receiver must be registered in the app's `AndroidManifest.erb` file. Please refer to the <a href="../guide/intent">Intent Guide</a> for more information. 
                     ]]>
                 </DESC>
+                <DESC_EB>
+                    <![CDATA[
+For an Android app to receive intent data, the Intent receiver must be registered in the app's `Config.xml` file. Please refer to the <a href="#guide-configreference?Intent">Intent section of the EB Config Reference</a> for more information. 
+                    ]]>
+                </DESC_EB>
             </REMARK>
         </REMARKS>
         <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
