@@ -515,7 +515,7 @@ def stuff_around_appname
     if $js_application
       shortcut_content = '"\\Program Files\\EnterpriseBrowser\\EnterpriseBrowser.exe" -jsapproot="\\Program Files\\' + $appname + '"'
     else
-      shortcut_content = '"\\Program Files\\EnterpriseBrowser\\EnterpriseBrowser.exe" -approot="\\Program Files\\' + $appname + '"'
+      shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
     end
 
     if File.exists? wm_icon then
