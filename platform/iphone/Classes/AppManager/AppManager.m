@@ -438,6 +438,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         
         UIDocumentInteractionController* docController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
         
+        [docController retain];
         docController.delegate = self;//[AppManager instance];
         
         BOOL result = [docController presentPreviewAnimated:YES];
