@@ -206,6 +206,15 @@ Notice that this looks very similar to a standard AndroidManifest.XML file secti
                 <DESC>Stop listening for custom intents.</DESC>
             </METHOD>
         </METHODS>
+        <REMARKS_EB>
+            <REMARK title="Registering Intent Receiver">
+                <DESC>
+                    <![CDATA[
+In Android, in-order to receive the intent data, one must ensure to register the Intent receiver in Config.xml. Please refer <a href="http://ebzebra.github.io/docs/1.3/#guide-configreference?Intent">Intent Config Tags</a> for further reference. 
+                    ]]>
+                </DESC>
+            </REMARK>
+        </REMARKS_EB>
         <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
         <PLATFORM>iOS, WM, Android</PLATFORM>
         <PLATFORM_EB>Android, WM</PLATFORM_EB>
