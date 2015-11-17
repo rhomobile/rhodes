@@ -87,21 +87,14 @@
         int app_height = 0;
 
 
-		if ((orientation == UIInterfaceOrientationPortrait) || (orientation == UIInterfaceOrientationPortraitUpsideDown)) {
-			scrnWidth = (int)(srcrnBounds.size.width*scales+0.5);
-			scrnHeight = (int)(srcrnBounds.size.height*scales+0.5);
-            app_width = (int)(appFrame.size.width+0.5);
-            app_height = (int)(appFrame.size.height+0.5);
-		}
-		else {
-			scrnWidth = (int)(srcrnBounds.size.height*scales+0.5);
-			scrnHeight = (int)(srcrnBounds.size.width*scales+0.5);
-            app_width = (int)(appFrame.size.height+0.5);
-            app_height = (int)(appFrame.size.width+0.5);
-        }
+	scrnWidth = (int)(srcrnBounds.size.width*scales+0.5);
+	scrnHeight = (int)(srcrnBounds.size.height*scales+0.5);
+        app_width = (int)(appFrame.size.width+0.5);
+        app_height = (int)(appFrame.size.height+0.5);
+
 		
 	
-		if ((image_width != scrnWidth) || (image_height != scrnHeight) || (img_scale != scales)) 
+	if ((image_width != scrnWidth) || (image_height != scrnHeight) || (img_scale != scales)) 
         {
             if ((((int)[img size].width) != app_width) || (((int)[img size].height) != app_height)) {
                 // scale to app frame
