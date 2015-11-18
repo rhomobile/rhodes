@@ -2798,6 +2798,7 @@ namespace "config" do
       end
 
       if $current_platform == "wm"
+		$app_config['extensions'] = $app_config['extensions'] | ['sharedruntimecheck']
         $app_config['extensions'] = $app_config['extensions'] | ['symboldevice']
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
         $app_config['extensions'] = $app_config['extensions'] | ['indicators']
