@@ -513,7 +513,7 @@ def stuff_around_appname
   wm_icon = $app_path + '/icon/icon.ico'
   if $use_shared_runtime
     if $js_application
-      shortcut_content = '"\\Program Files\\EnterpriseBrowser\\EnterpriseBrowser.exe" -jsapproot="\\Program Files\\' + $appname + '"'
+      shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -jsapproot="\\Program Files\\' + $appname + '"'
     else
       shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
     end
