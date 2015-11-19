@@ -2932,6 +2932,10 @@ void rho_rhodesapp_setStartParametersOriginal(const char* szParams)
     RHODESAPP().setStartParametersOriginal(szParams? szParams:"");
 }
     
+int rho_rhodesapp_is_application_active() {
+    return RHODESAPP().isApplicationActive() ? 1 : 0;
+}
+    
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 {
     String strCmdLineSecToken;
