@@ -358,11 +358,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	wFrame.origin.y = 0;
     
     toolbar = [self newToolbar:bar_info frame:wFrame];
-    assert([toolbar retainCount] == 1);
+    //assert([toolbar retainCount] == 1);
     toolbar.tag = RHO_TAG_TOOLBAR;
     UIView* root = self.view;
     [root addSubview:toolbar];
-    assert([toolbar retainCount] == 2);
+    //assert([toolbar retainCount] == 2);
     
     CGRect tbFrame = toolbar.frame;
 	wFrame = [self getContentRect];
