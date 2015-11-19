@@ -32,8 +32,8 @@ extern UINT WM_CREATE_SHORTCUT;
 #ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
-
 LPTSTR parseToken(LPCTSTR start, LPCTSTR* next_token);
+extern "C" void vParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode);
 extern "C" void rho_ringtone_manager_stop();
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);

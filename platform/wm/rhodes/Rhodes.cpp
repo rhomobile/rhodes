@@ -573,6 +573,12 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 
 	return _AtlModule.WinMain(nShowCmd);
 }
+//Customized Parse Command Line Method.
+//This is useful for customization of any command line arguments.
+extern "C" void vParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode )
+{
+	//Do whatever you want.....
+}
 
 extern "C" void rho_os_impl_performOnUiThread(rho::common::IRhoRunnable* pTask) 
 {
