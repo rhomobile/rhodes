@@ -134,7 +134,7 @@ extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const c
 
 extern "C" void rho_scanner_TEST(HWND hwnd);
 extern "C" void rho_scanner_TEST2();
-extern "C" void rho_wm_impl_CheckLicense();
+
 
 // This method is called immediately before entering the message loop.
 // It contains initialization code for the application.
@@ -623,76 +623,7 @@ static void rho_platform_check_restart_application()
 
 typedef bool (WINAPI *PCSD)();
 
-extern "C" void rho_wm_impl_SetApplicationLicenseObj(void* pAppLicenseObj);
-
-typedef LPCWSTR (WINAPI *PCL)(HWND, LPCWSTR, LPCWSTR, LPCWSTR);
-typedef int (WINAPI *FUNC_IsLicenseOK)();
-typedef void* (WINAPI *FUNC_GetAppLicenseObj)();
-
-extern "C" void rho_wm_impl_CheckLicense()
-{   
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-    int nRes = 0;
-    LOG(INFO) + "Start license_rc.dll";
-    HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
-    LOG(INFO) + "Stop license_rc.dll";
-    
-
-    if(hLicenseInstance)
-    {
-        PCL pCheckLicense = (PCL) GetProcAddress(hLicenseInstance, L"CheckLicense");
-        FUNC_IsLicenseOK pIsOK = (FUNC_IsLicenseOK) GetProcAddress(hLicenseInstance, L"IsLicenseOK");
-        LPCWSTR szLogText = 0;
-        if(pCheckLicense)
-        {
-            StringW strLicenseW;
-            StringW strCompanyW;
-
-        #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-            LPCTSTR szLicense = rho_wmimpl_sharedconfig_getvalue( L"LicenseKey" );
-            if ( szLicense )
-                strLicenseW = szLicense;
-
-            LPCTSTR szLicenseComp = rho_wmimpl_sharedconfig_getvalue( L"LicenseKeyCompany" );
-            if ( szLicenseComp )
-                strCompanyW = szLicenseComp;
-        #endif
-
-            StringW strAppNameW;
-            strAppNameW = RHODESAPP().getAppNameW();
-            szLogText = pCheckLicense( getMainWnd(), strAppNameW.c_str(), strLicenseW.c_str(), strCompanyW.c_str() );
-        }
-
-        if ( szLogText && *szLogText )
-            LOGC(INFO, "License") + szLogText;
-
-        nRes = pIsOK ? pIsOK() : 0;
-    }
-
-#ifdef APP_BUILD_CAPABILITY_SYMBOL
-    if ( nRes == 0 )
-    {
-        rho::BrowserFactory::getInstance()->checkLicense(getMainWnd(), hLicenseInstance);
-        return;
-    }
-#endif
-
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    if ( nRes )
-    {
-        FUNC_GetAppLicenseObj pGetAppLicenseObj = (FUNC_GetAppLicenseObj) GetProcAddress(hLicenseInstance, L"GetAppLicenseObj");
-        if ( pGetAppLicenseObj )
-            rho_wm_impl_SetApplicationLicenseObj( pGetAppLicenseObj() );
-    }
-#endif
-
-    if ( !nRes )
-        ::PostMessage( getMainWnd(), WM_SHOW_LICENSE_WARNING, 0, 0);
-#endif
-}
-
-static inline char *
-translate_char(char *p, int from, int to)
+static inline char * translate_char(char *p, int from, int to)
 {
     while (*p) {
 	if ((unsigned char)*p == from)

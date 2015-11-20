@@ -33,6 +33,14 @@ extern UINT WM_CREATE_SHORTCUT;
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
 LPTSTR parseToken(LPCTSTR start, LPCTSTR* next_token);
+
+extern "C" HWND getMainWnd();
+extern "C" void rho_wm_impl_SetApplicationLicenseObj(void* pAppLicenseObj);
+typedef LPCWSTR (WINAPI *PCL)(HWND, LPCWSTR, LPCWSTR, LPCWSTR);
+typedef int (WINAPI *FUNC_IsLicenseOK)();
+typedef void* (WINAPI *FUNC_GetAppLicenseObj)();
+extern "C" void rho_wm_impl_CheckLicense();
+
 extern "C" void vParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode);
 extern "C" void rho_ringtone_manager_stop();
 extern "C" void rho_sysimpl_sethas_network(int nValue);
