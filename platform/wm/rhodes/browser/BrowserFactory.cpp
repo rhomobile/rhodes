@@ -16,11 +16,6 @@ extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 extern "C" const char* rho_wmimpl_get_webengine();
 extern "C" const char* get_app_build_config_item(const char* key);
 
-#if defined(APP_BUILD_CAPABILITY_SYMBOL)
-extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent, HINSTANCE hLicenseInstance);
-extern "C" void rho_wm_impl_CheckLicenseWithBarcodeWoWebkit(HWND hParent, HINSTANCE hLicenseInstance);
-#endif
-
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 
 //////////////////////////////////////////////////////////////////////////
@@ -82,26 +77,6 @@ EBrowserEngineType BrowserFactory::convertBrowserType(rho::String browserType)
     }
 
     return eNone;
-}
-
-void BrowserFactory::checkLicense(HWND hParent, HINSTANCE hLicenseInstance)
-{
-#if defined(APP_BUILD_CAPABILITY_SYMBOL)
-    if(!m_bLicenseChecked)
-    {
-        switch(m_selBrowserType)
-        {
-        case eIE:
-            rho_wm_impl_CheckLicenseWithBarcodeWoWebkit(hParent, hLicenseInstance);
-            break;
-        case eWebkit:
-            rho_wm_impl_CheckLicenseWithBarcode(hParent, hLicenseInstance);
-            break;
-        default:
-            LOG(INFO) + "check license failed. browser engine was not selected.";
-        }
-    }
-#endif
 }
 
 IBrowserEngine* BrowserFactory::create(HWND hwndParent)
