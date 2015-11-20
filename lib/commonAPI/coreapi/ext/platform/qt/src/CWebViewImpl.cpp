@@ -155,7 +155,9 @@ public:
 
     virtual void navigateBack( int tabIndex, rho::apiGenerator::CMethodResult& oResult)
     {
-        rho_webview_navigate_back();
+        //rho_webview_navigate_back();
+        //commented because every time it is navigating with default -1 instead of user defined tab index.
+        rho_webview_navigate_back_with_tab(tabIndex);
     }
 
     virtual void currentLocation( int tabIndex, rho::apiGenerator::CMethodResult& oResult)
