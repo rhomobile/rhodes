@@ -107,6 +107,7 @@ public:
     int tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbri);
     void tabbarSetBadge(int index, const char* badge);
     void tabbarSetSwitchCallback(rho::apiGenerator::CMethodResult& oResult);
+    std::vector<std::string> navigatePage; //Every navigation page will be storred in this vector
 private:
     void tabbarWebViewRestore(bool reload);
     void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);

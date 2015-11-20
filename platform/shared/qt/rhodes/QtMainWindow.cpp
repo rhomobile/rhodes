@@ -463,6 +463,7 @@ void QtMainWindow::on_menuMain_aboutToShow()
 
 void QtMainWindow::navigate(QString url, int index)
 {
+    navigatePage.push_back(url.toStdString()); //Every navigation page will be storred in this vector
     QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
     if (wv) {
         if (url.startsWith("javascript:", Qt::CaseInsensitive)) {
@@ -487,8 +488,12 @@ void QtMainWindow::navigate(QString url, int index)
 void QtMainWindow::GoBack(int index)
 {
     QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
-    if (wv)
-        wv->back();
+    if (navigatePage[1]!=RHODESAPP().getCurrentUrl(tabbarGetCurrent()).c_str()) //it is checked whether current page is the fisrt time navigated page or not
+    {
+        if (wv)
+           wv->back();
+    }
+
 }
 
 void QtMainWindow::GoForward(void)
