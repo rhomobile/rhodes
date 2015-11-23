@@ -2798,6 +2798,7 @@ namespace "config" do
       end
 
       if $current_platform == "wm"
+		$app_config['extensions'] = $app_config['extensions'] | ['sharedruntimecheck']
         $app_config['extensions'] = $app_config['extensions'] | ['symboldevice']
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
         $app_config['extensions'] = $app_config['extensions'] | ['indicators']
@@ -3527,7 +3528,9 @@ def init_extensions(dest, mode = "")
         write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
 
         $ebfiles_shared_rt_js_appliction = ($js_application and ($current_platform == "wm" or $current_platform == "android") and $app_config["capabilities"].index('shared_runtime'))
-        if $use_shared_runtime || $ebfiles_shared_rt_js_appliction
+        $check_eb_js_enabled = Jake.getBuildBoolProp("create_eb_js")
+        $is_eb_js_creation_req = ($check_eb_js_enabled and $use_shared_runtime)
+        if $is_eb_js_creation_req || $ebfiles_shared_rt_js_appliction
           start_path = Dir.pwd
           chdir rhoapi_js_folder
 

@@ -2365,6 +2365,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Rhodes.h"
+				>
+			</File>
+			<File
 				RelativePath=".\RhoNativeViewManagerWM.h"
 				>
 			</File>
