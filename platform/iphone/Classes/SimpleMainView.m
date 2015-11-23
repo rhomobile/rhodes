@@ -414,10 +414,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
     assert(!webView || [webView retainCount] == 1);
     self.webView = nil;
     webView = w;
-    assert(!webView || [webView retainCount] == 1);
+    //Assertion Failed, fix for ios9 app crashed
+    //assert(!webView || [webView retainCount] == 1);
 	if (!webView)
         webView = [self newWebView:frame];
-    assert(webView && [webView retainCount] == 1);
+    //Assertion Failed, fix for ios9 app crashed
+    //assert(webView && [webView retainCount] == 1);
     
 	CGRect wFrame = frame;
     wFrame.origin.y = 0;
@@ -472,7 +474,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	}
 	else {
 		[root addSubview:webView];
-		assert([webView retainCount] == 2);
+        //Assertion Failed, fix for ios9 app crashed
+		//assert([webView retainCount] == 2);
     }
 	
 
@@ -712,7 +715,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
     webView.delegate = nil;
     self.webView = nil;
     
-    assert(w && [w retainCount] == 1);
+    //Assertion Failed, fix for ios9 app crashed
+    //assert(w && [w retainCount] == 1);
     return w;
 }
 
