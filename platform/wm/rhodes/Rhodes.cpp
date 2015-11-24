@@ -182,26 +182,33 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-    rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
-    if (rho_wmimpl_get_logurl()[0]!=0)
+	if (!rho_wmimpl_is_logging_native_type())
 	{
-        LOGCONF().setLogURL(rho_wmimpl_get_logurl());
-		LOGCONF().setLogToSocket(true);
+		rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
+		if (rho_wmimpl_get_logurl()[0]!=0)
+		{
+			LOGCONF().setLogURL(rho_wmimpl_get_logurl());
+			LOGCONF().setLogToSocket(true);
+		}
+		if (rho_wmimpl_get_logmaxsize())
+			LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
+		if (rho_wmimpl_get_loglevel())
+			LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
+		if (rho_wmimpl_get_fullscreen())
+			RHOCONF().setBool("full_screen", true, false);
+		if (rho_wmimpl_get_logmemperiod())
+			LOGCONF().setCollectMemoryInfoInterval(*rho_wmimpl_get_logmemperiod());
+		//SR EMBPD00121468
+		//Network api via proxy is not working with proxy enable using config.xml 
+		//Sabir: The values were getting set from rhoconfig.txt from function rho_logconf_Init
+		//fix: we have to override http_proxy_host using config.xml value
+		rho::String szHttpProxy =  rho_wmimpl_get_httpproxy();
+		parseHttpProxyURI(szHttpProxy);
 	}
-    if (rho_wmimpl_get_logmaxsize())
-        LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
-    if (rho_wmimpl_get_loglevel())
-        LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
-    if (rho_wmimpl_get_fullscreen())
-        RHOCONF().setBool("full_screen", true, false);
-    if (rho_wmimpl_get_logmemperiod())
-        LOGCONF().setCollectMemoryInfoInterval(*rho_wmimpl_get_logmemperiod());
-    //SR EMBPD00121468
-    //Network api via proxy is not working with proxy enable using config.xml 
-    //Sabir: The values were getting set from rhoconfig.txt from function rho_logconf_Init
-    //fix: we have to override http_proxy_host using config.xml value
-    rho::String szHttpProxy =  rho_wmimpl_get_httpproxy();
-    parseHttpProxyURI(szHttpProxy);
+	else
+	{
+		rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
+	}
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
