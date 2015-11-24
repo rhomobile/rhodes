@@ -28,7 +28,8 @@ void CEditSIP::InitSIP()
 		pfnSetKeyState = (LPFNSETKEYSTATE)GetProcAddress(hKeybdDriver, SETKEYSTATE);
 		if (pfnSetKeyState)
 		{
-			pfnSetKeyState(UN_SHIFTED, 0, true);
+			//SPR28803fix- removing the setting to enable alphakey while launching the EB in 48 keypad device. 
+			//pfnSetKeyState(UN_SHIFTED, 0, true);
 		}
 	}
 }
@@ -42,7 +43,8 @@ BOOL CEditSIP::ToggleSystemSIP()
 	{
 		if (pfnSetKeyState)
 		{
-			pfnSetKeyState(UN_SHIFTED, 0, true);
+			//SPR28803fix- removing the setting to enable alphakey while launching the EB in 48 keypad device. 
+			//pfnSetKeyState(UN_SHIFTED, 0, true);
 		}
 	}
 
