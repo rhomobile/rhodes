@@ -504,7 +504,15 @@ void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char*
 
     LOGCONF().setLogPrefix(true);
 #ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
-	rho::String logPath = oLogPath.getPath();
+	rho::String logPath;
+	if (get_app_build_config_item("create_eb_js"))
+    {
+        logPath = oLogPath.getPath();
+    }
+	else
+	{
+		logPath = oLogPath.makeFullPath("rholog.txt");
+	}
 #else
 	rho::String logPath = oLogPath.makeFullPath("rholog.txt");
 #endif

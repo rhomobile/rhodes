@@ -40,7 +40,7 @@ typedef LPCWSTR (WINAPI *PCL)(HWND, LPCWSTR, LPCWSTR, LPCWSTR);
 typedef int (WINAPI *FUNC_IsLicenseOK)();
 typedef void* (WINAPI *FUNC_GetAppLicenseObj)();
 extern "C" void rho_wm_impl_CheckLicense();
-
+extern "C" bool rho_wmimpl_is_logging_native_type();
 extern "C" void vParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode);
 extern "C" void rho_ringtone_manager_stop();
 extern "C" void rho_sysimpl_sethas_network(int nValue);
