@@ -487,6 +487,16 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         [[AppManager instance] openDocInteract:strUrl];
     }
     else {
+#ifdef __IPHONE_8_0
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
+            if ([strUrl rangeOfString:@":"].location == NSNotFound) {
+                //Append : for backward compatibility
+                strUrl = [strUrl stringByAppendingString:@":"];
+            } else {
+                //Do nothing
+            }
+        }
+#endif
         if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:strUrl]]) {
             res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:strUrl]];
         }
