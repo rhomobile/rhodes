@@ -120,6 +120,7 @@ module Rhogen
     end
 
     template :gemfile do |template|
+      Rhodes::VERSION = File.read(File.expand_path('../../../version', __FILE__)).strip rescue Rhodes::VERSION
       template.source = 'Gemfile'
       template.destination = "#{name}/Gemfile"
     end
