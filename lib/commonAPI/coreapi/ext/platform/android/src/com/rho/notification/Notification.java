@@ -26,7 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.rho.notification.NotificationFactory;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -58,7 +58,7 @@ public class Notification {
         this.id = id;
         this.result = result;
         
-        Context ctx = ContextFactory.getUiContext();
+        Context ctx = ContextFactory.getAppContext();
         
         String iconName = null;
 
@@ -376,12 +376,14 @@ public class Notification {
     }
     
     public boolean isForegroundToastNeeded() {
-        boolean foregroundDialog = RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated) && isDialogNeeded();
+       // boolean foregroundDialog = RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated) && isDialogNeeded();
+        boolean foregroundDialog = NotificationFactory.isAppAlive && isDialogNeeded();
         return kinds.contains(INotificationSingleton.TYPE_TOAST) && !foregroundDialog;
     }
     
     public boolean isNotificationAreaNeeded() {
-        return !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated) && (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION) || kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG));
+        //return !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated) && (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION) || kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG));
+        return !NotificationFactory.isAppAlive &&  (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION) || kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG));
     }
 
     private static class ActionData
