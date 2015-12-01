@@ -11,6 +11,7 @@ import com.rhomobile.rhodes.extmanager.IRhoListener;
 public class NotificationFactory extends AbstractRhoListener implements INotificationFactory, IRhoListener
 {
 	private NotificationSingleton singleton;
+	public static boolean isAppAlive= false;
 	
 	public NotificationFactory()
 	{
@@ -28,7 +29,11 @@ public class NotificationFactory extends AbstractRhoListener implements INotific
 	{
 		return null;
 	}
-
+	@Override
+	public void onStart(RhodesActivity activity)
+	{
+		isAppAlive = true;
+	}
 	@Override
 	public void onPause(RhodesActivity activity)
 	{
@@ -45,6 +50,7 @@ public class NotificationFactory extends AbstractRhoListener implements INotific
 		{
 			singleton.onStop();
 		}
+		isAppAlive = false; 
 	}
 
 	@Override
@@ -54,6 +60,7 @@ public class NotificationFactory extends AbstractRhoListener implements INotific
 		{
 			singleton.onDestroy();
 		}
+		isAppAlive = false; 
 	}
 
     @Override
