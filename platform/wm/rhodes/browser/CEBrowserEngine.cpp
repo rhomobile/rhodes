@@ -527,7 +527,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 		}
 	}
 */
-	if (lpMsg && (lpMsg->message == WM_KEYDOWN))
+/*	if (lpMsg && (lpMsg->message == WM_KEYDOWN))
 	{
 		if (lpMsg->wParam == VK_LEFT ||	lpMsg->wParam == VK_RIGHT || lpMsg->wParam == VK_UP || lpMsg->wParam == VK_DOWN || lpMsg->wParam == VK_RETURN)
 		{
@@ -535,6 +535,7 @@ HRESULT CEBrowserEngine::TranslateAccelerator(
 			return S_OK;
 		}
 	}
+*/
 	return S_FALSE;
 }
 
