@@ -120,6 +120,14 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 	HANDLE m_hMutex;
 
 public :
+	CRhodesModule()
+	{
+#ifdef RHO_NO_RUBY
+		m_bJSApplication   = true;        
+#else
+		m_bJSApplication   = false;
+#endif
+	}
     static HINSTANCE GetModuleInstance(){return m_hInstance;}
     static void SetModuleInstance(HINSTANCE hInstance){m_hInstance = hInstance;}
     HWND GetMainWindow() { return m_appWindow.m_hWnd;}
