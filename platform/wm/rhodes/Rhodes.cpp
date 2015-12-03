@@ -582,7 +582,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 }
 //Customized Parse Command Line Method.
 //This is useful for customization of any command line arguments.
-extern "C" bool vParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode )
+extern "C" bool bParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode )
 {
 	//Do whatever you want.....
 	return true;
