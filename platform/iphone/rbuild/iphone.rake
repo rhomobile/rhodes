@@ -1758,6 +1758,15 @@ namespace "build" do
           end
         end
 
+        #LSApplicationQueriesSchemes
+        if $app_config["iphone"].has_key?("ApplicationQueriesSchemes")
+          arr_app_queries_schemes = $app_config["iphone"]["ApplicationQueriesSchemes"]
+          if arr_app_queries_schemes.kind_of?(Array)
+            hash['LSApplicationQueriesSchemes'] = arr_app_queries_schemes
+          else
+            hash['LSApplicationQueriesSchemes'] = []
+          end
+        end
 
          set_app_icon(false)
          set_default_images(false, hash)
@@ -1838,6 +1847,16 @@ namespace "build" do
           if hash['NSLocationWhenInUseUsageDescription'] == nil
             puts "Info.plist: added key [NSLocationWhenInUseUsageDescription]"
             hash['NSLocationWhenInUseUsageDescription'] = gps_request_text
+          end
+        end
+
+        #LSApplicationQueriesSchemes
+        if $app_config["iphone"].has_key?("ApplicationQueriesSchemes")
+          arr_app_queries_schemes = $app_config["iphone"]["ApplicationQueriesSchemes"]
+          if arr_app_queries_schemes.kind_of?(Array)
+            hash['LSApplicationQueriesSchemes'] = arr_app_queries_schemes
+          else
+            hash['LSApplicationQueriesSchemes'] = []
           end
         end
 
