@@ -212,9 +212,10 @@ public class NotificationSingleton implements INotificationSingleton
         
         if (duration != 0)
         {
-            Activity activity = RhodesActivity.safeGetInstance();
+            //Activity activity = RhodesActivity.safeGetInstance();
+             Context ctx = ContextFactory.getAppContext();
             if(vibrator != null) vibrator.cancel();
-            vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
             
             if ( duration > 15000 ) {
                 duration = 15000;
