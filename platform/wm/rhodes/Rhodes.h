@@ -41,7 +41,7 @@ typedef int (WINAPI *FUNC_IsLicenseOK)();
 typedef void* (WINAPI *FUNC_GetAppLicenseObj)();
 extern "C" void rho_wm_impl_CheckLicense();
 extern "C" bool rho_wmimpl_is_logging_native_type();
-extern "C" bool vParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode);
+extern "C" bool bParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode);
 extern "C" void rho_ringtone_manager_stop();
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
@@ -111,6 +111,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
     static HINSTANCE m_hInstance;
     CMainWindow m_appWindow;
     rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath, m_strAppName;
+	bool m_isDefinedOSWince;
 	bool m_bRestarting;
     bool m_bMinimized;
 	bool m_isRhoConnectPush;
@@ -122,6 +123,11 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 public :
 	CRhodesModule()
 	{
+#ifdef OS_WINCE
+		m_isDefinedOSWince = true;
+#else
+		m_isDefinedOSWince = false;
+#endif
 #ifdef RHO_NO_RUBY
 		m_bJSApplication   = true;        
 #else
