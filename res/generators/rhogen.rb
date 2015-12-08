@@ -591,6 +591,13 @@ module Rhogen
       return rhodes_root
     end
 
+    def load_plist(fname)
+       require 'cfpropertylist'
+       plist = CFPropertyList::List.new(:file => fname)
+       data = CFPropertyList.native_types(plist.value)
+       data
+    end
+
     def get_xcode_version
       info_path = '/Applications/XCode.app/Contents/version.plist'
       ret_value = '0.0'
