@@ -312,18 +312,23 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	}
 	
 	@Override
-     protected void onNewIntent(Intent intent) {
+       protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-
         Logger.T(TAG, "onNewIntent");
          if(intent !=null && intent.getAction() !=null){
-        	 if(!(intent.getAction().compareTo("com.rho.rhoelements.SHORTCUT_ACTION") == 0) && ( intent.getAction().compareTo(lastIntent) == 0) && (RhoExtManager.getInstance().getWebView().getUrl()!=null/*..Double CLick Crash...*/)){
-	        	String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
-	        	intent.setAction("android.intent.action.VIEW");
-	        	intent.setData(Uri.parse(url));
-        	 }else if((intent.getAction().compareTo("android.intent.action.MAIN") == 0) && (!(lastIntent.compareTo("com.rho.rhoelements.SHORTCUT_ACTION") == 0)) && (RhoExtManager.getInstance().getWebView().getUrl()!=null/*..Double CLick Crash...*/) ){
-	    	   //This Else for :- If user click on launch the EB through Shortcut and second time launch the EB through the proper
-	    	   //App that time for handle the Start page , we added this else.
+        	 if(((lastIntent.compareTo("android.intent.action.MAIN") == 0) || ! (lastIntent.compareTo("android.intent.action.VIEW") == 0))){
+        		 //Use of this If -- generic if to avoid setAction = View for any system related intent. eg:- NFC
+        		if(intent.getAction().compareTo("android.intent.action.MAIN") == 0 && (!(lastIntent.compareTo("com.rho.rhoelements.SHORTCUT_ACTION") == 0)) && (RhoExtManager.getInstance().getWebView().getUrl()!=null/*..Double CLick Crash...*/)){
+        			//This Else for :- If user click on launch the EB through Shortcut and second time launch the EB through the proper
+     	    	   //App that time for handle the Start page , we added this else.
+        			 String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
+     	        	intent.setAction("android.intent.action.VIEW");
+     	        	intent.setData(Uri.parse(url));
+        		}
+        	 }
+        	 else if((intent.getAction().compareTo("android.intent.action.MAIN") == 0) && (!(lastIntent.compareTo("com.rho.rhoelements.SHORTCUT_ACTION") == 0)) && (RhoExtManager.getInstance().getWebView().getUrl()!=null/*..Double CLick Crash...*/) ){
+	    	  //This Else is to handle start page when user call  two times on minimize API 
+        		 //That time last intent will be as VIEW and intent action will be MAIN
 	    	    String url = RhoExtManager.getInstance().getWebView().getUrl().toString();
 	        	intent.setAction("android.intent.action.VIEW");
 	        	intent.setData(Uri.parse(url));
