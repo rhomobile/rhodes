@@ -532,6 +532,7 @@ module Net   #:nodoc:
       @debug_output = nil
       @use_ssl = false
       @ssl_context = nil
+	  @ssl_session = nil
       @enable_post_connection_check = true
       @compression = nil
       @sspi_enabled = false
@@ -672,6 +673,7 @@ module Net   #:nodoc:
           @ssl_context = OpenSSL::SSL::SSLContext.new
           @ssl_context.set_params(ssl_parameters)
           s = OpenSSL::SSL::SSLSocket.new(s, @ssl_context)
+		  s.session = @ssl_session if @ssl_session
           s.sync_close = true
         else
           s = SSLSocket.open(conn_address(), conn_port())
@@ -699,6 +701,7 @@ module Net   #:nodoc:
             if @ssl_context.verify_mode != OpenSSL::SSL::VERIFY_NONE
               s.post_connection_check(@address)
             end
+			@ssl_session = s.session
           end
         rescue => exception
           D "Conn close because of connect error #{exception}"
