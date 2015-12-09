@@ -502,6 +502,15 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 					}
 			}
 	}
+	
+	if(config.isExist("usedwforscanning")){
+	        String _usedwforscanning = config.getString("usedwforscanning");
+	        if(_usedwforscanning != null){
+				if(_usedwforscanning.length() > 0){
+						mConfig.set("usedwforscanning",_usedwforscanning);
+					}
+			}
+	}
         
     }
     
