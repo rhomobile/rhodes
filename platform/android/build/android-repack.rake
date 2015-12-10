@@ -536,7 +536,7 @@ namespace 'device' do
         iconappname_for_xhdpi = File.join($app_path, "icon", "icon120.png")
 
 
-        ['drawable', 'drawable-hdpi', 'drawable-mdpi', 'drawable-ldpi'].each do |dpi|
+        ['drawable', 'drawable-xxhdpi', 'drawable-xhdpi', 'drawable-hdpi', 'drawable-mdpi', 'drawable-ldpi'].each do |dpi|
             drawable = File.join(target_res, dpi)
             iconresname = File.join(drawable, "icon.png")
             rm_f iconresname
