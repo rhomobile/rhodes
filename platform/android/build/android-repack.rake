@@ -532,13 +532,23 @@ namespace 'device' do
         File.open(appstrings, "w") { |f| doc.write f }
 
         iconappname = File.join($app_path, "icon", "icon.png")
+        iconappname_for_xxhdpi = File.join($app_path, "icon", "icon144.png")
+        iconappname_for_xhdpi = File.join($app_path, "icon", "icon120.png")
+
 
         ['drawable', 'drawable-hdpi', 'drawable-mdpi', 'drawable-ldpi'].each do |dpi|
             drawable = File.join(target_res, dpi)
             iconresname = File.join(drawable, "icon.png")
             rm_f iconresname
-            cp iconappname, iconresname if File.exist? drawable
-        end
+            if dpi == 'drawable-xxhdpi'
+              cp iconappname_for_xxhdpi, iconresname if File.exist? drawable
+            elsif dpi == 'drawable-xhdpi'
+              cp iconappname_for_xhdpi, iconresname if File.exist? drawable                
+            else
+              cp iconappname, iconresname if File.exist? drawable
+            end
+        end 
+
 
         #cp_r( File.join(app_res,'.'), target_res, { :verbose => true } )
         print_timestamp('AndroidPrebuild.merge_resources FINISH')
