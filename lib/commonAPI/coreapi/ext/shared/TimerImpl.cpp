@@ -55,6 +55,9 @@ namespace rho
 
 			virtual void run()
 			{
+				while ( !RHODESAPP().isApplicationActive() ) {
+					wait(100);
+				}
 				m_oResult.set("");
 			}
 		};
