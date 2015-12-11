@@ -112,7 +112,7 @@ namespace common {
         virtual bool onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts) = 0;
         virtual bool onMigrateSource() = 0;
         virtual bool onDeviceScreenEvent(const int newState) = 0;
-        virtual bool isApplicationActive() = 0;
+
     };
     
     class ApplicationEventReceiver : public IApplicationEventReceiver
@@ -133,7 +133,7 @@ namespace common {
         
         virtual bool isCallbackSet();
         virtual void setCallback(apiGenerator::CMethodResult& oResult);
-        virtual bool isApplicationActive() { return m_app_state == applicationStateActivated; }
+
     };
 
 class CRhodesApp : public CRhodesAppBase
@@ -292,7 +292,7 @@ public:
     #ifdef OS_WINCE
     bool isWebkitOutofProcess();
     #endif
-	virtual bool isApplicationActive() { return m_app_state == applicationStateActivated; }
+
 protected:
     virtual void run();
 
@@ -411,7 +411,7 @@ void rho_platform_restart_application();
     
 void rho_sys_set_network_status_notify(const char* url, int poll_interval);
 void rho_sys_clear_network_status_notify();
-int rho_rhodesapp_is_application_active();    
+    
 #ifdef __cplusplus
 };
 #endif //__cplusplus
