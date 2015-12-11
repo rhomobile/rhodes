@@ -86,7 +86,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	private View mChild;
 	private int oldHeight;
 	private FrameLayout.LayoutParams frameLayoutParams;
-	
+	private int notificationBarHeight = 0;
 	public static boolean IS_RESIZE_SIP = false;
 	
 	private FrameLayout mTopLayout;
@@ -748,6 +748,11 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 				// keyboard probably just became hidden
 				frameLayoutParams.height = sipHeight;
 			}
+			
+			frameLayoutParams.height = frameLayoutParams.height  - notificationBarHeight;
+			if (heightDiff > (sipHeight / 4)) {
+				frameLayoutParams.height = frameLayoutParams.height  + notificationBarHeight;
+			}
 			mChild.requestLayout();
 			oldHeight = newHeight;
 		}
@@ -756,6 +761,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	private int calculateUsedHeight() {
 		Rect r = new Rect();
 		mChild.getWindowVisibleDisplayFrame(r);
+		notificationBarHeight = r.top;
 		return (r.bottom - r.top);
 	}
 
