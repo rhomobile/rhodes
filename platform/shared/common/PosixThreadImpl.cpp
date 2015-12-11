@@ -148,7 +148,7 @@ void CPosixThreadImpl::sleep(unsigned int nTimeoutMs)
 void CPosixThreadImpl::stopWait()
 {
 
-#if defined(OS_IPHONE)
+#if defined(OS_MACOSX) || defined(OS_IPHONE)
     m_stop_wait = true;
     common::CMutexLock oLock(m_mxSync);
 #else
