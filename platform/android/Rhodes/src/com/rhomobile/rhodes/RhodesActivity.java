@@ -669,12 +669,34 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event)
 	{
+		if(ActivityManager.isUserAMonkey())
+			return true;
+			
 		 IRhoExtManager extManager = RhoExtManager.getInstance();
 		 if(extManager.onKey(event.getKeyCode(), event))
 		 {
 			 return true;
 		 }
 		 return super.dispatchKeyEvent(event);
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		if(ActivityManager.isUserAMonkey())
+			return true;
+		return super.dispatchTouchEvent(ev);
+	}
+	@Override
+	public boolean dispatchGenericMotionEvent(MotionEvent ev) {
+		if(ActivityManager.isUserAMonkey())
+			return true;
+		return super.dispatchGenericMotionEvent(ev);
+	}
+	@Override
+	public boolean dispatchKeyShortcutEvent(KeyEvent event) {
+		if(ActivityManager.isUserAMonkey())
+			return true;
+		return super.dispatchKeyShortcutEvent(event);
 	}
 
 	public static Context getContext() {
