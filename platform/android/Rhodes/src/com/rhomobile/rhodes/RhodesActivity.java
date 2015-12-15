@@ -66,6 +66,9 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.FrameLayout;
+import android.app.ActivityManager;
+import android.view.MotionEvent;
+
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener {
 	
