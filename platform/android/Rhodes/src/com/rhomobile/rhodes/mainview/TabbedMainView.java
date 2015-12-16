@@ -1012,13 +1012,15 @@ public class TabbedMainView implements MainView {
         }
     }
 
-	public void back(int index) {
+    public void back(int index) {
         if ( !isValidIndex(index) ) {
             return;
         }
-
-		getTabMainView(index).back(0);
+	if (activeTab() == 0
+		|| !getWebView(activeTab()).getUrl().contains(tabDefaultUrl[activeTab()])) {
+        	getTabMainView(index).back(0);
 	}
+    }
 	
 	public void forward(int index) {
         if ( !isValidIndex(index) ) {
