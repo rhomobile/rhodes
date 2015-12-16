@@ -110,12 +110,12 @@ The ebapi.js file is necessary for all single API inclusions.
                             <DESC>Visible label.</DESC>
                         </PARAM>
                         <PARAM name="action" type="STRING"  rhoAction="true">
-                            <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or JavaScript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
+                            <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or JavaScript method to call: 'javascript: methodOnTab();'. Or path to html page to load. </DESC>
                             <DESC_EB>URL to page which will be loaded. Or it can be a JavaScript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC_EB>
                         </PARAM>
                     </PARAMS>
                 </PARAM>
-                <DESC>Native Menu items.</DESC>
+                <DESC>Native Menu items. To customise the native application menu and controller menu items in ruby follow [Application Menu API](http://docs.rhomobile.com/en/2.2.0/rhodesapi/menu-apis)</DESC>
                 <PLATFORM>WM, CE, Android, Win32, WP8</PLATFORM>
                 <PLATFORM_EB>WM, CE, Android, Win32</PLATFORM_EB>
             </PROPERTY>
