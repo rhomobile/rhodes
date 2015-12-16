@@ -13,6 +13,8 @@
 #import "common/StringConverter.h"
 #import "common/RhoConf.h"
 
+extern "C" void rho_net_impl_network_indicator(int active);
+
 @interface NetRequestDelegateContext : NSObject
 {
     NSCondition* netDelegateThreadStartCond;
@@ -413,7 +415,8 @@ public:
       [m_pReq setValue:[NSString stringWithUTF8String:session.c_str()] forHTTPHeaderField:@"Cookie"];
     }
     
-    [m_pReq setValue:@"" forHTTPHeaderField:@"Expect"];
+    //Commenting this as heroku reject request with empty value.
+    //[m_pReq setValue:@"" forHTTPHeaderField:@"Expect"];
     [m_pReq setValue:@"Keep-Alive" forHTTPHeaderField:@"Connection"];
     
     return true;
@@ -639,7 +642,8 @@ public:
     [m_pPerformCond lock];
 
     //start();
-    
+    rho_net_impl_network_indicator(1);
+
     [m_pConnDelegate performSelector:@selector(startAsyncRequest) onThread:[[NetRequestDelegateContext sharedInstance] netRequestDelegateThread] withObject:nil waitUntilDone:NO];
 
     [m_pPerformCond wait];
@@ -721,7 +725,7 @@ public:
         m_pCallback->didFinishLoading();
       }
     }
-    
+    rho_net_impl_network_indicator(0);
     return ret;
     
   }
