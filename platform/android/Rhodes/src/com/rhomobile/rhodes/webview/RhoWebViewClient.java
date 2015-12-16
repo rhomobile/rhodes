@@ -194,7 +194,7 @@ public class RhoWebViewClient extends WebViewClient
 				"data:text/html,"))
 				|| (url.trim().equalsIgnoreCase("data:,") && view.getTitle() == null)) {
 			String temp = RhodesActivity.safeGetInstance().getMainView().getTabDefaultUrl();
-			if(temp != null && !temp.isEmpty()) {
+			if(temp != null && !temp.isEmpty() && temp.contains(".htm")) {
 				url = temp;
 				view.loadUrl(url);
 			}
