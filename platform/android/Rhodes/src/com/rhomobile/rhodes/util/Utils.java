@@ -176,7 +176,35 @@ public class Utils {
 			}
 		}
 	}
-	
+		public static void copyAssetFile(String src, String dst) throws IOException {
+		
+		InputStream is = null;
+		OutputStream os = null;
+		AssetManager assetManager = ContextFactory.getAppContext().getAssets();
+		is =assetManager.open(src);
+		
+		
+		try {
+			
+			File f=new File(dst);
+			boolean t=f.createNewFile();
+			os = new FileOutputStream(f);
+			byte[] buf = new byte[1024];
+			for(;;) {
+				int n = is.read(buf);
+				if (n <= 0)
+					break;
+				os.write(buf, 0, n);
+			}
+			os.flush();
+		}
+		finally {
+			if (is != null)
+				is.close();
+			if (os != null)
+				os.close();
+		}
+	}
 	public static void copy(String src, String dst) throws IOException {
 		InputStream is = null;
 		OutputStream os = null;
