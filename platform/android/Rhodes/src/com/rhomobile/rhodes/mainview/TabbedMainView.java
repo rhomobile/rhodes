@@ -61,6 +61,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebBackForwardList;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TabHost;
@@ -1016,8 +1017,10 @@ public class TabbedMainView implements MainView {
         if ( !isValidIndex(index) ) {
             return;
         }
-
-		getTabMainView(index).back(0);
+        WebBackForwardList mWebBackForwardList = getWebView(activeTab()).copyBackForwardList();
+		if (activeTab() == 0 || mWebBackForwardList.getCurrentIndex() > 1) {
+			getTabMainView(index).back(0);
+		}
 	}
 	
 	public void forward(int index) {
@@ -1083,8 +1086,8 @@ public class TabbedMainView implements MainView {
 	}
 
 	public void goBack() {
-		if (activeTab() == 0
-				|| !getWebView(activeTab()).getUrl().contains(tabDefaultUrl[activeTab()])) {
+		WebBackForwardList mWebBackForwardList = getWebView(activeTab()).copyBackForwardList();
+		if (activeTab() == 0 || mWebBackForwardList.getCurrentIndex() > 1) {
 			getTabMainView(activeTab()).goBack();
 		}
 	}
