@@ -19,6 +19,8 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
         
         boolean enableZoom = config == null || config.getBool(WebViewConfig.ENABLE_ZOOM);
         boolean enableCache = config == null || config.getBool(WebViewConfig.ENABLE_CACHE);
+        //SPR28915 fix- setting to html5 audio tag support
+        boolean enableMediaPlaybackRequiresUserGesture = config == null || config.getBool(WebViewConfig.ENABLE_MEDIAPLAYBACKREQUIRESUSERGESTURE);
         String customUA = RhoConf.getString("useragent");
         
         settings.setSavePassword(false);
@@ -30,6 +32,8 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
         settings.setAppCacheEnabled(true);
         if(!RhoConf.getString("fontFamily").isEmpty())
         settings.setStandardFontFamily(RhoConf.getString("fontFamily"));
+        settings.setMediaPlaybackRequiresUserGesture(enableMediaPlaybackRequiresUserGesture);
+        Logger.T(TAG, "Enable enableMediaPlaybackRequiresUserGesture: " + enableMediaPlaybackRequiresUserGesture);
         //customUA = updateRevesionOfCustomUA(settings.getUserAgentString(), customUA);
         //settings.setUserAgentString(customUA);
         if(RhoConf.isExist("ApplicationCachePath")){
