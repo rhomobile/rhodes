@@ -15,6 +15,7 @@ public class WebViewConfig implements IRhoConfig {
     public static final String ENABLE_ZOOM = "enableZoom";
     public static final String ENABLE_WEB_PLUGINS = "enableWebPlugins";
     public static final String ENABLE_CACHE = "enableCache";
+    public static final String ENABLE_MEDIAPLAYBACKREQUIRESUSERGESTURE = "enableMediaPlaybackRequiresUserGesture";
     public static final String PAGE_ZOOM = "pageZoom";
     public static final String SETTING_SPLASHSCREEN_PATH = "splashscreenpath";
     public static final String SETTING_SPLASHSCREEN_DURATION = "splashscreenduration";
@@ -62,6 +63,7 @@ public class WebViewConfig implements IRhoConfig {
 	public static final boolean ENABLE_FUNCTION_KEY_F10_DEF = true;
 	public static final boolean ENABLE_FUNCTION_KEY_F11_DEF = true;
 	public static final boolean ENABLE_FUNCTION_KEY_F12_DEF = true;
+	public static final boolean ENABLE_MEDIAPLAYBACKREQUIRESUSERGESTURE_DEF = true;
 	public static boolean IS_FUNCTIONS_KEY_DEF = true;
     public static final boolean ENABLE_PAGE_LOADING_INDICATION_DEF = true;
     public static final boolean ENABLE_ZOOM_DEF = true;
@@ -84,6 +86,7 @@ public class WebViewConfig implements IRhoConfig {
         mConfigMap.put(PAGE_ZOOM, String.valueOf(PAGE_ZOOM_DEF));
         mConfigMap.put(SETTING_SPLASHSCREEN_PATH, SETTING_SPLASHSCREEN_PATH_DEF);
         mConfigMap.put(SETTING_SPLASHSCREEN_DURATION, String.valueOf(SETTING_SPLASHSCREEN_DURATION_DEF));
+        mConfigMap.put(ENABLE_MEDIAPLAYBACKREQUIRESUSERGESTURE, String.valueOf(ENABLE_MEDIAPLAYBACKREQUIRESUSERGESTURE_DEF));
         mConfigMap.put(ENABLE_WEB_PLUGINS, String.valueOf(ENABLE_WEB_PLUGINS_DEF));
         mConfigMap.put(ENABLE_CACHE, String.valueOf(ENABLE_CACHE_DEF));
         mConfigMap.put(USER_AGENT, USER_AGENT_DEF);
