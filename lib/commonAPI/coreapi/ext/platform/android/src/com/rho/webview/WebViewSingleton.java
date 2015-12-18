@@ -422,6 +422,11 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
             mConfig.set(WebViewConfig.PAGE_ZOOM, zoomValue);
         }
         
+        //SPR 28915 fix- Add a new config tag to configure mediaplaybackrequiredgesture. It requires a user to play media gesture.
+         if(config.isExist("enablemediaplaybackrequiresusergesture")){
+        	Boolean _enablemediaplaybackrequiresusergesture = config.getBool("enablemediaplaybackrequiresusergesture");
+        	mConfig.set(WebViewConfig.ENABLE_MEDIAPLAYBACKREQUIRESUSERGESTURE, _enablemediaplaybackrequiresusergesture);
+        }
         if (config.isExist("cache")) {
             String cache = config.getString("cache");
             cache=cache.toLowerCase();
