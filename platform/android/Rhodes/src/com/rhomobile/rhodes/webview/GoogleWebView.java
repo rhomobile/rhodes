@@ -23,6 +23,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
+import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
@@ -254,6 +255,11 @@ public class GoogleWebView implements IRhoWebView {
     @Override
     public void destroy() {
         mWebView.destroy();
+    }
+    
+    @Override
+    public WebBackForwardList copyBackForwardList() {
+    	return mWebView.copyBackForwardList();
     }
 
     @Override

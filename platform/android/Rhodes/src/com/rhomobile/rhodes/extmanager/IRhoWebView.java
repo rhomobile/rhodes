@@ -3,6 +3,7 @@ package com.rhomobile.rhodes.extmanager;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebBackForwardList;
 
 public interface IRhoWebView {
     enum CaptureFormat { CAPTURE_FORMAT_HTML, CAPTURE_FORMAT_JPEG }
@@ -30,6 +31,7 @@ public interface IRhoWebView {
     void onPause();
     void onResume();
     void destroy();
+    WebBackForwardList copyBackForwardList();
     void addJSInterface(Object obj, String name);
     
     void capture(CaptureFormat format, String path);
