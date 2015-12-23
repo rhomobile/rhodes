@@ -748,11 +748,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 				// keyboard probably just became hidden
 				frameLayoutParams.height = sipHeight;
 			}
-			
+		if( !BaseActivity.getFullScreenMode()){	
 			frameLayoutParams.height = frameLayoutParams.height  - notificationBarHeight;
 			if (heightDiff > (sipHeight / 4)) {
 				frameLayoutParams.height = frameLayoutParams.height  + notificationBarHeight;
 			}
+		}
 			mChild.requestLayout();
 			oldHeight = newHeight;
 		}
