@@ -242,10 +242,21 @@ public class Notification {
             {
                 Button button = new Button(ctx);
                 OnClickListener clickListener = new DialogActionListener(dialog);
-                button.setText(btn.title);
+                if(btn.title.length()>16 && actions.size() == 3 ){
+                	button.setText((btn.title).substring(0, 15));
+                }
+                else{
+                    button.setText(btn.title);
+                }
                 button.setTag(btn);
                 button.setOnClickListener(clickListener);
+                //Button text cutoff on Notification pop up
+                if(actions.size() > 3){
                 button.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
+                }
+                else{
+                	button.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1));
+                }
                 bottom.addView(button);
             }
         }
