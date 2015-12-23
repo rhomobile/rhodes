@@ -311,15 +311,21 @@ def update_rhodefs_header_file
   content = ""
   File.open( File.join( $startdir, "platform/shared/common/RhoDefs.h" ), 'rb' ){ |f| content = f.read() }
   is_find = nil
+  update_rhodef_android = nil
 
+  if $current_platform == "android"
+    update_rhodef_android = content.sub!( '#define RHO_ANDROID_LIB_SO "librhodes.so"', '#define RHO_ANDROID_LIB_SO "'+$sharedlib+'"')
+  end
+  
   if use_profiler
     is_find = content.sub!( '#define RHO_STRIP_PROFILER 1', '#define RHO_STRIP_PROFILER 0' )
   else
     is_find = content.sub!( '#define RHO_STRIP_PROFILER 0', '#define RHO_STRIP_PROFILER 1' )
   end
 
-  if is_find
+  if is_find || update_rhodef_android
     puts "RhoDefs.h has been modified: RhoProfiler is " + (use_profiler ? "enabled!" : "disabled!")
+    puts "RhoDefs.h has been modified: Libname is #{$sharedlib}" unless update_rhodef_android.nil?
     File.open( File.join( $startdir, "platform/shared/common/RhoDefs.h" ), 'wb' ){ |f| f.write(content) }
   end
 end
