@@ -565,7 +565,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     dlclose(pc);
 
     // This is just to get typical stat of file
-    std::string librhodes = rho_root_path() + "../lib/librhodes.so";
+    std::string librhodes = rho_root_path() + "../lib/"RHO_ANDROID_LIB_SO;
     RHO_LOG("Native library: %s", librhodes.c_str());
 
     real_stat(librhodes.c_str(), &librhodes_st);
