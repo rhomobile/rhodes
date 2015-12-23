@@ -152,5 +152,9 @@ typedef int LogSeverity;
 #define RHO_NO_RUBY_API
 #endif
 
+#if defined(OS_ANDROID)
+#define RHO_ANDROID_LIB_SO "librhodes.so"
+#endif
+
 #endif //_RHODEFS_H_
 

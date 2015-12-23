@@ -258,6 +258,11 @@ namespace "config" do
   task :android => :set_android_platform do
     print_timestamp('config:android START')
 
+    #Lets Set Android .so filename. It will be in structure of libapp_name_withoutsplcharacter.so
+    #Only keeping alphabets and numbers.
+    sharedlib_part_name = $app_config['name'].gsub(/\W+/, '')
+    $sharedlib = sharedlib_part_name.nil? || sharedlib_part_name.empty? ? 'librhodes.so' : "lib#{sharedlib_part_name}.so"
+
     Rake::Task["config:common"].invoke
 
     $java = $config["env"]["paths"]["java"]
@@ -1457,7 +1462,8 @@ namespace "build" do
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.join $app_builddir, 'librhodes', 'lib'
-      ENV['SHAREDLIB'] = 'librhodes.so'
+      ENV['SHAREDLIB'] = $sharedlib
+      #ENV['SHAREDLIB'] = 'librhodes.so' #sharedlib.nil? || sharedlib.empty? ? 'librhodes.so' : "#{sharedlib}.so"
       ENV['TEMP_FILES_DIR'] = File.join $tmpdir, 'librhodes'
       ENV['BUILDARGS'] = args.join(' ')
     
