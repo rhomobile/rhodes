@@ -242,6 +242,7 @@ public class Notification {
             {
                 Button button = new Button(ctx);
                 OnClickListener clickListener = new DialogActionListener(dialog);
+                float btnWeight = 1f/actions.size() ;
                 if(btn.title.length()>16 && actions.size() == 3 ){
                 	button.setText((btn.title).substring(0, 15));
                 }
@@ -255,7 +256,7 @@ public class Notification {
                 button.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
                 }
                 else{
-                	button.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1));
+                	button.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, btnWeight));
                 }
                 bottom.addView(button);
             }
