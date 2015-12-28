@@ -2774,11 +2774,13 @@ namespace "config" do
       end
 
       application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
+	  application_build_configs['symbol'] = '1' if $app_config["capabilities"].index('symbol') && $current_platform == 'wm'
 
       if $app_config["extensions"].index("webkit-browser")
         $app_config["capabilities"] += ["webkit_browser"]
         $app_config["extensions"].delete("webkit-browser")
       end
+	  application_build_configs['webkit_browser'] = '1' if $app_config["capabilities"].index('webkit_browser') && $current_platform == 'wm'
 
       if  $app_config["capabilities"].index("webkit_browser") || ($app_config["capabilities"].index("symbol") && $current_platform != "android")
         #contains wm and android libs for webkit browser

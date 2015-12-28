@@ -47,7 +47,7 @@ To include individual APIs, you must first include the `ebapi.js` in your HTML, 
         <METHODS>
             <METHOD name="create" access="STATIC">
                 <RETURN type="SELF_INSTANCE" />
-                <DESC>Create a timers objects.</DESC>
+                <DESC>Create timer object(s).</DESC>
             </METHOD>
 
             <METHOD name="start" access="INSTANCE" hasCallback="mandatory">
@@ -58,17 +58,17 @@ To include individual APIs, you must first include the `ebapi.js` in your HTML, 
               </PARAMS>
               <CALLBACK type="STRING">
               </CALLBACK>
-              <DESC>Start timer with preset interval. Callback fired only one time.</DESC>
+              <DESC>Start timer with preset interval. Callback fired one time only.</DESC>
             </METHOD>
 
             <METHOD name="stop" access="INSTANCE">
-              <DESC>Stop started timer</DESC>
+              <DESC>Stop the timer.</DESC>
             </METHOD>
 
             <METHOD name="isAlive" access="INSTANCE">
               <DESC></DESC>
               <RETURN type="BOOLEAN">
-                <DESC>Return alive state of a timer. If callback doesnt fired return true, otherwise return false</DESC>
+                <DESC>Return alive state of a timer. If callback doesn't return true, returns false.</DESC>
               </RETURN>
             </METHOD>
 
@@ -84,9 +84,10 @@ To include individual APIs, you must first include the `ebapi.js` in your HTML, 
             <EXAMPLE title="Examples">
                 <SECTIONS>
                     <SECTION>
+                      <DESC>Implementation of the timer API.</DESC>
                         <CODE>
-                           Implementation of the timer api.
-           Create a timer and catch callback after interval:
+                        <JAVASCRIPT> 
+           // Create a timer and catch callback after the specified interval:
            
             var timerCallback = function() {
                 alert("callback called");
@@ -105,6 +106,7 @@ To include individual APIs, you must first include the `ebapi.js` in your HTML, 
             setTimeout(function() {
                     timer.stop();
                 },3000);
+              </JAVASCRIPT>
                         </CODE>
                         </SECTION>
                   </SECTIONS>
