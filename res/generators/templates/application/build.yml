@@ -7,14 +7,16 @@ build: debug
 applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator9.1
+  sdk: iphonesimulator9.2
   provisionprofile:
   codesignidentity: iPhone Developer
   entitlements: ""
   BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
   BundleURLScheme: <%=@app_name_cleared%>
   production:
-    ipa_itunesartwork_image: "./production/iTunesArtwork.png"  
+    ipa_itunesartwork_image: "./production/iTunesArtwork.png"
+  # Note: Specifies the URL schemes the app is able to call using Rho.System.runApplication
+  #ApplicationQueriesSchemes: ["scheme1", "scheme2"]  
 wp8:
   productid: '<%=@productid%>'
 android:
