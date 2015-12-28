@@ -9,6 +9,8 @@
 #include "logging/RhoLog.h"
 #include <stdlib.h>
 
+extern "C" void rho_ios_log_console_output(const char* message);
+
 namespace rho 
 {    
 	class CTimerFactory;
@@ -53,6 +55,11 @@ namespace rho
 
 			virtual void run()
 			{
+				
+				while ( !RHODESAPP().isApplicationActive() ) {
+					wait(10);
+				}
+
 				m_oResult.set("");
 			}
 		};
