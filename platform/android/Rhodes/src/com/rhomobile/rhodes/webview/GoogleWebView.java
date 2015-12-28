@@ -72,9 +72,9 @@ public class GoogleWebView implements IRhoWebView {
 //            @Override
 //            public void run() {
                 Logger.I(TAG, "Web settings is applying now  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                
-                double z = getConfig().getDouble(WebViewConfig.PAGE_ZOOM);
-                mWebView.setInitialScale((int)(z * 100));
+                setInitialScaleUiParam();
+                //double z = getConfig().getDouble(WebViewConfig.PAGE_ZOOM);
+                //mWebView.setInitialScale((int)(z * 100));
                 mWebView.setVerticalScrollBarEnabled(true);
                 mWebView.setHorizontalScrollBarEnabled(true);
                 mWebView.setVerticalScrollbarOverlay(true);
@@ -93,7 +93,18 @@ public class GoogleWebView implements IRhoWebView {
 //            }
 //        });
     }
-
+//SPR28935 and SPR28964 fix- Pagezoom doesnot work on TC70 G1 device. 
+  public void setInitialScaleUiParam(){
+      PerformOnUiThread.exec(new Runnable() {
+      @Override
+      public void run() {
+          double z = getConfig().getDouble(WebViewConfig.PAGE_ZOOM);
+          Logger.I(TAG, "PageZoom value: "+z);
+          mWebView.setInitialScale((int)(z * 100));
+      	}
+      });
+    }
+    
     @Override
     public void setWebClient() {
         PerformOnUiThread.exec(new Runnable() {
