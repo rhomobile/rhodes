@@ -47,7 +47,7 @@ if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::
                   options['fileName'] = File.join(Rho::RhoApplication.get_blob_folder(), Rho::RhoConfig.generate_id.to_s)
               end
             end
-            cams = Camera.enumerate
+            cams = Rho::Camera.enumerate
             if cams != nil
                 if cams.size > 0
                     selected_cam = cams[0]
