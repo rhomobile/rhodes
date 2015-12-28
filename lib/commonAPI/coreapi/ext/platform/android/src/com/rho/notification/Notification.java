@@ -26,7 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.util.DisplayMetrics;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -242,10 +242,24 @@ public class Notification {
             {
                 Button button = new Button(ctx);
                 OnClickListener clickListener = new DialogActionListener(dialog);
+                float btnWeight = 1f/actions.size() ;
+                DisplayMetrics metrics = RhodesActivity.safeGetInstance().getContext().getResources().getDisplayMetrics();
+            	float dp = 8f;
+            	float fpixels = metrics.density * dp;
+            	int pixels = (int) (fpixels + 0.5f);
+                
+            	button.setMaxLines(2);
+            	button.setTextSize(pixels);
                 button.setText(btn.title);
                 button.setTag(btn);
                 button.setOnClickListener(clickListener);
+                //Button text cutoff on Notification pop up
+                if(actions.size() > 3){
                 button.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1));
+                }
+                else{
+                	button.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, btnWeight));
+                }
                 bottom.addView(button);
             }
         }
