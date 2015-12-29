@@ -1013,15 +1013,24 @@ public class TabbedMainView implements MainView {
         }
     }
 
-	public void back(int index) {
+    public void back(int index) {
         if ( !isValidIndex(index) ) {
             return;
         }
-        WebBackForwardList mWebBackForwardList = getWebView(activeTab()).copyBackForwardList();
-		if (activeTab() == 0 || mWebBackForwardList.getCurrentIndex() > 1) {
+        WebBackForwardList mWebBackForwardList = getWebView(index).copyBackForwardList();
+        // restrict back if user want to go back tab 1 from tab 0 with default page loaded on tab 1 
+        if ((activeTab() == 0 && index > 0 && mWebBackForwardList.getCurrentIndex() <= 1)){
+        	return ;
+        }
+        
+        //1st condition : go back from tab 0 always
+        //2nd condition : if active tab and navigate back index is differ
+        //3rd condition : if other than default pages are loaded on all tabs except tab 0
+        if (activeTab() == 0 || (index != activeTab() && index!= -1)
+				|| mWebBackForwardList.getCurrentIndex() > 1) {
 			getTabMainView(index).back(0);
-		}
 	}
+    }
 	
 	public void forward(int index) {
         if ( !isValidIndex(index) ) {
