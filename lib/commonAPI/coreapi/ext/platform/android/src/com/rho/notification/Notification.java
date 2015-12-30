@@ -247,10 +247,13 @@ public class Notification {
             	float dp = 8f;
             	float fpixels = metrics.density * dp;
             	int pixels = (int) (fpixels + 0.5f);
-                
-            	button.setMaxLines(2);
-            	button.setTextSize(pixels);
-                button.setText(btn.title);
+                if(actions.size() == 3){
+                	button.setMaxLines(2);
+                	button.setTextSize(12);
+                	button.setText(btn.title);
+                }else{
+                	button.setText(btn.title);
+                }
                 button.setTag(btn);
                 button.setOnClickListener(clickListener);
                 //Button text cutoff on Notification pop up
