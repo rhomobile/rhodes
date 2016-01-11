@@ -37,7 +37,14 @@ namespace push {
 //----------------------------------------------------------------------------------------------------------------------
 CPushManager* CPushManager::getInstance()
 {
-    return reinterpret_cast<CPushManager*>(CPushFactoryBase::getInstance()->getModuleSingleton());
+    CPushFactoryBase* pInstance = CPushFactoryBase::getInstance();
+    if (pInstance){
+        LOG(TRACE) + "Returning CPushManager Instance";
+        return reinterpret_cast<CPushManager*>(pInstance->getModuleSingleton());
+    }else{
+        LOG(TRACE) + "CPushFactoryBase::getInstance is empty. Returning 0";
+        return 0;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

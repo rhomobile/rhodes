@@ -332,7 +332,12 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrat
     std::string strType = jType ? rho_cast<std::string>(env, jType) : "";
     std::string deviceId = rho_cast<std::string>(env, jId);
 
-    rho::push::CPushManager::getInstance()->setDeviceId(strType, deviceId);
+    rho::push::CPushManager* pInstance = rho::push::CPushManager::getInstance();
+    if (pInstance){
+        pInstance->setDeviceId(strType, deviceId);
+    }else{
+        RAWTRACE("rho::push::CPushManager::getInstance is empty");
+    }
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
