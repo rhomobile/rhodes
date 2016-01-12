@@ -72,6 +72,7 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
 	GetWindowRect(hwndParent, &m_rcViewSize);
     CreateEngine();
 	RHODESAPP().getExtManager().getEngineEventMngr().setEngineInterface(this);
+	LOG(WARNING)+"zebra: dummy version with additional logs ";
 }
 
 CEBrowserEngine::~CEBrowserEngine(void)
@@ -287,16 +288,20 @@ BOOL CEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
 
 BOOL CEBrowserEngine::StopOnTab(UINT iTab)
 {
+	LOG(INFO) + "inside stopontab";
 	if(S_OK == m_pBrowser->Stop())
 	{
+		LOG(INFO) + "stop navtimeout thread and invalidate navtimeout event handle";
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
 		m_hNavigated = NULL;
 
+		LOG(INFO) + "stop docthread and invalidate docthread event handle";
         SetEvent(m_hDocComp);
         CloseHandle(m_hDocComp);
         m_hDocComp = NULL;
-            
+        
+		LOG(INFO) + "before sending NavigationStopped url to mainwindow";
         PostMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, m_tabID, (LPARAM)_tcsdup(L"NavigationStopped"));
         PostMessage(m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)_tcsdup(L"NavigationStopped"));
 
@@ -314,10 +319,21 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
 
     if(pEng->m_hDocComp == NULL)
     {
+		 LOG(INFO) + (L"before creating docthread handle.\n");
         pEng->m_hDocComp = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_DOCCOMPLETE_IN_PROGRESS"/*NULL*/);
-
-        if(WaitForSingleObject(pEng->m_hDocComp, pEng->m_dwNavigationTimeout) != WAIT_OBJECT_0)
+        DWORD dwResult = WaitForSingleObject(pEng->m_hDocComp, pEng->m_dwNavigationTimeout);
+        if( dwResult != WAIT_OBJECT_0)
         {
+			if(dwResult == WAIT_TIMEOUT)
+			{
+				LOG(INFO) + (L"before issueing a timeout in docthread, due to wait_timeout\n");
+			}
+			else
+			{
+				LOG(INFO) + (L"before issueing a timeout in docthread, due to unexpected error\n");
+			}
+			
+			LOG(INFO) + (L"before calling stopontab from docthread\n");
             //no point in doing anything as there is no event handler
             pEng->StopOnTab(pEng->m_tabID);
             CloseHandle(pEng->m_hDocComp);
@@ -331,7 +347,15 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
             SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
                 (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
         }
+		else
+		{
+			LOG(INFO) + (L"stop docthread signal received.\n");
+		}
     }
+	else
+	{
+		 LOG(INFO) + (L"event already exist, may docthread already running.\n");
+	}
 
     LOG(INFO) + (L"DocThread Ended\n");
 
@@ -340,6 +364,7 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
 
 DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
+	LOG(INFO) + "inside navtimeout thread entry";
     CEBrowserEngine * pEng = (CEBrowserEngine*) lpParameter;
 	DWORD dwWaitResult;
 	bool flag=false;
@@ -358,10 +383,11 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 				//
 				// TODO: Read from the shared buffer
 				//
-				LOG(INFO) + "NavigationTimeoutThread:Event object was signaled\n";
+				LOG(INFO) + "stop navtime out signal received. stoping thread ";	
 								
 				CloseHandle(pEng->m_hNavigated);
 				pEng->m_hNavigated = NULL;
+				LOG(INFO) + "invalidated navtimeout event handle inside navtimeout thread; case signaled";
 				flag=false;
 				if(pEng->m_bNavigationError)
 				{
@@ -403,9 +429,10 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 				LOG(INFO) + "NavigationTimeoutThread:Navigation Timed out\n";
 				LOG(INFO) + "Authentication window not present";
 				}
-					
+				LOG(INFO) + "before calling stopOntab from navtimeout thread ";	
 				pEng->StopOnTab(0);
 						
+				LOG(INFO) + "invalidated navtimeout event handle inside navtimeout thread; case timeout";
 				CloseHandle(pEng->m_hNavigated);
 				pEng->m_hNavigated = NULL;
 				SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
@@ -422,7 +449,7 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 		
     	}while(flag);	
     }
-
+    LOG(INFO) + "exiting navtimeout thread ";
     return 0;
 }
 
@@ -625,9 +652,13 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
         	if(!isCancelButtonPressed)
 		{
 			m_bNavigationError=TRUE;
+			LOG(INFO) + "inside DISPID_NAVIGATEERROR, before signaling stop navtimeoutthread; case cancel button pressed case";
 			SetEvent(m_hNavigated);
+		
 			CloseHandle(m_hNavigated);
+				LOG(TRACE) + "inside DISPID_NAVIGATEERROR, before invalidating navtimeout event handle; case cancel button pressed case ";
 			m_hNavigated = NULL;
+			LOG(TRACE) + "inside DISPID_NAVIGATEERROR, after invalidating navtimeout event handle; case cancel button pressed case ";
 		}
 		else 
 			isCancelButtonPressed=false;
@@ -646,10 +677,12 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
         LOG(INFO) + "DISPID_NAVIGATECOMPLETE2";
 		if (!m_bInitialised)
 			RegisterWndProcThread(this);
-
+        LOG(TRACE) + "inside DISPID_NAVIGATEERROR, before signaling stop navtimeoutthread ";
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
+		LOG(TRACE) + "inside DISPID_NAVIGATEERROR, before invalidating navtimeout event handle ";
 		m_hNavigated = NULL;
+		LOG(TRACE) + "inside DISPID_NAVIGATEERROR, after invalidating navtimeout event handle ";
 
 		if (pdparams && pdparams->rgvarg[0].vt == VT_BSTR) 
 		{
@@ -661,11 +694,14 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 			if(pdparams->rgvarg[0].pvarVal->vt == VT_BSTR && pdparams->rgvarg[0].pvarVal->bstrVal)
 				wcsncpy(tcURL, pdparams->rgvarg[0].pvarVal->bstrVal, MAX_URL-1);
 		}
-
+        LOG(TRACE) + "inside DISPID_NAVIGATEERROR, before signaling stop docthread ";
         SetEvent(m_hDocComp);
         CloseHandle(m_hDocComp);
+		LOG(TRACE) + "inside DISPID_NAVIGATEERROR, before invalidating docthread event handle ";
         m_hDocComp = NULL;
+		LOG(TRACE) + "inside DISPID_NAVIGATEERROR, after invalidating docthread event handle ";
 
+		LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, before creating docthread ";
         CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::DocumentTimeoutThread, (LPVOID)this, 0, NULL));
 
         SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)tcURL);
@@ -698,9 +734,14 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
 	case DISPID_DOCUMENTCOMPLETE:
 		//Validate that there is an event handler
-		LOG(INFO) + "DISPID_DOCUMENTCOMPLETE";		
-        SetEvent(m_hDocComp);
+		LOG(INFO) + "DISPID_DOCUMENTCOMPLETE";	
+
+		LOG(TRACE) + "inside DISPID_DOCUMENTCOMPLETE, before signaling stop docthread ";
+        SetEvent(m_hDocComp);		
+		LOG(TRACE) + "inside DISPID_DOCUMENTCOMPLETE, before invalidating docthread event handle ";
         CloseHandle(m_hDocComp);
+		LOG(TRACE) + "inside DISPID_DOCUMENTCOMPLETE, after invalidating docthread event handle ";
+
         m_hDocComp = NULL;
 
 		if (pdparams && pdparams->rgvarg[0].vt == VT_BSTR) 
@@ -738,10 +779,13 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 			retVal = S_OK;
 			break;
 		}
+		 LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, before signaling stop navtimeoutthread ";
 
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
+		LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, before invalidating navtimeout event handle ";
 		m_hNavigated = NULL;
+		LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, after invalidating navtimeout event handle ";
 
         //  Do not start the Navigation Timeout Timer if the 
 		//  navigation request is a script call.
@@ -778,8 +822,16 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
             		break;
 		}
         if(m_hNavigated==NULL)
+		{
+			LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, before creating navtimeout event handle ";
             m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
+		}
+		else
+		{
+			LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, navtimeout event handle already exist ";
+		}
 
+		LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, before creating navtimeout thread ";
 		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
 		// EMBPD00158491
 		m_bNavigationComplete = FALSE;
