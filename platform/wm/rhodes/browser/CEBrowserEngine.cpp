@@ -958,6 +958,7 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	
     while (GetMessage(&msg, NULL, 0, 0))
     {
+    	        HRESULT handleKey = S_FALSE;
 		// Used for Zoom-In Or Zoom-Out, if the return value is true then 
 		// the message will be pushed further so that the remaining action 
 		// on that function key can be processed.
@@ -1010,14 +1011,22 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 			{
 				IOleInPlaceActiveObject* pInPlaceObject;
 				pDisp->QueryInterface( IID_IOleInPlaceActiveObject, (void**)&pInPlaceObject);
-				HRESULT handleKey = pInPlaceObject->TranslateAccelerator(&msg);
+				handleKey = pInPlaceObject->TranslateAccelerator(&msg);
 			}
 		}
 
-		if (!mainWnd.TranslateAccelerator(&msg))
+	if(handleKey != S_OK)
+  		{
+  		
+  			if (!mainWnd.TranslateAccelerator(&msg))
+  			{
+  				TranslateMessage(&msg);
+ 				DispatchMessage(&msg);
+  			}
+  		}
+  	else
 		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			LOG(INFO)+"HandleKey S_OK";
 		}
 
 		if(msg.message == WM_PAINT)
