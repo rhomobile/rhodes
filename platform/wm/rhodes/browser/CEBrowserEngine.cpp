@@ -1522,36 +1522,36 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 
 void CEBrowserEngine::stopNavTimeOutThread()
 {
-    LOG(TRACE) + "inside stopNavTimeOutThread";
-
-    LOG(TRACE) + "before setting stop navtimeout signal";
-    //issue thread stop signal by setting the event
-    SetEvent(m_hNavigated);
-    //wait till thread is stopped
-   
+	LOG(TRACE) + "inside stopNavTimeOutThread";
 	if(m_hNavTimeoutThread)
 	{
+
+		LOG(TRACE) + "before setting stop navtimeout signal";
+		//issue thread stop signal by setting the event
+		SetEvent(m_hNavigated);
+		//wait till thread is stopped
+
+
 		LOG(TRACE) + "wait till navtimeout thread stopped";
 		WaitForSingleObject(m_hNavTimeoutThread, INFINITE);
-		RAWLOG_TRACE1("wait ends; navtimeout thread successfully terminated ThreadID: %d", m_dwNavTimeOutThreadID);	
+		LOG(TRACE) + "wait ends; navtimeout thread successfully terminated";	
 	}
    
 
-    CloseHandle(m_hNavTimeoutThread);
-    m_hNavTimeoutThread = NULL;
-    m_dwNavTimeOutThreadID =0;
+ 
 
 }
 void CEBrowserEngine::stopDocTimeOutThread()
 {
-    LOG(TRACE) + "inside stopDocTimeOutThread";
-
-    LOG(TRACE) + "before setting stop doctimeout signal";
-    //issue thread stop signal by setting the event
-    SetEvent(m_hDocComp);
-    //wait till thread is stopped
+	LOG(TRACE) + "inside stopDocTimeOutThread";
 	if(m_hDocTimeoutThread)
 	{
+
+		LOG(TRACE) + "before setting stop doctimeout signal";
+		//issue thread stop signal by setting the event
+		SetEvent(m_hDocComp);
+		//wait till thread is stopped
+
 		LOG(TRACE) + "wait till doctimeout thread stopped";
 		WaitForSingleObject(m_hDocTimeoutThread, INFINITE);
 		LOG(TRACE) + "wait ends; doctimeout thread successfully terminated";	
