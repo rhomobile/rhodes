@@ -315,47 +315,7 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
 {
     LOG(INFO) + (L"DocThread Started\n");
 
-    CEBrowserEngine * pEng = reinterpret_cast<CEBrowserEngine*>(lpParameter);
-
-    if(pEng->m_hDocComp == NULL)
-    {
-		 LOG(INFO) + (L"before creating docthread handle.\n");
-        pEng->m_hDocComp = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_DOCCOMPLETE_IN_PROGRESS"/*NULL*/);
-        DWORD dwResult = WaitForSingleObject(pEng->m_hDocComp, pEng->m_dwNavigationTimeout);
-        if( dwResult != WAIT_OBJECT_0)
-        {
-			if(dwResult == WAIT_TIMEOUT)
-			{
-				LOG(INFO) + (L"before issueing a timeout in docthread, due to wait_timeout\n");
-			}
-			else
-			{
-				LOG(INFO) + (L"before issueing a timeout in docthread, due to unexpected error\n");
-			}
-			
-			LOG(INFO) + (L"before calling stopontab from docthread\n");
-            //no point in doing anything as there is no event handler
-            pEng->StopOnTab(pEng->m_tabID);
-            CloseHandle(pEng->m_hDocComp);
-            pEng->m_hDocComp = NULL;
-
-            //send fake document complete event to plug-in modules
-            SendMessage(pEng->m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, 
-                (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
-
-            //send navigation timeout event to hit the local bad link page for recovery from missing document complete event
-            SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
-                (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
-        }
-		else
-		{
-			LOG(INFO) + (L"stop docthread signal received.\n");
-		}
-    }
-	else
-	{
-		 LOG(INFO) + (L"event already exist, may docthread already running.\n");
-	}
+    
 
     LOG(INFO) + (L"DocThread Ended\n");
 
