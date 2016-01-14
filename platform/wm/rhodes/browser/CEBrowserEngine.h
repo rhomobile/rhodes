@@ -159,6 +159,10 @@ private:
     BOOL              m_bNavigationError;
 	bool              m_bInitialised;
 	bool			  m_bNavigationComplete;
+	HANDLE            m_hNavTimeoutThread;
+	HANDLE            m_hDocTimeoutThread;
+	DWORD             m_dwNavTimeOutThreadID;
+	DWORD             m_dwDocTimeOutThreadID;
 
 
 
@@ -204,6 +208,9 @@ private:
 
 private:
 //	CScrollNotify *pScrollNotify;
+	protected:
+		void stopNavTimeOutThread();
+		void stopDocTimeOutThread();
 };
 
 #endif
