@@ -351,8 +351,8 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
 
     }
 	
-	RAWLOG_TRACE1("before terminating doctimeout thread ID: %d", m_dwDocTimeOutThreadID);	
-    m_dwDocTimeOutThreadID =0;
+	RAWTRACE1("before terminating doctimeout thread ID: %d", pEng->m_dwDocTimeOutThreadID);	
+    pEng->m_dwDocTimeOutThreadID =0;
     LOG(INFO) + (L"DocThread Ended\n");
     return 0;
 }
@@ -437,8 +437,8 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
     }while(flag);	
 
 	
-	RAWLOG_TRACE1("before terminating navtimeout thread ID: %d", m_dwNavTimeOutThreadID);	
-    m_dwNavTimeOutThreadID =0;
+	RAWTRACE1("before terminating navtimeout thread ID: %d", pEng->m_dwNavTimeOutThreadID);	
+    pEng->m_dwNavTimeOutThreadID =0;
 
     LOG(INFO) + "navtimeout thread ended";
     return 0;
@@ -687,7 +687,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 			m_hDocTimeoutThread = NULL;
 		}
         m_hDocTimeoutThread= CreateThread(NULL, 0, &CEBrowserEngine::DocumentTimeoutThread, (LPVOID)this, 0, &m_dwDocTimeOutThreadID);
-		RAWLOG_TRACE1("DocTimeOutThread created with id: %d", m_dwDocTimeOutThreadID);
+		RAWTRACE1("DocTimeOutThread created with id: %d", m_dwDocTimeOutThreadID);
 
         SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, (WPARAM)m_tabID, (LPARAM)tcURL);
 
@@ -805,10 +805,9 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 			m_hNavTimeoutThread = NULL;
 		}
 		m_hNavTimeoutThread = CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, &m_dwNavTimeOutThreadID);		
-		RAWLOG_TRACE1("navTimeOutThread created with id: %d", m_dwNavTimeOutThreadID);
+		RAWTRACE1("navTimeOutThread created with id: %d", m_dwNavTimeOutThreadID);
 		// EMBPD00158491
-		m_bNavigationComplete = FALSE;
-		if
+		m_bNavigationComplete = FALSE;		
 		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NetworkWindowThread, (LPVOID)this, 0, NULL));
 		wcscpy(m_tcNavigatedURL, strFile);
 
