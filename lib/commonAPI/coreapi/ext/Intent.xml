@@ -150,15 +150,22 @@ Sample Build.yml
                             <PARAM name="data" type="HASH">
                                 <DESC>Data which will be sent within the intent.
 
-For Android, this is similar to [Intent.putExtra()](http://developer.android.com/reference/android/content/Intent.html#putExtra(java.lang.String, java.lang.String\)). `data` should contain a HASH of Extra-String,Value pairs. The `Value` type of the `Extra` must be a string. Other object types are not supported at this time. For example:
+For Android, this is similar to [Intent.putExtra()](http://developer.android.com/reference/android/content/Intent.html#putExtra(java.lang.String, java.lang.String\)). `data` should contain a HASH of Extra-String,Value pairs. The `Value` type of the `Extra` can be String, Integer, Boolean or Double. Other object types are not supported at this time. For example:
 
 `Android:`
     :::java
-    intent.putExtra(Intent.EXTRA_TEXT, 'Here is the text I am passing to the Intent');
+    intent.putExtra("intent.extra.string", 'Here is the text I am passing to the Intent');
+	intent.putExtra("intent.extra.integer", 12);
+	intent.putExtra("intent.extra.boolean", true);
+	intent.putExtra("intent.extra.double", 14.28);
 
 `JavaScript:`
     :::javascript
-    var data = {"android.intent.extra.TEXT":"Here is the text I am passing to the Intent"}
+    var data: { 'intent.extra.string' : "Here is the text I am passing to the Intent" ,
+				'intent.extra.integer' : 12 ,
+				'intent.extra.boolean' : true ,
+				'intent.extra.double' : parseFloat("10.55")}
+              };
 
 Notice the use of the full constant string "android.intent.extra.TEXT" in place of [Intent.EXTRA_TEXT](http://developer.android.com/reference/android/content/Intent.html#EXTRA_TEXT)
 
