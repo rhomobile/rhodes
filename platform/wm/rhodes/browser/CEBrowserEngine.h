@@ -163,6 +163,8 @@ private:
 	HANDLE            m_hDocTimeoutThread;
 	DWORD             m_dwNavTimeOutThreadID;
 	DWORD             m_dwDocTimeOutThreadID;
+	//CRITICAL_SECTION  m_csProtectStopNavTimeOut;
+    //CRITICAL_SECTION m_csProtectStopDocTimeOut;
 
 
 

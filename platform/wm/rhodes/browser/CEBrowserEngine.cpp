@@ -55,6 +55,8 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
     , m_bNavigationError(FALSE)
 	, m_bInitialised(FALSE)
 	,m_bNavigationComplete(FALSE)
+	,m_hDocTimeoutThread(NULL)
+	,m_hNavTimeoutThread(NULL)
 {
 	m_hwndParent  = hwndParent;
 	m_hInstance = hInstance;
@@ -75,6 +77,8 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
 	LOG(WARNING)+"zebra: dummy version with additional logs ";
 	m_hNavigated = CreateEvent(NULL, FALSE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 	m_hDocComp = CreateEvent(NULL, FALSE, FALSE, L"PB_IEENGINE_DOCCOMPLETE_IN_PROGRESS"/*NULL*/);
+	//InitializeCriticalSection(&m_csProtectStopNavTimeOut);
+	//InitializeCriticalSection(&m_csProtectStopDocTimeOut);	
 
 }
 
@@ -83,6 +87,10 @@ CEBrowserEngine::~CEBrowserEngine(void)
 	//destroy the browser window
 	DestroyWindow(m_hwndTabHTML);
 	m_hwndTabHTML = NULL;
+	//DeleteCriticalSection(&m_csProtectStopNavTimeOut);
+	//DeleteCriticalSection(&m_csProtectStopDocTimeOut);
+	CloseHandle(m_hNavigated);
+	CloseHandle(m_hDocComp);
 }
 
 LRESULT CEBrowserEngine::CreateEngine()
@@ -319,6 +327,8 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
     CEBrowserEngine * pEng = reinterpret_cast<CEBrowserEngine*>(lpParameter);
 
     DWORD dwResult = WaitForSingleObject(pEng->m_hDocComp, pEng->m_dwNavigationTimeout);
+	CloseHandle(pEng->m_hDocTimeoutThread);
+	pEng->m_hDocTimeoutThread = NULL;
     switch(dwResult)
     {
     case WAIT_TIMEOUT:
@@ -368,6 +378,8 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
     do
     {
         dwWaitResult = WaitForSingleObject(pEng->m_hNavigated, pEng->m_dwNavigationTimeout);
+		CloseHandle(pEng->m_hNavTimeoutThread);
+		pEng->m_hNavTimeoutThread = NULL;
 
         switch (dwWaitResult) 
         {
@@ -1522,6 +1534,7 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPar
 void CEBrowserEngine::stopNavTimeOutThread()
 {
 	LOG(TRACE) + "inside stopNavTimeOutThread";
+	//EnterCriticalSection(&m_csProtectStopNavTimeOut);
 	if(m_hNavTimeoutThread)
 	{
 
@@ -1533,8 +1546,11 @@ void CEBrowserEngine::stopNavTimeOutThread()
 
 		LOG(TRACE) + "wait till navtimeout thread stopped";
 		WaitForSingleObject(m_hNavTimeoutThread, INFINITE);
-		LOG(TRACE) + "wait ends; navtimeout thread successfully terminated";	
+		LOG(TRACE) + "wait ends; navtimeout thread successfully terminated";
+		
 	}
+	//LeaveCriticalSection(&m_csProtectStopNavTimeOut);
+	
    
 
  
@@ -1543,6 +1559,7 @@ void CEBrowserEngine::stopNavTimeOutThread()
 void CEBrowserEngine::stopDocTimeOutThread()
 {
 	LOG(TRACE) + "inside stopDocTimeOutThread";
+	//EnterCriticalSection(&m_csProtectStopDocTimeOut);
 	if(m_hDocTimeoutThread)
 	{
 
@@ -1554,7 +1571,9 @@ void CEBrowserEngine::stopDocTimeOutThread()
 		LOG(TRACE) + "wait till doctimeout thread stopped";
 		WaitForSingleObject(m_hDocTimeoutThread, INFINITE);
 		LOG(TRACE) + "wait ends; doctimeout thread successfully terminated";	
+		
 	}
+	//LeaveCriticalSection(&m_csProtectStopDocTimeOut);
 
    
 
