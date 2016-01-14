@@ -333,19 +333,20 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
 				LOG(INFO) + (L"before issueing a timeout in docthread, due to unexpected error\n");
 			}
 			
-			LOG(INFO) + (L"before calling stopontab from docthread\n");
+			//LOG(INFO) + (L"before calling stopontab from docthread\n");
             //no point in doing anything as there is no event handler
-            pEng->StopOnTab(pEng->m_tabID);
+            //pEng->StopOnTab(pEng->m_tabID);
             CloseHandle(pEng->m_hDocComp);
             pEng->m_hDocComp = NULL;
 
+			LOG(INFO) + (L"before firing fake doccomplete \n");
             //send fake document complete event to plug-in modules
             SendMessage(pEng->m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, 
                 (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
 
             //send navigation timeout event to hit the local bad link page for recovery from missing document complete event
-            SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
-                (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+            //SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+               // (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
         }
 		else
 		{
