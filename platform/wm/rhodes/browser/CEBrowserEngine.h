@@ -1,6 +1,7 @@
 #pragma once
 #include "ibrowserengine.h"
 #include "EngineEventListner.h"
+#include "IEEngineWatchDog.h"
 
 #include "logging/RhoLog.h"
 
@@ -42,7 +43,8 @@ class CEBrowserEngine :
 	public IDocHostUIHandler2,
 	public DWebBrowserEvents2,
 	public IDocHostShowUI,
-	public rho::engineeventlistner::IDOMInjectorEngineInterface
+	public rho::engineeventlistner::IDOMInjectorEngineInterface,
+	public engineWatchDog::IEngineTimeOutHandler
 {
     DEFINE_LOGCLASS;
 
@@ -118,6 +120,10 @@ private:
     //IDOMInjectorEngineInterface implementation
     virtual bool executAnonymousJs(wchar_t* szFunctionText, int nTabID);
 
+	//IEngineTimeOutHandler implementation
+	virtual bool OnEngineTimeOut(engineWatchDog::eTimeOutType eType);
+	virtual BOOL StopTabOnTimeOut();
+
 #pragma region not_implemented_virtual_functions
     virtual BOOL    NavigateToHtml(LPCTSTR szHtml) { return FALSE; }
     
@@ -159,6 +165,8 @@ private:
     BOOL              m_bNavigationError;
 	bool              m_bInitialised;
 	bool			  m_bNavigationComplete;
+	CRITICAL_SECTION  m_cxNavWatchDogProtector;
+	engineWatchDog::CEngineWatchDog*  m_pEngineWatchDog;
 
 
 
