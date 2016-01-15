@@ -1,13 +1,14 @@
 #include "IEEngineWatchDog.h"
 #define THREAD_TERMINATION_TIME_OUT 5000
 
-CEngineWatchDog::CEngineWatchDog(DWORD nWaitTimet,IEngineTimeOutHandler* pIf )
+CEngineWatchDog::CEngineWatchDog(DWORD nWaitTimet,eTimeOutType eType, IEngineTimeOutHandler* pIf )
 {
 	m_nWaitTime = nWaitTimet;
 	m_pTimeOutHandlerIf = pIf;
 	m_ThreadID =0;
 	m_ThreadHandle=NULL;
 	m_StopEvent=  CreateEvent(NULL, FALSE, FALSE, NULL);
+	m_eTimeOutType = eType;
 	CreateThread(NULL, 0, &CEngineWatchDog::ThereadProc, (LPVOID)this, 0, NULL)
 
 }
@@ -37,7 +38,7 @@ DWORD WINAPI CEngineWatchDog::ThereadProc( LPVOID lpParameter )
 	{
 	case WAIT_TIMEOUT:
 		{
-			if(false == m_pTimeOutHandlerIf->OnEngineTimeOut(engineWatchDog::eNavtimeOut))
+			if(false == m_pTimeOutHandlerIf->OnEngineTimeOut(m_eTimeOutType))
 			{
 				//don't stop the thread
 				continue;
