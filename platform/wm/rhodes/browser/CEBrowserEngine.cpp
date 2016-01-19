@@ -717,6 +717,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		}
 		LOG(INFO) + "JDP inside DISPID_NAVIGATECOMPLETE2-tcURL"+tcURL;
 
+/*
         LOG(TRACE) + "JDP inside DISPID_NAVIGATECOMPLETE2-before SetEvent(m_hDocComp)";
         SetEvent(m_hDocComp);
 		 LOG(TRACE) + "JDP inside DISPID_NAVIGATECOMPLETE2-before CloseHandle(m_hDocComp)";
@@ -725,7 +726,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
         m_hDocComp = NULL;
 
 		LOG(TRACE) + "JDP inside DISPID_NAVIGATECOMPLETE2-after m_hDocComp NULL";
-
+*/
 		/*
 		LOG(TRACE) + "JDP inside DISPID_NAVIGATECOMPLETE2-before creating DocumentTimeoutThread";
         CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::DocumentTimeoutThread, (LPVOID)this, 0, NULL));
@@ -874,6 +875,19 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, afyer creating navtimeout thread ";
 
 
+
+        LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before SetEvent(m_hDocComp)";
+        SetEvent(m_hDocComp);
+	LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before CloseHandle(m_hDocComp)";
+        CloseHandle(m_hDocComp);
+	LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before m_hDocComp NULL";
+        m_hDocComp = NULL;
+
+	LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-after m_hDocComp NULL";
+
+
+
+
 		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before creating DocumentTimeoutThread";
         CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::DocumentTimeoutThread, (LPVOID)this, 0, NULL));
 		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before creating DocumentTimeoutThread";
@@ -905,9 +919,9 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		break;
 	}
 
-	LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2-before tcURL";
+	LOG(TRACE) + "JDP inside invoke-before delete tcURL";
 	delete[] tcURL;
-	LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2-after tcURL";
+	LOG(TRACE) + "inside invoke-after delete tcURL";
 	//tcURL = NULL;
 
 	return retVal;
