@@ -65,7 +65,7 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
 
 	memset(m_tcCurrentPageTitle, NULL, sizeof(TCHAR) * MAX_URL);
 	memset(m_tcNavigatedURL, 0, sizeof(TCHAR) * MAX_URL);
-	m_dwDocumentTimeout=45000;
+	m_dwDocumentTimeout=60000;
 	convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
 	convertFromStringW(rho_wmimpl_getDocTimeOutVal(),m_dwDocumentTimeout);
 	LOG(WARNING)+"JDP CEBrowserEngine constructor-m_dwDocumentTimeout "+m_dwDocumentTimeout;
