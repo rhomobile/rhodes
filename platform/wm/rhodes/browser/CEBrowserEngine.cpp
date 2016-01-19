@@ -363,11 +363,21 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
             //send fake document complete event to plug-in modules
             SendMessage(pEng->m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, 
                 (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+		
+		if(pEng->m_dwDocumentTimeout!=0)
+		{
+		LOG(TRACE) + (L"JDP inside DocumentTimeoutThread-m_dwDocumentTimeout not 0");
 			LOG(TRACE) + (L"JDP inside DocumentTimeoutThread-error-before SendMessage WM_BROWSER_ONNAVIGATIONTIMEOUT");
             //send navigation timeout event to hit the local bad link page for recovery from missing document complete event
             SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
                 (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
 			LOG(TRACE) + (L"JDP inside DocumentTimeoutThread-error-after SendMessage WM_BROWSER_ONNAVIGATIONTIMEOUT");
+		}
+		else
+		{
+		LOG(TRACE) + (L"JDP inside DocumentTimeoutThread-m_dwDocumentTimeout  0");	
+		}
+			
         }
 		else
 		{
