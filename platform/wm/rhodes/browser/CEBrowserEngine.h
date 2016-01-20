@@ -155,7 +155,7 @@ private:
     RECT              m_rcViewSize;
 
     unsigned int      m_dwNavigationTimeout;
-    unsigned int      m_dwDocumentTimeout;
+    //unsigned int      m_dwDocumentTimeout;
     BOOL              m_bLoadingComplete;
     BOOL              m_bNavigationError;
 	bool              m_bInitialised;
