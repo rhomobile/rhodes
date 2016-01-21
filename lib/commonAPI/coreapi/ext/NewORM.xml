@@ -58,15 +58,12 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
                 <PARAMS>
                     <PARAM name="models" type="ARRAY">
                         <DESC>List of models to reset.</DESC>
-                    </PARAM>
-                    <PARAM name="resetClientInfo" type="BOOLEAN">
-                        <DESC>Whether or not to reset Client Info.</DESC>
-                    </PARAM>
+                    </PARAM>                    
                     <PARAM name="resetLocalModels" type="BOOLEAN">
                         <DESC>Whether or not to reset Local Models.</DESC>
                     </PARAM>
                 </PARAMS>
-                <DESC>Resets selected models, client info and local models.</DESC>
+                <DESC>Resets selected models and local models.</DESC>
             </METHOD>
 
             <METHOD name="databaseFullReset" access="STATIC">
