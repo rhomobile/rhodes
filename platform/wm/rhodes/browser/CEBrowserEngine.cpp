@@ -337,7 +337,9 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
     {
 		LOG(TRACE) + (L"JDP inside DocumentTimeoutThread- m_hDocCompnull create a new event");
         pEng->m_hDocComp = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_DOCCOMPLETE_IN_PROGRESS"/*NULL*/);
-		LOG(INFO) + (L"JDP inside DocumentTimeoutThread- before WaitForSingleObject.");
+		LOG(INFO) + L"JDP inside DocumentTimeoutThread- before WaitForSingleObject m_dwDocumentTimeout:-  "+pEng->m_dwDocumentTimeout;
+
+
         DWORD dwResult = WaitForSingleObject(pEng->m_hDocComp, pEng->m_dwDocumentTimeout);
 		LOG(INFO) + (L"JDP inside DocumentTimeoutThread- after WaitForSingleObject.");
         if( dwResult != WAIT_OBJECT_0)
@@ -366,7 +368,7 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
 		
 		if(pEng->m_dwDocumentTimeout!=0)
 		{
-		LOG(TRACE) + (L"JDP inside DocumentTimeoutThread-m_dwDocumentTimeout not 0");
+			LOG(TRACE) + (L"JDP inside DocumentTimeoutThread-m_dwDocumentTimeout not 0");
 			LOG(TRACE) + (L"JDP inside DocumentTimeoutThread-error-before SendMessage WM_BROWSER_ONNAVIGATIONTIMEOUT");
             //send navigation timeout event to hit the local bad link page for recovery from missing document complete event
             SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
@@ -396,7 +398,7 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
 
 DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 {
-	LOG(INFO) + "JDP inside NavigationTimeoutThread thread ";
+	LOG(INFO) + "JDP inside NavigationTimeoutThread";
     CEBrowserEngine * pEng = (CEBrowserEngine*) lpParameter;
 	DWORD dwWaitResult;
 	bool flag=false;
@@ -404,10 +406,12 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 
     if (pEng->m_dwNavigationTimeout)
     {		
-    	do
+    	LOG(INFO) + "JDP inside NavigationTimeoutThread-m_dwNavigationTimeout exists";
+		do
     	{
+		LOG(INFO) + "JDP inside NavigationTimeoutThread-Inside do-while before WaitForSingleObject";
 		dwWaitResult = WaitForSingleObject(pEng->m_hNavigated, pEng->m_dwNavigationTimeout);
-
+		LOG(INFO) + "JDP inside NavigationTimeoutThread-Inside do-while after WaitForSingleObject";
 		switch (dwWaitResult) 
 		{
 			// Event object was signaled
@@ -415,15 +419,15 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 				//
 				// TODO: Read from the shared buffer
 				//
-				LOG(INFO) + "JDP stop navtime out signal received. stoping thread ";	
-								
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject success";	
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject success-before signalling Navtimeout thread";	
 				CloseHandle(pEng->m_hNavigated);
 				pEng->m_hNavigated = NULL;
-				LOG(INFO) + "JDP invalidated navtimeout event handle inside navtimeout thread; case signaled";
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject success-after signalling Navtimeout thread";
 				flag=false;
 				if(pEng->m_bNavigationError)
 				{
-					LOG(INFO) + "JDP NavigationTimeoutThread:m_bNavigationError\n";
+					LOG(INFO) + "JDP inside NavigationTimeoutThread-Navigationerror";
 					pEng->StopOnTab(0);
 					Sleep(400);
 					SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, 
@@ -431,12 +435,14 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 					pEng->m_bNavigationError=FALSE;
 
 				}
+				else
+				{
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-not Navigationerror";
+				}
 				break; 
 			case WAIT_TIMEOUT: 
-				//
-				// TODO: Read from the shared buffer
-				//
-				LOG(INFO) + "JDP NavigationTimeoutThread:timeout\n";
+			
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject timeout";	
 				HWND currentForeGroundWindowHandle;
 				currentForeGroundWindowHandle = GetForegroundWindow();
 				wchar_t szBuf[200];
@@ -458,30 +464,33 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 				else
 				{
 				flag=false;
-				LOG(INFO) + "NavigationTimeoutThread:Navigation Timed out\n";
+				
 				LOG(INFO) + "Authentication window not present";
 				}
-				LOG(INFO) + "before calling stopOntab from navtimeout thread ";	
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject timeout-before calling StopOnTab";		
 				pEng->StopOnTab(0);
-						
-				LOG(INFO) + "invalidated navtimeout event handle inside navtimeout thread; case timeout";
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject timeout-after calling StopOnTab";			
+				
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject timeout-before signalling navtimeout";	
 				CloseHandle(pEng->m_hNavigated);
 				pEng->m_hNavigated = NULL;
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject timeout-after signalling navtimeout";
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject timeout-before SendMessage WM_BROWSER_ONNAVIGATIONTIMEOUT";
 				SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
                 (WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
-
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject timeout-after SendMessage WM_BROWSER_ONNAVIGATIONTIMEOUT";
 				break; 
 
 			// An error occurred
 			default: 
-				LOG(INFO) + "JDP Wait error  GetLastError()=\n"+ GetLastError();
+				LOG(INFO) + "JDP inside NavigationTimeoutThread- WaitForSingleobject error  GetLastError()=\n"+ GetLastError();
 				flag=false;
 				return 0; 
 		}		
 		
     	}while(flag);	
     }
-    LOG(INFO) + "JDP exiting navtimeout thread ";
+    LOG(INFO) + "JDP inside NavigationTimeoutThread- finish ";
     return 0;
 }
 
@@ -679,7 +688,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 	switch (dispidMember) 
 	{
 		case DISPID_NAVIGATEERROR:
-        	LOG(INFO) + "DISPID_NAVIGATEERROR";
+        	LOG(INFO) + "JDP DISPID_NAVIGATEERROR";
         	if(!isCancelButtonPressed)
 		{
 			m_bNavigationError=TRUE;
@@ -708,7 +717,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
         LOG(INFO) + "JDP inside DISPID_NAVIGATECOMPLETE2";
 		if (!m_bInitialised)
 			RegisterWndProcThread(this);
-        LOG(TRACE) + "JDP inside DISPID_NAVIGATECOMPLETE2-before SetEvent(m_hNavigated)";
+        LOG(TRACE) + "JDP inside DISPID_NAVIGATECOMPLETE2-before signalling navtimeoutthread";
 		SetEvent(m_hNavigated);
 		CloseHandle(m_hNavigated);
 		LOG(TRACE) + "JDP inside DISPID_NAVIGATECOMPLETE2-after SetEvent(m_hNavigated)";
@@ -777,15 +786,16 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
 	case DISPID_DOCUMENTCOMPLETE:
 		//Validate that there is an event handler
-		LOG(INFO) + "DISPID_DOCUMENTCOMPLETE";	
+		LOG(INFO) + "JDP DISPID_DOCUMENTCOMPLETE";	
 
-		LOG(TRACE) + "inside DISPID_DOCUMENTCOMPLETE, before signaling stop docthread ";
+		LOG(TRACE) + "JDP inside DISPID_DOCUMENTCOMPLETE- before signaling stop docthread ";
         SetEvent(m_hDocComp);		
-		LOG(TRACE) + "inside DISPID_DOCUMENTCOMPLETE, before invalidating docthread event handle ";
+		LOG(TRACE) + "JDP inside DISPID_DOCUMENTCOMPLETE-before signalling docthread";
         CloseHandle(m_hDocComp);
 		LOG(TRACE) + "inside DISPID_DOCUMENTCOMPLETE, after invalidating docthread event handle ";
 
         m_hDocComp = NULL;
+		LOG(TRACE) + "JDP inside DISPID_DOCUMENTCOMPLETE-after signalling docthread";
 
 		if (pdparams && pdparams->rgvarg[0].vt == VT_BSTR) 
 		{
@@ -798,6 +808,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 				wcsncpy(tcURL, pdparams->rgvarg[0].pvarVal->bstrVal, MAX_URL-1);
 		}
 
+		LOG(INFO) + "JDP inside DISPID_DOCUMENTCOMPLETE-tcURL"+tcURL;
 		PostMessage(m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)_tcsdup(tcURL));
 
         m_bLoadingComplete = true;
@@ -805,10 +816,10 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
 		retVal = S_OK;
         m_bNavigationComplete = TRUE;
-		break;
+		break;.
 
 	case DISPID_BEFORENAVIGATE2:
-        LOG(INFO) + "JDP inside DISPID_BEFORENAVIGATE2";
+        //LOG(INFO) + "JDP inside DISPID_BEFORENAVIGATE2";
 
 		if (pdparams && pdparams->rgvarg[5].pvarVal[0].vt == VT_BSTR) 
 		{
@@ -880,27 +891,27 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 			LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, navtimeout event handle already exist ";
 		}
 
-		LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, before creating navtimeout thread ";
-		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
-		LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, afyer creating navtimeout thread ";
+		//LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, before creating navtimeout thread ";
+		//CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
+		//LOG(TRACE) + "inside DISPID_BEFORENAVIGATE2, afyer creating navtimeout thread ";
 
 
 
         LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before SetEvent(m_hDocComp)";
         SetEvent(m_hDocComp);
-	LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before CloseHandle(m_hDocComp)";
+		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before CloseHandle(m_hDocComp)";
         CloseHandle(m_hDocComp);
-	LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before m_hDocComp NULL";
+		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before m_hDocComp NULL";
         m_hDocComp = NULL;
 
-	LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-after m_hDocComp NULL";
+		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-after m_hDocComp NULL";
 
 
 
 
-		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before creating DocumentTimeoutThread";
-        CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::DocumentTimeoutThread, (LPVOID)this, 0, NULL));
-		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before creating DocumentTimeoutThread";
+		//LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before creating DocumentTimeoutThread";
+        //CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::DocumentTimeoutThread, (LPVOID)this, 0, NULL));
+		//LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before creating DocumentTimeoutThread";
 
 
 
@@ -929,9 +940,9 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		break;
 	}
 
-	LOG(TRACE) + "JDP inside invoke-before delete tcURL";
+	//LOG(TRACE) + "JDP inside invoke-before delete tcURL";
 	delete[] tcURL;
-	LOG(TRACE) + "inside invoke-after delete tcURL";
+	//LOG(TRACE) + "inside invoke-after delete tcURL";
 	//tcURL = NULL;
 
 	return retVal;
