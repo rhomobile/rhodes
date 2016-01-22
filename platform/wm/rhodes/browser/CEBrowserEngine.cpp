@@ -816,12 +816,10 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
 		retVal = S_OK;
         m_bNavigationComplete = TRUE;
-		break;.
+		break;
 
 	case DISPID_BEFORENAVIGATE2:
-        //LOG(INFO) + "JDP inside DISPID_BEFORENAVIGATE2";
-
-		if (pdparams && pdparams->rgvarg[5].pvarVal[0].vt == VT_BSTR) 
+        		if (pdparams && pdparams->rgvarg[5].pvarVal[0].vt == VT_BSTR) 
 		{
 			if(pdparams->rgvarg[5].pvarVal[0].bstrVal)
 				wcsncpy(tcURL, pdparams->rgvarg[5].pvarVal[0].bstrVal, MAX_URL-1);
