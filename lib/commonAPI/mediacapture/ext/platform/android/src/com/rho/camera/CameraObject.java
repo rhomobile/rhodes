@@ -408,7 +408,16 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                  parameters.setPreviewSize(previewSize.width, previewSize.height);
         	}
         	else if(desired_width > maxSize.width || desired_height > maxSize.height){        		
-        		parameters.setPreviewSize(maxSize.width , maxSize.height);       
+        		final Camera.Parameters newParam=parameters;
+        		final android.hardware.Camera.Size newMaxSize = sizes.get(0);
+        		RhodesActivity.safeGetInstance().runOnUiThread(new Runnable() {  			
+        						
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						newParam.setPreviewSize(newMaxSize.width , newMaxSize.height);
+					}
+				});  
         	}
         	else{ 
         		parameters.setPreviewSize(320, 240);
