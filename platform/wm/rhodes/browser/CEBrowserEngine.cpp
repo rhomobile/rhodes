@@ -830,16 +830,17 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		wsprintf(timeBuf, L"%02d%02d%04d%02d%02d%02d%03d", st.wMonth, st.wDay, st.wYear,
                     st.wHour, st.wMinute, st.wSecond, st.wMilliseconds );
 		
-		if(m_prevSystemTime!=NULL)
-		{
-		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2 m_prevSystemTime not NULL  ";
+		//if(m_prevSystemTime!=NULL)
+		//{
+		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2 m_prevSystemTime before";
 		wsprintf(prevtimeBuf, L"%02d%02d%04d%02d%02d%02d%03d", m_prevSystemTime.wMonth, m_prevSystemTime.wDay, m_prevSystemTime.wYear,
                     m_prevSystemTime.wHour, m_prevSystemTime.wMinute, m_prevSystemTime.wSecond, m_prevSystemTime.wMilliseconds );
-		}
-		else
-		{
-		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2 m_prevSystemTime  NULL  ";	
-		}
+                    LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2 m_prevSystemTime after";
+		//}
+		//else
+		//{
+		//LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2 m_prevSystemTime  NULL  ";	
+		//}
 
 
 
