@@ -823,14 +823,14 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 	case DISPID_BEFORENAVIGATE2:
         LOG(INFO) + "JDP inside DISPID_BEFORENAVIGATE2-enter";
 		WCHAR timeBuf[40];
-		//WCHAR prevtimeBuf[40];
+		WCHAR prevtimeBuf[40];
 		
 		SYSTEMTIME st;
 		GetSystemTime(&st); 
 		wsprintf(timeBuf, L"%02d%02d%04d%02d%02d%02d%03d", st.wMonth, st.wDay, st.wYear,
                     st.wHour, st.wMinute, st.wSecond, st.wMilliseconds );
-		//wsprintf(prevtimeBuf, L"%02d%02d%04d%02d%02d%02d%03d", m_prevSystemTime.wMonth, m_prevSystemTime.wDay, m_prevSystemTime.wYear,
-                    //m_prevSystemTime.wHour, m_prevSystemTime.wMinute, m_prevSystemTime.wSecond, m_prevSystemTime.wMilliseconds );
+		wsprintf(prevtimeBuf, L"%02d%02d%04d%02d%02d%02d%03d", m_prevSystemTime.wMonth, m_prevSystemTime.wDay, m_prevSystemTime.wYear,
+                    m_prevSystemTime.wHour, m_prevSystemTime.wMinute, m_prevSystemTime.wSecond, m_prevSystemTime.wMilliseconds );
 
 
 
@@ -842,7 +842,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		LOG(INFO) + "JDP inside DISPID_BEFORENAVIGATE2 tcURL  "+tcURL;
 		LOG(INFO) + "JDP inside DISPID_BEFORENAVIGATE2 m_prevtcURL  "+m_prevtcURL;
 		LOG(INFO) +"JDP inside DISPID_BEFORENAVIGATE2 current time:- "+ timeBuf;
-		//LOG(INFO) +"JDP inside DISPID_BEFORENAVIGATE2 prev time:- "+ prevtimeBuf;
+		LOG(INFO) +"JDP inside DISPID_BEFORENAVIGATE2 prev time:- "+ prevtimeBuf;
 
 		union timeunion {
 		FILETIME fileTime;
@@ -897,6 +897,15 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		LOG(INFO) +"JDP inside DISPID_BEFORENAVIGATE2-time difference less than 1 second-same url -cancel this navigation-after VARIANT_TRUE-no";
 		//retVal = S_OK;
 		LOG(INFO) +"JDP inside DISPID_BEFORENAVIGATE2-time difference less than 1 second-same url -cancel this navigation-after retVal = S_OK-no-break the loop";
+		
+		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before setting m_prevSystemTime inside loop";
+		m_prevSystemTime =st;
+
+		
+		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before copying tcURL to m_prevtcURL-inside loop"+m_prevtcURL;  
+		wcsncpy(m_prevtcURL, tcURL, MAX_URL-1);
+		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-after copying tcURL to m_prevtcURL-inside loop"+m_prevtcURL; 
+		
 		break;
 		}
 		else
@@ -923,13 +932,13 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
             break;
 		}
 */
-		
+		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before setting m_prevSystemTime ouside loop";
 		m_prevSystemTime =st;
 
 		
-		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before copying tcURL to m_prevtcURL"+m_prevtcURL;  
+		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-before copying tcURL to m_prevtcURL-outside loop"+m_prevtcURL;  
 		wcsncpy(m_prevtcURL, tcURL, MAX_URL-1);
-		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-after copying tcURL to m_prevtcURL"+m_prevtcURL; 
+		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2-after copying tcURL to m_prevtcURL-outside loop"+m_prevtcURL; 
 		
 		LOG(TRACE) + "JDP inside DISPID_BEFORENAVIGATE2, before signaling stop navtimeoutthread ";
 
