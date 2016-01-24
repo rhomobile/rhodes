@@ -72,6 +72,7 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
 	GetWindowRect(hwndParent, &m_rcViewSize);
     CreateEngine();
 	RHODESAPP().getExtManager().getEngineEventMngr().setEngineInterface(this);
+	InitializeCriticalSection(&m_cxNavWatchDogProtector);
 }
 
 CEBrowserEngine::~CEBrowserEngine(void)
@@ -79,6 +80,7 @@ CEBrowserEngine::~CEBrowserEngine(void)
 	//destroy the browser window
 	DestroyWindow(m_hwndTabHTML);
 	m_hwndTabHTML = NULL;
+	DeleteCriticalSection(&m_cxNavWatchDogProtector);
 }
 
 LRESULT CEBrowserEngine::CreateEngine()
@@ -284,7 +286,19 @@ BOOL CEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
 
     return SUCCEEDED(retVal);
 }
+BOOL CEBrowserEngine::StopTabOnTimeOut()
+{
+	if(S_OK == m_pBrowser->Stop())
+	{	
+            
+        PostMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, m_tabID, (LPARAM)_tcsdup(L"NavigationStopped"));
+        PostMessage(m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)_tcsdup(L"NavigationStopped"));
 
+		return TRUE;
+	}
+
+	return FALSE;
+}
 BOOL CEBrowserEngine::StopOnTab(UINT iTab)
 {
 	if(S_OK == m_pBrowser->Stop())
@@ -336,6 +350,50 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
     LOG(INFO) + (L"DocThread Ended\n");
 
     return 0;
+}
+void CEBrowserEngine::OnEngineTimeOut(engineWatchDog::eTimeOutType eType)
+{
+	bool bRestStatus= true;
+	switch(eType)
+	{
+		case engineWatchDog::eNavtimeOut
+		{
+			LOG(TRACE) + "inside nav timeout handler";
+
+			HWND currentForeGroundWindowHandle;
+			currentForeGroundWindowHandle = GetForegroundWindow();
+			wchar_t szBuf[200];
+			if(currentForeGroundWindowHandle!=NULL)
+			{
+				GetWindowText(currentForeGroundWindowHandle,szBuf,199);
+				LOG(INFO) + szBuf;
+			}
+
+			authwindowhandle = FindWindow(null,L"Enter Network Password");
+
+			if(authwindowhandle)
+			{
+				LOG(INFO) + "Authentication window present";
+				LOG(INFO) + "NavigationTimeoutThread:Authentication popup\n";	
+				bRestStatus = false;
+			}
+			else
+			{
+				StopTabOnTimeOut();
+				SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONTIMEOUT, 
+					(WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+
+			}
+
+			
+			break;
+		}
+	default:
+		{
+			LOG(TRACE) + "unknown timeout type request received";
+		}
+	}
+	return bRestStatus;
 }
 
 DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
@@ -623,10 +681,10 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
         	LOG(INFO) + "DISPID_NAVIGATEERROR";
         	if(!isCancelButtonPressed)
 		{
-			m_bNavigationError=TRUE;
-			SetEvent(m_hNavigated);
-			CloseHandle(m_hNavigated);
-			m_hNavigated = NULL;
+			pEng->StopOnTab(0);
+			SendMessage(pEng->m_hwndParent, WM_BROWSER_ONNAVIGATIONERROR, 
+					(WPARAM)pEng->m_tabID, (LPARAM)pEng->m_tcNavigatedURL);
+					pEng->m_bNavigationError=FALSE;
 		}
 		else 
 			isCancelButtonPressed=false;
@@ -646,9 +704,13 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		if (!m_bInitialised)
 			RegisterWndProcThread(this);
 
-		SetEvent(m_hNavigated);
-		CloseHandle(m_hNavigated);
-		m_hNavigated = NULL;
+		EnterCriticalSection(&m_cxNavWatchDogProtector)
+		if(m_pEngineWatchDog)
+		{
+			delete m_pEngineWatchDog;
+			m_pEngineWatchDog= NULL;
+		}	
+		LeaveCriticalSection(&m_cxNavWatchDogProtector);
 
 		if (pdparams && pdparams->rgvarg[0].vt == VT_BSTR) 
 		{
@@ -779,7 +841,15 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
         if(m_hNavigated==NULL)
             m_hNavigated = CreateEvent(NULL, TRUE, FALSE, L"PB_IEENGINE_NAVIGATION_IN_PROGRESS");
 
-		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
+		//CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NavigationTimeoutThread, (LPVOID)this, 0, NULL));
+		EnterCriticalSection(&m_cxNavWatchDogProtector)
+		if(m_pEngineWatchDog)
+		{
+			delete m_pEngineWatchDog;
+			m_pEngineWatchDog= NULL;
+		}
+		m_pEngineWatchDog = new engineWatchDog::CEngineWatchDog(m_dwNavigationTimeout, static_cast<engineWatchDog::IEngineTimeOutHandler>(this);
+		LeaveCriticalSection(&m_cxNavWatchDogProtector);
 		// EMBPD00158491
 		m_bNavigationComplete = FALSE;
 		CloseHandle (CreateThread(NULL, 0, &CEBrowserEngine::NetworkWindowThread, (LPVOID)this, 0, NULL));
