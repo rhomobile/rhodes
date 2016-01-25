@@ -354,6 +354,11 @@ DWORD WINAPI CEBrowserEngine::DocumentTimeoutThread( LPVOID lpParameter )
 			else
 			{
 				LOG(TRACE) + (L"JDP inside DocumentTimeoutThread-unexpected error");
+				LOG(INFO) + "JDP inside DocumentTimeoutThread- WaitForSingleobject error-dwResult= "+ dwResult;
+				LOG(WARNING) + "JDP inside DocumentTimeoutThread- WaitForSingleobject error  GetLastError()= "+ GetLastError();
+				LOG(WARNING) + "JDP inside DocumentTimeoutThread- WaitForSingleobject error-before return 0";
+				return 0;
+
 			}
 			
 			LOG(TRACE) + (L"JDP inside DocumentTimeoutThread-error-before calling StopOnTab");
