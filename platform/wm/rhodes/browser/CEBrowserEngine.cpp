@@ -418,14 +418,11 @@ DWORD WINAPI CEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 		{
 			// Event object was signaled
 			case WAIT_OBJECT_0: 
-				//
-				// TODO: Read from the shared buffer
-				//
-				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject success";	
-				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject success-before signalling Navtimeout thread";	
-				CloseHandle(pEng->m_hNavigated);
-				pEng->m_hNavigated = NULL;
-				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject success-after signalling Navtimeout thread";
+				LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject success-no invalidate";	
+				//LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject success-before signalling Navtimeout thread";	
+				//CloseHandle(pEng->m_hNavigated);
+				//pEng->m_hNavigated = NULL;
+				//LOG(INFO) + "JDP inside NavigationTimeoutThread-WaitForSingleObject success-after signalling Navtimeout thread";
 				flag=false;
 				if(pEng->m_bNavigationError)
 				{
