@@ -58,7 +58,7 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
 	,m_bNavigationComplete(FALSE)
 {
 	
-	LOG(TRACE)+"JDP CEBrowserEngine constructor";
+	LOG(INFO)+"JDP CEBrowserEngine constructor--";
 	
 	m_hwndParent  = hwndParent;
 	m_hInstance = hInstance;
@@ -864,7 +864,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 
 		int64 timediff= currentfiletime.ul.QuadPart - prevfiletime.ul.QuadPart;
 
-		LOG(INFO) +"JDP inside DISPID_BEFORENAVIGATE2-time difference "+ timediff;
+		//LOG(INFO) +"JDP inside DISPID_BEFORENAVIGATE2-time difference "+ timediff;
 		LOG(INFO) +"JDP inside DISPID_BEFORENAVIGATE2-time difference in milisecond "+ timediff/10000;
 		
 		
@@ -888,6 +888,8 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		LOG(INFO) +"JDP inside DISPID_BEFORENAVIGATE2-time difference 0 continue";
 		}
 		*/
+		
+		/*
 		
 		if(timediff/10000>1000)
 		{
@@ -925,7 +927,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		}
 		
 
-
+*/
 
 		
 		
