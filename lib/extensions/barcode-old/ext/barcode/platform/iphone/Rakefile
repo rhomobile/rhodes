@@ -41,7 +41,7 @@ namespace "build" do
 
   task :all => :config do
 
-    iphone_path = ENV['RHO_ROOT'] + '/lib/extensions/barcode/ext/barcode/platform/iphone'
+    iphone_path = ENV['RHO_ROOT'] + '/lib/extensions/barcode-old/ext/barcode/platform/iphone'
 
 
     simulator = $sdk =~ /iphonesimulator/

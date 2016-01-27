@@ -508,7 +508,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     self.view = root;
 	
     [root release];
-    assert([root retainCount] == 1);
+    //assert([root retainCount] == 1);
 }
 
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
