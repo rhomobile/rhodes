@@ -986,8 +986,12 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 				HRESULT handleKey = pInPlaceObject->TranslateAccelerator(&msg);
 			}
 		}
-
-		if (!mainWnd.TranslateAccelerator(&msg))
+               if(bDeviceCausesDoubleBackspace  &&  msg.message == WM_KEYDOWN  &&  msg.wParam == VK_BACK)
+               {
+               	        LOG(INFO) + "Inside CE6 back button";
+               		DispatchMessage(&msg);
+               }
+	      else if (!mainWnd.TranslateAccelerator(&msg))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
