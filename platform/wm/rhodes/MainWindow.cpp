@@ -1905,7 +1905,7 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
      }
       if (RHO_IS_CEDEVICE && control.m_hWnd && (pMsg->message == WM_CHAR) && (pMsg->wParam == VK_BACK))
      {
-     	LOG(INFO) + "coming on key down";
+     	LOG(INFO) + "coming on key char";
        	return TRUE;	
      }
      
