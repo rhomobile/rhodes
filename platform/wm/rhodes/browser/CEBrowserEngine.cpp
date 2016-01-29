@@ -181,11 +181,13 @@ LRESULT CEBrowserEngine::CreateEngine()
 		GetVersionEx(&osvi);
 		bRunningOnWM = (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 2) ||
 		     (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1);
-
+                LOG(INFO) + "dwMajorVersion is" + osvi.dwMajorVersion;
+                LOG(INFO) + "dwMinorVersion"    + osvi.dwMinorVersion;
+                LOG(INFO) + "osvi.dwBuildNumber"+ osvi.dwBuildNumber;
 		//  Devices which cause a Double Backspace:
 		//  1. MC3190 CE 6 build 3122
 		if (osvi.dwMajorVersion == 6 && 
-			osvi.dwMinorVersion == 0 &&	osvi.dwBuildNumber >= 3122)
+			osvi.dwMinorVersion == 0 )
 		{
 			bDeviceCausesDoubleBackspace = TRUE;
 		}
@@ -986,8 +988,13 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 				HRESULT handleKey = pInPlaceObject->TranslateAccelerator(&msg);
 			}
 		}
-
-		if (!mainWnd.TranslateAccelerator(&msg))
+		LOG(INFO) + "bDeviceCausesDoubleBackspace value" + bDeviceCausesDoubleBackspace;
+               if(bDeviceCausesDoubleBackspace  &&  msg.message == WM_KEYDOWN  &&  msg.wParam == VK_BACK)
+               {
+               	        LOG(INFO) + "Inside CE6 back button";
+               		DispatchMessage(&msg);
+               }
+	      else if (!mainWnd.TranslateAccelerator(&msg))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
