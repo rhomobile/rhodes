@@ -1903,6 +1903,11 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
      	LOG(INFO) + "coming on key down";
        	return TRUE;	
      }
+      if (RHO_IS_CEDEVICE && control.m_hWnd && (pMsg->message == WM_CHAR) && (pMsg->wParam == VK_BACK))
+     {
+     	LOG(INFO) + "coming on key down";
+       	return TRUE;	
+     }
      
 	// workaround for backspace key in text fields:
 	//if (control.m_hWnd && (pMsg->message == WM_KEYUP) && (pMsg->wParam == VK_BACK))
