@@ -961,7 +961,7 @@ void CEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 				ShowWindow(taskbarWnd, SW_HIDE);
 			}
 		}
-		
+		 LOG(INFO)  + "coming to this part: " ;
 		if ((msg.message == WM_KEYDOWN || msg.message == WM_KEYUP) && msg.wParam != VK_BACK)	//  Run Browser TranslateAccelerator
 		{
 			//Setting foucs back to the editable window if the focus is lost
