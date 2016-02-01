@@ -279,3 +279,5 @@ platform/build/*.build/*
 
 .qmake.stash
 rendered
+.byebug_history
+tmp/
