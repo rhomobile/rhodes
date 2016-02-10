@@ -27,9 +27,12 @@
 require 'rho/render'
 require 'rho/rhosupport'
 require 'rho/rhoviewhelpers'
+require 'erb'
 
 module Rho
   class RhoController
+  include ERB::Util
+
   	attr_accessor :menu
 
     @@before = nil

@@ -3720,7 +3720,6 @@ def common_bundle_start( startdir, dest)
 
   chdir dest
   Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
-  Dir.glob("**/erb.rb").each {|f| rm f}
   Dir.glob("**/find.rb").each {|f| rm f}
 
   $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
