@@ -133,10 +133,18 @@ public:
     String create_response(String const &reason, HeaderList const &headers);
     String create_response(String const &reason, String const &body);
     String create_response(String const &reason, HeaderList const &headers, String const &body);
+	#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	static DWORD WINAPI StartReceiveThreadProc( LPVOID lpParameter );
+	static DWORD WINAPI StartListenThreadProc( LPVOID lpParameter );
+	static DWORD WINAPI StartSendThreadProc( LPVOID lpParameter );
+	#endif
 
     static int isIndex(String const &uri);
   
     int getPort();
+	#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	String getRootPath(){return m_root;}
+	#endif
     rho::String getIPAdress();
     void disableAllLogging();
 

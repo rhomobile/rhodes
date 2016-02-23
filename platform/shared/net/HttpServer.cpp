@@ -88,7 +88,49 @@ namespace net
 using namespace rho::common;
 
 IMPLEMENT_LOGCLASS(CHttpServer, "HttpServer");
-
+typedef Vector<char> ByteVector;
+#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+//below are structs used to transfer information to the threads in win32 http server related APIs
+struct receiveData
+{
+	ByteVector& m_data;
+	bool verbose;
+	bool readSuccess;
+	SOCKET m_client_socket;
+	receiveData(ByteVector& data, SOCKET client_socket ):m_data(data),m_client_socket(client_socket)
+	{
+		verbose = true;
+		readSuccess=false;	
+	
+	}
+	
+	
+};
+struct acceptData
+{
+	bool verbose;
+	SOCKET m_client_socket;
+	acceptData(SOCKET server_socket ):m_client_socket(server_socket)
+	{
+		verbose = true;		
+	
+	}
+	
+	
+};
+struct sendData
+{
+	SOCKET m_client_socket;
+	String& m_data;
+	bool verbose;
+	sendData(String& data, SOCKET client_socket):m_data(data),m_client_socket(client_socket)
+	{
+		verbose = true;
+	
+	}
+	
+};
+#endif
 #if defined(WINDOWS_PLATFORM)
 static size_t const FILE_BUF_SIZE = 64*1024;
 #else
@@ -430,6 +472,12 @@ bool CHttpServer::init()
 	if (verbose) RAWTRACE("Open listening socket...");
 
     close_listener();
+	#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	
+	WSADATA m_wsa_data;
+	memset(&m_wsa_data,0,sizeof(WSADATA));
+	WSAStartup(MAKEWORD(2, 2), &m_wsa_data);
+	#endif
     
     //m_listener = socket(AF_INET, SOCK_STREAM, 0);
     m_listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -525,6 +573,9 @@ bool CHttpServer::run()
         if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
             rho_ruby_start_threadidle();
 #endif
+#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+int ret = 1;
+#else
         fd_set readfds;
         FD_ZERO(&readfds);
         FD_SET(m_listener, &readfds);
@@ -534,6 +585,7 @@ bool CHttpServer::run()
         tv.tv_sec = nTimeout/1000;
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
+#endif
 #ifndef RHO_NO_RUBY_API
         if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
             rho_ruby_stop_threadidle();
@@ -541,10 +593,29 @@ bool CHttpServer::run()
         bool bProcessed = false;
         if (ret > 0) 
         {
-            if (FD_ISSET(m_listener, &readfds))
+		#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+		 if(1)
+		#else
+          if (FD_ISSET(m_listener, &readfds))
+		#endif
             {
-                //RAWTRACE("Before accept...");
-                SOCKET conn = accept(m_listener, NULL, NULL);
+                RAWTRACE("Before accept...");
+				static int nAcceptCounter =0;
+				if(0 == nAcceptCounter)
+				{
+					RAWTRACE("accept counter reset");				 
+				}
+				#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )				
+				acceptData socket( m_listener);
+				HANDLE hthread =  CreateThread(NULL, 0, CHttpServer::StartListenThreadProc, (LPVOID)&socket, 0, NULL);
+	            WaitForSingleObject(hthread, INFINITE);
+				SOCKET conn = socket.m_client_socket;
+				#else
+				 SOCKET conn = accept(m_listener, NULL, NULL);
+				#endif               
+				
+				nAcceptCounter++;
+				RAWLOG_ERROR1("accept counter: %d", nAcceptCounter);
                 //RAWTRACE("After accept...");
                 if (!m_active) {
                     if (verbose) RAWTRACE("Stop HTTP server");
@@ -609,7 +680,7 @@ bool CHttpServer::run()
     }
 }
 
-typedef Vector<char> ByteVector;
+
 
 bool receive_request_test(ByteVector &request, int attempt)
 {
@@ -651,6 +722,15 @@ bool receive_request_test(ByteVector &request, int attempt)
 bool CHttpServer::receive_request(ByteVector &request)
 {
 	if (verbose) RAWTRACE("Receiving request...");
+	#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	
+	receiveData data(request,m_sock);	
+	HANDLE hthread =  CreateThread(NULL, 0, CHttpServer::StartReceiveThreadProc, (LPVOID)&data, 0, NULL);
+	WaitForSingleObject(hthread, INFINITE);
+	CloseHandle(hthread);
+    return data.readSuccess;
+	
+	#else
 
 	ByteVector r;
     char buf[BUF_SIZE];
@@ -719,6 +799,7 @@ bool CHttpServer::receive_request(ByteVector &request)
         }
     }
     return true;
+	#endif
 }
 
 bool CHttpServer::send_response_impl(String const &data, bool continuation)
@@ -755,6 +836,18 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
         return false;
     }
 #endif
+
+#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+
+	sendData responsedata(const_cast<String&>(data),m_sock);
+	
+	
+	HANDLE hthread =  CreateThread(NULL, 0, CHttpServer::StartSendThreadProc, (LPVOID)&responsedata, 0, NULL);
+	DWORD test = WaitForSingleObject(hthread, INFINITE);
+	
+	CloseHandle(hthread);
+
+#else
     
     size_t pos = 0;
     for(; pos < data.size();) {
@@ -775,6 +868,7 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
         
         pos += n;
     }
+#endif
     
     //String dbg_response = response.size() > 100 ? response.substr(0, 100) : response;
     //RAWTRACE2("Sent response:\n%s%s", dbg_response.c_str(), response.size() > 100 ? "..." : "   ");
@@ -847,6 +941,9 @@ String CHttpServer::create_response(String const &reason, HeaderList const &hdrs
 bool CHttpServer::process(SOCKET sock)
 {
     m_sock = sock;
+	
+	#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	#else
 
 	// First of all, make socket non-blocking
 #if defined(WINDOWS_PLATFORM)
@@ -866,6 +963,7 @@ bool CHttpServer::process(SOCKET sock)
 		return false;
 	}
 #endif
+    #endif
 
     // Read request from socket
     ByteVector request;
@@ -883,7 +981,145 @@ bool CHttpServer::process(SOCKET sock)
         if (verbose) RAWLOG_INFO1("Process URI: '%s'", uri.c_str());
 
     return decide(method, uri, query, headers, body);
+    
 }
+#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+DWORD WINAPI CHttpServer::StartListenThreadProc( LPVOID lpParameter )
+{
+	acceptData* pData = (acceptData*)lpParameter;
+	
+	struct sockaddr in_addr;
+              socklen_t in_len;
+              int infd;
+              
+
+              in_len = sizeof in_addr;
+	
+	SOCKET conn=INVALID_SOCKET;
+	for(;;)
+	{
+	    conn = accept(pData->m_client_socket, NULL, NULL);
+	  if(conn == INVALID_SOCKET)
+	  {
+		  RAWLOG_ERROR1("invalid socket returned by accept %d",  WSAGetLastError());
+		  Sleep(0);
+		  
+	  }
+	  else{
+	  break;
+	  }
+	}
+	
+	getsockname(conn,&in_addr, &in_len );
+	
+	
+	 // detect local IP adress
+    struct sockaddr_in sin;
+    memset(&sin, 0, sizeof(sin));
+    //sin.sin_len = sizeof(sin);
+    sin.sin_family = AF_INET; // or AF_INET6 (address family)
+    socklen_t len = sizeof(sin);
+    if (getsockname(conn, (struct sockaddr *)&sin, &len) < 0) {
+        // Handle error here
+       // if (verbose) RAWLOG_ERROR("Can not detect local IP adress");
+    }
+    else {
+         RAWTRACE1("accepted connection from ip %s and port %d",  inet_ntoa(sin.sin_addr),ntohs(sin.sin_port) );
+    }
+	
+		
+	
+	pData->m_client_socket = conn;
+	return 1;
+	
+}
+DWORD WINAPI CHttpServer::StartSendThreadProc( LPVOID lpParameter )
+{
+	sendData* data = (sendData*)lpParameter;
+	bool verbose = data->verbose;
+	 size_t pos = 0;
+    for(; pos < data->m_data.size();) {
+        int n = send(data->m_client_socket, data->m_data.c_str() + pos, data->m_data.size() - pos, 0);
+        if (n == -1) {
+            int e = RHO_NET_ERROR_CODE;
+#if !defined(WINDOWS_PLATFORM)
+            if (e == EINTR)
+                continue;
+#endif
+            
+            if (verbose) RAWLOG_ERROR1("Can not send response data: %d", e);
+            return false;
+        }
+        
+        if (n == 0)
+            break;
+        
+        pos += n;
+    }
+	return 1;
+    
+	//come
+	//come
+
+}
+DWORD WINAPI CHttpServer::StartReceiveThreadProc( LPVOID lpParameter )
+{	
+	 receiveData* pData = (receiveData*)lpParameter;
+	 bool verbose = pData->verbose;
+	 pData->readSuccess = true;
+	 
+	 
+	
+	ByteVector r;
+     char buf[BUF_SIZE];
+     int attempts = 0;
+   
+         if (verbose) RAWTRACE("Read portion of data from socket...");
+         int n = recv(pData->m_client_socket, &buf[0], sizeof(buf), 0);
+   
+         if (n < 0)
+		 {
+			 pData->readSuccess = false;
+			  RAWTRACE1("RECV error: %d", WSAGetLastError());
+			
+			
+		 }
+         else
+		 {			
+        
+            if (n == 0) 
+		    {
+           
+                 if (verbose) RAWTRACE("Client closed connection gracefully");
+				  pData->readSuccess = false;
+              
+            } 
+		    else 
+		    {
+             if (verbose) 
+				 RAWTRACE1("Actually read %d bytes", n);
+             r.insert(r.end(), &buf[0], &buf[0] + n);
+		    }
+         }
+			
+        
+		
+    
+    
+     if (!r.empty()) 
+	 {
+         pData->m_data.insert(pData->m_data.end(), r.begin(), r.end());
+         if ( !rho_conf_getBool("log_skip_post") ) 
+		 {
+             String strRequest(pData->m_data.begin(),pData->m_data.end());
+             if (verbose) RAWTRACE1("Received request:\n%s", strRequest.c_str());
+         }
+     }
+	 return 1;
+	
+
+}
+#endif
 
 bool CHttpServer::parse_request(String &method, String &uri, String &query, HeaderList &headers, String &body )
 {

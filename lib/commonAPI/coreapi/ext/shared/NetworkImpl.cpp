@@ -36,6 +36,11 @@ using namespace json;
 class CNetworkImpl: public CNetworkSingletonBase
 {
 public:
+#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+  String m_networkServer;
+  String m_LocalServer1;
+  String m_LocalServer2;
+#endif
 
     class CHttpCommand : public CGeneratorQueue::CGeneratorQueueCommand
     {
@@ -49,9 +54,33 @@ public:
             m_NetRequest.cancel(); 
         }
     };
+	#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	bool replace(String& str, const String& from, const String& to) 
+	{
+      size_t start_pos = str.find(from);
+      if(start_pos == std::string::npos)
+        return false;
+      str.replace(start_pos, from.length(), to);
+      return true;
+    }
+    #endif
 
     CNetworkImpl(): CNetworkSingletonBase()
 	{
+		#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+		int localport = RHODESAPP().getLocalServerPort();
+		int networkPort = RHODESAPP().getNetworkServerPort();
+		char Server[100];
+		sprintf(Server, "127.0.0.1:%d", localport);
+		m_LocalServer1 = Server;
+		sprintf(Server, "localhost:%d", localport);
+		m_LocalServer2 = Server;
+		sprintf(Server, "127.0.0.1:%d", networkPort);
+		m_networkServer = Server;		
+		LOG(TRACE) + m_networkServer;
+		LOG(TRACE) + m_LocalServer2;
+		#endif
+		
     m_networkPoller = 0;
 #if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
 		if(winversion == 1)
@@ -199,6 +228,23 @@ void CNetworkImpl::get( const rho::Hashtable<rho::String, rho::String>& property
     NetRequest oNetRequest;
     
     setupSecureConnection( propertyMap, oNetRequest, oResult );
+	String url = propertyMap.get("url");
+	
+	#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	
+	if(!replace( url, m_LocalServer1, m_networkServer))
+	{
+		if(replace( url, m_LocalServer2, m_networkServer))
+		{
+			LOG(TRACE) + "get request redirected to url " + url ;			
+		}
+	}
+	else
+	{
+	  LOG(TRACE) + "get request redirected to url " + url ;
+	}
+	#endif
+	
     
     String body = propertyMap.get("body");
     if ( propertyMap.containsKey("contentEncoding") ) {
@@ -206,7 +252,7 @@ void CNetworkImpl::get( const rho::Hashtable<rho::String, rho::String>& property
     }
     
     NetResponse resp = getNetRequest(&getCurRequest(oNetRequest, oResult)).doRequest( getStringProp(propertyMap, "httpVerb", "GET").c_str(),
-            propertyMap.get("url"), body, null, &mapHeaders);
+            url, body, null, &mapHeaders);
 
     if ( !getCurRequest(oNetRequest, oResult).isCancelled())
         createResult( resp, mapHeaders, oResult );
@@ -249,6 +295,22 @@ void CNetworkImpl::post( const rho::Hashtable<rho::String, rho::String>& propert
     NetRequest oNetRequest;
 
     setupSecureConnection( propertyMap, oNetRequest, oResult );
+	String url = propertyMap.get("url");
+	
+	#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	
+	if(!replace( url, m_LocalServer1, m_networkServer))
+	{
+		if(replace( url, m_LocalServer2, m_networkServer))
+		{
+			LOG(TRACE) + "post request redirected to url " + url ;			
+		}
+	}
+	else
+	{
+	  LOG(TRACE) + "post request redirected to url " + url ;
+	}
+	#endif
     
     String body = propertyMap.get("body");
     if ( propertyMap.containsKey("contentEncoding") ) {
@@ -256,7 +318,7 @@ void CNetworkImpl::post( const rho::Hashtable<rho::String, rho::String>& propert
     }
     
     NetResponse resp = getNetRequest(&getCurRequest(oNetRequest, oResult)).doRequest( getStringProp(propertyMap, "httpVerb", "POST").c_str(),
-            propertyMap.get("url"), body, null, &mapHeaders);
+            url, body, null, &mapHeaders);
 
     if ( !getCurRequest(oNetRequest, oResult).isCancelled())
         createResult( resp, mapHeaders, oResult );

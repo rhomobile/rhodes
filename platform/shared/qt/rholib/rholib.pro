@@ -99,6 +99,7 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../common/AppMenu.h\
 ../../net/INetRequest.h\
 ../../net/HttpServer.h\
+../../qt/WebServer/WebServer.h\
 ../../common/SplashScreen.h\
 ../../common/rhoparams.h\
 ../../common/app_build_configs.h\
@@ -152,6 +153,7 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/rhoparams.cpp\
 ../../rubyext/System.cpp\
 ../../net/HttpServer.cpp\
+../../qt/WebServer/WebServer.cpp\
 ../../common/SplashScreen.cpp\
 ../../common/app_build_configs.c\
 ../../common/map/OSMMapEngine.cpp\

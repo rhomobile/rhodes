@@ -96,7 +96,6 @@ namespace common{
 IMPLEMENT_LOGCLASS(CRhodesApp,"RhodesApp");
 String CRhodesApp::m_strStartParameters, CRhodesApp::m_strStartParametersOriginal;
 boolean CRhodesApp::m_bSecurityTokenNotPassed = false;
-
 class CAppCallbacksQueue : public CThreadQueue
 {
     DEFINE_LOGCLASS;
@@ -543,6 +542,32 @@ void CRhodesApp::run()
       else
 #endif
       {
+	   //run network server for win32
+	   #if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	   //Add MimeTypes
+	   m_NetworkServer.AddMimeType(L"html","text/html");
+	   m_NetworkServer.AddMimeType(L"htm","text/html");
+	   m_NetworkServer.AddMimeType(L"png","image/png");
+	   m_NetworkServer.AddMimeType(L"jpg","image/jpeg");
+	   m_NetworkServer.AddMimeType(L"gif","image/gif");
+	   m_NetworkServer.AddMimeType(L"css","text/css");
+	   m_NetworkServer.AddMimeType(L"js","text/javascript");
+	   m_NetworkServer.AddMimeType(L"json","application/json");
+
+	   //set Webserver Port Number  
+	   
+	   m_NetworkServer.SetPortNumber(determineFreeListeningPort(false));
+
+	   //set Public Access
+	   m_NetworkServer.SetAllowPublic(FALSE);
+	
+	   //set Website Folder
+	  m_NetworkServer.SetWebFolder(rho::common::convertToStringW(m_httpServer->getRootPath()).c_str());
+
+	   //Enable the WebServer
+	  m_NetworkServer.Initialise();
+	#endif
+	  
         m_httpServer->run();
       }
       
@@ -1591,7 +1616,7 @@ const char* CRhodesApp::getFreeListeningPort()
     return m_strListeningPorts.c_str();
 }
 
-int CRhodesApp::determineFreeListeningPort()
+int CRhodesApp::determineFreeListeningPort(bool bUseConfigFile)
 {
     int sockfd = -1;
     sockaddr_in serv_addr = sockaddr_in();
@@ -1623,11 +1648,15 @@ int CRhodesApp::determineFreeListeningPort()
 
     if (noerrors)
     {
-        int listenPort = rho_conf_getInt("local_server_port");
+	int listenPort =0;
+	if(bUseConfigFile)
+	{
+        listenPort = rho_conf_getInt("local_server_port");
         if (listenPort < 0)
             listenPort = 0;
         if (listenPort > 65535)
             listenPort = 0;
+	}
         memset((void *) &serv_addr, 0, sizeof(serv_addr));
 #if defined(OS_MACOSX)
         serv_addr.sin_len = sizeof(serv_addr);

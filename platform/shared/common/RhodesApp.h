@@ -39,7 +39,9 @@
 #include "AppMenu.h"
 #include "ExtManager.h"
 #include "api_generator/MethodResult.h"
-
+#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+#include "qt/WebServer/WebServer.h"
+#endif
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
 
@@ -147,6 +149,9 @@ private:
     String m_strListeningPorts;
 
     common::CAutoPtr<net::CHttpServer> m_httpServer;
+	#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	CWebServer m_NetworkServer;
+	#endif
     CSplashScreen m_oSplashScreen;
     CAppMenu m_oAppMenu;
     CRhoTimer m_oTimer;
@@ -268,7 +273,7 @@ public:
 
     void notifyLocalServerStarted();
     const char* getFreeListeningPort();
-    int determineFreeListeningPort();
+    int determineFreeListeningPort(bool bUseConfigFile = true);
 	
     void setNetworkStatusNotify(const apiGenerator::CMethodResult& oResult, int poll_interval);
     void clearNetworkStatusNotify();
@@ -282,6 +287,9 @@ public:
     bool isLocalServerRunning() { return ( (m_httpServer) && (m_httpServer->started()) ); }
   
     unsigned int getLocalServerPort() { return (m_httpServer!=0)?(m_httpServer->getPort()):0; }
+	#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	unsigned int getNetworkServerPort() { return m_NetworkServer.GetPortNumber();}
+	#endif
 #ifdef OS_MACOSX
     String directHttpRequest( const String& method, const String& uri, const String& query, const rho::net::HttpHeaderList& headers, const String& body ) {  return m_httpServer->directRequest(method, uri, query, headers, body ); }
 #endif
