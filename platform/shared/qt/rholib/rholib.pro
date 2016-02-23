@@ -31,7 +31,9 @@ win32 {
   Release {
     DEFINES += _NDEBUG NDEBUG
   }
-  HEADERS += ../../rubyext/WebView.h
+  HEADERS += ../../rubyext/WebView.h\
+  ../../qt/WebServer/WebServer.h
+  SOURCES += ../../qt/WebServer/WebServer.cpp
 }
 
 unix:!macx {

@@ -255,6 +255,7 @@ void QtMainWindow::showEvent(QShowEvent *)
 
 void QtMainWindow::closeEvent(QCloseEvent *ce)
 {
+    LOG(TRACE) + "inside closeEvent";
     if ( rho_ruby_is_started() )
         rb_thread_wakeup(rb_thread_main());
 
@@ -264,6 +265,10 @@ void QtMainWindow::closeEvent(QCloseEvent *ce)
     if (m_logView)
         m_logView->close();
     QMainWindow::closeEvent(ce);
+	#if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
+	//terminate process in case of win32
+	::TerminateProcess(::GetCurrentProcess(), 0);
+	#endif
 }
 
 void QtMainWindow::resizeEvent(QResizeEvent *event)
