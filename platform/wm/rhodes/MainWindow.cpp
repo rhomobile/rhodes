@@ -877,7 +877,8 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 	}
 #if defined(_WIN32_WCE)
 	// Notify shell of our WM_ACTIVATE message
-	if(RHO_IS_WMDEVICE)
+	//spr28983 fix- To store cursor value for CE devices as well.
+	//if(RHO_IS_WMDEVICE)
 		SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
 #endif
 
