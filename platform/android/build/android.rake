@@ -1943,6 +1943,12 @@ namespace "build" do
           classpath += $path_separator + jar
       end
 
+      javalibsdir = Jake.get_absolute("platform/android/lib")
+
+      Dir.glob( File.join(javalibsdir,"*.jar" )) do |filepath|
+        classpath += $path_separator + filepath
+      end      
+
       $ext_android_additional_sources.each do |extpath, list|
         ext = File.basename(extpath)
         ext_classpath = classpath
