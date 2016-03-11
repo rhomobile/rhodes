@@ -279,3 +279,4 @@ platform/build/*.build/*
 
 .qmake.stash
 rendered
+spec/phone_spec/app/Data/big_test.json
