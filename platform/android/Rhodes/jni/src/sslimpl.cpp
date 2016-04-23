@@ -102,7 +102,7 @@ SSLImpl::SSLImpl()
     if (!cls) return;
     midConstructor = getJNIClassMethod(env, cls, "<init>", "()V");
     if (!midConstructor) return;
-    midConnect = getJNIClassMethod(env, cls, "connect", "(IZ)Z");
+    midConnect = getJNIClassMethod(env, cls, "connect", "(IZLjava/lang/String;)Z");
     if (!midConnect) return;
     midShutdown = getJNIClassMethod(env, cls, "shutdown", "()V");
     if (!midShutdown) return;
@@ -133,7 +133,12 @@ CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify
     if (!storage) return CURLE_SSL_CONNECT_ERROR;
 
     jobject obj = (jobject)storage;
-    jboolean result = jnienv()->CallBooleanMethod(obj, midConnect, sockfd, (jboolean)ssl_verify_peer);
+
+    JNIEnv* env = jnienv();
+    jhstring jHostname = rho_cast<jstring>(env, host_name);
+
+
+    jboolean result = jnienv()->CallBooleanMethod(obj, midConnect, sockfd, (jboolean)ssl_verify_peer, (jstring)jHostname.get());
     if (!result)
         return CURLE_SSL_CONNECT_ERROR;
 
