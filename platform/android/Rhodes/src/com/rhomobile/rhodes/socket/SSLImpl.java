@@ -61,6 +61,8 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.file.RhoFileApi;
 
+import java.util.StringTokenizer;
+
 
 public class SSLImpl {
 	
@@ -342,7 +344,7 @@ public class SSLImpl {
         Logger.I(TAG, "Secure SSL factory initialization completed");
         
         return (SSLSocketFactory)context.getSocketFactory();
-        
+
     }
     	
 	private static SSLSocketFactory getFactory(boolean verify) throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException {
@@ -357,18 +359,23 @@ public class SSLImpl {
 			SSLContext context = SSLContext.getInstance("TLS");
 			TrustManager[] managers = {new MyTrustManager()};
 			context.init(null, managers, new SecureRandom());
-			factory = context.getSocketFactory();
+            factory = context.getSocketFactory();
 		}
 		return factory;
 	}
 	
-	public boolean connect(int fd, boolean sslVerifyPeer) {
+	public boolean connect(int fd, boolean sslVerifyPeer, String hostname ) {
 		try {
+            Logger.I(TAG, "SSL connect to " + hostname);
+
             RhoSockAddr remote = getRemoteSockAddr(fd);
             Socket s = new RhoSocket(fd, remote);
             SSLSocketFactory f = getFactory(sslVerifyPeer);
 
-            SSLSocket aSock = (SSLSocket)f.createSocket(s, remote.host.toString(), remote.port, true);
+            StringTokenizer st = new StringTokenizer( hostname, ":" );
+            String host = st.nextToken();
+
+            SSLSocket aSock = (SSLSocket)f.createSocket(s, host, remote.port, true);
             aSock.setUseClientMode(true);
 
             synchronized (this) {
