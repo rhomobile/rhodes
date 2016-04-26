@@ -48,11 +48,11 @@
 &#49;&#49;. **Download and Extract** the appropriate version of **Qt** as indicated below: 
 
 - To target **Windows XP/XPE** with **Microsoft Visual Studio 2008**:
-  - **[download Zebra’s Qt 5.1.1.0 VS2008 binaries](http://rhomobile-suite.s3.amazonaws.com/Qt/Qt5-vs2008.7z)**
+  - **[Download Zebra’s Qt 5.1.1.0 VS2008 binaries](http://rhomobile-suite.s3.amazonaws.com/Qt/Qt5-vs2008.7z)**
   - Extract the content at **```C:\Qt\Qt5-vs2008```** directory in the machine
   - Add the **```QTDIR``` System** variable with the value as **```C:\Qt\Qt5-vs2008```**
 - To target **Windows XP/XPE** with **Microsoft Visual Studio 2012**: 
-  - **[download Zebra’s Qt 5.1.1.0 VS2012 binaries](http://rhomobile-suite.s3.amazonaws.com/Qt/Qt5-rhoxp.7z)**
+  - **[Download Zebra’s Qt 5.1.1.0 VS2012 binaries](http://rhomobile-suite.s3.amazonaws.com/Qt/Qt5-rhoxp.7z)**
   - Extract the content at **```C:\Qt\Qt5-rhoxp```** directory in the machine 
   - Add the **```QTDIR``` System** variable with the value as **```C:\Qt\Qt5-rhoxp```**
 
