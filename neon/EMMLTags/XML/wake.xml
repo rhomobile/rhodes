@@ -1,0 +1,52 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>wake</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to keep the display and wifi ON as long as RhoElements is active</SYNOPSIS>			
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="wake" content="[parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>wakeLock</NAME>
+				<VALUES>Enabled, disabled</VALUES>
+				<DESC>Enables / disables the screen</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>wifiLock</NAME>
+				<VALUES>Enabled, disabled</VALUES>
+				<DESC>Enables / disables the network</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>				
+		</PARAMS_WITH_ATTRIBUTES>			
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following keeps the device on and doesn't go to standby</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="wake" Content="wakeLock:Enabled;wifiLock:Enabled"&gt;
+				</CODE>
+			</EXAMPLE>			
+		</EXAMPLES>
+		<REMARKS>		
+			<COMMENT>
+				<COMMENT_HEADING>wake Method</COMMENT_HEADING>
+				<COMMENT_DATA>
+				Please note that enabling locks override the system values and consume more battery power.
+				</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>Android only</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>None</REQ>
+			<VER_INTRODUCED>2.2</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

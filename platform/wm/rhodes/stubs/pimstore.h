@@ -5774,7 +5774,7 @@ DEFINE_GUID(CLSID_Folder, 0x5058f21, 0x20be, 0x11d2, 0x8f, 0x18, 0x0, 0x0, 0xf8,
 
 #ifdef __cplusplus
 
-//Rybas
+
 //class DECLSPEC_UUID("05058F21-20BE-11d2-8F18-0000F87A4335")
 //Folder;
 #endif

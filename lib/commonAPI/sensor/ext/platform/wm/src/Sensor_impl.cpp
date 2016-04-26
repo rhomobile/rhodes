@@ -13,7 +13,7 @@ using namespace apiGenerator;
 
 enum SensorChipManufacturer
 {
-    SCM_MOTOROLA_SOLUTIONS = 0,
+    SCM_SYMBOL_TECHNOLOGIES = 0,
     SCM_UNKNOWN
 };
 
@@ -69,11 +69,11 @@ private:
 CSensorImpl::CSensorImpl(const rho::String& strID) : CSensorBase(), m_rawSensor(NULL), m_callbackMethodResult(NULL)
 {
     m_hashProps.put("ID", strID); //TODO: understand backgrounf
-    if (SCM_MOTOROLA_SOLUTIONS == g_sensorChipManfacturer)
+    if (SCM_SYMBOL_TECHNOLOGIES == g_sensorChipManfacturer)
     {
-        LOG(INFO) + "Initialising Motorola Sensor Interface for type " + strID;
+        LOG(INFO) + "Initialising Symbol Sensor Interface for type " + strID;
         RHODESAPP().getExtManager().registerExtension((strID), this);
-        // its a motorola sensor, use the motorola class
+        // its a symbol sensor, use the symbol class
         sensormodule::CRawMotoSensor *rawSensor = new sensormodule::CRawMotoSensor(strID.c_str());
         if (NULL != rawSensor)
         {
@@ -91,7 +91,7 @@ CSensorImpl::CSensorImpl(const rho::String& strID) : CSensorBase(), m_rawSensor(
 
 CSensorImpl::~CSensorImpl()
 {
-    LOG(INFO) + "Shutting down Motorola Sensor Interface for type " + m_sensorId;
+    LOG(INFO) + "Shutting down Symbol Sensor Interface for type " + m_sensorId;
     if (NULL != m_rawSensor)
     {
         delete m_rawSensor;
@@ -634,14 +634,14 @@ private:
 CSensorSingleton::CSensorSingleton()
 {
     rho::Vector<rho::String> sensorList;
-    // whether motorola sensor apis are supported is done by
+    // whether symbol sensor apis are supported is done by
     // an enumerate test
     sensormodule::CRawMotoSensor::EnumerateSensors(sensorList);
     if (sensorList.size() > 0)
     {
-        g_sensorChipManfacturer = SCM_MOTOROLA_SOLUTIONS;
+        g_sensorChipManfacturer = SCM_SYMBOL_TECHNOLOGIES;
         sensorList.clear();
-        LOG(INFO) + "Motorola sensor found in device.";
+        LOG(INFO) + "Symbol sensor found in device.";
     } else
     {
         LOG(WARNING) + "No sensor found in device.";
@@ -658,7 +658,7 @@ CSensorSingleton::~CSensorSingleton()
 void CSensorSingleton::makeSensorByType(const rho::String& type, rho::apiGenerator::CMethodResult& oResult)
 {
     LOG(TRACE) + "Requested sensor type : " + type;
-    if (SCM_MOTOROLA_SOLUTIONS == g_sensorChipManfacturer)
+    if (SCM_SYMBOL_TECHNOLOGIES == g_sensorChipManfacturer)
     {
         rho::Vector<rho::String> sensorIDs;
         sensormodule::CRawMotoSensor::EnumerateSensors(sensorIDs);
@@ -667,18 +667,18 @@ void CSensorSingleton::makeSensorByType(const rho::String& type, rho::apiGenerat
         {
             rho::String result = *found;
             oResult.set(result);
-            LOG(INFO) + "Requested sensor type  " + type + " found under Motorola supported sensors.";
+            LOG(INFO) + "Requested sensor type  " + type + " found under Symbol supported sensors.";
         } else
         {
-            LOG(WARNING) + "Requested sensor type  " + type + " not found under Motorola supported sensors.";
+            LOG(WARNING) + "Requested sensor type  " + type + " not found under Symbol supported sensors.";
             //oResult.setError("Sensor type " + type + " not supported.");
 
         }
     }
     else
     {
-        //oResult.setError("Sensor type " + type + " not supported. No Motorola Sensor found.");
-        LOG(WARNING) + "Requested sensor type  " + type + " not found under Motorola supported sensors..";
+        //oResult.setError("Sensor type " + type + " not supported. No Symbol Sensor found.");
+        LOG(WARNING) + "Requested sensor type  " + type + " not found under Symbol supported sensors..";
     }
 
 }
@@ -686,12 +686,12 @@ void CSensorSingleton::makeSensorByType(const rho::String& type, rho::apiGenerat
 void CSensorSingleton::enumerate(rho::apiGenerator::CMethodResult& oResult)
 {
     LOG(TRACE) + "Enumerate sensor types";
-    if (SCM_MOTOROLA_SOLUTIONS == g_sensorChipManfacturer)
+    if (SCM_SYMBOL_TECHNOLOGIES == g_sensorChipManfacturer)
     {
         rho::Vector<rho::String> sensorIDs;
         sensormodule::CRawMotoSensor::EnumerateSensors(sensorIDs);
         oResult.set(sensorIDs);
-        LOG(TRACE) + "Found " + sensorIDs.size() + " Motorola based sensor types";
+        LOG(TRACE) + "Found " + sensorIDs.size() + " SYMBOL based sensor types";
     }
 }
 

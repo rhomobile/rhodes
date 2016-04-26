@@ -1,0 +1,46 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>signature</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Signature</PATH>
+		<TYPE>Decoder</TYPE>
+		<SYNOPSIS>is used to enable or disable the Signature decoder.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="Signature:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>signature</NAME>
+                <VALUES>enabled / Disabled</VALUES>
+				<DESC>Enables / Disables the Signature decoder.  The barcode will be returned as a Data URI object with a jpeg mime type, you should specify the barcodeDataFormat and dataBufferSize parameters accordingly.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+<EXAMPLE>
+<DESC>The following example enables the scanner to read only Signature barcodes:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:disabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="Signature:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="barcodeDataFormat:binary;dataBufferSize:5000"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+</EXAMPLE>
+</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except: Android devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner and device that supports the Signature decoder.</REQ>
+			<VER_INTRODUCED>2.1</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC RELPATH ="../">All_Decoders</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

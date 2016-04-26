@@ -1,6 +1,6 @@
 /** 
- * Abstarcts the Motorola properitory IST APIs. 
- * The APIs are avilable only on selected Motorola devices 
+ * Abstarcts the Symbol properitory IST APIs. 
+ * The APIs are avilable only on selected Symbol devices 
  * \file
  */
 #ifndef ISTDLL_H_34612E1C_97AA_43C1_B1E1_61EB28C378DE

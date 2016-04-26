@@ -1,0 +1,10 @@
+entry: Init_Cardreader_extension	
+libraries: ["Cardreader"]
+project_paths:
+  wp8: ext/platform/wp8/Cardreader.vcxproj
+  wm: ext/platform/wm/Cardreader.vcproj
+  win32: ext/platform/wm/Cardreader.vcproj
+  
+xml_api_paths: ext/cardreader.xml
+
+platforms: ["wm", "iphone"]

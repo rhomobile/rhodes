@@ -1,0 +1,9 @@
+; PocketBrowser.def : Declares the module parameters.
+
+LIBRARY      "PocketBrowser.DLL"
+
+EXPORTS
+	DllCanUnloadNow		PRIVATE
+	DllGetClassObject	PRIVATE
+	DllRegisterServer	PRIVATE
+	DllUnregisterServer	PRIVATE

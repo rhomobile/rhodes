@@ -1,0 +1,48 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>sntp</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to synchronize the device clock with a network SNTP server.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="SNTP" content="[parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>serverIp</NAME>
+				<VALUES>Valid IP Address</VALUES>
+				<DESC>The IP address of the SNTP time server</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example sets the device time from a network time server:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SNTP" Content="serverIp:132.163.4.102"&gt;
+</CODE>
+			</EXAMPLE>				
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Latency</COMMENT_HEADING>
+				<COMMENT_DATA>Once this tag is parsed RhoElements will request the time from the SNTP server immediately, however the clock will not be updated until a response is received.  Network latency and connectivity issues can all affect the speed and success with which this tag is actioned.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Proxy Settings</COMMENT_HEADING>
+				<COMMENT_DATA>Windows Mobile 5.0 will not allow you to obtain SNTP time when requesting via a proxy server, it is recommended the proxy is bypassed for this to work.</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except: Android devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

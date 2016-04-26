@@ -4,6 +4,6 @@ ext/platform/android/generated/src/com/rho/sensor/SensorSingletonBase.java
 ext/platform/android/generated/src/com/rho/sensor/ISensor.java
 ext/platform/android/generated/src/com/rho/sensor/ISensorFactory.java
 ext/platform/android/generated/src/com/rho/sensor/ISensorSingleton.java
-ext/platform/android/src/com/motorolasolutions/rho/sensor/Sensor.java
-ext/platform/android/src/com/motorolasolutions/rho/sensor/SensorFactory.java
-ext/platform/android/src/com/motorolasolutions/rho/sensor/SensorSingleton.java
+ext/platform/android/src/com/rho/sensor/Sensor.java
+ext/platform/android/src/com/rho/sensor/SensorFactory.java
+ext/platform/android/src/com/rho/sensor/SensorSingleton.java

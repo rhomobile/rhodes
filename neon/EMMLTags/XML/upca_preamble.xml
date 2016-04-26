@@ -1,0 +1,59 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>upcaPreamble</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Upca</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the upcapreamble property which controls the preamble applied to the bar code.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="upcapreamble:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>upcaPreamble</NAME>
+                		<VALUES>none / systemChar / countryAndSystemChars</VALUES>
+				<DESC>if value is none Applies no preamble to the bar code.if value is systemChar then Applies system character preamble to the bar code.if value is countryAndSystemChars Applies both system and country code preamble to the bar code.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upca labels with the preamble property set to both system and country code preamble:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="upca:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upcapreamble:countryAndSystemChars"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="upca:enabled;upcapreamble:countryAndSystemChars;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-upca" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-upcapreamble" Content="countryAndSystemChars"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports upca.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>upca</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

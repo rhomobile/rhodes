@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/Instrumentation.cpp
+ext/platform/android/generated/jni/instrumentation_ruby_wrap.cpp
+ext/platform/android/generated/jni/instrumentation_js_wrap.cpp
+ext/platform/android/jni/Instrumentation_impl.cpp
+ext/shared/generated/instrumentation_api_init.cpp
+ext/shared/generated/instrumentation_js_api.cpp
+ext/shared/generated/instrumentation_ruby_api.c

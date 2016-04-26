@@ -1,0 +1,48 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>volume</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to set the audio output volume of the device.  This is the wave output volume, not the volume of the device beeper.</SYNOPSIS>		
+		<MULTIPLE_INSTANCE>The volume settings are application specific.  Switching to another application which uses the volume module will cause the device volume to change to that specified by the application with focus. Only the application with Focus will have the ability to change the volume settings.</MULTIPLE_INSTANCE>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Volume" content="[parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>setVolume</NAME>
+				<VALUES>Volume in the format 0xnnnn</VALUES>
+				<DESC>Specifies a new volume setting. The low-order word contains the left-channel volume setting, and the high-order word contains the right-channel setting. A value of 0xFFFF represents full volume, and a value of 0x0000 is silence.  If a device does not support both left and right volume control, the low-order word specifies the volume level and the high-order word is ignored</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example sets the device volume to its maximum for all devices</DESC>
+<CODE>
+&lt;meta http-equiv="Volume" content="SetVolume:0xFFFF"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example sets the device volume to its maximum for devices with a single wave output channel.</DESC>
+<CODE>
+&lt;meta http-equiv="Volume" content="SetVolume:0x00FF"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>The device must have a speaker.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>Notification</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

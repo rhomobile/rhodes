@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/PrinterZebra.cpp
+ext/platform/android/generated/jni/printerzebra_ruby_wrap.cpp
+ext/platform/android/generated/jni/printerzebra_js_wrap.cpp
+ext/platform/android/jni/PrinterZebra_impl.cpp
+ext/shared/generated/printerzebra_api_init.cpp
+ext/shared/generated/printerzebra_js_api.cpp
+ext/shared/generated/printerzebra_ruby_api.c

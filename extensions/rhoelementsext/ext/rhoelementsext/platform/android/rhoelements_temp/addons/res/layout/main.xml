@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/home_container" android:layout_width="fill_parent" android:layout_height="fill_parent">
+	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/composed_layout" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1" android:orientation="vertical">
+		
+		<LinearLayout android:id="@+id/topcommand_area_panel" android:layout_width="fill_parent" android:layout_height="wrap_content" android:clickable="false" android:focusableInTouchMode="false" android:visibility="gone">
+			<View xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/topcommand_area" android:layout_width="fill_parent" android:layout_height="fill_parent" android:gravity="top" android:visibility="visible"/>
+		</LinearLayout>	
+		<android.view.View android:id="@+id/WebView" android:layout_width="fill_parent" android:layout_height="fill_parent" android:focusable="true" android:focusableInTouchMode="true" android:layout_weight="1"/>
+		<LinearLayout android:id="@+id/bottomcommand_area_panel" android:layout_width="fill_parent" android:layout_height="wrap_content" android:clickable="false" android:focusableInTouchMode="false" android:visibility="gone">
+			<View xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/bottomcommand_area" android:layout_width="fill_parent" android:layout_height="fill_parent" android:gravity="bottom" android:visibility="visible"/>
+		</LinearLayout>
+	</LinearLayout>
+</FrameLayout>

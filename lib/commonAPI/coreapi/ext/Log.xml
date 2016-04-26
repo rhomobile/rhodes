@@ -57,37 +57,7 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-        </MORE_HELP>
-        <MORE_HELP_EB>
-## Enabling the API
-There are two methods of enabling the Log API:
-
-* Include all ebapi modules or
-* Include only the API modules you need
-
-For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
-
-### Include all JS API modules
-To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
-
-> Note: that the pathing for this file is relative to the current page.
-
-This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
-
-### Include only the modules you need
-To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the Log API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
-    &lt;script type="text/javascript" charset="utf-8" src="eb.log.js"&gt;&lt;/script&gt;
-
-The ebapi.js file is necessary for all single API inclusions.
-
-
-        </MORE_HELP_EB>
+        </MORE_HELP>       
 
         <TEMPLATES>
         </TEMPLATES>
@@ -95,7 +65,6 @@ The ebapi.js file is necessary for all single API inclusions.
         <PROPERTIES access="STATIC" generateAccessors="true">
             <PROPERTY name="level" type="INTEGER">
                 <DESC>The current logging level. Minimal severity level of messages that will appear in log. When level is set to 0 any messages will be logged. When level is set to 4 only fatal error messages will be logged. Default value is defined in rhoconfig.txt (MinSeverity) </DESC>
-                <DESC_EB>The current logging level. Minimal severity level of messages that will appear in log. When level is set to 0 any messages will be logged. When level is set to 4 only fatal error messages will be logged. Default value is defined in Config.xml </DESC_EB>
                 <VALUES>
                     <VALUE constName="LEVEL_TRACE" value = "0">
                         <DESC>Everything will be logged. Also see settings for controlling log size.</DESC>
@@ -117,11 +86,9 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <PROPERTY name="destination" type="ARRAY">
                 <DESC>List of log destinations that are being used. Destination could be set to empty (disable all logging), Logging to several destinations could be set by setting destination to comma separated list in any order (for example "stdio,file"). By default logging to console can be enabled from rhoconfig.txt (LogToOutput = 1). After Rhodes initialization logging to file is enabled automatically.</DESC>
-                <DESC_EB>List of log destinations that are being used. Destination could be set to empty (disable all logging), Logging to several destinations could be set by setting destination to comma separated list in any order (for example "stdio,file"). By default logging to console can be enabled from Config.xml). </DESC_EB>
                 <VALUES>
                     <VALUE constName="DEST_FILE" value ="file">
                         <DESC>Log is written to a local file on the device (typically rholog.txt)</DESC>
-                        <DESC_EB>Log is written to a local file on the device (typically Log.txt)</DESC_EB>
                     </VALUE>
                     <VALUE constName="DEST_OUTPUT" value ="stdio">
                         <DESC>Log is written to the standard output (ex: Android ADB)</DESC>
@@ -134,35 +101,28 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <PROPERTY name="includeCategories" type="STRING" default="*">
                 <DESC>Comma-separated list of included log categories. Set to '\*' (asterisk) to log all categories. Set to '' (empty) to filter out all messages. Default value is '\*' (asterisk), it is set in rhoconfig.txt (LogCategories).</DESC>
-                <DESC_EB>Comma-separated list of included log categories. Set to '\*' (asterisk) to log all categories. Set to '' (empty) to filter out all messages. Default value is '\*' (asterisk), it is set in Config.xml.</DESC_EB>
             </PROPERTY>
 
             <PROPERTY name="excludeCategories" type="STRING" default="">
                 <DESC>Comma-separated list of excluded log categories. Set to '' (empty) to allow all messages to be logged. Set to concrete value to filter out log from those categories. Default value is '' (empty), it is set in rhoconfig.txt (ExcludeLogCategories)</DESC>
-                <DESC_EB>Comma-separated list of excluded log categories. Set to '' (empty) to allow all messages to be logged. Set to concrete value to filter out log from those categories. Default value is '' (empty), it is set in Config.xml</DESC_EB>
             </PROPERTY>
 
             <PROPERTY name="fileSize" type="INTEGER" default="50000">
                 <DESC>Maximum log file size in bytes, set 0 to unlimited size; when limit is reached, log wraps to beginning of file. Default value is 50000, it is set in rhoconfig.txt (MaxLogFileSize)</DESC>
-                <DESC_EB>Maximum log file size in bytes, set 0 to unlimited size; when limit is reached, log wraps to beginning of file. Default value is 50000, it is set in Config.xml</DESC_EB>
             </PROPERTY>
 
             <PROPERTY name="filePath" type="STRING" default="rholog.txt">
                 <DESC>Path to the log file including file name. The path is relative to the platform specific application root or start if from '/' if you wish to store elsewhere ('/mnt/sdcard/myapp.log').  Default file path is "rholog.txt"</DESC>
-                <DESC_EB>Path to the log file including file name. The path is relative to the platform specific application root or start if from '/' if you wish to store elsewhere ('/mnt/sdcard/myapp.log').  Default file path is Log.txt</DESC_EB>
             </PROPERTY>
 
             <PROPERTY name="memoryPeriod" type="INTEGER" default="0">
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
                 <DESC>Enables the logging of memory usage in the system; specifies the time interval in milliseconds at which memory logs will be generated periodically. Setting it to 0 will disable logging memory information.</DESC>
             </PROPERTY>
 
             <PROPERTY name="netTrace" type="BOOLEAN" default="false">
                 <DESC>Turn on remote network traces regardless of log level set (e.g. Network, asyncHttp). Traces contain information about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of local server app (and / or shared runtime). Default value can be overridden by the setting in rhoconfig.txt (net_trace). To get local server trace, use `Rho.Log.LEVEL_TRACE` in JavaScript and `Rho::Log::LEVEL_TRACE` in Ruby.</DESC>
-                <DESC_EB>Turn on remote network traces regardless of log level set (e.g. Network, asyncHttp). Traces contain information about connection process, sent and received headers and data. Please note that this parameter will not take an effect in case of local server app. Default value can be overridden by the setting in Config.xml. To get local server trace, use `Rho.Log.LEVEL_TRACE`.</DESC_EB>
                 <PLATFORM>Android, iOS, WP8</PLATFORM>
-                <PLATFORM_EB>Android</PLATFORM_EB>
             </PROPERTY>
 
             <PROPERTY name="skipPost" type="BOOLEAN" default="false">
@@ -175,7 +135,6 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <PROPERTY name="destinationURI" type="STRING" default="">
                 <DESC>Log server URI where log will be posted by using Rho::Log.sendLogFile or from the log view. Log server source code is open and available at http://github.com/rhomobile/rhologs, so you can deploy your own logserver. URI format: 'http://host:port[/path][?log_name=appName]'. Default value is set in rhoconfig.txt (logserver)</DESC>
-                <DESC_EB>Log server URI where log will be posted by using EB.Log.sendLogFile or from the log view. Log server source code is open and available at http://github.com/rhomobile/rhologs, so you can deploy your own logserver. URI format: 'http://host:port[/path][?log_name=appName]'. Default value is set in Config.xml in the LogURI setting under the Logger section.</DESC_EB>
             </PROPERTY>
         </PROPERTIES>
 
@@ -233,7 +192,6 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="fatalError">
                 <DESC>Log message at the FatalError level. Application will be terminated (on all platforms except iOS).</DESC>
-                <DESC_EB>Log message at the FatalError level. Application will be terminated.</DESC_EB>
                 <PARAMS>
                     <PARAM name="message" type="STRING">
                         <DESC>Log message.</DESC>
@@ -251,7 +209,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="showLog">
                 <DESC>Display Log view window.</DESC>
                 <PLATFORM>WM, CE, Win32, iOS, Android</PLATFORM>
-                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
             </METHOD>
 
             <METHOD name="cleanLogFile">
@@ -276,7 +233,6 @@ The ebapi.js file is necessary for all single API inclusions.
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
-        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
         <EXAMPLES >
            <EXAMPLE title="Show log file">
                <SECTIONS>

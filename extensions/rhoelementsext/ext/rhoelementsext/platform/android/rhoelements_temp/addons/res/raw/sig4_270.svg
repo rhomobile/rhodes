@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.2" baseProfile="tiny"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 x="0px" y="0px" width="22px" height="33px" viewBox="0 0 22 33" overflow="visible" xml:space="preserve">
+<defs>
+</defs>
+	<rect height="4" width="4" x="0.5" y="28.5" stroke-width="1" fill="#000000" stroke="#000000"/>
+	<rect height="4" width="8" x="0.5" y="21.5" stroke-width="1" fill="#000000" stroke="#000000"/>
+	<rect height="4" width="11" x="0.5" y="14.5" stroke-width="1" fill="#000000" stroke="#000000"/>
+	<rect height="4" width="16" x="0.5" y="7.5" stroke-width="1" fill="#000000" stroke="#000000"/>
+	<rect height="4" width="20" x="0.5" y="0.5" stroke-width="1" fill="#ffffff" stroke="#000000"/>
+	
+	<rect height="24" width="9" y="9" x="13" fill="#000000"/>
+	<path fill="#FFFFFF" d="M13,33 v-24 h9 v-1 h-10 v24 z"/>
+	
+	<path fill="#FFFFFF" d="M20.5,12 L14.5,13.5 v1 L18.5,15.75 L14.5,17 v1 L20.5,19.5 v-1.25 L16.5,17.375 L20.5,16.5 v-1.25 L16.5,14.125 L20.5,13.25 z"/>
+	<rect height="1.25" width="4.75" y="20.25" x="14.5" fill="#ffffff" /> <rect height="1.25" width="1" y="20.25" x="19.5" fill="#ffffff" />
+	<path fill="#FFFFFF" d="M14.5,22.75 v1.25 h2.5 v2.5 h1 v-2.5 h1.5 v2.75 h1 v-4 z"/>
+	<rect height="1.25" width="4.75" y="27.5" x="14.5" fill="#ffffff" /> <rect height="1.25" width="1" y="27.5" x="19.5" fill="#ffffff" />
+</svg>

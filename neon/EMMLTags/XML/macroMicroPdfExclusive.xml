@@ -1,0 +1,44 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>macroMicroPdfExclusive</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\MacroMicroPdf</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the macroMicroPdfExclusive property.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="macroMicroPdfExclusive:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>macroMicroPdfExclusive</NAME>
+                <VALUES>true / false</VALUES>
+				<DESC>If true, the scanner driver will not complete read requests while in the middle of a macroMicroPdf sequence.  Once a macroMicroPdf sequence has been started it must be completed or cancelled before the scan driver will complete other read requests.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner and sets macroMicroPdfExclusive property</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="scanner" Content="macroMicroPdf:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="macroMicroPdfExclusive:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+				</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except: Android devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports MacroMicroPDF.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

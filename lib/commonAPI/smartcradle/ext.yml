@@ -1,0 +1,16 @@
+entry: Init_Smartcradle_extension
+javaentry: com.smartcradle.Smartcradle
+libraries: ["Smartcradle"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+  sdk_addons: ['EMDK']
+wp8:
+  csharp_impl: yes
+  root_namespace: rho
+
+project_paths:
+  wp8: ext/platform/wp8/SmartcradleLib.vcxproj
+  wm: ext/platform/wm/Smartcradle.vcproj
+  
+xml_api_paths: ext/Smartcradle.xml

@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Sensor_impl"
 
-#define SENSOR_FACTORY_CLASS "com.motorolasolutions.rho.sensor.SensorFactory"
+#define SENSOR_FACTORY_CLASS "com.rho.sensor.SensorFactory"
 
 extern "C" void Init_Sensor_API(void);
 

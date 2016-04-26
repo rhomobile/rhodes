@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/prompt_root"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+  
+  <!-- The following is based on teh Android SDK layout -->
+    <TextView android:id="@+id/prompt_message"
+                style="?android:attr/textAppearanceMedium"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+	            android:paddingTop="7dip"
+	            android:paddingBottom="17dip"
+	            android:paddingLeft="19dip"
+	            android:paddingRight="19dip"/>
+                
+`	<EditText android:id="@+id/prompt_input"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:layout_marginLeft="19dip"
+         android:layout_marginRight="19dip"/>
+                
+</LinearLayout>

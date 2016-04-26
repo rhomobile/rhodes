@@ -1,0 +1,51 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+	  <JSOBJECTS>False</JSOBJECTS>
+		<NAME>History:Back</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Navigation</TYPE>
+		<SYNOPSIS>instructs RhoElements to navigate to the previously visited address.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;a href="history:back"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example shows how to navigate to the previous address using an anchor tag:</DESC>
+<CODE>
+&lt;a href="history:back"&gt;Back to Previous Page&lt;/a&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example shows how to navigate to the previous address using JavaScript:</DESC>
+<CODE>
+&lt;script&gt;
+   function goBack()
+   {
+      document.location = 'history:back';
+   }
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Interaction with Browser's History Stack</COMMENT_HEADING>
+				<COMMENT_DATA>The browser component on Windows Mobile has no history stack other than that provided by RhoElements, so this History:Back tag is the only way to navigate to a previous page (as well as the Back Button).  Windows CE's browser component has its own history stack accessed via Javascript's history.go(n), this is not compatible with RhoElements's history and the History:Back tag should be used in preference.</COMMENT_DATA>
+		</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Immediate - This method is actioned immediately.</APPLIES>
+			<REQ>None</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Controls and Appearance/">BackButton</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

@@ -1,0 +1,45 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>code128isBt128ConcatMode</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Code128</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the Code128 ISBT Concatenation mode property.  This feature allows a pair of barcodes which meet certain criteria defined in the ISBT128 spec to be reported as a single barcode.  This parameter describes the different concatenation modes available for ISBT128.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="code128isBt128ConcatMode:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>code128isBt128ConcatMode</NAME>
+                		<VALUES>never / always / auto</VALUES>
+				<DESC>Never: Will ignore the barcode pair and only output decode data for one of the barcodes.  Always: Will not decode if both barcodes are not present or if one of them can not be decoded.  Auto: Auto-Discriminate</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only Code128 labels with the code128isBt128ConcatMode property set</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="scanner" Content="Code128:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="code128isBt128ConcatMode:auto"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+				</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports Code128.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>Code128</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

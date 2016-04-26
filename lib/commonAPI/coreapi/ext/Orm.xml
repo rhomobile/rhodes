@@ -248,7 +248,6 @@ For Ruby access to the RHOM database please see the [Rhom Ruby API guide](/api/r
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
-        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
         <EXAMPLES>
             <EXAMPLE title="Add ORM model, create ORM object">
             <SECTIONS>

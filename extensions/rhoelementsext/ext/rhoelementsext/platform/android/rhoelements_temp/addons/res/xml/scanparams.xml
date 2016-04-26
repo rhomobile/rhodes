@@ -1,0 +1,1925 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+
+<scanner-params version="1.0">
+	<!--
+		Update version number if xml schema changes
+	-->
+
+	<!-- **************** Reader params  **************** -->
+	<param id="beam_timer" type="integer">
+		<name>Beam Timer</name>
+		<values val_type="range">
+			<lo>0</lo>
+			<hi>60000</hi>
+			<step>100</step>
+		</values>
+		<default>15000</default>
+		<desc>Time for which decode session lasts before timing out</desc>
+		<tags>
+			<tag>reader_param</tag>
+		</tags>
+		<neonalias>scantimeout</neonalias>
+	</param>
+	<param id="linear_security_level" type="integer">
+		<name>Linear Security Level</name>
+		<values val_type="discrete">
+			<vdiscrete value="0">
+				<vname>Security Redundancy And Length</vname>
+				<vdescription>Very aggressive but higher misdecode rate
+				</vdescription>
+			</vdiscrete>
+			<vdiscrete value="1">
+				<vname>Security Short Or Codabar</vname>
+				<vdescription>Aggressive </vdescription>
+			</vdiscrete>
+			<vdiscrete value="2">
+				<vname>Security All Twice</vname>
+				<vdescription>Moderate</vdescription>
+			</vdiscrete>
+			<vdiscrete value="3">
+				<vname>Security Long And Short</vname>
+				<vdescription>Not aggressive</vdescription>
+			</vdiscrete>
+			<vdiscrete value="4">
+				<vname>Security All Thrice</vname>
+				<vdescription>Use with very poor barcodes</vdescription>
+			</vdiscrete>
+		</values>
+		<default>2</default>
+		<desc>Set decoder aggressiveness for 1D barcodes</desc>
+		<tags>
+			<tag>reader_param</tag>
+		</tags>
+		<ssi_number>0x4e</ssi_number>
+		<neonalias>linearsecuritylevel</neonalias>
+	</param>
+	<param id="picklist" type="integer">
+		<name>Picklist</name>
+		<values val_type="discrete">
+			<vdiscrete value="0">
+				<vname>Disabled</vname>
+				<vdescription>Disable picklist</vdescription>
+			</vdiscrete>
+			<vdiscrete value="1">
+				<vname>Hardware Reticle</vname>
+				<vdescription>Decode barcode under hardware reticle</vdescription>
+			</vdiscrete>
+			<vdiscrete value="2">
+				<vname>Centered</vname>
+				<vdescription>Decodes the barcode which is in the center of the
+					image</vdescription>
+			</vdiscrete>
+		</values>
+		<default>0</default>
+		<desc>Picklist mode</desc>
+		<tags>
+			<tag>reader_param</tag>
+		</tags>
+		<ssi_number>0x192</ssi_number>
+		<neonalias>picklistmode</neonalias>
+	</param>
+	<param id="inverse_1d_mode" type="integer">
+		<name>Inverse 1D Mode</name>
+		<values val_type="discrete">
+			<vdiscrete value="0">
+				<vname>Disable</vname>
+				<vdescription>Inverse disabled</vdescription>
+			</vdiscrete>
+			<vdiscrete value="1">
+				<vname>Enable</vname>
+				<vdescription>Inverse enabled</vdescription>
+			</vdiscrete>
+			<vdiscrete value="2">
+				<vname>Auto</vname>
+				<vdescription>Inverse auto</vdescription>
+			</vdiscrete>
+		</values>
+		<default>0</default>
+		<desc>Allow inverse 1D barcode to decode?</desc>
+		<tags>
+			<tag>decoder_param</tag>
+		</tags>
+		<ssi_number>0x24a</ssi_number>
+		<neonalias>inverse1dmode</neonalias>
+	</param>
+	<!--  **************** UPCEAN params  **************** -->
+	<param id="upc_ean_security_level" type="integer">
+		<name>UPC EAN Security Level</name>
+		<values val_type="discrete">
+			<vdiscrete value="0">
+				<vname>Level 0</vname>
+				<vdescription />
+			</vdiscrete>
+			<vdiscrete value="1">
+				<vname>Level 1</vname>
+				<vdescription />
+			</vdiscrete>
+			<vdiscrete value="2">
+				<vname>Level 2</vname>
+				<vdescription />
+			</vdiscrete>
+			<vdiscrete value="3">
+				<vname>Level 3</vname>
+				<vdescription />
+			</vdiscrete>
+		</values>
+		<default>0</default>
+		<desc>Security level for UPC EAN</desc>
+		<tags>
+			<tag>upc_ean_param</tag>
+		</tags>
+		<ssi_number>0x4d</ssi_number>
+		<neonalias>upc_eansecuritylevel</neonalias>
+	</param>
+	<param id="upc_ean_supplemental2" type="boolean">
+		<name>UPC EAN Supplemental2</name>
+		<default>true</default>
+		<desc>Allow supplementals-2 to decode?</desc>
+		<tags>
+			<tag>upc_ean_param</tag>
+		</tags>
+		<ssi_number>0xcf</ssi_number>
+		<neonalias>upc_eansupplemental2</neonalias>
+	</param>
+	<param id="upc_ean_supplemental5" type="boolean">
+		<name>UPC EAN Supplemental5</name>
+		<default>true</default>
+		<desc>Allow supplementals-5 to decode?</desc>
+		<tags>
+			<tag>upc_ean_param</tag>
+		</tags>
+		<ssi_number>0xd0</ssi_number>
+		<neonalias>upc_eansupplemental5</neonalias>
+	</param>
+	<param id="upc_ean_supplemental_mode" type="integer">
+		<name>UPC EAN Supplemental Mode</name>
+		<values val_type="discrete">
+			<vdiscrete value="0">
+				<vname>No Supplementals</vname>
+				<vdescription />
+			</vdiscrete>
+			<vdiscrete value="1">
+				<vname>Supplemental Always</vname>
+				<vdescription />
+			</vdiscrete>
+			<vdiscrete value="2">
+				<vname>Supplemental Auto</vname>
+				<vdescription />
+			</vdiscrete>
+			<vdiscrete value="3">
+				<vname>Supplemental Smart</vname>
+				<vdescription />
+			</vdiscrete>
+			<vdiscrete value="4">
+				<vname>Supplemental 378-379</vname>
+				<vdescription />
+			</vdiscrete>
+			<vdiscrete value="5">
+				<vname>Supplemental 978-979</vname>
+				<vdescription />
+			</vdiscrete>
+			<vdiscrete value="6">
+				<vname>Supplemental 414-419-434-439</vname>
+				<vdescription />
+			</vdiscrete>
+			<vdiscrete value="7">
+				<vname>Supplemental 977</vname>
+				<vdescription />
+			</vdiscrete>
+		</values>
+		<default>0</default>
+		<desc>Set how supplementals should be handled</desc>
+		<tags>
+			<tag>upc_ean_param</tag>
+		</tags>
+		<ssi_number>0x10</ssi_number>
+		<neonalias>upc_eansupplementalmode</neonalias>
+	</param>
+	<param id="upc_ean_retry_count" type="integer">
+		<name>UPC EAN Retry Count</name>
+		<values val_type="range">
+			<lo>2</lo>
+			<hi>20</hi>
+			<step>1</step>
+		</values>
+		<default>10</default>
+		<desc>Retry count</desc>
+		<tags>
+			<tag>upc_ean_param</tag>
+		</tags>
+		<ssi_number>0x50</ssi_number>
+		<neonalias>upc_eanretrycount</neonalias>
+	</param>
+	<param id="upc_ean_random_weight_check_digit" type="boolean">
+		<name>UPC EAN Random Weight Check Digit</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>upc_ean_param</tag>
+		</tags>
+		<ssi_number>0x35</ssi_number>
+		<neonalias>upc_eanrandomweightcheckdigit</neonalias>
+	</param>
+	<param id="upc_ean_linear_decode" type="boolean">
+		<name>UPC EAN Linear Decode</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>upc_ean_param</tag>
+		</tags>
+		<ssi_number>0x44</ssi_number>
+		<neonalias>upc_eanlineardecode</neonalias>
+	</param>
+	<param id="upc_ean_bookland" type="boolean">
+		<name>UPC EAN Bookland</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>upc_ean_param</tag>
+		</tags>
+		<ssi_number>0x53</ssi_number>
+		<neonalias>upc_eanbookland</neonalias>
+	</param>
+	<param id="upc_ean_coupon" type="boolean">
+		<name>UPC EAN Coupon</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>upc_ean_param</tag>
+		</tags>
+		<ssi_number>0x55</ssi_number>
+		<neonalias>upc_eancoupon</neonalias>
+	</param>
+	<param id="upc_ean_bookland_format" type="integer">
+		<name>UPC EAN Bookland Format</name>
+		<values val_type="discrete">
+			<vdiscrete value="0">
+				<vname>Format ISBN-10</vname>
+				<vdescription />
+			</vdiscrete>
+			<vdiscrete value="1">
+				<vname>Format ISBN-13</vname>
+				<vdescription />
+			</vdiscrete>
+		</values>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>upc_ean_param</tag>
+		</tags>
+		<ssi_number>0x240</ssi_number>
+		<neonalias>upc_eanbooklandformat</neonalias>
+	</param>
+	<param id="upc_ean_rss_to_upc_ean" type="boolean">
+		<name>UPC EAN RSS To UPC EAN</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>upc_ean_param</tag>
+		</tags>
+		<ssi_number>0x18d</ssi_number>
+		<neonalias>upc_eanconvertrsstoupcean</neonalias>
+	</param>
+
+	<!-- **************** Symbologies and their corresponding decoder params	**************** -->
+
+	<!--  **************** UPCE-0  **************** -->
+	<param id="decoder_upce0" type="boolean">
+		<name>Decoder UPCE0</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x02</ssi_number>
+		<neonalias>upce0</neonalias>
+	</param>
+  <param id="decoder_upce0_report_check_digit" type="boolean">
+    <name>Decoder UPCE0 Report Check Digit</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_upce0</tag>
+      <tag>15</tag>
+    </tags>
+    <neonalias>upce0reportcheckdigit</neonalias>
+  </param>
+  <param id="decoder_upce0_preamble" type="integer">
+    <name>Decoder UPCE0 Preamble</name>
+    <default>0</default>
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Preamble None</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Preamble Sys Char</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="2">
+        <vname>Preamble Country And Sys Char</vname>
+        <vdescription />
+      </vdiscrete>
+    </values>
+    <desc />
+    <tags>
+      <tag>decoder_upce0</tag>
+      <tag>15</tag>
+    </tags>
+    <neonalias>upce0preamble</neonalias>
+  </param>
+  <param id="decoder_upce0_convert_to_upca" type="boolean">
+    <name>Decoder UPCE0 Convert To UPCA</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_upce0</tag>
+      <tag>15</tag>
+    </tags>
+    <neonalias>upce0converttoupca</neonalias>
+  </param>
+	<!--  **************** UPCE-1  **************** -->
+  <param id="decoder_upce1" type="boolean">
+    <name>Decoder UPCE1</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x0c</ssi_number>
+    <neonalias>upce1</neonalias>
+  </param>
+  <param id="decoder_upce1_report_check_digit" type="boolean">
+    <name>Decoder UPCE1 Report Check Digit</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_upce1</tag>
+      <tag>21</tag>
+    </tags>
+    <neonalias>upce1reportcheckdigit</neonalias>
+  </param>
+  <param id="decoder_upce1_preamble" type="integer">
+    <name>Decoder UPCE1 Preamble</name>
+    <default>0</default>
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Preamble None</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Preamble Sys Char</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="2">
+        <vname>Preamble Country And Sys Char</vname>
+        <vdescription />
+      </vdiscrete>
+    </values>
+    <desc />
+    <tags>
+      <tag>decoder_upce1</tag>
+      <tag>21</tag>
+    </tags>
+    <neonalias>upce1preamble</neonalias>
+  </param>
+  <param id="decoder_upce1_convert_to_upca" type="boolean">
+    <name>Decoder UPCE1 Convert To UPCA</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_upce1</tag>
+      <tag>21</tag>
+    </tags>
+    <neonalias>upce1converttoupca</neonalias>
+  </param>
+	<!--  **************** UPCA  **************** -->
+  <param id="decoder_upca" type="boolean">
+    <name>Decoder UPCA</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x01</ssi_number>
+    <neonalias>upca</neonalias>
+  </param>
+  <param id="decoder_upca_report_check_digit" type="boolean">
+    <name>Decoder UPCA Report Check Digit</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_upca</tag>
+      <tag>27</tag>
+    </tags>
+    <neonalias>upcareportcheckdigit</neonalias>
+  </param>
+  <param id="decoder_upca_preamble" type="integer">
+    <name>Decoder UPCA Preamble</name>
+    <default>0</default>
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Preamble None</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Preamble Sys Char</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="2">
+        <vname>Preamble Country And Sys Char</vname>
+        <vdescription />
+      </vdiscrete>
+    </values>
+    <desc />
+    <tags>
+      <tag>decoder_upca</tag>
+      <tag>27</tag>
+    </tags>
+    <neonalias>upcapreamble</neonalias>
+  </param>
+	<!--  **************** MSI **************** -->
+  <param id="decoder_msi" type="boolean">
+    <name>Decoder MSI</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x0b</ssi_number>
+    <neonalias>msi</neonalias>
+  </param>
+  <param id="decoder_msi_length1" type="integer">
+    <name>Decoder MSI Length1</name>
+    <default>4</default>
+    <desc />
+    <tags>
+      <tag>decoder_msi</tag>
+      <tag>32</tag>
+    </tags>
+    <ssi_number>0x1e</ssi_number>
+    <neonalias>msiminlength</neonalias>
+  </param>
+  <param id="decoder_msi_length2" type="integer">
+    <name>Decoder MSI Length2</name>
+    <default>55</default>
+    <desc />
+    <tags>
+      <tag>decoder_msi</tag>
+      <tag>32</tag>
+    </tags>
+    <ssi_number>0x1f</ssi_number>
+    <neonalias>msimaxlength</neonalias>
+  </param>
+  <param id="decoder_msi_redundancy" type="boolean">
+    <name>Decoder MSI Redundancy</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>decoder_msi</tag>
+      <tag>32</tag>
+    </tags>
+    <ssi_number>0x3d</ssi_number>
+    <neonalias>msiredundancy</neonalias>
+  </param>
+  <param id="decoder_msi_check_digit" type="integer">
+    <name>Decoder MSI Check Digit</name>
+    <default>0</default>
+    <desc />
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>One Check Digit</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Two Check Digit</vname>
+        <vdescription />
+      </vdiscrete>
+    </values>
+    <tags>
+      <tag>decoder_msi</tag>
+      <tag>32</tag>
+    </tags>
+    <ssi_number>0x32</ssi_number>
+    <neonalias>msicheckdigits</neonalias>
+  </param>
+  <param id="decoder_msi_check_digit_scheme" type="integer">
+    <name>Decoder MSI Check Digit Scheme</name>
+    <default>0</default>
+    <desc />
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Mod-11-10</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Mod-10-10</vname>
+        <vdescription />
+      </vdiscrete>
+    </values>
+    <tags>
+      <tag>decoder_msi</tag>
+      <tag>32</tag>
+    </tags>
+    <ssi_number>0x33</ssi_number>
+    <neonalias>msicheckdigitscheme</neonalias>
+  </param>
+  <param id="decoder_msi_report_check_digit" type="boolean">
+    <name>Decoder MSI Report Check Digit</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_msi</tag>
+      <tag>32</tag>
+    </tags>
+    <ssi_number>0x2e</ssi_number>
+    <neonalias>msireportcheckdigit</neonalias>
+  </param>
+	<!--  **************** EAN8  **************** -->
+  <param id="decoder_ean8" type="boolean">
+    <name>Decoder EAN8</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x04</ssi_number>
+    <neonalias>ean8</neonalias>
+  </param>
+  <param id="decoder_ean8_convert_to_ean13" type="boolean">
+    <name>Decoder EAN8 Convert To EAN13</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_ean8</tag>
+      <tag>39</tag>
+    </tags>
+    <neonalias>ean8converttoean13</neonalias>
+  </param>
+	<!--  **************** EAN13  **************** -->
+  <param id="decoder_ean13" type="boolean">
+    <name>Decoder EAN13</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x03</ssi_number>
+    <neonalias>ean13</neonalias>
+  </param>
+	<!--  **************** Codabar  **************** -->
+  <param id="decoder_codabar" type="boolean">
+    <name>Decoder Codabar</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x07</ssi_number>
+    <neonalias>codabar</neonalias>
+  </param>
+  <param id="decoder_codabar_length1" type="integer">
+    <name>Decoder Codabar Length1</name>
+    <default>6</default>
+    <desc />
+    <tags>
+      <tag>decoder_codabar</tag>
+      <tag>46</tag>
+    </tags>
+    <ssi_number>0x18</ssi_number>
+    <neonalias>codabarminlength</neonalias>
+  </param>
+  <param id="decoder_codabar_length2" type="integer">
+    <name>Decoder Codabar Length2</name>
+    <default>55</default>
+    <desc />
+    <tags>
+      <tag>decoder_codabar</tag>
+      <tag>46</tag>
+    </tags>
+    <ssi_number>0x19</ssi_number>
+    <neonalias>codabarmaxlength</neonalias>
+  </param>
+  <param id="decoder_codabar_redundancy" type="boolean">
+    <name>Decoder Codabar Redundancy</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>decoder_codabar</tag>
+      <tag>46</tag>
+    </tags>
+    <ssi_number>0x3e</ssi_number>
+    <neonalias>codabarredundancy</neonalias>
+  </param>
+  <param id="decoder_codabar_clsi_editing" type="boolean">
+    <name>Decoder Codabar Clsi Editing</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_codabar</tag>
+      <tag>46</tag>
+    </tags>
+    <ssi_number>0x36</ssi_number>
+    <neonalias>codabarclsiediting</neonalias>
+  </param>
+  <param id="decoder_codabar_notis_editing" type="boolean">
+    <name>Decoder Codabar Notis Editing</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_codabar</tag>
+      <tag>46</tag>
+    </tags>
+    <ssi_number>0x37</ssi_number>
+    <neonalias>codabarnotisediting</neonalias>
+  </param>
+	<!--  **************** Code 39  **************** -->
+  <param id="decoder_code39" type="boolean">
+    <name>Decoder Code39</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x00</ssi_number>
+    <neonalias>code39</neonalias>
+  </param>
+  <param id="decoder_code39_length1" type="integer">
+    <name>Decoder Code39 Length1</name>
+    <default>0</default>
+    <desc />
+    <tags>
+      <tag>decoder_code39</tag>
+      <tag>52</tag>
+    </tags>
+    <ssi_number>0x12</ssi_number>
+    <neonalias>code39minlength</neonalias>
+  </param>
+  <param id="decoder_code39_length2" type="integer">
+    <name>Decoder Code39 Length2</name>
+    <default>55</default>
+    <desc />
+    <tags>
+      <tag>decoder_code39</tag>
+      <tag>52</tag>
+    </tags>
+    <ssi_number>0x13</ssi_number>
+    <neonalias>code39maxlength</neonalias>
+  </param>
+  <param id="decoder_code39_verify_check_digit" type="boolean">
+    <name>Decoder Code39 Verify Check Digit</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_code39</tag>
+      <tag>52</tag>
+    </tags>
+    <ssi_number>0x30</ssi_number>
+    <neonalias>code39verifycheckdigit</neonalias>
+  </param>
+  <param id="decoder_code39_report_check_digit" type="boolean">
+    <name>Decoder Code39 Report Check Digit</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_code39</tag>
+      <tag>56</tag>
+    </tags>
+    <ssi_number>0x2b</ssi_number>
+    <neonalias>code39reportcheckdigit</neonalias>
+  </param>
+  <param id="decoder_code39_full_ascii" type="boolean">
+    <name>Decoder Code39 Full Ascii</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_code39</tag>
+      <tag>56</tag>
+    </tags>
+    <ssi_number>0x11</ssi_number>
+    <neonalias>Code39fullascii</neonalias>
+  </param>
+  <param id="decoder_code39_redundancy" type="boolean">
+    <name>Decoder Code39 Redundancy</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_code39</tag>
+      <tag>56</tag>
+    </tags>
+    <ssi_number>0x3b</ssi_number>
+    <neonalias>code39redundancy</neonalias>
+  </param>
+  <param id="decoder_code39_convert_to_code32" type="boolean">
+    <name>Decoder Code39 Convert To Code32</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_code39</tag>
+      <tag>56</tag>
+    </tags>
+    <ssi_number>0x56</ssi_number>
+    <neonalias>code39converttocode32</neonalias>
+  </param>
+  <param id="decoder_code39_report_code32_prefix" type="boolean">
+    <name>Decoder Code39 Report Code32 Prefix</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_code39</tag>
+      <tag>56</tag>
+    </tags>
+    <ssi_number>0xe7</ssi_number>
+    <neonalias>code39code32prefix</neonalias>
+  </param>
+  <param id="decoder_code39_security_level" type="integer">
+    <name>Decoder Code39 Security Level</name>
+    <default>1</default>
+    <desc />
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Security Level 0</vname>
+        <vdescription>This setting allows the digital scanner to operate in its
+		      most aggressive state, while providing sufficient security in
+		      decoding most &#8220;in-spec&#8221; bar codes</vdescription>
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Security Level 1</vname>
+        <vdescription>This default setting eliminates most misdecodes</vdescription>
+      </vdiscrete>
+      <vdiscrete value="2">
+        <vname>Security Level 2</vname>
+        <vdescription>Select this option if Security level 1 fails to eliminate
+					misdecodes</vdescription>
+      </vdiscrete>
+      <vdiscrete value="3">
+        <vname>Security Level 3</vname>
+        <vdescription>If you selected Security Level 2 and misdecodes still occur,
+					select this security level</vdescription>
+      </vdiscrete>
+    </values>
+    <tags>
+      <tag>decoder_code39</tag>
+      <tag>56</tag>
+    </tags>
+    <ssi_number>0x2ee</ssi_number>
+    <neonalias></neonalias>
+  </param>
+	<!--  **************** D2of5  **************** -->
+  <param id="decoder_d2of5" type="boolean">
+    <name>Decoder D2of5</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x05</ssi_number>
+    <neonalias>d2of5</neonalias>
+  </param>
+  <param id="decoder_d2of5_length1" type="integer">
+    <name>Decoder D2of5 Length1</name>
+    <default>0</default>
+    <desc />
+    <tags>
+      <tag>decoder_d2of5</tag>
+      <tag>62</tag>
+    </tags>
+    <ssi_number>0x14</ssi_number>
+    <neonalias>d2of5minlength</neonalias>
+  </param>
+  <param id="decoder_d2of5_length2" type="integer">
+    <name>Decoder D2of5 Length2</name>
+    <default>14</default>
+    <desc />
+    <tags>
+      <tag>decoder_d2of5</tag>
+      <tag>62</tag>
+    </tags>
+    <ssi_number>0x15</ssi_number>
+    <neonalias>d2of5maxlength</neonalias>
+  </param>
+  <param id="decoder_d2of5_redundancy" type="boolean">
+    <name>Decoder D2of5 Redundancy</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>decoder_d2of5</tag>
+      <tag>62</tag>
+    </tags>
+    <ssi_number>0x40</ssi_number>
+    <neonalias>d2of5redundancy</neonalias>
+  </param>
+  <param id="decoder_i2of5" type="boolean">
+    <name>Decoder I2of5</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x06</ssi_number>
+    <neonalias>i2of5</neonalias>
+  </param>
+  <param id="decoder_i2of5_length1" type="integer">
+    <name>Decoder I2of5 Length1</name>
+    <default>14</default>
+    <desc />
+    <tags>
+      <tag>decoder_i2of5</tag>
+      <tag>66</tag>
+    </tags>
+    <ssi_number>0x16</ssi_number>
+    <neonalias>i2of5minlength</neonalias>
+  </param>
+  <param id="decoder_i2of5_length2" type="integer">
+    <name>Decoder I2of5 Length2</name>
+    <default>10</default>
+    <desc />
+    <tags>
+      <tag>decoder_i2of5</tag>
+      <tag>66</tag>
+    </tags>
+    <ssi_number>0x17</ssi_number>
+    <neonalias>i2of5maxlength</neonalias>
+  </param>
+  <param id="decoder_i2of5_redundancy" type="boolean">
+    <name>Decoder I2of5 Redundancy</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>decoder_i2of5</tag>
+      <tag>66</tag>
+    </tags>
+    <ssi_number>0x3f</ssi_number>
+    <neonalias>i2of5redundancy</neonalias>
+  </param>
+  <param id="decoder_i2of5_check_digit" type="integer">
+    <name>Decoder I2of5 Check Digit</name>
+    <default>0</default>
+    <desc />
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>No Check Digit</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>USS Check Digit</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="2">
+        <vname>OPCC Check Digit</vname>
+        <vdescription />
+      </vdiscrete>
+    </values>
+    <tags>
+      <tag>decoder_i2of5</tag>
+      <tag>70</tag>
+    </tags>
+    <ssi_number>0x31</ssi_number>
+    <neonalias>i2of5verifycheckdigit</neonalias>
+  </param>
+  <param id="decoder_i2of5_report_check_digit" type="boolean">
+    <name>Decoder I2of5 Report Check Digit</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_i2of5</tag>
+      <tag>70</tag>
+    </tags>
+    <ssi_number>0x2c</ssi_number>
+    <neonalias>i2of5reportcheckdigit</neonalias>
+  </param>
+  <param id="decoder_i2of5_convert_to_ean13" type="boolean">
+    <name>Decoder I2of5 Convert To EAN13</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_i2of5</tag>
+      <tag>70</tag>
+    </tags>
+    <ssi_number>0x52</ssi_number>
+    <neonalias>i2of5converttoean13</neonalias>
+  </param>
+	<!--  **************** Code 11  **************** -->
+  <param id="decoder_code11" type="boolean">
+    <name>Decoder Code11</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x0a</ssi_number>
+    <neonalias>code11</neonalias>
+  </param>
+  <param id="decoder_code11_length1" type="integer">
+    <name>Decoder Code11 Length1</name>
+    <default>4</default>
+    <desc />
+    <tags>
+      <tag>decoder_code11</tag>
+      <tag>73</tag>
+    </tags>
+    <ssi_number>0x1c</ssi_number>
+    <neonalias></neonalias>
+  </param>
+  <param id="decoder_code11_length2" type="integer">
+    <name>Decoder Code11 Length2</name>
+    <default>55</default>
+    <desc />
+    <tags>
+      <tag>decoder_code11</tag>
+      <tag>73</tag>
+    </tags>
+    <ssi_number>0x1d</ssi_number>
+    <neonalias></neonalias>
+  </param>
+  <param id="decoder_code11_redundancy" type="boolean">
+    <name>Decoder Code11 Redundancy</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>decoder_code11</tag>
+      <tag>73</tag>
+    </tags>
+    <ssi_number>0x3a</ssi_number>
+    <neonalias>code11redundancy</neonalias>
+  </param>
+  <param id="decoder_code11_verify_check_digit" type="integer">
+    <name>Decoder Code11 Verify Check Digit</name>
+    <default>1</default>
+    <desc />
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>No Check Digit</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>1 Check Digit</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="2">
+        <vname>2 Check Digits</vname>
+        <vdescription />
+      </vdiscrete>
+    </values>
+    <tags>
+      <tag>decoder_code11</tag>
+      <tag>73</tag>
+    </tags>
+    <ssi_number>0x34</ssi_number>
+    <neonalias>code11checkdigitcount</neonalias>
+  </param>
+  <param id="decoder_code11_report_check_digit" type="boolean">
+    <name>Decoder Code11 Report Check Digit</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_code11</tag>
+      <tag>73</tag>
+    </tags>
+    <ssi_number>0x2f</ssi_number>
+    <neonalias>code11-reportcheckdigit</neonalias>
+  </param>
+	<!--  **************** Code 93  **************** -->
+  <param id="decoder_code93" type="boolean">
+    <name>Decoder Code93</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x09</ssi_number>
+    <neonalias>code93</neonalias>
+  </param>
+  <param id="decoder_code93_length1" type="integer">
+    <name>Decoder Code93 Length1</name>
+    <default>0</default>
+    <desc />
+    <tags>
+      <tag>decoder_code93</tag>
+      <tag>79</tag>
+    </tags>
+    <ssi_number>0x1a</ssi_number>
+    <neonalias>code93minlength</neonalias>
+  </param>
+  <param id="decoder_code93_length2" type="integer">
+    <name>Decoder Code93 Length2</name>
+    <default>55</default>
+    <desc />
+    <tags>
+      <tag>decoder_code93</tag>
+      <tag>79</tag>
+    </tags>
+    <ssi_number>0x1b</ssi_number>
+    <neonalias>code93maxlength</neonalias>
+  </param>
+  <param id="decoder_code93_redundancy" type="boolean">
+    <name>Decoder Code93 Redundancy</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_code93</tag>
+      <tag>79</tag>
+    </tags>
+    <ssi_number>0x41</ssi_number>
+    <neonalias>code93redundancy</neonalias>
+  </param>
+	<!--  **************** Code 128  **************** -->
+  <param id="decoder_code128" type="boolean">
+    <name>Decoder Code128</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x08</ssi_number>
+    <neonalias>code128</neonalias>
+  </param>
+  <param id="decoder_code128_length1" type="integer">
+    <name>Decoder Code128 Length1</name>
+    <default>0</default>
+    <desc />
+    <tags>
+      <tag>decoder_code128</tag>
+      <tag>83</tag>
+    </tags>
+    <ssi_number>0xd1</ssi_number>
+    <neonalias>code128minlength</neonalias>
+  </param>
+  <param id="decoder_code128_length2" type="integer">
+    <name>Decoder Code128 Length2</name>
+    <default>55</default>
+    <desc />
+    <tags>
+      <tag>decoder_code128</tag>
+      <tag>83</tag>
+    </tags>
+    <ssi_number>0xd2</ssi_number>
+    <neonalias>code128maxlength</neonalias>
+  </param>
+  <param id="decoder_code128_redundancy" type="boolean">
+    <name>Decoder Code128 Redundancy</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_code128</tag>
+      <tag>83</tag>
+    </tags>
+    <ssi_number>0x3c</ssi_number>
+    <neonalias>code128redundancy</neonalias>
+  </param>
+  <param id="decoder_code128_enable_ean128" type="boolean">
+    <name>Decoder Code128 Enable EAN128</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>decoder_code128</tag>
+      <tag>83</tag>
+    </tags>
+    <ssi_number>0x0e</ssi_number>
+    <neonalias>code128ean128</neonalias>
+  </param>
+  <param id="decoder_code128_enable_isbt128" type="boolean">
+    <name>Decoder Code128 Enable ISBT128</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>decoder_code128</tag>
+      <tag>83</tag>
+    </tags>
+    <ssi_number>0x54</ssi_number>
+    <neonalias>code128isbt128</neonalias>
+  </param>
+  <param id="decoder_code128_enable_subtypes" type="boolean">
+    <name>Decoder Code128 Enable Subtypes</name>
+    <default>true</default>
+    <desc>Enable other sub types besides EAN 128 and ISBT 128</desc>
+    <tags>
+      <tag>decoder_code128</tag>
+      <tag>83</tag>
+    </tags>
+    <ssi_number>0x08</ssi_number>
+    <neonalias>code128other128</neonalias>
+  </param>
+  <param id="decoder_code128_isbt128_concat_mode" type="integer">
+    <name>Decoder Code128 ISBT128 Concat Mode</name>
+    <default>0</default>
+    <desc />
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Concat Mode Never</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Concat Mode Always</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="2">
+        <vname>Concat Mode Auto</vname>
+        <vdescription />
+      </vdiscrete>
+    </values>
+    <tags>
+      <tag>decoder_code128</tag>
+      <tag>83</tag>
+    </tags>
+    <ssi_number>0x241</ssi_number>
+    <neonalias>code128ISBT128ConcatMode</neonalias>
+  </param>
+  <param id="decoder_code128_check_isbt_table" type="boolean">
+    <name>Decoder Code128 Check ISBT Table</name>
+    <default>false</default>
+    <desc> Check ISBT table</desc>
+    <tags>
+      <tag>decoder_code128</tag>
+      <tag>83</tag>
+    </tags>
+    <ssi_number>0x242</ssi_number>
+    <neonalias>code128checkisbttable</neonalias>
+  </param>
+  <param id="decoder_code128_security_level" type="integer">
+    <name>Decoder Code128 Security Level</name>
+    <default>1</default>
+    <desc />
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Security Level 0</vname>
+        <vdescription>This setting allows the digital scanner to operate in its
+					most
+					aggressive state, while providing sufficient security in
+					decoding
+					most &#8220;in-spec&#8221; bar codes</vdescription>
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Security Level 1</vname>
+        <vdescription>This default setting eliminates most misdecodes</vdescription>
+      </vdiscrete>
+      <vdiscrete value="2">
+        <vname>Security Level 2</vname>
+        <vdescription>Select this option if Security level 1 fails to eliminate
+					misdecodes</vdescription>
+      </vdiscrete>
+      <vdiscrete value="3">
+        <vname>Security Level 3</vname>
+        <vdescription>If you selected Security Level 2 and misdecodes still occur,
+					select this security level</vdescription>
+      </vdiscrete>
+    </values>
+    <tags>
+      <tag>decoder_code128</tag>
+      <tag>83</tag>
+    </tags>
+    <ssi_number>0x2ef</ssi_number>
+    <neonalias></neonalias>
+  </param>
+	<!--  **************** PDF 417  **************** -->
+  <param id="decoder_pdf417" type="boolean">
+    <name>Decoder PDF417</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x0f</ssi_number>
+    <bc_types>
+      <bc_type>0x11</bc_type>
+    </bc_types>
+    <neonalias>pdf417</neonalias>
+  </param>
+	<!--  **************** Trioptic 39  **************** -->
+  <param id="decoder_trioptic39" type="boolean">
+    <name>Decoder Trioptic39</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x0d</ssi_number>
+    <bc_types>
+      <bc_type>0x15</bc_type>
+    </bc_types>
+    <neonalias>trioptic39</neonalias>
+  </param>
+  <param id="decoder_trioptic39_redundancy" type="boolean">
+    <name>Decoder Trioptic39 Redundancy</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>decoder_trioptic39</tag>
+      <tag>96</tag>
+    </tags>
+    <ssi_number>0x42</ssi_number>
+    <neonalias>trioptic39redundancy</neonalias>
+  </param>
+  <!--  **************** Micro PDF  **************** -->
+  <param id="decoder_micropdf" type="boolean">
+    <name>Decoder MicroPDF</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0xe3</ssi_number>
+    <neonalias>micropdf</neonalias>
+  </param>
+  <param id="decoder_micropdf_code128_emulation" type="boolean">
+    <name>Decoder MicroPDF Code128 Emulation</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_micropdf</tag>
+      <tag>100</tag>
+    </tags>
+    <ssi_number>0x7b</ssi_number>
+    <neonalias></neonalias>
+  </param>
+	<!--  **************** Macro PDF  **************** -->
+  <param id="decoder_macropdf" type="boolean">
+    <name>Decoder MacroPDF</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0xf</ssi_number>
+    <bc_types>
+      <bc_type>0x28</bc_type>
+    </bc_types>
+    <neonalias>macropdf</neonalias>
+  </param>
+	<!--  **************** Maxicode  **************** -->
+  <param id="decoder_maxicode" type="boolean">
+    <name>Decoder Maxicode</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x126</ssi_number>
+    <bc_types>
+      <bc_type>0x25</bc_type>
+    </bc_types>
+    <neonalias>maxicode</neonalias>
+  </param>
+	<!--  **************** Datamatrix  **************** -->
+  <param id="decoder_datamatrix" type="boolean">
+    <name>Decoder Datamatrix</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x124</ssi_number>
+    <bc_types>
+      <bc_type>0x1b</bc_type>
+    </bc_types>
+    <neonalias>datamatrix</neonalias>
+  </param>
+	<!--  **************** QR code  **************** -->
+  <param id="decoder_qrcode" type="boolean">
+    <name>Decoder QRCode</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x125</ssi_number>
+    <bc_types>
+      <bc_type>0x1c</bc_type>
+    </bc_types>
+    <neonalias>qrcode</neonalias>
+  </param>
+	<!--  **************** Macro micro PDF  **************** -->
+  <param id="decoder_macromicropdf" type="boolean">
+    <name>Decoder MacromicroPDF</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0xe3</ssi_number>
+    <bc_types>
+      <bc_type>0x9a</bc_type>
+    </bc_types>
+    <neonalias>macromicropdf</neonalias>
+  </param>
+	<!--  **************** RSS14  **************** -->
+  <param id="decoder_rss14" type="boolean">
+    <name>Decoder RSS14</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x152</ssi_number>
+    <bc_types>
+      <bc_type>0x30</bc_type>
+    </bc_types>
+    <neonalias>rss14</neonalias>
+  </param>
+	<!--  **************** RSS limited  **************** -->
+  <param id="decoder_rss_lim" type="boolean">
+    <name>Decoder RSS Lim</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x153</ssi_number>
+    <bc_types>
+      <bc_type>0x31</bc_type>
+    </bc_types>
+    <neonalias>rsslim</neonalias>
+  </param>
+	<!--  **************** RSS exp  **************** -->
+  <param id="decoder_rss_exp" type="boolean">
+    <name>Decoder RSS Exp</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x154</ssi_number>
+    <bc_types>
+      <bc_type>0x32</bc_type>
+    </bc_types>
+    <neonalias>rssexp</neonalias>
+  </param>
+	<!--  **************** Signature  **************** -->
+  <param id="decoder_signature" type="boolean">
+    <name>Decoder Signature</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x5d</ssi_number>
+    <bc_types>
+      <bc_type>0x69</bc_type>
+    </bc_types>
+    <neonalias>signature</neonalias>
+  </param>
+	<!--  **************** Webcode  **************** -->
+  <param id="decoder_webcode" type="boolean">
+    <name>Decoder Webcode</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x176</ssi_number>
+    <bc_types>
+      <bc_type>0x37</bc_type>
+    </bc_types>
+    <neonalias>webcode</neonalias>
+  </param>
+  <param id="decoder_webcode_subtype" type="boolean">
+    <name>Decoder Webcode Subtype</name>
+    <default>true</default>
+    <desc>GT Webcode sub type enabled</desc>
+    <tags>
+      <tag>decoder_webcode</tag>
+      <tag>129</tag>
+    </tags>
+    <neonalias>webcodedecodegtsubtype</neonalias>
+  </param>
+<!--  **************** Composite AB  **************** -->
+  <param id="decoder_composite_ab" type="boolean">
+    <name>Decoder Composite AB</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x156</ssi_number>
+    <neonalias>composit_ab</neonalias>
+  </param>
+  <param id="decoder_composite_ab_ucc_link_mode" type="integer">
+    <name>Decoder Composite AB UCC Link Mode</name>
+    <default>2</default>
+    <desc />
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Link Flag Ignored</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Always Linked</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="2">
+        <vname>Auto Discriminate</vname>
+        <vdescription />
+      </vdiscrete>
+    </values>
+    <ssi_number>0x158</ssi_number>
+    <tags>
+      <tag>decoder_composite_ab</tag>
+      <tag>133</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+  <param id="decoder_composite_ab_multipacket_mode" type="integer">
+    <name>Decoder Composite AB MultiPacket Mode</name>
+    <default>0</default>
+    <desc />
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Multi Part Single Packet</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Multi Independent Reads</vname>
+        <vdescription />
+      </vdiscrete>
+    </values>
+    <tags>
+      <tag>decoder_composite_ab</tag>
+      <tag>133</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+  <param id="decoder_composite_ab_use_upc_preamble_check_digit	" type="boolean">
+    <name>Decoder Composite AB Use UPC Preamble Check Digit	</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>decoder_composite_ab</tag>
+      <tag>133</tag>
+    </tags>
+    <neonalias>composit_abuseupcpreamblecheckdigitrules</neonalias>
+  </param>
+<!--  **************** Composite C  **************** -->
+  <param id="decoder_composite_c" type="boolean">
+    <name>Decoder Composite C</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x155</ssi_number>
+    <neonalias>composit_c</neonalias>
+  </param>
+  <param id="decoder_composite_c_multipacket_mode" type="integer">
+    <name>Decoder Composite C MultiPacket Mode</name>
+    <default>0</default>
+    <desc />
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Multi Part Single Packet</vname>
+        <vdescription />
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Multi Independent Reads</vname>
+        <vdescription />
+      </vdiscrete>
+    </values>
+    <tags>
+      <tag>decoder_composite_c</tag>
+      <tag>139</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+	<!--  **************** TLC 39  **************** -->
+  <param id="decoder_tlc39" type="boolean">
+    <name>Decoder TLC39</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x173</ssi_number>
+    <bc_types>
+      <bc_type>0x5a</bc_type>
+    </bc_types>
+    <neonalias>tlc39</neonalias>
+  </param>
+	<!--  **************** US Postnet  **************** -->
+  <param id="decoder_uspostnet" type="boolean">
+    <name>Decoder USPostnet</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x59</ssi_number>
+    <bc_types>
+      <bc_type>0x1e</bc_type>
+    </bc_types>
+    <neonalias>uspostnet</neonalias>
+  </param>
+  <param id="decoder_uspostnet_report_check_digit" type="boolean">
+    <name>Decoder USPostnet Report Check Digit</name>
+    <default>false</default>
+    <desc>Report Check Digit</desc>
+    <tags>
+      <tag>decoder_uspostnet</tag>
+      <tag>146</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+<!--  **************** US Planet  **************** -->
+  <param id="decoder_usplanet" type="boolean">
+    <name>Decoder USPlanet</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x5a</ssi_number>
+    <bc_types>
+      <bc_type>0x1f</bc_type>
+    </bc_types>
+    <neonalias>usplanet</neonalias>
+  </param>
+  <param id="decoder_usplanet_report_check_digit" type="boolean">
+    <name>Decoder USPlanet Report Check Digit</name>
+    <default>false</default>
+    <desc>Report Check Digit</desc>
+    <tags>
+      <tag>decoder_usplanet</tag>
+      <tag>150</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+<!--  **************** UK Post  **************** -->
+  <param id="decoder_uk_postal" type="boolean">
+    <name>Decoder UK Postal</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x5b</ssi_number>
+    <bc_types>
+      <bc_type>0x27</bc_type>
+    </bc_types>
+    <neonalias>ukpostal</neonalias>
+  </param>
+  <param id="decoder_uk_postal_report_check_digit" type="boolean">
+    <name>Decoder UK Postal Report Check Digit</name>
+    <default>false</default>
+    <desc>Report Check Digit</desc>
+    <tags>
+      <tag>decoder_uk_postal</tag>
+      <tag>154</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+<!--  **************** Japanese postal  **************** -->
+  <param id="decoder_japanese_postal" type="boolean">
+    <name>Decoder Japanese Postal</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x122</ssi_number>
+    <bc_types>
+      <bc_type>0x22</bc_type>
+    </bc_types>
+    <neonalias>jappostal</neonalias>
+  </param>
+	<!--  **************** Australian postal  **************** -->
+  <param id="decoder_australian_postal" type="boolean">
+    <name>Decoder Australian Postal</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x123</ssi_number>
+    <bc_types>
+      <bc_type>0x23</bc_type>
+    </bc_types>
+    <neonalias>auspostal</neonalias>
+  </param>
+	<!--  **************** Canadian postal  **************** -->
+  <param id="decoder_canadian_postal" type="boolean">
+    <name>Decoder Canadian Postal</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x5c</ssi_number>
+    <bc_types>
+      <bc_type>0x26</bc_type>
+    </bc_types>
+    <neonalias>canpostal</neonalias>
+  </param>
+	<!--  **************** Dutch postal  **************** -->
+  <param id="decoder_dutch_postal" type="boolean">
+    <name>Decoder Dutch Postal</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x146</ssi_number>
+    <bc_types>
+      <bc_type>0x24</bc_type>
+    </bc_types>
+    <neonalias>dutchpostal</neonalias>
+  </param>
+<!--  **************** Chinese 2of5  **************** -->
+  <param id="decoder_chinese_2of5" type="boolean">
+    <name>Decoder Chinese 2of5</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x198</ssi_number>
+    <bc_types>
+      <bc_type>0x72</bc_type>
+    </bc_types>
+    <neonalias>chinese_2of5</neonalias>
+  </param>
+	<!--  **************** Aztec  **************** -->
+  <param id="decoder_aztec" type="boolean">
+    <name>Decoder Aztec</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x23e</ssi_number>
+    <bc_types>
+      <bc_type>0x2d</bc_type>
+    </bc_types>
+    <neonalias>aztec</neonalias>
+  </param>
+	<!--  **************** MicroQR  **************** -->
+  <param id="decoder_microqr" type="boolean">
+    <name>Decoder MicroQR</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x23d</ssi_number>
+    <bc_types>
+      <bc_type>0x2c</bc_type>
+    </bc_types>
+    <neonalias>microqr</neonalias>
+  </param>
+	<!--  **************** Korean 3of5  **************** -->
+  <param id="decoder_korean_3of5" type="boolean">
+    <name>Decoder Korean 3of5</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x245</ssi_number>
+    <bc_types>
+      <bc_type>0x73</bc_type>
+    </bc_types>
+    <neonalias>korean_3of5</neonalias>
+  </param>
+  <param id="decoder_korean_3of5_length1" type="integer">
+    <name>Decoder Korean 3of5 Length1</name>
+    <default>1</default>
+    <desc />
+    <tags>
+      <tag>decoder_korean_3of5</tag>
+      <tag>179</tag>
+    </tags>
+    <ssi_number>0x247</ssi_number>
+    <neonalias></neonalias>
+  </param>
+  <param id="decoder_korean_3of5_length2" type="integer">
+    <name>Decoder Korean 3of5 Length2</name>
+    <default>55</default>
+    <desc />
+    <tags>
+      <tag>decoder_korean_3of5</tag>
+      <tag>179</tag>
+    </tags>
+    <ssi_number>0x248</ssi_number>
+    <neonalias></neonalias>
+  </param>
+  <param id="decoder_korean_3of5_redundancy" type="boolean">
+    <name>Decoder Korean 3of5 Redundancy</name>
+    <default>true</default>
+    <desc />
+    <tags>
+      <tag>decoder_korean_3of5</tag>
+      <tag>179</tag>
+    </tags>
+    <ssi_number>0x246</ssi_number>
+    <neonalias>korean_3of5redundancy</neonalias>
+  </param>
+  <!--  **************** US 4 state  **************** -->
+  <param id="decoder_us4state" type="boolean">
+    <name>Decoder US4state</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x250</ssi_number>
+    <bc_types>
+      <bc_type>0x34</bc_type>
+    </bc_types>
+    <neonalias>us4state</neonalias>
+  </param>
+	<!--  **************** US 4 state fics  **************** -->
+  <param id="decoder_us4state_fics" type="boolean">
+    <name>Decoder US4state FICS</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x263</ssi_number>
+    <bc_types>
+      <bc_type>0x35</bc_type>
+    </bc_types>
+    <neonalias></neonalias>
+  </param>
+	<!--  **************** Matrix 2of5  **************** -->
+  <param id="decoder_matrix_2of5" type="boolean">
+    <name>Decoder Matrix 2of5</name>
+    <default>false</default>
+    <desc />
+    <tags>
+      <tag>symbologies</tag>
+    </tags>
+    <ssi_number>0x26a</ssi_number>
+    <bc_types>
+      <bc_type>0x39</bc_type>
+    </bc_types>
+    <neonalias></neonalias>
+  </param>
+  <param id="decoder_matrix_2of5_length1" type="integer">
+    <name>Decoder Matrix 2of5 Length1</name>
+    <default>0</default>
+    <desc />
+    <tags>
+      <tag>decoder_matrix_2of5</tag>
+      <tag>189</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+  <param id="decoder_matrix_2of5_length2" type="integer">
+    <name>Decoder Matrix 2of5 Length2</name>
+    <default>0</default>
+    <desc />
+    <tags>
+      <tag>decoder_matrix_2of5</tag>
+      <tag>189</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+  <param id="decoder_matrix_2of5_verify_check_digit" type="boolean">
+    <name>Decoder Matrix 2of5 Verify Check Digit</name>
+    <default>true</default>
+    <desc>Check Digit Verification</desc>
+    <tags>
+      <tag>decoder_matrix_2of5</tag>
+      <tag>189</tag>
+    </tags>
+    <ssi_number>0x26f</ssi_number>
+    <neonalias></neonalias>
+  </param>
+  <param id="decoder_matrix_2of5_report_check_digit" type="boolean">
+    <name>Decoder Matrix 2of5 Report Check Digit</name>
+    <default>true</default>
+    <desc>Report Check Digit</desc>
+    <tags>
+      <tag>decoder_matrix_2of5</tag>
+      <tag>189</tag>
+    </tags>
+    <ssi_number>0x26e</ssi_number>
+    <neonalias></neonalias>
+  </param>
+  <param id="scanner_version" type="integer">
+    <name>Scanner Version</name>
+    <mode>ro</mode>
+    <tags>
+      <tag>version</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+  <param id="device_version" mode="ro" type="string">
+    <name>Device Version</name>
+    <mode>ro</mode>
+    <tags>
+      <tag>version</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+  <param id="decoder_version" type="integer">
+    <name>Decoder Version</name>
+    <mode>ro</mode>
+    <tags>
+      <tag>version</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+<!-- ***************************** Scan params *************************-->
+  <param id="code_id_type" type="integer">
+    <name>Code Id Type</name>
+    <default>0</default>
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Code Id Type None</vname>
+        <vdescription>No code id</vdescription>
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Code Id Type Aim</vname>
+        <vdescription>AIM code id</vdescription>
+      </vdiscrete>
+      <vdiscrete value="2">
+        <vname>Code Id Type Symbol</vname>
+        <vdescription>Symbol Technologies code
+					identifier appended to the decode data</vdescription>
+      </vdiscrete>
+    </values>
+    <tags>
+      <tag>scan_param</tag>
+    </tags>
+    <ssi_number>0x2d</ssi_number>
+    <neonalias></neonalias>
+  </param>
+  <param id="decode_audio_feedback_resource_id" type="integer">
+    <name>Decode Audio Feedback Resource Id</name>
+    <default>0</default>
+    <tags>
+      <tag>scan_param</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+  <param id="decode_audio_feedback_uri" type="uri">
+    <name>Decode Audio Feedback Uri</name>
+    <tags>
+      <tag>scan_param</tag>
+    </tags>
+    <neonalias></neonalias>
+  </param>
+  <param id="view_finder_mode" type="integer">
+    <name>View Finder Mode</name>
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Viewfinder Disabled</vname>
+        <vdescription>A viewfinder is not displayed during scanning</vdescription>
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Viewfinder Enabled</vname>
+        <vdescription>Viewfinder displayed to aid decoding</vdescription>
+      </vdiscrete>
+      <vdiscrete value="2">
+        <vname>Static Reticle</vname>
+        <vdescription>A reticle is drawn in the centre of the screen (this aids in
+					scanning especially when picklist is enabled)</vdescription>
+      </vdiscrete>
+    </values>
+    <default>2</default>
+    <desc>Describes whether a viewfinder should be displayed and if a
+			reticle drawn to aid with scanning</desc>
+    <tags>
+      <tag>reader_param</tag>
+    </tags>
+    <neonalias>viewfindermode</neonalias>
+  </param>
+  <param id="view_finder_feedback_mode" type="integer">
+    <name>View Finder Feedback Mode</name>
+    <values val_type="discrete">
+      <vdiscrete value="0">
+        <vname>Viewfinder Feedback Disabled</vname>
+        <vdescription>This mode disables any visual feedback on a successful decode
+				</vdescription>
+      </vdiscrete>
+      <vdiscrete value="1">
+        <vname>Viewfinder Feedback Enabled</vname>
+        <vdescription>This mode displays the last image that successfully decoded.
+					The duration for which the image is displayed can be set by the VF
+					Feedback Time</vdescription>
+      </vdiscrete>
+    </values>
+    <default>0</default>
+    <desc>This parameter allows selection of the different feedback
+			parameters on a successful decode</desc>
+    <tags>
+      <tag>reader_param</tag>
+    </tags>
+    <neonalias>viewfinderfeedback</neonalias>
+  </param>
+  <param id="view_finder_feedback_time" type="integer">
+    <name>View Finder Feedback Time</name>
+    <values val_type="range">
+      <lo>0</lo>
+      <hi>60000</hi>
+      <step>100</step>
+    </values>
+    <default>500</default>
+    <desc>This parameter allows selection of the different feedback
+			parameters on a successful decode</desc>
+    <tags>
+      <tag>reader_param</tag>
+    </tags>
+    <neonalias>viewfinderfeedbacktime</neonalias>
+  </param>
+</scanner-params>

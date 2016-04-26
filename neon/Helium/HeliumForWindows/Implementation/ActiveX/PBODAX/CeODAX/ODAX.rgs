@@ -1,0 +1,26 @@
+HKCR
+{
+	CeODAX.ODAX.1 = s 'ODAX Class'
+	{
+		CLSID = s '{E9AAC651-2BDA-4DF8-8949-201C9ED6B52F}'
+	}
+	CeODAX.ODAX = s 'ODAX Class'
+	{
+		CLSID = s '{E9AAC651-2BDA-4DF8-8949-201C9ED6B52F}'
+		CurVer = s 'CeODAX.ODAX.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {E9AAC651-2BDA-4DF8-8949-201C9ED6B52F} = s 'ODAX Class'
+		{
+			ProgID = s 'CeODAX.ODAX.1'
+			VersionIndependentProgID = s 'CeODAX.ODAX'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Free'
+			}
+			'TypeLib' = s '{0274BCBC-3D1D-4877-98D6-09BDF38A4852}'
+		}
+	}
+}

@@ -1,0 +1,170 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>signal</NAME>
+		<PATH>Indicators</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to set positional and display parameters of the wireless signal indicator on the screen.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Signal" content="[parameter]"&gt;</EXAMPLE>
+            </USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Signal" content="SignalEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+            </USAGE>
+        </SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>visibility</NAME>
+				<VALUES>Visible or Hidden</VALUES>
+				<DESC>Sets whether or not the battery indicator is shown</DESC>
+				<DEFAULT>Hidden</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>left</NAME>
+                <VALUES>Pixel value</VALUES>
+				<DESC>Sets the horizontal position of the wireless signal indicator in pixels.  If negative the indicator will be off the screen</DESC>
+				<DEFAULT>Top right of screen</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>top</NAME>
+                <VALUES>Pixel value</VALUES>
+				<DESC>Sets the vertical position of the wireless signal indicator in pixels. If negative then it will be off the screen</DESC>
+				<DEFAULT>Top right of screen</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>layout</NAME>
+                <VALUES>Left, Right, Up, Down</VALUES>
+				<DESC>Sets the orientation of the signal icon.</DESC>
+				<DEFAULT>Right</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>color</NAME>
+           		<VALUES>Hex Values (#000000 - #FFFFFF)</VALUES>
+				<DESC>RGB value that sets the color of the wireless signal indicator using HTML web colors RR-Red, GG-Green and BB-Blue</DESC>
+				<DEFAULT>#000000</DEFAULT>
+			</PARAM>	
+        	</PARAMS_WITH_ATTRIBUTES>
+        <RETURNS>
+            <TAG>
+                <TAG_NAME>signalEvent</TAG_NAME>
+				<TAG_NOTES>The SignalEvent gives an indication of the signal level and other associated information.  Once registered for you will receive a SignalEvent at regular intervals, as specified by the SignalRefresh configuration setting.</TAG_NOTES>
+                <RETVAL>
+                    <NAME>signalStrength</NAME>
+                    <DESC>Signal strength value as a percentage</DESC>
+                </RETVAL>				
+                <RETVAL>
+                    <NAME>essid</NAME>
+                    <DESC>Current ESSID</DESC>
+                </RETVAL>	
+                <RETVAL>
+                    <NAME>macAddress</NAME>
+                    <DESC>Device's MAC address</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>adapterName</NAME>
+                    <DESC>Device's adapter name</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>dhcpServer</NAME>
+                    <DESC>Current DHCP servers address</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>dhcpStatic</NAME>
+                    <DESC>Whether the unit has a static or DHCP address</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>gateway</NAME>
+                    <DESC>Current gateway IP address</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>ipAddress</NAME>
+                    <DESC>Current IP address</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>rssi</NAME>
+                    <DESC>Signal strength in RSSI terms</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>subnetMask</NAME>
+                    <DESC>Current subnet mask</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>wins</NAME>
+                    <DESC>Current WINs server IP address</DESC>
+                </RETVAL>
+            </TAG>
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example shows the wireless signal indicator, sets the position to (50, 50), the color of the indicator beneath the bars growing from right to left:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Signal" Content="Visibility:Visible"&gt;
+&lt;META HTTP-Equiv="Signal" Content="Left:50"&gt;
+&lt;META HTTP-Equiv="Signal" Content="Top:50"&gt;
+&lt;META HTTP-Equiv="Signal" Content="Layout:Left"&gt;
+&lt;META HTTP-Equiv="Signal" Content="Color:#FF0000"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written in EMML1.1 as given below</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Signal" Content="Left:50; Top:50; Color:#FF0000; Layout:Left; Visibility:Visible"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>In EMML1.1 it is also possible to concatenate the Parameter with the module name.  The example above can also be written as:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Signal-Left" Content="50"&gt;
+&lt;META HTTP-Equiv="Signal-Top" Content="50"&gt;
+&lt;META HTTP-Equiv="Signal-Color" Content="#FF0000"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example navigates to a new page with parameters upon a wireless signal status change:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Signal" Content="signalevent:url('mypage.asp?Signal percentage=%s&amp;ESSID=%s&amp;MacAdd=%s&amp;Adapter=%s&amp;DHCPServ=%s&amp;Mode=%s&amp;Gateway=%s&amp;IPAddress=%s&amp;RSSI=%s&amp;Subnet=%s&amp;Wins=%s')"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+<REMARKS>
+	<COMMENT>
+<COMMENT_HEADING>Overlapping</COMMENT_HEADING>
+<COMMENT_DATA>
+Do not display the Battery indicator overlapping with the Signal indicator.
+</COMMENT_DATA>
+</COMMENT>
+	<COMMENT>
+		<COMMENT_HEADING>Indicator Positions</COMMENT_HEADING>
+		<COMMENT_DATA>
+			For an illustrative guide to the meaning of the Layout parameter see the 'Indicator Positions' section.
+		</COMMENT_DATA>
+	</COMMENT>
+	<COMMENT>
+		<COMMENT_HEADING>Unavailable Data on Android devices</COMMENT_HEADING>
+		<COMMENT_DATA>
+		The WINS server address and dhcpStatic data are not available on the Android devices. Also the dhcpServer address is always populated, even on static IP configurations. 
+		</COMMENT_DATA>
+	</COMMENT>
+	<COMMENT>
+		<COMMENT_HEADING>Parameter Deprecation</COMMENT_HEADING>
+		<COMMENT_DATA>
+			For users migrating their Browser apps to RhoElements please note that due to the difference in the signal indicator graphic, the GraphPosition and IconPosition parameters have been deprecated. Please use the Layout parameter instead.
+		</COMMENT_DATA>
+	</COMMENT>
+</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Partially Persistent - Changes to this module will persist when navigating to a new page with the exception of the return events.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="./">Battery</TOPIC>
+			<TOPIC RELPATH ="../Getting%20Started/">IndicatorPositions</TOPIC>
+			<TOPIC RELPATH ="../Getting%20Started/">ConfigurationSettings</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

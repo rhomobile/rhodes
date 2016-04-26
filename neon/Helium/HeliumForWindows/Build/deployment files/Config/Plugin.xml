@@ -1,0 +1,204 @@
+<?xml version = "1.0"?>
+<!--
+A DLL may contain more than one module
+Each Module must list the name and alias if any
+-->
+<!--
+RhoElements Configuration file
+-->
+<Plugins>
+
+  <Plugin location="%INSTALLDIR%\Plugin\FusionRhoElementsPlugin.dll">
+    <Module name="WLAN" >
+    </Module >
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_Multimedia_PLG.dll">
+    <Module name="AudioCapture" >
+      <Alias name="Audio"/>
+    </Module >
+    <Module name="VideoCapture" >
+	</Module >
+    <Module name="Mediaplayer" >
+	</Module >
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_CardReader_PLG.dll">
+    <Module name="CardReader" >
+      <Alias name="DCR"/>
+      <Alias name="MSR"/>
+    </Module >
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_Comm_PLG.dll">
+    <Module name="Comm" >
+    </Module >
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_Config_PLG.dll">
+    <Module name="Config" >
+    </Module >
+    <Module name="DeletePersistentRegSetting" >
+    </Module >
+    <Module name="DeleteRegSetting" >
+    </Module >
+    <Module name="Registry" >
+    </Module >
+    <Module name="WritePersistentRegSetting" >
+    </Module >
+    <Module name="WriteRegSetting" >
+    </Module >
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_Controls_PLG.dll">
+    <Module name="AddressBar" >
+    </Module >
+    <Module name="BackButton" >
+    </Module >
+    <Module name="BottomCommandArea" >
+    </Module >
+    <Module name="ForwardButton" >
+    </Module >
+    <Module name="GoButton" >
+    </Module >
+    <Module name="HomeButton" >
+    </Module >
+    <Module name="MinimizeButton" >
+    </Module >
+    <Module name="QuitButton" >
+    </Module >
+	<Module name="SettingsButton" >
+    </Module >
+    <Module name="ReloadButton" >
+    </Module >
+    <Module name="SIPButton" >
+    </Module >
+    <Module name="StopButton" >
+    </Module >
+    <Module name="TopCommandArea" >
+    </Module >
+    <Module name="ZoomInPageButton" >
+    </Module >
+    <Module name="ZoomOutPageButton" >
+    </Module >
+    <Module name="ZoomTextButton" >
+    </Module >
+    <Module name="KeyState" >
+    </Module >
+    <Module name="Scroll" >
+    </Module >
+    <Module name="Battery" >
+    </Module >
+    <Module name="Signal" >
+    </Module >
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_Cradle_PLG.dll">
+    <Module name="Cradle">
+    </Module > 
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_DeviceApplication_PLG.dll">
+    <Module name="Alarm"/>
+    <Module name="Application"/>
+    <Module name="Backlight"/>
+    <Module name="Device"/>
+    <Module name="GetNotificationInfo"/>
+    <Module name="Hourglass">
+      <Alias name="WaitCursor"/>
+    </Module >
+    <Module name="InvokeNotification"/>
+    <Module name="Keylight"/>
+	<Module name="Memory"/>
+    <Module name="Notification"/>
+    <Module name="PowerOn">
+      <Alias name="Power"/>
+    </Module >
+    <Module name="Reboot"/>
+    <Module name="ScreenOrientation"/>
+    <Module name="SIP"/>
+    <Module name="SystemTime">
+	  <Alias name="SNTP"/>
+	</Module >
+    <Module name="Stylus"/>
+    <Module name="TextSize"/>
+    <Module name="Zoom"/>
+    <Module name="Timer"/>
+    <Module name="Volume"/>
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_EMMP_PLG.dll">
+    <Module name="EMMLProfile">
+    </Module > 
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_EInk_PLG.dll">
+    <Module name="EInk">
+    </Module > 
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_FileTransfer_PLG.dll">
+    <Module name="FileTransfer">
+    </Module > 
+  </Plugin>
+  
+   <Plugin location="%INSTALLDIR%\Plugin\WTG_Gesture_PLG.dll">
+    <Module name="Gesture"/>
+  </Plugin>
+ 
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_ImageCapture_PLG.dll">
+    <Module name="Imager" >
+      <Alias name="ImageCapture" />
+    </Module >
+  </Plugin>
+
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_KeyCapture_PLG.dll">
+    <Module name="KeyCapture"/>
+    <Module name="OnKey"/>
+  </Plugin>  
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_Push_PLG.dll">
+    <Module name="Push"/>
+  </Plugin>
+
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_Sensors_PLG.dll">
+    <Module name="RawSensors"/>
+	<Module name="LightSensor"/>
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_Scanner_PLG.dll">
+    <Module name="Scanner">
+		<Alias name="RSM"/>
+	</Module>
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_Signature_PLG.dll">
+    <Module name="SignatureCapture">
+    </Module >
+   </Plugin>   
+
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_Network_PLG.dll">
+    <Module name="Network"/>
+  </Plugin>
+
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_RFID_PLG.dll">
+    <Module name="RFID"/>
+  </Plugin>
+  
+  <Plugin location="%INSTALLDIR%\Plugin\WTG_SmartCradle_PLG.dll">
+	  <Module name="SmartCradle" >
+	  </Module >
+  </Plugin>
+</Plugins>
+
+
+
+
+
+
+
+
+
+
+
+

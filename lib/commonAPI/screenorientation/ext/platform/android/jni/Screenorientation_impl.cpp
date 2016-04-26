@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Screenorientation_impl"
 
-#define SCREENORIENTATION_FACTORY_CLASS "com.motorolasolutions.rho.screenorientation.ScreenOrientationFactory"
+#define SCREENORIENTATION_FACTORY_CLASS "com.rho.screenorientation.ScreenOrientationFactory"
 
 extern "C" void Init_ScreenOrientation_API(void);
 

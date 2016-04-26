@@ -1,0 +1,77 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>device</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>controls device functions.</SYNOPSIS>
+		<MULTIPLE_INSTANCE>Only the application with Focus will have the ability to control device functions.</MULTIPLE_INSTANCE>	
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Device" content="[method]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>suspend</NAME>
+				<DESC>puts the device into suspend mode</DESC>
+				<DEFAULT>Not in suspend mode</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>powerOff</NAME>
+				<DESC>puts the device into power off mode. In this mode the device will draw no power. Only supported on SB1.</DESC>
+				<DEFAULT>Not in Power Off mode</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>wake</NAME>
+				<DESC>Wakes the device from suspend mode</DESC>
+				<DEFAULT>wake mode</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>calibrate</NAME>
+				<DESC>Carries out the screen calibration routine</DESC>
+				<DEFAULT>Not calibrating</DEFAULT>
+			</PARAM>	
+		</PARAMS_NO_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example put the device into suspend mode:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Device" Content="Suspend"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example wakes the device from Suspend mode:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Device" Content="wake"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Interaction with Unattended Method of the Push Module</COMMENT_HEADING>
+				<COMMENT_DATA>
+				The Suspend functionality is incompatible with the unattended functionality of the push module and they should not be used together.
+				</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>wake Method</COMMENT_HEADING>
+				<COMMENT_DATA>
+				The wake functionality can be used along with Push module. For e.g.: in the push detected event the user can call the wake method to wake the device. Please note that Android devices open in Lock Screen mode if wake method is used and the screen stays active until the user switches it off and hence this method consumes more battery power.
+				</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except Android. Only the method "wake" is supported on the Android.</PLATFORM>
+			<APPLIES>Immediate - These methods are actioned immediately.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Push/">Push</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

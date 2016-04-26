@@ -1,0 +1,521 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>rsm</NAME>
+		<PATH>Barcode Scanner</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to configure or to retrieve attributes relating to a remote scanner either tethered to the device or connected via Bluetooth.  The properties of the scanner which can be configured are detailed in the 'Remarks' section.
+When used for retrieval navigation to URL or call to javascript function happens immediately.
+</SYNOPSIS>
+		<MULTIPLE_INSTANCE>Only the foreground RhoElements application is given access to the device scanner, when an application is sent to the background its state will be saved and it will automatically relinquish control of the Scanner.  When brought back to the foreground, an application previously using the scanner will have its previous configuration (eg. selected decoders) reapplied to the scanner automatically.</MULTIPLE_INSTANCE>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="RSM" content="[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>bluetoothAuthentication</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the BluetoothAuthentication of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>bluetoothEncryption</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the BluetoothEncryption of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>bluetoothPinCode</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the BluetoothPINCode of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>bluetoothPinCodeType</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the BluetoothPINCodeType of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>bluetoothReconnectAttempts</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the BluetoothReconnectAttempts of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>bluetoothBeepOnReconnectAttempt</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the BluetoothBeepOnReconnectAttempt of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>bluetoothHidAutoReconnect</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the BluetoothHIDAutoReconnect of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>bluetoothFriendlyName</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the BluetoothFriendlyName of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>bluetoothInquiryMode</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the BluetoothInquiryMode of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>bluetoothAutoReconnect</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the BluetoothAutoReconnect of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>forceSavePairingBarcode</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the ForceSavePairingBarcode of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>lowBatteryIndication</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the LowBatteryIndication of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>lowBatteryIndicationCycle</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the LowBatteryIndicationCycle of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>scanLineWidth</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the ScanLineWidth of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>goodScansDelay</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the GoodScansDelay of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>decodeFeedback</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the DecodeFeedback of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>ignoreCode128Usps</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the IgnoreCode128USPS of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>scanTriggerWakeup</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the ScanTriggerWakeup of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>mems</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the Mems of the connected BT Scanner to the stated value.  See remarks</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>proximityEnable</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the ProximityEnable of the connected BT Scanner to the stated value.  See remarks.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>proximityContinuous</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the ProximityContinuous of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>proximityDistance</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the ProximityDistance of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>pagingEnable</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the PagingEnable of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>pagingBeepSequence</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the PagingBeepSequence of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>pagingActivate</NAME>
+                <VALUES>See Remarks</VALUES>
+				<DESC>Sets the PagingActivate of the connected BT Scanner to the stated value.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+        	<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>markForRetrievalModelNumber</NAME>
+				<DESC>	Marks the ModelNumber to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalSerialNumber</NAME>
+				<DESC>	Marks the SerialNumber to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalDateOfManufacture</NAME>
+				<DESC>	Marks the DateOfManufacture to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalDateOfService</NAME>
+				<DESC>	Marks the DateOfService to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBluetoothAddress</NAME>
+				<DESC>	Marks the BluetoothAddress to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalFirmwareVersion</NAME>
+				<DESC>	Marks the FirmwareVersion to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalDeviceClass</NAME>
+				<DESC>	Marks the DeviceClass to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBatteryStatus</NAME>
+				<DESC>	Marks the BatteryStatus to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBatteryCapacity</NAME>
+				<DESC>	Marks the BatteryCapacity to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBatteryId</NAME>
+				<DESC>	Marks the BatteryID to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBluetoothAuthentication</NAME>
+				<DESC>	Marks the BluetoothAuthentication to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBluetoothEncryption</NAME>
+				<DESC>	Marks the BluetoothEncryption to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBluetoothPinCode</NAME>
+				<DESC>	Marks the BluetoothPINCode to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBluetoothPinCodeType</NAME>
+				<DESC>	Marks the BluetoothPINCodeType to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBluetoothReconnectAttempts</NAME>
+				<DESC>Marks the BluetoothReconnectAttempts to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBluetoothBeepOnReconnectAttempt</NAME>
+				<DESC>	Marks the BluetoothBeepOnReconnectAttempt to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBluetoothHidAutoReconnect</NAME>
+				<DESC>	Marks the BluetoothHIDAutoReconnect to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBluetoothFriendlyName</NAME>
+				<DESC>	Marks the BluetoothFriendlyName to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBluetoothInquiryMode</NAME>
+				<DESC>	Marks the BluetoothInquiryMode to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalBluetoothAutoReconnect</NAME>
+				<DESC>	Marks the BluetoothAutoReconnect to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalForceSavePairingBarcode</NAME>
+				<DESC>	Marks the ForceSavePairingBarcode to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalLowBatteryIndication</NAME>
+				<DESC>	Marks the LowBatteryIndication to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalLowBatteryIndicationCycle</NAME>
+				<DESC>	Marks the LowBatteryIndicationCycle to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalScanLineWidth</NAME>
+				<DESC>	Marks the ScanLineWidth to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalGoodScansDelay</NAME>
+				<DESC>	Marks the GoodScansDelay to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalDecodeFeedback</NAME>
+				<DESC>	Marks the DecodeFeedback to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalIgnoreCode128Usps</NAME>
+				<DESC>	Marks the IgnoreCode128USPS to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalScanTriggerWakeup</NAME>
+				<DESC>	Marks the ScanTriggerWakeup to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalMems</NAME>
+				<DESC>	Marks the Mems to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalProximityEnable</NAME>
+				<DESC>	Marks the ProximityEnable to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalProximityContinuous</NAME>
+				<DESC>	Marks the ProximityContinuous to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalProximityDistance</NAME>
+				<DESC>	Marks the ProximityDistance to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalPagingEnable</NAME>
+				<DESC>	Marks the PagingEnable to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>markForRetrievalPagingBeepSequence</NAME>
+				<DESC>	Marks the PagingBeepSequence to be returned when RSMGetEvent is next called.  See Remarks.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>bluetoothDisconnect</NAME>
+				<DESC>Instructs the Bluetooth scanner to disconnect from its associated device.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>bluetoothUnpair</NAME>
+				<DESC>Instructs the bluetooth scanner to unpair from its associated device.  Allows the scanner to be associated with a different device</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>
+
+			
+		</PARAMS_NO_ATTRIBUTES>	
+		<RETURNS>
+			<TAG>
+				<TAG_NAME>rsmGetEvent</TAG_NAME>
+				<RETVAL><NAME>attributeArray</NAME><DESC>Array of attribute values.  The attributes returned in this array are those
+						registered for by calls to markForRetrievalXXX prior to calling RSMGetEvent.  
+						The table in the remarks section gives the possible values associated with 
+						each attribute, if an attribute is not supported then 'Unsupported Attribute' 
+						will be returned in that attribute's array position.</DESC>
+						<ARRAY>TRUE</ARRAY></RETVAL>				
+			</TAG>
+		</RETURNS>	
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example configures some parameters associated with the remote Bluetooth scanner:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Scanner" Content="Enabled:SCN2"&gt;
+&lt;META HTTP-Equiv="RSM" Content="BluetoothAuthentication:True"&gt;
+&lt;META HTTP-Equiv="RSM" Content="BluetoothPinCode:5678"&gt;
+&lt;META HTTP-Equiv="RSM" Content="BluetoothReconnectAttempts:6"&gt;
+&lt;META HTTP-Equiv="RSM" Content="BluetoothBeepOnReconnectAttempt:True"&gt;
+&lt;META HTTP-Equiv="RSM" Content="BluetoothPINCodeType:UseStored"&gt;
+&lt;META HTTP-Equiv="RSM" Content="BluetoothAutoReconnect:OnPowerOutOfRange"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example retrieves some attributes of the Bluetooth Scanner:</DESC>
+<CODE>
+&lt;SCRIPT TYPE="TEXT/JAVASCRIPT"&gt;
+
+function onRSMAttributes(jsonObject)
+{
+	//  Receive array of attribute values in the order they were registered and populate SPAN tags.
+	var spanID;
+	var spanElement;
+	for(i=0; i &lt; jsonObject.attributeArray.length; i++)
+	{
+		spanID = "Span" + (i+1);
+		spanElement = document.getElementById(spanID);
+		spanElement.innerText = jsonObject.attributeArray[i];
+	}
+}
+
+function onTest()
+{
+	//Invoke some attributes to be returned 
+	rsm.markForRetrievalModelNumber();	//  Array Index 0
+	rsm.markForRetrievalSerialNumber();			
+	rsm.markForRetrievalBluetoothAddress();		
+	rsm.markForRetrievalBluetoothPinCode();
+	rsm.markForRetrievalBluetoothFriendlyName();
+	rsm.markForRetrievalProximityEnable();	//  Array Index 5
+	
+	//	Finally assign a function for RSMGetEvent, this will call onRSMAttributes with the array of parameters we have registered for above.
+	rsm.rsmGetEvent = onRSMAttributes(%json);
+
+}
+&lt;/SCRIPT&gt;
+
+&lt;HTML&gt;
+	&lt;HEAD&gt;
+		&lt;!-- Scanner must be enabled to use RSM functionality --&gt;
+		&lt;META HTTP-Equiv="Scanner" Content="Enabled:SCN2"&gt;
+	&lt;/HEAD&gt;
+	&lt;BODY&gt;
+		&lt;a href="javascript:onTest()"&gt;Get Values&lt;/a&gt;&lt;br&gt;
+		Model Number: &lt;span id=Span1&gt;&lt;/span&gt;&lt;br&gt;
+		Serial Number: &lt;span id=Span2&gt;&lt;/span&gt;&lt;br&gt;
+		BT Address: &lt;span id=Span3&gt;&lt;/span&gt;&lt;br&gt;
+		BT PINcode: &lt;span id=Span4&gt;&lt;/span&gt;&lt;br&gt;
+		BT Friendly Name: &lt;span id=Span5&gt;&lt;/span&gt;&lt;br&gt;
+		Proximity Enable: &lt;span id=Span6&gt;&lt;/span&gt;&lt;br&gt;
+	&lt;/BODY&gt;
+&lt;/HTML&gt;
+
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+				<REMARKS>
+
+<COMMENT>
+<COMMENT_HEADING></COMMENT_HEADING>
+<COMMENT_DATA>The following is a mapping between Attributes, their possible values and whether they are read / write:</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+
+
+Attribute                      Access  Associated Value
+
+modelNumber                      R     The model number    
+serialNumber                     R     The serial number    
+dateOfManufacture                R     Date of manufacture as DDMMYY    
+dateOfService                    R     Date of service as DDMMYY    
+bluetoothAddress                 R     Bluetooth address as FF:FF:FF:FF:FF:FF where FF is a hex number.    
+firmwareVersion                  R     Scanner's operating system version.    
+deviceClass                      R     The device class of the system    
+batteryStatus                    R     Indicates the status us the scanner's battery, 'Unknown', 'Full', 
+                                       'Medium', 'Empty', 'Charging-FullRate', 'Charging-HalfRate', 
+                                       'Charging-Trickle' or 'Discharging'    
+batteryCapacity                  R     Remaining capacity of the battery, integer in the range '0' to 
+                                       '100'.  'Unknown' if unable to determine, e.g. if no battery in the scanner.    
+batteryID                        R     'Simple', 'Double', 'Cabled', 'Unknown'    
+bluetoothAuthentication          RW    'True' if authentication is required, else 'False'    
+bluetoothEncryption              RW    True' if encryption is required, else 'False'    
+bluetoothPinCode                 RW    Up to 5 character PIN code used for Bluetooth authentication    
+bluetoothPinCodeType             RW    'PromptUser' to prompt the user for the PIN code or 'UseStored' to 
+                                       use the code stored in memory.    
+bluetoothReconnectAttempts       RW    How long the scanner tries to re-establish connection if it goes 
+                                       out of range, in seconds.  This value must be a multiple of 5
+                                       and in the range 30 to 60 seconds.
+bluetoothBeepOnReconnectAttempt  RW    When 'True' scanner will emit 5 beeps every 5 seconds whilst 
+                                       re-connection in progress, else 'False'    
+bluetoothHidAutoReconnect        RW    'NeverReconnect', 'ReconnectOnData' or 'ReconnectImmediately'    
+bluetoothFriendlyName            RW    Friendly Bluetooth name, e.g. 'MyBTScanner'    
+bluetoothInquiryMode             RW    'General' to use a general inquiry mode, else 'Limited'    
+bluetoothAutoReconnect           RW    Bluetooth reconnection scheme: 
+                                         'None' - No scheme
+                                         'OnPower' - when powered on
+                                         'OnOutofRange' - when device goes out of range
+                                         'OnPowerOutofRange' - when powered on or when device goes out
+                                         of range.    
+forceSavePairingBarcode          RW    Force saving the barcode assigned to the device to which the scanner has
+                                       been paired.  'Enabled' or 'Disabled'
+bluetoothDisconnect              W     Command scanner to disconnect from its connected device.
+bluetoothUnpair                  W     Command scanner to unpair from its paired device.  Allows scanner to associate
+                                       with a different device.
+lowBatteryIndication             RW    Low battery indication 'Enabled' or 'Disabled'    
+lowBatteryIndicationCycle        RW    Low battery indication cycle time, in seconds 
+                                       ('10', '20', '30', '40' or '50').   
+scanLineWidth                    RW    The laser scan line width, 'Wide' or 'Narrow'.
+goodScansDelay                   RW    Delay between good scans in proximity continuous mode, measured in milliseconds.
+                                       Range 0 to 15000.  This value must be a multiple of 100.										 
+decodeFeedback                   RW    The remote scanner beeps and illuminates its green LED on a 
+                                       successful decode.  'Enabled' or 'Disabled'.
+ignoreCode128Usps                RW    Feature for ignoring Code 128 barcodes beginning with 420 and 421,
+                                       'Enabled' or 'Disabled' 
+scanTriggerWakeup                RW    Scanner trigger will wakeup the device from a low power state, 
+                                       'Enabled' or 'Disabled'    
+mems                             RW    Mems feature 'Enabled' or 'Disabled'    
+proximityEnable                  RW    Proximity feature 'Enabled' or 'Disabled'    
+proximityContinuous              RW    Proximity continuous mode 'Enabled' or 'Disabled'
+proximityDistance                RW    Specify the distance for the proximity feature as 'Short', 'Medium' 
+                                       or 'Long'    
+pagingEnable                     RW    Specify whether paging the device is 'Enabled' or 'Disabled'    
+pagingBeepSequence               RW    Range '0' to '15' to specify the pattern for the paging beep 
+                                       sequence.    
+pagingActivate                   W     'Start' or 'Stop' paging to the scanner.
+</COMMENTFIXEDWIDTH>		
+
+</COMMENT>
+
+<COMMENT>
+<COMMENT_HEADING>ProximityEnable / Mems</COMMENT_HEADING>
+<COMMENT_DATA>
+If you press the trigger on an RSM scanner proximity enabled will be turned off, even though it still reports its self as being turned on if you query the RSM parameter.  In order to use ProximityEnable you need to also have Mems enabled, this is the motion sensor and if you disable Mems the scanner will not function.
+</COMMENT_DATA>
+</COMMENT>
+
+		</REMARKS>
+		<ADDITIONAL>
+		<PLATFORM>All supported devices that have the ability to connect to remote scanners.</PLATFORM>
+			<APPLIES>Transient - The RSM parameters are volatile and only the current value of the RSM attribute will be altered.  Changes to RSM attributes will persist until the scanner is disabled or a navigation occurs.  rsmGetEvent will persist until a navigation occurs.</APPLIES>
+			<REQ>This tag requires appropriate hardware to run, i.e. a remote scanner and a device which supports it.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>Scanner</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

@@ -105,7 +105,7 @@ public class SimpleMainView implements MainView {
 		View al = webView.getView();
 			
 		if (al instanceof WebView) {
-			// we have android WebView (not private Motorola)
+			// we have android WebView
 			
 			// check for exist developer extension
 			try {

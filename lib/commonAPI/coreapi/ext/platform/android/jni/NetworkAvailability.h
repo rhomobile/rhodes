@@ -7,7 +7,7 @@
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NetworkAvailability"
-#define NETWORK_IMPL_CLASS "com.motorolasolutions.rho.network.Network"
+#define NETWORK_IMPL_CLASS "com.rho.network.Network"
 
 class CNetworkAvailability
 {

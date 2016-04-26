@@ -1,0 +1,67 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>gs1dataBar</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\gs1dataBar</PATH>
+		<TYPE>META Tag</TYPE>
+		<SYNOPSIS>is used to enable or disable the gs1dataBar decoder.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="gs1dataBar:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>gs1dataBar</NAME>
+                <VALUES>enabled/Disabled</VALUES>
+				<DESC>Enables/Disables the gs1dataBar decoder.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+<EXAMPLE>
+				<DESC>The following example enables the scanner to read only gs1dataBar labels:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:disabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="gs1dataBar:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:disabled;gs1dataBar:enabled;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-all_decoders" Content="disabled"&gt;
+&lt;META HTTP-Equiv="scanner-gs1dataBar" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+<COMMENT>
+<COMMENT_HEADING>Legacy</COMMENT_HEADING>
+<COMMENT_DATA>
+The gs1dataBar decoder was previously known as rss14.  Code written for the rss14 decoder will be compatible with the new naming convention.
+</COMMENT_DATA>
+</COMMENT>
+</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports gs1dataBar.</REQ>
+			<VER_INTRODUCED>2.1</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC RELPATH ="../">All_Decoders</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

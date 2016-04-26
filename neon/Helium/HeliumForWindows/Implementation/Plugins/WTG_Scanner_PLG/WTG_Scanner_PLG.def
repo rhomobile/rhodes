@@ -1,0 +1,5 @@
+LIBRARY	"WTG_Scanner_PLG"
+EXPORTS
+	Scanner_Preload
+	Scanner_MetaProc
+	Scanner_Dispose

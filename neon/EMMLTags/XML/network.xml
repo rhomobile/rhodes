@@ -1,0 +1,234 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>network</NAME>
+		<PATH>Network</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to determine whether the device is able to connect to a specified server URL or IP address.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Network" content="[method / parameter]"&gt;</EXAMPLE>
+			</USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Network" content="NetworkEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>start</NAME>
+				<DESC>Begins polling the specified host on the specified URL to check if there is a network connection available.  The connection status is reported back via the NetworkEvent.</DESC>
+				<DEFAULT>Not Started</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>stop</NAME>
+				<DESC>Stops polling for a network connection</DESC>
+				<DEFAULT>Not Started</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>disconnectWan</NAME>
+				<DESC>Disconnects the current WAN connection.  DisconnectWan will only affect connections established by RhoElements so if you have not previously called connectWan this function will have no effect.</DESC>
+				<DEFAULT>Not Started</DEFAULT>
+			</PARAM>				
+		</PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>host</NAME>
+				<VALUES>URL or IP address</VALUES>
+				<DESC>The URL or IP address of the server to attempt to connect to</DESC>
+				<DEFAULT>www.symbol.com</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>port</NAME>
+				<VALUES>Any valid port</VALUES>
+				<DESC>The port on the host on which to connect to</DESC>
+				<DEFAULT>80</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>networkPollInterval</NAME>
+				<VALUES>Milliseconds</VALUES>
+				<DESC>The time, in milliseconds, between each check for a connection.  Note that the actual connection report interval will be the sum of the NetworkPollInterval and the ConnectionTimeout.</DESC>
+				<DEFAULT>5000</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>connectionTimeout</NAME>
+				<VALUES>Milliseconds</VALUES>
+				<DESC>The amount of time the network plugin will attempt to connect to the specified URL before it gives up and assumes 'disconnected'</DESC>
+				<DEFAULT>1000</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>connectWan</NAME>
+				<VALUES>Connection Destination</VALUES>
+				<DESC>Connects RhoElements through a Wide Area Network.  The connection destination must be first configured through the Connection Manager and the destination name provided as the value to this parameter.  If a connection is already established, you must first call disconnectWan before attempting another connection.  A list of available connection destinations is written to the log file when either connectWan, disconnectWan or wanStatusEvent are first specified.  Specify the connection as 'Internet' to use the default internet connection defined on the device.  If the specified destination does not exist no connection attempt will be made and an entry will be made in the log file.</DESC>
+				<DEFAULT>Not Specified</DEFAULT>
+			</PARAM>				
+		</PARAMS_WITH_ATTRIBUTES>
+		<RETURNS>
+			<TAG>
+				<TAG_NAME>networkEvent</TAG_NAME>
+				<TAG_NOTES>The network events notifies the user when a connection to the specified URL is gained or lost.  A connection check is performed every [NetworkPollInterval] milliseconds but the user is only informed of a change of connection</TAG_NOTES>
+				<RETVAL>
+					<NAME>connectionInformation</NAME>
+					<DESC>Either "Connected" or "Disconnected"</DESC>
+				</RETVAL>
+			</TAG>
+			<TAG>
+				<TAG_NAME>wanStatusEvent</TAG_NAME>
+				<TAG_NOTES>The WAN Status Event notifies the user whenever any parameter associated with data connectivity changes.  The WAN Status Event is called when it is first declared (for the initial state) and again whenever any of the associated parameters change.</TAG_NOTES>
+				<RETVAL>
+					<NAME>phoneSignalStrength</NAME>
+					<DESC>The signal strength of the phone as a percentage of maximum strength.  Returned as a number between 0 and 100.  If there is no phone service this field will be 0.</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>networkOperator</NAME>
+					<DESC>The name of the current network operator associated with the SIM card</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>connectionTypeAvailable</NAME>
+					<DESC>The current data connection type available to RhoElements as provided by the Network.  Values can be 'Unavailable', GPRS, 1XRTT, EVDO, EDGE, UMTS, EVDV or HSDPA</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>connectionTypeConnected</NAME>
+					<DESC>The data connection type to which Rhoelements is currently connected.  The values returned are identical to connectionTypeAvailable, with the exception that 'Not Connected' replaces 'Unavailable'.</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>connectionManagerMessage</NAME>
+					<DESC>This is the last received status from the Connection Manager.  Do NOT use this parameter to determine if you are able to physically send / receive data to a remote host, it only provides an indication of whether the Connection Manager believes the connection is available.  To determine if you are connected to a remote host use the networkEvent.</DESC>
+				</RETVAL>
+			</TAG>
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example checks for a connection to symbol.com on the default port and notifies the user when connection is gained / lost:</DESC>
+<CODE>
+&lt;meta http-equiv="Network" content="Host:url('http://www.symbol.com')"&gt;
+&lt;meta http-equiv="Network" content="networkEvent:url('Javascript:onNetworkEvent(%json);');Start"&gt;
+&lt;SCRIPT&gt;
+  function onNetworkEvent(jsonObject)
+  {
+	var html = "&lt;b&gt;Network Event Returned:&lt;/b&gt; ";
+	html += jsonObject.connectionInformation;
+	networkOutput.innerHTML=html;
+  }
+&lt;/SCRIPT&gt;
+&lt;div id="networkOutput"&gt;Connection Information goes Here&lt;/div&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example checks for a connection to a proxy server and notifies the user when connection is gained / lost:</DESC>
+<CODE>
+&lt;BODY onload='onStartChecking()'&gt;
+&lt;SCRIPT&gt;
+  function onNetworkEvent(jsonObject)
+  {
+	var html = "&lt;b&gt;Network Event Returned:&lt;/b&gt; ";
+	html += jsonObject.connectionInformation;
+	networkOutput.innerHTML=html;
+  }
+  function onStartChecking()
+  {
+	network.networkEvent = onNetworkEvent(%json);
+	network.host = 'wwwexampleproxy.com';
+	network.port = '1050';
+	network.start();
+  }
+&lt;/SCRIPT&gt;
+&lt;div id="networkOutput"&gt;Connection Information goes Here&lt;/div&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example shows how to establish and monitor a WAN connection</DESC>
+<CODE>
+&lt;HTML&gt;&lt;HEAD&gt;
+&lt;META HTTP-Equiv="Network" Content="WANStatusEvent:url('javascript:fnWANStatus(%json);')"&gt;
+&lt;meta http-equiv="Network" content="NetworkEvent:url('Javascript:onNetworkEvent(%json);')"&gt;
+&lt;meta http-equiv="Network" content="networkPollInterval:5000;connectionTimeout:1500"&gt;
+&lt;meta http-equiv="Network" content="Host:url('http://www.symbol.com')"&gt;
+  &lt;script type="text/javascript"&gt;
+  var count = 0;
+  function onNetworkEvent(jsonObject)
+  {
+    count = count + 1;
+    var html = "&lt;b&gt;Network Event Returned:&lt;/b&gt; ";
+    html += jsonObject.connectionInformation + " - " + count;
+    networkOutput.innerHTML=html;
+  }
+  function fnWANStatus(jsonObject)
+  {
+    var html = "Signal Strength: " + jsonObject.phoneSignalStrength + "%";
+    html += "&lt;BR&gt; Operator: " + jsonObject.networkOperator;
+    html += "&lt;BR&gt; Cell Connection Available: " + jsonObject.connectionTypeAvailable;
+    html += "&lt;BR&gt; Cell Connection Connected?: " + jsonObject.connectionTypeConnected;
+    html += "&lt;BR&gt; Connection Manager Message: " + jsonObject.connectionManagerMessage;
+    outputDiv.innerHTML = html;
+  }
+  function fnConnect(destination)
+  {
+    network.connectWan = "" + destination;
+  }
+  function fnDisconnect()
+  {
+    network.disconnectWan();
+  }
+  function fnStartNetworkCheck()
+  {
+    network.start();
+  }
+  function fnStopNetworkCheck()
+  {
+    network.stop();
+    networkOutput.innerHTML = "Not Polling Network";
+  }
+  &lt;/script&gt;
+&lt;/HEAD&gt;
+&lt;H1&gt;WAN Tests&lt;/H1&gt;
+&lt;P&gt;&lt;div id="networkOutput"&gt;Network Connection Information goes Here&lt;/div&gt;&lt;br&gt;
+&lt;b&gt;&lt;div id="outputDiv"&gt;Network Check Started&lt;/div&gt;&lt;/b&gt;&lt;P&gt;
+&lt;input type="button" onclick="fnConnect('Internet')" Value="Connect (Default)" /&gt;
+&lt;input type="button" onclick="fnConnect('My Connection')" Value="Connect ('My Connection')" /&gt;
+&lt;input type="button" onclick="fnDisconnect()" Value="Disconnect" /&gt;
+&lt;input type="button" onclick="fnStartNetworkCheck()" Value="Start Network Checking" /&gt;
+&lt;input type="button" onclick="fnStopNetworkCheck()" Value="Stop Network Checking" /&gt;
+&lt;/BODY&gt;&lt;/HTML&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+			<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Connecting through Proxies</COMMENT_HEADING>
+				<COMMENT_DATA>Because the network module is protocol agnostic, it will not communicate through HTTP proxies to reach a specified URL.  In order to determine if you are connected when sitting behind a proxy you should configure the network plugin to attempt to connect to your proxy on the appropriate port.  A successful connection to the proxy should be taken to assume the device is connected to a network.  When configuring your WAN connection bear in mind that the proxy settings defined in the RhoElements configuration file will take precedence.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Maintaining an 'always on' WAN connection</COMMENT_HEADING>
+				<COMMENT_DATA>To instruct RhoElements to connect to a Wide Area Network automatically define a default meta tag with the required connection information, e.g. &lt;DefaultMetaTags&gt;&lt;MetaTag VALUE="Network~ConnectWAN:MyConnection"/&gt;&lt;/DefaultMetaTags&gt;.  See the Configuration Settings page for more information.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>NetworkEvent over WAN</COMMENT_HEADING>
+				<COMMENT_DATA>When defining a network event which will take place over WAN bear in mind if you specify a very low networkPollInterval your device will frequently have an active data connection.  'NetworkPollInterval's sufficiently low (in the region of 1000) can prevent the device from accepting incoming phone calls.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Preventing access to the device</COMMENT_HEADING>
+				<COMMENT_DATA>Receiving phone calls or texts whilst running RhoElements will cause the start button to be displayed on Windows Embedded Handheld devices, potentially offering users access to the operating system.  It is recommended to set the following registry keys to disable Operating System access on Windows Embedded Handheld as required.  The registry keys will be applied after a warm boot, omit them entirely to restore the Start and 'X' icons.</COMMENT_DATA>
+				<COMMENTFIXEDWIDTH>
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Shell\BubbleTiles]   Location in Registry
+"HardwareStartKeyEnabled"=dword:00000001                    Prevents the Start icon from appearing in the bottom left
+"HardwareDoneKeyEnabled"=dword:00000001                     Prevents the 'X' icon from appearing in the bottom right
+				</COMMENTFIXEDWIDTH>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Platform differences</COMMENT_HEADING>
+				<COMMENT_DATA>On Android connectWan can be treated as a method with no parameters as its only effect is enabling mobile data from the device general settings; any parameter passed to connectWan is ignored. Likewise, disconnectWan disables mobile data from the general settings, therefore executing disconnectWan on Android is not restricted to the scope of a RhoElements application, but may affect the connectivity of any other running application using mobile data.</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.  WAN Connectivity is only available on devices which support data connections through the Windows Connection Manager.</PLATFORM>
+			<APPLIES>Partially Persistent - Changes to this module will persist when navigating to a new page with the exception of the NetworkEvent and WANStatusEvent which only apply to the current page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Getting Started/">ConfigurationSettings</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

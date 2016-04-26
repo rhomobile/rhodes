@@ -1,0 +1,26 @@
+HKCR
+{
+	PocketBrowser.Generic.1 = s 'Generic Class'
+	{
+		CLSID = s '{6A890111-D9F6-481B-9886-C1A1FDE0F482}'
+	}
+	PocketBrowser.Generic = s 'Generic Class'
+	{
+		CLSID = s '{6A890111-D9F6-481B-9886-C1A1FDE0F482}'
+		CurVer = s 'PocketBrowser.Generic.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {6A890111-D9F6-481B-9886-C1A1FDE0F482} = s 'Generic Class'
+		{
+			ProgID = s 'PocketBrowser.Generic.1'
+			VersionIndependentProgID = s 'PocketBrowser.Generic'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Free'
+			}
+			'TypeLib' = s '{8A7719E2-3C21-4C09-9E13-D17534BD7ED1}'
+		}
+	}
+}

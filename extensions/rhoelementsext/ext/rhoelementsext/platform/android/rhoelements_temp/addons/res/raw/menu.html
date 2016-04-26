@@ -1,0 +1,341 @@
+<html>
+<head>
+	<title>Welcome to RhoElements Browser</title>
+	<script>
+		var currentZoom = 1;
+		window.addEventListener('resize', resize);
+		window.addEventListener('load', resize);
+
+		function resize() {
+			var newZoom;
+			
+			var currentWidth = window.innerWidth;
+			var currentHeight = window.innerHeight;
+			if(currentHeight > 650 || currentHeight < 600 || currentWidth > 490 || currentWidth < 440) {
+				var heightZoom = currentHeight / 620;
+				var widthZoom = currentWidth / 460;
+				if(heightZoom < widthZoom) {
+					newZoom = heightZoom;
+				}
+				else {
+					newZoom = widthZoom;
+				}
+			}
+			else {
+				newZoom = 1;
+			}
+			
+			if(newZoom > (currentZoom + 0.1) || newZoom < (currentZoom - 0.1)) {
+				currentZoom = newZoom;
+				document.getElementsByTagName("html")[0].style.zoom = newZoom;
+			}
+		}
+
+		function quit()	{
+			genericImpl.InvokeMETAFunction('application','quit');
+		}
+		
+		function loadSettings()	{
+			window.location.href = "settings.html";
+		}
+		
+		function swapPage(pageNum) {
+			if(pageNum == 0) {
+				document.getElementById("config").className = "content gone";
+				document.getElementById("intro").className = "content";
+				document.getElementById("menu0").className = "first pressed";
+				document.getElementById("menu1").className = "last";
+				
+				document.getElementById("spacer1Image").src = "images/spacerNormal.png";
+				document.getElementById("spacer1").className = "";
+			}
+			else if(pageNum == 1) {
+				document.getElementById("config").className = "content";
+				document.getElementById("intro").className = "content gone";
+				document.getElementById("menu0").className = "first";
+				document.getElementById("menu1").className = "last pressed";
+				
+				document.getElementById("spacer1Image").src = "images/spacerPressed.png";
+				document.getElementById("spacer1").className = "pressed";
+			}
+		}
+
+		function hasClass(element,cls) {
+			return element.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
+		}
+	</script>
+	<style type="text/css">
+		h1, h2, h3, h4, body, div, button
+		{
+			font-family: DroidSans, Tahoma, Geneva, Arial, Helvetica, sans-serif;
+		}
+		body
+		{
+			background-color: #4D4D4D;
+			padding: 12px;
+			margin: 0;
+			overflow: hidden;
+		}
+		h1
+		{
+			font: bold 30px "Arial Narrow";
+			color: #333333;
+			text-transform: uppercase;
+			min-height: 63px;
+			padding: 0;
+			margin: 0;
+			vertical-align: middle; 
+			line-height: 63px;
+			text-align: center;
+		}
+		h2
+		{
+			font-size: 18px;
+			font-weight: normal;
+			color: #4B4B4B;
+			margin: 14px 0px;
+		}
+		ol.li
+		{
+			font-size: 18px;
+			color: #4B4B4B;
+		}
+		button
+		{
+			font-size: 16px;
+			color: #FFFFFF;
+		}
+		a
+		{
+			display: block;
+			padding: 30px;
+		}
+		li:focus
+		{
+			outline: 2px solid #0693D4;
+		}
+		*:focus
+		{
+			outline:none;
+		}
+		.content
+		{
+			position: relative;
+			font-size: 18px;
+			color: #4B4B4B;
+			overflow: auto;
+			min-height: 275px;
+			margin-top: 24px;
+			overflow: hidden;
+			-webkit-user-select: none;
+			user-select: none;
+		}
+		.title
+		{
+			font-weight: bold;
+			font-size: 20px;
+			color: #4B4B4B;
+		}
+		#window
+		{
+			border: 2px solid black;
+			border-radius: 10px;
+			background-color: #FFFFFF;
+			margin: auto;
+			max-width: 454px;
+			max-height: 604px;
+			vertical-align: middle;
+		}
+		#title
+		{
+			background: url(images/backgroundTitle.png) repeat-x;
+			padding: 12px 18px;
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+		}
+		#body
+		{
+			padding: 32px 32px 16px 32px;
+		}
+		#quitButton
+		{
+			border: 2px solid transparent;
+			width: 130px;
+			height: 32px;
+			margin: 0px;
+			float: right;
+			right: 18px;
+			top: 8px;
+			position: relative;
+			background: url(images/buttonDefault.png) no-repeat;
+			text-align: center;
+			font-weight: bold;
+		}
+		#quitButton:active
+		{
+			background: url(images/buttonPressed.png) no-repeat;
+		}
+		#quitButton:focus
+		{
+			outline: none;
+			border: 2px solid #0693D4;
+		}
+		#disclaimer
+		{
+			font-size: 11px;
+			color: #686868;
+			margin-top: 15px;
+			text-align: center;
+		} 
+		#menu ul
+		{
+			padding: 0px 0px;
+			height: 52px;
+			width: 100%;
+			display: table;
+			table-layout: fixed;
+			font-size: 20px;
+			color: #333333;
+			font-weight: bold;
+			line-height:100%;
+			margin: 0px;
+			border-spacing: 0px;
+		}
+		#menu li.pressed
+		{
+			color: #0577AC;
+			background: url(images/pressedItem.png) repeat-x;
+		}
+		#menu li.first
+		{
+			border-left: 2px solid #ACACAC;
+		}
+		#menu li.last
+		{
+			border-right: 2px solid #ACACAC;
+		}
+		#menu li
+		{
+			border-top: 2px solid #ACACAC;
+			border-bottom: 2px solid #ACACAC;
+			height: 52px;
+			display: table-cell;
+			background: url(images/unselectedItem.png) repeat-x;
+			vertical-align: middle;
+			text-align: center;
+		}
+
+		#menu
+		{
+			height:54px;
+			margin: 0px;
+			display: block;
+			vertical-align: middle;
+			width: 100%;
+		}
+		#menu #spacer1
+		{
+			width: 23px;
+			background: url(images/pressedItem.png) repeat-x;
+		}
+		#menu #spacer1.pressed
+		{
+			background: url(images/unselectedItem.png) repeat-x;
+		}
+
+		#menu #spacer2
+		{
+			width: 23px;
+			background: url(images/pressedItem.png) repeat-x;
+		}
+		#menu #spacer2.pressed
+		{
+			background: url(images/unselectedItem.png) repeat-x;
+		}
+
+		.gone
+		{
+			display: none;
+		}
+		.code
+		{
+			font-family: "Courier New", Courier, monospace;
+			background-color: #f2f2f2;
+			font-size: 14px;
+			margin: 4px;
+			word-wrap: break-word;
+		}
+		table
+		{
+			height:100%;
+			width:100%;
+			spacing: 0px;
+		}
+		tr
+		{
+			height:100%;
+		}
+		td
+		{
+			vertical-align: middle;
+		}
+		
+	</style>
+</html>
+<body>
+<div id="debug" style="position: float; background-color: white;">
+</div>
+<table><tr><td>
+	<div id="center">
+		<div id="window">
+		<button onClick="javascript:loadSettings()" id="quitButton" tabindex="1">Settings</button>
+		<button onClick="javascript:quit()" id="quitButton" tabindex="2">Return to OS</button>
+			<div id="title">
+				<span class="title">Introduction</span>
+			</div>
+			<div id="body">
+				<h1>RhoElements Browser</h1>
+				<h2>Running RhoElements Browser for the first time.</h2>
+				<div id="menu">
+					<ul><li id="menu0" class="first pressed" onclick="javascript:swapPage(0)" onkeypress="javascript:swapPage(0)"  tabindex="2">Welcome</li>
+					<li id="spacer1"><img id="spacer1Image" src="images/spacerNormal.png"usemap="#map1"><map name="map1"><area href="javascript:swapPage(0)" shape="poly" coords="0,0,0,51,23,25,0,0"></area><area href="javascript:swapPage(1)" shape="poly" coords="0,0,23,0,23,51,0,51,23,25,0,0"></area></map></li>
+					<li id="menu1" class="last" onclick="javascript:swapPage(1)" onkeypress="javascript:swapPage(1)" onmouseover="this.style.cursor='hand'" tabindex="3">Config.xml</li>
+					<!--li id="spacer2" class="pressed"><img id="spacer2Image" src="images/spacerNormal.png"usemap="#map2"><map name="map2"><area href="javascript:swapPage(1)" shape="poly" coords="0,0,0,51,23,25,0,0"></area><area href="javascript:swapPage(2)" shape="poly" coords="0,0,23,0,23,51,0,51,23,25,0,0"></area></map></li>
+					<li id="menu2" class="last" onclick="javascript:swapPage(2)" onkeypress="javascript:swapPage(2)" onmouseover="this.style.cursor='hand'" tabindex="3">Demo</li></ul-->
+				</div>
+				<div id="intro" class="content">
+					Welcome to RhoElements Browser. This is the default startpage. This page has been provided to get you and your application up and running with RhoElements Browser. There is just <b>one step</b> required for first use:
+					<ol>
+						<li>Change the default Config.xml<br/>
+						available at "/Android/data/Installed_Dir_Location"<br/>
+						location. Here "Installed_Dir_Location"<br/>
+						is the path where RhoElements is <br/>
+						installed in the device</li>
+					</ol>
+				</div>
+				<div id="config" class="content gone" tabindex="3">
+					<div id="scroller">
+						The Config.xml sets default settings for all your RhoElements Browser applications. To run your application:
+						<ol>
+							<li>Open for editing: <p class="code">Config.xml</p></li>
+							<li>Set the "value" parameter of the "StartPage" tag to the URL of your application's first page.</li>
+							<li>Save Config.xml, and restart RhoElements Browser.
+						</ol>
+					</div>
+				</div>
+				<!-- div id="demos" class="content gone" tabindex="4">
+					<div id="scroller">
+						This RhoElements Browser installation includes a single page demonstration of some of the modules in RhoElements Browser.
+						<a href="Demos/FeatureDemo/fd.html">Feature Demo</a>
+					</div>
+				</div -->
+				
+				<div id="disclaimer">
+					&copy; Copyright 2014 Symbol Technologies Inc. All rights reserved.
+				</div>
+			</div>
+		</div>
+	</div>			
+	</td></tr></table>
+</body>
+</html>

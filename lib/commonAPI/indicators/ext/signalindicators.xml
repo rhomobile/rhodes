@@ -1,0 +1,283 @@
+<?xml version = "1.0"?>
+
+<API>
+    <MODULE name="SignalIndicators" parent="Rho">
+        <ALIASES>
+            <ALIAS new="Signal" deprecated="true"/>
+        </ALIASES>
+
+        <HELP_OVERVIEW>The Signal API is used to notify the user of the strength of the WLAN signal.  For Windows Mobile / CE, only Symbol devices are supported and it is also possible to display a small indicator showing the available signal.  The WLAN signal strength is not available on Windows Phone 8 and therefore this API is not supported on that platform.</HELP_OVERVIEW>
+        <HELP_OVERVIEW_EB>The Signal API is used to notify the user of the strength of the WLAN signal.  For Windows Mobile / CE, only Symbol devices are supported and it is also possible to display a small indicator showing the available signal.</HELP_OVERVIEW_EB>
+        <MORE_HELP>
+## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`.
+    :::ruby
+    extensions: ["indicators"]
+
+The `indicators` extension is also included automatically if you specify the following in your `build.yml`.
+    :::ruby
+    app_type: "rhoelements"
+
+> Note: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your build.yml as shown [here](../guide/build_config#other-build-time-settings).
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+### Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+        </MORE_HELP>
+
+        <!--  DEVELOPER NOTE: On WM/CE RE1 only ever implemented a periodic notification for WLAN signal strength, no API was available to retrieve it on change.  For Android / iOS you may wish to consider only updating the signal strength on change, in which case take a look at the Battery API which offers periodic and onChange notifications... it is recommended to use onChange notifications to save battery -->
+
+        <TEMPLATES>
+        </TEMPLATES>
+
+        <PROPERTIES access="STATIC">
+            <PROPERTY name="refreshInterval" type="INTEGER" default="5000" generateAccessors="true">
+                <PLATFORM>iOS, WM</PLATFORM>
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>A callback to retrieve the signal strength can be specified to occur periodically with the wlanStatus method. This value specifies the periodicity of the callback as well as the update frequency of the indicator icon, if shown. On Android this value is not used as the signal icon will be updated as soon as the signal strength changes.</DESC>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS access="STATIC">
+            <METHOD name="wlanStatus" hasCallback="optional">
+                <PLATFORM>iOS, WM, Android</PLATFORM>
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>Retrieve the current signal status. If a callback is provided to retrieve the signal then it will be called periodically at the specified refreshInterval. On Android, instead of being called periodically, the callback will be called when one of the below values changes.</DESC>
+                <RETURN type="HASH">
+                    <PARAMS>
+                        <PARAM name="signalStrength" type="INTEGER">
+                            <PLATFORM>WM, CE, Android</PLATFORM>
+                            <DESC>The signal strength as a value between 0 and 100. Not supported on iOS</DESC>
+                        </PARAM>
+                        <PARAM name="essid" type="STRING">
+                            <DESC>The current ESSID</DESC>
+                        </PARAM>
+                        <PARAM name="macAddress" type="STRING">
+                            <DESC>The Device's MAC address</DESC>
+                        </PARAM>
+                        <PARAM name="adapterName" type="STRING">
+                            <DESC>The Device's adapter name</DESC>
+                        </PARAM>
+                        <PARAM name="dhcpServer" type="STRING">
+                            <PLATFORM>WM, CE, Android</PLATFORM>
+                            <DESC>The current DHCP server's address. Always populated on Android, even on static IP configurations. Not supported on iOS </DESC>
+                        </PARAM>
+                        <PARAM name="dhcpStatic" type="STRING">
+                            <PLATFORM>WM</PLATFORM>
+                            <DESC>Whether the unit has a static or DHCP address. Not available on Android and iOS.</DESC>
+                        </PARAM>
+                        <PARAM name="gateway" type="STRING">
+                            <DESC>The current gateway IP address</DESC>
+                        </PARAM>
+                        <PARAM name="ipAddress" type="STRING">
+                            <DESC>The device's IP address</DESC>
+                        </PARAM>
+                        <PARAM name="rssi" type="STRING">
+                            <PLATFORM>WM, CE, Android</PLATFORM>
+                            <DESC>Signal strength in RSSI terms. Not supported on iOS.</DESC>
+                        </PARAM>
+                        <PARAM name="subnetMask" type="STRING">
+                            <DESC>The current subnet mask</DESC>
+                        </PARAM>
+                        <PARAM name="wins" type="STRING">
+                            <PLATFORM>WM</PLATFORM>
+                            <DESC>The current WINs server IP address. Not available on Android and iOS.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="stopWlanStatus" hasCallback="none">
+                <PLATFORM>iOS, WM, Android</PLATFORM>
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <DESC>If the signal is being retrieved via callback, by a previously invoked call to wlanStatus, this method will stop the callback from firing.</DESC>
+            </METHOD>
+
+            <METHOD name="showIcon" hasCallback="none" runInThread="ui">
+                <PLATFORM>WM, CE, Android</PLATFORM>
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>Overlays a small signal icon on top of the view indicating the remaining signal strength. This is particularly useful in full screen applications which cover the system signal level indicator.</DESC>
+                <APPLIES msiOnly="true">All platforms support wlanStatus which can be used to draw your own level indicator or display an appropriate graphic.</APPLIES>
+                <PARAMS>
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
+                        <DESC>The properties associated with the indicator, its position and colour.</DESC>
+                        <PARAMS>
+                            <PARAM name="left" type="INTEGER" default="[Top right of the screen]">
+                                <DESC>The absolute horizontal position of the indicator in pixels. This value is relative to the screen and not the view, so non-fullscreen applications should take care not to display the indicator off screen.</DESC>
+                            </PARAM>
+                            <PARAM name="top" type="INTEGER" default="[Top right of the screen]">
+                                <DESC>The absolute vertical position of the indicator in pixels. Positive numbers push the icon towards the bottom of the screen. The value is relative to the screen and not the view, so non-fullscreen applications should take care not to display the indicator off screen.</DESC>
+                            </PARAM>
+                            <PARAM name="layout" type="STRING" default="[Right]">
+                                <DESC>Sets the orientation of the icon, see the remarks section for illustrations.</DESC>
+                                <VALUES>
+                                    <VALUE constName="SIGNAL_LAYOUT_LEFT" value ="left">
+                                        <DESC>See the remarks section for illustrations of icon layout</DESC>
+                                    </VALUE>
+                                    <VALUE constName="SIGNAL_LAYOUT_RIGHT" value ="right">
+                                        <DESC>See the remarks section for illustrations of icon layout</DESC>
+                                    </VALUE>
+                                    <VALUE constName="SIGNAL_LAYOUT_UP" value ="up">
+                                        <DESC>See the remarks section for illustrations of icon layout</DESC>
+                                    </VALUE>
+                                    <VALUE constName="SIGNAL_LAYOUT_DOWN" value ="down">
+                                        <DESC>See the remarks section for illustrations of icon layout</DESC>
+                                    </VALUE>
+                                </VALUES>
+                            </PARAM>
+                            <PARAM name="color" type="STRING" default="#000000">
+                                <DESC>The color of the icon. This value must be specified as a Hex value in the format #000000 to #FFFFFF. Alpha values are not supported, i.e. you can only use the component parts RRGGBB.</DESC>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="hideIcon" hasCallback="none" runInThread="ui">
+                <PLATFORM>WM, CE, Android</PLATFORM>
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <DESC>Hide the icon if it has been previously set by the 'showIcon' call.</DESC>
+                <APPLIES msiOnly="true">All platforms support wlanStatus which can be used to draw your own level indicator or display an appropriate graphic.</APPLIES>
+            </METHOD>
+        </METHODS>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+
+        <EXAMPLES>
+            <EXAMPLE title="Retrieve the WLAN status">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>Synchronously: If you are only interested in the current signal state, for example to decide whether to perform some online operation then you can immediately determine the WLAN status as follows</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+  def signal_status_sync
+    signalValue = Rho::SignalIndicators.wlanStatus
+    puts signalValue
+    puts "Signal Strength is: " + signalValue['signalStrength']
+  end
+                    ]]>
+                            </RUBY>
+                            <JAVASCRIPT><![CDATA[
+  function signal_status_sync(){
+
+    signalValue = Rho.SignalIndicators.wlanStatus;
+    console.log(signalValue);
+    console.log("Signal Strength is: " + signalValue['signalStrength']);
+  }
+                    ]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>Asynchronously:  If you want to be notified of changes to the WLAN signal then you can register to receive values through a callback</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+  def signal_status_async
+    puts "Registering Signal Callback"
+    Rho::SignalIndicators.wlanStatus(url_for(:action => :signalEvent))
+  end
+
+   def signalEvent
+    puts "Signal Event: (Asynchronous).  Strength: #{@params["signalStrength"]}, ESS ID: #{@params["essid"]}, MacAddress: #{@params["macAddress"]}, AdapterName: #{@params["adapterName"]}, DHCP Server: #{@params["dhcpServer"]}, DHCP Static: #{@params["dhcpStatic"]}, Gateway: #{@params["gateway"]}, IP Address: #{@params["ipAddress"]}, RSSI: #{@params["rssi"]}, Subnet Mask: #{@params["subnetMask"]}, Wins: #{@params["wins"]}"
+  end
+  ]]>
+                            </RUBY>
+                            <JAVASCRIPT><![CDATA[
+  function signal_status_async(){
+    console.log("Registering Signal Callback");
+    Rho.SignalIndicators.wlanStatus(signalEvent);
+  }
+
+  function signalEvent(params){
+    console.log("Signal Event: (Asynchronous).  Strength: " + params["signalStrength"] + ", ESS ID: " + params["essid"] + ", MacAddress: " + params["macAddress"] + ", AdapterName: " + params["adapterName"] + ", DHCP Server: " + params["dhcpServer"] + ", DHCP Static: " + params["dhcpStatic"] + ", Gateway: " + params["gateway"] + ", IP Address: " + params["ipAddress"] + ", RSSI: " + params["rssi"] + ", Subnet Mask: " + params["subnetMask"] + ", Wins: " + params["wins"]);
+  }
+  ]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+
+            <EXAMPLE title="Working with the Signal indicator">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>If you just want to display the signal indicator in the default position and default colour then call as follows</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+  def show_signal_icon
+    Rho::SignalIndicators.showIcon({})
+  end
+                    ]]>
+                            </RUBY>
+                            <JAVASCRIPT><![CDATA[
+  function show_signal_icon(){
+    Rho.SignalIndicators.showIcon({});
+  }
+                    ]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>To display the signal icon at the default position but blue and vertical specify as follows</DESC>
+                        <CODE>
+                            <RUBY><![CDATA[
+  def show_signal_icon
+    Rho::SignalIndicators.showIcon({color:'#0000FF',layout: Rho::SignalIndicators.SIGNAL_LAYOUT_UP})
+  end
+  ]]>
+                            </RUBY>
+                            <JAVASCRIPT><![CDATA[
+  function show_signal_icon(){
+    Rho.SignalIndicators.showIcon({color:'#0000FF',layout: Rho.SignalIndicators.SIGNAL_LAYOUT_UP});
+  }
+  ]]>
+                            </JAVASCRIPT>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES>
+
+        <REMARKS>
+            <REMARK title="Icon Layout">
+                <DESC>Windows Mobile / CE and Handheld devices support the display of a small signal icon, this section explains the layout parameter which can be provided to showIcon(...).
+
+Layout:Left
+-----------
+![Left Layout Signal Indicator](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAI4AAABjCAIAAADCRa8DAAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sIBQsDMysrIIsAAAOXSURBVHja7ZztceIwEEDFDb8ZV5BJBQkdABUkVJDQAVTgpALTQZwKSAcmHXhSAelAQwPcDzIgryzjT87KvTf+E4/ONvvYXVn2MTgcDurKfH+r3U5BRYb/4JxxrF5eCH1V/hACVAGqUAWogrZmgGmqlsumh1mv1XhMNDtWpbX6/Gx6GK0JJQXwiqxWar/PbLe3/TkFqjwqgIIwLPtPX187vK75XL2/Z/ZEkfPaVit5MWGoosh52atVZs/NTYUCvt/X+Th3d83X0ixV5Zd8OlWVJEprFQTnPbOZU5U9oymY48xmmT/T1JdG29cCqLVKEhl909yJIFDz+QUf5mBhcbNhWtGYNC0lIHenrcQ12PxCRJEajTJb608AGpyix6pEVrnKmqvW5SoUg7XO+UJU4u1Nhj53a0N5v7NKfMLyWXWcmFwcbH8bKIA1EY3EbleuQldy8HYrRYqbntZpcIp+q7rYrhYLWY4KBtv558+coveqLrYr80+tpSoxeDr1dJrugyp7yl6QKJuNjL4YLLqXV41KebCwJNqJ2YFENzqONAUUDLaPXI/FQvYesX19+aAqTdV2e97qTYvt7/4pV3Kncx8fpQbb+dp7unxjabnMPF6ZTutE51jTzIQYj3+mA2ZBO5U+cYrHx5/Bom/55kn5sbIu5mnH/BAz71PoxV2tK6sa3vn+tqxqsV2Zk/Jj1ykIfZKcLZ6MikbVVlYliXp4IKsK25WYppuZZ9/Y2l49zCofVNkrdeNxJvrC5fEBijnY/0alvHkKLNrVfJ6Jvp0ipozcrELVlWqgeB/BzhJTRhB01ahQ5ZyylyyPqnBxb7Px9P0qf16DcaVCrpXdzlnl/Kx+XqlyrQO59rvU+ln9vFLlqmmu0OdmT/PHvqiqM2Uv7mG5Cr16QOWtqtzoF1QzcV9cXC1R1Xm7Kq5mxfdbvjH0LKtGowrjo8j5jm3t41e6gOYfwdes+r9BFaoAVagCVNmEoToc2KpuZBX3Vbk3pK7/CuDi/l6t1zn7qx7H5ulJPT+jyoHWldd1XL+q1nx9aDKhVwGqUEUIUAWoQhWgClCFKkAVoApV0CuGhOBMHKs4bnqQzl41RJXBbtfCz/hSAAFVqAJUoQpQBahCFaAKUIUqQBXUguXaq9D816eDAFVXQfw2bA0mEwogvQpQhSpAFaAKVYAqQBWqAFWAKlQBqgBVqAJUAapQBagCN9ZrMIMBQSGrAFWogl7xF92qR0MwnLlVAAAAAElFTkSuQmCC "Signal Indicator")
+
+Layout:Right
+------------
+![Right Layout Signal Indicator](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAI4AAABjCAIAAADCRa8DAAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sIBQsDEIlMUfkAAAOXSURBVHja7Z3dbeowFIDdKx4jlAl6O0HFBvRO0LIBbAATABOkG7SdgG4QukHaCTJChHjnPlBR5zg2+XNo2u+TXxpZCfjLOcd2gF6lafo3TRVUZTzu+oqH1eqgFK1y65w/hEdfQBWqAFWogu/OgCHwzT5Jgvm86UkeH1HlnSDL1Ntb85N84wS4WKjdLtdubvp3CWoVtcrCZKJeXnJHokgtl9Zbdb3OHVkuVRQVd16v1WKRO3J9rbKs7Mvf7eq86dtbdcG9NNu4FQ5OZVVxrLJMheHXkX//rJccjc4f0c+jkyQVPPWU1aqeqnIJMMtUHMvR182dCEM1mZzxoXcWFjcbEl3jWpUkpQQUHjSV2DrrN0QUqeEw11rPWh1c4gKqRFTZ0pot1xUqFJ2zrOCGqMTTkxz6wtbPhz5Vokq8w/JRdZyYnO1s3g1Qc7IuColZrmyJrmTn7VaKFIue1ungEpdRdbZczWYyHTk6m/HHnKI1VWfLlf5nlklVovPd3a+bpnenypyyOwJls5GjLzqL6kWhalOVWU70CiSq0bGnLsDR2TxzPWYzWXtE+/j4NarMe/8UK4XTudfXUp3NeO0J+yRR2+2p7RsuNpxUfAhyzGl6QIxGn9MBPaGdUp8Q8PDw2VnUrd5mv2Cx0PNBMB63kx5aiCpznnaMDzHzPg29WNXaosrnzfhjqP5ocbvNTcqPVccx9HH8ZfFkVBSqtqIqjtX9PdMKZ7kS03Q98syFremVqPKiytypG41yoy9cHh+g6J1/SqH69qrMcjWZ5EbfDBFdRmFUgS9VIg7E5xHMKNFlhKGvQoUq65S9ZHpUzs29zYb9JJ+qHKFQaCVNrVmO7OddlW2hZztuU0v2867KltNsQ18YPc0f+6KqzpTdXcMKFfKAqgtVhaPvyGZiXezOltCyKnOg3dnMvd6CcwwaRdVwWKF/FFk/Y1v7/JVeQPO30NeoAlQBqlAFqIK8quVSHQ60yo2oAg/rqkvx/Cy/QtnKVotSaj5X7+/VztPhHmYPVaWprx2pJGn+VXgSIKAKVYAqVAGqAFWoAlQBqlAFqIJ6+NyuFb9MUYPpVE2nSPKvqvkudXPZJEBAFaAKVYAqQBWqAFWAKlQBqlAFPWGwT5Kg2U/n7MMwcPyDFmhLVTCfN9wC9/oroEACRBWgClCFKkAVqgBVgCpUAaoAVagCVAGqUAWoAlShClAFJRgwBF1zdUVUkQABVVCJ/62iI55gpej+AAAAAElFTkSuQmCC "Signal Indicator")
+
+Layout:Up
+---------
+![Up Layout Signal Indicator](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAACOCAIAAACqgyGeAAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sIBQsCFnk0xY0AAANcSURBVHja7Z3bbatAEIaXozxHlEAFCR2AG4hCB04FkStIUkHSgUsgqcCkA5fgElAaIA9Y+IZhl90c9vL9QpZMJJt8mpmdmR1D1Gw2Ah0rjkWa9pxvOM6OLGv69A8bkhSkIPW3pJom0OPlBZvC+yAFKUhBCkEKUpCCFKQgBSkkpZuTd1EEEWwKUpCyL06xi3WmOO49HTVNAxy8D1KQghSkQlLUZJn//+XHR//4ilo+9f3tP6m6xvuIU5Byue6zvwrTDsbXSjm/SKWpJTU83ueNTXV6e5vz25dL6yd583w/uzvvZVQV3kecghSkIAUpSCFIQQpSkLJNcSyKwqMK2bjSVCwW+9c4FmU5RsryvZn7e8Pm09IpCpEkil2XqgrFfPJcLBaTP8Nf72vNJ89FUYTRHZ5mPkVhoPvuIal28Wqda4L5bLcyrXqXSXWhZ4L5tHTaV7kdZpdJfX39NZ2Q8ik9OqekLJ/Wz3Pl/b7dTpSlETq+21SSHPImc7A89b40PYT57VaU5d4HNRTZPmPded9llGiTJvm1r673vNZrZUOrKpdJ6aTjqpHeE1IDHQIZteH//T0wUpPd8/Y2YFJK7jlGKoyeZ12LshTPz+LhQazXZAmDBvX4OLF+9p+UTv3sP6kkOURxSfPpkiz/SXWtcSXzUU/cXSa1Wu33Dui6jEhm8rN1rs9PE10XL3OCznb0quJjsYccQi/h5+f/2Zfb1YwMqctMvaqmxCy3SensfYbbdenyKfmk4Yza8A11PewlTEtEpbouEjcnnrlAWS4ndl2UunrjpFy5W4nmbttowQypHvfsHWKA1Lh7tu0HSMka2nCuwK/WDkkpdZ8p3YjX1znXfs3lbLK6qZDV6uT89V2/mTLPLFOexNWv+3pzgrMPuRbXiVPyghSkIDXf2ueuhrNqSd3dBUDKiHY7vI84BSlIsfbNLp1qRn0lxabwPkhBioj+d5L5jdZxt+9yavjpSf7bXO7kqa6Pl6vb8F+PRSePOAUpSLmw9vG8GWwKUpCCFNWMC5LeUAielPQmlQSpPDd2WSYegGMtR6NP5jF3ExULfZOIHkKccnjSbLMxGfXOr5RJMzJPSEEKebv2MWlmZ/KJ9xGnIAUpSEEKUghSkIIUpFytkA0+mcfEw0qs1S9R7tiZjYt9FQAAAABJRU5ErkJggg== "Signal Indicator")
+
+Layout:Down
+-----------
+![Down Layout Signal Indicator](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGMAAACOCAIAAACqgyGeAAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sIBQsED0sFyssAAAOESURBVHja7Z3RcYJAEIaXDM8ZSqCCDB2AHeQ60BKoIEkF2oElkFQgSQWWYAmMDVweIChE5DgW4e7+fxgf1DDyze7e7t4GPBnHxKXdjqKIJtLHB82o9dqTjKc7HChJpvqtnjcnqTx/IkhNIAVSIAVSIAVSIAWBFEiB1KMUBCRE77d8dwFFEa1W1WsQUJaBVNN8SjpCUBgO+lPfIfNJElqttM/hW24+SUJCUBCMP59vp/kIwd5T9C0xHyEq59Iwn+ORDgerSdWhR8N8Sjrla1HYblNfX1PTcWntG0enSYpxb4ZjiWHQ6URZxkKnSSrPbbOjMLzkTXywPCmlGdf/fxfrfFZ1wCyrfFBbeW4yqTJpUl/7iqLitd8PNjSzSY1Jx4dGektI3ekQqKgM/9utY6S03fP52WFSg9yzn9Qslx3Hg7MTlgmOKKLNhjYbDVIO9KdKg3p91ayf7a9mxtTP9pMKw0sUVzSfOsmyn1TdGh9kPsMTd5NJpWm1d4CuS49UJj9L5/r85Oi62Kc69IysipvCHrJ618XczFOl68JlX2bn6Ir9qWtqWUZ5rhOzzCY1Zu9Tp+tiR91X51PqSUOL2tubYxWyXiLqei9hUFfP6V7C8XhZ70YXzI71p6h7iKHPpkjSHEccy6Ga4mdEkUxT+fMjz+eeb7pOqj6CoJcUqpm/pBR1H5cMn5/SVj1alqaN97t3/Tx5PzedSGFI6/Wj676b2VPrJF0roNn7fY8lhTiFTh5IYe0bEWvG6OXFAVIsOp2USb2/L/pKNPKJiSQXfiTJI+q+3gNZAtY+rH1cOfrwlRQ2Be8DKZBCRJ9OCv/o2ej27fftT28OEXfIW3p3KkkqInq7WNfr4//V7f6n10LmiTgFUiAFUiAFUhBIgRSqGR4pbyg4T0p5k8p5UnwcfTJlgmNu30REd8H7Hj1phvmpm++3hP4U4hRIzRnRp3tCDIuiiHa7ZZD6/jYskPdG32mST0yaqSafiFOI6CAFUiAFUiAFgRRIgRRIgZTdMqdCnruLDZtS1eInYoOA4Sav2+34kyze+4qC4UkTHI9ygPeBFEjNlyUwPplnycsCw9rn8qwLvA+kQAqkQMrNLMG+p9JNVGlKHGp30IT3IU6B1DJISenooXCrTtgUvA+kQAqkQAqkIJACKZACKZACKYioPevC9UQl2BRIQSDFGadU7h/qlDoGY34BQ9/qdocP8aYAAAAASUVORK5CYII= "Signal Indicator")</DESC>
+            </REMARK>
+
+            <REMARK title="Overlapping Indicators">
+                <DESC>The position of the signal and battery indicators should not be set to overlap</DESC>
+            </REMARK>
+
+            <REMARK title="Screen Orientation">
+                <DESC>The indicator positions are absolute and so when rotating the screen you should also move the indicator positions accordingly to accommodate the new screen layout.</DESC>
+            </REMARK>
+            <REMARK_EB title="Internet Explorer (IE) Rendering Engine">
+                <DESC>When using the this feature on a CE device using the IE engine, screen distortion may be noticed when scrolling. This is due to a limitation of the IE engine and can be worked around by any of the following options:
+
+* Not using debug buttons - If your app must use the IE engine, do not use debug buttons in the app.
+* If you need to use the signal or battery indicators either:
+    * Don't scroll the page.
+    * Don't use the signal / battery indicators
+    * Use the Webkit engine.</DESC>
+            </REMARK_EB>
+        </REMARKS>
+    </MODULE>
+</API>

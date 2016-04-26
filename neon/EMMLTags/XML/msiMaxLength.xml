@@ -1,0 +1,59 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>msiMaxLength</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Msi</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the msi MaxLength property.  Setting this property will help prevent partial decoding of barcodes.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="msimaxlength:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>msiMaxlength</NAME>
+                		<VALUES>Numeric value (1 - 55)</VALUES>
+				<DESC>Numeric value setting the maximum number of characters for the msi structure (1 - 55).</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only msi labels with the MaxLength property set to 30:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="msi:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="msimaxlength:30"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="msi:enabled;msimaxlength:30;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-msi" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-msimaxlength" Content="30"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports MSI.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>msi</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

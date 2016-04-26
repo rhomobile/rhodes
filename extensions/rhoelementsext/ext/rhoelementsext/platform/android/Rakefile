@@ -1,0 +1,222 @@
+require 'fileutils'
+
+SOURCEPATH = ENV['SOURCEPATH']
+raise 'SOURCEPATH is not set' if SOURCEPATH.nil?
+
+SOURCELIST = ENV['SOURCELIST']
+raise 'SOURCELIS is not setT' if SOURCELIST.nil?
+
+BUILDARGS = ENV['BUILDARGS'].split if ENV['BUILDARGS']
+LINKARGS = ENV['LINKARGS'].split if ENV['LINKARGS']
+LINKDEPS = ENV['LINKDEPS'].split if ENV['LINKDEPS']
+  
+TARGETDIR = ENV['TARGETPATH']
+raise "TARGETPATH is not set" if TARGETDIR.nil?
+
+TARGETLIB = ENV['TARGETLIB'] ? ENV['TARGETLIB'] : 'nolib.a'
+SHAREDLIB = ENV['SHAREDLIB'] ? ENV['SHAREDLIB'] : 'nolib.so'
+
+OBJDIR = ENV['TEMP_FILES_DIR']
+raise "TEMP_FILES_DIR is not set" if OBJDIR.nil?
+
+$rootdir = ENV['RHO_ROOT']
+raise "RHO_ROOT is not set" if $rootdir.nil?
+
+$appincdir = ENV["RHO_INC"]
+raise "RHO_INC is not set" if $appincdir.nil?
+
+ANDROID_NDK = ENV['ANDROID_NDK']
+raise 'ANDROID_NDK is not set' if ANDROID_NDK.nil?
+
+ANDROID_API_LEVEL = ENV['ANDROID_API_LEVEL']
+raise 'ANDROID_API_LEVEL is not set' if ANDROID_API_LEVEL.nil?
+
+RE_TEMP = File.join(SOURCEPATH, 'rhoelements_temp')
+
+$debug = ENV['RHO_DEBUG'] == 'true'
+
+#Implemented this to take the version of rhodes as rhoelements version
+$vermajor  = 0
+$verminor1 = 0
+$verminor2 = 0
+$verminor3 = 0
+$verminor4 = 0
+
+$rhodes_version = ENV['rhodes_version']
+
+if $rhodes_version
+  if $rhodes_version =~ /^(\d+)$/
+    $vermajor = $1.to_i
+  elsif $rhodes_version =~ /^(\d+)\.(\d+)$/
+    $vermajor  = $1.to_i
+    $verminor1 = $2.to_i
+  elsif $rhodes_version =~ /^(\d+)\.(\d+)\.(\d+)$/
+    $vermajor  = $1.to_i
+    $verminor1 = $2.to_i
+    $verminor2 = $3.to_i
+  elsif $rhodes_version =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+    $vermajor  = $1.to_i
+    $verminor1 = $2.to_i
+    $verminor2 = $3.to_i
+    $verminor3 = $4.to_i
+  elsif $rhodes_version =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+    $vermajor  = $1.to_i
+    $verminor1 = $2.to_i
+    $verminor2 = $3.to_i
+    $verminor3 = $4.to_i
+    $verminor4 = $5.to_i
+  else
+    raise "Version number must be numeric and in one of these formats: major, major.minor1, major.minor1.minor2, or major.minor1.minor2.minor3, or or major.minor1.minor2.minor3.minor4"
+  end
+end
+
+require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+
+ARGS = ['-Iext/platform/android/generated/jni',
+    '-Iext/platform/android/jni',
+    '-Iext/shared',
+    "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\"",
+    "-I\"#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details\"",
+    "-I\"#{$rootdir}/platform/shared/ruby/include\"",
+    "-I\"#{$rootdir}/platform/shared\"",
+    "-I\"#{$rootdir}/platform/shared/common\"",
+    "-I\"#{$rootdir}/platform/shared/api_generator\"",
+    "-I\"#{$appincdir}\"",
+    "-I\"#{$rootdir}/platform/shared/ruby\"",
+    "-I\"#{$rootdir}/platform/shared/ruby/android\"",
+    "-I\"#{$rootdir}/platform/shared/ruby/generated\""]
+
+OBJDIR_ARM = File.join(OBJDIR,'arm')
+OBJDIR_x86 = File.join(OBJDIR,'x86')
+OBJDIR_MIPS = File.join(OBJDIR,'mips')
+
+    
+puts "pwd: #{pwd}"
+#cd SOURCEPATH
+cd "../../../.."
+puts "pwd: #{pwd}"
+
+SRC = get_sources File.join(SOURCELIST)
+
+OBJ_ARM = FileList.new(get_objects(SRC, OBJDIR_ARM))
+OBJ_x86 = FileList.new(get_objects(SRC, OBJDIR_x86))
+OBJ_MIPS = FileList.new(get_objects(SRC, OBJDIR_MIPS))
+
+TARGETDIR_ARM = File.join(TARGETDIR,'armeabi')
+TARGETDIR_x86 = File.join(TARGETDIR,'x86')
+TARGETDIR_MIPS = File.join(TARGETDIR,'mips')
+
+TARGETLIB_ARM = File.join(TARGETDIR_ARM,TARGETLIB)
+TARGETLIB_x86 = File.join(TARGETDIR_x86,TARGETLIB)
+TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,TARGETLIB)
+
+SHAREDLIB_ARM = File.join(TARGETDIR_ARM,SHAREDLIB)
+SHAREDLIB_x86 = File.join(TARGETDIR_x86,SHAREDLIB)
+SHAREDLIB_MIPS = File.join(TARGETDIR_MIPS,SHAREDLIB)
+
+
+RHOELEMENTSEXTJAR = "ext_jar"
+
+namespace 'config' do
+  task :arm do
+      setup_ndk(ANDROID_NDK, ANDROID_API_LEVEL,'arm')
+  end
+  
+  task :x86 do
+      setup_ndk(ANDROID_NDK, ANDROID_API_LEVEL,'x86')
+  end
+  
+  task :mips do
+      setup_ndk(ANDROID_NDK, ANDROID_API_LEVEL,'mips')
+  end
+end
+
+namespace 'gen' do
+  task 'buildinfo' do
+    require 'date'
+    target = File.join RE_TEMP,'src','com','rho','rhoelements','BuildInfo.java'
+    buf = ''
+    buf += "package com.rho.rhoelements;\n"
+    buf += "\n"		
+    buf += "public class BuildInfo {\n"
+    buf += "    public static final String getBuildTime() {return \"#{DateTime.now}\";}\n"
+    buf += "    public static final int getMajor() {return #{$vermajor};}\n"
+    buf += "    public static final int getMinor() {return #{$verminor1};}\n"
+    buf += "    public static final int getMaintenanceRelease() {return #{$verminor2};}\n"
+    buf += "    public static final int getReleaseCandidate() {return #{$verminor3};}\n"
+    buf += "    public static final int getHotfix() {return #{$verminor4};}\n"
+    buf += "}\n"
+    File.open(target, 'w') do |f|
+      f.write buf
+    end
+  end 
+end
+
+
+directory TARGETDIR_ARM
+directory TARGETDIR_x86
+directory TARGETDIR_MIPS
+directory OBJDIR_ARM
+directory OBJDIR_x86
+directory OBJDIR_MIPS
+
+rule '.o' => lambda {|obj| find_source(obj) } do |t|
+  abi = File.basename(File.dirname(t.name))
+  Rake::Task["config:#{abi}"].invoke
+  cc_compile(find_source(t.name), File.dirname(t.name), BUILDARGS.nil? ? ARGS : BUILDARGS) or raise "\e[31mCompilation failed: #{find_source(t.name)}\e[0m"
+end
+
+task OBJ_ARM => OBJDIR_ARM
+task OBJ_x86 => OBJDIR_x86
+task OBJ_MIPS => OBJDIR_MIPS
+
+def find_source(objfile)
+  base = File.basename(objfile, '.o')
+  src = SRC.find { |s| File.basename(s) == base }
+  src
+end
+
+file TARGETLIB_ARM => TARGETDIR_ARM do |t|
+    Rake::Task["config:arm"].invoke
+    cc_ar t.name, OBJ_ARM or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_ARM => OBJ_ARM
+
+file TARGETLIB_x86 => TARGETDIR_x86 do |t|
+    Rake::Task["config:x86"].invoke
+    cc_ar t.name, OBJ_x86 or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_x86 => OBJ_x86
+
+file TARGETLIB_MIPS => TARGETDIR_MIPS do |t|
+    Rake::Task["config:mips"].invoke
+    cc_ar t.name, OBJ_MIPS or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_MIPS => OBJ_MIPS
+
+
+
+namespace 'build' do
+  task :arm => OBJ_ARM
+  task :x86 => OBJ_x86
+  task :mips => OBJ_MIPS
+end
+
+task :ext_jar do
+puts "START EXT FILE LOOPING"
+Dir.foreach(File.join(RE_TEMP,'libs')) do |fname|
+next if fname == '.' or fname == '..'
+  puts fname
+   cp File.join(RE_TEMP,'libs',fname), TARGETDIR
+end
+puts "END EXT  FILE LOOPING"
+
+end
+
+namespace 'arch' do
+  task :arm => [TARGETLIB_ARM, RHOELEMENTSEXTJAR, 'gen:buildinfo']
+  task :x86 => [TARGETLIB_x86, RHOELEMENTSEXTJAR, 'gen:buildinfo']
+  task :mips => [TARGETLIB_MIPS, RHOELEMENTSEXTJAR, 'gen:buildinfo']
+end
+
+task :default => ["build:arm", "build:x86"]

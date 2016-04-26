@@ -4,10 +4,8 @@
 	<classpathentry kind="src" path="extensions/gcm-push/ext/android/src"/>
 	<classpathentry kind="src" path="barcode/ext/platform/android/generated/src"/>
 	<classpathentry kind="src" path="barcode/ext/platform/android/src"/>
-	<classpathentry kind="src" path="Motorola-Extensions/extensions/rhoelements-license/ext/android/src"/>
 	<classpathentry kind="src" path="Implementation/src"/>
 	<classpathentry kind="src" path="rhoelementsext/ext/rhoelementsext/platform/android/src"/>
-	<classpathentry kind="src" path="Motorola-Extensions/extensions/rhoelements/ext/android/src"/>
 	<classpathentry kind="src" path="api_generator_spec/extensions/simpleonlystaticmodule/ext/platform/android/generated/src"/>
 	<classpathentry kind="src" path="commonAPI/coreapi/ext/platform/android/generated/src"/>
 	<classpathentry kind="src" path="commonAPI/coreapi/ext/platform/android/src"/>
@@ -18,8 +16,6 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="EkiohView.jar"/>
-	<classpathentry kind="lib" path="Motorola-Extensions/extensions/rhoconnect-push/ext/rhoconnect-push/platform/android/ANSConstants.jar"/>
 	<classpathentry kind="lib" path="/Library/Android/android-sdk-mac_x86/extras/google/gcm/gcm-client/dist/gcm.jar"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="output" path="bin/classes"/>

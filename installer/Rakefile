@@ -142,7 +142,7 @@ namespace "installer" do
 
     end
 
-    namespace "motorola" do
+    namespace "symbol" do
       task :gems do
         puts 'release - reinstall gems task'
         installMotoGems($isElementsBeta)
@@ -171,7 +171,7 @@ namespace "installer" do
     task :user => "user:rename" do
     end
 
-    task :motorola => "motorola:rename" do
+    task :symbol => "symbol:rename" do
     end
 
     task :makensis do 

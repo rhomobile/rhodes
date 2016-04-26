@@ -1,0 +1,33 @@
+HKCR
+{
+	PocketBrowser.AirBEAMSmart.1 = s 'AirBEAMSmart Class'
+	{
+		CLSID = s '{CE24DC9E-63F8-4881-9AAF-12C7C4053F51}'
+	}
+	PocketBrowser.AirBEAMSmart = s 'AirBEAMSmart Class'
+	{
+		CLSID = s '{CE24DC9E-63F8-4881-9AAF-12C7C4053F51}'
+		CurVer = s 'PocketBrowser.AirBEAMSmart.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {CE24DC9E-63F8-4881-9AAF-12C7C4053F51} = s 'AirBEAMSmart Class'
+		{
+			ProgID = s 'PocketBrowser.AirBEAMSmart.1'
+			VersionIndependentProgID = s 'PocketBrowser.AirBEAMSmart'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Free'
+			}
+			val AppID = s '%APPID%'
+			ForceRemove 'Control'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			'TypeLib' = s '{8A7719E2-3C21-4C09-9E13-D17534BD7ED1}'
+			'Version' = s '1.0'
+		}
+	}
+}

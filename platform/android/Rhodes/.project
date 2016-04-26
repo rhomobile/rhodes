@@ -111,16 +111,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>Implementation</name>
-			<type>2</type>
-			<location>/Users/lexis_tikh/rhomobile/Motorola-Extensions/neon/Helium/HeliumForAndroid/Implementation</location>
-		</link>
-		<link>
-			<name>Motorola-Extensions</name>
-			<type>2</type>
-			<location>/Users/lexis_tikh/rhomobile/Motorola-Extensions</location>
-		</link>
-		<link>
 			<name>barcode</name>
 			<type>2</type>
 			<location>/Users/lexis_tikh/rhomobile/rhodes/spec/api_generator_spec/extensions/barcode</location>
@@ -144,11 +134,6 @@
 			<name>extensions</name>
 			<type>2</type>
 			<locationURI>PARENT-3-PROJECT_LOC/lib/extensions</locationURI>
-		</link>
-		<link>
-			<name>rhoelementsext</name>
-			<type>2</type>
-			<location>/Users/lexis_tikh/rhomobile/Motorola-Extensions/neon/R2D1/RhoElementsOneExtension/extensions/rhoelementsext</location>
 		</link>
 		<link>
 			<name>shared</name>

@@ -1,0 +1,19 @@
+entry: Init_Indicators_extension
+javaentry: com.indicators.Indicators
+libraries: ["Indicators"]
+android:
+  manifest_changes: ext/platform/android/AndroidManifest.xml
+  source_list: ext/platform/android/ext_java.files
+  adds: ext/platform/android/adds
+  rhodes_listener: com.rho.signalindicators.SignalIndicatorsRhoListener
+  exttype: rakefile
+  sdk_addons: ['EMDK']
+
+project_paths:
+  wp8: ext/platform/wp8/Indicators.vcxproj
+  wm: ext/platform/wm/Indicators.vcproj
+  win32: ext/platform/wm/Indicators.vcproj
+  
+xml_api_paths: ext/battery.xml, ext/signalindicators.xml, ext/keystate.xml
+
+platforms: ["wm", "iphone", "android", "wp8"]

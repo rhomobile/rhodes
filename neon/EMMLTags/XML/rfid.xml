@@ -1,0 +1,1396 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<HELPPAGE>
+	<FUNC>
+		<NAME>rfid</NAME>
+		<PATH>rfid reader</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is not included in the default RhoElements/RhoStudio installers.  To be able to use the RFID module, a separate package must be downloaded and installed - please SEE REMARKS for how this can be obtained.  Provides access to control the functionality of the device's RFID reader.  Currently the plugin is supported on MC 3190Z and MC 9190Z devices.</SYNOPSIS>
+		<SYNTAX>
+       		<USAGE>
+            	<EXAMPLE>&lt;META HTTP-Equiv="rfid" content="[parameter / method]"&gt;</EXAMPLE>
+			</USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="rfid" content="tagEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+			</USAGE>
+       	</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>enumerate</NAME>
+				<DESC>Returns a list of RFID readers present on the device, and their respective capabilities via enumRFIDEvent.  For the supported devices, this method will return the number of RFID readers in the device as 1.</DESC>
+			</PARAM>
+			<PARAM>
+				<NAME>connect</NAME>
+				<DESC>Creates connection to the default RFID reader.  By default, the plugin attempts to connect to the RFID Reader whenever the plugin is loaded.</DESC>
+			</PARAM>
+			<PARAM>
+				<NAME>disconnect</NAME>
+				<DESC>Disconnects the current RFID connection and flushes all properties of the "rfid" module,except for the events.</DESC>
+			</PARAM>
+			<PARAM>
+				<NAME>stop</NAME>
+				<DESC>Soft trigger to stop a runnning inventory or locateTag operation.  All the pending tag reports are discarded. </DESC>
+			</PARAM>
+			<PARAM>
+				<NAME>performInventory</NAME>
+				<DESC>Performs an inventory operation on the RFID reader which is started and stopped according to the trigger settings done by the application.
+				By default, performInventory starts an inventory operation immediately and there is no default stop trigger.  So, an explicit "stop" call must be made
+				to stop the running Inventory in the default case.  Any pre filters that have been added will be applied for the inventory operation.
+				Tags will be reported as part of the TagData Array in the tagEvent's JSON object.  When the property "invMemBank" is set(to either Reserved/EPC/TID/User) prior to calling performInventory,
+				the corresponding memory-bank's data shall also be read for the tags being inventoried.  For the inventoried tags, additional fields may be reported as part
+				of tagEvent JSON by setting to true properties such as "enableTagCRC", "enableTagPC", "enableTagSeenCount", "enableTagRSSI", "enableTagAntennaID",etc.
+				As long as inventory operation is running, the plugin cannot process those Meta-tags that could initiate a RFID operation like performInventory, locateTag, readTag and other Access operations.
+				The plugin returns an error string describing that it is busy and it can perform other RFID operations only when the inventory is stopped.
+				
+				</DESC>
+				<DESCDETAIL>Applicable properties:
+Optional:
+
+antennaSelected,
+startTriggerType,
+startPeriod,
+stopTriggerType,
+stopDuration,
+stopObservationCount,
+invMemBank,
+beepOnRead,
+reportTrigger,
+reportUniqueTags,
+enableTagAccessStatus,
+enableTagAntennaID,
+enableTagCRC,
+enableTagXPC,
+enableTagPC,
+enableTagSeenCount,
+enableTagUTCTimeStamp
+
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>locateTag</NAME>
+				<DESC>Configures the locateTag operation which will look for a specific Tag ID on a specific antennaID, and will keep reporting tagEvents if the tag is found along with relative distance (In a scale of 0-100, 100 being the closest) to help locate the requested tag.
+				Also if the beepOnRead is enabled (Default state), the beep frequency varies proportionate to the relative distance (Geiger counter).  The tagLocationing algorithms can use only one antenna to locate a tagID.  Thus, antennaSelected cannot take the take default value 0, but one of the antenna IDs supported by the device.
+				As with performInventory, the start and stop trigger settings can autonomously invoke and stop the locateTag operation.  Please note that
+				while the properties "reportUniqueTags","reportTrigger" are not relevant here, the tag field settings "enableTagAntennaID", "enableTagRssi", etc are still applicable</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:
+antennaSelected,
+tagID,
+Optional:
+startTriggerType,
+startPeriod,
+stopTriggerType,
+stopDuration,
+beepOnRead,
+
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>killTag</NAME>
+				<DESC>Kills the currently selected tag referenced by tagID, or kills tags that match the filter criteria.  Requires tagKillPassword.
+				tagID property is ignored if useAccessFilter property is set to true.  If useAccessFilter is set to true, then  tagPatternA, tagPatternB and matchPattern will be used to filter out tags to perform the operation. 
+				If tagID is empty and useAccessFilter is false (i.e the default value),the kill operation will be attempted on all the tags in the field of view.
+				</DESC>
+				<DESCDETAIL>Applicable properties:
+				
+Mandatory:				
+tagKillPassword,
+tagID
+Optional:
+useAccessFilter,
+matchPattern,
+tagPatternAByteOffset,
+tagPatternAHexMask,
+tagPatternAHexPattern,
+tagPatternAMemBank,
+tagPatternBByteOffset,
+tagPatternBHexMask,
+tagPatternBHexPattern,
+tagPatternBMemBank
+
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>getRadioPowerState</NAME>
+				<DESC>Returns a boolean value (1 or 0) representing the radio power state via radioPowerStateEvent.</DESC>
+			</PARAM>
+			<PARAM>
+				<NAME>addPreFilter</NAME>
+				<DESC>Adds a preconfigured filter to the currently selected antenna.  It is used to sort out the subset of tags to participate in the next RFID operations.
+				Multiple preFilters may be added,limited by the RFID reader.  Each of them should be referenced by a unique value (which should be assigned to preFilterID property) before calling addPreFilter method.</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:			
+			
+preFilterID,
+preFilterHexPattern,
+preFilterBitCount
+
+Optional:
+
+preFilterMemBank,
+antennaSelected,
+preFilterBitOffset,
+performStateAwareSingulation,
+preFilterTarget,
+preFilterStateAwareAction,
+preFilterStateUnawareAction
+
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>deletePreFilter</NAME>
+				<DESC>Deletes a pre-filter of the index set by preFilterID property.</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:
+
+preFilterID
+
+Optional:
+
+antennaSelected
+
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>clearPreFilters</NAME>
+				<DESC>Deletes ALL preFilters</DESC>
+			</PARAM>
+			<PARAM>
+				<NAME>radioPowerStateOn</NAME>
+				<DESC>Sets the radio power of the RFID module on</DESC>
+			</PARAM>
+			<PARAM>
+				<NAME>radioPowerStateOff</NAME>
+				<DESC>Sets the radio power of the RFID module off</DESC>
+			</PARAM>
+			<PARAM>
+				<NAME>tagRead</NAME>
+				<DESC>Reads from a tag or  a set of tags (defined by Access filter) using the preconfigured read Parameters.  The tag data is returned via a tagEvent.  The read data is available in tagData.memoryBankData field of the JSON object passed to tagEvent handler.
+				tagID property is ignored if useAccessFilter property is set to true.  If useAccessFilter is set to true, then tagPatternA, tagPatternB and matchPattern will be used to filter out tags to perform the operation.  If the tagID is empty and useAccessFilter is false, the read operation will be performed on all the tags in field of view.
+				</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:
+							
+tagID
+
+Optional:
+
+tagPassword,
+tagMemBank,
+tagByteOffset,
+tagReadSize,
+useAccessFilter,
+matchPattern,
+tagPatternAByteOffset,
+tagPatternAHexMask,
+tagPatternAHexPattern,
+tagPatternAMemBank,
+tagPatternBByteOffset,
+tagPatternBHexMask,
+tagPatternBHexPattern,
+tagPatternBMemBank
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>tagWrite</NAME>
+				<DESC>Writes data to a tag or a set of tags (defined by Access filter) using the preconfigured Write parameters.
+				tagID property is ignored if useAccessFilter property is set to true.  If useAccessFilter is set to true, then  tagPatternA, tagPatternB and matchPattern will be used to filter out tags to perform the operation. 
+				If the tagID is empty and useAccessFilter is false, the write operation will be attempted on all the tags in field of view</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:
+	
+tagID,
+tagWriteData
+
+Optional:
+
+tagPassword,
+tagMemBank,
+tagByteOffset,
+useAccessFilter,
+matchPattern,
+tagPatternAByteOffset,
+tagPatternAHexMask,
+tagPatternAHexPattern,
+tagPatternAMemBank,
+tagPatternBByteOffset,
+tagPatternBHexMask,
+tagPatternBHexPattern,
+tagPatternBMemBank
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>setTagID</NAME>
+				<DESC>Writes a preconfigured new tag ID to the currently selected tag.</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:
+
+tagID,
+newTagID
+
+Optional:
+
+tagPassword
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>setTagAccessPassword</NAME>
+				<DESC>Writes a preconfgured new tag access password to the currently selected tag.</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:
+          
+tagID,
+newAccessPassword
+
+Optional:
+
+tagPassword
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>setTagKillPassword</NAME>
+				<DESC>Writes a preconfigured new kill password to the currently selected tag.</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:
+            
+tagID,
+newKillPassword
+
+Optional:
+
+tagPassword
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>setSingulation</NAME>
+				<DESC>sets the preconfigured singulation parameters on all the antenna(e).  At least one of Session or TagPopulation parameters must be properly set before calling this method.
+				When state-aware singulation is desired, performStateAwareSingulation is to be set to true and the configured values for SL flag and Inventory state will be matched during singulation of tags.</DESC>
+Mandatory:
+singulationSession,
+singulationTagPopulation
+Optional:
+performStateAwareSingulation,
+singulationSLFlag,
+singulationInventoryState
+
+
+			</PARAM>
+			<PARAM>
+				<NAME>getSingulation</NAME>
+				<DESC>Requests the current singulation parameters (session and tag population) for the antenna(e).
+				The result is returned in a singulationEvent.  Note that all antennae share the same singulation settings.
+				</DESC>
+			</PARAM>
+			<PARAM>
+				<NAME>getRFParams</NAME>
+				<DESC>gets the current RF Mode, Transmit power parameter for the currently selected antenna.  The result is return in rfParamsEvent.  The property antennaSelected cannot take default value(0) because the RF Params are returned only for one antennaID.</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:				
+				
+antennaSelected
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>tagLock</NAME>
+				<DESC>Locks a tag (or tags) according to the lockPrivilege and lockField, requires tagPassword.tagID property is ignored if useAccessFilter property is set to true.  If useAccessFilter is set to true, then  tagPatternA, tagPatternB and matchPattern will be used to filter out tags to perform the operation.
+				If the tagID is empty and useAccessFilter is false, the lock operation will be attempted on all the tags in field of view
+				</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:
+
+tagID,
+lockPrivilege,
+lockField,
+
+Optional:
+
+tagPassword,
+useAccessFilter,
+matchPattern,
+tagPatternAByteOffset,
+tagPatternAHexMask,
+tagPatternAHexPattern,
+tagPatternAMemBank,
+tagPatternBByteOffset,
+tagPatternBHexMask,
+tagPatternBHexPattern,
+tagPatternBMemBank
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>getRFModeInfo</NAME>
+				<DESC>gets the RF mode information for the given RFMode index.  The result is returned in a rfModeInfoEvent</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:
+				
+RFMode
+				</DESCDETAIL>
+			</PARAM>
+			<PARAM>
+				<NAME>setRFParams</NAME>
+				<DESC>sets the RF mode and/or transmit power of a selected antenna</DESC>
+				<DESCDETAIL>Applicable properties:
+Mandatory:	
+
+RFMode,
+transmitPower
+
+Optional:
+
+antennaSelected,
+
+				</DESCDETAIL>
+		</PARAM>
+		<PARAM>
+				<NAME>getLastAccessResult</NAME>
+				<DESC>gets the result of the last access operation in the lastAccessResultEvent.  The result consists of numbers of tags on which the last access operation succeeded and failed.  Note that this method can give valid results only after a operationCompleteEvent is received indicating that the last operation has ended.</DESC>
+		</PARAM>
+		</PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>antennaSelected</NAME>
+				<DESC>Index of the antenna being selected for the subsequent data or configuration operations.  A &apos;0&apos; indicates all antennas to be selected.</DESC>
+				<VALUES>0-N</VALUES>
+				<DEFAULT>0(ALL)</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>beepOnRead</NAME>
+				<DESC>Specifies if the device should beep whenever application receives a tag.</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>true</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>enableTagAccessStatus</NAME>
+				<DESC>Enable/Disable the access status field in the tag reports.  Contains valid values for Read/Write/Lock/Kill operations</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>false</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>enableTagAntennaID</NAME>
+				<DESC>Enable/Disable the antenna ID field in the tag reports</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>false</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>enableTagCRC</NAME>
+				<DESC>Enable/Disable the CRC field in the tag reports</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>false</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>enableTagXPC</NAME>
+				<DESC>Enable/Disable the XPC field in the tag reports</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>false</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>enableTagPC</NAME>
+				<DESC>Enable/Disable the PC field in the tag reports</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>false</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>enableTagRSSI</NAME>
+				<DESC>Enable/Disable the RSSI data field in tag reports</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>false</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>enableTagSeenCount</NAME>
+				<DESC>Enable/Disable the SeenCount field in tag reports</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>false</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>enableTagUTCTimeStamp</NAME>
+				<DESC>Enable/Disable the UTCTimeStamp data field in tag reports</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>false</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>invMemBank</NAME>
+				<DESC>Specifies if any memory bank is to be read during an inventory</DESC>
+				<VALUES>None, Reserved, EPC, TID, User</VALUES>
+				<DEFAULT>None</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>lockField</NAME>
+				<DESC>sets the data field to be used for tagLock operation</DESC>
+				<VALUES>killPassword, accessPassword, EPC, TID, User</VALUES>
+				<DEFAULT>None</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>lockPrivilege</NAME>
+				<DESC>sets the lock privilege to be used for tagLock operation</DESC>
+				<VALUES>lock, unlock, permanentLock, permanentUnlock</VALUES>
+				<DEFAULT>None</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>matchPattern</NAME>
+				<DESC>Match criteria to be used for filtering using tag-patterns A and B.</DESC>
+				<VALUES>A_AND_B, NOTA_AND_B, NOTA_AND_NOTB, A_AND_NOTB, A</VALUES>
+				<DEFAULT>A</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>newTagID</NAME>
+				<DESC>sets a new tag ID to be assigned to the currently selected tag in the setTagID method</DESC>
+				<VALUES>hex password</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>newAccessPassword</NAME>
+				<DESC>sets a new tag access password to be assigned to the currently selected tag in the setTagAccessPassword method</DESC>
+				<VALUES>hex password</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>newKillPassword</NAME>
+				<DESC>sets a new tag kill password to be assigned to the currently selected tag in the setTagKillPassword method</DESC>
+				<VALUES>hex password</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>performStateAwareSingulation</NAME>
+				<DESC>If set to true,the tags will henceforth be singulated based on the configured inventory states/SL flags rather than the reader defaults.
+				Besides, the subsequently added pre-filters should indicate the desired inventory state/SL flags of the matching/non-matching tags.
+				If this property is set to false, the tags are singulated based on the Reader defaults.</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>false</DEFAULT>
+			</PARAM>
+						
+			<PARAM>
+				<NAME>preFilterStateAwareAction</NAME>
+				<DESC>Sets the State-aware Action(s) for the current pre-filter's matching and/or non-matching tags.  This property is considered only when performStateAwareSingulation is true. 
+				All actions indicating asserting/de-asserting SL flags are valid only when preFilterTarget is SL. 
+				All actions indicating changes to the inventoried states(i.e A/B) are valid only when preFilterTarget is INV_S0/INV_S1/INV_S2/INV_S3</DESC>
+				<VALUES>INV_A_NOT_INV_B, ASRT_SL_NOT_DSRT_SL, INV_A,ASRT_SL, NOT_INV_B, NOT_DSRT_SL, INV_A2BB2A_NOT_INV_A, NEG_SL_NOT_ASRT_SL, INV_B_NOT_INV_A, DSRT_SL_NOT_ASRT_SL, INV_B, DSRT_SL, NOT_INV_A, NOT_ASRT_SL, NOT_INV_A2BB2A, NOT_NEG_SL</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>preFilterTarget</NAME>
+				<DESC>Indicates which flag(i.e SL/INV_S0/INV_S1/INV_S2/INV_S3) shall be affected when the current state-Aware prefilter is applied.  This property will be considered only when performStateAwareSingulation is true.</DESC>
+				<VALUES>SL, INV_S0, INV_S1, INV_S2, INV_S3</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>preFilterStateUnawareAction</NAME>
+				<DESC>Sets the State-unaware Action for the current pre-filter's matching and/or non-matching tags.  This property is considered only when performStateAwareSingulation is false.
+				This determines whether to select and/or unselect matching tags/non-matching tags when the current pre-filter is applied.</DESC>
+				<VALUES>SELECT_NOT_UNSELECT, SELECT, NOT_UNSELECT, UNSELECT, UNSELECT_NOT_SELECT, NOT_SELECT</VALUES>
+				<DEFAULT>SELECT_NOT_UNSELECT</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>preFilterBitCount</NAME>
+				<DESC>Specifies the number of bits within the preFilterHexPattern to match in a subsequent call to addFilter()</DESC>
+				<VALUES>Number of applicable bits in the filterHexPattern</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>preFilterBitOffset</NAME>
+				<DESC>Specifies the offset into the memory bank (position) applicable to a subsequent call to addFilter()</DESC>
+				<VALUES>Offset from the start of the memory bank in bits</VALUES>
+				<DEFAULT>32</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>preFilterHexPattern</NAME>
+				<DESC>Specifies a hex pattern to apply in a subsequent call to addFilter()</DESC>
+				<VALUES>Hex Pattern</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>preFilterID</NAME>
+				<DESC>Specifies the ID of the filter to apply in a subsequent call to addFilter()`or deleteFilter()</DESC>
+				<VALUES>unsigned integer</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>preFilterMemBank</NAME>
+				<DESC>Specifies the memory bank to apply in a subsequent call to addFilter()</DESC>
+				<VALUES>Reserved, EPC, TID, User</VALUES>
+				<DEFAULT>EPC</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>startPeriod</NAME>
+				<DESC>Sets the repeat period for a subsequent inventory</DESC>
+				<VALUES>milliseconds</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>reportTrigger</NAME>
+				<DESC>This property controls the reporting of tags from the plugin.  Setting this property to N indicate to the plugin that it
+					should report tags on seeing N tags.  0 indicates to report tags only at the end of inventory.</DESC>
+				<VALUES>0-N</VALUES>
+				<DEFAULT>1</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>reportUniqueTags</NAME>
+				<DESC>Specifies to report only unique tags</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>true</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>RFMode</NAME>
+				<DESC>Sets the RFMode of the currently selected antenna(e)</DESC>
+				<VALUES>One of the supported RF Modes listed in the capabilities (see enumRFIDEvent)</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>singulationSession</NAME>
+				<DESC>Sets the singulation session parameter</DESC>
+				<VALUES>0-3</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>singulationTagPopulation</NAME>
+				<DESC>Sets the singulation tag population parameter</DESC>
+				<VALUES>unsigned short integer</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>singulationInventoryState</NAME>
+				<DESC>Indicates the inventory state [A or B] to be matched during the singulation.</DESC>
+				<VALUES>INV_A, INV_B</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>singulationSLFlag</NAME>
+				<DESC>Indicates the SL bit [asserted or deasserted] to be matched during the singulation.</DESC>
+				<VALUES>SL_ASSERTED, SL_DEASSERTED</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>startTriggerType</NAME>
+				<DESC>Specifies the start triggers allowed for performInventory and tagLocate methods</DESC>
+				<VALUES>immediate, triggerPress, triggerRelease, periodicStart</VALUES>
+				<DEFAULT>immediate</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>stopDuration</NAME>
+				<DESC>Sets the duration of a inventory or locateTag</DESC>
+				<VALUES>milliseconds</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>stopObservationCount</NAME>
+				<DESC>Stops the inventory or locateTag after n tags are found</DESC>
+				<VALUES>unsigned integer</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>stopTriggerType</NAME>
+				<DESC>Specifies the stop-triggers allowed for performInventory and tagLocate methods</DESC>
+				<VALUES>triggerPress, triggerRelease, duration, tagObservation</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagByteOffset</NAME>
+				<DESC>sets the offset into the selected memory Bank to use for the next access of the currently selected tag</DESC>
+				<VALUES>unsigned integer</VALUES>
+				<DEFAULT>0</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagID</NAME>
+				<DESC>Select an RFID Tag ID to perform further operations on</DESC>
+				<VALUES>Tag ID in hex</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagKillPassword</NAME>
+				<DESC>sets the password to use when calling the killTag method</DESC>
+				<VALUES>hex kill password</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagMemBank</NAME>
+				<DESC>sets the memory bank to access within the currently selected tag.</DESC>
+				<VALUES>Reserved, EPC, TID, User</VALUES>
+				<DEFAULT>EPC</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagPassword</NAME>
+				<DESC>Sets the access password to use when accessing the currently selected tag.</DESC>
+				<VALUES>hex password</VALUES>
+				<DEFAULT>00000000</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagPatternAByteOffset</NAME>
+				<DESC>Specifies the offset into the memory bank (position) </DESC>
+				<VALUES>Offset from the start of the memory bank in bytes</VALUES>
+				<DEFAULT>4</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagPatternAHexMask</NAME>
+				<DESC>Specifies the mask for above pattern</DESC>
+				<VALUES>Hex Mask</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagPatternAHexPattern</NAME>
+				<DESC>Specifies a hex pattern to be used for comparing memory bank data</DESC>
+				<VALUES>Hex Pattern</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagPatternAMemBank</NAME>
+				<DESC>Specifies the memory bank for the tag pattern A</DESC>
+				<VALUES>Reserved, EPC, TID, User</VALUES>
+				<DEFAULT>EPC</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagPatternBByteOffset</NAME>
+				<DESC>Specifies the offset into the memory bank (position) </DESC>
+				<VALUES>Offset from the start of the memory bank in bytes</VALUES>
+				<DEFAULT>4</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagPatternBHexMask</NAME>
+				<DESC>Specifies the mask for above pattern</DESC>
+				<VALUES>Hex Mask</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagPatternBHexPattern</NAME>
+				<DESC>Specifies a hex pattern to be used for comparing memory bank data</DESC>
+				<VALUES>Hex Pattern</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagPatternBMemBank</NAME>
+				<DESC>Specifies the memory bank for the tag pattern B</DESC>
+				<VALUES>Reserved, EPC, TID, User</VALUES>
+				<DEFAULT>EPC</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagReadSize</NAME>
+				<DESC>sets the number of bytes to read in the tagRead method.</DESC>
+				<VALUES>0 (all) - N bytes</VALUES>
+				<DEFAULT>0 (all)</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tagWriteData</NAME>
+				<DESC>sets the data to write in the tagWrite method</DESC>
+				<VALUES>hex data</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>transmitPower</NAME>
+				<DESC>Specifies the transmit power to be used in a subsequent call to setTransmitPower</DESC>
+				<VALUES>power in dbm derived from min, max and step values provided in the enumRFIDevent</VALUES>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>useAccessFilter</NAME>
+				<DESC>Specifies whether to use the access filter in tag access operations</DESC>
+				<VALUES>true, false, 1, 0</VALUES>
+				<DEFAULT>false</DEFAULT>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<RETURNS>
+			<TAG>
+				<TAG_NAME>enumRFIDEvent</TAG_NAME>
+				<TAG_NOTES>Enumerates the RFID readers present on the device (normally only one) along with their respective capabilities</TAG_NOTES>
+				<RETVAL>
+					<NAME>numberOfDevices</NAME>
+					<DESC>returns total number of device enumerated, returns always 1</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>readerID</NAME>
+					<DESC>ID assigned to reader</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>firmwareVersion</NAME>
+					<DESC>Firmware version of the reader</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>modelName</NAME>
+					<DESC>Model FX, MC</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>numberOfAntennas</NAME>
+					<DESC>Antennas supported/connected by/to reader</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>numberOfPreFilters</NAME>
+					<DESC>Total number of pre-filters available </DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>countryCode</NAME>
+					<DESC>region configured</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>communicationStandard</NAME>
+					<DESC>country/region frequency band standards</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>transmitPowerMin</NAME>
+					<DESC>Minimum transmit power supported by reader 500dbm</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>transmitPowerMax</NAME>
+					<DESC>Maximum transmit power supported by reader 3000dbm</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>transmitPowerStep</NAME>
+					<DESC>Transmit power can be set in multiple of value - step</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>numberOfRFModes</NAME>
+					<DESC>Number of supported RFModes</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>stateAwareSingulationSupported</NAME>
+					<DESC>Indicates whether Inventory State Aware Singulation is supported by the Reader.</DESC>
+				</RETVAL>
+			</TAG>
+			<TAG>
+				<TAG_NAME>rfParamsEvent</TAG_NAME>
+				<TAG_NOTES>Returns RF Parameter values - Transmit Power and RF Mode of a selected antenna</TAG_NOTES>
+				<RETVAL>
+					<NAME>transmitPower</NAME>
+					<DESC>radiated power in db</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>RFMode</NAME>
+					<DESC>RF Mode Table Index</DESC>
+				</RETVAL>
+			</TAG>
+			<TAG>
+				<TAG_NAME>rfModeInfoEvent</TAG_NAME>
+				<TAG_NOTES>Returns the RF Characteristics for a particular RF Mode</TAG_NOTES>
+				<RETVAL>
+					<NAME>modeIdentifier</NAME>
+					<DESC>Refer to EPC-Global's definition</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>divideRatio</NAME>
+					<DESC>Refer to EPC-Global's definition</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>bdrValue</NAME>
+					<DESC>Refer to EPC-Global's definition</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>modulation</NAME>
+					<DESC>Refer to EPC-Global's definition</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>forwardLinkModulationType</NAME>
+					<DESC>Refer to EPC-Global's definition</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>pieValue</NAME>
+					<DESC>Refer to EPC-Global's definition</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>minTariValue</NAME>
+					<DESC>Refer to EPC-Global's definition</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>maxTariValue</NAME>
+					<DESC>Refer to EPC-Global's definition</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>stepTariValue</NAME>
+					<DESC>Refer to EPC-Global's definition</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>spectralMaskIndicator</NAME>
+					<DESC>Refer to EPC-Global's definition</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>epcHAGTCConformance</NAME>
+					<DESC>Refer to EPC-Global's definition</DESC>
+				</RETVAL>
+			</TAG>
+			<TAG>
+				<TAG_NAME>tagEvent</TAG_NAME>
+				<TAG_NOTES>Returns received RFID tag data from N tags, where N = reportTrigger.  Typically methods like performInventory, tagLocate, readTag/writeTag/lockTag/killTag (performed on one or more tags)
+				generate tagEvents with necessary data.</TAG_NOTES>
+				<RETVAL>
+					<NAME>TagData (tagID, PC, tagSeenCount, memoryBankData, XPC, CRC, antennaID, 
+						RSSI, accessStatus, relativeDistance, firstSeenTimeStamp)</NAME>
+					<DESC>Tag data array with various parameter of read tag TagData[1..N] </DESC>
+					<ARRAY>TRUE</ARRAY>
+				</RETVAL>
+			</TAG>
+			<TAG>
+				<TAG_NAME>radioPowerStateEvent</TAG_NAME>
+				<TAG_NOTES>Returns 1 if the radio is ON and 0 if the radio is off</TAG_NOTES>
+				<RETVAL>
+					<NAME>powerState</NAME>
+					<DESC>Radio is on/off</DESC>
+				</RETVAL>
+			</TAG>
+			<TAG>
+				<TAG_NAME>statusEvent</TAG_NAME>
+				<TAG_NOTES>Returns any error conditions where required</TAG_NOTES>
+				<RETVAL>
+					<NAME>method</NAME>
+					<DESC>Name of method where exactly error was generated</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>errorCode</NAME>
+					<DESC>standard RFID API error code or a plugin specific error code.
+					Plugin Error code   Description
+					2000  			One of the relevant parameters is invalid or missing
+					2001			Plugin Busy
+					2002			Failed to create a plugin thread.
+					2003      		Plugin Cannot process properties or methods unless connected
+					</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>vendorMessage</NAME>
+					<DESC>Additional Error Info if any</DESC>
+				</RETVAL>
+			</TAG>
+			<TAG>
+				<TAG_NAME>singulationEvent</TAG_NAME>
+				<TAG_NOTES>Returns singulation values</TAG_NOTES>
+				<RETVAL>
+					<NAME>singulationSession</NAME>
+					<DESC>Indicates the session in which the antenna singulates</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>singulationTagPopulation</NAME>
+					<DESC>Indicates the tag-population that the reader considers is in an antenna's field of view</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>performStateAwareSingulation</NAME>
+					<DESC>Indicates whether the antennas perform stateAware-singulation.</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>singulationSLFlag</NAME>
+					<DESC>Indicates which SL bit(asserted or deasserted) will be matched during singulation</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>singulationInventoryState</NAME>
+					<DESC>Indicates which inventory state [A or B] will be matched during the singulation</DESC>
+				</RETVAL>
+			</TAG>
+			<TAG>
+				<TAG_NAME>operationCompleteEvent</TAG_NAME>
+				<TAG_NOTES>Indicates the currently running operation (Inventory/Access/Locationing) is complete and there are no more tags to report.</TAG_NOTES>
+      </TAG>  
+        
+			<TAG>
+				<TAG_NAME>lastAccessResultEvent</TAG_NAME>
+				<TAG_NOTES>Returns results of the last Access operation</TAG_NOTES>
+				<RETVAL>
+					<NAME>tagsSucceeded</NAME>
+					<DESC>Number of tags on which the access operation succeeded.</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>tagsFailed</NAME>
+					<DESC>Number of tags on which the access operation failed.</DESC>
+				</RETVAL>
+			</TAG>
+		</RETURNS>
+		<EXAMPLES>
+		<EXAMPLE>
+		<DESC>This example starts an inventory using HTTP Meta Tags and tags are sent to a javascript function "TagHandler".</DESC>
+		<CODE>
+&lt;META HTTP-Equiv="rfid" content="statusEvent:url('javascript:statusHandler(%json)')"&gt;
+&lt;META HTTP-Equiv="rfid" content="tagEvent:url('javascript:TagHandler(%json)')"&gt;
+&lt;META HTTP-Equiv="rfid" content="performInventory"&gt;
+&lt;script&gt;
+// Function to handle a tagReport containing only tagID field
+function TagHandler(tagReportJSON)
+{
+   objGeneric.Log("TagID read:"+tagReportJSON.TagData[0].tagID,3);
+}
+&lt;/script&gt;	
+		
+		</CODE>
+		</EXAMPLE>
+		<EXAMPLE>
+				<DESC>This example runs inventory as long as trigger button is pressed.  By default, the plugin reports unique tags to tagEvent callback in JSON format
+				and beeps for every unique tag encountered.  By default, only one tagID is reported per the JSON tagReport.  Besides, this JSON contains only the field tagID.</DESC>
+				<CODE>
+&lt;script&gt;
+var objGeneric = new ActiveXObject("PocketBrowser.Generic");   
+objGeneric.InvokeMETAFunction("OnTrigger", "javascript:doTrigger('%s')");
+rfid.statusEvent = "statusHandler(%json)";
+
+function doTrigger(state) 
+{
+
+  if(state == 0)
+  {	
+	  rfid.stop();
+  }
+  else
+  {
+	  rfid.tagEvent =  "TagHandler(%json)";
+	  rfid.performInventory();
+  }
+}
+
+// Function to handle a tagReport containing only tagID field
+function TagHandler(tagReportJSON)
+{
+   objGeneric.Log("TagID read:"+tagReportJSON.TagData[0].tagID,3);
+}
+
+
+function statusHandler(statusJSON)
+{
+  objGeneric.Log("Status:"+statusJSON.method+'  '+statusJSON.errorCode,1);
+}
+
+&lt;/script&gt;	
+				</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>This example performs inventory with start and stop triggers configured.  Here all the tag-reads are reported to tagEvent callback with 5 reports per callback.
+				Besides, the tagSeenCount and the UTCTtimestamp at which tag was first seen is also reported.  Note:It will still beep for only unique tags read.</DESC>
+				<CODE>
+&lt;script&gt;
+var objGeneric = new ActiveXObject("PocketBrowser.Generic");   
+rfid.statusEvent = "statusHandler(%json)";
+
+function performAdvancedInventory1()
+{
+	rfid.tagEvent =  "TagHandlerAdvanced1(%json)";
+	rfid.reportUniqueTags = false;
+	rfid.reportTrigger = 5;
+	rfid.enableTagSeenCount = true;
+	rfid.enableTagUTCTimeStamp = true;
+	rfid.startTriggerType = "triggerPress";
+	rfid.stopTriggerType = "duration";
+	rfid.stopDuration = 10000;// Duration in milliseconds.
+	rfid.performInventory();
+}
+
+// Function to handle tagReports containing tagID, seenCount and firstSeenTimeStamp fields.
+function TagHandlerAdvanced1(tagReportJSON)
+{
+   objGeneric.Log("TagID :"+tagReportJSON.TagData[0].tagID+" Seen Count: "+tagReportJSON.TagData[0].tagSeenCount+" First seen Timestamp:"+tagReportJSON.TagData[0].firstSeenTimeStamp,3);
+   objGeneric.Log("TagID :"+tagReportJSON.TagData[1].tagID+" Seen Count: "+tagReportJSON.TagData[1].tagSeenCount+" First seen Timestamp:"+tagReportJSON.TagData[1].firstSeenTimeStamp,3);
+   objGeneric.Log("TagID :"+tagReportJSON.TagData[2].tagID+" Seen Count: "+tagReportJSON.TagData[2].tagSeenCount+" First seen Timestamp:"+tagReportJSON.TagData[2].firstSeenTimeStamp,3);
+   objGeneric.Log("TagID :"+tagReportJSON.TagData[3].tagID+" Seen Count: "+tagReportJSON.TagData[3].tagSeenCount+" First seen Timestamp:"+tagReportJSON.TagData[3].firstSeenTimeStamp,3);
+   objGeneric.Log("TagID :"+tagReportJSON.TagData[4].tagID+" Seen Count: "+tagReportJSON.TagData[4].tagSeenCount+" First seen Timestamp:"+tagReportJSON.TagData[4].firstSeenTimeStamp,3);
+}
+
+function statusHandler(statusJSON)
+{
+   objGeneric.Log("Status:"+statusJSON.method+'  '+statusJSON.errorCode,1);
+}
+&lt;/script&gt;					
+				</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>This example performs inventory and reads the Reserved memory Bank of all tags inventoried.  The tags are selected to match a particular pre-filter pattern (EPC starts with "9742")
+				The tagEvent handler extracts both tagID and memoryBankData fields.  Inventory is stopped after 10 tag-reads are observed</DESC>
+				<CODE>
+&lt;script&gt;
+var objGeneric = new ActiveXObject("PocketBrowser.Generic");   
+rfid.statusEvent = "statusHandler(%json)";
+
+function performAdvancedInventory2()
+{
+	rfid.tagEvent =  "TagHandlerAdvanced2(%json)";
+	rfid.stopTriggerType = "tagObservation";
+	rfid.stopObservationCount = 10;
+	rfid.preFilterID = 1;
+	rfid.preFilterMemBank = "EPC";
+	rfid.preFilterBitOffset = 32;
+	rfid.preFilterHexPattern = "9742";
+	rfid.preFilterBitCount = 16;
+	rfid.addPreFilter();
+	rfid.invMemBank = "Reserved";	
+	rfid.performInventory();
+}
+
+// Function to handle tagReports containing tagID, seenCount and firstSeenTimeStamp fields.
+function TagHandlerAdvanced2(tagReportJSON)
+{
+   objGeneric.Log("TagID :"+tagReportJSON.TagData[0].tagID+" Reserved MemoryBank Data: "+tagReportJSON.TagData[0].memoryBankData,1);
+}
+
+function statusHandler(statusJSON)
+{
+   objGeneric.Log("Status:"+statusJSON.method+'  '+statusJSON.errorCode,1);
+}
+&lt;/script&gt;					
+				</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>This example gets the capabilities of the local RFID Module and configures the antenna's RF and Singulation parameters.
+				The application should register Javascript callbacks for the enumRFIDEvent and rfParamsEvent events.</DESC>
+				<CODE>
+&lt;script&gt;
+var objGeneric = new ActiveXObject("PocketBrowser.Generic");   
+rfid.statusEvent = "statusHandler(%json)";
+
+function EnumerateRFIDModule()
+{
+  rfid.enumRFIDEvent = "enumerateRFIDHandler(%json)";
+  objGeneric.Log("In EnumerateRFIDModule :",3);
+  rfid.enumerate();
+  ConfigureRFIDModule();
+}
+
+function enumerateRFIDHandler(enumRFIDJSON)
+{
+  objGeneric.Log("Number of Devices:"+enumRFIDJSON.numberOfDevices,3);
+  objGeneric.Log("Reader ID:"+enumRFIDJSON.readerID,3);
+  objGeneric.Log("Firmware version:"+enumRFIDJSON.firmwareVersion,3);
+  objGeneric.Log("Model Name:"+enumRFIDJSON.modelName,3);
+  objGeneric.Log("Number of Antennas:"+enumRFIDJSON.numberOfAntennas,3);
+  objGeneric.Log("Number of Prefilters:"+enumRFIDJSON.numberOfPreFilters,3);
+  objGeneric.Log("Country code:"+enumRFIDJSON.countryCode,3);
+  objGeneric.Log("Communication standard:"+enumRFIDJSON.communicationStandard,3);
+  objGeneric.Log("Minimum Transmit Power:"+enumRFIDJSON.transmitPowerMin,3);
+  objGeneric.Log("Maximum Transmit Power:"+enumRFIDJSON.transmitPowerMax,3);
+  objGeneric.Log("Step Transmit Power:"+enumRFIDJSON.transmitPowerStep,3);
+  objGeneric.Log("Supported RF Modes:"+enumRFIDJSON.numberOfRFModes,3);
+  objGeneric.Log("State Aware Singulation:"+enumRFIDJSON.stateAwareSingulationSupported,3);
+}
+
+function ConfigureRFIDModule()
+{
+  rfid.singulationEvent = "getSingulationHandler(%json)";
+  rfid.rfParamsEvent = "getRFParamsHandler(%json)";
+
+  rfid.singulationSession  = "1";
+  rfid.singulationTagPopulation = "100";
+
+  rfid.RFMode = "4";             // Mode table Index
+  rfid.transmitPower = "25.20";  // Transmit Power in dbM
+
+  rfid.setSingulation(); // Applies on both the antennas.
+  rfid.setRFParams();
+
+  rfid.antennaSelected = 1;  // To verify if the settings have indeed been applied.
+  rfid.getSingulation();
+  rfid.getRFParams();
+}
+
+function getRFParamsHandler(RFParamsJSON)
+{
+  objGeneric.Log("RFMode of Antenna 1:"+RFParamsJSON.RFMode,3);
+  objGeneric.Log("Transmit Power of Antenna 1:"+RFParamsJSON.transmitPower,3);
+}
+
+function getSingulationHandler(singulationJSON)
+{
+  objGeneric.Log("Session of Antenna 1:"+singulationJSON.singulationSession,3);
+  objGeneric.Log("Tag Population of Antenna 1:"+singulationJSON.singulationTagPopulation,3);
+}
+
+function statusHandler(statusJSON)
+{
+  objGeneric.Log("Status:"+statusJSON.method+'  '+statusJSON.errorCode,1);
+}
+&lt;/script&gt;					
+			  </CODE>
+			</EXAMPLE>	
+			<EXAMPLE>
+				<DESC>This example performs TagLocationing operation and reports the real-time relative distance information of the tag being located.</DESC>
+				<CODE>
+&lt;script&gt;
+var objGeneric = new ActiveXObject("PocketBrowser.Generic");   
+rfid.statusEvent = "statusHandler(%json)";
+
+function TagLocationing()
+{
+	rfid.tagEvent = "TagLocateHandler(%json)";
+	rfid.antennaSelected = 1;
+	rfid.tagID = "97427423111111111111111111111111111111111111111111111111";
+	rfid.locateTag();
+	setTimeout("stopRunningLocate()",10000);
+}
+function stopRunningLocate()
+{
+	rfid.stop();
+  
+}
+function TagLocateHandler(tagReportJSON)
+{
+	objGeneric.Log("TagID :"+tagReportJSON.TagData[0].tagID+" Relative Distance: "+tagReportJSON.TagData[0].relativeDistance,1);
+}
+
+function statusHandler(statusJSON)
+{
+   objGeneric.Log("Status:"+statusJSON.method+'  '+statusJSON.errorCode,1);
+}
+&lt;/script&gt;					
+				</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>This example performs Read operation on a particular tagID.</DESC>
+				<CODE>
+&lt;script&gt;
+var objGeneric = new ActiveXObject("PocketBrowser.Generic");   
+rfid.statusEvent = "statusHandler(%json)";
+
+function readSingleTag()
+{
+	rfid.tagID = "97427423111111111111111111111111111111111111111111111111";
+	rfid.tagEvent =  "TagMemBankHandler(%json)";
+	rfid.tagByteOffset = 4;
+	rfid.tagMemBank = "Reserved";
+	rfid.tagReadSize = 4;
+	rfid.tagRead();
+}
+function TagMemBankHandler(tagReportJSON)
+{
+  objGeneric.Log("TagID :"+tagReportJSON.TagData[0].tagID+" Access Password: "+tagReportJSON.TagData[0].memoryBankData,1);
+}
+
+function statusHandler(statusJSON)
+{
+   objGeneric.Log("Status:"+statusJSON.method+'  '+statusJSON.errorCode,1);
+}
+&lt;/script&gt;					
+				</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>This example performs Read operation on all tags that match a particular tagPattern(access-filter).  Reads User memory bank of all tags whose EPC start with "9742".</DESC>
+				<CODE>
+&lt;script&gt;
+var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+rfid.statusEvent = "statusHandler(%json)";
+function testReadMultipleTags()
+{
+  var selectedTagPattern = "9742";
+  var hexMaskStr = "";var i =0;
+  for(i =0;i &lt; selectedTagPattern.length;i++)
+  hexMaskStr += "F";
+
+  rfid.useAccessFilter = true;
+  rfid.matchPattern = "A";
+  rfid.tagPatternAMemBank = "EPC";
+  rfid.tagPatternAByteOffset = 4;
+  rfid.tagPatternAHexPattern = selectedTagPattern;
+  rfid.tagPatternAHexMask = hexMaskStr.toString();
+  hexMaskStr = "";
+  for(i=0;i &lt; selectedTagPattern.length;i++)
+  hexMaskStr += "F";
+
+  rfid.tagByteOffset = 0;
+  rfid.tagMemBank = "User";
+  rfid.tagReadSize = 0;
+  rfid.tagEvent =  "TagMemBankHandler(%json)";
+  rfid.tagRead();
+}
+
+function TagMemBankHandler(tagReportJSON)
+{
+  objGeneric.Log("TagID :"+tagReportJSON.TagData[0].tagID+" User Memory Data: "+tagReportJSON.TagData[0].memoryBankData,1);
+}
+
+function statusHandler(statusJSON)
+{
+  objGeneric.Log("Status:"+statusJSON.method+'  '+statusJSON.errorCode,1);
+}
+&lt;/script&gt;					
+				</CODE>
+			</EXAMPLE>	
+			<EXAMPLE>
+				<DESC>This example shows the usage of State aware pre-filters and operationCompleteEvent.  This function tries to search for a tag whose EPC starts with "56780000" </DESC>
+				<CODE>
+&lt;script&gt;
+var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+var tagCount = 0;
+
+function testStateAwarePreFilter()
+{
+  rfid.tagEvent =  "TagHandler(%json)";
+  rfid.statusEvent = "statusHandler(%json)";
+  rfid.operationCompleteEvent = "operCompleteHandler()";
+  
+  rfid.performStateAwareSingulation = true;
+  
+  rfid.singulationSLFlag = "SL_ASSERTED";
+  rfid.singulationInventoryState = "INV_B";
+  rfid.setSingulation();
+      
+  rfid.preFilterID = 0;
+  rfid.preFilterHexPattern = "0000";
+  rfid.preFilterMemBank = "EPC";
+  rfid.preFilterBitOffset = 48;
+  rfid.preFilterStateAwareAction = "INV_B_NOT_INV_A";
+  rfid.preFilterTarget = "INV_S0";
+  rfid.addPreFilter();
+	
+  rfid.preFilterID = 1;
+  rfid.preFilterHexPattern = "5678";
+  rfid.preFilterBitOffset = 32;
+  rfid.preFilterStateAwareAction = "ASRT_SL_NOT_DSRT_SL";
+  rfid.preFilterTarget = "SL";
+  rfid.addPreFilter();
+  
+  rfid.reportUniqueTags = false;
+  rfid.beepOnRead = true;
+  rfid.stopTriggerType = "tagObservation";
+  rfid.stopObservationCount = 10;
+  rfid.performInventory();
+}
+
+
+function operCompleteHandler()
+{
+	alert('Operation Complete. Total tags received:'+tagCount.toString());
+}
+
+function TagHandler(tagReportJSON)
+{
+	tagCount += tagReportJSON.TagData.length;
+	objGeneric.Log("TagID :"+tagReportJSON.TagData[0].tagID,1);
+
+}
+function statusHandler(statusJSON)
+{
+  objGeneric.Log("Status:"+statusJSON.method+'  '+statusJSON.errorCode,1);
+}
+&lt;/script&gt;					
+				</CODE>
+			</EXAMPLE>	
+			<EXAMPLE>
+				<DESC>This example shows the usage of getLastAccessResult method.  At the completion of a multiple tag Write operation, the latter method is called to find out how many tags the operation succeeded and failed.</DESC>
+				<CODE>
+&lt;script&gt;
+var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+var tagCount = 0;
+function writeMultipleTags()
+{
+		  
+	rfid.tagEvent =  "TagAccessStatusFieldHandler(%json)";
+	rfid.statusEvent = "statusHandler(%json)";
+	rfid.operationCompleteEvent = "operCompleteHandler()";
+	rfid.lastAccessResultEvent = "lastAccessResultHandler(%json)";
+	clear();
+		
+	var hexMaskStr = "";var i =0;
+	for(i =0;i&lt;8;i++)
+	  hexMaskStr += "F";
+	rfid.enableTagAccessStatus = true;
+	rfid.useAccessFilter = true;
+	rfid.tagPatternAMemBank = "Reserved";
+	rfid.tagPatternAByteOffset = 4;
+	rfid.tagPatternAHexPattern = "FFFFFFFF";
+	rfid.tagPatternAHexMask = hexMaskStr.toString();
+	rfid.tagByteOffset = 4;
+	rfid.tagMemBank = "EPC";
+	rfid.tagWriteData = "EEEEAAAA";
+	rfid.tagWrite();
+	
+
+}
+function TagAccessStatusFieldHandler(tagReportJSON)
+{
+	objGeneric.Log("TagID:"tagReportJSON.TagData[0].tagID+" Access Status "+tagReportJSON.TagData[0].accessStatus);
+}
+function operCompleteHandler()
+{
+	rfid.getLastAccessResult();
+}
+function lastAccessResultHandler(accessResultJSON)
+{
+	alert("Success: "+accessResultJSON.tagsSucceeded.toString()+"	Failures: "+accessResultJSON.tagsFailed.toString());
+}
+
+function statusHandler(statusJSON)
+{
+  objGeneric.Log("Status:"+statusJSON.method+'  '+statusJSON.errorCode,1);
+}
+&lt;/script&gt;					
+				</CODE>
+			</EXAMPLE>				
+		</EXAMPLES>
+		<REMARKS>
+		<COMMENT>
+		<COMMENT_HEADING>Installation</COMMENT_HEADING>
+		<COMMENT_DATA>
+			The RFID plugin package for RhoElements 2.2 SP1 must be [downloaded separately](http://bit.ly/W0K6nG) and installed on the device.  Please refer to the RFID plugin release notes included with the download for installation instructions.
+		</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+		<COMMENT_HEADING>General</COMMENT_HEADING>
+		<COMMENT_DATA>
+			By default the plugin, when loaded, is already connected to RFID Module. In order to disconnect, one may use disconnect() method call on rfid object.
+			After a successful disconnection, the connect() method may be used to make a new connection to the RFID Module.
+			For a plugin method to be successfully invoked, all of its associated non-default properties must be successfully set prior to making the call.
+		</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+		<COMMENT_HEADING>Waiting for operationCompleteEvent</COMMENT_HEADING>
+		<COMMENT_DATA>
+			When RhoElements finishes execution of a plugin method call, the corresponding RFID operation may not have been completed, rather it may have just been started.
+			Specifically, for performInventory, tagLocate, tag access operations (readTag/writeTag/lockTag/killTag) using access-filter or performed on all tags, the corresponding 
+			method call just initiates the corresponding RFID operation. These operations generate Tag-reports, and once all the reports are completely
+			sent to the application, the plugin sends a operationCompleteEvent.   
+			The disconnect() method also gives an operationCompleteEvent back to the application.  It is important that the application register for operationCompleteEvent and further method calls will have to
+			be made only after the reception of this event.
+		</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+		<COMMENT_HEADING>Handling the TagEvent</COMMENT_HEADING>
+		<COMMENT_DATA>
+			TagEvent should be assigned to a Callback that handles the tag-reports arising out of Inventory/Locationing/Read/Write/Lock/Kill operations.
+			Every tagEvent callback should usually result in JSON TagData Array object of length equalling to the reportTrigger property set.
+			However, in the contingency that the RFID operation has ended and the plugin hasn't accumulated reportTrigger number of tagData objects, then
+			the pending tags are all sent to the tagEvent callback.
+		</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+		<COMMENT_HEADING>Access Operation Status Codes</COMMENT_HEADING>
+		<COMMENT_DATA>
+			For an access operation performed by using an access filter or an access operation performed on all tags, the status code only indicates that the operation has been successfully started.
+			Setting enableTagAccessStatus to true generates Tag reports with the tagID and status of the access operation on the corresponding tagID.
+			However, for a single tag access operation, the statusEvent indicates the result of the access operation for the given tagID.
+		</COMMENT_DATA>  
+		</COMMENT>
+		<COMMENT>
+		<COMMENT_HEADING>Handling the operationCompleteEvent</COMMENT_HEADING>
+		<COMMENT_DATA>
+			When RhoElements finishes execution of a plugin method call, the corresponding RFID operation may not have been completed, rather it may have just been started.
+			Specifically, for performInventory, tagLocate, tag access operations (readTag/writeTag/lockTag/killTag) using access-filter or performed on all tags, the corresponding 
+			method call just initiates the corresponding RFID operation. These operations generate Tag-reports, and once all the reports are completely
+			sent to the application, the plugin sends a operationCompleteEvent.
+		</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+		<COMMENT_HEADING>Plugin Busy</COMMENT_HEADING>
+		<COMMENT_DATA>
+			The Plugin can perform only one RFID protocol operation (Inventory/Read/Write/Locate/Kill) at a time.  Trying to invoke a new operation when an existing one is still running,
+			will generate a "Plugin Busy" error.
+			Irrespective whether stop method is called or not, the plugin is ready to initiate a new operation only after it sends the operationCompleteEvent.
+			Trying to start a new operation before the event is received will return a "Plugin Busy error".	   
+		</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+		<COMMENT_HEADING>Deleting Prefilters</COMMENT_HEADING>
+		<COMMENT_DATA>		  
+			Once a prefilter is added with a particular ID, the same ID should be used to reference it when deleting it.
+		</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+		<COMMENT_HEADING>Tag Locating</COMMENT_HEADING>
+		<COMMENT_DATA> 
+			Tag Locating can be performed only a particular antennaID.
+		</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+		<COMMENT_HEADING>Access Operations On All Visible Tags</COMMENT_HEADING>
+		<COMMENT_DATA> 
+			One can perform an access operation on all tags in the field of view by setting rfid.tagID to an empty string("")
+		</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+		<COMMENT_HEADING>Access Filters</COMMENT_HEADING>
+		<COMMENT_DATA>    
+			Access-filter can take up to tag-patterns.  By default, match pattern used is Pattern-A alone and settings for tagPattern B are not considered unless specified
+			by the appropriate matchPattern.
+		</COMMENT_DATA>
+		</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>MC 3190Z, MC 9190Z</PLATFORM>
+			<APPLIES>Not Persistent - Changes to this module will not persist when navigating to a new page.</APPLIES>
+			<REQ>Hardware for reading RFID Tags</REQ>
+			<VER_INTRODUCED>2.2 SP1 - Additional Download Required</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

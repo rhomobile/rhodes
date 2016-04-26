@@ -1,0 +1,47 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>powerOn</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to register to receive an event when the device is resumed from suspend mode.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="PowerOn" content="PowerOnEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<RETURNS>
+			<TAG>
+                <TAG_NAME>powerOnEvent</TAG_NAME>
+				<TAG_NOTES>The PowerOnEvent is sent whenever the device is resumed from suspend mode.  There is no data associated with this event.</TAG_NOTES>
+				<RETVAL>NONE</RETVAL>
+			</TAG>
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example displays a message box when the device resumes:</DESC>
+<CODE>
+&lt;meta http-equiv="PowerOn" content="PowerOnEvent:url('javascript:alert('Powered Up');')"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Example usage</COMMENT_HEADING>
+				<COMMENT_DATA>This feature is very useful for security.  Navigating to an offline page (file:// protocol) when the device is powered on can be used to request a pin number from the user.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Use when cradled</COMMENT_HEADING>
+				<COMMENT_DATA>Windows Power events will not always be generated when the device is connected to power and instructed to stand by / wake up, though this is dependant on the Operating System in use.</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - any changes made by changing parameters will be lost when navigating to a new page.</APPLIES>
+			<REQ>None</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

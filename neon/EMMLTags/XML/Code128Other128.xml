@@ -1,0 +1,65 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>code128other128</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Code128</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the code128other128 property to enable other (non EAN or ISBT) 128 subtype</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="code128other128:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>code128other128</NAME>
+                		<VALUES>true/false</VALUES>
+				<DESC>Enables/Disables the other (non EAN or ISBT) 128 subtype.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only codabar labels with the other128 subtype property set:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="codabar:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="code128other128:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="codabar:enabled;code128other128:true;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-codabar" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-code128other128" Content="true"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+<COMMENT>
+At least one subtype must be enabled (the default is all subtypes enabled).
+</COMMENT>
+			<RETRIEVAL>FALSE</RETRIEVAL>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports Code128.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>Codabar</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

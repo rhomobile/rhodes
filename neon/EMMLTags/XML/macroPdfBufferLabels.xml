@@ -1,0 +1,44 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>macroPdfBufferLabels</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\MacroPdf</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the macroPdfBufferLabels property.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="macroPdfBufferLabels:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>macroPdfBufferLabels</NAME>
+                <VALUES>true / false</VALUES>
+				<DESC>If true, the scanner driver will return the barcode data only after the complete macroPdf sequence has been read.  If false, the scan driver will return each barcode in the macroPdf sequence as it is read.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner and sets macroPdfBufferLabels property</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="scanner" Content="macroPdf:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="macroPdfBufferLabels:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+				</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except: Android devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports MacroPDF.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

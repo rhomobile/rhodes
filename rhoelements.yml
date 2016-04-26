@@ -1,0 +1,11 @@
+---
+env:
+  paths:
+    cabwiz: C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz/
+    vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcpackages/vcbuild.exe
+    devenv: C:/Program Files (x86)/Microsoft Visual Studio 9.0/Common7/IDE/devenv.exe
+    neon: E:\project\rhodes\neon
+version: 2.2.1.12.0
+capabilities:
+- webkit_browser
+sdk: MC3000c50b (ARMV4I)

@@ -1,0 +1,135 @@
+<?xml version = "1.0"?>
+<API>
+    <MODULE name="SmartCradle" parent="Rho">
+        <HELP_OVERVIEW>The SmartCradle API is used to set and retrieve attributes of the MC18 Cradle</HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
+        <TEMPLATES>
+			<PROPERTY_BAG/>
+        </TEMPLATES>
+
+         <PROPERTIES access="STATIC" usePropertyBag="none">
+			<PLATFORM>Android,CE</PLATFORM>
+            <DESC>The following properties configure the Smart Cradle API</DESC>
+            <PROPERTY name="chargeState" type="STRING" generateAccessors="true">
+                <DESC>Sets the charge state of the cradle.  Values can be either 'Fast' or 'Slow'.</DESC>
+                <VALUES>
+                    <VALUE constName="SMART_CRADLE_FAST" value="fast">
+                        <DESC>The cradle will charge devices quickly.</DESC>
+                    </VALUE>
+                    <VALUE constName="SMART_CRADLE_SLOW" value="slow">
+                        <DESC>The cradle will charge devices slowly.</DESC>
+                    </VALUE>
+                </VALUES>
+            </PROPERTY>
+            <PROPERTY name="rowId" type="INTEGER" generateAccessors="true">
+                <DESC>The current Row ID of the cradle in the matrix. In Android, the range of rowId is 0 to 255.</DESC>
+            </PROPERTY>
+            <PROPERTY name="columnId" type="INTEGER" generateAccessors="true">
+                <DESC>The current Column ID of the cradle in the matrix. In Android, the range of columnId is 0 to 255.</DESC>
+            </PROPERTY>
+            <PROPERTY name="wallId" type="INTEGER" generateAccessors="true">
+                <DESC>The current Wall ID of the cradle in the matrix. In Android, the range of wallId is 0 to 255.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hardwareId" type="INTEGER" readOnly="true" generateAccessors="true">
+                <DESC>Hardware ID of the cradle</DESC>
+            </PROPERTY>
+            <PROPERTY name="partNumber" type="STRING" readOnly="true" generateAccessors="true">
+                <DESC>Part number of the cradle.</DESC>
+            </PROPERTY>
+            <PROPERTY name="serialNumber" type="STRING" readOnly="true" generateAccessors="true">
+                <DESC>Serial number of the cradle.</DESC>
+            </PROPERTY>
+            <PROPERTY name="mfgDate" type="STRING" readOnly="true" generateAccessors="true">
+                <DESC>Manufacture date of the cradle in DD-MM-YY format. Not Applicable for Android.</DESC>
+            </PROPERTY>
+            <PROPERTY name="driverVersion" type="STRING" readOnly="true" generateAccessors="true">
+                <DESC>Driver version of the cradle. Not Applicable for Android.</DESC>
+            </PROPERTY>
+            <PROPERTY name="cApiVersion" type="STRING" readOnly="true" generateAccessors="true">
+                <DESC>CAPI version of the cradle. Not Applicable for Android.</DESC>
+            </PROPERTY>
+            <PROPERTY name="firmwareVersion" type="STRING" readOnly="true" generateAccessors="true">
+                <DESC>Firmware version of the cradle.</DESC>
+            </PROPERTY>
+			
+        </PROPERTIES>
+
+        <METHODS access="STATIC">
+            <METHOD name="unlock">
+            	<PLATFORM>Android,CE</PLATFORM>
+                <DESC>Unlocks the terminal from the cradle for the specified period. For Android, the smoothing effect by default is false.</DESC>
+                <PARAMS>
+                    <PARAM name="ledOnDuration" type="INTEGER">
+                        <DESC>During unlock the LEDs will flash, this is the on duration of that flash specified in milliseconds.  Set to 0 to prevent flashing and keep the LED off. In Android, this is in mSecs and the range is from 0 mSec(minimum) to 65535 mSec(maximum).</DESC>
+                    </PARAM>
+                    <PARAM name="ledOffDuration" type="INTEGER">
+                        <DESC>During unlock the LEDs will flash, this is the off duration of that flash specified in milliseconds.  Set to 0 to prevent flashing.  If the on duration is non-zero and this parameter is zero then the LED will remain on when unlocked. In Android, this is in mSecs and the range is from 0 mSec(minimum) to 65535 mSec(maximum).</DESC>
+                    </PARAM>
+                    <PARAM name="timeout" type="INTEGER">
+                        <DESC>The cradle will remain unlocked for the length of time in seconds specified by this value.  Specified in seconds.  Range 10 to 30 inclusive.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+			
+	    <METHOD name="unlockEx">
+		<PLATFORM>Android</PLATFORM>
+                <DESC>Unlocks the terminal from the cradle for the specified period. For Android, the smoothing effect by default is false.</DESC>
+                <PARAMS>
+						  <PARAM name="propertyMap" type="HASH" propertyHash="true">
+							<DESC>The properties associated with reading card data.</DESC>
+									<PARAMS>
+											 <PARAM name="ledOnDuration" type="INTEGER">
+											<DESC>During unlock the LEDs will flash, this is the on duration of that flash specified in milliseconds.  Set to 0 to prevent flashing and keep the LED off. In Android, this is in mSecs and the range is from 0 mSec(minimum) to 65535 mSec(maximum).</DESC>
+											</PARAM>
+											<PARAM name="ledOffDuration" type="INTEGER">
+											<DESC>During unlock the LEDs will flash, this is the off duration of that flash specified in milliseconds.  Set to 0 to prevent flashing.  If the on duration is non-zero and this parameter is zero then the LED will remain on when unlocked. In Android, this is in mSecs and the range is from 0 mSec(minimum) to 65535 mSec(maximum).</DESC>
+											</PARAM>
+											<PARAM name="timeout" type="INTEGER">
+											<DESC>The cradle will remain unlocked for the length of time in seconds specified by this value.  Specified in seconds.  Range 10 to 30 inclusive.</DESC>
+											</PARAM>
+											<PARAM name="smoothingEffect" type="BOOLEAN">
+											<DESC>Enables or Disables the smoothing effect of LED blinking.</DESC>
+											</PARAM>
+									</PARAMS>
+						  </PARAM>
+				</PARAMS>
+            </METHOD>
+	    <METHOD name="flashLed">
+	    	<PLATFORM>Android</PLATFORM>
+                <DESC>The LED can be flashed to identify device location without unlocking the cradle.</DESC>
+                <PARAMS>
+						  <PARAM name="propertyMap" type="HASH" propertyHash="true">
+							<DESC>The properties associated with reading card data.</DESC>
+									<PARAMS>
+											 <PARAM name="ledOnDuration" type="INTEGER">
+											<DESC>During unlock the LEDs will flash, this is the on duration of that flash specified in milliseconds.  Set to 0 to prevent flashing and keep the LED off. In Android, this is in mSecs and the range is from 0 mSec(minimum) to 65535 mSec(maximum).</DESC>
+											</PARAM>
+											<PARAM name="ledOffDuration" type="INTEGER">
+											<DESC>During unlock the LEDs will flash, this is the off duration of that flash specified in milliseconds.  Set to 0 to prevent flashing.  If the on duration is non-zero and this parameter is zero then the LED will remain on when unlocked. In Android, this is in mSecs and the range is from 0 mSec(minimum) to 65535 mSec(maximum).</DESC>
+											</PARAM>
+											<PARAM name="smoothingEffect" type="BOOLEAN">
+											<DESC>Enables or Disables the smoothing effect of LED blinking.</DESC>
+											</PARAM>
+											<PARAM name="ledFlashCount" type="INTEGER">
+											<DESC>ledFlashCount is the no of count it will be flashed. This will take affect for valid values of ledOnDuration and ledOffDuration. </DESC>
+											</PARAM>
+									</PARAMS>
+						  </PARAM>
+				</PARAMS>
+            </METHOD>
+
+        </METHODS>
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>5.1.0</VER_INTRODUCED>
+        <PLATFORM>CE,Android</PLATFORM>
+        <REMARKS>
+            <REMARK title="Flashing the Cradle LEDs">
+                <DESC>There is a hardware imposed limit to how quickly the cradle LEDs can be flashed for a quickly flashing LED it is recommended to set the on / off duration to 500ms.
+                </DESC>
+            </REMARK>
+		</REMARKS>
+	</MODULE>
+</API>    

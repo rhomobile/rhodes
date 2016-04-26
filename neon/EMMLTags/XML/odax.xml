@@ -1,0 +1,370 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<HELPPAGE>
+	<FUNC>
+    <ACTIVEX>ODAX</ACTIVEX>
+		<NAME>ODAX</NAME>
+		<PATH>legacyObjects</PATH>
+		<TYPE>Preexisting JavaScript Object</TYPE>
+		<SYNOPSIS>contains read methods to provide offline data access.  ODAX uses either a CSV or XML file on the device to provide rudimentary offline capabilities and should only be used to provide backward compatibility with legacy applications.  RhoElements supports Application cache and Web SQL implementations which should be used in preference to ODAX in new applications.  If you have configured 'PreloadLegacyODAX' to be '1' the Javascript object 'odax' will be inserted automatically into your page's DOM by RhoElements.  The result set is stored internally in the 'odax' object and is created and manipulated using the exposed methods below</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>odax.Select('SELECT * FROM \'\\application\\test.xml\';', ',', false);</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<ACTIVEX_METHODS>
+			<METHOD>
+				<NAME>Clear</NAME>
+				<DESC>Clears the result set.</DESC>
+			</METHOD>
+			<METHOD>
+				<NAME>Copy</NAME>
+				<DESC>Copies the specified source filename to the destination filename.</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>Source</NAME>
+						<VALUES>String</VALUES>
+						<DESC>Full path of the source file name that is to be copied.</DESC>
+					</PARAMETER>
+					<PARAMETER>
+						<NAME>Destination</NAME>
+						<VALUES>String</VALUES>
+						<DESC>Full path of the destination file name.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>0 if no error is received.  If an error occurs the value from Windows API call GetLastError() is returned, if appropriate.</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>Delete</NAME>
+				<DESC>Deletes the specified file.</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>FileName</NAME>
+						<VALUES>String</VALUES>
+						<DESC>Full path of the file name that is to be deleted.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>0 if no error is received.  If an error occurs the value from Windows API call GetLastError() is returned, if appropriate.</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>FileExists</NAME>
+				<DESC>Checks to see whether the specified file exists.</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>FileName</NAME>
+						<VALUES>String</VALUES>
+						<DESC>Full path of the file name that is to be checked.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>True if the specified file exists, else False if it does not.</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>Execute</NAME>
+				<DESC>performs INSERT, UPDATE and DELETE statements on the specified file.  The file can be either XML or CSV.</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>SQL Statement</NAME>
+						<VALUES>String</VALUES>
+						<DESC>String representing the INSERT, UPDATE and DELETE SQL statement to be executed.</DESC>
+					</PARAMETER>
+					<PARAMETER>
+						<NAME>Format</NAME>
+						<VALUES>0 or 1</VALUES>
+						<DESC> If no extension is supplied the format parameter is used to determine file format (0 = XML, 1 = CSV).</DESC>
+					</PARAMETER>
+					<PARAMETER>
+						<NAME>Delimiter</NAME>
+						<VALUES>Character</VALUES>
+						<DESC>Delimiter which is used in CSV files as a column separator. Even though there is no special use for this in XML files you cannot leave this blank, hence you need to provide a valid value.</DESC>
+					</PARAMETER>
+					<PARAMETER>
+						<NAME>First Row</NAME>
+						<VALUES>'True' or 'False'</VALUES>
+						<DESC>This denotes that the first row of a CSV file contain the Column Names. If set to false in CSV mode it will retrieve columns as column1, column2 etc.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>The count of records affected by the operation or 0 if no records were affected.</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>Get</NAME>
+				<DESC>Retrieves the column value specified, from the current result set.  There must a valid result set in order to successfully execute this command, otherwise the operation will result in an error. In a CSV file, if the firstrow is set to true then strFieldName should have the field name else if firstrow is set to false then Column1 ... ColumnN literals should be used to retrieve the appropriate filed values.</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>Field Name</NAME>
+						<VALUES>String</VALUES>
+						<DESC>Field Name to be retrieved.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>The value from the specified field in the current result set record or a negative value if an error occurs.</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>GetLastErrorString</NAME>
+				<DESC>Returns a string containing an error message relating to the last error that occurred.</DESC>
+				<RETURN>
+					<DESC>String containing the last error message.</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>Move</NAME>
+				<DESC>Moves the specified source filename to the destination filename.</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>Source</NAME>
+						<VALUES>String</VALUES>
+						<DESC>Full path of the source file name that is to be moved.</DESC>
+					</PARAMETER>
+					<PARAMETER>
+						<NAME>Destination</NAME>
+						<VALUES>String</VALUES>
+						<DESC>Full file name and path where the file will be moved to.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>0 if no error occurs or an error code (see GetLastErrorString).</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>MoveFirst</NAME>
+				<DESC>Moves the row pointer to the first record of the result set.  There must a valid result set in order to successfully execute this command, otherwise the operation will result in an error.</DESC>
+				<RETURN>
+					<DESC>0 if no error occurs or an error code (see GetLastErrorString).</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>MoveLast</NAME>
+				<DESC>Moves the row pointer to the last record of the result set.  There must a valid result set in order to successfully execute this command, otherwise the operation will result in an error.</DESC>
+				<RETURN>
+					<DESC>0 if no error occurs or an error code (see GetLastErrorString).</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>MoveNext</NAME>
+				<DESC>Moves the row pointer to the next record of the result set.  There must a valid result set in order to successfully execute this command, otherwise the operation will result in an error.</DESC>
+				<RETURN>
+					<DESC>0 if no error occurs or an error code (see GetLastErrorString).</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>MovePrev</NAME>
+				<DESC>Moves the row pointer to the previous record of the result set.  There must a valid result set in order to successfully execute this command, otherwise the operation will result in an error.</DESC>
+				<RETURN>
+					<DESC>0 if no error occurs or an error code (see GetLastErrorString).</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>Select</NAME>
+				<DESC>Queries XML or CSV based database files.  This method performs the SQL SELECT statement on the specified file and populates the object's result set.</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>SQL Statement</NAME>
+						<VALUES>String</VALUES>
+						<DESC>String representing the SELECT SQL statement to be executed.</DESC>
+					</PARAMETER>
+					<PARAMETER>
+						<NAME>Delimiter</NAME>
+						<VALUES>Character</VALUES>
+						<DESC>Delimiter which is used in CSV files as a column separator. Even though there is no special use for this in XML files you cannot leave this blank, hence you need to provide a valid value.</DESC>
+					</PARAMETER>
+					<PARAMETER>
+						<NAME>First Row</NAME>
+						<VALUES>'True' or 'False'</VALUES>
+						<DESC>This denotes that the first row of a CSV file contain the Column Names. If set to false in CSV mode it will retrieve columns as column1, column2 etc.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>The number of records in the result set or a negative number to indicate an error (see GetLastErrorString).</DESC>
+				</RETURN>
+			</METHOD>
+		</ACTIVEX_METHODS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The Following example shows usage of the odax object to manipulate files on the device:</DESC>
+<CODE>
+&lt;script&gt;
+   //  Copy a file
+   var srcFileName = '\\application\\test.xml';
+   var destFileName = '\\windows\\test.xml';
+   var status1 = odax.Copy(srcFileName, destFileName);
+
+   //  Move a file
+   var status2 = odax.Move(srcFileName, destFileName);
+
+   //  Check if a file exists
+   if( true == odax.FileExists(destFileName))
+   {
+      alert("File: "+ destFileName + " Exists!");
+   }
+      
+   //  Delete a file
+   var status3 = odax.Delete(destFileName);
+
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example inserts records to a XML file: </DESC>
+<CODE>
+&lt;script&gt;
+   var FieldValue1 = 'Red';
+   var FieldValue2 =  Green';
+   var FieldValue3 = 'Blue';
+
+   var QueryString = 'INSERT INTO \'\\application\\test.xml\' (field1,field2,field3) VALUES (';
+   QueryString += '\''+FieldValue1+'\',';
+   QueryString += '\''+FieldValue2+'\',';
+   QueryString += '\''+FieldValue3+'\');';
+   var count = odax.Execute(QueryString,0,',',false);
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example inserts records to a CSV file: </DESC>
+<CODE>
+&lt;script&gt;
+   var QueryString = 'INSERT INTO \'\\application\\test.csv\' (field1,field2,field3) VALUES (';
+   QueryString += '\''+FieldValue1+'\',';
+   QueryString += '\''+FieldValue2+'\',';
+   QueryString += '\''+FieldValue3+'\');';
+   var count = odax.Execute(QueryString,1,',',true);
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example updates records in a XML file</DESC>
+<CODE>
+&lt;script&gt;
+   var fieldValue = 'Orange';
+   var conditionField = 'Red';
+
+   var QueryString = 'UPDATE \'\\application\\test.xml\' SET field1=';
+   QueryString += '\''+ fieldValue +'\'';
+   QueryString += ' WHERE field1=\'';
+   QueryString += conditionField +"\';"
+   var count = odax.Execute(QueryString,0,',',false);
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example deletes records in a XML file</DESC>
+<CODE>
+&lt;script&gt;
+   var conditionField = 'Red';
+
+   var QueryString = 'DELETE FROM \'\\application\\test.xml\' WHERE field1=';
+   QueryString += '\''+ conditionField +'\';';
+   var count = odax.Execute(QueryString,0,',',false);
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example clears the resultset after a query is executed:</DESC>
+<CODE>
+&lt;script&gt;
+   var count = odax.Select('SELECT * FROM \'\\application\\test.xml\';', ',', false);
+   odax.Clear();
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following javascript gets the column 'field1' from the resultset:</DESC>
+<CODE>
+&lt;script&gt;
+   var count = odax.Select('SELECT * FROM \'\\application\\test.xml\';', ',', false);
+   var colval = odax.Get("field1");
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following javascript moves the row pointer to the first record of the resultset:</DESC>
+<CODE>
+&lt;script&gt;
+   var count = odax.Select('SELECT * FROM \'\\application\\test.xml\';', ',', false);
+   var result = odax.MoveFirst();
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following javascript moves the row pointer to the next record in the resultset:</DESC>
+<CODE>
+&lt;script&gt;
+   var count = odax.Select('SELECT * FROM \'\\application\\test.xml\';', ',', false);
+   var result = odax.movenext();
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following javascript moves the row pointer to the previous record in the resultset:</DESC>
+<CODE>
+&lt;script&gt;
+   var count = odax.Select('SELECT * FROM \'\\application\\test.xml\';', ',', false);
+   var result = odax.moveprev();
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following javascript moves the row pointer to the last record of the resultset</DESC>
+<CODE>
+&lt;script&gt;
+   var count = odax.Select('SELECT * FROM \'\\application\\test.xml\';', ',', false);
+   var result = odax.movelast();
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following javascript selects all records from a XML file: </DESC>
+<CODE>
+&lt;script&gt;
+   var count = odax.Select('SELECT * FROM \'\\application\\test.xml\';', ',', false);
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>			
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Good Practise</COMMENT_HEADING>
+				<COMMENT_DATA>It's good practice to check if the file exists before copying it. To do this use FileExists() method. This will support any file extension and will work as per normal file copy command. If file already exists with the same name in the destination folder/path it would be overwritten.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>First Row</COMMENT_HEADING>
+				<COMMENT_DATA>The delimiter and firstrow are a Select. If firstrow is set to true when creating a table with INSERT, then the field names are written to the first row as column names.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Query needed after Execute</COMMENT_HEADING>
+				<COMMENT_DATA>The current result set becomes invalid after any Execute (INSERT, UPDATE, DELETE) and arbitrary values will be returned by MoveFirst etc. A new SELECT query must be performed to get valid results.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Backwards Compatibility</COMMENT_HEADING>
+				<COMMENT_DATA>The ODAX Preexisting Javascript Object provides backwards compatibility with code written for Browser and also supports the syntax below.  Because RhoElements inserts the object 'odax' on the page automatically when 'PreloadLegacyODAX' is configured to be '1' you can not create your own objects by this name, see below:</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+&lt;script&gt;
+  //  Old Browser syntax supported by ODAX
+  var myObj = new ActiveXObject("CeODAX.ODAX"); 
+  
+  //  Note: var odax = new ... will fail because the object already exists on the page.
+  myObj.Delete('\\windows\\crazy_frog.wav');
+&lt;/script&gt;
+</COMMENTFIXEDWIDTH>
+		</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except Android devices.</PLATFORM>
+			<APPLIES>Immediate - These methods are actioned immediately.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Getting Started/">ConfigurationSettings</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>
+

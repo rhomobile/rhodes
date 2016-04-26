@@ -1,0 +1,358 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="RhoElements_runtime_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>RawSensors</NAME>
+		<PATH>Sensor</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to retrieve the raw data values of the specified sensors.</SYNOPSIS>		
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="RawSensors" content="[method / parameter]"&gt;</EXAMPLE>
+			</USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="RawSensors" content="sensorEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>getSensorData</NAME>
+				<DESC>This immediately returns the raw data of the specified sensors via the sensorEvent</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>			
+		</PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>			
+			<PARAM>
+				<NAME>accelerometer</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the accelerometer sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>deviceOrientation</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the device orientation sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tiltangle</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the tiltangle sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>motion</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the motion sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>ecompass</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the ecompass sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>magnetometer</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the magnetometer sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>gyroscope</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the gyroscope sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>ambientlight</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the ambientlight sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>proximity</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the proximity sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>proximitylongrange</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the proximitylongrange sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>pressure</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the pressure sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>temperature</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the temperature sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>humidity</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the humidity sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>gravity</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the gravity sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>linearAcceleration</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the linear acceleration sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>rotation</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the rotation sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>orientation</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables the orientation sensor data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>all</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>This enables/disables all the available sensors data retrieval.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>			
+			<PARAM>
+				<NAME>minimumInterval</NAME>
+				<VALUES>Value in milli seconds</VALUES>
+				<DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds.</DESC>
+				<DEFAULT>1000 milliseconds</DEFAULT>
+			</PARAM>			
+		</PARAMS_WITH_ATTRIBUTES>
+		<RETURNS>
+			<TAG>
+				<TAG_NAME>sensorEvent</TAG_NAME>
+				<TAG_NOTES>The sensorEvent event is triggered when a parameter of the specfiied sensors is changed.</TAG_NOTES>				
+				<RETVAL>
+					<NAME>accelerometerX</NAME>
+					<DESC>X co-ordinate value of the Accelerometer sensor in SI units (m/s^2)</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>accelerometerY</NAME>
+					<DESC>Y co-ordinate value of the Accelerometer sensor in SI units (m/s^2)</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>accelerometerZ</NAME>
+					<DESC>Z co-ordinate value of the Accelerometer sensor in SI units (m/s^2)</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>deviceOrientation</NAME>
+					<DESC>value of the orientation sensor</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>tiltangleX</NAME>
+					<DESC>X co-ordinate value of the tiltangle sensor in degrees units</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>tiltangleY</NAME>
+					<DESC>Y co-ordinate value of the tiltangle sensor in degrees units</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>tiltangleZ</NAME>
+					<DESC>Z co-ordinate value of the tiltangle sensor in degrees units</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>motion</NAME>
+					<DESC>value of the motion sensor</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>ecompass</NAME>
+					<DESC>value of the ecompass sensor</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>magnetometerX</NAME>
+					<DESC>X value of the magnetometer sensor in micro-Tesla (uT) units</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>magnetometerY</NAME>
+					<DESC>Y value of the magnetometer sensor in micro-Tesla (uT) units</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>magnetometerZ</NAME>
+					<DESC>Z value of the magnetometer sensor in micro-Tesla (uT) units</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>gyroscopeX</NAME>
+					<DESC>X co-ordinate value of the gyroscope sensor in radians/second units</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>gyroscopeY</NAME>
+					<DESC>Y co-ordinate value of the gyroscope sensor in radians/second units</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>gyroscopeZ</NAME>
+					<DESC>Z co-ordinate value of the gyroscope sensor in radians/second units</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>ambientLight</NAME>
+					<DESC>value of the ambient Light sensor in SI lux units</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>proximity</NAME>
+					<DESC>value of the proximity sensor in centimeters units</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>proximitylongrange</NAME>
+					<DESC>value of the proximitylongrange sensor</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>pressure</NAME>
+					<DESC>value of the pressure sensor in hPa (millibar) units</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>temperature</NAME>
+					<DESC>value of the temperature sensor in degree Celsius units</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>humidity</NAME>
+					<DESC>value of the humidity sensor in percent units</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>gravityX</NAME>
+					<DESC>X co-ordinate value of the gravity sensor in SI units (m/s^2)</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>gravityY</NAME>
+					<DESC>Y co-ordinate value of the gravity sensor in SI units (m/s^2)</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>gravityZ</NAME>
+					<DESC>Z co-ordinate value of the gravity sensor in SI units (m/s^2)</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>linearAccelerationX</NAME>
+					<DESC>X co-ordinate value of the linear acceleration sensor in SI units (m/s^2)</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>linearAccelerationY</NAME>
+					<DESC>Y co-ordinate value of the linear acceleration sensor in SI units (m/s^2)</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>linearAccelerationZ</NAME>
+					<DESC>Z co-ordinate value of the linear acceleration sensor in SI units (m/s^2)</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>rotationX</NAME>
+					<DESC>X co-ordinate value of the rotation sensor as a combination of an angle and an axis</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>rotationY</NAME>
+					<DESC>Y co-ordinate value of the rotation sensor as a combination of an angle and an axis</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>rotationZ</NAME>
+					<DESC>Z co-ordinate value of the rotation sensor as a combination of an angle and an axis</DESC>					
+				</RETVAL>
+				<RETVAL>
+					<NAME>orientationX</NAME>
+					<DESC>X co-ordinate value of the orientation sensor in degrees units</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>orientationY</NAME>
+					<DESC>Y co-ordinate value of the orientation sensor in degrees units</DESC>					
+				</RETVAL>	
+				<RETVAL>
+					<NAME>orientationZ</NAME>
+					<DESC>Z co-ordinate value of the orientation sensor in degrees units</DESC>					
+				</RETVAL>
+			</TAG>
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables all the sensors and waits for the updates through the sensor event</DESC>
+<CODE>
+&lt;META HTTP-EQUIV="RawSensors" CONTENT="sensorEvent:url('Javascript:onSensor(%json);');all:enabled; "&gt;
+
+&lt;SCRIPT&gt;
+    function onSensor(jsonObject)
+    {
+        var theOutput = "&lt;BR&gt;&lt;BR&gt;&lt;B&gt;Accelerometer  &lt;/B&gt;";        
+        theOutput = theOutput + "X: " + jsonObject.accelerometerX + ", Y: " + jsonObject.accelerometerY + ", Z: " + jsonObject.accelerometerZ + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Orientation  &lt;/B&gt;";        
+        theOutput = theOutput + "X: " + jsonObject.deviceOrientation  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Tilt  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.tiltangleX  + ", Y: " + jsonObject.tiltangleY  + ", Z: " + jsonObject.tiltangleZ  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Motion  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.motion  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Ecompass  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.ecompass  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Magnetometer  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.magnetometerX  + ", Y: " + jsonObject.magnetometerY  + ", Z: " + jsonObject.magnetometerZ  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Gyroscope  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.gyroscopeX  + ", Y: " + jsonObject.gyroscopeY  + ", Z: " + jsonObject.gyroscopeZ  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;AmbientLight  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.ambientLight  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Proximity  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.proximity  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Proximitylongrange  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.proximitylongrange  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Pressure  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.pressure  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Temperature  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.temperature  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Humidity  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.humidity  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Gravity  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.gravityX  + ", Y: " + jsonObject.gravityY  + ", Z: " + jsonObject.gravityZ  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Linear Acceleration  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.linearAccelerationX  + ", Y: " + jsonObject.linearAccelerationY  + ", Z: " + jsonObject.linearAccelerationZ  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Rotation  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.rotationX  + ", Y: " + jsonObject.rotationY  + ", Z: " + jsonObject.rotationZ  + "&lt;BR&gt;";
+        theOutput = theOutput + "&lt;B&gt;Orientation  &lt;/B&gt;";
+        theOutput = theOutput + "X: " + jsonObject.orientationX  + ", Y: " + jsonObject.orientationY  + ", Z: " + jsonObject.orientationZ  + "&lt;BR&gt;";
+        outputDiv.innerHTML = theOutput;
+    }
+&lt;/SCRIPT&gt;
+&lt;div id="outputDiv"&gt;Sensor Output Goes Here&lt;/div&gt;
+&lt;P&gt;
+  &lt;INPUT align="center" type="button" value="Retrieve Sensor Data" onclick="RawSensors.getSensorData();"&gt;&lt;br&gt;
+</CODE>
+			</EXAMPLE>			
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>sensor data format</COMMENT_HEADING>
+				<COMMENT_DATA>Since the json object returned by the event contains the data for all of the sensors if a sensor is not enabled or absent then that data is undefined (null) and should not be used.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>minimum interval</COMMENT_HEADING>
+				<COMMENT_DATA>As some of the sensor values change rapidly the minimum interval between two updates should be specified as a reasonable value, otherwise there can be a performance impact.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Cross platform consistency</COMMENT_HEADING>
+				<COMMENT_DATA>As this plugin returns the raw sensor values reported by the operating system the values might differ between platforms.  Which sensors are supported on which platform are dependant on the hardware available on the device.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Javascript and Meta-Tag Support</COMMENT_HEADING>
+				<COMMENT_DATA>
+          On iOS devices and non Symbol Technologies Windows Mobile/CE devices, only the Ruby interface is currently available. On all Android and Symbol Technologies devices all language interfaces are supported.
+        </COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices. On Windows this is only supported in MPA3.0 devices.</PLATFORM>
+			<APPLIES>Non Persistent - Changes to this module will not persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>2.1</VER_INTRODUCED>
+		</ADDITIONAL>		
+	</FUNC>
+</HELPPAGE>

@@ -1,0 +1,74 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>upcEanSupplemental5</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Upc Ean</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to enable or disable upcEanSupplemental5 supplemental barcodes.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="upcEanSupplemental5:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>upcEanSupplemental5</NAME>
+                		<VALUES>true/false</VALUES>
+				<DESC>Enables/Disables the supplemental barcode decoding.  Note you must have upcEanSupplementalMode:always set for this parameter to take effect</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to decode upcEanSupplemental5 barcodes:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upcEanSupplementalMode:always"&gt;   
+&lt;META HTTP-Equiv="scanner" Content="upcEanSupplemental5:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to decode upcEanSupplemental5 barcodes:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled;upcEanSupplementalMode:always;upcEanSupplemental5:true;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to decode upcEanSupplemental5 barcodes:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-allDecoders" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-upcEanSupplementalMode" Content="always"&gt;   
+&lt;META HTTP-Equiv="scanner-upcEanSupplemental5" Content="true"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+<COMMENT>
+This tag is only considered if upcEanSupplementalMode is set to always.
+</COMMENT>
+<COMMENT>
+<COMMENT_HEADING>Picklist mode</COMMENT_HEADING>
+<COMMENT_DATA>
+UPC EAN Supplemental 5 is not compatible with picklist mode.
+</COMMENT_DATA>
+</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports decoding upcEanSupplemental5 barcodes.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>upcEanSupplementalMode</TOPIC>
+			<TOPIC RELPATH ="../">All_Decoders</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

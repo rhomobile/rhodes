@@ -1,0 +1,73 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>compositeC</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags</PATH>
+		<TYPE>Decoder</TYPE>
+		<SYNOPSIS>is used to enable or disable the Composite C decoder.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="CompositeC:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>compositeC</NAME>
+                		<VALUES>enabled/Disabled</VALUES>
+				<DESC>Enables/Disables the Composite C decoder.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read CompositeC labels:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:disabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="code128:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="compositeC:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:disabled;code128:enabled;compositeC:enabled;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+function enableCompositeC()
+{
+	scanner.allDecoders = 'disabled';
+	scanner.code128 = 'enabled';
+	scanner.compositeC = 'enabled';
+	scanner.enable();
+}
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Requirements - Code128</COMMENT_HEADING>
+				<COMMENT_DATA>
+In order to enable compositeC barcode scanning, the code128 decoder must also be enabled.
+				</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports CompositeC.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../">Scanner</TOPIC>
+			<TOPIC RELPATH ="./Code128/">Code128</TOPIC>
+			<TOPIC>All_Decoders</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

@@ -1,0 +1,354 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Signature" parent="Rho" license="Required">
+        <HELP_OVERVIEW>creates a rectangular box within which the user can draw by using a finger or the device's stylus to record handwritten data. Common usages for this tag include the capture of client/customer signatures and the input of handwritten text/notations. It is recommended to not to rotate the device when Signature window is shown.</HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["signature"]
+
+The `signature` extension is also included automatically if you specify the following in your `build.yml`
+    :::ruby
+    app_type: "rhoelements"
+
+> Note: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your build.yml as shown [here](../guide/build_config#other-build-time-settings).
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+
+## Persistence
+With the old PocketBrowser / RhoElements 1 APIs, any events, such as `signatureCaptureEvent` were canceled when a full navigate was performed. The original reason for this was a limitation of the IE engine on WM5 devices. When moving to the common API this was changed so that callbacks are not canceled.
+        </MORE_HELP>
+
+        <PLATFORM>iOS, Android, WM</PLATFORM>
+        <TEMPLATES>
+        </TEMPLATES>
+
+        <PROPERTIES access="STATIC" generateAccessors="true">
+            <DESC>These properties are used to configure the appearance and the behavior of the signature capture area.</DESC>
+            <ALIASES>
+                <ALIAS new="imageFormat" existing="compressionFormat" deprecated="true"/>
+                <ALIAS new="name" existing="fileName" deprecated="true"/>
+            </ALIASES>
+
+            <PROPERTY name="compressionFormat" type="STRING">
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <DESC>Compression format of the image file for the captured signature. On WM/CE, irrespective of setting any format, the output format will be of bitmap type. On WM/CE, when compressionFormat is queried, it will be of bitmap type always.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+                <VALUES>
+                    <VALUE constName="COMPRESSION_FORMAT_JPG" value ="jpg">
+                        <DESC>JPEG file format (Not available on WM/CE).</DESC>
+                    </VALUE>
+                    <VALUE constName="COMPRESSION_FORMAT_PNG" value ="png">
+                        <DESC>Portable Network Graphics file (Not available on WM/CE).</DESC>
+                    </VALUE>
+                    <VALUE constName="COMPRESSION_FORMAT_BMP" value ="bmp">
+                        <DESC>Bitmap image file (Not available on iOS).</DESC>
+                    </VALUE>
+                </VALUES>
+            </PROPERTY>
+
+            <PROPERTY name="outputFormat" type="STRING" default="image">
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <DESC>The return type of the saved signature capture image.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+                <VALUES>
+                    <VALUE constName="OUTPUT_FORMAT_IMAGE" value="image">
+                        <DESC>Outputs the signature capture image into an image file. The compression method and extension of the image file can be specified in compressionFormat.</DESC>
+                    </VALUE>
+                    <VALUE constName="OUTPUT_FORMAT_DATAURI" value="dataUri">
+                        <DESC>Outputs the signature capture image as a DataURI string. (Not available on iOS).</DESC>
+                    </VALUE>
+                </VALUES>
+            </PROPERTY>
+
+            <PROPERTY name="fileName" type="STRING" default="signature">
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>The filename in which to store the signature image, if "image" is used as the outputFormat. The file extension is determined by the compressionFormat used.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+            </PROPERTY>
+
+            <PROPERTY name="border" type="BOOLEAN" default="true">
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>Shows or hides a border for the rectangular capture area. Not applicable to full-screen signature capture area.</DESC>
+                <PLATFORM>Android, WM</PLATFORM>
+            </PROPERTY>
+
+            <PROPERTY name="penColor" type="STRING" default="#FF000000">
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>RGB or ARGB value that sets the color of the stylus pen ink using HTML web colors.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+            </PROPERTY>
+
+            <PROPERTY name="penWidth" type="INTEGER" default="3">
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>Sets the width of the pen line in pixels when using the device's stylus. On Android this setting will also be applied to any previously drawn signature currently displayed. It is advised that you keep this at 5 or less.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+            </PROPERTY>
+
+            <PROPERTY name="bgColor" type="STRING" default="#FFFFFFFF">
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>RGB or ARGB value that sets the background color of the signature capture area.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+            </PROPERTY>
+
+            <PROPERTY name="left" type="INTEGER" default="15">
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>The coordinates in pixels of the left side of the signature capture area. Not applicable to full-screen signature capture area.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+            </PROPERTY>
+
+            <PROPERTY name="top" type="INTEGER" default="60">
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>The coordinates in pixels of the top side of the signature capture area. Not applicable to full-screen signature capture area.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+            </PROPERTY>
+
+            <PROPERTY name="width" type="INTEGER" default="200">
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>The width of the signature capture area in pixels. Not applicable to full-screen signature capture area.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+            </PROPERTY>
+
+            <PROPERTY name="height" type="INTEGER" default="150">
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>The height of the signature capture area in pixels. Not applicable to full-screen signature capture area.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS access="STATIC">
+            <METHOD name="takeFullScreen" hasCallback="mandatory" runInThread="ui">
+                <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+                <DESC>Shows a modal window with signature capture area and UI (toolbar with buttons) for cancel / capture and return to main application window. The callback is fired when the signature window is closed (when in full-screen) or when capture is called. On WM/CE, the signature area has visible buttons for 'clear', 'capture' and 'cancel'. In Android / iOS, the signature area has images which will behave as buttons for 'clear', 'capture' and 'cancel'. This function open modal full screen window therefore, other functions related to in-line signature capture (work with inside browser window area) do not affect the capture window shown by this function.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+                <PARAMS>
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
+                        <DESC>Map of signature properties to be set</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Use already set properties</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK  type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>Whether a signature was captured or the signature capture area was dismissed (Fullscreen version only). Possible values:'ok' or 'cancel'</DESC>
+                        </PARAM>
+                        <PARAM name="imageUri" type="STRING">
+                            <DESC>If the outputFormat is "image", this will be the URI of the captured signature image. If the outputFormat is "dataUri", this will be the DataURI representation of the captured signature image.</DESC>
+                        </PARAM>
+                        <PARAM name="signature_uri" type="STRING" deprecated="true">
+                            <DESC>If the outputFormat is "image", this will be the URI of the captured signature image. If the outputFormat is "dataUri", this will be the DataURI representation of the captured signature image.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="show" runInThread="ui">
+                <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+                <DESC>Show in-line signature window. This function works with a non-modal signature capture area shown inside browser window. All in-line signature capture functions (like this) do not has affect the capture area shown in takeFullScreen (modal full screen capture area).</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+                <PARAMS>
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
+                        <DESC>Map of signature properties to be set.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Use existing properties from this API.</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="capture" hasCallback="mandatory" runInThread="ui">
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>Captures the in-line signature area as an image. This function works with a non-modal signature capture area shown inside browser window. All in-line signature capture functions (like this) do not has affect the capture area shown in takeFullScreen (modal full screen capture area).</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+                <CALLBACK  type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>Whether a signature was captured or the signature capture area was dismissed (Fullscreen version only). Possible values:'ok' or 'cancel'</DESC>
+                        </PARAM>
+                        <PARAM name="imageUri" type="STRING">
+                            <DESC>If the outputFormat is "image", this will be the URI of the captured signature image. If the outputFormat is "dataUri", this will be the DataURI representation of the captured signature image.</DESC>
+                        </PARAM>
+                        <PARAM name="signature_uri" type="STRING" deprecated="true">
+                            <DESC>If the outputFormat is "image", this will be the URI of the captured signature image. If the outputFormat is "dataUri", this will be the DataURI representation of the captured signature image.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="clear" runInThread="ui">
+                <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+                <DESC>Clears an in-line capture area. This function works with a non-modal signature capture area shown inside browser window. All in-line signature capture functions (like this) do not has affect to capture area shown in takeFullScreen (modal full screen capture area) </DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+            </METHOD>
+
+            <METHOD name="hide" runInThread="ui">
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <DESC>Hides an in-line capture area from view. It clears the inputed signature for in-line signature areas. In a hidden state, a user cannot interact with the signature capture area. This function work with non-modal signature capture area showed inside browser window. All in-line signature capture functions (like this) do not has affect to capture area showed in takeFullScreen (modal full screen capture area) </DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+            </METHOD>
+
+            <METHOD name="setVectorCallback" hasCallback="mandatory" runInThread="ui">
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <PLATFORM>Android, WM</PLATFORM>
+                <DESC>Signature data is formatted into a series of vectors and returned to the application via this callback function. The received data may not represent the entire signature as the vectors will be sent in batches if the signature is large. A single vector (array entry) contains an X, Y coordinate and the beginning / end of the signature is defined by (65535, 65535). This callback is independent of the callback of the capture method, when specified the callback will be called whenever a 'pen up' occurs in the signature box.</DESC>
+                <CALLBACK  type="HASH">
+                    <DESC>Not providing a callback will result in the vector callback being cleared</DESC>
+                    <PARAMS>
+                        <PARAM name="vectorArray" type="ARRAY">
+                            <DESC>JavaScript array of vectors which represent the signature.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+        </METHODS>
+
+        <USER_OVERVIEW>
+            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+Full-screen and In-line
+=======================
+The signature capture feature can work in two visual modes, Full-screen and In-line. The full-screen variant has buttons to capture, clear and cancel the signature capture box, so the methods: "clear", "hide", "capture" don't need to be used. Whereas with the in-line signature capture, there are no such buttons so these will have to be designed into the app itself.
+
+Parameters which clear the signature
+====================================
+The signature capture area is designed to be set up prior to capturing the signature, as such the following parameters will clear any current signature: "width", "height", "penColor", "bgColor".
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>iOS, Android, WM</PLATFORM>
+
+        <REMARKS>
+            <REMARK title="Fullscreen and In-line">
+                <DESC>The signature capture feature can work in two visual modes, Full-screen and In-line. The full-screen variant has buttons to capture, clear and cancel the signature capture box, so the methods: "clear", "hide", "capture" don't need to be used. Whereas with the in-line signature capture, there are no such buttons so these will have to be designed into the app itself.</DESC>
+            </REMARK>
+
+            <REMARK title="Parameters which clear the signature">
+                <DESC>The signature capture area is designed to be set up prior to capturing the signature, as such the following parameters will clear any current signature: "width", "height", "penColor", "bgColor".</DESC>
+            </REMARK>
+
+            <REMARK title="Page Navigation">
+                <DESC>In Android, the state of the signature will not be cleared on page navigation whereas in Windows, the state of the signature is cleared.</DESC>
+            </REMARK>
+
+            <REMARK title="Persistent Behavior">
+                <DESC>While using "takeFullScreen" method, if we press Home button and re-launch the application the state won't be persisted in Android platform.</DESC>
+            </REMARK>
+        </REMARKS>
+
+        <EXAMPLES>
+           <EXAMPLE title="Capture signature to file (fullscreen) and display it in a view">
+               <SECTIONS>
+               <SECTION>
+               <DESC>In order to capture a signature in full-screen mode you need to </DESC>
+               <CODE lang='ruby'>
+           <![CDATA[
+  def capture_fullscreen
+    # Invoke signature capture screen and assign callback
+    Rho::Signature.takeFullScreen({}, url_for(:action => :signature_callback))
+
+    render :action => :show_signature
+  end
+
+  def signature_callback
+    # If status is not 'ok', the capture was canceled
+    if @params['status'] == 'ok'
+
+      # By default, the output format is "image", so the imageUri parameter will contain the relative filename of an image
+      # We must convert that relative filename to an absolute path in order to access the file
+      signature = Rho::Application.expandDatabaseBlobFilePath(@params["imageUri"])
+
+      # In our example, we will display the signature as soon as it is captured.
+      # We have a JavaScript function in our page to set the src attribute of an img element and we will call it now
+      #
+      WebView.executeJavascript("updateSignature('#{signature}')")
+    else
+      # if we did not really capture a signature, there is nothing else to do here
+      WebView.navigate(url_for(:action => :index ))
+    end
+  end
+                   ]]>
+               </CODE>
+               </SECTION>
+               <SECTION>
+               <DESC>In the view, we have an img element to display the captured signature and a JavaScript function to update it</DESC>
+               <CODE lang='javascript'>
+           <![CDATA[
+<div data-role="page">
+
+
+  <div data-role="header" data-position="in-line">
+    <h1>Captured signature</h1>
+  </div>
+
+  <div data-role="content">
+    <img id="signature-image" src="<%= @signature %>">
+  </div>
+
+  <script type="text/javascript">
+    function updateSignature(signature) {
+      $("#signature-image").attr('src',signature);
+    }
+  </script>
+
+</div>
+                   ]]>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+
+           <EXAMPLE title="Set signature capture properties">
+               <SECTIONS>
+               <SECTION>
+               <DESC>Several properties affect the appearance of the signature capture functionality. You can set their values before showing the capture interface:</DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# Change full-screen from true (default) to false
+# Change background color from white (default) to black
+# Change pen color from blue (default) to white
+Rho::Signature.show { :fullScreen => false, :bgColor => "#000000", :penColor => "#FFFFFF" }
+                   ]]>
+                 </RUBY>
+                 <JAVASCRIPT>
+           <![CDATA[
+// Change full-screen from true (default) to false
+// Change background color from white (default) to black
+// Change pen color from blue (default) to white
+Rho.Signature.show ({"fullScreen" : false, "bgColor" : "#000000", "penColor" : "#FFFFFF"});
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+
+           <EXAMPLE title="Capture as DataURI">
+            <SECTIONS>
+
+              <SECTION>
+               <DESC>By default, the Signature API returns the capture as an image. If you prefer a DataURI representation of the signature, use the "outputFormat" property</DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+Rho::Signature.takeFullScreen({ :outputFormat => "dataUri" }, url_for(:action => :signature_callback))
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+Rho.Signature.takeFullScreen({"outputFormat" : "dataUri"}, signature_callback)
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+       </EXAMPLES>
+    </MODULE>
+</API>

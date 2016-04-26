@@ -68,7 +68,7 @@ namespace rho.common
 	        }
         }
 
-        int MotorolaLicence_check(String company, String licence)
+        int SymbolLicence_check(String company, String licence)
         {	
             char[] wtCoName = company.ToCharArray();
 	        char[] wtReg = licence.ToCharArray();

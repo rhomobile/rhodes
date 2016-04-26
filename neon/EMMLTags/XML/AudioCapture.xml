@@ -1,0 +1,168 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="RhoElements_runtime_help.xsl"?>
+
+<HELPPAGE>
+  <FUNC>
+    <NAME>audioCapture</NAME>
+    <PATH>audioCapture</PATH>
+   <TYPE>Module</TYPE>
+    <SYNOPSIS>captures audio files from the default microphone device.</SYNOPSIS>
+	<MULTIPLE_INSTANCE>Only the foreground RhoElements application is given access to capture audio, when an application is sent to the background any capture that is in progress will be cancelled and it will automatically relinquish control of the Audio hardware.  When brought back to the foreground, an application previously using the audio capture will have its previous configuration (eg. name etc.) reapplied to the plugin automatically. Please note that any file transfer that is in progress continues even if the application is sent to the background.</MULTIPLE_INSTANCE>
+    <SYNTAX>
+		<USAGE>
+			<EXAMPLE>&lt;META HTTP-Equiv="AudioCapture" content="[method / parameter]"&gt;</EXAMPLE>
+		</USAGE>
+		<USAGE>
+			<EXAMPLE>&lt;META HTTP-Equiv="AudioCapture" content="AudioSaveEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+		</USAGE>
+	</SYNTAX>
+    <PARAMS_WITH_ATTRIBUTES>
+		<PARAM>
+			<NAME>duration</NAME>
+			<VALUES>Milliseconds</VALUES>
+			<DESC>Specifies the number of milliseconds of audio to capture, defining the size of the capture buffer.  This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milli seconds is specified, the interval will be defaulted to 20000 milli seconds.</DESC>
+			<DEFAULT>20000</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>destination</NAME>
+			<VALUES>Fully qualified URL or file name.  Supports HTTP, FTP and File protocols.</VALUES>
+			<DESC>Sets the destination path and name for the captured WAV file.  See Remarks</DESC>
+			<DEFAULT></DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>username</NAME>
+			<VALUES>String</VALUES>
+			<DESC>The username for the HTTP or FTP server if required</DESC>
+			<DEFAULT>No username</DEFAULT>
+		</PARAM>	
+		<PARAM>
+			<NAME>password</NAME>
+			<VALUES>String</VALUES>
+			<DESC>The password for the HTTP or FTP server if required</DESC>
+			<DEFAULT>No password</DEFAULT>
+		</PARAM>	
+		<PARAM>
+			<NAME>name</NAME>
+			<VALUES>String compliant with Windows Naming restrictions</VALUES>
+			<DESC>When the audio capture completes a file is saved in the root directory of the device (package directory in case of Android).  This parameter is used to specify the filename when storing the file locally. </DESC>
+			<DEFAULT>AudioCapture</DEFAULT>
+		</PARAM>	
+		<PARAM>
+			<NAME>codec</NAME>
+			<VALUES>"AAC", "AMR_NB" or "AMR_WB"</VALUES>
+			<DESC>The Audio Encoder can be specified through this attribute. NOTE: This is only on Android</DESC>
+			<DEFAULT>"AAC"</DEFAULT>
+		</PARAM>
+		
+	</PARAMS_WITH_ATTRIBUTES>
+	
+	<PARAMS_NO_ATTRIBUTES>	
+		<PARAM>
+			<NAME>start</NAME>
+			<DESC>Starts capturing audio until either 'stop' is received, or 'duration' is reached (i.e. until the buffer is full).</DESC>
+			<DEFAULT>N/A</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>stop</NAME>
+			<DESC>Stops capturing audio and either saves the file locally, or transfers it to a remote server</DESC>
+			<DEFAULT>N/A</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>cancel</NAME>
+			<DESC>Stops capturing audio and discards any captured audio data</DESC>
+			<DEFAULT>N/A</DEFAULT>
+		</PARAM>
+
+	</PARAMS_NO_ATTRIBUTES>	
+	<RETURNS>
+		<TAG>
+			<TAG_NAME>audioSaveEvent</TAG_NAME>
+			<TAG_NOTES>The Audio Save Event is called when the captured audio has been successfully transfered to the specified destination.  When a capture is started with the HTTP protocol, the destination server message is returned. When it is called with the FTP protocol, either 'OK: File Sent', 'OK: File Received' or 'ERROR' is returned.  This tag should be used in conjunction with the Start method.</TAG_NOTES>
+			<RETVAL>
+				<NAME>transferResult</NAME>
+				<DESC>Success or failure of transfer, see note above.</DESC>
+			</RETVAL>
+		</TAG>
+	</RETURNS>
+	<EXAMPLES>
+		<EXAMPLE>
+			<DESC>The following META Tag example performs a 30 second capture. The resulting audio file will be transferred to a server via HTTP and an alert will inform the user whether or not the transfer succeeded.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="AudioCapture" Content="duration:30000"&gt;
+&lt;META HTTP-Equiv="AudioCapture" Content="Destination:url('HTTP://192.168.1.1:80/Uploaded/upload.aspx')"&gt;
+&lt;META HTTP-Equiv="AudioCapture" Content="AudioSaveEvent:url('javascript:alert('%s');')"&gt;
+&lt;META HTTP-Equiv="AudioCapture" Content="start"&gt;
+</CODE>
+		</EXAMPLE>
+		<EXAMPLE>
+			<DESC>The following javascript will start and stop an audio capture respectively when onStart and onStop are called with a 60 second limit:</DESC>
+<CODE>
+&lt;script&gt;
+   function onStart()
+   {
+      audioCapture.duration = '60000';
+      audioCapture.start();
+   }
+   
+   function onStop()
+   {
+      audioCapture.stop();
+   }
+&lt;/script&gt;
+</CODE>
+		</EXAMPLE>
+		<EXAMPLE>
+			<DESC>The following javascript will start a 30 second audio capture when onStart is called:</DESC>
+<CODE>
+&lt;script&gt;
+   function onStart()
+   {
+      audioCapture.duration = '30000';
+      audioCapture.start();
+   }
+&lt;/script&gt;
+</CODE>
+		</EXAMPLE>
+	</EXAMPLES>
+	<REMARKS>
+		<COMMENT>
+			<COMMENT_HEADING>Rhodes Applications</COMMENT_HEADING>
+			<COMMENT_DATA>
+        If your application is a 'Rhodes' application then AudioCapture will create a WAV format file with 22050 Hz 16 bit MONO. The destination property only supports a local path. The Code and Username/Password properties are not used.
+
+       
+      </COMMENT_DATA>
+		</COMMENT>
+		
+		<COMMENT>
+			<COMMENT_HEADING>Buffer full</COMMENT_HEADING>
+			<COMMENT_DATA>Once duration has been reached the audio file will be saved or transferred.  Calling 'stop' once this has occurred will have no effect.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Audio Encoder</COMMENT_HEADING>
+			<COMMENT_DATA>Not all the audio encoders are supported on all the platforms. The encoders AAC, AMR_NB and AMR_WB are supported only on Android and the encoder WAV is supported only on Windows. The output file format for AMR_NB and AMR_WB encoders is 3GPP and for AAC encoder is MP4.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>File Storage Error</COMMENT_HEADING>
+			<COMMENT_DATA>An Audio Capture will fail if there is not sufficient space on the device's filesystem to store it.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+				<COMMENT_HEADING>Setting up a Transfer to a remote HTTP or FTP location</COMMENT_HEADING>
+				<COMMENT_DATA>Audio Capture is designed to be configured before any transfer is made to a remote location.  If the 'Destination' paramter is specified as either HTTP or an FTP location the 'destination' / 'username' / 'password' parameters can not be guaranteed to stay the same after the capture has completed, therefore configure your destination for each capture.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>	
+			<COMMENT_HEADING>Format of the Destination URL</COMMENT_HEADING>
+			<COMMENT_DATA>The protocol, port number, username (optional) and password (optional) are all derived from the URL string and should be specified in the following manner: [protocol]://[username]:[password@]Server[:Port]FileNameAndPath.  FTP Example: ftp://admin:root@192.168.1.1:2500/Folder/Cap.wav.  HTTP Example: http://admin:root@192.168.1.1:8080/Folder/Upload.aspx.  File Example: file://\path\Cap.wav.  Remember to also wrap your URL with url('') when being used as part of a meta tag, as shown in the examples above.</COMMENT_DATA>
+		</COMMENT>
+	</REMARKS>
+	<ADDITIONAL>
+		<PLATFORM>All devices</PLATFORM>
+		<APPLIES>Not Persistent - Changes to this module will not persist when navigating to a new page.</APPLIES>
+		<REQ>Microphone</REQ>
+			<VER_INTRODUCED>2.2</VER_INTRODUCED>
+    </ADDITIONAL>
+    <SEEALSO>
+		<TOPIC RELPATH ="../File Management/">FileTransfer</TOPIC>
+	</SEEALSO>
+  </FUNC>
+</HELPPAGE>

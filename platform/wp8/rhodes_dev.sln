@@ -57,7 +57,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "digest-md5", "..\..\lib\ext
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "digest-sha1", "..\..\lib\extensions\digest-sha1\ext\wp8\digest-sha1.vcxproj", "{861C01D8-54E0-476C-B0C1-02647F844482}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BarcodeLib", "..\..\..\Motorola-Extensions\lib\commonAPI\barcode\ext\platform\wp8\BarcodeLib.vcxproj", "{20C78CF1-3404-0132-C892-64CE8F468BC3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BarcodeLib", "..\..\lib\commonAPI\barcode\ext\platform\wp8\BarcodeLib.vcxproj", "{20C78CF1-3404-0132-C892-64CE8F468BC3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rhoconnect-client", "..\..\..\rhoconnect-client\ext\rhoconnect-client\ext\platform\wp8\Rhoconnect-client.vcxproj", "{12F7458F-04CD-445E-9232-C93A506E9B50}"
 EndProject

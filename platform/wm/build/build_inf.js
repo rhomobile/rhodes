@@ -394,12 +394,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         p("\"prtlib.dll\"=3");
         
         if (webkit_mode != 'none') 
-        {
-            p("\"eklibrary.dll\"=3");            
+        {           
             p("\"ipc_manager.dll\"=3");
             p(webkit_file + "=3");
-            p("\"openssl.dll\"=3");
-            p("\"Ekioh.dll\"=3");
             p("\"npwtg_jsobjects.dll\"=4");
             p("\"bridge.dll\"=4");
             p("\"npwtg_legacy.dll\"=4");
@@ -510,7 +507,6 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     } else {
         p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
         p("\"" + "RhoLaunch" + ".exe\",\"" + "RhoLaunch" + ".exe\",,0");
-        p("\"license_rc.dll\",\"license_rc.dll\",,0");
         
         p("[" + (is_persistent ? "CopyBrowserPluginsPers" : "CopyBrowserPlugins") + "]");
         each_file(rhogempath + "\\Plugin", function(f) {
@@ -523,11 +519,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             if (!is_persistent)
             {
                 p("[CopyWebKitBin]");
-                p("\"eklibrary.dll\",\"eklibrary.dll\",,0");
                 p("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
                 p(webkit_file + "," + webkit_file + ",,0");
-                p("\"openssl.dll\",\"openssl.dll\",,0");
-                p("\"Ekioh.dll\",\"Ekioh.dll\",,0");
                 p("");
 
                 p("[CopyNPAPI]");
@@ -548,11 +541,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             else
             {
                 p("[CopyWebKitBinPers]");
-                p("\"eklibrary.dll\",\"eklibrary.dll\",,0");
                 p("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
                 p(webkit_file + "," + webkit_file + ",,0");
-                p("\"openssl.dll\",\"openssl.dll\",,0");
-                p("\"Ekioh.dll\",\"Ekioh.dll\",,0");
                 p("");
 
                 p("[CopyNPAPIPers]");
@@ -630,10 +620,10 @@ function main() {
     // args(3) = vendor
     // args(4) = srcdir
     // args(5) = hidden_app
-    // args(6) = include motorola webkit binaries and configs?
+    // args(6) = include symbol webkit binaries and configs?
     // args(7) = rhoelements gem folder path
     // args(8) = use RhoElements runtime?
-    // args(9) = use Motorola extextension?
+    // args(9) = use rhodes?
     // args(10)= run on system startup 
     // args(11)= path to autorun link file
     // args(12)= persistent flag

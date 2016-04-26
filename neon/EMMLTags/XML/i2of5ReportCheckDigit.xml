@@ -1,0 +1,59 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>i2of5reportCheckDigit</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\I2of5</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the i2of5 ReportCheckDigit property which enables reporting of the bar code check digit(s).</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="i2of5ReportCheckDigit:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>i2of5reportCheckDigit</NAME>
+                		<VALUES>true/false</VALUES>
+				<DESC>Enables/Disables reporting of the check digit.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only i2of5 labels with the ReportCheckDigit property set:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="i2of5:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="i2of5ReportCheckDigit:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="i2of5:enabled;i2of5ReportCheckDigit:true;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-i2of5" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-i2of5ReportCheckDigit" Content="true"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports i2of5.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>i2of5</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

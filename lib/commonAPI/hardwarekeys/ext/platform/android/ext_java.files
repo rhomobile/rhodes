@@ -1,0 +1,12 @@
+ext/platform/android/generated/src/com/rho/keycapture/KeyCaptureBase.java
+ext/platform/android/generated/src/com/rho/keycapture/KeyCaptureFactorySingleton.java
+ext/platform/android/generated/src/com/rho/keycapture/KeyCaptureSingletonBase.java
+ext/platform/android/generated/src/com/rho/keycapture/IKeyCapture.java
+ext/platform/android/generated/src/com/rho/keycapture/IKeyCaptureFactory.java
+ext/platform/android/generated/src/com/rho/keycapture/IKeyCaptureSingleton.java
+ext/platform/android/src/com/rho/keycapture/KeyCapture.java
+ext/platform/android/src/com/rho/keycapture/KeyCaptureFactory.java
+ext/platform/android/src/com/rho/keycapture/KeyCaptureSingleton.java
+ext/platform/android/src/com/rho/keycapture/KeyCaptureRhoListener.java
+ext/platform/android/src/com/rho/keycapture/CaptureRecord.java
+ext/platform/android/src/com/rho/keycapture/KeyCodeRemapper.java

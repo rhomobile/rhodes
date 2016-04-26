@@ -18,7 +18,7 @@ typedef UNITID_EX FAR * LPUNITID_EX;
 #define	RCM_ERROR(code)			(ERROR_BIT | USER_BIT | (WORD) code)
 #define	E_RCM_SUCCESS				0
 #define	E_RCM_NOTSUPPORTED			RCM_ERROR(0x0015)
-//  These defines originally came from EMDK and are applicable only to Motorola devices, adding them
+//  These defines originally came from EMDK and are applicable only to Symbol devices, adding them
 //  here to enable building under rhodes
 typedef BOOL (WINAPI* LPFNSETKEYSTATE)(DWORD dwState, DWORD dwActiveModifer, BOOL bUpdateRegistry);	
 #define SETKEYSTATE		      TEXT("SetKeyState")

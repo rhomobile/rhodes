@@ -1,0 +1,44 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>macroMicroPdfConvertToMicroPdf</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\MacroMicroPdf</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the macroMicroPdfConvertToMicroPdf property.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="macroMicroPdfConvertToMicroPdf:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>macroMicroPdfConvertToMicroPdf</NAME>
+                <VALUES>true / false</VALUES>
+				<DESC>If true, MacroMicroPDF barcodes will be converted to MicroPDF codes.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner and sets macroMicroPdfConvertToMicroPdf property</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="scanner" Content="macroMicroPdf:enabled; microPdf:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="macroMicroPdfConvertToMicroPdf:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+				</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except: Android devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports MacroMicroPDF and MicroPDF.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

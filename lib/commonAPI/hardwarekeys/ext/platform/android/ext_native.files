@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/KeyCapture.cpp
+ext/platform/android/generated/jni/keycapture_ruby_wrap.cpp
+ext/platform/android/generated/jni/keycapture_js_wrap.cpp
+ext/platform/android/jni/KeyCapture_impl.cpp
+ext/shared/generated/keycapture_api_init.cpp
+ext/shared/generated/keycapture_js_api.cpp
+ext/shared/generated/keycapture_ruby_api.c

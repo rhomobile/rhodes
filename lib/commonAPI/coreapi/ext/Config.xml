@@ -6,7 +6,6 @@
         <MORE_HELP>Implementation of the Config API.</MORE_HELP>
 
         <PLATFORM>Android, WP8,iOS</PLATFORM>
-        <PLATFORM_EB>Android</PLATFORM_EB>
         <VER_INTRODUCED>5.1.0</VER_INTRODUCED>
 
         <PROPERTIES access="STATIC" generateAccessors="true">

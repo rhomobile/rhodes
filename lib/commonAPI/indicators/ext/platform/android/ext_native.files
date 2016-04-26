@@ -1,0 +1,15 @@
+ext/shared/InitIndicatorsExtensions.cpp
+ext/platform/android/generated/jni/Battery.cpp
+ext/platform/android/generated/jni/battery_ruby_wrap.cpp
+ext/platform/android/generated/jni/battery_js_wrap.cpp
+ext/platform/android/jni/Battery_impl.cpp
+ext/shared/generated/battery_api_init.cpp
+ext/shared/generated/battery_js_api.cpp
+ext/shared/generated/battery_ruby_api.c
+ext/platform/android/generated/jni/SignalIndicators.cpp
+ext/platform/android/generated/jni/signalindicators_ruby_wrap.cpp
+ext/platform/android/generated/jni/signalindicators_js_wrap.cpp
+ext/platform/android/jni/SignalIndicators_impl.cpp
+ext/shared/generated/signalindicators_api_init.cpp
+ext/shared/generated/signalindicators_js_api.cpp
+ext/shared/generated/signalindicators_ruby_api.c

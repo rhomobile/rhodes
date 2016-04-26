@@ -1,0 +1,9 @@
+LIBRARY	"WTG_Sensors_PLG"
+EXPORTS
+	RawSensors_Preload
+	RawSensors_MetaProc
+	RawSensors_Dispose
+	LightSensor_Preload
+	LightSensor_MetaProc
+	LightSensor_Dispose
+	

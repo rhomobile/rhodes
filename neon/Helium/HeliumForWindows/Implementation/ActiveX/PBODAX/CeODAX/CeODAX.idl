@@ -1,0 +1,51 @@
+// CeODAX.idl : IDL source for CeODAX
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (CeODAX.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(D4321E3B-786C-44C6-8901-1DC9ACFE0D24),
+	dual,
+	nonextensible,
+	helpstring("IODAX Interface"),
+	pointer_default(unique)
+]
+interface IODAX : IDispatch{
+	[id(1), helpstring("method FileExists")] HRESULT FileExists([in] BSTR filename, [out,retval] VARIANT_BOOL* ret);
+	[id(2), helpstring("method Copy")] HRESULT Copy([in] BSTR srcFileName, [in] BSTR destFileName, [out,retval] LONG* status);
+	[id(3), helpstring("method Delete")] HRESULT Delete([in] BSTR FileName, [out,retval] LONG* status);
+	[id(4), helpstring("method Move")] HRESULT Move([in] BSTR srcFileName, [in] BSTR destFileName, [out,retval] LONG* status);
+	[id(5), helpstring("method Execute")] HRESULT Execute([in] BSTR sql_statement, [in] int format, [in] BSTR delimiter, [in] VARIANT_BOOL firstrow, [out,retval] int* pcount);
+	[id(6), helpstring("method GetLastErrorString")] HRESULT GetLastErrorString([out,retval] BSTR* perror);
+	[id(7), helpstring("method Select")] HRESULT Select([in] BSTR sql_statement, [in] BSTR delimiter, [in] VARIANT_BOOL firstrow, [out,retval] int* pcount);
+	[id(8), helpstring("method MoveFirst")] HRESULT MoveFirst([out,retval] int* presult);
+	[id(9), helpstring("method MoveLast")] HRESULT MoveLast([out,retval] int* presult);
+	[id(10), helpstring("method MoveNext")] HRESULT MoveNext([out,retval] int* presult);
+	[id(11), helpstring("method MovePrev")] HRESULT MovePrev([out,retval] int* presult);
+	[id(12), helpstring("method Get")] HRESULT Get([in] BSTR column_name, [out,retval] BSTR* pvar);
+	[id(13), helpstring("method Clear")] HRESULT Clear(void);
+};
+[
+	uuid(0274BCBC-3D1D-4877-98D6-09BDF38A4852),
+	version(1.0),
+	helpstring("CeODAX 1.0 Type Library")
+]
+library CeODAXLib
+{
+	importlib("stdole2.tlb");
+	interface IDocHostUIHandlerDispatch;
+	interface IAxWinAmbientDispatchEx;
+	[
+		uuid(E9AAC651-2BDA-4DF8-8949-201C9ED6B52F),
+		helpstring("ODAX Class")
+	]
+	coclass ODAX
+	{
+		[default] interface IODAX;
+	};
+};

@@ -128,7 +128,7 @@ module WM
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?)
     $webkit_out_of_process = $app_config['wm']['webkit_outprocess'] == '1'
-    $motorola_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("symbol").nil?)
+    $symbol_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("symbol").nil?)
     $additional_dlls_path = nil
     $additional_regkeys = nil
     $use_direct_deploy = "yes"
@@ -139,16 +139,16 @@ module WM
     $is_webkit_engine = true if $is_webkit_engine.nil?
 
     if $wk_data_dir.nil?
-      $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
+      $wk_data_dir = File.join($startdir, "libs/data") #"/Program Files" # its fake value for running without symbol extensions. do not delete
       begin
-        if $webkit_capability || $motorola_capability
+        if $webkit_capability || $symbol_capability
           require "rhoelements-data"
-          $wk_data_dir = $data_dir[0]
+          $wk_data_dir = File.join($startdir, "libs/data")
         end
       rescue Exception => e
-        puts "rhoelements gem is't found, webkit capability is disabled"
-        $webkit_capability = false
-        $motorola_capability = false
+        #puts "rhoelements gem is't found, webkit capability is disabled"
+        #$webkit_capability = false
+        #$symbol_capability = false
       end
     end
 
@@ -588,7 +588,7 @@ def build_cab
     webkit,                                   #6
     '"' + $wk_data_dir + '"',                 #7
     ($use_shared_runtime  ? "1" : "0"),       #8
-    ($motorola_capability ? "1" : "0"),       #9
+    ($symbol_capability ? "1" : "0"),       #9
     ($run_on_startup      ? "1" : "0"),       #10
     '"' + $srcdir + '"',                      #11
     ($build_persistent_cab ? "1" : "0")       #12
@@ -645,6 +645,13 @@ namespace "config" do
 
   task :set_wm_platform do
     $current_platform = "wm" unless $current_platform
+      if($current_platform=='wm')
+        $webkiLibraryCheck = File.join($startdir,'/thirdpartyWebkit.zip')
+        if !File.exists? ($webkiLibraryCheck)
+          puts "\nWindows Mobile or Windows CE applications require additional components for built. Please refer the documentation available at the below link.\nhttps://github.com/rhomobile/rhodes/blob/master/doc/oss/DeveloperNotes.md#third-party-webkit-dependencies-for-wmce\n"
+          exit 1
+        end
+      end
   end
 
   task :set_win32_platform do
@@ -1526,7 +1533,6 @@ namespace "device" do
       rhodes_gem_paths = ([
         'platform/wm/RhoLaunch/RhoLaunch.ico',
         'platform/wm/rhodes/resources/icon.ico',
-        'platform/wm/bin/**/license_rc.dll',
         'platform/wm/bin/**/rhodes.exe',
         'platform/wm/bin/**/RhoLaunch.exe',
         'platform/wm/build/regs.txt'
@@ -1594,7 +1600,6 @@ namespace "device" do
         out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
         out_rholauch_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/RhoLaunch/Release/"
         cp out_rholauch_dir + "RhoLaunch.exe", out_dir + "RhoLaunch.exe"
-        cp $startdir + "/res/build-tools/license_rc.dll", out_dir + "license_rc.dll"
       end
 
       stuff_around_appname
@@ -1627,7 +1632,6 @@ namespace "device" do
     mkdir_p out_dir
 
     cp out_dir + "rhodes.exe", $tmpdir + "/" + $appname + ".exe"
-    cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), $tmpdir
 
     script_name = File.join($startdir, "platform", "wm", "build", "rhodes.nsi")
     app_script_name = File.join($tmpdir, $appname + ".nsi")
@@ -1900,7 +1904,7 @@ namespace "run" do
         Jake.run2( detool, add_files_args, {:nowait => false})
       end
 
-      args = [$detoolappflag, 'emu', exe_changed ? "1" : "0", "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+      args = [$detoolappflag, 'emu', exe_changed ? "1" : "0", "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
       Jake.run2( detool, args, {:nowait => false})
     end
   end
@@ -2001,7 +2005,7 @@ namespace "run" do
         cs = CheckSumComparer.new($tmp_dir, File.join($startdir, $vcbindir, $sdk) )
         exe_changed = cs.compare
 
-        args = [$detoolappflag, 'dev', exe_changed ? "1" : "0", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+        args = [$detoolappflag, 'dev', exe_changed ? "1" : "0", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port]
         Jake.run2( detool, args, {:nowait => false})
       end
     end
@@ -2028,7 +2032,7 @@ namespace "run" do
               Jake.run2( detool, add_files_args, {:nowait => false})
             end
 
-            args = [$detoolappflag, 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+            args = [$detoolappflag, 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port]
      
             puts "\nStarting application on the WM6 emulator\n\n"
             log_file = gelLogPath
@@ -2192,7 +2196,6 @@ namespace "run" do
       exefile = $target_path + '/' + $appname + '.exe'
     end
 
-    cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), $target_path
     Rake::Task["build:win32:deployqt"].invoke unless $prebuild_win32
 
     cp $qt_icon_path, $target_path + "/icon.png"

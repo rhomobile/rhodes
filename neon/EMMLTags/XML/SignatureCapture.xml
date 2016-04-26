@@ -1,0 +1,268 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+  <FUNC>
+    <NAME>signatureCapture</NAME>
+    <PATH>SignatureCapture</PATH>
+   <TYPE>Module</TYPE>
+    <SYNOPSIS>creates a rectangular box that the user can draw within using the device's stylus to record handwritten data. 
+	Common usages for this tag include the capture of client/customer signatures and the input of handwritten text/notations.</SYNOPSIS>
+    <SYNTAX>
+		<USAGE>
+			<EXAMPLE>&lt;META HTTP-Equiv="SignatureCapture" content="[method / parameter]"&gt;</EXAMPLE>
+		</USAGE>
+		<USAGE>
+			<EXAMPLE>&lt;META HTTP-Equiv="SignatureCapture" content="SignatureSaveEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+		</USAGE>
+	</SYNTAX>
+    <PARAMS_WITH_ATTRIBUTES>
+		<PARAM>
+			<NAME>visibility</NAME>
+			<VALUES>'Visible' or 'Hidden'</VALUES>
+			<DESC>Shows or hides the rectangular capture area</DESC>
+			<DEFAULT>By default the capture area is hidden</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>border</NAME>
+			<VALUES>'Visible' or 'Hidden'</VALUES>
+			<DESC>Shows or hides a border for the rectangular capture area</DESC>
+			<DEFAULT>Visible</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>width</NAME>
+			<VALUES>Positive number</VALUES>
+			<DESC>Sets the width of the rectangular capture area in pixels</DESC>
+			<DEFAULT>200</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>height</NAME>
+			<VALUES>Positive number</VALUES>
+			<DESC>Sets the height of the rectangular capture area in pixels</DESC>
+			<DEFAULT>150</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>left</NAME>
+			<VALUES>Positive number</VALUES>
+			<DESC>Sets the top left horizontal position of the rectangular capture area in pixels</DESC>
+			<DEFAULT>15</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>top</NAME>
+			<VALUES>Positive number</VALUES>
+			<DESC>Sets the top left vertical position of the rectangular capture area in pixels</DESC>
+			<DEFAULT>60</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>penWidth</NAME>
+			<VALUES>Positive number but values less than 5 are advised</VALUES>
+			<DESC>Sets the width of the pen line in pixels when using the device's stylus.  On Android this setting will also be applied to any previously drawn signature currently displayed</DESC>
+			<DEFAULT>1</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>penColor</NAME>
+			<VALUES>#000000 to #FFFFFF</VALUES>
+			<DESC>RGB value that sets the color of the stylus pen ink using HTML web colors.</DESC>
+			<DEFAULT>#000000</DEFAULT>
+			<COLORPICKER>TRUE</COLORPICKER>
+		</PARAM>
+		<PARAM>
+			<NAME>bgColor</NAME>
+			<VALUES>#000000 to #FFFFFF</VALUES>
+			<DESC>RGB value that sets the background color of the signature capture area</DESC>
+			<DEFAULT>#FFFFFF</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>destination</NAME>
+			<VALUES>Fully qualified URL or file name.  Supports HTTP, FTP and File protocols.</VALUES>
+			<DESC>Sets the destination path and name for the signature bitmap when the 'capture' method is called.  See Remarks</DESC>
+			<DEFAULT></DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>username</NAME>
+			<VALUES>String</VALUES>
+			<DESC>The username for the HTTP or FTP server if required</DESC>
+			<DEFAULT>No username</DEFAULT>
+		</PARAM>	
+		<PARAM>
+			<NAME>password</NAME>
+			<VALUES>String</VALUES>
+			<DESC>The password for the HTTP or FTP server if required</DESC>
+			<DEFAULT>No password</DEFAULT>
+		</PARAM>	
+		<PARAM>
+			<NAME>name</NAME>
+			<VALUES>String compliant with Windows Naming restrictions</VALUES>
+			<DESC>When the 'Capture' method is invoked the contents of the signature capture area are saved in a bitmap in the root directory of the device.  This parameter is used to specify the filename when storing the bitmap locally.</DESC>
+			<DEFAULT>Signature</DEFAULT>
+		</PARAM>	
+		
+	</PARAMS_WITH_ATTRIBUTES>
+	
+	<PARAMS_NO_ATTRIBUTES>	
+		<PARAM>
+			<NAME>clear</NAME>
+			<DESC>Clears the capture area.</DESC>
+			<DEFAULT>N/A</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>capture</NAME>
+			<DESC>Saves the signature as a bitmap on the device and attempts to send that bitmap to the location specified in the 'Destination' parameter.  If a signatureCaptureEvent is specified the signature will also be returned as a Data URI object.</DESC>
+			<DEFAULT></DEFAULT>
+		</PARAM>
+
+	</PARAMS_NO_ATTRIBUTES>	
+	<RETURNS>
+		<TAG>
+			<TAG_NAME>signatureSaveEvent</TAG_NAME>
+			<TAG_NOTES>The Signature Save Event is called when the captured signature has been successfully transfered to the specified destination.  When 'Capture' is called with the HTTP protocol, the destination server message is returned. When 'Capture' is called with the FTP protocol, either 'OK: File Sent', 'OK: File Received' or 'ERROR' is returned.  This tag should be used in conjunction with the Capture method.</TAG_NOTES>
+			<RETVAL>
+				<NAME>transferResult</NAME>
+				<DESC>Success or failure of transfer, see note above.</DESC>
+			</RETVAL>
+		</TAG>
+		<TAG>
+			<TAG_NAME>signatureCaptureEvent</TAG_NAME>
+			<TAG_NOTES>Specifying a SignatureCaptureEvent will cause the signature to be returned as a Data URI object when the capture() method is invoked.  A Data URI is a base 64 encoding of the signature and can be used to easily embed the signature on the page, store the image in a database or transfer the image to a server.</TAG_NOTES>
+			<RETVAL>
+				<NAME>imageData</NAME>
+				<DESC>A DataURI representation of the captured Signature.</DESC>
+			</RETVAL>
+		</TAG>
+		<TAG>
+			<TAG_NAME>vectorEvent</TAG_NAME>
+			<TAG_NOTES>Signature data is formatted into a series of vectors and returned to the application via this callback function.  The received data may not represent the entire signature as the vectors will be sent in batches if the signature is large.  A single vector (array entry) contains an X, Y coordinate and the beginning / end of the signature is defined by (0xFFFF, 0xFFFF).  This event is independent of the SignatureSaveEvent or capture method, when specified the event will be called whenever a 'pen up' occurs in the signature box.</TAG_NOTES>
+			<RETVAL>
+				<NAME>vectorArray</NAME>
+				<DESC>JavaScript array of vectors which represent the signature.</DESC>
+				<ARRAY>TRUE</ARRAY>
+			</RETVAL>
+		</TAG>
+	</RETURNS>
+	<EXAMPLES>
+		<EXAMPLE>
+			<DESC>The following META Tag example sets up a yellow rectangular area that has a border with a pen color of burgundy. When the Capture method is invoked via JavaScript the signature will be transferred to a server via HTTP and an alert will inform the user whether or not the transfer succeeded.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SignatureCapture" Content="width:200"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="height:100"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="left:20"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="top:60"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="penwidth:2"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="name:Sig"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="pencolor:#AA0000"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="bgcolor:#FFFF00"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="Visibility:Visible"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="Destination:url('HTTP://192.168.1.1:80/RhoElementsLog/upload.aspx')"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="SignatureSaveEvent:url('javascript:alert('%s');')"&gt;
+</CODE>
+		</EXAMPLE>
+		<EXAMPLE>
+			<DESC>The following javascript will show a Signature Capture box with default settings when the JavaScript function onDisplay is called:</DESC>
+<CODE>
+&lt;script&gt;
+   function onDisplay()
+   {
+      signatureCapture.visibility  = 'visible';
+   }
+&lt;/script&gt;
+</CODE>
+		</EXAMPLE>
+		<EXAMPLE>
+			<DESC>The following example shows signature being captured as a Data URI and displayed on the page</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SignatureCapture" Content="Height:200"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="BGColor:#FFFF00"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="Width:400"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="Visibility:Visible"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="PenColor:#FF00FF"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="PenWidth:4"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="signatureCaptureEvent:url('Javascript:onSignatureCapture(%json)');"&gt;
+  
+&lt;script type="text/javascript"&gt;
+function onSignatureCapture(jsonObject)
+{
+	signatureImage.src = jsonObject.imageData;
+}
+&lt;/script&gt;
+  
+&lt;/HEAD&gt;
+  &lt;BODY&gt;
+  &lt;BR&gt;&lt;BR&gt;&lt;BR&gt;&lt;BR&gt;
+  &lt;img src="" id="signatureImage"&lt;&gt;/img&gt;
+&lt;/BODY&gt;  
+</CODE>
+		</EXAMPLE>		
+		<EXAMPLE>
+			<DESC>The following example shows signature vectors being displayed in an HTML table</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SignatureCapture" Content="Height:200"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="BGColor:#FFFF00"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="Width:400"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="Visibility:Visible"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="PenColor:#FF00FF"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="PenWidth:4"&gt;
+&lt;META HTTP-Equiv="SignatureCapture" Content="VectorEvent:url('Javascript:onVectors(%s);')"&gt;
+  
+&lt;script type="text/javascript"&gt;
+function onVectors(data)
+{
+  var VectorAsHTML = "&lt;TABLE&gt;&lt;TR&gt;&lt;TH&gt;X&lt;/TH&gt;&lt;TH&gt;Y&lt;/TH&gt;&lt;TH&gt;X&lt;/TH&gt;&lt;TH&gt;Y&lt;/TH&gt;&lt;TH&gt;X&lt;/TH&gt;&lt;TH&gt;Y&lt;/TH&gt;&lt;/TR&gt;";
+  for (var i=0; i&lt;data.length; i = i + 6)
+  {
+    VectorAsHTML = VectorAsHTML + "&lt;TR&gt;"
+    VectorAsHTML = VectorAsHTML + "&lt;TD&gt;" + data[i] + "&lt;/TD&gt;&lt;TD&gt;" + data[i+1] + "&lt;/TD&gt;";
+    VectorAsHTML = VectorAsHTML + "&lt;TD&gt;" + data[i+2] + "&lt;/TD&gt;&lt;TD&gt;" + data[i+3] + "&lt;/TD&gt;";
+    VectorAsHTML = VectorAsHTML + "&lt;TD&gt;" + data[i+4] + "&lt;/TD&gt;&lt;TD&gt;" + data[i+5] + "&lt;/TD&gt;";
+    VectorAsHTML = VectorAsHTML + "&lt;/TR&gt;"
+  }
+  VectorAsHTML + "&lt;/TABLE&gt;"
+  vectorOut.innerHTML = VectorAsHTML;
+}
+&lt;/script&gt;
+  
+&lt;/HEAD&gt;
+  &lt;BODY&gt;
+  &lt;BR&gt;&lt;BR&gt;&lt;BR&gt;&lt;BR&gt;
+  &lt;BR&gt;&lt;BR&gt;&lt;BR&gt;&lt;BR&gt;&lt;BR&gt;
+  &lt;DIV id="vectorOut"&gt;Vectors Will Appear Here:&lt;/div&gt;
+  &lt;/BODY&gt;  
+</CODE>
+		</EXAMPLE>		
+	</EXAMPLES>
+	<REMARKS>
+		<COMMENT>
+			<COMMENT_HEADING>Scrolling</COMMENT_HEADING>
+			<COMMENT_DATA>The signature capture area is not compatible with scrolling the browser window.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Parameters which clear the Signature</COMMENT_HEADING>
+			<COMMENT_DATA>The signature capture area is designed to be set up prior to capturing the signature, as such the following parameters will clear any current signature: "Width", "Height", "PenColor", "BGColor".</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Common Issues</COMMENT_HEADING>
+			<COMMENT_DATA>The 'Visibility:Visible' parameter must be set in order to display the signature capture area.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+				<COMMENT_HEADING>Setting up a Transfer to a remote HTTP or FTP location</COMMENT_HEADING>
+				<COMMENT_DATA>Signature Capture is designed to be configured before any transfer is made to a remote location.  If the 'Destination' paramter is specified as either HTTP or an FTP location the 'destination' / 'username' / 'password' parameters can not be guaranteed to stay the same after capture() has been called, therefore configure your destination for each capture, as in the above examples.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>	
+			<COMMENT_HEADING>Format of the Destination URL</COMMENT_HEADING>
+			<COMMENT_DATA>The protocol, port number, username (optional) and password (optional) are all derived from the URL string and should be specified in the following manner: [protocol]://[username]:[password@]Server[:Port]FileNameAndPath.  FTP Example: ftp://admin:root@192.168.1.1:2500/Folder/Sig.bmp.  HTTP Example: http://admin:root@192.168.1.1:8080/Folder/Upload.aspx.  File Example: file://\path\Sig.bmp.  Remember to also wrap your URL with url('') when being used as part of a meta tag, as shown in the examples above.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Supported Output File Formats</COMMENT_HEADING>
+			<COMMENT_DATA>All devices support ".bmp" as the default file format for the saved signature. Android also supports ".png" format.</COMMENT_DATA>
+		</COMMENT>		
+	</REMARKS>
+	<ADDITIONAL>
+		<PLATFORM>All supported devices.</PLATFORM>
+		<APPLIES>Partially Persistent - Changes to this module will persist when navigating to a new page with the exception of  The signature box and Save / Vector events. These will be cleared during page navigation.</APPLIES>
+		<REQ>Touch Screen.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+    </ADDITIONAL>
+    <SEEALSO>
+		<TOPIC RELPATH ="../File Management/">FileTransfer</TOPIC>
+	</SEEALSO>
+  </FUNC>
+</HELPPAGE>

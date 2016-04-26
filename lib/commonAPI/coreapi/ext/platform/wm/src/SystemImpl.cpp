@@ -306,24 +306,7 @@ void CSystemImpl::getIsSymbolDevice(CMethodResult& oResult)
     memset(szPlatform, 0, MAX_PATH*sizeof(TCHAR));
     SystemParametersInfo(SPI_GETOEMINFO, MAX_PATH, szPlatform, 0);
     _wcslwr(szPlatform);
-    if(wcsstr(szPlatform, L"symbol") || wcsstr(szPlatform, L"motorola"))
-        oResult.set(true);
-    else
-        oResult.set(false);
-#else
-    oResult.set(false);
-#endif
-}
-
-void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
-{
-#if defined( APP_BUILD_CAPABILITY_SYMBOL ) && defined( OS_WINCE )
-    //get the system OEM string
-    TCHAR szPlatform[MAX_PATH+1];
-    memset(szPlatform, 0, MAX_PATH*sizeof(TCHAR));
-    SystemParametersInfo(SPI_GETOEMINFO, MAX_PATH, szPlatform, 0);
-    _wcslwr(szPlatform);
-    if(wcsstr(szPlatform, L"symbol") || wcsstr(szPlatform, L"motorola"))
+    if(wcsstr(szPlatform, L"symbol"))
         oResult.set(true);
     else
         oResult.set(false);
@@ -387,7 +370,7 @@ void CSystemImpl::getUuid(CMethodResult& oResult)
 
 bool CSystemImpl::populateUUID(UNITID_EX* uuid)
 {
-	//  For Motorola devices the UUID is obtained from the RCM library.  For non-motorola devices the UUID is 
+	//  For Symbol devices the UUID is obtained from the RCM library.  For non-Symbol devices the UUID is 
 	//  obtained from a system call.
 	bool bRetVal = false;
 	HMODULE hLib = LoadLibrary(TEXT("Rcm2API32.dll"));
@@ -416,7 +399,7 @@ bool CSystemImpl::populateUUID(UNITID_EX* uuid)
 	}
 	else
 	{
-		//  Unable to load Rcm2API32.dll, it is possible we are running on a Non Motorola 
+		//  Unable to load Rcm2API32.dll, it is possible we are running on a Non Symbol
 		//  WM / CE device, use the Windows function for retrieving UUID:
 		//  Load CoreDLL
 		typedef HRESULT (WINAPI* GET_DEVICE_ID_T)(LPBYTE pbApplicationData, 
@@ -988,7 +971,7 @@ void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& oResult)
 #if defined(OS_WINDOWS_DESKTOP)
 	strRes = rho_sys_qt_getWebviewFramework();
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-	strRes = "WEBKIT/MOTOROLA";
+	strRes = "WEBKIT/SYMBOL";
 #else
 	strRes = "IE";
     //TODO: get IE version for WM/CE

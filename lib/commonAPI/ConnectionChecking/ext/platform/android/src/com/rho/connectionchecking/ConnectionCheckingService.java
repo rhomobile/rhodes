@@ -49,7 +49,7 @@ public class ConnectionCheckingService extends Service{
 		boolean res = false;
 		try
 		{
-			Class.forName("com.symbol.enterprisebrowser.EBLicense", false, ContextFactory.getContext().getClassLoader());
+			Class.forName("com.symbol.rhoelements.RhoLicense", false, ContextFactory.getContext().getClassLoader());
 			res = true; //EB will come
 			//System.out.println(" isLicensePopupComing= "+res);
 		}

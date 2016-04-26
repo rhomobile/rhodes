@@ -9,7 +9,6 @@ capabilities:
 - phone
 - bluetooth
 - calendar
-- motorola_browser
 
 #sdk: "c:/Android/rhodes"
 

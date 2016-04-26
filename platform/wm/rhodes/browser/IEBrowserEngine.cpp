@@ -309,14 +309,6 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-		// Used for Zoom-In Or Zoom-Out, if the return value is true then 
-		// the message will be pushed further so that the remaining action 
-		// on that function key can be processed.
-		// For Ex: After Zoom In or Zoom Out, the same key may be used by JavaScript
-		// or KeyCapture Module to perform other task from the html page.
-		if ( !RHODESAPP().getExtManager().onZoomTextWndMsg(msg) )
-            continue;
-
 		if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
 

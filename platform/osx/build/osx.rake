@@ -113,7 +113,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleGetInfoString</key>
-	<string>RhoSimulator #{$rhodes_version}, Copyright 2010-2013 Motorola Solutions, Inc.</string>
+	<string>RhoSimulator #{$rhodes_version}, Copyright 2010-2016 Symbol Technologies LLC.</string>
 	<key>CFBundleSignature</key>
 	<string>@TYPEINFO@</string>
 	<key>CFBundleExecutable</key>

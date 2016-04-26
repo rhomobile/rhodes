@@ -1,0 +1,9 @@
+; PBNoSIP.def : Declares the module parameters.
+
+LIBRARY      "PBNoSIP.DLL"
+
+EXPORTS
+	DllCanUnloadNow		PRIVATE
+	DllGetClassObject	PRIVATE
+	DllRegisterServer	PRIVATE
+	DllUnregisterServer	PRIVATE

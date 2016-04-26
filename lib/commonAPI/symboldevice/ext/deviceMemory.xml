@@ -1,0 +1,70 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="DeviceMemory" parent="Rho" productException='eb'>
+        <HELP_OVERVIEW>Example extension api</HELP_OVERVIEW>
+        <MORE_HELP>This is example of API. Implementation contain in extension. In Android, this API will work version 4.0 onwards.</MORE_HELP>
+    
+    	<CONSTANTS>
+    		<!-- Status value - returned in callback -->
+    		<CONSTANT name="DEVICE_MEMORY_STATUS_LOW" value="DEVICE_MEMORY_STATUS_LOW" type="STRING">
+    			<DESC>Device has low free memory - application should free unused resources and prepare to emergency exit</DESC>
+    		</CONSTANT>
+
+    		<CONSTANT name="DEVICE_MEMORY_STATUS_CRITICAL" value="DEVICE_MEMORY_STATUS_CRITICAL" type="STRING">
+    			<DESC>Device has critical memory situation - application should prepare to exit or crash ASAP and free unused resources if possible</DESC>
+    		</CONSTANT>
+
+    	</CONSTANTS>	
+
+        <METHODS access="STATIC">
+    
+            <METHOD name="startListeningPlatformMemoryWarning" hasCallback="mandatory">
+                <DESC>Callback to be fired when underlying OS warns for device memory being low or critical</DESC>
+            	<PLATFORM>Android, iOS</PLATFORM>
+				<CALLBACK type="HASH">
+						  <PARAMS>
+							<PARAM name="status" type="STRING">
+								<DESC>It will be either DEVICE_MEMORY_STATUS_LOW or DEVICE_MEMORY_STATUS_CRITICAL. When it's value is "low" it means device memory is beginning to run low on memory and when "critical", the app is in 
+									risk of getting killed.So when on "critical", release all the resources as soon as possible. In Android, the OS can fire mutiple times for both the status. So the user of this should handle appropriately. In iOS only DEVICE_MEMORY_STATUS_CRITICAL received, because System has only one level of memory warning.</DESC>
+							</PARAM>
+							
+						  </PARAMS>
+				</CALLBACK>
+                
+            </METHOD>
+			<METHOD name="stopListeningPlatformMemoryWarning">
+				<DESC>Stops firing callbacks for the method startListeningPlatformMemoryWarning. Now the application will NOT recieve any callbacks when device Memory is down. </DESC>
+				<PLATFORM>Android, iOS</PLATFORM>
+			</METHOD>
+            <METHOD name="getAvailableMemory" >
+				<DESC>Returns the available memory present in the device. It will be returned in KB. In iOS this function return current free memory of application, but system memory management can allocate more via free unused memory or memory allocated by another processes. So in this case this function is practically unuseful on iOS - we do not recommned use it on iOS for plane any memory using strategy etc.</DESC>
+				<RETURN type="INTEGER">
+				</RETURN>
+            	<PLATFORM>Android, iOS</PLATFORM>
+			</METHOD>
+			<METHOD name="getInternalStorage" >
+				<DESC>Returns the available memory present in the external storage of the device. It will be returned in KB.</DESC>
+				<PLATFORM>Android, iOS</PLATFORM>
+				<RETURN type="INTEGER">
+				</RETURN>
+			</METHOD>
+			 <METHOD name="getExternalStorage" >
+				<DESC>Returns the available memory present in the user directory of the device. It will be returned in KB.</DESC>
+			 	<PLATFORM>Android</PLATFORM>
+			 	<RETURN type="INTEGER">
+				</RETURN>
+			</METHOD>
+
+            
+
+        </METHODS>
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>    

@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Barcode1_impl"
 
-#define BARCODE1_FACTORY_CLASS "com.motorolasolutions.rhoelements.barcode1.Barcode1Factory"
+#define BARCODE1_FACTORY_CLASS "com.rho.rhoelements.barcode1.Barcode1Factory"
 
 extern "C" void Init_Barcode1_API(void);
 

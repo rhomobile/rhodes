@@ -62,7 +62,6 @@
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 UINT WM_LICENSE_SCREEN		= ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
 UINT WM_INTENTMSG			= ::RegisterWindowMessage(L"RHODES_WM_INTENTMSG");
-UINT WM_CREATE_SHORTCUT		= ::RegisterWindowMessage(L"RHODES_WM_CREATE_SHORTCUT");	
 
 #include "DateTimePicker.h"
 
@@ -91,11 +90,8 @@ int CMainWindow::m_screenHeight;
 extern "C" bool rho_wmimpl_get_resize_on_sip();
 #endif
 
-extern "C" int rho_wm_impl_CheckLicense();
-
 CMainWindow::CMainWindow()
 {
-    m_bLicenseScreenShownFirsttime=true;
     mIsBrowserViewHided = false;
     mNativeView = NULL;
     mNativeViewFactory = NULL;
@@ -446,10 +442,6 @@ void CMainWindow::showWebView()
 
 LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-	RHODESAPP().getExtManager().OnQuittingTheApplication();
-#endif
-
 	rho_rhodesapp_callUiDestroyedCallback();
 
 #if defined (_WIN32_WCE)
@@ -659,16 +651,6 @@ LRESULT CMainWindow::OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     Rhodes_WM_ProcessBeforeNavigate((LPCTSTR)lParam);
-
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    if (( m_bLoading ==true)&&(m_bLicenseScreenShownFirsttime==true))
-	{
-        	LOG(INFO) + "Showing License screen";
-		m_bLicenseScreenShownFirsttime = false;
-		rho_wm_impl_CheckLicense();
-	}
-#endif
-
     free((void*)lParam);
     return 0;
 }
@@ -1516,18 +1498,6 @@ LRESULT CMainWindow::OnLicenseWarning (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     ::MessageBoxW( m_hWnd, L"Please provide RhoElements license key.", L"Symbol License", MB_ICONERROR | MB_OK);
 
     return 0;
-}
-LRESULT CMainWindow::OnCreateShortcutViaXML(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-{
-	if(RHO_IS_WMDEVICE)
-	{
-		RHODESAPP().getExtManager().OnCreateShortcutViaXML(true);
-	}
-	else if(RHO_IS_CEDEVICE)
-	{
-		RHODESAPP().getExtManager().OnCreateShortcutViaXML(false);
-	}
-	return 0;
 }
 LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {

@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Led_impl"
 
-#define LED_FACTORY_CLASS "com.motorolasolutions.rho.notification.led.LedFactory"
+#define LED_FACTORY_CLASS "com.rho.notification.led.LedFactory"
 
 extern "C" void Init_Led_API(void);
 

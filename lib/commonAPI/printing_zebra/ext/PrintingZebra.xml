@@ -1,0 +1,478 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="PrinterZebra" parent="Rho">
+        <HELP_OVERVIEW>The PrinterZebra API provides Zebra-specific API access to Zebra's Bluetooth and Wi-Fi network printers, and to USB-capable printers for Android and Windows Mobile/CE. This API inherits all methods, properties and constants from the [Printer API](#api-printing).</HELP_OVERVIEW>
+        <MORE_HELP>
+###Notes
+
+1. Unless using the printer's 'line mode' (for sending raw text strings), Zebra recommends sending ZPL only.
+2. USB printing is supported for Android and Windows Mobile/CE.
+
+## Enabling the API
+To use this API you must include the following extensions in your `build.yml`: 
+
+    :::ruby
+    extensions: ["printing","printing_zebra"]
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+        </MORE_HELP>
+        <TEMPLATES>
+            <DEFAULT_INSTANCE/>
+            <PROPERTY_BAG/>
+            <SINGLETON_INSTANCES/>
+            <INCLUDE path="../../printing/ext/printing.xml"/>
+        </TEMPLATES>
+
+        <CONSTANTS>
+            <!-- Zebra specific properties -->
+            <CONSTANT name="PRINT_MODE_APPLICATOR" value="PRINT_MODE_APPLICATOR" type="STRING">
+                <DESC>Applicator print mode</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINT_MODE_CUTTER" value="PRINT_MODE_CUTTER" type="STRING">
+                <DESC>Cutter print mode</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINT_MODE_DELAYED_CUT" value="PRINT_MODE_DELAYED_CUT" type="STRING">
+                <DESC>Delayed cut print mode</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINT_MODE_KIOSK" value="PRINT_MODE_KIOSK" type="STRING">
+                <DESC>Kiosk print mode</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINT_MODE_LINERLESS_PEEL" value="PRINT_MODE_LINERLESS_PEEL" type="STRING">
+                <DESC>Linerless peel print mode</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINT_MODE_LINERLESS_REWIND" value="PRINT_MODE_LINERLESS_REWIND" type="STRING">
+                <DESC>Linerless rewind print mode</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINT_MODE_PARTIAL_CUTTER" value="PRINT_MODE_PARTIAL_CUTTER" type="STRING">
+                <DESC>Partial cutter print mode</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINT_MODE_PEEL_OFF" value="PRINT_MODE_PEEL_OFF" type="STRING">
+                <DESC>Peel-off print mode</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINT_MODE_REWIND" value="PRINT_MODE_REWIND" type="STRING">
+                <DESC>Rewind print mode</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINT_MODE_RFID" value="PRINT_MODE_RFID" type="STRING">
+                <DESC>RFID print mode</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINT_MODE_TEAR_OFF" value="PRINT_MODE_TEAR_OFF" type="STRING">
+                <DESC>Tear-off print mode (this also implies Linerless Tear print mode)</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINT_MODE_UNKNOWN" value="PRINT_MODE_UNKNOWN" type="STRING">
+                <DESC>Unknown print mode</DESC>
+            </CONSTANT>
+
+            <!-- Connection types types -->
+            <CONSTANT name="DISCOVERY_MODE_MULTICAST" value="DISCOVERY_MODE_MULTICAST" type="STRING"/>
+            <CONSTANT name="DISCOVERY_MODE_SUBNET_SEARCH" value="DISCOVERY_MODE_SUBNET_SEARCH" type="STRING"/>
+            <CONSTANT name="DISCOVERY_MODE_DIRECTED_BROADCAST" value="DISCOVERY_MODE_DIRECTED_BROADCAST" type="STRING"/>
+            <CONSTANT name="DISCOVERY_MODE_LOCAL_BROADCAST" value="DISCOVERY_MODE_LOCAL_BROADCAST" type="STRING"/>
+
+            <CONSTANT name="ERROR_NO_CONNECTION" value="ERROR_NO_CONNECTION" type="STRING">
+                <DESC>Unable to create a connection to a printer</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_WRITE_FAILURE" value="ERROR_WRITE_FAILURE" type="STRING">
+                <DESC>Write to a connection failed</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_READ_FAILURE" value="ERROR_READ_FAILURE" type="STRING">
+                <DESC>Read from a connection failed</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_UNKNOWN_PRINTER_LANGUAGE" value="ERROR_UNKNOWN_PRINTER_LANGUAGE" type="STRING">
+                <DESC>Unable to determine the control language of a printer</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_MALFORMED_NETWORK_DISCOVERY_ADDRESS" value="ERROR_MALFORMED_NETWORK_DISCOVERY_ADDRESS" type="STRING">
+                <DESC>Malformed discovery address</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_NETWORK_ERROR_DURING_DISCOVERY" value="ERROR_NETWORK_ERROR_DURING_DISCOVERY" type="STRING">
+                <DESC>Network error during discovery</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_INVALID_DISCOVERY_HOP_COUNT" value="ERROR_INVALID_DISCOVERY_HOP_COUNT" type="STRING">
+                <DESC>Invalid multi-cast hop count</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_MALFORMED_PRINTER_STATUS_RESPONSE" value="ERROR_MALFORMED_PRINTER_STATUS_RESPONSE" type="STRING">
+                <DESC>Malformed status response - unable to determine printer status</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_INVALID_FORMAT_NAME" value="ERROR_INVALID_FORMAT_NAME" type="STRING">
+                <DESC>Invalid format name</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_BAD_FILE_DIRECTORY_ENTRY" value="ERROR_BAD_FILE_DIRECTORY_ENTRY" type="STRING">
+                <DESC>Bad file directory entry</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_MALFORMED_FORMAT_FIELD_NUMBER" value="ERROR_MALFORMED_FORMAT_FIELD_NUMBER" type="STRING">
+                <DESC>'^FN' integer must be between 1 and 999</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_INVALID_PRINTER_LANGUAGE" value="ERROR_INVALID_PRINTER_LANGUAGE" type="STRING">
+                <DESC>Invalid printer language</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_INVALID_FILE_NAME" value="ERROR_INVALID_FILE_NAME" type="STRING">
+                <DESC>Invalid file name</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="ERROR_INVALID_PRINTER_DRIVE_LETTER" value="ERROR_INVALID_PRINTER_DRIVE_LETTER" type="STRING">
+                <DESC>Invalid drive specified</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="PRINTER_STATE_IS_HEAD_COLD" value="PRINTER_STATE_IS_HEAD_COLD" type="STRING">
+                <DESC>Use this name for requestState(), true if the head is cold</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_IS_HEAD_OPEN" value="PRINTER_STATE_IS_HEAD_OPEN" type="STRING">
+                <DESC>Use this name for requestState(), true if the head is open</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_IS_HEAD_TOO_HOT" value="PRINTER_STATE_IS_HEAD_TOO_HOT" type="STRING">
+                <DESC>Use this name for requestState(), true if the head is too hot</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_IS_PARTIAL_FORMAT_IN_PROGRESS" value="PRINTER_STATE_IS_PARTIAL_FORMAT_IN_PROGRESS" type="STRING">
+                <DESC>Use this name for requestState(), true if there is a partial format in progress</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_IS_PAUSED" value="PRINTER_STATE_IS_PAUSED" type="STRING">
+                <DESC>Use this name for requestState(), true if the printer is paused</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_IS_RECEIVE_BUFFER_FULL" value="PRINTER_STATE_IS_RECEIVE_BUFFER_FULL" type="STRING">
+                <DESC>Use this name for requestState(), true if the receive buffer is full</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_IS_RIBBON_OUT" value="PRINTER_STATE_IS_RIBBON_OUT" type="STRING">
+                <DESC>Use this name for requestState(), true if the ribbon is out</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_LABEL_LENGTH_IN_DOTS" value="PRINTER_STATE_LABEL_LENGTH_IN_DOTS" type="STRING">
+                <DESC>Use this name for requestState(), The length of the label in dots</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_LABELS_REMAINING_IN_BATCH" value="PRINTER_STATE_LABELS_REMAINING_IN_BATCH" type="STRING">
+                <DESC>Use this name for requestState(), The number of labels remaining in the batch</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_NUMBER_OF_FORMATS_IN_RECEIVE_BUFFER" value="PRINTER_STATE_NUMBER_OF_FORMATS_IN_RECEIVE_BUFFER" type="STRING">
+                <DESC>Use this name for requestState(), The number of formats currently in the receive buffer of the printer</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_PRINT_MODE" value="PRINTER_STATE_PRINT_MODE" type="STRING">
+                <DESC>Use this name for requestState(), The print mode</DESC>
+            </CONSTANT>
+        </CONSTANTS>
+
+        <METHODS access="INSTANCE">
+            <METHOD name="retrieveFileNames" hasCallback="mandatory">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>Retrieves the names of the files which are stored on the printer. Works asynchronously; use callback to check the result.</DESC>
+                <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>PRINTER_STATUS_SUCCESS, PRINTER_STATUS_ERROR</DESC>
+                        </PARAM>
+                        <PARAM name="fileNames" type="ARRAY">
+                            <PARAM type="STRING"></PARAM>
+                            <DESC></DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="retrieveFileNamesWithExtensions" hasCallback="mandatory">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>This method only returns files which have the extensions in "extensions". Works asynchronously; use callback to check the result.</DESC>
+                <PARAMS>
+                    <PARAM name="extensions" type="ARRAY">
+                        <PARAM type="STRING"></PARAM>
+                        <DESC>The list of extensions that should be returned.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>PRINTER_STATUS_SUCCESS, PRINTER_STATUS_ERROR</DESC>
+                        </PARAM>
+                        <PARAM name="fileNames" type="ARRAY">
+                            <PARAM type="STRING"></PARAM>
+                            <DESC></DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="sendFileContents" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>Sends the contents of a file on the device to the printer. Equals to printing raw string with content of specified file. Should be used to print ZPL and CPCL commands stored inside predefined filed. Works asynchronously; use callback to check the result.</DESC>
+                <PARAMS>
+                    <PARAM name="path" type="STRING">
+                        <DESC>Location of file to print. This path must be fully qualified path to local file on the device.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="STRING">
+                    <DESC>Returns result of a printing attempt. PRINTER_STATUS_SUCCESS, PRINTER_STATUS_ERROR</DESC>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="printStoredFormatWithHash" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>Prints a stored format on the printer, filling in the fields specified by the Hash. Works asynchronously; use callback to check the result.</DESC>
+                <PARAMS>
+                    <PARAM name="formatPathOnPrinter" type="STRING">
+                        <DESC>The location of the file on the printer (e.g. "E:FORMAT.ZPL").</DESC>
+                    </PARAM>
+                    <PARAM name="vars" type="HASH">
+                        <DESC>A Hash containing the key / value pairs for the stored format. For ZPL formats, the key number should correspond directly to the number of the field in the format. Number keys should be passed as Strings, i.e. '1':'field1' etc. Only ZPL format is supported; CPCL format is not supported.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="STRING">
+                    <DESC>Returns result of a printing attempt. PRINTER_STATUS_SUCCESS, PRINTER_STATUS_ERROR. If you try to print formats containing invalid data, then only iOS return ERROR, on Android and WM  Zebra SDK not provided that info due to Zebra SDK API limitations on Android and WM. So on Android and WM you can receive ERROR only if some connection problem occurred.</DESC>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="printStoredFormatWithArray" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>Prints a stored format on the printer, filling in the fields specified by the array. Works asynchronously; use callback to check the result.</DESC>
+                <PARAMS>
+                    <PARAM name="formatPathOnPrinter" type="STRING">
+                        <DESC>The location of the file on the printer (e.g. "E:FORMAT.ZPL").</DESC>
+                    </PARAM>
+                    <PARAM name="vars" type="Array">
+                        <DESC>An array of strings representing the data to fill into the format. For ZPL formats, index 0 of the array corresponds to field number 2 (^FN2). For CPCL, the variables are passed in the order that they are found in the format</DESC>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="STRING">
+                    <DESC>Returns result of a printing attempt. PRINTER_STATUS_SUCCESS, PRINTER_STATUS_ERROR. If you try to print format contains invalid data, then only iOS return ERROR, on Android and WM  Zebra SDK not provided that info due to Zebra SDK API limitations on Android and WM. So on Android and WM you can receive ERROR only if some connection problem occurred.</DESC>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="storeImage" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>Stores the specified image to the connected printer as a monochrome image. Works asynchronously; use callback to check the result. The image will be stored on the printer at printerDriveAndFileName with the extension GRF. If a drive letter is not supplied, E will be used as the default (e.g. FILE becomes E:FILE.GRF). If an extension is supplied, it is ignored (E:FILE.BMP becomes E:FILE.GRF). Note that if the image resolution is large (e.g. 1024x768) this method may take a long time to execute. There are device OS limitations on supported file formats and image sizes. iOS, Android and WM are supporting only JPG and PNG files. WM can fail to handle large (>1024x1024 pixel) images.</DESC>
+                <PARAMS>
+                    <PARAM name="printerDriveAndFileName" type="STRING">
+                        <DESC>Path on the printer where the image will be stored.</DESC>
+                    </PARAM>
+                    <PARAM name="imageFilePathOnDevice" type="STRING">
+                        <DESC>Path to the local image file containing the bitmap image to send.</DESC>
+                    </PARAM>
+                    <PARAM name="width" type="INTEGER">
+                        <DESC>Desired width of the printed image, in dots. Passing -1 will preserve original width.</DESC>
+                    </PARAM>
+                    <PARAM name="height" type="INTEGER">
+                        <DESC>Desired height of the printed image, in dots. Passing -1 will preserve original height.</DESC>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="STRING">
+                    <DESC>Returns result of a printing attempt. PRINTER_STATUS_SUCCESS, PRINTER_STATUS_ERROR, </DESC>
+                </CALLBACK>
+            </METHOD>
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+        <REMARKS>
+            <REMARK title="iOS Notes" productException="eb">
+                <DESC>
+To use a Bluetooth connection on iOS devices you should take into account the following preconditions:
+
+* It will only work with Zebra printers which have the `Made For iPod/iPhone` certification.
+* Before using the printer you should pair it using the iOS system Bluetooth settings.
+* You need to include the External Accessory framework in your project (this is automatically added when you first generate the iPhone project file)
+* You need to include the Zebra printer protocol string "com.zebra.rawport" in your info.plist file ([project root]/project/iphone/Info.plist) under "Supported external accessory protocols":
+        &lt;key&gt;UISupportedExternalAccessoryProtocols&lt;/key&gt;
+        &lt;array&gt;
+            &lt;string&gt;com.zebra.rawport&lt;/string&gt;
+        &lt;/array&gt;
+* You need to set the key `Required Background modes` to `App Communicates with an accessory` in your app's plist file
+        &lt;key&gt;UIBackgroundModes&lt;/key&gt;
+        &lt;array&gt;
+            &lt;string&gt;external-accessory&lt;/string&gt;
+        &lt;/array&gt;</DESC>
+            </REMARK>
+            <REMARK title="Android Notes">
+                <DESC>
+* To use a Bluetooth connection on Android devices you should take into account the following preconditions: Before using the printer you should pair it using the Android system Bluetooth settings.
+* When you call searchPrinters() with Bluetooth search (with CONNECTION_TYPE_ANY or CONNECTION_TYPE_BLUETOOTH) then _all_ Bluetooth devices around you will be discovered. You may see a lot of pairing requests to non-printer devices and should just cancel or ignore them. This happens because we can not detect that the device is a printer until the device is paired. It is recommended that the BT Address or WiFi MAC Address is also used when searching for printers.
+* When you call searchPrinters() with USB search (with CONNECTION_TYPE_ANY or CONNECTION_TYPE_USB) then you should configure your device USB controller as "USB Host mode" and should reboot device after the configuration. USB connection is not supported on the Zebra QLn320 printer. The searchPrinters method should not return any non-printer devices. If USB printers are not supported by the SDK or device, the searchPrinters function should return PRINTER_STATUS_ERR_UNSUPPORTED. For example, executing searchPrinters on an Android device with connectionType set to CONNECTION_TYPE_USB should return PRINTER_STATUS_ERR_UNSUPPORTED.
+
+            </DESC>
+            </REMARK>
+            <REMARK title="Windows Mobile/CE Notes">
+                <DESC>
+
+* You must set your app_type as "rhoelements" in your `build.yml` as shown the [build-time settings guide](../guide/build_config#other-build-time-settings).
+
+* Requires a Printing Service application to be running. This is described in the [Printing Guide](../guide/printing#platform-notes)
+
+* You should avoid navigating from the current page using the printer without disconnecting from the printer first. You can use the window.onunload event:
+
+        window.onunload = function(){
+            printer.disconnect();
+        }
+
+* When you call searchPrinters() with Bluetooth search (with CONNECTION_TYPE_ANY or CONNECTION_TYPE_BLUETOOTH) then _all_ Bluetooth devices around you will be discovered. You may see a lot of pairing requests to non-printer devices and should just cancel or ignore them. This happens because we can not detect that the device is a printer until the device is paired. It is recommended that the BT Address or WiFi MAC Address is also used when searching for printers.</DESC>
+            </REMARK>
+            <REMARK title="Supported Zebra Printers">
+                <DESC>Only printers listed in supported models in Zebra [SDK description](https://www.zebra.com/us/en/products-services/software/zebralink/zebralink-multiplatform-sdk.html) (click "Compatible Printers" link) are supported for use with this API. For example, the QL 320 (old model) is __not__ supported but, QLn320 and QL320 plus __are__ supported.</DESC>
+            </REMARK>
+        </REMARKS>
+        <EXAMPLES>
+            <EXAMPLE title="Printing via Bluetooth">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>To print to the Zebra printer we must first search for the device. In this example we are using the searchPrinters method and passing in options to limit the search to Bluetooth and also look for Zebra printers only. If we knew the printer Bluetooth address we could have added the 'deviceAddress' parameter. The callback function will be executed for each printer found. When a printer is found the callback object will contain a 'printerID' property. This ID is an internal RhoMobie ID used. If no printerID property is there for the successful callback object, then it means that the search has finished. We don't have any API to identify whether it is zebra or non zebra printer, so we are checking as per the friendly name of the device, If friendly name contains "zebra"  then we confirm printer type as PRINTER_TYPE_ZEBRA. </DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+var printers = [];
+
+Rho.Printer.searchPrinters({
+    connectionType:Rho.Printer.CONNECTION_TYPE_BLUETOOTH,
+    printerType: Rho.Printer.PRINTER_TYPE_ZEBRA
+    }, function (cb){
+        if(cb.status == 'PRINTER_STATUS_SUCCESS')
+        {
+            if (typeof cb.printerID != "undefined")
+            {
+                console.log('Found: ' + cb.printerID)
+                printers.push(cb.printerID);
+            }
+            else
+            {
+                console.log('Done Searching');
+            }
+        }
+        else
+        {
+            console.log(cb.status);
+        }
+    }
+);
+]]>
+                            </JAVASCRIPT>
+                            <RUBY><![CDATA[
+@printers = []
+
+Rho::Printer.searchPrinters({ connectionType  => Rho::Printer::CONNECTION_TYPE_BLUETOOTH,
+                              printerType     => Rho::Printer::PRINTER_TYPE_ZEBRA },
+                              url_for(:action => :printer_callback) )
+
+def find_printer_callback
+  if @params['status'] == 'PRINTER_STATUS_SUCCESS'
+    if defined? @params['printerID']
+      puts "Found: #{@params['printerID']}"
+      @printers.push @params['printerID']
+    else
+      puts "Done Searching"
+    end
+  else
+    puts @params['status']
+  end
+end
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>Now that we have found a printer. The `printers` array will contain the `printerID` we need to create an instance object that we will use for all communications. Upon first connection to the printer via Bluetooth, you may see a prompt to enter the Bluetooth PIN. Check the manufacturers guide for details. Normally the default is '0000' or '1111' or '1234'. Once it is connected, you should see some indication in the printer (like a blue light).</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+var myPrinter = Rho.Printer.getPrinterByID(printers[0]);
+
+// Let's try connecting
+myPrinter.connect(function (cb){
+    console.log(cb);
+    // This will be the Zebra's `Friendly Name`
+    // by default it is the serial number
+    console.log(myPrinter.deviceName);
+
+    // This will be the BT MC Address
+    since we are connecting via BlueTooth
+    console.log(myPrinter.deviceAddress);
+});
+]]>
+                            </JAVASCRIPT>
+                            <RUBY><![CDATA[
+@my_printer = Rho::Printer.getPrinterByID printers[0]
+
+# Let's try connecting
+@my_printer.connect url_for(:action => :printer_connect_callback)
+
+def printer_connect_callback
+  puts @params.to_s
+
+  # This will be the Zebra's `Friendly Name`
+  # by default it is the serial number
+  puts @my_printer['deviceName']
+
+  # This will be the BT MAC Address
+  # since we are connecting via BlueTooth
+  puts @my_printer['deviceAddress']
+end
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>Now we can just print a test string and read some properties of the printer to make sure the communications is working.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+// If my printer was in line mode I would see this text printed
+myPrinter.printRawString('This is a test print');
+
+// Example of sending a Zebra CPCL Command
+// changing from linemode to ZPL mode
+myPrinter.printRawString('! U1 setvar "device.languages" "ZPL"\r\n');
+
+// Get state - this is real-time status of printer.
+// reading a property of the myPrinter instance will
+// show last known status
+myPrinter.requestState(['PRINTER_STATE_IS_READY_TO_PRINT',
+    'PRINTER_STATE_IS_PAPER_OUT'],function (cb){
+        console.log(cb.status);
+        console.log(cb.PRINTER_STATE_IS_PAPER_OUT);
+        console.log(cb.PRINTER_STATE_IS_READY_TO_PRINT);
+
+    });
+                   ]]>
+                            </JAVASCRIPT>
+                            <RUBY><![CDATA[
+# If my printer was in line mode I would see this text printed
+@my_printer.printRawString 'This is a test print'
+
+# Example of sending a Zebra CPCL Command
+# changing from linemode to ZPL mode
+@my_printer.printRawString '! U1 setvar "device.languages" "ZPL"\r\n'
+
+# Get state - this is real-time status of printer.
+# reading a property of the @my_printer instance will
+# show last known status
+@my_printer.requestState([Rho::Printer::PRINTER_STATE_IS_READY_TO_PRINT,
+                          Rho::Printer::PRINTER_STATE_IS_PAPER_OUT],
+                          url_for(:action => :request_state_callback));
+
+def request_state_callback
+  puts @params['status']
+  puts @params['PRINTER_STATE_IS_PAPER_OUT']
+  puts @params['PRINTER_STATE_IS_READY_TO_PRINT']
+end
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES>
+    </MODULE>
+</API>

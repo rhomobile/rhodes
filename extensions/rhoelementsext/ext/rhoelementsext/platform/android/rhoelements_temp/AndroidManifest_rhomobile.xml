@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.rho.rhoelements"
+      android:versionCode="1"
+      android:versionName="1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="false" android:permission="com.symbol.emdk.permission.EMDK">
+        <activity android:name="com.rhomobile.rhodes.RhodesActivity"/>
+		<service android:name="com.rho.rhoelements.services.FileTransferService"/>
+		<service android:name="com.rho.rhoelements.services.ScannerService" android:permission="android.permission.CAMERA"></service>
+		<service android:name="com.rho.rhoelements.services.LockService" android:permission="android.permission.INTERNET"></service>
+		<service android:name="com.rho.rhoelements.services.MSRService"></service>
+		<service android:name="com.rho.rhoelements.services.MSRServiceRebranded"></service>
+		<service android:name="com.rho.rhoelements.services.PluginService">
+			<intent-filter>
+				<action android:name="android.webkit.PLUGIN" />
+			</intent-filter>
+			<meta-data android:name="type" android:value="native" />
+		</service>
+		
+        <uses-library android:name="com.symbol.scanner" android:required="false" />
+        <uses-library android:name="com.symbol.adc.usbscanner" android:required="false" />
+    </application>
+
+    <uses-permission android:name="android.webkit.permission.PLUGIN"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+	<uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
+    <uses-permission android:name="android.permission.ACCESS_GPS" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+</manifest> 

@@ -1,0 +1,68 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "res.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+//#include "resdefce.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BACK_DOWN           BITMAP                  "wiz-back-dep-32x32.bmp"
+IDB_BACK_FOCUS          BITMAP                  "wiz-back-dep-32x32_orange.bmp"
+IDB_BACK                BITMAP                  "wiz-back-32x32.bmp"
+IDB_NEXT_DOWN           BITMAP                  "wiz-next-dep-32x32.bmp"
+IDB_NEXT_FOCUS          BITMAP                  "wiz-next-dep-32x32_orange.bmp"
+IDB_NEXT                BITMAP                  "wiz-next-32x32.bmp"
+IDB_MANUAL_DOWN         BITMAP                  "wiz-manual-dep-32x32.bmp"
+IDB_MANUAL_FOCUS        BITMAP                  "wiz-manual-dep-32x32_orange.bmp"
+IDB_MANUAL              BITMAP                  "wiz-manual-32x32.bmp"
+IDB_CANCEL_DOWN         BITMAP                  "wiz-cancel-dep-32x32.bmp"
+IDB_CANCEL_FOCUS        BITMAP                  "wiz-cancel-dep-32x32_orange.bmp"
+IDB_CANCEL              BITMAP                  "wiz-cancel-32x32.bmp"
+IDB_KEYBOARD_DOWN       BITMAP                  "app-sip-dep-32x32.bmp"
+IDB_KEYBOARD_FOCUS      BITMAP                  "app-sip-dep-32x32_orange.bmp"
+IDB_KEYBOARD            BITMAP                  "app-sip-32x32.bmp"
+IDB_WEB_DOWN            BITMAP                  "wiz-online-dep-32x32.bmp"
+IDB_WEB_FOCUS           BITMAP                  "wiz-online-dep-32x32_orange.bmp"
+IDB_WEB                 BITMAP                  "wiz-online-32x32.bmp"
+IDB_TICK_DOWN           BITMAP                  "wiz-done-dep-32x32.bmp"
+IDB_TICK_FOCUS          BITMAP                  "wiz-done-dep-32x32_orange.bmp"
+IDB_TICK                BITMAP                  "wiz-done-32x32.bmp"
+IDB_LOGO                BITMAP                  "logo.bmp"
+IDB_LICBACK             BITMAP                  "licback.bmp"
+IDB_SHIFT               BITMAP                  "keystate\\shift.bmp"
+IDB_ALT               	BITMAP                  "keystate\\alt.bmp"
+IDB_BLUE_DOUGHNUT       BITMAP                  "keystate\\blue_doughnut.bmp"
+IDB_BLUE_FILL           BITMAP                  "keystate\\blue_fill.bmp"
+IDB_CTRL                BITMAP                  "keystate\\ctrl.bmp"
+IDB_GRAY_DOUGHNUT       BITMAP                  "keystate\\gray_doughnut.bmp"
+IDB_ORANGE_DOUGHNUT     BITMAP                  "keystate\\orange_doughnut.bmp"
+IDB_ORANGE_FILL         BITMAP                  "keystate\\orange_fill.bmp"
+IDB_SHIFT_LOCK          BITMAP                  "keystate\\shift_lock.bmp"
+
+#endif
+
+

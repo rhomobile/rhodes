@@ -1,0 +1,371 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C041CB30171323A50097829C /* signature_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C041CB28171323A50097829C /* signature_api_init.cpp */; };
+		C041CB31171323A50097829C /* signature_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C041CB29171323A50097829C /* signature_js_api.cpp */; };
+		C041CB32171323A50097829C /* signature_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C041CB2A171323A50097829C /* signature_ruby_api.c */; };
+		C041CB56171323D00097829C /* SignatureBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C041CB35171323D00097829C /* SignatureBase.h */; };
+		C041CB57171323D00097829C /* SignatureBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C041CB36171323D00097829C /* SignatureBase.m */; };
+		C041CB58171323D00097829C /* SignatureFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C041CB37171323D00097829C /* SignatureFactoryBase.h */; };
+		C041CB59171323D00097829C /* SignatureFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C041CB38171323D00097829C /* SignatureFactoryBase.m */; };
+		C041CB5A171323D00097829C /* SignatureSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C041CB39171323D00097829C /* SignatureSingletonBase.h */; };
+		C041CB5B171323D00097829C /* SignatureSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C041CB3A171323D00097829C /* SignatureSingletonBase.m */; };
+		C041CB5C171323D00097829C /* ISignature.h in Headers */ = {isa = PBXBuildFile; fileRef = C041CB3B171323D00097829C /* ISignature.h */; };
+		C041CB5D171323D00097829C /* signature_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = C041CB3D171323D00097829C /* signature_js_wrap.mm */; };
+		C041CB5E171323D00097829C /* signature_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = C041CB3F171323D00097829C /* signature_ruby_wrap.m */; };
+		C041CB65171323D00097829C /* Signature.h in Headers */ = {isa = PBXBuildFile; fileRef = C041CB4A171323D00097829C /* Signature.h */; };
+		C041CB66171323D00097829C /* Signature.m in Sources */ = {isa = PBXBuildFile; fileRef = C041CB4B171323D00097829C /* Signature.m */; };
+		C041CB69171323D00097829C /* SignatureFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C041CB4E171323D00097829C /* SignatureFactorySingleton.m */; };
+		C041CB6A171323D00097829C /* SignatureSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = C041CB4F171323D00097829C /* SignatureSetup.m */; };
+		C041CB6B171323D00097829C /* SignatureSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = C041CB50171323D00097829C /* SignatureSingleton.h */; };
+		C041CB6C171323D00097829C /* SignatureSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C041CB51171323D00097829C /* SignatureSingleton.m */; };
+		FAC155E7145855CF0016F3BD /* Signature_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Signature_Prefix.pch */; };
+		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C041CB28171323A50097829C /* signature_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = signature_api_init.cpp; path = generated/signature_api_init.cpp; sourceTree = "<group>"; };
+		C041CB29171323A50097829C /* signature_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = signature_js_api.cpp; path = generated/signature_js_api.cpp; sourceTree = "<group>"; };
+		C041CB2A171323A50097829C /* signature_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = signature_ruby_api.c; path = generated/signature_ruby_api.c; sourceTree = "<group>"; };
+		C041CB35171323D00097829C /* SignatureBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignatureBase.h; sourceTree = "<group>"; };
+		C041CB36171323D00097829C /* SignatureBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignatureBase.m; sourceTree = "<group>"; };
+		C041CB37171323D00097829C /* SignatureFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignatureFactoryBase.h; sourceTree = "<group>"; };
+		C041CB38171323D00097829C /* SignatureFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignatureFactoryBase.m; sourceTree = "<group>"; };
+		C041CB39171323D00097829C /* SignatureSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignatureSingletonBase.h; sourceTree = "<group>"; };
+		C041CB3A171323D00097829C /* SignatureSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignatureSingletonBase.m; sourceTree = "<group>"; };
+		C041CB3B171323D00097829C /* ISignature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISignature.h; sourceTree = "<group>"; };
+		C041CB3D171323D00097829C /* signature_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = signature_js_wrap.mm; sourceTree = "<group>"; };
+		C041CB3F171323D00097829C /* signature_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = signature_ruby_wrap.m; sourceTree = "<group>"; };
+		C041CB4A171323D00097829C /* Signature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signature.h; sourceTree = "<group>"; };
+		C041CB4B171323D00097829C /* Signature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Signature.m; sourceTree = "<group>"; };
+		C041CB4E171323D00097829C /* SignatureFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignatureFactorySingleton.m; sourceTree = "<group>"; };
+		C041CB4F171323D00097829C /* SignatureSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignatureSetup.m; sourceTree = "<group>"; };
+		C041CB50171323D00097829C /* SignatureSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignatureSingleton.h; sourceTree = "<group>"; };
+		C041CB51171323D00097829C /* SignatureSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignatureSingleton.m; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libSignature.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSignature.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD45FD51225FED600141873 /* Signature_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signature_Prefix.pch; sourceTree = "<group>"; };
+		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
+				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libSignature.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* Barcode */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = Barcode;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FAD4602C12260A8500141873 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C041CB20171323A50097829C /* shared */,
+				C041CB33171323D00097829C /* generated */,
+				C041CB48171323D00097829C /* impl */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* Signature_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		C041CB20171323A50097829C /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				C041CB28171323A50097829C /* signature_api_init.cpp */,
+				C041CB29171323A50097829C /* signature_js_api.cpp */,
+				C041CB2A171323A50097829C /* signature_ruby_api.c */,
+			);
+			name = shared;
+			path = ../../shared;
+			sourceTree = "<group>";
+		};
+		C041CB33171323D00097829C /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C041CB3B171323D00097829C /* ISignature.h */,
+				C041CB3C171323D00097829C /* javascript */,
+				C041CB3E171323D00097829C /* ruby */,
+				C041CB34171323D00097829C /* base_impl */,
+			);
+			path = generated;
+			sourceTree = "<group>";
+		};
+		C041CB34171323D00097829C /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				C041CB35171323D00097829C /* SignatureBase.h */,
+				C041CB36171323D00097829C /* SignatureBase.m */,
+				C041CB37171323D00097829C /* SignatureFactoryBase.h */,
+				C041CB38171323D00097829C /* SignatureFactoryBase.m */,
+				C041CB39171323D00097829C /* SignatureSingletonBase.h */,
+				C041CB3A171323D00097829C /* SignatureSingletonBase.m */,
+			);
+			path = base_impl;
+			sourceTree = "<group>";
+		};
+		C041CB3C171323D00097829C /* javascript */ = {
+			isa = PBXGroup;
+			children = (
+				C041CB3D171323D00097829C /* signature_js_wrap.mm */,
+			);
+			path = javascript;
+			sourceTree = "<group>";
+		};
+		C041CB3E171323D00097829C /* ruby */ = {
+			isa = PBXGroup;
+			children = (
+				C041CB3F171323D00097829C /* signature_ruby_wrap.m */,
+			);
+			path = ruby;
+			sourceTree = "<group>";
+		};
+		C041CB48171323D00097829C /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				C041CB4A171323D00097829C /* Signature.h */,
+				C041CB4B171323D00097829C /* Signature.m */,
+				C041CB4E171323D00097829C /* SignatureFactorySingleton.m */,
+				C041CB4F171323D00097829C /* SignatureSetup.m */,
+				C041CB50171323D00097829C /* SignatureSingleton.h */,
+				C041CB51171323D00097829C /* SignatureSingleton.m */,
+			);
+			path = impl;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155E7145855CF0016F3BD /* Signature_Prefix.pch in Headers */,
+				C041CB56171323D00097829C /* SignatureBase.h in Headers */,
+				C041CB58171323D00097829C /* SignatureFactoryBase.h in Headers */,
+				C041CB5A171323D00097829C /* SignatureSingletonBase.h in Headers */,
+				C041CB5C171323D00097829C /* ISignature.h in Headers */,
+				C041CB65171323D00097829C /* Signature.h in Headers */,
+				C041CB6B171323D00097829C /* SignatureSingleton.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* Signature */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Signature" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Signature;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libSignature.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "signature" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* Barcode */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* Signature */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C041CB30171323A50097829C /* signature_api_init.cpp in Sources */,
+				C041CB31171323A50097829C /* signature_js_api.cpp in Sources */,
+				C041CB32171323A50097829C /* signature_ruby_api.c in Sources */,
+				C041CB57171323D00097829C /* SignatureBase.m in Sources */,
+				C041CB59171323D00097829C /* SignatureFactoryBase.m in Sources */,
+				C041CB5B171323D00097829C /* SignatureSingletonBase.m in Sources */,
+				C041CB5D171323D00097829C /* signature_js_wrap.mm in Sources */,
+				C041CB5E171323D00097829C /* signature_ruby_wrap.m in Sources */,
+				C041CB66171323D00097829C /* Signature.m in Sources */,
+				C041CB69171323D00097829C /* SignatureFactorySingleton.m in Sources */,
+				C041CB6A171323D00097829C /* SignatureSetup.m in Sources */,
+				C041CB6C171323D00097829C /* SignatureSingleton.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/Signature.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Signature_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Signature;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/Signature.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Signature_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Signature;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "signature" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Signature" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

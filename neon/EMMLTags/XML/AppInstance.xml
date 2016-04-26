@@ -1,0 +1,200 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+	  <JSOBJECT>False</JSOBJECT>
+		<NAME>Module</NAME>
+		<PATH>Device</PATH>
+		<TYPE>META Tag</TYPE>
+		<SYNOPSIS>is an action tag used to manage the applications running on your device.</SYNOPSIS>
+		<SYNTAX>
+            <USAGE>
+                <EXAMPLE>&lt;META HTTP-Equiv="AppInstance" content="NewInstance:123"&gt;</EXAMPLE>
+            </USAGE>
+            <USAGE>
+                <EXAMPLE>&lt;META HTTP-Equiv="AppInstance-NewInstance" contents="123"&gt;</EXAMPLE>
+            </USAGE>
+        </SYNTAX>
+        <PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>newInstance</NAME>
+				<DESC>Creates a new running application.  Before creating a new application instance you must first set (at a minimum) a unique identifier for it, via AppInstance-ID.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>closeCurrent</NAME>
+				<DESC>Closes the current application.  The application being shown after this application is closed will depend on a number of factors including if there are other applications running and the last visible application.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>enumerate</NAME>
+				<DESC>Cause an EnumApplications event to be fired detailing the applications running on the device, see the EnumApplications return values for more information.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+        </PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>iD</NAME>
+                <VALUES>Positive integer.</VALUES>
+				<DESC>
+                    ID which will be assigned to the next newly created application via AppInstance-NewInstance
+                </DESC>
+				<DEFAULT>No Default parameter defined, failing to specify an ID will cause AppInstance-NewInstance to have no effect.</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>location</NAME>
+                <VALUES>URL</VALUES>
+				<DESC>
+                    The next newly created application (via AppInstance-NewInstance) will have its start page set at the specified URL
+                </DESC>
+				<DEFAULT>The Internet Explorer home page.</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>icon</NAME>
+                <VALUES>Path to Icon Resource</VALUES>
+				<DESC>
+                    Specifies the location of the icon (.gif / .jpg) to be used for the next newly created application via AppInstance-NewInstance.  This icon will be used in the application switcher screen and the application launch screen.
+                </DESC>
+				<DEFAULT>A default icon.</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>close</NAME>
+                <VALUES>ID of the application to Close.</VALUES>
+				<DESC>
+                    Closes the application with the specified ID.  No action will be taken if there is no application with the specified ID.
+                </DESC>
+				<DEFAULT>No Default parameter defined, failing to specify an ID will have no effect.</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>switch</NAME>
+                <VALUES>One of the following: ID, if you know the ID of the application to Switch to;
+                HOME, which switches to the application launcher; LOCK, which locks the device and UNLOCK which unlocks the device if called from the Lock application.</VALUES>
+				<DESC>
+                    Switches to the application with the specified ID or pre-defined application.  No action will be taken if there is no application with the specified ID.
+                </DESC>
+				<DEFAULT>No Default parameter defined, failing to specify an Application will have no effect.</DEFAULT>
+			</PARAM>	
+        </PARAMS_WITH_ATTRIBUTES>
+         <RETURNS>
+            <TAG>
+                <TAG_NAME>enumApplications</TAG_NAME>
+                <RETVAL>
+                    <NAME>applicationArray</NAME>
+                    <DESC>2 dimensional array of data relating to each application running on the device.  See the Remarks section for the format of this array.</DESC>
+					<ARRAY>TRUE</ARRAY>
+                </RETVAL>				
+            </TAG>
+        </RETURNS>        
+        
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example outputs the running applications:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="AppInstance" Content="EnumApplications:url('Javascript:fnEnumApplications(%s);')"&gt;
+&lt;DIV ID="message"&gt;&lt;/DIV&gt;
+&lt;script&gt;
+    var bPickingAppRunning = False;
+    function fnEnumApplications(applicationArray)
+    {
+        var applicationInfo = "Running Applications: " + applicationArray.length + "&lt;BR&gt;ID  --  Name&lt;BR&gt;" 
+        for (i=0; i &lt; applicationArray.length; i++)
+        {
+            applicationInfo = applicationInfo + applicationArray[i][0] + ' -- ' + applicationArray[i][1] + ' -- ' + applicationArray[i][2] + '&lt;BR&gt;';
+            if (applicationArray[i][0] == "PickingApp")
+                bPickingAppRunning = True;
+        }
+        message.innerHTML = applicationInfo;
+    }
+    function fnInvoke()
+    {
+        appInstance.enumerate();
+    }
+&lt;/script&gt;
+&lt;a href='JavaScript:fnInvoke()'&gt;Display Running Applications&lt;/a&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example builds on the last to create a new application (a picking system), setting the default page and bringing it to the foreground.</DESC>
+<CODE>
+&lt;script&gt;
+    function launchPickingApp()
+    {
+        if (!bPickingAppRunning)
+        {
+            appInstance.id = 1;
+            appInstance.location = url('file://\PickSystem\index.html');
+            appInstance.icon = url('file://\icons\pickApp.gif');
+            appInstance.newInstance();
+        }
+        appInstance.switch = 1;
+    }
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+
+			<EXAMPLE>
+				<DESC>The following example closes the current application and brings up the application switcher:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="AppInstance" Content="CloseCurrent"&gt;
+&lt;META HTTP-Equiv="AppSwitcher" Content="Visibility:Visible"&gt;
+</CODE>
+			</EXAMPLE>	
+
+  			<EXAMPLE>
+				<DESC>The following example brings up the lock screen if no key is pressed for 30 seconds</DESC>
+<CODE>
+&lt;HTML&gt;
+   &lt;HEAD&gt;
+      &lt;META HTTP-Equiv="Timer-Interval" Content="30000"&gt;
+      &lt;META HTTP-Equiv="Timer-Event" Content="javascript:fnTimer('%s')"&gt;
+      &lt;META HTTP-Equiv="OnAllKeysDispatch" Content="resetTimer()"&gt;
+   &lt;/HEAD&gt;
+   &lt;BODY"&gt;
+        &lt;SCRIPT LANGUAGE="javascript"&gt;
+           function fnTimer(time)
+           {
+              Generic.InvokeMetaFunction('AppInstance', 'Switch:LOCK');
+           }
+           function resetTimer()
+           {
+              Generic.InvokeMetaFunction('Timer', 'KillTimer');
+              Generic.InvokeMetaFunction('Timer-Interval', '30000');
+           }
+        &lt;/SCRIPT&gt;
+    &lt;/BODY&gt;
+&lt;/HTML&gt;
+
+ 
+</CODE>
+			</EXAMPLE>	
+
+		</EXAMPLES>
+		<REMARKS>
+<COMMENT>
+<COMMENT_HEADING>EnumApplications Array Format</COMMENT_HEADING>
+<COMMENT_DATA>
+
+The ApplicationArray attribute returned from EnumApplications will enumerate each Application running
+on the device in a 2D array, associating each application's name with its attributes as follows:
+ApplicationName, ApplicationID, LocationOfIcon
+e.g.
+"LockScreen", -1, "LockScreen.gif"
+"AppSwitcher", -2, "AppSwitcher.gif"
+"AppLauncher", -3, "AppLauncher.gif"
+"PickingApp", 1, "file://\icons\pickApp.gif"
+"MedicalApp", 2, "file://\icons\medicalApp.gif"
+</COMMENT_DATA>
+</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>Windows CE, Windows Mobile, Windows Mobile SE</PLATFORM>
+			<APPLIES>This tag is page specific and is actioned immediately.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>N/A</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>AppSwitcher</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

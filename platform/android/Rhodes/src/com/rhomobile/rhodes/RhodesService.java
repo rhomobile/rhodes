@@ -301,9 +301,7 @@ public class RhodesService extends Service {
 	
 	public static native void resetHttpLogging(String http_log_url);
 	public static native void resetFileLogging(String log_path);
-	
-	//public static native boolean isMotorolaLicencePassed(String license, String company, String appName);
-	
+		
 	public native void notifyNetworkStatusChanged( int status );
 	
 	
@@ -914,8 +912,7 @@ public class RhodesService extends Service {
 			} else if (name.equalsIgnoreCase("webview_framework")) {
 				return RhodesActivity.safeGetInstance().getMainView()
 						.getWebView(-1).getEngineId();
-			} else if (name.equalsIgnoreCase("is_symbol_device")
-					|| name.equalsIgnoreCase("is_motorola_device")) {
+			} else if (name.equalsIgnoreCase("is_symbol_device")) {
 				return isSymbolDevice();
 			} else if (name.equalsIgnoreCase("oem_info")) {
 				return Build.PRODUCT;
@@ -954,14 +951,13 @@ public class RhodesService extends Service {
             res = (Boolean)isEmdkDeviceMethod.invoke(null);
         } 
         catch (Throwable e) { }
-        return Boolean.valueOf(Capabilities.MOTOROLA_ENABLED && res);*/
+        return Boolean.valueOf(Capabilities.SYMBOL_ENABLED && res);*/
         
       //   There is a loading issue if app_type=rhodes. SR EMBPD00111897
         
       return isAppInstalled("com.symbol.emdk.proxyframework") ||
              isAppInstalled("com.symbol.emdk.datawedge") ||
-             isAppInstalled("com.motorolasolutions.emdk.proxyframework") ||
-             isAppInstalled("com.motorolasolutions.emdk.datawedge") ||  isAppInstalled("com.symbol.datawedge") || symbolSupportedDeviceID();
+            isAppInstalled("com.symbol.datawedge") || symbolSupportedDeviceID();
     }
     
     private static Boolean symbolSupportedDeviceID(){

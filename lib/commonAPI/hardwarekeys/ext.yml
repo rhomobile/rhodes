@@ -1,0 +1,18 @@
+entry: Init_HardwareKeys_extension	
+javaentry: com.hardwarekeys.HardwareKeys
+libraries: ["HardwareKeys"]
+android:
+  manifest_changes: ext/platform/android/AndroidManifest.rb
+  source_list: ext/platform/android/ext_java.files
+  rhodes_listener: com.rho.keycapture.KeyCaptureRhoListener
+  exttype: rakefile
+  adds: ext/platform/android/addons
+
+project_paths:
+  wp8: ext/platform/wp8/HardwareKeys.vcxproj
+  wm: ext/platform/wm/HardwareKeys.vcproj
+  win32: ext/platform/wm/HardwareKeys.vcproj
+  
+xml_api_paths: ext/keycapture.xml
+
+platforms: ["wm", "iphone", "android"]

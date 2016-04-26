@@ -1,0 +1,106 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>zoomTextButton</NAME>
+		<PATH>Controls and Appearance</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to set the parameters of the ZoomTextButton.  When clicked the font size in the browser will cycle from smallest to largest.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="ZoomTextButton" content="[parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+        <PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>left</NAME>
+				<VALUES>Positive number, representing pixels</VALUES>
+				<DESC>Sets the X position of the ZoomText button in pixels.</DESC>
+				<DEFAULT>Bottom right of the screen</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>top</NAME>
+				<VALUES>Positive number, representing pixels</VALUES>
+				<DESC>Sets the Y position of the ZoomText button in pixels.</DESC>
+				<DEFAULT>Bottom right of the screen</DEFAULT>
+			</PARAM>
+            <PARAM>
+				<NAME>height</NAME>
+				<VALUES>Positive number, representing pixels</VALUES>
+				<DESC>Sets the height of the ZoomText button.</DESC>
+				<DEFAULT>Dependant on screen resolution</DEFAULT>
+			</PARAM>
+            <PARAM>
+				<NAME>width</NAME>
+				<VALUES>Positive number, representing pixels</VALUES>
+				<DESC>Sets the width of the ZoomText button.</DESC>
+				<DEFAULT>Dependant on screen resolution</DEFAULT>
+			</PARAM>
+            <PARAM>
+				<NAME>imageUp</NAME>
+				<VALUES>URL</VALUES>
+				<DESC>Sets the image to be displayed when the ZoomText Button is in the up state. See Remarks.</DESC>
+				<DEFAULT>Default image</DEFAULT>
+			</PARAM>
+            <PARAM>
+				<NAME>imageDown</NAME>
+                <VALUES>URL</VALUES>
+                <DESC>Sets the image to be displayed when the ZoomText Button is in the down state. See Remarks.</DESC>
+                <DEFAULT>Default image</DEFAULT>
+            </PARAM>    
+			<PARAM>
+				<NAME>visibility</NAME>
+                <VALUES>visible, hidden</VALUES>
+				<DESC>Sets the visibility of the ZoomText button.</DESC>
+				<DEFAULT>Hidden.</DEFAULT>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example shows the ZoomText button, sets its left and top coordinates to 50 pixels, and its height and width to 20 pixels.</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="ZoomTextButton" Content="Visibility:Visible"&gt;
+&lt;META HTTP-Equiv="ZoomTextButton" Content="Left:50"&gt;
+&lt;META HTTP-Equiv="ZoomTextButton" Content="Top:50"&gt;
+&lt;META HTTP-Equiv="ZoomTextButton" Content="Height:20"&gt;
+&lt;META HTTP-Equiv="ZoomTextButton" Content="Width:20"&gt;
+				</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example shows the ZoomText button and displays the zoomText_up.gif / zoomText_down.gif images on it (resizing the images if necessary).</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="ZoomTextButton" Content="ImageUp:url('http://myaddress/zoomText_up.gif'); ImageDown:url('http://myaddress.zoomText_down.gif'); Visibility:Visible"&gt;
+				</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Use of Images on Buttons.</COMMENT_HEADING>
+				<COMMENT_DATA>Images can be specified as local to the device or on an HTTP / FTP server, just specify the required protocol as part of your URL (file://\, HTTP:// and FTP://).  Image will be scaled to the size of the button.  JPEG and GIF images are only supported on WM devices.  Both CE and WM support BMP files.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Switching to Other Applications</COMMENT_HEADING>
+				<COMMENT_DATA>All controls are designed to be shown on top of RhoElements.  If you require to switch to an application other than RhoElements you should minimize RhoElements to ensure the buttons do not remain shown.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Screen Orientation</COMMENT_HEADING>
+				<COMMENT_DATA>When the screen orientation changes, either using the ScreenOrientation tag or by rotating a device with hardware support, the command areas will automatically move and resize to fit the new layout. However the buttons themselves are not moved and in some cases this may result in them being off the screen or not in the expected position. If so they must be moved manually by detecting the ScreenOrientationEvent.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Use in Production</COMMENT_HEADING>
+				<COMMENT_DATA>This API is designed for debugging your application only and should not be used in production</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported touch devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>SIPButton</TOPIC>			
+			<TOPIC>KeyState</TOPIC>						
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

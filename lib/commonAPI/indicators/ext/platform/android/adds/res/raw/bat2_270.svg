@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.2" baseProfile="tiny"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 x="0px" y="0px" width="32px" height="46px" viewBox="0 0 32 46" overflow="visible" xml:space="preserve">
+<defs>
+</defs>
+<path fill="#000000" d="M4,8 h7 V4 h10 v4 h7 V42 H4 V8 M0,4 V46 H32 V4 H25 V0 H7 V4 H0 l0,0 z" />
+<path fill="#FFFFFF" d="M4,8 h7 V4 h10 v4 h7 V42 H4 V8" />
+<rect x="6" y="26" fill="#000000" width="20" height="6" />
+<rect x="6" y="34" fill="#000000" width="20" height="6" />
+</svg>

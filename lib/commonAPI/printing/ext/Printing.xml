@@ -1,0 +1,638 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Printer" parent="Rho">
+
+<HELP_OVERVIEW>
+The Printer API module provides access to find, connect, and print over Bluetooth, Wi-Fi and USB from Android and Windows Mobie/CE devices.
+</HELP_OVERVIEW>
+
+<MORE_HELP>
+This general API does not provide access to manufacturer-specific features such as those found in the [PrintingZebra API](printingzebra). If you wish to have access to general *and* manufacturer-specific features, you must include this general API as as well as the printer-specific extension in your `build.yml` file.
+
+###Notes
+
+1. Windows Mobile/CE platforms require the Printing Service application to be running. This is described in the [Printing Guide](../guide/printing#platform-notes).
+2. Unless using the printer's 'line mode' (for sending raw text strings), Zebra recommends sending ZPL only.
+3. USB printing is supported on Android and Windows Mobile/CE platforms on RMS 5.3 and higher.
+
+## Enabling the API
+To use this API you must include the following extension in your `build.yml`:
+
+    :::ruby
+    extensions: ["printing"]
+
+&gt; Note: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your build.yml as shown in the [build-time settings guide](../guide/build_config#other-build-time-settings).
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+</MORE_HELP>
+
+        <TEMPLATES>
+            <DEFAULT_INSTANCE/>
+            <PROPERTY_BAG/>
+            <SINGLETON_INSTANCES/>
+        </TEMPLATES>
+
+        <CONSTANTS>
+            <!-- Printer control languages -->
+            <CONSTANT name="PRINTER_LANGUAGE_ZPL" value="PRINTER_LANGUAGE_ZPL" type="STRING">
+                <DESC> Printer control language ZPL</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="PRINTER_LANGUAGE_CPCL" value="PRINTER_LANGUAGE_CPCL" type="STRING">
+                <DESC> Printer control language CPCL</DESC>
+            </CONSTANT>
+
+            <CONSTANT name="PRINTER_LANGUAGE_EPS" value="PRINTER_LANGUAGE_EPS" type="STRING">
+                <DESC> Printer control language EPS. Not Supported in RMS 4.1</DESC>
+            </CONSTANT>
+
+            <!-- Printer types -->
+            <CONSTANT name="PRINTER_TYPE_ANY" value="PRINTER_TYPE_ANY" type="STRING"/>
+            <CONSTANT name="PRINTER_TYPE_NATIVE" value="PRINTER_TYPE_NATIVE" type="STRING">
+                <DESC> Not supported in RMS 4.1</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_TYPE_ZEBRA" value="PRINTER_TYPE_ZEBRA" type="STRING"/>
+            <CONSTANT name="PRINTER_TYPE_EPSON" value="PRINTER_TYPE_EPSON" type="STRING">
+                <DESC> Not supported in RMS 4.1</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_TYPE_APD" value="PRINTER_TYPE_APD" type="STRING">
+                <DESC> Not supported in RMS 4.1</DESC>
+            </CONSTANT>
+            <!-- Connection types types -->
+            <CONSTANT name="CONNECTION_TYPE_ANY" value="CONNECTION_TYPE_ANY" type="STRING"/>
+            <CONSTANT name="CONNECTION_TYPE_ON_BOARD" value="CONNECTION_TYPE_ON_BOARD" type="STRING">
+                <DESC> Not supported in RMS 4.1</DESC>
+            </CONSTANT>
+            <CONSTANT name="CONNECTION_TYPE_USB" value="CONNECTION_TYPE_USB" type="STRING">
+                <DESC> Supported in RMS 5.1, EB 1.3</DESC>
+            </CONSTANT>
+            <CONSTANT name="CONNECTION_TYPE_BLUETOOTH" value="CONNECTION_TYPE_BLUETOOTH" type="STRING"/>
+            <CONSTANT name="CONNECTION_TYPE_TCP" value="CONNECTION_TYPE_TCP" type="STRING"/>
+            <!-- Printer Status result -->
+            <CONSTANT name="PRINTER_STATUS_SUCCESS" value="PRINTER_STATUS_SUCCESS" type="STRING"/>
+            <CONSTANT name="PRINTER_STATUS_ERROR" value="PRINTER_STATUS_ERROR" type="STRING"/>
+            <CONSTANT name="PRINTER_STATUS_ERR_IO" value="PRINTER_STATUS_ERR_IO" type="STRING"/>
+            <CONSTANT name="PRINTER_STATUS_ERR_MEMORY" value="PRINTER_STATUS_ERR_MEMORY" type="STRING"/>
+            <CONSTANT name="PRINTER_STATUS_ERR_NETWORK" value="PRINTER_STATUS_ERR_NETWORK" type="STRING"/>
+            <CONSTANT name="PRINTER_STATUS_ERR_NOT_CONNECTED" value="PRINTER_STATUS_ERR_NOT_CONNECTED" type="STRING"/>
+            <CONSTANT name="PRINTER_STATUS_ERR_NOT_FOUND" value="PRINTER_STATUS_ERR_NOT_FOUND" type="STRING"/>
+            <CONSTANT name="PRINTER_STATUS_ERR_PARAM" value="PRINTER_STATUS_ERR_PARAM" type="STRING"/>
+            <CONSTANT name="PRINTER_STATUS_ERR_PROCESSING" value="PRINTER_STATUS_ERR_PROCESSING" type="STRING"/>
+            <CONSTANT name="PRINTER_STATUS_ERR_RESPONSE" value="PRINTER_STATUS_ERR_RESPONSE" type="STRING"/>
+            <CONSTANT name="PRINTER_STATUS_ERR_TIMEOUT" value="PRINTER_STATUS_ERR_TIMEOUT" type="STRING"/>
+            <CONSTANT name="PRINTER_STATUS_ERR_UNSUPPORTED" value="PRINTER_STATUS_ERR_UNSUPPORTED" type="STRING"/>
+
+            <CONSTANT name="PRINTER_STATE_IS_READY_TO_PRINT" value="PRINTER_STATE_IS_READY_TO_PRINT" type="STRING">
+                <DESC> Use this name for requestState(), return true if printer ready to print.</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_IS_COVER_OPENED" value="PRINTER_STATE_IS_COVER_OPENED" type="STRING">
+                <DESC> Use this name for requestState(), return true if cover is opened.</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_IS_DRAWER_OPENED" value="PRINTER_STATE_IS_DRAWER_OPENED" type="STRING">
+                <DESC> Use this name for requestState(), return true if drawer is opened.</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_IS_PAPER_OUT" value="PRINTER_STATE_IS_PAPER_OUT" type="STRING">
+                <DESC> Use this name for requestState(), return true if paper out.</DESC>
+            </CONSTANT>
+            <CONSTANT name="PRINTER_STATE_IS_BATTERY_LOW" value="PRINTER_STATE_IS_BATTERY_LOW" type="STRING">
+                <DESC> Use this name for requestState(), return true if battery low.</DESC>
+            </CONSTANT>
+        </CONSTANTS>
+
+    <PROPERTIES>
+        <!-- Common properties -->
+        <DESC>General properties for Printer.</DESC>
+        <PROPERTY name="ID" type="STRING" readOnly="true">
+            <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+            <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+            <DESC>Unique printer ID during application lifetime.</DESC>
+        </PROPERTY>
+        <PROPERTY name="deviceName" type="STRING" readOnly="true">
+            <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+            <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+            <DESC>Bluetooth/Network name of printer.</DESC>
+        </PROPERTY>
+        <PROPERTY name="printerType" type="STRING" readOnly="true">
+            <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+            <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+            <DESC>Type of printer - see PRINTER_TYPE_... constants.</DESC>
+        </PROPERTY>
+        <PROPERTY name="deviceAddress" type="STRING" readOnly="true">
+            <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+            <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+            <DESC>**IP address for Wi-Fi connection**, Bluetooth(R) MAC address or device serial number. Note: iOS uses device serial number instead of MAC address. If you need to get device MAC you can use CPCL command ! U1 getvar "bluetooth.address" </DESC>
+        </PROPERTY>
+        <PROPERTY name="devicePort" type="INTEGER" generateAccessors="true">
+            <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+            <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+            <DESC>Default port when connecting with TCP/IP.</DESC>
+        </PROPERTY>
+        <PROPERTY name="connectionType" type="STRING" readOnly="true">
+            <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+            <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+            <DESC>Type of connection to printer.</DESC>
+        </PROPERTY>
+        <PROPERTY name="isConnected" type="BOOLEAN" readOnly="true">
+            <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+            <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+            <DESC>**Connection status flag**. All other properties are valid only if isConnect = true. Note: This property does not guarantee a real connection, because all real device functionality is processed in separate thread asynchronously. If you want a real physical connection, use `requestState()` method with receive result in the callback. This is the only guaranteed method of processing real requests to the device and analyzing answers from the device.</DESC>
+        </PROPERTY>
+    </PROPERTIES>
+
+        <METHODS access="INSTANCE">
+            <METHOD name="enumerateSupportedTypes" access="STATIC" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>**Immediately returns an array with supported printer types**. The result depends on your build configuration. Each extension is linked to application during build. To add or remove support for any printer type, update extension list in the `build.yml`. </DESC>
+                <RETURN type="ARRAY">
+                    <DESC>Array of currently supported printer types. Depends on build settings. May contain PRINTER_TYPE_ZEBRA, PRINTER_TYPE_EPSON, PRINTER_TYPE_APD, PRINTER_TYPE_NATIVE in any combination.</DESC>
+                    <PARAM type="STRING">
+                        <DESC>Type of device.</DESC>
+                    </PARAM>
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="searchPrinters" access="STATIC" hasCallback="mandatory">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>**Searches for printers connected to the device via Bluetooth(R), Wi-Fi or USB**. To reduce search times, it is highly recommended that searches for wireless connections be done by specific MAC address (Bluetooth) or IP address (Wi-Fi). This method also can be used to retrieve the printerID for a known Bluetooth or network printer specifying the `deviceAddress` options parameter. Result is returned asynchronously using a callback called for each discovered printer. Search is finished if printerID is not set in callback hash. Note that discovery is not guaranteed to return all the available devices. It is therefore recommended that this method run 2-3 times for maximum accuracy. 
+
+                    **NOTE**: On certain Android devices, calling searchPrinters() over Bluetooth or TCP can cause the application to freeze momentarily or to display an alert that "The application has stopped responding." In such cases, it is recommended that the user tap the "Continue waiting" button. 
+                </DESC>
+                <PARAMS>
+                    <PARAM name="options" type="HASH">
+                        <DESC>Options for discover.</DESC>
+                        <CAN_BE_NIL/>
+                       <PARAMS>
+                           <PARAM name="printerType" type="STRING" default="PRINTER_TYPE_ANY">
+                                <DESC>**Printer types to search**. Make sure that Printer type is supported by calling enumerateSupportedTypes method.</DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="connectionType" type="STRING" default="CONNECTION_TYPE_ANY">
+                                <DESC>Interfaces for search (Bluetooth/TCP/All).</DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="timeout" type="INTEGER" default="30000">
+                                <DESC>**Maximum search interval in milliseconds, applies to network discovery**. This is the maximum interval for wait during connection attempt. Note that if no printer was found, even with timeout property, status will be set to PRINTER_STATUS_SUCCESS, but without any printerId.</DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="deviceAddress" type="STRING">
+                                <DESC>**Printer address (MAC, device serial number or IP address)** can be used for setting either subnet mask or full address of printer. For TCP if address is not specified /8 subnet will be used for search. </DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="devicePort" type="INTEGER" default="6101">
+                                <DESC>Override default printer port number. Applicable for network discovery only.</DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>**Status of network discovery**, can be the following:
+* PRINTER_STATUS_SUCCESS - when printer is discovered or operation is finished;
+* PRINTER_STATUS_ERROR - general error
+* PRINTER_STATUS_ERR_UNSUPPORTED - in case if printer type is not supported
+* PRINTER_STATUS_ERR_NOT_CONNECTED - in case if deviceAddress was specified in options and device was unable to connect to printer.</DESC>
+                        </PARAM>
+                        <PARAM name="printerID" type="STRING">
+                            <DESC>**Printer ID, valid only if status equals = 'PRINTER_STATUS_SUCCESS'. If no more printers are available, printerID will be undefined.</DESC>
+                            <CAN_BE_NIL/>
+                        </PARAM>
+                        <PARAM name="message" type="STRING">
+                            <DESC>Error message if status = ERROR**.</DESC>
+                            <CAN_BE_NIL/>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="stopSearch" access="STATIC">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <DESC>**Immediately stops all active search requests and cancels pending search requests**. Does not return a result.</DESC>
+            </METHOD>
+
+            <METHOD name="getPrinterByID" access="STATIC">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>**Returns printer instance specified by printerId**. Returns null is no printers contains the ID. To get valid printerId, use searchPrinters function.</DESC>
+                <PARAMS>
+                    <PARAM name="printerId" type="STRING">
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="SELF_INSTANCE">
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="connect" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>**Connect to a printer using default options**. Works asynchronously; use callback to check the result. If connection is successful printer state and properties are automatically updated. **Note: Default options are defined by printer SDK and platform and may vary between different devices.</DESC>
+                <CALLBACK type="STRING">
+                    <DESC>Returns result of a connection attempt to printer. PRINTER_STATUS_SUCCESS, PRINTER_STATUS_TIMEOUT, PRINTER_STATUS_ERROR, PRINTER_STATUS_NOT_FOUND.</DESC>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="connectWithOptions" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>**Connect to a printer with user options**. Works asynchronously; use callback to check the result. After this function call, the printer state is automatically updated.</DESC>
+                <PARAMS>
+                    <PARAM name="options" type="HASH">
+                        <DESC>Connect options.</DESC>
+                        <PARAMS>
+                            <PARAM name="timeout" type="INTEGER" default="15000">
+                                <DESC>Connection timeout in milliseconds. Must be larger than 0.</DESC>
+                                <PLATFORM>WM, CE, iOS, Android</PLATFORM>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="additionalStringOption" type="STRING" generateDoc="false">
+                                <DESC>Any additional info; currently unused.</DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="STRING">
+                    <DESC>Returns result of a connection attempt to printer. PRINTER_STATUS_SUCCESS, PRINTER_STATUS_TIMEOUT, PRINTER_STATUS_ERROR, PRINTER_STATUS_NOT_FOUND.</DESC>
+                    <CAN_BE_NIL/>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="requestState" hasCallback="mandatory">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>**Requests printer state with a list of parameters**. Works asynchronously and uses the callback to check the result. Returns hash with status and parameters as keys. **NOTE: On the Windows Mobile / Windows CE platform, this method does not work in the case of a Bluetooth and USB connection.</DESC>
+                <PARAMS>
+                    <PARAM name="listOfParameters" type="ARRAY">
+                        <DESC>List of parameters for request from printer device.</DESC>
+                        <PARAM type="STRING">
+                            <DESC>Parameter name - see constants with PRINTER_STATE_...</DESC>
+                        </PARAM>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="HASH">
+                    <DESC>If the printer does not support a parameter, it will not be included in result hash.</DESC>
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>PRINTER_STATUS_SUCCESS, PRINTER_STATUS_ERROR.</DESC>
+                        </PARAM>
+                        <PARAM name="message" type="STRING">
+                            <DESC>Error message, only if status = ERROR.</DESC>
+                            <CAN_BE_NIL/>
+                        </PARAM>
+                        <PARAM name="propertyWithIntValue" type="INTEGER" generateDoc="false">
+                            <DESC>Currently unused.</DESC>
+                            <CAN_BE_NIL/>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="disconnect" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>Disconnect from a printer and release OS resources. Works asynchronously; use callback to check the result.</DESC>
+                <CALLBACK type="STRING">
+                    <DESC>Returns the result of a disconnection. PRINTER_STATUS_SUCCESS, PRINTER_STATUS_ERROR.</DESC>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="printFile" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>**Prints file**. Works asynchronously; use callback to check the result. File extension is used to determine its type. Supported image types: JPEG and PNG.</DESC>
+                <PARAMS>
+                    <PARAM name="filePathOnDevice" type="STRING">
+                        <DESC>Full path to local image file on the device.</DESC>
+                    </PARAM>
+                    <PARAM name="options" type="HASH" generateDoc="false">
+                        <CAN_BE_NIL>
+                            <DESC>Providing no properties to this function will print with default settings. Reserved for future use.</DESC>
+                        </CAN_BE_NIL>
+                        <PARAMS>
+                            <DESC>Provide a set of properties to configure file printing.</DESC>
+                            <PARAM name="propertyWithStringValue" type="STRING"  generateDoc="false">
+                                <DESC>This is currently not being used.</DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="propertyWithIntValue" type="INTEGER" generateDoc="false">
+                                <DESC>Currently unused.</DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="STRING">
+                    <DESC>**Returns result of a printing attempt**. PRINTER_STATUS_SUCCESS, PRINTER_STATUS_ERROR. </DESC>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="printImageFromFile" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>**Prints an image from a device's file system to the connected printer as a monochrome image**. Works asynchronously; use callback to check the result. Images larger than 1024x768 might take a long time or print incorrectly. Consult printer documentation for image printing parameters.
+            </DESC>
+                <PARAMS>
+                    <PARAM name="filePathOnDevice" type="STRING">
+                        <DESC>Full path to local image file on the device. (The image must be either a PNG or JPG, all other types are platform depend).</DESC>
+                    </PARAM>
+                    <PARAM name="x" type="INTEGER">
+                        <DESC>Horizontal starting position in dots.</DESC>
+                    </PARAM>
+                    <PARAM name="y" type="INTEGER">
+                        <DESC>Vertical starting position in dots.</DESC>
+                    </PARAM>
+                    <PARAM name="options" type="HASH">
+                        <DESC>Provide a set of optional parameters.</DESC>
+                        <CAN_BE_NIL></CAN_BE_NIL>
+                        <PARAMS>
+                            <PARAM name="width" type="INTEGER">
+                                <DESC>Desired width of the printed image. Passing -1 will preserve original width.</DESC>
+                            </PARAM>
+                            <PARAM name="height" type="INTEGER">
+                                <DESC>Desired height of the printed image. Passing -1 will preserve original height.</DESC>
+                            </PARAM>
+                            <PARAM name="isInsideFormat" type="BOOLEAN">
+                                <DESC>Boolean value indicating whether this image should be printed by itself (false), or is part of a format being written to the connection (true).</DESC>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="STRING">
+                    <DESC>**Returns result of a printing attempt**. PRINTER_STATUS_SUCCESS, PRINTER_STATUS_ERROR. </DESC>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="printRawString" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>**Send raw string to printer**. Works asynchronously, use callback to check the result. **Note: This method will not print ZPL commands from Windows Mobile/CE devices to Zebra printers; compatible with line mode or raw text only.</DESC>
+                <PARAMS>
+                    <PARAM name="command" type="STRING">
+                        <DESC>Raw string to print. Could be any valid command in printer supported programming language.</DESC>
+                    </PARAM>
+                    <PARAM name="options" type="HASH" generateDoc="false">
+                        <CAN_BE_NIL>
+                            <DESC>Providing no properties to this function will print with default settings.</DESC>
+                        </CAN_BE_NIL>
+                        <PARAMS>
+                            <DESC>Provide a set of properties to configure the printer.</DESC>
+                            <PARAM name="propertyWithStringValue" type="STRING"  generateDoc="false">
+                                <DESC>This is currently not being used.</DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                            <PARAM name="propertyWithIntValue" type="INTEGER"  generateDoc="false">
+                                <DESC>Currently unused.</DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="HASH">
+                    <DESC></DESC>
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>PRINTER_STATUS_SUCCESS, PRINTER_STATUS_ERROR.</DESC>
+                        </PARAM>
+                        <PARAM name="message" type="STRING">
+                            <DESC>Error message, only if status = ERROR.</DESC>
+                            <CAN_BE_NIL/>
+                        </PARAM>
+                        <PARAM name="stringResponce" type="STRING">
+                            <DESC>Response from printer if received, converted to string from byteArray(original data)</DESC>
+                            <CAN_BE_NIL/>
+                            <PLATFORM>Android, WM</PLATFORM>
+                        </PARAM>
+                        <PARAM name="byteArrayResponce" type="ARRAY">
+                            <PARAM type="INTEGER"></PARAM>
+                            <DESC>Response from printer if received.</DESC>
+                            <CAN_BE_NIL/>
+                            <PLATFORM>Android</PLATFORM>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="enumerateSupportedControlLanguages" hasCallback="optional">
+                <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <DESC>**Returns an array with languages supported by this printer**.</DESC>
+                <RETURN type="ARRAY">
+                    <DESC>Array of supported printer control languages.</DESC>
+                    <PARAM type="STRING">
+                        <DESC>Language. See - PRINTER_LANGUAGE_... constants.</DESC>
+                    </PARAM>
+                </RETURN>
+            </METHOD>
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
+        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+        <REMARKS>
+            <REMARK title="iOS Notes" productException="eb">
+                <DESC>
+To use a Bluetooth connection on iOS devices, take into account the following preconditions:
+
+* Zebra printer must have 'Made For iPod/iPhone' certification.  
+* Before using Bluetooth printer, pair it using the iOS system's Bluetooth settings.
+* Your project must include the External Accessory framework (automatically added when iPhone projects are generated).
+* Project must include the Zebra printer protocol string "com.zebra.rawport" in the info.plist file ([project root]/project/iphone/Info.plist) under "Supported external accessory protocols":
+        &lt;key&gt;UISupportedExternalAccessoryProtocols&lt;/key&gt;
+        &lt;array&gt;
+            &lt;string&gt;com.zebra.rawport&lt;/string&gt;
+        &lt;/array&gt;
+* You must set the key 'Required Background modes' to 'App Communicates with an accessory' in your app's plist file.
+        &lt;key&gt;UIBackgroundModes&lt;/key&gt;
+        &lt;array&gt;
+            &lt;string&gt;external-accessory&lt;/string&gt;
+        &lt;/array&gt;</DESC>
+            </REMARK>
+
+            <REMARK title="Android Notes">
+                <DESC>
+* When calling searchPrinters() with Bluetooth search (CONNECTION_TYPE_ANY or CONNECTION_TYPE_BLUETOOTH), all local Bluetooth devices--including non-printers--will be discovered and send pairing requests. Just cancel or ignore them. This happens because the software cannot detect non-printers until after the device is paired. It is recommended that the BT or Wi-Fi MAC address also be used when searching for printers.
+
+* When calling searchPrinters() with USB search (with CONNECTION_TYPE_ANY or CONNECTION_TYPE_USB), all USB Printers connected to the device will be discovered. If USB printers are not supported by SDK or device, searchPrinters function should return PRINTER_STATUS_ERR_UNSUPPORTED.
+                </DESC>
+            </REMARK>
+
+            <REMARK title="Windows Mobile/CE Notes">
+                <DESC>
+* Requires a Printing Service application to be running. This is described in the [Printing Guide](../guide/printing#platform-notes). 
+
+* You should avoid navigating from the current page using the printer without disconnecting from the printer first. You can use the window.onunload event:
+
+        :::javascript
+        window.onunload = function(){
+            printer.disconnect();
+        }
+
+* When calling searchPrinters() with Bluetooth search (CONNECTION_TYPE_ANY or CONNECTION_TYPE_BLUETOOTH), all local Bluetooth devices--including non-printers--will be discovered and send pairing requests. Just cancel or ignore them. This happens because the software cannot detect non-printers until after the device is paired. It is recommended that the BT or Wi-Fi MAC address also be used when searching for printers.
+
+* Before calling searchPrinters() with USB search (CONNECTION_TYPE_ANY or CONNECTION_TYPE_USB), you should configure the device's USB controller for "USB Host mode" and reboot. 
+
+* When calling searchPrinters() with USB search (with CONNECTION_TYPE_ANY or CONNECTION_TYPE_USB), all USB Printers connected to the device will be discovered. If USB printers are not supported by SDK or device, searchPrinters function should return PRINTER_STATUS_ERR_UNSUPPORTED.
+
+* USB connection is not supported on QLn320; `printer.searchPrinters` should return no non-printer devices. If USB printers are not supported by SDK or device, searchPrinters function should return PRINTER_STATUS_ERR_UNSUPPORTED; For example, executing searchPrinters on Android device with connectionType set to CONNECTION_TYPE_USB should return PRINTER_STATUS_ERR_UNSUPPORTED.
+              </DESC>
+            </REMARK>
+        </REMARKS>
+
+        <EXAMPLES>
+            <EXAMPLE title="Printing via Bluetooth">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>To print to the Zebra printer, your app must first search for the device. In this example we are using the searchPrinters method and passing in options to limit the search to Bluetooth and also look for Zebra printers only. If we knew the printer Bluetooth address we could have added the 'deviceAddress' parameter. The callback function will be executed for each printer found. When a printer is found the callback object will contain a 'printerID' property. This ID is an internal RhoMobie ID used. If no printerID property is there for the successful callback object, then it means that the search has finished.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+var printers = [];
+
+Rho.Printer.searchPrinters({
+    connectionType:Rho.Printer.CONNECTION_TYPE_BLUETOOTH,
+    printerType: Rho.Printer.PRINTER_TYPE_ZEBRA
+    }, function (cb){
+        if(cb.status == 'PRINTER_STATUS_SUCCESS')
+        {
+            if (typeof cb.printerID != "undefined")
+            {
+                console.log('Found: ' + cb.printerID)
+                printers.push(cb.printerID);
+            }
+            else
+            {
+                console.log('Done Searching');
+            }
+        }
+        else
+        {
+            console.log(cb.status);
+        }
+    }
+);
+]]>
+                            </JAVASCRIPT>
+                            <RUBY><![CDATA[
+@printers = []
+
+Rho::Printer.searchPrinters({ connectionType  => Rho::Printer::CONNECTION_TYPE_BLUETOOTH,
+                              printerType     => Rho::Printer::PRINTER_TYPE_ZEBRA },
+                              url_for(:action => :printer_callback) )
+
+def find_printer_callback
+  if @params['status'] == 'PRINTER_STATUS_SUCCESS'
+    if defined? @params['printerID']
+      puts "Found: #{@params['printerID']}"
+      @printers.push @params['printerID']
+    else
+      puts "Done Searching"
+    end
+  else
+    puts @params['status']
+  end
+end
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>Now that we have found a printer. The `printers` array will contain the `printerID` we need to create an instance object that we will use for all communications. Upon first connection to the printer via Bluetooth, you may see a prompt to enter the Bluetooth PIN. Check the manufacturers guide for details. Normally the default is '0000' or '1111' or '1234'. Once it is connected, you should see some indication in the printer (like a blue light).</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+var myPrinter = Rho.Printer.getPrinterByID(printers[0]);
+
+// Let's try connecting
+myPrinter.connect(function (cb){
+    console.log(cb);
+    // This will be the Zebra's `Friendly Name`
+    // by default it is the serial number
+    console.log(myPrinter.deviceName);
+
+    // This will be the BT MC Address
+    since we are connecting via BlueTooth
+    console.log(myPrinter.deviceAddress);
+});
+]]>
+                            </JAVASCRIPT>
+                            <RUBY><![CDATA[
+@my_printer = Rho::Printer.getPrinterByID printers[0]
+
+# Let's try connecting
+@my_printer.connect url_for(:action => :printer_connect_callback)
+
+def printer_connect_callback
+  puts @params.to_s
+
+  # This will be the Zebra's `Friendly Name`
+  # by default it is the serial number
+  puts @my_printer['deviceName']
+
+  # This will be the BT MAC Address
+  # since we are connecting via BlueTooth
+  puts @my_printer['deviceAddress']
+end
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                    <SECTION>
+                        <DESC>Now we can just print a test string and read some properties of the printer to make sure the communications is working.</DESC>
+                        <CODE>
+                            <JAVASCRIPT><![CDATA[
+// If my printer was in line mode I would see this text printed
+myPrinter.printRawString('This is a test print');
+
+// Example of sending a Zebra CPCL Command
+// changing from linemode to ZPL mode
+myPrinter.printRawString('! U1 setvar "device.languages" "ZPL"\r\n');
+
+// Get state - this is real-time status of printer.
+// reading a property of the myPrinter instance will
+// show last known status
+myPrinter.requestState(['PRINTER_STATE_IS_READY_TO_PRINT',
+    'PRINTER_STATE_IS_PAPER_OUT'],function (cb){
+        console.log(cb.status);
+        console.log(cb.PRINTER_STATE_IS_PAPER_OUT);
+        console.log(cb.PRINTER_STATE_IS_READY_TO_PRINT);
+
+    });
+                   ]]>
+                            </JAVASCRIPT>
+                            <RUBY><![CDATA[
+# If my printer was in line mode I would see this text printed
+@my_printer.printRawString 'This is a test print'
+
+# Example of sending a Zebra CPCL Command
+# changing from linemode to ZPL mode
+@my_printer.printRawString '! U1 setvar "device.languages" "ZPL"\r\n'
+
+# Get state - this is real-time status of printer.
+# reading a property of the @my_printer instance will
+# show last known status
+@my_printer.requestState([Rho::Printer::PRINTER_STATE_IS_READY_TO_PRINT,
+                          Rho::Printer::PRINTER_STATE_IS_PAPER_OUT],
+                          url_for(:action => :request_state_callback));
+
+def request_state_callback
+  puts @params['status']
+  puts @params['PRINTER_STATE_IS_PAPER_OUT']
+  puts @params['PRINTER_STATE_IS_READY_TO_PRINT']
+end
+]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES>
+    </MODULE>
+</API>

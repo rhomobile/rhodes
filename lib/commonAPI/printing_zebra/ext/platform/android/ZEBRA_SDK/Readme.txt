@@ -1,0 +1,1 @@
+Include all the jars required in android provided by zebra in current direcotry i.e. /ZEBRA_SDK/

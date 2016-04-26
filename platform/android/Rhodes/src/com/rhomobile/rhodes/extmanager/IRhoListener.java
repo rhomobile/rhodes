@@ -61,20 +61,20 @@ public interface IRhoListener {
 	boolean onKey(int keyCode, KeyEvent event);
 	
 	/**
-	 * Called whenever the Enterprise Browser License Screen becomes visible 
+	 * Called whenever the RhoElements Browser License Screen becomes visible 
 	 * @author Ben Kennedy (NCVT73)
 	 */
 	void onEBLicenseVisible();
 	
 	/**
-	 * Called whenever the Enterprise Browser License Screen hides. The license screen will
+	 * Called whenever the RhoElements Browser License Screen hides. The license screen will
 	 * reappear after 5 minutes and onEBLicenseVisible will be shown.
 	 * @author Ben Kennedy (NCVT73)
 	 */
 	void onEBLicenseHidden();
 	
 	/**
-	 * Called when the Enterprise Browser License Screen is destroyed. This will only occur if:
+	 * Called when the RhoElements Browser License Screen is destroyed. This will only occur if:
 	 *  - The product is already licensed. In this case the splash screen will show, and then be destroyed
 	 *  - The user licenses the product.
 	 * When this method is called, onEBLicenseHidden will not be called.

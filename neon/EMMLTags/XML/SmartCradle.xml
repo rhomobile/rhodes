@@ -1,0 +1,192 @@
+<?xml version = "1.0"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>smartCradle</NAME>
+		<PATH>Cradle</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is a tag used to retrieve and set the attributes of the MC18 Cradle driver.</SYNOPSIS>
+		<SYNTAX>
+            <USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="SmartCradle" content="[parameter]"&gt;</EXAMPLE>
+            </USAGE>
+            <USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="SmartCradle" content="CradleInfoEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+            </USAGE>
+            <USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="SmartCradle" content="CradleMatrixEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+            </USAGE>
+        </SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>getCradleInfo</NAME>
+				<DESC>Triggers a CradleInfoEvent. This returns attributes about the cradle such as Partnumber,SerialNumber,ManufactureDate,Versions,FastChargeState etc.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>getCradleMatrix</NAME>
+				<DESC>Triggers a CradleMatrixEvent.Cradle matrix information such as ROW ID, COLUMN ID and WALL ID are returned.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>unlock</NAME>
+				<DESC>Unlocks terminal from cradle for specified period.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+				
+		</PARAMS_NO_ATTRIBUTES>		
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>chargeState</NAME>
+				<VALUES>Fast or Slow</VALUES>
+				<DESC>Sets the charge state of the cradle to fast or slow</DESC>
+				<DEFAULT>Fast</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>rowId</NAME>
+                <VALUES>Positive Number</VALUES>
+				<DESC>Sets the Row Id of the cradle.</DESC>
+				<DEFAULT>0</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>columnId</NAME>
+           		<VALUES>Positive Number</VALUES>
+				<DESC>Sets the Column Id of the cradle.</DESC>
+				<DEFAULT>0</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>wallId</NAME>
+                <VALUES>Positive Number</VALUES>
+				<DESC>Sets the Wall Id of the cradle.</DESC>
+				<DEFAULT>0</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>unlockLedOnDuration</NAME>
+           		<VALUES>Milliseconds</VALUES>
+				<DESC>Calls to Unlock will cause cradle LEDs to remain on for the specified number of milliseconds during Unlock.</DESC>
+				<DEFAULT>0</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>unlockLedOffDuration</NAME>
+           		<VALUES>Milliseconds</VALUES>
+				<DESC>Calls to Unlock  will cause cradle LEDs to remain off for the specified number of milliseconds during Unlock.</DESC>
+				<DEFAULT>0</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>unlockTimeOut</NAME>
+           		<VALUES>Seconds(10-30)</VALUES>
+				<DESC>Calls to Unlock  will unlock the cradle for specified UnlockTimeOut value.</DESC>
+				<DEFAULT>10</DEFAULT>
+			</PARAM>
+       	</PARAMS_WITH_ATTRIBUTES>
+        <RETURNS>
+            <TAG>
+                <TAG_NAME>cradleInfoEvent</TAG_NAME>
+				<TAG_NOTES>The CradleInfoEvent returns the HardwareID,Part number,Serial number,Manufacture Date and Charge state and different version related information of the cradle.</TAG_NOTES>
+                <RETVAL>
+                    <NAME>hardwareId</NAME>
+                    <DESC>Hardware ID of the cradle.</DESC>
+                </RETVAL>
+				<RETVAL>
+                    <NAME>partNumber</NAME>
+                    <DESC>Part number of the Cradle.</DESC>
+                </RETVAL>				
+                <RETVAL>
+                    <NAME>serialNumber</NAME>
+                    <DESC>Serial number of the cradle.</DESC>
+                </RETVAL>	
+                <RETVAL>
+                    <NAME>mfgDate</NAME>
+                    <DESC>Manufacture date of the cradle in DD-MM-YY(??) format</DESC>
+                </RETVAL>
+				<RETVAL>
+                    <NAME>driverVersion</NAME>
+                    <DESC>Driver version of the cradle</DESC>
+                </RETVAL>
+				<RETVAL>
+                    <NAME>cApiVersion</NAME>
+                    <DESC>CAPI version of the cradle</DESC>
+                </RETVAL>
+				<RETVAL>
+                    <NAME>firmwareVersion</NAME>
+                    <DESC>Firmware version of the cradle</DESC>
+                </RETVAL>
+				
+				<RETVAL>
+                    <NAME>chargeState</NAME>
+                    <DESC>Current charge state of the device will be returned.Possible values are Fast or Slow.</DESC>
+                </RETVAL>
+            </TAG>
+			
+            <TAG>
+                <TAG_NAME>cradleMatrixEvent</TAG_NAME>
+				<TAG_NOTES>Cradle matrix information such as ROW ID, COLUMN ID and WALL ID are returned.</TAG_NOTES>
+                <RETVAL>
+                    <NAME>currentRowId</NAME>
+                    <DESC>Row ID of the Cradle in the Matrix.</DESC>
+                </RETVAL>				
+                <RETVAL>
+                    <NAME>currentColumnId</NAME>
+                    <DESC>Column ID of the Cradle in the Matrix.</DESC>
+                </RETVAL>				
+                <RETVAL>
+                    <NAME>currentWallId</NAME>
+                    <DESC>Wall ID of the Cradle in the Matrix.</DESC>
+                </RETVAL>				
+				
+            </TAG>
+			
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example calls the javascript function 'MyCradleInfoEvent'with cradle info.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SmartCradle" Content="CradleInfoEvent:url('javascript:MyCradleInfoEvent('%s','%s','%s','%s','%s','%s','%s','%s');')"&gt;
+&lt;META HTTP-Equiv="SmartCradle" Content="GetCradleInfo"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example calls the javascript function 'MyCradleMatrixEvent' with column and row cradle data.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SmartCradle" Content="CradleMatrixEvent:url('javascript:MyCradleMatrixEvent('%s','%s','%s');');GetCradleMatrix"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following functions unlock the cradle with and without LED illumination.</DESC>
+<CODE>
+ &lt;script&gt;
+  function Unlock()
+  {
+    var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+    objGeneric.InvokeMETAFunction("SmartCradle","UnlockLEDOnDuration:0;UnlockLEDOffDuration:0;UnlockTimeOut:20;Unlock");
+  }
+  function UnlockWithLeds()
+  {
+    var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+    objGeneric.InvokeMETAFunction("SmartCradle","UnlockLEDOnDuration:1000;UnlockLEDOffDuration:1000;UnlockTimeOut:20;Unlock");
+  }
+ &lt;/script&gt; 
+</CODE>
+			</EXAMPLE>
+			
+			
+		</EXAMPLES>
+<REMARKS>
+	<COMMENT>
+<COMMENT_HEADING>Controlling cradle LEDs during Unlock</COMMENT_HEADING>
+<COMMENT_DATA>
+Setting UnlockLEDOnDuration and UnlockLEDOffDuration both as zero will switch off the LEDs during entire Unlock  duration.
+SettingUnlockLEDOnDuration as valid value and UnlockLEDOffDuration as zero will switch on the LEDs during entire Unlock  duration.
+SettingUnlockLEDOnDuration as zero and UnlockLEDOffDuration as valid value will switch off the LEDs during entire Unlock  duration.
+</COMMENT_DATA>
+</COMMENT>
+
+</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>MC18</PLATFORM>
+			<APPLIES> This tag is Non persistent.</APPLIES>
+			<REQ>None.</REQ>
+		</ADDITIONAL>
+
+	</FUNC>
+</HELPPAGE>

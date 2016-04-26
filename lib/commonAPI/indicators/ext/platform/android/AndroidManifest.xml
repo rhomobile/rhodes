@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.rho.videocapture"
+      android:versionCode="1"
+      android:versionName="1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+	<application>
+		<activity android:name="com.rhomobile.rhodes.RhodesActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.ACTION_BATTERY_CHANGED"/>
+				<action android:name="android.intent.action.ACTION_BATTERY_LOW"/>
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.net.wifi.STATE_CHANGE"/>
+				 <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
+			     <action android:name="android.net.wifi.RSSI_CHANGED"/>
+			</intent-filter>
+		</activity>
+	</application>
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+</manifest>

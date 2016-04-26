@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!-- RhoElements Configuration file -->
+<Configuration>
+
+	<FileLocations>
+		<RegEXFile value="file://%INSTALLDIR%/RegEx.xml"/>
+	</FileLocations>
+		
+	<WebServer>
+    	<Enabled VALUE="0"/>
+    	<Port VALUE="8080"/>
+    	<WebFolder VALUE="\www"/>
+    	<Public VALUE="0"/>
+  	</WebServer>
+	
+	<DeviceKeys>
+		<EnableFunctionKey_F1 value="0"/>
+		<EnableFunctionKey_F2 value="0"/>
+		<EnableFunctionKey_F3 value="0"/>
+  	</DeviceKeys>
+	
+	<Applications>
+		<Application>
+		
+			<General>
+				<Name value="Menu"/>
+				<StartPage value="file://%INSTALLDIR%/menu.html" name="Menu"/>
+			</General>
+			
+			<HTTP_Proxy value=""/>
+			<HTTPS_Proxy value=""/>
+						
+			<NPAPI>
+				<Preloads>
+					<PreloadLegacyGeneric value="1"/>
+					<PreloadLegacyODAX value="1"/>
+					<PreloadLegacyNoSIP value="1"/>
+					<PreloadLegacyAirBeam value="1"/>
+					<PreloadLegacyAPD value="1"/>
+					<PreloadJSObjects value="1"/>
+				</Preloads>
+			</NPAPI>
+		</Application>
+	</Applications>
+</Configuration>

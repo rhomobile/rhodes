@@ -249,18 +249,6 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfi
     return rho_cast<jstring>(env, cs);
 }
 
-//RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isMotorolaLicencePassed
-//(JNIEnv *env, jclass, jstring jLicense, jstring jCompany, jstring jAppName)
-//{
-//    int res = rho_can_app_started_with_current_licence(
-//                    jLicense ? rho_cast<std::string>(env, jLicense).c_str() : 0,
-//                    jCompany ? rho_cast<std::string>(env, jCompany).c_str() : 0,
-//                    jAppName ? rho_cast<std::string>(env, jAppName).c_str() : 0);
-
-//    return (jboolean)(res == 1);
-//}
-
-
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnabled
   (JNIEnv *, jclass)
 {

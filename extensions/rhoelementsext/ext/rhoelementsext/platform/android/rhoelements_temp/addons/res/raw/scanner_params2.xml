@@ -1,0 +1,2293 @@
+<scanner-params>
+	<param type="integer">
+		<id>0</id>
+		<name>beam-timer</name>
+		<values>
+			<range>
+				<lo>0</lo>
+				<hi>65535</hi>
+				<step>1</step>
+			</range>
+		</values>
+		<default>5000</default>
+		<desc>Time for which decode session lasts before timing out</desc>
+		<tags>
+			<tag>reader-param</tag>
+		</tags>
+	</param>
+
+	<param type="integer">
+		<id>1</id>
+		<name>linear-security-level</name>
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>SECURITY_REDUNDANCY_AND_LENGTH</name>
+				<desc>Very aggressive but higher misdecode rate</desc>
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>SECURITY_SHORT_OR_CODABAR</name>
+				<desc>Aggressive </desc>
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>SECURITY_ALL_TWICE</name>
+				<desc>Moderate</desc>
+			</discrete>
+			<discrete>
+				<value>3</value>
+				<name>SECURITY_LONG_AND_SHORT</name>
+				<desc>Not aggressive</desc>
+			</discrete>
+			<discrete>
+				<value>4</value>
+				<name>SECURITY_ALL_THRICE</name>
+				<desc>Use with very poor barcodes</desc>
+			</discrete>
+		</values>
+		<default>2</default>
+		<desc>Set decoder aggressiveness for 1D barcodes</desc>
+		<tags>
+			<tag>reader-param</tag>
+		</tags>
+		<ssi_number>0x4e</ssi_number>
+	</param>
+
+	<param type="integer">
+		<id>2</id>
+		<name>picklist</name>
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>Disabled</name>
+				<desc>Disable picklist</desc>
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Hardware reticle</name>
+				<desc>Decode barcode under hardware reticle</desc>
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>Software reticle</name>
+				<desc>Decode barcode under the crosshair on the VF (center of
+					screen)</desc>
+			</discrete>
+		</values>
+		<default>0</default>
+		<desc>Picklist mode</desc>
+		<tags>
+			<tag>reader-param</tag>
+		</tags>
+		<ssi_number>0x192</ssi_number>
+	</param>
+
+	<param type="integer">
+		<id>3</id>
+		<name>inverse-1d-mode</name>
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>Disable</name>
+				<desc>Inverse disabled</desc>
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Enable</name>
+				<desc>Inverse enabled</desc>
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>Auto</name>
+				<desc>Inverse auto</desc>
+			</discrete>
+		</values>
+		<default>0</default>
+		<desc>Allow inverse 1d barcode to decode?</desc>
+		<tags>
+			<tag>decoder-param</tag>
+		</tags>
+		<ssi_number>0x24a</ssi_number>
+	</param>
+
+
+
+	<param type="integer">
+		<id>4</id>
+		<name>upcean-security-level</name>
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>Level 0</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>level 1</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>Level 2</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>3</value>
+				<name>Level 3</name>
+				<desc />
+			</discrete>
+		</values>
+		<default>0</default>
+		<desc>Security level for UPCEAN</desc>
+		<tags>
+			<tag>upcean-param</tag>
+		</tags>
+		<ssi_number>0x4d</ssi_number>
+	</param>
+
+	<param type="boolean">
+		<id>5</id>
+		<name>upcean-supplemental2</name>
+		<default>true</default>
+		<desc>Allow supplementals-2 to decode?</desc>
+		<tags>
+			<tag>upcean-param</tag>
+		</tags>
+		<ssi_number>0xcf</ssi_number>
+	</param>
+
+	<param type="boolean">
+		<id>6</id>
+		<name>upcean-supplemental5</name>
+		<default>true</default>
+		<desc>Allow supplementals-5 to decode?</desc>
+		<tags>
+			<tag>upcean-param</tag>
+		</tags>
+		<ssi_number>0xd0</ssi_number>
+	</param>
+
+	<param type="integer">
+		<id>7</id>
+		<name>upcean-supplemental-mode</name>
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>No supplementals</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Supplemental always</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>Supplemental auto</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>3</value>
+				<name>Supplemental smart</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>4</value>
+				<name>Supplemental 378-379</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>5</value>
+				<name>Supplemental 978-979</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>6</value>
+				<name>Supplemental 414-419-434-439</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>7</value>
+				<name>Supplemental 977</name>
+				<desc />
+			</discrete>
+		</values>
+		<default>0</default>
+		<desc>Set how supplementals should be handled</desc>
+		<tags>
+			<tag>upcean-param</tag>
+		</tags>
+		<ssi_number>0x10</ssi_number>
+	</param>
+
+	<param type="integer">
+		<id>8</id>
+		<name>upcean-retry-count</name>
+		<values>
+			<range>
+				<lo>2</lo>
+				<hi>20</hi>
+				<step>1</step>
+			</range>
+		</values>
+		<default>10</default>
+		<desc>Retry count</desc>
+		<tags>
+			<tag>upcean-param</tag>
+		</tags>
+		<ssi_number>0x50</ssi_number>
+	</param>
+
+	<param type="boolean">
+		<id>9</id>
+		<name>upcean-random-weight-check-digit</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>upcean-param</tag>
+		</tags>
+		<ssi_number>0x35</ssi_number>
+	</param>
+
+	<param type="boolean">
+		<id>10</id>
+		<name>upcean-linear-decode</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>upcean-param</tag>
+		</tags>
+		<ssi_number>0x44</ssi_number>
+	</param>
+
+	<param type="boolean">
+		<id>11</id>
+		<name>upcean-bookland</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>upcean-param</tag>
+		</tags>
+		<ssi_number>0x53</ssi_number>
+	</param>
+
+	<param type="boolean">
+		<id>12</id>
+		<name>upcean-coupon</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>upcean-param</tag>
+		</tags>
+		<ssi_number>0x55</ssi_number>
+	</param>
+
+	<param type="integer">
+		<id>13</id>
+		<name>upcean-bookland-format</name>
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>Format ISBN-10</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Format ISBN-13</name>
+				<desc />
+			</discrete>
+		</values>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>upcean-param</tag>
+		</tags>
+		<ssi_number>0x240</ssi_number>
+	</param>
+
+	<param type="boolean">
+		<id>14</id>
+		<name>upcean-rss-to-upcean</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>upcean-param</tag>
+		</tags>
+		<ssi_number>0x18d</ssi_number>
+	</param>
+
+
+
+
+
+	<param type="boolean">
+		<id>15</id>
+		<name>decoder-upce0</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x02</ssi_number>
+	</param>
+
+	<param type="integer">
+		<id>16</id>
+		<name>decoder-upce0-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-upce0</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>17</id>
+		<name>decoder-upce0-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-upce0</tag>
+		</tags>
+	</param>
+	<param type="boolean">
+		<id>18</id>
+		<name>decoder-upce0-report-check-digit</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-upce0</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>19</id>
+		<name>decoder-upce0-preamble</name>
+		<default>0</default>
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>Preamble none</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Preamble sys char</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>Preamble country and sys char</name>
+				<desc />
+			</discrete>
+		</values>
+		<desc />
+		<tags>
+			<tag>decoder-upce0</tag>
+		</tags>
+	</param>
+	<param type="boolean">
+		<id>20</id>
+		<name>decoder-upce0-convert-to-upca</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-upce0</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>21</id>
+		<name>decoder-upce1</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x0c</ssi_number>
+	</param>
+	<param type="integer">
+		<id>22</id>
+		<name>decoder-upce1-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-upce1</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>23</id>
+		<name>decoder-upce1-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-upce1</tag>
+		</tags>
+	</param>
+	<param type="boolean">
+		<id>24</id>
+		<name>decoder-upce1-report-check-digit</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-upce1</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>25</id>
+		<name>decoder-upce1-preamble</name>
+		<default>0</default>
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>Preamble none</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Preamble sys char</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>Preamble country and sys char</name>
+				<desc />
+			</discrete>
+		</values>
+		<desc />
+		<tags>
+			<tag>decoder-upce1</tag>
+		</tags>
+	</param>
+	<param type="boolean">
+		<id>26</id>
+		<name>decoder-upce1-convert-to-upca</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-upce1</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>27</id>
+		<name>decoder-upca</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x01</ssi_number>
+	</param>
+	<param type="integer">
+		<id>28</id>
+		<name>decoder-upca-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-upca</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>29</id>
+		<name>decoder-upca-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-upca</tag>
+		</tags>
+	</param>
+	<param type="boolean">
+		<id>30</id>
+		<name>decoder-upca-report-check-digit</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-upca</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>31</id>
+		<name>decoder-upca-preamble</name>
+		<default>0</default>
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>Preamble none</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Preamble sys char</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>Preamble country and sys char</name>
+				<desc />
+			</discrete>
+		</values>
+		<desc />
+		<tags>
+			<tag>decoder-upca</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>32</id>
+		<name>decoder-msi</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x0b</ssi_number>
+	</param>
+	<param type="integer">
+		<id>33</id>
+		<name>decoder-msi-length1</name>
+		<default>4</default>
+		<desc />
+		<tags>
+			<tag>decoder-msi</tag>
+		</tags>
+		<ssi_number>0x1e</ssi_number>
+	</param>
+	<param type="integer">
+		<id>34</id>
+		<name>decoder-msi-length2</name>
+		<default>55</default>
+		<desc />
+		<tags>
+			<tag>decoder-msi</tag>
+		</tags>
+		<ssi_number>0x1f</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>35</id>
+		<name>decoder-msi-redundancy</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>decoder-msi</tag>
+		</tags>
+		<ssi_number>0x3d</ssi_number>
+	</param>
+	<param type="integer">
+		<id>36</id>
+		<name>decoder-msi-check-digit</name>
+		<default>0</default>
+		<desc />
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>One check digit</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Two check digit</name>
+				<desc />
+			</discrete>
+		</values>
+		<tags>
+			<tag>decoder-msi</tag>
+		</tags>
+		<ssi_number>0x32</ssi_number>
+	</param>
+	<param type="integer">
+		<id>37</id>
+		<name>decoder-msi-check-digit-scheme</name>
+		<default>0</default>
+		<desc />
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>MOD-11-10</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>MOD-10-10</name>
+				<desc />
+			</discrete>
+		</values>
+		<tags>
+			<tag>decoder-msi</tag>
+		</tags>
+		<ssi_number>0x33</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>38</id>
+		<name>decoder-msi-report-check-digit</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-msi</tag>
+		</tags>
+		<ssi_number>0x2e</ssi_number>
+	</param>
+
+
+
+	<param type="boolean">
+		<id>39</id>
+		<name>decoder-ean8</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x04</ssi_number>
+	</param>
+	<param type="integer">
+		<id>40</id>
+		<name>decoder-ean8-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-ean8</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>41</id>
+		<name>decoder-ean8-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-ean8</tag>
+		</tags>
+	</param>
+	<param type="boolean">
+		<id>42</id>
+		<name>decoder-ean8-convert-to-ean13</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-ean8</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>43</id>
+		<name>decoder-ean13</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x03</ssi_number>
+	</param>
+	<param type="integer">
+		<id>44</id>
+		<name>decoder-ean13-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-ean13</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>45</id>
+		<name>decoder-ean13-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-ean13</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>46</id>
+		<name>decoder-codabar</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x07</ssi_number>
+	</param>
+	<param type="integer">
+		<id>47</id>
+		<name>decoder-codabar-length1</name>
+		<default>6</default>
+		<desc />
+		<tags>
+			<tag>decoder-codabar</tag>
+		</tags>
+		<ssi_number>0x18</ssi_number>
+	</param>
+	<param type="integer">
+		<id>48</id>
+		<name>decoder-codabar-length2</name>
+		<default>55</default>
+		<desc />
+		<tags>
+			<tag>decoder-codabar</tag>
+		</tags>
+		<ssi_number>0x19</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>49</id>
+		<name>decoder-codabar-redundancy</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>decoder-codabar</tag>
+		</tags>
+		<ssi_number>0x3e</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>50</id>
+		<name>decoder-codabar-clsi-editing</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-codabar</tag>
+		</tags>
+		<ssi_number>0x36</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>51</id>
+		<name>decoder-codabar-notis-editing</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-codabar</tag>
+		</tags>
+		<ssi_number>0x37</ssi_number>
+	</param>
+
+
+
+	<param type="boolean">
+		<id>52</id>
+		<name>decoder-code39</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x00</ssi_number>
+	</param>
+	<param type="integer">
+		<id>53</id>
+		<name>decoder-code39-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-code39</tag>
+		</tags>
+		<ssi_number>0x12</ssi_number>
+	</param>
+	<param type="integer">
+		<id>54</id>
+		<name>decoder-code39-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-code39</tag>
+		</tags>
+		<ssi_number>0x13</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>55</id>
+		<name>decoder-code39-verify-check-digit</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-code39</tag>
+		</tags>
+		<ssi_number>0x30</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>56</id>
+		<name>decoder-code39-transmit-check-digit</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-code39</tag>
+		</tags>
+		<ssi_number>0x2b</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>57</id>
+		<name>decoder-code39-full-ascii</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-code39</tag>
+		</tags>
+		<ssi_number>0x11</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>58</id>
+		<name>decoder-code39-redundancy</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-code39</tag>
+		</tags>
+		<ssi_number>0x3b</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>59</id>
+		<name>decoder-code39-convert-to-code32</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-code39</tag>
+		</tags>
+		<ssi_number>0x56</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>60</id>
+		<name>decoder-code39-report-code32-prefix</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-code39</tag>
+		</tags>
+		<ssi_number>0xe7</ssi_number>
+	</param>
+	<param type="integer">
+		<id>61</id>
+		<name>decoder-code39-security-level</name>
+		<default>1</default>
+		<desc />
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>Security level 0</name>
+				<desc>This setting allows the digital scanner to operate in its most
+					aggressive state, while providing sufficient security in decoding
+					most &#8220;in-spec&#8221; bar codes</desc>
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Security level 1</name>
+				<desc>This default setting eliminates most misdecodes</desc>
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>Security level 2</name>
+				<desc>Select this option if Security level 1 fails to eliminate
+					misdecodes</desc>
+			</discrete>
+			<discrete>
+				<value>3</value>
+				<name>Security level 3</name>
+				<desc>If you selected Security Level 2 and misdecodes still occur,
+					select this security level</desc>
+			</discrete>
+		</values>
+		<tags>
+			<tag>decoder-code39</tag>
+		</tags>
+		<ssi_number>0x2ee</ssi_number>
+	</param>
+
+
+	<param type="boolean">
+		<id>62</id>
+		<name>decoder-d2of5</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x05</ssi_number>
+	</param>
+	<param type="integer">
+		<id>63</id>
+		<name>decoder-d2of5-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-d2of5</tag>
+		</tags>
+		<ssi_number>0x14</ssi_number>
+	</param>
+	<param type="integer">
+		<id>64</id>
+		<name>decoder-d2of5-length2</name>
+		<default>14</default>
+		<desc />
+		<tags>
+			<tag>decoder-d2of5</tag>
+		</tags>
+		<ssi_number>0x15</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>65</id>
+		<name>decoder-d2of5-redundancy</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x40</ssi_number>
+	</param>
+
+
+	<param type="boolean">
+		<id>66</id>
+		<name>decoder-i2of5</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x06</ssi_number>
+	</param>
+	<param type="integer">
+		<id>67</id>
+		<name>decoder-i2of5-length1</name>
+		<default>14</default>
+		<desc />
+		<tags>
+			<tag>decoder-i2of5</tag>
+		</tags>
+		<ssi_number>0x16</ssi_number>
+	</param>
+	<param type="integer">
+		<id>68</id>
+		<name>decoder-i2of5-length2</name>
+		<default>10</default>
+		<desc />
+		<tags>
+			<tag>decoder-i2of5</tag>
+		</tags>
+		<ssi_number>0x17</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>69</id>
+		<name>decoder-i2of5-redundancy</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>decoder-i2of5</tag>
+		</tags>
+		<ssi_number>0x3f</ssi_number>
+	</param>
+	<param type="integer">
+		<id>70</id>
+		<name>decoder-i2of5-check-digit</name>
+		<default>0</default>
+		<desc />
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>No check digit</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>USS check digit</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>OPCC check digit</name>
+				<desc />
+			</discrete>
+		</values>
+		<tags>
+			<tag>decoder-i2of5</tag>
+		</tags>
+		<ssi_number>0x31</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>71</id>
+		<name>decoder-i2of5-report-check-digit</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-i2of5</tag>
+		</tags>
+		<ssi_number>0x2c</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>72</id>
+		<name>decoder-i2of5-convert-to-ean13</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-i2of5</tag>
+		</tags>
+		<ssi_number>0x52</ssi_number>
+	</param>
+
+
+	<param type="boolean">
+		<id>73</id>
+		<name>decoder-code11</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x0a</ssi_number>
+	</param>
+	<param type="integer">
+		<id>74</id>
+		<name>decoder-code11-length1</name>
+		<default>5</default>
+		<desc />
+		<tags>
+			<tag>decoder-code11</tag>
+		</tags>
+		<ssi_number>0x1c</ssi_number>
+	</param>
+	<param type="integer">
+		<id>75</id>
+		<name>decoder-code11-length2</name>
+		<default>55</default>
+		<desc />
+		<tags>
+			<tag>decoder-code11</tag>
+		</tags>
+		<ssi_number>0x1d</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>76</id>
+		<name>decoder-code11-redundancy</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>decoder-code11</tag>
+		</tags>
+		<ssi_number>0x3a</ssi_number>
+	</param>
+	<param type="integer">
+		<id>77</id>
+		<name>decoder-code11-verify-check-digit</name>
+		<default>0</default>
+		<desc />
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>No check digit</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>1 check digit</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>2 check digits</name>
+				<desc />
+			</discrete>
+		</values>
+		<tags>
+			<tag>decoder-code11</tag>
+		</tags>
+		<ssi_number>0x34</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>78</id>
+		<name>decoder-code11-report-check-digit</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>decoder-code11</tag>
+		</tags>
+		<ssi_number>0x2f</ssi_number>
+	</param>
+
+
+	<param type="boolean">
+		<id>79</id>
+		<name>decoder-code93</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x09</ssi_number>
+	</param>
+	<param type="integer">
+		<id>80</id>
+		<name>decoder-code93-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-code93</tag>
+		</tags>
+		<ssi_number>0x1a</ssi_number>
+	</param>
+	<param type="integer">
+		<id>81</id>
+		<name>decoder-code93-length2</name>
+		<default>55</default>
+		<desc />
+		<tags>
+			<tag>decoder-code93</tag>
+		</tags>
+		<ssi_number>0x1b</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>82</id>
+		<name>decoder-code93-redundancy</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-code93</tag>
+		</tags>
+		<ssi_number>0x41</ssi_number>
+	</param>
+
+
+	<param type="boolean">
+		<id>83</id>
+		<name>decoder-code128</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x08</ssi_number>
+	</param>
+	<param type="integer">
+		<id>84</id>
+		<name>decoder-code128-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-code128</tag>
+		</tags>
+		<ssi_number>0xd1</ssi_number>
+	</param>
+	<param type="integer">
+		<id>85</id>
+		<name>decoder-code128-length2</name>
+		<default>55</default>
+		<desc />
+		<tags>
+			<tag>decoder-code128</tag>
+		</tags>
+		<ssi_number>0xd2</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>86</id>
+		<name>decoder-code128-redundancy</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-code128</tag>
+		</tags>
+		<ssi_number>0x3c</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>87</id>
+		<name>decoder-code128-enable-ean128</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-code128</tag>
+		</tags>
+		<ssi_number>0x0e</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>88</id>
+		<name>decoder-code128-enable-isbt128</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>decoder-code128</tag>
+		</tags>
+		<ssi_number>0x54</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>89</id>
+		<name>decoder-code128-enable-subtypes</name>
+		<default>true</default>
+		<desc>Enable other sub types besides EAN 128 and ISBT 128</desc>
+		<tags>
+			<tag>decoder-code128</tag>
+		</tags>
+		<ssi_number>0x08</ssi_number>
+	</param>
+	<param type="integer">
+		<id>90</id>
+		<name>decoder-code128-isbt128-concat-mode</name>
+		<default>0</default>
+		<desc />
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>Concat mode never</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Concat mode always</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>Concat mode auto</name>
+				<desc />
+			</discrete>
+		</values>
+		<tags>
+			<tag>decoder-code128</tag>
+		</tags>
+		<ssi_number>0x241</ssi_number>
+	</param>
+	<param type="boolean">
+		<id>91</id>
+		<name>decoder-code128-check-isbt-table</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>decoder-code128</tag>
+		</tags>
+		<ssi_number>0x242</ssi_number>
+	</param>
+	<param type="integer">
+		<id>92</id>
+		<name>decoder-code128-security-level</name>
+		<default>1</default>
+		<desc />
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>Security level 0</name>
+				<desc>This setting allows the digital scanner to operate in its most
+					aggressive state, while providing sufficient security in decoding
+					most &#8220;in-spec&#8221; bar codes</desc>
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Security level 1</name>
+				<desc>This default setting eliminates most misdecodes</desc>
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>Security level 2</name>
+				<desc>Select this option if Security level 1 fails to eliminate
+					misdecodes</desc>
+			</discrete>
+			<discrete>
+				<value>3</value>
+				<name>Security level 3</name>
+				<desc>If you selected Security Level 2 and misdecodes still occur,
+					select this security level</desc>
+			</discrete>
+		</values>
+		<tags>
+			<tag>decoder-code128</tag>
+		</tags>
+		<ssi_number>0x2ef</ssi_number>
+	</param>
+
+
+	<param type="boolean">
+		<id>93</id>
+		<name>decoder-pdf417</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x0f</ssi_number>
+		<bc_types>
+			<bc_type>0x11</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>94</id>
+		<name>decoder-pdf417-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-pdf417</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>95</id>
+		<name>decoder-pdf417-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-pdf417</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>96</id>
+		<name>decoder-trioptic39</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x0d</ssi_number>
+		<bc_types>
+			<bc_type>0x15</bc_type>
+		</bc_types>
+
+	</param>
+	<param type="integer">
+		<id>97</id>
+		<name>decoder-trioptic39-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-trioptic39</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>98</id>
+		<name>decoder-trioptic39-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-trioptic39</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>99</id>
+		<name>decoder-micropdf</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0xe3</ssi_number>
+	</param>
+	<param type="integer">
+		<id>100</id>
+		<name>decoder-micropdf-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-micropdf</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>101</id>
+		<name>decoder-micropdf-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-micropdf</tag>
+		</tags>
+	</param>
+	<param type="boolean">
+		<id>102</id>
+		<name>decoder-micropdf-code128-emulation</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>decoder-micropdf</tag>
+		</tags>
+		<ssi_number>0x7b</ssi_number>
+	</param>
+
+
+	<param type="boolean">
+		<id>103</id>
+		<name>decoder-macropdf</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0xf</ssi_number>
+		<bc_types>
+			<bc_type>0x28</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>104</id>
+		<name>decoder-macropdf-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-macropdf</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>105</id>
+		<name>decoder-macropdf-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-macropdf</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>106</id>
+		<name>decoder-maxicode</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x126</ssi_number>
+		<bc_types>
+			<bc_type>0x25</bc_type>
+		</bc_types>
+
+	</param>
+	<param type="integer">
+		<id>107</id>
+		<name>decoder-maxicode-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-maxicode</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>108</id>
+		<name>decoder-maxicode-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-maxicode</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>109</id>
+		<name>decoder-datamatrix</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x124</ssi_number>
+		<bc_types>
+			<bc_type>0x1b</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>110</id>
+		<name>decoder-datamatrix-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-datamatrix</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>111</id>
+		<name>decoder-datamatrix-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-datamatrix</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>112</id>
+		<name>decoder-qrcode</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x125</ssi_number>
+		<bc_types>
+			<bc_type>0x1c</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>113</id>
+		<name>decoder-qrcode-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-qrcode</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>114</id>
+		<name>decoder-qrcode-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-qrcode</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>115</id>
+		<name>decoder-macromicropdf</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0xe3</ssi_number>
+		<bc_types>
+			<bc_type>0x9a</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>116</id>
+		<name>decoder-macromicropdf-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-macromicropdf</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>117</id>
+		<name>decoder-macromicropdf-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-macromicropdf</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>118</id>
+		<name>decoder-rss14</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x152</ssi_number>
+		<bc_types>
+			<bc_type>0x30</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>119</id>
+		<name>decoder-rss14-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-rss14</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>120</id>
+		<name>decoder-rss14-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-rss14</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>121</id>
+		<name>decoder-rss-lim</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x153</ssi_number>
+		<bc_types>
+			<bc_type>0x31</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>122</id>
+		<name>decoder-rss-lim-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-rss-lim</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>123</id>
+		<name>decoder-rss-lim-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-rss-lim</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>124</id>
+		<name>decoder-rss-exp</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x154</ssi_number>
+		<bc_types>
+			<bc_type>0x32</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>125</id>
+		<name>decoder-rss-exp-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-rss-exp</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>126</id>
+		<name>decoder-rss-exp-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-rss-exp</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>127</id>
+		<name>decoder-signature</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x5d</ssi_number>
+		<bc_types>
+			<bc_type>0x69</bc_type>
+		</bc_types>
+	</param>
+
+
+	<param type="boolean">
+		<id>128</id>
+		<name>decoder-webcode</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x176</ssi_number>
+		<bc_types>
+			<bc_type>0x37</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>129</id>
+		<name>decoder-webcode-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-webcode</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>130</id>
+		<name>decoder-webcode-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-webcode</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>131</id>
+		<name>decoder-composite-ab</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x156</ssi_number>
+	</param>
+	<param type="integer">
+		<id>132</id>
+		<name>decoder-composite-ab-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-composite-ab</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>133</id>
+		<name>decoder-composite-ab-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-composite-ab</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>134</id>
+		<name>decoder-composite-ab-ucc-link-mode</name>
+		<default>0</default>
+		<desc />
+		<values>
+			<discrete>
+				<value>0</value>
+				<name>Link flag ignored</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>1</value>
+				<name>Always linked</name>
+				<desc />
+			</discrete>
+			<discrete>
+				<value>2</value>
+				<name>Auto discriminate</name>
+				<desc />
+			</discrete>
+		</values>
+		<ssi_number>0x158</ssi_number>
+		<tags>
+			<tag>decoder-composite-ab</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>135</id>
+		<name>decoder-composite-c</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x155</ssi_number>
+	</param>
+	<param type="integer">
+		<id>136</id>
+		<name>decoder-composite-c-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-composite-c</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>137</id>
+		<name>decoder-composite-c-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-composite-c</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>138</id>
+		<name>decoder-tlc39</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x173</ssi_number>
+		<bc_types>
+			<bc_type>0x5a</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>139</id>
+		<name>decoder-tlc39-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-tlc39</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>140</id>
+		<name>decoder-tlc39-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-tlc39</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>141</id>
+		<name>decoder-uspostnet</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x59</ssi_number>
+		<bc_types>
+			<bc_type>0x1e</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>142</id>
+		<name>decoder-uspostnet-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-uspostnet</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>143</id>
+		<name>decoder-uspostnet-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-uspostnet</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>144</id>
+		<name>decoder-usplanet</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x5a</ssi_number>
+		<bc_types>
+			<bc_type>0x1f</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>145</id>
+		<name>decoder-usplanet-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-usplanet</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>146</id>
+		<name>decoder-usplanet-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-usplanet</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>147</id>
+		<name>decoder-uk-postal</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x5b</ssi_number>
+		<bc_types>
+			<bc_type>0x27</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>148</id>
+		<name>decoder-uk-postal-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-uk-postal</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>149</id>
+		<name>decoder-uk-postal-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-uk-postal</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>150</id>
+		<name>decoder-japanese-postal</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x122</ssi_number>
+		<bc_types>
+			<bc_type>0x22</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>151</id>
+		<name>decoder-japanese-postal-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-japanese-postal</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>152</id>
+		<name>decoder-japanese-postal-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-japanese-postal</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>153</id>
+		<name>decoder-australian-postal</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x123</ssi_number>
+		<bc_types>
+			<bc_type>0x23</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>154</id>
+		<name>decoder-australian-postal-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-australian-postal</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>155</id>
+		<name>decoder-australian-postal-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-australian-postal</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>156</id>
+		<name>decoder-canadian-postal</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x5c</ssi_number>
+		<bc_types>
+			<bc_type>0x26</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>157</id>
+		<name>decoder-canadian-postal-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-canadian-postal</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>158</id>
+		<name>decoder-canadian-postal-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-canadian-postal</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>159</id>
+		<name>decoder-dutch-postal</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x146</ssi_number>
+		<bc_types>
+			<bc_type>0x24</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>160</id>
+		<name>decoder-dutch-postal-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-dutch-postal</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>161</id>
+		<name>decoder-dutch-postal-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-dutch-postal</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>162</id>
+		<name>decoder-chinese-2of5</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x198</ssi_number>
+		<bc_types>
+			<bc_type>0x72</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>163</id>
+		<name>decoder-chinese-2of5-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-chinese-2of5</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>164</id>
+		<name>decoder-chinese-2of5-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-chinese-2of5</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>165</id>
+		<name>decoder-aztec</name>
+		<default>true</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x23e</ssi_number>
+		<bc_types>
+			<bc_type>0x2d</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>166</id>
+		<name>decoder-aztec-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-aztec</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>167</id>
+		<name>decoder-aztec-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-aztec</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>168</id>
+		<name>decoder-microqr</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x23d</ssi_number>
+		<bc_types>
+			<bc_type>0x2c</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>169</id>
+		<name>decoder-microqr-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-microqr</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>170</id>
+		<name>decoder-microqr-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-microqr</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>171</id>
+		<name>decoder-korean-3of5</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x245</ssi_number>
+		<bc_types>
+			<bc_type>0x73</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>172</id>
+		<name>decoder-korean-3of5-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-korean-3of5</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>173</id>
+		<name>decoder-korean-3of5-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-korean-3of5</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>174</id>
+		<name>decoder-us4state</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x250</ssi_number>
+		<bc_types>
+			<bc_type>0x34</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>175</id>
+		<name>decoder-us4state-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-us4state</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>176</id>
+		<name>decoder-us4state-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-us4state</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>177</id>
+		<name>decoder-us4state-fics</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x263</ssi_number>
+		<bc_types>
+			<bc_type>0x35</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>178</id>
+		<name>decoder-us4state-fics-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-us4state-fics</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>179</id>
+		<name>decoder-us4state-fics-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-us4state-fics</tag>
+		</tags>
+	</param>
+
+
+	<param type="boolean">
+		<id>180</id>
+		<name>decoder-matrix-2of5</name>
+		<default>false</default>
+		<desc />
+		<tags>
+			<tag>symbologies</tag>
+		</tags>
+		<ssi_number>0x26a</ssi_number>
+		<bc_types>
+			<bc_type>0x39</bc_type>
+		</bc_types>
+	</param>
+	<param type="integer">
+		<id>181</id>
+		<name>decoder-matrix-2of5-length1</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-matrix-2of5</tag>
+		</tags>
+	</param>
+	<param type="integer">
+		<id>182</id>
+		<name>decoder-matrix-2of5-length2</name>
+		<default>0</default>
+		<desc />
+		<tags>
+			<tag>decoder-matrix-2of5</tag>
+		</tags>
+	</param>
+
+</scanner-params>

@@ -15,8 +15,6 @@ enum EBrowserEngineType
     
 struct IBrowserFactory
 {
-    virtual void checkLicense(HWND hParent, HINSTANCE hLicenseInstance) = 0;    
-
     virtual IBrowserEngine* create(HWND hWnd) = 0;    
 };
  
@@ -50,8 +48,6 @@ public:
     static EBrowserEngineType getCurrentBrowserType();
     //
     IBrowserEngine* create(HWND hWnd);
-    //
-    void checkLicense(HWND hParent, HINSTANCE hLicenseInstance);
 };
 
 }

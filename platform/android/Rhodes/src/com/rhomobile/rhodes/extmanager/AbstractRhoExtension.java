@@ -108,9 +108,7 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     public void onAppActivate(IRhoExtManager extManager, boolean bActivate) {
     }
 
-    //@Override
-    //EkiohLocation getCachedLocation(IRhoExtManager extManager, IRhoExtData ext);
-
+    
     @Override
     public boolean startLocationUpdates(IRhoExtManager extManager, boolean highAccuracy, IRhoWebView ext, boolean res) {
         return res;

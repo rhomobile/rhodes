@@ -43,8 +43,8 @@ protected:
 	void setDefaults();
 	rho::String modesToString(ScreenOrientationExt::ScreenOrientationModes& modes);
 private:	
-	bool										m_isISTEnabled;					// state of availability Motorola Solutions IST api's
-	bool										m_isSensorEnabled;				// state of availability Motorola Solutions Sensor api's
+	bool										m_isISTEnabled;					// state of availability Symbol Technologies IST api's
+	bool										m_isSensorEnabled;				// state of availability Symbol Technologies Sensor api's
 	bool										m_supportsScreenOrientation;	// do device support screen orientation
 	bool										m_hasFocus;						// whether the app has focus
 	bool										m_autoRotate;					// current auto rate state
@@ -120,7 +120,7 @@ CScreenOrientationSingleton::CScreenOrientationSingleton() :
 	}
 
 	
-	// now set the default state to autoroate on supported motorola devices
+	// now set the default state to autoroate on supported symbol devices
 	setDefaults();
 }
 
@@ -172,8 +172,8 @@ CScreenOrientationSingleton::~CScreenOrientationSingleton()
  */
 void CScreenOrientationSingleton::getAutoRotate(rho::apiGenerator::CMethodResult& oResult)
 {
-	// Motorola Solutions exposes turning on/off the auto rotate state
-	// via the properitory IST/Sensor interfaces, applicable for MotorolaSolutions
+	// Symbol Technologies exposes turning on/off the auto rotate state
+	// via the properitory IST/Sensor interfaces, applicable for Symbol
 	// device alone
 	bool autoRotateState = false;
 	
@@ -211,7 +211,7 @@ void CScreenOrientationSingleton::getAutoRotate(rho::apiGenerator::CMethodResult
 	else
 	{
 		autoRotateState = false;
-		LOG(WARNING) + "Get: Autorotate feature is currently enabled only on Motorola devices with IST/Sensor support"; 
+		LOG(WARNING) + "Get: Autorotate feature is currently enabled only on Symbol Technologies with IST/Sensor support"; 
 	}
 	oResult.set(autoRotateState);
 }
@@ -226,8 +226,8 @@ void CScreenOrientationSingleton::getAutoRotate(rho::apiGenerator::CMethodResult
  */
 void CScreenOrientationSingleton::setAutoRotate( bool autoRotate, rho::apiGenerator::CMethodResult& oResult)
 {
-	// Motorola Solutions exposes turning on/off the auto rotate state
-	// via the properitory IST interfaces, applicable for MotorolaSolutions
+	// Symbol Technologies exposes turning on/off the auto rotate state
+	// via the properitory IST interfaces, applicable for Symbol
 	// device alone
 	bool bDone = false;
 	if (this->m_isISTEnabled)
@@ -251,8 +251,8 @@ void CScreenOrientationSingleton::setAutoRotate( bool autoRotate, rho::apiGenera
 	else
 	{
 		this->m_autoRotate = false;
-		LOG(WARNING) + "Set: Autorotate feature is currently enabled only on Motorola devices with IST support"; 
-        //oResult.setError("Autorotate feature is currently enabled only on Motorola devices with IST support");
+		LOG(WARNING) + "Set: Autorotate feature is currently enabled only on Symbol Technologies with IST support"; 
+        //oResult.setError("Autorotate feature is currently enabled only on Symbol Technologies with IST support");
         oResult.set(bDone);
 	}
 	
@@ -468,8 +468,8 @@ bool CScreenOrientationSingleton::onWndMsg(MSG& msg)
  */
 void CScreenOrientationSingleton::setDefaults()
 {
-	// Motorola Solutions exposes turning on/off the auto rotate state
-	// via the properitory IST interfaces, applicable for MotorolaSolutions
+	// Symbol Technologies exposes turning on/off the auto rotate state
+	// via the properitory IST interfaces, applicable for Symbol
 	// device alone
 	if (this->m_isISTEnabled)
 	{
@@ -490,9 +490,9 @@ void CScreenOrientationSingleton::setDefaults()
 	else
 	{
 		this->m_autoRotate = false;
-		// non Motorola devices are TODO: as there no API
+		// non Symbol devices are TODO: as there no API
 		// exposed by Microsoft to directly set the auto rotate state
-		LOG(WARNING) + "Default Autorotate feature is currently enabled only on Motorola devices with IST/Sensor support"; 
+		LOG(WARNING) + "Default Autorotate feature is currently enabled only on Symbol devices with IST/Sensor support"; 
 	}
 }
 

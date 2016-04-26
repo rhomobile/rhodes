@@ -37,11 +37,3 @@ excludedirs:
     - "**/.*.swn"
     - "**/.DS_Store"
 
-#cloud:
-#  server_url: "https://rms.rhomobile.com/api/v1"
-
-
-# internet proxy configuration for cloud build
-# connection:
-#   proxy: http://user:pass@address:port
-

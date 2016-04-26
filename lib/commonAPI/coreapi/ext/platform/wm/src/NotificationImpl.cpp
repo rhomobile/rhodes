@@ -30,7 +30,7 @@ public:
 		if (m_pNotifications)
 			m_bNotificationsLoaded = m_pNotifications->LoadNotificationDLL();
 		if (!m_pNotifications || !m_bNotificationsLoaded)
-			LOG(INFO) + "Motorola specific notification functionality is not available on this device";
+			LOG(INFO) + "SYMBOL specific notification functionality is not available on this device";
 #endif
 	}
 
@@ -92,7 +92,7 @@ public:
 		if (!bVibrateSuccess)
 			LOG(WARNING) + "Unable to initiate the device vibrate function";
 #else
-		//  This call is having no effect on Moto Devices, they use Ntfy API (directly above)
+		//  This call is having no effect on Symbol Devices, they use Ntfy API (directly above)
 		alert_vibrate(duration);
 #endif
 

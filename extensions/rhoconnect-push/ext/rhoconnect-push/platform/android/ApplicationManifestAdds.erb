@@ -1,0 +1,11 @@
+        <receiver android:name="com.rhomobile.rhoelements.ans.ANSBroadcastReceiver"
+              android:permission="com.symbol.rhoconnect.pushservice.permission.RECEIVE"
+              android:enabled="true">
+            <intent-filter>
+                <!-- Receive actual messages -->
+                <action android:name="com.symbol.rhoconnect.pushservice.action.RECEIVE" />
+                <!-- Receive registration ids -->
+                <action android:name="com.symbol.rhoconnect.pushservice.action.REGISTRATION" />
+                <category android:name='<%=@appPackageName%>' />
+            </intent-filter>
+        </receiver>

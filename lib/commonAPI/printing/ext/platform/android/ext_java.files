@@ -1,0 +1,16 @@
+ext/platform/android/generated/src/com/rho/printer/PrinterBase.java
+ext/platform/android/generated/src/com/rho/printer/PrinterFactorySingleton.java
+ext/platform/android/generated/src/com/rho/printer/PrinterSingletonBase.java
+ext/platform/android/generated/src/com/rho/printer/IPrinter.java
+ext/platform/android/generated/src/com/rho/printer/IPrinterFactory.java
+ext/platform/android/generated/src/com/rho/printer/IPrinterSingleton.java
+ext/platform/android/src/com/rho/printer/Printer.java
+ext/platform/android/src/com/rho/printer/PrinterFactory.java
+ext/platform/android/src/com/rho/printer/PrinterSingleton.java
+ext/platform/android/src/com/rho/printer/RhoPrinterResponceBase.java
+ext/platform/android/src/com/rhomobile/printing/api/IPrinterDevice.java
+ext/platform/android/src/com/rhomobile/printing/api/IPrintingManager.java
+ext/platform/android/src/com/rhomobile/printing/api/IPrintingProvider.java
+ext/platform/android/src/com/rhomobile/printing/api/ISearchPrinterListener.java
+ext/platform/android/src/com/rhomobile/printing/api/PrintingManagerSingletone.java
+ext/platform/android/src/com/rhomobile/printing/impl/PrintingManagerImpl.java

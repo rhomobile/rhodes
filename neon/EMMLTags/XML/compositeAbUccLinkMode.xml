@@ -1,0 +1,52 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>compositeAbUccLinkMode</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\CompositeAb</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS> describes whether the UCC link mode is enabled.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="compositeAbUccLinkMode:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>compositeAbUccLinkMode</NAME>
+                		<VALUES>See Description</VALUES>
+				<DESC>Describes the UCC link mode.  Possible values:</DESC>
+				<DESCDETAIL>
+never:
+  Link flag ignored.
+always:
+  Always linked.
+auto:  
+  Auto-discriminate
+  </DESCDETAIL>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read barcodes with the compositeAbUccLinkMode property set</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="scanner" Content="compositeAb:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="compositeAbUccLinkMode:always"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+				</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports CompositeAB.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

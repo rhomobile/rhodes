@@ -1,0 +1,212 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>notification</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to control the notification objects on the device.  There are three types of notification object (LEDs, Beeper and Pager) and a device may have more than one of any object type, though in practise devices will have multiple LEDs and a maximum of one beeper and pager.  In order to control the notification objects it is first necessary to query the device to discover which objects are available, this is done through the Enumerate method and EnumNotificationsEvent.  The EnumNotificationsEvent will return a unique identifier for each available notification and this will be used to set the notification state.  Notifications can be set to either on, off or cycling with the behaviour of 'on' or 'off' notification objects self explanatory; when set to cyclic LEDs will flash for the specified number of times whereas the beeper and pager will only activate once for the specified duration.</SYNOPSIS>
+		<MULTIPLE_INSTANCE>Only the application with Focus will have the ability to enable/disable notifications. When an application is sent to background if there are any notifications in progress (vibrator, beeper etc.) they would be stopped.</MULTIPLE_INSTANCE>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Notification" content="[method / parameter]"&gt;</EXAMPLE>
+			</USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Notification" content="EnumNotificationsEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>enumerate</NAME>
+				<DESC>Immediately triggers an EnumNotificationsEvent containing the notification objects available on the current device</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+		</PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>setLEDOnDuration</NAME>
+				<VALUES>Milliseconds</VALUES>
+				<DESC>Subsequent calls to cycle LED notifications will cause them to remain on for the specified number of milliseconds per cycle.  This parameter has no effect if the LED State is set to 'On' or 'Off'</DESC>
+				<DEFAULT>1000</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>setLEDOffDuration</NAME>
+				<VALUES>Milliseconds</VALUES>
+				<DESC>Subsequent calls to cycle LED notifications will cause them to remain off for the specified number of milliseconds per cycle.  This parameter has no effect if the LED State is set to 'On' or 'Off'</DESC>
+				<DEFAULT>1000</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>setLEDNumberOfCycles</NAME>
+				<VALUES>Positive Number</VALUES>
+				<DESC>Subsequent calls to cycle LED notifications will cause them to switch between on and off the specified number of times.</DESC>
+				<DEFAULT>1</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>setBeeperFrequency</NAME>
+				<VALUES>Frequency in Hertz</VALUES>
+				<DESC>When the beeper next sounds it will do so at the specified number of Hertz, provided this is supported by the hardware.  This parameter has an effect for both StateOn and StateCycle.</DESC>
+				<DEFAULT>2000</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>setBeeperVolume</NAME>
+				<VALUES>Number greater than 0.  The maximum value is platform dependant.</VALUES>
+				<DESC>When the beeper next sounds it will do so at the specified volume.  0 represents minimum volume, the decibels each volume level represents is device dependant</DESC>
+				<DEFAULT>0</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>setBeeperDuration</NAME>
+				<VALUES>Milliseconds</VALUES>
+				<DESC>When the beeper is next instructed to cycle it will sound for the specified number of milliseconds</DESC>
+				<DEFAULT>1000</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>setVibrateDuration</NAME>
+				<VALUES>Milliseconds</VALUES>
+				<DESC>When the pager is next instructed to cycle it will vibrate the device for the specified number of milliseconds</DESC>
+				<DEFAULT>1000</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>stateOn</NAME>
+				<VALUES>The index of the notification, obtained via the EnumNotificationsEvent</VALUES>
+				<DESC>Turns the specified notification object on.  This will either light an LED, sound the beeper or vibrate the device depending on the type of the notification. Please note that some platforms may not allow you to continuously vibrate the pager to conserve battery. </DESC>
+				<DEFAULT>Device Specific</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>stateOff</NAME>
+				<VALUES>The index of the notification, obtained via the EnumNotificationsEvent</VALUES>
+				<DESC>Turns the specified notification object off.  This will either extinguish an LED, silence the beeper or stop the device from vibrating</DESC>
+				<DEFAULT>Device Specific</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>stateCycle</NAME>
+				<VALUES>The index of the notification, obtained via the EnumNotificationsEvent</VALUES>
+				<DESC>Cycles the specified notification object.  LEDs will alternate between on and off for the specified number of cycles.  The beeper and pager will be invoked once for the specified number of milliseconds.</DESC>
+				<DEFAULT>Device Specific</DEFAULT>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<RETURNS>
+			<TAG>
+				<TAG_NAME>enumNotificationsEvent</TAG_NAME>
+				<TAG_NOTES>The EnumNotificationsEvent is triggered in response to calling the 'Enumerate' method and is used to obtain the notifications available on the device and their associated identifiers.  There is a single return value for this event which is a two dimensional array, with one dimension listing the available notifications and the other dimension listing the attributes for each notification object</TAG_NOTES>
+				<RETVAL>
+					<NAME>notificationsArray (notificationIndex, notificationType, notificationName)</NAME>
+					<DESC>2 Dimensional array of notifications, see remarks</DESC>
+					<ARRAY>TRUE</ARRAY>
+				</RETVAL>
+			</TAG>
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example stores the available notifications in a javascript array and displays them to the user in an HTML table.  Note that a 2 dimensional array is returned in the EnumNotificationsEvent.</DESC>
+<CODE>
+&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;META HTTP-Equiv="Notification" content="EnumNotificationsEvent:url('javascript:setupNtfyArr(%s)');"&gt;
+&lt;/HEAD&gt;
+&lt;script&gt;
+   var ntfyArr = new Array();
+   var notType = new Array('LED', 'BEEPER', 'PAGER');
+   var NTFY_INDEX = 0;
+   var NTFY_TYPE = 1;
+   var NTFY_NAME = 2;
+
+   function setupNtfyArr(notArr)
+   {
+     ntfyArr = notArr;
+	 var html = "<table>";
+
+	 for(i=0; i&lt;ntfyArr.length; i++)
+     {
+       html += '<tr><td>' + ntfyArr[i][NTFY_INDEX] + ', '
+	        + notType[ntfyArr[i][NTFY_TYPE]] + '</td><td>'
+	        + ntfyArr[i][NTFY_NAME] + '</td></tr>';
+     }
+
+     html += "</table>";
+     htmDiv.innerHTML = html;
+   }
+
+   function onListNotifications()
+   {
+	  notification.enumerate();
+   }
+&lt;/script&gt;
+   &lt;BODY&gt;
+      &lt;div id="htmDiv"&gt;
+	  &lt;INPUT TYPE="button" VALUE="List Notification Objects" ONCLICK="onListNotifications();"&gt;
+      &lt;/div&gt;
+   &lt;/BODY&gt;
+&lt;/HTML&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following function takes a notification index and a notification type.  Depending on the type of notification it invokes it appropriately.  The index and type of each notification can be obtained via the EnumNotificationsEvent as demonstrated in the previous example</DESC>
+<CODE>
+&lt;script&gt;
+   function annoyUser(index, type)
+   {
+     if (type == 0)
+     {
+       //  If the Type of Notification is an LED flash it 10 times, on for 1 second off for 1 second.
+       notification.setLEDOnDuration = 1000;
+       notification.setLEDOffDuration = 1000;
+       notification.setLEDNumberOfCycles = 10;
+       //  Flash the LED
+       notification.stateCycle = index;
+     }
+     else if (type == 1)
+     {
+       //  If the Type of the Notification is a Beeper emit a continuous high pitch tone at maximum volume
+       notification.setBeeperFrequency = 8000;
+       notification.setBeeperVolume = 3;
+       //  Start the Beeper
+       notification.stateOn = index;
+     }
+     else if (type == 2)
+     {
+       //  If the type of the notification is a Pager then vibrate the device for 15 seconds
+       notification.setVibrateDuration = 15000;
+       notification.stateCycle = index);
+     }
+   }
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>No Notification Objects</COMMENT_HEADING>
+				<COMMENT_DATA>If the device has no notification objects the array returned by EnumNotificationsEvent will be empty</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Notification State</COMMENT_HEADING>
+				<COMMENT_DATA>If RhoElements is exited after applying notifications, the settings will not revert.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>EnumNotificationsEvent Array Format</COMMENT_HEADING>
+				<COMMENT_DATA>There is a single return value for this event which is a two dimensional array with the format below:</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+(
+   (                      //  Array for Notification 1
+      notificationIndex,  //  Unique Identifier for each notification.
+      notificationType,   //  Type of the notification.  '0' Indicates an LED; '1' indicates a Beeper and '2' indicates a pager
+      notificationName    //  Human readable name of the notification, e.g. "Green LED"
+   )
+   (                      //  Array for Notification 2
+      notificationIndex,
+      notificationType,
+      notificationName
+   )
+)
+</COMMENTFIXEDWIDTH>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Partially Persistent - Changes to this module will persist when navigating to a new page with the exception of the EnumNotificationsEvent which is page specific.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

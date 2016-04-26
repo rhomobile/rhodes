@@ -1,0 +1,45 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>signatureImageSize</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the image size property of the signature decoder.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="signatureImageSize:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>signatureImageSize</NAME>
+                <VALUES>size in KB</VALUES>
+				<DESC>Specifies the maximum compressed JPEG image size, in kilobytes.  Specifying a value of 0 means optimize for image quality.  Note JPEG image will be optimized for either quality or size, size restrictions take priority over quality restrictions.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to specify the signatureImageSize parameter</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="scanner" Content="signature:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="signatureImageSize:0"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+				</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except: Android devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports Signature.</REQ>
+			<VER_INTRODUCED>2.1</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../">Scanner</TOPIC>
+			<TOPIC>Signature</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

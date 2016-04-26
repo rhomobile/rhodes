@@ -1,0 +1,191 @@
+*
+	{
+		font-family: "Droid Sans", Tahoma, "sans-serif";
+		color: white;
+		padding: 0px;
+	}
+
+	body
+	{
+		background-color: #4D4D4D;
+		padding: 0px;
+		margin: 0px;
+		height:auto;
+		overflow: auto;
+	}
+
+	#body1
+	{
+		display: table-cell;
+		height:auto;
+		padding: 0px;
+		text-align: center;
+		
+		
+		border-radius: 10px;
+	}
+    
+	button
+	{
+		background: url(images/backNorm.gif) no-repeat center center;
+	}
+
+	button:active
+	{
+		background: url(images/backActive.gif) no-repeat center center;
+	}
+	button:focus
+	{
+		outline: none;
+		background: url(images/backFocused.gif) no-repeat center center;
+	}
+	.gone
+	{
+		display: none;
+	}
+
+	#window
+	{
+		display:table;
+		position: absolute;
+		top: 0px;
+		left 0px;
+		width: 100%;
+		height: auto;
+		padding: 12px;
+		border-radius: 10px;
+	}
+
+	@media screen and (orientation: portrait), screen and (min-width: 240px)
+	{
+		h1
+		{
+			font-size: 19px;
+			margin: 26px 0px 0px 0px;
+		}
+		h2
+		{
+			margin: 10px 0px 0px 0px;
+			font-size: 14px;
+		}
+
+		button
+		{
+			display:inherit;
+			height: 30px;
+			width:  90%;
+			margin: 0px 0px 10px 0px;
+			font-size: 26px;
+			border: none;
+		}
+		
+		.spacer
+		{
+			height: 30px;
+			margin: 0px;
+		}		
+
+		#title1
+		{
+			text-align:left;
+			padding: 15px 18px;
+			color: #4B4B4B;
+			font-weight: bold;
+			font-size: 11px;
+			background: #CCCCCC url(images/backgroundTitle.gif) repeat-x;
+			height: 10px;
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+			vertical-align: middle;
+			margin: 0px 0px 10px 0px;
+		}
+	}
+
+	@media screen and (orientation: landscape),screen and (min-width: 240px)
+	{
+		h1
+		{
+			font-size: 19px;
+			margin: 8px 0px 0px 0px;
+		}
+		h2
+		{
+			margin: 10px 0px 0px 0px;
+			font-size: 12px;
+		}
+
+		button
+		{
+			display: inline;
+			height: 28px;
+			width:  30%;
+			margin: 0px 0px 10px 0px;
+			font-size: 16px;
+			border: none;
+		}
+		
+		.spacer
+		{
+			height: 7px;
+			margin: 0px;
+		}		
+
+		#title1
+		{
+			text-align:left;
+			padding: 10px 18px;
+			color: #4B4B4B;
+			font-weight: bold;
+			font-size: 11px;
+			background: #CCCCCC url(images/backgroundTitle.gif) repeat-x;
+			height: 10px;
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+			vertical-align: middle;
+			margin: 0px 0px 10px 0px;
+		}
+	}
+
+	@media screen and (min-width: 480px)
+	{
+		h1
+		{
+			font-size: 29px;
+			margin: 26px 0px 0px 0px;
+		}
+		h2
+		{
+			margin: 10px 0px 0px 0px;
+			font-size: 14px;
+		}
+
+		button
+		{
+			height: 60px;
+			width: 272px;
+			margin: 0px 0px 10px 0px;
+			font-size: 26px;
+			border: none;
+		}
+		
+		.spacer
+		{
+			height: 60px;
+			margin: 0px;
+		}		
+
+		#title1
+		{
+			text-align:left;
+			padding: 15px 18px;
+			color: #4B4B4B;
+			font-weight: bold;
+			font-size: 20px;
+			background: #CCCCCC url(images/backgroundTitle.gif) repeat-x;
+			height: 22px;
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+			vertical-align: middle;
+			margin: 0px 0px 72px 0px;
+		}
+	}

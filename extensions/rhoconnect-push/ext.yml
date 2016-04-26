@@ -1,0 +1,11 @@
+entry: Init_RhoConnectPush_extension
+javaentry: com.rhomobile.rhoelements.ans.ANSFacade
+libraries: ["rhoconnect-push"]
+android:
+  manifest_changes: 
+  - ext/rhoconnect-push/platform/android/AndroidManifest.rb
+  - ext/rhoconnect-push/platform/android/ApplicationManifestAdds.erb
+  source_list: ext/rhoconnect-push/platform/android/ext_java.files
+  exttype: rakefile
+xml_api_paths: ext/rhoconnect-push.xml
+platforms: ['wm', 'android', 'win32']

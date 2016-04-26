@@ -15,34 +15,6 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
-        <MORE_HELP_EB>
-## Enabling the API
-There are two methods of enabling the System API:
-
-* Include all ebapi modules or
-* Include only the API modules you need
-
-For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
-
-### Include all JS API modules
-To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
-
-> Note: that the pathing for this file is relative to the current page.
-
-This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
-
-### Include only the modules you need
-To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the System API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
-    &lt;script type="text/javascript" charset="utf-8" src="eb.system.js"&gt;&lt;/script&gt;
-
-The ebapi.js file is necessary for all single API inclusions.
-        </MORE_HELP_EB>
         <ALIASES>
             <ALIAS new="System" deprecated="true"/>
         </ALIASES>
@@ -78,7 +50,6 @@ The ebapi.js file is necessary for all single API inclusions.
                         <DESC></DESC>
                     </VALUE>
                 </VALUES>
-                <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if there is a camera available on the device.</DESC>
@@ -153,9 +124,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="isSymbolDevice" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if the device supports Symbol device capabilities. APIs will indicate if the property or method is available on Symbol devices only. You can use this property to help your application decide when to take advantage of advanced Symbol capabilities.</DESC>
             </PROPERTY>
-            <PROPERTY name="isMotorolaDevice" type="BOOLEAN" readOnly="true" deprecated="true">
-                <DESC>Returns true if the device supports Motorola device capabilities. APIs will indicate if the property or method is available on Motorola devices only. You can use this property to help your application decide when to take advantage of advanced Motorola capabilities. This property has been deprecated. It is recommended to use 'isSymbolDevice' property.</DESC>
-            </PROPERTY>
             <PROPERTY name="oemInfo" type="STRING" readOnly="true">
                 <DESC>The OEM Information string for the terminal.</DESC>
                 <APPLIES msiOnly="true"></APPLIES>
@@ -173,7 +141,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="httpProxyURI" type="STRING">
                 <DESC>Set HTTP proxy parameters for using the Network module. Example: 'user:password@url:port'. Supports basic authentication only. Do not include 'http://'. Setting this property overrides http_proxy_uri, http_proxy_host, http_proxy_port, http_proxy_user and http_proxy_password. Proxy settings for Windows Mobile/CE with Zebra WebKit should be configured in the config.xml file.</DESC>
                 <PLATFORM>Android, iOS, WM, Win32</PLATFORM>
-                <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
                 <DESC>Lock / unlock the window size change by the user. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
@@ -204,7 +171,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="screenAutoRotate" type="BOOLEAN" default="true">
                 <DESC>Screen auto rotate.</DESC>
                 <PLATFORM>Android, iOS</PLATFORM>
-                <PLATFORM_EB>Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="hasTouchscreen" type="BOOLEAN" readOnly="true">
                 <DESC>Returns true if the device has touch screen capabilities.  For Win32 desktop builds this API will return whether mouse support is available.</DESC>
@@ -215,7 +181,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="screenSleeping" type="BOOLEAN">
                 <DESC>If true, then screen will go to sleep by system inactivity timeout. If false then screen never go to sleep while application is in foreground.</DESC>
                 <PLATFORM>Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="hasNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
                 <DESC>Use Network.hasNetwork to tell if the device is connected to the network.</DESC>
@@ -246,7 +211,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="applicationInstall">
                 <DESC>Install an application.</DESC>
               <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
-              <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="applicationUrl" type="STRING">
                         <DESC>The url of an application to install on the device.</DESC>
@@ -257,7 +221,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="isApplicationInstalled">
                 <DESC>Checks if the specified applicationName is installed on the device.</DESC>
                 <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
-                <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="applicationName" type="STRING">
                         <DESC>The name of the application.</DESC>
@@ -285,8 +248,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="openUrl">
                 <DESC>Open the application associated with the URL. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix will execute the Web Browser installed on system and open URL in executed browser. Note: For opening pdf files on android devices it is necessary to add option "no_compression: [ pdf ]" to android section in build.yml. In android, "sms:","mailto:","tel:","http:","https:","file:" are supported. For file url the proper permission and path has to be given. For external storage space fully qualified path has to be given.(Example:-file:///storage/sdcard/sample.jpg).  Hence only external storage space and userFolder are supported for file uri in android.
                 </DESC>
-                <DESC_EB>Open the application associated with the URL. Behavior may be different on different platforms and depend on installed software. For example, open URL with http:// prefix will execute the Web Browser installed on system and open URL in executed browser. Note: Opening pdf files on Android devices is not supported. In android, "sms:","mailto:","tel:","http:","https:","file:" are supported.  Hence it is recommended to use storage space or userFolder for the file uri.
-                </DESC_EB>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>URL as string.</DESC>
@@ -350,7 +311,6 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="setRegistrySetting">
                 <DESC>Set a value in the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
-                <DESC_EB>Set a value in the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. </DESC_EB>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -412,7 +372,6 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="getRegistrySetting">
                 <DESC>Retrieve a value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
-                <DESC_EB>Retrieve a value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. </DESC_EB>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -437,7 +396,6 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="deleteRegistrySetting">
                 <DESC>Deletes the specified value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. When running on RhoSimulator, this method is supported only for Windows OS.</DESC>
-                <DESC_EB>Deletes the specified value from the device registry. Only applicable on Windows Mobile / Embedded Handheld and CE devices. </DESC_EB>
                 <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -605,7 +563,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="setScreenRotationNotification" deprecated="true">
                 <DESC>Use ScreenOrientation.setScreenOrientationEvent: Notify (call a callback method) when the screen rotates.</DESC>
                 <PLATFORM>iOS, Android, WM</PLATFORM>
-                <PLATFORM_EB>WM, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>URL of the callback method. If empty, unregisters notification callback.</DESC>
@@ -683,11 +640,9 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="runApplication">
                 <DESC>Run an application.</DESC>
                 <PLATFORM>iOS, WM, Win32, Android</PLATFORM>
-                <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="appName" type="STRING">
                         <DESC>The name of the application on the device to run. It depends from platform. On iOS it is BundleURLScheme of executed application.</DESC>
-                        <DESC_EB>The name of the application on the device to run. </DESC_EB>
                     </PARAM>
                     <PARAM name="params" type="STRING">
                         <DESC>Start parameters string. Executed Application can receive this string by getStartParams method. Parameter could be just value, or key-value pair separated by '=' sign. Please note that for each platform there are distinct ways to write several params at once. On Android parameters should be separated by an amperstand, on other platforms by a comma or a space.</DESC>
@@ -709,7 +664,6 @@ The ebapi.js file is necessary for all single API inclusions.
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>iOS, WM, Win32, WP8, Android</PLATFORM>
-        <PLATFORM_EB>WM, Win32, Android</PLATFORM_EB>
 
         <EXAMPLES>
             <EXAMPLE title="Get device capabilities">

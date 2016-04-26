@@ -1,7 +1,7 @@
 #pragma once
 #include <windows.h>
 
-#include "NotificationDefines.h"
+#include "NtfyDef.h"
 #define	E_NTFY_SUCCESS					0
 
 //  Dynamically Loading the Notification DLL (This code is shared by the Scanner and 
@@ -36,7 +36,7 @@ public:
 	*  The Scanner is dependant on the EMDK Notification API for generating
 	*  good and bad decode 'beeps'.  Load the Notification DLL dynamically
 	*  to avoid catastrophic failure if we try and launch the scanner on
-	*  a non-Motorola device (remember this DLL is loaded by the license 
+	*  a non-Symbol device (remember this DLL is loaded by the license 
 	*  screen and also in the default config's preloads)
 	*  \return Whether or not the Notification DLL could be loaded
 	*/

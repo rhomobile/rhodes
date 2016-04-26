@@ -1,0 +1,72 @@
+/*
+* --------------------------------------------------------------------
+* FILENAME:			cradle_err.h
+*
+* Copyright(c) 2013 Symbol Technologies Inc. All rights reserved.
+*
+* DESCRIPTION:		Header file containing error codes used by cradle
+*					drivers. To be included by clients of cradle to understand
+*					cradle drive failure codes
+* NOTES:
+*
+* AUTHOR:			Rajesh Narasimhaiah
+* CREATION DATE:	23rd Feb 2013
+* DERIVED FROM:		-
+*/
+#ifndef CRADLE_ERR_H_
+#define CRADLE_ERR_H_
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+
+#define	ERROR_BIT						0x80000000	// Use bit 31 to indicate errror
+#define	USER_BIT						0x20000000	// Bit 29 means not Win32 error	
+
+#define	CRAD_ERRORID(code)				(ERROR_BIT | USER_BIT | (WORD) code)
+
+#define	E_CRAD_SUCCESS					0
+#define E_CRAD_ERROR					CRAD_ERRORID(0x0001)
+#define	E_CRAD_ALREADYINITIALIZED		CRAD_ERRORID(0x0002)
+#define	E_CRAD_CREATEEVENTFAILED		CRAD_ERRORID(0x0003)
+#define	E_CRAD_INVALIDINSTANCE			CRAD_ERRORID(0x0004)
+#define	E_CRAD_NOTENOUGHMEMORY			CRAD_ERRORID(0x0005)
+#define	E_CRAD_NOTINITIALIZED			CRAD_ERRORID(0x0006)
+#define	E_CRAD_INVALIDDVCCONTEXT		CRAD_ERRORID(0x0007)
+#define	E_CRAD_INVALIDOPNCONTEXT		CRAD_ERRORID(0x0008)
+#define	E_CRAD_CANTREADREGVALUE			CRAD_ERRORID(0x0009)
+#define	E_CRAD_CANTOPENREGKEY			CRAD_ERRORID(0x000A)
+#define	E_CRAD_INVALIDIOCTRL			CRAD_ERRORID(0x000B)
+#define	E_CRAD_NULLPTR					CRAD_ERRORID(0x000C)
+#define	E_CRAD_BADSTRUCTINFO			CRAD_ERRORID(0x000D)
+#define	E_CRAD_PARAMMISSING				CRAD_ERRORID(0x000E)
+#define	E_CRAD_BUFFERTOOSMALL			CRAD_ERRORID(0x000F)
+#define	E_CRAD_MISSINGFIELD				CRAD_ERRORID(0x0010)
+#define	E_CRAD_INVALIDHANDLE			CRAD_ERRORID(0x0011)
+#define	E_CRAD_INVALIDPARAM				CRAD_ERRORID(0x0012)
+#define	E_CRAD_INVALIDDEVICENAME		CRAD_ERRORID(0x0013)
+#define	E_CRAD_NOTSUPPORTED				CRAD_ERRORID(0x0014)
+#define	E_CRAD_INVALIDCONFIGTYPE		CRAD_ERRORID(0x0015)
+#define	E_CRAD_EXCEPTION				CRAD_ERRORID(0x0016)
+#define	E_CRAD_WIN32ERROR				CRAD_ERRORID(0x0017)
+#define	E_CRAD_OUTPUTTIMEOUT			CRAD_ERRORID(0x0018)
+#define	E_CRAD_WRITECMDFAIL				CRAD_ERRORID(0x0019)
+#define	E_CRAD_NOTCONNECTED				CRAD_ERRORID(0x0020)
+#define	E_CRAD_JUNKDATA					CRAD_ERRORID(0x0021)
+#define	E_CRAD_IOCTL_ERROR				CRAD_ERRORID(0x0022)
+#define	E_CRAD_BUSY						CRAD_ERRORID(0x0023)
+#define E_CRAD_DISB_CHRG_FAILED			CRAD_ERRORID(0x0024)
+#define E_CRAD_ALREADY_UNLOCKED			CRAD_ERRORID(0x0025)
+#define E_CRAD_INVALID_PASSWORD			CRAD_ERRORID(0x0026)
+#define E_CRAD_OUTSIDE_CRADLE			CRAD_ERRORID(0x0027)
+
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif	// #ifndef CRADLE_ERR_H_
+

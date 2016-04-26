@@ -1,0 +1,17 @@
+#!/bin/sh
+
+
+if [ "$RHO_PLATFORM" = "android" ]; then
+
+cd rhoconnect-push/platform/android
+rake --trace
+
+elif [ "$RHO_PLATFORM" = "iphone" ]; then
+
+cd rhoconnect-push/platform/iphone
+rake --trace
+
+fi
+
+
+

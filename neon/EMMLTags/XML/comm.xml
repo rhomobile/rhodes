@@ -1,0 +1,234 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>comm</NAME>
+		<PATH>Comm</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to control the functionality of the devices communication (serial) port; the way RhoElements interacts with that port and the data it provides.</SYNOPSIS>
+		<SYNTAX>
+    	    <USAGE>
+        		<EXAMPLE>&lt;META HTTP-Equiv="Comm" content="[parameter]"&gt;</EXAMPLE>
+        	</USAGE>
+        	<USAGE>
+        		<EXAMPLE>&lt;META HTTP-Equiv="Comm" content="CommEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+        	</USAGE>
+    	</SYNTAX>
+    	<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>open</NAME>
+				<DESC>Opens the COM port using applied settings.
+				</DESC>
+			    <DEFAULT>Closed</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>close</NAME>
+				<DESC>Closes the currently open COM port, if any.</DESC>
+			    <DEFAULT>Closed</DEFAULT>
+			</PARAM>
+		</PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>baudRate</NAME>
+        	    <VALUES>110, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 56000, 57600, 115200, 128000, 256000</VALUES>
+				<DESC>Sets the baud rate of the serial port. (not all values are supported on all devices)</DESC>
+				<DEFAULT>9600</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>dataBits</NAME>
+        	    <VALUES>Integers between 5 and 9 inclusive.</VALUES>
+				<DESC>Sets the number of data bits per word on the device serial port (not all values are supported on all devices).</DESC>
+				<DEFAULT>8</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>stopBits</NAME>
+        	    <VALUES>'1', '1.5', '2'.</VALUES>
+				<DESC>Sets the number of stop bits per word on the device serial port (not all values are supported on all devices).</DESC>
+				<DEFAULT>1</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>parity</NAME>
+        	    <VALUES>'Even', 'Odd', 'Mark', 'Space', 'No Parity'</VALUES>
+				<DESC>Sets the parity check type for the device serial port. (not all values are supported on all devices)</DESC>
+				<DEFAULT>'No Parity'</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>handshake</NAME>
+        	    <VALUES>'HW' - Hardware Handshake, 'SW' - Software Handshake, 'None' - No handshake</VALUES>
+				<DESC>Sets the handshaking for the device serial port. (not all values are supported on all devices)</DESC>
+				<DEFAULT>'None'</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>port</NAME>
+        	    <VALUES>The device comm port, in the format COMn</VALUES>
+				<DESC>Sets the device serial port. (only certain port designations are valid on any given device)</DESC>
+				<DEFAULT>'COM1'</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>chars</NAME>
+				<VALUES>Positive number.</VALUES>
+				<DESC>Data will be received by RhoElements after the specified number of characters have been received over the COM port.  RhoElements will receive the data in either a CommEvent or as keystrokes.  'Chars', 'EndChar' and 'Time' are mutually exclusive, see remarks.</DESC>
+			    <DEFAULT>'EndChar:CRLF'</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>endChar</NAME>
+				<VALUES>Character code expressed as a decimal or 'CRLF' to specify Carriage return + Line Feed</VALUES>
+				<DESC>Data will be received by RhoElements after the specified character (or Carriage return + Line Feed) has been received over the COM port.  RhoElements will receive the data, minus the final CRLF, in either a CommEvent or as keystrokes.  'Chars', 'EndChar' and 'Time' are mutually exclusive, see remarks.</DESC>
+			    <DEFAULT>'EndChar:CRLF'</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>time</NAME>
+				<VALUES>Milliseconds</VALUES>
+				<DESC>Data will be received by RhoElements after the specified period of COM port inactivity has elapsed.  RhoElements will receive the data in either a CommEvent or as keystrokes.  'Chars', 'EndChar' and 'Time' are mutually exclusive, see remarks.</DESC>
+			    <DEFAULT>'EndChar:CRLF'</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>writeBytes</NAME>
+				<VALUES>A string of bytes, each byte represented as '%hh' where 'h' is a hexidecimal digit.  A delimiter is optional and may be any character</VALUES>
+				<DESC>Value is converted to an array of bytes and written to the COM port.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>writeString</NAME>
+				<VALUES>String</VALUES>
+				<DESC>Writes the specified string to the COM port.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>writeFile</NAME>
+				<VALUES>Filename and Path</VALUES>
+				<DESC>The specified file is opened and its contents is written to the COM port.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>autoEnter</NAME>
+				<VALUES>Enabled or Disabled</VALUES>
+				<DESC>Provided no CommEvent is defined and the received data is being received as keystrokes each block received will have a CR (Carriage Return) character appended to it.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>autoTab</NAME>
+				<VALUES>Enabled or Disabled</VALUES>
+				<DESC>Provided no CommEvent is defined and the received data is being received as keystrokes each block received will have a tab character appended to it.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+    	</PARAMS_WITH_ATTRIBUTES>
+
+        <RETURNS>
+            <TAG>
+                <TAG_NAME>commEvent</TAG_NAME>
+                <TAG_NOTES>This event is used to read data from the COM port and is triggered in response to a port event.  Port events can be  one of 'Chars', 'EndChar' or 'Time' as described in the Parameters section.  If no CommEvent is defined the associated data is output as keystrokes.
+                </TAG_NOTES>
+                <RETVAL>
+                    <NAME>data</NAME>
+                    <DESC>The data that has been accumulated from the open communications port since the last time data was returned.</DESC>
+                </RETVAL>
+            </TAG>
+		</RETURNS>
+        
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example opens up the COM1 port using META tags, and instructs the Comm module to call the 'ProcessData' JavaScript function after 250 ms of port inactivity, passing the received data to the function.  The port will be closed when RhoElements navigates to a new page.
+				</DESC>
+				<CODE>
+&lt;HTML&gt;
+   &lt;HEAD&gt;
+   &lt;!-- Setup the port --&gt;
+   &lt;META HTTP-Equiv="Comm" Content="Port:COM1"&gt;
+   &lt;META HTTP-Equiv="Comm" Content="BaudRate:9600"&gt;
+   &lt;META HTTP-Equiv="Comm" Content="DataBits:8"&gt;
+   &lt;META HTTP-Equiv="Comm" Content="StopBits:1"&gt;
+   &lt;META HTTP-Equiv="Comm" Content="Parity:'No Parity'"&gt;
+   &lt;META HTTP-Equiv="Comm" Content="HandShake:None"&gt;
+   &lt;META HTTP-Equiv="Comm" Content="Time:250"&gt;
+   &lt;META HTTP-Equiv="Comm" Content="CommEvent:url('JavaScript:ProcessData('%s');')"&gt;
+   &lt;META HTTP-Equiv="Comm" Content="Open"&gt;
+
+   &lt;!-- Function called when data received from the port --&gt;
+   &lt;SCRIPT TYPE="text/javascript"&gt;
+      function ProcessData(data)
+      {
+         alert(data);
+      }
+   &lt;/SCRIPT&gt;
+   &lt;/HEAD&gt;
+
+   &lt;BODY&gt;
+   &lt;!-- Your page goes here --&gt;
+   &lt;/BODY&gt;
+&lt;/HTML&gt;
+   
+				</CODE>
+			</EXAMPLE>
+
+			<EXAMPLE>
+				<DESC>The following example sets up the communications port and opens it using JavaScript and the generic ActiveX object.  This example	sets the event trigger to be the receipt of the '#' character (char code = 35).  The default port parameters are used.  JavaScript routines for writing to the port and closing it are also included.
+				</DESC>
+				<CODE>
+&lt;HTML&gt;
+   &lt;HEAD&gt;
+   &lt;!-- Script that will get called on page load --&gt;
+   &lt;SCRIPT TYPE="text/javascript"&gt;
+
+   var objGeneric;
+
+   function DisplayData(data)
+   {
+      alert("Received the following data on the Comm port: " + data);
+   }
+
+   function CommSetup()
+   {
+      comm.endChar = 35;
+      comm.commEvent = url('JavaScript:DisplayData('%s');');
+      comm.open();
+   }
+
+   function CommWrite()
+   {
+      //  Write a string to the COM port
+      comm.writeString = 'StringToWrite';
+      //  Write bytes to the COM port
+      comm.writeBytes = '%62 %79 %74 %65 %20 %6d %65 %0a';
+      //  Write a file to the COM port
+      comm.writeFile = '\\File Path\\FileToWrite.txt';
+   }
+   
+   function CommClose()
+   {
+      comm.close();
+   }
+   &lt;/SCRIPT&gt;
+   &lt;/HEAD&gt;
+
+   &lt;BODY onload="CommSetup()"&gt;
+   &lt;!-- Your page goes here --&gt;
+   &lt;/BODY&gt;
+&lt;/HTML&gt;
+				</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+
+		<REMARKS>
+			<COMMENT>
+			<COMMENT_HEADING>General</COMMENT_HEADING>
+			<COMMENT_DATA>If any of the parameters (e.g. BaudRate) are set whilst the COM port is open they will not take effect until the port is closed and reopened again.  The parameters 'Chars', 'EndChar' and 'Time' are mutually exclusive and the last one set will take priority when the COM port is next opened.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>AutoEnter and AccelerateKey</COMMENT_HEADING>
+				<COMMENT_DATA>
+				The AccelerateKey Meta tag controls the behaviour of Accelerate keys on Windows CE, if the Enter key is configured to be non functional then AutoEnter will also appear to not function either
+				</COMMENT_DATA>
+			</COMMENT>
+
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices that have a COM port</PLATFORM>
+			<APPLIES>This tag is mostly page persistent, however when navigating to a new page the port will be closed and the CommEvent cleared.  You will need to re-register the CommEvent and open the port again on the new page to continue serial port communication.
+			</APPLIES>
+			<REQ>COM Interface.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

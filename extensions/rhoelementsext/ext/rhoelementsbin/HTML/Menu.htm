@@ -1,0 +1,462 @@
+<html>
+<head>
+	<title>Welcome to RhoElements</title>
+	<script type="text/javascript" charset="utf-8" src="..\rho\apps\public\re1\elements.js"></script>
+   
+  <script type="text/javascript">
+	
+		var currentZoom = 1;
+// 		window.onresize = function ()
+// 		{
+// 			resize();
+// 		}
+	
+		function onload()
+		{
+			
+      resize();
+			var theBody = document.getElementById("body");
+			var agent = navigator.userAgent.toString();
+      
+      
+      if (agent.indexOf("MSIE") != -1)
+			{
+				var theTitle = document.getElementById("title");
+				theTitle.innerHTML = "";
+				theBody.innerHTML = "<b>Running RhoElements Browser.</b><P>This is the default RhoElements Browser start page, please configure your config.xml to point to your own start page";
+				
+			}
+				else if (window.innerWidth <= 320)
+			{
+				var theTitle = document.getElementById("title");
+				theTitle.innerHTML = "";
+				theBody.innerHTML = "<b>Running RhoElements Browser.</b><P>This is the default RhoElements Browser start page, please configure your config.xml to point to your own start page";
+			}
+      else//Webkit
+			{
+				document.getElementById("title").className="titleBkGnd";
+        
+      }
+
+			theBody.style.display = "block";
+		}
+		
+		function resize()
+		{
+		  
+			var newZoom;
+			var currentHeight = document.body.clientHeight;
+			//alert('' + currentHeight);
+			//alert(document.body);
+			//alert(document.getElementsByTagName('body')[0].clientHeight + '');
+      if(currentHeight > 650 || currentHeight < 600)
+			{
+				newZoom = currentHeight / 620;
+			}
+			else
+			{
+				newZoom = 1;
+			}
+			
+			if(newZoom > (currentZoom + 0.1) || newZoom < (currentZoom - 0.1))
+			{
+				currentZoom = newZoom;
+				document.getElementsByTagName("html")[0].style.zoom = newZoom;
+			}
+		}
+
+		function quit()
+		{
+      var agent = navigator.userAgent.toString();
+      //alert(agent);
+      if (agent.indexOf("MSIE") != -1)
+      {
+        var myGeneric = new ActiveXObject("PocketBrowser.Generic");
+        myGeneric.invokeMETAFunction("application", "quit");
+      }
+      else
+      {
+			  application.quit();
+      }
+		}
+		
+		function swapPage(pageNum)
+		{
+			if(pageNum == 0)
+			{
+				document.getElementById("config").className = "content gone";
+				document.getElementById("intro").className = "content";
+				document.getElementById("menu0").className = "first pressed";
+				document.getElementById("menu1").className = "last";
+				document.getElementById("spacer").className = "";
+				
+				if(oneFocus)
+				{
+					document.getElementById("spacerImage").src = "images/spacerNormalFocus.gif";
+				}
+				else
+				{
+					document.getElementById("spacerImage").src = "images/spacerNormal.gif";
+				}
+				
+			}
+			else if(pageNum == 1)
+			{
+				document.getElementById("config").className = "content";
+				document.getElementById("intro").className = "content gone";
+				document.getElementById("menu0").className = "first";
+				document.getElementById("menu1").className = "last pressed";
+				
+				if(hasClass(document.getElementById("spacer"),"isfocus"))
+				{
+					document.getElementById("spacerImage").src = "images/spacerPressedFocus.gif";
+					document.getElementById("spacer").className = "pressed isfocus";
+				}
+				else
+				{
+					document.getElementById("spacerImage").src = "images/spacerPressed.gif";
+					document.getElementById("spacer").className = "pressed";
+				}
+			}
+		}
+
+		function hasClass(element,cls)
+		{
+			return element.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
+		}
+		
+		function dofocus(page)
+		{
+			var spacer = document.getElementById("spacer");
+			
+			if(hasClass(spacer, "pressed"))
+			{
+				document.getElementById("spacerImage").src = "images/spacerPressedFocus.gif";
+				if(page == 1)
+				{
+					twoFocus = true;
+					spacer.className = "pressed isfocus";
+				}
+				else
+				{
+					oneFocus = true;
+				}
+			}
+			else
+			{
+				document.getElementById("spacerImage").src = "images/spacerNormalFocus.gif";
+				if(page == 1)
+				{
+					twoFocus = true;
+					spacer.className = "isfocus";
+				}
+				else
+				{
+					oneFocus = true;
+				}
+			}
+		}
+		
+		function doblur()
+		{
+			var spacer = document.getElementById("spacer");
+			var spacerImage = document.getElementById("spacerImage");
+			oneFocus = false;
+			twoFocus = false;
+			
+			if(spacer.className	== "pressed isfocus" || spacer.className == "pressed")
+			{
+				spacerImage.src = "images/spacerPressed.gif";
+				spacer.className = "pressed";
+			}
+			else
+			{
+				spacerImage.src = "images/spacerNormal.gif";
+				spacer.className = "";
+			}
+		}
+	</script>
+	<style type="text/css">
+		h1, h2, h3, h4, body, div, button
+		{
+			font-family: DroidSans, Tahoma, Geneva, Arial, Helvetica, sans-serif;
+		}
+		body
+		{
+			background-color: #4D4D4D;
+			padding: 8px;
+			margin: 0;
+			overflow: hidden;
+		}
+		h1
+		{
+			font: bold 30px "Arial Narrow";
+			color: #333333;
+			text-transform: uppercase;
+			background: url(images/symbol.gif) no-repeat center left;
+			min-height: 73px;
+			padding: 0px 0px 0px 86px;
+			margin: 0px;
+			vertical-align: middle; 
+			/*line-height: 63px;*/
+		}
+		h2
+		{
+			font-size: 18px;
+			font-weight: normal;
+			color: #4B4B4B;
+			margin: 20px 0px;
+		}
+		ol.li
+		{
+			font-size: 18px;
+			color: #4B4B4B;
+		}
+		button
+		{
+			font-size: 16px;
+			color: #FFFFFF;
+		}
+		*:focus
+		{
+			outline: 2px solid #0693D4;
+		}
+		.content
+		{
+			position: relative;
+			font-size: 18px;
+			color: #4B4B4B;
+			overflow: auto;
+			height: 250px;
+			margin-top: 24px;
+			overflow: hidden;
+		}
+		.title
+		{
+			font-weight: bold;
+			font-size: 20px;
+			padding: 10px 60px;
+			color: #4B4B4B;
+		}
+		#window
+		{
+			border: 1px solid black;
+			border-radius: 10px;
+			background-color: #FFFFFF;
+			margin: auto;
+			max-width: 454px;
+			max-height: 604px;
+			vertical-align: middle;
+		}
+		.titleBkGnd
+		{
+      background: url(images/backgroundTitle.gif) repeat-x;
+			padding: 12px 18px;
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+    
+    }
+    /*
+    #title
+		{
+			background: url(images/backgroundTitle.gif) repeat-x;
+			padding: 12px 18px;
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+		}
+		*/
+		#body
+		{
+			padding: 37px 16px 16px 16px;
+		}
+		#quitButtonIE
+		{
+			border: 2px solid transparent;
+			width: 130px;
+			height: 32px;
+			margin: 0px;
+			float: right;
+			right: 18px;
+			top: 8px;
+			position: relative;
+			background: url(images/buttonDefault.gif) no-repeat;
+			text-align: center;
+			font-weight: bold;
+		}
+    #quitButton
+		{
+			border: 2px solid transparent;
+			width: 110px;
+			height: 32px;
+			margin: 1px;
+			float: right;
+			right: 0px;
+			top: 2px;
+			position: relative;
+			background: url(images/buttonDefault.gif) no-repeat;
+			text-align: center;
+			font-weight: bold;
+			font-size: 14px;
+			background-color: #454545;
+		}
+		#quitButton:active
+		{
+			background: url(images/buttonPressed.gif) no-repeat;
+		}
+		#quitButton:focus
+		{
+			outline: none;
+			border: 2px solid #0693D4;
+		}
+		#disclaimer
+		{
+			font-size: 13px;
+			color: #686868;
+			margin-top: 15px;
+			text-align: center;
+		} 
+		#menu ul
+		{
+			padding: 0px 0px;
+			height: 52px;
+			width: 100%;
+			display: table;
+			table-layout: fixed;
+			font-size: 20px;
+			color: #333333;
+			font-weight: bold;
+			line-height:100%;
+			margin: 0px;
+			border-spacing: 0px;
+		}
+		#menu li.pressed
+		{
+			color: #0577AC;
+			background: url(images/pressedItem.gif) repeat-x;
+		}
+		#menu li.first
+		{
+			border-left: 2px solid #ACACAC;
+		}
+		#menu li.last
+		{
+			border-right: 2px solid #ACACAC;
+		}
+		#menu li.first:focus
+		{
+			border-left: 2px solid #0693D4;
+		}
+		#menu li.last:focus
+		{
+			border-right: 2px solid #0693D4;
+		}
+		#menu li
+		{
+			border-top: 2px solid #ACACAC;
+			border-bottom: 2px solid #ACACAC;
+			height: 52px;
+			display: table-cell;
+			background: url(images/unselectedItem.gif) repeat-x;
+			vertical-align: middle;
+			text-align: center;
+		}
+		#menu li:focus
+		{
+			border-top: 2px solid #0693D4;
+			border-bottom: 2px solid #0693D4;
+			outline: none;
+		}
+		#menu
+		{
+			height:54px;
+			margin: 0px;
+			display: block;
+			vertical-align: middle;
+			width: 100%;
+		}
+		#menu #spacer
+		{
+			width: 23px;
+			background: url(images/pressedItem.gif) repeat-x;
+		}
+		#menu #spacer.pressed
+		{
+			background: url(images/unselectedItem.gif) repeat-x;
+		}
+		#menu #spacer.isfocus
+		{
+			border-top: 2px solid #0693D4;
+			border-bottom: 2px solid #0693D4;
+		}
+		.gone
+		{
+			display: none;
+		}
+		.code
+		{
+			font-family: "Courier New", Courier, monospace;
+			background-color: #f2f2f2;
+			font-size: 14px;
+			margin: 4px;
+		}
+		table
+		{
+			height:100%;
+			width:100%;
+			spacing: 0px;
+		}
+		tr
+		{
+			height:100%;
+		}
+		td
+		{
+			vertical-align: middle;
+		}
+		
+	</style>
+
+<body onload="Javascript:onload()"  onresize="Javascript:resize()" >
+<div id="debug" style="position: float; background-color: white;">
+</div>
+<table><tr><td>
+	<div id="center">
+		<div id="window">
+		<button onClick="javascript:quit()" id="quitButton" tabindex="1">Return to OS</button>
+			<div id="title" >
+				<span class="title">Introduction</span>
+			</div>
+			<div id="body" style="display:none">
+				<h1>RhoElements Browser </h1>
+				<h2>Running RhoElements Browser for the first time.</h2>
+				<div id="menu">
+					<ul><li id="menu0" class="first pressed" onclick="javascript:swapPage(0)" onkeypress="javascript:swapPage(0)" onfocus="javascript:dofocus(0)" onblur="javascript:doblur()" tabindex="2">Welcome</li><li id="spacer"><img id="spacerImage" src="images/spacerNormal.gif"usemap="#map1"><map name="map1"><area href="javascript:swapPage(0)" shape="poly" coords="0,0,0,51,23,25,0,0"></area><area href="javascript:swapPage(1)" shape="poly" coords="0,0,23,0,23,51,0,51,23,25,0,0"></area></map></li>
+					<li id="menu1" class="last" onclick="javascript:swapPage(1)" onkeypress="javascript:swapPage(1)" onmouseover="this.style.cursor='hand'" onfocus="javascript:dofocus(1)" onblur="javascript:doblur()" tabindex="3">Config.xml</li></ul>
+				</div>
+				<div id="intro" class="content">
+					Welcome to RhoElements Browser. This is the default startpage.
+					<ul>
+						<li>To run your own application modify the default Config.xml:<br/>
+						<p class="code">\Program Files\RhoElements\Config\Config.xml</p></li>
+						<li>Refer to your desktop installation for sample applications and help on native / hybrid / web application development</li>
+					</ul>
+				</div>
+				<div id="config" class="content gone" tabindex="3">
+					<div id="scroller">
+						The Config.xml sets default settings for all your RhoElements Browser applications. To run your application:
+						<ol>
+							<li>Open for editing: <p class="code">\Program Files\RhoElements\Config\Config.xml</p></li>
+							<li>Set the "value" parameter of the "StartPage" tag to the URL of your application's first page.</li>
+							<li>Save Config.xml, and restart RhoElements Browser to run your web application.
+						</ol>
+					</div>
+				</div>
+				<div id="disclaimer">
+					
+				</div>
+			</div>
+		</div>
+	</div>			
+	</td></tr></table>
+</body>
+</html>

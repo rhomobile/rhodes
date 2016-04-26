@@ -1,0 +1,9 @@
+android:
+  rhodes_listener: com.rhomobile.rhoelements.rhoelements.WebkitRhodesListener
+  source_list: ext/android/WebkitSRC_build.files
+  adds: ext/android/adds
+
+libraries: ["rhowebkit"]
+
+
+platforms: ['wm', 'android']

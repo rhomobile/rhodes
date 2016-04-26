@@ -19,7 +19,4 @@ wp:
 android:
   version: 2.3.3
 
-paths:
-  extensions: /Users/alexepifanoff/repos/Motorola-Extensions/extensions
-
 extensions: ["json", "rhoconnect-client", "rhoconnect-push"]

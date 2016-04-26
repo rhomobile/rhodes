@@ -161,9 +161,6 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
                 libnames = $1.split(';')
                 libnames.each do |name|
 
-                  # Work around Motorola SDK Add-on bug ########################################
-                  name = 'com.motorolasolutions.msr' if name == 'com.motorolasolutions.emdk.msr'
-                  ##############################################################################
                   
                   found_libpatterns << Regexp.new("^(#{name})=(.+);.*$")
                 end

@@ -11,7 +11,7 @@ android:
   source_list: ext/platform/android/ext_java.files
   adds: ext/platform/android/adds
   manifest_changes: ext/platform/android/ApplicationManifestAdds.erb
-  rhodes_listener: com.motorolasolutions.rho.coreapi.RhodesListener
+  rhodes_listener: com.rho.coreapi.RhodesListener
   exttype: rakefile
 
 wp8:

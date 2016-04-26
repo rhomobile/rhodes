@@ -1,0 +1,350 @@
+<?xml version = "1.0"?>
+<!-- Regular expressions configuration file -->
+<RegularEx>
+  <Equivs>
+  	<!-- Key Capture HTTP-Equiv -->
+    <Expression patternEx="^OnKey0x(..)" replaceEx="OnKey-keyvalue0x\1" />
+    <Expression patternEx="^OnKeyDispatch0x(..)" replaceEx="OnKey-Dispatch0x\1" />
+    <Expression patternEx="^OnAllKeys$" replaceEx="OnKey-AllKeys" />
+    <Expression patternEx="^OnAllKeysDispatch$" replaceEx="OnKey-AllKeysDispatch" />
+    <Expression patternEx="^acceleratekey$" replaceEx="KeyCapture-AccelerateKey" />
+    <Expression patternEx="^HomeKey$" replaceEx="KeyCapture-HomeKeyValue" />
+    <Expression patternEx="^OnTrigger$" replaceEx="KeyCapture-TriggerEvent" />
+
+	<!-- Scanner (RSM) HTTP-Equiv -->
+    <Expression patternEx="^RSMGetNavigate$" replaceEx="RSM-RSMGetEvent" />
+    <Expression patternEx="^RSMGetParam$" replaceEx="RSM" />
+    <Expression patternEx="^RSMSetParam$" replaceEx="RSM" />
+
+	<!-- Scanner (Decoders) HTTP-Equiv -->
+    <Expression patternEx="^all_decoders$" replaceEx="scanner-all_decoders" />
+    <Expression patternEx="^auspostal$" replaceEx="scanner-auspostal" />
+    <Expression patternEx="^Canpostal$" replaceEx="scanner-canpostal" />
+    <Expression patternEx="^Codabar$" replaceEx="scanner-codabar" />
+    <Expression patternEx="^Codabar-CLSiEditing$" replaceEx="scanner-codabarclsiediting" />
+    <Expression patternEx="^Codabar-maxlength$" replaceEx="scanner-codabarmaxlength" />
+    <Expression patternEx="^Codabar-minlength$" replaceEx="scanner-codabarminlength" />
+    <Expression patternEx="^Codabar-NotisEditing$" replaceEx="scanner-notisediting" />
+    <Expression patternEx="^Codabar-Redundancy$" replaceEx="scanner-codabarredundancy" />
+    <Expression patternEx="^code11$" replaceEx="scanner-code11" />
+    <Expression patternEx="^Code11-CheckDigitCount$" replaceEx="scanner-code11checkdigitcount" />
+    <Expression patternEx="^Code11-Redundancy$" replaceEx="scanner-code11redundancy" />
+    <Expression patternEx="^code11-reportcheckdiget$" replaceEx="scanner-code11reportcheckdigit" />
+    <Expression patternEx="^code128$" replaceEx="scanner-code128" />
+    <Expression patternEx="^code128-ean128$" replaceEx="scanner-code128ean128" />
+    <Expression patternEx="^code128-isbt128$" replaceEx="scanner-code128isbt128" />
+    <Expression patternEx="^Code128-maxlength$" replaceEx="scanner-Code128maxlength" />
+    <Expression patternEx="^Code128-minlength$" replaceEx="scanner-Code128minlength" />
+    <Expression patternEx="^code128-other128$" replaceEx="scanner-code128other128" />
+    <Expression patternEx="^Code128-Redundancy$" replaceEx="scanner-Code128Redundancy" />
+    <Expression patternEx="^Code39$" replaceEx="scanner-Code39" />
+    <Expression patternEx="^Code39-code32prefix$" replaceEx="scanner-Code39code32prefix" />
+    <Expression patternEx="^Code39-concatenation$" replaceEx="scanner-Code39concatenation" />
+    <Expression patternEx="^Code39-ConvertToCode32$" replaceEx="scanner-Code39ConvertToCode32" />
+    <Expression patternEx="^Code39-fullascii$" replaceEx="scanner-Code39fullascii" />
+    <Expression patternEx="^Code39-maxlength$" replaceEx="scanner-Code39maxlength" />
+    <Expression patternEx="^Code39-minlength$" replaceEx="scanner-Code39minlength" />
+    <Expression patternEx="^Code39-Redundancy$" replaceEx="scanner-Code39Redundancy" />
+    <Expression patternEx="^Code39-ReportCheckDigit$" replaceEx="scanner-Code39ReportCheckDigit" />
+    <Expression patternEx="^Code39-VerifyCheckDigit$" replaceEx="scanner-Code39VerifyCheckDigit" />
+    <Expression patternEx="^Code93$" replaceEx="scanner-Code93" />
+    <Expression patternEx="^Code93-maxlength$" replaceEx="scanner-Code93maxlength" />
+    <Expression patternEx="^Code93-minlength$" replaceEx="scanner-Code93minlength" />
+    <Expression patternEx="^Code93-Redundancy$" replaceEx="scanner-Code93Redundancy" />
+    <Expression patternEx="^Composit_ab$" replaceEx="scanner-Composit_ab" />
+    <Expression patternEx="^Composit_c$" replaceEx="scanner-Composit_c" />
+    <Expression patternEx="^d2of5$" replaceEx="scanner-d2of5" />
+    <Expression patternEx="^d2of5-maxlength$" replaceEx="scanner-d2of5maxlength" />
+    <Expression patternEx="^d2of5-minlength$" replaceEx="scanner-d2of5minlength" />
+    <Expression patternEx="^d2of5-Redundancy$" replaceEx="scanner-d2of5Redundancy" />
+    <Expression patternEx="^DataMatrix$" replaceEx="scanner-DataMatrix" />
+    <Expression patternEx="^DutchPostal$" replaceEx="scanner-DutchPostal" />
+    <Expression patternEx="^Ean13$" replaceEx="scanner-Ean13" />
+    <Expression patternEx="^ean8$" replaceEx="scanner-ean8" />
+    <Expression patternEx="^ean8-ConvertToEAN13$" replaceEx="scanner-ean8ConvertToEAN13" />
+    <Expression patternEx="^i2of5$" replaceEx="scanner-i2of5" />
+    <Expression patternEx="^i2of5-ConvertToEAN13$" replaceEx="scanner-i2of5ConvertToEAN13" />
+    <Expression patternEx="^i2of5-maxlength$" replaceEx="scanner-i2of5maxlength" />
+    <Expression patternEx="^i2of5-minlength$" replaceEx="scanner-i2of5minlength" />
+    <Expression patternEx="^i2of5-Redundancy$" replaceEx="scanner-i2of5Redundancy" />
+    <Expression patternEx="^12of5-ReportCheckDigit$" replaceEx="scanner-12of5ReportCheckDigit" />
+    <Expression patternEx="^i2of5-VerifyCheckDigit$" replaceEx="scanner-i2of5VerifyCheckDigit" />
+    <Expression patternEx="^JapPostal$" replaceEx="scanner-JapPostal" />
+    <Expression patternEx="^MacroMicroPDF$" replaceEx="scanner-MacroMicroPDF" />
+    <Expression patternEx="^MacroPDF$" replaceEx="scanner-MacroPDF" />
+    <Expression patternEx="^MaxiCode$" replaceEx="scanner-MaxiCode" />
+    <Expression patternEx="^MicroPDF$" replaceEx="scanner-MicroPDF" />
+    <Expression patternEx="^Msi$" replaceEx="scanner-Msi" />
+    <Expression patternEx="^Msi-checkdigits$" replaceEx="scanner-Msicheckdigits" />
+    <Expression patternEx="^Msi-CheckDigitScheme$" replaceEx="scanner-MsiCheckDigitScheme" />
+    <Expression patternEx="^Msi-maxlength$" replaceEx="scanner-Msimaxlength" />
+    <Expression patternEx="^Msi-minlength$" replaceEx="scanner-Msiminlength" />
+    <Expression patternEx="^Msi-Redundancy$" replaceEx="scanner-MsiRedundancy" />
+    <Expression patternEx="^Msi-ReportCheckDigit$" replaceEx="scanner-MsiReportCheckDigit" />
+    <Expression patternEx="^Qrcode$" replaceEx="scanner-Qrcode" />
+    <Expression patternEx="^rss14$" replaceEx="scanner-rss14" />
+    <Expression patternEx="^Rssexp$" replaceEx="scanner-Rssexp" />
+    <Expression patternEx="^Rsslim$" replaceEx="scanner-Rsslim" />
+    <Expression patternEx="^Signature$" replaceEx="scanner-Signature" />
+    <Expression patternEx="^tlc39$" replaceEx="scanner-tlc39" />
+    <Expression patternEx="^Trioptic39$" replaceEx="scanner-Trioptic39" />
+    <Expression patternEx="^trioptic39-Redundancy$" replaceEx="scanner-trioptic39Redundancy" />
+    <Expression patternEx="^UKPostal$" replaceEx="scanner-UKPostal" />
+    <Expression patternEx="^upc_ean-bookland$" replaceEx="scanner-upc_eanbookland" />
+    <Expression patternEx="^upc_ean-coupon$" replaceEx="scanner-upc_eancoupon" />
+    <Expression patternEx="^upc_ean-lineardecode$" replaceEx="scanner-upc_eanlineardecode" />
+    <Expression patternEx="^upc_ean-randomweightcheckdigit$" replaceEx="scanner-upc_eanrandomweightcheckdigit" />
+    <Expression patternEx="^upc_ean-securitylevel$" replaceEx="scanner-upc_eansecuritylevel" />
+    <Expression patternEx="^Upc_ean-supplemental2$" replaceEx="scanner-Upc_eansupplemental2" />
+    <Expression patternEx="^Upc_ean-supplemental5$" replaceEx="scanner-Upc_eansupplemental5" />
+    <Expression patternEx="^upc_ean-supplementalmode$" replaceEx="scanner-upc_eansupplementalmode" />
+    <Expression patternEx="^Upca$" replaceEx="scanner-Upca" />
+    <Expression patternEx="^upca-preamble$" replaceEx="scanner-upcapreamble" />
+    <Expression patternEx="^upca-ReportCheckDigit$" replaceEx="scanner-upcaReportCheckDigit" />
+    <Expression patternEx="^upce0$" replaceEx="scanner-upce0" />
+    <Expression patternEx="^upce0-ConvertToupca$" replaceEx="scanner-upce0ConvertToupca" />
+    <Expression patternEx="^upce0-preamble$" replaceEx="scanner-upce0preamble" />
+    <Expression patternEx="^upce0-ReportCheckDigit$" replaceEx="scanner-upce0ReportCheckDigit" />
+    <Expression patternEx="^upce1$" replaceEx="scanner-upce1" />
+    <Expression patternEx="^upce1-ConvertToupca$" replaceEx="scanner-upce1ConvertToupca" />
+    <Expression patternEx="^upce1-preamble$" replaceEx="scanner-upce1preamble" />
+    <Expression patternEx="^upce1-ReportCheckDigit$" replaceEx="scanner-upce1ReportCheckDigit" />
+    <Expression patternEx="^Usplanet$" replaceEx="scanner-Usplanet" />
+    <Expression patternEx="^Uspostnet$" replaceEx="scanner-Uspostnet" />
+    <Expression patternEx="^Webcode$" replaceEx="scanner-Webcode" />
+    <Expression patternEx="^scannernavigate$" replaceEx="scanner-decodeevent" />
+    <Expression patternEx="^enumscannernavigate$" replaceEx="scanner-enumscannerevent" />
+
+	<!-- Imager HTTP-Equiv -->
+    <Expression patternEx="^imagernavigate$" replaceEx="imager-imagerevent" />
+
+	<!-- Indicators HTTP-Equiv -->
+    <Expression patternEx="^batterynavigate$" replaceEx="battery-batteryevent" />
+    <Expression patternEx="^signalnavigate$" replaceEx="signal-signalevent" />
+
+	<!-- Signature Capture HTTP-Equiv -->
+    <Expression patternEx="^signaturenavigate$" replaceEx="signaturecapture-SignatureSaveEvent" />
+
+	<!-- Telemetry HTTP-Equiv -->
+    <Expression patternEx="^TelemetryNavigate$" replaceEx="Telemetry-TelemetryDataEvent" />
+
+	<!-- IO HTTP-Equiv -->
+    <Expression patternEx="^IONavigate$" replaceEx="IO-PortEvent" />
+    <Expression patternEx="^IOAnalog$" replaceEx="IO" />
+    <Expression patternEx="^IOSystem$" replaceEx="IO" />
+    <Expression patternEx="^IODigital$" replaceEx="IO" />
+
+	<!-- Device & Application HTTP-Equiv -->
+    <Expression patternEx="^TimerNavigate$" replaceEx="Timer-Start" />
+    <Expression patternEx="^TimerInterval$" replaceEx="Timer-Interval" />
+    <Expression patternEx="^MoveSIP$" replaceEx="SIP" />
+    <Expression patternEx="^SIPControl$" replaceEx="SIP" />
+    <Expression patternEx="^CursorPos$" replaceEx="Hourglass" />
+    <Expression patternEx="^Volume$" replaceEx="Volume-SetVolume" />
+    <Expression patternEx="^Reboot$" replaceEx="Reboot-BootType" />
+    <Expression patternEx="^PowerOn$" replaceEx="PowerOn-PowerOnEventLegacy" />
+
+	<!-- Card Reader HTTP-Equiv -->
+    <Expression patternEx="^msrnavigate$" replaceEx="cardreader-readevent" />
+    <Expression patternEx="^dcrnavigate$" replaceEx="cardreader-readevent" />
+    <Expression patternEx="^dcr$" replaceEx="cardreader" />
+
+	<!-- Push HTTP-Equiv -->
+    <Expression patternEx="^PushNavigate$" replaceEx="Push-Detected" />
+    <Expression patternEx="^Unattended$" replaceEx="Push-Unattended" />
+
+	<!-- File Management HTTP-Equiv -->
+    <Expression patternEx="^FileTransferNavigate$" replaceEx="FileTransfer-TransferEvent" />
+
+	<!-- Controls (Buttons) HTTP-Equiv -->
+    <Expression patternEx="^TextButton$" replaceEx="ZoomTextButton" />
+
+  </Equivs>
+  <Contents>
+
+  	<!-- Common Contents -->
+    <Expression patternEx="^$" replaceEx="url('')" />
+    <Expression patternEx="^Javascript:(.*)" replaceEx="url('Javascript:\1');" />
+    <Expression patternEx="^(x)=(-?[0-9]+)" replaceEx="left:\2" />
+    <Expression patternEx="^(y)=(-?[0-9]+)" replaceEx="top:\2" />
+    <Expression patternEx="^(w)=(-?[0-9]+)" replaceEx="width:\2" />
+    <Expression patternEx="^(h)=(-?[0-9]+)" replaceEx="height:\2" />
+    <Expression patternEx="^show$" replaceEx="visibility:visible" />
+    <Expression patternEx="^hide$" replaceEx="visibility:hidden" />
+    <Expression patternEx="^enabled$" replaceEx="enable" />
+    <Expression patternEx="^disabled$" replaceEx="disable" />
+
+	<!-- Colour -->
+    <Expression patternEx="(.*):([a-f0-9]+),([a-f0-9]+),([a-f0-9]+)" replaceEx="\1:#\2\3\4;" />
+    <Expression patternEx="(.*)=([a-f0-9]+),([a-f0-9]+),([a-f0-9]+)" replaceEx="\1:#\2\3\4;" />
+	<Expression patternEx="^RGB:(.*)" replaceEx="color:\1" />
+
+	<!-- File Management Contents -->
+    <Expression patternEx="^source=(http://.*)" replaceEx="source:url('\1')" />
+    <Expression patternEx="^dest=(http://.*)" replaceEx="destination:url('\1')" />
+    <Expression patternEx="^source=(ftp://.*)" replaceEx="source:url('\1')" />
+    <Expression patternEx="^dest=(ftp://.*)" replaceEx="destination:url('\1')" />
+	<Expression patternEx="^filename:(ftp://.*)" replaceEx="filename:url('\1')" />
+    <Expression patternEx="^filename:(http://.*)" replaceEx="filename:url('\1')" />
+    <Expression patternEx="^filename:(file://.*)" replaceEx="filename:url('\1')" />
+    <Expression patternEx="^http://(.*)" replaceEx="url('http://\1');" />
+    <Expression patternEx="^https://(.*)" replaceEx="url('https://\1');" />
+    <Expression patternEx="^file://(.*)" replaceEx="url('file://\1');" />
+    <Expression patternEx="^ftp://(.*)" replaceEx="url('ftp://\1');" />
+    <Expression patternEx="^http:$" replaceEx="protocol:http" />
+    <Expression patternEx="^ftp:$" replaceEx="protocol:ftp" />
+    <Expression patternEx="^http$" replaceEx="protocol:http" />
+    <Expression patternEx="^http:([0-9]+)" replaceEx="protocol:http; port:\1" />
+    <Expression patternEx="^ftp$" replaceEx="protocol:ftp" />
+    <Expression patternEx="^ftp:([0-9]+)" replaceEx="protocol:ftp; port:\1" />
+    <Expression patternEx="^file$" replaceEx="protocol:file" />
+    <Expression patternEx="^source=(.*)" replaceEx="source:\1" />
+    <Expression patternEx="^dest=(.*)" replaceEx="destination:\1" />
+    <Expression patternEx="^user=(.*)" replaceEx="username:\1" />
+    <Expression patternEx="^pass=(.*)" replaceEx="password:\1" />
+    <Expression patternEx="^username=(.*)" replaceEx="username:\1" />
+    <Expression patternEx="^password=(.*)" replaceEx="password:\1" />
+    <Expression patternEx="^send$" replaceEx="transfer;SetFileDestination:FALSE" />
+    <Expression patternEx="^receive$" replaceEx="transfer;SetFileDestination:TRUE" />
+	<Expression patternEx="^createfolders=(.*)" replaceEx="createfolders:\1" />
+	<Expression patternEx="^overwrite=(.*)" replaceEx="overwrite:\1" />
+
+	<!-- Signature Capture Contents -->
+    <Expression patternEx="^noborder$" replaceEx="border:hidden" />
+    <Expression patternEx="^border$" replaceEx="border:visible" />
+    <Expression patternEx="^penwidth=(.*)" replaceEx="penwidth:\1" />
+    <Expression patternEx="^pencolor=(.*)" replaceEx="pencolor:\1" />
+    <Expression patternEx="^bgcolor=(.*)" replaceEx="bgcolor:\1" />
+    <Expression patternEx="^url=(.*)" replaceEx="destination:url('\1');" />
+    <Expression patternEx="^user=(.*)" replaceEx="username:\1" />
+    <Expression patternEx="^pass=(.*)" replaceEx="password:\1" />
+    <Expression patternEx="^name=(.*)" replaceEx="name:\1" />
+    <Expression patternEx="^aim=(on|off)" replaceEx="aim:\1" />
+    <Expression patternEx="^lamp=(on|off)" replaceEx="lamp:\1" />
+
+	<!-- Scanner (Decoders) Contents -->
+    <Expression patternEx="^autoenter$" replaceEx="autoenter:enabled" />
+    <Expression patternEx="^autotab$" replaceEx="autotab:enabled" />
+    <Expression patternEx="^RASTER_MODE_NONE$" replaceEx="rastermode:none" />
+    <Expression patternEx="^RASTER_MODE_OPEN_ALWAYS$" replaceEx="rastermode:open_always" />
+    <Expression patternEx="^RASTER_MODE_SMART$" replaceEx="rastermode:smart" />
+    <Expression patternEx="^RASTER_MODE_CYCLONE$" replaceEx="rastermode:cyclone" />
+    <Expression patternEx="^AIM_TYPE_TRIGGER$" replaceEx="aimtype:trigger" />
+    <Expression patternEx="^AIM_TYPE_TIMED_HOLD$" replaceEx="aimtype:timed_hold" />
+    <Expression patternEx="^AIM_TYPE_TIMED_RELEASE$" replaceEx="aimtype:timed_release" />
+    <Expression patternEx="^AIM_TYPE_CONTINUOUS_TRIGGER$" replaceEx="aimtype:continuous_trigger" />
+    <Expression patternEx="^AIM_TYPE_PRESENTATION$" replaceEx="aimtype:presentation" />
+    <Expression patternEx="^I2OF5_NO_CHECK_DIGIT$" replaceEx="none" />
+    <Expression patternEx="^I2OF5_USS_CHECK_DIGIT$" replaceEx="uss" />
+    <Expression patternEx="^I2OF5_OPCC_CHECK_DIGIT$" replaceEx="opcc" />
+    <Expression patternEx="^msi_chkdgt_mod_11_10$" replaceEx="mod_11_10" />
+    <Expression patternEx="^msi_chkdgt_mod_10_10$" replaceEx="mod_10_10" />
+    <Expression patternEx="^security_none$" replaceEx="none" />
+    <Expression patternEx="^security_ambiguous$" replaceEx="ambiguous" />
+    <Expression patternEx="^security_all$" replaceEx="all" />
+    <Expression patternEx="^supplementals_none$" replaceEx="none" />
+    <Expression patternEx="^supplementals_always$" replaceEx="always" />
+    <Expression patternEx="^supplementals_auto$" replaceEx="auto" />
+    <Expression patternEx="^PREAMBLE_NONE$" replaceEx="none" />
+    <Expression patternEx="^PREAMBLE_SYSTEM_CHAR$" replaceEx="system_char" />
+    <Expression patternEx="^PREAMBLE_COUNTRY_AND_SYSTEM_CHARS$" replaceEx="country_and_system_chars" />
+
+	<!-- Indicators Contents -->
+    <Expression patternEx="^Left_GrowFromTop$" replaceEx="IconPosition:Left;GraphPosition:Top" />
+    <Expression patternEx="^Right_GrowFromTop$" replaceEx="IconPosition:Right;GraphPosition:Top" />
+    <Expression patternEx="^Bottom_GrowFromRight$" replaceEx="IconPosition:Bottom;GraphPosition:Right" />
+    <Expression patternEx="^Top_GrowFromRight$" replaceEx="IconPosition:Top;GraphPosition:Right" />
+    <Expression patternEx="^Left_GrowFromBottom$" replaceEx="IconPosition:Left;GraphPosition:Bottom" />
+    <Expression patternEx="^Right_GrowFromBottom$" replaceEx="IconPosition:Right;GraphPosition:Bottom" />
+    <Expression patternEx="^Bottom_GrowFromLeft$" replaceEx="IconPosition:bottom;GraphPosition:left" />
+    <Expression patternEx="^Top_GrowFromLeft$" replaceEx="IconPosition:top;GraphPosition:left" />
+
+	<!-- Card Reader Contents -->
+    <Expression patternEx="^pintimeout=([0-9]+)" replaceEx="pintimeout:\1" />
+    <Expression patternEx="^pinentry=(on|off)" replaceEx="pinentry:\1" />
+    <Expression patternEx="^pandata=(.*)" replaceEx="pandata:\1" />
+
+	<!-- Key Capture Contents -->
+    <Expression patternEx="^remapto:(.*)" replaceEx="remapto=\1" />
+
+	<!-- Device & Application Contents -->
+    <Expression patternEx="^Interval=([0-9][0-9]):([0-9][0-9]):([0-9][0-9])" replaceEx="Interval:\1-\2-\3" />
+    <Expression patternEx="^Repeat=(true|false)" replaceEx="Repeat:\1" />
+    <Expression patternEx="^ServerIP:(.*)" replaceEx="SntpServerIP:\1" />
+    <!-- Alarm Time Parameter -->
+	<Expression patternEx="^Time=([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])t([0-9][0-9]):([0-9][0-9]):([0-9][0-9])([+-][0-9][0-9]):([0-9][0-9])" replaceEx="Time:\1-\2-\3t\4-\5-\6\7-\8" />
+
+	<!-- Push Contents -->
+    <Expression patternEx="^Port=([0-9]+)" replaceEx="Port:\1" />
+    <Expression patternEx="^Passkey=(.+)" replaceEx="Passkey:\1" />
+    <Expression patternEx="^Passkey=$" replaceEx="Passkey:url('')" />
+
+	<!-- EMML Profile  Contents -->
+	<Expression patternEx="^Import:(.*)$" replaceEx="ImportProfile:\1" />
+
+	<!-- Telemetry Parameters -->
+	<Expression patternEx="^Enable(ABSControlStatus)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(ThrottlePosition)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(ServiceBrakeSwitch)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(IgnitionStatus)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(ParkingBrakeSwitch)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(RoadSpeed)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(CruiseControlSwitch)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(BrakesSwitch)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(ClutchStatus)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(CruiseControlSetSpeed)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(AcceleratorPedalPos)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(EngineLoad)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(EngineOilPressure)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(BoostPressure)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(EngineCoolantTemperature)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(EngineRetarderStatus)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(ATC_ASR_Status)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(TransmissionRangeSelected)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(TransmissionRangeAttained)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(BatteryVoltage)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(EngineOilTemperature)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(TransmissionOilTemperature)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(FuelRate)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(InstantaneousFuelEconomy)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(AverageFuelEconomy)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(EngineRPM)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(TransmitterDiagnosticCode)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(TransmitterDiagnosticTable)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(VehicleIDNumber)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(VehicleGlobalPosition)$" replaceEx="Enable:\1" />
+	<Expression patternEx="^Enable(TotalDistance)$" replaceEx="Enable:\1" />
+	<!-- Disable Parameters -->
+	<Expression patternEx="^Disable(ABSControlStatus)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(ThrottlePosition)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(ServiceBrakeSwitch)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(IgnitionStatus)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(ParkingBrakeSwitch)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(RoadSpeed)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(CruiseControlSwitch)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(BrakesSwitch)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(ClutchStatus)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(CruiseControlSetSpeed)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(AcceleratorPedalPos)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(EngineLoad)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(EngineOilPressure)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(BoostPressure)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(EngineCoolantTemperature)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(EngineRetarderStatus)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(ATC_ASR_Status)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(TransmissionRangeSelected)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(TransmissionRangeAttained)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(BatteryVoltage)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(EngineOilTemperature)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(TransmissionOilTemperature)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(FuelRate)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(InstantaneousFuelEconomy)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(AverageFuelEconomy)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(EngineRPM)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(TransmitterDiagnosticCode)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(TransmitterDiagnosticTable)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(VehicleIDNumber)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(VehicleGlobalPosition)$" replaceEx="Disable:\1" />
+	<Expression patternEx="^Disable(TotalDistance)$" replaceEx="Disable:\1" />
+  </Contents>
+</RegularEx>

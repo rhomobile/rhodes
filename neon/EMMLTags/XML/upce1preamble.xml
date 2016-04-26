@@ -1,0 +1,59 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>upce1preamble</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Upce1</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the upce1-preamble property which controls the preamble applied to the bar code.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="upce1preamble:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>upce1preamble</NAME>
+                		<VALUES>none / systemChar / countryAndSystemChars</VALUES>
+				<DESC>if none Applies no preamble to the bar code. if systemChar Applies system character preamble to the bar code.if countryAndSystemChars Applies both system and country code preamble to the bar code.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upce1 labels with the preamble property set to both system and country code preamble:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="upce1:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upce1preamble:countryAndSystemChars"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upce1 labels with the preamble property set to both system and country code preamble:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="upce1:enabled;upce1preamble:countryAndSystemChars;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upce1 labels with the preamble property set to both system and country code preamble:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-upce1" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-upce1preamble" Content="countryAndSystemChars"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports upce1.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>upce1</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

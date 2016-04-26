@@ -1,4 +1,4 @@
-ext/platform/android/src/com/motorolasolutions/rho/coreapi/RhodesListener.java
+ext/platform/android/src/com/rho/coreapi/RhodesListener.java
 ext/platform/android/generated/src/com/rho/webview/IWebView.java
 ext/platform/android/generated/src/com/rho/webview/IWebViewFactory.java
 ext/platform/android/generated/src/com/rho/webview/IWebViewSingleton.java
@@ -26,7 +26,7 @@ ext/platform/android/generated/src/com/rho/nativetoolbar/NativeToolbarSingletonB
 ext/platform/android/src/com/rho/nativetoolbar/NativeToolbar.java
 ext/platform/android/src/com/rho/nativetoolbar/NativeToolbarSingleton.java
 ext/platform/android/src/com/rho/nativetoolbar/NativeToolbarFactory.java
-ext/platform/android/src/com/motorolasolutions/rho/network/Network.java
+ext/platform/android/src/com/rho/network/Network.java
 ext/platform/android/generated/src/com/rho/notification/NotificationBase.java
 ext/platform/android/generated/src/com/rho/notification/NotificationFactorySingleton.java
 ext/platform/android/generated/src/com/rho/notification/NotificationSingletonBase.java

@@ -1,0 +1,84 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>timer</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to set a timer and register an action to perform when that timer expires.  Once the timer is started the interval time can not be changed without stopping the timer and restarting it.</SYNOPSIS>
+		<!--MULTIPLE_INSTANCE>There can be a maximum of one timer running per RhoElements application.</MULTIPLE_INSTANCE-->
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Timer" content="[method / parameter]"&gt;</EXAMPLE>
+			</USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Timer" content="Timeout:url('[jsFunction | url]')"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>start</NAME>
+				<DESC>Starts the timer.  The timer will expire after an interval as specified in the 'Interval' parameter</DESC>
+				<DEFAULT>Not Started</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>stop</NAME>
+				<DESC>Stops the timer if there is currently one running</DESC>
+				<DEFAULT>Not Started</DEFAULT>
+			</PARAM>
+		</PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>interval</NAME>
+				<VALUES>Values greater than or equal to 500 milliseconds</VALUES>
+				<DESC>The duration the timer should run for, specified in milliseconds.  This must be specified before the timer is started.</DESC>
+				<DEFAULT>1000 milliseconds (1 second)</DEFAULT>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<RETURNS>
+			<TAG>
+				<TAG_NAME>timeout</TAG_NAME>
+				<TAG_NOTES>The Timeout event is triggered when the timer expires and returns the current time.</TAG_NOTES>
+				<RETVAL>
+					<NAME>time</NAME>
+					<DESC>The current time from the device clock.  Format is DD/MM/YY HH:MM:SS</DESC>
+				</RETVAL>
+			</TAG>
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example sets the timerinterval to 5 seconds:</DESC>
+<CODE>
+&lt;META HTTP-EQUIV="Timer" CONTENT="Interval:5000; Timeout:url('Javascript:doTimer('%s');'); Start"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example shows a JavaScript alert at 10 second intervals:</DESC>
+<CODE>
+&lt;HTML&gt;
+  &lt;HEAD&gt;
+    &lt;META HTTP-EQUIV="Timer" CONTENT="Interval:10000; Timeout:url('Javascript:doTimer('%s');'); Start"&gt;
+  &lt;/HEAD&gt;
+  &lt;SCRIPT LANGUAGE="javascript"&gt;
+    function doTimer(time)
+    {
+      divTimer.innerHTML = 'Time: ' + time;
+    }
+  &lt;/SCRIPT&gt;
+  &lt;BODY&gt;&lt;DIV ID="divTimer"&gt;&lt;/DIV&gt;&lt;/BODY&gt;
+&lt;/HTML&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Partially Persistent - Changes to this module will persist when navigating to a new page with the exception of timeout event.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>Alarm</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

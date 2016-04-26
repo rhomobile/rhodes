@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PB_DeviceApplication_PLG", "PB_DeviceApplication_PLG.vcproj", "{A107D1A9-E5AC-40D5-9887-C63CCDE21FBB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|MC3000c50b (ARMV4I) = Debug|MC3000c50b (ARMV4I)
+		Release|MC3000c50b (ARMV4I) = Release|MC3000c50b (ARMV4I)
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A107D1A9-E5AC-40D5-9887-C63CCDE21FBB}.Debug|MC3000c50b (ARMV4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{A107D1A9-E5AC-40D5-9887-C63CCDE21FBB}.Debug|MC3000c50b (ARMV4I).Build.0 = Debug|MC3000c50b (ARMV4I)
+		{A107D1A9-E5AC-40D5-9887-C63CCDE21FBB}.Debug|MC3000c50b (ARMV4I).Deploy.0 = Debug|MC3000c50b (ARMV4I)
+		{A107D1A9-E5AC-40D5-9887-C63CCDE21FBB}.Release|MC3000c50b (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{A107D1A9-E5AC-40D5-9887-C63CCDE21FBB}.Release|MC3000c50b (ARMV4I).Build.0 = Release|MC3000c50b (ARMV4I)
+		{A107D1A9-E5AC-40D5-9887-C63CCDE21FBB}.Release|MC3000c50b (ARMV4I).Deploy.0 = Release|MC3000c50b (ARMV4I)
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

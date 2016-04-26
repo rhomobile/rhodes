@@ -5,4 +5,4 @@ rhodes: "../.."
 rhoconnect: "../../../rhoconnect"
 
 # path to rhoelements
-rhoelements: "../../../Motorola-Extensions"
+rhoelements: "../.."

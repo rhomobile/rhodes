@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="shared">
+      <UniqueIdentifier>{60f58091-37ba-4e88-a355-14f7fd6cb57e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wp8">
+      <UniqueIdentifier>{c5e11966-bbc5-4200-bd1d-963ecd33c58c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared\generated">
+      <UniqueIdentifier>{e385e312-d9a0-4097-8630-ed93f91838f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wp8\javascript">
+      <UniqueIdentifier>{34d3e0a0-8b16-4778-ae36-12bbb2122368}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wp8\lib">
+      <UniqueIdentifier>{505150d6-e3d2-4e7e-bc95-b3214d69ac36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wp8\ruby">
+      <UniqueIdentifier>{4cb44028-11a8-4bc1-a372-bfab217ebf07}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\shared\generated\instrumentation_api_init.cpp">
+      <Filter>shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\instrumentation_js_api.cpp">
+      <Filter>shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\instrumentation_ruby_api.c">
+      <Filter>shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\instrumentation_js_wrap.cpp">
+      <Filter>wp8\javascript</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\instrumentation_ruby_wrap.cpp">
+      <Filter>wp8\ruby</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\Instrumentation_impl.cpp">
+      <Filter>wp8</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\MethodResultImpl.cpp">
+      <Filter>wp8</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shared\generated\cpp\IInstrumentation.h">
+      <Filter>wp8</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\MethodResultImpl.h">
+      <Filter>wp8</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

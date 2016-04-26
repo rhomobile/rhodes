@@ -1,0 +1,65 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>upce1convertToUpca</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Upce1</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to enable conversion from upce1 to upca bar code. If this flag is set, the bar code is converted to upca, and upca parameters are used.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="upce1ConvertToupca:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>upce1convertToUpca</NAME>
+                		<VALUES>true/false</VALUES>
+				<DESC>Enables/Disables the property.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upce1 labels with the ConvertToupca property set:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="upce1:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upca:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upce1ConvertToupca:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="upce1:enabled;upca:enabled;upce1ConvertToupca:true;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-upce1" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-upca" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-upce1ConvertToupca" Content="true"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>For this property to work the upca decoder must also be enabled.</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports upce1 and upca.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>upce1</TOPIC>
+			<TOPIC RELPATH ="../Upca/">upca</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

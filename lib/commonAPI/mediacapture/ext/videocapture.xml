@@ -18,55 +18,23 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
-        <MORE_HELP_EB>
-## Enabling the API
-There are two methods of enabling the VideoCapture API:
-
-* Include all ebapi modules or
-* Include only the API modules you need
-
-For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
-
-### Include all JS API modules
-To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
-
-> Note: that the pathing for this file is relative to the current page.
-
-This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
-
-### Include only the modules you need
-To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the VideoCapture API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
-    &lt;script type="text/javascript" charset="utf-8" src="eb.videocapture.js"&gt;&lt;/script&gt;
-
-The ebapi.js file is necessary for all single API inclusions.
-        </MORE_HELP_EB>
         <TEMPLATES>
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
 
         <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-        <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
 
         <PROPERTIES usePropertyBag="accessorsViaPropertyBag">
             <DESC>These properties are used for configuring video capture.</DESC>
              <PROPERTY name="duration" type="INTEGER" generateAccessors="true" default="5000">
                 <DESC>Specifies the number of milliseconds of video to capture. This is the maximum number of milliseconds of video to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milliseconds is specified, the interval will be defaulted to 5000 milliseconds.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
             </PROPERTY>
 
             <PROPERTY name="fileName" type="STRING" generateAccessors="true">
                 <DESC>The path and name of the file that the video is saved to locally on the device. When the video capture completes the file is saved in the root directory of the device (In case of Android this is the external storage directory). For example, if the user specifies '/video/file1' then the file gets saved as '/mnt/sdcard/video/file1.mp4' in Android, and as '\video\file1.mov' on Windows. The file extension should not be provided as this is determined by the platform (.mp4 in Android and .mov in Windows). On iOS you'll need to provide the entire path, including the extension, which should be .MOV.</DESC>
-                <DESC_EB>The path and name of the file that the video is saved to locally on the device. When the video capture completes the file is saved in the root directory of the device (In case of Android this is the external storage directory). For example, if the user specifies '/video/file1' then the file gets saved as '/mnt/sdcard/video/file1.mp4' in Android, and as '\video\file1.mov' on Windows. The file extension should not be provided as this is determined by the platform (.mp4 in Android and .mov in Windows).</DESC_EB>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
             </PROPERTY>
 
             <PROPERTY name="saveToGallery" type="BOOLEAN" generateAccessors="true">
@@ -92,7 +60,6 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="start" hasCallback="optional" runInThread="ui">
                 <DESC>Starts capturing video until either 'stop' is received, or 'duration' is reached. NOTE: On Android this meta tag wouldn't immediately start recording and presents a preview window with controls (start, stop and cancel) for recording.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <RETURN>
                     <DESC>Not providing a callback to be invoked will result in that file is saved only locally and file is not transfered.</DESC>
                 </RETURN>
@@ -113,13 +80,11 @@ The ebapi.js file is necessary for all single API inclusions.
 
             <METHOD name="stop" runInThread="ui">
                 <DESC>Stops capturing video and either saves the file locally, or transfers it to a remote server. NOTE: This is not applicable for Android and iOS as the video capture window is full screen and provides a button to stop the video capture. Please note that the file transfer happens as specified even if we don't call the stop method.</DESC>
-                <DESC_EB>Stops capturing video and either saves the file locally, or transfers it to a remote server. NOTE: This is not applicable for Android as the video capture window is full screen and provides a button to stop the video capture. Please note that the file transfer happens as specified even if we don't call the stop method.</DESC_EB>
                 <PLATFORM>WM</PLATFORM>
             </METHOD>
 
             <METHOD name="cancel" runInThread="ui">
                 <DESC>Stops capturing video and discards any captured video data. No file transfer takes place if the video capture is canceled. NOTE: This is not applicable for Android and iOS as the video capture window is full screen and provides a button to cancel the video capture.</DESC>
-                <DESC_EB>Stops capturing video and discards any captured video data. No file transfer takes place if the video capture is canceled. NOTE: This is not applicable for Android as the video capture window is full screen and provides a button to cancel the video capture.</DESC_EB>
                 <PLATFORM>WM</PLATFORM>
             </METHOD>
 
@@ -134,7 +99,6 @@ The ebapi.js file is necessary for all single API inclusions.
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>Android, WM, iOS</PLATFORM>
-        <PLATFORM_EB>Android, WM</PLATFORM_EB>
 
         <REMARKS>
             <REMARK title="Memory requirements">

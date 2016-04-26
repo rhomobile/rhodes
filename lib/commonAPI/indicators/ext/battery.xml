@@ -1,0 +1,363 @@
+<?xml version = "1.0"?>
+<API>
+    <MODULE name="Battery" parent="Rho" license="Required">
+        <HELP_OVERVIEW>The Battery API is used to notify the user of the remaining power in the battery. Windows Mobile / CE devices also support displaying a small indicator to show the available power.</HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`.
+    :::ruby
+    extensions: ["indicators"]
+
+The `indicators` extension is also included automatically if you specify the following in your `build.yml`
+    :::ruby
+    app_type: "rhoelements"
+
+> Note: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your `build.yml` as shown in this [build-time settings example](../guide/build_config#other-build-time-settings).
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+
+## Persistence
+With the old PocketBrowser / RhoElements 1 APIs, any events, such as `batteryEvent` were canceled when a full navigate was performed. The original reason for this was a limitation of the IE engine on WM5 devices. When moving to the common API this was changed so that callbacks are not canceled.
+        </MORE_HELP>
+
+        <TEMPLATES>
+        </TEMPLATES>
+
+        <PROPERTIES access="STATIC">
+            <PROPERTY name="refreshInterval" type="INTEGER" default="5000" generateAccessors="true">
+                <PLATFORM>WM, CE, iOS</PLATFORM>
+                <DESC>A callback to retrieve the battery strength can be specified to occur periodically with the batteryStatus method. This value specifies the periodicity of the callback as well as the update frequency of the battery icon, if shown. Setting this value to zero will disable the batteryStatus callback. Note that most platforms will not support periodic updates to the battery level, this is only supported on Windows Mobile / CE / Embedded.</DESC>
+            </PROPERTY>
+            <PROPERTY name="tripDuration" type="INTEGER" generateAccessors="true">
+                <PLATFORM>CE, Android</PLATFORM>
+                <DESC>Supported only by the MC18 device. Sets the desired working time (in minutes) out of the cradle, which is used in subsequent power-related calculations. If set to 0, the driver default value of 45 minutes will be used.</DESC>
+            </PROPERTY>
+            <PROPERTY name="averageCurrentConsumption" type="INTEGER" generateAccessors="true">
+                <PLATFORM>CE, Android</PLATFORM>
+                <DESC>Supported only by the MC18 device. Sets an average current consumption (in mA) that is used in subsequent power-related calculations. If set to 0, the value will be provided by the device driver based on the running average.</DESC>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS access="STATIC">
+            <METHOD name="batteryStatus" hasCallback="optional">
+                <DESC>Retrieve the current battery level. If a callback is provided to retrieve the battery then it will be called periodically at a frequency determined by the trigger property.</DESC>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                <PARAMS>
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
+                    <DESC>The properties associated with accessing the battery status.</DESC>
+                        <PARAMS>
+                            <PARAM name="trigger" type="STRING" default="Platform Dependant">
+                            <DESC>What will cause the batteryStatus callback to fire. It is recommended to use system events to conserve battery life. Please note, that iOS devices have no system triggers and will provide updates only with a specified period (Trigger value will be ignored)</DESC>
+                            <VALUES>
+                                <VALUE constName="BATTERY_TRIGGER_PERIODIC" value ="periodic">
+                                    <DESC>The batteryStatus callback will fire periodically at the specified refresh interval. This is the default setting on Windows Mobile / CE / Embedded but those platforms do also support the system trigger. Not supported on Android.</DESC>
+                                </VALUE>
+                                <VALUE constName="BATTERY_TRIGGER_SYSTEM" value ="system">
+                                    <DESC>The batteryStatus callback will fire when the underlying operating system notifies that there has been a change to the battery level. The resolution of this change will vary depending on operating system, for example on Windows Mobile the notifications only occur when 'critical', 'full' etc.</DESC>
+                                </VALUE>
+                            </VALUES>
+                            </PARAM>
+                            <PARAM name="refreshInterval" type="INTEGER">
+                                <DESC>Alternative way of specifying the refreshInterval parameter. If you are using a system trigger then this parameter will be ignored.</DESC>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="HASH">
+                    <PARAMS>
+                        <PARAM name="acLineStatus" type="BOOLEAN">
+                            <DESC>Whether or not the device is connected to external power.</DESC>
+                        </PARAM>
+                        <PARAM name="batteryLifePercent" type="INTEGER">
+                            <DESC>Displays the remaining battery power as a percentage value between 0 and 100. For some Zebra Android devices, the API will return a value of 255 at all times while the battery is being charged. The same value also might be displayed for a few seconds initially after reboot while the battery is being discharged. This is in accordance with hardware design specs and should be taken into account when using the API.</DESC>
+                        </PARAM>
+                        <PARAM name="backupBatteryLifePercent" type="INTEGER">
+                            <PLATFORM>WM</PLATFORM>
+                            <DESC>The remaining backup battery power as a percentage between 0 and 100. Supported only on Symbol Technologies Windows Mobile / CE / Embedded devices.</DESC>
+                        </PARAM>
+                        <PARAM name="trigger" type="STRING">
+                            <PLATFORM>WM, CE, Android</PLATFORM>
+                            <DESC>Human readable form of what has caused this callback to fire. This value will be OS dependent. On Windows Mobile / CE / Embedded it will be one of: "High Battery", "Low Battery", "Critical Battery", "Charging", "No Battery", "Unknown". In the case of periodic updates, this field will contain the last known status of the battery.</DESC>
+                        </PARAM>
+                        <PARAM name="batteryLifeKnown" type="BOOLEAN">
+                            <PLATFORM>WM</PLATFORM>
+                            <DESC>Supported only on Symbol Technologies' Windows Mobile / CE / Embedded devices. The battery life will not be readable for a period of time after removing from an AC power source and this parameter will state whether the batteryLifePercent value is accurate.</DESC>
+                        </PARAM>
+                        <PARAM name="backupBatteryLifeKnown" type="BOOLEAN">
+                            <PLATFORM>WM</PLATFORM>
+                            <DESC>Supported only on Symbol Technologies' Windows Mobile / CE / Embedded devices. The battery life will not be readable for a period of time after removing from an AC power source and this parameter will state whether the backupBatteryLifePercent value is accurate.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="stopBatteryStatus" hasCallback="none">
+                <DESC>If the battery status is being retrieved via callback by a previously invoked call to batteryStatus, this method will stop the callback from firing.</DESC>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+            </METHOD>
+
+            <METHOD name="smartBatteryStatus" hasCallback="optional">
+                <DESC>Returns the various parameters relating to battery charge and battery hardware. Not all return values may be supported by all batteries.</DESC>
+                <PLATFORM>WM</PLATFORM>
+                <APPLIES msiOnly="true">Scanners on Symbol Technologies' Windows Mobile / CE / Embedded devices</APPLIES>
+                <RETURN type="HASH">
+                    <PARAMS>
+                        <PARAM name="serialNumber" type="STRING">
+                            <DESC>The serial number of the battery.</DESC>
+                        </PARAM>
+                        <PARAM name="partNumber" type="STRING">
+                            <DESC>The Symbol Technologies' part number of the battery, e.g. 21-65587 Rev. A.</DESC>
+                        </PARAM>
+                        <PARAM name="batteryChargeCycles" type="INTEGER">
+                            <DESC>The number of times the battery has been charged. Partial charges are aggregated, therefore each charge cycle count represents one full charge / discharge cycle. The battery charge cycle count gets updated when the battery charging state changes from charging to not charging. Cycle count may not accurately predict the life of a battery.</DESC>
+                        </PARAM>
+                        <PARAM name="ratedCapacity" type="INTEGER">
+                            <DESC>Rated capacity of the battery in mAh.</DESC>
+                        </PARAM>
+                        <PARAM name="manufactureDate" type="STRING">
+                            <DESC>Date the battery was manufactured expressed as MM/DD/YYYY.</DESC>
+                        </PARAM>
+                        <PARAM name="stateOfHealth" type="STRING">
+                            <DESC>The health of the battery.</DESC>
+                            <VALUES>
+                                <VALUE constName="SMART_BATTERY_HEALTHY" value ="healthy">
+                                    <DESC>The battery is healthy.</DESC>
+                                </VALUE>
+                                <VALUE constName="SMART_BATTERY_UNHEALTHY" value ="unhealthy">
+                                    <DESC>The battery is unhealthy.</DESC>
+                                </VALUE>
+                                <VALUE constName="SMART_BATTERY_UNKNOWN" value ="unknown">
+                                    <DESC>The battery health is unknown.</DESC>
+                                </VALUE>
+                            </VALUES>
+                        </PARAM>
+                    </PARAMS>
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="batteryDiagnostics" hasCallback="optional">
+                <DESC>The BatteryDiagnostics method returns parameters for further battery analysis. Not all return values will be supported by all batteries. Any parameters that cannot be retrieved will return 'undefined'. In Android, Currently supported only on the MC18 device</DESC>
+                <PLATFORM>CE, Android</PLATFORM>
+                <APPLIES msiOnly="true">Currently supported only on the MC18 device</APPLIES>
+                <RETURN type="HASH">
+                    <PARAMS>
+                        <PARAM name="stateOfHealthPercent" type="STRING">
+                            <DESC>The current maximum battery capacity as a percentage of the battery rated capacity</DESC>
+                        </PARAM>
+                        <PARAM name="batteryCapacityPercent" type="STRING">
+                            <DESC>The remaining battery capacity percentage</DESC>
+                        </PARAM>
+                        <PARAM name="batteryCapacityMinutes" type="STRING">
+                            <DESC>The remaining battery capacity in minutes. Calculations are based on the averageCurrentConsumption parameter</DESC>
+                        </PARAM>
+                        <PARAM name="batteryExpirationInMonths" type="STRING">
+                            <DESC>Prediction in number of months when the battery should be replaced. Returns undefined for Android.</DESC>
+                        </PARAM>
+                        <PARAM name="previousBatteryReplacement" type="STRING">
+                            <DESC>Duration in days since the battery was last replaced</DESC>
+                        </PARAM>
+                        <PARAM name="timeSinceLastColdBoot" type="STRING">
+                            <DESC>Time in minutes since the device was last cold booted</DESC>
+                        </PARAM>
+                        <PARAM name="requiredChargeTime" type="STRING">
+                            <DESC>Calculates the charge time required in minutes based on the tripDuration and averageCurrentConsumption parameters.</DESC>
+                        </PARAM>
+                        <PARAM name="chargingTime" type="STRING">
+                            <DESC>The duration of time for which the unit was last charging, in minutes</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="showIcon" hasCallback="none" runInThread="ui">
+                <DESC>Overlays a small battery icon on top of the view indicating the remaining battery strength. This is particularly useful in full screen applications that cover the system battery level indicator.</DESC>
+                <PLATFORM>WM, CE, Android</PLATFORM>
+                <APPLIES msiOnly="true">All platforms support batteryStatus, which can be used to draw your own level indicator or display an appropriate graphic.</APPLIES>
+                <PARAMS>
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
+                        <DESC>The properties associated with the indicator, its position and color.</DESC>
+                        <PARAMS>
+                            <PARAM name="left" type="INTEGER" default="[Top left of the screen]">
+                                <DESC>The absolute horizontal position of the indicator in pixels. This value is relative to the screen and not the view, so non-fullscreen applications should take care not to display the indicator off screen.</DESC>
+                            </PARAM>
+                            <PARAM name="top" type="INTEGER" default="[Top left of the screen]">
+                                <DESC>The absolute vertical position of the indicator in pixels. Positive numbers go towards the bottom of the screen. This value is relative to the screen and not the view, so non-fullscreen applications should take care not to display the indicator off screen.</DESC>
+                            </PARAM>
+                            <PARAM name="layout" type="STRING" default="[Right]">
+                                <DESC>Sets the orientation of the icon, see the remarks section for illustrations.</DESC>
+                                <VALUES>
+                                    <VALUE constName="BATTERY_LAYOUT_LEFT" value ="left">
+                                        <DESC>See the remarks section for illustrations of icon layout.</DESC>
+                                    </VALUE>
+                                    <VALUE constName="BATTERY_LAYOUT_RIGHT" value ="right">
+                                        <DESC>See the remarks section for illustrations of icon layout.</DESC>
+                                    </VALUE>
+                                    <VALUE constName="BATTERY_LAYOUT_UP" value ="up">
+                                        <DESC>See the remarks section for illustrations of icon layout.</DESC>
+                                    </VALUE>
+                                    <VALUE constName="BATTERY_LAYOUT_DOWN" value ="down">
+                                        <DESC>See the remarks section for illustrations of icon layout.</DESC>
+                                    </VALUE>
+                                </VALUES>
+                            </PARAM>
+                            <PARAM name="color" type="STRING">
+                                <DESC>The color of the icon. This value must be specified as a Hex value in the format #000000 to #FFFFFF. Alpha values are not supported, i.e. you can only use the component parts RRGGBB.</DESC>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="hideIcon" hasCallback="none" runInThread="ui">
+                <DESC>Hide the icon if it has been previously set by the 'showIcon' call.</DESC>
+                <PLATFORM>WM, CE, Android</PLATFORM>
+                <APPLIES msiOnly="true">All platforms support batteryStatus, which can be used to draw your own level indicator or display an appropriate graphic.</APPLIES>
+            </METHOD>
+        </METHODS>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+        <EXAMPLES>
+            <EXAMPLE title="Retrieve the Battery status">
+                <SECTIONS>
+                <SECTION>
+                <DESC>Synchronously: If you are interested only in the current battery level, for example to decide whether you have sufficient battery for the worker to start their shift, then you can immediately determine the level as follows</DESC>
+                <CODE>
+                    <RUBY>
+            <![CDATA[
+  def battery_status_sync
+    batteryValues = Rho::Battery.batteryStatus
+    puts "Battery Level is: " + batteryValues['batteryLifePercent']
+  end
+                    ]]>
+                    </RUBY>
+                    <JAVASCRIPT>
+            <![CDATA[
+  function battery_status_sync(){
+    batteryValues = Rho.Battery.batteryStatus({});
+    console.log("Battery Level is: " + batteryValues['batteryLifePercent']);
+  }
+                    ]]>
+                    </JAVASCRIPT>
+                </CODE>
+                </SECTION>
+                <SECTION>
+                <DESC>Asynchronously:  If you want to be notified of changes to the battery level, then you can register to receive values through a callback</DESC>
+                <CODE>
+                    <RUBY>
+            <![CDATA[
+  def battery_status_async
+    puts "Registering Battery Callback"
+    Rho::Battery.batteryStatus(url_for(:action => :batteryEvent))
+  end
+
+   def batteryEvent
+    puts "Battery Event Fired: #{@params}"
+    puts "Battery Event (Asynchronous). AC Line Status: #{@params["acLineStatus"]}, Battery Life Percent: #{@params["batteryLifePercent"]}, Backup Battery Life Percent: #{@params["backupBatteryLifePercent"]}, Status: #{@params["batteryStatus"]}, Battery Life Known: #{@params["batteryLifeKnown"]}, Backup Battery Life Known: #{@params["backupBatteryLifeKnown"]}"
+  end
+  ]]>
+                    </RUBY>
+                    <JAVASCRIPT>
+            <![CDATA[
+  function battery_status_async(){
+    console.log("Registering Battery Callback");
+    Rho.Battery.batteryStatus({},batteryEvent);
+  }
+
+   function batteryEvent(params){
+    console.log("Battery Event Fired:");
+    console.log("Battery Event (Asynchronous). AC Line Status: " + params["acLineStatus"] + " Battery Life Percent: " + params["batteryLifePercent"] + " Backup Battery Life Percent: " + params["backupBatteryLifePercent"] + " Status: " + params["batteryStatus"] + " Battery Life Known: " + params["batteryLifeKnown"] + " Backup Battery Life Known: " + params["backupBatteryLifeKnown"]);
+  }
+  ]]>
+                    </JAVASCRIPT>
+                </CODE>
+                </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+            <EXAMPLE title="Working with the Battery indicator">
+                <SECTIONS>
+                <SECTION>
+                <DESC>If you just want to display the battery indicator in the default position and default color, then call as follows.</DESC>
+                <CODE>
+                    <RUBY>
+            <![CDATA[
+  def show_battery_icon
+    Rho::Battery.showIcon({})
+  end
+                    ]]>
+                    </RUBY>
+                    <JAVASCRIPT>
+            <![CDATA[
+  function show_battery_icon(){
+    Rho.Battery.showIcon({});
+  }
+                    ]]>
+                    </JAVASCRIPT>
+                </CODE>
+                </SECTION>
+                <SECTION>
+                <DESC>To display the battery icon at the default position but blue and vertical specify as follows.</DESC>
+                <CODE>
+                    <RUBY>
+            <![CDATA[
+  def show_battery_icon
+    Rho::Battery.showIcon { left: 0, top: 40, color: '#FF0000', layout: Rho::Battery.BATTERY_LAYOUT_RIGHT }
+  ]]>
+                    </RUBY>
+                    <JAVASCRIPT>
+            <![CDATA[
+  function show_battery_icon(){
+    Rho.Battery.showIcon({ left: 0, top: 40, color: '#FF0000', layout: Rho.Battery.BATTERY_LAYOUT_RIGHT });
+  }
+  ]]>
+                    </JAVASCRIPT>
+                </CODE>
+                </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES>
+        <REMARKS>
+            <REMARK title="Icon Layout">
+                <DESC>Windows Mobile / CE and Handheld devices support the display of a small battery icon. This section explains the layout parameter, which can be provided to showIcon(...).
+
+Layout:Left
+-----------
+![Left Layout Battery Indicator](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAI4AAABiCAIAAAAJGXymAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sIBQouCLvI+XcAAAGaSURBVHja7d3tjYIwAIBhe3EARnAD2aCMwggdwREYwVFgA9xAN3AD7u/luJy1UfHjeX+aapo+oeDlwDBN0yqjEMJKyxVj/LIKrxIqVEKFSqiECpVQCRUqPVfrG35WjLFpGmt6bfv9/nQ6PZSqaZrdbmfpr63v+xwqG6BzlVCh0iddAd6vcRxTSgVvbNu2bdufr6SUxnEsO/nfaUpvRXU+n4dhKLsonauXfdT9pmQDfLsNsPhA1qOpig9kuQIUKlRCJVSohEqoUAnVR5f7l/XtdltV1f9jNpuNBV2equs6/41kAxQqVEIlVKiESqhQCZVQoRIqoUIlVKiESqhQCZVQoRIqoUIlVEKFSouWeydISuniTTvFz+TSLakOh8PFMe7qsQEKFSqhQiVUQoVKqITqg1pXVRVjvDjOU6OXp6rr+tdPKPxZCMFi2QCVd1S9xCwzd+l584ep1XX9bFN6K6rMXTqnruuebUo2QOcqoRIqV4Cz+r73u8AFHY/HnGFhmqascb4CL1qM0QboXCVUqIRKqFAJlVChEioV9Q38vGIHwMPikwAAAABJRU5ErkJggg== "Battery Indicator")
+
+Layout:Right
+------------
+![Right Layout Battery Indicator](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAI4AAABiCAIAAAAJGXymAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sIBQouHk8cTCYAAAGRSURBVHja7d3hbYJAGIBh0nQANpAR2ADdhE1khBuBUc4R3IARbgP7t6lpOAgnYp7np7GG8IaPq9Gz6rquYlePPF/O1FFIJRVSSYVUSCUVUiGVVLyX75wnnU6nvu+drKVijLfb7aWpmqYZhsGpX2oYhg1TGYDuVUglFR+xAnw2juM4jiv+MITQtu3vR87n84rXads2hFDokD4q1TRN69Y2KaU/j2y1RtrwkAxA9riq2FDOLSCEINX+cuZ2SskAtFhHKqmQCqmkQiqkkor34o2lgpqmmf2mYUrpfr9LtbO+72c/6RVjvFwuBqB7FVIhlVRIhVRSIRVSSYVUSCUVUkmFVEglFVIhlVRIhVRSIRVSSYVUZPBNkIJyNlPL34xLqoJWb6ZmALpXIRVSSYVUSCUVUknFAXhjaX+zm/tUVVXXtVT7izEagAZg3p5c/13IKy7/Z88/uLLhIR14UHZd92C56/WakyDz1QxAi3WkkoqPWAFO0+R3gcv9w7TlCpCirADdq5AKqaRCKqSSCqmQSipK+gHwTQYZtwZTVQAAAABJRU5ErkJggg== "Battery Indicator")
+
+Layout:Up
+---------
+![Up Layout Battery Indicator](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGIAAACOCAIAAABFQUqgAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sIBQouKm6ouJMAAAGWSURBVHja7d3RkYIwFEBR3LEAO9AOpINnKZaQDmjBkrAD7EA7sAO2gP1YJjFonHO/HYQzJA5gdDPPc1fQNE3P57P77Ha7Xd/3RZuYy4qI7uOLiMLD/Om0IEyYMGHChAmTMGHCtHabFd7jeDxeLpdKG08p3W632oewXecC/XQ61du4QWduwoQJkzBhwoQJ0xe26GIlIkquNg6HQ70DOJ/PJfs2juP1en3NrgzDMH9pwzAYdOYmTJgwYRImTJgwYcKESZgwYcKECRMmYcKECRMmTJiEaWmZX59vYl3937JX2mcypZRe9n2XFYuIcRwNOnMTJkyYMAkTJkyYMGHCJEyYMGFqocy7l4WL/d5V9gLIfCaDTpgwYWrzky6lNE1Tc0fb933ez7flP/Vt8XGmQYcJEyZMmIQJEyZMmDBhEiZMmDC1U+bdy7wlDc4mTMKE6QOmcMsOF2XZoTBhwoQJEyZMwoQJEyZMmDAJE6bKWXZYmcmgEyZMmN7cZsmL9vt91f/mfWP3+/3xeDgPJEmSJDV6TRcRFP7tF5VvpjOfDnyyAAAAAElFTkSuQmCC "Battery Indicator")
+
+Layout:Down
+-----------
+![Down Layout Battery Indicator](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGIAAACOCAIAAABFQUqgAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sIBQotLKzmTmUAAAF9SURBVHja7d3hkUNQFIDR2EkBOqAEHVyl6EQLSkgpdKAEOtCBbcGwrCfn+51InMmTEXMji4iXJEmSJCnJsi0PKoqiLMtH7v80TfM8/8222rZdH1rbtlsEfiwoTJgw3bD3vqd9Pp9pmpLb27Ism6a5lGkYhuSYImIfk0WHCRMmTJgwCRMmTJgwYcIkTJgwXd7OXy+7rluWJbm9zfP8Uqaqqiw6YcKEKU2muq6zBKvr2qfJosOECRMmYcKECRMmTJiECRMmTIn0XRegdr/t/ZczLTphwoQpzW86Y4dbmYwdChMmTJgwYcIkTJgwYcKECZMwYTozY4dnMhk7FCZMmDBhwoRJmDBhwoQJEyZhwoQJEyZMmIQJEyZMmDB9Y5vu6xsRu/9Y83Vg2G9LBwcg+76/y2BgRJx3Y96IsOgcmzBhwiRMmDBhwvTA3he8xrIsfd+ft/ErnJI4pfr3k0qLzrEJEyZMmDAJEyZMmG5Ztq7rkeeP43j/Sfs8zw+Ouv8CFfQAjSZxPXkAAAAASUVORK5CYII= "Battery Indicator")</DESC>
+            </REMARK>
+
+            <REMARK title="Overlapping Indicators">
+                <DESC>The position of the signal and battery indicators should not be set to overlap.</DESC>
+            </REMARK>
+
+            <REMARK title="Screen Orientation">
+                <DESC>The indicator positions are absolute and so when rotating the screen you should also move the indicator positions accordingly to accommodate the new screen layout.</DESC>
+            </REMARK>
+            <REMARK_EB title="Internet Explorer (IE) Rendering Engine">
+                <DESC>When using the this feature on a CE device using the IE engine, screen distortion may be noticed when scrolling. This is due to a limitation of the IE engine and can be worked around using any of the following options:
+
+* Not using debug buttons - If your app must use the IE engine, do not use debug buttons in the app.
+* If you need to use the signal or battery indicators either:
+    * Don't scroll the page.
+    * Don't use the signal / battery indicators
+    * Use the Webkit engine.</DESC>
+            </REMARK_EB>
+        </REMARKS>
+    </MODULE>
+</API>

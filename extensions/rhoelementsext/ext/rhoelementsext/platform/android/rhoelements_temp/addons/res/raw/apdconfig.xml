@@ -1,0 +1,13 @@
+<apdconfiguration>
+	<path formats="%INSTALLDIR%/APD/Formats/"
+		  templates="%INSTALLDIR%/APD/Template/"
+		  idlabels="%INSTALLDIR%/APD/ID_Label/" />	
+	<printer bluetooth="00:00:00:00:00:00"
+			 id="0"
+			 ipaddress=""
+			 ipport="0"
+			 language=""
+			 message="0" 
+			 model="0"
+			 transport="0"/>
+</apdconfiguration>

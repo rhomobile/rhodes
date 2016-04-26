@@ -1,0 +1,33 @@
+HKCR
+{
+	PocketBrowser.MicroFlash.1 = s 'MicroFlash Class'
+	{
+		CLSID = s '{1C7EA8DE-9AA6-46AC-A12A-5BB2D66F4ACA}'
+	}
+	PocketBrowser.MicroFlash = s 'MicroFlash Class'
+	{
+		CLSID = s '{1C7EA8DE-9AA6-46AC-A12A-5BB2D66F4ACA}'
+		CurVer = s 'PocketBrowser.MicroFlash.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {1C7EA8DE-9AA6-46AC-A12A-5BB2D66F4ACA} = s 'MicroFlash Class'
+		{
+			ProgID = s 'PocketBrowser.MicroFlash.1'
+			VersionIndependentProgID = s 'PocketBrowser.MicroFlash'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Free'
+			}
+			val AppID = s '%APPID%'
+			ForceRemove 'Control'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			'TypeLib' = s '{8A7719E2-3C21-4C09-9E13-D17534BD7ED1}'
+			'Version' = s '1.0'
+		}
+	}
+}

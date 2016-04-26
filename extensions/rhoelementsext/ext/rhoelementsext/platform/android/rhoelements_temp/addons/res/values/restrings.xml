@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reapp_name">RhoElements</string>
+    
+    <string name="signaturecapture_name">Signature Capture</string>
+    <string name="activity_dialog">App/Activity/Dialog</string>
+    <string name="alert_dialog_ok">Ok</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="alert_dialog_quit">Quit</string>
+    <string name="validation_dialog_message">RhoElements is not validated to run on this platform.  If you choose to continue, Symbol does not guarantee the software on this device.  For information on validation of this product please contact the Symbol helpdesk\n(http://www.symbol.com)</string>
+    <string name="invalidplat_dialog_message">RhoElements is not validated to run on this platform or it is not a Symbol Technologies device.</string>
+    <string name="alert_dialog_title">Alert</string>
+    <string name="version_number">0.0.0.1</string>
+        
+    <string name="scanner_array_name">scannerArray</string>
+    <string name="scanner_decode_event">decodeEvent</string>
+    <string name="scan_int_result">SCAN_INT_RESULT</string>
+    <string name="scan_time">SCAN_TIME</string>
+    <string name="apd_title">Adaptive Printer Driver</string>
+    <string name="apd_connecting">Connecting...</string>
+    <string name="apd_printing">Printing...</string>
+    <string name="apd_ok">OK</string>
+    <string name="apd_nodata">No data</string>
+    <string name="apd_pathnotvalid">Path not valid</string>
+    <string name="apd_pidnotvalid">Pid not valid</string>
+    <string name="apd_pidnotsupported">Pid not supported</string>
+    <string name="apd_filenotfound">File not found</string>
+    <string name="apd_sendfailed">Send operation failed</string>
+    <string name="apd_ioerror">I/O error</string>
+    <string name="apd_porterror">Port error</string>
+    <string name="apd_functionnotsupported">Function not supported by Android APD</string>
+    <string name="apd_configurationerror">Problem with APD configuration file apdconfig.xml</string>
+    <string name="apd_unknownerror">Unknown error</string>
+    <string name="apd_bton">Bluetooth is on</string>
+    <string name="apd_btoff">Bluetooth is off</string>
+    <string name="notification_array_name">notificationsArray</string>
+    <string name="notification_index">notificationIndex</string>
+    <string name="notification_type">notificationType</string>
+    <string name="notification_name">notificationName</string>
+    <string name="config_error_dialog_title">Error in Config.xml</string>
+    <string name="button_ok">Ok</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="shortcut_label_url">Application URL</string>
+    <string name="shortcut_label_name">Shortcut name</string>
+    <string name="shortCut_icon_path">Shortcut Icon path </string>
+    <string name="shortcut_configfile_path">config.xml path</string>
+    <string name="shortcut_err_dialogtitle">Error</string>
+    <string name="shortcut_err_entervalidpath">Please enter a valid local file path</string>
+    <string name="shortcut_err_entervalidurl">Please enter a valid url</string>
+    <string name="shortcut_mime_configpath">com.rho.rhoelements/config</string>
+    <string name="shortcut_mime_url">com.rho.rhoelements/application</string>
+    <string name="geolocation_permission_denied">Geolocation is disabled. Please check your config.xml file.</string>
+    <string name="geolocation_location_unavailable">No location available. Please check if location services are enabled in system settings</string>
+    <string name="geolocation_unexpected_error">Unexpected error.</string>
+    <string name="http_authentication_title">Authentication required</string>
+    <string name="http_authentication_username">Username</string>
+    <string name="http_authentication_password">Password</string>
+    <string name="http_authentication_username_hint">Enter username</string>
+    <string name="http_authentication_password_hint">Enter password</string>
+    <string name="network_unavailable">Unavailable</string>
+    <string name="network_notconnected">Not Connected</string>
+    <string name="network_connman_connected">Connected</string>
+    <string name="network_connman_connecting">The device is attempting to connect</string>
+    <string name="network_connman_notconnected">No Connection</string>
+</resources>

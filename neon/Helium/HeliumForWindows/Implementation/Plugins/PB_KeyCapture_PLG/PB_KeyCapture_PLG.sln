@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PB_KeyCapture_PLG", "PlugIn\PB_KeyCapture_PLG.vcproj", "{C6603831-01C6-4F61-902B-FE92DC740E6C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|MC3000c50b (ARMV4I) = Debug|MC3000c50b (ARMV4I)
+		Release|MC3000c50b (ARMV4I) = Release|MC3000c50b (ARMV4I)
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C6603831-01C6-4F61-902B-FE92DC740E6C}.Debug|MC3000c50b (ARMV4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{C6603831-01C6-4F61-902B-FE92DC740E6C}.Debug|MC3000c50b (ARMV4I).Build.0 = Debug|MC3000c50b (ARMV4I)
+		{C6603831-01C6-4F61-902B-FE92DC740E6C}.Debug|MC3000c50b (ARMV4I).Deploy.0 = Debug|MC3000c50b (ARMV4I)
+		{C6603831-01C6-4F61-902B-FE92DC740E6C}.Release|MC3000c50b (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{C6603831-01C6-4F61-902B-FE92DC740E6C}.Release|MC3000c50b (ARMV4I).Build.0 = Release|MC3000c50b (ARMV4I)
+		{C6603831-01C6-4F61-902B-FE92DC740E6C}.Release|MC3000c50b (ARMV4I).Deploy.0 = Release|MC3000c50b (ARMV4I)
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

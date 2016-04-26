@@ -16,37 +16,8 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
         </MORE_HELP>
-        <MORE_HELP_EB>
-## Enabling the API
-There are two methods of enabling the MediaPlayer API:
-
-* Include all ebapi modules or
-* Include only the API modules you need
-
-For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
-
-### Include all JS API modules
-To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
-
-> Note: that the pathing for this file is relative to the current page.
-
-This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
-
-### Include only the modules you need
-To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the MediaPlayer API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
-    &lt;script type="text/javascript" charset="utf-8" src="eb.mediaplayer.js"&gt;&lt;/script&gt;
-
-The ebapi.js file is necessary for all single API inclusions.
-        </MORE_HELP_EB>
 
         <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-        <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
 
         <TEMPLATES>
         </TEMPLATES>
@@ -56,18 +27,15 @@ The ebapi.js file is necessary for all single API inclusions.
             <METHOD name="start" access="STATIC" hasCallback="none">
                 <DESC>Play the audio file using the supplied filename. On WM/CE devices, the API supports only wav file format.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>Android, WM, CE</PLATFORM_EB>
                 <PARAMS>
                     <PARAM name="filename" type="STRING">
                         <DESC>File name of the audio media to be played - absolute filepath. On iOS when you post URL to remote server (except https), then we open a standard browser (another application) for playing it. On iOS we support: mp3, mp4, wav formats. On other platforms the formats supported depends on what support is built into the platform. Typically on WM/CE this will be wav and on Android mp3.</DESC>
-                        <DESC_EB>File name of the audio media to be played - absolute filepath. The formats supported depends on what support is built into the platform. Typically on WM/CE this will be wav and on Android mp3.</DESC_EB>
                     </PARAM>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="stop" access="STATIC" hasCallback="none">
                 <DESC>Stop playing the media file. Not applicable on iOS, because on iOS the special UI is opened for playback audio / video - user can stop / close player by UI.</DESC>
-                <DESC_EB>Stop playing the media file. </DESC_EB>
                 <PLATFORM>WM, CE, Android</PLATFORM>
             </METHOD>
 
@@ -77,14 +45,12 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PARAMS>
                     <PARAM name="filename" type="STRING" runInThread="ui">
                         <DESC>File name of the video media to be played - full filepath. On iOS when you post URL to remote server  (except https), then we open a standard browser (another application) for playing it. On iOS we support: mov, mp4, 3gp formats. On other platforms the formats supported depends on what support is built into the platform. Typically on WM/CE this will be wmv and on Android mp4.</DESC>
-                        <DESC_EB>File name of the video media to be played - full filepath. The formats supported depends on what support is built into the platform. Typically on WM/CE this will be wmv and on Android mp4.</DESC_EB>
                     </PARAM>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="stopvideo" access="STATIC" hasCallback="none">
                 <DESC>Stop the playback of a currently playing video file. Not applicable on iOS, because on iOS the special UI is opened for playback audio / video - user can stop / close player by UI.</DESC>
-                <DESC_EB>Stop the playback of a currently playing video file. </DESC_EB>
                 <PLATFORM>WM, CE, Android</PLATFORM>
             </METHOD>
 

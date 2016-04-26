@@ -1,0 +1,3 @@
+Zebra printer support requers link SDK library. To obtain it you should go to the http://www.zebra.com/gb/en/products-services/software/link-os/link-os-sdk.html#mainpartabscontainer_794f=downloads , get installer for mac os x and then run it.
+
+After installation library will be placed into /Users/<user_name>/Applications/link_os_sdk/. You should navigate to link_os_sdk/iOS/<sdk-ver>/ and copy lib/ to folder where this readme is found. 

@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Instrumentation" parent="Rho" generatedoc="false">
+        <HELP_OVERVIEW>The Instrumentation module can be used to simulate key presses, touch events, file events and capturing of the screen.</HELP_OVERVIEW>
+        <MORE_HELP>The Instrumentation module will be available to any process that requests it.  No properties are defined, only methods.</MORE_HELP>
+    
+        <TEMPLATES>
+            <SINGLETON_INSTANCES/>   <!-- produce enumerate() fabric method, all instances is singletones by ID, add ID property -->
+            <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
+            <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
+        </TEMPLATES>
+
+        <METHODS>
+            <METHOD name="simulate_key_event_code" runInThread="none">
+                <DESC>Simulates a single key event, based upon the supplied parameter.</DESC>
+    
+                <PARAMS>
+                    <PARAM name="keycode" type="INTEGER">
+                        <DESC>The character that will be pushed onto the input stream for the underlying OS.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+    
+            <METHOD name="simulate_key_event_string" runInThread="none">
+                <DESC>Simluates a string, based upon the supplied paramter.</DESC>
+				
+				<PARAMS>
+					<PARAM name="str" type="STRING">
+                        <DESC>The string that will be pushed onto the input stream for the underlying OS.</DESC>
+                    </PARAM>
+				</PARAMS>
+            </METHOD>
+			
+            <METHOD name="simulate_touch_event" runInThread="none">
+                <DESC>Simulate a touch event, this can either be a left down, left down and mouse move and left up. To draw something correctly, this function must be called multiple times by the user.
+                For instance, when drawing a line, the first call will be to be mouse down, then the second call will be to mouse move, and the final call will be to mouse up.
+                This will draw line.  You cannot pass through an array of co-ordinates or button presses.</DESC>
+				
+				<PARAMS>
+					<PARAM name="event_type" type="INTEGER">
+						<DESC>The event type represents the state of the touch event and where it is on the screen.
+						Currently, the three values that can be used are 0, 1 and 2.
+						</DESC>
+					</PARAM>
+					<PARAM name="x" type="INTEGER">
+						<DESC>The absolute x co-ordinate, cannot be negative.</DESC>
+					</PARAM>
+					<PARAM name="y" type="INTEGER">
+						<DESC>The absolute y co-ordinate, cannot be negative.</DESC>
+					</PARAM>
+				</PARAMS>
+            </METHOD>
+			
+			<METHOD name="screen_capture" runInThread="none">
+                <DESC>Capture the contents of the screen and save it.  On WMCE it is a Bitmap.</DESC>
+				<PARAMS>
+					<PARAM name="pszFilename" type="STRING">
+                        <DESC>The name of the file to be used for saving the screen buffer.</DESC>
+                    </PARAM>
+				</PARAMS>
+				
+				<RETURN type="INTEGER">
+                    <DESC>The result of the screen capture method. -1 for failure and 1 for success.</DESC>
+                </RETURN>
+            </METHOD>
+			
+			<METHOD name="get_allocated_memory">
+                <DESC>Return the amount of memory that the process is using.  Currently on Windows, this just returns the amount of 
+				memory the device has, on Android, it can return size of the running process.
+				</DESC>
+				
+				<RETURN type="INTEGER">
+                    <DESC>A value greater than 0.</DESC>
+                </RETURN>
+            </METHOD>
+			
+			<METHOD name="delete_file" runInThread="none">
+                <DESC>Delete the file at the specified location.</DESC>
+				<PARAMS>
+					<PARAM name="str" type="STRING">
+                        <DESC>The name of the file to be deleted.</DESC>
+                    </PARAM>
+				</PARAMS>
+				
+				<RETURN type="INTEGER">
+                    <DESC>-1 if deletion fails, 1 if deleted</DESC>
+                </RETURN>
+            </METHOD>
+			
+			<METHOD name="file_exists" runInThread="none">
+                <DESC>Delete the file at the specified location.</DESC>
+				<PARAMS>
+					<PARAM name="str" type="STRING">
+                        <DESC>The name of the file to search for.</DESC>
+                    </PARAM>
+				</PARAMS>
+				
+				<RETURN type="INTEGER">
+                    <DESC>-1 if error occured, 0 if file not found, 1 if file found.</DESC>
+                </RETURN>
+            </METHOD>
+			
+			<METHOD name="re_simulate_navigation">
+                <DESC>Generate, PB_ONMETA and PB_NAVIGATE messages</DESC>
+            </METHOD>
+        </METHODS>
+        
+        <USER_OVERVIEW>
+            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+            <![CDATA[
+TODO. Add example code to show how to call methods.
+    				]]>
+    
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+    </MODULE>
+</API>    

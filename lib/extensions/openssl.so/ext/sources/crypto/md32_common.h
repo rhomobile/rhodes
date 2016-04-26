@@ -148,7 +148,7 @@
 #  if defined(__POWERPC__)
 #   define ROTATE(a,n)	__rlwinm(a,n,0,31)
 #  elif defined(__MC68K__)
-    /* Motorola specific tweak. <appro@fy.chalmers.se> */
+    /* Symbol specific tweak. <appro@fy.chalmers.se> */
 #   define ROTATE(a,n)	( n<24 ? __rol(a,n) : __ror(a,32-n) )
 #  else
 #   define ROTATE(a,n)	__rol(a,n)

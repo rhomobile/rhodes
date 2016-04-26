@@ -15,35 +15,7 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
     </MORE_HELP>
-        <MORE_HELP_EB>
-## Enabling the API
-There are two methods of enabling the Database API:
-
-* Include all ebapi modules or
-* Include only the API modules you need
-
-For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
-
-### Include all JS API modules
-To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
-
-> Note: that the pathing for this file is relative to the current page.
-
-This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
-
-### Include only the modules you need
-To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the Database API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
-    &lt;script type="text/javascript" charset="utf-8" src="eb.database.js"&gt;&lt;/script&gt;
-
-The ebapi.js file is necessary for all single API inclusions.          
-        </MORE_HELP_EB>
-
+        
     <ALIASES>
     </ALIASES>
 
@@ -60,7 +32,6 @@ The ebapi.js file is necessary for all single API inclusions.
       </ALIASES>
       <METHOD name="initialize" constructor="true" generateAPI="false">
         <DESC>This method is a constructor for this class. Instead of saying Rho.Database.initialize(dbPath,dbPartition) you would use new Rho.Database(dbPath,dbPartition). ex: `var db = new Rho.Database(Rho.Application.databaseFilePath('test'), 'test');` Make sure you issue a `.close()` when you are finished using the database. If the database file does not exist it will be created using a SQL schema: rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files. Do not open the same file twice.</DESC>
-        <DESC_EB>This method is a constructor for this class. Instead of saying `EB.Database.initialize(dbPath,dbPartition)` you would use `new EB.Database(dbPath,dbPartition)`. ex: `var db = new EB.Database(EB.Application.databaseFilePath('test'), 'test');` Make sure you issue a `.close()` when you are finished using the database. If the database file does not exist it will be created using a default SQL schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files. Do not open the same file twice.</DESC_EB>
         <PARAMS>
           <PARAM name="dbPath" type="STRING">
             <DESC>The path to the database. Databases stored at the path provided by Application.databaseFilePath.</DESC>
@@ -178,7 +149,6 @@ The ebapi.js file is necessary for all single API inclusions.
     </USER_OVERVIEW>
     <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
     <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
-    <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
     <EXAMPLES>
       <EXAMPLE title="Using Transactions">
         <SECTIONS>

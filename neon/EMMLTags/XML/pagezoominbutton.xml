@@ -1,0 +1,113 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>zoomInPageButton</NAME>
+		<PATH>Controls and Appearance</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to set the parameters of the ZoomInPageButton.
+      When clicked, the ZoomInPage button zooms into the web page. There is a default zoom in step and 
+      a maximum zoom in level.
+    </SYNOPSIS>
+		<SYNTAX>&lt;META HTTP-Equiv="ZoomInPageButton" content="[parameter]"&gt;</SYNTAX>
+                <PARAMS_WITH_ATTRIBUTES>	
+			<PARAM>
+				<NAME>left</NAME>
+        <VALUES>Any valid pixel value</VALUES>
+        <DESC>Sets the left horizontal position of the ZoomInPage button in pixels.</DESC>
+        <DEFAULT>10</DEFAULT>
+      </PARAM>
+      <PARAM>
+        <NAME>top</NAME>
+        <VALUES>Any valid pixel value</VALUES>
+				<DESC>Sets the top vertical position of the ZoomInPage button in pixels.</DESC>
+				<DEFAULT>10</DEFAULT>
+			</PARAM>
+                        <PARAM>
+				<NAME>height</NAME>
+                                <VALUES>Any valid pixel range</VALUES>
+				<DESC>Sets the height of the PageZoomIn button in pixels.</DESC>
+				<DEFAULT>100</DEFAULT>
+			</PARAM>
+                        <PARAM>
+				<NAME>width</NAME>
+                                <VALUES>Any valid pixel range</VALUES>
+				<DESC>Sets the width of the ZoomInPage button in pixels.</DESC>
+				<DEFAULT>100</DEFAULT>
+			</PARAM>
+                        <PARAM>
+				<NAME>imageup</NAME>
+                                <VALUES>String indicating the url address</VALUES>
+				<DESC>Sets the image to be displayed on the ZoomInPage button; the image shall be in bitmap(WinCE and WM devices),
+                                JPEG(WM devices ONLY), or GIF(WM devices ONLY) format and will be scaled to the size of the button; the image can be stored 
+                                either on the local device or remotely (http and ftp protocols supported); if the url address is
+                                not valid or not given, the default image shall be displayed.
+                                </DESC>
+				<DEFAULT>Default image</DEFAULT>
+			</PARAM>
+
+                  <PARAM>
+                    <NAME>imagedown</NAME>
+                    <VALUES>String indicating the url address</VALUES>
+                    <DESC>
+                      Sets the image to be displayed on the ZoomInPage button when pressed; the image shall be in bitmap(WinCE and WM devices),
+                      JPEG(WM devices ONLY), or GIF(WM devices ONLY) format and will be scaled to the size of the button; the image can be stored
+                      either on the local device or remotely (http and ftp protocols supported); if the url address is
+                      not valid or not given, the default image shall be displayed.
+                    </DESC>
+                    <DEFAULT>Default image</DEFAULT>
+                  </PARAM>    
+                  
+                  
+		        <PARAM>
+				<NAME>visibility</NAME>
+                                <VALUES>visible, hidden</VALUES>
+				<DESC>Sets the visibility of the ZoomInPage button.</DESC>
+				<DEFAULT>By default the ZoomInPage button is hidden.</DEFAULT>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example shows the ZoomInPage button, sets its x and y coordinates to 50, and its height and width to 20 pixels.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="ZoomInPageButton" Content="visibility:visible"&gt;
+&lt;META HTTP-Equiv="ZoomInPageButton" Content="left:50"&gt;
+&lt;META HTTP-Equiv="ZoomInPageButton" Content="top:50"&gt;
+&lt;META HTTP-Equiv="ZoomInPageButton" Content="height:20"&gt;
+&lt;META HTTP-Equiv="ZoomInPageButton" Content="width:20"&gt;
+
+</CODE>
+        
+			</EXAMPLE>
+			<EXAMPLE>
+                           <DESC>The following example shows the ZoomInPage button, sets its top coordinate to 30 pixels, its left coordinate 
+                           to 50 pixels, its width and height to 30 pixels, and displays the foo.gif image on it (resizing the image if 
+                           necessary).
+                           </DESC>
+<CODE>
+&lt;META HTTP-Equiv="ZoomInPageButton" Content="top:30 left:50 width:30 height:30 imageup:http://myaddress/foo.gif visibility:visible"&gt;
+</CODE>                        
+                        </EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Screen Orientation</COMMENT_HEADING>
+				<COMMENT_DATA>When the screen orientation changes, either using the ScreenOrientation tag or by rotating a device with hardware support, the command areas will automatically move and resize to fit the new layout. However the buttons themselves are not moved and in some cases this may result in them being off the screen or not in the expected position. If so they must be moved manually by detecting the ScreenOrientationEvent.</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>BackButton</TOPIC>
+			<TOPIC>GoButton</TOPIC>
+			<TOPIC>AddressBar</TOPIC>			
+			<TOPIC>SIPButton</TOPIC>			
+			<TOPIC>ReloadButton</TOPIC>						
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

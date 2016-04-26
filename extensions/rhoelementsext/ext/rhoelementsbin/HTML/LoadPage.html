@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+<TITLE>Symbol RhoElements</TITLE>
+
+<style>
+	body
+	{
+		padding: 0px; 
+		margin: 0px; 
+		background-image: url('Background.jpg'); 
+	}
+	
+	.prompt
+	{
+		width:100%;
+		left: -36px;
+		text-align: center;
+		vertical-align: text-middle;
+	}
+		.build
+	{
+	  font-family: tahoma;
+	  font-size: 10pt;
+	  color: white;
+		width:100%;
+		height:12px;
+		left: 0px;
+		text-align: right;
+		vertical-align: text-top;
+	}
+	.logo
+	{
+		top: 70px; 
+		padding: 0px; 
+		margin: 0px; 
+		
+	}
+	.quitlbl
+	{
+		color: white;
+		font-family: tahoma;
+		font-size: 8pt;
+	}
+</style>
+</HEAD>
+<BODY>
+  <script type="text/javascript">
+	//  This code is compatible with both WebKit and IE Engines
+	var objgeneric = new ActiveXObject("PocketBrowser.Generic");
+	function Quit()
+	{
+		objgeneric.InvokeMETAFunction("Application", "Quit"); 
+	}
+</SCRIPT>
+<div class="build" ></div>
+<div class="prompt" >
+<br/><br/><br/>
+	<img src="Logo.gif" class="logo"/><br/>
+	<div class="quitdiv"><a class="quitlbl" href="Javascript:Quit();">Return to OS</a>&nbsp;</div>
+</div>
+</BODY>
+</HTML>

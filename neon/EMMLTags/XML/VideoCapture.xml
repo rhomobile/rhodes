@@ -1,0 +1,153 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="RhoElements_runtime_help.xsl"?>
+
+<HELPPAGE>
+  <FUNC>
+    <NAME>videoCapture</NAME>
+    <PATH>videoCapture</PATH>
+   <TYPE>Module</TYPE>
+    <SYNOPSIS>captures video files from the default camera device.</SYNOPSIS>
+	<MULTIPLE_INSTANCE>Only the foreground RhoElements application is given access to capture video, when an application is sent to the background any capture that is in progress will be cancelled and it will automatically relinquish control of the video hardware.  When brought back to the foreground, an application previously using the video capture will have its previous configuration (eg. name etc.) reapplied to the plugin automatically. Please note that any file transfer that is in progress continues even if the application is sent to the background.</MULTIPLE_INSTANCE>
+    <SYNTAX>
+		<USAGE>
+			<EXAMPLE>&lt;META HTTP-Equiv="VideoCapture" content="[method / parameter]"&gt;</EXAMPLE>
+		</USAGE>
+		<USAGE>
+			<EXAMPLE>&lt;META HTTP-Equiv="VideoCapture" content="VideoSaveEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+		</USAGE>
+	</SYNTAX>
+    <PARAMS_WITH_ATTRIBUTES>
+		<PARAM>
+			<NAME>duration</NAME>
+			<VALUES>Milliseconds</VALUES>
+			<DESC>Specifies the number of milliseconds of video to capture.  It is the maximum number of milliseconds of video to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milli seconds is specified, the interval will be defaulted to 5000 milli seconds.</DESC>
+			<DEFAULT>5000</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>destination</NAME>
+			<VALUES>Fully qualified URL or file name.  Supports HTTP, FTP and File protocols.</VALUES>
+			<DESC>Sets the destination path and name for the captured video file.  See Remarks</DESC>
+			<DEFAULT></DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>username</NAME>
+			<VALUES>String</VALUES>
+			<DESC>The username for the HTTP or FTP server if required</DESC>
+			<DEFAULT>No username</DEFAULT>
+		</PARAM>	
+		<PARAM>
+			<NAME>password</NAME>
+			<VALUES>String</VALUES>
+			<DESC>The password for the HTTP or FTP server if required</DESC>
+			<DEFAULT>No password</DEFAULT>
+		</PARAM>	
+		<PARAM>
+			<NAME>name</NAME>
+			<VALUES>String compliant with Windows Naming restrictions</VALUES>
+			<DESC>When the video capture completes a video file is saved in the root directory of the device (package directory in case of Android).  This parameter is used to specify the filename when storing the file locally. </DESC>
+			<DEFAULT>VideoCapture</DEFAULT>
+		</PARAM>	
+		
+	</PARAMS_WITH_ATTRIBUTES>
+	
+	<PARAMS_NO_ATTRIBUTES>	
+		<PARAM>
+			<NAME>start</NAME>
+			<DESC>Starts capturing video until either 'stop' is received, or 'duration' is reached. NOTE: On Android this meta tag wouldn't immediately start recording and presents a preview window with controls (Start, stop and cancel) for recording. </DESC>
+			<DEFAULT>N/A</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>stop</NAME>
+			<DESC>Stops capturing video and either saves the file locally, or transfers it to a remote server. NOTE: This is not applicable for Android as the video capture window is full screen and displays a stop button. Please note that the file transfer happens as specified even if we dont use the stop meta tag.</DESC>
+			<DEFAULT>N/A</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>cancel</NAME>
+			<DESC>Stops capturing video and discards any captured video data. NOTE: This is not applicable for Android as the video capture window is full screen and displays a cancel button.</DESC>
+			<DEFAULT>N/A</DEFAULT>
+		</PARAM>
+
+	</PARAMS_NO_ATTRIBUTES>	
+	<RETURNS>
+		<TAG>
+			<TAG_NAME>videoSaveEvent</TAG_NAME>
+			<TAG_NOTES>The Video Save Event is called when the captured video has been successfully transfered to the specified destination.  When a capture is started with the HTTP protocol, the destination server message is returned. When it is called with the FTP protocol, either 'OK: File Sent', 'OK: File Received' or 'ERROR' is returned.  This tag should be used in conjunction with the Start method.</TAG_NOTES>
+			<RETVAL>
+				<NAME>transferResult</NAME>
+				<DESC>Success or failure of transfer, see note above.</DESC>
+			</RETVAL>
+		</TAG>
+	</RETURNS>
+	<EXAMPLES>
+		<EXAMPLE>
+			<DESC>The following META Tag example performs a 30 second capture. The resulting video file will be transferred to a server via HTTP and an alert will inform the user whether or not the transfer succeeded.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="VideoCapture" Content="duration:30000"&gt;
+&lt;META HTTP-Equiv="VideoCapture" Content="Destination:url('HTTP://192.168.1.1:80/Uploaded/upload.aspx')"&gt;
+&lt;META HTTP-Equiv="VideoCapture" Content="VideoSaveEvent:url('javascript:alert('%s');')"&gt;
+&lt;META HTTP-Equiv="VideoCapture" Content="start"&gt;
+</CODE>
+		</EXAMPLE>
+		<EXAMPLE>
+			<DESC>The following javascript will start and stop a video capture respectively when onStart and onStop are called with a 60 second limit:</DESC>
+<CODE>
+&lt;script&gt;
+   function onStart()
+   {
+      videoCapture.duration = '60000';
+      videoCapture.start();
+   }
+   
+   function onStop()
+   {
+      videoCapture.stop();
+   }
+&lt;/script&gt;
+</CODE>
+		</EXAMPLE>
+		<EXAMPLE>
+			<DESC>The following javascript will start a 30 second video capture when onStart is called:</DESC>
+<CODE>
+&lt;script&gt;
+   function onStart()
+   {
+      videoCapture.duration = '30000';
+      videoCapture.start();
+   }
+&lt;/script&gt;
+</CODE>
+		</EXAMPLE>
+	</EXAMPLES>
+	<REMARKS>
+		<COMMENT>
+			<COMMENT_HEADING>Buffer full</COMMENT_HEADING>
+			<COMMENT_DATA>Once duration has been reached the video file will be saved or transferred.  Calling 'stop' once this has occurred will have no effect.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>File Formats</COMMENT_HEADING>
+			<COMMENT_DATA>The output file format on Android is MP4 and on Windows is WMV.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>File Storage Error</COMMENT_HEADING>
+			<COMMENT_DATA>A Video Capture will fail if there is not sufficient space on the device's filesystem to store it.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+				<COMMENT_HEADING>Setting up a Transfer to a remote HTTP or FTP location</COMMENT_HEADING>
+				<COMMENT_DATA>Video Capture is designed to be configured before any transfer is made to a remote location.  If the 'Destination' parameter is specified as either HTTP or an FTP location the 'destination' / 'username' / 'password' parameters can not be guaranteed to stay the same after the capture has completed, therefore configure your destination for each capture.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>	
+			<COMMENT_HEADING>Format of the Destination URL</COMMENT_HEADING>
+			<COMMENT_DATA>The protocol, port number, username (optional) and password (optional) are all derived from the URL string and should be specified in the following manner: [protocol]://[username]:[password@]Server[:Port]FileNameAndPath.  FTP Example: ftp://admin:root@192.168.1.1:2500/Folder/Cap.mov.  HTTP Example: http://admin:root@192.168.1.1:8080/Folder/Upload.aspx.  File Example: file://\path\Cap.mov.  Remember to also wrap your URL with url('') when being used as part of a meta tag, as shown in the examples above.</COMMENT_DATA>
+		</COMMENT>
+	</REMARKS>
+	<ADDITIONAL>
+		<PLATFORM>All devices.</PLATFORM>
+		<APPLIES>Not Persistent - Changes to this module will not persist when navigating to a new page.</APPLIES>
+		<REQ>Camera</REQ>
+			<VER_INTRODUCED>2.2</VER_INTRODUCED>
+    </ADDITIONAL>
+    <SEEALSO>
+		<TOPIC RELPATH ="../File Management/">FileTransfer</TOPIC>
+	</SEEALSO>
+  </FUNC>
+</HELPPAGE>

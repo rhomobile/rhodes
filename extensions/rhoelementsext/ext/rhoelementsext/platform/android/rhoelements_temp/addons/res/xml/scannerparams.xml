@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scanner-params version="1.0">
+
+	<!-- SUPPORTED DECODERS AND DECODER SETTINGS -->
+	<param alias="auspostal" id="decoder_australian_postal" type="boolean"></param>
+	<param alias="aztec" id="decoder_aztec" type="boolean"></param>
+	<param alias="canpostal" id="decoder_canadian_postal" type="boolean"></param>
+	<param alias="chinese_2of5" id="decoder_chinese_2of5" type="boolean"></param>
+	<param alias="chinese2of5" id="decoder_chinese_2of5" type="boolean"></param>
+	<param alias="codabar" id="decoder_codabar" type="boolean"></param>
+	<param alias="codabarclsiediting" id="decoder_codabar_clsi_editing" type="boolean"></param>
+	<param alias="codabarmaxlength" id="decoder_codabar_length2" type="integer"></param>
+	<param alias="codabarminlength" id="decoder_codabar_length1" type="integer"></param>
+	<param alias="codabarnotisediting" id="decoder_codabar_notis_editing" type="boolean"></param>
+	<param alias="codabarredundancy" id="decoder_codabar_redundancy" type="boolean"></param>
+	<param alias="code11" id="decoder_code11" type="boolean"></param>
+	<param alias="code11-reportcheckdigit" id="decoder_code11_report_check_digit" type="boolean"></param>
+	<param alias="code11reportcheckdigit" id="decoder_code11_report_check_digit" type="boolean"></param>
+	<param alias="code11redundancy" id="decoder_code11_redundancy" type="boolean"></param>
+	<param alias="code11checkdigitcount" id="decoder_code11_verify_check_digit" type="integer">
+		<translate id="none">0</translate>
+		<translate id="one">1</translate>
+		<translate id="two">2</translate>
+	</param>
+	<param alias="code11minlength" id="decoder_code11_length1" type="integer"></param>
+	<param alias="code11maxlength" id="decoder_code11_length2" type="integer"></param>
+	<param alias="code128" id="decoder_code128" type="boolean"></param>
+	<param alias="code128checkisbttable" id="decoder_code128_check_isbt_table" type="boolean"></param>
+	<param alias="code128ean128" id="decoder_code128_enable_ean128" type="boolean"></param>
+	<param alias="code128isbt128" id="decoder_code128_enable_isbt128" type="boolean"></param>
+	<param alias="code128isbt128concatmode" id="decoder_code128_isbt128_concat_mode" type="integer">
+		<translate id="never">0</translate>
+		<translate id="always">1</translate>
+		<translate id="auto">2</translate>
+	</param>
+	<param alias="code128maxlength" id="decoder_code128_length2" type="integer"></param>
+	<param alias="code128minlength" id="decoder_code128_length1" type="integer"></param>
+	<param alias="code128redundancy" id="decoder_code128_redundancy" type="boolean"></param>
+	<param alias="code128securitylevel" id="decoder_code128_security_level" type="integer"></param>
+	<param alias="code39" id="decoder_code39" type="boolean"></param>
+	<param alias="code39converttocode32" id="decoder_code39_convert_to_code32" type="boolean"></param>
+	<param alias="code39fullascii" id="decoder_code39_full_ascii" type="boolean"></param>
+	<param alias="code39maxlength" id="decoder_code39_length2" type="integer"></param>
+	<param alias="code39minlength" id="decoder_code39_length1" type="integer"></param>
+	<param alias="code39redundancy" id="decoder_code39_redundancy" type="boolean"></param>
+	<param alias="code39reportcheckdigit" id="decoder_code39_report_check_digit" type="boolean"></param>
+	<param alias="code39code32prefix" id="decoder_code39_report_code32_prefix" type="boolean"></param>
+	<param alias="code39verifycheckdigit" id="decoder_code39_verify_check_digit" type="boolean"></param>
+	<param alias="code39securitylevel" id="decoder_code39_security_level" type="integer"></param>
+	<param alias="code93" id="decoder_code93" type="boolean"></param>
+	<param alias="code93maxlength" id="decoder_code93_length2" type="integer"></param>
+	<param alias="code93minlength" id="decoder_code93_length1" type="integer"></param>
+	<param alias="code93redundancy" id="decoder_code93_redundancy" type="boolean"></param>
+	<param alias="composit_ab" id="decoder_composite_ab" type="boolean"></param>
+	<param alias="compositeab" id="decoder_composite_ab" type="boolean"></param>
+	<param alias="compositeabucclinkmode" id="decoder_composite_ab_ucc_link_mode" type="integer">
+		<translate id="never">0</translate>
+		<translate id="always">1</translate>
+		<translate id="auto">2</translate>
+	</param>
+	<param alias="composit_c" id="decoder_composite_c" type="boolean"></param>
+	<param alias="compositec" id="decoder_composite_c" type="boolean"></param>
+	<param alias="d2of5" id="decoder_d2of5" type="boolean"></param>
+	<param alias="d2of5maxlength" id="decoder_d2of5_length2" type="integer"></param>
+	<param alias="d2of5minlength" id="decoder_d2of5_length1" type="integer"></param>
+	<param alias="d2of5redundancy" id="decoder_d2of5_redundancy" type="boolean"></param>
+	<param alias="datamatrix" id="decoder_datamatrix" type="boolean"></param>
+	<param alias="dutchpostal" id="decoder_dutch_postal" type="boolean"></param>
+	<param alias="ean13" id="decoder_ean13" type="boolean"></param>
+	<param alias="ean8" id="decoder_ean8" type="boolean"></param>
+	<param alias="gs1databar" id="decoder_gs1_databar" type="boolean"></param>
+	<param alias="gs1databarexpanded" id="decoder_gs1_databar_exp" type="boolean"></param>
+	<param alias="gs1databarlimited" id="decoder_gs1_databar_lim" type="boolean"></param>
+	<param alias="i2of5" id="decoder_i2of5" type="boolean"></param>
+	<param alias="i2of5verifycheckdigit" id="decoder_i2of5_check_digit" type="integer">
+		<translate id="none">0</translate>
+		<translate id="uss">1</translate>
+		<translate id="opcc">2</translate>
+	</param>
+	<param alias="i2of5maxlength" id="decoder_i2of5_length2" type="integer"></param>
+	<param alias="i2of5minlength" id="decoder_i2of5_length1" type="integer"></param>
+	<param alias="i2of5redundancy" id="decoder_i2of5_redundancy" type="boolean"></param>
+	<param alias="i2of5converttoean13" id="decoder_itf14_convert_to_ean13" type="boolean"></param>
+	<param alias="i2of5reportcheckdigit" id="decoder_i2of5_report_check_digit" type="boolean"></param>
+	<param alias="jappostal" id="decoder_japanese_postal" type="boolean"></param>
+	<param alias="korean_3of5" id="decoder_korean_3of5" type="boolean"></param>
+	<param alias="korean3of5" id="decoder_korean_3of5" type="boolean"></param>
+	<param alias="maxicode" id="decoder_maxicode" type="boolean"></param>
+	<param alias="micropdf" id="decoder_micropdf" type="boolean"></param>
+	<param alias="microqr" id="decoder_microqr" type="boolean"></param>
+	<param alias="msi" id="decoder_msi" type="boolean"></param>
+	<param alias="msicheckdigits" id="decoder_msi_check_digit" type="integer">
+		<translate id="one">0</translate>
+		<translate id="two">1</translate>
+	</param>
+	<param alias="msicheckdigitscheme" id="decoder_msi_check_digit_scheme" type="integer">
+		<translate id="mod_11_10">0</translate>
+		<translate id="mod_10_10">1</translate>
+		<translate id="mod11">0</translate>
+		<translate id="mod10">1</translate>
+	</param>
+	<param alias="msimaxlength" id="decoder_msi_length2" type="integer"></param>
+	<param alias="msiminlength" id="decoder_msi_length1" type="integer"></param>
+	<param alias="msiredundancy" id="decoder_msi_redundancy" type="boolean"></param>
+	<param alias="msireportcheckdigit" id="decoder_msi_report_check_digit" type="boolean"></param>
+	<param alias="pdf417" id="decoder_pdf417" type="boolean"></param>
+	<param alias="qrcode" id="decoder_qrcode" type="boolean"></param>
+	<param alias="tlc39" id="decoder_tlc39" type="boolean"></param>
+	<param alias="trioptic39" id="decoder_trioptic39" type="boolean"></param>
+	<param alias="ukpostal" id="decoder_uk_postal" type="boolean"></param>
+	<param alias="ukpostalreportcheckdigit" id="decoder_uk_postal_report_check_digit" type="boolean"></param>
+	<param alias="upc_eanbookland" id="upcean_bookland" type="boolean"></param>
+	<param alias="upceanbookland" id="upcean_bookland" type="boolean"></param>
+	<param alias="upc_eanconvertrsstoupcean" id="databar_to_upc_ean" type="boolean"></param>
+	<param alias="upceanconvertrsstoupcean" id="databar_to_upc_ean" type="boolean"></param>
+	<param alias="upc_eancoupon" id="upcean_coupon" type="boolean"></param>
+	<param alias="upceancoupon" id="upcean_coupon" type="boolean"></param>
+	<param alias="upc_eanretrycount" id="upcean_retry_count" type="integer"></param>
+	<param alias="upceanretrycount" id="upcean_retry_count" type="integer"></param>
+	<param alias="upc_eansecuritylevel" id="upcean_security_level" type="integer">
+		<translate id="none">-2</translate>
+		<translate id="ambiguous">-2</translate>
+		<translate id="all">-2</translate>
+	</param>
+	<param alias="upceansecuritylevel" id="upcean_security_level" type="integer">
+		<translate id="none">-2</translate>
+		<translate id="ambiguous">-2</translate>
+		<translate id="all">-2</translate>
+	</param>
+	<param alias="upc_eansupplemental2" id="upcean_supplemental2" type="boolean"></param>
+	<param alias="upc_eansupplemental5" id="upcean_supplemental5" type="boolean"></param>
+	<param alias="upc_eansupplementalmode" id="upcean_supplemental_mode" type="integer">
+		<translate id="none">0</translate>
+		<translate id="always">1</translate>
+		<translate id="auto">2</translate>
+		<translate id="smart">3</translate>
+		<translate id="378_379">4</translate>
+		<translate id="378or379">4</translate>
+		<translate id="978_979">5</translate>
+		<translate id="978or979">5</translate>
+		<translate id="414_419_434_439">6</translate>
+		<translate id="414or419or434or439">6</translate>
+		<translate id="977">7</translate>
+	</param>
+	<param alias="upceansupplemental2" id="upcean_supplemental2" type="boolean"></param>
+	<param alias="upceansupplemental5" id="upcean_supplemental5" type="boolean"></param>
+	<param alias="upceansupplementalmode" id="upcean_supplemental_mode" type="integer">
+		<translate id="none">0</translate>
+		<translate id="always">1</translate>
+		<translate id="auto">2</translate>
+		<translate id="smart">3</translate>
+		<translate id="378_379">4</translate>
+		<translate id="378or379">4</translate>
+		<translate id="978_979">5</translate>
+		<translate id="978or979">5</translate>
+		<translate id="414_419_434_439">6</translate>
+		<translate id="414or419or434or439">6</translate>
+		<translate id="977">7</translate>
+	</param>
+	<param alias="upca" id="decoder_upca" type="boolean"></param>
+	<param alias="upcapreamble" id="decoder_upca_preamble" type="integer">
+		<translate id="none">0</translate>
+		<translate id="system_char">1</translate>
+		<translate id="country_and_system_chars">2</translate>
+		<translate id="none">0</translate>
+		<translate id="systemchar">1</translate>
+		<translate id="countryandsystemchars">2</translate>
+	</param>
+	<param alias="upcareportcheckdigit" id="decoder_upca_report_check_digit" type="boolean"></param>
+	<param alias="upce0" id="decoder_upce0" type="boolean"></param>
+	<param alias="upce0converttoupca" id="decoder_upce0_convert_to_upca" type="boolean"></param>
+	<param alias="upce0preamble" id="decoder_upce0_preamble" type="integer">
+		<translate id="none">0</translate>
+		<translate id="system_char">1</translate>
+		<translate id="country_and_system_chars">2</translate>
+		<translate id="none">0</translate>
+		<translate id="systemchar">1</translate>
+		<translate id="countryandsystemchars">2</translate>
+	</param>
+	<param alias="upce0reportcheckdigit" id="decoder_upce0_report_check_digit" type="boolean"></param>
+	<param alias="upce1" id="decoder_upce1" type="boolean"></param>
+	<param alias="upce1converttoupca" id="decoder_upce1_convert_to_upca" type="boolean"></param>
+	<param alias="upce1preamble" id="decoder_upce1_preamble" type="integer">
+		<translate id="none">0</translate>
+		<translate id="system_char">1</translate>
+		<translate id="country_and_system_chars">2</translate>
+		<translate id="none">0</translate>
+		<translate id="systemchar">1</translate>
+		<translate id="countryandsystemchars">2</translate>
+	</param>
+	<param alias="upce1reportcheckdigit" id="decoder_upce1_report_check_digit" type="boolean"></param>
+	<param alias="us4statefics" id="decoder_us4state_fics" type="boolean"></param>
+	<param alias="usplanet" id="decoder_usplanet" type="boolean"></param>
+	<param alias="usplanetreportcheckdigit" id="decoder_usplanet_report_check_digit" type="boolean"></param>
+	<param alias="uspostnet" id="decoder_uspostnet" type="boolean"></param>
+	<param alias="uspostnetreportcheckdigit" id="decoder_uspostnet_report_check_digit" type="boolean"></param>
+	<param alias="webcode" id="decoder_webcode" type="boolean"></param>
+	<param alias="webcodedecodegtsubtype" id="decoder_webcode_subtype" type="boolean"></param>
+	
+	<!-- UNSUPPORTED DECODERS AND DECODER SETTINGS -->
+	<param alias="code128other128" id="decoder_code128_enable_plain" type="boolean"></param>
+	<param alias="composit_abuseupcpreamblecheckdigitrules" id="" type="deprecated"></param>
+	<param alias="compositeabuseupcpreamblecheckdigitrules" id="" type="deprecated"></param>
+	<param alias="ean8converttoean13" id="" type=""></param>
+	<param alias="korean_3of5redundancy" id="decoder_korean_3of5_redundancy" type="boolean"></param>
+	<param alias="korean3of5redundancy" id="decoder_korean_3of5_redundancy" type="boolean"></param>
+	<param alias="macromicropdf" id="" type=""></param>
+	<param alias="macropdf" id="" type=""></param>
+	<param alias="signature" id="decoder_signature" type="boolean"></param>
+	<param alias="trioptic39redundancy" id="decoder_trioptic39_redundancy" type="boolean"></param>
+	<param alias="upc_eanbooklandformat" id="upcean_bookland_format" type="integer">
+		<translate id="isbn_10">0</translate>
+		<translate id="isbn_13">1</translate>
+	</param>
+	<param alias="upc_eanlineardecode" id="upcean_linear_decode" type="boolean"></param>
+	<param alias="upc_eanrandomweightcheckdigit" id="upcean_random_weight_check_digit" type="boolean"></param>
+	<param alias="upceanbooklandformat" id="upcean_bookland_format" type="integer">
+		<translate id="isbn_10">0</translate>
+		<translate id="isbn_13">1</translate>
+	</param>
+	<param alias="upceanlineardecode" id="upcean_linear_decode" type="boolean"></param>
+	<param alias="upceanrandomweightcheckdigit" id="upcean_random_weight_check_digit" type="boolean"></param>
+	
+	<param alias="macromicropdfbufferlabels" id="" type=""></param>
+	<param alias="macromicropdfexclusive" id="" type=""></param>
+	<param alias="macromicropdfreportappendedinfo" id="" type=""></param>
+	<param alias="macropdfbufferlabels" id="" type=""></param>
+	<param alias="macropdfconverttopdf417" id="" type=""></param>
+	<param alias="macropdfexclusive" id="" type=""></param>
+	<param alias="code39concatenation" id="" type="deprecated"></param>
+	<param alias="us4state" id="" type=""></param>
+	
+	<!-- SUPPOERTED MODES -->
+	<param alias="illuminationmode" id="illumination_mode" type="string">
+		<translate id="alwaysoff">off</translate>
+		<translate id="alwayson">torch</translate>
+	</param>
+	<param alias="linearsecuritylevel" id="linear_security_level" type="integer">
+		<translate id="redundancyandlength">0</translate>
+		<translate id="shortorcodabar">1</translate>
+		<translate id="longandshort">3</translate>
+		<translate id="alltwice">2</translate>
+		<translate id="allthrice">4</translate>
+	</param>
+	<param alias="picklistmode" id="picklist" type="integer">
+		<translate id="disabled">0</translate>
+		<translate id="hardwarereticle">1</translate>
+		<translate id="softwarereticle">2</translate>
+	</param>
+	<param alias="scantimeout" id="beam_timer" type="integer"></param>
+	<param alias="viewfindermode" id="viewfinder_mode" type="integer">
+		<translate id="disabled">0</translate>
+		<translate id="enabled">1</translate>
+		<translate id="staticreticle">2</translate>
+		<translate id="dynamicreticle">-1</translate>
+	</param>
+	
+	<!-- UNSUPPORTED MODES -->
+	<param alias="viewfinderfeedbacktime" id="viewfinder_feedback_time" type="integer"></param>
+	<param alias="viewfinderfeedback" id="viewfinder_feedback_mode" type="integer">
+		<translate id="enabled">1</translate>
+		<translate id="disabled">0</translate>
+		<translate id="reticle">-1</translate>
+	</param>
+	<param alias="inverse1dmode" id="inverse_1d_mode" type="integer">
+		<translate id="disabled">0</translate>
+		<translate id="enabled">1</translate>
+		<translate id="auto">2</translate>
+	</param>
+	
+	<param alias="aimmode" id="" type=""></param>
+	<param alias="aimtype" id="" type=""></param>
+	<param alias="bidirectionalredundancy" id="" type=""></param>
+	<param alias="connectionidletimeout" id="" type=""></param>
+	<param alias="dbpmode" id="" type=""></param>
+	<param alias="differentsymboltimeout" id="" type=""></param>
+	<param alias="disconnectbtondisable" id="" type=""></param>
+	<param alias="displaybtaddressbarcodeonenable" id="" type=""></param>
+	<param alias="dpmmode" id="" type=""></param>
+	<param alias="focusmode" id="" type=""></param>
+	<param alias="klasseeins" id="" type=""></param>
+	<param alias="narrowbeam" id="" type=""></param>
+	<param alias="poorquality1dmode" id="" type=""></param>
+	<param alias="rasterheight" id="" type=""></param>
+	<param alias="rastermode" id="" type=""></param>
+	<param alias="samesymboltimeout" id="" type=""></param>
+	<param alias="signatureimageheight" id="" type=""></param>
+	<param alias="signatureimagequality" id="" type=""></param>
+	<param alias="signatureimagesize" id="" type=""></param>
+	<param alias="signatureimagewidth" id="" type=""></param>
+	<param alias="timedaimduration" id="" type=""></param>
+	<param alias="viewfinderheight" id="" type=""></param>
+	<param alias="viewfinderwidth" id="" type=""></param>
+	<param alias="viewfinderx" id="" type=""></param>
+	<param alias="viewfindery" id="" type=""></param>
+</scanner-params>

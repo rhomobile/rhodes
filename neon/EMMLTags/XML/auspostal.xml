@@ -1,0 +1,73 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>ausPostal</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Postal</PATH>
+		<TYPE>Decoder</TYPE>
+		<SYNOPSIS>is used to enable or disable the auspostal decoder.</SYNOPSIS>
+		<SYNTAX>
+            <USAGE>
+                <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="auspostal:[parameter]"&gt;</EXAMPLE>
+            </USAGE>
+        </SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>ausPostal</NAME>
+                		<VALUES>Enabled/Disabled</VALUES>
+				<DESC>Enables/Disables auspostal Decoder</DESC>
+				<DEFAULT>Device Specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only auspostal labels:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="all_decoders:disabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="auspostal:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="all_decoders:disabled;auspostal:enabled;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read all labels except auspostal:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="all_decoders:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="auspostal:disabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="all_decoders:enabled;auspostal:disabled;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-all_decoders" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-auspostal" Content="disabled"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports auspostal.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC RELPATH ="../">All_Decoders</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

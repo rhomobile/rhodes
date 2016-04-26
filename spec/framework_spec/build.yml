@@ -24,6 +24,4 @@ extensions: ["mspec", "fileutils", "zlib", "hmac", "digest", "digest-md5", "dige
 
 paths:
   extensions:
-  - ../../../Motorola-Extensions/build/ci/extensions
-  - ../../../Motorola-Extensions/lib/commonAPI
   - ../../../rhoconnect-client/ext/

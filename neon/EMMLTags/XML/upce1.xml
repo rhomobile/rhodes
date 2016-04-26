@@ -1,0 +1,67 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>upce1</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Upce1</PATH>
+		<TYPE>Decoder</TYPE>
+		<SYNOPSIS>is used to enable or disable the upce1 decoder.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="upce1:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>upce1</NAME>
+                		<VALUES>enabled/Disabled</VALUES>
+				<DESC>Enables the upce1 decoder.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upce1 labels:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:disabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upce1:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upce1 labels:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:disabled;upce1:enabled;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upce1 labels:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-all_decoders" Content="disabled"&gt;
+&lt;META HTTP-Equiv="scanner-upce1" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read all labels except upce1:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upce1:disabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports upce1.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC RELPATH ="../">All_Decoders</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

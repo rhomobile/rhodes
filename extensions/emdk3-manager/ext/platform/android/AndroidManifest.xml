@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rhomobile.rhodes"
+    android:installLocation="auto"
+    android:versionCode="29"
+    android:versionName="2.3.3">
+  <application >
+	<uses-library android:name="com.symbol.emdk" android:required="false"/>
+  </application >
+
+  <uses-permission android:name="com.symbol.emdk.permission.EMDK"/>
+</manifest> 
+

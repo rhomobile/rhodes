@@ -1,0 +1,97 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>sip</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>		
+		<SYNOPSIS>is used to control attributes of the soft input panel.  Note that these settings apply to both text boxes on the current page as well as the address bar</SYNOPSIS>
+		<MULTIPLE_INSTANCE>The SIP settings are application specific.  Switching to another application which uses the SIP module will apply the focused application's settings to it, e.g. the SIP may move position.</MULTIPLE_INSTANCE>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="SIP" content="[method / parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>                                                              
+				<NAME>left</NAME>
+				<VALUES>Horizontal position, in pixels</VALUES>
+				<DESC>Sets the horizontal position of the SIP in pixels. Not compatible with Finger Scrolling on Windows devices</DESC>
+				<DEFAULT>Center of the screen</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>top</NAME>
+				<VALUES>Vertical position, in pixels</VALUES>
+				<DESC>Sets the vertical position of the SIP in pixels. Not compatible with Finger Scrolling on Windows devices</DESC>
+				<DEFAULT>Bottom of the screen</DEFAULT>
+			</PARAM>				
+		</PARAMS_WITH_ATTRIBUTES>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>manual</NAME>
+				<DESC>The SIP will show or hide only when the SIP button is pressed.</DESC>
+				<DEFAULT>manual</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>automatic</NAME>
+				<DESC>Shows and hides the SIP when editable fields have focus.</DESC>
+				<DEFAULT>manual</DEFAULT>
+			</PARAM>				
+		</PARAMS_NO_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example moves the SIP to sit at the bottom of a 1/4 VGA screen:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SIP" Content="Left:0;Top:240"&gt;
+</CODE>
+			</EXAMPLE>				
+			<EXAMPLE>
+				<DESC>To completely disable the use of the SIP it can be positioned off the visible area of the screen.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SIP" Content="Left:640;Top:640"&gt;
+</CODE>
+			</EXAMPLE>				
+			<EXAMPLE>
+				<DESC>The following example sets the SIP to manual:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SIP" Content="Manual"&gt;
+</CODE>
+			</EXAMPLE>				
+		</EXAMPLES>
+		<REMARKS>
+		<COMMENT>
+			<COMMENT_HEADING>Disabling the SIP</COMMENT_HEADING>
+			<COMMENT_DATA>
+			If you want to completely disable to the use of the SIP, set it to appear off the visible area of the screen (see example above).  You can use a default meta tag to avoid pasting the tag on every page. 
+			</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Interaction with Hardware Keyboard</COMMENT_HEADING>
+			<COMMENT_DATA>The SIP used is the standard keyboard input panel supplied with Windows.  Certain incompatibilities exist when using the software keyboard on a device which also has a hardware keyboard though this will have no impact on the average user.  For example moving the SIP will reset the alpha or function key (orange or blue key) lock and using the orange or blue keys may reset the position of the SIP on certain devices.  Also note that if you press a hardware key the SIP will disappear if you are using the Internet Explorer engine and you will need to press the SIP button again or return focus to an editable field to get it to appear</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Interaction with Screen Rotation</COMMENT_HEADING>
+			<COMMENT_DATA>Depending on the underlying operating system the SIP position may change following screen rotation.  The SIP left and top parameters can be applied in a ScreenOrientationEvent to bypass this feature if required.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Backwards Compatibility</COMMENT_HEADING>
+			<COMMENT_DATA>
+			The SIP methods 'Manual' and 'Automatic' have slightly different behaviour when the configuration setting EngineInUse is set to Internet Explorer. Manual: When shown by the SIP Button, will show and hide when text boxes have focus.  Automatic: Shows and hides when text boxes have focus.  Applying SIP control Automatic will prevent SIP control Manual being applied in the same application.  To return to Manual SIP control you can press a hardware key.  In Backwards Compatibility mode Manual and Automatic do not apply for Windows CE, only Windows Mobile.
+			</COMMENT_DATA>
+		</COMMENT>
+		
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>Windows Only. No support for Android</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page. Moving the SIP may also persist after RhoElements has been shut down, dependent on Operating System.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Controls and Appearance/">SIPButton</TOPIC>
+			<TOPIC RELPATH="../Controls and Appearance/">AddressBar</TOPIC>
+			<TOPIC RELPATH="../Getting Started/">ConfigurationSettings</TOPIC>			
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

@@ -1,0 +1,457 @@
+<?xml version = "1.0"?>
+<API>
+	<MODULE name="Device" parent="Rho" license="Required">
+        <HELP_OVERVIEW>The Device API provides access to some device level functionality that is only available on Symbol devices such as suspend, calibrate, powerOff, wake, reboot etc.</HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`.
+    :::ruby
+    extensions: ["symboldevice"]
+
+The `symboldevice` extension is also included automatically if you specify the following in your `build.yml`
+    :::ruby
+    app_type: "rhoelements"
+
+NOTE: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your build.yml as shown [here](../guide/build_config#other-build-time-settings).
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+        </MORE_HELP>
+		
+      <VER_INTRODUCED>5.1.0</VER_INTRODUCED>
+      <PLATFORM>WM, CE, Android</PLATFORM>
+      <TEMPLATES>
+      </TEMPLATES>
+      <METHODS access="STATIC">            
+			
+			<METHOD name="calibrate" hasCallback="optional">
+				<CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>Whether or not the calibration was successfully done, status will be 'success' or 'failed'.</DESC>
+                        </PARAM>
+						<PARAM name="message" type="STRING">
+                            <DESC>If 'status' == 'success', the message will contain 'Calibration was done succesfully.' and if 'status' == 'failed', the message will contain 'Calibration was failed.'.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>    
+                <DESC>Carries out the screen calibration routine.</DESC>
+				<PLATFORM>WM, CE</PLATFORM>
+            </METHOD>
+
+            <METHOD name="suspend" hasCallback="optional">
+				<CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>If the suspend was unsuccessful, status will be 'failed'. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+						<PARAM name="message" type="STRING">
+                            <DESC>If 'status' == 'failed', the message will contain an error message. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>  
+                <DESC>Puts the device into suspend mode. On suspend, the device goes to hibernation mode. Callback is triggered only for 'failed' status. In some devices, the suspend doesnot happen instead it puts the device into an idle state.</DESC>
+				<PLATFORM>WM, CE</PLATFORM>
+            </METHOD>
+
+            <METHOD name="powerOff" hasCallback="optional">
+				<CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>If the powerOff was unsuccessful, status will be 'failed'. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+						<PARAM name="message" type="STRING">
+                            <DESC>If 'status' == 'failed', the message will contain an error message. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>  
+                <DESC>Puts the device into power off mode. In this mode the device will draw no power. Only supported on SB1. Callback is triggered only for 'failed' status.</DESC>
+				<PLATFORM>WM, CE</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="idle" hasCallback="optional">
+				<CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>If the mode of the device was not changed to idle mode, status will be 'failed'. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+						<PARAM name="message" type="STRING">
+                            <DESC>If 'status' == 'failed', the message will contain an error message. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>  
+                <DESC>Puts the device into idle mode. In this mode, the screen display is turned off. Callback is triggered only for 'failed' status.</DESC>
+				<PLATFORM>WM, CE</PLATFORM>
+            </METHOD>
+			
+            <METHOD name="wake" hasCallback="optional">
+				<CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>In WM/CE, if the wake was unsuccessful, status will be 'failed'. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+						<PARAM name="message" type="STRING">
+                            <DESC>In WM/CE, if 'status' == 'failed', the message will contain an error message. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>  
+                <DESC>In WM/CE, wakes the device from idle state to active state. Callback is triggered only for 'failed' status. In Android, it will turn on the display, if it was off. The callback parameter is ignored in Android platform.</DESC>
+				<PLATFORM>WM, CE, Android</PLATFORM>
+            </METHOD>
+
+            <METHOD name="reboot" hasCallback="optional">
+                <PARAMS>
+                    <PARAM name="bootType" type="STRING">
+                    </PARAM>
+					<DESC>The string value is either "Warm" or "Cold" or "ColdCAD". It will do warm boot, if nothing has been passed as an argument or if the string value is either empty i.e. "" or other than "Warm" or "Cold" or "ColdCAD". Value is case insensitive. Note, some devices may not support the particular 'bootType' values. It may do normal warm boot for such devices.</DESC>
+                </PARAMS>
+				<CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>If the reboot was unsuccessful, status will be 'failed'. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+						<PARAM name="message" type="STRING">
+                            <DESC>If 'status' == 'failed', the message will contain an error message. In all other cases, it will remain empty.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>  
+				<DESC>It reboots the terminal using either a Warm or Cold software boot (as specified). Note on CE6 devices a "ColdCAD" boot is required to replicate the Coldboot key sequence, e.g. 1+9+Power on an MC3000. Callback is triggered only for 'failed' status.</DESC>
+				<PLATFORM>WM, CE</PLATFORM>
+            </METHOD>           
+
+        </METHODS>
+        <REMARKS>
+			<REMARK title="General">
+                <DESC>
+                    <![CDATA[
+Note that some devices may not support all the API's or there is a possiblities of discrepancy across BSP's & platforms.
+                    ]]>
+                </DESC>
+			</REMARK>
+			<REMARK title="Power Off">
+                <DESC>
+                    <![CDATA[
+Note that some devices may not support power off feature. Those devices may either throw an error message or it may enter into Sleep mode.
+                    ]]>
+                </DESC>
+			</REMARK>
+			<REMARK title="Reboot">
+				<DESC>
+					<![CDATA[
+Note that in WM5.0 and above, there is no software difference between a warm and a cold boot as the device uses persistent storage; both the file and registry will remain the same after boot. In WM/CE, not all device support Cold or ColdCAD feature. Device may warm boot even though any of these option has been selected.
+					]]>
+				</DESC>
+			</REMARK>
+			<REMARK title="Interaction with Unattended Method of the Push Module">
+				<DESC>
+					<![CDATA[
+The suspend functionality is incompatible with the unattended functionality of the push module and they should not be used together.
+					]]>
+				</DESC>
+			</REMARK>
+			<REMARK title="wake Method">
+				<DESC>
+					<![CDATA[
+The wake functionality can be used along with Push module. For eg: in the push detected event the user can call the wake method to wake the device.
+					]]>
+				</DESC>
+			</REMARK>
+		</REMARKS>
+        <USER_OVERVIEW></USER_OVERVIEW>
+		<EXAMPLES>
+			<EXAMPLE title="Setting callback">
+				<SECTIONS>
+					<SECTION>
+						<DESC>Setting a callback
+						</DESC>
+						<CODE>
+							<RUBY><![CDATA[
+#Callback is optional, user can call the API with or without callback.
+#User can set the callback in the below manner.							
+def mycallback
+	myMessage = "Status:" + @params['status'] + "\n";
+		if(@params['message'] != "")
+			myMessage += "Message:" + @params['message']
+		end		
+	Alert.show_popup(myMessage)
+end							
+]]>
+							</RUBY>
+							<JAVASCRIPT><![CDATA[	
+//Callback is optional, user can call the API with or without callback.
+//User can set the callback in the below manner.							
+function mycallback(data){
+	var myMessage = "Status:" + data.status + "\n";
+	if(data.message != ""){
+		myMessage += "Message:" + data.message;
+	}
+	alert(myMessage);
+}
+]]>
+							</JAVASCRIPT>
+						</CODE>
+					</SECTION>
+				</SECTIONS>							
+			</EXAMPLE>
+			<EXAMPLE title="Calibrating the device">
+				<SECTIONS>
+					<SECTION>
+						<DESC>Calibrating the device
+						</DESC>
+						<CODE>
+							<RUBY><![CDATA[
+#Calibrating the device with callback
+Rho::Device.calibrate(mycallback);	
+#On successful calibration, callback will update the 'status' as 'success' and 'message' as 'Calibration was done succesfully.'.
+#On unsuccessful calibration, callback will update the 'status' as 'failed' and 'message' as 'Calibration was failed.'.
+
+#Calibrating the device without callback
+Rho::Device.calibrate();							
+]]>
+							</RUBY>
+							<JAVASCRIPT><![CDATA[			
+//Calibrating the device with callback
+Rho.Device.calibrate(mycallback);	
+//On successful calibration, callback will update the 'status' as 'success' and 'message' as 'Calibration was done succesfully.'.
+//On unsuccessful calibration, callback will update the 'status' as 'failed' and 'message' as 'Calibration was failed.'.
+							
+//Calibrating the device without callback
+Rho.Device.calibrate();							
+]]>
+							</JAVASCRIPT>
+						</CODE>
+					</SECTION>
+				</SECTIONS>
+			</EXAMPLE>
+			<EXAMPLE title="Suspending the device">
+				<SECTIONS>
+					<SECTION>
+						<DESC>Suspending the device
+						</DESC>
+						<CODE>
+							<RUBY><![CDATA[
+#Suspending the device with callback
+Rho::Device.suspend(mycallback);
+#On successful suspend, callback will not be updated.
+#On unsuccessful suspend, callback will update the 'status' as 'failed' and 'message' will contain the error message.
+							
+#Suspending the device without callback
+Rho::Device.suspend();							
+]]>
+							</RUBY>
+							<JAVASCRIPT><![CDATA[
+//Suspending the device with callback
+Rho.Device.suspend(mycallback);
+//On successful suspend, callback will not be updated.
+//On unsuccessful suspend, callback will update the 'status' as 'failed' and 'message' will contain the error message.
+							
+//Suspending the device without callback
+Rho.Device.suspend();							
+]]>
+							</JAVASCRIPT>
+						</CODE>
+					</SECTION>
+				</SECTIONS>
+			</EXAMPLE>
+			<EXAMPLE title="Power Off the device">
+				<SECTIONS>
+					<SECTION>
+						<DESC>Power Off the device
+						</DESC>
+						<CODE>
+							<RUBY><![CDATA[
+#Power Off the device with callback
+Rho::Device.powerOff(mycallback);	
+#On successful powerOff, callback will not be updated.
+#On unsuccessful powerOff, callback will update the 'status' as 'failed' and 'message' will contain the error message.
+							
+#Power Off the device without callback
+Rho::Device.powerOff();							
+]]>
+							</RUBY>
+							<JAVASCRIPT><![CDATA[
+//Power Off the device with callback
+Rho.Device.powerOff(mycallback);	
+//On successful powerOff, callback will not be updated.
+//On unsuccessful powerOff, callback will update the 'status' as 'failed' and 'message' will contain the error message.
+							
+//Power Off the device without callback
+Rho.Device.powerOff();							
+]]>
+							</JAVASCRIPT>
+						</CODE>
+					</SECTION>
+				</SECTIONS>
+			</EXAMPLE>
+			<EXAMPLE title="Switching device to idle mode">
+				<SECTIONS>
+					<SECTION>
+						<DESC>Switching device to idle mode
+						</DESC>
+						<CODE>
+							<RUBY><![CDATA[
+#Switching device to idle mode with callback
+Rho::Device.idle(mycallback);	
+#On successful idle, callback will not be updated.
+#On unsuccessful idle, callback will update the 'status' as 'failed' and 'message' will contain the error message.
+							
+#Switching device to idle mode without callback
+Rho::Device.idle();							
+]]>
+							</RUBY>
+							<JAVASCRIPT><![CDATA[
+//Switching device to idle mode with callback
+Rho.Device.idle(mycallback);	
+//On successful idle, callback will not be updated.
+//On unsuccessful idle, callback will update the 'status' as 'failed' and 'message' will contain the error message.
+							
+//Switching device to idle mode without callback
+Rho.Device.idle();							
+]]>
+							</JAVASCRIPT>
+						</CODE>
+					</SECTION>
+				</SECTIONS>
+			</EXAMPLE>
+			<EXAMPLE title="Wake the device">
+				<SECTIONS>
+					<SECTION>
+						<DESC>Wake the device
+						</DESC>
+						<CODE>
+							<RUBY><![CDATA[
+#Wake the device with callback
+#Note: callback is ignored in Android platform. Hence no update will be retrieved on Android platform.
+Rho::Device.wake(mycallback);	
+#On successful wake, callback will not be updated.
+#On unsuccessful wake, callback will update the 'status' as 'failed' and 'message' will contain the error message.
+							
+#Wake the device without callback
+Rho::Device.wake();							
+]]>
+							</RUBY>
+							<JAVASCRIPT><![CDATA[
+//Wake the device with callback
+//Note: callback is ignored in Android platform. Hence no update will be retrieved on Android platform.
+Rho.Device.wake(mycallback);	
+//On successful wake, callback will not be updated.
+//On unsuccessful wake, callback will update the 'status' as 'failed' and 'message' will contain the error message.
+							
+//Wake the device without callback
+Rho.Device.wake();							
+]]>
+							</JAVASCRIPT>
+						</CODE>
+					</SECTION>
+				</SECTIONS>
+			</EXAMPLE>
+			<EXAMPLE title="Rebooting the device">
+				<SECTIONS>
+					<SECTION>
+						<DESC>Rebooting the device
+						</DESC>
+						<CODE>
+							<RUBY><![CDATA[
+#With callback
+
+#The callback is updated only for failed cases as mentioned below:-
+#For 'Warm' boot, the callback contains 'status' as 'failed' and 'message' as 'Failed to do Warm booting.'.
+#For 'Cold' boot, the callback contains 'status' as 'failed' and 'message' as 'Failed to do Cold booting.'.
+#For 'ColdCAD' boot, the callback contains 'status' as 'failed' and 'message' as 'Failed to do ColdCAD booting.'.
+#Other than 'Warm' or 'Cold' or 'ColdCAD' boot, the callback contains 'status' as 'failed' and 'message' as 'Failed to do Warm booting.'.
+
+#Rebooting the device using the string value as 'Warm'. 
+Rho::Device.reboot("Warm",mycallback);
+
+#Rebooting the device using the string value as 'Cold'. Note this feature may not be supported on all devices.
+Rho::Device.reboot("Cold",mycallback);
+							
+#Rebooting the device using the string value as 'ColdCAD'. Note this feature may not be supported on all devices.
+Rho::Device.reboot("ColdCAD",mycallback);		
+
+#Rebooting the device with an empty string, results in warm booting of the device. 
+Rho::Device.reboot("",mycallback);	
+
+#Rebooting the device without passing any argument and only with callback, results in warm booting of the device.
+Rho::Device.reboot(mycallback);	
+
+#Rebooting the device with any string other than 'Warm' or 'Cold' or 'ColdCAD', results in warm booting of the device.
+Rho::Device.reboot("XYZ",mycallback);	
+							
+#Without callback							
+#Rebooting the device using the string value as 'Warm'. 
+Rho::Device.reboot("Warm");
+
+#Rebooting the device using the string value as 'Cold'. Note this feature may not be supported on all devices.
+Rho::Device.reboot("Cold");
+							
+#Rebooting the device using the string value as 'ColdCAD'. Note this feature may not be supported on all devices.
+Rho::Device.reboot("ColdCAD");		
+
+#Rebooting the device with an empty string, results in warm booting of the device. 
+Rho::Device.reboot("");	
+
+#Rebooting the device without passing any argument, results in warm booting of the device.
+Rho::Device.reboot();	
+
+#Rebooting the device with any string other than 'Warm' or 'Cold' or 'ColdCAD', results in warm booting of the device.
+Rho::Device.reboot("XYZ");						
+]]>
+							</RUBY>
+							<JAVASCRIPT><![CDATA[
+//With callback
+
+//The callback is updated only for failed cases as mentioned below:-
+//For 'Warm' boot, the callback contains 'status' as 'failed' and 'message' as 'Failed to do Warm booting.'.
+//For 'Cold' boot, the callback contains 'status' as 'failed' and 'message' as 'Failed to do Cold booting.'.
+//For 'ColdCAD' boot, the callback contains 'status' as 'failed' and 'message' as 'Failed to do ColdCAD booting.'.
+//Other than 'Warm' or 'Cold' or 'ColdCAD' boot, the callback contains 'status' as 'failed' and 'message' as 'Failed to do Warm booting.'.
+
+//Rebooting the device using the string value as 'Warm'. 
+Rho.Device.reboot("Warm",mycallback);
+
+//Rebooting the device using the string value as 'Cold'. Note this feature may not be supported on all devices.
+Rho.Device.reboot("Cold",mycallback);
+							
+//Rebooting the device using the string value as 'ColdCAD'. Note this feature may not be supported on all devices.
+Rho.Device.reboot("ColdCAD",mycallback);	
+
+//Rebooting the device with an empty string, results in warm booting of the device. 
+Rho.Device.reboot("",mycallback);	
+
+//Rebooting the device without passing any argument and only with callback, results in warm booting of the device.
+Rho.Device.reboot(mycallback);	
+
+//Rebooting the device with any string other than 'Warm' or 'Cold' or 'ColdCAD', results in warm booting of the device.
+Rho.Device.reboot("XYZ",mycallback);
+							
+//Without callback
+//Rebooting the device using the string value as 'Warm'. 
+Rho.Device.reboot("Warm");
+
+//Rebooting the device using the string value as 'Cold'. Note this feature may not be supported on all devices.
+Rho.Device.reboot("Cold");
+							
+//Rebooting the device using the string value as 'ColdCAD'. Note this feature may not be supported on all devices.
+Rho.Device.reboot("ColdCAD");	
+
+//Rebooting the device with an empty string, results in warm booting of the device. 
+Rho.Device.reboot("");	
+
+//Rebooting the device without passing any argument, results in warm booting of the device.
+Rho.Device.reboot();	
+
+//Rebooting the device with any string other than 'Warm' or 'Cold' or 'ColdCAD', results in warm booting of the device.
+Rho.Device.reboot("XYZ");								
+]]>
+							</JAVASCRIPT>
+						</CODE>
+					</SECTION>
+				</SECTIONS>
+			</EXAMPLE>
+		</EXAMPLES>        
+    </MODULE>
+</API>    

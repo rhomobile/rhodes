@@ -1,0 +1,101 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>keyState</NAME>
+		<PATH>Controls and Appearance</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to set the parameters of the KeyState indicator. The KeyState indicator will display icons for Shift, Alt, Control, Function, Caps, Num lock and Orange key states.
+    It grows from the right as necessary if more than one key state is set at once.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="KeyState" content="[parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+    <PARAMS_WITH_ATTRIBUTES>
+		  <PARAM>
+        <NAME>right</NAME>
+        <VALUES>Positive number, representing pixels</VALUES>
+        <DESC>Sets the X position of the right-hand edge of the KeyState indicators.</DESC>
+        <DEFAULT>Indicators start at the bottom right of the screen.</DEFAULT>
+      </PARAM>
+  
+		  <PARAM>
+        <NAME>left</NAME>
+        <VALUES>Positive number, representing pixels</VALUES>
+        <DESC>The same as Right, included for backward compatibility.</DESC>
+        <DEFAULT>Indicators start at the bottom right of the screen.</DEFAULT>
+      </PARAM>
+  
+      <PARAM>
+        <NAME>top</NAME>
+        <VALUES>Positive number, representing pixels</VALUES>
+        <DESC>Sets the Y position of the KeyState indicators.</DESC>
+        <DEFAULT>Indicators start at the bottom right of the screen.</DEFAULT>
+      </PARAM>
+      <PARAM>
+        <NAME>height</NAME>
+        <VALUES>Positive number, representing pixels</VALUES>
+        <DESC>Sets the height of the KeyState Indicators.</DESC>
+        <DEFAULT>Dependant on screen resolution</DEFAULT>
+      </PARAM>
+    
+      <PARAM>
+        <NAME>width</NAME>
+        <VALUES>Positive number, representing pixels</VALUES>
+        <DESC>Sets the width of each KeyState indicator.</DESC>
+        <DEFAULT>Dependant on screen resolution</DEFAULT>
+      </PARAM>
+
+      <PARAM>
+        <NAME>visibility</NAME>
+        <VALUES>Visible, Hidden</VALUES>
+        <DESC>Sets the visibility of the keystate indicators.</DESC>
+        <DEFAULT>Hidden.</DEFAULT>
+      </PARAM>
+        
+      </PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example shows the KeyState indicators and sets the right and top coordinates to 50.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="KeyState" Content="Visibility:Visible"&gt;
+&lt;META HTTP-Equiv="KeyState" Content="Right:50"&gt;
+&lt;META HTTP-Equiv="KeyState" Content="Top:50"&gt;
+</CODE>
+			</EXAMPLE>
+      <EXAMPLE>
+        <DESC>The following example shows the KeyState and sets the right and top coordinates to 20.</DESC>
+        <CODE>
+&lt;META HTTP-Equiv="KeyState" Content="Visibility:Visible; Right:20; Top:20"&gt;
+        </CODE>
+      </EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Switching to Other Applications</COMMENT_HEADING>
+				<COMMENT_DATA>All controls are designed to be shown on top of RhoElements.  If you require to switch to an application other than RhoElements you should minimize RhoElements to ensure the buttons do not remain shown. (Not applicable to Android devices)</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Screen Orientation</COMMENT_HEADING>
+				<COMMENT_DATA>When the screen orientation changes, either using the ScreenOrientation tag or by rotating a device with hardware support, the command areas will automatically move and resize to fit the new layout. However the buttons themselves are not moved and in some cases this may result in them being off the screen or not in the expected position. If so they must be moved manually by detecting the ScreenOrientationEvent.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Devices lacking support</COMMENT_HEADING>
+				<COMMENT_DATA>Due to platform limitations this API is not available on the following Symbol Technologies' devices:</COMMENT_DATA>
+				<COMMENT_DATA>1. Workabout Pro 4</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except Android devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>SIPButton</TOPIC>
+			<TOPIC>ZoomTextButton</TOPIC>				
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

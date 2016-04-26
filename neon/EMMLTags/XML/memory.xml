@@ -1,0 +1,86 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="RhoElements_runtime_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>memory</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to to retrieve the current available memory or notification of memory dropping below a user defined value.</SYNOPSIS>		
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Memory" content="[method / parameter]"&gt;</EXAMPLE>
+			</USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Memory" content="memoryEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>getMemoryStats</NAME>
+				<DESC>This returns the current status of the device such as total memory and available memory via memoryEvent</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>			
+		</PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>lowMemThreshold</NAME>
+				<VALUES>Values in KB</VALUES>
+				<DESC>The minimum amount of available memory, specified in KB. </DESC>
+				<DEFAULT>10% of the total memory</DEFAULT>
+			</PARAM>			
+		</PARAMS_WITH_ATTRIBUTES>
+		<RETURNS>
+			<TAG>
+				<TAG_NAME>memoryEvent</TAG_NAME>
+				<TAG_NOTES>The memoryEvent event is triggered when the available Memory drops below the set value.</TAG_NOTES>
+				<RETVAL>
+					<NAME>totalMemory</NAME>
+					<DESC>The total memory in the device, specified in KB</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>availMemory</NAME>
+					<DESC>The available memory in the device, specified in KB</DESC>
+				</RETVAL>
+			</TAG>
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example sets the lowMemThreshold to 1500 KB:</DESC>
+<CODE>
+&lt;META HTTP-EQUIV="Memory" CONTENT="lowMemThreshold:1500; memoryEvent:url('Javascript:notification('%s');');"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example sets the memory threshold value to 10% of the total memory in the device:</DESC>
+<CODE>
+&lt;HTML&gt;
+	&lt;HEAD&gt;
+	&lt;TITLE&gt;memory Notification&lt;/TITLE&gt;
+	&lt;META HTTP-EQUIV="memory" content="memoryEvent:url('javascript:getMemory(%json);')"&gt;			
+	&lt;/HEAD&gt;	
+	&lt;SCRIPT type="text/javascript"&gt;
+	function getMemory(jsonObject)
+	{
+		alert("Total Memory: " + jsonObject.totalMemory + "KB, Avail Memory: " + jsonObject.availMemory + "KB");		
+		memory.lowMemThreshold  = jsonObject.totalMemory / 10;
+		memory.memoryEvent = "onLowMemory(%json);";		
+	}	
+	function onLowMemory(jsonObject)
+	{
+		alert("The device is running low on memory, only " + jsonObject.availMemory + "KB is left on the device");			
+	}	
+	&lt;/SCRIPT&gt;
+	&lt;BR&gt;&lt;BR&gt;&lt;INPUT type="button" value="GetMemory" onclick="memory.getMemoryStats();"&gt;
+&lt;/HTML&gt;
+</CODE>
+		</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except Enterprise Tablet.</PLATFORM>
+			<APPLIES>Non Persistent - Changes to this module will not persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>2.1</VER_INTRODUCED>
+		</ADDITIONAL>		
+	</FUNC>
+</HELPPAGE>

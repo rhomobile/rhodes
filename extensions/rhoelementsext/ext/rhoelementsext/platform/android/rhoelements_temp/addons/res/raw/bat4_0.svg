@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.2" baseProfile="tiny"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 x="0px" y="0px" width="46px" height="32px" viewBox="0 0 46 32" overflow="visible" xml:space="preserve">
+<defs>
+</defs>
+<path fill="#000000" d="M38,4v3v4h4v10h-4v4v3H4V4H38 M42,0H0v32h42v-7h4V7h-4V0L42,0z"/>
+<path fill="#FFFFFF" d="M38,4 v7 h4 v10 h-4 v7 H4 V4 H38 z" />
+<rect x="30" y="6" fill="#000000" width="6" height="20"/>
+<rect x="22" y="6" fill="#000000" width="6" height="20"/>
+<rect x="14" y="6" fill="#000000" width="6" height="20"/>
+<rect x="6" y="6" fill="#000000" width="6" height="20"/>
+</svg>

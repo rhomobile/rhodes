@@ -1,0 +1,393 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C01D66461880445100A741BD /* IPrinterTech.h in Headers */ = {isa = PBXBuildFile; fileRef = C01D66431880445100A741BD /* IPrinterTech.h */; };
+		C01D66471880445100A741BD /* PrinterTechBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C01D66441880445100A741BD /* PrinterTechBase.h */; };
+		C01D66481880445100A741BD /* PrinterTechBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C01D66451880445100A741BD /* PrinterTechBase.m */; };
+		C057B67118688F6D000D2CB8 /* PrinterBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C057B65618688F6D000D2CB8 /* PrinterBase.h */; };
+		C057B67218688F6D000D2CB8 /* PrinterBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C057B65718688F6D000D2CB8 /* PrinterBase.m */; };
+		C057B67318688F6D000D2CB8 /* PrinterFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C057B65818688F6D000D2CB8 /* PrinterFactoryBase.h */; };
+		C057B67518688F6D000D2CB8 /* PrinterSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C057B65A18688F6D000D2CB8 /* PrinterSingletonBase.h */; };
+		C057B67618688F6D000D2CB8 /* PrinterSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C057B65B18688F6D000D2CB8 /* PrinterSingletonBase.m */; };
+		C057B67718688F6D000D2CB8 /* IPrinter.h in Headers */ = {isa = PBXBuildFile; fileRef = C057B65C18688F6D000D2CB8 /* IPrinter.h */; };
+		C057B67818688F6D000D2CB8 /* printer_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = C057B65E18688F6D000D2CB8 /* printer_js_wrap.mm */; };
+		C057B67918688F6D000D2CB8 /* printer_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = C057B66018688F6D000D2CB8 /* printer_ruby_wrap.m */; };
+		C057B69918688F76000D2CB8 /* printer_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C057B68E18688F76000D2CB8 /* printer_api_init.cpp */; };
+		C057B69A18688F76000D2CB8 /* printer_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C057B68F18688F76000D2CB8 /* printer_js_api.cpp */; };
+		C057B69B18688F76000D2CB8 /* printer_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C057B69018688F76000D2CB8 /* printer_ruby_api.c */; };
+		C057B6A318688FF8000D2CB8 /* PrinterImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = C057B69D18688FF8000D2CB8 /* PrinterImpl.h */; };
+		C057B6A418688FF8000D2CB8 /* PrinterImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = C057B69E18688FF8000D2CB8 /* PrinterImpl.m */; };
+		C057B6A518688FF8000D2CB8 /* PrinterFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C057B69F18688FF8000D2CB8 /* PrinterFactorySingleton.m */; };
+		C057B6A618688FF8000D2CB8 /* PrinterSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = C057B6A018688FF8000D2CB8 /* PrinterSetup.m */; };
+		C057B6A718688FF8000D2CB8 /* PrinterSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = C057B6A118688FF8000D2CB8 /* PrinterSingleton.h */; };
+		C057B6A818688FF8000D2CB8 /* PrinterSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C057B6A218688FF8000D2CB8 /* PrinterSingleton.m */; };
+		C057B716186908DF000D2CB8 /* PrinterFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C057B715186908DF000D2CB8 /* PrinterFactoryBase.m */; };
+		FAC155E7145855CF0016F3BD /* Printing_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Printing_Prefix.pch */; };
+		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C00B2C5F1884D5A800F0EBB8 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
+		C01D66431880445100A741BD /* IPrinterTech.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPrinterTech.h; sourceTree = "<group>"; };
+		C01D66441880445100A741BD /* PrinterTechBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterTechBase.h; sourceTree = "<group>"; };
+		C01D66451880445100A741BD /* PrinterTechBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterTechBase.m; sourceTree = "<group>"; };
+		C057B65618688F6D000D2CB8 /* PrinterBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterBase.h; sourceTree = "<group>"; };
+		C057B65718688F6D000D2CB8 /* PrinterBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterBase.m; sourceTree = "<group>"; };
+		C057B65818688F6D000D2CB8 /* PrinterFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterFactoryBase.h; sourceTree = "<group>"; };
+		C057B65A18688F6D000D2CB8 /* PrinterSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterSingletonBase.h; sourceTree = "<group>"; };
+		C057B65B18688F6D000D2CB8 /* PrinterSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterSingletonBase.m; sourceTree = "<group>"; };
+		C057B65C18688F6D000D2CB8 /* IPrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPrinter.h; sourceTree = "<group>"; };
+		C057B65E18688F6D000D2CB8 /* printer_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = printer_js_wrap.mm; sourceTree = "<group>"; };
+		C057B66018688F6D000D2CB8 /* printer_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = printer_ruby_wrap.m; sourceTree = "<group>"; };
+		C057B68E18688F76000D2CB8 /* printer_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = printer_api_init.cpp; sourceTree = "<group>"; };
+		C057B68F18688F76000D2CB8 /* printer_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = printer_js_api.cpp; sourceTree = "<group>"; };
+		C057B69018688F76000D2CB8 /* printer_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = printer_ruby_api.c; sourceTree = "<group>"; };
+		C057B69D18688FF8000D2CB8 /* PrinterImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterImpl.h; sourceTree = "<group>"; };
+		C057B69E18688FF8000D2CB8 /* PrinterImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterImpl.m; sourceTree = "<group>"; };
+		C057B69F18688FF8000D2CB8 /* PrinterFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterFactorySingleton.m; sourceTree = "<group>"; };
+		C057B6A018688FF8000D2CB8 /* PrinterSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterSetup.m; sourceTree = "<group>"; };
+		C057B6A118688FF8000D2CB8 /* PrinterSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterSingleton.h; sourceTree = "<group>"; };
+		C057B6A218688FF8000D2CB8 /* PrinterSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterSingleton.m; sourceTree = "<group>"; };
+		C057B715186908DF000D2CB8 /* PrinterFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterFactoryBase.m; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libPrinting.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPrinting.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD45FD51225FED600141873 /* Printing_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Printing_Prefix.pch; sourceTree = "<group>"; };
+		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
+				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libPrinting.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* Printing */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = Printing;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C00B2C5F1884D5A800F0EBB8 /* QuartzCore.framework */,
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FAD4602C12260A8500141873 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C057B65418688F6D000D2CB8 /* generated */,
+				C057B68618688F76000D2CB8 /* shared */,
+				C057B66918688F6D000D2CB8 /* impl */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* Printing_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		C057B65418688F6D000D2CB8 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C057B65C18688F6D000D2CB8 /* IPrinter.h */,
+				C057B65518688F6D000D2CB8 /* base_impl */,
+				C057B65D18688F6D000D2CB8 /* javascript */,
+				C057B65F18688F6D000D2CB8 /* ruby */,
+			);
+			path = generated;
+			sourceTree = "<group>";
+		};
+		C057B65518688F6D000D2CB8 /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				C057B65618688F6D000D2CB8 /* PrinterBase.h */,
+				C057B65718688F6D000D2CB8 /* PrinterBase.m */,
+				C057B65818688F6D000D2CB8 /* PrinterFactoryBase.h */,
+				C057B65A18688F6D000D2CB8 /* PrinterSingletonBase.h */,
+				C057B65B18688F6D000D2CB8 /* PrinterSingletonBase.m */,
+			);
+			path = base_impl;
+			sourceTree = "<group>";
+		};
+		C057B65D18688F6D000D2CB8 /* javascript */ = {
+			isa = PBXGroup;
+			children = (
+				C057B65E18688F6D000D2CB8 /* printer_js_wrap.mm */,
+			);
+			path = javascript;
+			sourceTree = "<group>";
+		};
+		C057B65F18688F6D000D2CB8 /* ruby */ = {
+			isa = PBXGroup;
+			children = (
+				C057B66018688F6D000D2CB8 /* printer_ruby_wrap.m */,
+			);
+			path = ruby;
+			sourceTree = "<group>";
+		};
+		C057B66918688F6D000D2CB8 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				C01D66431880445100A741BD /* IPrinterTech.h */,
+				C01D66441880445100A741BD /* PrinterTechBase.h */,
+				C01D66451880445100A741BD /* PrinterTechBase.m */,
+				C057B69D18688FF8000D2CB8 /* PrinterImpl.h */,
+				C057B69E18688FF8000D2CB8 /* PrinterImpl.m */,
+				C057B715186908DF000D2CB8 /* PrinterFactoryBase.m */,
+				C057B69F18688FF8000D2CB8 /* PrinterFactorySingleton.m */,
+				C057B6A018688FF8000D2CB8 /* PrinterSetup.m */,
+				C057B6A118688FF8000D2CB8 /* PrinterSingleton.h */,
+				C057B6A218688FF8000D2CB8 /* PrinterSingleton.m */,
+			);
+			path = impl;
+			sourceTree = "<group>";
+		};
+		C057B68618688F76000D2CB8 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				C057B68718688F76000D2CB8 /* generated */,
+			);
+			name = shared;
+			path = ../../shared;
+			sourceTree = "<group>";
+		};
+		C057B68718688F76000D2CB8 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C057B68E18688F76000D2CB8 /* printer_api_init.cpp */,
+				C057B68F18688F76000D2CB8 /* printer_js_api.cpp */,
+				C057B69018688F76000D2CB8 /* printer_ruby_api.c */,
+			);
+			path = generated;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C057B6A718688FF8000D2CB8 /* PrinterSingleton.h in Headers */,
+				C057B67118688F6D000D2CB8 /* PrinterBase.h in Headers */,
+				C057B67318688F6D000D2CB8 /* PrinterFactoryBase.h in Headers */,
+				C057B67518688F6D000D2CB8 /* PrinterSingletonBase.h in Headers */,
+				C057B6A318688FF8000D2CB8 /* PrinterImpl.h in Headers */,
+				C01D66461880445100A741BD /* IPrinterTech.h in Headers */,
+				C057B67718688F6D000D2CB8 /* IPrinter.h in Headers */,
+				FAC155E7145855CF0016F3BD /* Printing_Prefix.pch in Headers */,
+				C01D66471880445100A741BD /* PrinterTechBase.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* Printing */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Printing" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Printing;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libPrinting.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Printing" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* Printing */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* Printing */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C057B6A818688FF8000D2CB8 /* PrinterSingleton.m in Sources */,
+				C057B67918688F6D000D2CB8 /* printer_ruby_wrap.m in Sources */,
+				C057B716186908DF000D2CB8 /* PrinterFactoryBase.m in Sources */,
+				C057B6A618688FF8000D2CB8 /* PrinterSetup.m in Sources */,
+				C057B6A518688FF8000D2CB8 /* PrinterFactorySingleton.m in Sources */,
+				C057B69B18688F76000D2CB8 /* printer_ruby_api.c in Sources */,
+				C057B6A418688FF8000D2CB8 /* PrinterImpl.m in Sources */,
+				C01D66481880445100A741BD /* PrinterTechBase.m in Sources */,
+				C057B67618688F6D000D2CB8 /* PrinterSingletonBase.m in Sources */,
+				C057B69A18688F76000D2CB8 /* printer_js_api.cpp in Sources */,
+				C057B67218688F6D000D2CB8 /* PrinterBase.m in Sources */,
+				C057B69918688F76000D2CB8 /* printer_api_init.cpp in Sources */,
+				C057B67818688F6D000D2CB8 /* printer_js_wrap.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/Printing.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Printing_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Printing;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/Printing.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Printing_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Printing;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Printing" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Printing" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

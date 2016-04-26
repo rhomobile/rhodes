@@ -1,0 +1,29 @@
+  Here is a quick summary for your reference:
+  You encountered a problem in which ATL based ActiveX Control was getting set to zero size draw area in some versions of IE Mobile.
+  We tracked down the problem to a bug in versions of IE Mobile which have the “Zoom Level” menu option.
+  We identified a change that can be implemented in the control to work-around the problem and which does not appear to cause problems on other browsers, which don’t have the bug.
+The problem can be worked around by overriding the InPlaceActivate implementation, of "CComControlBase", in the control code.  The work-around is described below:
+To override InPlaceActivate :
+1) Add the following function to your control class: "HRESULT InPlaceActivate(long iVerb, const RECT* prcPosRect)" to your control class.
+    (if using the "Add Member Function Wizard" 
+     * set "Return type:" to "HRESULT"
+     * set "Function name:" to "InPlaceActivate"
+     > First Parameter:
+       * set "Parameter type:" to "long"
+       * set "Parameter name:" to "iVerb"
+       * click "Add"
+     > Second Parameter:
+       * set "Parameter type:" to "const RECT*"
+       * set "Parameter name:" to "prcPosRect"
+       * click "Add"
+     * click "Finish" 
+2) copy the implementation of "CComControlBase::InPlaceActivate" from "atlctl.h" into your new function, replacing the existing content.
+      ("...\VC\ce\atlmfc\include\atlctl.h")
+3) In in the code you copied search for the call to "CreateControlWindow"
+4) add the following code *before* the call to "CreateControlWindow":
+    if (rcPos.right == rcPos.left && rcPos.bottom == rcPos.top)
+    {
+        rcPos = rcClip = m_rcPos;
+    }
+    // now call CreateControlWindow...
+5) save your changes and rebuild the control.

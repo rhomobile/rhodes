@@ -1,0 +1,13 @@
+<?xml version = "1.0"?>
+<!--
+.....KeyCode Mapping File....
+-->
+<KeyCodeConfiguration>
+
+<KeyCodes>
+	<!-- Example -->
+  <!-- <KEYCODE  name="KEYCODE_0" from="7" to="0x30" /> -->
+  
+</KeyCodes>
+
+</KeyCodeConfiguration>

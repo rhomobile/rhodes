@@ -1,0 +1,124 @@
+<html>
+<head>
+	<title>BadLink</title>
+	<script type="text/javascript">
+        var gen;
+		var agent;
+		agent = navigator.userAgent.toString();
+			if (agent.indexOf("MSIE") != -1)
+			{
+				gen = new ActiveXObject("PocketBrowser.Generic");
+			}
+			else
+			{
+				gen = generic;
+			}
+		function getParameter(paramName)
+		{
+			paramName = paramName.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+			var regexExp = "[\\?&]"+paramName+"=([^&#]*)";
+			var regex = new RegExp( regexExp );
+			var results = regex.exec( window.location.href );
+			if( results == null )
+				return "";
+			else
+				return results[1];
+		}
+
+		function putProperElement()
+		{  
+			//Determine what type of BadLink this is by checking the GET Parameters
+			
+			
+			var timeout	= getParameter('Timeout');
+			var stopped	= getParameter('Stopped');
+			var badlink = getParameter('BadLink');
+			var unlicensed = getParameter('Unlicensed');
+			var idimage = document.getElementById("alertImage");
+			idimage.src="images/alert.gif" ;
+			
+			
+			document.getElementById('cantFindPage').style.display	= 'none'; 
+			document.getElementById('stopped').style.display	= 'none'; 
+			document.getElementById('timedOut').style.display	= 'none'; 
+			document.getElementById('unlicensedApp').style.display	= 'none'; 
+			
+			if(stopped == 'true' && badlink != '1')
+			{
+				document.getElementById('cantFindPage').className = 'gone';
+				document.getElementById('stopped').className = '';
+				document.getElementById('stopped').style.display = 'inline'; 
+			}
+			else if(timeout == 'true' && badlink != '1')
+			{
+				document.getElementById('cantFindPage').className = 'gone';
+				document.getElementById('timedOut').className = '';
+				document.getElementById('timedOut').style.display = 'inline'; 
+			}
+			else if(unlicensed == 'true' && badlink != '1')
+			{
+				document.getElementById('cantFindPage').className = 'gone';
+				document.getElementById('unlicensedApp').className = '';
+				document.getElementById('unlicensedApp').style.display = 'inline'; 
+			}
+			else
+			{
+				document.getElementById('cantFindPage').style.display = 'inline'; 
+			}
+		}
+		function reload()
+		{
+			window.location = getParameter('BadLink');
+		}
+	</script>
+	
+	
+	
+</head>
+<body onload="putProperElement();">
+	<div id="window">
+	    
+	    <!--div id="body"-->
+		<div id="body1" >
+			<div id="title1">Error</div>
+			<div id="icon"><img id="alertImage" alt="Alert"></img></div>
+			<div id="cantFindPage" style="display: none;">
+				<h1>Unable to find page</h1>
+				<h2>Press back button to return to the previous page</h2>
+				<div class="spacer"></div>
+				<div align="center">
+				<button id="cantFindPageBtn" onClick="location.href = 'history:back'" onKeyPress="location.href = 'history:back'" tabindex="1">Back</button>
+				</div>
+			</div>
+			<div id="timedOut" class="gone" style="display: none;">
+				<h1>Navigation timed out</h1>
+				<h2>Press back button to return to the previous page or press retry button to attempt to load the page again</h2>
+				<div class="spacer"></div>
+				<div align="center">
+				<button id="timedOutBtnOne" onClick="reload()" onKeyPress="reload()" tabindex="1">Retry</button>
+				<button id="timedOutBtnTwo" onClick="location.href = 'history:back'" onKeyPress="location.href = 'history:back'" tabindex="2">Back</button>
+				</div>
+			</div>
+			<div id="stopped" class="gone" style="display: none;">
+				<h1>Navigation stopped</h1>
+				<h2>Press back button to return to the previous page or press reload button to reload the current page</h2>
+				<div class="spacer"></div>
+				<div align="center">
+				<button id="stoppedBtnOne" onClick="reload()" onKeyPress="reload()" tabindex="1">Reload</button>
+				<button id="stoppedBtnTwo" onClick="location.href = 'history:back'" onKeyPress="location.href = 'history:back'" tabindex="1">Back</button>
+				</div>
+			</div>
+			<div id="unlicensedApp" class="gone" style="display: none;">
+				<h1>Not Licensed</h1>
+				<h2>Your Application license does not allow you to visit this URL</h2>
+				<div class="spacer"></div>
+				<div align="center">
+				<button id="UnlicBtn"onClick="location.href = 'history:back'" onKeyPress="location.href = 'history:back'" tabindex="2">Back</button>
+				</div>
+			</div>			
+		</div>
+	</div>
+</body>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+</html>

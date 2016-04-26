@@ -1,0 +1,24 @@
+! 0 200 200 150 1
+! 0 200 200 150 1
+JOURNAL
+COUNTRY CP850
+LEFT
+TEXT 1 0 50 0 Al's Restaurant
+TEXT 5 0 10 60 Date: $$[1]$$         Table:  $$[2]$$
+TEXT 5 0 10 90 Your waiter today:    $$[3]$$
+LINE 0 130 350 130 3
+POSTFEED 0
+PRINT
+! U1 SETLP 7 0 20
+$$[N6:%s\r\n]$$! 0 200 200 300 1
+! 0 200 200 300 1
+JOURNAL
+LEFT
+LINE 0 0 350 0 3
+TEXT 4 0 20 20 TOTAL:  $$[4]$$ 
+TEXT 5 0 70 70 Includes  $$[5]$$ Tax
+TEXT 1 0 100 110 Thank you.
+TEXT 5 0 10 160 We hope to see you again soon!
+B 39 2 1 50 20 200  $$[4]$$
+POSTFEED 80
+PRINT

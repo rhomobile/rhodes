@@ -1,0 +1,54 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>zoom</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to set the zoom size of the text or page.</SYNOPSIS>
+		<!--MULTIPLE_INSTANCE>The current text size is persisted between applications.  Switching to another application which uses the zoom module will cause the text size to change to that specified by the application with focus.</MULTIPLE_INSTANCE-->
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="zoom" content="[Parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>text</NAME>
+				<VALUES>Number in the range 0 to 4</VALUES>
+				<DESC>Sets the font size to be displayed on the page, set to 0 for the smallest font and 4 for the largest font.</DESC>
+				<DEFAULT>2</DEFAULT>
+			</PARAM>			
+      <PARAM>
+				<NAME>page</NAME>
+				<VALUES>Number greater than 0.0</VALUES>
+				<DESC>Sets the zoom factor of the page.  Factor 1.0 is no zoom, values less than 1.0 are zoomed out and values greater than 1.0 are zoomed in.</DESC>
+				<DEFAULT>1.0</DEFAULT>
+			</PARAM>		
+		</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example uses zoom to set the text zoom level to the smallest:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="zoom" Content="text:0"&gt;
+</CODE>
+			</EXAMPLE>				
+			<EXAMPLE>
+				<DESC>The following example will zoom the page to enable an application written for a QVGA screen to be displayed properly on a VGA screen:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="zoom" Content="page:2.0"&gt;
+</CODE>
+			</EXAMPLE>				
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Controls and Appearance/">zoomTextButton</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

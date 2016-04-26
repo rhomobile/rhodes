@@ -1,0 +1,94 @@
+// PBNoSIP.idl : IDL source for PBNoSIP
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (PBNoSIP.tlb) and marshalling code.
+
+#include "olectl.h"
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	//uuid(28C3630D-BC60-411C-AA03-E0E8C90C476C),
+	uuid(27A5B737-CB8D-4A97-9C97-B6E55ED9A363),
+	dual,
+	nonextensible,
+	helpstring("INSEdit Interface"),
+	pointer_default(unique)
+]
+interface INSEdit : IDispatch{
+	[propput, bindable, requestedit, id(DISPID_TEXT)]
+	HRESULT Text([in]BSTR strText);
+	[propget, bindable, requestedit, id(DISPID_TEXT)]
+	HRESULT Text([out, retval]BSTR* pstrText);
+
+		[propget, id(1), helpstring("property Value")] HRESULT Value([out, retval] BSTR *pVal);
+		[propput, id(1), helpstring("property Value")] HRESULT Value([in] BSTR newVal);
+		[propget, id(2), helpstring("property MaxLength")] HRESULT MaxLength([out, retval] int *pVal);
+		[propput, id(2), helpstring("property MaxLength")] HRESULT MaxLength([in] int newVal);
+		[propget, id(3), helpstring("property Password")] HRESULT Password([out, retval] VARIANT_BOOL *pVal);
+		[propput, id(3), helpstring("property Password")] HRESULT Password([in] VARIANT_BOOL newVal);
+		[propput, id(4), helpstring("property FontBold")] HRESULT FontBold([in] VARIANT_BOOL newVal);
+		[propget, id(4), helpstring("property FontBold")] HRESULT FontBold([out, retval] VARIANT_BOOL *pVal);
+		[propget, id(11), helpstring("property Alignment")] HRESULT Alignment([out, retval] BSTR *pVal);
+		[propput, id(11), helpstring("property Alignment")] HRESULT Alignment([in] BSTR newVal);
+		[propput, id(6), helpstring("property FontFixedPitch")] HRESULT FontFixedPitch([in] VARIANT_BOOL newVal);
+		[propput, id(7), helpstring("property Border")] HRESULT Border([in] VARIANT_BOOL newVal);
+		[propput, id(8), helpstring("property Font")] HRESULT Font([in] BSTR* newVal);
+		[propput, id(9), helpstring("property FontHeight")] HRESULT FontHeight([in] int newVal);
+		[propput, id(10), helpstring("property FontUnderline")] HRESULT FontUnderline([in] VARIANT_BOOL newVal);
+		[propput, id(5), helpstring("property FontItalic")] HRESULT FontItalic([in] VARIANT_BOOL newVal);
+		[propput, id(12), helpstring("property FontName")] HRESULT FontName([in] BSTR newVal);
+		[id(13), helpstring("method SetFocus")] HRESULT SetFocus(VARIANT_BOOL bSelect);
+		[id(14), helpstring("method ShowSIP")] HRESULT ShowSIP(VARIANT_BOOL bShow);
+		[id(15), helpstring("method SetSelection")] HRESULT SetSelection([in] int iStart, [in] int iEnd);
+		[propget, id(17), helpstring("property SelStartPos")] HRESULT SelStartPos([out, retval] int *pVal);
+		[propget, id(18), helpstring("property SelEndPos")] HRESULT SelEndPos([out, retval] int *pVal);
+};
+
+[
+	//uuid(D6268A16-F49A-4A6F-B665-4EE2A2EBA235),
+	uuid(584FFAF9-AD89-43EE-A503-89CC927AEDF1),
+	version(1.0),
+	helpstring("PBNoSIP 1.0 Type Library")
+]
+library PBNoSIPLib
+{
+	importlib("stdole2.tlb");
+	interface IDocHostUIHandlerDispatch;
+	interface IAxWinAmbientDispatchEx;
+	[
+		//uuid(5FBE4751-C78F-4189-A59C-8D7ACA3DC830),
+		uuid(29721A79-C85F-4C07-8380-683D279B1F54),
+		helpstring("_INSEditEvents Interface")
+	]
+	dispinterface _INSEditEvents
+	{
+		properties:
+		methods:
+
+		[id(1), helpstring("method OnKeyDown")] HRESULT OnKeyDown(int nChar, int nRepCnt, int nFlags);
+		[id(2), helpstring("method OnClick")] HRESULT OnClick(int iX, int iY);
+		[id(3), helpstring("method OnKeyPress")] HRESULT OnKeyPress(int iAscii);
+		[id(4), helpstring("method OnKeyUp")] HRESULT OnKeyUp(int nChar, int nRepCnt, int nFlags);
+		[id(5), helpstring("method OnChange")] HRESULT OnChange();
+		[id(6), helpstring("method OnFocus")] HRESULT OnFocus();
+		[id(7), helpstring("method OnLostFocus")] HRESULT OnLostFocus();
+	};
+	[
+		// New ID
+		//uuid(BC58EA45-D95A-48E3-914D-90B50C801E64),
+
+		// Old ID
+		uuid(A72D1405-40C2-11D6-918E-00C0DF232EEE),
+
+		control,
+		helpstring("NSEdit Class")
+	]
+	coclass NSEdit
+	{
+		[default] interface INSEdit;
+		[default, source] dispinterface _INSEditEvents;
+	};
+};

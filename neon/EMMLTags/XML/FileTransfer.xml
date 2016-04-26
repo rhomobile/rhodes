@@ -1,0 +1,198 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<HELPPAGE>
+	<FUNC>
+		<NAME>fileTransfer</NAME>
+		<PATH>File Management</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to send or receive files between the local filestore and either an FTP or HTTP site.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="FileTransfer" content="[Method | Parameter]"&gt;</EXAMPLE>
+			</USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="FileTransfer" content="TransferEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+		  <PARAM>
+			<NAME>destination</NAME>
+			<VALUES>URL or a path</VALUES>
+			<DESC>Sets the destination path and name of the file to be transferred.  If specifying a URL this should be fully qualified with protocol, port and optionally username and password.</DESC>
+			<DEFAULT>N/A</DEFAULT>
+		  </PARAM>
+		  <PARAM>
+			<NAME>source</NAME>
+			<VALUES>URL or a path</VALUES>
+			<DESC>Sets the source path and name of the file to be transferred.  If specifying a URL this should be fully qualified with protocol, port and optionally username and password.</DESC>
+			<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+		<PARAM>
+			<NAME>username</NAME>
+			<VALUES>String</VALUES>
+			<DESC>The username for the HTTP or FTP server if required</DESC>
+			<DEFAULT>No username</DEFAULT>
+		</PARAM>	
+		<PARAM>
+			<NAME>password</NAME>
+			<VALUES>String</VALUES>
+			<DESC>The password for the HTTP or FTP server if required</DESC>
+			<DEFAULT>No password</DEFAULT>
+		</PARAM>	
+			<PARAM>
+			<NAME>createFolders</NAME>
+			<VALUES>'True' or 'False'</VALUES>
+			<DESC>On a filetransfer that results in local file storage, createFolders can automatically create the directory path.</DESC>
+		   <DEFAULT>False</DEFAULT>
+		  </PARAM>
+			<PARAM>
+			<NAME>overWrite</NAME>
+			<VALUES>'True' or 'False'</VALUES>
+			<DESC>On a filetransfer that results in local file storage, OverWrite will overwrite the destination file if it already exists.</DESC>
+		   <DEFAULT>False</DEFAULT>
+		  </PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>transfer</NAME>
+				<DESC>Sends or receives the file according to the configured properties.</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+		</PARAMS_NO_ATTRIBUTES>
+		<RETURNS>
+			<TAG>
+				<TAG_NAME>transferEvent</TAG_NAME>
+				<TAG_NOTES>Provided the source and destination parameters were valid, the TransferEvent is fired after the transfer has been made.  When the transfer is via the HTTP protocol 'OK: File Received' is returned; for HTTP uploads the destination server message is returned.  When the transfer is via FTP either 'OK: File Sent', 'OK: File Received'.  If there is an error during the transfer 'Error:' will be returned and may be followed by the relevant Windows error code; see the log file for more information on the error.  Note when downloading from an HTTP server if the requested file does not exist you may receive 'OK: File received' and the server 404 string placed in your destination file.</TAG_NOTES>
+				<RETVAL>
+					<NAME>transferResult</NAME>
+					<DESC>Success or failure of the transfer, see note above.</DESC>
+				</RETVAL>
+			</TAG>
+		</RETURNS>		
+		<EXAMPLES>
+		<EXAMPLE>
+		 <DESC>The following example shows how to move the file 'myfile.txt' from the device's root to a folder off the root:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="FileTransfer" Content="Source:url('file://\myfile.txt')"&gt;
+&lt;META HTTP-Equiv="FileTransfer" Content="Destination:url('file://\MyFolder\myfile.txt')"&gt;
+&lt;META HTTP-Equiv="FileTransfer" Content="Overwrite:True"&gt;
+&lt;META HTTP-Equiv="FileTransfer" Content="CreateFolders:True"&gt;
+&lt;META HTTP-Equiv="FileTransfer" Content="Transfer"&gt;
+</CODE>
+		  </EXAMPLE>
+		<EXAMPLE>
+		 <DESC>The following example sets up a protocol, destination and source file and sends the file via HTTP. Upon a successful transfer, the server message (if any) is sent to 'mypage.asp.':</DESC>
+<CODE>
+&lt;META HTTP-Equiv="FileTransfer" Content="TransferEvent:url('mypage.asp?Data=%s')"&gt;
+&lt;META HTTP-Equiv="FileTransfer" Content="Destination:url('HTTP://192.168.1.1/accounts/upload.aspx')"&gt;
+&lt;META HTTP-Equiv="FileTransfer" Content="Source:url('file://\temp/accounts.xls')"&gt;
+&lt;META HTTP-Equiv="FileTransfer" Content="Transfer"&gt;
+</CODE>
+		  </EXAMPLE>
+	  <EXAMPLE>
+		 <DESC>The following example shows how to download a file from an HTTP server.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="FileTransfer" Content="TransferEvent:url('Javascript:alert('%s')'); Transfer"&gt;
+
+&lt;script type="text/javascript"&gt;
+   //  HTTP Functions
+  
+   //  Download from an HTTP site
+   function downloadFromHTTP()
+   {
+      fileTransfer.source = "url('http://myserver/myfile.txt')";
+      fileTransfer.destination = "url('file://\\myfile.txt')";
+      fileTransfer.transfer();     
+   }
+
+   //  Download from an HTTP site requiring login credentials
+   function downloadFromHTTPAuth()
+   {
+      fileTransfer.source = "url('http://httpAdmin:httpPassword@myserver/myfile.txt')";
+	  fileTransfer.destination = "url('file://\\myfile.txt')";
+	  fileTransfer.transfer();
+   }
+&lt;/script&gt;
+</CODE>
+		  </EXAMPLE>
+	  <EXAMPLE>
+		 <DESC>The following example shows to transfer a file via FTP.  After each transfer the result (OK or Error) is given in an alert box.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="FileTransfer" Content="TransferEvent:url('Javascript:alert('%s')'); Transfer"&gt;
+
+&lt;script type="text/javascript"&gt;
+   //  FTP Functions
+  
+   //  Upload to an FTP server
+   function uploadToFTP()
+   {
+        fileTransfer.source = "url('file://\\Program Files\\RhoElements\\file.txt')";
+        fileTransfer.destination = "url('ftp://192.168.4.110/file.txt')";
+        fileTransfer.transfer();     
+   }
+
+   //  Upload to an FTP server on port 2500 using username 'ftpadmin' and password 'ftpadminpw'
+   function uploadToFTPWithAuthentication()
+   {
+        fileTransfer.source = "url('file://\\Program Files\\RhoElements\\file.txt')"; 
+        fileTransfer.destination = "url('ftp://ftpadmin:ftpadminpw@192.168.4.110:2500/Folder/file.txt')";
+        fileTransfer.transfer();    
+   }
+
+   //  Download from an FTP Server using username 'ftpadmin' and password 'ftpadminpw'   
+   function downloadFromFTP()
+   {
+        fileTransfer.source = "url('ftp://ftpadmin:ftpadminpw@192.168.4.110/NewFolder/file.txt')"; 
+        fileTransfer.destination = "url('file://\\sigReceived.bmp')";
+        fileTransfer.transfer();
+   }
+&lt;/script&gt;
+</CODE>
+		  </EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Default Ports</COMMENT_HEADING>
+				<COMMENT_DATA>The default port settings are 80 for HTTP and 21 for FTP.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Common mistakes</COMMENT_HEADING>
+				<COMMENT_DATA>Remember that in Javascript the '\' character is the escape character so to use a backslash in the URL use '\\'.  This is not the case when specifying the URL via a meta tag where a single '\' will suffice.  See the examples above.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Setting up a Transfer</COMMENT_HEADING>
+				<COMMENT_DATA>File transfer is designed to be configured before any transfer() is made.  Once a transfer hs been initiated the parameters can not be guaranteed to be the same for the next transfer, therefore set all non default parameters before starting the transfer.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Creating a fully qualified URL</COMMENT_HEADING>
+				<COMMENT_DATA>The protocol, port number, username (optional) and password (optional) are all derived from the URL string and should be specified in the following manner: [protocol]://[username]:[password@]Server[:Port]FileNameAndPath.  FTP Example: ftp://admin:root@192.168.1.1:2500/Folder/file.txt.  HTTP Example: http://admin:root@192.168.1.1:8080/Folder/upload.aspx</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Relative URLs</COMMENT_HEADING>
+				<COMMENT_DATA>The FileTransfer meta tag also supports relative URLs, for example if the current page's path is 'http://192.168.0.1/myElementsApp/index.html and you specify &lt;META HTTP-Equiv="FileTransfer" Content="Source:url('../file.xls')"&gt; then the source file will be 'http://192.168.0.1/file.xls'.  This notation can also be used for FTP upload and file URLs.  Note that the relative URL must start with a '.' so to specify a file in the same directory as your application page use Source:url('./file.xls')</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Maximum File Size</COMMENT_HEADING>
+				<COMMENT_DATA>The maximum file size which can be transferred is about 4MB but is also dependant on the memory available to the device and the transport protocol selected.  For file sizes above 2MB on lower memory devices alternate methods for transferring files should be considered.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Platform differences</COMMENT_HEADING>
+				<COMMENT_DATA>Although the file transfer functionality has the same behavior on all supported platforms the vast majority of the times, there might be scenarios where the Android version may return different error codes when compared to the Windows (CE, Mobile) version.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>File transfer result code received in Javascipt or JASON events</COMMENT_HEADING>
+				<COMMENT_DATA>If an invalid username or password are used on an FTP transfer to a remote server the response returned is 0 instead of the expected 12014</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - any changes made by changing parameters will be lost when navigating to a new page or initiating a transfer.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../SignatureCapture/">SignatureCapture</TOPIC>
+			<TOPIC RELPATH="../legacyObjects/">Odax</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

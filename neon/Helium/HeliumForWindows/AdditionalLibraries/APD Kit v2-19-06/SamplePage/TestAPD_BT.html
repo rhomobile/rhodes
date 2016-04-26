@@ -1,0 +1,93 @@
+
+
+
+<HTML>
+<HEAD>
+<TITLE>NarrowBand Test 1</TITLE>
+<META HTTP-Equiv="scanner" Content="enabled">
+<META HTTP-Equiv="scannernavigate" Content="Javascript:doScan('%s', '%s', '%s', '%s', '%s');">
+<META HTTP-Equiv="quitbutton" Content="show">
+<META HTTP-Equiv="quitbutton" Content="x=0">
+<META HTTP-Equiv="quitbutton" Content="y=0">
+</HEAD>
+
+
+<BODY OnLoad="OnLoad()" BGCOLOR="#FFFFEA" TEXT="#0000A0" LINK="#FF0000" VLINK="#808080" ALINK="#008040">
+<OBJECT ID="NarrowBand" CLASSID="CLSID:AE3B4850-4811-4E3C-A4BB-FEDE80068E28" width="1" height="1"></OBJECT>
+
+
+
+
+
+<H2>NarrowBand Test 1</H2>
+<P>Data is sent to printer.</P>
+<table border=0>
+	<tr>
+		<td colspan=2>
+			<input type=text name="PrinterID">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<INPUT TYPE="button" VALUE="SetPrinter" ONCLICK="SetUpPrinter();">		
+		</td>
+		<td>
+			<INPUT TYPE="button" VALUE="PrintData" ONCLICK="PrintData();">		
+		</td>
+	</tr>
+</table>
+
+</BODY>
+</HTML>
+
+<SCRIPT LANGAUGE="JavaScript">
+
+var Generic = new ActiveXObject("SymbolBrowser.Generic");
+
+///var printerID = 'BC52:1|00037A3180D4';
+var printerID;
+
+function OnLoad()
+{
+
+}
+
+function doScan(data, source, type, time, length)
+{
+	PrinterID.value = data;
+	printerID = 'BC53:1|'+ data; //B - Bluetooth  C53 - Zeebra QL320 Printer :1 - Channel 1
+								 // Pleae refer Cpr576f.pdf in the APD Release for Printer IDs
+}
+
+
+function SetUpPrinter()
+{
+	Generic.ShowHourglass();
+	
+	NarrowBand.PSExternal(261, printerID);// set printer
+	NarrowBand.PSExternal(270, "");  // open port after doing set printer
+	NarrowBand.PSExternal(271, "");  // close port after doing open port
+
+  
+	Generic.HideHourglass();
+
+}
+
+
+
+function PrintData()
+{
+
+	var code = '1234567890';
+	var sLabel = '! 0 200 200 350 1\n'
+	     + 'JOURNAL\n'
+	     + 'SPEED 3\n'
+	     + 'PW 400\n'
+	     + 'B 128 1 1 80 20 80 ' + code + '\n'
+	     + 'T 5 3 20 196 £2.00 off\n'
+	     + 'T 7 0 20 166 ' + code + '\n'
+	     + 'BOX 5 5 350 295 1\n'
+	     + 'PRINT\n';
+	NarrowBand.PSExternal(266, sLabel);
+}
+</SCRIPT>

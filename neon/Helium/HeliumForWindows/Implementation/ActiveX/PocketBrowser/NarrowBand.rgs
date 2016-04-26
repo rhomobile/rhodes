@@ -1,0 +1,33 @@
+HKCR
+{
+	PocketBrowser.NarrowBand.1 = s 'NarrowBand Class'
+	{
+		CLSID = s '{12D075A2-B113-4A28-B41A-9F65AA7E4ADA}'
+	}
+	PocketBrowser.NarrowBand = s 'NarrowBand Class'
+	{
+		CLSID = s '{12D075A2-B113-4A28-B41A-9F65AA7E4ADA}'
+		CurVer = s 'PocketBrowser.NarrowBand.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {12D075A2-B113-4A28-B41A-9F65AA7E4ADA} = s 'NarrowBand Class'
+		{
+			ProgID = s 'PocketBrowser.NarrowBand.1'
+			VersionIndependentProgID = s 'PocketBrowser.NarrowBand'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Free'
+			}
+			val AppID = s '%APPID%'
+			ForceRemove 'Control'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			'TypeLib' = s '{8A7719E2-3C21-4C09-9E13-D17534BD7ED1}'
+			'Version' = s '1.0'
+		}
+	}
+}

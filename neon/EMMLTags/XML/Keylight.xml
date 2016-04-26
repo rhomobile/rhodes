@@ -1,0 +1,64 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>keylight</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to illuminate / extinguish the keyboard backlight as well as setting the intensity of the keylight.</SYNOPSIS>
+		<MULTIPLE_INSTANCE>The keylight settings are application specific.  Switching to another application which uses the keylight module will cause the keyboard illumination settings to change to those of the application with focus. Only the application with Focus will have the ability to change the keylight settings.</MULTIPLE_INSTANCE>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Keylight" content="[method / parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>intensity</NAME>
+				<VALUES>Positive Number, see remarks for range</VALUES>
+				<DESC>Sets the keyboard backlight to the specified intensity.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>				
+		</PARAMS_WITH_ATTRIBUTES>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>on</NAME>
+				<DESC>Turns the keyboard backlight on.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>off</NAME>
+				<DESC>Turns the keyboard backlight off.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>				
+		</PARAMS_NO_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example turns the keyboard backlight on with an intensity of 3:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Keylight-On" Content="Intensity:3"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+	<COMMENT>
+		<COMMENT_HEADING>General</COMMENT_HEADING>
+		<COMMENT_DATA>The intensity tag will only have an observable effect if the keyboard backlight is turned on, setting the intensity by its self is insufficient to illuminate the backlight.</COMMENT_DATA>
+	</COMMENT>
+	<COMMENT>
+		<COMMENT_HEADING>Device Limits</COMMENT_HEADING>
+		<COMMENT_DATA>The levels of supported keylight intensity is device dependant.  When the Keylight module is first loaded it writes the supported levels to the log file as INFORMATION so you can determine the maximum setting from the log file.</COMMENT_DATA>		
+	</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except Android devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>This tag requires appropriate hardware and drivers to run, i.e. a device with a keyboard backlight.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>Backlight</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

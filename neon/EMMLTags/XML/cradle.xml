@@ -1,0 +1,89 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="RhoElements_runtime_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>cradle</NAME>
+		<PATH>Cradle</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>returns cradle information.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Cradle" content="[method]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>getCradleId</NAME>
+				<DESC>Returns the identification code of the cradle in which the device is situated.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+		</PARAMS_NO_ATTRIBUTES>
+		<RETURNS>
+			<TAG>
+            <TAG_NAME>cradleEvent</TAG_NAME>
+				<TAG_NOTES>The cradleEvent is fired immediately after getCradleId is called.</TAG_NOTES>
+				<RETVAL>
+					<NAME>cradleId</NAME>
+					<DESC>The ID code of the cradle in which the device is situated. Cradles without this feature should return 0</DESC>
+				</RETVAL>
+			</TAG>
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example retreives the cradle ID:</DESC>
+<CODE>
+&lt;html&gt;
+&lt;head&gt;
+   &lt;script type="text/javascript"&gt;
+      function onStart()
+      {
+         battery.batteryEvent = 'myBatteryEvent(%json)';
+      }
+      //Makes the function run when the DOM has loaded
+      window.addEventListener('load',onStart,false);
+      
+      function myBatteryEvent(jsonObject)
+      {
+         //if AC Line is connected
+         if(jsonObject.acLineStatus = '1')
+         {
+            cradle.cradleEvent = 'myCradleEvent(%json)';
+            cradle.getCradleId();
+         }
+      }
+      
+      function myCradleEvent(jsonObject)
+      {
+         document.getElementById('cradleIdSpan').innerHTML = jsonObject.cradleId;
+      }
+   &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+   &lt;h1&gt;CradleId Test&lt;/h1&gt;
+   &lt;p&gt;Cradle Id = &lt;span id="cradleIdSpan"&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>When to call getCradleId</COMMENT_HEADING>
+				<COMMENT_DATA>
+				GetCradleId should only be called when the device is in a cradle. This can be determined by the battery module's batteryEvent. This event includes the acLineStatus field which when has the value '1' means that the device is being charged, and therefore is probably in a cradle.
+				</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+
+		<ADDITIONAL>
+			<PLATFORM>SB1 only</PLATFORM>
+			<APPLIES>Immediate - These methods are actioned immediately.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>2.2</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Indicators/">Battery</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

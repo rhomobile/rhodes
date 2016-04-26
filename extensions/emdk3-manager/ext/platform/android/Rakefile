@@ -1,0 +1,13 @@
+require 'fileutils'
+
+namespace "build" do
+  task :all do
+  end
+end
+
+namespace :arch do
+  task :arm => 'build:all'
+  task :x86 => 'build:all'
+end
+
+task :default => "build:all"

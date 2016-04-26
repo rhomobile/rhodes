@@ -1,0 +1,57 @@
+def build_extension(name)
+  #dir = File.join($rootdir, "extensions/#{name}/ext/platform/qt")
+  qmake = "#{$qmake} -o Makefile -r -spec #{$qmake_spec} #{name}.pro CONFIG-=debug CONFIG+=release #{$qmakevars}"
+
+  #Jake.run3(qmake           , dir)
+  #Jake.run3("#{$make} all"  , dir)
+
+  objects = []
+  mkdir_p $tempdir unless File.exists? $tempdir
+
+  mkdir_p $targetdir unless File.exist? $targetdir
+
+    args = []
+    args << "/M4"
+    args << name + ".vcxproj"
+    args << "\"Debug|Win32\""
+    #cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
+    puts qmake
+    puts `#{qmake}`
+	puts `#{$make} all`
+    exit unless $? == 0
+
+    build_target = File.join(ENV['PWD'], 'platform', 'win32', 'bin', 'extensions', 'rhoconnect-push')
+    #cp_r build_target, File.join($tempdir, '..')
+
+    cp_r File.join($tempdir, "Debug", name + ".lib"), $targetdir
+    cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
+end
+
+namespace "build" do
+  task :config do
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $platform = ENV['RHO_PLATFORM']
+    raise "RHO_PLATFORM is not set" if $platform.nil?
+    $rootdir = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" if $rootdir.nil?
+    $qmake = ENV['RHO_QMAKE']
+    raise "RHO_QMAKE is not set" if $qmake.nil?
+    $qmake_spec = ENV['RHO_QMAKE_SPEC']
+    raise "RHO_QMAKE_SPEC is not set" if $qmake_spec.nil?
+    $qmakevars = ENV['RHO_QMAKE_VARS']
+    if $platform == 'win32'
+      $make = 'nmake'
+    else
+      $make = 'make'
+    end
+  end
+
+  task :all => :config do
+    build_extension('rhoconnect-push')
+  end
+end
+
+task :default => "build:all"

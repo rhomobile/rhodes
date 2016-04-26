@@ -1,0 +1,181 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>push</NAME>
+		<PATH>Push</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to receive data over an HTTP connection.</SYNOPSIS>
+
+	<SYNTAX>
+    <USAGE>
+      <EXAMPLE>&lt;META HTTP-Equiv="Push" content="[Parameter]"&gt;</EXAMPLE>
+    </USAGE>
+    <USAGE>
+      <EXAMPLE>&lt;META HTTP-Equiv="Push" content="[Parameter:Attribute]"&gt;</EXAMPLE>
+    </USAGE>
+    <USAGE>
+      <EXAMPLE>&lt;META HTTP-Equiv="Push" contents="detected:url('[jsFunction | url]')"&gt;</EXAMPLE>
+    </USAGE>
+  </SYNTAX>
+
+  <PARAMS_WITH_ATTRIBUTES>
+    <PARAM>
+      <NAME>port</NAME>
+        <VALUES>0 - 65535 in Windows and 1025 - 65535 in Android</VALUES>
+        <DESC>Port number to listen on.</DESC>
+        <DEFAULT>8081</DEFAULT>
+    </PARAM>
+    <PARAM>
+      <NAME>passKey</NAME>
+        <VALUES>Any string</VALUES>
+        <DESC>If specified then the client must include passkey=value in the passed parameters. Case sensitive.</DESC>
+        <DEFAULT>Empty (no passkey required)</DEFAULT>
+    </PARAM>
+    <PARAM>
+      <NAME>response</NAME>
+        <VALUES>Filename</VALUES>
+        <DESC>Name of the HTML file to return to the client after a successful request.</DESC>
+        <DEFAULT>Empty (a short default HTML response is sent)</DEFAULT>
+    </PARAM>
+    <PARAM>
+      <NAME>path</NAME>
+        <VALUES>Virtual path</VALUES>
+        <DESC>The client must include this in the HTTP request (after the address and before the parameters).  The forward slash '/' should be used as the directory delimiter.</DESC>
+        <DEFAULT>Empty (any path is accepted)</DEFAULT>
+    </PARAM>
+    <PARAM>
+      <NAME>unattended</NAME>
+        <VALUES>enabled or disabled</VALUES>
+        <DESC>Enables or disables unattended mode - see Remarks for details.</DESC>
+        <DEFAULT>disabled</DEFAULT>
+    </PARAM>
+  </PARAMS_WITH_ATTRIBUTES>
+
+  <PARAMS_NO_ATTRIBUTES>
+    <PARAM>
+      <NAME>start</NAME>
+        <DESC>Starts the server. Must be after the &lt;port&gt; tag.</DESC>
+        <DEFAULT></DEFAULT>
+    </PARAM>
+    <PARAM>
+      <NAME>stop</NAME>
+        <DESC>Stops the server.</DESC>
+        <DEFAULT></DEFAULT>
+    </PARAM>
+  </PARAMS_NO_ATTRIBUTES>
+
+  <RETURNS>
+    <TAG>
+      <TAG_NAME>detected</TAG_NAME>
+      <RETVAL>
+        <NAME>Whatever is defined as 'name' in each name=value pair in the HTTP request.</NAME>
+        <DESC>One value is returned for each name=value pair in the HTTP request, you access this in JSON using the names you provided in the request.  An example is provided in the examples section below.</DESC>
+      </RETVAL>
+    </TAG>
+  </RETURNS>
+
+  <REMARKS>
+    <COMMENT>
+      <COMMENT_HEADING>HTTP request format</COMMENT_HEADING>
+      <COMMENT_DATA>
+The push server accepts both GET and POST requests. For GET requests the parameters and values
+are specified in the URL, while for POST requests the request body should hold the
+parameters and values in url encoded form. The virtual path in the URL must be as specified
+by the &lt;path&gt; tag, or can be anything if the tag isn't present. The parameters must
+include 'passkey' with the correct value if the &lt;passkey&gt; tag is present.
+      </COMMENT_DATA>
+    </COMMENT>
+
+    <COMMENT>
+      <COMMENT_HEADING>Accessing Returned values via %s / %[number]</COMMENT_HEADING>
+      <COMMENT_DATA>
+When a valid request is received the specified destination URL is called with one '%s' per
+parameter/value pair in the request. Only the values are returned; the parameter names are
+discarded. The 'passkey' parameter and value are ignored if present.  Parameter names are only applicable if you are accessing your return values via JSON.
+      </COMMENT_DATA>
+    </COMMENT>
+
+    <COMMENT>
+      <COMMENT_HEADING>Allowed characters</COMMENT_HEADING>
+      <COMMENT_DATA>
+Only alphanumeric characters and the characters $-_.!*'(), are allowed in a URL (see RFC 1738). Any other characters will cause undefined behaviour. Ensure that the passkey uses only valid characters.
+      </COMMENT_DATA>
+    </COMMENT>
+
+    <COMMENT>
+      <COMMENT_HEADING>Unattended mode</COMMENT_HEADING>
+      <COMMENT_DATA>
+Normally when a device enters suspend mode, either because it has been idle for a certain time
+or because the power key was pressed, all the device subsystems are switched off, including the
+wireless network. When unattended mode is enabled however the device keeps enough subsystems powered
+that applications continue to run, and it can still respond to Push requests. Note that unattended mode
+uses significantly more battery power.
+      </COMMENT_DATA>
+    </COMMENT>
+    <COMMENT>
+      <COMMENT_HEADING>Windows Mobile / CE Backwards compatibility</COMMENT_HEADING>
+      <COMMENT_DATA>
+In version 2.2 of RhoElements for WM / CE the default push port was changed from '80' to '8081' to match RhoElements for Android.  Applications developed for RhoElements 2.1 and previous which rely on the default port number being 80 should add the default meta tag &lt;MetaTag VALUE="Push~port:80"&gt; to their configuration.
+      </COMMENT_DATA>
+    </COMMENT>
+  </REMARKS>
+
+  <EXAMPLES>
+    <EXAMPLE>
+      <DESC>
+The code below configures the server to listen on port 8081, to accept only requests to
+the virtual path \push and to require a passkey of 'secret'. Assuming the device has IP address 1.2.3.4 then
+browsing to the following URL will cause the Javascript function onPush() to be called
+with the parameters 'hello' and 'world':
+
+http://1.2.3.4:8081/push?name1=hello&amp;name2=world&amp;passkey=secret.
+
+The browser will receive the contents of the file \ok.html as response.
+      </DESC>
+      <CODE>
+&lt;META HTTP-Equiv="Push" Content="Port:8081"&gt;
+&lt;META HTTP-Equiv="Push" Content="Passkey:secret"&gt;
+&lt;META HTTP-Equiv="Push" Content="Path:/push"&gt;
+&lt;META HTTP-Equiv="Push" Content="Response:/ok.html"&gt;
+&lt;META HTTP-Equiv="Push-detected" Content="url('Javascript:onPush('%s','%s');')"&gt;
+&lt;META HTTP-Equiv="Push" Content="Start"&gt;
+      </CODE>
+    </EXAMPLE>
+	<EXAMPLE>
+	<DESC>The following code shows a very simple push server which just responds by executing a javascript function, but does show how to process the push request in JSON.  Similarly to the previous example the following URL has been browsed to: http://1.2.3.4:8081/push?name1=hello&amp;myname=world</DESC>
+<CODE>
+&lt;HEAD&gt;
+&lt;META HTTP-Equiv="Push" Content="Port:1234"&gt;
+&lt;META HTTP-Equiv="Push-detected" Content="url('Javascript:pushDetectJSON(%json);')"&gt;
+&lt;META HTTP-Equiv="Push" Content="Start"&gt;
+&lt;TITLE&gt;Push Tests&lt;/TITLE&gt;
+  &lt;script type="text/javascript"&gt;
+  function pushDetectJSON(jsonObject)
+  {
+    //  The following will show an Alert box with 'hello - world'
+    alert('Push Via JSON: ' + jsonObject.name1 + ' - ' + jsonObject.myname);
+  }
+  &lt;/script&gt;
+&lt;/HEAD&gt;
+</CODE>
+	
+	</EXAMPLE>
+    <EXAMPLE>
+      <DESC>
+To enable unattended mode:
+      </DESC>
+      <CODE>
+&lt;META HTTP-Equiv="push" Content="unattended:enable"&gt;
+      </CODE>
+    </EXAMPLE>
+  </EXAMPLES>
+  		<ADDITIONAL>
+			<PLATFORM>All supported devices</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

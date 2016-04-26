@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/PrintingEpson.cpp
+ext/platform/android/generated/jni/printingepson_ruby_wrap.cpp
+ext/platform/android/generated/jni/printingepson_js_wrap.cpp
+ext/platform/android/jni/PrintingEpson_impl.cpp
+ext/shared/generated/printingepson_api_init.cpp
+ext/shared/generated/printingepson_js_api.cpp
+ext/shared/generated/printingepson_ruby_api.c

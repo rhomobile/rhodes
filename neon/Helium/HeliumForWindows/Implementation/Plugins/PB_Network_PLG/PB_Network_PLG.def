@@ -1,0 +1,5 @@
+LIBRARY	"WTG_Network_PLG"
+EXPORTS
+	Network_Preload
+	Network_MetaProc
+	Network_Dispose

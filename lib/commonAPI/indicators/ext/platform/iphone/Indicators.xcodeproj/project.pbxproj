@@ -1,0 +1,521 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C0287B8017788BF1001B5ED0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0287B7F17788BF1001B5ED0 /* Foundation.framework */; };
+		C0287B8217788BFB001B5ED0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0287B8117788BFB001B5ED0 /* UIKit.framework */; };
+		C0287BD317789014001B5ED0 /* BatteryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287B8D17789014001B5ED0 /* BatteryBase.h */; };
+		C0287BD417789014001B5ED0 /* BatteryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287B8E17789014001B5ED0 /* BatteryBase.m */; };
+		C0287BD517789014001B5ED0 /* BatteryFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287B8F17789014001B5ED0 /* BatteryFactoryBase.h */; };
+		C0287BD617789014001B5ED0 /* BatteryFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287B9017789014001B5ED0 /* BatteryFactoryBase.m */; };
+		C0287BD717789014001B5ED0 /* BatterySingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287B9117789014001B5ED0 /* BatterySingletonBase.h */; };
+		C0287BD817789014001B5ED0 /* BatterySingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287B9217789014001B5ED0 /* BatterySingletonBase.m */; };
+		C0287BD917789014001B5ED0 /* KeyStateBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287B9317789014001B5ED0 /* KeyStateBase.h */; };
+		C0287BDA17789014001B5ED0 /* KeyStateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287B9417789014001B5ED0 /* KeyStateBase.m */; };
+		C0287BDB17789014001B5ED0 /* KeyStateFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287B9517789014001B5ED0 /* KeyStateFactoryBase.h */; };
+		C0287BDC17789014001B5ED0 /* KeyStateFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287B9617789014001B5ED0 /* KeyStateFactoryBase.m */; };
+		C0287BDD17789014001B5ED0 /* KeyStateSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287B9717789014001B5ED0 /* KeyStateSingletonBase.h */; };
+		C0287BDE17789014001B5ED0 /* KeyStateSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287B9817789014001B5ED0 /* KeyStateSingletonBase.m */; };
+		C0287BE517789014001B5ED0 /* IBattery.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287B9F17789014001B5ED0 /* IBattery.h */; };
+		C0287BE617789014001B5ED0 /* IKeyState.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287BA017789014001B5ED0 /* IKeyState.h */; };
+		C0287BE817789014001B5ED0 /* battery_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0287BA317789014001B5ED0 /* battery_js_wrap.mm */; };
+		C0287BE917789014001B5ED0 /* keystate_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0287BA417789014001B5ED0 /* keystate_js_wrap.mm */; };
+		C0287BEB17789014001B5ED0 /* battery_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287BA717789014001B5ED0 /* battery_ruby_wrap.m */; };
+		C0287BEC17789014001B5ED0 /* keystate_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287BA817789014001B5ED0 /* keystate_ruby_wrap.m */; };
+		C0287C0017789014001B5ED0 /* Battery.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287BBF17789014001B5ED0 /* Battery.h */; };
+		C0287C0117789014001B5ED0 /* Battery.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287BC017789014001B5ED0 /* Battery.m */; };
+		C0287C0217789014001B5ED0 /* BatteryFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287BC117789014001B5ED0 /* BatteryFactorySingleton.m */; };
+		C0287C0317789014001B5ED0 /* BatterySetup.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287BC217789014001B5ED0 /* BatterySetup.m */; };
+		C0287C0417789014001B5ED0 /* BatterySingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287BC317789014001B5ED0 /* BatterySingleton.h */; };
+		C0287C0517789014001B5ED0 /* BatterySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287BC417789014001B5ED0 /* BatterySingleton.m */; };
+		C0287C0617789014001B5ED0 /* IndicatorsSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287BC517789014001B5ED0 /* IndicatorsSetup.m */; };
+		C0287C0717789014001B5ED0 /* KeyState.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287BC617789014001B5ED0 /* KeyState.h */; };
+		C0287C0817789014001B5ED0 /* KeyState.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287BC717789014001B5ED0 /* KeyState.m */; };
+		C0287C0917789014001B5ED0 /* KeyStateFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287BC817789014001B5ED0 /* KeyStateFactorySingleton.m */; };
+		C0287C0A17789014001B5ED0 /* KeyStateSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287BC917789014001B5ED0 /* KeyStateSetup.m */; };
+		C0287C0B17789014001B5ED0 /* KeyStateSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287BCA17789014001B5ED0 /* KeyStateSingleton.h */; };
+		C0287C0C17789014001B5ED0 /* KeyStateSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287BCB17789014001B5ED0 /* KeyStateSingleton.m */; };
+		C0287C2F17789026001B5ED0 /* battery_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0287C1517789026001B5ED0 /* battery_api_init.cpp */; };
+		C0287C3017789026001B5ED0 /* battery_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0287C1617789026001B5ED0 /* battery_js_api.cpp */; };
+		C0287C3117789026001B5ED0 /* battery_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C0287C1717789026001B5ED0 /* battery_ruby_api.c */; };
+		C0287C4117789026001B5ED0 /* keystate_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0287C2817789026001B5ED0 /* keystate_api_init.cpp */; };
+		C0287C4217789026001B5ED0 /* keystate_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0287C2917789026001B5ED0 /* keystate_js_api.cpp */; };
+		C0287C4317789026001B5ED0 /* keystate_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C0287C2A17789026001B5ED0 /* keystate_ruby_api.c */; };
+		C0287C551778AEF6001B5ED0 /* route.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287C541778AEF6001B5ED0 /* route.h */; };
+		C0287CA217832F6F001B5ED0 /* signalindicators_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0287C9F17832F6F001B5ED0 /* signalindicators_api_init.cpp */; };
+		C0287CA317832F6F001B5ED0 /* signalindicators_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0287CA017832F6F001B5ED0 /* signalindicators_js_api.cpp */; };
+		C0287CA417832F6F001B5ED0 /* signalindicators_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C0287CA117832F6F001B5ED0 /* signalindicators_ruby_api.c */; };
+		C0287CCB17832FB1001B5ED0 /* ISignalIndicators.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287CCA17832FB1001B5ED0 /* ISignalIndicators.h */; };
+		C0287CD217832FBA001B5ED0 /* SignalIndicatorsBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287CCC17832FBA001B5ED0 /* SignalIndicatorsBase.h */; };
+		C0287CD317832FBA001B5ED0 /* SignalIndicatorsBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287CCD17832FBA001B5ED0 /* SignalIndicatorsBase.m */; };
+		C0287CD417832FBA001B5ED0 /* SignalIndicatorsFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287CCE17832FBA001B5ED0 /* SignalIndicatorsFactoryBase.h */; };
+		C0287CD517832FBA001B5ED0 /* SignalIndicatorsFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287CCF17832FBA001B5ED0 /* SignalIndicatorsFactoryBase.m */; };
+		C0287CD617832FBA001B5ED0 /* SignalIndicatorsSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287CD017832FBA001B5ED0 /* SignalIndicatorsSingletonBase.h */; };
+		C0287CD717832FBA001B5ED0 /* SignalIndicatorsSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287CD117832FBA001B5ED0 /* SignalIndicatorsSingletonBase.m */; };
+		C0287CD917832FC3001B5ED0 /* signalindicators_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = C0287CD817832FC3001B5ED0 /* signalindicators_js_wrap.mm */; };
+		C0287CDB17832FCC001B5ED0 /* signalindicators_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287CDA17832FCC001B5ED0 /* signalindicators_ruby_wrap.m */; };
+		C0287CE417833003001B5ED0 /* SignalIndicators.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287CDD17833002001B5ED0 /* SignalIndicators.h */; };
+		C0287CE517833003001B5ED0 /* SignalIndicators.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287CDE17833002001B5ED0 /* SignalIndicators.m */; };
+		C0287CE617833003001B5ED0 /* SignalIndicatorsFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287CDF17833002001B5ED0 /* SignalIndicatorsFactorySingleton.m */; };
+		C0287CE717833003001B5ED0 /* SignalIndicatorsSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287CE017833002001B5ED0 /* SignalIndicatorsSetup.m */; };
+		C0287CE817833003001B5ED0 /* SignalIndicatorsSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = C0287CE117833002001B5ED0 /* SignalIndicatorsSingleton.h */; };
+		C0287CE917833003001B5ED0 /* SignalIndicatorsSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C0287CE217833003001B5ED0 /* SignalIndicatorsSingleton.m */; };
+		FAC155E7145855CF0016F3BD /* Indicators_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Indicators_Prefix.pch */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C0287B7F17788BF1001B5ED0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		C0287B8117788BFB001B5ED0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		C0287B8D17789014001B5ED0 /* BatteryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BatteryBase.h; sourceTree = "<group>"; };
+		C0287B8E17789014001B5ED0 /* BatteryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BatteryBase.m; sourceTree = "<group>"; };
+		C0287B8F17789014001B5ED0 /* BatteryFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BatteryFactoryBase.h; sourceTree = "<group>"; };
+		C0287B9017789014001B5ED0 /* BatteryFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BatteryFactoryBase.m; sourceTree = "<group>"; };
+		C0287B9117789014001B5ED0 /* BatterySingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BatterySingletonBase.h; sourceTree = "<group>"; };
+		C0287B9217789014001B5ED0 /* BatterySingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BatterySingletonBase.m; sourceTree = "<group>"; };
+		C0287B9317789014001B5ED0 /* KeyStateBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyStateBase.h; sourceTree = "<group>"; };
+		C0287B9417789014001B5ED0 /* KeyStateBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyStateBase.m; sourceTree = "<group>"; };
+		C0287B9517789014001B5ED0 /* KeyStateFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyStateFactoryBase.h; sourceTree = "<group>"; };
+		C0287B9617789014001B5ED0 /* KeyStateFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyStateFactoryBase.m; sourceTree = "<group>"; };
+		C0287B9717789014001B5ED0 /* KeyStateSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyStateSingletonBase.h; sourceTree = "<group>"; };
+		C0287B9817789014001B5ED0 /* KeyStateSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyStateSingletonBase.m; sourceTree = "<group>"; };
+		C0287B9F17789014001B5ED0 /* IBattery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IBattery.h; sourceTree = "<group>"; };
+		C0287BA017789014001B5ED0 /* IKeyState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IKeyState.h; sourceTree = "<group>"; };
+		C0287BA317789014001B5ED0 /* battery_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = battery_js_wrap.mm; sourceTree = "<group>"; };
+		C0287BA417789014001B5ED0 /* keystate_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = keystate_js_wrap.mm; sourceTree = "<group>"; };
+		C0287BA717789014001B5ED0 /* battery_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = battery_ruby_wrap.m; sourceTree = "<group>"; };
+		C0287BA817789014001B5ED0 /* keystate_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = keystate_ruby_wrap.m; sourceTree = "<group>"; };
+		C0287BBF17789014001B5ED0 /* Battery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Battery.h; sourceTree = "<group>"; };
+		C0287BC017789014001B5ED0 /* Battery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Battery.m; sourceTree = "<group>"; };
+		C0287BC117789014001B5ED0 /* BatteryFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BatteryFactorySingleton.m; sourceTree = "<group>"; };
+		C0287BC217789014001B5ED0 /* BatterySetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BatterySetup.m; sourceTree = "<group>"; };
+		C0287BC317789014001B5ED0 /* BatterySingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BatterySingleton.h; sourceTree = "<group>"; };
+		C0287BC417789014001B5ED0 /* BatterySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BatterySingleton.m; sourceTree = "<group>"; };
+		C0287BC517789014001B5ED0 /* IndicatorsSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IndicatorsSetup.m; sourceTree = "<group>"; };
+		C0287BC617789014001B5ED0 /* KeyState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyState.h; sourceTree = "<group>"; };
+		C0287BC717789014001B5ED0 /* KeyState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyState.m; sourceTree = "<group>"; };
+		C0287BC817789014001B5ED0 /* KeyStateFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyStateFactorySingleton.m; sourceTree = "<group>"; };
+		C0287BC917789014001B5ED0 /* KeyStateSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyStateSetup.m; sourceTree = "<group>"; };
+		C0287BCA17789014001B5ED0 /* KeyStateSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyStateSingleton.h; sourceTree = "<group>"; };
+		C0287BCB17789014001B5ED0 /* KeyStateSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyStateSingleton.m; sourceTree = "<group>"; };
+		C0287C1517789026001B5ED0 /* battery_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = battery_api_init.cpp; sourceTree = "<group>"; };
+		C0287C1617789026001B5ED0 /* battery_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = battery_js_api.cpp; sourceTree = "<group>"; };
+		C0287C1717789026001B5ED0 /* battery_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = battery_ruby_api.c; sourceTree = "<group>"; };
+		C0287C2817789026001B5ED0 /* keystate_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keystate_api_init.cpp; sourceTree = "<group>"; };
+		C0287C2917789026001B5ED0 /* keystate_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keystate_js_api.cpp; sourceTree = "<group>"; };
+		C0287C2A17789026001B5ED0 /* keystate_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = keystate_ruby_api.c; sourceTree = "<group>"; };
+		C0287C541778AEF6001B5ED0 /* route.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = route.h; sourceTree = SOURCE_ROOT; };
+		C0287C9F17832F6F001B5ED0 /* signalindicators_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = signalindicators_api_init.cpp; sourceTree = "<group>"; };
+		C0287CA017832F6F001B5ED0 /* signalindicators_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = signalindicators_js_api.cpp; sourceTree = "<group>"; };
+		C0287CA117832F6F001B5ED0 /* signalindicators_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = signalindicators_ruby_api.c; sourceTree = "<group>"; };
+		C0287CCA17832FB1001B5ED0 /* ISignalIndicators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISignalIndicators.h; sourceTree = "<group>"; };
+		C0287CCC17832FBA001B5ED0 /* SignalIndicatorsBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalIndicatorsBase.h; sourceTree = "<group>"; };
+		C0287CCD17832FBA001B5ED0 /* SignalIndicatorsBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalIndicatorsBase.m; sourceTree = "<group>"; };
+		C0287CCE17832FBA001B5ED0 /* SignalIndicatorsFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalIndicatorsFactoryBase.h; sourceTree = "<group>"; };
+		C0287CCF17832FBA001B5ED0 /* SignalIndicatorsFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalIndicatorsFactoryBase.m; sourceTree = "<group>"; };
+		C0287CD017832FBA001B5ED0 /* SignalIndicatorsSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalIndicatorsSingletonBase.h; sourceTree = "<group>"; };
+		C0287CD117832FBA001B5ED0 /* SignalIndicatorsSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalIndicatorsSingletonBase.m; sourceTree = "<group>"; };
+		C0287CD817832FC3001B5ED0 /* signalindicators_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = signalindicators_js_wrap.mm; sourceTree = "<group>"; };
+		C0287CDA17832FCC001B5ED0 /* signalindicators_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = signalindicators_ruby_wrap.m; sourceTree = "<group>"; };
+		C0287CDD17833002001B5ED0 /* SignalIndicators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalIndicators.h; sourceTree = "<group>"; };
+		C0287CDE17833002001B5ED0 /* SignalIndicators.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalIndicators.m; sourceTree = "<group>"; };
+		C0287CDF17833002001B5ED0 /* SignalIndicatorsFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalIndicatorsFactorySingleton.m; sourceTree = "<group>"; };
+		C0287CE017833002001B5ED0 /* SignalIndicatorsSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalIndicatorsSetup.m; sourceTree = "<group>"; };
+		C0287CE117833002001B5ED0 /* SignalIndicatorsSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalIndicatorsSingleton.h; sourceTree = "<group>"; };
+		C0287CE217833003001B5ED0 /* SignalIndicatorsSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalIndicatorsSingleton.m; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libIndicators.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libIndicators.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD45FD51225FED600141873 /* Indicators_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Indicators_Prefix.pch; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0287B8017788BF1001B5ED0 /* Foundation.framework in Frameworks */,
+				C0287B8217788BFB001B5ED0 /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libIndicators.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* Barcode */ = {
+			isa = PBXGroup;
+			children = (
+				C0287C1317789026001B5ED0 /* shared */,
+				C0287B8B17789014001B5ED0 /* generated */,
+				C0287BBE17789014001B5ED0 /* impl */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = Barcode;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C0287B8117788BFB001B5ED0 /* UIKit.framework */,
+				C0287B7F17788BF1001B5ED0 /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* Indicators_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		C0287B8B17789014001B5ED0 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C0287B9F17789014001B5ED0 /* IBattery.h */,
+				C0287BA017789014001B5ED0 /* IKeyState.h */,
+				C0287CCA17832FB1001B5ED0 /* ISignalIndicators.h */,
+				C0287B8C17789014001B5ED0 /* base_impl */,
+				C0287BA217789014001B5ED0 /* javascript */,
+				C0287BA617789014001B5ED0 /* ruby */,
+			);
+			path = generated;
+			sourceTree = "<group>";
+		};
+		C0287B8C17789014001B5ED0 /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				C0287B8D17789014001B5ED0 /* BatteryBase.h */,
+				C0287B8E17789014001B5ED0 /* BatteryBase.m */,
+				C0287B8F17789014001B5ED0 /* BatteryFactoryBase.h */,
+				C0287B9017789014001B5ED0 /* BatteryFactoryBase.m */,
+				C0287B9117789014001B5ED0 /* BatterySingletonBase.h */,
+				C0287B9217789014001B5ED0 /* BatterySingletonBase.m */,
+				C0287B9317789014001B5ED0 /* KeyStateBase.h */,
+				C0287B9417789014001B5ED0 /* KeyStateBase.m */,
+				C0287B9517789014001B5ED0 /* KeyStateFactoryBase.h */,
+				C0287B9617789014001B5ED0 /* KeyStateFactoryBase.m */,
+				C0287B9717789014001B5ED0 /* KeyStateSingletonBase.h */,
+				C0287B9817789014001B5ED0 /* KeyStateSingletonBase.m */,
+				C0287CCC17832FBA001B5ED0 /* SignalIndicatorsBase.h */,
+				C0287CCD17832FBA001B5ED0 /* SignalIndicatorsBase.m */,
+				C0287CCE17832FBA001B5ED0 /* SignalIndicatorsFactoryBase.h */,
+				C0287CCF17832FBA001B5ED0 /* SignalIndicatorsFactoryBase.m */,
+				C0287CD017832FBA001B5ED0 /* SignalIndicatorsSingletonBase.h */,
+				C0287CD117832FBA001B5ED0 /* SignalIndicatorsSingletonBase.m */,
+			);
+			path = base_impl;
+			sourceTree = "<group>";
+		};
+		C0287BA217789014001B5ED0 /* javascript */ = {
+			isa = PBXGroup;
+			children = (
+				C0287BA317789014001B5ED0 /* battery_js_wrap.mm */,
+				C0287BA417789014001B5ED0 /* keystate_js_wrap.mm */,
+				C0287CD817832FC3001B5ED0 /* signalindicators_js_wrap.mm */,
+			);
+			path = javascript;
+			sourceTree = "<group>";
+		};
+		C0287BA617789014001B5ED0 /* ruby */ = {
+			isa = PBXGroup;
+			children = (
+				C0287BA717789014001B5ED0 /* battery_ruby_wrap.m */,
+				C0287BA817789014001B5ED0 /* keystate_ruby_wrap.m */,
+				C0287CDA17832FCC001B5ED0 /* signalindicators_ruby_wrap.m */,
+			);
+			path = ruby;
+			sourceTree = "<group>";
+		};
+		C0287BBE17789014001B5ED0 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				C0287BBF17789014001B5ED0 /* Battery.h */,
+				C0287BC017789014001B5ED0 /* Battery.m */,
+				C0287BC117789014001B5ED0 /* BatteryFactorySingleton.m */,
+				C0287BC217789014001B5ED0 /* BatterySetup.m */,
+				C0287BC317789014001B5ED0 /* BatterySingleton.h */,
+				C0287BC417789014001B5ED0 /* BatterySingleton.m */,
+				C0287BC517789014001B5ED0 /* IndicatorsSetup.m */,
+				C0287BC617789014001B5ED0 /* KeyState.h */,
+				C0287BC717789014001B5ED0 /* KeyState.m */,
+				C0287BC817789014001B5ED0 /* KeyStateFactorySingleton.m */,
+				C0287BC917789014001B5ED0 /* KeyStateSetup.m */,
+				C0287BCA17789014001B5ED0 /* KeyStateSingleton.h */,
+				C0287BCB17789014001B5ED0 /* KeyStateSingleton.m */,
+				C0287C541778AEF6001B5ED0 /* route.h */,
+				C0287CDD17833002001B5ED0 /* SignalIndicators.h */,
+				C0287CDE17833002001B5ED0 /* SignalIndicators.m */,
+				C0287CDF17833002001B5ED0 /* SignalIndicatorsFactorySingleton.m */,
+				C0287CE017833002001B5ED0 /* SignalIndicatorsSetup.m */,
+				C0287CE117833002001B5ED0 /* SignalIndicatorsSingleton.h */,
+				C0287CE217833003001B5ED0 /* SignalIndicatorsSingleton.m */,
+			);
+			path = impl;
+			sourceTree = "<group>";
+		};
+		C0287C1317789026001B5ED0 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				C0287C1417789026001B5ED0 /* generated */,
+			);
+			name = shared;
+			path = ../../shared;
+			sourceTree = "<group>";
+		};
+		C0287C1417789026001B5ED0 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C0287C1517789026001B5ED0 /* battery_api_init.cpp */,
+				C0287C1617789026001B5ED0 /* battery_js_api.cpp */,
+				C0287C1717789026001B5ED0 /* battery_ruby_api.c */,
+				C0287C2817789026001B5ED0 /* keystate_api_init.cpp */,
+				C0287C2917789026001B5ED0 /* keystate_js_api.cpp */,
+				C0287C2A17789026001B5ED0 /* keystate_ruby_api.c */,
+				C0287C9F17832F6F001B5ED0 /* signalindicators_api_init.cpp */,
+				C0287CA017832F6F001B5ED0 /* signalindicators_js_api.cpp */,
+				C0287CA117832F6F001B5ED0 /* signalindicators_ruby_api.c */,
+			);
+			path = generated;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155E7145855CF0016F3BD /* Indicators_Prefix.pch in Headers */,
+				C0287BD317789014001B5ED0 /* BatteryBase.h in Headers */,
+				C0287BD517789014001B5ED0 /* BatteryFactoryBase.h in Headers */,
+				C0287BD717789014001B5ED0 /* BatterySingletonBase.h in Headers */,
+				C0287BD917789014001B5ED0 /* KeyStateBase.h in Headers */,
+				C0287BDB17789014001B5ED0 /* KeyStateFactoryBase.h in Headers */,
+				C0287BDD17789014001B5ED0 /* KeyStateSingletonBase.h in Headers */,
+				C0287BE517789014001B5ED0 /* IBattery.h in Headers */,
+				C0287BE617789014001B5ED0 /* IKeyState.h in Headers */,
+				C0287C0017789014001B5ED0 /* Battery.h in Headers */,
+				C0287C0417789014001B5ED0 /* BatterySingleton.h in Headers */,
+				C0287C0717789014001B5ED0 /* KeyState.h in Headers */,
+				C0287C0B17789014001B5ED0 /* KeyStateSingleton.h in Headers */,
+				C0287C551778AEF6001B5ED0 /* route.h in Headers */,
+				C0287CCB17832FB1001B5ED0 /* ISignalIndicators.h in Headers */,
+				C0287CD217832FBA001B5ED0 /* SignalIndicatorsBase.h in Headers */,
+				C0287CD417832FBA001B5ED0 /* SignalIndicatorsFactoryBase.h in Headers */,
+				C0287CD617832FBA001B5ED0 /* SignalIndicatorsSingletonBase.h in Headers */,
+				C0287CE417833003001B5ED0 /* SignalIndicators.h in Headers */,
+				C0287CE817833003001B5ED0 /* SignalIndicatorsSingleton.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* Indicators */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Indicators" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Indicators;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libIndicators.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Indicators" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* Barcode */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* Indicators */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0287BD417789014001B5ED0 /* BatteryBase.m in Sources */,
+				C0287BD617789014001B5ED0 /* BatteryFactoryBase.m in Sources */,
+				C0287BD817789014001B5ED0 /* BatterySingletonBase.m in Sources */,
+				C0287BDA17789014001B5ED0 /* KeyStateBase.m in Sources */,
+				C0287BDC17789014001B5ED0 /* KeyStateFactoryBase.m in Sources */,
+				C0287BDE17789014001B5ED0 /* KeyStateSingletonBase.m in Sources */,
+				C0287BE817789014001B5ED0 /* battery_js_wrap.mm in Sources */,
+				C0287BE917789014001B5ED0 /* keystate_js_wrap.mm in Sources */,
+				C0287BEB17789014001B5ED0 /* battery_ruby_wrap.m in Sources */,
+				C0287BEC17789014001B5ED0 /* keystate_ruby_wrap.m in Sources */,
+				C0287C0117789014001B5ED0 /* Battery.m in Sources */,
+				C0287C0217789014001B5ED0 /* BatteryFactorySingleton.m in Sources */,
+				C0287C0317789014001B5ED0 /* BatterySetup.m in Sources */,
+				C0287C0517789014001B5ED0 /* BatterySingleton.m in Sources */,
+				C0287C0617789014001B5ED0 /* IndicatorsSetup.m in Sources */,
+				C0287C0817789014001B5ED0 /* KeyState.m in Sources */,
+				C0287C0917789014001B5ED0 /* KeyStateFactorySingleton.m in Sources */,
+				C0287C0A17789014001B5ED0 /* KeyStateSetup.m in Sources */,
+				C0287C0C17789014001B5ED0 /* KeyStateSingleton.m in Sources */,
+				C0287C2F17789026001B5ED0 /* battery_api_init.cpp in Sources */,
+				C0287C3017789026001B5ED0 /* battery_js_api.cpp in Sources */,
+				C0287C3117789026001B5ED0 /* battery_ruby_api.c in Sources */,
+				C0287C4117789026001B5ED0 /* keystate_api_init.cpp in Sources */,
+				C0287C4217789026001B5ED0 /* keystate_js_api.cpp in Sources */,
+				C0287C4317789026001B5ED0 /* keystate_ruby_api.c in Sources */,
+				C0287CA217832F6F001B5ED0 /* signalindicators_api_init.cpp in Sources */,
+				C0287CA317832F6F001B5ED0 /* signalindicators_js_api.cpp in Sources */,
+				C0287CA417832F6F001B5ED0 /* signalindicators_ruby_api.c in Sources */,
+				C0287CD317832FBA001B5ED0 /* SignalIndicatorsBase.m in Sources */,
+				C0287CD517832FBA001B5ED0 /* SignalIndicatorsFactoryBase.m in Sources */,
+				C0287CD717832FBA001B5ED0 /* SignalIndicatorsSingletonBase.m in Sources */,
+				C0287CD917832FC3001B5ED0 /* signalindicators_js_wrap.mm in Sources */,
+				C0287CDB17832FCC001B5ED0 /* signalindicators_ruby_wrap.m in Sources */,
+				C0287CE517833003001B5ED0 /* SignalIndicators.m in Sources */,
+				C0287CE617833003001B5ED0 /* SignalIndicatorsFactorySingleton.m in Sources */,
+				C0287CE717833003001B5ED0 /* SignalIndicatorsSetup.m in Sources */,
+				C0287CE917833003001B5ED0 /* SignalIndicatorsSingleton.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/Indicators.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Indicators_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Indicators;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/Indicators.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Indicators_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Indicators;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Indicators" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Indicators" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

@@ -1,0 +1,105 @@
+<HTML>
+<HEAD>
+<TITLE>Generic Test</TITLE>
+    <meta http-equiv="quitbutton" content="show" />
+    <meta http-equiv="quitbutton" content="y=40" />
+    <meta http-equiv="reloadbutton" content="show" />
+    <meta http-equiv="reloadbutton" content="y=40" />
+</HEAD>
+<BODY>
+
+<script type="text/javascript">
+    function invokeMeta()
+    {
+        var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+        var n = objGeneric.InvokeMETAFunction(equiv.value, content.value);
+        alert (n);
+    }
+
+    function showHourglass()
+    {
+        var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+        objGeneric.ShowHourglass();
+    }
+
+    function hideHourglass()
+    {
+        var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+        objGeneric.HideHourglass();
+    }
+
+    function log()
+    {
+        var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+        alert (objGeneric.Log ("Hello, world", 1));
+    }
+
+    function spbLog()
+    {
+        var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+        alert (objGeneric.SPBLog ("Hello, world", "HIGH"));
+    }
+    
+    function writeUser()
+    {
+        var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+        alert (objGeneric.WriteUserSetting("BgColor", "Green"));
+    }
+
+    function readUser()
+    {
+        var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+        var setting = objGeneric.ReadUserSetting("BgColor");
+        alert (setting);
+    }
+
+    function writeConfig()
+    {
+        var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+        alert (objGeneric.WriteConfigSetting("DebugButtons", "Yes please"));
+    }
+
+    function readConfig()
+    {
+        var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+        var setting = objGeneric.ReadConfigSetting("DebugButtons");
+        alert (setting);
+    }
+
+    function OEMInfo()
+    {
+        var objGeneric = new ActiveXObject("PocketBrowser.Generic");
+        alert (objGeneric.OEMInfo);
+    }
+</script>
+
+<div>http-equiv:<br/><input type="text" id="equiv" value="scanner" /></div>
+<div>content:<br/><input type="text" id="content" value="enabled" /></div>
+<div><input type="button" value="InvokeMeta" onclick="invokeMeta();" /></div>
+
+<div>
+<input type="button" value="Show h/g" onclick="showHourglass();" />
+<input type="button" value="Hide h/g" onclick="hideHourglass();" />
+</div>
+
+<div>
+<input type="button" value="Log" onclick="log();" />
+<input type="button" value="SPB Log" onclick="spbLog();" />
+</div>
+
+<div>
+<input type="button" value="Write user" onclick="writeUser();" />
+<input type="button" value="Read user" onclick="readUser();" />
+</div>
+
+<div>
+<input type="button" value="Write config" onclick="writeConfig();" />
+<input type="button" value="Read config" onclick="readConfig();" />
+</div>
+
+<div>
+<input type="button" value="OEM Info" onclick="OEMInfo();" />
+</div>
+
+</BODY>
+</HTML>

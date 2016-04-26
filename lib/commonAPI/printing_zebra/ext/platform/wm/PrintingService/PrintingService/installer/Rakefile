@@ -1,0 +1,24 @@
+
+namespace :printing do
+
+  @service_name = 'PrintingService'
+  @service_cab = File.join(File.dirname(__FILE__), "#{@service_name}.cab")
+
+  task :config => 'wm_gem:build:config' do
+  end
+
+  namespace :build do
+    task :service => :config do
+      Jake.run3("\"#{$devenv}\" #{@service_name}.sln /build Release", File.join(File.dirname(__FILE__), '..', '..'))
+    end
+
+    task :installer => :config do
+      rm_rf @service_cab
+      Jake.run3("\"#{$cabwiz}\" #{@service_name}.inf", File.dirname(__FILE__))
+    end
+
+    task :all, [:target] => [:service, :installer] do |t, args|
+      cp @service_cab, args[:target] if args[:target]
+    end
+  end
+end

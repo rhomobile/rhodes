@@ -1,0 +1,7 @@
+android:
+  manifest_changes: ext/platform/android/AndroidManifest.xml
+  rhodes_listener: com.rho.emdk3.EMDK3RhoListener
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+  sdk_addons: ['EMDK']
+platforms: ["android"]

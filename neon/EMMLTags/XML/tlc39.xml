@@ -1,0 +1,91 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>tlc39</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags</PATH>
+		<TYPE>Decoder</TYPE>
+		<SYNOPSIS>is used to enable or disable the tlc39 decoder.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="tlc39:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>tlc39</NAME>
+                		<VALUES>enabled/Disabled</VALUES>
+				<DESC>Enables/Disables the tlc39 decoder.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read tlc39 labels:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:disabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="code39:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="tlc39:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:disabled;code39:enabled;tlc39:enabled;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Or:</DESC>
+<CODE>
+function enableTlc39()
+{
+	scanner.allDecoders = 'disabled';
+	scanner.tlc39 = 'enabled';
+	scanner.code39 = 'enabled';
+	scanner.enable();
+}
+</CODE>
+			</EXAMPLE>		
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read all labels except tlc39:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="tlc39:disabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+function disableTlc39()
+{
+	scanner.allDecoders = 'enabled';
+	scanner.tlc39 = 'disabled';
+	scanner.enable();
+}
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Code39</COMMENT_HEADING>
+				<COMMENT_DATA>
+In order to enable tlc39 barcode scanning, the code39 decoder must also be enabled.
+				</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports tlc39.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../">Scanner</TOPIC>
+			<TOPIC>All_Decoders</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

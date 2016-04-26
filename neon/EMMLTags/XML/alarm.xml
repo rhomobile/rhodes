@@ -1,0 +1,107 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>alarm</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to set an alarm and register an action to perform when that alarm fires.</SYNOPSIS>
+		<!--MULTIPLE_INSTANCE>There can be a maximum of one alarm running per RhoElements application.</MULTIPLE_INSTANCE-->
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Alarm" content="[method / parameter]"&gt;</EXAMPLE>
+			</USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Alarm" content="AlarmTriggered:url('[jsFunction | url]')"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>clear</NAME>
+				<DESC>Clears the currently set alarm</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>			
+			<PARAM>
+				<NAME>set</NAME>
+				<DESC>Sets the alarm.  The alarm will fire after the specified interval or at the specified time (see the parameters section).  You can only have one active alarm at a time.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>			
+		</PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>interval</NAME>
+				<VALUES>Alarm Interval in the format HH-MM-SS</VALUES>
+				<DESC>Sets a time after which the Alarm will fire.  The delay cannot be set to less that 30 seconds, if a value of less than 30 seconds is supplied, the delay will be defaulted to 30 seconds.</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>			
+			<PARAM>
+				<NAME>repeat</NAME>
+				<VALUES>'true' or 'false'</VALUES>
+				<DESC>Provided the alarm has been set using the Interval parameter the alarm will be reset once fired.  If the alarm is set using the 'Time' parameter then this value is ignored.</DESC>
+				<DEFAULT>False</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>time</NAME>
+				<VALUES>Time in the format "YYYY-MM-DDtHH-MM-SStzd" (e.g. "2009-11-19t11-56-00+01-00"), See Remarks</VALUES>
+				<DESC>Sets the alarm to trigger at the specified time.</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<RETURNS>
+            <TAG>
+                <TAG_NAME>alarmTriggered</TAG_NAME>
+				<TAG_NOTES>The alarm triggered event will be fired when either the alarm time reaches that specified in the 'Time' parameter or the period specified in 'Interval' expires.  There are no parameters associated with the AlarmTriggered event.</TAG_NOTES>
+				<RETVAL>NONE</RETVAL>
+            </TAG>
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example sets the alarm to display an alert box at a repeated interval of 1 hour:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Alarm-Set" Content="Interval:01-00-00; Repeat:True; AlarmTriggered:url('javascript:alert('Alarm Fired');')"&gt;
+</CODE>
+			</EXAMPLE>				
+			<EXAMPLE>
+				<DESC>The following example sets the alarm to display an alert box at 8am GMT on 27th July 2012:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Alarm-Set" Content="Time:2012-07-27t08-00-00+00-00; AlarmTriggered:url('javascript:alert('London Olympics Start Today');')"&gt;
+</CODE>
+			</EXAMPLE>				
+		</EXAMPLES>
+
+		<REMARKS>
+		<COMMENT>
+			<COMMENT_HEADING>Validity of registered action on Alarm Triggered</COMMENT_HEADING>
+			<COMMENT_DATA>Uniquely for a RhoElements event the registered action for the AlarmTriggered event does not get cleared when you navigate away from the current page.  If using a javascript function, you must ensure the script is still valid when the alarm fires or alternatively you can clear the alarm.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Minimum Time Interval</COMMENT_HEADING>
+			<COMMENT_DATA>The Alarm is not designed to be triggered for intervals less than 30 seconds, if you require a shorter delay then consider using the JavaScript function 'SetTimeout'.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Explanation of Time Format</COMMENT_HEADING>
+			<COMMENT_DATA>You must specify the time in GMT and then the device's timezone offset from that.  E.g. a time expressed as 2012-07-27t08-30-00-05-00 breaks down as follows:</COMMENT_DATA>
+			<COMMENTFIXEDWIDTH>
+//  Assuming a device with timezone offset -5 hours
+//  This alarm will fire at 8:30am (local time) on 27th July 2012
+
+Year: 2012
+Month: July
+Day: 27th
+Time: 13:30 exactly (GMT)
+Timezone: -5 (Eastern Time, 8:30am local time)
+			</COMMENTFIXEDWIDTH>
+		</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except kiosk devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>Timer</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

@@ -1,0 +1,80 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>hourglass</NAME>
+		<PATH>Device_Application</PATH>
+		<SYNOPSIS>is used to show or hide the hourglass (wait cursor) as well as adjust its position.</SYNOPSIS>
+		<TYPE>Module</TYPE>
+		<MULTIPLE_INSTANCE>The hourglass settings are application specific.  Switching to another application which uses the hourglass module will apply the focused application's settings to it, e.g. it may move position or be shown / hidden.  Applications which do not have focus will not have their hourglass shown.</MULTIPLE_INSTANCE>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Hourglass" content="[parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>visibility</NAME>
+				<DESC>Shows or hides the hourglass</DESC>
+				<VALUES>Visible or Hidden</VALUES>
+				<DEFAULT>Hidden</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>left</NAME>
+				<DESC>Sets the horizontal position of the hourglass</DESC>
+				<VALUES>Horizontal position, in pixels</VALUES>
+				<DEFAULT>Center of the screen</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>top</NAME>
+				<DESC>Sets the vertical position of the hourglass</DESC>
+				<VALUES>Vertical position, in pixels</VALUES>
+				<DEFAULT>Center of the screen</DEFAULT>
+			</PARAM>				
+		</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example sets the Hourglass position to (50, 50).</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Hourglass" Content="left:50; top:50"&gt;
+</CODE>
+			</EXAMPLE>				
+			<EXAMPLE>
+				<DESC>The following example shows and hides the Hourglass.</DESC>
+<CODE>
+  &lt;SCRIPT LANGUAGE="JavaScript"&gt;
+    function showHourglass()
+    {
+	    hourglass.visibility = 'visible';
+    }
+
+    function hideHourglass()
+    {
+	    hourglass.visibility = 'hidden';
+    }
+  &lt;/SCRIPT&gt;
+</CODE>
+			</EXAMPLE>				
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Navigation</COMMENT_HEADING>
+				<COMMENT_DATA>When navigating between pages the hourglass will be shown and hidden automatically and will override the current visibility settings.  The position the hourglass is shown at during page loads will be as set using the Left / Top properties.  Because the Hourglass is shown and hidden automatically during page loads it is not recommended to use static meta tags to show or hide it, in preference use InvokeMETATag from JavaScript.</COMMENT_DATA>
+			</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Scrolling</COMMENT_HEADING>
+			<COMMENT_DATA>The hourglass is not compatible with scrolling the browser window.  The spinning cursor will move with the HTML page.</COMMENT_DATA>
+		</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Partially Transient - any changes made by changing parameters will be lost when navigating to a new page with the exception that the wait cursor will always be hidden once the new page has loaded.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../legacyObjects/">Generic</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

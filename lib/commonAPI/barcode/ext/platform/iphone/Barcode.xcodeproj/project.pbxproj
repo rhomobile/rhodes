@@ -1,0 +1,524 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA747D9F0F9514B9006C5449 /* Barcode_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Barcode_Prefix.pch */; };
+		FA21F9FA170658EE0061F9DC /* barcode_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA21F9F7170658EE0061F9DC /* barcode_api_init.cpp */; };
+		FA21F9FB170658EE0061F9DC /* barcode_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA21F9F8170658EE0061F9DC /* barcode_js_api.cpp */; };
+		FA21F9FC170658EE0061F9DC /* barcode_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA21F9F9170658EE0061F9DC /* barcode_ruby_api.c */; };
+		FA21FA03170658FA0061F9DC /* Barcode.h in Headers */ = {isa = PBXBuildFile; fileRef = FA21F9FD170658FA0061F9DC /* Barcode.h */; };
+		FA21FA04170658FA0061F9DC /* Barcode.m in Sources */ = {isa = PBXBuildFile; fileRef = FA21F9FE170658FA0061F9DC /* Barcode.m */; };
+		FA21FA05170658FA0061F9DC /* BarcodeFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA21F9FF170658FA0061F9DC /* BarcodeFactorySingleton.m */; };
+		FA21FA06170658FA0061F9DC /* BarcodeSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FA21FA00170658FA0061F9DC /* BarcodeSetup.m */; };
+		FA21FA07170658FA0061F9DC /* BarcodeSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FA21FA01170658FA0061F9DC /* BarcodeSingleton.h */; };
+		FA21FA08170658FA0061F9DC /* BarcodeSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA21FA02170658FA0061F9DC /* BarcodeSingleton.m */; };
+		FA21FA0A170659090061F9DC /* IBarcode.h in Headers */ = {isa = PBXBuildFile; fileRef = FA21FA09170659090061F9DC /* IBarcode.h */; };
+		FA21FA111706591A0061F9DC /* BarcodeBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA21FA0B1706591A0061F9DC /* BarcodeBase.h */; };
+		FA21FA121706591A0061F9DC /* BarcodeBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA21FA0C1706591A0061F9DC /* BarcodeBase.m */; };
+		FA21FA131706591A0061F9DC /* BarcodeFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA21FA0D1706591A0061F9DC /* BarcodeFactoryBase.h */; };
+		FA21FA141706591A0061F9DC /* BarcodeFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA21FA0E1706591A0061F9DC /* BarcodeFactoryBase.m */; };
+		FA21FA151706591A0061F9DC /* BarcodeSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA21FA0F1706591A0061F9DC /* BarcodeSingletonBase.h */; };
+		FA21FA161706591A0061F9DC /* BarcodeSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA21FA101706591A0061F9DC /* BarcodeSingletonBase.m */; };
+		FA21FA181706592E0061F9DC /* barcode_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FA21FA171706592E0061F9DC /* barcode_ruby_wrap.m */; };
+		FA21FA1A170659370061F9DC /* barcode_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA21FA19170659370061F9DC /* barcode_js_wrap.mm */; };
+		FA21FA1B17065D5E0061F9DC /* BarcodeCallbackHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA839301455F7210002F4E6 /* BarcodeCallbackHelper.h */; };
+		FA21FA1C17065D610061F9DC /* BarcodeCallbackHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA839311455F7210002F4E6 /* BarcodeCallbackHelper.mm */; };
+		FA4D3F0C136AF9BD009D6E63 /* libzbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F0B136AF9BD009D6E63 /* libzbar.a */; };
+		FA4D3F44136B0789009D6E63 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F43136B0789009D6E63 /* Foundation.framework */; };
+		FA4D3F46136B0793009D6E63 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F45136B0793009D6E63 /* CoreGraphics.framework */; };
+		FA4D3F48136B079C009D6E63 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F47136B079C009D6E63 /* UIKit.framework */; };
+		FA4D3F4A136B07A6009D6E63 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F49136B07A6009D6E63 /* QuartzCore.framework */; };
+		FA4D3F4C136B07AB009D6E63 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F4B136B07AB009D6E63 /* AVFoundation.framework */; };
+		FA4D3F4E136B07B2009D6E63 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F4D136B07B2009D6E63 /* CoreMedia.framework */; };
+		FA4D3F50136B07BB009D6E63 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F4F136B07BB009D6E63 /* CoreVideo.framework */; };
+		FAA838881455B0BA0002F4E6 /* BarcodeViewFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA838831455B0BA0002F4E6 /* BarcodeViewFactory.h */; };
+		FAA838891455B0BA0002F4E6 /* BarcodeViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA838841455B0BA0002F4E6 /* BarcodeViewFactory.mm */; };
+		FAA8388A1455B0BA0002F4E6 /* BarcodeViewFactoryRegister.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA838851455B0BA0002F4E6 /* BarcodeViewFactoryRegister.mm */; };
+		FAA8388B1455B0BA0002F4E6 /* BarcodeViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA838861455B0BA0002F4E6 /* BarcodeViewManager.h */; };
+		FAA8388C1455B0BA0002F4E6 /* BarcodeViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA838871455B0BA0002F4E6 /* BarcodeViewManager.mm */; };
+		FAA838901455B1F60002F4E6 /* BarcodeViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA8388E1455B1F60002F4E6 /* BarcodeViewController.h */; };
+		FAA838911455B1F60002F4E6 /* BarcodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FAA8388F1455B1F60002F4E6 /* BarcodeViewController.m */; };
+		FAAE06AD11EF4F02001787D8 /* ImageProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAAE06AA11EF4F02001787D8 /* ImageProvider.cpp */; };
+		FAAE06AE11EF4F02001787D8 /* ImageProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = FAAE06AB11EF4F02001787D8 /* ImageProvider.h */; };
+		FAAE06AF11EF4F02001787D8 /* ImageProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAAE06AC11EF4F02001787D8 /* ImageProvider.mm */; };
+		FAD38B2D1720615100C8E560 /* BarcodeFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = FAD38B2B1720615100C8E560 /* BarcodeFactory.h */; };
+		FAD38B2E1720615100C8E560 /* BarcodeFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = FAD38B2C1720615100C8E560 /* BarcodeFactory.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AA747D9E0F9514B9006C5449 /* Barcode_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Barcode_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		D2AAC07E0554694100DB518D /* libBarcode.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libBarcode.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA21F9F7170658EE0061F9DC /* barcode_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = barcode_api_init.cpp; path = ../../shared/generated/barcode_api_init.cpp; sourceTree = "<group>"; };
+		FA21F9F8170658EE0061F9DC /* barcode_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = barcode_js_api.cpp; path = ../../shared/generated/barcode_js_api.cpp; sourceTree = "<group>"; };
+		FA21F9F9170658EE0061F9DC /* barcode_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = barcode_ruby_api.c; path = ../../shared/generated/barcode_ruby_api.c; sourceTree = "<group>"; };
+		FA21F9FD170658FA0061F9DC /* Barcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Barcode.h; path = impl/Barcode.h; sourceTree = "<group>"; };
+		FA21F9FE170658FA0061F9DC /* Barcode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Barcode.m; path = impl/Barcode.m; sourceTree = "<group>"; };
+		FA21F9FF170658FA0061F9DC /* BarcodeFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BarcodeFactorySingleton.m; path = impl/BarcodeFactorySingleton.m; sourceTree = "<group>"; };
+		FA21FA00170658FA0061F9DC /* BarcodeSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BarcodeSetup.m; path = impl/BarcodeSetup.m; sourceTree = "<group>"; };
+		FA21FA01170658FA0061F9DC /* BarcodeSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeSingleton.h; path = impl/BarcodeSingleton.h; sourceTree = "<group>"; };
+		FA21FA02170658FA0061F9DC /* BarcodeSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BarcodeSingleton.m; path = impl/BarcodeSingleton.m; sourceTree = "<group>"; };
+		FA21FA09170659090061F9DC /* IBarcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IBarcode.h; path = generated/IBarcode.h; sourceTree = "<group>"; };
+		FA21FA0B1706591A0061F9DC /* BarcodeBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeBase.h; path = generated/base_impl/BarcodeBase.h; sourceTree = "<group>"; };
+		FA21FA0C1706591A0061F9DC /* BarcodeBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BarcodeBase.m; path = generated/base_impl/BarcodeBase.m; sourceTree = "<group>"; };
+		FA21FA0D1706591A0061F9DC /* BarcodeFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeFactoryBase.h; path = generated/base_impl/BarcodeFactoryBase.h; sourceTree = "<group>"; };
+		FA21FA0E1706591A0061F9DC /* BarcodeFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BarcodeFactoryBase.m; path = generated/base_impl/BarcodeFactoryBase.m; sourceTree = "<group>"; };
+		FA21FA0F1706591A0061F9DC /* BarcodeSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeSingletonBase.h; path = generated/base_impl/BarcodeSingletonBase.h; sourceTree = "<group>"; };
+		FA21FA101706591A0061F9DC /* BarcodeSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BarcodeSingletonBase.m; path = generated/base_impl/BarcodeSingletonBase.m; sourceTree = "<group>"; };
+		FA21FA171706592E0061F9DC /* barcode_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = barcode_ruby_wrap.m; path = generated/ruby/barcode_ruby_wrap.m; sourceTree = "<group>"; };
+		FA21FA19170659370061F9DC /* barcode_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = barcode_js_wrap.mm; path = generated/javascript/barcode_js_wrap.mm; sourceTree = "<group>"; };
+		FA4D3F0B136AF9BD009D6E63 /* libzbar.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzbar.a; path = ZBarSDK/libzbar.a; sourceTree = "<group>"; };
+		FA4D3F0E136AFA94009D6E63 /* barcode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = barcode.m; path = Classes/barcode.m; sourceTree = "<group>"; };
+		FA4D3F23136B05E8009D6E63 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		FA4D3F43136B0789009D6E63 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FA4D3F45136B0793009D6E63 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		FA4D3F47136B079C009D6E63 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		FA4D3F49136B07A6009D6E63 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		FA4D3F4B136B07AB009D6E63 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		FA4D3F4D136B07B2009D6E63 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		FA4D3F4F136B07BB009D6E63 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		FA4D3F51136B07CA009D6E63 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		FAA838831455B0BA0002F4E6 /* BarcodeViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeViewFactory.h; path = Classes/BarcodeViewFactory.h; sourceTree = "<group>"; };
+		FAA838841455B0BA0002F4E6 /* BarcodeViewFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BarcodeViewFactory.mm; path = Classes/BarcodeViewFactory.mm; sourceTree = "<group>"; };
+		FAA838851455B0BA0002F4E6 /* BarcodeViewFactoryRegister.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BarcodeViewFactoryRegister.mm; path = Classes/BarcodeViewFactoryRegister.mm; sourceTree = "<group>"; };
+		FAA838861455B0BA0002F4E6 /* BarcodeViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeViewManager.h; path = Classes/BarcodeViewManager.h; sourceTree = "<group>"; };
+		FAA838871455B0BA0002F4E6 /* BarcodeViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BarcodeViewManager.mm; path = Classes/BarcodeViewManager.mm; sourceTree = "<group>"; };
+		FAA8388E1455B1F60002F4E6 /* BarcodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeViewController.h; path = Classes/BarcodeViewController.h; sourceTree = "<group>"; };
+		FAA8388F1455B1F60002F4E6 /* BarcodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BarcodeViewController.m; path = Classes/BarcodeViewController.m; sourceTree = "<group>"; };
+		FAA839301455F7210002F4E6 /* BarcodeCallbackHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeCallbackHelper.h; path = Classes/BarcodeCallbackHelper.h; sourceTree = "<group>"; };
+		FAA839311455F7210002F4E6 /* BarcodeCallbackHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BarcodeCallbackHelper.mm; path = Classes/BarcodeCallbackHelper.mm; sourceTree = "<group>"; };
+		FAAE06AA11EF4F02001787D8 /* ImageProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageProvider.cpp; path = Classes/ImageProvider.cpp; sourceTree = "<group>"; };
+		FAAE06AB11EF4F02001787D8 /* ImageProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageProvider.h; path = Classes/ImageProvider.h; sourceTree = "<group>"; };
+		FAAE06AC11EF4F02001787D8 /* ImageProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ImageProvider.mm; path = Classes/ImageProvider.mm; sourceTree = "<group>"; };
+		FAD38B2B1720615100C8E560 /* BarcodeFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeFactory.h; path = impl/BarcodeFactory.h; sourceTree = "<group>"; };
+		FAD38B2C1720615100C8E560 /* BarcodeFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BarcodeFactory.m; path = impl/BarcodeFactory.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D2AAC07C0554694100DB518D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA4D3F50136B07BB009D6E63 /* CoreVideo.framework in Frameworks */,
+				FA4D3F4E136B07B2009D6E63 /* CoreMedia.framework in Frameworks */,
+				FA4D3F4C136B07AB009D6E63 /* AVFoundation.framework in Frameworks */,
+				FA4D3F4A136B07A6009D6E63 /* QuartzCore.framework in Frameworks */,
+				FA4D3F48136B079C009D6E63 /* UIKit.framework in Frameworks */,
+				FA4D3F46136B0793009D6E63 /* CoreGraphics.framework in Frameworks */,
+				FA4D3F44136B0789009D6E63 /* Foundation.framework in Frameworks */,
+				FA4D3F0C136AF9BD009D6E63 /* libzbar.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D2AAC07E0554694100DB518D /* libBarcode.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* Barcode */ = {
+			isa = PBXGroup;
+			children = (
+				FA21F9F0170658620061F9DC /* CommonAPI */,
+				FA4D3F51136B07CA009D6E63 /* libiconv.dylib */,
+				FA4D3F4F136B07BB009D6E63 /* CoreVideo.framework */,
+				FA4D3F4D136B07B2009D6E63 /* CoreMedia.framework */,
+				FA4D3F4B136B07AB009D6E63 /* AVFoundation.framework */,
+				FA4D3F49136B07A6009D6E63 /* QuartzCore.framework */,
+				FA4D3F47136B079C009D6E63 /* UIKit.framework */,
+				FA4D3F45136B0793009D6E63 /* CoreGraphics.framework */,
+				FA4D3F43136B0789009D6E63 /* Foundation.framework */,
+				FA4D3F23136B05E8009D6E63 /* QuartzCore.framework */,
+				FA4D3F0B136AF9BD009D6E63 /* libzbar.a */,
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = Barcode;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FAA839301455F7210002F4E6 /* BarcodeCallbackHelper.h */,
+				FAA839311455F7210002F4E6 /* BarcodeCallbackHelper.mm */,
+				FAA8388E1455B1F60002F4E6 /* BarcodeViewController.h */,
+				FAA8388F1455B1F60002F4E6 /* BarcodeViewController.m */,
+				FAA838831455B0BA0002F4E6 /* BarcodeViewFactory.h */,
+				FAA838841455B0BA0002F4E6 /* BarcodeViewFactory.mm */,
+				FAA838851455B0BA0002F4E6 /* BarcodeViewFactoryRegister.mm */,
+				FAA838861455B0BA0002F4E6 /* BarcodeViewManager.h */,
+				FAA838871455B0BA0002F4E6 /* BarcodeViewManager.mm */,
+				FA4D3F0E136AFA94009D6E63 /* barcode.m */,
+				FAAE06AA11EF4F02001787D8 /* ImageProvider.cpp */,
+				FAAE06AB11EF4F02001787D8 /* ImageProvider.h */,
+				FAAE06AC11EF4F02001787D8 /* ImageProvider.mm */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				AA747D9E0F9514B9006C5449 /* Barcode_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		FA21F9F0170658620061F9DC /* CommonAPI */ = {
+			isa = PBXGroup;
+			children = (
+				FA21F9F31706588F0061F9DC /* shared */,
+				FA21F9F21706587C0061F9DC /* impl */,
+				FA21F9F11706586F0061F9DC /* generated */,
+			);
+			name = CommonAPI;
+			sourceTree = "<group>";
+		};
+		FA21F9F11706586F0061F9DC /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FA21FA09170659090061F9DC /* IBarcode.h */,
+				FA21F9F6170658A50061F9DC /* ruby */,
+				FA21F9F51706589E0061F9DC /* javascript */,
+				FA21F9F4170658960061F9DC /* base_impl */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FA21F9F21706587C0061F9DC /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAD38B2B1720615100C8E560 /* BarcodeFactory.h */,
+				FAD38B2C1720615100C8E560 /* BarcodeFactory.m */,
+				FA21F9FD170658FA0061F9DC /* Barcode.h */,
+				FA21F9FE170658FA0061F9DC /* Barcode.m */,
+				FA21F9FF170658FA0061F9DC /* BarcodeFactorySingleton.m */,
+				FA21FA00170658FA0061F9DC /* BarcodeSetup.m */,
+				FA21FA01170658FA0061F9DC /* BarcodeSingleton.h */,
+				FA21FA02170658FA0061F9DC /* BarcodeSingleton.m */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FA21F9F31706588F0061F9DC /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FA21F9F7170658EE0061F9DC /* barcode_api_init.cpp */,
+				FA21F9F8170658EE0061F9DC /* barcode_js_api.cpp */,
+				FA21F9F9170658EE0061F9DC /* barcode_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FA21F9F4170658960061F9DC /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA21FA0B1706591A0061F9DC /* BarcodeBase.h */,
+				FA21FA0C1706591A0061F9DC /* BarcodeBase.m */,
+				FA21FA0D1706591A0061F9DC /* BarcodeFactoryBase.h */,
+				FA21FA0E1706591A0061F9DC /* BarcodeFactoryBase.m */,
+				FA21FA0F1706591A0061F9DC /* BarcodeSingletonBase.h */,
+				FA21FA101706591A0061F9DC /* BarcodeSingletonBase.m */,
+			);
+			name = base_impl;
+			sourceTree = "<group>";
+		};
+		FA21F9F51706589E0061F9DC /* javascript */ = {
+			isa = PBXGroup;
+			children = (
+				FA21FA19170659370061F9DC /* barcode_js_wrap.mm */,
+			);
+			name = javascript;
+			sourceTree = "<group>";
+		};
+		FA21F9F6170658A50061F9DC /* ruby */ = {
+			isa = PBXGroup;
+			children = (
+				FA21FA171706592E0061F9DC /* barcode_ruby_wrap.m */,
+			);
+			name = ruby;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D2AAC07A0554694100DB518D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA747D9F0F9514B9006C5449 /* Barcode_Prefix.pch in Headers */,
+				FAAE06AE11EF4F02001787D8 /* ImageProvider.h in Headers */,
+				FAA838881455B0BA0002F4E6 /* BarcodeViewFactory.h in Headers */,
+				FAA8388B1455B0BA0002F4E6 /* BarcodeViewManager.h in Headers */,
+				FAA838901455B1F60002F4E6 /* BarcodeViewController.h in Headers */,
+				FA21FA03170658FA0061F9DC /* Barcode.h in Headers */,
+				FA21FA07170658FA0061F9DC /* BarcodeSingleton.h in Headers */,
+				FA21FA0A170659090061F9DC /* IBarcode.h in Headers */,
+				FA21FA111706591A0061F9DC /* BarcodeBase.h in Headers */,
+				FA21FA131706591A0061F9DC /* BarcodeFactoryBase.h in Headers */,
+				FA21FA151706591A0061F9DC /* BarcodeSingletonBase.h in Headers */,
+				FA21FA1B17065D5E0061F9DC /* BarcodeCallbackHelper.h in Headers */,
+				FAD38B2D1720615100C8E560 /* BarcodeFactory.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		D2AAC07D0554694100DB518D /* Barcode */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "Barcode" */;
+			buildPhases = (
+				D2AAC07A0554694100DB518D /* Headers */,
+				D2AAC07B0554694100DB518D /* Sources */,
+				D2AAC07C0554694100DB518D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Barcode;
+			productName = Barcode;
+			productReference = D2AAC07E0554694100DB518D /* libBarcode.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Barcode" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* Barcode */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D2AAC07D0554694100DB518D /* Barcode */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D2AAC07B0554694100DB518D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAAE06AD11EF4F02001787D8 /* ImageProvider.cpp in Sources */,
+				FAAE06AF11EF4F02001787D8 /* ImageProvider.mm in Sources */,
+				FAA838891455B0BA0002F4E6 /* BarcodeViewFactory.mm in Sources */,
+				FAA8388A1455B0BA0002F4E6 /* BarcodeViewFactoryRegister.mm in Sources */,
+				FAA8388C1455B0BA0002F4E6 /* BarcodeViewManager.mm in Sources */,
+				FAA838911455B1F60002F4E6 /* BarcodeViewController.m in Sources */,
+				FA21F9FA170658EE0061F9DC /* barcode_api_init.cpp in Sources */,
+				FA21F9FB170658EE0061F9DC /* barcode_js_api.cpp in Sources */,
+				FA21F9FC170658EE0061F9DC /* barcode_ruby_api.c in Sources */,
+				FA21FA04170658FA0061F9DC /* Barcode.m in Sources */,
+				FA21FA05170658FA0061F9DC /* BarcodeFactorySingleton.m in Sources */,
+				FA21FA06170658FA0061F9DC /* BarcodeSetup.m in Sources */,
+				FA21FA08170658FA0061F9DC /* BarcodeSingleton.m in Sources */,
+				FA21FA121706591A0061F9DC /* BarcodeBase.m in Sources */,
+				FA21FA141706591A0061F9DC /* BarcodeFactoryBase.m in Sources */,
+				FA21FA161706591A0061F9DC /* BarcodeSingletonBase.m in Sources */,
+				FA21FA181706592E0061F9DC /* barcode_ruby_wrap.m in Sources */,
+				FA21FA1A170659370061F9DC /* barcode_js_wrap.mm in Sources */,
+				FA21FA1C17065D610061F9DC /* BarcodeCallbackHelper.mm in Sources */,
+				FAD38B2E1720615100C8E560 /* BarcodeFactory.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB921F08733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/Barcode.dst;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Barcode_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					ZBarSDK/Headers/ZBarSDK,
+					ZBarSDK/Headers/ZBarSDK/zbar,
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/ZBarSDK\"",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_LDFLAGS = "-liconv";
+				PRODUCT_NAME = Barcode;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		1DEB922008733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/Barcode.dst;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Barcode_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					ZBarSDK/Headers/ZBarSDK,
+					ZBarSDK/Headers/ZBarSDK/zbar,
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/ZBarSDK\"",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_LDFLAGS = "-liconv";
+				PRODUCT_NAME = Barcode;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					ZBarSDK/Headers/ZBarSDK,
+					ZBarSDK/Headers/ZBarSDK/zbar,
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					ZBarSDK/Headers/ZBarSDK,
+					ZBarSDK/Headers/ZBarSDK/zbar,
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "Barcode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB921F08733DC00010E9CD /* Debug */,
+				1DEB922008733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Barcode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

@@ -1,0 +1,85 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>lightsensor</NAME>
+		<PATH>Sensor</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to retrieve the intensity of the ambient light falling on the device..</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="LightSensor" content="[parameter]"&gt;</EXAMPLE>
+            </USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="LightSensor" content="LightSensorEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+            </USAGE>
+        </SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>getSensorData</NAME>
+				<DESC>This immediately returns the Ambient Light sensor via the LightSensorEvent</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>			
+		</PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>status</NAME>
+				<VALUES>Enabled, disabled</VALUES>
+				<DESC>Enables / disables the Light Sensor value retrieval</DESC>
+				<DEFAULT>disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>minimumInterval</NAME>
+				<VALUES>Value in milli seconds</VALUES>
+				<DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds.</DESC>
+				<DEFAULT>1000 milliseconds</DEFAULT>
+			</PARAM>				
+        	</PARAMS_WITH_ATTRIBUTES>
+        <RETURNS>
+            <TAG>
+                <TAG_NAME>LightSensorEvent</TAG_NAME>
+				<TAG_NOTES>The LightSensorEvent gives the LightSensor value. Once registered for you will receive a LightSensorEvent when it gets changed.</TAG_NOTES>
+                <RETVAL>
+                    <NAME>LightSensorValue</NAME>
+                    <DESC>LightSensor value in SI lux units</DESC>
+                </RETVAL>                
+            </TAG>
+		</RETURNS>	
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example retrieves the light sensor value when it is changed</DESC>
+<CODE>
+&lt;META HTTP-EQUIV="LightSensor" CONTENT="LightSensorEvent:url('Javascript:onSensor(%json);');status:enabled; "&gt;
+
+&lt;SCRIPT&gt;
+    function onSensor(jsonObject)
+    {
+        var theOutput = "Light Sensor: " + jsonObject.LightSensorValue;                
+        outputDiv.innerHTML = theOutput;
+    }
+&lt;/SCRIPT&gt;
+&lt;div id="outputDiv"&gt;Light Sensor Output Goes Here&lt;/div&gt;
+&lt;P&gt;
+  &lt;INPUT align="center" type="button" value="Retrieve Light Sensor Data" onclick="LightSensor.getSensorData();"&gt;&lt;br&gt;
+</CODE>
+			</EXAMPLE>			
+		</EXAMPLES>
+		<REMARKS>		
+			<COMMENT>
+				<COMMENT_HEADING>minimum interval</COMMENT_HEADING>
+				<COMMENT_DATA>As the light sensor value change rapidly the minimum interval between two updates should be specified as a reasonable value, otherwise there can be a performance impact.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Cross platform consistency</COMMENT_HEADING>
+				<COMMENT_DATA>As this plugin returns the raw sensor values reported by the operating system the values might differ between platforms.</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices. On Windows this is only supported in MPA3.0 devices.</PLATFORM>
+			<APPLIES>Non Persistent - Changes to this module will not persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>2.1</VER_INTRODUCED>
+		</ADDITIONAL>		
+	</FUNC>
+</HELPPAGE>

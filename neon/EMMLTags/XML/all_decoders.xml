@@ -1,0 +1,55 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>allDecoders</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags</PATH>
+		<TYPE>Decoder</TYPE>
+		<SYNOPSIS>is used to set the set the barcode scanner to read all barcode types that the scanner is capable of reading*.</SYNOPSIS>
+		<SYNTAX>
+            <USAGE>
+                <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="allDecoders:[parameter]"&gt;</EXAMPLE>
+            </USAGE>
+	       </SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>allDecoders</NAME>
+				<VALUES>enabled / disabled</VALUES>
+				<DESC>Enable / Disables all available decoders</DESC>
+				<DEFAULT></DEFAULT>
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables all available decoders then turns on the scanner:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enable"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables all available decoders then turns on the scanner:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled;enable"&gt;
+</CODE>
+			</EXAMPLE>				
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Exception</COMMENT_HEADING>
+				<COMMENT_DATA>Some decoders will not be enabled as some symbologies use the same systems to encode data, making it impossible to differentiate between them. For example: "canpostal" and "auspostal" both use a 4-state system, so devices will only enable either "canpostal" OR "auspostal" when "alldecoders" is enabled.  Note that other symbologies also share the 4-state system.</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Symbol Technologies Inc barcode scanner hardware.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../">Scanner</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

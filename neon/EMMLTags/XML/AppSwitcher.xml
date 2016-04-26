@@ -1,0 +1,74 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>appSwitcher</NAME>
+		<PATH>Device</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to show or hide the application switcher.</SYNOPSIS>
+		<SYNTAX>
+            <USAGE>
+                <EXAMPLE>&lt;META HTTP-Equiv="AppSwitcher" content="Visibility:Visible"&gt;</EXAMPLE>
+            </USAGE>
+            <USAGE>
+                <EXAMPLE>&lt;META HTTP-Equiv="AppSwitcher-Visibility" contents="Visible"&gt;</EXAMPLE>
+            </USAGE>
+        </SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>visibility</NAME>
+                <VALUES>Either 'visible' or 'hidden'.</VALUES>
+				<DESC>
+                    Setting the visibility to 'visible' will show the application switcher.  Setting the visibility to 'hidden' will hide the application switcher.  Developers can design their own custom application switchers, see the Remarks section for information on how to do this.
+                </DESC>
+				<DEFAULT>The visibility of the switcher will remain unchanged if given an invalid parameter.</DEFAULT>
+			</PARAM>	
+        </PARAMS_WITH_ATTRIBUTES>
+
+
+        
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example closes the current application and brings up the application switcher:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="AppInstance" Content="CloseCurrent"&gt;
+&lt;META HTTP-Equiv="AppSwitcher" Content="Visibility:Visible"&gt;
+</CODE>
+			</EXAMPLE>	
+			<EXAMPLE>
+				<DESC>The following example shows the application switcher for 5 seconds when this page is loaded :</DESC>
+<CODE>
+&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;META HTTP-Equiv="AppSwitcher" Content="Visibility:Visible"&gt;
+&lt;/HEAD&gt;
+
+&lt;BODY onLoad="HideAppSwitcherTimer();"&gt;
+
+&lt;SCRIPT LANGUAGE="JavaScript"&gt;
+function HideAppSwitcherTimer()
+{
+	setTimeout("onHideAppSwither()", 5000);
+}
+function onHideAppSwitcher()
+{
+	appSwitcher.visibility = hidden;
+}
+&lt;/SCRIPT&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+</CODE>
+			</EXAMPLE>	
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>Windows CE, Windows Mobile, Windows Mobile SE</PLATFORM>
+			<APPLIES>This tag is page specific and is actioned immediately.</APPLIES>
+			<REQ>Browser running a multiple instance compatable browser.</REQ>
+			<VER_INTRODUCED>N/A</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>AppInstance</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

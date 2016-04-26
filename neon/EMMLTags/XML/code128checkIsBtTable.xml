@@ -1,0 +1,45 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>code128checkIsBtTable</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Code128</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>decodes concatenated output only if the pair belongs to one of the commonly concatenated pairs as defined by the standard.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="code128checkIsBtTable:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>code128checkIsBtTable</NAME>
+                		<VALUES>true / false</VALUES>
+				<DESC>Enables / Disables the property.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only Code128 labels with the code128checkIsBtTable property set</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="scanner" Content="Code128:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="code128checkIsBtTable:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+				</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports Code128.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>Code128</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

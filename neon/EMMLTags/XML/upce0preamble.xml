@@ -1,0 +1,59 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>upce0preamble</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Upce0</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is to set the upce0-preamble property which controls the preamble applied to the bar code.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+			 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="upce0preamble:[parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>upce0preamble</NAME>
+                		<VALUES>none / systemChar / countryAndSystemChars</VALUES>
+				<DESC>if none Applies no preamble to the bar code.if systemChar Applies system character preamble to the bar code.if countryAndSystemChars Applies both system and country code preamble to the bar code.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upce0 labels with the preamble property set to both system and country code preamble:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="upce0:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upce0preamble:countryAndSystemChars"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="upce0:enabled;upce0preamble:countryAndSystemChars;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-upce0" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-upce0preamble" Content="countryAndSystemChars"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports upce0.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>upce0</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

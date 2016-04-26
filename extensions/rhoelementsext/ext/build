@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ "$RHO_PLATFORM" = "android" ]; then
+
+cd rhoelementsext/platform/android
+rake --trace
+
+elif [ "$RHO_PLATFORM" = "iphone" ]; then
+cd rhoelementsone/platform/iphone
+rake --trace
+fi

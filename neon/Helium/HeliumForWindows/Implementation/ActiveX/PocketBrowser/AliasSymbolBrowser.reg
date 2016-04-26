@@ -1,0 +1,11 @@
+REGEDIT4
+
+[HKEY_CLASSES_ROOT\SymbolBrowser.Generic]
+@="Generic Class"
+
+[HKEY_CLASSES_ROOT\SymbolBrowser.Generic\CLSID]
+@="{6A890111-D9F6-481B-9886-C1A1FDE0F482}"
+
+[HKEY_CLASSES_ROOT\SymbolBrowser.Generic\CurVer]
+@="PocketBrowser.Generic.1"
+

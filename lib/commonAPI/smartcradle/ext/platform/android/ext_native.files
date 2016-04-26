@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/Smartcradle.cpp
+ext/platform/android/generated/jni/smartcradle_ruby_wrap.cpp
+ext/platform/android/generated/jni/smartcradle_js_wrap.cpp
+ext/platform/android/jni/Smartcradle_impl.cpp
+ext/shared/generated/smartcradle_api_init.cpp
+ext/shared/generated/smartcradle_js_api.cpp
+ext/shared/generated/smartcradle_ruby_api.c

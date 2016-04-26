@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PB_FileTransfer_PLG", "PB_FileTransfer_PLG.vcproj", "{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|MC3000c50b (ARMV4I) = Debug|MC3000c50b (ARMV4I)
+		Debug|MC9090c50 (ARMV4I) = Debug|MC9090c50 (ARMV4I)
+		Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I) = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		Release|MC3000c50b (ARMV4I) = Release|MC3000c50b (ARMV4I)
+		Release|MC9090c50 (ARMV4I) = Release|MC9090c50 (ARMV4I)
+		Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I) = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Debug|MC3000c50b (ARMV4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Debug|MC3000c50b (ARMV4I).Build.0 = Debug|MC3000c50b (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Debug|MC3000c50b (ARMV4I).Deploy.0 = Debug|MC3000c50b (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Debug|MC9090c50 (ARMV4I).ActiveCfg = Debug|MC9090c50 (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Debug|MC9090c50 (ARMV4I).Build.0 = Debug|MC9090c50 (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Debug|MC9090c50 (ARMV4I).Deploy.0 = Debug|MC9090c50 (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Build.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Deploy.0 = Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Release|MC3000c50b (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Release|MC3000c50b (ARMV4I).Build.0 = Release|MC3000c50b (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Release|MC3000c50b (ARMV4I).Deploy.0 = Release|MC3000c50b (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Release|MC9090c50 (ARMV4I).ActiveCfg = Release|MC9090c50 (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Release|MC9090c50 (ARMV4I).Build.0 = Release|MC9090c50 (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Release|MC9090c50 (ARMV4I).Deploy.0 = Release|MC9090c50 (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Build.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+		{3BF75BBE-E095-4DBC-A15B-4353D00E56A5}.Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).Deploy.0 = Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

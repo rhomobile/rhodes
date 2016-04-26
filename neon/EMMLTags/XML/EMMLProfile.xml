@@ -1,0 +1,103 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>emmlProfile</NAME>
+		<PATH>EMML Profiles</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to manage EMML profile pages.</SYNOPSIS>
+		<SYNTAX>
+		<USAGE>
+			<EXAMPLE>&lt;META HTTP-Equiv="EMMLProfile" content="parameter:value"&gt;</EXAMPLE>
+		</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>name</NAME>
+				<VALUES>[optional name] (see remarks below)</VALUES>
+				<DESC>Imports the EMML profile page stored at the local specified by "importProfile". Nb. This parameter should come before the related import profile method.</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>importProfile</NAME>
+				<VALUES>url('URI')</VALUES>
+				<DESC>http or file location of the .emmp file containing the EMML profiles to be imported.</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>clear</NAME>
+				<VALUES>[optional name] (see remarks below)</VALUES>
+				<DESC>Clears the currently loaded EMML profiles.</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>apply</NAME>
+				<VALUES>[profile class name]</VALUES>
+				<DESC>Applies the EMML profile with the class name specified. </DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example imports an EMML profile page into the temporary, unnamed space.</DESC>
+				<CODE>&lt;META HTTP-Equiv="EMMLProfile" Content="importProfile:url('http://myserver/scannerparams.emmp');"&gt;</CODE>
+			</EXAMPLE>
+      <EXAMPLE>
+				<DESC>The following example imports an EMML profile page into a page persistent, named space.</DESC>
+				<CODE>&lt;META HTTP-Equiv="EMMLProfile" Content="name:scanner_params;importProfile:url('http://myserver/scannerparams.emmp');"&gt;</CODE>
+			</EXAMPLE>
+      <EXAMPLE>
+				<DESC>The following example applies two profile classes from the temporary, unnamed space.</DESC>
+				<CODE>&lt;META HTTP-Equiv="EMMLProfile" Content="apply:default_decoders;"&gt;
+&lt;META HTTP-Equiv="EMMLProfile" Content="apply:inventory_decoders;"&gt;</CODE>
+			</EXAMPLE>
+      <EXAMPLE>
+				<DESC>The following example applies two profile classes from page persistent, named space.</DESC>
+				<CODE>&lt;META HTTP-Equiv="EMMLProfile" Content="apply:scanner_params.default_decoders;"&gt;
+&lt;META HTTP-Equiv="EMMLProfile" Content="apply:scanner_params.inventory_decoders;"&gt;</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following is an example of an EMML Profile page.</DESC>
+				<CODE>.default_decoders
+{
+  scanner-all_decoders: disabled;
+  scanner-code128other128: false;
+  scanner-code128maxlength: 10;
+  scanner-code128minlength: 1;
+  scanner-code128: enabled;
+}
+
+.inventory_decoders
+{
+  scanner-ean13converttocode128: true;
+  scanner-ean13: enabled;
+  scanner-ean8: enabled;
+  scanner-i2of5: enabled;
+  scanner-code128: enabled;
+}</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Named Profile Pages</COMMENT_HEADING>
+				<COMMENT_DATA>Normally, when importing a profile page, the imported profiles will be cleared from memory when the page is navigated away from. If you provide a name when importing a profile page, the imported profiles will not be cleared on page navigation and you will be able to reference them until you manually clear the profiles.  To reference a named imported profile, prefix the profile class name with the name you supplied when importing the profile page (see example above).
+				Naming profile pages can improve performance.  If you include many profiles for your application within the profile page, it will only have to be downloaded, parsed and imported the once.  It is often also preferable to maintain a central location for all your EMML.
+				</COMMENT_DATA>
+				</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Importing Local Profiles</COMMENT_HEADING>
+				<COMMENT_DATA>Importing profiles from a file:// location will cause the profile to be moved from its previous location, not copied.
+				</COMMENT_DATA>
+				</COMMENT>
+		</REMARKS>
+
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Partially Transient - any changes made by changing parameters will be lost when navigating to a new page with the exception of when a named EMML profile set is imported.</APPLIES>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

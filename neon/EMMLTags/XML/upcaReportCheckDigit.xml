@@ -1,0 +1,59 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>upcaReportCheckDigit</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Upca</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the upca ReportCheckDigit property which enables reporting of the bar code check digit(s).</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="upcaReportCheckDigit:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>upcaReportCheckDigit</NAME>
+                		<VALUES>true/false</VALUES>
+				<DESC>Enables/Disables reporting of the check digit.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upca labels with the ReportCheckDigit property set:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="upca:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upcaReportCheckDigit:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upca labels with the ReportCheckDigit property set:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="upca:enabled;upcaReportCheckDigit:true;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only upca labels with the ReportCheckDigit property set:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-upca" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-upcaReportCheckDigit" Content="true"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports upca.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>upca</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

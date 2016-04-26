@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="rhoconnect-push"
+	>
+	<UserMacro
+		Name="RHO_ROOT"
+		Value="../../../../../../../rhodes"
+	/>
+	<UserMacro
+		Name="NEON_ROOT"
+		Value="../../../../../../neon\Helium\HeliumForWindows\Implementation"
+		PerformEnvironmentSet="true"
+	/>
+
+	<UserMacro
+		Name="TEMP_FILES_DIR"
+		Value="$(RHO_ROOT)\platform\wm\bin\$(PlatformName)\extensions\$(ProjectName)"
+	/>
+
+</VisualStudioPropertySheet>

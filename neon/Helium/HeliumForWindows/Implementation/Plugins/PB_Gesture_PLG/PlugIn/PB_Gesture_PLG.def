@@ -1,0 +1,6 @@
+LIBRARY	"WTG_Gesture_PLG"
+EXPORTS
+	Gesture_Preload
+	Gesture_MetaProc
+	Gesture_Dispose
+	

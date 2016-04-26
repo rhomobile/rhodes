@@ -1,0 +1,66 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>ean8convertToEan13</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Ean8</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to enable conversion from ean8 to EAN13 bar code. If this flag is set, the bar code is converted to EAN13, and EAN13 parameters are used.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="ean8ConvertToEAN13:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>ean8convertToEan13</NAME>
+                		<VALUES>true/false</VALUES>
+				<DESC>Enables/Disables the property.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only ean8 labels with the ConvertToEAN13 property set:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="ean8:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="ean13:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="ean8ConvertToEAN13:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="ean8:enabled;ean13:enabled;ean8ConvertToEAN13:true;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-ean8" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-ean13" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-ean8ConvertToEAN13" Content="true"&gt;
+&lt;META HTTP-Equiv="scanner-Enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>For this property to work the EAN13 decoder must also be enabled.</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except: Android.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports ean8 and ean13.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>ean8</TOPIC>
+			<TOPIC>ean13</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

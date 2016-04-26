@@ -28,7 +28,10 @@
 #include <windows.h>
 #include <winbase.h>
 #include <wincon.h>
+
+#ifndef _WIN32_WCE
 #include <share.h>
+#endif
 
 #ifndef _WP8_LIB
 #include <shlobj.h>

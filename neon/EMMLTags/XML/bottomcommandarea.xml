@@ -1,0 +1,83 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>bottomCommandArea</NAME>
+		<PATH>Controls and Appearance</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is  used to set the parameters of the Bottom Command Area.  The bottom command area is a region at the bottom of the screen designed to hold RhoElements controls such as the SIP button or Zoom button to separate them from the rest of the user application.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="BottomCommandArea" content="[parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+    <PARAMS_WITH_ATTRIBUTES>
+      <PARAM>
+        <NAME>visibility</NAME>
+        <VALUES>visible, hidden</VALUES>
+        <DESC>Sets the Visibility of the Bottom Command area.</DESC>
+        <DEFAULT>Hidden.</DEFAULT>
+      </PARAM>
+	  <PARAM>
+		<NAME>height</NAME>
+        <VALUES>Positive number, representing pixels</VALUES>
+		<DESC>Sets the height of the bottom command area</DESC>
+		<DEFAULT>Slightly greater than the height of a buttons default height, which depends on the screen resolution.</DEFAULT>
+		</PARAM>				
+		<PARAM>
+		<NAME>color</NAME>
+        <VALUES>Color in the #RRGGBB format</VALUES>
+		<DESC>The color to set the bottom command area to.</DESC>
+		<DEFAULT>None. The default image is displayed by default.</DEFAULT>
+	  </PARAM>
+      <PARAM>
+        <NAME>image</NAME>
+        <VALUES>URL</VALUES>
+        <DESC>Sets the image to be displayed on the bottom command area.  See Remarks.</DESC>
+        <DEFAULT>Default image</DEFAULT>
+      </PARAM>
+      
+    </PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example shows the BottomCommandArea, sets the height to 100 pixels and background color to red.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="BottomCommandArea" Content="Visibility:Visible"&gt;
+&lt;META HTTP-Equiv="BottomCommandArea" Content="Height:100"&gt;
+&lt;META HTTP-Equiv="BottomCommandArea" Content="Color:#FF0000"&gt;
+</CODE>
+			</EXAMPLE>
+      <EXAMPLE>
+        <DESC>The following example shows the BottomCommandArea, sets the height to 100 pixels and displays image bca.gif on it (resizing the image if necessary).</DESC>
+        <CODE>
+&lt;META HTTP-Equiv="BottomCommandArea" Content="Visibility:Visible; Height:100; Image:url('http://myaddress/bca.gif')"&gt;
+        </CODE>
+      </EXAMPLE>
+      
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Use of Images.</COMMENT_HEADING>
+				<COMMENT_DATA>Images can be specified as local to the device or on an HTTP / FTP server, just specify the required protocol as part of your URL (file://\, HTTP:// and FTP://).  Image will be scaled to the size of the command area.  JPEG and GIF images are only supported on WM devices.  Both CE and WM support BMP files.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Switching to Other Applications</COMMENT_HEADING>
+				<COMMENT_DATA>All controls are designed to be shown on top of RhoElements.  If you require to switch to an application other than RhoElements you should minimize RhoElements to ensure the buttons do not remain shown. (Not applicable to Android)</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Screen Orientation</COMMENT_HEADING>
+				<COMMENT_DATA>When the screen orientation changes, either using the ScreenOrientation tag or by rotating a device with hardware support, the command areas will automatically move and resize to fit the new layout. However the buttons themselves are not moved and in some cases this may result in them being off the screen or not in the expected position. If so they must be moved manually by detecting the ScreenOrientationEvent.</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>	
+    <ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>TopCommandArea</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

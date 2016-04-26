@@ -1,0 +1,785 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>scanner</NAME>
+		<PATH>Barcode Scanner</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>provides access to control the functionality of the device's scanner.</SYNOPSIS>
+		<MULTIPLE_INSTANCE>Only the foreground RhoElements application is given access to the device scanner, when an application is sent to the background its state will be saved and it will automatically relinquish control of the Scanner.  When brought back to the foreground, an application previously using the scanner will have its previous configuration (eg. selected decoders) reapplied to the scanner automatically.</MULTIPLE_INSTANCE>
+		<SYNTAX>
+       		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="Scanner" content="[parameter / method]"&gt;</EXAMPLE>
+            		</USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Scanner" content="DecodeEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+			</USAGE>
+       	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>enabled</NAME>
+                <VALUES>ID of Scanner, obtained via EnumScanner</VALUES>
+				<DESC>Enables the specified scanner.  The non-default scanner should only be used on licensed devices.</DESC>
+				<DEFAULT>SCN1</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>[Decoder Name]</NAME>
+                <VALUES>Decoder Property</VALUES>
+				<DESC>Sets each Decoders' parameters.  Refer to the "Decoders" Section of this help file to know available decoders and Their Parameters</DESC>
+				<DEFAULT>Refer to the "Decoders" Section</DEFAULT>
+				<VSCONTROLS>FALSE</VSCONTROLS>
+			</PARAM>
+			<PARAM>
+				<NAME>autoEnter</NAME>
+				<VALUES>'enabled' / 'disabled'</VALUES>
+				<DESC>If "enabled" then automatically append an Enter to the end of any barcodes scanned.  This feature is only available when a decodeEvent is not specified and is useful for submitting forms.  See Remarks.</DESC>
+				<DEFAULT>'Disabled'</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>autoTab</NAME>
+				<VALUES>'enabled' / 'disabled'</VALUES>
+				<DESC>If "enabled" then automatically appends a Tab to the end of any barcodes scanned.  This feature is only available when a decodeEvent is not specified and is useful for advancing to the next input field.  See Remarks.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>linearSecurityLevel</NAME>
+				<DESC>Describes the linear security level used during decoding.  </DESC>
+				<DESCDETAIL>
+ <br/><b>Possible values:</b>
+<br/><b>redundancyAndLength:</b>
+  Two times redundancy based on redundancy flags and code length.
+ <br/><b>shortOrCodabar:</b>
+  Two times redundancy if short barcode or Codabar.
+ <br/><b>longAndShort:</b>
+  Two times redundancy for long barcodes, three times for short barcodes.
+ <br/><b>allTwice:</b>
+  Two times redundancy for all barcodes.  
+ <br/><b>allThrice:</b>
+  Three times redundancy for all barcodes.</DESCDETAIL>
+				<SCANNER_TYPE>Laser and Imager / Camera</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>scanTimeout</NAME>
+				<VALUES>milliseconds</VALUES>
+				<DESC>Maximum time in milliseconds that laser scanners will emit a beam or imager scanners will enable the imager.  A value of 0 indicates an infinite timeout.  This parameter is compatibile with aimType:trigger, aimType:timedHold, aimType:timedRelease and aimType:pressAndRelease.  Note that for regulatory reasons scanTimeout is not configurable on all laser/imager scanners. Scan timeout is extent to hardware capabilities and limitations.</DESC>
+				<SCANNER_TYPE>Laser and Imager / Camera</SCANNER_TYPE>
+				<DEFAULT>5000 (Laser), 15000 (Imager)</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>rasterMode</NAME>
+				<DESC>Describes the type of vertical rastering to use.  </DESC>
+				<DESCDETAIL>
+ <br/><b>Possible values:</b>
+<br/><b>none:</b>
+  No vertical rastering.
+ <br/><b>openAlways:</b>
+  Vertical rastering is always full open.  To adjust the rastering height use the rasterHeight property.
+<br/><b>smart:</b>
+  Vertical rastering mode is 'Smart'.
+ <br/><b>cyclone:</b>
+  Vertical rastering mode is 'Cyclone'.</DESCDETAIL>
+				<SCANNER_TYPE>Laser Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>rasterHeight</NAME>
+				<VALUES>0 - 100</VALUES>
+				<DESC>Vertical rastering height to use, as a percentage, when rasterMode:openAlways is applied.</DESC>
+				<SCANNER_TYPE>Laser Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>aimType</NAME>
+				<DESC>Describes the type of aiming to use.   </DESC>
+				<DESCDETAIL>
+ <br/><b>Possible values:</b>
+ <br/><b>trigger:</b>
+  Standard trigger mode.  Holding the trigger will start a decoding session.  
+  The decoding session ends when a barcode is decoded, scanTimeout occurs or the trigger is released.
+ <br/><b>timedHold:</b>
+  Aiming lasts for the time specified by 'timedAimDuration' before decoding.  
+  The decode will last until the barcode is decoded or scanTimeout occurs.
+ <br/><b>timedRelease:</b>
+  Aiming lasts until trigger is released.  
+  If the timedAimDuration has expired when the trigger is released then a decode session is started
+  until a barcode is decoded or for the remaining time equal to the scanTimeout value.
+ <br/><b>presentation:</b>
+  Provided to support Kiosk devices.  The scanner illuminates when movement is detected in the range
+  of the scanner window.  In order to use this mode the scanner must be initiated with a softscan
+  using the scanner.start() method and again after each decode.  The device must be equipped with a 
+  sensor to detect movement to use presentation mode.  See examples below.  
+ <br/><b>pressAndRelease:</b>
+  Scan will continue after the trigger is released until scanTimeout occurs.
+ <br/><b>continuousRead:</b>	
+  Once the trigger is pulled barcodes will continue to be scanned whilst the trigger
+  is held, enabling rapid scanning, to be used in conjunction with sameSymbolTimeout 
+  and differentSymbolTimeout.  This value is ignored if viewfinderMode is set to 
+  'dynamicReticle'</DESCDETAIL>
+				<SCANNER_TYPE>Laser and Imager / Camera</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>timedAimDuration</NAME>
+				<VALUES>milliseconds</VALUES>
+				<DESC>Duration in milliseconds for aimType:timedHold and aimType:timedRelease</DESC>
+				<SCANNER_TYPE>Laser and Imager / Camera</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>sameSymbolTimeout</NAME>
+				<VALUES>milliseconds</VALUES>
+				<DESC>When the aimType:continuousRead property is applied this value defines the interval between which the same barcode can be decoded twice.  The value is specified in milliseconds, use 0 to indicate no interval between successive reads.  Use this value to prevent accidental duplicate scans.</DESC>
+				<SCANNER_TYPE>Laser and Imager / Camera</SCANNER_TYPE>
+				<DEFAULT>2500</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>differentSymbolTimeout</NAME>
+				<VALUES>milliseconds</VALUES>
+				<DESC>When the aimType:continuousRead property is applied this value defines the interval between which different barcodes can be scanned.  The value is specified in milliseconds, use 0 to indicate no interval between successive reads.  Use this setting to allow time for the operator to reaim the device between successive scans.</DESC>
+				<SCANNER_TYPE>Laser and Imager / Camera</SCANNER_TYPE>
+				<DEFAULT>500</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>aimMode</NAME>
+				<DESC>Describes the aiming mode to used.  </DESC>
+				<DESCDETAIL>
+<br/><b>Possible values:</b>
+<br/><b>none:</b>
+  No Aiming (Can be overridden by picklistMode).  
+<br/><b>dot:</b>
+  Laser barcode readers will show a dot for aiming.
+<br/><b>slab:</b>
+  Laser barcode readers will show a slab for aiming.
+<br/><b>reticle:</b>
+  Imager barcode readers will show a reticle for aiming</DESCDETAIL>
+				<SCANNER_TYPE>Laser and Imager / Camera</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>picklistMode</NAME>
+				<DESC>Allows the imager to decode only the barcode that is directly under the cross-hair / center of the reticle.  This feature is most useful in applications where multiple barcodes may appear in the field of view during a decode session and only one of them is targeted for decode.  When enabled picklistMode will override aimMode if no aiming is chosen and use aimMode:reticle.  This mode will also interact with viewfinderMode, see the EMDK for C help file for more information.  Enabling picklist mode may adversely affect overall decoding performance.  </DESC>
+				<DESCDETAIL>
+<br/><b>Possible values:</b>
+<br/><b>disabled:</b>
+  Disables picklist mode so any barcode within the field of view can be decoded.
+<br/><b>hardwareReticle:</b> (<i>not available on Android</i>)
+  Enables picklist mode so that only the barcode under the projected reticle can 
+  be decoded.  If the imager does not support a projected reticle then the 
+  behaviour is the same as softwareReticle.
+<br/><b>softwareReticle:</b>
+  Enables picklist mode so that only the barcode in the center of the image is 
+  decoded.  This is most useful when used in conjunction with static and 
+  dynamic reticle viewfinder modes.</DESCDETAIL>
+				<SCANNER_TYPE>Imager / Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>viewfinderMode</NAME>
+				<DESC>Configures the mode of the scanner viewfinder window.  This attribute is not supported on all Scanners and will interact with the picklistMode parameter, see the EMDK for C help file for more information.    </DESC>
+				<DESCDETAIL>
+<br/><b>Possible values:</b>
+<br/><b>enabled:</b>
+  Only the viewfinder is enabled (not the reticle).  Displays a viewfinder on the
+  screen showing the image being captured by the camera.
+<br/><b>disabled:</b> (<i>not available on Android</i>)
+  The viewfinder will not be displayed during aiming or scanning.
+<br/><b>staticReticle:</b>
+  Displays the viewfinder as well as draws a red reticle in the center of the image
+  which helps with tracking the barcode.
+<br/><b>dynamicReticle:</b> (<i>not available on Android</i>)
+  Displays the viewfinder as well as draws a red reticle in the center of the image.
+  If the barcode in the image is 'decodable' the reticle turns green to indicate
+  this.  This mode requires a second trigger press to decode the barcode after the
+  reticle turns green.</DESCDETAIL>
+				<SCANNER_TYPE>Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>viewfinderX</NAME>
+				<VALUES>pixels</VALUES>
+				<DESC>When scanning a barcode using an imager scanner the viewfinder preview window will appear this number of pixels from the left hand side of the screen.  The images displayed in the viewfinder will be scaled as appropriate.</DESC>
+				<SCANNER_TYPE>Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>viewfinderY</NAME>
+				<VALUES>pixels</VALUES>
+				<DESC>When scanning a barcode using an imager scanner the viewfinder preview window will appear this number of pixels from the top of the screen.  The images displayed in the viewfinder will be scaled as appropriate.</DESC>
+				<SCANNER_TYPE>Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>viewfinderWidth</NAME>
+				<VALUES>pixels</VALUES>
+				<DESC>When scanning a barcode using an imager scanner the viewfinder preview window will be this number of pixels wide.  The images displayed in the viewfinder will be scaled as appropriate.</DESC>
+				<SCANNER_TYPE>Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>viewfinderHeight</NAME>
+				<VALUES>pixels</VALUES>
+				<DESC>When scanning a barcode using an imager scanner the viewfinder preview window will be this number of pixels high.  The images displayed in the viewfinder will be scaled as appropriate.</DESC>
+				<SCANNER_TYPE>Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>viewfinderFeedback</NAME>
+				<DESC>Configures the feedback given after a successful scan in milliseconds.  This value is ignored if aimType is set to continuousRead and no feedback will be given.  </DESC>
+				<DESCDETAIL>
+<br/><b>Possible values:</b>
+<br/><b>disabled:</b>
+  No feedback is given after a successful decode.
+<br/><b>enabled:</b>
+  The last image that was successfully decoded is displayed.  The time for which
+  the image is displayed can be configured by the viewfinderFeedbackTime parameter.
+<br/><b>reticle:</b>
+  The last image that was successfully decoded is displayed along with a red reticle 
+  in the center of the image.  The time for which the image is displayed can be 
+  configured by the viewfinderFeedbackTime parameter.</DESCDETAIL>
+				<SCANNER_TYPE>Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>viewfinderFeedbackTime</NAME>
+				<VALUES>milliseconds</VALUES>
+				<DESC>If the viewfinderFeedback:enabled or viewfinderFeedback:reticle are applied then the decoded barcode will remain on the screen for this duration.</DESC>
+				<SCANNER_TYPE>Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>focusMode</NAME>
+				<DESC>Sets the focus mode in use.  </DESC>
+				<DESCDETAIL>
+<br/><b>Possible values:</b>
+<br/><b>fixed:</b>
+  Use fixed focus.
+<br/><b>auto:</b>
+  Use auto focus.</DESCDETAIL>
+				<SCANNER_TYPE>Imager / Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>illuminationMode</NAME>
+				<DESC>Selects the illumination mode to use. This parameter is currently being not supported on Android Platform.</DESC>
+				<DESCDETAIL>
+<br/><b>Possible values:</b>
+<br/><b>auto:</b>(<i>not available on Android</i>)
+  Auto-exposure algorithms will decide whether illumination is required or not.
+<br/><b>alwaysOn:</b>
+  External illumination is always on.
+<br/><b>alwaysOff:</b>
+  External illumination is always off.
+<br/><b>Note:</b> On Android devices for Camera scanners this setting has to be enabled/disabled before starting the scanner.</DESCDETAIL>
+				<SCANNER_TYPE>Imager / Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>dpmMode</NAME>
+				<VALUES>true / false</VALUES>
+				<DESC>Allows Direct Part Marking (DPM) barcodes to be read when true but may adversely affect overall decoding performance.  DPM is a way of stamping barcodes directly on physical objects and is only available on DPM terminals.</DESC>
+				<SCANNER_TYPE>Imager / Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>		
+			<PARAM>
+				<NAME>inverse1dMode</NAME>
+				<DESC>Allows the user to select inverse 1D barcodes for decoding.  </DESC>
+				<DESCDETAIL>
+<br/><b>Possible values:</b>
+<br/><b>enabled:</b>
+  Inverse 1D symbology decoding is enabled.
+<br/><b>disabled:</b>
+  Inverse 1D symbology decoding is disabled.
+<br/><b>auto:</b>  
+  Allows decoding of both positive and inverse 1D symbologies</DESCDETAIL>
+				<SCANNER_TYPE>Imager / Camera Only and a scanning engine which supports Inverse barcodes.</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>poorQuality1dMode</NAME>
+				<VALUES>true / false</VALUES>
+				<DESC>Allows poor quality 1D barcodes to be read when true but this will adversely affect the overall decoding performance.</DESC>
+				<SCANNER_TYPE>Imager / Camera Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<!--PARAM>
+				<NAME>narrowBeam</NAME>
+				<VALUES>true / false</VALUES>
+				<DESC>Enables or disables narrow beam width.</DESC>
+				<SCANNER_TYPE>Laser Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM-->	
+			<PARAM>
+				<NAME>beamWidth</NAME>
+				<VALUES>normal / narrow / wide</VALUES>
+				<DESC>Specifies the width of the laser beam.</DESC>
+				<SCANNER_TYPE>Laser Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>dbpMode</NAME>
+				<DESC>Describes the type of Digital Bar Pulse (DBP) being produced by the scan engine.  </DESC>
+				<DESCDETAIL>
+<br/><b>Possible values:</b>
+<br/><b>normal:</b>
+  Tells the engine to produce normal DBP.
+<br/><b>composite:</b>
+  Tells the engine to produce composite DBP, which is 2 different sets of DBP data 
+  multiplexed together for better decode performance.  In order to enable this mode 
+  it must be supported by the scanner.</DESCDETAIL>
+				<SCANNER_TYPE>Laser Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>klasseEins</NAME>
+				<VALUES>true / false</VALUES>
+				<DESC>Enables or disables the Klasse Eins laser on time function.</DESC>
+				<SCANNER_TYPE>Laser Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>adaptiveScanning</NAME>
+				<VALUES>true / false</VALUES>
+				<DESC>Enables or disables adaptive scanning.  When set to true, the scan engine will automatically toggle between 2 scan angles, wide and narrow, allowing the scan engine to decode barcodes both in close proximity and far away (~100 inches).  Adaptive scanning is only supported in high performance, long working range scan engines such as SE960.</DESC>
+				<SCANNER_TYPE>Laser Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>bidirectionalRedundancy</NAME>
+				<VALUES>true / false</VALUES>
+				<DESC>Enables or disables bidirectional redundancy.</DESC>
+				<SCANNER_TYPE>Laser Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>barcodeDataFormat</NAME>
+				<VALUES>text / binary</VALUES>
+				<DESC>Specifies the format in which the barcode data is returned, binary data is returned in Data URI format with the appropriate mime type.  This parameter is designed to be used primarily with image based symbologies (eg. Signature).  Binary data will not be output as keystrokes, you must set a decodeEvent in order to receive scanned data.</DESC>
+				<SCANNER_TYPE>Imager Only</SCANNER_TYPE>
+				<DEFAULT>Text</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>dataBufferSize</NAME>
+				<VALUES>Number</VALUES>
+				<DESC>Specifies the number of bytes allocated to receive the scanned barcode.  This parameter is designed to be used primarily with image based symbologies and should not be modified unless absolutely necessary (eg. Signature).</DESC>
+				<SCANNER_TYPE>All</SCANNER_TYPE>
+				<DEFAULT>2500 bytes</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>connectionIdleTimeout</NAME>
+				<VALUES>seconds</VALUES>
+				<DESC>Specifies the time, in seconds, that an external scanner will be allowed to remain idle before the connection is terminated to conserve power.</DESC>
+				<SCANNER_TYPE>Bluetooth Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>disconnectBtOnDisable</NAME>
+				<VALUES>true / false</VALUES>
+				<DESC>Forces the scanner to disconnect from the terminal when it is 'disabled'.  Since the scanner is disabled when you navigate to a new page, set this value to false if you want to maintain the bluetooth connection to your remote scanner.</DESC>
+				<SCANNER_TYPE>Bluetooth Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>displayBtAddressBarcodeOnEnable</NAME>
+				<VALUES>true / false</VALUES>
+				<DESC>If set to true the bluetooth address will be displayed as a barcode on the screen during the pairing process, initiated by calling 'enable' on a bluetooth scanner.  Not all devices support this functionality.  Note you must specify this parameter before calling 'enable'.</DESC>
+				<SCANNER_TYPE>Bluetooth Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>enableTimeout</NAME>
+				<VALUES>seconds</VALUES>
+				<DESC>Configures the time (in seconds) allowed to pair with the external bluetooth scanner after calling the 'enable()' method.  You must specify this parameter before calling 'enable'.</DESC>
+				<SCANNER_TYPE>Bluetooth Only</SCANNER_TYPE>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+
+        	</PARAMS_WITH_ATTRIBUTES>
+        <PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>enumerate</NAME>
+				<DESC>Return a list of scanners present on the device via EnumScannerEvent.  This tag will be actioned immediately and should be called via JavaScript.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>enable</NAME>
+				<DESC>Enables the default scanner if no scanner is currently enabled.</DESC>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>disable</NAME>
+				<DESC>Disables the currently enabled scanner.  This reverts the scanner to its default state and flushes any current decoder settings.</DESC>
+				<DEFAULT>Device specific</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>start</NAME>
+				<DESC>Performs a soft trigger start.  If the scan does not result in a decode it is necessary to perform a soft stop before another soft start.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>stop</NAME>
+				<DESC>Performs a soft trigger stop</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+		</PARAMS_NO_ATTRIBUTES>
+        
+        <RETURNS>
+            <TAG>
+                <TAG_NAME>decodeEvent</TAG_NAME>
+				<TAG_NOTES>A decode event is sent by the Scanner whenever a barcode is decoded.</TAG_NOTES>
+                <RETVAL>
+                    <NAME>data</NAME>
+                    <DESC>The data decoded by the scanner or imaging device</DESC>
+                </RETVAL>				
+                <RETVAL>
+                    <NAME>source</NAME>
+                    <DESC>The source device and human readable decoder type of the decoded barcode or symbol</DESC>
+                </RETVAL>	
+                <RETVAL>
+                    <NAME>type</NAME>
+                    <DESC>Hex value representing the decoder type</DESC>
+					<ARRAY>TRUE</ARRAY>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>time</NAME>
+                    <DESC>The time at which the decode occurred (hh:mm:ss)</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>length</NAME>
+                    <DESC>The length of the decoded barcode or symbol</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>event</NAME>
+                    <DESC>The type of event which has occurred at the scanner.  This field will be either 'Decode' for barcode scanning or a message from a Bluetooth scanner.  See Remarks</DESC>
+                </RETVAL>
+            </TAG>
+
+			<TAG>
+				<TAG_NAME>bluetoothStatusEvent</TAG_NAME>
+				<TAG_NOTES>A bluetoothStatusEvent is sent whenever a bluetooth connection / disconnection event occurs.  If you are connected to a bluetooth scanner and have not registered to receive this event the status message will be sent as the sixth return value of the decodeEvent.</TAG_NOTES>
+				<RETVAL>
+					<NAME>status</NAME>
+					<DESC>The message describing the bluetooth connection, see remarks.</DESC>
+				</RETVAL>
+			</TAG>
+			
+            <TAG>
+                <TAG_NAME>enumScannerEvent</TAG_NAME>
+				<TAG_NOTES>The Enum Scanner Event is used to ascertain the scanners present on the device.</TAG_NOTES>
+                <RETVAL>
+                    <NAME>scannerArray (deviceName, friendlyName)</NAME>
+                    <DESC>2 dimensional array of scanners present on the device.  See remarks.</DESC>
+					<ARRAY>TRUE</ARRAY>
+                </RETVAL>				
+            </TAG>
+			
+			<!--TAG>
+                <TAG_NAME>enumSupportedDecodersEvent</TAG_NAME>
+				<TAG_NOTES>The enumSupportedDecodersEvent is used to determine which decoders are supported by the currently enabled scanner.  This event will occur in response to the scanner.enumerateSupportedDecoders() method</TAG_NOTES>
+                <RETVAL>
+                    <NAME>supportedDecoders</NAME>
+                    <DESC>Array of decoders supported by the device, separated by commas</DESC>
+					<ARRAY>TRUE</ARRAY>
+                </RETVAL>				
+			</TAG -->
+		</RETURNS>
+        
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner, turns on autoenter and performs a soft trigger start:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="Enable"&gt;
+&lt;META HTTP-Equiv="scanner" Content="AutoEnter:Enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="Start"&gt;
+</CODE>
+			</EXAMPLE>
+
+			<EXAMPLE>
+				<DESC>The following example sets up the scanner on a page to submit the scanned data to an asp page upon successful decoding</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="DecodeEvent:url('mypage.asp?Data=%s&amp;Source=%s&amp;Type=%s&amp;Time=%s&amp;Length=%s')"&gt;
+</CODE>
+			</EXAMPLE>				
+			<EXAMPLE>
+				<DESC>The following example sets up the scanner on a page to call a javascript function upon successful decoding:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="enable"&gt;
+&lt;META HTTP-Equiv="scanner" Content="DecodeEvent:url('javascript:doScan(%json);')"&gt;
+
+&lt;script&gt;
+   function doScan(jsonObject)
+   {
+      if(jsonObject.type == 0x35) //ean 13
+      {
+         alert('Please scan a non EAN 13 code!');
+      }
+      else
+      {
+         alert('You scanned: ' + jsonObject.data);
+      }
+   }
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>	
+			<EXAMPLE>
+				<DESC>The following example demonstrates how to set a device into presentation mode.</DESC>
+<CODE>
+&lt;HTML&gt;
+&lt;HEAD&gt;
+  &lt;Meta http-equiv="scanner" content="aimType:presentation"&gt;
+  &lt;Meta http-equiv="scanner" content="DecodeEvent:url('Javascript:doScan('%s');')"&gt;
+  &lt;Meta http-equiv="scanner" content="enable"&gt;
+&lt;/HEAD&gt;
+&lt;BODY onLoad="doSoftScan();"&gt;
+  &lt;SCRIPT LANGUAGE="JavaScript"&gt;
+
+    function doSoftScan()
+    {
+	    scanner.start();
+    }
+
+    function doScan(jsonObject)
+    {
+	    bcode.innerHTML = jsonObject.data;
+	    doSoftScan();
+	}
+  &lt;/SCRIPT&gt;
+  &lt;div id="bcode"&gt;&lt;/div&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+
+</CODE>
+			</EXAMPLE>			
+			<EXAMPLE>				
+
+				<DESC>The following example shows how an application might handle a Bluetooth Scanner whose ID is SCN2:</DESC>
+<CODE>
+&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;!-- Status Updates are received via bluetoothStatusEvent --&gt;
+&lt;META HTTP-Equiv="Scanner" Content="BluetoothStatusEvent:url('Javascript:BTStatusFunc(%json);')"&gt;
+&lt;META HTTP-Equiv="Scanner" Content="DecodeEvent:url('Javascript:ScanFunc(%json);')"&gt;
+&lt;!-- Enable the Bluetooth Scanner, this will commence the BT pairing --&gt;
+&lt;META HTTP-Equiv="Scanner" Content="Enabled:SCN2"&gt;
+&lt;/HEAD&gt;
+
+Barcode Data: &lt;DIV ID="bcode"&gt; &lt;/DIV&gt;
+User Message: &lt;DIV ID="message"&gt; &lt;/DIV&gt;
+&lt;P&gt;&lt;INPUT TYPE="button" VALUE="Change Associated Scanner" ONCLICK="onChangeScanner();"&gt;&lt;/P&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+
+&lt;SCRIPT LANGUAGE="JavaScript"&gt;
+
+//  Whether or not the next barcode data we receive will be the unpairing barcode
+var expectingUnpairingBarcode = false;
+
+function ScanFunc(jsonObject)
+{
+	//  Output the scanned barcode
+	bcode.innerHTML = data;
+}
+
+function BTStatusFunc(jsonObject)
+{
+	if (expectingUnpairingBarcode)
+	{
+		//  restart the scanner component so it is ready
+		//  to accept a different Bluetooth Scanner
+		expectingUnpairingBarcode = false;
+		scanner.disable();
+		scanner.enabled = 'SCN2';
+		return;
+	}
+	
+	if (jsonObject.status == 'BTScanAssociationBarcode')
+	{
+		//  Instruct the User to scan the association barcode
+		alert('Scan Association Barcode');
+	}
+	else if(jsonObject.status == 'BluetoothConnected')
+	{
+		message.innerHTML = "Bluetooth Scanner Connected";
+	}
+	else if(jsonObject.status == 'BluetoothDisconnected')
+	{
+		message.innerHTML = "Bluetooth Disconnected, Please Reconnect";
+	}
+}
+
+function onChangeScanner()
+{
+	//  Change the BT Scanner associated with the device, the logic to do this is handled
+	//  once the 'unpairing' barcode is scanned.
+	message.innerHTML = "Please Scan Unpairing Barcode";
+	expectingUnpairingBarcode = true;
+}
+&lt;/SCRIPT&gt;
+
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example displays the available scanners on screen and enables the Bluetooth Scanner (if available)</DESC>
+<CODE>
+&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;META HTTP-Equiv="Scanner" Content="DecodeEvent:url('Javascript:ScanFunc(%json);')"&gt;
+&lt;META HTTP-Equiv="Scanner" Content="BluetoothStatusEvent:url('Javascript:BTFunc(%json);')"&gt;
+&lt;META HTTP-Equiv="Scanner" Content="EnumScannerEvent:url('Javascript:EnumScanners(%json);')"&gt;
+&lt;/HEAD&gt;
+
+&lt;BODY onLoad="setEnumScannerTimer();"&gt;
+&lt;DIV ID="message"&gt;&lt;/DIV&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+
+&lt;SCRIPT LANGUAGE="JavaScript"&gt;
+function ScanFunc(jsonObject) {message.innerHTML = jsonObject.data;}
+
+function BTFunc(jsonObject) {message.innerHTML = jsonObject.status;}
+
+function EnumScanners(jsonObject)
+{
+	var scannerInfo = "Scanners On Device: " + jsonObject.scannerArray.length + "&lt;BR&gt;ID  --  Name&lt;BR&gt;" 
+	for (i=0; i &lt; jsonObject.scannerArray.length; i++)
+	{
+		scannerInfo = scannerInfo + jsonObject.scannerArray[i].deviceName + ' -- '
+		+ jsonObject.scannerArray[i].friendlyName + '&lt;BR&gt;';
+		//  See if this is the Bluetooth Scanner
+		if (jsonObject.scannerArray[i].friendlyName.indexOf("Bluetooth") &gt;= 0)
+		{
+			//  This is the Bluetooth Scanner, Enable it
+			scanner.enabled = jsonObject.scannerArray[i].deviceName;
+		}
+	}
+	message.innerHTML = scannerInfo;
+}
+
+//  Wait for the DOM to fully load before we enumerate the scanners
+function setEnumScannerTimer()
+{
+    setTimeout("onScannerEnable()", 3000);
+}
+function onScannerEnable()
+{
+	scanner.enumerate();
+}
+&lt;/SCRIPT&gt;
+</CODE>
+			</EXAMPLE>	
+		</EXAMPLES>
+		<REMARKS>
+<COMMENT>
+<COMMENT_HEADING>General</COMMENT_HEADING>
+<COMMENT_DATA>
+If the Scanner Meta Tag is used without DecodeEvent, the data will be output as keystrokes.
+
+On unlicensed devices it is not recommended to enable the Scanner on the application's startup page, this can interfere with the the license screen.
+</COMMENT_DATA>
+</COMMENT>
+<COMMENT>
+<COMMENT_HEADING>Set Scanner Properties</COMMENT_HEADING>
+<COMMENT_DATA>
+On WM/CE, for some properties, it is first necessary to apply those properties before enabling the scanner.
+</COMMENT_DATA>
+</COMMENT>
+<COMMENT>
+<COMMENT_HEADING>Scanning and Image Capture Interaction</COMMENT_HEADING>
+<COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+In some device configurations the scanner and imager share the same hardware, e.g. the blockbuster scanner and top mounted imager on the MC75a.  Where two modules share the same physical hardware they cannot be enabled simultaneously, once the scanner is enabled it must be disabled before the imager can be used, and vice versa.
+</COMMENTFIXEDWIDTH>
+</COMMENT_DATA>
+</COMMENT>
+
+		<COMMENT>
+		<COMMENT_HEADING>AutoEnter and AutoTab</COMMENT_HEADING>
+		<COMMENT_DATA>AutoEnter and AutoTab are mutually exclusive, only one can be enabled at any one time.  If both are enabled then AutoEnter will take priority.</COMMENT_DATA>
+		</COMMENT>
+
+<COMMENT>
+<COMMENT_HEADING>Bluetooth Scanner Overview</COMMENT_HEADING>
+<COMMENT_DATA>Once associated with the Device a Bluetooth Scanner will remain associated even after losing the BT 
+connection.  In order to associate a different Bluetooth scanner with the device it is necessary to  
+scan the 'unpairing' barcode and then invoke the 'disabled' meta tag followed by the 'enabled' meta tag, 
+this will allow you to scan the BT association barcode with a different scanner.  You can override this default
+behaviour using the disconnectBtOnDisable parameter.</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+The following messages will be received from the Bluetooth Scanner in the bluetoothStatus event:
+
+* 'BTScanAssociationBarcode' 
+   Means the device is ready to be associated with a BT scanner.  You must scan the 
+   association barcode.  It is only necessary to scan the association 
+   barcode when you first associate a scanner with the device, this pairing will be remembered until
+   you scan the unpairing barcode.
+
+* 'BluetoothConnected'
+   The remote scanner has successfully connected to the device.
+	
+* 'BluetoothDisconnected'
+   The remote scanner has become disconnected from the device, this may be due to loss of battery, being out
+   of range or scanning the 'unpairing' barcode.  The scanner will attempt to reconnect automatically for
+   a period of time once it regains power or goes out of range, if it fails to reconnect after the specified
+   timeout the reconnect button on the device should be pushed.  Once the unpairing barcode is scanned
+   it is necessary to disable the scanner and then re-enable it before another scanner can be associated.
+</COMMENTFIXEDWIDTH>
+</COMMENT>
+<COMMENT>
+<COMMENT_HEADING>ScannerArray attribute</COMMENT_HEADING>
+<COMMENT_DATA>The ScannerArray attribute returned from Scanner tag with parameter "EnumScannerEvent" will enumerate each scanner present 
+on the device in a 2D array, associating each scanner's device name with a user friendly name.  
+The device ID can be passed as a parameter to "Scanner" "Enabled:&lt;deviceID&gt;", the friendly
+name is a user readable description of the scanner, e.g:</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+"SCN1", "1D Scanner Driver"
+"SCN2", "Camera"
+"SCN3", "Bluetooth SSI Scanner Driver"
+</COMMENTFIXEDWIDTH>
+</COMMENT>
+<COMMENT>
+<COMMENT_HEADING>Viewfinder Position Parameters</COMMENT_HEADING>
+<COMMENT_DATA>The scanner viewfinder window is not infinitely resizable, when setting ViewFinderX, ViewFinderY, ViewFinderWidth and ViewFinderHeight ensure you do not exceed the size of the screen and it is recommended to use the same aspect ratio as your device.  For applications designed to handle screen rotation it is recommended to use a scan window whose longest side will fit within both the screen width and screen height.  If your viewfinder position fails to be applied it is recommended you query your log file to see which parameter is causing trouble, or reposition the window away from the edges of the screen.
+</COMMENT_DATA>
+</COMMENT>
+<COMMENT>
+<COMMENT_HEADING>DataWedge Interaction With Native Apps</COMMENT_HEADING>
+<COMMENT_DATA>
+In order to use the scanner with RhoElements Native Apps you will need to either disable DataWedge or create a DataWedge profile for your app.
+</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>DISABLING DATAWEDGE
+1.	Start the DataWedge app
+2.	Click the menu button > "Settings" and untick "DataWedge enabled". 
+RHOELEMENTS DATAWEDGE PROFILE
+1.	Install your RhoElements native app,
+2.	Start the DataWedge app
+3.	Click the menu button > "New Profile" and enter a name,
+4.	Click on the link to the new profile in the profile list,
+5.	Click on "Associated apps" in the "Applications" section,
+6.	Click the menu button > "New app/activity",
+7.	Select the package name for your app,
+8.	Select "*",
+9.	Click the "Back" capacitive button,
+10.	Make sure the "Profile enabled" checkbox is ticked.
+11.	Uncheck all three "Enabled" checkboxes under the sections of:
+	"Barcode input", "Keystroke output" and "Intent output".
+</COMMENTFIXEDWIDTH>
+</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices that have a scanner component. Android only supports the following parameters: enabled, [Decoder Name], autoEnter, autoTab, illuminationMode, linearSecurityLevel, picklistMode, scanTimeout, viewfinderMode, inverse1d.  Note that not all parameters will be supported by all scanner engines, e.g. Inverse1D barcodes are not supported on the MK4000.</PLATFORM>
+			<APPLIES>
+        Transient - The scanner is disabled when navigating to a new page or refreshing the current page.  Disabling and Re-enabling the scanner may reset some parameters back to their device default.  The Symbol Technologies Inc utility CtlPanel, available as a separate download, can be used to configure the default state of the scanner.
+        For Scanner to work with VC70, it should be connected as SSI mode.
+      </APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="Decoder and Parameter Tags/">All_Decoders</TOPIC>
+			<TOPIC RELPATH="../Getting Started/">key_capture_overview</TOPIC>
+			<TOPIC RELPATH="../Key Handling/">KeyCapture</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

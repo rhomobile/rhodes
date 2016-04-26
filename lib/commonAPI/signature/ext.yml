@@ -1,0 +1,17 @@
+entry: Init_Signature_extension	
+javaentry: com.signature.Signature
+libraries: ["Signature"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+  manifest_changes: ext/platform/android/ApplicationManifestAdd.erb
+  adds: ext/platform/android/additional_files
+
+project_paths:
+  wp8: ext/platform/wp8/Signature.vcxproj
+  wm: ext/platform/wm/Signature.vcproj
+  win32: ext/platform/wm/Signature.vcproj
+  
+xml_api_paths: ext/Signature.xml
+
+platforms: ["iphone", "wm", "android"]

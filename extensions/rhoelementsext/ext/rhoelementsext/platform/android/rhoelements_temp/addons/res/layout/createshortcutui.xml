@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent" 
+  android:id="@+id/create_shortcut_ui" 
+  android:orientation="vertical">
+  	<ImageView 
+  		android:layout_width="wrap_content" 
+  		android:src="@drawable/icon" 
+  		android:layout_height="wrap_content" 
+  		android:id="@+id/imageView1">
+  	</ImageView>
+  	<TextView 
+  		android:layout_height="wrap_content" 
+  		android:layout_width="wrap_content" 
+  		android:id="@+id/textView3" android:text="@string/shortcut_configfile_path">
+  	</TextView>
+  	<LinearLayout
+	  xmlns:android="http://schemas.android.com/apk/res/android"
+	  android:layout_width="match_parent"
+	  android:layout_height="wrap_content" 
+	  android:id="@+id/config_file_layout" 
+	  android:orientation="horizontal">
+  		<RadioButton  
+  			android:id="@+id/rbConfigPath" 
+  			android:layout_width="wrap_content" 
+  			android:layout_height="wrap_content">
+  		</RadioButton>
+	    <EditText 
+	    	android:layout_height="wrap_content" 
+	    	android:layout_width="match_parent" 
+	    	android:id="@+id/editConfigPath" 
+	    	android:hint="Enter config.xml path" 
+	    	android:singleLine="true" 
+	    	android:inputType="textUri" android:nextFocusDown="@+id/editName">
+	    </EditText>  	
+    </LinearLayout>
+    <TextView 
+  		android:layout_height="wrap_content" 
+  		android:text="@string/shortcut_label_url"
+  		android:layout_width="wrap_content" 
+  		android:id="@+id/textView2">
+  	</TextView>
+    <LinearLayout
+	  xmlns:android="http://schemas.android.com/apk/res/android"
+	  android:layout_width="match_parent"
+	  android:layout_height="wrap_content"
+	  android:id="@+id/application_url_layout" 
+	  android:orientation="horizontal">
+        <RadioButton  
+        	android:id="@+id/rbAppUrl" 
+        	android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content">
+        </RadioButton>
+	    <EditText 
+	    	android:layout_height="wrap_content" 
+	    	android:layout_width="match_parent" 
+	    	android:id="@+id/editUrl" 
+	    	android:hint="Enter application URL" 
+	    	android:singleLine="true" 
+	    	android:inputType="textUri" android:enabled="false" android:nextFocusDown="@+id/editName">
+	    </EditText>
+	</LinearLayout>
+    <TextView 
+    	android:layout_height="wrap_content" 
+    	android:text="@string/shortcut_label_name" 
+    	android:layout_width="wrap_content" 
+    	android:id="@+id/textView1">
+    </TextView>
+    <EditText 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="match_parent" 
+    	android:id="@+id/editName" 
+    	android:hint="Enter shortcut name" 
+    	android:singleLine="true" 
+    	android:inputType="text">
+    </EditText>
+    <TextView 
+    	android:layout_height="wrap_content" 
+    	android:text="@string/shortCut_icon_path" 
+    	android:layout_width="wrap_content" 
+    	android:id="@+id/ShortCutIcon">
+    </TextView>
+    <TextView 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="match_parent" 
+    	android:id="@+id/iconRes" 
+    	android:hint="Click on below button" 
+    	android:maxLines="3"
+        android:ellipsize="end"        
+    	android:textSize="12dp"  
+    	android:inputType="text">
+    </TextView>
+    <FrameLayout
+        android:layout_width="fill_parent" 
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
+    	<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/iconButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Choose Shortcut Icon" />
+
+        </LinearLayout>
+    </FrameLayout>
+    <LinearLayout 
+    	android:layout_width="match_parent" 
+    	android:layout_height="wrap_content" 
+    	android:id="@+id/linearLayout1" 
+    	android:layout_gravity="center_horizontal" 
+    	android:gravity="center_horizontal">
+        	<Button android:layout_height="wrap_content" 
+        		android:layout_width="match_parent" 
+        		android:layout_weight="1" 
+        		android:text="@string/button_ok" 
+        		android:id="@+id/bt_ok" 
+        		android:gravity="center">
+        	</Button>
+        	<Button 
+        		android:layout_height="wrap_content" 
+        		android:layout_width="match_parent" 
+        		android:layout_weight="1" 
+        		android:id="@+id/bt_cancel" 
+        		android:text="@string/button_cancel">
+        	</Button>
+    </LinearLayout>
+</LinearLayout>

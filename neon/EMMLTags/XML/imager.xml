@@ -1,0 +1,389 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>imager</NAME>
+		<PATH>Image Capture</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>controls the imager functions and navigates to a URL or calls a javascript function in response to an HTTP image transfer carried out by the imager meta tag. This module is NOT supported on zebra MC92 Android device.</SYNOPSIS>			
+		<MULTIPLE_INSTANCE>Only the foreground RhoElements application is given access to the imaging hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the imager.  When brought back to the foreground, an application previously using the imager will have its previous configuration (eg. whether it was enabled or not) reapplied to the imager automatically. Please note that any file transfer that is in progress continues even if the application is sent to the background and capture will not have any effect on an application that is in the background.</MULTIPLE_INSTANCE>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="imager" content="[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="imager" content="ImagerEvent:url('jsFunction or url')"&gt;</EXAMPLE>
+            		</USAGE>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="imager" content="ImagerEnumEvent:url('jsFunction or url')"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>enabled</NAME>
+				<VALUES>enables referenced Imager. Imager IDs can be obtained via ImagerEnumEvent</VALUES>
+				<DESC>enables the referenced imager device and shows the viewer window</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>desiredWidth</NAME>
+                <VALUES>numeric Value</VALUES>
+				<DESC>Sets the desired width of the output image, in pixels.  Depending on the camera hardware in use the closest matching image size will be chosen; the width of the chosen image will equal or exceed the value specified up to the capabilities of the hardware.  On Symbol Technologies Inc devices the imaging hardware (that hardware shared by the imager scanner) can not have its output image width configured.  This parameter is only available in version 2.2 and higher</DESC>
+				<DEFAULT>Hardware Specific</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>desiredHeight</NAME>
+                <VALUES>numeric Value</VALUES>
+				<DESC>Sets the desired height of the output image, in pixels.  Depending on the camera hardware in use the closest matching image size will be chosen; the height of the chosen image will equal or exceed the value specified up to the capabilities of the hardware.  On Symbol Technologies Inc devices the imaging hardware (that hardware shared by the imager scanner) can not have its output image height configured.  This parameter is only available in version 2.2 and higher</DESC>
+				<DEFAULT>Hardware Specific</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>left</NAME>
+                		<VALUES>numeric Value (0 - ScreenWidth)</VALUES>
+				<DESC>Sets the top left horizontal position of the viewer window in pixels</DESC>
+				<DEFAULT>Device Specific</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>top</NAME>
+                		<VALUES>Numeric values (0 - ScreenHeight)</VALUES>
+				<DESC>Sets the top left vertical position of the viewer window in pixels</DESC>
+				<DEFAULT>Device Specific</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>width</NAME>
+                		<VALUES>Numeric values (0 - ScreenWidth)</VALUES>
+				<DESC>Sets the width of the viewer window in pixels</DESC>
+				<DEFAULT>Device Specific</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>height</NAME>
+                		<VALUES>Numeric values (0 - ScreenHeight)</VALUES>
+				<DESC>Sets the height of the viewer window in pixels</DESC>
+				<DEFAULT>Device Specific</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>lamp</NAME>
+                		<VALUES>ON/OFF</VALUES>
+				<DESC>switches the lamp ON or OFF</DESC>
+				<DEFAULT>OFF</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>aim</NAME>
+                		<VALUES>ON/OFF</VALUES>
+				<DESC>switches the imager's aim ON or OFF</DESC>
+				<DEFAULT>OFF</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>username</NAME>
+                		<VALUES>http or ftp server user name</VALUES>
+				<DESC>username for the http or ftp server if required</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>password</NAME>
+                		<VALUES>http or ftp server password</VALUES>
+				<DESC>password for the http or ftp server if required</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>sound</NAME>
+                		<VALUES>wav file name</VALUES>
+				<DESC>specifies the wave file to play when capturing an image</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>destination</NAME>
+        <VALUES>http,ftp or file path </VALUES>
+				<DESC>the path of the destination</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+				<PARAM>
+					<NAME>deviceId</NAME>
+					<VALUES>IMG1 or IMG2 depending on the hardware on the device.</VALUES>
+					<DESC>Defines which imager should be enabled.</DESC>
+					<DEFAULT>IMG1 (or IMG2 if IMG1 not found on device)</DEFAULT>
+					<VSCONTROLS_ONLY>TRUE</VSCONTROLS_ONLY>
+			</PARAM>
+       	</PARAMS_WITH_ATTRIBUTES>
+        <PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>enable</NAME>
+				<DESC>enables the imager device and shows the viewer window</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>disable</NAME>
+				<DESC>disables the imager device and hides the viewer window</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>capture</NAME>
+				<DESC>captures the current image and sends the file to the specified destination address.  If an imagerCaptureEvent is specified the image will also be returned as a Data URI object.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>enumerate</NAME>
+				<DESC>Return a list of imagers available on the device using ImagerEnumEvent. This tag will be actioned immediately</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+		</PARAMS_NO_ATTRIBUTES>
+		<RETURNS>
+			<TAG>
+				<TAG_NAME>imagerEvent</TAG_NAME>
+				<RETVAL><NAME>transferResult</NAME><DESC>In response to an upload to an HTTP site, the reply from the web server will be returned.  There will be no response to an upload to an FTP site</DESC></RETVAL>				
+			</TAG>
+			<TAG>
+				<TAG_NAME>imagerCaptureEvent</TAG_NAME>
+				<TAG_NOTES>Specifying an ImagerCaptureEvent will cause the captured image to be returned as a Data URI object when the capture() method is invoked.  A Data URI is a base 64 encoding of the image and can be used to easily embed the image on the page, store the image in a database or transfer the image to a server.</TAG_NOTES>
+				<RETVAL>
+					<NAME>imageData</NAME>
+					<DESC>A DataURI representation of the captured Image.</DESC>
+				</RETVAL>
+			</TAG>
+			<TAG>
+				<TAG_NAME>imagerEnumEvent</TAG_NAME>
+				<RETVAL><NAME>imagerArray (deviceName, friendlyName)</NAME><DESC>Two dimensional array of imagers present on the device</DESC>
+				<ARRAY>TRUE</ARRAY></RETVAL>				
+			</TAG>
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example sets up the imager to capture an image and transfer it to an ftp site:</DESC>
+<CODE>
+&lt;meta http-equiv="Imager" content="width:100"&gt;
+&lt;meta http-equiv="Imager" content="height:100"&gt;
+&lt;meta http-equiv="Imager" content="left:120"&gt;
+&lt;meta http-equiv="Imager" content="Destination:url('software.symbol.com')"&gt;
+&lt;meta http-equiv="Imager" content="username:elementstest"&gt;
+&lt;meta http-equiv="Imager" content="password:elements30"&gt;
+&lt;meta http-equiv="Imager" content="sound:\windows\alarm2.wav"&gt;
+&lt;meta http-equiv="Imager" content="aim:on"&gt;
+&lt;meta http-equiv="Imager" content="lamp:off"&gt;
+&lt;meta http-equiv="Imager" content="FTP"&gt;
+&lt;meta http-equiv="Imager" content="imagerevent:url('javascript:alert('%s');')"&gt;
+&lt;meta http-equiv="Imager" content="enabled"&gt;
+&lt;meta http-equiv="onkey0x0d" content="KeyEvent:url('javascript:doCapture(0);')"&gt;
+
+&lt;SCRIPT&gt;
+   function doCapture()
+   {
+      imager.capture();
+   }
+&lt;/SCRIPT&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example sets up the imager to capture an image when the Javascript function 'doCapture' is called:</DESC>
+<CODE>
+
+&lt;meta HTTP-Equiv="Imager" Content="enabled;left:30;top:50;width:160;height:100;aim:off;lamp:off"&gt;
+&lt;meta HTTP-Equiv="Imager" Content="destination:url('http://ds-laptop/PHTest/Received/HTTP/Upload.aspx')"&gt;
+&lt;meta http-equiv="Imager" content="sound:\windows\alarm2.wav"&gt;
+&lt;meta http-equiv="Imager" content="imagerevent:url('javascript:alert('%s');')"&gt;
+
+&lt;script&gt;
+   function doCapture()
+   {
+      imager.capture();
+   }
+&lt;/script&gt;
+
+</CODE>
+			</EXAMPLE>
+			
+			<EXAMPLE>
+				<DESC>The following ASP.NET example receives a file from the imager and saves it in a new filename:</DESC>
+<CODE>
+&lt;%@ Import namespace="System.Web.UI.HtmlControls" %&gt;
+&lt;%@ Import namespace="System.IO" %&gt;
+
+&lt;script runat="server" language="C#"&gt;
+   //called when the file is submitted	
+   protected void Page_Load(object o, EventArgs e) 
+   {
+      //check we have submitted a file
+      if( elementsImagerFile.PostedFile != null )
+      {
+         // Get a reference to PostedFile object
+         HttpPostedFile myFile = elementsImagerFile.PostedFile;
+
+         // Get size of uploaded file
+         int nFileLen = myFile.ContentLength; 
+
+         // make sure the size of the file is &gt; 0
+         if(nFileLen &gt; 0 )
+         {
+            //Allocate a buffer for reading of the file
+            byte[] myData = new byte[nFileLen];
+
+            // Read uploaded file from the Stream
+            myFile.InputStream.Read(myData, 0, nFileLen);
+
+            // Create a name for the file to store
+            string strFilename = Path.GetFileName(myFile.FileName);
+
+            // Write data into a file
+            WriteToFile(Server.MapPath(strFilename), ref myData);
+
+            // Write a response back to sender
+            Response.Write("File Received");
+         }
+      }
+   }
+
+   // Writes file to current folder
+   private void WriteToFile(string strPath, ref byte[] Buffer)
+   {
+      // Create a file
+      FileStream newFile = new FileStream(strPath, FileMode.Create);
+
+      // Write data to the file
+      newFile.Write(Buffer, 0, Buffer.Length);
+
+      // Close file
+      newFile.Close();
+   }
+&lt;/script&gt;
+
+&lt;form name="elementsImagerForm" method="post" action="upload.aspx" id="elementsImagerForm" enctype="multipart/form-data"&gt;
+   &lt;input id="elementsImagerFile" type="file" runat="server" Visible="false"&gt;
+&lt;/form&gt;
+</CODE>
+			</EXAMPLE>
+		<EXAMPLE>
+				<DESC>The following is a useful desktop html file for testing the example above:</DESC>
+<CODE>
+&lt;form name="elementsImagerForm" method="post" action="upload.aspx" id="elementsImagerForm" enctype="multipart/form-data"&gt;
+   &lt;input name="elementsImagerFile" id="elementsImagerFile" type="file" /&gt;
+   &lt;input type="submit" value="submit"&gt;
+&lt;/form&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example displays the available imagers on screen </DESC>
+<CODE>
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta HTTP-Equiv="imager" Content="imagerEnumEvent:url('Javascript:Enumimagers(%s);')"&gt;
+&lt;meta HTTP-Equiv="quitbutton" Content="left:200;top:0;visibility:visible"&gt;
+&lt;/head&gt;
+
+&lt;body BGCOLOR="#FFFFEA" TEXT="#0000A0" LINK="#FF0000" VLINK="#808080" ALINK="#008040" onLoad="setImagerEnumTimer();"&gt;
+&lt;a HREF="./Index.html"&gt;Back&lt;/a&gt;&lt;br&gt;
+&lt;div ID="message"&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+&lt;SCRIPT LANGUAGE="JavaScript"&gt;
+
+function Enumimagers(imagerArray)
+{
+    var imagerInfo = "Imagers On Device: " + imagerArray.length + "&lt;BR&gt;ID  --  Name&lt;BR&gt;" 
+  
+    for (i=0; i &lt; imagerArray.length; i++)
+    {
+        imagerInfo = imagerInfo + imagerArray[i][0] + ' -- ' + imagerArray[i][1] + '&lt;BR&gt;';
+    }
+    message.innerHTML = imagerInfo;
+}
+
+//  We can not call Scanner:Enumerate during page load on WM so give the page 3 seconds to finish loading
+function setImagerEnumTimer()
+{
+    message.innerHTML = "getting data...";
+    setTimeout("onImagerEnable()", 3000);
+}
+function onImagerEnable()
+{
+	imager.enumerate();
+}
+&lt;/SCRIPT&gt;
+</CODE>
+			</EXAMPLE>
+		<EXAMPLE>
+			<DESC>The following example shows image being captured as a Data URI and displayed on the page</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Imager" Content="imagerCaptureEvent:url('Javascript:onImageCapture(%json)');"&gt;
+  
+&lt;script type="text/javascript"&gt;
+function onImageCapture(jsonObject)
+{
+	imagerImage.src = jsonObject.imageData;
+}
+&lt;/script&gt;
+  
+&lt;/HEAD&gt;
+  &lt;BODY&gt;
+  &lt;BR&gt;&lt;BR&gt;&lt;BR&gt;&lt;BR&gt;
+  &lt;img src="" id="imagerImage"&lt;&gt;/img&gt;
+&lt;/BODY&gt;  
+</CODE>
+		</EXAMPLE>		
+		</EXAMPLES>
+		<REMARKS>
+
+<COMMENT>
+<COMMENT_HEADING>ImagerArray attribute</COMMENT_HEADING>
+<COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+The ImagerArray attribute returned from ImagerEnumevent retrieval tag will enumerate each imager present 
+on the device in a 2D array, associating each Imager's device name with a user friendly name.  
+The device ID can be passed as a parameter to "Imager" "Enabled:&lt;deviceID&gt;", the friendly
+name is a user readable description of the Imager, e.g:
+"IMG1", "Imager"
+"IMG2", "color Camera".
+</COMMENTFIXEDWIDTH>
+</COMMENT_DATA>
+</COMMENT>
+<COMMENT>
+<COMMENT_HEADING>Scanning and Image Capture Interaction</COMMENT_HEADING>
+<COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+In some device configurations the scanner and imager share the same hardware, e.g. the blockbuster scanner and top mounted imager on the MC75a.  Where two modules share the same physical hardware they cannot be enabled simultaneously, once the scanner is enabled it must be disabled before the imager can be used, and vice versa.
+</COMMENTFIXEDWIDTH>
+</COMMENT_DATA>
+</COMMENT>
+	<COMMENT>
+		<COMMENT_HEADING>Setting up a Transfer to a remote HTTP or FTP location</COMMENT_HEADING>
+		<COMMENT_DATA>The Imager module is designed to be configured before any transfer is made to a remote location.  If the 'Destination' paramter is specified as either HTTP or an FTP location the 'destination' / 'username' / 'password' parameters can not be guaranteed to stay the same after capture() has been called, therefore configure your destination for each capture.  The above examples will work for a single transfer.</COMMENT_DATA>
+	</COMMENT>
+<COMMENT>
+<COMMENT_HEADING>Stretching the Image</COMMENT_HEADING>
+<COMMENT_DATA>
+The image can only be stretched as far as the screen dimensions will allow, do not expect to be able to create an image larger than the dimensions of your screen.
+</COMMENT_DATA>
+</COMMENT>
+<COMMENT>
+	<COMMENT_HEADING>Creating a fully qualified URL</COMMENT_HEADING>
+	<COMMENT_DATA>The protocol, port number, username (optional) and password (optional) are all derived from the URL string and should be specified in the following manner: [protocol]://[username]:[password@]Server[:Port]FileNameAndPath.  FTP Example: ftp://admin:root@192.168.1.1:2500/Folder/file.txt.  HTTP Example: http://admin:root@192.168.1.1:8080/Folder/upload.aspx.  Remember to also wrap your URL with url('') when being used as part of a meta tag, as shown in the examples above.</COMMENT_DATA>
+</COMMENT>
+<COMMENT>
+	<COMMENT_HEADING>imagerEnumEvent Array Format</COMMENT_HEADING>
+	<COMMENT_DATA>The imagerArray parameter in the imagerEnumEvent is defined as a 2D array:</COMMENT_DATA>
+	<COMMENTFIXEDWIDTH>
+(
+   (            //  Array for Imager 1
+      deviceName,    //  The internal name given to the Imager, use this when enabling a specific imager.
+      friendlyName,  //  A human readable description of the Imager.
+   )
+   (            //  Array for Imager 2
+      deviceName,
+      friendlyName,
+   )
+)
+</COMMENTFIXEDWIDTH>
+</COMMENT>
+<COMMENT>
+	<COMMENT_HEADING>Platform differences</COMMENT_HEADING>
+	<COMMENT_DATA>On Android the height of the viewfinder cannot be set to any value less than 200.</COMMENT_DATA>
+</COMMENT>
+</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except Kiosk units.</PLATFORM>
+			<APPLIES>Partially Persistent - Changes to this module will persist when navigating to a new page with the exception of the view finder: this will be hidden on page navigation.</APPLIES>
+			<REQ>The device must have an Imager device or Color Camera.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

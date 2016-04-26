@@ -1,0 +1,318 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>cardReader</NAME>
+		<PATH>Card Reader</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</SYNOPSIS>
+		<MULTIPLE_INSTANCE>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MULTIPLE_INSTANCE>
+		<SYNTAX>
+		<USAGE>
+			<EXAMPLE>&lt;META HTTP-Equiv="cardreader" content="parameter:value"&gt;</EXAMPLE>
+		</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>pinTimeout</NAME>
+				<VALUES>0 - 65535</VALUES>
+				<DESC>PIN entry timeout in milliseconds. A value of 65535 sets the timeout to infinite.</DESC>
+				<DEFAULT>30000->30s timeout</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>pinEntry</NAME>
+				<VALUES>On, Off</VALUES>
+				<DESC>Turns the PIN entry on or off.</DESC>
+				<DEFAULT>OFF</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>panData</NAME>
+				<VALUES>Any 16 digit number</VALUES>
+				<DESC>Sets the card data without the need of a swipe.  This parameter should not be called via a Meta tag as doing so simulates a card read.</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>autoTab</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>When enabled, appends a tab to any data returned as keystrokes by the cardreader. </DESC>
+				<DEFAULT>"disabled"</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>autoEnter</NAME>
+				<VALUES>Enabled, Disabled</VALUES>
+				<DESC>When enabled, appends a carriage return to any data returned as keystrokes by the cardreader.</DESC>
+				<DEFAULT>"disabled"</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>moduleName</NAME>
+				<VALUES>MSR9000, MSR9001, MSR9500, MSRCAMEO, MSR7000, DCR7000, MSR55, MSR3000</VALUES>
+				<DESC>This method is present to provide backwards compatibility with Browser code, devices supported by RhoElements will have a single card reader driver installed as part of the platform.  If the device has multiple card reader drivers installed this parameter is used to select which driver to use.  The drivers present are output in the log file when the card reader is initialised.  This parameter is also used to distinguish between an MSR and a DCR, e.g. if you attach a DCR7000 to your device you can specify that only the MSR functionality is used by specifying this parameter as 'MSR7000'</DESC>
+				<DEFAULT>None</DEFAULT>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>open</NAME>
+				<DESC>Opens the card reader. Resets the ReadEvent to "".</DESC>
+				<DEFAULT>Closed</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>close</NAME>
+				<DESC>Closes the card reader</DESC>
+				<DEFAULT>Closed</DEFAULT>
+			</PARAM>
+		</PARAMS_NO_ATTRIBUTES>
+
+		<RETURNS>
+			<TAG>
+				<TAG_NAME>readEvent</TAG_NAME>
+				<TAG_NOTES>
+					<NAME>readEvent:URL('URI')</NAME>
+					<DESC>URI is either a URL or a javascript function. If a URL, the browser navigates to the URL when the attached card reader decodes some data. If a javascript function, the function is treated as a callback which is invoked when the card reader decodes data. Issuing this tag, automatically opens the card reader, if it has not been opened already.
+					</DESC>
+					<DEFAULT></DEFAULT>
+				</TAG_NOTES>
+
+				<RETVAL>
+					<NAME>data</NAME>
+					<DESC>Data read by the card reader. This may be card data, the PAN data extracted from the card data, encrypted PIN block data, or a message. In case of an ISO/ABA card [eg: a financial card], data is encrypted. For other cards, data is in the clear. </DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>mode</NAME>
+					<DESC>Describes the data. This will be either: 'CR','ENCDATA','PAN', or 'MESSAGE'.  This equates to card data, encrypted PIN block data, PAN data, or a message, respectively.</DESC>
+				</RETVAL>	
+				<RETVAL>
+					<NAME>encryption</NAME>
+					<DESC>This provides the information regarding the card reader head configuration. Available only on Android and the value can be "encrypted" or "unencrypted".</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>rawData</NAME>
+					<DESC>This is the raw data read by the card reader from all the tracks. Available only on Android and the value is in HEX format.</DESC>
+				</RETVAL>					
+				<RETVAL>
+					<NAME>track1</NAME>
+					<DESC>The track1 clear/masked data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track1Status value returned is "true".</DESC>
+				</RETVAL>	
+				<RETVAL>
+					<NAME>track2</NAME>
+					<DESC>The track2 clear/masked data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track2Status value returned is "true".</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>track3</NAME>
+					<DESC>The track3 clear/masked data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track3Status value returned is "true".</DESC>
+				</RETVAL>	
+				<RETVAL>
+					<NAME>track1Status</NAME>
+					<DESC>The status of the track1 clear/masked data read by the card reader. Available only on Android and the value can be "true" or "false".</DESC>
+				</RETVAL>	
+				<RETVAL>
+					<NAME>track2Status</NAME>
+					<DESC>The status of the track2 clear/masked data read by the card reader. Available only on Android and the value can be "true" or "false".</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>track3Status</NAME>
+					<DESC>The status of the track3 clear/masked data read by the card reader. Available only on Android and the value can be "true" or "false".</DESC>
+				</RETVAL>	
+				<RETVAL>
+					<NAME>track1Encrypted</NAME>
+					<DESC>The track1 encrypted data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track1EncryptedStatus value returned is "true".</DESC>
+				</RETVAL>	
+				<RETVAL>
+					<NAME>track2Encrypted</NAME>
+					<DESC>The track2 encrypted data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track2EncryptedStatus value returned is "true".</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>track3Encrypted</NAME>
+					<DESC>The track3 encrypted data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track3EncryptedStatus value returned is "true".</DESC>
+				</RETVAL>	
+				<RETVAL>
+					<NAME>track1EncryptedStatus</NAME>
+					<DESC>The status of the track1 encrypted data read by the card reader. Available only on Android and the value can be "true" or "false".</DESC>
+				</RETVAL>	
+				<RETVAL>
+					<NAME>track2EncryptedStatus</NAME>
+					<DESC>The status of the track2 encrypted data read by the card reader. Available only on Android and the value can be "true" or "false".</DESC>
+				</RETVAL>
+				<RETVAL>
+					<NAME>track3EncryptedStatus</NAME>
+					<DESC>The status of the track3 encrypted data read by the card reader. Available only on Android and the value can be "true" or "false".</DESC>
+				</RETVAL>				
+				<RETVAL>
+					<NAME>ksn</NAME>
+					<DESC>The encrypted KSN serial number read by the card reader. Available only on Android and the value is in HEX format.</DESC>
+				</RETVAL>				
+			</TAG>
+		</RETURNS>
+
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example sets up the card reader to submit the scanned data to an asp page upon successful decoding</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="cardreader" Content="readevent:url('http://mypage.asp?Data=%s;Mode=%s')"&gt;
+				</CODE>
+			</EXAMPLE>				
+			<EXAMPLE>
+				<DESC>The following example sets up the card reader to call a javascript function upon successful decoding. The javascript
+					function will be called 3 times, once with the raw card data, once with just the pan data extracted
+					from the raw card data, and once with the encrypted pan data if the pin has been supplied by the
+					user within 10s.:</DESC>
+				<CODE>
+&lt;html&gt;&lt;head&gt;
+&lt;meta http-equiv="content-type" content="text/html; charset=UTF-8"&gt;
+	&lt;title&gt;RhoElements CardReader Test&lt;/title&gt;
+&lt;META HTTP-Equiv="CardReader" Content="PINEntry:ON"&gt;
+&lt;META HTTP-Equiv="CardReader" Content="PINTimeout:0x2710"&gt;
+&lt;META HTTP-Equiv="CardReader" Content="ReadEvent:url('javascript:doTransaction('%s', '%s');')"&gt;
+
+&lt;script language="javascript" type="text/javascript"&gt;
+    function doTransaction(data, mode)
+    {
+        switch(mode) {
+        case 'CR':
+            alert('Card: '+data);
+            break;
+        case 'ENCDATA':
+            alert('Encoded data: '+data);
+            break;
+        case 'MESSAGE':
+            alert('Error: '+data);
+            break;
+        case 'PAN':
+            alert('PAN data: '+data);
+            alert('Please turn the unit over and enter the PIN');
+            break;
+        }
+    }
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</CODE>
+			</EXAMPLE>				
+			<EXAMPLE>
+				<DESC>The following example closes the card reader</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="CardReader" Content="Close"&gt;
+</CODE>
+			</EXAMPLE>		
+			<EXAMPLE>
+				<DESC>The following example reads the encrypted data from the card reader</DESC>
+<CODE>
+&lt;html&gt;&lt;head&gt;
+&lt;meta http-equiv="content-type" content="text/html; charset=UTF-8"&gt;
+&lt;title&gt;RhoElements CardReader data Test&lt;/title&gt;
+&lt;META HTTP-Equiv="CardReader" Content="ReadEvent:url('javascript:doTransaction(%json);')"&gt;
+&lt;script language="javascript" type="text/javascript"&gt;
+    function doTransaction(j)
+    {		
+        switch(j.mode) {
+        case 'CR':						
+            htmlData.innerHTML = "Encryption = " + j.encryption + "&lt;br&gt;" 
+				+ "Total data = " + j.data + "&lt;br&gt;"		
+				+ "Raw data = " + j.rawData + "&lt;br&gt;"					
+				+ "Unencrypted track1 data = " + j.track1 + "&lt;br&gt;"
+				+ "Unencrypted track2 data = " + j.track2 + "&lt;br&gt;"
+				+ "Unencrypted track3 data = " + j.track3 + "&lt;br&gt;"	
+				+ "Unencrypted track1 Status = " + j.track1Status + "&lt;br&gt;"
+				+ "Unencrypted track2 Status = " + j.track2Status + "&lt;br&gt;"
+				+ "Unencrypted track3 Status = " + j.track3Status + "&lt;br&gt;"	
+				+ "Encrypted track1 data = " + j.track1Encrypted + "&lt;br&gt;"
+				+ "Encrypted track2 data = " + j.track2Encrypted + "&lt;br&gt;"
+				+ "Encrypted track3 data = " + j.track3Encrypted + "&lt;br&gt;"	
+				+ "Encrypted track1 Status = " + j.track1EncryptedStatus + "&lt;br&gt;"
+				+ "Encrypted track2 Status = " + j.track2EncryptedStatus + "&lt;br&gt;"
+				+ "Encrypted track3 Status = " + j.track3EncryptedStatus + "&lt;br&gt;"					
+				+ "KSN number = " + j.ksn;			
+            break;        
+        }		
+    }	
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;DIV id="htmlData"&gt;The card data will appear here&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</CODE>
+			</EXAMPLE>				
+		</EXAMPLES>
+		
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>General</COMMENT_HEADING>
+				<COMMENT_DATA>If the CardReader return URI is "", the cardreader data will be returned as keystrokes.  
+
+					The readevent parameter must be set at least once before the pandata parameter is set.
+
+					If both the autotab and autoenter parameters are set to "enabled", autoenter will take precedence.
+
+					An opened card reader must be closed before the attached card reader device and associated
+					modulename parameter are changed.
+				</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>AutoEnter and AccelerateKey</COMMENT_HEADING>
+				<COMMENT_DATA>
+				The AccelerateKey Meta tag controls the behaviour of Accelerate keys on Windows CE, if the Enter key is configured to be non functional then AutoEnter will also appear to not function either
+				</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Operational Modes (Backwards compatibility with Browser)</COMMENT_HEADING>
+				<COMMENT_DATA>For the DCR7000 the ModuleName parameter must be set at least once before the readevent parameter is set.  If the card reader is an MSR, when a card is swiped it returns the data read from the card. Setting ModuleName to a DCR will cause the card data to be returned followed by the PAN Data before waiting for a PIN to be entered on the keypad.  Once entered the PIN will be encrypted and returned by a third ReadEvent.  The card must be a validly formatted IATA or ABA card.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Event URI and Parameter Persistence</COMMENT_HEADING>
+				<COMMENT_DATA>
+					The ReadEvent URI, the PINTimeout, PINEntry, AutoEnter / AutoTab parameters are page-specific values.  When RhoElements performs a page navigate (not a JavaScript callback), the URI is invalidated, the parameters set to their default values and the cardreader is closed.  While the cardreader is open, the URI value may be changed via passing a new readevent parameter/value pair.  In the case that the CardReader is already open, the readevent parameter will simply update the URI and do nothing to the state	of the port.
+				</COMMENT_DATA>
+
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Invalid parameter values</COMMENT_HEADING>
+				<COMMENT_DATA>
+					Any attempt to set a parameter to an invalid value, will result in no effect on the parameter's current value.
+				</COMMENT_DATA>
+
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Closing the reader while PIN entry pending</COMMENT_HEADING>
+				<COMMENT_DATA>
+				There is no way to abort a pending PIN entry (other than the customer pressing the Cancel button), for security reasons. Therefore if the reader is closed or RhoElements is quit during that time it will become unresponsive until a PIN is entered or the PIN timeout occurs. 
+				</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Blank card data</COMMENT_HEADING>
+				<COMMENT_DATA>
+In certain circumstances it is possible that the card reader may return empty card data. The Javascript event function should be able to handle this correctly. 
+				</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Detaching / Reattaching the Card Reader</COMMENT_HEADING>
+				<COMMENT_DATA>
+Applications running in RhoElements should be resilient against the card reader being detached and subsequently reattached.  Card data parsing code should be robust against unexpected characters in the first read after reattachment.  
+				</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Encrypted Card data</COMMENT_HEADING>
+				<COMMENT_DATA>
+The encrypted data is supported only on the card readres that are configured for encryption.  Since the encrypted data might contain unreadable characters sometimes it is recommended to use only JSON object method rather than Javascript '%s' notation.
+				</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Navigation to URL on ReadEvent</COMMENT_HEADING>
+				<COMMENT_DATA>
+Because encrypted card data can contain characters not accepted in a URL the ReadEvent should be handled entirely in either Javascript or Ruby.
+				</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+
+		<ADDITIONAL>
+			<PLATFORM>All supported devices that have a card reader attachment.</PLATFORM>
+			<APPLIES>See Comment Above.</APPLIES>
+			<REQ>You must have the appropriate drivers installed on your device to use the CardReader.  You will see which drivers are installed in the RhoElements log file after you attempt to use any of the card reader functions in RhoElements.  All necessary drivers should be included as part of the platform for supported devices.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

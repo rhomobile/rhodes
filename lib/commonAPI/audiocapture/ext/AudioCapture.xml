@@ -14,39 +14,9 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 
 ### Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
-        </MORE_HELP>
-        <MORE_HELP_EB>
-## Enabling the API
-There are two methods of enabling the AudioCapture API:
-
-* Include all ebapi modules or
-* Include only the API modules you need
-
-For either of these methods, you'll need to include files from the `/Enterprise Browser/JavaScript Files/Enterprise Browser` directory on the computer that you installed the Enterprise Browser.
-
-### Include all JS API modules
-To include all JS APIs, you must copy the ebapi-modules.js file to a location accessible by your app's files and include the JavaScript file in your app. For instance, to include the modules file in your index.html, with the file in the same directory as your index.html, you would add the following line to the &lt;head&gt; section of your index.html:
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
-
-> Note: that the pathing for this file is relative to the current page.
-
-This will define the EB class within the page. Any page you need to use the modules will need to have the .js file included in this fashion.
-
-### Include only the modules you need
-To include single APIs, you must first include the `ebapi.js` in your HTML as well as the API file you want to use. For instance, to use the AudioCapture API, I would add the following code to my HTML file(s), assuming the API files have been copied to the same directory as the HTML.
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
-    &lt;script type="text/javascript" charset="utf-8" src="eb.audiocapture.js"&gt;&lt;/script&gt;
-
-The ebapi.js file is necessary for all single API inclusions.
-        </MORE_HELP_EB>
-
+        </MORE_HELP> 
         <VER_INTRODUCED>4.2.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-        <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
 
         <TEMPLATES>
             <DEFAULT_INSTANCE/>
@@ -86,12 +56,10 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="maxDuration" type="INTEGER" default="20000">
                 <DESC>Specifies the number of milliseconds of audio to capture, defining the size of the capture buffer. This is also the maximum number of milliseconds of audio to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milliseconds is specified, the interval will be defaulted to 20000 milliseconds. The default value is 20,000 milliseconds.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
             </PROPERTY>
             <PROPERTY name="fileName" type="STRING">
                 <DESC>(Required) This parameter is used to specify the file name. The file name should be set at least once before calling 'start' method, otherwise the 'start' method will update the callback 'status' as 'error'.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
             </PROPERTY>
         </PROPERTIES>
         <METHODS>
@@ -100,7 +68,6 @@ The ebapi.js file is necessary for all single API inclusions.
                 <PARAMS>
                     <PARAM name="props" type="HASH" propertyHash="true">
                         <DESC>Map of Audio Capture properties to be set. For iOS 22kHz 16bit Mono WAV file will be created. In Android, ruby callbacks are taking 20secs to fire.</DESC>
-                        <DESC_EB>Map of Audio Capture properties to be set.</DESC_EB>
                     </PARAM>
                 </PARAMS>
                 <CALLBACK type="HASH">
@@ -118,17 +85,14 @@ The ebapi.js file is necessary for all single API inclusions.
                 </CALLBACK>
                 <DESC>Starts capturing audio until either 'stop' is received, or 'maxDuration' is reached. The successful recording will set 'ok' as the status. An unsuccessful recording will set 'cancel' or 'error' as the status in the callback returning parameters. If 'cancel' method is called during recording, 'cancel' status will be set in the callback returning parameters. In order to restart the audio capture, if the audio capturing is already in process, it is mandatory to call 'stop' or 'cancel' method before calling 'start' method again.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
             </METHOD>
             <METHOD name="stop" runInThread="separate">
                 <DESC>Stop audio recording. During recording if 'stop' method is called, the status of recording will be 'ok' in the callback returning parameter of 'start' method. The file is saved in user provided location.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
             </METHOD>
             <METHOD name="cancel" runInThread="separate">
                 <DESC>Cancel audio recording. During recording if 'cancel' method is called, the status of recording will be 'cancel' in the callback returning parameter of 'start' method. No file is saved. In android, it will delete the file if it exists.</DESC>
                 <PLATFORM>WM, CE, Android, iOS</PLATFORM>
-                <PLATFORM_EB>WM, CE, Android</PLATFORM_EB>
             </METHOD>
         </METHODS>
 		<REMARKS>
@@ -159,11 +123,6 @@ Audio recording will not be restarted, if the audio recording is already in proc
 If the page is to be refreshed, the audio recording should be canceled. In Android and iOS, the state will be persisted.
                     ]]>
                 </DESC>
-                <DESC_EB>
-                    <![CDATA[
-If the page is to be refreshed, the audio recording should be canceled. In Android, the state will be persisted.
-                    ]]>
-                </DESC_EB>
             </REMARK>
 			<REMARK title="Page Navigation">
                 <DESC>
@@ -171,11 +130,6 @@ If the page is to be refreshed, the audio recording should be canceled. In Andro
 Upon page navigation, the audio recording should be canceled.In iOS, the state will be persisted.
                     ]]>
                 </DESC>
-                <DESC_EB>
-                    <![CDATA[
-Upon page navigation, the audio recording should be canceled.
-                    ]]>
-                </DESC_EB>
             </REMARK>
 			<REMARK title="Duration And File Name Settings">
                 <DESC>
@@ -202,11 +156,6 @@ On Quitting of the Application, Android will save the data in the file and grace
                 <DESC>Extensions which came from RhoElements (i.e. AudioCapture) that could possibly write files to external storage will require "write SD card" permissions as part of the extension's AndroidManifest. You cannot remove the ability to write to the SD card as it would cause the extension to malfunction. Therefore, the capability has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
             </REMARK>
 		</REMARKS>
-        <REMARKS_EB>
-            <REMARK title="SDCard Access">
-                <DESC>Extensions that could possibly write files to external storage (i.e. AudioCapture) will require "write SD card" permissions as part of the extension's AndroidManifest. You cannot remove the ability to write to the SD card as it would cause the extension to malfunction. Therefore, the capability has already been granted on build, and any capability added by you will be ignored. This being the case, the following extensions will always be able to write to the SD card by default.</DESC>
-            </REMARK>
-        </REMARKS_EB>
         <USER_OVERVIEW></USER_OVERVIEW>
 		<EXAMPLES>
 			<EXAMPLE title="Starting, Stopping And Canceling Audio Capture">
@@ -356,64 +305,5 @@ alert(Rho.AudioCapture.fileName);
                     </SECTIONS>
             </EXAMPLE>
         </EXAMPLES>
-        <EXAMPLES_EB>
-            <EXAMPLE title="Capturing and Playing Audio">
-                <SECTIONS>
-                    <SECTION>
-                        <DESC>This example will show how to capture audio from your device to a file and then play that audio file. Note that this example assumes that your ebapi-modules.js file is located in the same folder as the HTML that is evoking it.</DESC>
-                        <CODE>
-                            <JAVASCRIPT><![CDATA[
-<head>
-    <script src="http://192.168.1.28:8080/target/target-script-min.js#anonymous"></script>
-    <script type="text/javascript" charset="utf-8" src="../apis/EnterpriseBrowser/ebapi-modules.js"></script>
-
-    <title>Audio Capture API Example</title>
-
-    <script>
-        audioFile = null;
-
-        function captureAudio(){
-            display.innerHTML = 'Capturing...'
-            EB.AudioCapture.start({fileName:   'testCap',
-                                                         maxDuration: 5000}, captureCallback);
-        }
-
-        function captureCallback(params){
-            if (params['status'] == 'ok'){
-                display.innerHTML = 'Captured Audio File: ' + params['fileName'];
-                audioFile = params['fileName'];
-                audioFile = audioFile.substr(7); // Remove 'file://' from the beginning of the fileName
-            }
-            else{
-                display.innerHTML = 'Audio Not Captured';
-            }
-        }
-
-        function playCapturedAudio(){
-            if(audioFile){
-                EB.Mediaplayer.start(audioFile);
-            }
-            else{
-                alert("No audio captured yet.");
-            }
-        }
-
-    </script>
-</head>
-<body>
-    <h1>AudioCapture API Example</h1>
-    <div id="display"></div>
-    </br>
-    </br>
-    <button onclick="captureAudio()">Capture Audio</button>
-    <button onclick="playCapturedAudio()">Play Captured Audio</button>
-</body>
-                                ]]>
-                            </JAVASCRIPT>
-                        </CODE>
-                    </SECTION>
-                </SECTIONS>
-            </EXAMPLE>
-        </EXAMPLES_EB>
     </MODULE>
 </API>

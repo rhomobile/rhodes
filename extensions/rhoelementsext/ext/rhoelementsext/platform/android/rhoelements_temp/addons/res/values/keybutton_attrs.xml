@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<declare-styleable name="KeyButton">
+		<attr name="keycode" format="integer"/>
+		<!-- Special Key Type legal values: num, sym, abc -->
+		<attr name="specialkeytype" format="string"/>
+		<attr name="repeatable" format="boolean"/>
+		<attr name="shifted_char" format="string"/>
+	</declare-styleable>
+</resources>

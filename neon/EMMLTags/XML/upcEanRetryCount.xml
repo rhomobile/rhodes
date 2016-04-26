@@ -1,0 +1,67 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>upcEanRetryCount</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Upc Ean</PATH>
+		<TYPE>Decoder String</TYPE>
+		<SYNOPSIS>is used to set the upc_ean retrycount for auto-discriminating for supplementals. Possible values are 2 to 20 inclusive.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="upcEanRetryCount:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>upcEanRetryCount</NAME>
+                		<VALUES>Numeric value (2 - 20)</VALUES>
+				<DESC>Sets the retry count for auto-discriminating for supplementals (2 - 20).</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example sets the scanner to retry upc_ean codes 8 times:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:disabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upcEanSupplementalMode:auto"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upcEanRetryCount:8"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:disabled;upcEanSupplementalMode:auto;upcEanRetryCount:8;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-allDecoders" Content="disabled"&gt;
+&lt;META HTTP-Equiv="scanner-upcEanSupplementalMode" Content="auto"&gt;
+&lt;META HTTP-Equiv="scanner-upcEanRetryCount" Content="8"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+<COMMENT>
+This tag is only considered if upcEanSupplementalMode is set to auto.
+</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports upc_ean.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>upcEanSupplementalMode</TOPIC>
+			<TOPIC RELPATH ="../">All_Decoders</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

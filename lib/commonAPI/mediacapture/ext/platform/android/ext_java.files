@@ -25,6 +25,6 @@ ext/platform/android/generated/src/com/rho/videocapture/IVideocaptureFactory.jav
 ext/platform/android/generated/src/com/rho/videocapture/VideocaptureBase.java
 ext/platform/android/generated/src/com/rho/videocapture/VideocaptureSingletonBase.java
 ext/platform/android/generated/src/com/rho/videocapture/VideocaptureFactorySingleton.java
-ext/platform/android/src/com/motorolasolutions/rho/videocapture/Videocapture.java
-ext/platform/android/src/com/motorolasolutions/rho/videocapture/VideocaptureSingleton.java
-ext/platform/android/src/com/motorolasolutions/rho/videocapture/VideocaptureFactory.java
+ext/platform/android/src/com/rho/videocapture/Videocapture.java
+ext/platform/android/src/com/rho/videocapture/VideocaptureSingleton.java
+ext/platform/android/src/com/rho/videocapture/VideocaptureFactory.java

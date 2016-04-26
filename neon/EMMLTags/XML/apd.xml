@@ -1,0 +1,126 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<HELPPAGE>
+	<FUNC>
+    <ACTIVEX>APD</ACTIVEX>
+		<NAME>APD</NAME>
+		<PATH>legacyObjects</PATH>
+		<TYPE>Preexisting JavaScript Object</TYPE>
+		<SYNOPSIS>contains read only properties and methods for interacting with the Adaptive Printer Driver.  If you have configured 'PreloadLegacyAPD' to be '1' the Javascript object 'apd' will be inserted automatically into your page's DOM by RhoElements.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>apd.PSExternal(iCommand, 'strParameter');</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<ACTIVEX_METHODS>
+			<METHOD>
+				<NAME>PSExternal</NAME>
+				<DESC>Used to send commands via the Symbol Technologies Inc Adaptive Printer Driver without returning a result.</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>iCommand</NAME>
+						<VALUES>Four digit numeric value, See APD documentation for values</VALUES>
+						<DESC>A numeric value representing the required Adaptive Printer Driver function ID.</DESC>
+					</PARAMETER>
+					<PARAMETER>
+						<NAME>strParameter</NAME>
+						<VALUES>String, See APD documentation for values</VALUES>
+						<DESC>String containing function specific parameters / data to be passed to the Adaptive Printer Driver.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>N/A</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>PSExternalEx</NAME>
+				<DESC>Used to send commands via the Symbol Technologies Inc Adaptive Printer Driver, returning the result of the command.</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>iCommand</NAME>
+						<VALUES>Four digit numeric value, See APD documentation for values</VALUES>
+						<DESC>A numeric value representing the required Adaptive Printer Driver function ID.</DESC>
+					</PARAMETER>
+					<PARAMETER>
+						<NAME>strParameter</NAME>
+						<VALUES>String, See APD documentation for values</VALUES>
+						<DESC>String containing function specific parameters / data to be passed to the Adaptive Printer Driver.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>Integer representing the result of sending the command (See APD documentation)</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>PSGetLastMessage</NAME>
+				<DESC>Returns the last error message encountered by the Symbol Technologies Inc Adaptive Printer Driver.</DESC>
+				<RETURN>
+					<DESC>String representing the last error message from the APD</DESC>
+				</RETURN>
+			</METHOD>
+		</ACTIVEX_METHODS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The Following example shows usage PSExternal:</DESC>
+<CODE>
+&lt;script&gt;
+   var printerID = '2350C';
+   apd.PSExternal(261, printerID);
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The Following example shows usage PSExternalEx and PSGetLastMessage:</DESC>
+<CODE>
+&lt;script&gt;
+   if(apd.PSExternalEx(257, 'Hello World') > 0)
+   {
+      alert(apd.PSGetLastMessage());
+   }
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>More Documentation</COMMENT_HEADING>
+				<COMMENT_DATA>More documentation on the APD is available at http://docs.rhomobile.com</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Backwards Compatibility</COMMENT_HEADING>
+				<COMMENT_DATA>The APD Preexisting Javascript Object provides backwards compatibility with code written for Browser and also supports the syntax below.  Because RhoElements inserts the object 'apd' on the page automatically when 'PreloadLegacyAPD' is configured to be '1' you can not create your own objects by this name, see below:</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+&lt;script&gt;
+  //  Old Browser syntax supported by APD
+  var myObj = new ActiveXObject("PocketBrowser.NarrowBand"); 
+  
+  //  Note: var apd = new ... will fail because the object already exists on the page.
+  myObj.PSExternal(261, '2350C');
+&lt;/script&gt;
+</COMMENTFIXEDWIDTH>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>APD version</COMMENT_HEADING>
+			<COMMENT_DATA>The APD version returned by the Cmd_PSGetVersion command (decimal code 260) is not assumed to be the same across the supported platforms, even though the supported capabilities are the same. For instance, at the time of writing, the current version for Windows is 'Symbol Technologies Inc APD V2.19.06', whereas the version for Android is Symbol APD V1.00.00A, with the terminating 'A' standing for Android.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Embedded Commands</COMMENT_HEADING>
+			<COMMENT_DATA>If an embedded command with a malformed code is sent via APD, for instance 'apd.PSExternal(266, "$$[CMD:-0104]$$")', Windows APD will not generate any output to the printer, but on Android the malformed command will be treated as a common string and therefore printed out.</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Printing on the MC2100</COMMENT_HEADING>
+			<COMMENT_DATA>Additional steps are required to pair your MC2100 via Bluetooth for printing.  Please refer to the "Bluetooth Printing" section in the MC2100 User Guide</COMMENT_DATA>
+		</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All devices</PLATFORM>
+			<APPLIES>Executes immediately.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Getting Started/">ConfigurationSettings</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>
+

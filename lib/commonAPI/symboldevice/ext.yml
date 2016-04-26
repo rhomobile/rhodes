@@ -1,0 +1,18 @@
+entry: Init_Symboldevice_extension
+javaentry: com.symboldevice.Symboldevice
+libraries: ["Symboldevice"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+  rhodes_listener: com.rho.devicememory.DeviceMemoryListener
+wp8:
+  csharp_impl: yes
+  root_namespace: rho
+
+project_paths:
+  wp8: ext/platform/wp8/SymboldeviceLib.vcxproj
+  wm: ext/platform/wm/Symboldevice.vcproj
+  
+xml_api_paths: ext/device.xml, ext/deviceMemory.xml
+
+platforms: ["wm", "iphone", "android", "wp8"]

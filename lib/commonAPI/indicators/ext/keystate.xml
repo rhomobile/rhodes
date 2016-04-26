@@ -1,0 +1,119 @@
+<?xml version = "1.0"?>
+
+<API>
+    <MODULE name="KeyState" parent="Rho" license="Required">
+        <HELP_OVERVIEW>The KeyState API is used to display small icons to the user indicating the current shifted state of the hardware keyboard. The KeyState indicator will display icons for Shift, Alt, Control, Function, Caps, Num lock and Orange key states, growing from the right as necessary if more than one key state is set at once. This API is only supported on a subset of Symbol Technologies' Windows Mobile / CE / Embedded handheld devices (see remarks).</HELP_OVERVIEW>
+        <HELP_OVERVIEW_EB>The KeyState API is used to display small icons to the user indicating the current shifted state of the hardware keyboard. The KeyState indicator will display icons for Shift, Alt, Control, Function, Caps, Num lock and Orange key states, growing from the right as necessary if more than one key state is set at once. This API is only supported on a subset of Symbol Technologies' Windows Mobile / CE / Embedded handheld devices (see remarks).
+
+> Note: When using the keyState indicator on a VC5090 device, there is the possibility that the display will be slightly distorted while the keyState indicator is displayed. This only occurs when the keyState indicator or other similar overlays are on set to be visible.
+Other overlays consist of, but are not necessarily limited to:
+* addressBar
+* backbutton
+* forwardbutton
+* gobutton
+* minimizebutton
+* quitbutton
+* reloadButton
+* sipbutton
+* stopbutton
+        </HELP_OVERVIEW_EB>
+        <MORE_HELP>
+## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`.
+    :::ruby
+    extensions: ["indicators"]
+
+The `indicators` extension is also included automatically if you specify the following in your `build.yml`.
+    :::ruby
+    app_type: "rhoelements"
+
+NOTE: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your build.yml as shown [here](../guide/build_config#other-build-time-settings).
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+        </MORE_HELP>
+        <TEMPLATES>
+        </TEMPLATES>
+        <METHODS access="STATIC">
+            <METHOD name="showStates" hasCallback="none" runInThread="ui">
+                <DESC>Display keystate icons representing the shifted state of the hardware keyboard.</DESC>
+                <PLATFORM>WM</PLATFORM>
+                <APPLIES msiOnly="true"></APPLIES>
+                <PARAMS>
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
+                        <DESC>The properties associated with the keystate indicator, its size and position.</DESC>
+                        <PARAMS>
+                            <PARAM name="right" type="INTEGER" default="[Keystate Indicators start at the bottom right of the screen]">
+                                <DESC>The absolute horizontal position of the keystate indicators in pixels. This is the rightmost edge of the rightmost indicator, where multiple indicators are displayed simultaneously they will grow from right to left.</DESC>
+                            </PARAM>
+                            <PARAM name="top" type="INTEGER" default="[Keystate Indicators start at the bottom right of the screen]">
+                                <DESC>The absolute vertical position of the keystate indicators in pixels.</DESC>
+                            </PARAM>
+                            <PARAM name="width" type="INTEGER" default="[A sensible width based on Screen Resolution]">
+                                <DESC>The width of each keystate indicator in pixels.</DESC>
+                            </PARAM>
+                            <PARAM name="height" type="INTEGER" default="[A sensible height based on Screen Resolution]">
+                                <DESC>The width of each keystate indicator in pixels.</DESC>
+                            </PARAM>
+                        </PARAMS>
+                        <CAN_BE_NIL>
+                            <DESC>Not specifying any properties will display the keystate indicators at the bottom right hand corner of the screen.</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="hideStates" hasCallback="none" runInThread="ui">
+                <DESC>Stops showing keystate icons representing the shifted state of the hardware keyboard.</DESC>
+                <PLATFORM>WM</PLATFORM>
+                <APPLIES msiOnly="true"></APPLIES>
+            </METHOD>
+        </METHODS>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>WM</PLATFORM>
+        <EXAMPLES>
+            <EXAMPLE title="Show the Keystate Indicators">
+                <SECTIONS>
+                    <SECTION>
+                    <DESC>If you just want to display the keystate indicators in their default positions with size 25x25 pixels then call as follows.</DESC>
+                    <CODE>
+                        <RUBY>
+                <![CDATA[
+def show_keystates
+    Rho::Keystate.showStates({width:25;height:25})
+end]]>
+                        </RUBY>
+                        <JAVASCRIPT>
+                            <![CDATA[
+function show_keystates(){
+    Rho.Keystate.showStates({width:25;height:25});
+}]]>
+                        </JAVASCRIPT>
+                    </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES>
+
+        <REMARKS>
+            <REMARK title="Devices lacking support">
+                <DESC>Due to platform limitations this API is not available on the following Zebra Technologies devices:
+
+* ES400
+* MC45
+* MC65
+* VC70
+* MC45
+* Workabout Pro 4</DESC>
+            </REMARK>
+
+            <REMARK title="Rotating the Screen">
+                <DESC>The keystate indicator positions are absolute and so when rotating the screen you should also reposition the keystate accordingly to accommodate the new screen layout.</DESC>
+            </REMARK>
+        </REMARKS>
+    </MODULE>
+</API>

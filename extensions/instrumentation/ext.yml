@@ -1,0 +1,13 @@
+entry: Init_Instrumentation_extension	
+javaentry: com.instrumentation.Instrumentation
+libraries: ["Instrumentation"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+
+project_paths:
+  wp8: ext/platform/wp8/Instrumentation.vcxproj
+  wm: ext/platform/wm/Instrumentation.vcproj
+  win32: ext/platform/wm/Instrumentation.vcproj
+  
+xml_api_paths: ext/Instrumentation.xml

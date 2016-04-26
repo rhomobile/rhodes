@@ -1,0 +1,11 @@
+ext/platform/android/generated/src/com/rho/smartcradle/SmartCradleBase.java
+ext/platform/android/generated/src/com/rho/smartcradle/SmartCradleFactorySingleton.java
+ext/platform/android/generated/src/com/rho/smartcradle/SmartCradleSingletonBase.java
+ext/platform/android/generated/src/com/rho/smartcradle/ISmartCradle.java
+ext/platform/android/generated/src/com/rho/smartcradle/ISmartCradleFactory.java
+ext/platform/android/generated/src/com/rho/smartcradle/ISmartCradleSingleton.java
+ext/platform/android/src/com/rho/smartcradle/SmartCradle.java
+ext/platform/android/src/com/rho/smartcradle/SmartCradleFactory.java
+ext/platform/android/src/com/rho/smartcradle/SmartCradleSingleton.java
+ext/platform/android/src/com/rho/smartcradle/EMDK3ExtensionListener.java
+

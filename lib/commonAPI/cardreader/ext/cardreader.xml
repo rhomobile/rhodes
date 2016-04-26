@@ -1,0 +1,292 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="CardReader" parent="Rho" license="Required">
+        <HELP_OVERVIEW>The Card Reader module decodes the card data when read through a card reader attachment. Currently this is available only on Symbol Technologies devices.Only the foreground application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader. When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`.
+    :::ruby
+    extensions: ["cardreader"]
+
+The `cardreader` extension is also included automatically if you specify the following in your `build.yml`.
+    :::ruby
+    app_type: "rhoelements"
+
+NOTE: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your build.yml as shown [here](../guide/build_config#other-build-time-settings).
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+        </MORE_HELP>
+        <TEMPLATES>
+            <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
+            <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
+        </TEMPLATES>
+
+        <PLATFORM>WM, CE, Android</PLATFORM>
+
+        <PROPERTIES usePropertyBag="accessorsViaPropertyBag">
+            <DESC>These properties are used to configure the card reader.</DESC>
+             <PROPERTY name="pinTimeout" type="INTEGER" generateAccessors="true" default="30000">
+                <!-- <VALUES>0 - 65535</VALUES> -->
+                <DESC>PIN entry timeout in milliseconds. A value of 65535 sets the timeout to infinite. Accepts values between 0 and 65535.</DESC>
+                <PLATFORM>WM</PLATFORM>
+                <APPLIES msiOnly="true">Only compatible with DCR7000-x00</APPLIES>
+            </PROPERTY>
+            <PROPERTY name="pinEntry" type="BOOLEAN" generateAccessors="true">
+                <DESC>Turns the PIN entry on or off.</DESC>
+                <PLATFORM>WM</PLATFORM>
+                <APPLIES msiOnly="true">Only compatible with DCR7000-x00</APPLIES>
+            </PROPERTY>
+            <PROPERTY name="panData" type="STRING" generateAccessors="true">
+                <DESC>Sets the card data without the need of a swipe. This accepts any 16 digit number as the string value. Ensure that pinEntry is true before getting the property of panData.</DESC>
+                <PLATFORM>WM</PLATFORM>
+                <APPLIES msiOnly="true">Only compatible with DCR7000-x00</APPLIES>
+            </PROPERTY>
+            <PROPERTY name="autoTab" type="BOOLEAN" generateAccessors="true" default="false">
+                <DESC>When enabled, appends a tab to any data returned as keystrokes by the cardreader. This is useful when filling out a form so that you can move to the next field without extra interaction necessary.</DESC>
+                <PLATFORM>WM, CE, Android</PLATFORM>
+                <APPLIES msiOnly="true"></APPLIES>
+            </PROPERTY>
+            <PROPERTY name="autoEnter" type="BOOLEAN" generateAccessors="true" default="false">
+                <DESC>When enabled, appends a carriage return to any data returned as keystrokes by the cardreader. This is useful for auto submitting returned data without extra interaction necessary.</DESC>
+                <PLATFORM>WM, CE, Android</PLATFORM>
+                <APPLIES msiOnly="true"></APPLIES>
+            </PROPERTY>
+            <PROPERTY name="moduleName" type="STRING" generateAccessors="true" deprecated="true">
+                <DESC>This method is present to provide backwards compatibility with PocketBrowser code, devices supported by RhoElements will have a single card reader driver installed as part of the platform. If the device has multiple card reader drivers installed this parameter is used to select which driver to use. The drivers present are output in the log file when the card reader is initialized. This parameter is also used to distinguish between an MSR and a DCR, e.g. if you attach a DCR7000 to your device you can specify that only the MSR functionality is used by specifying this parameter as 'MSR7000'.</DESC>
+                <PLATFORM>WM</PLATFORM>
+                <APPLIES msiOnly="true"></APPLIES>
+                <VALUES>
+                    <VALUE constName="MSR9000" value="msr9000">
+                        <DESC>MSR9000 drivers. Return value while getting the property of moduleName will be its associated DLL name i.e. MSR3000.DLL.</DESC>
+                    </VALUE> 
+                    <VALUE constName="MSR9001" value="msr9001">
+                        <DESC>MSR9001 drivers. Return value while getting the property of moduleName will be its associated DLL name i.e. MSR3000.DLL.</DESC>
+                    </VALUE> 
+                    <VALUE constName="MSR9500" value="msr9500">
+                        <DESC>MSR9500 drivers. Return value while getting the property of moduleName will be its associated DLL name i.e. MSRMC50.DLL.</DESC>
+                    </VALUE> 
+                    <VALUE constName="MSRCAMEO" value="msrcameo">
+                        <DESC>MSRCAMEO drivers. Return value while getting the property of moduleName will be its associated DLL name i.e. MSRCAMEO.DLL.</DESC>
+                    </VALUE> 
+                    <VALUE constName="MSR7000" value="msr7000">
+                        <DESC>MSR7000 drivers. Return value while getting the property of moduleName will be its associated DLL name i.e. MSRMC50.DLL.</DESC>
+                    </VALUE> 
+                    <VALUE constName="DCR7000" value="dcr7000">
+                        <DESC>DCR7000 drivers. Return value while getting the property of moduleName will be its associated DLL name i.e. MSRMC50.DLL.</DESC>
+                    </VALUE> 
+                    <VALUE constName="MSR55" value="msr55">
+                        <DESC>MSR55 drivers. Return value while getting the property of moduleName will be its associated DLL name i.e. MSRMC55.DLL.</DESC>
+                    </VALUE> 
+                    <VALUE constName="MSR3000" value="msr3000">
+                        <DESC>MSR3000 drivers. Return value while getting the property of moduleName will be its associated DLL name i.e. MSR3000.DLL.</DESC>
+                    </VALUE>
+                </VALUES>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS>
+            <METHOD name="open" hasCallback="optional">
+                <DESC>Opens the card reader.</DESC>
+                <PLATFORM>WM, CE, Android</PLATFORM>
+                <APPLIES msiOnly="true"></APPLIES>
+                <CALLBACK  type="HASH">
+                    <DESC>Not providing a callback to be invoked when a card is swiped will result in that card data being output as keystrokes. In case of Android devices the RawData will be shown as keystrokes.</DESC>
+                    <PARAMS>
+                        <PARAM name="data" type="STRING">
+                            <DESC>Data read by the card reader. This may be card data, the PAN data extracted from the card data, encrypted PIN block data, or a message. In case of an ISO/ABA card [eg: a financial card], data is encrypted. For other cards, data is in the clear.</DESC>
+                        </PARAM>
+                        <PARAM name="mode" type="STRING">
+                            <DESC>Describes the data. This will be either: 'CR','ENCDATA','PAN', or 'MESSAGE'. This equates to card data, encrypted PIN block data, PAN data, or a message, respectively.</DESC>
+                        </PARAM>
+                        <PARAM name="encryption" type="BOOLEAN">
+                            <DESC>This provides the information regarding the card reader head configuration. Available only on Android.</DESC>
+                        </PARAM>
+                        <PARAM name="rawData" type="STRING">
+                            <DESC>This is the raw data read by the card reader from all the tracks. Available only on Android and the value is in HEX format.</DESC>
+                        </PARAM>
+                        <PARAM name="track1" type="STRING">
+                            <DESC>The track1 clear/masked data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track1Status value returned is true.</DESC>
+                        </PARAM>
+                        <PARAM name="track2" type="STRING">
+                            <DESC>The track2 clear/masked data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track2Status value returned is true.</DESC>
+                        </PARAM>
+                        <PARAM name="track3" type="STRING">
+                            <DESC>The track3 clear/masked data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track3Status value returned is true.</DESC>
+                        </PARAM>
+                        <PARAM name="track1Status" type="BOOLEAN">
+                            <DESC>The status of the track1 clear/masked data read by the card reader. Available only on Android.</DESC>
+                        </PARAM>
+                        <PARAM name="track2Status" type="BOOLEAN">
+                            <DESC>The status of the track2 clear/masked data read by the card reader. Available only on Android.</DESC>
+                        </PARAM>
+                        <PARAM name="track3Status" type="BOOLEAN">
+                            <DESC>The status of the track3 clear/masked data read by the card reader. Available only on Android.</DESC>
+                        </PARAM>
+                        <PARAM name="track1Encrypted" type="STRING">
+                            <DESC>The track1 encrypted data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track1EncryptedStatus value returned is true.</DESC>
+                        </PARAM>
+                        <PARAM name="track2Encrypted" type="STRING">
+                            <DESC>The track2 encrypted data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track2EncryptedStatus value returned is true.</DESC>
+                        </PARAM>
+                        <PARAM name="track3Encrypted" type="STRING">
+                            <DESC>The track3 encrypted data read by the card reader. Available only on Android and the value is in HEX format. This value should be used only when the track3EncryptedStatus value returned is true.</DESC>
+                        </PARAM>
+                        <PARAM name="track1EncryptedStatus" type="BOOLEAN">
+                            <DESC>The status of the track1 encrypted data read by the card reader. Available only on Android.</DESC>
+                        </PARAM>
+                        <PARAM name="track2EncryptedStatus" type="BOOLEAN">
+                            <DESC>The status of the track2 encrypted data read by the card reader. Available only on Android.</DESC>
+                        </PARAM>
+                        <PARAM name="track3EncryptedStatus" type="BOOLEAN">
+                            <DESC>The status of the track3 encrypted data read by the card reader. Available only on Android.</DESC>
+                        </PARAM>
+                        <PARAM name="ksn" type="STRING">
+                            <DESC>The encrypted KSN serial number read by the card reader. Available only on Android. The value is in HEX format.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK> 
+            </METHOD>
+
+            <METHOD name="close">
+                <DESC>Closes the card reader.</DESC>
+                <PLATFORM>WM, CE, Android</PLATFORM>
+                <APPLIES msiOnly="true"></APPLIES>
+            </METHOD>
+
+            <METHOD name="enumerate" access="STATIC" hasCallback="optional">
+                <DESC>Enumerates all the available card readers.</DESC>
+                <RETURN type="ARRAY">
+                    <DESC>Array of Card reader objects.</DESC>
+                    <PARAM name="cardreaderArray" type="SELF_INSTANCE"/>
+                </RETURN>
+                <PLATFORM>Android, WM</PLATFORM>
+            </METHOD>
+        </METHODS>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>Android, WM</PLATFORM>
+        <REMARKS>
+            <REMARK title="General">
+                <DESC>If the CardReader open method is not specified with a callback, the cardreader data will be returned as keystrokes. If both the autotab and autoenter parameters are set to "enabled", autoenter will take precedence. An opened card reader must be closed before the attached card reader device and associated modulename parameter are changed. Any attempt to set a parameter to an invalid value, will result in no effect on the parameter's current value. There should be made a delay around 2 secs or more between API calls which interact with hardware.</DESC>
+            </REMARK>
+
+            <!--REMARK title="AutoEnter and AccelerateKey">
+                <DESC>The AccelerateKey Meta tag controls the behavior of Accelerate keys on Windows CE, if the Enter key is configured to be non functional then AutoEnter will also appear to not function either.</DESC>
+            </REMARK-->
+
+            <REMARK title="Operational Modes (Backwards compatibility with PocketBrowser)">
+                <DESC>For the DCR7000 the ModuleName parameter must be set at least once before the readevent parameter is set. If the card reader is an MSR, when a card is swiped it returns the data read from the card. Setting ModuleName to a DCR will cause the card data to be returned followed by the PAN Data before waiting for a PIN to be entered on the keypad. Once entered the PIN will be encrypted and returned by a third ReadEvent. The card must be a validly formatted IATA or ABA card.</DESC>
+            </REMARK>
+
+            <REMARK title="Closing the reader while PIN entry pending">
+                <DESC>There is no way to abort a pending PIN entry (other than the customer pressing the Cancel button), for security reasons. Therefore if the reader is closed or RhoElements is quit during that time it will become unresponsive until a PIN is entered or the PIN timeout occurs.</DESC>
+            </REMARK>
+
+            <REMARK title="Blank card data">
+                <DESC>In certain circumstances it is possible that the card reader may return empty card data. The JavaScript event function should be able to handle this correctly. </DESC>
+            </REMARK>
+
+            <REMARK title="Detaching / Reattaching the Card Reader">
+                <DESC>Applications running in RhoElements should be resilient against the card reader being detached and subsequently reattached. Card data parsing code should be robust against unexpected characters in the first read after reattachment.</DESC>
+            </REMARK>
+
+            <REMARK title="Encrypted Card data">
+                <DESC>The encrypted data is supported only on the card readers that are configured for encryption. Since the encrypted data might contain unreadable characters sometimes it is recommended to use only JSON object method rather than JavaScript '%s' notation.</DESC>
+            </REMARK>
+        </REMARKS>
+
+        <EXAMPLES>
+            <EXAMPLE title="Basic Example">
+                <SECTIONS>
+                <SECTION>
+                <DESC>The default card reader on the device is enabled when the index view is loaded. When a card is swiped the swipeEvent is called.</DESC>
+                <CODE lang='ruby'>
+            <![CDATA[
+#/app/Model
+def index
+    Rho::CardReader.open(url_for(:action => :myswipeevent))
+end
+  def myswipeevent
+       puts "Swipe params: #{@params}"
+       puts "Mode is #{@params['mode']}"
+       puts "Data is #{@params['data']}"
+  end 
+                    ]]>
+                </CODE>
+                </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+            <EXAMPLE title="Connect to card reader">
+            <SECTIONS>
+              <SECTION>
+               <DESC>Enable card reader and receive a callback when a card is swiped.</DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+def connect
+  Rho::CardReader.open(url_for(:action => :cardreader_callback))
+  redirect :index
+end
+
+def cardreader_callback
+  Alert.show_popup("Received card reader data: #{@params[:data]}")
+end
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+function cardreader_callback(params) {
+  alert("Received data from card reader: "+params["data"]);
+}
+
+function connect() {
+  Rho.CardReader.open(cardreader_callback);
+}
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Set card reader properties">
+            <SECTIONS>
+              <SECTION>
+               <DESC>There are two ways to use the card reader. One is to receive a callback when a card is swiped, the other is to have it simulate keypresses. See below for an example of this second option.</DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# Configure the MSR to output keystrokes instead of calling a function when a card is swiped
+# Note the absence of a callback parameter
+# Also, After emitting the keystrokes, automatically send a "Tab" keypress
+Rho::CardReader.autoTab = true
+Rho::CardReader.open()
+
+# Instead of "Tab", we could request a simulated "Enter" 
+Rho::CardReader.autoEnter = true
+Rho::CardReader.open()
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+// Configure the MSR to output keystrokes instead of calling a function when a card is swiped
+// Note the absence of a callback parameter
+// Also, After emitting the keystrokes, automatically send a "Tab" keypress
+Rho.CardReader.autoTab = true;
+Rho.CardReader.open();
+
+Rho.CardReader.autoEnter = true;
+Rho.CardReader.open();
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+        </EXAMPLES>
+    </MODULE>
+</API>

@@ -45,7 +45,6 @@
 #include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "MainWindow.h"
-#include "PasswordPopUp/pwdPopUp.h"
 
 #if defined(OS_WINDOWS_DESKTOP)
 #undef null
@@ -66,11 +65,6 @@ using namespace rho::common;
 
 extern "C"
 {
-
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-const wchar_t* rho_wmimpl_getExitPasswordEnabled();
-const wchar_t* rho_wmimpl_getExitPasswordValue();
-#endif
 
 #if defined(OS_WINDOWS_DESKTOP)
 const char* rho_sys_qt_getWebviewFramework();
@@ -148,44 +142,7 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
 
 void rho_sys_app_exit()
 {
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-	LPCTSTR szCheckPasswordRequired = rho_wmimpl_getExitPasswordEnabled();
-	if (szCheckPasswordRequired)
-	{	
-		if (*szCheckPasswordRequired == L'1')
-		{
-			LPCTSTR szPasswordValue = rho_wmimpl_getExitPasswordValue();
-			if(szPasswordValue)
-			{
-				int iPasswordLength = _tcslen(szPasswordValue);
-				if(iPasswordLength > 0)
-				{
-					HWND hwndForeGroundWindow = RHODESAPP().getExtManager().makeExtData().m_hBrowserWnd;
-					if(ShowPasswordDialog(RHO_IS_WMDEVICE, true, hwndForeGroundWindow, NULL, L"Enterprise Browser", L"Enter Exit Password", szPasswordValue))
-					{
-						::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
-					}	
-				}
-				else
-				{
-					::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
-				}
-			}
-			else
-			{
-				::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
-			}
-		}
-		else
-		{
-			::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
-		}
-	}
-	else
-#endif
-	{
-		::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
-	}
+	::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
 }
 
 void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
@@ -794,7 +751,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 #if defined(OS_WINDOWS_DESKTOP)
 		*resValue = rho_ruby_create_string(rho_sys_qt_getWebviewFramework());
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-		*resValue = rho_ruby_create_string("WEBKIT/MOTOROLA");
+		*resValue = rho_ruby_create_string("WEBKIT/SYMBOL");
 #else
 		rho::String msieVer = "IE";
 		get_msie_version(msieVer);
@@ -955,27 +912,6 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         *resValue = rho_ruby_create_boolean( g_rho_has_network != 0 );
         return 1;
     }
-
-#if defined( OS_WINCE )
-	if (strcasecmp("is_motorola_device",szPropName) == 0)
-    {
-#ifdef APP_BUILD_CAPABILITY_SYMBOL
-   	    //get the system OEM string
-	    TCHAR szPlatform[MAX_PATH+1];
-	    memset(szPlatform, 0, MAX_PATH*sizeof(TCHAR));
-	    SystemParametersInfo(SPI_GETOEMINFO, MAX_PATH, szPlatform, 0);
-        _wcslwr(szPlatform);
-        if(wcsstr(szPlatform, L"symbol") || wcsstr(szPlatform, L"motorola"))
-            *resValue = rho_ruby_create_boolean( 1 );
-        else
-            *resValue = rho_ruby_create_boolean( 0 );
-#else
-        *resValue = rho_ruby_create_boolean(0);
-#endif
-
-        return 1;
-    }
-#endif
 
     return 0;
 }

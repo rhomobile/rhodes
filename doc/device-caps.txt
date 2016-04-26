@@ -5,7 +5,7 @@
 Rhodes provide access to device specific capabilities such as GPS, PIM, camera, SMS, video player, accelerometer, proximity detector and [native UI elements](ui).  Check the [API Compatibility Matrix](/rhoelements/apicompatibility) for complete details on which APIs are supported on the variety of operating systems.
 
 
-**NOTE: As of Rhodes version 3.3.3, the [Barcode](/rhodes/device-caps#barcode), [NFC](/rhodes/device-caps#nfc), and [Inline Signature Capture](/rhodes/device-caps#signature-capture) APIs, as well as [Rhom data encryption](/rhodes/rhom#database-encryption) are removed from Rhodes. These features are only supported in Motorola RhoMobile Suite. If you wish to use these features, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements']( /rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
+**NOTE: As of Rhodes version 3.3.3, the [Barcode](/rhodes/device-caps#barcode), [NFC](/rhodes/device-caps#nfc), and [Inline Signature Capture](/rhodes/device-caps#signature-capture) APIs, as well as [Rhom data encryption](/rhodes/rhom#database-encryption) are removed from Rhodes. These features are only supported in RhoMobile Suite. If you wish to use these features, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements']. Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
 
 ## System Class
 
@@ -363,7 +363,7 @@ Refer to the [Camera API](/rhodesapi/camera-api) methods to perform the followin
  * [choose_picture](/rhodesapi/camera-api#choosepicture) - Choose a picture from an album.
  * [take_picture](/rhodesapi/camera-api#takepicture) - Take a picture.
 
-You can set [extended options for take_picture on iOS and Android, for choose_picture on iPhone](/rhodesapi/camera-api#optionshashforiosandandroiddevices), and for [RhoElements Motorola devices](/rhodesapi/camera-api#optionshashforrhoelementsmotoroladevices).
+You can set [extended options for take_picture on iOS and Android, for choose_picture on iPhone](/rhodesapi/camera-api#optionshashforiosandandroiddevices), and for [RhoElements Symbol devices](/rhodesapi/camera-api#optionshashforrhoelementssymboldevices).
 
 ### Sample
 
@@ -379,7 +379,7 @@ Here is an example call from the System API Samples application.
 
 ## Barcode
 
-**NOTE: As of Rhodes version 3.3.3, the [Barcode](/rhodes/device-caps#barcode) API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
+**NOTE: As of Rhodes version 3.3.3, the [Barcode](/rhodes/device-caps#barcode) API is removed from Rhodes. This feature is only supported in RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements']. Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
 
 You can use the [Barcode API](/rhodesapi/barcode-api) methods to recognize barcodes.
 
@@ -417,7 +417,7 @@ Example:
 **NOTE: To take signature on Blackberry devices, press the Menu button, then select 'Capture'.**
 
 ### Inline Signature Capture
-**NOTE: As of Rhodes version 3.3.3, the Inline Signature API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
+**NOTE: As of Rhodes version 3.3.3, the Inline Signature API is removed from Rhodes. This feature is only supported in RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements']. Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
 
 Windows Mobile and Windows CE devices support signature capture started in window, which you can show over the current page (scrolling is not supported in this case). 
 
@@ -563,7 +563,7 @@ You can find a complete example of using Bluetooth API in [Rhodes-System-Api-Sam
 NFC (Near Field Communication). NFC API provide access to NFC functionality. You can check NFC availability on current device and register callback for listen event when NFC tag near of device. Currently NFC supported only on Android. And also Android version must be 2.3.3 or later.
 NFC API implemented in native extension. You should add "nfc" to extension list in your build.yml before start using NFC in your application. Please see detailed doc: [Rhodes NFC extension](/rhodes/nfc).
 
-**NOTE: As of Rhodes version 3.3.3, the [NFC](/rhodes/nfc) API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
+**NOTE: As of Rhodes version 3.3.3, the [NFC](/rhodes/nfc) API is removed from Rhodes. This feature is only supported in RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements']. Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
 
 ## Ringtone manager
 

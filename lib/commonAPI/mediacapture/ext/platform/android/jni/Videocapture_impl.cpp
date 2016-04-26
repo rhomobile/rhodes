@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Videocapture_impl"
 
-#define VIDEOCAPTURE_FACTORY_CLASS "com.motorolasolutions.rho.videocapture.VideocaptureFactory"
+#define VIDEOCAPTURE_FACTORY_CLASS "com.rho.videocapture.VideocaptureFactory"
 
 extern "C" void Init_Videocapture_API(void);
 

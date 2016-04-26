@@ -28,7 +28,7 @@ enum EngineEventID
 	EEID_BEFORENAVIGATE = 0,///< Fired Before a new page is navigated to, if the calling application instructs a CEngine::Navigate or the user clicks on a link.
 	EEID_NAVIGATECOMPLETE,	///< Fired once the server responds to the client's navigation request, the page now starts loading.
 	EEID_DOCUMENTCOMPLETE,  ///< Fired when the page is 100% loaded included all embedded images.
-	EEID_NAVIGATIONERROR,	///< Fired if there is an error navigating to the page, for example attempting to navigate to http://www.motorola.com if the device does not have a network connection.
+	EEID_NAVIGATIONERROR,	///< Fired if there is an error navigating to the page, for example attempting to navigate to http://www.symbol.com if the device does not have a network connection.
 	EEID_METATAG,			///< Fired when a Meta Tag is parsed on the loaded page.  This event is fired once for each meta tag, so a page with 3 meta tags will invoke this event 3 times.
 	/**
 	* Fires when the title of a document in the object becomes available or changes.  

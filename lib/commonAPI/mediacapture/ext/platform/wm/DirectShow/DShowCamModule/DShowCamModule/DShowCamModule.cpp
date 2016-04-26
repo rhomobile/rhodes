@@ -3,13 +3,58 @@
 
 #include "stdafx.h"
 #include "DShowCamModule.h"
-#include "DShowDef.h"
 #include "PropertyBag.h"
 #include <windows.h>
 #include <pm.h>
 #include <Notify.h>
 #include "DshowCam.h"
 
+const MEDIA_SUBTYPE_LIST media_list[] = {
+      {TEXT("RGB1"),&MEDIASUBTYPE_RGB1},
+      {TEXT("RGB4"),&MEDIASUBTYPE_RGB4},
+      {TEXT("RGB8"),&MEDIASUBTYPE_RGB8},
+      {TEXT("RGB565"),&MEDIASUBTYPE_RGB565},
+      {TEXT("RGB555"),&MEDIASUBTYPE_RGB555},
+      {TEXT("RGB24"),&MEDIASUBTYPE_RGB24},
+      {TEXT("RGB32"),&MEDIASUBTYPE_RGB32},
+	  {TEXT("YVU9"),&MEDIASUBTYPE_YVU9},
+      {TEXT("Y411"),&MEDIASUBTYPE_Y411},
+      {TEXT("Y41P"),&MEDIASUBTYPE_Y41P},
+      {TEXT("YUY2"),&MEDIASUBTYPE_YUY2},
+      {TEXT("YVYU"),&MEDIASUBTYPE_YVYU},
+      {TEXT("UYVY"),&MEDIASUBTYPE_UYVY},
+      {TEXT("Y211"),&MEDIASUBTYPE_Y211},
+      {TEXT("YV12"),&MEDIASUBTYPE_YV12},
+      {TEXT("Overlay"),&MEDIASUBTYPE_Overlay},
+      {TEXT("INVALIDE"),NULL},
+};
+
+
+#define DFT_VDO_FN L"\\My Documents\\My Pictures\\Default.wmv"
+#define EXT_VDO_FN L"\\My Documents\\My Pictures\\DefaultExt"
+#define TXT_LENGTH 256
+#define PROP_LENGHT 128
+#define DAY_LENGTH 10
+#define TIME_LENGTH 10
+#define START_TIME 0
+#define STOP_TIME MAXLONGLONG
+#define START_COOKIE 1
+#define STOP_COOKIE 2
+#define VSTART_COOKIE 3
+#define VSTOP_COOKIE 4
+#define ASTART_COOKIE 5
+#define ASTOP_COOKIE 6
+
+#define Index0 0
+#define Index1 1
+#define Index2 2
+#define Index3 3
+#define Index4 4
+#define Index5 5
+#define Index6 6
+#define Index7 7
+#define Index8 8
+#define Index9 9
 
 #define POWER_KEY_REG_ROOT_MPA			TEXT("Drivers\\BuiltIn\\Power\\Settings")
 #define POWER_KEY_REG_ROOT_IAC			TEXT("Drivers\\BuiltIn\\Remkeys")

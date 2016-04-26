@@ -1,0 +1,67 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>upcEanBookland</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Upc Ean</PATH>
+		<TYPE>Decoder</TYPE>
+		<SYNOPSIS>is an action tag used to enable or disable decoding of upcEanBookland barcodes.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="upcEanBookland:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>upcEanBookland</NAME>
+                		<VALUES>true/false</VALUES>
+				<DESC>Enables/Disables Bookland code decoding.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to decode upcEanBookland barcodes:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upcEanBookland:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled;upcEanBookland:true;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-all_decoders" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-upcEanBookland" Content="true"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example disables the scanner from decoding upcEanBookland barcodes:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upcEanBookland:false"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports decoding of upcEanBookland barcodes.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC RELPATH ="../">All_Decoders</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

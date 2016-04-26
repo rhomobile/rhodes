@@ -127,11 +127,11 @@ public:
         //oResult.set( RHOCONF().getInt("WebView.cacheSize") );
     }
 
-    //TODO: EnableCache - does it supported by Moto Webkit ?
+    //TODO: EnableCache - does it supported by Webkit ?
     virtual void getEnableCache(rho::apiGenerator::CMethodResult& oResult){}
     virtual void setEnableCache( bool value, rho::apiGenerator::CMethodResult& oResult){}
 
-    //TODO: AcceptLanguage - does it supported by Moto Webkit ?
+    //TODO: AcceptLanguage - does it supported by Webkit ?
     virtual void getAcceptLanguage(rho::apiGenerator::CMethodResult& oResult){}
     virtual void setAcceptLanguage( const rho::String& value, rho::apiGenerator::CMethodResult& oResult){}
 

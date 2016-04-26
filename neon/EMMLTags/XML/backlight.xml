@@ -1,0 +1,117 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>backlight</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to illuminate / extinguish the display backlight as well as setting the intensity of the backlight.</SYNOPSIS>
+		<MULTIPLE_INSTANCE>The backlight settings are application specific.  Switching to another application which uses the backlight module will cause the screen illumination settings to change to those of the application with focus. Only the application with Focus will have the ability to change the backlight settings. </MULTIPLE_INSTANCE>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="backlight" content="[parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>intensity</NAME>
+				<VALUES>Positive Number, see remarks for range</VALUES>
+				<DESC>Sets the screen backlight to the specified intensity.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>				
+		</PARAMS_WITH_ATTRIBUTES>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>on</NAME>
+				<DESC>Turn on the screen backlight. N/A for Android devices, please use the wake module to keep the screen ON.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>off</NAME>
+				<DESC>Turn off the screen backlight</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>
+      <PARAM>
+        <NAME>getBacklightSettings</NAME>
+        <DESC>Returns the backlight settings via a 'backlightSettingsEvent'</DESC>
+        <DEFAULT>N/A</DEFAULT>
+      </PARAM>
+		</PARAMS_NO_ATTRIBUTES>
+    <RETURNS>
+    <TAG>
+      <TAG_NAME>backlightSettingsEvent</TAG_NAME>
+      <TAG_NOTES>The backlight display settings</TAG_NOTES>
+      <RETVAL>
+        <NAME>intensity</NAME>
+        <DESC>The current backlight intensity value E.g. 2. On Android a negative value indicates the default system value.</DESC>
+      </RETVAL>
+      <RETVAL>
+        <NAME>intensityRange</NAME>
+        <DESC>A javascript array of integers contanining the valid range of intensity values.  e.g. ['0','1','2']</DESC>
+      </RETVAL>
+      <RETVAL>
+        <NAME>state</NAME>
+        <DESC>The current backlight state "on" or "off" or "timeout"</DESC>
+      </RETVAL>
+    </TAG>
+    </RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following turns on the screen backlight and sets the intensity to level 2</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Backlight-On" Content="Intensity:2"&gt;
+</CODE>
+			</EXAMPLE>
+      <EXAMPLE>
+        <DESC>The following example retrieves the backlight settings</DESC>
+<CODE>
+&lt;META HTTP-EQUIV="backlight" content="backlightSettingsEvent:url('javascript:fnBacklightJSON(%json);')"&gt;
+
+&lt;SCRIPT&gt;
+function fnBacklightJSON(jsonObject)
+        {
+              var theOutput = "&lt;B&gt;Backlight State:&lt;/B&gt;" + jsonObject.state + "&lt;P&gt;";
+              theOutput = theOutput + "&lt;B&gt;Backlight Intensity:&lt;/b&gt; " + jsonObject.intensity + "&lt;P&gt;";
+              theOutput = theOutput + "&lt;b&gt;Backlight Intensity Range:&lt;/b&gt;&lt;P&gt;";
+              for (var i=0; i&lt;jsonObject.intensityRange.length; i = i + 1)
+              {
+                      theOutput = theOutput + jsonObject.intensityRange[i] + "&lt;BR&gt;";
+              }
+              theOutput = theOutput + "&lt;P&gt;";
+              outputDiv.innerHTML = theOutput;
+        }
+&lt;/SCRIPT&gt;
+&lt;div id="outputDiv"&gt;Backlight settings go here&lt;/div&gt;
+&lt;P&gt;
+        &lt;INPUT align="center" type="button" value="Retrieve Backlight Settings" 
+		   onclick="backlight.getBacklightSettings()";
+</CODE>
+      </EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+	<COMMENT>
+		<COMMENT_HEADING>General</COMMENT_HEADING>
+		<COMMENT_DATA>The intensity tag will only have an observable effect if the screen backlight is turned on, setting the intensity by its self is insufficient to illuminate the backlight.</COMMENT_DATA>
+	</COMMENT>
+	<COMMENT>
+		<COMMENT_HEADING>Device Limits</COMMENT_HEADING>
+		<COMMENT_DATA>The levels of supported screen backlight intensity are device dependant.  You can determine the levels on your device using the backlightSettingsEvent and getBacklightSettings method.</COMMENT_DATA>		
+	</COMMENT>
+	<COMMENT>
+		<COMMENT_HEADING>'Auto' and 'Manual' Backlight Intensity</COMMENT_HEADING>
+		<COMMENT_DATA>Windows Mobile 6.5 Devices with a light sensor, such as the ES400 will support two modes for the Backlight: Auto Mode (default) where the light sensor input affects the backlight intensity and Manual Mode where the user sets the backlight manually.  In order to use the Intensity setting in RhoElements the device must be put into Manual Mode, most easily achieved via the 'Backlight &amp; Keylight' applet accessed via Start->Settings->System.</COMMENT_DATA>
+	</COMMENT>
+	<COMMENT>
+		<COMMENT_HEADING>Android</COMMENT_HEADING>
+		<COMMENT_DATA>Unlike all other devices, changes made to the backlight intensity are made only to RhoElements. Switching native applications or quitting RhoElements will revert the backlight intensity to the system's default level until RhoElements is resumed. Also the method "on" does not work as the backlight settings are application specific, please use the Wake module to keep the screen on.</COMMENT_DATA>
+	</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>None</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

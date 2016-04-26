@@ -1,0 +1,98 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>upcEanSupplementalMode</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Upc Ean</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the upcEanSupplementalMode.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="upcEanSupplementalMode:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>upcEanSupplementalMode</NAME>
+				<VALUES>See Description</VALUES>
+				<DESC>Describes the supplemental mode enabled.  Possible values:</DESC>
+				<DESCDETAIL>
+none:
+  Supplementals are ignored.
+auto:
+  Auto-discriminates supplementals.
+always:  
+  Will not decode upc/ean without supplementals
+smart:
+  The decoder will return the decoded value of the main block right away if it does not belong 
+  to any of the supplemental types.  If the barcode starts with one of the prefixes it will 
+  search the image more aggressively for a supplemental.  The scanner will try to scan the 
+  supplemental if it is present but if that fails, the main barcode will be returned.  
+378or379:
+  Auto-discriminates supplemental for upc/ean codes starting with 378 or 379.  Will disable 
+  reading of supplementals for any other upc/ean barcodes not starting with these values.  
+  The supplemental will be scanned if present but if scanning fails then the main barcode 
+  will be returned.  
+978or979:
+  Auto-discriminates supplemental for upc/ean codes starting with 978 or 979.  Will disable 
+  reading of supplementals for any other upc/ean barcodes not starting with these values.  
+  The supplemental will be scanned if present but if scanning fails then the main barcode 
+  will be returned.  
+414or419or434or439:
+  Auto-discriminates supplemental for upc/ean codes starting with 414 or 419 or 434 or 439.  
+  Will disable reading of supplementals for any other upc/ean barcodes not starting with 
+  these values.  The supplemental will be scanned if present but if scanning fails then 
+  the main barcode will be returned.  
+  </DESCDETAIL>
+				<DEFAULT>Device specific</DEFAULT>
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>	
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following will only read upc/ean codes with supplementals:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upcEanSupplementalMode:always"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled;upcEanSupplementalMode:always;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-allDecoders" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-upcEanSupplementalMode" Content="always"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+<COMMENT>
+<COMMENT_HEADING>Picklist mode</COMMENT_HEADING>
+<COMMENT_DATA>
+UPC EAN Supplemental mode is not compatible with picklist mode.
+</COMMENT_DATA>
+</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports decoding upcEanSupplemental barcodes.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>upcEanSupplemental2</TOPIC>
+			<TOPIC>upcEanSupplemental5</TOPIC>
+			<TOPIC>upcEanRetryCount</TOPIC>
+			<TOPIC RELPATH ="../">All_Decoders</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

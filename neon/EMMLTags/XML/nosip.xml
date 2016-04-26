@@ -1,0 +1,78 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<HELPPAGE>
+	<FUNC>
+    <ACTIVEX>NoSIP</ACTIVEX>
+		<NAME>NoSIP</NAME>
+		<PATH>legacyObjects</PATH>
+		<TYPE>Preexisting JavaScript Object</TYPE>
+		<SYNOPSIS>contains methods which can be used to control the Soft Input Panel (on screen keyboard).  If you have configured 'PreloadLegacyNoSIP' to be '1' the Javascript object 'nosip' will be inserted automatically into your page's DOM by RhoElements.  These methods should be used in conjunction with the SIP module to provide full control over the SIP</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>nosip.ShowSIP(true);</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<ACTIVEX_METHODS>
+			<METHOD>
+				<NAME>ShowSIP</NAME>
+				<DESC>Shows or Hides the SIP.</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>bShowSIP</NAME>
+						<VALUES>Boolean</VALUES>
+						<DESC>Set to true to show the SIP, set to false to hide the SIP.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>N/A</DESC>
+				</RETURN>
+			</METHOD>
+		</ACTIVEX_METHODS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The Following example will show or hide the SIP, depending on how the function is called:</DESC>
+<CODE>
+&lt;script&gt;
+function fnControlSIP(bShowSIP)
+{
+	nosip.ShowSIP(bShowSIP);
+	if (bShowSIP)
+		msg.innerHTML = "The SIP is Shown";
+	else
+		msg.innerHTML = "The SIP is Hidden";
+}
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Backwards Compatibility</COMMENT_HEADING>
+				<COMMENT_DATA>The NoSIP Preexisting Javascript Object provides backwards compatibility with code written for Browser and also supports the syntax below.  Because RhoElements inserts the object 'nosip' on the page automatically when 'PreloadLegacyNoSIP' is configured to be '1' you can not create your own objects by this name, see below:</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+&lt;script&gt;
+  //  Old Browser syntax supported by NoSIP
+  var myObj = new ActiveXObject("NoSIP.NSEdit"); 
+  
+  //  Note: var nosip = new ... will fail because the object already exists on the page.
+  myObj.ShowSIP(true);
+&lt;/script&gt;
+</COMMENTFIXEDWIDTH>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Backwards Compatibility with Browser NoSIP visual control</COMMENT_HEADING>
+				<COMMENT_DATA>Browser provides the ability to create a 'NoSIP' control on the page, displayed as a text box which, when clicked, does not display the SIP.  Full control over the SIP is provided in RhoElements; code which used the NoSIP visual control will need to be rewritten as a standard text input.  The SIP can be disabled by following the instructions under the Configuration Setting SIP\\EnableSIP.</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Immediate - These methods are actioned immediately.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Getting Started/">ConfigurationSettings</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>
+

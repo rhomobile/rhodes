@@ -808,7 +808,6 @@ NOTE: BETA VERSION - This API has not been officially released. It should not be
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>WM, CE, Win32, Android, iOS, WP8</PLATFORM>
-        <PLATFORM_EB>WM, CE, Win32, Android</PLATFORM_EB>
 		 
 		 <EXAMPLES>
             <EXAMPLE title="find_by_sql">
@@ -935,12 +934,12 @@ accounts = Account.paginate({ :page=>5,
                                 <CODE>
                                     <JAVASCRIPT>
                 <![CDATA[           
-var account = Account.make({"name": "Motorola", "industry": "electronics"});
+var account = Account.make({"name": "Symbol", "industry": "electronics"});
                 account.save(); ]]>
                                     </JAVASCRIPT>
                                     <RUBY>
                 <![CDATA[           
-account = Account.make({"name"=>"Motorola", "industry"=>"electronics"});
+account = Account.make({"name"=>"Symbol", "industry"=>"electronics"});
                 account.save() ]]>
                                     </RUBY>
                                 </CODE>
@@ -955,13 +954,13 @@ account = Account.make({"name"=>"Motorola", "industry"=>"electronics"});
                                 <CODE>
                                     <JAVASCRIPT>
                 <![CDATA[           
-var account = Account.create({'name': 'Motorola', 'industry': 'electronics'});
+var account = Account.create({'name': 'Symbol', 'industry': 'electronics'});
             account.update_attributes({'name':'ABB','industry':'robotics'});
             account.get("industry"); //"robotics"   ]]>
                                     </JAVASCRIPT>
                                     <RUBY>
                 <![CDATA[           
-account = Account.create({'name'=> 'Motorola', 'industry'=> 'electronics'})
+account = Account.create({'name'=> 'Symbol', 'industry'=> 'electronics'})
             account.update_attributes({'name'=>'ABB','industry'=>'robotics'})
             account.get("industry") //"robotics"    ]]>
                                     </RUBY>

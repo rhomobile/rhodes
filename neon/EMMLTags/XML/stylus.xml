@@ -1,0 +1,62 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>stylus</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to enable or disable the touch screen.</SYNOPSIS>
+		<!--MULTIPLE_INSTANCE>Whether or not the touch screen is currently enabled is persisted between applications.  Switching to another application which uses the Stylus module will cause the touch screen to be enabled / disabled as specified by the application with focus.</MULTIPLE_INSTANCE-->
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-EQUIV="Stylus" content="[method]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>enable</NAME>
+				<DESC>Enables the touch screen</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>disable</NAME>
+				<DESC>Disables the touch screen</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>	
+		</PARAMS_NO_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example disables the touch screen until the Enter key is pressed:</DESC>
+<CODE>
+&lt;META HTTP-EQUIV="Stylus" content="Disabled"&gt;
+&lt;META HTTP-EQUIV="OnKey0x0d" content="javascript:doTest();"&gt;
+
+&lt;SCRIPT&gt;
+   function doTest()
+   {
+      stylus.enable();
+   }
+&lt;/SCRIPT&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+		<COMMENT>
+			<COMMENT_HEADING>Remote Display</COMMENT_HEADING>
+			<COMMENT_DATA>This tag does not affect the behaviour of remote display applications for controlling the device</COMMENT_DATA>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Devices lacking support</COMMENT_HEADING>
+			<COMMENT_DATA>Due to platform limitations this API is not available on the following Symbol Technologies' devices:</COMMENT_DATA>
+			<COMMENT_DATA>1. Workabout Pro 4</COMMENT_DATA>
+		</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>Touch Screen.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

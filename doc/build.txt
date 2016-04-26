@@ -868,7 +868,7 @@ Make sure you have installed the following software.
 * .NET Compact Framework
 * For Windows Mobile 6: Windows Mobile 6 Professional SDK Refresh
 * For Windows Mobile 6.5.3: Windows Mobile 6.5.3 Professional DTK
-* For Windows CE 5.0: MC3000c50b PSDK from [Motorola Support Central](http://support.symbol.com/support/supportcentral/supportcentral.do?id=m1)
+* For Windows CE 5.0: MC3000c50b PSDK from [Symbol Support Central](http://support.symbol.com/support/supportcentral/supportcentral.do?id=m1)
 * Microsoft Active Sync 4.5 for Windows XP; Windows Mobile Device Center for Windows Vista or higher
 * Microsoft Device Emulator 3.0 for Windows Vista or higher
 * Visual Studio 2008. 
@@ -930,7 +930,7 @@ By default 'Windows Mobile 6 Professional SDK (ARMV4I)' SDK and "Windows Mobile 
 
 * 'target_sdk' may be:
  
-  "MC3000c50b (ARMV4I)" - for Motorola CE devices. Install MC3000c50b PSDK from [Symbol support site](http://support.symbol.com)
+  "MC3000c50b (ARMV4I)" - for Symbol CE devices. Install MC3000c50b PSDK from [Symbol support site](http://support.symbol.com)
   
   "Windows Mobile 6.5.3 Professional DTK (ARMV4I)" for latest Windows Mobile SDK.
   

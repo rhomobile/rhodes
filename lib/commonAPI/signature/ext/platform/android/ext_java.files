@@ -1,0 +1,14 @@
+ext/platform/android/generated/src/com/rho/signature/SignatureBase.java
+ext/platform/android/generated/src/com/rho/signature/SignatureFactorySingleton.java
+ext/platform/android/generated/src/com/rho/signature/SignatureSingletonBase.java
+ext/platform/android/generated/src/com/rho/signature/ISignature.java
+ext/platform/android/generated/src/com/rho/signature/ISignatureFactory.java
+ext/platform/android/generated/src/com/rho/signature/ISignatureSingleton.java
+ext/platform/android/src/com/rho/signature/SignatureFactory.java
+ext/platform/android/src/com/rho/signature/SignatureSingleton.java
+ext/platform/android/src/com/rho/signature/Signature.java
+ext/platform/android/src/com/rho/signature/SignatureFullScreen.java
+ext/platform/android/src/com/rho/signature/SignatureInline.java
+ext/platform/android/src/com/rho/signature/SignatureView.java
+ext/platform/android/src/com/rho/signature/ImageCapture.java
+ext/platform/android/src/com/rho/signature/FormatBitmap.java

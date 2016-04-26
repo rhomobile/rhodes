@@ -1,0 +1,147 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<HELPPAGE>
+	<FUNC>
+	<NAME>application</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is to adjust the running state of RhoElements applications.</SYNOPSIS>
+		<!--MULTIPLE_INSTANCE>The methods contained within this module are applicable to all currently running applications, i.e. Minimise will minimise all RhoElements applications.</MULTIPLE_INSTANCE-->
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Application" content="[method]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>quit</NAME>
+				<DESC>Quits RhoElements. Quitting the application while license screen is shown will be slightly delayed.</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+				<PARAM>
+				<NAME>minimize</NAME>
+				<DESC>Minimizes RhoElements</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+				<PARAM>
+				<NAME>restore</NAME>
+				<DESC>Restores RhoElements to full screen. Not supported on Android.</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>getVersion</NAME>
+				<DESC>Returns the version of all installed components via a 'VersionEvent'</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+		</PARAMS_NO_ATTRIBUTES>
+		<RETURNS>
+		<TAG>
+			<TAG_NAME>applicationEvent</TAG_NAME>
+			<TAG_NOTES>The ApplicationEvent is triggered when a RhoElements application is minimized or restored.</TAG_NOTES>
+			<RETVAL>
+				<NAME>applicationState</NAME>
+				<DESC>"Minimized" or "Restored"</DESC>
+			</RETVAL>
+		</TAG>
+		<TAG>
+			<TAG_NAME>versionEvent</TAG_NAME>
+			<TAG_NOTES>The version of RhoElements installed on the device</TAG_NOTES>
+			<RETVAL>
+				<NAME>productVersion</NAME>
+				<DESC>A string defining the released version running on the device, this will be in the form v.w.x.y.  E.g. 1.0.0.0</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>hotFixes</NAME>
+				<DESC>A javascript array of strings containing the hot fixes applied.  There may have been multiple hot fixes applied, e.g. ['1','3']</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>componentVersions (module, version)</NAME>
+				<DESC>A 2 dimensional array of strings which defined a mapping between each of the installed plugins' name and their version.  See remarks</DESC>
+			</RETVAL>
+		</TAG>
+		</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example causes RhoElements to exit when the page is loaded</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Application" Content="Quit"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example minimizes RhoElements when the enter key is pressed and reports its state in a message box</DESC>
+<CODE>
+&lt;META HTTP-EQUIV="OnKey0x0d" content="javascript:doTest();"&gt;
+&lt;META HTTP-EQUIV="Application" content="ApplicationEvent:url('Javascript:receivedEvent('%s');')"&gt;
+
+&lt;SCRIPT&gt;
+    function doTest()
+    {
+        application.minimize();
+    }
+    function doEvent(currentState)
+    {
+        alert('RhoElements has been ' + currentState);
+    }
+&lt;/SCRIPT&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example </DESC>
+<CODE>
+&lt;META HTTP-EQUIV="Application" content="VersionEvent:url('javascript:fnVerJSON(%json);')"&gt;
+
+&lt;SCRIPT&gt;
+    function fnVerJSON(jsonObject)
+    {
+        var theOutput = "&lt;B&gt;Product Version:&lt;/b&gt; " + jsonObject.productVersion + "&lt;P&gt;";
+        theOutput = theOutput + "&lt;b&gt;Hot Fixes:&lt;/b&gt;&lt;P&gt;";
+        for (var i=0; i&lt;jsonObject.hotFixes.length; i = i + 1)
+        {
+            theOutput = theOutput + "  Hot Fix: " + jsonObject.hotFixes[i] + "&lt;BR&gt;";
+        }
+        theOutput = theOutput + "&lt;P&gt;";
+        theOutput = theOutput + "&lt;b&gt;Installed Components:&lt;/b&gt;&lt;P&gt;";
+        for (var j=0; j&lt;jsonObject.componentVersions.length; j = j + 1)
+        {
+            theOutput = theOutput + "  Module: " + jsonObject.componentVersions[j].module + ', Version: ' + jsonObject.componentVersions[j].version + "&lt;BR&gt;";
+        }
+        outputDiv.innerHTML = theOutput;
+    }
+&lt;/SCRIPT&gt;
+&lt;div id="outputDiv"&gt;Version Goes Here&lt;/div&gt;
+&lt;P&gt;
+  &lt;INPUT align="center" type="button" value="Retrieve Version" onclick="application.getVersion()"&gt;&lt;br&gt;
+</CODE>
+
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>ComponentVersions Array Format</COMMENT_HEADING>
+				<COMMENT_DATA>The ComponentVersions parameter in the VersionEvent is defined as a 2D array:</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+(
+   (            //  Array for Component 1
+      module,   //  The name of the module (string).
+      version,  //  The version of the module (string) in the form v.w.x.y.z.
+   )
+   (            //  Array for Component 2
+      module,
+      version,
+   )
+)
+</COMMENTFIXEDWIDTH>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except: Android does not support the "Restore" method.</PLATFORM>
+			<APPLIES>Immediate - These methods are actioned immediately.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Controls and Appearance/">QuitButton</TOPIC>
+			<TOPIC RELPATH="../Controls and Appearance/">MinimizeButton</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

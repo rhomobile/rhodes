@@ -48,7 +48,7 @@ public interface IRhoExtension {
 
     void onAppActivate(IRhoExtManager extManager, boolean bActivate);
 
-    //EkiohLocation getCachedLocation(IRhoExtManager extManager, IRhoExtData ext);
+    
     boolean startLocationUpdates(IRhoExtManager extManager, boolean highAccuracy, IRhoWebView ext, boolean res); 
     boolean stopLocationUpdates(IRhoExtManager extManager, IRhoWebView ext, boolean res);
 

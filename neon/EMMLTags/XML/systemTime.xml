@@ -1,0 +1,76 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="RhoElements_runtime_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>systemTime</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to set the device clock, set the timezone, or synchronize it with a network SNTP server.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="SystemTime" content="[parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>setLocal</NAME>
+				<VALUES>Local Time String e.g. "2011-12-25T09-57-00"</VALUES>
+				<DESC>Local Time String in the format &lt;YYYY&gt;-&lt;MM&gt;-&lt;DD&gt;T&lt;HH&gt;-&lt;MM&gt;-&lt;SS&gt;. An offset from UTC is not supported.</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>setUtc</NAME>
+				<VALUES>UTC Time String i.e. "2011-12-25T09-57-00+01-00" or "2011-12-25T09-57-00"</VALUES>
+				<DESC>UTC Time String in the format &lt;YYYY&gt;-&lt;MM&gt;-&lt;DD&gt;T&lt;HH&gt;-&lt;MM&gt;-&lt;SS&gt;&lt;+/-&gt;&lt;HH offset from UTC&gt;-&lt;MM offset from UTC&gt;. The offset from UTC is optional</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>SntpServerIP</NAME>
+				<VALUES>Valid IP Address</VALUES>
+				<DESC>The IP address of the SNTP time server</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>
+		</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example sets the device time to 9:57am on 25th December 2011 Local Time without changing the timezone:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SystemTime" Content="setLocal:2011-12-25T09-57-00"&gt;
+</CODE>
+			</EXAMPLE>				
+			<EXAMPLE>
+				<DESC>The following example sets the device time to 9:57am on 25th December 2011 UTC, and the timezone to UTC+1.  Local Time on the device will therefore be 1 hour ahead of the UTC time given, so the local time displayed will be 10:57am:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SystemTime" Content="setUtc:2011-12-25T09-57-00+01-00"&gt;
+</CODE>
+			</EXAMPLE>				
+			<EXAMPLE>
+				<DESC>The following example sets the UTC device time from a network time server:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="SystemTime" Content="SntpServerIP:132.163.4.102"&gt;
+</CODE>
+			</EXAMPLE>				
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Latency</COMMENT_HEADING>
+				<COMMENT_DATA>Once the SntpServerIP tag is parsed RhoElements will request the time from the SNTP server immediately, however the clock will not be updated until a response is received.  Network latency and connectivity issues can all affect the speed and success with which this tag is actioned.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Proxy Settings</COMMENT_HEADING>
+				<COMMENT_DATA>Windows Mobile 5.0 or above will not allow you to obtain SNTP time when requesting via a proxy server, it is recommended the proxy is bypassed for this to work.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Time Zone</COMMENT_HEADING>
+				<COMMENT_DATA>The Time Zone location string (Windows CE) is not supported.  The timezone offset from GMT will be correctly set, but the geographical location will not be set.</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices except: Android devices.</PLATFORM>
+			<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>2.1</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

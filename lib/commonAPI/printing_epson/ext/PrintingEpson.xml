@@ -1,0 +1,63 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="PrintingEpson" parent="Rho" productException="eb">
+        <HELP_OVERVIEW>The PrinterEpson API provides Epson specific API access Epson Bluetooth and WiFi Network printers. This API inherits all methods,properties,constants from the [Printer API](printing)</HELP_OVERVIEW>
+        <MORE_HELP>This is example of API. Implementation contain in extension.</MORE_HELP>
+    
+        <TEMPLATES>
+            <DEFAULT_INSTANCE/>
+            <PROPERTY_BAG/>
+        </TEMPLATES>
+
+         <PROPERTIES>
+            <DESC>List of properties supported by instance of object.</DESC>
+            <PROPERTY name="simpleStringProperty" type="STRING" usePropertyBag="accessorsViaPropertyBag" >
+                <DESC>Simple string property.</DESC>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS>
+            <METHOD name="enumerate" access="STATIC" hasCallback="optional">
+                <RETURN type="ARRAY">
+                    <DESC>Array of PrintingEpson objects.</DESC>
+                    <PARAM type="SELF_INSTANCE"/>
+                </RETURN>
+            </METHOD>
+    
+            <METHOD name="getPlatformName">
+                <DESC>Return string with platform.</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+    
+            <METHOD name="calcSumm">
+                <DESC>Return sum of two params: a+b.</DESC>
+                <PARAMS>
+                    <PARAM name="a" type="INTEGER">
+                    </PARAM>
+                    <PARAM name="b" type="INTEGER">
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="INTEGER"/>
+            </METHOD>
+
+            <METHOD name="joinStrings">
+                <DESC>Return join of two strings: a+b.</DESC>
+                <PARAMS>
+                    <PARAM name="a" type="STRING">
+                    </PARAM>
+                    <PARAM name="b" type="STRING">
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING"/>
+            </METHOD>
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+        </PLATFORM>
+    </MODULE>
+</API>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_RHO_ROOT>c:\rhomobile\rhodes</_RHO_ROOT>
+    <_TEMP_FILES_ROOT>$(RHO_ROOT)\platform\wp8\bin</_TEMP_FILES_ROOT>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,52 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>upcEanConvertGs1dataBarToUpcEan</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Upc Ean</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the upcEanConvertGs1dataBarToUpcEan property.</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="upcEanConvertGs1dataBarToUpcEan:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>upcEanConvertGs1dataBarToUpcEan</NAME>
+                <VALUES>true / false</VALUES>
+				<DESC>If true, GS1 DataBar barcodes will be converted to UPC/EAN format.  For this setting to work UPC/EAN and GS1 DataBar symbologies must be enabled.</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner and sets upcEanConvertGs1dataBarToUpcEan property</DESC>
+				<CODE>
+&lt;META HTTP-Equiv="scanner" Content="allDecoders:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="upcEanConvertGs1dataBarToUpcEan:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+				</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+<COMMENT>
+<COMMENT_HEADING>Legacy</COMMENT_HEADING>
+<COMMENT_DATA>
+The upcEanConvertGs1dataBarToUpcEan decoder property was previously known as upcEanConvertRssToUpcEan.  Code written for the old syntax decoder will be compatible with the new naming convention.
+</COMMENT_DATA>
+</COMMENT>
+</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports UPC-EAN and GS1 DataBar decoders</REQ>
+			<VER_INTRODUCED>2.1</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

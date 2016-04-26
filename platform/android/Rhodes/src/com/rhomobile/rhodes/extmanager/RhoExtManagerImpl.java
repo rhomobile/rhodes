@@ -207,7 +207,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     @Override
     public void stopNavigate(final IRhoExtension.LoadErrorReason reason) {
         
-        //TODO: cannot do stopNavigate due to EkiohView bug
+        
         //WebView.stopNavigate();
         
         final RhodesActivity activity = RhodesActivity.safeGetInstance();

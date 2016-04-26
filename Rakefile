@@ -90,7 +90,7 @@ require File.join(pwd, 'lib/build/RhoHubAccount.rb')
 
 require File.join(pwd, 'lib/build/rhoDevelopment.rb')
 
-
+load File.join(pwd, 'lib/commonAPI/printing_zebra/ext/platform/wm/PrintingService/PrintingService/installer/Rakefile')
 #load File.join(pwd, 'platform/bb/build/bb.rake')
 load File.join(pwd, 'platform/android/build/android.rake')
 load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
@@ -143,7 +143,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "create_eb_js"]
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine"]
 
 $winxpe_build = false
 
@@ -518,7 +518,7 @@ namespace "clean" do
         end
       end
 
-      if (extpath.nil?) && (extname != 'motoapi')
+      if (extpath.nil?) && (extname != 'symbolapi')
         raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
       end
 
@@ -747,229 +747,6 @@ def get_server(url, default)
       ""
   end
 
-end
-
-namespace 'token' do
-  task :initialize => "config:load" do
-    $user_acc = RhoHubAccount.new()
-
-    server_url = get_conf('cloud/server_url', $server_list)
-    server_list = []
-
-    if server_url.kind_of?(String)
-      server_list << server_url
-    elsif server_url.kind_of?(Array)
-      server_list.concat(server_url)
-    elsif !server_url.nil?
-      raise "Invalid server_url setting! #{server_url.inspect}"
-    end
-    server_list.select!{|url| url =~ /\A#{URI::regexp(['http', 'https'])}\z/}
-    $server_list = server_list unless server_list.empty?
-
-    SiteChecker.site = $server_list.first
-    Rhohub.url = $server_list.first
-    if !($proxy.nil? || $proxy.empty?)
-      SiteChecker.proxy = $proxy
-      RestClient.proxy = $proxy
-    end
-  end
-
-  task :login => [:initialize] do
-    puts 'Login to cloud build system'
-
-    if $stdin.tty?
-      print "Username: "
-      username = STDIN.gets.chomp.downcase
-      if username.empty?
-        BuildOutput.note('Empty username, login stopped')
-
-        exit 1
-      end
-
-      print "Password: "
-
-      STDIN.tty?
-      password = STDIN.noecho(&:gets).chomp
-      print $/
-
-      if password.empty?
-        BuildOutput.note('Empty password, login stopped')
-
-        exit 1
-      end
-    else
-      username = STDIN.readline.chomp
-      password = STDIN.readline.chomp
-    end
-
-    token = nil
-
-    sort_by_distance($server_list, $user_acc.server).each do |server|
-      Rhohub.url = server
-      rhohub_make_request(server) do
-        info = Rhohub::Token.login(username, password)
-        token = JSON.parse(info)["token"]
-        if token != nil
-          $user_acc.server = server
-        end
-      end
-      break if !token.nil?
-    end
-
-    if token.nil?
-      srv_address = URI.join( get_server($user_acc.server, $server_list.first), '/forgot')
-      BuildOutput.error( "Could not login using your username and password, please verify them and try again. \nIf you forgot your password you can reset at #{srv_address}", 'Invalid username or password')
-      exit 1
-    end
-
-    if !(token.nil? || token.empty?) && RhoHubAccount.is_valid_token?(token)
-      Rake::Task["token:set"].invoke(token)
-    else
-      BuildOutput.error( "Could not receive API token from cloud build server", 'Internal error')
-      exit 1
-    end
-  end
-
-  task :read, [:force_re_app_check] => [:initialize] do |t, args|
-    args.with_defaults(:force_re_app_check => "false")
-
-    if !$user_acc.read_token_from_env()
-      $user_acc.read_token_from_files($rhodes_home)
-    end
-
-    Rhohub.url = sort_by_distance($server_list, $user_acc.server).first
-
-    if !$user_acc.is_valid_token?()
-      last_read_token = nil
-
-      search_paths = [Rake.application.original_dir, $app_path, $rhodes_home]
-      files = search_paths.compact.uniq.map{|d| File.join(d,'token.txt')}
-
-      read_and_delete_files(files).each do |token|
-        if RhoHubAccount.is_valid_token?(token)
-          last_read_token = token
-        end
-      end
-
-      $user_acc.token = last_read_token
-    end
-
-    if $user_acc.is_valid_token?()
-      force_re_app_check_level = 0
-
-      if $re_app
-        force_re_app_check_level = 1
-      end
-
-      if to_boolean(args[:force_re_app_check])
-        force_re_app_check_level = 3
-      end
-
-      # check existing API token
-      case check_update_token_file($server_list, $user_acc, $rhodes_home, force_re_app_check_level )
-      when 2
-        #BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check" );
-      when 1
-        BuildOutput.put_log( BuildOutput::WARNING, "Token is valid, could not check subcription", "Token check" );
-      when 0
-        BuildOutput.put_log( BuildOutput::WARNING, "Cloud not check token online", "Token check" );
-      else
-        BuildOutput.put_log( BuildOutput::ERROR, "Cloud build server API token is not valid!", 'Token check');
-        exit 1
-      end
-    end
-
-    if $user_acc.is_valid_token?()
-      Rhohub.token = $user_acc.token
-    end
-
-    if $user_acc.server.empty?
-      $user_acc.server = $server_list.first
-    end
-
-    $selected_server = get_server($user_acc.server, $server_list.first)
-  end
-
-  task :check => [:read] do
-    puts "TokenValid[#{from_boolean($user_acc.is_valid_token?())}]"
-    puts "TokenChecked[#{from_boolean($user_acc.remaining_time() > 0)}]"
-    puts "SubscriptionValid[#{from_boolean($user_acc.is_valid_subscription?())}]"
-    puts "SubscriptionChecked[#{from_boolean($user_acc.remaining_subscription_time() > 0)}]"
-  end
-
-  desc "Show token and user subscription information"
-  task :info => [:initialize] do
-
-    Rake::Task['token:read'].reenable()
-    Rake::Task['token:read'].invoke(true)
-
-    puts "Login complete: " + from_boolean($user_acc.is_valid_token?())
-    if $user_acc.is_valid_token?()
-      token_remaining = $user_acc.remaining_time()
-      if token_remaining > 0
-        puts "Token will be checked after " + time_to_str($user_acc.remaining_time())
-      else
-        puts "Token should be checked"
-        BuildOutput.warning( "Unable to connect to cloud build servers to validate your token information.\nPlease ensure you have a valid network connection and your proxy settings are configured correctly.", 'Token check error')
-      end
-      puts "Subscription plan: " + $user_acc.subsciption_plan()
-      subs_valid = $user_acc.is_valid_subscription?()
-      puts "Local subscripton cache valid: " + from_boolean(subs_valid)
-      if subs_valid
-        puts "Local subscription cache will be valid for " + time_to_str($user_acc.remaining_subscription_time())
-      end
-    end
-  end
-
-  task :get => [:read] do
-    if $user_acc.is_valid_token?()
-      puts "Token[#{$user_acc.token}]"
-    else
-      puts "TokenNotSet!"
-      exit 1
-    end
-  end
-
-  task :set, [:token] => [:initialize] do |t, args|
-    if RhoHubAccount.is_valid_token?(args[:token])
-      $user_acc.token = args[:token]
-    else
-      BuildOutput.error('Invalid Rhomobile API token !', 'Token check')
-      exit 1
-    end
-
-    if $user_acc.is_valid_token?()
-      case check_update_token_file($server_list, $user_acc, $rhodes_home, 3)
-      when 2
-        BuildOutput.put_log( BuildOutput::NOTE, "Token and subscription are valid", "Token check")
-      when 1
-        BuildOutput.put_log( BuildOutput::WARNING,"Token is valid, could not check subscription", "Token check")
-      when 0
-        BuildOutput.put_log( BuildOutput::ERROR, 'Could not check token online', 'Token check')
-        exit 1
-      else
-        BuildOutput.put_log( BuildOutput::ERROR, 'Rhomobile API token is not valid!', 'Token check')
-        exit 1
-      end
-    end
-  end
-
-  task :clear => [:initialize] do
-    RhoHubAccount.remove_account_files($rhodes_home)
-  end
-
-  task :setup => [:read] do
-    if !$user_acc.is_valid_token?()
-      have_input = STDIN.tty? && STDOUT.tty?
-
-      BuildOutput.put_log( BuildOutput::NOTE, "In order to use #{$re_app ? 'Rhoelements' :  'Rhodes'} framework you need to log in into your rhomobile account.
-If you don't have account please register at " + URI.join($server_list.first, '/').to_s + ( have_input ? 'To stop build just press enter.' : '') )
-
-      if have_input
-        Rake::Task['token:login'].invoke()
-      end
-    end
-  end
 end
 
 def distance(a, b, case_insensitive = false)
@@ -1942,532 +1719,6 @@ def includes(a, b)
   a.include?(b) || b.include?(a)
 end
 
-namespace 'cloud' do
-  task :set_paths => ['config:initialize'] do
-    if $app_path.empty?
-      BuildOutput.error('Could not run cloud build, app_path is not set', 'Cloud server build')
-      exit 1
-    end
-
-    $cloud_build_home = File.join($app_path, '.cbc')
-    if !File.exist?($cloud_build_home)
-      FileUtils::mkdir_p $cloud_build_home
-    end
-    $cloud_build_temp = File.join($cloud_build_home, 'temp')
-    if !File.exist?($cloud_build_temp)
-      FileUtils::mkdir_p $cloud_build_temp
-    end
-    $cloud_build_bin = File.join($app_path, 'bin')
-    if !File.exist?($cloud_build_bin)
-      FileUtils::mkdir_p $cloud_build_bin
-    end
-  end
-
-  desc 'Initialize cloud build functionality'
-  task :initialize => ['config:initialize', 'token:setup', :set_paths] do
-    if $user_acc.subscription_level < 1
-      Rake::Task['token:read'].reenable
-      Rake::Task['token:read'].invoke('true')
-    end
-  end
-
-  desc 'Login using interactive mode'
-  task :login => ['token:login'] do
-  end
-
-  desc 'Check current remote build status'
-  task :info => ['token:setup'] do
-    status = nil
-
-    Rake::Task['token:read'].reenable()
-    Rake::Task['token:read'].invoke(true)
-
-    rhohub_make_request($user_acc.server) do
-      status = JSON.parse(Rhohub::Build.user_status())
-    end
-
-    if !status.nil? && status['text'].nil?
-      puts "Cloud build is #{status["cloud_build_enabled"] ? 'enabled' : 'disabled'} for '#{$user_acc.subsciption_plan}' plan" if status["cloud_build_enabled"]
-      puts "Builds limit: #{status["builds_remaining"] < 0 ? 'not set' : status["builds_remaining"].to_s + ' requests' }" if status["builds_remaining"]
-      puts "Free build queue slots: #{status["free_queue_slots"]}" if status["free_queue_slots"]
-    else
-      puts "Could build server #{$user_acc.server} does not returned user information"
-    end
-
-    Rake::Task['cloud:show:gems'].invoke()
-  end
-
-  desc 'Get project information from server'
-  task :find_app => [:initialize] do
-
-    #check current folder
-    remote_origin_url = Jake.run2('git',%w(config --get remote.origin.url),{:directory=>$app_path,:hide_output=>true})
-
-    if remote_origin_url.nil? || remote_origin_url.empty?
-      BuildOutput.error("Current project folder #{$app_path} is not versioned by git", 'Cloud server build')
-      raise Exception.new('Not versioned by git')
-    end
-
-    result = Jake.run2('git',%w(log --oneline origin/master..HEAD),{:directory=>$app_path,:hide_output=>true})
-
-    if $?.exitstatus != 0
-      BuildOutput.error(["Application repository does not have any commits stored on server","Please create your project, commit files and push changes to server."], 'Cloud build')
-      raise Exception.new('Application repository is not ready for cloud build')
-    else
-      lines = result.lines.count
-      if lines > 0
-        BuildOutput.warning(["Application repository is ahead of remote repository by #{lines} commit(s)","Please check if you are building correct version and push your changes to server if necessary."], 'Cloud build')
-      end
-    end
-
-    rhohub_make_request($user_acc.server) do
-
-      #get app list
-      $apps = get_app_list() unless !$apps.nil?
-    end
-
-    if $apps.nil?
-      BuildOutput.error('Could not get project list from cloud build server. Check your internet connection and proxy settings.', 'Cloud build')
-
-      raise Exception.new('Could not get project list from server')
-    end
-
-    if $apps.empty?
-      BuildOutput.error('You do not have any cloud server projects, please create project first in order to use cloud build system', 'Cloud build')
-
-      raise Exception.new('Empty project list')
-    end
-
-    matching_extenral = $apps.select do |x|
-      # it is possible to have true for x['use_external_git_url'] and nil for x['external_url']
-      x['use_external_git_url'] &&
-      !x['external_url'].nil? &&
-      !x['external_url'].empty? &&
-      includes(x['external_url'], remote_origin_url)
-    end
-    
-    if (matching_extenral.empty?)
-      user_proj = cloud_url_git_match(remote_origin_url)
-
-      if !user_proj.empty?
-        puts "Cloud build server user: #{user_proj[:user]}, application: #{user_proj[:app]}"
-      else
-        BuildOutput.error("Current project folder #{$app_path} has git origin #{result}\nIt is not supported by cloud build system", 'Cloud build')
-        raise Exception.new('Application repository is not hosted on cloud build server')
-      end
-
-      $apps.each do |item|
-        item[:user_proj] = cloud_url_git_match(item['git_repo_url'])
-        item[:dist]=distance(user_proj[:str], item[:user_proj][:str])
-      end
-
-      $cloud_app = $apps.sort{|a,b| a[:dist] <=> b[:dist]}.first
-
-      if $cloud_app[:dist] > 0
-        if $cloud_app[:user_proj][:server] != user_proj[:server]
-          BuildOutput.error("Current user account is on #{$cloud_app[:user_proj][:server].bold} but project in working directory is on #{user_proj[:server].bold}", 'Cloud build')
-        elsif $cloud_app[:user] != user_proj[:user]
-          BuildOutput.error("Current user account is #{$cloud_app[:user_proj][:user].bold} but project in working directory is owned by #{user_proj[:user].bold}", 'Cloud build')
-        else
-          project_names = $apps.map{ |e| " - #{e[:user_proj][:app].to_s}" }.join($/)
-          BuildOutput.error("Could not find #{user_proj[:app].bold} in current user application list: \n#{project_names}", 'Cloud build')
-        end
-        raise Exception.new('User or application list mismatch')
-      end
-      $app_cloud_id = $cloud_app['id']
-    else
-      $cloud_app = matching_extenral.first
-      $app_cloud_id = $cloud_app['id']
-    end
-  end
-
-  namespace :show do
-    desc 'Show error logs of failed builds'
-    task :fail_log, [:build_id] => ['cloud:find_app']  do |t, args|
-      args.with_defaults(:build_id => nil)
-
-      build_id = args.build_id
-
-      $platform_list = get_build_platforms() unless $platform_list
-
-      builds = get_builds_list($app_cloud_id)
-
-      find_result, find_match_type, matches = find_build_id(build_id, builds, ['failed'])
-
-      case find_result
-        when RESULT_EXACT, RESULT_ANY
-          matches.each do |build_hash|
-            show_build_information(build_hash, $platform_list, {:hide_link => true})
-
-            show_build_messages(build_hash, $proxy, $cloud_build_home)
-          end
-
-        when RESULT_NO_ANY
-          BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake cloud:build:<platform>:<target>' command", 'Build list is empty')
-
-        when RESULT_NO_STATE
-          BuildOutput.note("Oops! You don't have any failed builds. Please write more code and try again.", 'Build list is empty')
-
-        when RESULT_NO_IDX
-          failed_builds = filter_by_status(builds,['failed'])
-          message = [
-              "Could not find #{build_id} in failed builds list:",
-              " * " + failed_builds.map{|el| el['id']}.join(', ')
-          ]
-          message << "Did you mean #{matches.map{|el| el['id']}.join(', ')}?" unless matches.empty?
-
-          BuildOutput.warning( message, 'FailLog')
-
-        when RESULT_INVALID_ID
-          BuildOutput.error( "Invalid build_id: '#{build_id}'", 'Invalid build id')
-          raise Exception.new('Invalid build id')
-
-        when RESULT_STATE_MISMATCH
-          latest = matches.last
-          BuildOutput.warning( "Build #{latest['id']} status is #{latest['status']}", 'FailLog')
-      end
-    end
-
-    desc 'Show status of one build, or all builds if optional parameter is not set'
-    task :build, [:build_id] => ['cloud:find_app'] do |t, args|
-      args.with_defaults(:build_id => nil)
-
-      build_id = args.build_id
-
-      $platform_list = get_build_platforms() unless $platform_list
-
-      builds = get_builds_list($app_cloud_id)
-      match  = match_build_id(build_id, builds)
-
-      unless builds.nil?
-        if !valid_build_id(build_id)
-          BuildOutput.error("Invalid build_id: '#{build_id}'. Please provide integer number in range from #{(builds.first)['id']} to #{(builds.last)['id']}", 'Invalid build id')
-          raise Exception.new('Invalid build id')
-        end
-
-        unless match.empty?
-          match.each do |build|
-            puts
-            show_build_information(build, $platform_list)
-          end
-        else
-          str = build_id.to_s
-          match = builds.collect{ |h| { :id => h['id'], :dist => distance(str, h['id'].to_s) } }.reject{|a| a[:dist] > 1}
-
-          puts "Could not find #{build_id} in builds list: #{builds.map{|el| el["id"]}.join(', ')}"
-
-          unless match.empty?
-            puts "Did you mean #{match.map{|el| el[:id]}.join(', ')}?"
-          end
-        end
-      else
-        BuildOutput.note("You don't have any build requests. To start new remote build use \n'rake cloud:build:<platform>:<target>' command", 'Build list is empty')
-      end
-    end
-
-    desc 'Show server supported gems'
-    task :gems => ['cloud:initialize'] do
-      begin
-        gems_supported = JSON.parse(Rhohub::Build.supported_gems())
-      rescue Exception => e
-        gems_supported = nil
-      end
-
-      if !gems_supported.nil? && gems_supported["versions"]
-        versions = gems_supported["versions"].sort{|a,b| String.natcmp(b,a)}
-        fast_builds = gems_supported["fast_build"].sort{|a,b| String.natcmp(b,a)}
-
-        puts "Server gem versions: " + versions.join(', ')
-        puts "Fast build supported for: " + fast_builds.join(', ')
-
-        best = $app_config["sdkversion"].nil? ? fast_builds.first : $app_config["sdkversion"]
-
-        best = best_match(best, versions, false)
-
-        puts "Using build.yml sdkversion setting selecting gem: " + best
-      else
-        puts "Could build server #{$user_acc.server} does not returned rhodes gems information"
-      end
-    end
-
-    task :platforms => ['cloud:initialize'] do
-      puts JSON.pretty_generate(get_build_platforms())
-    end
-
-    task :apps => ['cloud:initialize'] do
-      apps = []
-      rhohub_make_request($user_acc.server) do
-        #get app list
-        apps = get_app_list()
-      end
-      puts JSON.pretty_generate(apps)
-
-    end
-
-  end
-
-  desc 'List available builds'
-  task :list_builds => [:find_app] do
-    Rake::Task['cloud:show:build'].invoke()
-  end
-
-  desc "Download build into app\\bin folder"
-  task :download, [:build_id] => [:find_app] do |t, args|
-    is_ok, data, $latest_platform = get_build(args.build_id, true)
-
-    $unpacked_file_list = []
-
-    if is_ok
-      $unpacked_file_list = deploy_build($latest_platform)
-    else
-      BuildOutput.put_log(BuildOutput::ERROR, data, 'build error')
-    end
-  end
-
-  # android
-  # both simulator and device are supported
-
-  desc 'Build and run for android application on a simulator'
-  task :android => ['build:initialize'] do
-    build_deploy_run('android', 'simulator')
-  end
-
-  desc 'Android cloud build and run on the device'
-  task 'android:device' => ['build:initialize'] do
-    build_deploy_run('android', 'device')
-  end
-
-  desc 'Android cloud build and download'
-  task 'android:download' => ['build:initialize'] do
-    build_deploy_run('android')
-  end
-
-  # iphone
-
-  # iphone does not support simulator cloud builds
-
-  # desc 'Build and run for iphone application on a simulator'
-  # task :iphone => ['build:initialize'] do
-  #   build_deploy_run('iphone', 'simulator')
-  # end
-
-  # 
-  # desc 'Iphone cloud build and run on the device'
-  # task 'iphone:device' => ['build:initialize'] do
-  #   build_deploy_run('iphone:development', 'device')
-  # end
-
-  desc 'Iphone cloud build and download'
-  task 'iphone:download' => ['build:initialize'] do
-    build_deploy_run('iphone:development')
-  end
-
-  # win mobile
-
-  desc 'Build and run for windows mobile application on a simulator'
-  task :wm => ['build:initialize'] do
-    build_deploy_run('wm', 'simulator')
-  end
-
-  desc 'Windows mobile cloud build and run on the device'
-  task 'wm:device' => ['build:initialize'] do
-    build_deploy_run('wm', 'device')
-  end
-
-  desc 'Windows mobile cloud build and download'
-  task 'wm:download' => ['build:initialize'] do
-    build_deploy_run('wm')
-  end
-
-  # win32
-  # win32 does not have simulator version
-
-  # desc 'Build and run win32 application'
-  # task :win32 => ['build:initialize'] do
-  #   build_deploy_run('win32', '')
-  # end
-
-  desc 'Build win32 application'
-  task 'win32:download' => ['build:initialize'] do
-    build_deploy_run('win32')
-  end
-
-
-  namespace :build do
-    desc 'Prepare for cloud build'
-    task :initialize => ['cloud:find_app'] do
-      status = nil
-
-      begin
-        status = JSON.parse(Rhohub::Build.user_status())
-      rescue Exception => e
-        status = nil
-        BuildOutput.error(
-            ["Could not get user builds information #{e.inspect}"],
-            'Server response error')
-      end
-
-      # client side check
-      build_enabled = false
-
-      if !(status.nil? || status.empty?)
-        build_enabled = status["cloud_build_enabled"]== true
-        remaining_builds = status["builds_remaining"]
-
-        # account status is out of sync, re get it
-        if !build_enabled && ($user_acc.subscription_level > 0)
-          Rake::Task['token:read'].reenable()
-          Rake::Task['token:read'].invoke(true)
-        end
-
-        if build_enabled
-          if remaining_builds > 0
-            BuildOutput.note(
-                ["You have #{remaining_builds} builds remaining"],
-                'Account limitation')
-          elsif remaining_builds == 0
-            BuildOutput.error(
-                ["Build count limit reached on your #{$user_acc.subsciption_plan} plan. Please login to #{$selected_server} and check details."],
-                'Account limitation')
-            exit 1
-          end
-          free_queue_slots = status["free_queue_slots"]
-
-          if free_queue_slots == 0
-            $platform_list = get_build_platforms() unless $platform_list
-
-            builds = filter_by_status(get_builds_list($app_cloud_id),['queued'])
-
-            puts "There are #{builds.length} builds queued:\n\n"
-
-            builds.each do |build|
-              show_build_information(build, $platform_list)
-            end
-
-            puts
-
-            BuildOutput.error(
-                ['Could not start build because all build slots are used.',
-                'Please wait until running builds will finish and try again.'],
-                'Build server limitation')
-            exit 1
-          end
-        end
-      else
-        build_enabled = $user_acc.subscription_level() > 0
-      end
-
-      if !build_enabled
-        if $user_acc.subscription_level() < 0
-          BuildOutput.note(['Cloud build was disabled locally. Your subscription information is outdated or not downloaded, please connect to internet and run this command again'],'Could not build licensed features.')
-        else
-          BuildOutput.note(
-            ["Cloud build is not supported on your #{$user_acc.subsciption_plan} account type. In order to upgrade your account please",
-             "login to #{$selected_server} and select \"change plan\" menu item in your profile settings."],
-            'Free account limitation')
-        end
-        exit 1
-      end
-
-      begin
-        gems_supported = JSON.parse(Rhohub::Build.supported_gems())
-      rescue Exception => e
-        gems_supported = nil
-      end
-
-      best = get_conf('rhohub/rhodesgem',$rhodes_ver_default)
-
-      if !gems_supported.nil?
-        versions = gems_supported["versions"].sort{|a,b| String.natcmp(b,a)}
-        fast_builds = gems_supported["fast_build"].sort{|a,b| String.natcmp(b,a)}
-
-        best = $app_config["sdkversion"].nil? ? fast_builds.first : $app_config["sdkversion"]
-
-        best = best_match(best, versions, false)
-      end
-
-      $rhodes_ver = best
-
-      puts "Using server gem version #{$rhodes_ver}"
-
-      $platform_list = get_build_platforms() unless $platform_list
-    end
-
-    namespace :android do
-      desc 'Build android production version'
-      task :production => ['build:initialize'] do
-        $build_platform = 'android'
-
-        do_platform_build( $build_platform, $platform_list, false)
-      end
-    end
-
-    namespace :wm do
-      desc 'Build wm production version'
-      task :production => ['build:initialize'] do
-        $build_platform = 'wm'
-
-        do_platform_build( $build_platform, $platform_list, false, {}, '6.5')
-      end
-    end
-
-    namespace :iphone do
-      desc 'Build iphone development version'
-      task :development => ['build:initialize'] do
-        $build_platform = 'iphone'
-
-        do_platform_build( $build_platform, $platform_list, true, get_iphone_options(), 'development')
-      end
-
-      desc "Build iphone distribution version"
-      task :distribution => ["build:initialize"] do
-        $build_platform = "iphone"
-
-        do_platform_build( $build_platform, $platform_list, true, get_iphone_options(), 'distribution')
-      end
-    end
-
-    namespace :win32 do
-      desc "Build win32 production version"
-      task :production => ["build:initialize"] do
-        $build_platform = "win32"
-
-        do_platform_build( $build_platform, $platform_list, false)
-      end
-    end
-  end
-
-  namespace "cache" do
-    desc "Clear local file cache"
-    task :clear => ["cloud:initialize"] do
-      files = []
-
-      if !($cloud_build_home.nil? || $cloud_build_home.empty?)
-        files.concat( Dir.glob(File.join($cloud_build_home,'*')).reject { |el| File.directory?(el) } )
-      end
-
-      if !files.empty?
-        FileUtils.rm_rf(files)
-        BuildOutput.put_log( BuildOutput::NOTE, "Removed #{files.size} file(s) from cache", "Could build cache clear" )
-      else
-        BuildOutput.put_log( BuildOutput::NOTE, "Cache is already empty", "Could build cache clear" )
-      end
-
-    end
-
-  end
-
-  desc "Run binary on the simulator with id"
-  task "run:simulator", [:build_id] => [:find_app] do |t, args|
-    get_build_and_run(args.build_id, 'simulator')
-  end
-
-  desc "Run binary on the simulator with id"
-  task "run:device", [:build_id] => [:find_app] do |t, args|
-    get_build_and_run(args.build_id, 'device')
-  end
-end
-
 #------------------------------------------------------------------------
 #config
 
@@ -2669,13 +1920,16 @@ namespace "config" do
     Jake.set_bbver($app_config["bbver"].to_s)
   end
 
-  task :common => ["token:setup", :initialize] do
+  task :common => [:initialize] do
     puts "Starting rhodes build system using ruby version: #{RUBY_VERSION}"
     print_timestamp('config:common')
 
     if $app_config && !$app_config["sdk"].nil?
       BuildOutput.note('To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.','You use sdk parameter in build.yml')
     end
+
+    #Rhodes gem/framework version from version file.
+    ENV['rhodes_version'] = File.read(File.join($startdir,'version')).chomp
 
     $bindir = File.join($app_path, "bin")
     $tmpdir = File.join($bindir, "tmp")
@@ -2705,6 +1959,7 @@ namespace "config" do
     extpaths << File.join($app_path, "extensions")
     extpaths << File.join($startdir, "lib","commonAPI")
     extpaths << File.join($startdir, "lib","extensions")
+    extpaths << File.join($startdir, "extensions")
     $app_config["extpaths"] = extpaths
 
     if $app_config["build"] and $app_config["build"].casecmp("release") == 0
@@ -2750,7 +2005,7 @@ namespace "config" do
 
           $app_config["capabilities"] += ["symbol"] unless $app_config["capabilities"].index("symbol")
           $app_config["extensions"] += ["rhoelementsext"]
-          $app_config["extensions"] += ["motoapi"] #extension with plug-ins
+          $app_config["extensions"] += ["symbolapi"] #extension with plug-ins
 
           #check for RE2 plugins
           plugins = ""
@@ -2774,13 +2029,11 @@ namespace "config" do
       end
 
       application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
-	  application_build_configs['symbol'] = '1' if $app_config["capabilities"].index('symbol') && $current_platform == 'wm'
 
       if $app_config["extensions"].index("webkit-browser")
         $app_config["capabilities"] += ["webkit_browser"]
         $app_config["extensions"].delete("webkit-browser")
       end
-	  application_build_configs['webkit_browser'] = '1' if $app_config["capabilities"].index('webkit_browser') && $current_platform == 'wm'
 
       if  $app_config["capabilities"].index("webkit_browser") || ($app_config["capabilities"].index("symbol") && $current_platform != "android")
         #contains wm and android libs for webkit browser
@@ -2800,7 +2053,6 @@ namespace "config" do
       end
 
       if $current_platform == "wm"
-		$app_config['extensions'] = $app_config['extensions'] | ['sharedruntimecheck']
         $app_config['extensions'] = $app_config['extensions'] | ['symboldevice']
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
         $app_config['extensions'] = $app_config['extensions'] | ['indicators']
@@ -2823,11 +2075,9 @@ namespace "config" do
         $app_config['extensions'] = $app_config['extensions'] | ['emdk3-manager']
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
         $app_config['extensions'] = $app_config['extensions'] | ['signature']
-        $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
         $app_config['extensions'] = $app_config['extensions'] | ['indicators']
         $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
         $app_config['extensions'] = $app_config['extensions'] | ['sensor']
-         $app_config['extensions'] = $app_config['extensions'] | ['sip']
       end
       
       if $current_platform == "wp8"
@@ -2870,103 +2120,6 @@ namespace "config" do
       end
     end
     $application_build_configs = application_build_configs
-    #check for rhoelements gem
-    $rhoelements_features = []
-    if $app_config['extensions'].index('barcode')
-      #$app_config['extensions'].delete('barcode')
-      $rhoelements_features << "- Barcode extension"
-    end
-    if $app_config['extensions'].index('indicators')
-      $rhoelements_features << "- Indicators extension"
-    end
-    if $app_config['extensions'].index('hardwarekeys')
-      $rhoelements_features << "- HardwareKeys extension"
-    end
-    if $app_config['extensions'].index('cardreader')
-      $rhoelements_features << "- CardReader extension"
-    end
-
-    if $app_config['extensions'].index('nfc')
-      #$app_config['extensions'].delete('nfc')
-      $rhoelements_features << "- NFC extension"
-    end
-    #if $app_config['extensions'].index('audiocapture')
-    #    #$app_config['extensions'].delete('audiocapture')
-    #    $rhoelements_features << "- Audio Capture"
-    #end
-    if $app_config['extensions'].index('signature')
-      $rhoelements_features << "- Signature Capture"
-    end
-
-    if $current_platform == "wm"
-      $rhoelements_features << "- Windows Mobile/Windows CE platform support"
-    end
-
-    if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
-      #$application_build_configs.delete('encrypt_database')
-      $rhoelements_features << "- Database encryption"
-    end
-
-    if $app_config["capabilities"].index("symbol")
-      $rhoelements_features << "- Symbol device capabilities"
-    end
-
-    if $app_config['extensions'].index('webkit-browser') || $app_config['capabilities'].index('webkit_browser')
-      $rhoelements_features << "- Symbol WebKit Browser"
-    end
-
-    if $app_config['extensions'].index('rho-javascript')
-      $rhoelements_features << "- Javascript API for device capabilities"
-    end
-
-    if $re_app || $rhoelements_features.length() > 0
-      if $user_acc.subscription_level < 1
-        Rake::Task["token:read"].reenable
-        Rake::Task["token:read"].invoke("true")
-      end
-      if $user_acc.subscription_level < 1
-        if !$user_acc.is_valid_subscription?
-          BuildOutput.error([
-                                'Your subscription information is outdated or not downloaded. Please verify your internet connection and run build command again.'],
-                            'Could not build licensed features.')
-        else
-          msg = ["You have free subscription on #{$selected_server}. RhoElements features are available only for paid accounts."]
-          if $rhoelements_features.length() > 0
-            msg.concat(['The following features are only available in RhoElements v2 and above:',
-                        $rhoelements_features,
-                        'For more information go to http://www.rhomobile.com '])
-          end
-          msg.concat(
-              ["In order to upgrade your account please log in to #{$selected_server}",
-               'Select "change plan" menu item in your profile settings.'])
-          BuildOutput.error(msg, 'Could not build licensed features.')
-        end
-        raise Exception.new("Could not build licensed features")
-      end
-    end
-
-    if $rhoelements_features.length() > 0
-      #check for RhoElements gem and license
-      if  !$app_config['re_buildstub']
-        begin
-          require "rhoelements"
-
-          $rhoelements_features = []
-
-        rescue Exception => e
-        end
-      else
-        $rhoelements_features = []
-      end
-    end
-
-
-    if (!$rhoelements_features.nil?) && ($rhoelements_features.length() > 0)
-      BuildOutput.warning([
-                            'The following features are only available in RhoElements v2 and above:',
-                            $rhoelements_features,
-      'For more information go to http://www.rhomobile.com '])
-    end
 
     if $current_platform == "win32" && $winxpe_build
       $app_config['capabilities'] << 'winxpe'
@@ -3328,7 +2481,7 @@ def init_extensions(dest, mode = "")
       end
     end
 
-    if ((extpath.nil?) && (extname != 'motoapi') ) && ($skip_build_extensions == false)
+    if ((extpath.nil?) && (extname != 'symbolapi') ) && ($skip_build_extensions == false)
       raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
     end
 
@@ -3530,9 +2683,7 @@ def init_extensions(dest, mode = "")
         write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
 
         $ebfiles_shared_rt_js_appliction = ($js_application and ($current_platform == "wm" or $current_platform == "android") and $app_config["capabilities"].index('shared_runtime'))
-        $check_eb_js_enabled = Jake.getBuildBoolProp("create_eb_js")
-        $is_eb_js_creation_req = ($check_eb_js_enabled and $use_shared_runtime)
-        if $is_eb_js_creation_req || $ebfiles_shared_rt_js_appliction
+        if $use_shared_runtime || $ebfiles_shared_rt_js_appliction
           start_path = Dir.pwd
           chdir rhoapi_js_folder
 
@@ -4931,8 +4082,81 @@ namespace "run" do
 end
 
 #------------------------------------------------------------------------
+namespace "wm_gem" do
+  namespace "build" do
+   task :printing_service do
+      printing_service_target = File.join(File.dirname(__FILE__), 'libs', 'printing-service')
+      rm_r printing_service_target if File.exists?(printing_service_target)
+      mkdir_p printing_service_target
+      Rake::Task['printing:build:all'].invoke(printing_service_target)
+   end
+   task :config  do
+      puts "Configure build"
+      buildyml = "rhoelements.yml"
 
-namespace "build" do
+      $config = Jake.config(File.open(buildyml))
+
+      $cabwiz = $config["env"]["paths"]["cabwiz"]
+      $cabwiz = "" if $cabwiz.nil?
+      $cabwiz = File.join($cabwiz, "cabwiz.exe")
+
+      $devenv = $config["env"]["paths"]["devenv"]
+      $devenv = "devenv.exe" if $devenv.nil?
+
+      $vcbuild = $config["env"]["paths"]["vcbuild"]
+      $vcbuild = "vcbuild" if $vcbuild.nil?
+      raise "VCBUILD is not set" if $vcbuild.nil?
+
+      $sdk = $config["sdk"]
+      raise "SDK is not set" if $sdk.nil?
+
+      $app_config  = Hash.new
+      $app_config["capabilities"] = $config["capabilities"]
+
+      make_application_build_capabilities_header_file
+      $startdir = File.dirname(__FILE__)
+
+      #ENV['RHO_ROOT']  = File.expand_path("../rhodes")
+      #puts "RHO_ROOT - " + ENV['RHO_ROOT'].to_s
+
+      puts "$startdir - " + $startdir
+
+      $neon_root = $config["env"]["paths"]["neon"] unless $config["env"]["paths"]["neon"].nil?
+      $rhoelementsext_main_dir = File.join($startdir, 'extensions/rhoelementsext/ext')
+      $rhoelementsext_wm_dir = File.join($rhoelementsext_main_dir, "rhoelementsext/platform/wm")
+      
+      $re_version = $config['version']
+    end
+
+	namespace 'wm' do
+		 task :copy_webkit => ["wm_gem:build:config"] do
+				chdir File.dirname(__FILE__)
+
+				dest_dir = "./libs/data"
+				mkdir_p dest_dir
+			
+				src_dir = File.join($startdir, "neon/R2D1/Build" )
+			
+				cp_r File.join(src_dir, "Config"), dest_dir, :preserve => true
+				cp_r File.join(src_dir, "Windows/NPAPI"), dest_dir, :preserve => true
+				cp_r File.join(src_dir, "Windows/Plugins"), File.join(dest_dir, 'Plugin'), :preserve => true
+
+				Dir.glob(File.join(src_dir, "Windows/Binaries/*.*")).each { |f| cp_r f, dest_dir }
+				Dir.glob(File.join(src_dir, "Windows/WebKit/*.*")).each { |f| cp_r f, dest_dir }
+				
+				chdir File.dirname(__FILE__)
+				chmod_R 0777, "./libs/data"
+			  end
+			end
+		end	
+end
+namespace "build" do  
+  task :set_neon, :neon_dir do |t, args|
+    Jake.edit_yml(File.join(File.dirname(__FILE__), 'rhoelements.yml')) do |yml|
+      yml['env']['paths']['neon'] = args[:neon_dir]
+    end
+  end
+
   task :rhosimulator do
     if RUBY_PLATFORM =~ /(win|w)32$/
       Rake::Task["build:win32:rhosimulator"].invoke

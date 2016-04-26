@@ -1,0 +1,691 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="RhoElements_runtime_help.xsl"?>
+
+<HELPPAGE>
+  <FUNC>
+    <NAME>wlan</NAME>
+    <PATH>wlan</PATH>
+    <TYPE>Module</TYPE>
+    <SYNOPSIS>controls the wireless LAN radio.</SYNOPSIS>
+    <SYNTAX>
+		<USAGE>
+			<EXAMPLE>&lt;META HTTP-Equiv="Wlan" content="[method / parameter]"&gt;</EXAMPLE>
+		</USAGE>
+	</SYNTAX>
+    <PARAMS_WITH_ATTRIBUTES>
+		<!-- REMOVE THIS NEXT TAG IF YOU WANT TO SEE PARAMETERS -->
+		<HIDDEN>TRUE</HIDDEN>
+		<PARAM>
+			<NAME>parameter</NAME>
+			<VALUES>Not Applicable</VALUES>
+			<DESC>Not Applicable</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		<PARAM>
+			<NAME>profileGuid</NAME>
+			<VALUES>GUID String</VALUES>
+			<DESC>Sets the GUID credential for the user profile for which the connection is to be attempted.</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>networkUsername</NAME>
+			<VALUES>Username String</VALUES>
+			<DESC>Sets the Username credential for the user profile for which the connection is to be attempted.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>networkPassword</NAME>
+			<VALUES>Password String</VALUES>
+			<DESC>Sets the Password credential for the user profile for which the connection is to be attempted.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>networkDomain</NAME>
+			<VALUES>Domain String</VALUES>
+			<DESC>Sets the Domain credential for the user profile for which the connection is to be attempted.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>selectLoginProfile</NAME>
+			<VALUES>Integer</VALUES>
+			<DESC>Select the profile from the list of candidate profiles. The parameter is the array index of profiles retrieved from loginCandidateProfilesEvent.</DESC>
+			<DEFAULT>Last added profile ID or -1 if none.</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>profileEssid</NAME>
+			<VALUES>Alphanumeric characters, maximum length 32</VALUES>
+			<DESC>Sets the ESSID of the new profile.</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>profileName</NAME>
+			<VALUES>String</VALUES>
+			<DESC>Sets the friendly name for new profile.</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>profilePassphrase</NAME>
+			<VALUES>String. May have restrictions on format dependant on the authentication method.</VALUES>
+			<DESC>Sets the Passphrase for new profile.</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>profileEncryption</NAME>
+			<VALUES>"OPEN", "WEP40", "WEP104", "TKIP", "AES", "SMS4"</VALUES>
+			<DESC>Sets the encryption method for this profile.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>profileSecurityMode</NAME>
+			<VALUES>"LEGACY", "WPA_PERSONAL", "WPA2_PERSONAL", "WPA_ENTERPRISE",  "WPA2_ENTERPRISE", "CCKM_WPA", "CCKM_WPA2", "WAPI"</VALUES>
+			<DESC>Security used for profile.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<!-- Related to Profile creation, importing -->
+		
+		<PARAM>
+			<NAME>deleteAfterImport</NAME>
+			<VALUES>'TRUE', 'FALSE'</VALUES>
+			<DESC>Deletes the profile after importing;</DESC>
+			<DEFAULT>false</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>importConfigFromLocation</NAME>
+			<VALUES>URI</VALUES>
+			<DESC>URI. Imports WLAN configuration from the defined location. Can be file, http or ftp based location.</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>exportType</NAME>
+			<VALUES></VALUES>
+			<DESC>This is a 1D array of strings. Selects config/data types to be exported.Value can include "PROFILES", "OPTIONS", "CERTS" and "PACS"</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>exportConfigToLocation</NAME>
+			<VALUES></VALUES>
+			<DESC>URL. Exports WLAN configuration to this location. This can be a local directory</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>configFilePassword</NAME>
+			<VALUES></VALUES>
+			<DESC>Password for export file.</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>profileGuids</NAME>
+			<VALUES></VALUES>
+			<DESC>Profiles to be used for different operations like export. This is a 1D array of strings. An empty array means all profiles.</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>countryCode</NAME>
+			<VALUES></VALUES>
+			<DESC>WLAN country code (4 characters) to be set.</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>optionsPassword</NAME>
+			<VALUES></VALUES>
+			<DESC>Password to be verified with Fusion Options</DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>regulatory11dMode</NAME>
+			<VALUES></VALUES>
+			<DESC></DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>	
+		
+		<PARAM>
+			<NAME>regulatoryCountryCode</NAME>
+			<VALUES></VALUES>
+			<DESC></DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>	
+	
+	</PARAMS_WITH_ATTRIBUTES>
+	
+	<PARAMS_NO_ATTRIBUTES>	
+		<PARAM>
+			<NAME>enableAdapter</NAME>
+			<DESC>Enables the default wireless LAN NIC adapter.</DESC>
+			<DEFAULT></DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>disableAdapter</NAME>
+			<DESC>Disables the currently enabled wireless LAN NIC adapter.</DESC>
+			<DEFAULT></DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>getAdapterPowerState</NAME>
+			<DESC>Returns the current power state of the WLAN adapter. Immediately fires adapterPowerStateEvent. Subscribe to this event to receive this adapter state.</DESC>
+			<DEFAULT></DEFAULT>
+		</PARAM>
+		
+		<!-- Profiling -->
+
+		<PARAM>
+			<NAME>resetToDefault</NAME>
+			<DESC>Load the default WLAN out of box profiles.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>deleteProfile</NAME>
+			<DESC>Delete the WLAN profile. The profile which is to be deleted has to be set using profileGuid.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>networkLogin</NAME>
+			<DESC>Logs into the currently selected profile. If credentials have been set with profileGuid, networkUsername, networkPassword, and/or networkDomain then these will be used to authenticate. If no credentials are provided an attempt will be made to connect to one of profiles where user credentials are required. If there are more than one such profiles present, all of those will be sent to application by loginCandidateProfilesEvent. User can select one of these profiles by selectLoginProfile paramter and as a result networkLoginEvent will be sent. This will cause Login Launch dialog to pop up where user can provide credentials and call this method again.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		<PARAM>
+			<NAME>networkLogout</NAME>
+			<DESC>Logs out from the currently connected profile.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		<PARAM>
+			<NAME>cancelNetworkLogin</NAME>
+			<DESC>Cancels the Login prompt notification.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		<PARAM>
+			<NAME>addProfile</NAME>
+			<DESC>Creates and add a new WLAN profile. Input for creation of profile has to be set by profileESSID, profileName, profilePassphrase, profileEncryption and profileSecurityMode. addedProfileEvent is fired.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		<PARAM>
+			<NAME>connectProfile</NAME>
+			<DESC>Connect to the wlan profile. Current profile if any will be disconnected and the attempt will be made for connection to this profile. The status of connection and ESSID can be retrieved from signal module's signalEvent. The parameter profileGuid should be used to select which profile should be connected to.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		<PARAM>
+			<NAME>importConfig</NAME>
+			<DESC>Import WLAN configuration files (profiles, options, certificates, PACs). Option to consume the profile can be set using deleteAfterImport and importConfigFromLocation parameter.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		<PARAM>
+			<NAME>getAllProfiles</NAME>
+			<DESC>Enumerates all the WLAN profiles. Fires the allProfilesEvent.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		<PARAM>
+			<NAME>getCurrentProfile</NAME>
+			<DESC>Enumerate the current profile. Fires the currentProfileEvent.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		<PARAM>
+			<NAME>getConnectionState</NAME>
+			<DESC>Returns the current WLAN connection state of the device. Fires the connectionStateEvent.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>exportConfig</NAME>
+			<DESC>Exports WLAN configuration (Profile / Options / Certs / PACs) to a file. Profiles / Options / Certs / PACs can be included in export operation using  exportType parameter. Password can be set by using configFilePassword parameter.Location can be set using exportConfigToLocation parameter.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>enableDot11d</NAME>
+			<DESC>Enables 802.11d. Fires dot11dModeEvent to indicate updated 802.11d mode.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>disableDot11d</NAME>
+			<DESC>Disables 802.11d. Fires dot11dModeEvent to indicate updated 802.11d mode.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>getDot11dMode</NAME>
+			<DESC>Returns current 802.11d mode. Fires dot11dModeEvent</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>getCountryCode</NAME>
+			<DESC>Returns country code configured in Fusion Options. Fires countryCodeEvent</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>getCountryList</NAME>
+			<DESC>Returns supported country list. Fires countryListEvent</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>setCountryCode</NAME>
+			<DESC>Sets Fusion Options country code. Fires countryCodeEvent</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>disableProfile</NAME>
+			<DESC>Disables a profile. Fires profileStateEvent to indicate updated profile state.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>enableProfile</NAME>
+			<DESC>Enables a profile. Fires profileStateEvent to indicate updated profile state.</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>validateOptionsPassword</NAME>
+			<DESC>Validates the given string with password configured in Fusion Options. Fires validateOptionsPasswordEvent</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+
+		<PARAM>
+			<NAME>getOptionsPasswordState</NAME>
+			<DESC>Returns the password state in Fusion Options (configured or not configured)</DESC>
+			<DEFAULT></DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+		
+		<PARAM>
+			<NAME>getRegulatorySettings</NAME>
+			<DESC></DESC>
+			<DEFAULT>""</DEFAULT>
+			<HIDDEN>TRUE</HIDDEN>
+		</PARAM>
+	</PARAMS_NO_ATTRIBUTES>	
+	
+	<RETURNS>
+		<TAG>
+			<TAG_NAME>adapterPowerStateEvent</TAG_NAME>
+			<TAG_NOTES>Returns data on if the radio is enabled or disabled.</TAG_NOTES>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC>Either "AdapterEnabled" or "AdapterDisabled"</DESC>
+			</RETVAL>
+		</TAG>
+
+		<TAG>
+			<TAG_NAME>loginResponseEvent</TAG_NAME>
+			<TAG_NOTES>Fired when network login response occurs</TAG_NOTES>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC>Either "Success" or "Failed"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+		
+		<TAG>
+			<TAG_NAME>logoutResponseEvent</TAG_NAME>
+			<TAG_NOTES>Fired when network logout response occurs</TAG_NOTES>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC>Either "Success" or "Failed"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+		
+		<TAG>
+			<TAG_NAME>cancelLoginResponseEvent</TAG_NAME>
+			<TAG_NOTES>Fired when the network login cancel is requested</TAG_NOTES>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC>Either "Success" or "Failed"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+		
+		<TAG>
+			<TAG_NAME>loginCandidateProfilesEvent</TAG_NAME>
+			<TAG_NOTES>This event is generated when there is more than one possible profile to connect with. This event will be followed up with networkLoginEvent on successful selection of profile by the user. Maximum length of profile name is 28 characters because of data size limitation of RhoElements for a function call. If profile name is more than 28 characters, it will be truncated.</TAG_NOTES>
+			<RETVAL>
+				<NAME>profiles</NAME>
+				<DESC>An array of Strings. Each string is the name of a profile.</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+
+		<TAG>
+			<TAG_NAME>networkLoginEvent</TAG_NAME>
+			<TAG_NOTES>This event is generated, when fusion needs the authentication from user to connect to a pre-defined profile.</TAG_NOTES>
+			<RETVAL>
+				<NAME>profileGuid</NAME>
+				<DESC>Candidate profile GUID</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>profileName</NAME>
+				<DESC>Candidate profile Name</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>networkUsername</NAME>
+				<DESC>Candidate network Username</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>networkPassword</NAME>
+				<DESC>Candidate network Password</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>networkDomain</NAME>
+				<DESC>Current domain Name</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC>Status as text message.</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+
+		<TAG>
+			<TAG_NAME>networkLoginCloseEvent</TAG_NAME>
+			<TAG_NOTES>This event is fired when a login dialog is to be closed due to timeout.</TAG_NOTES>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC></DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+		<TAG>
+			<TAG_NAME>importConfigEvent</TAG_NAME>
+			<TAG_NOTES>Fired when the network login cancel is requested</TAG_NOTES>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC>Either "ImportSuccess" or "ImportFailed"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>		
+		
+		<TAG>
+			<TAG_NAME>addedProfileEvent</TAG_NAME>
+			<TAG_NOTES>This event is fired when a profile is stored. This event contains data on whether the config items were imported successfully or failed to import.</TAG_NOTES>
+			<RETVAL>
+				<DESC>GUID of the profile which was added successfully. If it is empty, profile addition was unsuccessful.</DESC>
+				<NAME>profileGuid</NAME>
+			</RETVAL>
+			<RETVAL>
+				<NAME>profileName</NAME>
+				<DESC>Candidate profile Name</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>profileEssid</NAME>
+				<DESC>Candidate profile ESSID</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+		
+		<TAG>
+			<TAG_NAME>allProfilesEvent</TAG_NAME>
+			<TAG_NOTES>Lists all profiles on the device</TAG_NOTES>
+			<RETVAL>
+				<NAME>profiles</NAME>
+				<DESC>2D Array of profiles which defines the values of key elements of profile. guid: Unique Id of profile. name: Profile name. enabled: Either "TRUE" or "FALSE". type: Either "USER" or "DEVICE". canceled: Either "TRUE" or "FALSE"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>			
+
+		<TAG>
+			<TAG_NAME>currentProfileEvent</TAG_NAME>
+			<TAG_NOTES>Lists details of the current profile</TAG_NOTES>
+			<RETVAL>
+				<NAME>profileGuid</NAME>
+				<DESC>Unique Id of profile</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>profileEssid</NAME>
+				<DESC>ESSID of current profile</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>profileName</NAME>
+				<DESC>Name of profile</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>profileEnabled</NAME>
+				<DESC>Either "TRUE" or "FALSE"</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>profileType</NAME>
+				<DESC>Either "USER" or "DEVICE"</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>profileCanceled</NAME>
+				<DESC>Either "TRUE" or "FALSE"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>			
+
+		<TAG>
+			<TAG_NAME>connectionStateEvent</TAG_NAME>
+			<TAG_NOTES>Returns the current connection status</TAG_NOTES>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC>Possible Value: "Disconnected", "Associating", "Associated", "Authenticating", "Authenticated", "Connected"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>	
+
+		<TAG>
+			<TAG_NAME>exportConfigEvent</TAG_NAME>
+			<TAG_NOTES></TAG_NOTES>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC>Either "ExportSuccess" or "ExportFailed"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+
+		<TAG>
+			<TAG_NAME>dot11dModeEvent</TAG_NAME>
+			<TAG_NOTES></TAG_NOTES>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC>Either "Enabled" or "Disabled"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+
+		<TAG>
+			<TAG_NAME>countryCodeEvent</TAG_NAME>
+			<TAG_NOTES></TAG_NOTES>
+			<RETVAL>
+				<NAME>countryCode</NAME>
+				<DESC>Currently configured country code in Fusion Options.</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+
+		<TAG>
+			<TAG_NAME>countryListEvent</TAG_NAME>
+			<TAG_NOTES></TAG_NOTES>
+			<RETVAL>
+				<NAME>countryList</NAME>
+				<DESC>2D array of supported country list. countryCode: 4 letter country code. countryName: country name</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+
+		<TAG>
+			<TAG_NAME>profileStateEvent</TAG_NAME>
+			<TAG_NOTES></TAG_NOTES>
+			<RETVAL>
+				<NAME>profileGuid</NAME>
+				<DESC>Unique Id of profile</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>state</NAME>
+				<DESC>Profile state. Possible values: "Enabled", "Disabled"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+
+		<TAG>
+			<TAG_NAME>validateOptionsPasswordEvent</TAG_NAME>
+			<TAG_NOTES></TAG_NOTES>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC>Either "Valid" or "Invalid"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+
+		<TAG>
+			<TAG_NAME>optionsPasswordStateEvent</TAG_NAME>
+			<TAG_NOTES></TAG_NOTES>
+			<RETVAL>
+				<NAME>state</NAME>
+				<DESC>Options password state. Value can be either "Configured", "Not configured"</DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>
+		
+		<TAG>
+			<TAG_NAME>regulatorySettingsEvent</TAG_NAME>
+			<TAG_NOTES></TAG_NOTES>
+			<RETVAL>
+				<NAME>status</NAME>
+				<DESC></DESC>
+			</RETVAL>
+			<HIDDEN>TRUE</HIDDEN>
+		</TAG>			
+	</RETURNS>
+	
+	<EXAMPLES>
+		<EXAMPLE>
+			<DESC>Enable/disable the radio on a button click</DESC>
+<CODE>
+&lt;html&gt;
+&lt;head&gt;
+    &lt;script type="text/javascript"&gt;
+        function enableRadio()
+        {
+            wlan.enableAdapter();
+        }
+    
+        function disableRadio()
+        {
+            wlan.disableAdapter();
+        }
+    &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;button onclick="enableRadio()"&gt;Enable Radio&lt;/button&gt;
+    &lt;button onclick="disableRadio()"&gt;Disable Radio&lt;/button&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</CODE>
+		</EXAMPLE>
+	</EXAMPLES>
+	
+	<REMARKS>
+		<!-- REMOVE THIS NEXT TAG IF YOU WANT TO SEE REMARKS -->
+		<HIDDEN>TRUE</HIDDEN>
+		<COMMENT>
+			<COMMENT_HEADING>connectProfile</COMMENT_HEADING>
+			<COMMENT_DATA>The credentials that connectProfile will use will be: 1) The unsaved profile data (data set by profileGuid, profileEssid, profileName, profilePassphrase, profileEncryption, profileSecurityMode). If these cant be found then, 2) The credentials stored in the profile represented by the currentProfileId.</COMMENT_DATA>
+			<HIDDEN>TRUE</HIDDEN>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>addProfile</COMMENT_HEADING>
+			<COMMENT_DATA>After addProfile is called, all of the following parameters will be cleared:</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+profileGuid
+profileEssid
+profileName
+profilePassphrase
+profileEncryption
+profileSecurityMode
+networkUsername
+networkPassword
+networkDomain
+</COMMENTFIXEDWIDTH>
+			<HIDDEN>TRUE</HIDDEN>
+		</COMMENT>
+		<COMMENT>
+			<COMMENT_HEADING>Order of events when connecting</COMMENT_HEADING>
+			<COMMENT_DATA>The order of the events when connecting will be:</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+1) Set the profile by either setting "currentProfileId" or by setting the parameters that are prefixed with "profile".
+2) Call connectProfile.
+3) Set the parameters prefixed with "network" if needed.
+4) Call networkLogin
+5) loginResponseEvent will be fired. 
+	If connection was successful then "connectionStatus" = "CONNECTED".
+	If connection needs extra authentication then "connectionStatus" = "AUTHENTICATION REQUIRED".
+	If connection failed then "connectionStatus" = "NOT CONNECTED".
+6) If extra authentication was required, at some point another loginResponseEvent can be fired.
+	If the connectionStatus = "NOT CONNECTED", then the authentication period has timed out.
+</COMMENTFIXEDWIDTH>
+			<HIDDEN>TRUE</HIDDEN>
+		</COMMENT>			
+
+	</REMARKS>
+	<ADDITIONAL>
+		<PLATFORM>SB1</PLATFORM>
+		<APPLIES>Partially Persistent - Changes to the parameters and events of this module will not persist when navigating to a new page. Enable and Disable methods do persist.</APPLIES>
+		<REQ>Fusion module</REQ>
+			<VER_INTRODUCED>2.2</VER_INTRODUCED>
+    </ADDITIONAL>
+  </FUNC>
+</HELPPAGE>

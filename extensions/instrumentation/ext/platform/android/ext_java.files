@@ -1,0 +1,9 @@
+ext/platform/android/generated/src/com/rho/instrumentation/InstrumentationBase.java
+ext/platform/android/generated/src/com/rho/instrumentation/InstrumentationFactorySingleton.java
+ext/platform/android/generated/src/com/rho/instrumentation/InstrumentationSingletonBase.java
+ext/platform/android/generated/src/com/rho/instrumentation/IInstrumentation.java
+ext/platform/android/generated/src/com/rho/instrumentation/IInstrumentationFactory.java
+ext/platform/android/generated/src/com/rho/instrumentation/IInstrumentationSingleton.java
+ext/platform/android/src/com/rho/instrumentation/Instrumentation.java
+ext/platform/android/src/com/rho/instrumentation/InstrumentationFactory.java
+ext/platform/android/src/com/rho/instrumentation/InstrumentationSingleton.java

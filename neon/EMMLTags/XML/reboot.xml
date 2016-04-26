@@ -1,0 +1,58 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>reboot</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to reboot the terminal immediately.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Reboot" content="[parameter]"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>bootType</NAME>
+				<VALUES>"Warm", "Cold" or "ColdCAD"</VALUES>
+				<DESC>Reboots the terminal using either a Warm or Cold software boot (as specified).  Note on CE6 devices a 'ColdCAD' boot is required to replicate the Coldboot key sequence, e.g. 1+9+Power on an MC3000.</DESC>
+				<DEFAULT>N/A</DEFAULT>
+			</PARAM>				
+		</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example Warm boots the terminal:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Reboot" Content="BootType:Warm"&gt;
+</CODE>
+			</EXAMPLE>				
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Reboot</COMMENT_HEADING>
+				<COMMENT_DATA>
+				In WM/CE, not all device support Cold or ColdCAD feature. Device may warm boot even though any of these option has been selected.
+				</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Suggested Use</COMMENT_HEADING>
+				<COMMENT_DATA>
+				The Reboot tag can be used to apply new settings after downloading files (eg. .REG) or applications from a server.
+				</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Windows Mobile</COMMENT_HEADING>
+				<COMMENT_DATA>
+				Note that in WM5.0 and up there is no software difference between a warm and a cold boot as the device uses persistent storage; both the file and registry will remain the same after boot.
+				</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices. (See Above comment for behaviour on Windows Mobile)</PLATFORM>
+			<APPLIES>Immediate - These methods are actioned immediately.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+	</FUNC>
+</HELPPAGE>

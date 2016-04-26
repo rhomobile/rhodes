@@ -1,0 +1,9 @@
+ext/platform/android/generated/src/com/rho/printingepson/PrintingEpsonBase.java
+ext/platform/android/generated/src/com/rho/printingepson/PrintingEpsonFactorySingleton.java
+ext/platform/android/generated/src/com/rho/printingepson/PrintingEpsonSingletonBase.java
+ext/platform/android/generated/src/com/rho/printingepson/IPrintingEpson.java
+ext/platform/android/generated/src/com/rho/printingepson/IPrintingEpsonFactory.java
+ext/platform/android/generated/src/com/rho/printingepson/IPrintingEpsonSingleton.java
+ext/platform/android/src/com/rho/printingepson/PrintingEpson.java
+ext/platform/android/src/com/rho/printingepson/PrintingEpsonFactory.java
+ext/platform/android/src/com/rho/printingepson/PrintingEpsonSingleton.java

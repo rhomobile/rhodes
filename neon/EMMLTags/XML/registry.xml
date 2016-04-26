@@ -1,0 +1,150 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>registry</NAME>
+		<PATH>Configuration</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to write and delete registry settings, and create corresponding merge files.</SYNOPSIS>
+
+	<SYNTAX>
+    <USAGE>
+      <EXAMPLE>&lt;META HTTP-Equiv="registry" content="[parameter]"&gt;</EXAMPLE>
+    </USAGE>
+    <USAGE>
+      <EXAMPLE>&lt;META HTTP-Equiv="registry" content="[parameter:attribute]"&gt;</EXAMPLE>
+    </USAGE>
+  </SYNTAX>
+
+  <PARAMS_WITH_ATTRIBUTES>
+    <PARAM>
+      <NAME>hive</NAME>
+        <VALUES>HKLM, HKCU, HKCR or HKU</VALUES>
+        <DESC>Name of the root hive.</DESC>
+        <DEFAULT>None</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>key</NAME>
+        <VALUES>Any string</VALUES>
+        <DESC>Full path of the key, including '\' separators as required.  Remember to use '\\' in Javascript to specify backslash whereas just a single '\' should be used in META tags.</DESC>
+        <DEFAULT>None</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>setting</NAME>
+        <VALUES>Any string</VALUES>
+        <DESC>Name of the setting.</DESC>
+        <DEFAULT>None</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>type</NAME>
+        <VALUES>DWORD, STRING, BINARY or MULTISZ</VALUES>
+        <DESC>Data type of the setting.</DESC>
+        <DEFAULT>None</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>persistent</NAME>
+        <VALUES>TRUE or FALSE</VALUES>
+        <DESC>Whether to create the corresponding merge file.</DESC>
+        <DEFAULT>FALSE</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>value</NAME>
+        <VALUES>Valid string for the setting type specified - see remarks</VALUES>
+        <DESC>Value for the setting.</DESC>
+        <DEFAULT>None</DEFAULT>
+    </PARAM>	
+  </PARAMS_WITH_ATTRIBUTES>
+
+  <PARAMS_NO_ATTRIBUTES>
+    <PARAM>
+      <NAME>delete</NAME>
+        <DESC>Deletes the setting.</DESC>
+        <DEFAULT></DEFAULT>
+    </PARAM>	
+  </PARAMS_NO_ATTRIBUTES>
+  
+  <REMARKS>
+    <COMMENT>
+      <COMMENT_HEADING>Hive values</COMMENT_HEADING>
+      <COMMENT_DATA>
+The values HKLM, HKCU, HKCR and HKU correspond to HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER,
+HKEY_CLASSES_ROOT and HKEY_USERS.
+      </COMMENT_DATA>
+    </COMMENT>
+    
+    <COMMENT>
+      <COMMENT_HEADING>Data types</COMMENT_HEADING>
+      <COMMENT_DATA>
+The value is formatted for each data type as follows.
+      </COMMENT_DATA>
+      <COMMENTFIXEDWIDTH>
+DATA TYPE    VALUE FORMAT
+dword        A decimal number.
+string       Any string of characters.
+binary       A string of hexadecimal digits (0-9, A-F).
+             There must be an even number of digits.
+multisz      Multiple strings of characters, separated by \n.
+             To include a backslash (\) in a string write a double backslash (\\).
+      </COMMENTFIXEDWIDTH>
+    </COMMENT>
+
+    <COMMENT>
+      <COMMENT_HEADING>Merge files</COMMENT_HEADING>
+      <COMMENT_DATA>
+When the persistent tag is given the module will write a .reg file to the \Application
+folder on the device, which will add the setting to the registry when merged by Windows CE/WM,
+e.g. during a cold boot.
+When the persistent tag is given when deleting a setting, the module deletes any existing .reg
+file created above, and creates a new .reg file which will delete the setting when merged - this is in addition to deleting the registry setting itself.
+      </COMMENT_DATA>
+    </COMMENT>
+	
+	<COMMENT>
+      <COMMENT_HEADING>Deprecation</COMMENT_HEADING>
+      <COMMENT_DATA>
+		The Registry module has been deprecated. It is advised to use the SetRegistrySetting/GetRegistrySetting/ReadConfigSetting/WriteConfigSetting methods in the Generic module instead. 
+      </COMMENT_DATA>
+    </COMMENT>
+  </REMARKS>
+
+  <EXAMPLES>
+    <EXAMPLE>
+      <DESC>
+The tags below add a registry setting called 'RhoElements' in the 'Software' key of the
+HKEY_LOCAL_MACHINE hive.
+The setting is of type 'multisz' and has the values 'hello' and 'world'. The corresponding
+.reg merge file will be created in the \Application folder.
+      </DESC> 
+      <CODE>
+        &lt;META HTTP-Equiv="registry" Content="hive:hklm"&gt;
+        &lt;META HTTP-Equiv="registry" Content="key:Software"&gt;
+        &lt;META HTTP-Equiv="registry" Content="setting:RhoElements"&gt;
+        &lt;META HTTP-Equiv="registry" Content="type:multisz"&gt;
+        &lt;META HTTP-Equiv="registry" Content="persistent:true"&gt;
+        &lt;META HTTP-Equiv="registry" Content="value:hello\nworld"&gt;
+      </CODE>
+    </EXAMPLE>
+
+    <EXAMPLE>
+      <DESC>
+The tags below delete the above setting.
+      </DESC> 
+      <CODE>
+        &lt;META HTTP-Equiv="registry" Content="hive:hklm"&gt;
+        &lt;META HTTP-Equiv="registry" Content="key:Software"&gt;
+        &lt;META HTTP-Equiv="registry" Content="setting:RhoElements"&gt;
+        &lt;META HTTP-Equiv="registry" Content="delete"&gt;
+      </CODE>
+    </EXAMPLE>
+  </EXAMPLES>
+  
+	<ADDITIONAL>
+		<PLATFORM>All supported devices except: Android devices.</PLATFORM>
+		<APPLIES>Persistent - Changes to this module will persist when navigating to a new page.</APPLIES>
+		<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+	</ADDITIONAL>
+  
+	</FUNC>
+</HELPPAGE>

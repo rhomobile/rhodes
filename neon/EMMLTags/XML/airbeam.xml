@@ -1,0 +1,180 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<HELPPAGE>
+	<FUNC>
+    <ACTIVEX>AirBeam</ACTIVEX>
+		<NAME>AirBeam</NAME>
+		<PATH>legacyObjects</PATH>
+		<TYPE>Preexisting JavaScript Object</TYPE>
+		<SYNOPSIS>contains properties and methods which can be used to control the AirBeam Smart client.  AirBeam is a separate application provided by Symbol Technologies Inc and provides the ability to download software packages to your mobile device.  If you have configured 'PreloadLegacyAirBeam' to be '1' the Javascript object 'airbeam' will be inserted automatically into your page's DOM by RhoElements.</SYNOPSIS>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>airbeam.AddPackage('myPackage');</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<ACTIVEX_METHODS>
+			<METHOD>
+				<NAME>AddPackage</NAME>
+				<DESC>Instructs the AirBeam Smart client to add the named package to the package list (can be added up to four times)</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>PackageName</NAME>
+						<VALUES>String</VALUES>
+						<DESC>The name of the AirBEAM package to add.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>True if the package was successfully added or false if it was not</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>DeletePackage</NAME>
+				<DESC>Instructs the AirBeam Smart client to delete the specified package</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>PackageName</NAME>
+						<VALUES>String</VALUES>
+						<DESC>The name of the AirBEAM package to be deleted.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>N/A</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>UploadPackage</NAME>
+				<DESC>Instructs the AirBeam Smart client to process the specified package for upload</DESC>
+				<PARAMETERS>
+					<PARAMETER>
+						<NAME>PackageName</NAME>
+						<VALUES>String</VALUES>
+						<DESC>The name of the AirBEAM package to process for upload.</DESC>
+					</PARAMETER>
+				</PARAMETERS>
+				<RETURN>
+					<DESC>N/A</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD>
+				<NAME>Run</NAME>
+				<DESC>Instructs the AirBeam Smart client to run the client and perform the current configuration.  Note that the client is run as the foreground application.</DESC>
+				<RETURN>
+					<DESC>The exit code of the AirBeam Smart client</DESC>
+				</RETURN>
+			</METHOD>
+		</ACTIVEX_METHODS>
+		<ACTIVEX_RETURNS>
+			<RETVAL>
+				<NAME>AutoLoadMode</NAME>
+				<DESC>0 - 3, describes how synchronization is started.  See remarks.</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>AutoReboot</NAME>
+				<DESC>True or False, whether or not the enable auto reboot mode.</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>RAMManagement</NAME>
+				<DESC>True or False, Enables or Disables RAM Management mode.</DESC>
+			</RETVAL>
+			<RETVAL>
+				<NAME>TestMode</NAME>
+				<DESC>True or False, Whether or not packages should be loaded when added.</DESC>
+			</RETVAL>
+		</ACTIVEX_RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The Following example shows usage of the AddPackage and Run methods:</DESC>
+<CODE>
+&lt;script&gt;
+   function doSync()
+   {
+      if(airbeam.AddPackage("myPackage"))
+      {
+         setTimeout('airbeam.Run();', 100);
+      }
+      else
+	  {
+         alert('Add Package Failed.  You can only have a maximum of 4 packages');
+      }
+   }
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The Following example shows usage of the AutoLoadMode, AutoReboot, RAMManagement and TestMode properties:</DESC>
+<CODE>
+&lt;script&gt;
+   function doSync()
+   {
+      airbeam.AutoLoadMode = 2;
+	  airbeam.AutoReboot = false;
+	  airbeam.RAMManagement = true;
+	  airbeam.TestMode = false;
+	  airbeam.AddPackage('myPackage');
+	  setTimeout('airbeam.Run()', 100);
+   }
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The Following example shows usage of the DeletePackage method:</DESC>
+<CODE>
+&lt;script&gt;
+   function doSync()
+   {
+     airbeam.DeletePackage = 'myPackage';
+     setTimeout('airbeam.Run()', 100);
+   }
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The Following example shows usage of the UploadPackage method:</DESC>
+<CODE>
+&lt;script&gt;
+   function doSync()
+   {
+     airbeam.UploadPackage = 'myPackage';
+     setTimeout('airbeam.Run()', 100);
+   }
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Mode Settings</COMMENT_HEADING>
+				<COMMENT_DATA>The following mode settings apply to the AutoLoadMode Property</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+0: Synchronization is not automatically started.
+1: Synchronization is automatically started in interactive mode.
+2: Synchronization is automatically started in non-interactive mode.
+3: Synchronization is automatically started in background mode.
+</COMMENTFIXEDWIDTH>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Backwards Compatibility</COMMENT_HEADING>
+				<COMMENT_DATA>The AirBeam Preexisting Javascript Object provides backwards compatibility with code written for Browser and also supports the syntax below.  Because RhoElements inserts the object 'airbeam' on the page automatically when 'PreloadLegacyAirBeam' is configured to be '1' you can not create your own objects by this name, see below:</COMMENT_DATA>
+<COMMENTFIXEDWIDTH>
+&lt;script&gt;
+  //  Old Browser syntax to support AirBeam
+  var myObj = new ActiveXObject("PocketBrowser.AirBEAMSmart"); 
+  
+  //  Note: var airbeam = new ... will fail because the object already exists on the page.
+  myObj.Run();
+&lt;/script&gt;
+</COMMENTFIXEDWIDTH>
+		</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Immediate - These methods are actioned immediately.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Getting Started/">ConfigurationSettings</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>
+

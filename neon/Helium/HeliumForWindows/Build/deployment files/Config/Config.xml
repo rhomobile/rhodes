@@ -1,0 +1,191 @@
+<?xml version = "1.0"?>
+<!--
+RhoElements Configuration file
+-->
+<Configuration>
+   
+  <DebugButtons>
+    <DebugButtonsEnabled value="0" />
+  </DebugButtons>
+  
+  <Logger>
+    <LogProtocol   value="FILE"/>
+    <LogPort       value="80"/>
+    <LogURI        value="file://%INSTALLDIR%\Log.txt"/>
+    <LogError      value="0"/>
+    <LogWarning    value="0"/>
+    <LogInfo       value="0"/>
+    <LogUser       value="0"/>
+    <LogMemory     value="0"/>
+    <LogMemPeriod  value="5000"/>
+    <LogMaxSize    value="10"/>
+  </Logger>
+    
+  <FileLocations>
+    <RegEXFile  value="file://%INSTALLDIR%\Config\RegEx.xml"/>
+    <PluginFile value="file://%INSTALLDIR%\Config\Plugin.xml"/>
+  </FileLocations>
+  
+  <Screen>
+    <FullScreen value="1"/>
+	<PageZoom value="1.0" />
+  </Screen>
+  
+  <DeviceKeys>
+	<FunctionKeysCapturable	  value="0"/>
+    <EnableFunctionKey_F1     value="0"/>
+    <EnableFunctionKey_F2     value="0"/>
+    <EnableFunctionKey_F3     value="0"/>
+    <EnableFunctionKey_F4     value="0"/>
+    <EnableFunctionKey_F5     value="0"/>
+    <EnableFunctionKey_F6     value="0"/>
+    <EnableFunctionKey_F7     value="0"/>
+    <EnableFunctionKey_F8     value="0"/>
+    <EnableFunctionKey_F9     value="0"/>
+    <EnableFunctionKey_F10    value="0"/>
+    <EnableFunctionKey_F11    value="0"/>
+    <EnableFunctionKey_F12    value="0"/>
+    <EnableApplicationKey_A1  value="0"/>
+    <EnableApplicationKey_A2  value="0"/>
+    <EnableApplicationKey_A3  value="0"/>
+    <EnableApplicationKey_A4  value="0"/>
+    <EnableApplicationKey_A5  value="0"/>
+    <EnableApplicationKey_A6  value="0"/>
+    <EnableApplicationKey_A7  value="0"/>
+    <EnableApplicationKey_A8  value="0"/>
+  </DeviceKeys>
+  
+  <Navigation>
+    <NavTimeout value="45000"/>
+  </Navigation>
+
+  <Geolocation>
+    <GeolocationEnabled value="1"/>
+  </Geolocation> 
+  
+  <VoidConnection>
+     <TrackConnection value="0"/>
+     <HostURL value="100.159.16.12"/>
+     <Message value="Connection Establishing"/>
+     <Timeout value="30000"/>
+     <PollInterval value="5000"/>
+  </VoidConnection>
+  
+  <ScreenOrientation>
+    <AutoRotate value="1" />
+  </ScreenOrientation>
+  
+ <TabInstance>
+    <NewTabPhysicalMemLimit value="100"/>
+    <NewTabVirtualMemLimit value="100"/>
+  </TabInstance>
+  
+  <Engine>
+    <EngineTimeout value="60000"/>
+  </Engine>
+  
+  
+  <UserData>
+  </UserData>
+    
+  <Applications>
+    <Application>
+      
+	  <HTTP_Proxy value=""/>
+      <General>
+        <Name value="Menu"/>
+        <StartPage value="file://%INSTALLDIR%\HTML\Menu.htm" name="Menu"/>
+      </General>
+      
+      <WebDB>
+        <WebStorageDBPath value="file://%INSTALLDIR%"/>
+        <WebSQLDBQuota value="5000000"/>
+        <WebSQLDBPath value="file://%INSTALLDIR%"/>
+      </WebDB>
+      <ApplicationCache>
+        <ApplicationCachePath VALUE="file://%INSTALLDIR%"/>
+        <ApplicationCacheQuota VALUE="5000000"/>
+      </ApplicationCache>
+
+      <NPAPI>
+        <NPAPIDirectory value="file://%INSTALLDIR%\NPAPI\"/>
+        <Preloads>
+          <PreloadLegacyGeneric value="1"/>
+          <PreloadLegacyODAX    value="1"/>
+          <PreloadLegacyNoSIP   value="1"/>
+          <PreloadLegacyAirBeam value="1"/>
+          <PreloadLegacyAPD     value="1"/>
+          <PreloadJSObjects     value="1"/>
+        </Preloads>
+      </NPAPI>
+      
+      <Preloads>
+      </Preloads>
+	  
+	  <Scrolling>
+		<ScrollTechnique VALUE="FingerScroll"/>
+	  </Scrolling>
+	  <!-- Authentication -->
+		<!--  Used for Digest Access Authentication and Basic Access Authentication -->
+		<!--  Global  -->
+		<!--Username VALUE="user1"/ -->
+		<!--Password VALUE="user1"/ -->
+	  <!--/Authentication -->
+      
+      <HTMLStyles>
+        <FitToScreenEnabled    value="1" />
+        <ClearTypeEnabled      value="1" />
+        <JavascriptEnabled     value="1" />
+        <TextSelectionEnabled  value="0" />
+        <FontFamily            value="Tahoma" />
+      </HTMLStyles>
+      
+      <SIP>
+        <ResizeOnSIP  value="0"/>
+      </SIP>
+
+      <System>
+        <LowBatteryScan  value="0"/>
+      </System>
+
+      <Sound>
+        <DecodeVolume           value="5"/>
+        <DecodeFrequency        value="0xBB8"/>
+        <InvalidDecodeFrequency value="0x9C4"/>
+        <DecodeDuration         value="250"/>
+        <ScanDecodeWav          value=""/>
+        <ScanInvalidWav         value=""/>
+        <ImagerCaptureWav       value=""/>
+      </Sound>
+      
+      <GUI>
+        <SignalRefresh      value="5000"/>
+        <BatteryRefresh     value="5000"/>
+        <HourglassEnabled   value="1" />
+        <HourglassLeft      value="" />
+        <HourglassTop       value="" />
+      </GUI>
+      
+      <Navigation>
+        <BadLinkURI value="file://%INSTALLDIR%\HTML\BadLink.html"/>
+        <UserAgent  value="Mozilla/5.0 (SymbolWebKit; U; /%p) AppleWebKit/%w (KHTML, like Gecko) Version/%e Mobile Safari/%w" />
+		<NetworkCookieDatabase value="file://%INSTALLDIR%\cookies.db"/>
+		<ViewportEnabled value="1"/>
+		<!--ViewportWidth value="640"/-->
+      </Navigation>
+     
+    
+	<DeviceKeys>
+        <EnableCtrlKey_A    value="1"/>
+        <EnableCtrlKey_C    value="1"/>
+        <EnableCtrlKey_V    value="1"/>
+        <EnableCtrlKey_O    value="0"/>
+        <EnableCtrlKey_P    value="0"/>
+      </DeviceKeys>
+  
+      <DefaultMetaTags>
+      </DefaultMetaTags>
+    
+    </Application>
+  </Applications>
+</Configuration>

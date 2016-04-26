@@ -446,12 +446,6 @@ void CSystemImplBase::hideSplashScreen(rho::apiGenerator::CMethodResult& result)
     //Android only
 }
 
-void CSystemImplBase::getIsMotorolaDevice(rho::apiGenerator::CMethodResult& oResult)
-{
-  oResult.set(false);
-}
-
-
 }
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)

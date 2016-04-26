@@ -1,0 +1,59 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>usPlanetreportCheckDigit</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Postal</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the usPlanet ReportCheckDigit property which enables reporting of the bar code check digit(s).</SYNOPSIS>
+		<SYNTAX>
+            		<USAGE>
+               		 <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="usPlanetreportCheckDigit:[parameter]"&gt;</EXAMPLE>
+            		</USAGE>
+        	</SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>usPlanetreportCheckDigit</NAME>
+                		<VALUES>true/false</VALUES>
+				<DESC>Enables reporting of the check digit.</DESC>
+				<DEFAULT>false</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only usPlanet labels with the ReportCheckDigit property set:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="usPlanet:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="usPlanetreportCheckDigit:true"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="usPlanet:enabled;usPlanetreportCheckDigit:true;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>or</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-usPlanet" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-usPlanetreportCheckDigit" Content="true"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>Android only.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device that supports usPlanet.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>usPlanet</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

@@ -1,0 +1,86 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+	  <JSOBJECT>False</JSOBJECT>
+		<NAME>history</NAME>
+		<PATH>Device</PATH>
+		<TYPE>META Tag</TYPE>
+		<SYNOPSIS>is an action tag used to navigate forward or backward through the page history.</SYNOPSIS>
+		<SYNTAX>
+            <USAGE>
+                <EXAMPLE>&lt;META HTTP-Equiv="History" content="Back:1"&gt;</EXAMPLE>
+            </USAGE>
+            <USAGE>
+                <EXAMPLE>&lt;META HTTP-Equiv="History-Back" contents="1"&gt;</EXAMPLE>
+            </USAGE>
+        </SYNTAX>
+        <PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>back</NAME>
+				<DESC>Navigates back one page in the browser history.  This tag will have no effect if there is no browser history.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>forward</NAME>
+				<DESC>Navigates forward one page in the browser history.  This tag will have no effect if not predicated by a 'Back' command.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+        </PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>back</NAME>
+                <VALUES>Positive Integer specifying the number of pages to navigate back</VALUES>
+				<DESC>
+                    Navigates back the specified number of pages in the browser history.  This tag will have no effect if there is no browser history.
+                </DESC>
+				<DEFAULT>1.  See parameters without attributes section.</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>forward</NAME>
+                <VALUES>Positive Integer specifying the number of pages to navigate forward</VALUES>
+				<DESC>
+                    Navigates forward the specified number of pages in the browser history.  This tag will have no effect if there is no browser history.
+                </DESC>
+				<DEFAULT>1.  See parameters without attributes section.</DEFAULT>
+			</PARAM>	
+        </PARAMS_WITH_ATTRIBUTES>
+        
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example navigates back one page when the delete key is pressed (regardless of the Accelerate Key mode)</DESC>
+<CODE>
+&lt;META HTTP-Equiv="AccelerateKey" Content="OFF"&gt;
+&lt;META HTTP-Equiv="OnKey0x09" Content="onBackspacePressed"&gt;
+&lt;script&gt;
+    function onBackspacePressed()
+    {
+        history.back = 1;
+    }
+&lt;/script&gt;
+</CODE>
+			</EXAMPLE>
+
+		</EXAMPLES>
+		<REMARKS>
+<COMMENT>
+<COMMENT_HEADING>Deprecation</COMMENT_HEADING>
+<COMMENT_DATA>
+This tag deprecates the history:back URL
+</COMMENT_DATA>
+</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>Windows CE, Windows Mobile, Windows Mobile SE</PLATFORM>
+			<APPLIES>This tag is page specific and is actioned immediately.</APPLIES>
+			<REQ>RhoElements</REQ>
+			<VER_INTRODUCED>N/A</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC>AccelerateKey</TOPIC>
+			<TOPIC>BackButton</TOPIC>
+			<TOPIC>ForwardButton</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

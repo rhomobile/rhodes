@@ -1,0 +1,277 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>battery</NAME>
+		<PATH>Indicators</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to set the attributes of the battery indicator and retrieve the status of the battery.</SYNOPSIS>
+		<SYNTAX>
+            <USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Battery" content="[parameter]"&gt;</EXAMPLE>
+            </USAGE>
+            <USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Battery" content="BatteryEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+            </USAGE>
+            <USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Battery" content="SmartBatteryEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+            </USAGE>
+            <USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="Battery" content="BatteryDiagnosticEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+            </USAGE>
+        </SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>getSmartBatteryStatus</NAME>
+				<DESC>Triggers a SmartBatteryEvent.  This returns attributes about the battery such as number of charge cycles and date of manufacture. Please note that the Smart Battery is only supported on Symbol Technologies Inc Devices running Windows Embedded Handheld or CE and is dependant on the available hardware.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>getBatteryStatus</NAME>
+				<DESC>Triggers a BatteryEvent.  This returns attributes about the battery such as battery life and AC line status etc.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>		
+      			<PARAM>
+				<NAME>getBatteryDiagnostics</NAME>
+				<DESC>Triggers a BatteryDiagnosticEvent.  This returns attributes about the battery such as battery expiration, charge time predictions and more.</DESC>
+				<DEFAULT></DEFAULT>
+			</PARAM>					
+		</PARAMS_NO_ATTRIBUTES>		
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>visibility</NAME>
+				<VALUES>visible or hidden</VALUES>
+				<DESC>Sets whether or not the battery indicator is shown</DESC>
+				<DEFAULT>Hidden</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>left</NAME>
+                <VALUES>Pixel value</VALUES>
+				<DESC>Sets the horizontal position of the battery indicator in pixels.  If it is negative the then indicator will be moved off screen</DESC>
+				<DEFAULT>Top left of screen</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>top</NAME>
+           		<VALUES>Pixel value</VALUES>
+				<DESC>Sets the vertical position of the battery indicator in pixels. if value is negative then indicator will be moved off screen</DESC>
+				<DEFAULT>Top left of screen</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>layout</NAME>
+                <VALUES>Left, Right, Up, Down</VALUES>
+				<DESC>Sets the orientation of the battery icon</DESC>
+				<DEFAULT>Right</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>color</NAME>
+           		<VALUES>Hex Values (#000000 - #FFFFFF)</VALUES>
+				<DESC>RGB value that sets the color of the battery indicator using HTML web colors</DESC>
+				<DEFAULT>#000000</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>sampleInterval</NAME>
+           		<VALUES>Refresh interval</VALUES>
+				<DESC>The battery refresh interval, specified in milli seconds. A value of 0 disables the automatic refresh. </DESC>
+				<DEFAULT>5000 milli seconds</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>setSystemNotifications</NAME>
+           		<VALUES>Enabled, Disabled</VALUES>
+				<DESC>Sets the system notifications for battery. If we enable the system Notifications then its recommended to disable the auto refresh by setting the sampleInterval to 0 otherwise the eventSource in the battery status gets overwritten to "Timed Interval". Please note that the system notifications are reported only once by the operating system and hence the low battery conditions are not reported if the device is already in low battery condition.</DESC>
+				<DEFAULT>Disabled</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>tripDuration</NAME>
+           			<VALUES>Positive number of minutes</VALUES>
+				<DESC>Sets the desired working time out of the cradle, which is used in subsequent power related calculations. If set to 0, the default value of 45 minutes will be used.  Applicable to MC18</DESC>
+				<DEFAULT>45 minutes</DEFAULT>
+			</PARAM>
+			<PARAM>
+				<NAME>averageCurrentConsumption</NAME>
+           			<VALUES>Positive number in mA</VALUES>
+				<DESC>Sets an average current consumption that is used in subsequent power related calculations. If set to 0, the value will be provided by driver based on the running average.  Applicable to MC18</DESC>
+				<DEFAULT>Driver dependent</DEFAULT>
+			</PARAM>			
+        	</PARAMS_WITH_ATTRIBUTES>
+        <RETURNS>
+            <TAG>
+                <TAG_NAME>batteryEvent</TAG_NAME>
+				<TAG_NOTES>The BatteryEvent gives an indication of the remaining battery level.  Once registered for you will receive a BatteryEvent at regular intervals, as specified by the BatteryRefresh configuration setting.</TAG_NOTES>
+                <RETVAL>
+                    <NAME>acLineStatus</NAME>
+                    <DESC>The AC line status (whether or not on external power).</DESC>
+                </RETVAL>				
+                <RETVAL>
+                    <NAME>batteryLifePercent</NAME>
+                    <DESC>Displays the remaining battery power as a percentage. For some Zebra Android devices, the API will return a value of 255 at all times while the battery is being charged. The same value also might be displayed for a few seconds initially after reboot while the battery is being discharged. This is in accordance with hardware design specs and should be taken into account when using the API.</DESC>
+                </RETVAL>	
+                <RETVAL>
+                    <NAME>backupBatteryLifePercent</NAME>
+                    <DESC>Remaining backup battery power as a percentage.</DESC>
+                </RETVAL>
+		<RETVAL>
+                    <NAME>eventSource</NAME>
+                    <DESC>Reason for event firing ("Timed Interval", "User Request", "Low Battery", "Critical Battery", "AC Connect" and "AC Disconnect"). "Timed Interval" is when the status gets refreshed automatically and "User Request" is when the user manually calls getBatteryStatus method and the remaining are generated through system notifications.</DESC>
+                </RETVAL>
+	    	<RETVAL>
+                    <NAME>batteryLifeKnown</NAME>
+                    <DESC>Battery life will not be readable for a period of time after removing from an AC power source. This parameter will state whether the batteryLifePercent is accurate ("true"/"false").</DESC>
+                </RETVAL>
+               	<RETVAL>
+                    <NAME>backupBatteryLifeKnown</NAME>
+                    <DESC>Backup battery life will not be readable for a period of time after removing from an AC power source. This parameter will state whether the backupBatteryLifePercent is accurate ("true"/"false").</DESC>
+                </RETVAL>
+            </TAG>
+            <TAG>
+                <TAG_NAME>smartBatteryEvent</TAG_NAME>
+				<TAG_NOTES>Returns various parameters relating to battery charge and battery hardware.  Not all return values may be supported by all batteries. Not supported on Android.</TAG_NOTES>
+                <RETVAL>
+                    <NAME>serialNumber</NAME>
+                    <DESC>The serial number of the battery</DESC>
+                </RETVAL>				
+                <RETVAL>
+                    <NAME>partNumber</NAME>
+                    <DESC>The Symbol part number of the battery, e.g. 21-65587 Rev. A</DESC>
+                </RETVAL>				
+                <RETVAL>
+                    <NAME>batteryChargeCycles</NAME>
+                    <DESC>The number of times the battery has been charged.  Partial charges are aggregated, therefore each charge cycle count represents one full charge / discharge cycle.  The battery charge cycle count gets updated when the battery charging state changes from charging to not charging.  Cycle count may not accuratley predict the life of a battery.</DESC>
+                </RETVAL>				
+                <RETVAL>
+                    <NAME>ratedCapacity</NAME>
+                    <DESC>Rated capacity of the battery in mAh</DESC>
+                </RETVAL>				
+                <RETVAL>
+                    <NAME>manufactureDate</NAME>
+                    <DESC>Date the battery was manufactured expressed as MM/DD/YYYY.</DESC>
+                </RETVAL>				
+                <RETVAL>
+                    <NAME>stateOfHealth</NAME>
+                    <DESC>"Healthy", "Unhealthy" or "Unknown"</DESC>
+                </RETVAL>				
+            </TAG>
+            <TAG>
+                <TAG_NAME>BatteryDiagnosticEvent</TAG_NAME>
+	    	<TAG_NOTES>The BatteryDiagnosticEvent returns parameters for further battery analysis. Not all return values may be supported by all batteries.</TAG_NOTES>
+                <RETVAL>
+                    <NAME>stateOfHealthPercent</NAME>
+                    <DESC>The current maximum battery capacity as a percentage of the battery rated capacity.</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>batteryCapacityPercent</NAME>
+                    <DESC>The remaining battery capacity percentage. </DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>batteryCapacityMinutes</NAME>
+                    <DESC>The remaining battery capacity in minutes. Calculations are based on the AverageCurrentConsumption parameter. </DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>batteryExpirationInMonths</NAME>
+                    <DESC>Prediction in number of months when the battery should be replaced.</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>previousBatteryReplacement</NAME>
+                    <DESC>Duration in Days since the battery was last Replaced.</DESC>
+                </RETVAL>
+                	
+                <RETVAL>
+                    <NAME>timeSinceLastColdBoot</NAME>
+                    <DESC>Time in minutes since the device was last cold booted.</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>requiredChargeTime</NAME>
+                    <DESC>Calculates charge time required in minutes based on the TripDuration and AverageCurrentConsumption parameters.</DESC>
+                </RETVAL>
+                <RETVAL>
+                    <NAME>chargingTime</NAME>
+                    <DESC>Time in minute’s terminal was in cradle charging.</DESC>
+                </RETVAL>
+                	
+            </TAG>
+	    	</RETURNS>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example shows the battery indicator, sets the x and y co-ordinates to 50, the color of the indicator to red and positions the indicator at the bottom of the screen growing from right to left:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="battery" Content="visibility:visible"&gt;
+&lt;META HTTP-Equiv="battery" Content="Left:50"&gt;
+&lt;META HTTP-Equiv="battery" Content="Top:50"&gt;
+&lt;META HTTP-Equiv="battery" Content="Layout:Left"&gt;
+&lt;META HTTP-Equiv="battery" Content="Color:#FF0000"&gt;   
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Example shown above can also be written as shown below </DESC>
+<CODE>
+&lt;META HTTP-Equiv="Battery" Content="Left:50;Top:50;Layout:Left;color:#FF0000;visibility:visible"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Parameters can also be concatenated as shown below</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Battery-Left" Content="Left:50"&gt;
+&lt;META HTTP-Equiv="Battery-Top" Content="Top:50"&gt;
+&lt;META HTTP-Equiv="Battery-Color" Content="Color:#FF0000"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example navigates to a new page with parameters upon a battery status change.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="Battery" Content="BatteryEvent:url('mypage.asp?Data=%s&amp;Source=%s&amp;Type=%s&amp;Time=%s&amp;Length=%s')"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example alerts the user with battery notifications such as low battery warning.</DESC>
+<CODE>
+&lt;HTML&gt;
+	&lt;HEAD&gt;
+	&lt;TITLE&gt;Low Battery Notification&lt;/TITLE&gt;
+	&lt;META HTTP-EQUIV="battery" content="sampleInterval:0;batteryEvent:url('javascript:lowBattery(%json);')"&gt;			
+	&lt;/HEAD&gt;	
+	&lt;SCRIPT type="text/javascript"&gt;
+	function lowBattery(jsonObject)
+	{
+		alert("Event: " + jsonObject.eventSource + " ,Battery remaining: " + jsonObject.batteryLifePercent + 
+		"% ,Backup battery remaining:" + jsonObject.backupBatteryLifePercent + "% ,AC line status: " + jsonObject.acLineStatus);		
+	}			
+	&lt;/SCRIPT&gt;
+	&lt;BR&gt;&lt;INPUT type="button" value="EnableNotifications" onclick="battery.setSystemNotifications='Enabled';"&gt;
+	&lt;BR&gt;&lt;INPUT type="button" value="DisableNotifications" onclick="battery.setSystemNotifications='Disabled';"&gt;
+&lt;/HTML&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+<REMARKS>
+	<COMMENT>
+		<COMMENT_HEADING>Overlapping</COMMENT_HEADING>
+		<COMMENT_DATA>
+			Do not display the Battery indicator overlapping with the Signal indicator.
+		</COMMENT_DATA>
+	</COMMENT>
+	<COMMENT>
+		<COMMENT_HEADING>Indicator Positions</COMMENT_HEADING>
+		<COMMENT_DATA>
+			For an illustrative guide to the meaning of the Layout parameter, see the 'Indicator Positions' section.
+		</COMMENT_DATA>
+	</COMMENT>
+	<COMMENT>
+		<COMMENT_HEADING>Parameter Deprecation</COMMENT_HEADING>
+		<COMMENT_DATA>
+			For users migrating their Browser apps to RhoElements please note that due to the difference in the battery indicator graphic, the GraphPosition and IconPosition parameters have been deprecated. Please use the Layout parameter instead.
+		</COMMENT_DATA>
+	</COMMENT>
+</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices. Android does not support Smart battery information, battery diagnostics, getBatteryStatus, sampleInterval, setSystemNotifications and eventSource.</PLATFORM>
+			<APPLIES>Partially Persistent - Changes to this module will persist when navigating to a new page with the exception of the events; these will be cleared on page navigation.</APPLIES>
+			<REQ>None.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="./">Signal</TOPIC>
+			<TOPIC RELPATH ="../Getting%20Started/">IndicatorPositions</TOPIC>
+			<TOPIC RELPATH="../Getting%20Started/">ConfigurationSettings</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

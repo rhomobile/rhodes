@@ -3,7 +3,7 @@ entry: Init_ScreenOrientation_extension
 libraries: ["screenorientation"]
 android:
   source_list: ext/platform/android/ext_java.files
-  rhodes_listener: com.motorolasolutions.rho.screenorientation.ScreenOrientationRhoListener
+  rhodes_listener: com.rho.screenorientation.ScreenOrientationRhoListener
   exttype: rakefile
 
 project_paths:

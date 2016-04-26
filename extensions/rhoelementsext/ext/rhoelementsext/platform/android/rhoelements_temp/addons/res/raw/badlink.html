@@ -1,0 +1,229 @@
+<html>
+<head>
+	<title>BadLink</title>
+	<script type="text/javascript">
+		var currentZoom = 1;
+		var timeout;
+		var stopped;
+		var unlicensed;
+		
+		window.addEventListener('resize', resize);
+		window.addEventListener('load', loadEvent);
+	
+		function loadEvent()
+		{
+			//Determine what type of BadLink this is by checking the GET Parameters
+			timeout	= getParameter('Timeout');
+			stopped	= getParameter('Stopped');
+			unlicensed = getParameter('Unlicensed');
+			
+			var badlink = getParameter('BadLink');
+			
+			if(stopped == 'true' && badlink != '1')
+			{
+				document.getElementById('cantFindPage').className = 'gone';
+				document.getElementById('stopped').className = '';
+			}
+			else if(timeout == 'true' && badlink != '1')
+			{
+				document.getElementById('cantFindPage').className = 'gone';
+				document.getElementById('timedOut').className = '';
+			}
+			else if(unlicensed == 'true' && badlink != '1')
+			{
+				document.getElementById('cantFindPage').className = 'gone';
+				document.getElementById('unlicensedApp').className = '';
+			}
+			resize();
+		}
+		
+		/**
+		 * Resizes the page if not close to the dimensions of 640*480
+		 */
+		function resize()
+		{
+			var newZoom;
+			var currentHeight = window.innerHeight;
+			if(currentHeight > 650 || currentHeight < 600)
+			{
+				newZoom = currentHeight / 620;
+			}
+			else
+			{
+				newZoom = 1;
+			}
+			
+			if(newZoom > (currentZoom + 0.1) || newZoom < (currentZoom - 0.1))
+			{
+				currentZoom = newZoom;
+				document.getElementsByTagName('html')[0].style.zoom = newZoom;
+			}
+		}
+		
+		/**
+		 * Finds GET Parameters from the URL. Adapted from article:
+		 * http://www.netlobo.com/url_query_string_javascript.html
+		 */
+		function getParameter(paramName)
+		{
+			paramName = paramName.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+			var regexExp = "[\\?&]"+paramName+"=([^&#]*)";
+			var regex = new RegExp( regexExp );
+			var results = regex.exec( window.location.href );
+			if( results == null )
+				return "";
+			else
+				return results[1];
+		}
+		
+		/**
+		 * Loads the page in the BadLink GET parameter
+		 */
+		function reload()
+		{
+			window.location.href = decodeURIComponent(getParameter('BadLink'));
+		}
+		function goback()
+		{
+		
+		if(stopped == 'true' || timeout == 'true' || unlicensed == 'true' )
+		{
+			location.href='history:back';
+		}
+		else
+		{
+			location.href='history:twiceback';	
+		}
+		
+			
+		}
+	</script>
+	
+	<style type="text/css">
+		*
+		{
+			font-family: "Droid Sans", Tahoma, "sans-serif";
+			color: white;
+			padding: 0px;
+		}
+		body
+		{
+			background-color: #4D4D4D;
+			padding: 0px;
+			margin: 0px;
+			height: 100%;
+			overflow: hidden;
+		}
+		h1
+		{
+			font-size: 29px;
+			margin: 26px 0px 0px 0px;
+		}
+		h2
+		{
+			margin: 10px 0px 0px 0px;
+			font-size: 14px;
+		}
+		button
+		{
+			height: 60px;
+			width: 272px;
+			background: url(images/backNorm.png) no-repeat center center;
+			margin: 0px 0px 10px 0px;
+			font-size: 26px;
+			border: none;
+		}
+		button:active
+		{
+			background: url(images/backActive.png) no-repeat center center;
+		}
+		button:focus
+		{
+			outline: none;
+			background: url(images/backFocused.png) no-repeat center center;
+		}
+		.gone
+		{
+			display: none;
+		}
+		.spacer
+		{
+			height: 60px;
+			margin: 0px;
+		}
+		#body
+		{
+			display: table-cell;
+			height: 100%;
+			padding: 0px;
+			text-align: center;
+			background: #4D4D4D url(images/blback.png) repeat;
+			border-radius: 10px;
+		}
+		#window
+		{
+			display:table;
+			position: absolute;
+			top: 0px;
+			left 0px;
+			width: 100%;
+			height: 100%;
+			padding: 12px;
+			border-radius: 10px;
+			box-sizing: border-box;
+		}
+		#title
+		{
+			text-align:left;
+			padding: 15px 18px;
+			color: #4B4B4B;
+			font-weight: bold;
+			font-size: 20px;
+			background: #CCCCCC url(images/backgroundtitle.png) repeat-x;
+			height: 22px;
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+			vertical-align: middle;
+			margin: 0px 0px 72px 0px;
+		}
+	</style>
+</head>
+<body>
+	<div id="window">
+		<div id="body">
+			<div id="title">Error</div>
+			<div id="icon"><img src="images/alert.png" alt="Alert"></img></div>
+			<div id="cantFindPage">
+				<h1>Unable to find page</h1>
+				<h2>Press back button to return to the previous page</h2>
+				<div class="spacer"></div>
+				<!--<button id="button" onclick="location.href = 'history:back'" onkeypress="location.href = 'history:back'" tabindex="1">Back</button>-->
+				<button id="button" onclick="goback();" onkeypress="goback();" tabindex="1">Back</button>
+			</div>
+			<div id="timedOut" class="gone">
+				<h1>Navigation timed out</h1>
+				<h2>Press back button to return to the previous page or press retry button to attempt to load the page again</h2>
+				<div class="spacer"></div>
+				<button onclick="reload()" onkeypress="reload()" tabindex="1">Retry</button><br />
+				<!--<button onclick="location.href = 'history:back'" onkeypress="location.href = 'history:back'" tabindex="2">Back</button>-->
+				<button onclick="goback();" onkeypress="goback();" tabindex="2">Back</button>
+			</div>
+			<div id="stopped" class="gone">
+				<h1>Navigation stopped</h1>
+				<h2>Press back button to return to the previous page or press reload button to reload the current page</h2>
+				<div class="spacer"></div>
+				<button onclick="reload()" onkeypress="reload()" tabindex="1">Reload</button><br />
+				<!--<button id="button" onclick="location.href = 'history:back'" onkeypress="location.href = 'history:back'" tabindex="1">Back</button>-->
+				<button id="button" onclick="goback();" onkeypress="goback();" tabindex="1">Back</button>
+			</div>
+			<div id="unlicensedApp" class="gone">
+				<h1>Not Licensed</h1>
+				<h2>Your Application license does not allow you to visit this URL</h2>
+				<div class="spacer"></div>
+				<!--<button onClick="location.href = 'history:back'" onKeyPress="location.href = 'history:back'" tabindex="2">Back</button>-->
+				<button onClick="goback();" onKeyPress="goback();" tabindex="2">Back</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

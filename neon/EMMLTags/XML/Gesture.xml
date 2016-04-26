@@ -1,0 +1,347 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>gesture</NAME>
+		<PATH>Gesture</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to define touch screen.</SYNOPSIS>
+
+	<SYNTAX>
+    <USAGE>
+      <EXAMPLE>&lt;META HTTP-Equiv="Gesture" content="[method / parameter]"&gt;</EXAMPLE>
+    </USAGE>
+    <USAGE>
+      <EXAMPLE>&lt;META HTTP-Equiv="Gesture" contents="Detected:url('[jsFunction | url]')"&gt;</EXAMPLE>
+    </USAGE>
+  </SYNTAX>
+
+  <PARAMS_WITH_ATTRIBUTES>
+    <PARAM>
+      <NAME>type</NAME>
+        <VALUES>Linear, Circle, Hold, Tilt and Shake</VALUES>
+        <DESC>Specifies the type of gesture being created. Must be the first tag when creating a gesture.</DESC>
+        <DEFAULT>None</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>id</NAME>
+        <VALUES>Any string</VALUES>
+        <DESC>ID used to identify gesture when detected.</DESC>
+        <DEFAULT>Depends on gesture type and preset used, if any. See remarks.</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>preset</NAME>
+        <VALUES>Depends on gesture type. See remarks.</VALUES>
+        <DESC>Name of predefined set of parameter values.</DESC>
+        <DEFAULT>Depends on gesture type. See remarks.</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>diagnostics</NAME>
+        <VALUES>TRUE, FALSE</VALUES>
+        <DESC>Enables drawing of diagnostic information to provide guidance showing whether or not the gesture will be detected.  Note that by their very nature Diagnostics are not designed to be seen by the user.</DESC>
+        <DEFAULT>FALSE</DEFAULT>
+    </PARAM>	
+    
+    <PARAM>
+      <NAME>startX</NAME>
+        <VALUES>0 to 10000</VALUES>
+        <DESC>Linear Gestures: Starting point of gesture.</DESC>
+        <DEFAULT>10% of screen width.</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>startY</NAME>
+        <VALUES>0 to 10000</VALUES>
+        <DESC>Linear Gestures: Starting point of gesture.</DESC>
+        <DEFAULT>50% of screen height.</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>endX</NAME>
+        <VALUES>0 to 10000</VALUES>
+        <DESC>Linear Gestures: End point of gesture.</DESC>
+        <DEFAULT>90% of screen width.</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>endY</NAME>
+        <VALUES>0 to 10000</VALUES>
+        <DESC>Linear Gestures: End point of gesture.</DESC>
+        <DEFAULT>50% of screen height.</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>skew</NAME>
+        <VALUES>0 to 90</VALUES>
+        <DESC>Linear Gestures: Maximum angle which straight line through mouse track can make to the gesture path.</DESC>
+        <DEFAULT>20</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>deviation</NAME>
+        <VALUES>0 to 100</VALUES>
+        <DESC>Linear Gestures: Maximum deviation of mouse track from a straight line.</DESC>
+        <DEFAULT>20</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>regionWidth</NAME>
+        <VALUES>0 to 10000</VALUES>
+        <DESC>Linear Gestures: Width of regions into which gesture path is divided. Setting very small (e.g. 1) or large (e.g. equal to the gesture line length) values is allowed but may lead to unexpected results.</DESC>
+        <DEFAULT>10% of screen width.</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>centerX</NAME>
+        <VALUES>-10000 to 10000</VALUES>
+        <DESC>Circle &amp; Hold Gestures: Center of gesture.</DESC>
+        <DEFAULT>Center of screen.</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>centerY</NAME>
+        <VALUES>-10000 to 10000</VALUES>
+        <DESC>Circle &amp; Hold Gestures: Center of gesture.</DESC>
+        <DEFAULT>Center of screen.</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>radius</NAME>
+        <VALUES>1 to 10000</VALUES>
+        <DESC>Circle &amp; Hold Gestures: Radius (in pixels) of gesture.</DESC>
+        <DEFAULT>33% of screen width or height, whichever is smaller.</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>start</NAME>
+        <VALUES>0 to 10000</VALUES>
+        <DESC>Circle Gestures: Starting angle of gesture in degrees. Angles are measured clockwise from 3 o'clock position.</DESC>
+        <DEFAULT>0</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>end</NAME>
+        <VALUES>0 to 10000</VALUES>
+        <DESC>Circle Gestures: Ending angle of gesture in degrees. Angles are measured clockwise from 3 o'clock position.</DESC>
+        <DEFAULT>180</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>tolerance</NAME>
+        <VALUES>0 to 10000</VALUES>
+        <DESC>Linear &amp; Circle Gestures: How far (in pixels) the mouse track can vary from the gesture path.</DESC>
+        <DEFAULT> Linear: 25% of screen height. Circle: 16% of screen width.</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>sensitivity</NAME>
+        <VALUES>0 to 100</VALUES>
+        <DESC>Linear &amp; Circle Gestures: Percentage of gesture path which mouse track must cover. Rounds down if this results in a non-whole number of regions.</DESC>
+        <DEFAULT>50</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>delay</NAME>
+        <VALUES>>=0</VALUES>
+        <DESC>Hold Gestures: Time (in milliseconds) that screen must be touched within gesture before first detected.</DESC>
+        <DEFAULT>1000</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>interval</NAME>
+        <VALUES>>=0</VALUES>
+        <DESC>Hold Gestures: Time (in milliseconds) between subsequent detections while screen continues to be touched. Zero means no further detections.  This parameter is ignored if the detection event is not set to navigate to a new page.</DESC>
+        <DEFAULT>0</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>TargetX</NAME>
+        <VALUES>-90 to 90</VALUES>
+        <DESC>Tilt Gestures: Target orientation of device on X-axis</DESC>
+        <DEFAULT>0</DEFAULT>
+    </PARAM>	
+	    <PARAM>
+      <NAME>TargetY</NAME>
+        <VALUES>-90 to 90</VALUES>
+        <DESC>Tilt Gestures: Target orientation of device on Y-axis</DESC>
+        <DEFAULT>0</DEFAULT>
+    </PARAM>
+	    <PARAM>
+      <NAME>TargetZ</NAME>
+        <VALUES>-90 to 90</VALUES>
+        <DESC>Tilt Gestures: Target orientation of device on Z-axis</DESC>
+        <DEFAULT>90</DEFAULT>
+    </PARAM>
+    <PARAM>
+      <NAME>TiltTolerance</NAME>
+        <VALUES>0 to 90</VALUES>
+        <DESC>Tilt Gestures: How close the device must be to the target orientation.</DESC>
+        <DEFAULT>10</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>Hysteresis</NAME>
+        <VALUES>0 to 90</VALUES>
+        <DESC>Tilt Gestures: How far the device must move away from the target orientation before the gesture can be detected again.</DESC>
+        <DEFAULT>10</DEFAULT>
+    </PARAM>		
+    <PARAM>
+      <NAME>Threshold</NAME>
+        <VALUES>0 to 1000</VALUES>
+        <DESC>Shake Gestures: How vigorously the device must be shaken. The smaller the value the more vigorous.</DESC>
+        <DEFAULT>500</DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>Quiet</NAME>
+        <VALUES>>=0</VALUES>
+        <DESC>Shake Gestures: Time (in milliseconds) that the device must be still before another shake gesture can be detected.</DESC>
+        <DEFAULT>1000</DEFAULT>
+    </PARAM>	
+  </PARAMS_WITH_ATTRIBUTES>
+
+  <PARAMS_NO_ATTRIBUTES>
+    <PARAM>
+      <NAME>create</NAME>
+        <DESC>Creates the previously defined gesture. Must be the last tag when creating a gesture.</DESC>
+        <DEFAULT></DEFAULT>
+    </PARAM>	
+    <PARAM>
+      <NAME>delete</NAME>
+        <DESC>Deletes the gesture last defined by the ID property.  See example.</DESC>
+        <DEFAULT></DEFAULT>
+    </PARAM>	
+  </PARAMS_NO_ATTRIBUTES>
+  
+  <RETURNS>
+    <TAG>
+      <TAG_NAME>detected</TAG_NAME>
+      <RETVAL>
+        <NAME>id</NAME>
+        <DESC>The ID string of the detected gesture.</DESC>
+      </RETVAL>
+      <RETVAL>
+        <NAME>count</NAME>
+        <DESC>The number of times a hold gesture has been detected for a single press of the screen. Returns zero when the screen touch stops. Only applies to hold gestures.</DESC>
+      </RETVAL>
+    </TAG>
+  </RETURNS>
+  
+  <REMARKS>
+  <COMMENT>
+  	<COMMENT_HEADING>Devices lacking support</COMMENT_HEADING>
+  	<COMMENT_DATA>Due to platform limitations this API is not available on the following Symbol Technologies devices:</COMMENT_DATA>
+  	<COMMENT_DATA>1. Workabout Pro 4</COMMENT_DATA>
+  </COMMENT>
+    <COMMENT>
+      <COMMENT_HEADING>Presets and IDs</COMMENT_HEADING>
+      <COMMENT_DATA>
+The 'preset' tag is used to specify one of the preset values below. When a gesture definition is started
+using the 'type' tag its parameters are initially set to the preset shown as default.
+When a preset is specified for a gesture, including when it is first created, its ID is set to [gesture name]-[default preset name].
+E.g. a new linear gesture will have the ID 'linear-left-right'. This can be replaced (as can any preset value) by a subsequent parameter tag.
+      </COMMENT_DATA>
+      <COMMENTFIXEDWIDTH>
+GESTURE          POSSIBLE VALUES                                         		DEFAULT
+Linear           left-right, right-left, top-bottom, bottom-top          		left-right
+Circle           happy*, sad*                                            		happy
+Hold             center                                                  		center
+Tilt             face-up   (0, 0, 90), face-down  (0, 0, -90), 				face-up
+		 upright   (0, 90, 0), turn-down  (0, -90, 0),
+		 turn-left (90, 0, 0), turn-right (-90, 0, 0)
+Shake            normal                                                  		normal
+      </COMMENTFIXEDWIDTH>
+    </COMMENT>
+    <COMMENT>
+      <COMMENT_HEADING>* Meanings of Presets</COMMENT_HEADING>
+      <COMMENT_DATA>
+"Happy" means a 180 degree semi-circle, clockwise from the 3 o'clock position. "Sad" means a 180 degree semi-circle, clockwise from the 9 o'clock position.
+      </COMMENT_DATA>
+    </COMMENT>
+    <COMMENT>
+      <COMMENT_HEADING>Maximum Gesture Size</COMMENT_HEADING>
+      <COMMENT_DATA>
+There is no formal maximum size for a gesture, for example a circle gesture could require the user to move several times round the circle. However if the user draws such a gesture very slowly it's possible that too many stylus move points could be generated, and the gesture wouldn't be detected. The plugin has been tested with a circle gesture from 0 to 720 degrees and taking approximately 6 seconds to draw without problem.
+      </COMMENT_DATA>
+    </COMMENT>
+    <COMMENT>
+      <COMMENT_HEADING>Compatibility with other APIs and settings</COMMENT_HEADING>
+      <COMMENT_DATA>
+Gestures may behave strangely on some devices if you are using Finger Scrolling or if you have any of the debug buttons displayed like the 'backbutton' or 'forwardbutton'.  Particularly with the IE engine the screen will also scroll behind the gesture or the diagnostics will not persist respectively.
+      </COMMENT_DATA>
+    </COMMENT>
+    <COMMENT>
+      <COMMENT_HEADING>Common Pitfalls</COMMENT_HEADING>
+      <COMMENT_DATA>
+Do not use alert boxes within the Gesture-Detected Callback, doing so will steal focus from the gesture region.
+      </COMMENT_DATA>
+    </COMMENT>
+    <COMMENT>
+      <COMMENT_HEADING>Out-of-range Values</COMMENT_HEADING>
+      <COMMENT_DATA>
+Any parameter values out of the allowed range will be limited to the nearest allowed value. E.g. giving a sensitivity greater than 100 will use 100. Numeric parameters given as text will be treated as zero.
+      </COMMENT_DATA>
+    </COMMENT>
+    <COMMENT>
+      <COMMENT_HEADING>Diagnostics</COMMENT_HEADING>
+      <COMMENT_DATA>
+Note that diagnostics exist only for the purpose of understanding and evaluating the various parameters. They should not be enabled in the release version of the code. They may also not display correctly in every circumstance, e.g. when scrolling, or for certain sets of parameters, e.g. for nearly vertical linear gestures.
+Diagnostics are not available for Tilt and Shake gestures.
+      </COMMENT_DATA>
+    </COMMENT>
+  </REMARKS>
+
+  <EXAMPLES>
+    <EXAMPLE>
+      <DESC>
+        Create two gestures: a default left to right gesture with ID 'swipe', and a hold gesture at the top left
+        of the screen which will fire one time after 500 milliseconds with ID 'press'. The Javascript function onGesture()
+        is called when either gesture is detected.
+      </DESC> 
+      <CODE>
+&lt;META HTTP-Equiv="gesture" Content="type:linear"&gt;
+&lt;META HTTP-Equiv="gesture" Content="id:swipe"&gt;
+&lt;META HTTP-Equiv="gesture" Content="create"&gt;
+&lt;META HTTP-Equiv="gesture" Content="type:hold"&gt;
+&lt;META HTTP-Equiv="gesture" Content="center-x:60"&gt;
+&lt;META HTTP-Equiv="gesture" Content="center-y:60"&gt;
+&lt;META HTTP-Equiv="gesture" Content="radius:60"&gt;
+&lt;META HTTP-Equiv="gesture" Content="delay:500"&gt;
+&lt;META HTTP-Equiv="gesture" Content="interval:0"&gt;
+&lt;META HTTP-Equiv="gesture" Content="id:press"&gt;
+&lt;META HTTP-Equiv="gesture" Content="create"&gt;
+&lt;META HTTP-Equiv="gesture-detected" Content="url('Javascript:onGesture('%s','%s');')"&gt;
+      </CODE>
+    </EXAMPLE>
+    <EXAMPLE>
+      <DESC>
+        The following example deletes a gesture via a javascript function.
+      </DESC> 
+      <CODE>
+function deleteGesture(gestureID)
+{
+  gesture.id = gestureID;
+  gesture.delete();
+}	
+      </CODE>
+    </EXAMPLE>
+	  <EXAMPLE>
+      <DESC>
+        Create 3D gestures: a tilt gesture that is called when the device is placed in upright position and a shake gesture. 
+		The Javascript function onGesture() is called when either gesture is detected.
+      </DESC> 
+      <CODE>
+&lt;META HTTP-Equiv="gesture" Content="type:tilt"&gt;
+&lt;META HTTP-Equiv="gesture" Content="id:swipe"&gt;
+&lt;META HTTP-Equiv="gesture" Content="create"&gt;
+&lt;META HTTP-Equiv="gesture" Content="type:shake"&gt;        
+&lt;META HTTP-Equiv="gesture" Content="id:shake"&gt;
+&lt;META HTTP-Equiv="gesture" Content="create"&gt;
+&lt;META HTTP-Equiv="gesture-detected" Content="url('Javascript:onGesture(%json);')"&gt;
+
+&lt;script type="text/javascript"&gt;	
+function onGesture(jsonObject)
+{
+ var html = "&lt;b&gt;Gesture Detected: &lt;/b&gt;" + jsonObject.id + "";	 
+ gestureOut.innerHTML=html;	 
+}      
+&lt;/script&gt; 
+&lt;DIV id="gestureOut"&gt;Gesture Output will appear here&lt;/div&gt;
+      </CODE>
+    </EXAMPLE>
+  </EXAMPLES>
+  		<ADDITIONAL>
+			<PLATFORM>All supported devices. On Windows the tilt and shake gestures are supported only on MPA3.0 devices.</PLATFORM>
+			<APPLIES>Transient - any changes made by changing parameters will be lost when navigating to a new page.</APPLIES>
+			<REQ>Linear, Circle and Hold gestures require a touch screen.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+  		<SEEALSO>
+			<TOPIC RELPATH="../Getting Started/">GesturesOverview</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>
+

@@ -94,7 +94,7 @@ namespace RhoAppRunner
 
                 if (args.Length == 6)
                 {
-                    var remoteIso = app.GetIsolatedStore("Local");
+                    var remoteIso = app.GetIsolatedStore();
                     string targetDesktopFilePath = @args[5];
                     try
                     {

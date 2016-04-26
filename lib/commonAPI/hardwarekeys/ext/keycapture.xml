@@ -1,0 +1,371 @@
+<?xml version = "1.0"?>
+
+<API>
+    <MODULE name="KeyCapture" parent="Rho" license="Required">
+        <HELP_OVERVIEW>The KeyCapture module is used to intercept or override hardware keys. It is typically used to provide certain application functions through the use of the device's physical keyboard or other hardware enabled buttons.</HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API
+In order to use this API you must include the following extension in your `build.yml`
+    :::ruby
+    extensions: ["hardwarekeys"]
+
+The `hardwarekeys` extension is also included automatically if you specify the following in your `build.yml`
+    :::ruby
+    app_type: "rhoelements"
+
+> Note: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your build.yml as shown [here](../guide/build_config#other-build-time-settings).
+
+## JavaScript Usage
+Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript
+
+## Ruby Usage
+Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
+        </MORE_HELP>
+        <TEMPLATES>
+        </TEMPLATES>
+
+        <CONSTANTS>
+          <CONSTANT name="IPHONE_VOLUME_UP" value="10" type="INTEGER" productException="eb">
+              <DESC>IPhone volume up keyCode. Used to capture the volume up key when it is pressed.</DESC>
+          </CONSTANT>
+          <CONSTANT name="IPHONE_VOLUME_DOWN" value="11" type="INTEGER" productException="eb">
+              <DESC>IPhone volume down keyCode. Used to capture the volume down key when it is pressed.</DESC>
+          </CONSTANT>
+        </CONSTANTS>
+
+        <PROPERTIES access="STATIC">
+            <PROPERTY name="homeKeyValue" type="STRING" default="Disabled" generateAccessors="true">
+                <DESC>Specifies a key which, when pressed, will navigate to the start page as defined in the RhoElements configuration. Set to 'Disabled' to prevent this behavior.</DESC>
+                <PLATFORM>WM</PLATFORM>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS access="STATIC">
+            <METHOD name="captureKey" hasCallback="optional" runInThread="ui">
+                <DESC>Notifies the user when a specified physical key is pressed. The key event can also be absorbed so that it isn't delivered to the web view. If the callback is not set then the capture setting for the given key will be cleared.</DESC>
+            <PLATFORM>iOS, WM, Android</PLATFORM>
+            <PARAMS>
+                <PARAM name="dispatch" type="BOOLEAN">
+                        <PLATFORM>WM, CE, Android</PLATFORM>
+                    <DESC>After a key has been intercepted this parameter will determine whether or not it will still be received by the Web View. For example if you have focus in a text box and are intercepting keys set this to 'False' to avoid having the keys appear in the box. For iOS devices this parameter has no effect. If any of the volume keys are captured, real sound volume will not be changed.</DESC>
+                </PARAM>
+                <PARAM name="keyValue" type="STRING">
+                    <DESC>Specifies the identifier of the key to capture. This this value is the operating system's identifier for the key, not the ASCII representation of the key (for example, the 'a' key on Windows Mobile devices has a keyValue of 101). Alternatively, this parameter can be set to 'all'. This value will capture all hardware key presses. This parameter needs to be passed as a string (for example '101' or '0x65' or 'all').</DESC>
+                </PARAM>
+            </PARAMS>
+            <CALLBACK  type="HASH">
+                <PARAMS>
+                    <PARAM name="keyValue" type="INTEGER">
+                        <DESC>The internal representation of the key expressed in decimal, e.g. 13 is the return key.</DESC>
+                        <PLATFORM>WM, CE, Android</PLATFORM>
+                    </PARAM>
+                </PARAMS>
+            </CALLBACK>
+            </METHOD>
+
+            <METHOD name="remapKey" hasCallback="none" runInThread="ui">
+                <DESC>Captures and consumes a specific key value and spawns a new key event with the remapped key code. If remapTo is empty or null, the remapping for this key value will be cleared.</DESC>
+            <PLATFORM>WM, CE, Android</PLATFORM>
+            <PARAMS>
+                <PARAM name="keyValue" type="STRING">
+                    <DESC>Specifies the identifier of the key to capture. This this value is the operating system's identifier for the key, not the ASCII representation of the key (for example, the 'a' key on Windows Mobile devices has a keyValue of 101). This parameter needs to be passed as a string (for example '101' or '0x65').</DESC>
+                </PARAM>
+                <PARAM name="remapTo" type="STRING">
+                    <DESC>The operating system's identifier of the key press event to generate when the keyValue is captured.</DESC>
+                </PARAM>
+            </PARAMS>
+            </METHOD>
+
+            <METHOD name="captureTrigger" hasCallback="optional" runInThread="ui">
+                <DESC>Captures the event whenever a device hardware trigger is pressed or released. If the callback is not set then the capture setting for the trigger will be cleared. The trigger presses cannot be absorbed. All trigger presses will propagate to RhoElements.</DESC>
+            <PLATFORM>WM, CE, Android</PLATFORM>
+            <APPLIES msiOnly="true"></APPLIES>
+            <CALLBACK  type="HASH">
+                <PARAMS>
+                    <PARAM name="triggerFlag" type="INTEGER">
+                        <DESC>The combination of the triggers pressed and the state of the triggers. Older devices may report duplicate values for different triggers on the device due to a platform issue, this has been resolved in newer devices.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </CALLBACK>
+            </METHOD>
+        </METHODS>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+
+        <EXAMPLES>
+            <EXAMPLE title="Disabling all keys">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>This shows how to capture all hardware keys so that they are not propagated through to the page.</DESC>
+                        <CODE>
+                            <JAVASCRIPT>
+                    <![CDATA[
+    Rho.KeyCapture.captureKey(false, "ALL", callback);
+                            ]]>
+                            </JAVASCRIPT>
+                            <RUBY>
+                    <![CDATA[
+    Rho::KeyCapture.captureKey false, 'ALL',  url_for(:action => :keyCallback)
+                            ]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+
+            <EXAMPLE title="Capturing all keys">
+                <SECTIONS>
+                    <SECTION>
+                        <DESC>This shows how to get notified when any hardware key is pressed (except trigger keys). In this example, the keys will pass through to the web page.</DESC>
+                        <CODE>
+                            <JAVASCRIPT>
+                    <![CDATA[
+    function keyCallback(result)
+    {
+        alert("this key has just been pressed!: " + result.keyValue);
+    }
+
+    Rho.KeyCapture.captureKey(true, "ALL", keyCallback);
+                            ]]>
+                            </JAVASCRIPT>
+                            <RUBY>
+                    <![CDATA[
+    def keyCallback
+
+        Rho::Log("this key has just been pressed!: " + @params["keyValue"],"APP")
+    end
+
+    Rho::KeyCapture.captureKey true, 'ALL', url_for(:action => :keyCallback)
+                            ]]>
+                            </RUBY>
+                        </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+
+            <EXAMPLE title="Remapping ET1 P keys to arrow keys">
+                <SECTIONS>
+                    <SECTION>
+                    <DESC>In this example, the P1 and P2 keys of the ET1 tablet are remapped to the left key and right key respectively.</DESC>
+                    <CODE>
+                        <JAVASCRIPT>
+                <![CDATA[
+function remap()
+{
+    Rho.KeyCapture.remapKey('0x19','0x15'); //P1, left
+    Rho.KeyCapture.remapKey('0x18','0x16'); //P2, right
+}
+                        ]]>
+                        </JAVASCRIPT>
+                        <RUBY>
+                <![CDATA[
+def remap
+
+    Rho::KeyCapture.remapKey('0x19','0x15') #P1, left
+    Rho::KeyCapture.remapKey('0x18','0x16') #P2, right
+end
+                        ]]>
+                        </RUBY>
+                    </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+
+            <EXAMPLE title="Trigger capture">
+                <SECTIONS>
+                    <SECTION>
+                    <DESC>This example notifies the user when a trigger key is pressed.</DESC>
+                    <CODE>
+                        <JAVASCRIPT>
+                <![CDATA[
+function trigger()
+{
+    Rho.KeyCapture.captureTrigger(triggerCallback);
+}
+
+function triggerCallback(result)
+{
+    alert("this trigger event has just been received!: " + result.triggerFlag);
+}
+                        ]]>
+                        </JAVASCRIPT>
+                        <RUBY>
+                <![CDATA[
+def trigger()
+
+    Rho::KeyCapture.captureTrigger(url_for(:action => :callbackTrig))
+end
+
+def callbackTrig
+
+    Rho::Log("this key has just been pressed!: " + @params["triggerFlag"],"APP")
+end
+                        ]]>
+                        </RUBY>
+                    </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+
+            <EXAMPLE title="HomeKeyValue">
+                <SECTIONS>
+                    <SECTION>
+                    <DESC>The following example will navigate to the RhoElements start page when return is pressed.</DESC>
+                    <CODE>
+                        <JAVASCRIPT>
+                <![CDATA[
+function goHome()
+{
+    Rho.KeyCapture.homeKeyValue = '0x0D';
+}
+                        ]]>
+                        </JAVASCRIPT>
+                        <RUBY>
+                <![CDATA[
+def goHome
+
+    Rho::KeyCapture.homeKeyValue = '0x0D'
+end
+                        ]]>
+                        </RUBY>
+                    </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+
+            <EXAMPLE title="iPhoneVolume">
+                <SECTIONS>
+                    <SECTION>
+                    <DESC>The following example shows how to capture the iPhone Volume Up trigger.</DESC>
+                    <CODE>
+                        <JAVASCRIPT>
+                <![CDATA[
+    function keyCallback(result)
+    {
+        if(result.keyValue == Rho.KeyCapture.IPHONE_VOLUME_UP){
+            //do something
+        }
+    }
+
+    Rho.KeyCapture.captureKey(true, Rho.KeyCapture.IPHONE_VOLUME_UP, keyCallback);
+                        ]]>
+                        </JAVASCRIPT>
+                        <RUBY>
+                <![CDATA[
+    def keyCallback
+    {
+        if(@params["keyValue"] == Rho::KeyCapture.IPHONE_VOLUME_UP){
+            //do something
+        }
+    }
+
+    Rho::KeyCapture.captureKey true, Rho::KeyCapture.IPHONE_VOLUME_UP, url_for(:action => :key_Callback)
+                        ]]>
+                        </RUBY>
+                    </CODE>
+                    </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES>
+
+        <REMARKS>
+            <REMARK title="Keys which cannot be captured">
+                <DESC>It is not possible to capture the following types of keys:
+
+1.  Keyboard modifiers such as SHIFT, ALT, ORANGE button, BLUE button etc.
+2.  Device Keys such as the screen backlight or keyboard backlight.
+3.  Hot keys such as phone keys or 'soft' buttons, those whose function changes based on the running application.
+4.  The Home key and the power key on Android and iOS devices.
+5.  Depending on the device keyboard driver, some keys may not be easily capturable as they are interpreted as a shifted character by the device.  One example of such a key is the '#' character on CE7 devices, whilst the character code for this key is 23 it is interpreted as 33.  This applies to both capturing keys and specifying the HomeKeyValue.
+6.  On Android devices, keys reserved for use by the "PTT" apps (such as the left trigger button), if a "PTT" app has been enabled.
+7. On consumer Jelly Bean (Android) devices, the search button cannot be captured, as it has been reserved for the sole use of "Google Now".
+8. On ET1, Search (P3) key is application specific. Dispatching this key within RhoElements wont do anything as it RhoElements doesn't do anything specific with this key (unlike the menu key which raises the menu).
+Although on some device configurations pressing the SHIFT key twice generates CAPS LOCK which can be captured with a key value of 16.</DESC>
+            </REMARK>
+
+            <REMARK title="Precedence of APIs using the same keyValue">
+                <DESC>If captureKey and remapKey have been called with the same keyValue, the remapKey will take precedence. In this case this means that the keyEvent for the inputted key will not be fired as the remapping will occur and consume the key event.
+
+If the same key has been set as the homeKeyValue and captureKey with a callback, the captureKey will take precedence over the homeKeyValue. For example:
+
+`Rho.KeyCapture.homeKeyValue = '0x0D';`
+
+`Rho.KeyCapture.captureKey(true, '0x0D', capturekeyCallback);`
+
+When the specified key is pressed, the event will fire but the homeKey event will not occur.</DESC>
+            </REMARK>
+
+            <REMARK title="Precedence of captureKey events">
+                <DESC>Any captureKey calls set with a specific key will take precedence over any captureKey calls with value 'all'. This means that the 'all' callback will not be called when individual keys that have been registered with captureKey are pressed. This also goes for dispatch values. If captureKey 'all' has a dispatch value of false, and captureKey with an individual keyCode value has a dispatch value of true, then this individual key will be dispatched to the app when pressed.</DESC>
+            </REMARK>
+
+            <REMARK title="Device Lockdown on Symbol Technologies Android devices">
+                <DESC>Because the Home key cannot be captured on the ET1 and MC40 it is possible for users to return to the system home page by pressing it. If you need to prevent this then please consult the Symbol Technologies Android documentation for other device lock-down options.</DESC>
+            </REMARK>
+
+            <REMARK title="Capturable keys on iOS devices" productException="eb">
+                <DESC>Only the volume up and volume down keys can be caught on iOS devices.</DESC>
+            </REMARK>
+
+           <REMARK title="Capturing Function">
+                <DESC>If you have enabled the function key in the configuration settings and that function key has some special behavior in the Operating system the key will not be capturable unless you also set the 'FunctionKeysCapturable' option (see RhoElements Configuration Settings). An example of special behavior is the F6 and F7 keys on the MC75a (non QWERTY) which control the volume up and volume down. Although 'FunctionKeysCapturable' will allow you to capture Function keys it will also disable the special Function key behavior. Which buttons map to which function keys will differ from device to device, some devices such as the MC9500 have dedicated, labeled function keys whereas other devices such as the MC75a do not label the fact that their volume / red phone / green phone keys all behave as function keys internally.</DESC>
+            </REMARK>
+            
+            <REMARK title="Keys with multiple functionalities">
+                <DESC>Some keys which are meant for performing multiple functionalities but performs the single functionality may return the single code value. In that case it is recommended to remap the key code value with the expected desired keycode value.</DESC>
+            </REMARK>
+
+            <REMARK title="VC70 Hardware Keys">
+                <DESC>The VC70 has a hardware keys (P1, P2, P3 and P4 as well as a brightness button) which are not capturable by the KeyCapture module. Additionally the the default Operating system behavior (like volume up / down) of hardware keys can not be blocked when RhoElements is running in full-screen mode.</DESC>
+            </REMARK>
+
+            <REMARK title="ES400 Application Keys">
+                <DESC>The ES400 has a hardware messaging key with an envelope icon on it that does not function like a standard Application Key. To disable this key go to 'Settings' on the device, then 'Personal', then 'KeyRemap' and remap it to a key not in use. Also note that the 'Sym' key on the ES400 is not capturable.</DESC>
+            </REMARK>
+
+            <REMARK title="F5 Key">
+                <DESC>In Internet Explorer the F5 key is used to refresh the current page. It is not recommended to rely on this functionality on Windows Mobile and it is not supported.</DESC>
+            </REMARK>
+            
+            <REMARK title="PTT Keys">
+                <DESC>On Android, PTT keys are capturable using captureTrigger method only.</DESC>
+            </REMARK>
+
+             <REMARK title="Accelerator Keys">
+                <DESC>The following keys will be affected by the 'AccelerateKey' tag. Accelerator Keys are only applicable when RhoElements is run with the Internet Explorer engine on a Windows CE device.
+
+Key           Code    Usual Behavior               Special behavior in Internet Explorer
+
+Left Arrow    0x25    Cursor left                   Scroll window left
+Right Arrow   0x27    Cursor right                  Scroll window right
+Up Arrow      0x26    Cursor up                     Scroll window up
+Down Arrow    0x28    Cursor down                   Scroll window down
+Backspace     0x08    Delete previous character.   Navigate to previous page
+Enter         0x0D    Cursor line feed              Submit form
+Tab           0x09    Advance to next control       Advance to next control</DESC>
+            </REMARK>
+
+            <REMARK title="Remapping a key to itself">
+                <DESC>If a key is remapped to itself, the app will appear to hang if that key is pressed because it will generate another press of the same key, and so on forever. A similar endless loop will occur if, for example, key 1 is remapped to key 2, and key 2 is remapped to key 1.
+                </DESC>
+            </REMARK>
+
+            <REMARK title="Symbol Keys">
+                <DESC>On some devices certain keys containing special characters, these keys are known as symbol keys and they trigger two separate key events. This happens because such characters are translated by the platform into the combination of a Shift and a Base Key. Characters behaving in such way are $, %, &amp;, ", (, ), !, :, ?, #, _, @. Capturing symbol key input via the SIP is not possible on WM/CE as all symbol keys return the same value; there is no such limitation on the physical keys representing the special characters.</DESC>
+            </REMARK>
+
+            <REMARK title="Device Specific Exceptions">
+                <DESC>Certain devices may map their function keys to apparently normal keys. For example, the VC6090 maps the '{' key to F12 and the '}' key to F14. To capture those two keys it is necessary to enable F12 and F14 in the Configuration Settings. You may also find on some devices special keys like 'OK' return the same code as a function key, depending on your keyboard layout. The MK3100 and other kiosk devices will report their symbol keys as '0' rather than assigning each key a different value.</DESC>
+            </REMARK>
+
+            <REMARK title="Use of Key Capture module on Localized Operating Systems">
+                <DESC>Users of the key capture module with Chinese, Korean and Japanese operating systems should bear the following in mind: Internally the KeyCapture module stores key representations as VK codes, therefore the key event will always return VK_PROCESSKEY (229) and keys can not be individually specified. In JavaScript the DOM element's keyup event can be used as an indication of which key has been pressed.</DESC>
+            </REMARK>
+
+            <REMARK title="Build Configuration" productException="eb">
+                <DESC>To build the keycapture API into your application you must specify the 'hardwarekeys' extension and specify your application type to be 'rhoelements'.</DESC>
+            </REMARK>
+        </REMARKS>
+    </MODULE>
+</API>

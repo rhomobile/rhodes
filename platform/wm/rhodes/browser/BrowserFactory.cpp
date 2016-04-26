@@ -15,7 +15,6 @@
 extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 extern "C" const char* rho_wmimpl_get_webengine();
 extern "C" const char* get_app_build_config_item(const char* key);
-
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 
 //////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,98 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>screenOrientation</NAME>
+		<PATH>Device_Application</PATH>
+		<TYPE>Module</TYPE>
+		<SYNOPSIS>is used to control the screen orientation/layout and register to receive an event when it changes.
+		</SYNOPSIS>
+		<MULTIPLE_INSTANCE>The screen orientation settings are application specific.  Switching to another application which uses the ScreenOrientation module will cause the screen to be rotated automatically if necessary</MULTIPLE_INSTANCE>
+		<SYNTAX>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="ScreenOrientation" content="[orientation]"&gt;</EXAMPLE>
+			</USAGE>
+			<USAGE>
+				<EXAMPLE>&lt;META HTTP-Equiv="ScreenOrientation" content="ScreenOrientationEvent:url('[jsFunction | url]')"&gt;</EXAMPLE>
+			</USAGE>
+		</SYNTAX>
+		<PARAMS_NO_ATTRIBUTES>
+			<PARAM>
+				<NAME>normal</NAME>
+				<DESC>Sets the screen orientation to portrait</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>				
+			<PARAM>
+				<NAME>rightHanded</NAME>
+				<DESC>Sets the screen orientation to righthanded (landscape).  Note the webpage will not reformat in line with the new screen size automatically.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>leftHanded</NAME>
+				<DESC>Sets the screen orientation to lefthanded (landscape).  Note the webpage will not reformat in line with the new screen size automatically.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>	
+			<PARAM>
+				<NAME>upsideDown</NAME>
+				<DESC>Sets the screen orientation to upside down, useful if presenting the device to a customer to obtain a signature.</DESC>
+				<DEFAULT>Device Dependant</DEFAULT>
+			</PARAM>	
+		</PARAMS_NO_ATTRIBUTES>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>autoRotate</NAME>
+				<VALUES>'Enabled' or 'Disabled'</VALUES>
+				<DESC>Enables or Disables autorotation of the screen orientation when the device is rotated</DESC>
+				<DEFAULT>Defined in Configuration File</DEFAULT>
+			</PARAM>				
+		</PARAMS_WITH_ATTRIBUTES>
+		<RETURNS>
+			<TAG>
+                <TAG_NAME>screenOrientationEvent</TAG_NAME>
+				<TAG_NOTES>The screen orientation event is sent when the current RhoElements application changes the orientation of the screen.  For devices with an inbuilt accelerometer this event will also be sent when the user physically rotates the device to a new orientation.</TAG_NOTES>
+                <RETVAL>
+                    <NAME>orientation</NAME>
+                    <DESC>Either 'normal', 'rightHanded', 'leftHanded' or 'upsideDown'</DESC>
+                </RETVAL>				
+            </TAG>
+		</RETURNS>
+
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example orientates the screen to righthanded in landscape mode:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="ScreenOrientation" Content="RightHanded"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<REMARKS>
+			<COMMENT>
+				<COMMENT_HEADING>Effect on Command Areas and Control Buttons</COMMENT_HEADING>
+				<COMMENT_DATA>When the screen orientation changes, either using the ScreenOrientation tag or by rotating a device with hardware support, the command areas will automatically move and resize to fit the new layout. However the buttons themselves are not moved and in some cases this may result in them being off the screen or not in the expected position. If so they must be moved manually by detecting the ScreenOrientationEvent.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Orientation Persistence</COMMENT_HEADING>
+				<COMMENT_DATA>In all devices apart from Android devices, orientation changes will persist if RhoElements is closed or the device is warm booted.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Landscape Windows Devices</COMMENT_HEADING>
+				<COMMENT_DATA>By default the Screen Orientation module will assume the "Normal" orientation of your device is portrait mode.  Devices which default to landscape mode (e.g. VC model devices) may need to be set to "leftHanded" in order to achieve an 'out of the box' orientation.</COMMENT_DATA>
+			</COMMENT>
+			<COMMENT>
+				<COMMENT_HEADING>Alert Box</COMMENT_HEADING>
+				<COMMENT_DATA>It is recommended to not to display more than one alert box simultaneously or else it may block the browser page.</COMMENT_DATA>
+			</COMMENT>
+		</REMARKS>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices. autoRotate is only supported in devices that have IST.</PLATFORM>
+			<APPLIES>Partially Persistent - Changes to this module will persist when navigating to a new page with the exception of ScreenOrientationEvent</APPLIES>
+			<REQ>A device with a screen.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH="../Getting Started/">ConfigurationSettings</TOPIC>
+		</SEEALSO>
+
+	</FUNC>
+</HELPPAGE>

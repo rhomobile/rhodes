@@ -1,0 +1,170 @@
+// IDL source for Browser
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library  and marshalling code.
+
+#include "olectl.h"
+#include "olectl.h"
+#include "olectl.h"
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(BAEAD40E-0468-4881-8E8A-D28BA9C29EC9),
+	dual,
+	nonextensible,
+	helpstring("IGeneric Interface"),
+	pointer_default(unique)
+]
+interface IGeneric : IDispatch{
+	[id(1), helpstring("method PlayWave")] HRESULT PlayWave([in] BSTR strSound, [in] LONG iFlags);
+	[id(2), helpstring("method PlaySound")] HRESULT PlaySound([in] BSTR strWaveFile);
+	[id(3), helpstring("method InvokeMETAFunction")] HRESULT InvokeMETAFunction([in] BSTR strHTTPEquiv, [in] BSTR strContent, [out,retval] LONG* iReturn);
+	[id(4), helpstring("method HideHourglass")] HRESULT HideHourglass(void);
+	[id(5), helpstring("method ShowHourglass")] HRESULT ShowHourglass(void);
+	[id(6), helpstring("method SetRegistrySetting")] HRESULT SetRegistrySetting([in] LONG lKey, [in] LONG lType, [in] BSTR sSubKey, [in] BSTR sSetting, [in] BSTR psData);
+	[id(7), helpstring("method GetRegistrySetting")] HRESULT GetRegistrySetting([in] LONG lKey, [in] BSTR sSubKey, [in] BSTR sSetting, [out,retval] BSTR* psData);
+	[propget, id(8), helpstring("property UUID")] HRESULT UUID([out, retval] BSTR* pVal);
+	[id(9), helpstring("method LaunchProcess")] HRESULT LaunchProcess([in] BSTR strImageName, [in] BSTR strCommandLine, [out,retval] LONG* iReturn);
+	[id(10), helpstring("method LaunchProcessNonBlocking")] HRESULT LaunchProcessNonBlocking([in] BSTR strImageName, [in] BSTR strCommandLine, [out,retval] LONG* iReturn);
+	[id(11), helpstring("method GetProcessExitCode")] HRESULT GetProcessExitCode([in] LONG iProcess, [out,retval] LONG* iReturn);
+	[id(12), helpstring("method CloseProcess")] HRESULT CloseProcess([in] LONG iProcess);
+	[id(13), helpstring("method WaitProcess")] HRESULT WaitProcess([in] LONG iProcess, [in] LONG iTimeout, [out,retval] VARIANT_BOOL* Finished);
+	[id(14), helpstring("method Log")] HRESULT Log([in] BSTR strComment, [in] LONG nSeverity, [out, retval] VARIANT_BOOL *pOK);
+	[id(15), helpstring("method SPBLog")] HRESULT SPBLog([in] BSTR strComment, [in] BSTR strSeverity, [out, retval] int *iReturn);
+	[id(16), helpstring("method WriteUserSetting")] HRESULT WriteUserSetting([in] BSTR strSetting, [in] BSTR strValue, [out, retval] VARIANT_BOOL *pOK);
+	[id(17), helpstring("method ReadUserSetting")] HRESULT ReadUserSetting([in] BSTR strSetting, [out, retval] BSTR *pstrValue);
+	[id(18), helpstring("method WriteConfigSetting")] HRESULT WriteConfigSetting([in] BSTR strSetting, [in] BSTR strValue, [in, optional, defaultvalue("GLOBAL")] BSTR strApp, [out, retval] VARIANT_BOOL *pOK);
+	[id(19), helpstring("method ReadConfigSetting")] HRESULT ReadConfigSetting([in] BSTR strSetting, [in, optional, defaultvalue("GLOBAL")] BSTR strApp, [out, retval] BSTR *pstrValue);
+	[id(20), helpstring("method RasConnect")] HRESULT RasConnect([in] BSTR strEntry, [in] BSTR strUser, [in] BSTR strPwd, [in] BSTR strDomain);
+	[id(21), helpstring("method RasDisconnect")] HRESULT RasDisconnect([in] BSTR strEntry);
+	[propget, id(22), helpstring("property ConnectionStatus")] HRESULT ConnectionStatus(BSTR strEntry, [out, retval] long *pVal);
+	[propget, id(23), helpstring("property OEMInfo")] HRESULT OEMInfo([out, retval] BSTR* pVal);
+};
+
+
+
+
+
+
+[
+	uuid(8A7719E2-3C21-4C09-9E13-D17534BD7ED1),
+	version(1.0),
+	helpstring("PocketBrowser 1.0 Type Library")
+]
+library PocketBrowserLib
+{
+	importlib("stdole2.tlb");
+	interface IDocHostUIHandlerDispatch;
+	interface IAxWinAmbientDispatchEx;
+	[
+		uuid(6A890111-D9F6-481B-9886-C1A1FDE0F482),
+		helpstring("Generic Class")
+	]
+	coclass Generic
+	{
+		[default] interface IGeneric;
+	};
+[
+	object,
+	uuid(E6D09D5C-D7CC-4A3A-832B-FF2579871F04),
+	dual,
+	nonextensible,
+	helpstring("INarrowBand Interface"),
+	pointer_default(unique)
+]
+interface INarrowBand : IDispatch
+	{
+//		[propput, id(DISPID_TEXT)]
+////		HRESULT Text([in]BSTR strText);
+//		[propget, id(DISPID_TEXT)]
+//		HRESULT Text([out, retval]BSTR* pstrText);
+		[id(1), helpstring("method PSExternal")] HRESULT PSExternal([in] int iCommand, [in] BSTR strParameter);
+		[id(2), helpstring("method PSExternalEx")] HRESULT PSExternalEx([in] int iCommand, [in] BSTR strParameter, [retval][out] int *iReturn);
+		[id(3), helpstring("method PSGetLastMessage")] HRESULT PSGetLastMessage([retval][out] BSTR *pVal);
+};
+	[
+		uuid(12D075A2-B113-4A28-B41A-9F65AA7E4ADA),
+		control,
+		helpstring("NarrowBand Class")
+	]
+	coclass NarrowBand
+	{
+		[default] interface INarrowBand;
+	};
+	
+	[
+	object,
+	uuid(552416B8-0742-4A04-BC05-7C417805C316),
+	dual,
+	nonextensible,
+	helpstring("IMicroFlash Interface"),
+	pointer_default(unique)
+]
+interface IMicroFlash : IDispatch{
+//		[propput, id(DISPID_TEXT)]
+//		HRESULT Text([in]BSTR strText);
+//		[propget, id(DISPID_TEXT)]
+//		HRESULT Text([out, retval]BSTR* pstrText);
+		[id(1), helpstring("method AddData")] HRESULT AddData([in] BSTR strData);
+		[id(2), helpstring("method AddLine")] HRESULT AddLine([in] BSTR strLine);
+		[id(3), helpstring("method Clear")] HRESULT Clear();
+		[id(4), helpstring("method Print")] HRESULT Print([in] int iCopies);
+		[id(5), helpstring("method SetPort")] HRESULT SetPort([in] BSTR strPort);
+
+};
+	[
+		uuid(1C7EA8DE-9AA6-46AC-A12A-5BB2D66F4ACA),
+		control,
+		helpstring("MicroFlash Class")
+	]
+	coclass MicroFlash
+	{
+		[default] interface IMicroFlash;
+	};
+	
+	
+	[
+	object,
+	uuid(BBB6AEB6-1AE1-498E-B387-14B5BF022247),
+	dual,
+	nonextensible,
+	helpstring("IAirBEAMSmart Interface"),
+	pointer_default(unique)
+]
+interface IAirBEAMSmart : IDispatch
+{
+//		[propput, id(DISPID_TEXT)]
+//		HRESULT Text([in]BSTR strText);
+//		[propget, id(DISPID_TEXT)]
+//		HRESULT Text([out, retval]BSTR* pstrText);
+		[propget, id(1), helpstring("property AutoLoadMode")] HRESULT AutoLoadMode([out, retval] long *pVal);
+		[propput, id(1), helpstring("property AutoLoadMode")] HRESULT AutoLoadMode([in] long newVal);
+		[propget, id(2), helpstring("property RAMManagement")] HRESULT RAMManagement([out, retval] BOOL *pVal);
+		[propput, id(2), helpstring("property RAMManagement")] HRESULT RAMManagement([in] BOOL newVal);
+		[id(3), helpstring("method AddPackage")] HRESULT AddPackage([in] BSTR strPackageName, [out,retval] int* iRetVal);
+		[propget, id(4), helpstring("property AutoReboot")] HRESULT AutoReboot([out, retval] BOOL *pVal);
+		[propput, id(4), helpstring("property AutoReboot")] HRESULT AutoReboot([in] BOOL newVal);
+		[propget, id(6), helpstring("property TestMode")] HRESULT TestMode([out, retval] BOOL *pVal);
+		[propput, id(6), helpstring("property TestMode")] HRESULT TestMode([in] BOOL newVal);
+		[id(8), helpstring("method Run")] HRESULT Run([out,retval] int* iRetVal);
+		[propget, id(9), helpstring("property UploadPackage")] HRESULT UploadPackage([out, retval] BSTR *pVal);
+		[propput, id(9), helpstring("property UploadPackage")] HRESULT UploadPackage([in] BSTR newVal);
+		[propget, id(10), helpstring("property DeletePackage")] HRESULT DeletePackage([out, retval] BSTR *pVal);
+		[propput, id(10), helpstring("property DeletePackage")] HRESULT DeletePackage([in] BSTR newVal);
+
+};
+	
+	
+	[
+		uuid(CE24DC9E-63F8-4881-9AAF-12C7C4053F51),
+		control,
+		helpstring("AirBEAMSmart Class")
+	]
+	coclass AirBEAMSmart
+	{
+		[default] interface IAirBEAMSmart;
+	};
+};

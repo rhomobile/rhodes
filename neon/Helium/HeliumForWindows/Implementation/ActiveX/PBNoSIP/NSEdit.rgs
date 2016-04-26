@@ -1,0 +1,33 @@
+HKCR
+{
+	NoSIP.NSEdit.1 = s 'NSEdit Class'
+	{
+		CLSID = s '{A72D1405-40C2-11D6-918E-00C0DF232EEE}'
+	}
+	NoSIP.NSEdit = s 'NSEdit Class'
+	{
+		CLSID = s '{A72D1405-40C2-11D6-918E-00C0DF232EEE}'
+		CurVer = s 'NoSIP.NSEdit.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {A72D1405-40C2-11D6-918E-00C0DF232EEE} = s 'NSEdit Class'
+		{
+			ProgID = s 'NoSIP.NSEdit.1'
+			VersionIndependentProgID = s 'NoSIP.NSEdit'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Free'
+			}
+			val AppID = s '%APPID%'
+			ForceRemove 'Control'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			'TypeLib' = s '{584FFAF9-AD89-43EE-A503-89CC927AEDF1}'
+			'Version' = s '1.0'
+		}
+	}
+}

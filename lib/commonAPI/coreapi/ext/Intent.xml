@@ -15,38 +15,7 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
     </MORE_HELP>
-         <MORE_HELP_EB>
-## Enabling the API
-
-There are two methods of enabling the Intent API:
-
-* Include all 'ebapi' modules
-* Include only the API modules you need
-
-Both methods are explained below. 
-
-Either way, the included files will be found in: 
-`/Enterprise Browser/JavaScript Files/Enterprise Browser`,
-a directory on the computer that contains the Enterprise Browser installation.
-
-### Include all JS API modules
-To include all JavaScript APIs, copy the `ebapi-modules.js` file to a location accessible by your app's files and include the JavaScript modules file in your app. For instance, to include the modules file in your `index.html`, copy the file to the same directory as your index.html and add the following line to the HEAD section of your index.html file:
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi-modules.js"&gt;&lt;/script&gt;
-
-&gt; This will define the EB class within the page. **Note that the path for this file is relative to the current page** (index.html). Any page on which the modules are required will need to have the required .js file(s) included in this fashion.
-
-### Include only the modules you need
-To include individual APIs, you must first include the `ebapi.js` in your HTML, and then the additional required API file(s). For instance, to use the Intent API, add the following code to the HTML file(s). Again, this assumes that relevant API files have been copied to the same directory as the HTML.
-
-    :::html
-    &lt;script type="text/javascript" charset="utf-8" src="ebapi.js"&gt;&lt;/script&gt;
-    &lt;script type="text/javascript" charset="utf-8" src="eb.intent.js"&gt;&lt;/script&gt;
-
-&gt; In the code lines above, notice that `ebapi.js` is included first, followed by `eb.intent.js`, which is the Intent API for Enterprise Browser. **This coding is required on each HTML page whenever an individual API will be called from that page**.
-
-        </MORE_HELP_EB>
+         
         <TEMPLATES>
         </TEMPLATES>
         <METHODS  access="STATIC">
@@ -76,10 +45,6 @@ Sample Build.yml
 
 
 </DESC>
-            <DESC_EB>Sends an intent. The receiver of the intent can be another application that is listening for this Intent characteristic or, on Android, the receiver can be a native Android application set up with an Intent-Filter that will trigger based on the parameters of this method.
-
-**Android Note**: On Android, the callback should be used only when the intentType is set to START_ACTIVITY. The only valid way for an Android app to pass a private file from a package directly to another application is to set the 'uri' parameter with content URI. 
-            </DESC_EB>
                 <PARAMS>
                     <PARAM name="params" type="HASH">
                         <DESC>A hash-map with intent parameters.</DESC>
@@ -124,10 +89,6 @@ Sample Build.yml
 * Android it is application package name.
 * Windows it is the application/executable name. For shared runtime based applications, the application name is taken from the "Name" attribute from the Config.xml file. Hence use the application name which is mentioned in config.xml.
 </DESC>
-                                <DESC_EB>Explicit name of the application to run on the device. The platform will determine the value to use.
-
-<![CDATA[ On Android, use the application package name. On Windows use the application/executable name. For shared runtime applications, the application name is taken from the 'Name' attribute in the Config.xml file. ]]>
-</DESC_EB>
                             </PARAM>
                             <PARAM name="targetClass" type="STRING">
                                 <PLATFORM>Android</PLATFORM>
@@ -162,7 +123,6 @@ Sample Build.yml
                 </CALLBACK>
             </METHOD>
             <METHOD name="startListening" hasCallback="mandatory" runInThread="none" >
-                <DESC_EB>Start listening for custom intents. </DESC_EB>
                     <DESC>Start listening for custom intents.
 
 For Android, this is how we have implemented [Android Intent Filters](http://developer.android.com/guide/components/intents-filters.html#Receiving). In order to listen for Intents you will have to update the `AndroidManifest.erb` file and add a special section to it. This file is now generated with RhoMobile Version 4.1 when you create a new project. The file is located in the root of project.
@@ -183,7 +143,6 @@ Notice that this looks very similar to a standard AndroidManifest.XML file secti
                     <DESC>Same format as 'params' argument passed to Rho.Intent.send method
                         Android: Developer has to ensure that an intent passed to handler is what he intended to proceed since any other intent may also be passed here.</DESC>
                 </CALLBACK>
-                <PLATFORM_EB>Android, WM</PLATFORM_EB>
             </METHOD>
             <METHOD name="stopListening" hasCallback="none" productException="">
                 <DESC>Stop listening for custom intents.</DESC>
@@ -196,16 +155,10 @@ Notice that this looks very similar to a standard AndroidManifest.XML file secti
 For an Android app to receive intent data, the Intent receiver must be registered in the app's `AndroidManifest.erb` file. Please refer to the <a href="../guide/intent">Intent Guide</a> for more information. 
                     ]]>
                 </DESC>
-                <DESC_EB>
-                    <![CDATA[
-For an Android app to receive intent data, the Intent receiver must be registered in the app's `Config.xml` file. Please refer to the <a href="#guide-configreference?Intent">Intent section of the EB Config Reference</a> for more information. 
-                    ]]>
-                </DESC_EB>
             </REMARK>
         </REMARKS>
         <VER_INTRODUCED>4.1.0</VER_INTRODUCED>
         <PLATFORM>iOS, WM, Android</PLATFORM>
-        <PLATFORM_EB>Android, WM</PLATFORM_EB>
         <EXAMPLES>
             <EXAMPLE title="Plot a location on a map">
                 <SECTIONS>
@@ -258,40 +211,5 @@ function webSearch(){}
                 </SECTIONS>
             </EXAMPLE>
         </EXAMPLES>
-        <EXAMPLES_EB>
-            <EXAMPLE title="Sending Data Within an Intent">
-                <SECTIONS>
-                    <SECTION>
-                        <DESC>This example shows how to send data within an intent. On Android, this is similar to <![CDATA[ <a href="http://developer.android.com/reference/android/content/Intent.html#putExtra(java.lang.String, java.lang.String\))">Intent.putExtra</a>. Data should contain a HASH of Extra-String/Value pairs. The 'Value' type of the 'Extra' can be a String, Integer, Boolean or Double. Notice the use of the full constant string 'android.intent.extra.TEXT' in place of <a href="http://developer.android.com/reference/android/content/Intent.html#EXTRA_TEXT">Intent.EXTRA_TEXT</a>.]]></DESC>
-                        <CODE>
-<JAVASCRIPT>
-<![CDATA[
-
-Android (Java)
-
-    intent.putExtra("intent.extra.string", 'Here is the text I am passing to the Intent');
-    intent.putExtra("intent.extra.integer", 12);
-    intent.putExtra("intent.extra.boolean", true);
-    intent.putExtra("intent.extra.double", 14.28);
-
-JavaScript
-
-    var data: { 'intent.extra.string' : "Here is the text I am passing to the Intent" ,
-                'intent.extra.integer' : 12 ,
-                'intent.extra.boolean' : true ,
-                'intent.extra.double' : parseFloat("10.55")}
-              };
-
-
-
-
-                                ]]>
-                            </JAVASCRIPT>
-                        </CODE>
-                    </SECTION>
-                </SECTIONS>
-            </EXAMPLE>
-        </EXAMPLES_EB>
-
     </MODULE>
 </API>

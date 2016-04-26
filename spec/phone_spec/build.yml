@@ -25,7 +25,6 @@ capabilities:
   - push
   - calendar
   - gps
-  - motorola_browser
    
 extensions: ["json", "rhoxml", "rhospec", "crypt", "fileutils"]  
 

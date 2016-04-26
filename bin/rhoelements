@@ -1,0 +1,74 @@
+#!/usr/bin/env ruby
+
+# TODO: deprecate rhogen
+
+require File.join(File.dirname(__FILE__), 'jake.rb')
+
+rhodesDir = ""
+begin
+  rhodesDir = Jake.run2("get-rhodes-info", ['--rhodes-path'], {:hide_output => true})
+rescue Exception => e
+  puts 'Install the rhodes gem before use rhoelements'
+  exit 
+end 
+
+rhodesDir = rhodesDir.chomp
+
+require 'rubygems'
+require 'templater'
+require 'yaml'
+require 'erb'
+
+require File.expand_path(File.join(rhodesDir, 'res', 'generators', 'rhogen'))
+require File.expand_path(File.join(rhodesDir, 'lib', 'rhodes'))
+
+# Stub this method to force 1.8 compatibility (come on templater!)
+class Encoding
+  def find
+    "utf-8"
+  end
+
+  def dummy?
+    false
+  end
+end
+
+class String
+  def force_encoding(enc)
+    return self
+  end
+  def encoding
+    if RUBY_VERSION =~ /1\.8/ and Encoding.responds_to?('new')
+      Encoding.new
+    else
+      Encoding.default_external
+    end
+  end
+end
+          
+run_type = ARGV[0].to_s
+
+Rhogen.run_cli(Dir.pwd, 'rhoelements', Rhodes::VERSION, ARGV)
+
+if run_type.eql? 'app'
+  #change build.yml parameters for rhoelements
+  pathCfg = File.expand_path File.join("./", ARGV[0], "build.yml")
+
+  app_config = Jake.config(File.open(pathCfg))
+  app_config["app_type"] = "rhoelements"
+
+  if app_config["capabilities"].nil?
+    app_config["capabilities"] = Array.new
+  end
+
+  # save the application yaml file
+  File.open(pathCfg, 'w' ) do |out|
+    YAML.dump(app_config, out)
+  end
+
+  # rebrand app as RhoElements one
+  appPath = File.expand_path File.join('./', ARGV[0])
+  templatePath = File.join(File.dirname(__FILE__), '../res/generators/templates/application')
+  FileUtils.rm_f Dir.glob(File.join(appPath, 'app/loading*.png'))
+  FileUtils.cp_r templatePath + '/.', appPath
+end

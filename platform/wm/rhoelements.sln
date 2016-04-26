@@ -25,9 +25,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tcmalloc", "tcmalloc\tcmall
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Coreapi", "..\..\lib\commonAPI\coreapi\ext\platform\wm\Coreapi.vcproj", "{E0343F80-50EA-0130-78EC-3CAEC51BD50E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RhoElementsExt", "..\..\..\Motorola-Extensions\extensions\rhoelementsext\ext\rhoelementsext\platform\wm\RhoElementsExt.vcproj", "{93453E28-E84A-40C4-BD6A-51A8373D7044}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RhoElementsExt", "..\..\extensions\rhoelementsext\ext\rhoelementsext\platform\wm\RhoElementsExt.vcproj", "{93453E28-E84A-40C4-BD6A-51A8373D7044}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhowebkit", "..\..\..\Motorola-Extensions\extensions\rhoelements\ext\wm\rhowebkit.vcproj", "{D81234E0-D8D4-49C7-BDE5-4720C3898AE8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhowebkit", "..\..\extensions\rhoelements\ext\wm\rhowebkit.vcproj", "{D81234E0-D8D4-49C7-BDE5-4720C3898AE8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml2", "tinyxml2\tinyxml2.vcproj", "{205C1A2A-B5F2-421C-9FD8-FC7828A6C45D}"
 EndProject

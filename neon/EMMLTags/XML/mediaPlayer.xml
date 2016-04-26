@@ -1,0 +1,94 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="RhoElements_runtime_help.xsl"?>
+
+<HELPPAGE>
+  <FUNC>
+    <NAME>mediaPlayer</NAME>
+    <PATH>mediaPlayer</PATH>
+   <TYPE>Module</TYPE>
+    <SYNOPSIS>plays audio/video files.</SYNOPSIS>
+	<MULTIPLE_INSTANCE>Only the foreground RhoElements application is given access to play the media files, when an application is sent to the background any playback that is in progress will be stopped and it will automatically relinquish control of the Audio/Video hardware.  When brought back to the foreground, an application previously using the media player will have its previous configuration (eg. name etc.) reapplied to the plugin automatically.</MULTIPLE_INSTANCE>
+    <SYNTAX>
+		<USAGE>
+			<EXAMPLE>&lt;META HTTP-Equiv="mediaPlayer" content="[method / parameter]"&gt;</EXAMPLE>
+		</USAGE>		
+	</SYNTAX>
+    <PARAMS_WITH_ATTRIBUTES>
+		<PARAM>
+			<NAME>filename</NAME>
+			<VALUES>Fully qualified URL or file name.  Supports HTTP and File protocols.</VALUES>
+			<DESC>Plays the specified file. Please note that the file format has to be supported on the platform for playback.</DESC>
+			<DEFAULT></DEFAULT>
+		</PARAM>	
+		<PARAM>
+			<NAME>type</NAME>
+			<VALUES>"audio" or "video"</VALUES>
+			<DESC>The type of the file.</DESC>
+			<DEFAULT>"video"</DEFAULT>
+		</PARAM>		
+	</PARAMS_WITH_ATTRIBUTES>
+	
+	<PARAMS_NO_ATTRIBUTES>	
+		<PARAM>
+			<NAME>start</NAME>
+			<DESC>Starts playing the audio/video file until either the end or 'stop' is received. Please note that at any time only one file can be played.</DESC>
+			<DEFAULT>N/A</DEFAULT>
+		</PARAM>
+		<PARAM>
+			<NAME>stop</NAME>
+			<DESC>Stops playing the aduio/video file.</DESC>
+			<DEFAULT>N/A</DEFAULT>
+		</PARAM>
+	</PARAMS_NO_ATTRIBUTES>		
+	<EXAMPLES>
+		<EXAMPLE>
+			<DESC>The following META Tag example plays a video file.</DESC>
+<CODE>
+&lt;META HTTP-Equiv="mediaPlayer" Content="filename:url('HTTP://192.168.1.1:80/Media/RhoElements.mp4')"&gt;
+&lt;META HTTP-Equiv="mediaPlayer" Content="start"&gt;
+</CODE>
+		</EXAMPLE>
+		<EXAMPLE>
+			<DESC>The following javascript will start and stop a media playback respectively when onStart and onStop are called</DESC>
+<CODE>
+&lt;script&gt;
+   function onStart()
+   {
+	mediaPlayer.filename = url('wtgdev.co.uk/audio.mp3');
+	mediaPlayer.type = 'audio';
+	mediaPlayer.start();
+   }
+   
+   function onStop()
+   {
+	mediaPlayer.stop();
+   }
+&lt;/script&gt;
+</CODE>
+		</EXAMPLE>		
+	</EXAMPLES>
+	<REMARKS>
+		<COMMENT>	
+			<COMMENT_HEADING>Full Screen Videos</COMMENT_HEADING>
+			<COMMENT_DATA>Video playback always happens in full screen and the user can use the back button to stop the video. While the video is being palyed there will be controls for Pause, seek, forward and rewind operations.</COMMENT_DATA>
+		</COMMENT>	
+		<COMMENT>	
+			<COMMENT_HEADING>Licensing issues</COMMENT_HEADING>
+			<COMMENT_DATA>The user is responsible for installing the required CODEC and for any legal problems or licensing issues that arise from installing the  additional codecs. The media player would play the formats that are available on the device.</COMMENT_DATA>
+		</COMMENT>	
+		<COMMENT>	
+			<COMMENT_HEADING>File formats</COMMENT_HEADING>
+			<COMMENT_DATA>The supported formats vary according to the platform. On Android devices we can play a 3GPP/MP4/MP3/WebM file.</COMMENT_DATA>
+		</COMMENT>	
+		<COMMENT>	
+			<COMMENT_HEADING>Format of the filename URL</COMMENT_HEADING>
+			<COMMENT_DATA>Supports only HTTP and FILE formats. HTTP Example: http://192.168.1.1:8080/Folder/Media.mp4.  File Example: file:///Application/Media.mp4.  Remember to also wrap your URL with url('') when being used as part of a meta tag, as shown in the examples above.</COMMENT_DATA>
+		</COMMENT>
+	</REMARKS>
+	<ADDITIONAL>
+		<PLATFORM>All supported devices</PLATFORM>
+		<APPLIES>Not Persistent - Changes to this module will not persist when navigating to a new page.</APPLIES>		
+		<VER_INTRODUCED>2.2 (SP1 on windows devices)</VER_INTRODUCED>
+    </ADDITIONAL>    
+  </FUNC>
+</HELPPAGE>

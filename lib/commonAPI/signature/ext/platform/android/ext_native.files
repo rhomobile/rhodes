@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/Signature.cpp
+ext/platform/android/generated/jni/signature_ruby_wrap.cpp
+ext/platform/android/generated/jni/signature_js_wrap.cpp
+ext/platform/android/jni/Signature_impl.cpp
+ext/shared/generated/signature_api_init.cpp
+ext/shared/generated/signature_js_api.cpp
+ext/shared/generated/signature_ruby_api.c

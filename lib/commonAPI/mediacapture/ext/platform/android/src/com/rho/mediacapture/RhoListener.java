@@ -1,6 +1,6 @@
 package com.rho.mediacapture;
 
-import com.motorolasolutions.rho.videocapture.VideocaptureFactory;
+import com.rho.videocapture.VideocaptureFactory;
 import com.rho.camera.CameraFactory;
 import com.rho.camera.CameraRhoListener;
 import com.rhomobile.rhodes.Logger;

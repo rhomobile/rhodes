@@ -1,0 +1,59 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<HELPPAGE>
+	<FUNC>
+		<NAME>codabarMinLength</NAME>
+		<PATH>Barcode Scanner\Decoder and Parameter Tags\Codabar</PATH>
+		<TYPE>Decoder Setting</TYPE>
+		<SYNOPSIS>is used to set the Codabar MinLength property.</SYNOPSIS>
+		<SYNTAX>
+            <USAGE>
+                <EXAMPLE>&lt;META HTTP-Equiv="scanner" content="Codabarminlength:[parameter]"&gt;</EXAMPLE>
+            </USAGE>
+        </SYNTAX>
+		<PARAMS_WITH_ATTRIBUTES>
+			<PARAM>
+				<NAME>codabarMinLength</NAME>
+                		<VALUES>Numeric value (1 - 55)</VALUES>
+				<DESC>Numeric value setting the minimum number of characters for the Codabar structure (1 - 55).</DESC>
+				<DEFAULT>Device specific</DEFAULT>				
+				<SCANNERTAG>TRUE</SCANNERTAG>
+			</PARAM>
+        	</PARAMS_WITH_ATTRIBUTES>
+		<EXAMPLES>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only Codabar labels with the MinLength property set to 30:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="Codabar:enabled"&gt;
+&lt;META HTTP-Equiv="scanner" Content="CodabarMinLength:30"&gt;
+&lt;META HTTP-Equiv="scanner" Content="enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>Above example can also be written as shown below:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner" Content="Codabar:enabled;CodabarMinLength:30;enabled"&gt;
+</CODE>
+			</EXAMPLE>
+			<EXAMPLE>
+				<DESC>The following example enables the scanner to read only Codabar labels with the MinLength property set to 30:</DESC>
+<CODE>
+&lt;META HTTP-Equiv="scanner-Codabar" Content="enabled"&gt;
+&lt;META HTTP-Equiv="scanner-CodabarMinLength" Content="30"&gt;
+&lt;META HTTP-Equiv="scanner-enabled" Content="SCN1"&gt;
+</CODE>
+			</EXAMPLE>
+		</EXAMPLES>
+		<ADDITIONAL>
+			<PLATFORM>All supported devices.</PLATFORM>
+			<APPLIES>Transient - Decoder settings are only guaranteed to persist until the Scanner is disabled</APPLIES>
+			<REQ>Scanner or Imager module and device supports Codabar.</REQ>
+			<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		</ADDITIONAL>
+		<SEEALSO>
+			<TOPIC RELPATH ="../../">Scanner</TOPIC>
+			<TOPIC>Codabar</TOPIC>
+		</SEEALSO>
+	</FUNC>
+</HELPPAGE>

@@ -56,11 +56,7 @@ class ManifestGenerator
     @applicationManifestAdds << erbPath
   end
     
-  def addMotosolSdk
-	 @usesLibraries['com.motorolasolutions.scanner'] = false
-     @usesLibraries['com.motorolasolutions.adc.usbscanner'] = false
-     @usesLibraries['com.motorolasolutions.emdk.msr'] = false
-  end
+  
   
   def addUriParams(scheme, host, pathPrefix = nil)
     @rhodesActivityIntentFilters.each do |filter|
