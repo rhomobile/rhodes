@@ -82,7 +82,7 @@ The file **```rhobuild.yml```** will be created in the cloned **rhodes** directo
 &#52;. Open **```rhobuild.yml```** that was created inside the cloned **```rhodes```** repository: 
 
    - Ensure **```nsis```** path is configured in ```rhobuild.yml```. (**Example:** ```nsis: C:/Program Files (x86)/NSIS/makensis.exe``` or wherever installed in the desktop machine.)
-   - If more than one version of **Microsoft Visual Studio** is installed, the system by default will build the application using the newest supported version. To explicitly specify the version of Visual Studio to use, add the parameter **```msvc```** to the **```win32```** section of your **```build.yml```** and specify **2012** or **2008** as shown in the example: 
+   - If more than one version of **Microsoft Visual Studio** is installed, the system by default will build the application using the newest supported version. To explicitly specify the version of Visual Studio to use, add the parameter **```msvc```** to the **```win32```** section of your **```rhobuild.yml```** and specify **2012** or **2008** as shown in the example: 
    
      ```
      win32:
