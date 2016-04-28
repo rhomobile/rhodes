@@ -74,7 +74,7 @@ In Terminal, execute the following commands to install the required gems on the 
 	$ gem install json
 	$ gem install rest-client
 	$ gem install CFPropertyList
-	$ gem install listen
+	$ gem install listen --version 3.0.6
 	$ gem install rubyzip
 	$ gem install rhodes-translator
 	$ gem install rhomobile-debug
