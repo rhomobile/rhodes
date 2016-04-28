@@ -33,7 +33,7 @@
         * Set the Ruby environment variables prior to use of the ```gem``` command:
         - ```gem install rest_client```     <i>- Must be installed</i>
         - ```gem install rest-client```     <i>- Must be installed</i>
-        - ```gem install listen```          <i>- Must be installed</i>
+        - ```gem install listen --version 3.0.6```          <i>- Must be installed</i>
         - ```gem install templater```       <i>- Must be installed</i>
         - ```gem install uuid```            <i>- Must be installed</i>
         - ```gem install CFPropertyList```  <i>- Install only if required and not present</i>
