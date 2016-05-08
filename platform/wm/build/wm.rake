@@ -646,11 +646,11 @@ namespace "config" do
   task :set_wm_platform do
     $current_platform = "wm" unless $current_platform
       if($current_platform=='wm')
-        $webkiLibraryCheck = File.join($startdir,'/thirdpartyWebkit.zip')
-        if !File.exists? ($webkiLibraryCheck)
-          puts "\nWindows Mobile or Windows CE applications require additional components for built. Please refer the documentation available at the below link.\nhttps://github.com/rhomobile/rhodes/blob/master/doc/oss/DeveloperNotes.md#third-party-webkit-dependencies-for-wmce\n"
-          exit 1
-        end
+        #$webkiLibraryCheck = File.join($startdir,'/thirdpartyWebkit.zip')
+        #if !File.exists? ($webkiLibraryCheck)
+        #  puts "\nWindows Mobile or Windows CE applications require additional components for built. Please refer the documentation available at the below link.\nhttps://github.com/rhomobile/rhodes/blob/master/doc/oss/DeveloperNotes.md#third-party-webkit-dependencies-for-wmce\n"
+        #  exit 1
+        #end
       end
   end
 
