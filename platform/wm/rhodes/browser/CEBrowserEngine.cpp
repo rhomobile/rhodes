@@ -61,7 +61,8 @@ CEBrowserEngine::CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance)
 
 	memset(m_tcCurrentPageTitle, NULL, sizeof(TCHAR) * MAX_URL);
 	memset(m_tcNavigatedURL, 0, sizeof(TCHAR) * MAX_URL);
-	convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
+	//TODO TAU
+	//convertFromStringW(rho_wmimpl_getNavTimeOutVal(),m_dwNavigationTimeout);
 	if(m_dwNavigationTimeout<=0)
 	{
 		LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_dwNavigationTimeout;
@@ -124,8 +125,9 @@ LRESULT CEBrowserEngine::CreateEngine()
     
 		// See if text selection is enabled, so we can pass the correct value through the GetHostInfo() interface
 		//configFunction(m_tabID, L"HTMLStyles\\TextSelectionEnabled", tcConfigSetting);
-		//m_bTextSelectionEnabled = FALSE; //(tcConfigSetting [0] == L'1');
-		m_bTextSelectionEnabled = rho_wmimpl_get_textselectionenabled();
+		//TODO TAU
+		m_bTextSelectionEnabled = FALSE; //(tcConfigSetting [0] == L'1');
+		//m_bTextSelectionEnabled = rho_wmimpl_get_textselectionenabled();
 
 		// Create an instance of a web browser object (from Shdocvw.dll).
 		
@@ -887,7 +889,10 @@ BOOL CEBrowserEngine::ReloadOnTab(bool bFromCache, UINT iTab)
 
 LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
 {
-    bHandled = TRUE;
+
+	//TODO TAU
+    /*
+	bHandled = TRUE;
 
     switch (uMsg) 
     {
@@ -918,7 +923,7 @@ LRESULT CEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPara
         return rtRes;
         break;
     }
-
+*/
     return 0;
 }
 

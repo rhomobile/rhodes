@@ -567,13 +567,19 @@ def build_cab
   end
   
   if $build_persistent_cab && !$use_shared_runtime
-    makePersistentFiles($srcdir, additional_dlls_persistent_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process, reg_keys_filename)
+    #TODO TAU
+    #makePersistentFiles($srcdir, additional_dlls_persistent_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process, reg_keys_filename)
+    makePersistentFiles($srcdir, additional_dlls_persistent_paths, nil, $webkit_out_of_process, reg_keys_filename)
   end
 
   webkit = 'none'
   if $is_webkit_engine && $webkit_capability 
     webkit = $webkit_out_of_process ? 'out_of_process' : 'in_process'
   end
+
+  #TODO TAU
+  webkit = 'none'
+  $wk_data_dir = File.join($startdir, "lib/tau/webkit")
 
   dir = File.join($startdir, $builddir)
   

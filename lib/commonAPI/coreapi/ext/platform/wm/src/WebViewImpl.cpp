@@ -22,7 +22,8 @@ public:
 
     CWebViewImpl(): m_nNavigationTimeout(45000), m_dZoomPage(1.0), m_nTextZoom(1), CWebViewSingletonBase()
     {
-        convertFromStringW( rho_wmimpl_getNavTimeOutVal(), m_nNavigationTimeout );
+        //TODO TAU
+		//convertFromStringW( rho_wmimpl_getNavTimeOutVal(), m_nNavigationTimeout );
 		if(m_nNavigationTimeout<=0)
 		{
 			LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_nNavigationTimeout;

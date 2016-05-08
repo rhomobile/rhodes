@@ -1677,7 +1677,8 @@ void CMainWindow::ProcessNavigateComplete(LPCTSTR url)
     RAWLOGC_INFO("WebView", "Page load complete." );
 
     PROF_STOP("BROWSER_PAGE");
-	RHODESAPP().getExtManager().zoomPage( (float)rho_wmimpl_get_pagezoom());
+	//TODO TAU
+	//RHODESAPP().getExtManager().zoomPage( (float)rho_wmimpl_get_pagezoom());
     RHODESAPP().getExtManager().onNavigateComplete(url);
 }
 
@@ -2135,7 +2136,8 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 
     StringW pathW;
 
-	LPCTSTR szSplashScreenPath = rho_wmimpl_getSplashScreenPathVal();
+	//TODO TAU LPCTSTR szSplashScreenPath = rho_wmimpl_getSplashScreenPathVal();
+	LPCTSTR szSplashScreenPath = 0;
 	if (szSplashScreenPath)
 	{
 		pathW = szSplashScreenPath;
