@@ -1,4 +1,5 @@
 /*------------------------------------------------------------------------
+
 * (The MIT License)
 * 
 * Copyright (c) 2008-2011 Rhomobile, Inc.
@@ -179,6 +180,7 @@ static void _addPhonesToHash(VALUE hash,ABRecordRef ref) {
 		int num_phones = ABMultiValueGetCount(phones);
 		for (int n = 0; n < num_phones; n++) {
 			CFStringRef label = ABMultiValueCopyLabelAtIndex(phones,n);
+			if (label == nil) continue;
 			if(CFStringCompare(label,kABWorkLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_BUSINESS_NUMBER,
 					ABMultiValueCopyValueAtIndex(phones,n));
@@ -238,6 +240,7 @@ static void _addUrlToHash(VALUE hash,ABRecordRef ref) {
 		int num_urls = ABMultiValueGetCount(urls);
 		for (int n = 0; n < num_urls; n++) {
 			CFStringRef label = ABMultiValueCopyLabelAtIndex(urls,n);
+			if (label == nil) continue;
 			if(CFStringCompare(label,kABPersonHomePageLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_HOME_PAGE,
 								   ABMultiValueCopyValueAtIndex(urls,n));
@@ -254,6 +257,7 @@ static void _addRelatedNamesToHash(VALUE hash,ABRecordRef ref) {
 		int num_names = ABMultiValueGetCount(names);
 		for (int n = 0; n < num_names; n++) {
 			CFStringRef label = ABMultiValueCopyLabelAtIndex(names,n);
+			if (label == nil) continue;
 			if(CFStringCompare(label,kABPersonSpouseLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_SPOUSE_NAME,
 								   ABMultiValueCopyValueAtIndex(names,n));
@@ -273,6 +277,7 @@ static void _addDatesToHash(VALUE hash,ABRecordRef ref) {
 		int num_dates = ABMultiValueGetCount(dates);
 		for (int n = 0; n < num_dates; n++) {
 			CFStringRef label = ABMultiValueCopyLabelAtIndex(dates,n);
+			if (label == nil) continue;
 			if(CFStringCompare(label,kABPersonAnniversaryLabel,0)==kCFCompareEqualTo) {
 				_addDatePropertyToHash(hash,RUBY_PB_ANNIVERSARY,
 								   (NSDate*)ABMultiValueCopyValueAtIndex(dates,n));

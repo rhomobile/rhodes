@@ -60,7 +60,7 @@ module LocalizationSimplified
     # Rails uses Month names in Date and time select boxes 
     # (+date_select+ and +datetime_select+ )
     # Currently (as of version 1.1.6), Rails doesn't use daynames
-    Monthnames     = [nil] + %w{Janvier Février Mars Avril Mai Juin Juillet Août Septembre Octobre Novembre Decembre}
+    Monthnames     = [nil] + %w{Janvier Février Mars Avril Mai Juin Juillet Août Septembre Octobre Novembre Décembre}
     AbbrMonthnames = [nil] + %w{Jan Fév Mar Avr Mai Jui Jul Aoû Sep Oct Nov Déc}
     Daynames       = %w{Dimanche Lundi Mardi Mercredi Jeudi Vendredi Samedi}
     AbbrDaynames   = %w{Dim Lun Mar Mer Jeu Ven Sam}
