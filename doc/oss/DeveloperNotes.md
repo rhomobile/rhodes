@@ -8,7 +8,7 @@ Detailed information on unsupported features, known issues or specific notes rel
 - **Usage the RMS OSS release is completely free of charge**. All fees and royalties have been dropped from the [RMS open source licensing agreement](https://github.com/rhomobile/rhodes/blob/master/LICENSE).
 - OSS users will **not have access cloud build** or other features of rhomobile.com. 
 - Users of RMS 5.4 and earlier versions will continue to have access to [rhomobile.com](http://www.rhomobile.com). 
-- **[Zebra's RhoMobile documentation site](http://docs.rhomobile.com/en/5.4/guide/welcome)** will remain available. 
+- **[Zebra's RhoMobile documentation site](http://docs.rhomobile.com/en/5.4/guide/welcome)** will remain available for API reference. 
 
 For more information please refer to the [Zebra RMS Open Sourcing Announcement and FAQ](https://developer.zebra.com/community/rhomobile-suite/rhomobile-community/rhomobile-blogs/blog/2016/03/25/announcement-rhomobile-transitioning-to-open-source?et=watches.email.blog) and licensing options.
 
