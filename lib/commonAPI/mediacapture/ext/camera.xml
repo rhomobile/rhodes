@@ -56,9 +56,9 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
 		<CONSTANTS>
-		
+
 		  <!-- Camera Types -->
-    
+
 			<CONSTANT name="CAMERA_TYPE_BACK" value="back" type="STRING">
 				<DESC>Back camera. This is not supported in WM/CE devices.</DESC>
 			</CONSTANT>
@@ -92,7 +92,7 @@ The ebapi.js file is necessary for all single API inclusions.
 			<CONSTANT name="COLOR_MODEL_GRAYSCALE" value="grayscale" type="STRING">
 				<DESC>A grayscale image is captured.</DESC>
 			</CONSTANT>
-			
+
 			<CONSTANT name="FLASH_ON" value="on" type="STRING">
 				<DESC>Flash will be used.</DESC>
 			</CONSTANT>
@@ -139,7 +139,7 @@ The ebapi.js file is necessary for all single API inclusions.
 				</DESC>
                 <DESC_EB>This property is device specific. The value for this property can be either 'back' or 'front' in the case of Android devices.In the case of windows it could be either 'imager' or 'color'. WM/CE devices will use 'color'as default and if color camera not available the default value will be 'imager'. Android devices will use 'back'as default and if back camera not available the default value will be 'front'.
 				This Property shall return one among the values mentioned in constant section which starts with CAMERA_TYPE_...</DESC_EB>
-               
+
             </PROPERTY>
             <PROPERTY name="maxWidth" type="INTEGER" generateAccessors="true" readOnly="true">
                 <PLATFORM>Android, iOS, WP8, WM, CE</PLATFORM>
@@ -192,7 +192,7 @@ The ebapi.js file is necessary for all single API inclusions.
                 <DESC_EB>The format of the captured image in subsequent calls to takePicture(). On windows devices the format will be always .jpg type.
 				This Property shall accept/return one among the values mentioned in constant section which starts with COMPRESSION_FORMAT_...
 				</DESC_EB>
-                
+
             </PROPERTY>
             <PROPERTY name="outputFormat" type="STRING" default="image">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
@@ -203,7 +203,7 @@ The ebapi.js file is necessary for all single API inclusions.
 				<DESC_EB>Specifies the way to return the captured image to the application.
 				This Property shall accept/return one among the values mentioned in constant section which starts with OUTPUT_FORMAT_...
 				</DESC_EB>
-                
+
             </PROPERTY>
             <PROPERTY name="colorModel" type="STRING" default="rgb">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
@@ -214,7 +214,7 @@ The ebapi.js file is necessary for all single API inclusions.
 				<DESC_EB>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.
 				This Property shall accept/return one among the values mentioned in constant section which starts with COLOR_MODEL_...
 				</DESC_EB>
-                
+
             </PROPERTY>
             <PROPERTY name="enableEditing" type="BOOLEAN" default="true" productException="eb">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
@@ -229,7 +229,7 @@ The ebapi.js file is necessary for all single API inclusions.
 				This Property shall accept/return one among the values mentioned in constant section which starts with FLASH_...</DESC>
 				<DESC_EB>Specifies the flash behavior when taking a picture.
 				This Property shall accept/return one among the values mentioned in constant section which starts with FLASH_...</DESC_EB>
-               
+
             </PROPERTY>
             <PROPERTY name="saveToDeviceGallery" type="BOOLEAN" default="false">
                 <VER_INTRODUCED>2.0.0</VER_INTRODUCED>
@@ -266,15 +266,20 @@ The ebapi.js file is necessary for all single API inclusions.
             <PROPERTY name="useSystemViewfinder" type="BOOLEAN" default="false">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <PLATFORM>Android</PLATFORM>
-                <DESC>Setting the value of this property to "true", shall open the System ViewFinder with its properties. None of the Rho camera properties shall be applicable.</DESC>
+                <DESC>Setting the value of this property to "true", shall open the System ViewFinder with its properties. Applicable to takePicture() and choosePicture() both. None of the Rho camera properties shall be applicable except desiredWidth and desiredHeight (desired size aplly if useRealBitmapResize enabled).</DESC>
             </PROPERTY>
-			<PROPERTY name="aimMode" type="STRING">
+            <PROPERTY name="useRealBitmapResize" type="BOOLEAN" default="false">
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <PLATFORM>Android</PLATFORM>
+                <DESC>Setting the value of this property to "true", shall use real resize captured or selected Image and scale image exactly to desired size (with keep aspect ratio). For example 3000x2000 with desired 1500x1500 will be resized to 1500x1000.</DESC>
+            </PROPERTY>
+            <PROPERTY name="aimMode" type="STRING">
                 <PLATFORM>WM, CE</PLATFORM>
                 <DESC>Specifies the aim behaviour when taking a picture. Applicable only for imager module.
 				This Property shall accept/return one among the values mentioned in constant section which starts with AIM_...</DESC>
 				<DESC_EB>Specifies the aim behaviour when taking a picture. Applicable only for imager module.
 				This Property shall accept/return one among the values mentioned in constant section which starts with AIM_...</DESC_EB>
-                
+
             </PROPERTY>
         </PROPERTIES>
 

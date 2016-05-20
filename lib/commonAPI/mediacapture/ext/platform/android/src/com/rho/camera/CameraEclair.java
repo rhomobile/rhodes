@@ -14,11 +14,11 @@ import com.rhomobile.rhodes.api.IMethodResult;
 
 public class CameraEclair extends CameraObject implements ICameraObject {
     private static final String TAG = CameraEclair.class.getSimpleName();
-    
+
     private List<Camera.Size> mSupportedPictureSizes;
 
-    CameraEclair(String id) { 
-        super(id); 
+    CameraEclair(String id) {
+        super(id);
 
         getPropertiesMap().put("cameraType", "back");
         getPropertiesMap().put("compressionFormat", "jpg");
@@ -99,7 +99,7 @@ public class CameraEclair extends CameraObject implements ICameraObject {
                     closeCamera();
                 }
             });
-            
+
         } else {
             getCamera().takePicture(null, null, new TakePictureCallback(previewActivity));
         }
@@ -109,7 +109,18 @@ public class CameraEclair extends CameraObject implements ICameraObject {
     protected ISize getDesiredSize() {
         String strDesiredWidth = getActualPropertyMap().get("desiredWidth");
         String strDesiredHeight = getActualPropertyMap().get("desiredHeight");
-        
+
+        if (Boolean.parseBoolean(getActualPropertyMap().get("useRealBitmapResize"))) {
+            return null;
+        }
+
+        if (Integer.valueOf(strDesiredWidth) <= 0) {
+            strDesiredWidth = null;
+        }
+        if (Integer.valueOf(strDesiredHeight) <= 0) {
+            strDesiredHeight = null;
+        }
+
         int minDiff = Integer.MAX_VALUE;
         ISize selectedSize = null;
 
@@ -157,7 +168,7 @@ public class CameraEclair extends CameraObject implements ICameraObject {
             supported = (focusMode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO)) || (focusMode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_MACRO));
         }
         return supported;
-        
+
     }
 
     protected String getFlashMode() {
