@@ -673,9 +673,11 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     // could repeated twice or more times
     if (RHODESAPP().isBaseUrl(strUrl))
 	{
-        curl_easy_setopt(m_curl, CURLOPT_CONNECTTIMEOUT, 10*24*60*60);
-		curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, 10*24*60*60);
+        timeout = 10*24*60*60;
+        curl_easy_setopt(m_curl, CURLOPT_CONNECTTIMEOUT, timeout);
+        curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
 	}
+
     
     curl_slist *hdrs = NULL;
     // Disable "Expect: 100-continue"
