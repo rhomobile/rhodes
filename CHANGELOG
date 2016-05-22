@@ -1,3 +1,13 @@
+## 1.0.3
+* fix some network issues
+* improve Android Camera
+
+
+## 1.0.2
+* restore barcode and nfc extensions
+
+
+
 ## 1.0.0
 * rebranding from Rhodes to TAU
 * fully support of iOS 9.0 and latest XCode
