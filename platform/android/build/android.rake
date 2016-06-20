@@ -528,6 +528,14 @@ namespace "config" do
       end
 
       v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
+
+      #try for newer sdk tools
+      if v4jar.size != 1
+        toolsver = File.split(build_tools_path)[1]
+        path = File.join($androidsdkpath,'extras','android', 'm2repository', '**','support-v4',toolsver,"support-v4-#{toolsver}-sources.jar")
+        v4jar = Dir.glob( path )
+      end
+
       raise "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
       $v4support_classpath = v4jar.first
 
