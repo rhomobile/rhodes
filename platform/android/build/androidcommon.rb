@@ -87,45 +87,69 @@ def detect_toolchain(ndkpath, abi)
       ]
   end
 
+  toolchainversions = ['4.8','4.9']
+
   toolchain = 'unknown-toolchain'
   if abi == 'arm'
-    toolchain = 'arm-linux-androideabi-4.8'
+    toolchain = 'arm-linux-androideabi'
   elsif abi == 'x86'
-    toolchain = 'x86-4.8'
+    toolchain = 'x86'
+  elsif abi == 'x86_64'
+    toolchain = 'x86_64'
   elsif abi == 'mips'
-    toolchain = 'mipsel-linux-android-4.8'
+    toolchain = 'mipsel-linux-android'
   else
     raise "Unknown ABI: {abi}";
   end
 
-  variants = []
   ndkhostvariants.each do |ndkhost|
-      variants << File.join(ndkpath,'build','prebuilt',ndkhost,toolchain)
-      variants << File.join(ndkpath,'toolchains',toolchain,'prebuilt',ndkhost)
-      variants.each do |variant|
-        puts "Check toolchain path: #{variant}" if USE_TRACES    
-        next unless File.directory? variant
-        $ndktools = variant
-        $ndkabi = toolchain.gsub(/^(.*)-([^-]*)$/, '\1')
-        $ndkgccver = toolchain.gsub(/^(.*)-([^-]*)$/, '\2')
-        
-        $ndkabi = 'i686-linux-android' if $ndkabi == 'x86'
+      puts "Checking toolchain for host: #{ndkhost}" if USE_TRACES
 
-        puts "Toolchain is detected: #{$ndktools}, abi: #{$ndkabi}, version: #{$ndkgccver}" if USE_TRACES
-        
-        ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
-            name = tool.gsub('+', 'p')
-            eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
+      toolchainversions.each do |version|
+        variants = []
+        variants << File.join(ndkpath,'build','prebuilt',ndkhost,"#{toolchain}-#{version}")
+        variants << File.join(ndkpath,'toolchains',"#{toolchain}-#{version}",'prebuilt',ndkhost)
+
+        variants.each do |variant|
+          puts "Check toolchain path: #{variant}" if USE_TRACES    
+          next unless File.directory? variant
+
+          $ndktools = variant
+          $ndkabi = toolchain#toolchain.gsub(/^(.*)-([^-]*)$/, '\1')
+          $ndkgccver = version#toolchain.gsub(/^(.*)-([^-]*)$/, '\2')
+          
+          $ndkabi = 'i686-linux-android' if $ndkabi == 'x86'
+          $ndkabi = 'x86_64-linux-android' if $ndkabi == 'x86_64'
+
+          puts "Toolchain is detected: #{$ndktools}, abi: #{$ndkabi}, version: #{$ndkgccver}" if USE_TRACES
+          
+          ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
+              name = tool.gsub('+', 'p')
+
+              toolpath = check_tool( tool, $ndktools, $ndkabi)
+
+              eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
+          end
+
+          return
         end
-
-        return
       end
   end
 
   if $ndktools.nil?
     raise "Can't detect NDK toolchain path (corrupted NDK installation?)"
-  end
+  end  
+end
+
+def check_tool( tool, ndktoolsdir, abi )
+  toolpath = File.join(ndktoolsdir,'bin',"#{abi}-#{tool}")
+  puts "Checking tool path #{toolpath} for tool #{tool}" if USE_TRACES
   
+  if File.file? toolpath
+    return toolpath
+  else
+    raise "Can't find tool #{tool} at path #{toolpath} (corrupted NDK installation or unsupported NDK?)"
+  end
 end
 
 def setup_ndk(ndkpath,apilevel,abi)
