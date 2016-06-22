@@ -110,7 +110,7 @@
 #define HAVE_SYS_TIME_H 1
 #define HAVE_SYS_TIMES_H 1
 #define HAVE_SYS_PARAM_H 1
-#define HAVE_PWD_H 1
+//#define HAVE_PWD_H 1
 #define HAVE_GRP_H 1
 #define HAVE_UTIME_H 1
 #define HAVE_SYS_RESOURCE_H 1
@@ -210,7 +210,7 @@
 #define HAVE_SETEGID 1
 #define HAVE_SETREGID 1
 #define HAVE_SETRESGID 1
-#define HAVE_ISSETUGID 1
+//#define HAVE_ISSETUGID 1
 #define HAVE_PAUSE 1
 #define HAVE_LCHOWN 1
 #define HAVE_GETPGRP 1
@@ -261,7 +261,7 @@
 #define HAVE_TIMEZONE 1
 #define TIMEZONE_VOID 1
 #define NEGATIVE_TIME_T 1
-#define POSIX_SIGNAL 1
+//#define POSIX_SIGNAL 1
 #define GETPGRP_VOID 1
 #define SETPGRP_VOID 1
 #define RSHIFT(x,y) ((x)>>(int)(y))
