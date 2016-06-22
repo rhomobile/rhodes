@@ -81,7 +81,10 @@ def detect_toolchain(ndkpath, abi)
       ndkhostvariants << 'windows-x86_64' if bufcheck64 and bufcheck64.include?('64')
       ndkhostvariants << 'windows'
   else
-      ndkhostvariants = [`uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, `uname -s`.downcase!.chomp! + '-x86']
+      ndkhostvariants = [
+        `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, 
+        `uname -s`.downcase!.chomp! + '-x86'
+      ]
   end
 
   toolchain = 'unknown-toolchain'
