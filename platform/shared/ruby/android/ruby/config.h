@@ -248,7 +248,7 @@
 #define HAVE_PREAD 1
 #define HAVE_SENDFILE 1
 #define HAVE_SHUTDOWN 1
-//#define HAVE_SIGALTSTACK 1
+#define HAVE_SIGALTSTACK 1
 #define RUBY_SETJMP(env) _setjmp(env)
 #define RUBY_LONGJMP(env,val) _longjmp(env,val)
 #define RUBY_JMP_BUF jmp_buf
@@ -261,7 +261,7 @@
 #define HAVE_TIMEZONE 1
 #define TIMEZONE_VOID 1
 #define NEGATIVE_TIME_T 1
-//#define POSIX_SIGNAL 1
+#define POSIX_SIGNAL 1
 #define GETPGRP_VOID 1
 #define SETPGRP_VOID 1
 #define RSHIFT(x,y) ((x)>>(int)(y))
