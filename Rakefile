@@ -47,6 +47,7 @@ require 'pathname'
 require 'rexml/document'
 require 'securerandom'
 require 'uri'
+require 'logger'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
@@ -101,6 +102,18 @@ load File.join(pwd, 'platform/osx/build/osx.rake')
 
 
 $timestamp_start_milliseconds = 0
+
+$logger = Logger.new(STDOUT)
+if Rake.application.options.trace
+  $logger.level = Logger::DEBUG
+else
+  $logger.level = Logger::INFO
+end
+
+$logger.formatter = proc do |severity,datetime,progname,msg|
+  "[#{severity}]\t#{msg}\n"
+end
+
 
 def print_timestamp(msg = 'just for info')
   if $timestamp_start_milliseconds == 0
