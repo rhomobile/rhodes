@@ -26,6 +26,7 @@
 
 require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
+require File.dirname(__FILE__) + '/maven_deps_extractor.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
@@ -401,6 +402,9 @@ namespace "config" do
       # TODO: add ruby executable for Linux
     end
 
+    m = AndroidTools::MavenDepsExtractor.instance.set_temp_dir($tmpdir)
+    m = AndroidTools::MavenDepsExtractor.instance.set_java_home($java)
+
     build_tools_path = nil
 
     if !$skip_checking_Android_SDK
@@ -529,15 +533,12 @@ namespace "config" do
 
       v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
 
-      #try for newer sdk tools
-      if v4jar.size != 1
-        toolsver = File.split(build_tools_path)[1]
-        path = File.join($androidsdkpath,'extras','android', 'm2repository', '**','support-v4',toolsver,"support-v4-#{toolsver}-sources.jar")
-        v4jar = Dir.glob( path )
+      if v4jar.size !=1
+        AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:24.0.0')
+      else
+        $v4support_classpath = v4jar.first
       end
 
-      raise "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
-      $v4support_classpath = v4jar.first
 
       #setup_ndk($androidndkpath, $found_api_level, 'arm')
       $abis = $app_config['android']['abis'] if $app_config["android"]
@@ -740,6 +741,15 @@ namespace "config" do
                 end
               end
 
+              maven_deps = extconf_android['maven_deps']
+              if maven_deps
+                if maven_deps.is_a? Array
+                  maven_deps.each do |dep|
+                    AndroidTools::MavenDepsExtractor.instance.add_dependency( ext, dep )
+                  end
+                end
+              end
+
               resource_packages = extconf_android['resource_packages'] if extconf_android
               if resource_packages
                 if resource_packages.is_a? Array
@@ -844,6 +854,9 @@ namespace "config" do
       end # $app_extensions_list.each
 
       puts "Extensions' java source lists: #{$ext_android_additional_sources.inspect}"
+
+      AndroidTools::MavenDepsExtractor.instance.extract_all
+
       print_timestamp('android:extensions FINISH')
 
     end #task :extensions
