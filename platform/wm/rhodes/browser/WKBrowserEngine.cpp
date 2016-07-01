@@ -67,7 +67,20 @@ CWKBrowserEngine::CWKBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
         m_urlList(NULL),
 	m_currentPage(NULL)
 {
-    m_parentHWND = hParentWnd;    
+    m_hWKInstance = LoadLibrary(L"rhowebkit.dll");
+	if(m_hWKInstance)
+	{
+		m_pWKInitialize = (PWKINITIALIZE) GetProcAddress(m_hWKInstance, L"initialize");
+		m_pWKCleanUp = (PWKCLEANUP)    GetProcAddress(m_hWKInstance, L"cleanup");
+		m_pWKCreate = (PWKCREATE) GetProcAddress(m_hWKInstance, L"create");
+		m_pWKDestroy = (PWKDESTROY) GetProcAddress(m_hWKInstance, L"destroy");
+		m_pWKLoad = (PWKLOAD) GetProcAddress(m_hWKInstance, L"load");
+		m_pWKReload = (PWKRELOAD) GetProcAddress(m_hWKInstance, L"reload");
+		m_pWKStop = (PWKSTOP) GetProcAddress(m_hWKInstance, L"stop");
+	}
+	
+	
+	m_parentHWND = hParentWnd;    
     m_hparentInst = hInstance;
     m_tabID = 0; //tabID;
 
@@ -98,6 +111,8 @@ CWKBrowserEngine::~CWKBrowserEngine()
         DestroyWindow(g_hwndTabHTMLContainer);
         g_hwndTabHTMLContainer = NULL;
     }
+	m_pWKDestroy();
+	m_pWKCleanUp();
 }
 
 HRESULT CWKBrowserEngine::RegisterWindowClass(HINSTANCE hInstance, WNDPROC appWndProc) 
@@ -125,7 +140,8 @@ HRESULT CWKBrowserEngine::RegisterWindowClass(HINSTANCE hInstance, WNDPROC appWn
 
 LRESULT CWKBrowserEngine::CreateEngine()
 {		
-    WebView::initialize(m_hparentInst);
+    //WebView::initialize(m_hparentInst);
+	m_pWKInitialize(m_hparentInst);
 	WNDCLASSW wc;
     wc.style          = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc    = CWKBrowserEngine::WndProc;
@@ -156,7 +172,8 @@ LRESULT CWKBrowserEngine::CreateEngine()
     if (!m_hwndTabHTML)
         return S_FALSE;
 
-	m_webView = new WebView(m_hwndTabHTML, true, true);
+	//m_webView = new WebView(m_hwndTabHTML, true, true);
+	m_pWKCreate(m_hwndTabHTML, true, true);
 
     CloseHandle (CreateThread(NULL, 0, 
         &CWKBrowserEngine::RegisterWndProcThread, (LPVOID)this, 0, NULL));
@@ -210,7 +227,8 @@ BOOL CWKBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
                 TCHAR tcNewURL[MAX_URL + 1];
                 wsprintf(tcNewURL, L"file://%s", tcDereferencedURL);
                // retVal = SendMessage(m_hwndTabHTML, DTM_NAVIGATE, 0, (LPARAM) (LPCTSTR)tcNewURL);
-				m_webView->load(tcNewURL);
+				//m_webView->load(tcNewURL);
+				m_pWKLoad(tcNewURL);
             }
         }
         else if (wcslen(tcDereferencedURL) > wcslen(L"www") && wcsnicmp(tcURL, L"www", 3) == 0)
@@ -220,12 +238,14 @@ BOOL CWKBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
                 TCHAR tcNewURL[MAX_URL + 1];
                 wsprintf(tcNewURL, L"http://%s", tcDereferencedURL);
                 //retVal = SendMessage(m_hwndTabHTML, DTM_NAVIGATE, 0, (LPARAM) (LPCTSTR)tcNewURL);
-				    m_webView->load(tcNewURL);
+				    //m_webView->load(tcNewURL);
+				m_pWKLoad(tcNewURL);
             }
         }
         else
             //retVal = SendMessage(m_hwndTabHTML, DTM_NAVIGATE, 0, (LPARAM) (LPCTSTR)tcDereferencedURL);
-		    m_webView->load(tcDereferencedURL);
+		    //m_webView->load(tcDereferencedURL);
+			m_pWKLoad(tcDereferencedURL);
     
 
     return true;
@@ -235,8 +255,8 @@ BOOL CWKBrowserEngine::ResizeOnTab(int iInstID,RECT rcNewSize)
 {    
     m_rcViewSize = rcNewSize;
 
-    if(!m_bLoadingComplete)
-        return TRUE;
+   // if(!m_bLoadingComplete)
+      //  return TRUE;
 
     if (MoveWindow(m_hwndTabHTML,
                    m_rcViewSize.left, 
@@ -312,14 +332,6 @@ void CWKBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
-		// Used for Zoom-In Or Zoom-Out, if the return value is true then 
-		// the message will be pushed further so that the remaining action 
-		// on that function key can be processed.
-		// For Ex: After Zoom In or Zoom Out, the same key may be used by JavaScript
-		// or KeyCapture Module to perform other task from the html page.
-		if ( !RHODESAPP().getExtManager().onZoomTextWndMsg(msg) )
-            continue;
-
 		if (RHODESAPP().getExtManager().onWndMsg(msg) )
             continue;
 

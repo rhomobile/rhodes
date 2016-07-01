@@ -306,7 +306,7 @@ void CSystemImpl::getIsSymbolDevice(CMethodResult& oResult)
     memset(szPlatform, 0, MAX_PATH*sizeof(TCHAR));
     SystemParametersInfo(SPI_GETOEMINFO, MAX_PATH, szPlatform, 0);
     _wcslwr(szPlatform);
-    if(wcsstr(szPlatform, L"symbol"))
+    if(wcsstr(szPlatform, L"symbol") || wcsstr(szPlatform, L"motorola"))
         oResult.set(true);
     else
         oResult.set(false);

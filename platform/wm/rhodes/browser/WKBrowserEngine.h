@@ -4,13 +4,22 @@
 #include "logging/RhoLog.h"
 
 #include "EngineDefines.h"
-#include "WebView.h"
+//#include "WebView.h"
 
 #if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 #include <pvdispid.h>
 #include <piedocvw.h>
 #endif
 #define MAX_HISTORY 30
+
+typedef VOID (WINAPI *PWKINITIALIZE)(HINSTANCE);
+typedef VOID (WINAPI *PWKCLEANUP)();
+typedef VOID (WINAPI *PWKCREATE)(HWND, bool, bool);
+typedef VOID (WINAPI *PWKDESTROY)();
+typedef VOID (WINAPI *PWKLOAD)(LPCWSTR);
+typedef VOID (WINAPI *PWKRELOAD)();
+typedef VOID (WINAPI *PWKSTOP)();
+
 class CHistoryElement
 {
 public:
@@ -42,7 +51,7 @@ private:
 	CHistoryElement* m_currentPage;			///< Pointer to current position in the History List
 
 	int				m_textZoomValue;		///< The text zoom value of an html page.
-	WebView* m_webView;
+	//WebView* m_webView;
 	
 private:
     //
@@ -88,7 +97,14 @@ private:
     static DWORD WINAPI NavigationTimeoutThread( LPVOID lpParameter );
     static DWORD WINAPI CWKBrowserEngine::RegisterWndProcThread(LPVOID lpParameter);
     static LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    
+	HINSTANCE m_hWKInstance;
+	PWKINITIALIZE m_pWKInitialize;
+	PWKCLEANUP m_pWKCleanUp;
+	PWKCREATE m_pWKCreate;
+	PWKDESTROY m_pWKDestroy;
+	PWKLOAD m_pWKLoad;
+	PWKRELOAD m_pWKReload;
+	PWKSTOP m_pWKStop;
 public:
 
     static CWKBrowserEngine* getInstance();

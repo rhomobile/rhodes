@@ -118,6 +118,12 @@ extern "C" bool rho_wmimpl_get_resize_on_sip()
 {
     return true;
 }
+#else
+//TODO TAU
+extern "C" bool rho_wmimpl_get_resize_on_sip()
+{
+    return false;
+}
 #endif
 
 #if defined(_WIN32_WCE)
@@ -578,7 +584,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	m_appWindow.SetActiveWindow();	//  RhoElements Browser was failing to launch maximimized through a shortcut, this line ensures it launches maximised
     m_appWindow.UpdateWindow();
 #if defined(APP_BUILD_CAPABILITY_SYMBOL)
-	initialiseRhoElementsExt();
+//TODO TAU
+	//	initialiseRhoElementsExt();
 #endif
     m_appWindow.initBrowserWindow();
 

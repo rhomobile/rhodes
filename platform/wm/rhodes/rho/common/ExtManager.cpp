@@ -356,11 +356,12 @@ int CExtManager::getTextZoom() //Enum (0 to 4)
 
 StringW CExtManager::getConfigPath()
 {
-#if defined(APP_BUILD_CAPABILITY_SYMBOL)
-    return rho_wmimpl_get_configfilepath();
-#else
+//TODO TAU
+	//#if defined(APP_BUILD_CAPABILITY_SYMBOL)
+ //   return rho_wmimpl_get_configfilepath();
+//#else
     return L"";
-#endif
+//#endif
 }
 
 StringW CExtManager::getPageTitle(UINT iTab)

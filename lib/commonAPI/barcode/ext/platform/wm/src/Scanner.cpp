@@ -3,7 +3,11 @@
 //	TODO: This flag should not need to be global in true multiple instance.
 
 //Reading LowBatteryScan value from config.xml
-extern "C" bool rho_wmimpl_sharedconfig_getboolvalue(const wchar_t* szName);
+extern "C" bool rho_wmimpl_sharedconfig_getboolvalue(const wchar_t* szName)
+{
+	//TODO TAU
+	return false;
+}
 extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
 
 #pragma region public_methods
