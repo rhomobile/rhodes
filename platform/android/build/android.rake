@@ -209,6 +209,11 @@ namespace 'project' do
       cp manifest_path, project_path
 
     end
+
+    task :studio => ['config:android', 'config:android:extensions','build:android:manifest'] do
+      #TODO
+      raise "Project generation for Android Studio is not implemented yet"
+    end
   end
 end
 
