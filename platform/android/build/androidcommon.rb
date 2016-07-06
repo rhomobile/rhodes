@@ -142,7 +142,7 @@ def detect_toolchain(ndkpath, abi)
 end
 
 def check_tool( tool, ndktoolsdir, abi )
-  toolpath = File.join(ndktoolsdir,'bin',"#{abi}-#{tool}")
+  toolpath = File.join(ndktoolsdir,'bin',"#{abi}-#{tool}#{$exe_ext}")
   puts "Checking tool path #{toolpath} for tool #{tool}" if USE_TRACES
   
   if File.file? toolpath
