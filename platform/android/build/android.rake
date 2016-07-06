@@ -414,24 +414,42 @@ namespace "config" do
 
     if !$skip_checking_Android_SDK
       if File.exist?(File.join($androidsdkpath, "build-tools"))
+
+
+        
+        toolsver = $app_config['android']['buildtools'] if ($app_config['android'] and $app_config['android']['buildtools'])
+
+        if toolsver
+          #will try to find user-specified build tools
+          path = File.join($androidsdkpath,'build-tools',toolsver)
+          if File.directory?(path)
+            build_tools_path = toolsver
+          else
+            $logger.warn("Android build tools v#{toolsver} specified in build.yml were not found, will use latest")
+          end
+        end
+
+
         build_tools = {}
-        Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
-          next if entry == '.' or entry == '..'
 
-          #Lets read source.properties file to get highest available build-tools
-          src_prop_path = File.join($androidsdkpath, "build-tools",entry,"source.properties")
-          next unless File.file?(src_prop_path)
+        if !build_tools_path
+          Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
+            next if entry == '.' or entry == '..'
 
-          File.open(src_prop_path) do |f|
-            f.each_line do |line|
-              build_tools[entry] = line.split('=')[1].gsub("\n",'') if line.match(/^Pkg.Revision=/)
+            #Lets read source.properties file to get highest available build-tools
+            src_prop_path = File.join($androidsdkpath, "build-tools",entry,"source.properties")
+            next unless File.file?(src_prop_path)
+
+            File.open(src_prop_path) do |f|
+              f.each_line do |line|
+                build_tools[entry] = line.split('=')[1].gsub("\n",'') if line.match(/^Pkg.Revision=/)
+              end
             end
           end
 
+          latest_build_tools = build_tools.sort_by{|folder_name,sdk_version| sdk_version}.last
+          build_tools_path = latest_build_tools[0]
         end
-
-        latest_build_tools = build_tools.sort_by{|folder_name,sdk_version| sdk_version}.last
-        build_tools_path = latest_build_tools[0]
       end
 
       if build_tools_path
