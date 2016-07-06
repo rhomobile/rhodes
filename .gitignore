@@ -279,3 +279,6 @@ platform/build/*.build/*
 
 .qmake.stash
 rendered
+
+res/build-tools/apache-maven-3.3.9/m2/**/_remote.repositories
+res/build-tools/apache-maven-3.3.9/m2/**/*.lastUpdated
