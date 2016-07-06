@@ -1867,6 +1867,10 @@ namespace "build" do
       puts "Generate initial R.java at #{$app_rjava_dir}"
 
       args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
+      args += AndroidTools::MavenDepsExtractor.instance.aapt_args
+
+      args << '-v' if USE_TRACES
+
       Jake.run($aapt, args)
 
       raise 'Error in AAPT: R.java' unless $?.success?
@@ -1894,6 +1898,7 @@ namespace "build" do
     task :genreclipse => [:manifest, :resources] do
       mkdir_p $app_rjava_dir
       args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
+      args += AndroidTools::MavenDepsExtractor.instance.aapt_args
       Jake.run($aapt, args)
 
       raise 'Error in AAPT: R.java' unless $?.success?
@@ -1941,7 +1946,8 @@ namespace "build" do
       classpath = $androidjar
       classpath += $path_separator + $google_classpath if $google_classpath
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
-      classpath += $path_separator + $v4support_classpath
+      classpath += $path_separator + $v4support_classpath if $v4support_classpath
+      classpath += $path_separator + AndroidTools::MavenDepsExtractor.instance.classpath($path_separator)
 
       javalibsdir = Jake.get_absolute("platform/android/lib")
 
@@ -1974,7 +1980,8 @@ namespace "build" do
       classpath += $path_separator + $google_classpath if $google_classpath
       #######################################################################
 
-      classpath += $path_separator + $v4support_classpath
+      classpath += $path_separator + $v4support_classpath if $v4support_classpath
+      classpath += $path_separator + AndroidTools::MavenDepsExtractor.instance.classpath($path_separator)
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
           classpath += $path_separator + jar
@@ -2014,7 +2021,8 @@ namespace "build" do
       end
 
       print_timestamp('build:android:extensions_java FINISH')
-      $android_jars << $v4support_classpath
+      $android_jars << $v4support_classpath if $v4support_classpath
+      $android_jars += AndroidTools::MavenDepsExtractor.instance.jars
     end
 
     task :upgrade_package => ["config:set_android_platform", "config:common"] do
@@ -2182,7 +2190,10 @@ namespace "package" do
 
     jarnames = []
 
-    Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
+    alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
+    alljars += AndroidTools::MavenDepsExtractor.instance.jars
+
+    alljars.each do |jar|
 
         jarname = Pathname.new(jar).basename
 
@@ -2207,6 +2218,7 @@ namespace "package" do
     #set_app_name_android($appname)
 
     args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-F", resourcepkg]
+    args += AndroidTools::MavenDepsExtractor.instance.aapt_args
     if $no_compression
       $no_compression.each do |ext|
         args << '-0'
