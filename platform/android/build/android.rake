@@ -557,7 +557,7 @@ namespace "config" do
       v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
 
       if v4jar.size !=1
-        AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:24.0.0')
+        AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:23.0.0')
       else
         $v4support_classpath = v4jar.first
       end
