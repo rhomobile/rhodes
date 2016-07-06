@@ -107,9 +107,13 @@ end
 multitask TARGETLIB_MIPS => OBJ_MIPS
 file V4JAR => [TARGETDIR] do
     v4jar = Dir.glob(File.join(ENV['ANDROID_SDK'],'extras','android','**','v4','android-support-v4.jar'))
-    raise "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
-    v4jar = v4jar.first
-    cp v4jar, TARGETDIR
+
+    if v4jar.size != 1
+      puts "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
+    else
+      v4jar = v4jar.first
+      cp v4jar, TARGETDIR
+    end
 end
 
 namespace 'arch' do
