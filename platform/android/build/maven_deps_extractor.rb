@@ -19,6 +19,11 @@ class MavenDepsExtractor
       @mvnbin += '.cmd'
     end
 
+    @jars = []
+    @res_dirs = []
+    @asset_dirs = []
+    @jni_libs = []
+    @manifests = []
 
   end
 
@@ -59,8 +64,8 @@ class MavenDepsExtractor
     @dependencies.each do |name,deps|
       $logger.debug "Extracting dependencies for extension #{name}"
 
-      path = File.join( @temp_dir, name )
-      mkdir_p( path )
+      path = @temp_dir#File.join( @temp_dir, name )
+      #mkdir_p( path )
       deps.each { |dep| extract( dep, path ) }
     end
   end
@@ -68,21 +73,52 @@ class MavenDepsExtractor
   def extract( dep, path )
     $logger.debug "Extracting dependency #{dep} to #{path}"
 
-    copy_dependency( dep, path )
+    extract_dir = File.join( @temp_dir, '.tmp')
+    mkdir_p extract_dir
+
+    copy_dependency( dep, extract_dir )
 
     $logger.debug "Processing dependencies"
 
-    Dir[File.join(path,'*')].each do |f|
-      if File.extname(f) == '.aar'
+    Dir[File.join(extract_dir,'*')].each do |f|      
+      if File.extname(f) == '.aar'        
         target = File.join(path,File.basename(f,'.aar'))
 
-        $logger.debug "Dependency artefact #{f} is AAR so will unzip it to #{target}"
+        if !File.exist?( target )
+          $logger.debug "Dependency artefact #{f} is AAR so will unzip it to #{target}"
+          mkdir_p target
+          Jake.unzip(f,target)
+          rm f
 
-        mkdir_p target
-        Jake.unzip(f,target)
-        rm f
-      end
+          assets = File.join(target,'assets')
+          manifest = File.join(target,'AndroidManifest.xml')
+          res = File.join(target,'res')
+          libs = File.join(target,'libs')
+          jni = File.join(target,'jni')
+          classes = File.join(target,'classes.jar')
+
+          raise "ERROR: res directory does not exist for AAR package" if !File.directory?( res )
+          raise "ERROR: classes.jar does not exist for AAR package" if !File.exist?( classes )
+          raise "ERROR: AndroidManifest.xml does not exist for AAR package" if !File.exist?( manifest )
+
+          @asset_dirs << assets if (File.directory?(assets) and !Dir[File.join(assets,'*')].empty? )
+          @manifests << manifest
+          @res_dirs << res if !Dir[File.join(res,'*')].empty?
+          @jars += Dir[File.join(libs,'*.jar')]
+          @jars << classes
+          @jni_libs += Dir[(File.join(jni,'**','*.so'))]
+
+        end
+      elsif File.extname(f) == '.jar'
+        target = File.join(path,File.basename(f))
+        if !File.exist?(target)
+          mv(f,target) 
+          @jars << target
+        end
+      end        
     end
+
+    rm_r extract_dir
   end
 
   def maven_env
@@ -114,7 +150,7 @@ class MavenDepsExtractor
     rm pom
 
     $logger.debug "Moving extracted dependencies to #{path}"
-    Dir[File.join(path,'target','dependency','*')].each { |f|mv(f,path) }
+    Dir[File.join(path,'target','dependency','*')].each { |f| mv(f,path) }
     rm_r File.join(path,'target')
   end
 
@@ -189,6 +225,34 @@ class MavenDepsExtractor
     f.write( pom )
     f.close
   end
+
+  def aapt_args
+    args = []
+=begin    
+    @jars.each do |j|
+      args << '-I'
+      args << j
+    end
+=end
+    @res_dirs.each do |d|
+      args << '-S'
+      args << d
+    end
+
+    args << "--auto-add-overlay" if !@res_dirs.empty?
+
+    return args
+
+  end
+
+  def jars
+    @jars
+  end
+
+  def classpath(separator)
+    @jars.join(separator)
+  end
+
 end
 
 end
