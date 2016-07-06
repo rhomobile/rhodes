@@ -8,4 +8,9 @@ android:
   - ext/platform/android/ManifestManifestAdds.erb
   source_list: ext/platform/android/java_build.files
   adds: ext/platform/android/adds
+  
+  #will work with older SDKs
   library_deps: [extras/google/google_play_services/libproject/google-play-services_lib]
+  
+  #will work with newer SDKs
+  maven_deps: ['com.google.android.gms:play-services-maps:9.0.2']
