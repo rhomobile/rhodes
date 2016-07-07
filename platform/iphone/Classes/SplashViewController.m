@@ -98,11 +98,11 @@
         {
             if ((((int)[img size].width) != app_width) || (((int)[img size].height) != app_height)) {
                 // scale to app frame
-                self.frame = appFrame;
+                self.frame = srcrnBounds;//appFrame;
                 CGRect rect;
                 
-                rect.origin.x = appFrame.origin.x;
-                rect.origin.y = appFrame.origin.y;
+                rect.origin.x = 0;//appFrame.origin.x;
+                rect.origin.y = 0;//appFrame.origin.y;
 
                 float res_w = 0;
                 float res_h = 0;
@@ -119,23 +119,23 @@
                     res_w = (((float)image_width) / scales) * height_k;
                 }
                 
-                if ((orientation == UIInterfaceOrientationPortrait) || (orientation == UIInterfaceOrientationPortraitUpsideDown)) {
+                //if ((orientation == UIInterfaceOrientationPortrait) || (orientation == UIInterfaceOrientationPortraitUpsideDown)) {
                     if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
                         rect.origin.x -= (res_w - app_width);
                     }
                     rect.size.width = res_w;
                     rect.size.height = res_h;
-                }
-                else {
-                    if (orientation == UIInterfaceOrientationLandscapeLeft) {
-                        //rect.origin.x -= (res_h - app_height);
-                    }
-                    else {
-                        rect.origin.x -= (res_h - app_height);
-                    }
-                    rect.size.width = res_h;
-                    rect.size.height = res_w;
-                }
+                //}
+                //else {
+                //    if (orientation == UIInterfaceOrientationLandscapeLeft) {
+                //        //rect.origin.x -= (res_h - app_height);
+                //    }
+                //    else {
+                //        rect.origin.x -= (res_h - app_height);
+                //    }
+                //    rect.size.width = res_h;
+                //    rect.size.height = res_w;
+                //}
                 
                 if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                     self.frame = rect;
