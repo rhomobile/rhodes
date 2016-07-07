@@ -12,11 +12,11 @@ class MavenDepsExtractor
     @dependencies = {}
 
     rhoroot = File.join( File.dirname(__FILE__),'..','..','..')
-    @m2home = File.join( rhoroot, 'res', 'build-tools', 'apache-maven-3.3.9' )
+    @m2home = File.join( rhoroot, 'res', 'build-tools', 'maven' )
     @mvnbin = File.join( @m2home, 'bin', 'mvn' )
 
     if RUBY_PLATFORM =~ /(win|w)32$/
-      @mvnbin += '.cmd'
+      @mvnbin += '.bat'
     end
 
     @jars = []
