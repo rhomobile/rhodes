@@ -3194,6 +3194,10 @@ namespace "build" do
     end
 
     task :noxruby, :exclude_dirs do |t, args|
+
+      print_timestamp('build:bundle:noxruby START')
+
+
       exclude_dirs = args[:exclude_dirs]
       excluded_dirs = []
       if (!exclude_dirs.nil?) && (exclude_dirs !~ /^\s*$/)
@@ -3285,6 +3289,8 @@ namespace "build" do
       Jake.build_file_map($srcdir, $file_map_name)
 
       Rake::Task["app:after_build_bundle"].invoke if $app_rakefile_exist
+
+      print_timestamp('build:bundle:noxruby FINISH')
     end # end of noxruby
 
     def is_exclude_folder(excludes, filename)

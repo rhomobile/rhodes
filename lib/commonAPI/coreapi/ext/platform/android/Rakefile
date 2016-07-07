@@ -15,6 +15,16 @@ $debug = ENV['RHO_DEBUG'] == 'true'
 
 require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
+
+$timestamp_start_milliseconds = ENV['RHO_BUILD_STARTED_AT'].to_i
+
+def print_timestamp(msg = 'just for info')
+  curmillis = (Time.now.to_f*1000.0).to_i - $timestamp_start_milliseconds
+
+  puts '-$TIME$- message [ '+msg+' ] time is { '+Time.now.utc.to_s+' } milliseconds from start ('+curmillis.to_s+')'
+end
+
+
 ARGS = ["-I\"#{$curdir}/generated/jni\"",
     "-I\"#{$curdir}/../../shared\"",
     "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\"",
@@ -34,9 +44,9 @@ OBJDIR_MIPS = File.join(OBJDIR,'mips')
 
 SRC = get_sources File.join($curdir, 'ext_native.files')
 
-OBJ_ARM = FileList.new(get_objects(SRC, OBJDIR_ARM))
-OBJ_x86 = FileList.new(get_objects(SRC, OBJDIR_x86))
-OBJ_MIPS = FileList.new(get_objects(SRC, OBJDIR_MIPS))
+OBJ_ARM = FileList.new(get_objects2(SRC, OBJDIR_ARM))
+OBJ_x86 = FileList.new(get_objects2(SRC, OBJDIR_x86))
+OBJ_MIPS = FileList.new(get_objects2(SRC, OBJDIR_MIPS))
 
 TARGETDIR_ARM = File.join(TARGETDIR,'armeabi')
 TARGETDIR_x86 = File.join(TARGETDIR,'x86')
@@ -52,7 +62,9 @@ cd '../../..'
 
 namespace 'config' do
   task :arm do
+      print_timestamp("config:arm START")
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'arm')
+      print_timestamp("config:arm FINISH")
   end
   
   task :x86 do
@@ -70,13 +82,15 @@ directory TARGETDIR_MIPS
 directory OBJDIR_ARM
 directory OBJDIR_x86
 directory OBJDIR_MIPS
-
+=begin
 rule '.o' => lambda {|obj| find_source(obj) } do |t|
+  print_timestamp("rule .o for #{t.name} START")  
   abi = File.basename(File.dirname(t.name))
   Rake::Task["config:#{abi}"].invoke
   cc_compile find_source(t.name), File.dirname(t.name), ARGS or raise "\e[31mCompilation failed: #{find_source(t.name)}\e[0m"
+  print_timestamp("rule .o for #{t.name} FINISH")  
 end
-
+=end
 task OBJ_ARM => OBJDIR_ARM
 task OBJ_x86 => OBJDIR_x86
 task OBJ_MIPS => OBJDIR_MIPS
@@ -87,11 +101,27 @@ def find_source(objfile)
   src
 end
 
+=begin
 file TARGETLIB_ARM => TARGETDIR_ARM do |t|
     Rake::Task["config:arm"].invoke
+    print_timestamp("cc_ar for #{t.name} START")      
     cc_ar t.name, OBJ_ARM or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+    print_timestamp("cc_ar for #{t.name} FINISH")      
 end
 multitask TARGETLIB_ARM => OBJ_ARM
+=end
+
+task TARGETLIB_ARM => TARGETDIR_ARM do
+
+  print_timestamp("TARGETLIB_ARM START")
+
+  Rake::Task["config:arm"].invoke
+
+  cc_compile_multiple(SRC.map{|s| File.join(pwd,s) }, OBJDIR_ARM, ARGS) or raise "\e[31mCompilation failed: #{TARGETLIB_ARM}\e[0m"
+  cc_ar TARGETLIB_ARM, OBJ_ARM or raise "\e[31mCreating library failed: #{TARGETLIB_ARM}\e[0m"
+
+  print_timestamp("TARGETLIB_ARM FINISH")      
+end
 
 file TARGETLIB_x86 => TARGETDIR_x86 do |t|
     Rake::Task["config:x86"].invoke

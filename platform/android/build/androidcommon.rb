@@ -71,6 +71,11 @@ def get_objects(sources, objdir)
     sources.map { |src| File.join(objdir, File.basename(src) + ".o") }    
 end
 
+def get_objects2(sources, objdir)
+    sources.map { |src| File.join(objdir, File.basename(src,File.extname(src)) + ".o") }    
+end
+
+
 def detect_toolchain(ndkpath, abi)
   $ndktools = nil
   $ndkabi = "unknown"
@@ -301,8 +306,10 @@ def cc_deps(filename, objdir, additional)
   args = get_def_args(filename)
   args += additional unless additional.nil?
   out = `#{ccbin} #{args.join(' ')} -MM -MG #{filename}`
-  out.gsub!(/^[^:]*:\s*/, '') unless out.nil?
+
   out.gsub!(/\\\n/, ' ') unless out.nil?
+  out.gsub!(/^[^:]*:\s*/, '') unless out.nil?
+  
   out = "" if out.nil?
   #out = File.expand_path(__FILE__) + ' ' + out
 
@@ -388,6 +395,56 @@ def cc_compile(filename, objdir, additional = nil)
   cmdline = ccbin + ' ' + args.join(' ')
   cc_run(ccbin, args)
 end
+
+def cc_compile_multiple(filenames, objdir, additional = nil)
+  #filename.chomp!
+  #objname = File.join objdir, File.basename(filename) + ".o"
+
+  uptodate = true
+  filenames.each do |filename|
+    ext = File.extname(filename)
+    objname = File.join(objdir,(File.basename(filename,ext) + '.o'))
+    deps = cc_deps(filename,objdir,additional)
+
+    if !FileUtils.uptodate? objname, [filename] + deps
+      uptodate = false
+      break
+    end
+  end
+
+  return true if uptodate
+
+  mkdir_p objdir unless File.directory? objdir
+
+  buckets = {}
+
+  filenames.each do |filename|
+    ext = File.extname(filename)
+    if buckets.has_key?(ext)
+      buckets[ext] << filename
+    else
+      buckets[ext] = [ filename ]
+    end
+  end
+
+  buckets.each do |ext,names|
+    cc_compile_multiple_onetype(names,objdir,additional)
+  end  
+end
+
+def cc_compile_multiple_onetype(filenames, objdir, additional = nil)
+  ccbin = cc_get_ccbin(filenames[0])
+
+  args = get_def_args(filenames[0])
+  args += additional if additional.is_a? Array and not additional.empty?
+  args << "-c"
+  filenames.each do |filename|
+    args << '"' + filename+ '"'
+  end
+  cmdline = ccbin + ' ' + args.join(' ')
+  cc_run(ccbin, args, objdir)
+end
+
 
 def cc_build(sources, objdir, additional = nil)
   

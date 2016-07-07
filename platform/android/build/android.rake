@@ -878,7 +878,9 @@ namespace "config" do
 
       puts "Extensions' java source lists: #{$ext_android_additional_sources.inspect}"
 
+      print_timestamp('Extracting Maven dependencies START')
       AndroidTools::MavenDepsExtractor.instance.extract_all
+      print_timestamp('Extracting Maven dependencies FINISH')
 
       print_timestamp('android:extensions FINISH')
 
@@ -960,6 +962,7 @@ namespace "build" do
     task :extensions => ["config:android:extensions", :genconfig] do
       print_timestamp('build:android:extensions START')
 
+
       Rake::Task["build:bundle:noxruby"].invoke
 
       ENV['RHO_PLATFORM'] = 'android'
@@ -1002,12 +1005,16 @@ namespace "build" do
             "-I\"#{$startdir}/platform/shared/ruby/android\"",
             "-I\"#{$startdir}/platform/shared/ruby/generated\""]
         ENV['BUILDARGS'] = buildargs.join(' ')
+        ENV['RHO_BUILD_STARTED_AT'] = $timestamp_start_milliseconds.to_s
 
         mkdir_p ENV["TARGET_TEMP_DIR"] unless File.directory? ENV["TARGET_TEMP_DIR"]
         mkdir_p ENV["TEMP_FILES_DIR"] unless File.directory? ENV["TEMP_FILES_DIR"]
 
         $abis.each do |abi|
           puts "Build extension (#{abi}): #{ext}"
+
+          print_timestamp("#{ext} build for #{abi} START")
+
           if RUBY_PLATFORM =~ /(win|w)32$/ || (builddata[1] == 'rake')
             
             args = []
@@ -1029,7 +1036,10 @@ namespace "build" do
             Dir.chdir currentdir
             raise "Cannot build #{builddata[0]}" unless result.success?
           end
+
           puts "Extension build completed"
+          print_timestamp("#{ext} build for #{abi} FINISH")
+
         end
       end
 
