@@ -501,11 +501,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	}
     root.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     root.autoresizesSubviews = YES;
-	
+
     self.view = root;
-	
+
     [root release];
-    assert([root retainCount] == 1);
+    //assert([root retainCount] == 1);
 }
 
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
