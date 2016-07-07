@@ -660,6 +660,9 @@ namespace "config" do
           $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_7')
         elsif xcode_version[0].to_i >= 6
           $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_6')
+          if xcode_version[0].to_i >= 7
+            $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_7')
+          end  
         else
           $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43')
         end

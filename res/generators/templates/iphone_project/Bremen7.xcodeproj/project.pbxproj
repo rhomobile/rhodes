@@ -158,7 +158,6 @@
 		FAC70A7919D10F0A0036337B /* Default-Portrait@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait@2x.png"; sourceTree = "<group>"; };
 		FAC70A7A19D10F0A0036337B /* Default-PortraitUpsideDown@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-PortraitUpsideDown@2x.png"; sourceTree = "<group>"; };
 		FAC70A7B19D10F0A0036337B /* icon180.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon180.png; sourceTree = "<group>"; };
-		FACC20FF123A759A0088A447 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Rhodes.xcodeproj; path = Rhodes/Rhodes.xcodeproj; sourceTree = "<group>"; };
 		FAEE464319D111E500E7E2CE /* iTunesArtwork@2x */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iTunesArtwork@2x"; sourceTree = "<group>"; };
 		FAF3BF3018E26D3B00860FCA /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = Rhodes/app_build_configs.c; sourceTree = "<group>"; };
@@ -259,7 +258,6 @@
 				C0539BFD1767169700D53DF7 /* MediaPlayer.framework */,
 				46AD7DB21117AFB9009A974A /* MapKit.framework */,
 				46AD7DB61117AFBF009A974A /* CFNetwork.framework */,
-				FACC20FF123A759A0088A447 /* GameKit.framework */,
 				5C59AB4112DDA22E00ED4A1E /* Security.framework */,
 				FA522FE012E49D6F00AB55CC /* QuartzCore.framework */,
 				FA52309312E55CA700AB55CC /* EventKit.framework */,
