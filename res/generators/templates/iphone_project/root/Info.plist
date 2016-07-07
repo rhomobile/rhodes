@@ -134,9 +134,11 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
     	<string>application tracks your position</string>
-	<key>NSAppTransportSecurity</key>  
-     <dict>  
-          <key>NSAllowsArbitraryLoads</key><true/>  
+	<key>NSAppTransportSecurity</key>
+     <dict>
+          <key>NSAllowsArbitraryLoads</key><true/>
      </dict>
+	 <key>UIRequiresFullScreen</key>
+     <true/>
 </dict>
 </plist>
