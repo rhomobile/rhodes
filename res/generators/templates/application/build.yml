@@ -16,7 +16,7 @@ iphone:
   production:
     ipa_itunesartwork_image: "./production/iTunesArtwork.png"
   # Note: Specifies the URL schemes the app is able to call using Rho.System.runApplication
-  #ApplicationQueriesSchemes: ["scheme1", "scheme2"]  
+  #ApplicationQueriesSchemes: ["scheme1", "scheme2"]
 wp8:
   productid: '<%=@productid%>'
 android:
