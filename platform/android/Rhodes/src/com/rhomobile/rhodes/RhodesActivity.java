@@ -52,6 +52,8 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
@@ -67,7 +69,10 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.FrameLayout;
 
-public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener {
+import android.support.v4.content.PermissionChecker;
+import android.support.v4.app.ActivityCompat;
+
+public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener, ActivityCompat.OnRequestPermissionsResultCallback {
 	
 	private static final String TAG = RhodesActivity.class.getSimpleName();
 	
@@ -231,6 +236,57 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     }
     
     //------------------------------------------------------------------------------------------------------------------
+
+    private final int RHODES_PERMISSIONS_REQUEST = 1;
+
+    private void requestPermissions() {
+        String pkgName = getPackageName();
+        
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(pkgName, PackageManager.GET_PERMISSIONS);
+
+            ArrayList<String> requestedPermissions  = new ArrayList<String>();
+
+            for ( String p : info.requestedPermissions ) {               
+
+                int result = PermissionChecker.checkSelfPermission( this, p );
+
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    requestedPermissions.add(p);
+                }
+            }
+
+            if ( requestedPermissions.size() > 0 ) {
+                Logger.I(TAG, "Requesting permissions: " + requestedPermissions.toString() );
+
+                ActivityCompat.requestPermissions(
+                    this,
+                    requestedPermissions.toArray(new String[0]),
+                    RHODES_PERMISSIONS_REQUEST);
+            }
+        } catch (NameNotFoundException e) {
+            throw new RuntimeException("Internal error: package " + pkgName + " not found: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {       
+
+        StringBuilder results = new StringBuilder();
+
+        for ( int i = 0; i < permissions.length; ++ i ) {
+            results.append( String.format("%s:%d, ", permissions[i], grantResults[i] ) );
+        }
+
+        Logger.I(
+            TAG,
+            String.format(
+                "onRequestPermissionsResult code: %d, results: %s", 
+                    requestCode, 
+                    results.toString()
+            )
+        );
+    }
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -278,7 +334,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 			} else {
 				IS_RESIZE_SIP = false;
 			}
-	}
+	   }
+
+       requestPermissions();
     }
 
     public MainView switchToSimpleMainView(MainView currentView) {
