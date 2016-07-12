@@ -10,15 +10,15 @@
 
 -(id) init {
     self = [super init];
-    
+
     NSString *folder = [NSString stringWithUTF8String:rho_rhodesapp_getblobsdirpath()];
-    
+
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:folder])
         [fileManager createDirectoryAtPath:folder attributes:nil];
     NSString* destination = [folder stringByAppendingPathComponent:@"Videocapture.mp4"];
-    [self setFileName:destination];
-    
+    [self setFileName:destination methodResult:nil];
+
     return self;
 }
 
@@ -38,35 +38,35 @@
 - (BOOL) startCameraControllerFromViewController: (UIViewController*) controller
                                    usingDelegate: (id <UIImagePickerControllerDelegate,
                                                    UINavigationControllerDelegate>) delegate {
-    
+
     if (([UIImagePickerController isSourceTypeAvailable:
           UIImagePickerControllerSourceTypeCamera] == NO)
         || (delegate == nil)
         || (controller == nil))
         return NO;
-    
-    
+
+
     UIImagePickerController *cameraUI = [[UIImagePickerController alloc] init];
     cameraUI.sourceType = UIImagePickerControllerSourceTypeCamera;
-    
+
     // Displays a control that allows the user to choose picture or
     // movie capture, if both are available:
     //cameraUI.mediaTypes =
     //[UIImagePickerController availableMediaTypesForSourceType:
     // UIImagePickerControllerSourceTypeCamera];
-    
+
     cameraUI.mediaTypes = [[NSArray alloc] initWithObjects: (NSString *) kUTTypeMovie, nil];
-    
+
     // Hides the controls for moving & scaling pictures, or for
     // trimming movies. To instead show the controls, use YES.
     cameraUI.allowsEditing = NO;
-    
+
     cameraUI.delegate = delegate;
-    
+
     cameraUI.videoMaximumDuration = (NSTimeInterval) ((double)[self getDurationInt]/1000.0);
-    
+
     moviePickerController = cameraUI;
-    
+
     [controller presentModalViewController: cameraUI animated: YES];
     return YES;
 }
@@ -83,49 +83,49 @@
 // For responding to the user accepting a newly-captured picture or movie
 - (void) imagePickerController: (UIImagePickerController *) picker
  didFinishPickingMediaWithInfo: (NSDictionary *) info {
-    
+
     moviePickerController = nil;
-    
+
     NSString *mediaType = [info objectForKey: UIImagePickerControllerMediaType];
     UIImage *originalImage, *editedImage, *imageToSave;
-    
+
     // Handle a movie capture
     if (CFStringCompare ((CFStringRef) mediaType, kUTTypeMovie, 0)
         == kCFCompareEqualTo) {
-        
-        
+
+
         if (isSaveFile) {
             NSString *moviePath = [[info objectForKey:
                                     UIImagePickerControllerMediaURL] path];
-            
+
             NSURL *movieUrl = [[[info objectForKey:UIImagePickerControllerMediaURL] copy] autorelease];
-            
+
             NSFileManager *fileManager = [NSFileManager defaultManager];
             NSError *err = nil;
             NSString* destination = [mProperties objectForKey:@"fileName"];
-            
+
             if (destination == nil) {
                 destination = @"Videocapture.mov";
             }
-            
+
             NSString *appDirectory = [NSString stringWithUTF8String:rho_native_rhopath()];
             NSString *dbDirectory = [NSString stringWithUTF8String:rho_native_rhodbpath()];
-            
-            
-            
+
+
+
             if ((![destination hasPrefix:appDirectory])   && (![destination hasPrefix:dbDirectory])) {
                 NSString* userfolder = [NSString stringWithUTF8String:rho_native_rhouserpath()];
-                
+
                 destination = [userfolder stringByAppendingPathComponent:destination];
             }
-            
+
             if ([fileManager fileExistsAtPath:destination]) {
                 [fileManager removeItemAtPath:destination error:&err];
             }
-            
+
             //move recorded to destination
             [fileManager moveItemAtPath:moviePath toPath:destination error:&err];
-            
+
             NSNumber* size = nil;
             if ([fileManager isReadableFileAtPath:destination]) {
                 NSDictionary *attributes = [fileManager attributesOfItemAtPath:destination error:&err];
@@ -136,17 +136,17 @@
                     }
                 }
             }
-            
+
             [self fireCallback:@"OK" fileName:destination fileSize:size];
-            
+
         }
-        
+
     }
     else {
         // error
         [self fireCallback:@"ERROR"fileName:@"message" fileSize:@"not found recorded video"];
     }
-    
+
     //[[picker parentViewController] dismissModalViewControllerAnimated: YES];
     [[[[Rhodes sharedInstance] mainView] getMainViewController] dismissModalViewControllerAnimated:YES];
     [picker release];
@@ -162,7 +162,7 @@
         // error
         [self fireCallback:@"ERROR"fileName:@"message" fileSize:@"can not start record process"];
     }
-    
+
 }
 
 -(void) start:(id<IMethodResult>)methodResult {
@@ -198,9 +198,9 @@
         [dict setObject:status forKey:@"transferResult"];
         [dict setObject:fileSize forKey:fileName];
     }
-    
-    
-    
+
+
+
     [callback setResult:dict];
     [callback release];
     callback = nil;
