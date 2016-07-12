@@ -1,5 +1,5 @@
 require 'thread'
-require 'mspec'
+#require 'mspec'
 require '../../lib/build/jake'
 require './simple_rhogcm'
 
@@ -14,6 +14,7 @@ $requests = []
 $signal = ConditionVariable.new
 $mutex = Mutex.new
 $gcm_api_key = 'AIzaSyANZO6psbeXLHvU88InbDnR6Zd_vZMWUZ8'
+$device = ARGV.include?('-d')
 
 describe 'GCM push spec' do
   before(:all) do
@@ -47,7 +48,10 @@ describe 'GCM push spec' do
 
     puts 'Building and starting application...'
     FileUtils.chdir File.join($spec_path, 'gcm_push_client')   
-    system("rake run:#{$platform}").should == true
+
+    onDevice = ":device" if $device
+
+    system("rake run:#{$platform}#{onDevice}").should == true
 
   end
   
@@ -140,7 +144,7 @@ describe 'GCM push spec' do
     
     sleep 5
     
-    output = Jake.run2('adb', ['-e', 'shell', 'ps'], {:hide_output=>true})
+    output = Jake.run2('adb', [(($device)?'-d':'-e'), 'shell', 'ps'], {:hide_output=>true})
     
     (output =~ /gcm_push_client/).should_not be_nil
   end
