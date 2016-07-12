@@ -2199,22 +2199,10 @@ namespace "package" do
     args << "--dex"
     args << "--output=#{$bindir}/classes.dex"
 
-    jarnames = []
-
     alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
     alljars += AndroidTools::MavenDepsExtractor.instance.jars
 
-    alljars.each do |jar|
-
-        jarname = Pathname.new(jar).basename
-
-        if not jarnames.include?(jarname) then
-            args << jar
-            jarnames << jarname
-        else
-            puts "Skipping duplicated jar: #{jar}"
-        end
-    end
+    alljars.each { |jar| args << jar }
 
     Jake.run(File.join($java, 'java'+$exe_ext), args)
     unless $?.success?
