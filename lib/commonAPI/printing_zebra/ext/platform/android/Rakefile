@@ -114,10 +114,10 @@ multitask TARGETLIB_MIPS => OBJ_MIPS
 
 task :print_jar do
 puts "START FILE LOOPING"
-Dir.foreach(File.join($curdir,'Zebra_SDK')) do |fname|
+Dir.foreach(File.join($curdir,'ZEBRA_SDK')) do |fname|
 next if fname == '.' or fname == '..'
   puts fname
-   cp File.join($curdir,'Zebra_SDK',fname), TARGETDIR
+   cp File.join($curdir,'ZEBRA_SDK',fname), TARGETDIR
 end
 puts "END FILE LOOPING"
 
