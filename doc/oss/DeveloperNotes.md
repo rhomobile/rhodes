@@ -222,7 +222,7 @@ Support for **5.X KeyState API** has been dropped. Developers must use the **Rho
 - On Android, the APD 'SendString' command is not available. 
 - The Signal icon available in 2.2 will no longer function on CE devices. Switch to the Signal API introduced in 4.0 for CE support.
 - The Destination parameter in 2.2 Signature is not working on WM/CE. Use the Network API to upload any files to a remote destination.
-- Applications using the 2.2 Scanner API should not rely on the following properties (use the Barcode API in 4.0 to resolve this issue): 
+- Applications using the 2.2 Scanner API should not rely on the following properties (Use 4.0 Barcode API to resolve this issue): 
 	- ```sameSymbolTimeout```
 	- ```differentSymbolTimeout```
 	- ```connectionIdleTimeout```
