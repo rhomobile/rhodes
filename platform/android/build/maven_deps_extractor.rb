@@ -25,6 +25,8 @@ class MavenDepsExtractor
     @jni_libs = []
     @manifests = []
 
+    @have_v4_support_lib = false
+
   end
 
   def add_dependency( mod=nil, dep )
@@ -80,7 +82,10 @@ class MavenDepsExtractor
 
     $logger.debug "Processing dependencies"
 
-    Dir[File.join(extract_dir,'*')].each do |f|      
+    Dir[File.join(extract_dir,'*')].each do |f|
+
+      @have_v4_support_lib = true if ( File.basename(f) =~ /support-v4/ )
+
       if File.extname(f) == '.aar'        
         target = File.join(path,File.basename(f,'.aar'))
 
@@ -251,6 +256,10 @@ class MavenDepsExtractor
 
   def classpath(separator)
     @jars.join(separator)
+  end
+
+  def have_v4_support_lib?
+    @have_v4_support_lib
   end
 
 end
