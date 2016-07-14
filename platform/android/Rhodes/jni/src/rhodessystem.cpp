@@ -84,6 +84,43 @@ rho::String rho_cur_path()
     char buf[PATH_MAX];
     if (::getcwd(buf, sizeof(buf)) == NULL)
         return "";
+
+    static const char* before_m_prefix = "/data/data/";
+    static const char* m_prefix = "/data/user/0/";
+
+    //For Android M compatibility: ::getcwd will return path starting with /data/data while root starts with /data/user/0.
+    //This breaks file API so substitute for compatibility
+    //TODO: deprecate rho_cur_path and use only rho_root path after stability testing.
+
+    //check if root set from java code starts from m_prefix
+    bool root_is_android_m = (
+        ::strncmp(
+            rho_root_path().c_str(), 
+            m_prefix, 
+            ::strlen(m_prefix)
+        ) == 0
+    );
+
+    //check if current dir starts from legacy prefix
+    bool cwd_is_legacy = (
+        ::strncmp(
+            buf,
+            before_m_prefix,
+            ::strlen(before_m_prefix )
+        ) == 0 
+    );
+
+    if ( root_is_android_m && cwd_is_legacy )
+    {
+        //make buf copy to avoid overlapping
+        char buf2[PATH_MAX];
+        ::strcpy(buf2,buf);
+
+        ::snprintf(buf, sizeof(buf), "%s%s", m_prefix, &buf2[::strlen(before_m_prefix)] );
+
+        RAWTRACE2( "Android M compat: altering rho_cur_path from %s to %s", buf2, buf );
+    }
+
     return buf;
 }
 //--------------------------------------------------------------------------------------------------
