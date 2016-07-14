@@ -51,6 +51,15 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.CookieSyncManager;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import android.net.Uri;
+import java.util.Map;
+import java.util.HashMap;
+
 public class RhoWebViewClient extends WebViewClient
 {
     private class HttpAuthResult implements IRhoExtension.IAuthRequest {
@@ -108,11 +117,94 @@ public class RhoWebViewClient extends WebViewClient
         mWebView = webView;
     }
 
-//    @Override
-//    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-//        Logger.I(TAG, "Resource request: " + url);
-//        return null;
-//    }
+    @Override
+    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+        /*
+        Uri uri = Uri.parse(url);
+
+        Logger.I(TAG, "Resource request: " + url + " scheme: " + uri.getScheme() + " host: " + uri.getHost() );
+
+        WebResourceResponse response = null;
+
+        if ( (uri.getScheme().equals("http")) && ( (uri.getHost().equals("127.0.0.1") ) || uri.getHost().equals("localhost") ) ) {
+
+            Logger.I(TAG, "Intercepting request to local server: " + url);
+
+            HttpURLConnection urlConnection = null;
+            
+            try {
+                URL urlObj = new URL(url);
+                urlConnection = (HttpURLConnection)urlObj.openConnection();
+                urlConnection.setInstanceFollowRedirects(true);
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                //copy connections response stream and gracefully close connection
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = urlConnection.getInputStream().read(buffer)) > -1 ) {
+                    baos.write(buffer, 0, len);
+                }
+                baos.flush();
+
+                Map headers = new HashMap<String,String>();
+
+                String ct = null;
+                String cs = null;
+
+                //need to parse charset and content type
+                for ( String val: urlConnection.getContentType().split(";") ) {
+                    String[] splitted = val.split("=");
+                    if ( splitted.length == 2) {
+                        if (splitted[0].equals("charset")) {
+                            cs = splitted[1];
+                        }
+                    } else {
+                        ct = val;
+                    }
+                }
+
+                response = new WebResourceResponse( ct, cs, new ByteArrayInputStream( baos.toByteArray() ) );
+
+                Logger.D( 
+                    TAG, 
+                    "Received content-type: " + urlConnection.getContentType() + 
+                    " parsed content type " + cs + " parsed charset: " + cs +
+                    " encoding: " + urlConnection.getContentEncoding() 
+                );
+
+                //response.setStatusCodeAndReasonPhrase( urlConnection.getResponseCode(), urlConnection.getResponseMessage() );
+
+                String header;
+                for ( int i = 0; ( header = urlConnection.getHeaderFieldKey(i) ) != null ; ++i ) {
+                    String headerVal = urlConnection.getHeaderField(i);
+
+                    Logger.D( TAG, "Received header: " + header + "=" + headerVal );
+                    headers.put( header, urlConnection.getHeaderField(i) );
+                }
+
+                //response.setResponseHeaders( headers );
+
+                Logger.D( TAG, "Received body:\n" + baos.toString( "UTF-8" ) );
+
+
+            } catch (Exception e) {
+                Logger.E(TAG, "Error intercepting request");
+                e.printStackTrace();
+            } finally {
+                if ( urlConnection != null ) {
+                    urlConnection.disconnect();
+                }
+            }
+        }
+
+        return response;*/
+        return null;
+    }
+
+
 //
 //    public void onLoadResource(WebView view, String url) {
 //        Logger.I(TAG, "Load resource" + url);
