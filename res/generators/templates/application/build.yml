@@ -7,10 +7,10 @@ build: debug
 applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator9.2
-  provisionprofile:
-  codesignidentity: iPhone Developer
-  entitlements: ""
+  sdk: iphonesimulator9.3
+  #provisionprofile:
+  #codesignidentity:
+  #entitlements:
   BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
   BundleURLScheme: <%=@app_name_cleared%>
   production:

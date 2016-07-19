@@ -127,18 +127,20 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
     	<string>application tracks your position</string>
 	<key>NSAppTransportSecurity</key>
      <dict>
-          <key>NSAllowsArbitraryLoads</key><true/>
+          <key>NSAllowsArbitraryLoads</key>
+		  <true/>
+		  <key>NSAllowsArbitraryLoadsInWebContent</key>
+    	  <true/>
      </dict>
-	 <key>UIRequiresFullScreen</key>
+     <key>UIRequiresFullScreen</key>
      <true/>
+     <key>UIRequiredDeviceCapabilities</key>
+     <array>
+          <string>gamekit</string>
+     </array>
 </dict>
 </plist>

@@ -50,6 +50,8 @@
 		FA522FE112E49D6F00AB55CC /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA522FE012E49D6F00AB55CC /* QuartzCore.framework */; };
 		FA52309412E55CA700AB55CC /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA52309312E55CA700AB55CC /* EventKit.framework */; };
 		FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA673A5615FCD787005CAD64 /* CoreMotion.framework */; };
+		FA6747E71D3DD1D000F0A09D /* rhorunner_production.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = FA376CEC1D3DC3BA00CAD973 /* rhorunner_production.entitlements */; };
+		FA6747E81D3DD1D300F0A09D /* rhorunner_development.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = FA376CED1D3DC3BA00CAD973 /* rhorunner_development.entitlements */; };
 		FA6DFCE618232A2C00A3B595 /* icon144.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCDE18232A2C00A3B595 /* icon144.png */; };
 		FA6DFCE718232A2C00A3B595 /* icon72.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCDF18232A2C00A3B595 /* icon72.png */; };
 		FA6DFCE818232A2C00A3B595 /* icon114.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6DFCE018232A2C00A3B595 /* icon114.png */; };
@@ -132,6 +134,8 @@
 		FA20C1F0182B01DF0036D304 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		FA20C1F1182B01DF0036D304 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		FA305F8C16D7BD8900565023 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = DEVELOPER_DIR; };
+		FA376CEC1D3DC3BA00CAD973 /* rhorunner_production.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = rhorunner_production.entitlements; sourceTree = "<group>"; };
+		FA376CED1D3DC3BA00CAD973 /* rhorunner_development.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = rhorunner_development.entitlements; sourceTree = "<group>"; };
 		FA3C79AD136ED523002302E5 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
 		FA3C79E1136ED8BB002302E5 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
 		FA3D8EAA182B831400231D0E /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
@@ -223,14 +227,16 @@
 			isa = PBXGroup;
 			children = (
 				FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */,
-				FA3D8EAA182B831400231D0E /* iTunesArtwork */,
-				FAEE464319D111E500E7E2CE /* iTunesArtwork@2x */,
 				FA52317212E750F300AB55CC /* Resources */,
-				BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				FAF3BF2F18E26C4A00860FCA /* Rhodes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				BD72CCE4112D629F003B7D27 /* Info.plist */,
+				BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */,
+				FA376CEC1D3DC3BA00CAD973 /* rhorunner_production.entitlements */,
+				FA376CED1D3DC3BA00CAD973 /* rhorunner_development.entitlements */,
+				FA3D8EAA182B831400231D0E /* iTunesArtwork */,
+				FAEE464319D111E500E7E2CE /* iTunesArtwork@2x */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
@@ -367,10 +373,10 @@
 				LastUpgradeCheck = 0500;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
+						ProvisioningStyle = Manual;
 						SystemCapabilities = {
-							com.apple.BackgroundModes = {
-								enabled = 1;
-							};
+							com.apple.BackgroundModes = {enabled = 1;};
+							com.apple.Push = {enabled = 1;};
 						};
 					};
 				};
@@ -446,6 +452,8 @@
 				FA6DFCEC18232A2C00A3B595 /* icon76.png in Resources */,
 				FA20C1B2182AFD870036D304 /* BluePushpin@2x.png in Resources */,
 				FAC70A8119D10F0A0036337B /* Default-Portrait@2x.png in Resources */,
+				FA6747E71D3DD1D000F0A09D /* rhorunner_production.entitlements in Resources */,
+				FA6747E81D3DD1D300F0A09D /* rhorunner_development.entitlements in Resources */,
 				FA6DFCE818232A2C00A3B595 /* icon114.png in Resources */,
 				FA20C1B3182AFD870036D304 /* esri.png in Resources */,
 				FAC70A8019D10F0A0036337B /* Default-LandscapeRight@2x.png in Resources */,
@@ -525,7 +533,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libstdc++";
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = "rhorunner_development.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
@@ -568,7 +576,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libstdc++";
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = "rhorunner_development.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
@@ -601,7 +609,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -629,7 +637,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libstdc++";
-				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				CODE_SIGN_ENTITLEMENTS = "rhorunner_production.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COMPRESS_PNG_FILES = NO;
