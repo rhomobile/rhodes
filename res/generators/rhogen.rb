@@ -70,7 +70,7 @@ module Rhogen
       Generates a new rhodes application.
 
       Options:
-        --norhoconnect - don't include rhoconnect-client in application
+        --rhoconnect - include rhoconnect-client in application
 
       Required:
         name        - application name
@@ -82,7 +82,7 @@ module Rhogen
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
 
-    option :norhoconnect, :desc => '', :as => :boolean, :default => false
+    option :rhoconnect, :desc => '', :as => :boolean, :default => false
 
     first_argument :name, :required => true, :desc => 'application name'
     second_argument :syncserver, :required => false, :desc => 'url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/")'
@@ -104,7 +104,7 @@ module Rhogen
       generated_uuid = puuid.generate
       @productid = generated_uuid
       @uid = '0x'+(0xE0000000 + rand(0xFFFFFFF)).to_s(16)
-      @rhoconnectclient_ext = '"rhoconnect-client"' unless norhoconnect
+      @rhoconnectclient_ext = '"rhoconnect-client"' if rhoconnect
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end
@@ -441,7 +441,7 @@ module Rhogen
     def rhodes_root_path
       return rhodes_root
     end
-
+    
     def load_plist(fname)
        require 'cfpropertylist'
        plist = CFPropertyList::List.new(:file => fname)
@@ -449,18 +449,20 @@ module Rhogen
        data
     end    
     
-    def get_xcode_version
-      info_path = '/Applications/XCode.app/Contents/version.plist'
-      ret_value = '0.0'
-      if File.exists? info_path
-        hash = load_plist(info_path)
-        ret_value = hash['CFBundleShortVersionString'] if hash.has_key?('CFBundleShortVersionString')
-      else
-        puts '$$$ can not find XCode version file ['+info_path+']'
-      end
-      puts '$$$ XCode version is '+ret_value
-      return ret_value
-    end
+	def get_xcode_version
+  		info_path = '/Applications/XCode.app/Contents/version.plist'
+  		ret_value = '0.0'
+  		if File.exists? info_path
+    		hash = load_plist(info_path)
+    		ret_value = hash['CFBundleShortVersionString'] if hash.has_key?('CFBundleShortVersionString')
+  		else
+    		puts '$$$ can not find XCode version file ['+info_path+']'
+  		end
+  		puts '$$$ XCode version is '+ret_value
+  		return ret_value
+	end    
+    
+    
 
     directory :root do |directory|
       @options[:force] = true
@@ -503,7 +505,7 @@ module Rhogen
       #@options[:skip] = true
       template.source = 'Bremen.xcodeproj/project.pbxproj'
       xcode_version = get_xcode_version
-      if xcode_version[0].to_i >= 7
+	  if xcode_version[0].to_i >= 7
         template.source = 'Bremen7.xcodeproj/project.pbxproj'
       end
       template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
@@ -534,7 +536,7 @@ module Rhogen
     template :rhodes_project do |template|
       @options[:force] = true
       template.source = 'Rhodes/Rhodes.xcodeproj/project.pbxproj'
-      template.destination = "project/iphone/Rhodes/Rhodes.xcodeproj/project.pbxproj"
+	  template.destination = "project/iphone/Rhodes/Rhodes.xcodeproj/project.pbxproj"
     end
 
     template :rhodes_project_01 do |template|
@@ -589,26 +591,6 @@ module Rhogen
 
     def rhodes_root_path
       return rhodes_root
-    end
-
-    def load_plist(fname)
-       require 'cfpropertylist'
-       plist = CFPropertyList::List.new(:file => fname)
-       data = CFPropertyList.native_types(plist.value)
-       data
-    end
-
-    def get_xcode_version
-      info_path = '/Applications/XCode.app/Contents/version.plist'
-      ret_value = '0.0'
-      if File.exists? info_path
-        hash = load_plist(info_path)
-        ret_value = hash['CFBundleShortVersionString'] if hash.has_key?('CFBundleShortVersionString')
-      else
-        puts '$$$ can not find XCode version file ['+info_path+']'
-      end
-      puts '$$$ XCode version is '+ret_value
-      return ret_value
     end
 
     directory :root do |directory|

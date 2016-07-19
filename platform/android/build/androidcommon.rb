@@ -81,48 +81,75 @@ def detect_toolchain(ndkpath, abi)
       ndkhostvariants << 'windows-x86_64' if bufcheck64 and bufcheck64.include?('64')
       ndkhostvariants << 'windows'
   else
-      ndkhostvariants = [`uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, `uname -s`.downcase!.chomp! + '-x86']
+      ndkhostvariants = [
+        `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, 
+        `uname -s`.downcase!.chomp! + '-x86'
+      ]
   end
+
+  toolchainversions = ['4.8','4.9']
 
   toolchain = 'unknown-toolchain'
   if abi == 'arm'
-    toolchain = 'arm-linux-androideabi-4.8'
+    toolchain = 'arm-linux-androideabi'
   elsif abi == 'x86'
-    toolchain = 'x86-4.8'
+    toolchain = 'x86'
+  elsif abi == 'x86_64'
+    toolchain = 'x86_64'
   elsif abi == 'mips'
-    toolchain = 'mipsel-linux-android-4.8'
+    toolchain = 'mipsel-linux-android'
   else
     raise "Unknown ABI: {abi}";
   end
 
-  variants = []
   ndkhostvariants.each do |ndkhost|
-      variants << File.join(ndkpath,'build','prebuilt',ndkhost,toolchain)
-      variants << File.join(ndkpath,'toolchains',toolchain,'prebuilt',ndkhost)
-      variants.each do |variant|
-        puts "Check toolchain path: #{variant}" if USE_TRACES    
-        next unless File.directory? variant
-        $ndktools = variant
-        $ndkabi = toolchain.gsub(/^(.*)-([^-]*)$/, '\1')
-        $ndkgccver = toolchain.gsub(/^(.*)-([^-]*)$/, '\2')
-        
-        $ndkabi = 'i686-linux-android' if $ndkabi == 'x86'
+      puts "Checking toolchain for host: #{ndkhost}" if USE_TRACES
 
-        puts "Toolchain is detected: #{$ndktools}, abi: #{$ndkabi}, version: #{$ndkgccver}" if USE_TRACES
-        
-        ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
-            name = tool.gsub('+', 'p')
-            eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
+      toolchainversions.each do |version|
+        variants = []
+        variants << File.join(ndkpath,'build','prebuilt',ndkhost,"#{toolchain}-#{version}")
+        variants << File.join(ndkpath,'toolchains',"#{toolchain}-#{version}",'prebuilt',ndkhost)
+
+        variants.each do |variant|
+          puts "Check toolchain path: #{variant}" if USE_TRACES    
+          next unless File.directory? variant
+
+          $ndktools = variant
+          $ndkabi = toolchain#toolchain.gsub(/^(.*)-([^-]*)$/, '\1')
+          $ndkgccver = version#toolchain.gsub(/^(.*)-([^-]*)$/, '\2')
+          
+          $ndkabi = 'i686-linux-android' if $ndkabi == 'x86'
+          $ndkabi = 'x86_64-linux-android' if $ndkabi == 'x86_64'
+
+          puts "Toolchain is detected: #{$ndktools}, abi: #{$ndkabi}, version: #{$ndkgccver}" if USE_TRACES
+          
+          ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
+              name = tool.gsub('+', 'p')
+
+              toolpath = check_tool( tool, $ndktools, $ndkabi)
+
+              eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
+          end
+
+          return
         end
-
-        return
       end
   end
 
   if $ndktools.nil?
     raise "Can't detect NDK toolchain path (corrupted NDK installation?)"
-  end
+  end  
+end
+
+def check_tool( tool, ndktoolsdir, abi )
+  toolpath = File.join(ndktoolsdir,'bin',"#{abi}-#{tool}#{$exe_ext}")
+  puts "Checking tool path #{toolpath} for tool #{tool}" if USE_TRACES
   
+  if File.file? toolpath
+    return toolpath
+  else
+    raise "Can't find tool #{tool} at path #{toolpath} (corrupted NDK installation or unsupported NDK?)"
+  end
 end
 
 def setup_ndk(ndkpath,apilevel,abi)
@@ -136,6 +163,8 @@ def setup_ndk(ndkpath,apilevel,abi)
 
   api_levels = Array.new
 
+  max_ndk_api_level = 19 #we use some functions missing from API 20 and forth
+
   variants.each do |variant|
     puts "Check NDK folder: #{variant}" if USE_TRACES
     Dir.glob(File.join(ndkpath, variant, "*")).each do |platform|
@@ -144,7 +173,7 @@ def setup_ndk(ndkpath,apilevel,abi)
       next unless File.directory? sys_root
       next unless platform =~ /android-([0-9]+)$/
       api_level = $1.to_i 
-      api_levels.push api_level
+      api_levels.push api_level if (api_level<=max_ndk_api_level)
       puts "NDK API level: #{api_level}" if USE_TRACES
     end
   end

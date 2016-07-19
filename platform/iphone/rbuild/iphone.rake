@@ -39,7 +39,7 @@ end
 
 def save_plist(fname, hash_data = {})
   require 'cfpropertylist'
-  
+
   plist = CFPropertyList::List.new
   plist.value = CFPropertyList.guess(hash_data)
   plist.save(fname, CFPropertyList::List::FORMAT_XML,{:formatted=>true})
@@ -158,7 +158,9 @@ def set_signing_identity(identity,profile,entitlements)
   fname = $app_path + "/project/iphone" + "/" + appname_fixed + ".xcodeproj/project.pbxproj"
   buf = ""
   File.new(fname,"r").read.each_line do |line|
-    line.gsub!(/CODE_SIGN_ENTITLEMENTS = .*;/,"CODE_SIGN_ENTITLEMENTS = \"#{entitlements}\";")
+    if entitlements != nil
+       line.gsub!(/CODE_SIGN_ENTITLEMENTS = .*;/,"CODE_SIGN_ENTITLEMENTS = \"#{entitlements}\";")
+    end
     line.gsub!(/CODE_SIGN_IDENTITY = .*;/,"CODE_SIGN_IDENTITY = \"#{identity}\";")
     line.gsub!(/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = .*;/,"\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"#{identity}\";")
     if profile and profile.to_s != ""
@@ -406,6 +408,27 @@ def restore_default_images
   end
 end
 
+
+def remove_lines_from_xcode_project(array_with_substrings)
+    appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+    appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| (w.capitalize) }.join("")
+
+    fname = $app_path + "/project/iphone" + "/" + appname_fixed + ".xcodeproj/project.pbxproj"
+    buf = ""
+    File.new(fname,"r").read.each_line do |line|
+        is_remove = false
+        array_with_substrings.each do |rimg|
+            if line.include?(rimg)
+               is_remove = true
+            end
+        end
+        if !is_remove
+           buf << line
+        end
+    end
+    File.open(fname,"w") { |f| f.write(buf) }
+end
+
 def set_default_images(make_bak, plist_hash)
   puts "set_default_images"
   #ipath = $config["build"]["iphonepath"]
@@ -461,25 +484,116 @@ def set_default_images(make_bak, plist_hash)
   end
 
 
-  appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-  appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| (w.capitalize) }.join("")
+  remove_lines_from_xcode_project(images_to_remove)
+end
 
-  fname = $app_path + "/project/iphone" + "/" + appname_fixed + ".xcodeproj/project.pbxproj"
-  buf = ""
-  File.new(fname,"r").read.each_line do |line|
-      is_remove = false
-      images_to_remove.each do |rimg|
-          if line.include?(rimg)
-             is_remove = true
-          end
-      end
-      if !is_remove
-         buf << line
-      end
-  end
 
-  File.open(fname,"w") { |f| f.write(buf) }
+def update_xcode_project_files_by_capabilities
+    info_plist = $app_path + "/project/iphone/Info.plist"
+    dev_ent = $app_path + "/project/iphone/rhorunner_development.entitlements"
+    prd_ent = $app_path + "/project/iphone/rhorunner_production.entitlements"
 
+    hash_info_plist = load_plist(info_plist)
+    hash_dev_ent = load_plist(dev_ent)
+    hash_prd_ent = load_plist(prd_ent)
+
+    #bluetooth
+    bt_capability = false
+    if $app_config['capabilities'] != nil
+        if $app_config['capabilities'].index('bluetooth')
+            bt_capability = true
+        end
+    end
+    if $app_config['iphone'] != nil
+        if $app_config['iphone']['capabilities'] != nil
+            if $app_config['iphone']['capabilities'].index('bluetooth')
+                bt_capability = true
+            end
+        end
+    end
+    if bt_capability
+        if hash_info_plist['UIRequiredDeviceCapabilities'] == nil
+            hash_info_plist['UIRequiredDeviceCapabilities'] = []
+        end
+        hash_info_plist['UIRequiredDeviceCapabilities'] << "gamekit"
+    else
+        remove_lines_from_xcode_project(['GameKit.framework'])
+        if hash_info_plist['UIRequiredDeviceCapabilities'] != nil
+            hash_info_plist['UIRequiredDeviceCapabilities'].delete("gamekit")
+        end
+    end
+
+    #external_accessory
+    zebra_printing_ext = false
+    if $app_config['extensions'] != nil
+        if $app_config['extensions'].index('printing_zebra')
+            zebra_printing_ext = true
+        end
+    end
+    if $app_config['iphone'] != nil
+        if $app_config['iphone']['extensions'] != nil
+            if $app_config['iphone']['extensions'].index('printing_zebra')
+                zebra_printing_ext = true
+            end
+        end
+    end
+    if zebra_printing_ext
+        if $app_config['capabilities'] == nil
+            $app_config['capabilities'] = []
+        end
+        if $app_config['capabilities'].index('external_accessory')
+        else
+            $app_config['capabilities'] << "external_accessory"
+        end
+    end
+    ea_capability = false
+    if $app_config['capabilities'] != nil
+        if $app_config['capabilities'].index('external_accessory')
+            ea_capability = true
+        end
+    end
+    if $app_config['iphone'] != nil
+        if $app_config['iphone']['capabilities'] != nil
+            if $app_config['iphone']['capabilities'].index('external_accessory')
+                ea_capability = true
+            end
+        end
+    end
+    if ea_capability
+        hash_dev_ent['com.apple.external-accessory.wireless-configuration'] = true
+        hash_prd_ent['com.apple.external-accessory.wireless-configuration'] = true
+    else
+        hash_dev_ent.delete('com.apple.external-accessory.wireless-configuration')
+        hash_prd_ent.delete('com.apple.external-accessory.wireless-configuration')
+        remove_lines_from_xcode_project(['ExternalAccessory.framework', 'com.apple.BackgroundModes = {enabled = 1;};'])
+    end
+
+    #push
+    push_capability = false
+    if $app_config['capabilities'] != nil
+        if $app_config['capabilities'].index('push')
+            push_capability = true
+        end
+    end
+    if $app_config['iphone'] != nil
+        if $app_config['iphone']['capabilities'] != nil
+            if $app_config['iphone']['capabilities'].index('push')
+                push_capability = true
+            end
+        end
+    end
+    if push_capability
+        hash_dev_ent['aps-environment'] = 'development'
+        hash_prd_ent['aps-environment'] = 'production'
+    else
+        hash_dev_ent.delete('aps-environment')
+        hash_prd_ent.delete('aps-environment')
+        remove_lines_from_xcode_project(['com.apple.Push = {enabled = 1;};'])
+    end
+
+    save_plist(info_plist, hash_info_plist)
+    save_plist(dev_ent, hash_dev_ent)
+    save_plist(prd_ent, hash_prd_ent)
 end
 
 def copy_entitlements_file_from_app
@@ -579,6 +693,7 @@ def kill_iphone_simulator
   `killall -9 iphonesim_51`
   `killall -9 iphonesim_6`
   `killall -9 iphonesim_7`
+  `killall -9 iphonesim_8`
 end
 
 namespace "config" do
@@ -644,6 +759,9 @@ namespace "config" do
     if xcode_version[0].to_i >= 7
       $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_7')
     end
+    if xcode_version[0].to_i >= 8
+      $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_8')
+    end
 
 
     $xcodebuild = $devroot + "/usr/bin/xcodebuild"
@@ -656,10 +774,18 @@ namespace "config" do
       if !File.exists? '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/DVTiPhoneSimulatorRemoteClient.framework'
         #check for XCode 6
         xcode_version = get_xcode_version
-        if xcode_version[0].to_i >= 7
+        if xcode_version[0].to_i >= 8
+          $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_8')
+        elsif xcode_version[0].to_i >= 7
           $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_7')
         elsif xcode_version[0].to_i >= 6
           $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_6')
+          if xcode_version[0].to_i >= 7
+            $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_7')
+          end
+          if xcode_version[0].to_i >= 8
+            $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_8')
+          end
         else
           $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43')
         end
@@ -704,6 +830,7 @@ namespace "config" do
       end
     end
 
+    $entitlements = nil
     if $app_config["iphone"].nil?
       $signidentity = $config["env"]["iphone"]["codesignidentity"]
       $provisionprofile = $config["env"]["iphone"]["provisionprofile"]
@@ -721,6 +848,10 @@ namespace "config" do
       if $emulatortarget == nil
          $emulatortarget = 'iphone'
       end
+    end
+
+    if $entitlements == ""
+        $entitlements = nil
     end
 
     if $signidentity == nil
@@ -1693,6 +1824,8 @@ namespace "build" do
           rm_rf File.join('project','iphone','toremovef')
         end
 
+        update_xcode_project_files_by_capabilities
+
       end
 
       copy_generated_sources_and_binaries
@@ -1773,7 +1906,7 @@ namespace "build" do
       end
 
 
-      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) #if $signidentity.to_s != ""
+      set_signing_identity($signidentity,$provisionprofile,$entitlements) #if $signidentity.to_s != ""
     end
 
 
@@ -1871,7 +2004,7 @@ namespace "build" do
           end
       end
 
-      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) #if $signidentity.to_s != ""
+      set_signing_identity($signidentity,$provisionprofile,$entitlements) #if $signidentity.to_s != ""
       copy_entitlements_file_from_app
 
       Rake::Task['build:bundle:prepare_native_generated_files'].invoke
@@ -1923,6 +2056,8 @@ namespace "build" do
 
       rm_rf File.join('project','iphone','toremoved')
       rm_rf File.join('project','iphone','toremovef')
+
+      update_xcode_project_files_by_capabilities
 
       copy_generated_sources_and_binaries
 

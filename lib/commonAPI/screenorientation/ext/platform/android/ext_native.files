@@ -1,4 +1,4 @@
-ext/platform/android/generated/jni/Screenorientation.cpp
+ext/platform/android/generated/jni/ScreenOrientation.cpp
 ext/platform/android/generated/jni/screenorientation_ruby_wrap.cpp
 ext/platform/android/generated/jni/screenorientation_js_wrap.cpp
 ext/platform/android/jni/Screenorientation_impl.cpp

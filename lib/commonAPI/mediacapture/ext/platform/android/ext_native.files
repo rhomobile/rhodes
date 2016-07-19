@@ -6,9 +6,9 @@ ext/shared/generated/camera_js_api.cpp
 ext/shared/generated/camera_ruby_api.c
 ext/shared/MediacaptureInit.cpp
 ext/platform/android/generated/jni/Videocapture.cpp
-ext/platform/android/generated/jni/Videocapture_ruby_wrap.cpp
-ext/platform/android/generated/jni/Videocapture_js_wrap.cpp
-ext/shared/generated/Videocapture_api_init.cpp
-ext/shared/generated/Videocapture_js_api.cpp
-ext/shared/generated/Videocapture_ruby_api.c
+ext/platform/android/generated/jni/videocapture_ruby_wrap.cpp
+ext/platform/android/generated/jni/videocapture_js_wrap.cpp
+ext/shared/generated/videocapture_api_init.cpp
+ext/shared/generated/videocapture_js_api.cpp
+ext/shared/generated/videocapture_ruby_api.c
 ext/platform/android/jni/Videocapture_impl.cpp

@@ -1,5 +1,5 @@
 sdk: ../../.. 
-sdkversion: 3.5.0
+sdkversion: 5.5
 name: gcm_push_client
 version: 1.0
 vendor: rhomobile
@@ -17,7 +17,7 @@ iphone:
 wp:
   productid: '80b879d0-16fc-0130-39e9-3c0754090a18'
 android:
-  version: 2.3.3
+  version: 4.4.2
   capabilities:
   - push
   push:

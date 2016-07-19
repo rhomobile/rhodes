@@ -359,8 +359,8 @@ class Jake
 
     $stdout.flush
     unless options[:hide_output]
-      puts "PWD: " + Dir.pwd()
-      puts "CMD: " + cmdstr
+      puts "PWD: #{Dir.pwd()}"
+      puts "CMD: #{cmdstr}"
       $stdout.flush
     end
 
@@ -393,7 +393,7 @@ class Jake
             else
                 retval += line
 		unless options[:hide_output]
-                    puts "RET: " + line
+                    puts "RET: #{line}"
                     $stdout.flush
 		end
             end
@@ -434,6 +434,10 @@ class Jake
       else
         to_run = "cd '#{cd}'&&#{to_run}"
       end
+    end
+
+    if !env.nil?
+      to_print = "ENV: #{env}\n#{to_print}"
     end
 
     puts
@@ -490,7 +494,6 @@ class Jake
         end
       end
     end
-    puts "CLEAN_VSPROPS [#{file}, #{changed}]. TODO: remove this output."
   end
 
   def self.unjar(src,targetdir)

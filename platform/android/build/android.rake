@@ -26,6 +26,7 @@
 
 require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
+require File.dirname(__FILE__) + '/maven_deps_extractor.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
@@ -207,6 +208,11 @@ namespace 'project' do
 
       cp manifest_path, project_path
 
+    end
+
+    task :studio => ['config:android', 'config:android:extensions','build:android:manifest'] do
+      #TODO
+      raise "Project generation for Android Studio is not implemented yet"
     end
   end
 end
@@ -401,28 +407,49 @@ namespace "config" do
       # TODO: add ruby executable for Linux
     end
 
+    m = AndroidTools::MavenDepsExtractor.instance.set_temp_dir($tmpdir)
+    m = AndroidTools::MavenDepsExtractor.instance.set_java_home($java)
+
     build_tools_path = nil
 
     if !$skip_checking_Android_SDK
       if File.exist?(File.join($androidsdkpath, "build-tools"))
+
+
+        
+        toolsver = $app_config['android']['buildtools'] if ($app_config['android'] and $app_config['android']['buildtools'])
+
+        if toolsver
+          #will try to find user-specified build tools
+          path = File.join($androidsdkpath,'build-tools',toolsver)
+          if File.directory?(path)
+            build_tools_path = toolsver
+          else
+            $logger.warn("Android build tools v#{toolsver} specified in build.yml were not found, will use latest")
+          end
+        end
+
+
         build_tools = {}
-        Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
-          next if entry == '.' or entry == '..'
 
-          #Lets read source.properties file to get highest available build-tools
-          src_prop_path = File.join($androidsdkpath, "build-tools",entry,"source.properties")
-          next unless File.file?(src_prop_path)
+        if !build_tools_path
+          Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
+            next if entry == '.' or entry == '..'
 
-          File.open(src_prop_path) do |f|
-            f.each_line do |line|
-              build_tools[entry] = line.split('=')[1].gsub("\n",'') if line.match(/^Pkg.Revision=/)
+            #Lets read source.properties file to get highest available build-tools
+            src_prop_path = File.join($androidsdkpath, "build-tools",entry,"source.properties")
+            next unless File.file?(src_prop_path)
+
+            File.open(src_prop_path) do |f|
+              f.each_line do |line|
+                build_tools[entry] = line.split('=')[1].gsub("\n",'') if line.match(/^Pkg.Revision=/)
+              end
             end
           end
 
+          latest_build_tools = build_tools.sort_by{|folder_name,sdk_version| sdk_version}.last
+          build_tools_path = latest_build_tools[0]
         end
-
-        latest_build_tools = build_tools.sort_by{|folder_name,sdk_version| sdk_version}.last
-        build_tools_path = latest_build_tools[0]
       end
 
       if build_tools_path
@@ -527,9 +554,7 @@ namespace "config" do
         $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
       end
 
-      v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
-      raise "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
-      $v4support_classpath = v4jar.first
+      AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:23.0.0')
 
       #setup_ndk($androidndkpath, $found_api_level, 'arm')
       $abis = $app_config['android']['abis'] if $app_config["android"]
@@ -732,6 +757,15 @@ namespace "config" do
                 end
               end
 
+              maven_deps = extconf_android['maven_deps']
+              if maven_deps
+                if maven_deps.is_a? Array
+                  maven_deps.each do |dep|
+                    AndroidTools::MavenDepsExtractor.instance.add_dependency( ext, dep )
+                  end
+                end
+              end
+
               resource_packages = extconf_android['resource_packages'] if extconf_android
               if resource_packages
                 if resource_packages.is_a? Array
@@ -836,6 +870,16 @@ namespace "config" do
       end # $app_extensions_list.each
 
       puts "Extensions' java source lists: #{$ext_android_additional_sources.inspect}"
+
+      AndroidTools::MavenDepsExtractor.instance.extract_all
+
+      if !AndroidTools::MavenDepsExtractor.instance.have_v4_support_lib?
+        v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
+        raise "Support-v4 library was not found neither in SDK extras nor in m2 repository" if v4jar.size !=1
+        $v4support_classpath = v4jar.first
+      end
+
+
       print_timestamp('android:extensions FINISH')
 
     end #task :extensions
@@ -1834,6 +1878,10 @@ namespace "build" do
       puts "Generate initial R.java at #{$app_rjava_dir}"
 
       args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
+      args += AndroidTools::MavenDepsExtractor.instance.aapt_args
+
+      args << '-v' if USE_TRACES
+
       Jake.run($aapt, args)
 
       raise 'Error in AAPT: R.java' unless $?.success?
@@ -1847,6 +1895,10 @@ namespace "build" do
       File.open(File.join($app_rjava_dir, "R", "R.java"), "w") { |f| f.write(buf) }
 
       $ext_android_library_deps.each do |package, path|
+        if !File.directory?(path)
+          puts "[WARN] Path for dependency #{package} does not exists (#{path})"
+          next
+        end
         r_dir = File.join $tmpdir, 'gen', package.split('.')
         mkdir_p r_dir
         buf = File.new(File.join($app_rjava_dir, 'R.java'), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage #{package};\n")
@@ -1857,6 +1909,7 @@ namespace "build" do
     task :genreclipse => [:manifest, :resources] do
       mkdir_p $app_rjava_dir
       args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
+      args += AndroidTools::MavenDepsExtractor.instance.aapt_args
       Jake.run($aapt, args)
 
       raise 'Error in AAPT: R.java' unless $?.success?
@@ -1904,7 +1957,14 @@ namespace "build" do
       classpath = $androidjar
       classpath += $path_separator + $google_classpath if $google_classpath
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
-      classpath += $path_separator + $v4support_classpath
+      classpath += $path_separator + $v4support_classpath if $v4support_classpath
+      classpath += $path_separator + AndroidTools::MavenDepsExtractor.instance.classpath($path_separator)
+
+      javalibsdir = Jake.get_absolute("platform/android/lib")
+
+      Dir.glob( File.join(javalibsdir,"*.jar" )) do |filepath|
+        classpath += $path_separator + filepath
+      end
 
       javafilelists = [srclist]
 
@@ -1931,11 +1991,18 @@ namespace "build" do
       classpath += $path_separator + $google_classpath if $google_classpath
       #######################################################################
 
-      classpath += $path_separator + $v4support_classpath
+      classpath += $path_separator + $v4support_classpath if $v4support_classpath
+      classpath += $path_separator + AndroidTools::MavenDepsExtractor.instance.classpath($path_separator)
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
           classpath += $path_separator + jar
       end
+
+      javalibsdir = Jake.get_absolute("platform/android/lib")
+
+      Dir.glob( File.join(javalibsdir,"*.jar" )) do |filepath|
+        classpath += $path_separator + filepath
+      end      
 
       $ext_android_additional_sources.each do |extpath, list|
         ext = File.basename(extpath)
@@ -1965,7 +2032,8 @@ namespace "build" do
       end
 
       print_timestamp('build:android:extensions_java FINISH')
-      $android_jars << $v4support_classpath
+      $android_jars << $v4support_classpath if $v4support_classpath
+      $android_jars += AndroidTools::MavenDepsExtractor.instance.jars
     end
 
     task :upgrade_package => ["config:set_android_platform", "config:common"] do
@@ -2131,19 +2199,10 @@ namespace "package" do
     args << "--dex"
     args << "--output=#{$bindir}/classes.dex"
 
-    jarnames = []
+    alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
+    alljars += AndroidTools::MavenDepsExtractor.instance.jars
 
-    Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
-
-        jarname = Pathname.new(jar).basename
-
-        if not jarnames.include?(jarname) then
-            args << jar
-            jarnames << jarname
-        else
-            puts "Skipping duplicated jar: #{jar}"
-        end
-    end
+    alljars.each { |jar| args << jar }
 
     Jake.run(File.join($java, 'java'+$exe_ext), args)
     unless $?.success?
@@ -2158,6 +2217,7 @@ namespace "package" do
     #set_app_name_android($appname)
 
     args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-F", resourcepkg]
+    args += AndroidTools::MavenDepsExtractor.instance.aapt_args
     if $no_compression
       $no_compression.each do |ext|
         args << '-0'

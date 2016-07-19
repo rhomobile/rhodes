@@ -367,7 +367,8 @@ public:
 
     [m_pReq initWithURL:
       [NSURL URLWithString:
-        [NSString stringWithUTF8String:url.c_str()]
+       [[NSString stringWithUTF8String:url.c_str()] stringByAddingPercentEscapesUsingEncoding:
+        NSUTF8StringEncoding]
       ]
       cachePolicy:NSURLRequestUseProtocolCachePolicy
       timeoutInterval:timeout

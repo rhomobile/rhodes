@@ -26,6 +26,9 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+#include "common/app_build_capabilities.h"
+
+#ifdef APP_BUILD_CAPABILITY_BLUETOOTH
 #import <GameKit/GameKit.h>
 
 
@@ -99,3 +102,5 @@
 - (void)sendData:(void*)buf length:(int)length;
 
 @end
+
+#endif APP_BUILD_CAPABILITY_BLUETOOTH

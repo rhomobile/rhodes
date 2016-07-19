@@ -24,7 +24,7 @@ public class CameraSingletonObject implements ICameraSingletonObject {
     private static final String TAG = CameraSingletonObject.class.getSimpleName();
     public static boolean deprecated_choose_pic;
     private int mId;
-    
+
     static int getCameraIndex(String id) {
         return Integer.valueOf(id.substring(7)).intValue();
     }
@@ -41,7 +41,7 @@ public class CameraSingletonObject implements ICameraSingletonObject {
     public CameraSingletonObject() {
         mId = 0;
     }
-    
+
     @Override
     public String getDefaultID() {
         return getCameraId(mId);
@@ -74,6 +74,7 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 
     @Override
     public void choosePicture(Map<String, String> propertyMap, IMethodResult result) {
+	CameraObject.deprecated_take_pic = false;
     	CameraActivity.CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
     	CameraActivity.CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
     	if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){   
@@ -84,44 +85,65 @@ public class CameraSingletonObject implements ICameraSingletonObject {
     		deprecated_choose_pic = true;
         Intent intent = null;
         String outputFormat = null;
-	if(propertyMap.get("outputFormat") == null){
-	    propertyMap.put("outputFormat", "image");
-	    outputFormat = propertyMap.get("outputFormat");	        	
-	}
-	else{
-	     outputFormat = propertyMap.get("outputFormat");	         
-	}
+        if(propertyMap.get("outputFormat") == null){
+            propertyMap.put("outputFormat", "image");
+            outputFormat = propertyMap.get("outputFormat");
+        }
+        else{
+            outputFormat = propertyMap.get("outputFormat");
+        }
         CameraFactory factory = (CameraFactory)CameraFactorySingleton.getInstance();
         factory.getRhoListener().setMethodResult(result);
         factory.getRhoListener().setActualPropertyMap(propertyMap);
         RhodesActivity ra = RhodesActivity.safeGetInstance();
         intent = new Intent(ra, FileList.class);
-        String fileName = null;
-	if(!propertyMap.containsKey("fileName")){
-	   fileName = "/sdcard/DCIM/Camera/";
-	}
-	else{
-	   fileName = propertyMap.get("fileName");
-	}
-	if (fileName != null && fileName.length() > 0) {
-	        if (outputFormat.equalsIgnoreCase("image")) {        	
-	           String tmpPath = getTemporaryLoc(fileName);
-	            if (tmpPath == null) {
-	                throw new RuntimeException("Failed to access shared temporary folder");
-	            }
-	            Uri captureUri = Uri.fromFile(new File(tmpPath));
-	            propertyMap.put("captureUri", captureUri.toString());
-	            intent.putExtra(MediaStore.EXTRA_OUTPUT, captureUri);
-	        }
-	        else 
-	        if(outputFormat.equalsIgnoreCase("dataUri"))
-	        {        	
-	            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(fileName + ".jpg")));
-	        }        
-	        ra.startActivityForResult(intent, 0);
-	        propertyMap.put("ChoosePicture_Key", "ChoosePicture_Value");
+
+        if ( Boolean.parseBoolean(propertyMap.get("useSystemViewfinder")) ) {
+            /*
+            Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            getIntent.setType("image/*");
+
+            Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            pickIntent.setType("image/*");
+
+            Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
+
+            intent =  chooserIntent;
+            */
+
+            Intent gallery = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            gallery.setType("image/*");
+            intent =  gallery;
+
         }
-         else {        	
+
+        String fileName = null;
+        if(!propertyMap.containsKey("fileName")){
+            fileName = "/sdcard/DCIM/Camera/";
+        }
+        else{
+            fileName = propertyMap.get("fileName");
+        }
+        if (fileName != null && fileName.length() > 0) {
+            if (outputFormat.equalsIgnoreCase("image")) {
+                String tmpPath = getTemporaryLoc(fileName);
+                if (tmpPath == null) {
+                    throw new RuntimeException("Failed to access shared temporary folder");
+                }
+                Uri captureUri = Uri.fromFile(new File(tmpPath));
+                propertyMap.put("captureUri", captureUri.toString());
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, captureUri);
+            }
+            else
+            if(outputFormat.equalsIgnoreCase("dataUri"))
+            {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(fileName + ".jpg")));
+            }
+            ra.startActivityForResult(intent, 0);
+            propertyMap.put("ChoosePicture_Key", "ChoosePicture_Value");
+        }
+        else {
             result.setArgError("'fileName' parameter is missed");
         }
     }
@@ -141,9 +163,10 @@ public class CameraSingletonObject implements ICameraSingletonObject {
             return null;
         }
     }
-   /* @Override
+
+    /* @Override
     public void saveImageToDeviceGallery(String pathToImage, IMethodResult result) {
-        // TODO Auto-generated method stub
+    // TODO Auto-generated method stub
 
     }
     */
@@ -153,58 +176,60 @@ public class CameraSingletonObject implements ICameraSingletonObject {
         Logger.T(TAG, "createCameraObject: " + id);
         return new CameraObject(id);
     }
-	@Override
-	public void copyImageToDeviceGallery(String pathToImage,
-			IMethodResult result) {
-		// TODO Auto-generated method stub
-		String imageName = pathToImage.substring(pathToImage.lastIndexOf("/")+1, pathToImage.length());
-		String abspath = copyImageToDesired(pathToImage, imageName);
-	String strUri = null;
-		try {
-			strUri = MediaStore.Images.Media.insertImage(RhodesActivity.getContext().getContentResolver(), abspath, imageName, "Saving Image to Device Gallery through Camera");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-	}
-	private String copyImageToDesired(String pathToImage, String imageName) {
-		// TODO Auto-generated method stub
-		File oldFile = new File(RhoFileApi.absolutePath(pathToImage));
-		File mediafile  =  new File(RhoFileApi.getDbFilesPath(), imageName);
-	
-		InputStream finput= null;
-		FileOutputStream fout = null;
-		try {
-			finput= RhoFileApi.open(pathToImage);
-			fout = new FileOutputStream(mediafile);
-			byte[] b = new byte[1024];
-			int read = 0;
-			while ((read = finput.read(b)) != -1) {
-				fout.write(b, 0, read);
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if(finput != null){
-				try {
-					finput.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			if(fout != null){
-				try {
-					fout.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		return mediafile.getAbsolutePath();
-	}
+
+    @Override
+    public void copyImageToDeviceGallery(String pathToImage,
+    IMethodResult result) {
+        // TODO Auto-generated method stub
+        String imageName = pathToImage.substring(pathToImage.lastIndexOf("/")+1, pathToImage.length());
+        String abspath = copyImageToDesired(pathToImage, imageName);
+        String strUri = null;
+        try {
+            strUri = MediaStore.Images.Media.insertImage(RhodesActivity.getContext().getContentResolver(), abspath, imageName, "Saving Image to Device Gallery through Camera");
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private String copyImageToDesired(String pathToImage, String imageName) {
+        // TODO Auto-generated method stub
+        File oldFile = new File(RhoFileApi.absolutePath(pathToImage));
+        File mediafile  =  new File(RhoFileApi.getDbFilesPath(), imageName);
+
+        InputStream finput= null;
+        FileOutputStream fout = null;
+        try {
+            finput= RhoFileApi.open(pathToImage);
+            fout = new FileOutputStream(mediafile);
+            byte[] b = new byte[1024];
+            int read = 0;
+            while ((read = finput.read(b)) != -1) {
+                fout.write(b, 0, read);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(finput != null){
+                try {
+                    finput.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(fout != null){
+                try {
+                    fout.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return mediafile.getAbsolutePath();
+    }
 
 }

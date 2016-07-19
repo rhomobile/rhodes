@@ -28,8 +28,8 @@
 #import "Bluetooth.h"
 #import "AppManager.h"
 #import "common/RhodesApp.h"
+#include "logging/RhoLog.h"
 #include "ruby/ext/rho/rhoruby.h"
-
 
 
 #define BTC_OK  "OK"
@@ -52,6 +52,10 @@
 
 
 #define kMaxPacketSize 1024
+
+
+#ifdef APP_BUILD_CAPABILITY_BLUETOOTH
+
 
 
 @implementation RhoBluetoothManager
@@ -543,6 +547,87 @@ void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE d
 	free(buf);
 }
 
+#else
 
+
+int rho_bluetooth_is_bluetooth_available() {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+    return 0;
+}
+
+void rho_bluetooth_off_bluetooth() {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+}
+
+void rho_bluetooth_set_device_name(const char* device_name) {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+}
+
+VALUE rho_bluetooth_get_device_name() {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+    return rho_ruby_get_NIL();
+}
+
+const char* rho_bluetooth_get_last_error() {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+    return BTC_OK;
+}
+
+const char* rho_bluetooth_create_session(const char* role, const char* callback_url) {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+    return BTC_OK;
+}
+
+
+const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device) {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+    return BTC_OK;
+}
+
+const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url) {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+    return BTC_OK;
+}
+
+const char* rho_bluetooth_stop_current_connection_process() {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+    return BTC_OK;
+}
+
+
+
+void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url) {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+}
+
+void rho_bluetooth_session_disconnect(const char* connected_device_name) {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+}
+
+int rho_bluetooth_session_get_status(const char* connected_device_name) {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+    return 0;
+}
+
+VALUE rho_bluetooth_session_read_string(const char* connected_device_name) {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+    return rho_ruby_get_NIL();
+}
+
+void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str) {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+}
+
+VALUE rho_bluetooth_session_read_data(const char* connected_device_name) {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+    return rho_ruby_get_NIL();
+}
+
+void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE data) {
+    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
+}
+
+
+#endif APP_BUILD_CAPABILITY_BLUETOOTH
 
 
