@@ -18,6 +18,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -78,6 +81,35 @@ IRhoListener {
 		extManager.registerExtension("RhoCameraApi", new CameraExtension());
 		resultMap=new HashMap<String,Object>();
 	}
+
+
+	public Bitmap toGrayscale(Bitmap bmpOriginal)
+    {
+        int width, height;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();
+
+        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        Canvas c = new Canvas(bmpGrayscale);
+        Paint paint = new Paint();
+
+		//ColorMatrix cm = new ColorMatrix();
+        //cm.setSaturation(0);
+        //ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+
+		float[] mat = new float[]{
+	            0.3f, 0.59f, 0.11f, 0, 0,
+	            0.3f, 0.59f, 0.11f, 0, 0,
+	            0.3f, 0.59f, 0.11f, 0, 0,
+	            0, 0, 0, 1, 0};
+	    ColorMatrixColorFilter f = new ColorMatrixColorFilter(mat);
+
+        paint.setColorFilter(f);
+        c.drawBitmap(bmpOriginal, 0, 0, paint);
+        return bmpGrayscale;
+    }
+
+
 
 	@SuppressLint("NewApi")
 	@Override
@@ -397,6 +429,45 @@ IRhoListener {
 						e.printStackTrace();
 					}
 					Logger.T(TAG, "$$$ resize finished $$$");
+				}
+
+				// Grayscale
+				String strColorMode = getActualPropertyMap().get("colorModel");
+				if ((strColorMode != null) && (strColorMode.equalsIgnoreCase("grayscale")) ) {
+					Logger.T(TAG, "$$$ recolor to grayscale start $$$");
+
+					try {
+						// resize to preffered size
+
+						Logger.T(TAG, "imgPath ["+imgPath+"]");
+						Logger.T(TAG, "rename ["+rename+"]");
+						String bitmapPath = imgPath;
+
+						Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath);
+						Bitmap gray = toGrayscale(bitmap);
+
+						ByteArrayOutputStream bos=new ByteArrayOutputStream();
+						gray.compress(Bitmap.CompressFormat.JPEG, 75, bos);
+						bitmap.recycle();
+						bitmap=null;
+						OutputStream out;
+						out = new FileOutputStream(bitmapPath+"_tmp");
+						bos.writeTo(out);
+						bos.flush();
+
+						File file= new File(bitmapPath+"_tmp");
+						File file_old = new File(bitmapPath);
+						file_old.delete();
+						file.renameTo(new File(bitmapPath));
+						fixTheGalleryIssue(bitmapPath);
+
+
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+					}
+
+					Logger.T(TAG, "$$$ recolor to grayscale finished $$$");
 				}
 
 				try{
