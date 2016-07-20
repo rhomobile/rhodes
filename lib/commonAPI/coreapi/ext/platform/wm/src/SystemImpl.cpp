@@ -973,7 +973,9 @@ void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& oResult)
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 	strRes = "WEBKIT/SYMBOL";
 #else
-	strRes = "IE";
+	//TODO TAU
+	//strRes = "IE";
+	strRes = "WEBKIT/SYMBOL";
     //TODO: get IE version for WM/CE
 #endif
 

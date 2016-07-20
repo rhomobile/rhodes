@@ -6,10 +6,10 @@
 
 //extern "C" HWND getMainWnd();
 extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
-extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName)
-{
+extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
+/*{
 	return L"";
-}
+}*/
 
 namespace rho {
 
