@@ -29,7 +29,19 @@ public class BarcodeFactoryRhoListener extends AbstractRhoListener
 		int myUseDWScanning = 0;
 		IRhoConfig myIRhoConfig= null;
 		IRhoWebView myIRhoWebView=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
-		GoogleWebView myGoogleWebView=(GoogleWebView)myIRhoWebView;
+		GoogleWebView myGoogleWebView=null;
+
+		try {
+			myGoogleWebView=(GoogleWebView)myIRhoWebView;			
+		} catch( ClassCastException e ) {
+			Logger.W(TAG, "onResume: WebView is not from Google, skipping configuration" );
+			myGoogleWebView = null;
+		}
+
+		if ( null == myGoogleWebView ) {
+			return;
+		}
+
 		myIRhoConfig=myGoogleWebView.getConfig();
 
 		if(myIRhoConfig.getString("usedwforscanning") != null)

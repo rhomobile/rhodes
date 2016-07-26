@@ -351,7 +351,19 @@ public class RhoElementsExt extends AbstractRhoExtension
             Logger.T(TAG, "Processing rhoelements config");
             IRhoConfig rhoelementsGetConfig= null;
 		IRhoWebView vi=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
-		GoogleWebView web=(GoogleWebView)vi;
+
+        GoogleWebView web = null;
+        try {
+            web=(GoogleWebView)vi;
+        } catch ( ClassCastException e ) {
+            Logger.W(TAG, "onNewConfig: WebView is not from Google, skipping configuration" );
+            web = null;
+        }
+
+        if ( null == web ) {
+            return false;
+        }
+		
 		rhoelementsGetConfig=web.getConfig();
 		WebViewConfig cfg=(WebViewConfig)rhoelementsGetConfig;
             String logProtocol = config.getString("logprotocol");

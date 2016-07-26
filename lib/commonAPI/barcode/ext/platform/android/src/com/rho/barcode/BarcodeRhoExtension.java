@@ -17,11 +17,21 @@ public class BarcodeRhoExtension extends AbstractRhoExtension{
 		int disable_scanner_val = 0;
 		IRhoConfig rhoelementsGetConfig= null;
         IRhoWebView vi=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
-        GoogleWebView web=(GoogleWebView)vi;
-        rhoelementsGetConfig=web.getConfig();
-        if(rhoelementsGetConfig.getString(WebViewConfig.DISABLE_SCANNER_ON_NAVIGATION) != null){
-        	disable_scanner_val = Integer.parseInt(rhoelementsGetConfig.getString(WebViewConfig.DISABLE_SCANNER_ON_NAVIGATION));
+        
+        GoogleWebView web=null;
+
+        try {
+        	web=(GoogleWebView)vi;
+        } catch ( ClassCastException e ) {
+        	web=null;
         }
+
+        if ( web != null ) {
+	        rhoelementsGetConfig=web.getConfig();
+	        if(rhoelementsGetConfig.getString(WebViewConfig.DISABLE_SCANNER_ON_NAVIGATION) != null){
+	        	disable_scanner_val = Integer.parseInt(rhoelementsGetConfig.getString(WebViewConfig.DISABLE_SCANNER_ON_NAVIGATION));
+	        }
+	    }
 
 		if(disable_scanner_val == 1){
 			BarcodeFactory factory=(BarcodeFactory) BarcodeFactorySingleton.getInstance();

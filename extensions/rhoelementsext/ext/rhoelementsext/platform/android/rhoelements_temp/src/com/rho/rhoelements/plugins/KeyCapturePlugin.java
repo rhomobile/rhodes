@@ -155,10 +155,20 @@ public class KeyCapturePlugin extends Plugin implements View.OnKeyListener
 		int disAppCallKey = 1000;
 		IRhoConfig rhoelementsGetConfig= null; //RhoExtManager.getInstance().getConfig("rhoelementsext");
 		IRhoWebView vi=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
-		GoogleWebView web=(GoogleWebView)vi;
-		rhoelementsGetConfig=web.getConfig();
-		if((rhoelementsGetConfig!=null) && (rhoelementsGetConfig.getString(WebViewConfig.ENABLE_APPLICATION_KEY_A1) != null)){
- 			disAppCallKey = Integer.parseInt(rhoelementsGetConfig.getString(WebViewConfig.ENABLE_APPLICATION_KEY_A1));
+
+		GoogleWebView web=null;
+		try {
+			web=(GoogleWebView)vi;
+		} catch ( ClassCastException e ) {
+			//Logger.W(TAG, "onKeyDispatchFromActivity: WebView is not from Google, skipping configuration" );
+			web = null;
+		}
+
+		if ( web != null ) {
+			rhoelementsGetConfig=web.getConfig();
+			if((rhoelementsGetConfig!=null) && (rhoelementsGetConfig.getString(WebViewConfig.ENABLE_APPLICATION_KEY_A1) != null)){
+ 				disAppCallKey = Integer.parseInt(rhoelementsGetConfig.getString(WebViewConfig.ENABLE_APPLICATION_KEY_A1));
+ 			}
  		}
 		
 		
