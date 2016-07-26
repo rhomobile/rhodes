@@ -2202,7 +2202,17 @@ namespace "package" do
     alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
     alljars += AndroidTools::MavenDepsExtractor.instance.jars
 
-    alljars.each { |jar| args << jar }
+    require 'set'
+    unique_jars = Set.new
+
+    alljars.each { |jar|
+      basename = File.basename(jar);
+      if !unique_jars.member?(basename)
+        args << jar
+        unique_jars.add(basename)
+      end
+    }
+
 
     Jake.run(File.join($java, 'java'+$exe_ext), args)
     unless $?.success?
