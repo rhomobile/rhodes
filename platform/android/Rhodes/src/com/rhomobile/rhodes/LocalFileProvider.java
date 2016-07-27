@@ -124,6 +124,9 @@ public class LocalFileProvider extends ContentProvider
     }
     
     public static File fileFromUri(Uri uri) throws IllegalArgumentException {
+
+        Logger.T(TAG, "fileFromUri: " + uri);
+
         String authority = uri.getAuthority();
         if(isCorrectAuthority(authority)) {
             return new File(getPathPrefix() + uri.getPath());
@@ -133,7 +136,7 @@ public class LocalFileProvider extends ContentProvider
         }
     }
     
-   /* @Override
+   @Override
     public AssetFileDescriptor openAssetFile(Uri uri, String mode) {
         Logger.T(TAG, "Opening asset: " + uri);
         
@@ -148,10 +151,12 @@ public class LocalFileProvider extends ContentProvider
         
         return fd;
     }
-    */
+
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode)
         throws FileNotFoundException, SecurityException {
+
+        Logger.T(TAG, "openFile: " + uri + " mode: " + mode );
 
         if(mode.compareTo("r") != 0)
         {
@@ -179,11 +184,15 @@ public class LocalFileProvider extends ContentProvider
 
     @Override
     public boolean onCreate() {
+        Logger.T(TAG, "OnCreate");
+
         return true;
     }
 
     @Override
     public int delete(Uri uri, String s, String[] as) {
+        Logger.T(TAG, "delete: " + uri);
+
         throw new UnsupportedOperationException(
                 "Delete operation is not supported by this provider");
     }
@@ -204,12 +213,16 @@ public class LocalFileProvider extends ContentProvider
 
     @Override
     public Uri insert(Uri uri, ContentValues contentvalues) {
+        Logger.T(TAG, "insert: " + uri);
+
         throw new UnsupportedOperationException(
                 "Insert operation is not supported by this provider");
     }
 
     @Override
     public Cursor query(Uri uri, String[] proj, String selection, String[] selectionArgs, String sortOrder) {
+        Logger.T(TAG, "query: " + uri);
+
         // Some apps want to query some metadata for files being opened. So do not throw form here...  
         return null;
 //        throw new UnsupportedOperationException(
@@ -218,6 +231,8 @@ public class LocalFileProvider extends ContentProvider
 
     @Override
     public int update(Uri uri, ContentValues contentvalues, String s, String[] as) {
+        Logger.T(TAG, "update: " + uri);
+
         throw new UnsupportedOperationException(
                 "Update operation is not supported by this provider");
     }
