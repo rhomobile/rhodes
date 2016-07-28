@@ -36,39 +36,15 @@ RE_TEMP = File.join(SOURCEPATH, 'rhoelements_temp')
 $debug = ENV['RHO_DEBUG'] == 'true'
 
 #Implemented this to take the version of rhodes as rhoelements version
-$vermajor  = 0
-$verminor1 = 0
-$verminor2 = 0
-$verminor3 = 0
-$verminor4 = 0
-
 $rhodes_version = ENV['rhodes_version']
 
-if $rhodes_version
-  if $rhodes_version =~ /^(\d+)$/
-    $vermajor = $1.to_i
-  elsif $rhodes_version =~ /^(\d+)\.(\d+)$/
-    $vermajor  = $1.to_i
-    $verminor1 = $2.to_i
-  elsif $rhodes_version =~ /^(\d+)\.(\d+)\.(\d+)$/
-    $vermajor  = $1.to_i
-    $verminor1 = $2.to_i
-    $verminor2 = $3.to_i
-  elsif $rhodes_version =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
-    $vermajor  = $1.to_i
-    $verminor1 = $2.to_i
-    $verminor2 = $3.to_i
-    $verminor3 = $4.to_i
-  elsif $rhodes_version =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)\.(\d+)$/
-    $vermajor  = $1.to_i
-    $verminor1 = $2.to_i
-    $verminor2 = $3.to_i
-    $verminor3 = $4.to_i
-    $verminor4 = $5.to_i
-  else
-    raise "Version number must be numeric and in one of these formats: major, major.minor1, major.minor1.minor2, or major.minor1.minor2.minor3, or or major.minor1.minor2.minor3.minor4"
-  end
-end
+v = $rhodes_version ? $rhodes_version.split('.').map(&:to_i) : []
+
+$vermajor  = v.fetch(0, 0)
+$verminor1 = v.fetch(1, 0)
+$verminor2 = v.fetch(2, 0)
+$verminor3 = v.fetch(3, 0)
+$verminor4 = v.fetch(4, 0)
 
 require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
