@@ -14,6 +14,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.drawable.Drawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -165,8 +166,10 @@ public class NotificationSingleton implements INotificationSingleton
 					return false;
 				}
 			});
-			currentMP.setDataSource(RhoFileApi.openFd(path));
-
+			// Fix for Android Marshmallow
+			AssetFileDescriptor afd = RhoFileApi.openAssetFd(path);
+			currentMP.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+			afd.close(); 
 			currentMP.prepare();
 			currentMP.start();
 		}
