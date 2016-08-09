@@ -130,6 +130,7 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
 
         File.open(props, 'r') do |f|
           while line = f.gets
+            line.strip!
             
             if namepattern =~ line
               puts "Parsing add-on: #{$1}" if USE_TRACES
