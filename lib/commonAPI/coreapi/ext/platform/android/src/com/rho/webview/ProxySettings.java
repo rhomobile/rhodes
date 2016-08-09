@@ -16,6 +16,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.rhomobile.rhodes.Logger;
+
+
 /**
  * Utility class for setting WebKit proxy used by Android WebView
  */
@@ -80,6 +83,18 @@ public class ProxySettings {
         f.set(obj, value);
     }
 
+    // /* set default proxy values, localhost and 127.0.0.1 will be added to exclusions list */
+    // public static void excludeLocalhost(Context ctx) {
+    //     String defHost = Proxy.getDefaultHost();
+    //     int defPort = Proxy.getDefaultPort();
+
+    //     if ( (defHost!=null) && (defHost.length()>0)) {
+    //         Logger.D( TAG, "Resetting proxy: " + defHost + ":" + String.valueOf(defPort) );
+
+    //         setProxy(ctx,"",0);
+    //     }
+    // }
+
     /**
      * Override WebKit Proxy settings
      *
@@ -125,7 +140,7 @@ public class ProxySettings {
                     String.class);
             m.setAccessible(true);
             c.setAccessible(true);
-            Object properties = c.newInstance(host, port, null);
+            Object properties = c.newInstance(host, port, "127.0.0.1,localhost");
             m.invoke(null, PROXY_CHANGED, properties);
             return true;
         }
@@ -157,11 +172,19 @@ public class ProxySettings {
                         Intent intent = new Intent(Proxy.PROXY_CHANGE_ACTION);
 
                         /*********** optional, may be need in future *************/
-                        final String CLASS_NAME = "android.net.ProxyProperties";
+                        
+                        String CLASS_NAME = "";
+
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            CLASS_NAME = "android.net.ProxyInfo";
+                        } else {
+                            CLASS_NAME = "android.net.ProxyProperties";
+                        }
+
                         Class cls = Class.forName(CLASS_NAME);
                         Constructor constructor = cls.getConstructor(String.class, Integer.TYPE, String.class);
                         constructor.setAccessible(true);
-                        Object proxyProperties = constructor.newInstance(host, port, null);
+                        Object proxyProperties = constructor.newInstance(host, port, "127.0.0.1,localhost");
                         intent.putExtra("proxy", (Parcelable) proxyProperties);
                         /*********** optional, may be need in future *************/
                       
@@ -180,10 +203,14 @@ public class ProxySettings {
 
     private static void setSystemProperties(String host, int port) {
 
-        System.setProperty("http.proxyHost", host);
-        System.setProperty("http.proxyPort", port + "");
+        try {
+            System.setProperty("http.proxyHost", host);
+            System.setProperty("http.proxyPort", port + "");
 
-        System.setProperty("https.proxyHost", host);
-        System.setProperty("https.proxyPort", port + "");
+            System.setProperty("https.proxyHost", host);
+            System.setProperty("https.proxyPort", port + "");
+        } catch( Exception e ) {
+            e. printStackTrace();
+        }
      }
 }

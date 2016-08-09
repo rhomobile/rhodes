@@ -18,6 +18,11 @@ import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.webview.WebViewConfig;
 
+import com.rhomobile.rhodes.util.ContextFactory;
+
+import android.net.Proxy;
+import android.net.Uri;
+
 public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     private static final String TAG = WebViewSingleton.class.getSimpleName();
@@ -26,12 +31,20 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     private static final String ENABLE_ZOOM = "enable_screen_zoom";
     private static final String ENABLE_WEB_PLUGINS = "enable_web_plugins";
     private static final String ENABLE_CACHE = "WebView.enableCache";
-    private static final String DISABLE_SCANNER_NAVIGATION = "disable_scanner_during_navigation";
+    private static final String DISABLE_SCANNER_NAVIGATION = "disable_scanner_during_navigation";    
     private WebViewConfig mConfig = new WebViewConfig();
+
+    //private boolean bypassProxy;
+    private String originalProxyHost;
+    private int originalProxyPort;
 
     public WebViewSingleton() {
         IRhoExtManager extManager = RhoExtManager.getInstance();
-        readRhoConfig(extManager.getConfig("rhoconfig"));
+
+        originalProxyHost = Proxy.getDefaultHost();
+        originalProxyPort = Proxy.getDefaultPort();
+
+        readRhoConfig(extManager.getConfig("rhoconfig"));        
     }
     
     @Override
@@ -264,7 +277,8 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     @Override
     public boolean onWebViewCreated(IRhoExtManager extManager, IRhoWebView ext, boolean res) {
         Logger.I(TAG, "Set config initially: " + (mConfig != null));
-        ext.setConfig(mConfig);
+        ext.setConfig(mConfig);        
+
         return res;
     }
 
@@ -283,9 +297,44 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
         return res;
     }
 
+    private void adjustProxySettingsForUrl( String url ) {
+        Uri uri = Uri.parse(url);
+        String host = uri.getHost();
+
+        boolean haveOriginalProxy = ( ( originalProxyHost!=null ) && ( originalProxyHost.length() > 0 ) );
+        boolean isLocalUrl = ( (host!=null) && ( host.equals("localhost") || uri.getHost().equals("127.0.0.1") ) );
+
+        
+        if ( haveOriginalProxy ) {
+            //we have system/rhoelements proxy settings so decide what to do with URL
+            
+            if ( isLocalUrl ) {
+                //local URL, we don't need proxy
+                Logger.D( TAG, "Bypassing system proxy: " + originalProxyHost + ":" + String.valueOf(originalProxyPort) );
+                ProxySettings.setProxy(ContextFactory.getAppContext(),"",0);
+            } else {
+                //set original proxy setting
+                restoreProxySettings();
+            }
+        }
+    }
+
+    private void restoreProxySettings() {
+
+        boolean haveOriginalProxy = ( ( originalProxyHost!=null ) && ( originalProxyHost.length() > 0 ) );
+
+        if ( haveOriginalProxy ) {
+            Logger.D( TAG, "Restoring proxy settings: " + originalProxyHost + ":" + String.valueOf(originalProxyPort) );
+            ProxySettings.setProxy(ContextFactory.getAppContext(),originalProxyHost,originalProxyPort);            
+        }
+    }
+
     @Override
     public boolean onBeforeNavigate(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
-        Logger.I(TAG, "onBeforeNavigate ------------------------------------------------------------");
+        Logger.I(TAG, "onBeforeNavigate >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + url );
+
+        adjustProxySettingsForUrl( url );
+
         return res;
     }
 
@@ -301,7 +350,10 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     @Override
     public boolean onNavigateComplete(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
-        Logger.I(TAG, "onNavigateComplete <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        Logger.I(TAG, "onNavigateComplete <<<<<<<<<<<<<<<<<<<<<<<<<<<<<" + url );
+
+        restoreProxySettings();
+
         return res;
     }
 
@@ -456,6 +508,9 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 		    		String portNumber = httpProxy.substring(index + 1, httpProxy.length());
 		    		String hostURL = httpProxy.substring(0, index);
 		    		int port = Integer.parseInt(portNumber);
+
+                    originalProxyHost = hostURL;
+                    originalProxyPort = port;
 		    		
 		    		ProxySettings.setProxy(RhodesActivity.getContext(),hostURL,port);
 		  		}
@@ -470,6 +525,9 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 	    			String portNumber = httpsProxy.substring(index + 1, httpsProxy.length());
 	    			String hostURL = httpsProxy.substring(0, index);
 	    			int port = Integer.parseInt(portNumber);
+
+                    originalProxyHost = hostURL;
+                    originalProxyPort = port;
 	    		
 	    			ProxySettings.setProxy(RhodesActivity.getContext(),hostURL,port);
 	    		}
@@ -531,7 +589,9 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
         if (RhoConf.isExist(DISABLE_SCANNER_NAVIGATION))
             mConfig.set(WebViewConfig.DISABLE_SCANNER_ON_NAVIGATION, RhoConf.getString(DISABLE_SCANNER_NAVIGATION));
         if (RhoConf.isExist("iswindowskey"))
-            mConfig.set("iswindowskey", RhoConf.getString("iswindowskey"));      
+            mConfig.set("iswindowskey", RhoConf.getString("iswindowskey"));
+
+        //bypassProxy = RhoConf.isExist("android_webview_bypass_system_proxy") && RhoConf.getBool("android_webview_bypass_system_proxy");
     }
 
 }
