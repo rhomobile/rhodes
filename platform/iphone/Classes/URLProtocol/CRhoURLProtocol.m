@@ -206,7 +206,7 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 - (CRhoURLResponse*) makeDirectHttpRequest:(NSURL*)theUrl
 {
-  NSLog(@"Will make local request to %@", [theUrl absoluteString]);
+  //NSLog(@"Will make local request to %@", [theUrl absoluteString]);
   
   const char* uri = [[theUrl path] UTF8String];
   const char* method = [[[self request] HTTPMethod] UTF8String];

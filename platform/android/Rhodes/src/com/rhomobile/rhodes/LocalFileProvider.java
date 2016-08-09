@@ -32,12 +32,14 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
+import android.net.Uri.Builder;
 import android.webkit.MimeTypeMap;
 import android.os.ParcelFileDescriptor;
 import java.io.FileNotFoundException;
@@ -46,80 +48,95 @@ import java.io.FileNotFoundException;
 public class LocalFileProvider extends ContentProvider
 {
     private static final String TAG = LocalFileProvider.class.getSimpleName();
-    private static final String PATH_PREFIX = "/data/data/";
     private static String fullPathPrefix;
-    public static final String PROTOCOL_PREFIX = "content";
-    
+    private static String contentAuthority;
+  
     private static String getPathPrefix() {
         if (fullPathPrefix == null) {
-            fullPathPrefix = PATH_PREFIX + ContextFactory.getAppContext().getPackageName();
+            fullPathPrefix = ContextFactory.getAppContext().getApplicationInfo().dataDir;
         }
         return fullPathPrefix;
     }
 
-    public static boolean isCorrectAuthority(String authority)
-    {
-        
-        return authority.equals(ContextFactory.getAppContext().getPackageName());
+
+    //content authority for Rhodes app always equals package name. See manifest template.
+    private static String getAuthority() {
+        if ( null == contentAuthority ) {
+            contentAuthority = ContextFactory.getAppContext().getPackageName();
+        }
+
+        return contentAuthority;
+    }
+
+    public static boolean isCorrectAuthority(String authority) {        
+        return authority.equals(getAuthority());
     }
     
-    public static Uri overrideUri(Uri uri)
-    {
+    public static Uri overrideUri(Uri uri) {
         if (!RhoConf.isExist("useAssetFS") || RhoConf.getBool("useAssetFS")) {
-            String scheme = uri.getScheme();
-            if (scheme != null && scheme.equals("file")) {
-                String ssp = uri.getSchemeSpecificPart();//.getAbsolutePath();
-    
-                String sspPrefix = "//" + getPathPrefix();
-                if(ssp.startsWith(sspPrefix)) {
-                    ssp = "//" + ssp.substring(("//"+PATH_PREFIX).length(), ssp.length());
-                    Logger.T(TAG, "Overriding URI: " + uri.toString());
-    
-                    return Uri.fromParts(PROTOCOL_PREFIX, ssp, uri.getFragment());
-                }
+            return overrideSystemUri(uri);
+       }
+        return null;
+    }
+
+    //builds content:// URI from file:// URI
+    public static Uri overrideSystemUri(Uri uri) {
+
+        Uri overridedUri = null;
+
+        String scheme = uri.getScheme();
+        
+        if (scheme != null && scheme.equals("file")) {
+            String ssp = uri.getSchemeSpecificPart();
+            String sspPrefix = "//" + getPathPrefix();
+
+            //if requested path is inside app data dir
+            if(ssp.startsWith(sspPrefix)) {
+                //get content part
+                String packagePath = ssp.substring(sspPrefix.length());
+
+                Uri.Builder builder = new Uri.Builder();
+                builder.scheme( ContentResolver.SCHEME_CONTENT );
+                builder.authority( getAuthority() );
+                builder.path( packagePath );
+                builder.fragment( uri.getFragment() );
+
+                overridedUri = builder.build();
+
+                Logger.T(TAG, "Overriding URI: " + uri.toString() + " to " + overridedUri.toString() );                
             }
         }
-        return null;
-    }
-    public static Uri overrideSystemUri(Uri uri)
-    {
-    
-       //IF clause is commented out.....
-            String scheme = uri.getScheme();
-            
-            if (scheme != null && scheme.equals("file")) {
-                String ssp = uri.getSchemeSpecificPart();//.getAbsolutePath();
-                String sspPrefix = "//" + getPathPrefix();
-                if(ssp.startsWith(sspPrefix)) {
-                    ssp = "//" + ssp.substring(("//"+PATH_PREFIX).length(), ssp.length());
-                    Logger.T(TAG, "Overriding URI: " + uri.toString());
-                    
-                    return Uri.fromParts(PROTOCOL_PREFIX, ssp, uri.getFragment());
-                }
-            }
-     
-        return null;
+ 
+        return overridedUri;
     }
     
     
-    public static void revokeUriPermissions(Context ctx)
-    {
-        Uri uri = Uri.fromParts(PROTOCOL_PREFIX, "//" + ctx.getPackageName(), null);
+    public static void revokeUriPermissions( Context ctx ) {
+        Uri.Builder builder = new Uri.Builder();
+
+        builder.scheme( ContentResolver.SCHEME_CONTENT );
+        builder.authority( getAuthority() );
+
+        Uri uri = builder.build();
         
         Logger.I(TAG, "Revoke URI permissions: " + Uri.decode(uri.toString()));
-
         ctx.revokeUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
     }
     
-    public static File fileFromUri(Uri uri) throws IllegalArgumentException
-    {
+    public static File fileFromUri(Uri uri) throws IllegalArgumentException {
+
+        Logger.T(TAG, "fileFromUri: " + uri);
+
         String authority = uri.getAuthority();
-        if(isCorrectAuthority(authority))
+        if(isCorrectAuthority(authority)) {
             return new File(getPathPrefix() + uri.getPath());
-        else throw new IllegalArgumentException("Unknown URI authority: " + authority);
+        }
+        else {
+            throw new IllegalArgumentException("Unknown URI authority: " + authority);
+        }
     }
     
-   /* @Override
+   @Override
     public AssetFileDescriptor openAssetFile(Uri uri, String mode) {
         Logger.T(TAG, "Opening asset: " + uri);
         
@@ -134,42 +151,48 @@ public class LocalFileProvider extends ContentProvider
         
         return fd;
     }
-    */
-     @Override
+
+    @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode)
-             throws FileNotFoundException, SecurityException
-       {
-    	
-         if(mode.compareTo("r") != 0)
-         {
-             throw new SecurityException("Unacceptable openFile mode: " + mode);
-         }
-         try {
-         	            File path = fileFromUri(uri);
-         	            
-         	           Logger.D(TAG, "Opening content file: " + path.getPath());
-         	            
-         	            ParcelFileDescriptor fd = RhoFileApi.openParcelFd(path.getPath());
-         	           if(fd == null)
-         	                throw new IllegalArgumentException();
-         	            
-         	            return fd;
-         	        } catch(IllegalArgumentException error)
-         	        {
-         	            FileNotFoundException fileError = new FileNotFoundException("Cannot assign file for URI: " + uri.toString());
-         	            fileError.initCause(error);
-         	            throw fileError;
-         	        }
-         
-     }
+        throws FileNotFoundException, SecurityException {
+
+        Logger.T(TAG, "openFile: " + uri + " mode: " + mode );
+
+        if(mode.compareTo("r") != 0)
+        {
+            throw new SecurityException("Unacceptable openFile mode: " + mode);
+        }
+        try {
+            File path = fileFromUri(uri);
+
+            Logger.D(TAG, "Opening content file: " + path.getPath());
+
+            ParcelFileDescriptor fd = RhoFileApi.openParcelFd(path.getPath());
+            if(fd == null) {
+                throw new IllegalArgumentException();
+            }
+
+            return fd;
+
+        }
+        catch(IllegalArgumentException error) {
+            FileNotFoundException fileError = new FileNotFoundException("Cannot assign file for URI: " + uri.toString());
+            fileError.initCause(error);
+            throw fileError;
+        }      
+    }
 
     @Override
     public boolean onCreate() {
+        Logger.T(TAG, "OnCreate");
+
         return true;
     }
 
     @Override
     public int delete(Uri uri, String s, String[] as) {
+        Logger.T(TAG, "delete: " + uri);
+
         throw new UnsupportedOperationException(
                 "Delete operation is not supported by this provider");
     }
@@ -190,12 +213,16 @@ public class LocalFileProvider extends ContentProvider
 
     @Override
     public Uri insert(Uri uri, ContentValues contentvalues) {
+        Logger.T(TAG, "insert: " + uri);
+
         throw new UnsupportedOperationException(
                 "Insert operation is not supported by this provider");
     }
 
     @Override
     public Cursor query(Uri uri, String[] proj, String selection, String[] selectionArgs, String sortOrder) {
+        Logger.T(TAG, "query: " + uri);
+
         // Some apps want to query some metadata for files being opened. So do not throw form here...  
         return null;
 //        throw new UnsupportedOperationException(
@@ -204,6 +231,8 @@ public class LocalFileProvider extends ContentProvider
 
     @Override
     public int update(Uri uri, ContentValues contentvalues, String s, String[] as) {
+        Logger.T(TAG, "update: " + uri);
+
         throw new UnsupportedOperationException(
                 "Update operation is not supported by this provider");
     }

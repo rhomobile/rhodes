@@ -1,26 +1,26 @@
-This media, software or hardware ("Product") obtained from Zebra, Inc. ("Zebra") may include Zebra? 
+This media, software or hardware ("Product") obtained from Tau, Inc. ("Tau") may include Tau? 
 Software, Third Party Software (defined below), and/or Open Source Software 
 (defined below).
 
 The object code or source code (collectively, the "Software") included 
-with the Product is the exclusive property of Zebra or its 
+with the Product is the exclusive property of Tau or its 
 licensors, and any use is subject to the terms and conditions of one or 
-more agreements in force between the purchaser of the Zebra 
-Product or licensee of the Zebra Software and Zebra.  SOFTWARE IS PROTECTED BY U.S. COPYRIGHT LAWS AND INTERNATIONAL 
+more agreements in force between the purchaser of the Tau 
+Product or licensee of the Tau Software and Tau.  SOFTWARE IS PROTECTED BY U.S. COPYRIGHT LAWS AND INTERNATIONAL 
 LAWS AND TREATIES. UNAUTHORIZED COPYING, DISTRIBUTION OR OTHER USE OF
 THIS PRODUCT IS STRICTLY PROHIBITED. ANY DISTRIBUTION OR USE NOT 
 SPECIFICALLY APPROVED BY ZEBRA IS STRICTLY PROHIBITED.
 
-Zebra? Software is subject to the commercial terms and 
-conditions entered into with Zebra, any other use is strictly 
-prohibited.  Commercial Software licensed for redistribution by Zebra ("Third Party Software") is subject to the terms and conditions 
-in force between Zebra and the licensor of the Third party 
+Tau? Software is subject to the commercial terms and 
+conditions entered into with Tau, any other use is strictly 
+prohibited.  Commercial Software licensed for redistribution by Tau ("Third Party Software") is subject to the terms and conditions 
+in force between Tau and the licensor of the Third party 
 Software.  The terms and conditions governing the usage of Third Party 
 Software may be part of the agreement entered into by the purchaser of 
-the Product with Zebra or separate Third Party Software 
+the Product with Tau or separate Third Party Software 
 license agreement(s) included with the Product.
 
-Software provided by Zebra which is covered by a publicly 
+Software provided by Tau which is covered by a publicly 
 available license governed solely under Copyright law, whereas the complete 
 terms and obligations of such license attach to a licensee solely through 
 the act of copying, using and/or distribution of the licensed Software, such 
@@ -28,42 +28,18 @@ obligations often include one or more of attribution obligations, distribution
 obligations, copyleft obligations, and intellectual property encumbrances is 
 referred to herein as "Open Source Software".  The use of any Open Source 
 Software is subject to the licenses, terms and conditions of the commercial 
-agreement in force between the purchaser of the Product and Zebra 
+agreement in force between the purchaser of the Product and Tau 
 as well as the terms and conditions of the corresponding license of each 
 Open Source Software package. If there is a conflict between the terms and 
 conditions of any commercial agreement and the terms and conditions of the 
 Open Source Software license, the applicable Open Source Software license will 
 take precedence. Copies of the licenses for the included Open Source Software 
 as well as their attributions, acknowledgements, and software information 
-details, are listed below. Zebra is required to reproduce 
+details, are listed below. Tau is required to reproduce 
 the software licenses, acknowledgements and copyright notices as provided by 
 the authors and owners, thus, all such information is provided in its native 
 language form, without modification or translation.
  
-For instructions on how to obtain a copy of any source code made publicly 
-available by Zebra related to Open Source Software distributed 
-by Zebra, you may send your request in writing to: 
-
-Zebra, Inc.
-Open Source Software Management
-1301 E. Algonquin Road
-Schaumburg, IL 60196  USA.
-
-In your request, please include the Zebra Product name and 
-version, along with the Open Source Software specifics, such as the Open 
-Source Software name and version.
-
-Note: the source code for the Open Source Software included by Zebra may be resident on the Product?s installation media provided with 
-the Product or on supplemental Product media. Please reference and review 
-the entire Zebra Open Source Software "Legal Notices" and any 
-corresponding "End User License Agreement" provided with the Product or the 
-commercial agreement under which the Product was purchased for details on 
-the availability, location and method for obtaining source code. Further, 
-depending on the license terms of the specific Open Source Software, source 
-code may not be provided. Please reference and review the entire Zebra Open Source Software "Legal Notices" and "End User License Agreement" 
-to identify which Open Source Software packages have source code provided 
-or available.
-
 To view information regarding licenses, acknowledgments and required copyright 
 notices for Open Source Software used in this Product, please select "Legal Notices" 
 from the graphical user interface of the Software (if applicable) or as 
@@ -72,10 +48,7 @@ associated with the Product.  Use of any Software is subject to acceptance of
 the corresponding terms associated with the Software and by using the Software 
 you agree you have reviewed the terms and agreed to be bound by said terms.
 
-ZEBRA ZEBRA and the Stylized M Logo are trademarks or 
-registered trademarks of Zebra Trademark Holdings, LLC and are used under 
-license. All other trademarks are the property of Zebra, Inc. or 
-their respective owners. All rights reserved. 
+All trademarks are the property their respective owners. All rights reserved. 
 
  
 
@@ -94,8 +67,8 @@ Description: 	Brief description of Pacakge.  Typically can cut/paste
                 should be the description that was provided in the
                 PAS Justification Form provided to the OSRB.
 
-                If Zebra has modified the Package, please state:
-                "Zebra has modified the software."
+                If Tau has modified the Package, please state:
+                "Tau has modified the software."
 
 
 Software Site:  http://www.xxx.com
@@ -106,69 +79,69 @@ Source Code: 	Include Commentary based on Options below:
                 a)  For Packages that do not have Source Distribution Obligations,
                 state: 
 
-    	        " No Source Distribution Obligations.  Zebra will 
+    	        " No Source Distribution Obligations.  Tau will 
                 not provide nor distribute the Source Code for the <package name>
                 Software.  The Source Code may be obtained from the original 
                 Software Site.
 
 
                 b)  For Packages that have Source Code Distribution Obligations, and 
-                Zebra HAS NOT MODIFIED the Software, please state: 
+                Tau HAS NOT MODIFIED the Software, please state: 
  
                 "The Source Packages for <package name> are available from the
-                original Software Site, or may be acquired from Zebra.
-                To obtain the Software from Zebra, please contact 
-                Zebra using the methods described in the preamble of 
+                original Software Site, or may be acquired from Tau.
+                To obtain the Software from Tau, please contact 
+                Tau using the methods described in the preamble of 
                 this Legal Notices Document."
 
   
                 c) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS NOT MODIFIED the Software, as well as, you are including 
-                the Source Code Packages as part of the Zebra Product Release or 
+                Tau HAS NOT MODIFIED the Software, as well as, you are including 
+                the Source Code Packages as part of the Tau Product Release or 
                 Distribution Media, please state:
 
                 "The Source Packages for <package name> are available from the
                 original Software Site, or can be found at <Full Path Location>
-                in the Zebra Product Media.  You may also acquire the 
-                Source Packages from Zebra using the request methods 
+                in the Tau Product Media.  You may also acquire the 
+                Source Packages from Tau using the request methods 
                 described in the preamble of this Legal Notices Document."
 
                 d) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS NOT MODIFIED the Software, as well as, Zebra is
+                Tau HAS NOT MODIFIED the Software, as well as, Tau is
                 providing access via Web Portal, please state:
 
                 "The Source Packages for <package name> are available from the
-                original Software Site, or from the Zebra Internet Portal
+                original Software Site, or from the Tau Internet Portal
                 at <URL Link>.  You may also acquire the Source Packages
-                from Zebra using the request methods described in the preamble of 
+                from Tau using the request methods described in the preamble of 
                 this Legal Notices Document."
 
                 e) For Packages that have Source Code Distribution Obligations, and 
-                Zebra HAS MODIFIED the Software, please state: 
+                Tau HAS MODIFIED the Software, please state: 
  
-                "The Source Packages for <package name> may be acquired from Zebra.
-                To obtain the Software from Zebra, please contact Zebra using 
+                "The Source Packages for <package name> may be acquired from Tau.
+                To obtain the Software from Tau, please contact Tau using 
                 the methods described in the preamble of this Legal Notices Document."
   
 
                 f) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS MODIFIED the Software, as well as, you are including 
-                the Source Code Packages as part of the Zebra Product Release or 
+                Tau HAS MODIFIED the Software, as well as, you are including 
+                the Source Code Packages as part of the Tau Product Release or 
                 Distribution Media, please state:
 
                 "The Source Packages for <package name> can be found at <Full Path Location>
-                in the Zebra Product Media.  You may also acquire the Source 
-                Packages from Zebra using the request methods described in the 
+                in the Tau Product Media.  You may also acquire the Source 
+                Packages from Tau using the request methods described in the 
                 preamble of this Legal Notices Document."
   
   
                 g) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS MODIFIED the Software, as well as, Zebra is
+                Tau HAS MODIFIED the Software, as well as, Tau is
                 providing access via Web Portal, please state:
 
                 "The Source Packages for <package name> are available from the
-                Zebra Internet Portal at <URL Link>.  You may also acquire the 
-                Source Packages from Zebra using the request methods described in the 
+                Tau Internet Portal at <URL Link>.  You may also acquire the 
+                Source Packages from Tau using the request methods described in the 
                 preamble of this Legal Notices Document."
 
 
@@ -235,8 +208,8 @@ Description: 	Brief description of Pacakge.  Typically can cut/paste
                 should be the description that was provided in the
                 PAS Justification Form provided to the OSRB.
 
-                If Zebra has modified the Package, please state:
-                "Zebra has modified the software."
+                If Tau has modified the Package, please state:
+                "Tau has modified the software."
                 
 
 Software Site:  http://www.xxx.com
@@ -247,69 +220,69 @@ Source Code: 	Include Commentary based on Options below:
                 a)  For Packages that do not have Source Distribution Obligations,
                 state: 
 
-    	        " No Source Distribution Obligations.  Zebra will 
+    	        " No Source Distribution Obligations.  Tau will 
                 not provide nor distribute the Source Code for the <package name>
                 Software.  The Source Code may be obtained from the original 
                 Software Site.
 
 
                 b)  For Packages that have Source Code Distribution Obligations, and 
-                Zebra HAS NOT MODIFIED the Software, please state: 
+                Tau HAS NOT MODIFIED the Software, please state: 
  
                 "The Source Packages for <package name> are available from the
-                original Software Site, or may be acquired from Zebra.
-                To obtain the Software from Zebra, please contact 
-                Zebra using the methods described in the preamble of 
+                original Software Site, or may be acquired from Tau.
+                To obtain the Software from Tau, please contact 
+                Tau using the methods described in the preamble of 
                 this Legal Notices Document."
 
   
                 c) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS NOT MODIFIED the Software, as well as, you are including 
-                the Source Code Packages as part of the Zebra Product Release or 
+                Tau HAS NOT MODIFIED the Software, as well as, you are including 
+                the Source Code Packages as part of the Tau Product Release or 
                 Distribution Media, please state:
 
                 "The Source Packages for <package name> are available from the
                 original Software Site, or can be found at <Full Path Location>
-                in the Zebra Product Media.  You may also acquire the 
-                Source Packages from Zebra using the request methods 
+                in the Tau Product Media.  You may also acquire the 
+                Source Packages from Tau using the request methods 
                 described in the preamble of this Legal Notices Document."
 
                 d) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS NOT MODIFIED the Software, as well as, Zebra is
+                Tau HAS NOT MODIFIED the Software, as well as, Tau is
                 providing access via Web Portal, please state:
 
                 "The Source Packages for <package name> are available from the
-                original Software Site, or from the Zebra Internet Portal
+                original Software Site, or from the Tau Internet Portal
                 at <URL Link>.  You may also acquire the Source Packages
-                from Zebra using the request methods described in the preamble of 
+                from Tau using the request methods described in the preamble of 
                 this Legal Notices Document."
 
                 e) For Packages that have Source Code Distribution Obligations, and 
-                Zebra HAS MODIFIED the Software, please state: 
+                Tau HAS MODIFIED the Software, please state: 
  
-                "The Source Packages for <package name> may be acquired from Zebra.
-                To obtain the Software from Zebra, please contact Zebra using 
+                "The Source Packages for <package name> may be acquired from Tau.
+                To obtain the Software from Tau, please contact Tau using 
                 the methods described in the preamble of this Legal Notices Document."
   
 
                 f) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS MODIFIED the Software, as well as, you are including 
-                the Source Code Packages as part of the Zebra Product Release or 
+                Tau HAS MODIFIED the Software, as well as, you are including 
+                the Source Code Packages as part of the Tau Product Release or 
                 Distribution Media, please state:
 
                 "The Source Packages for <package name> can be found at <Full Path Location>
-                in the Zebra Product Media.  You may also acquire the Source 
-                Packages from Zebra using the request methods described in the 
+                in the Tau Product Media.  You may also acquire the Source 
+                Packages from Tau using the request methods described in the 
                 preamble of this Legal Notices Document."
   
   
                 g) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS MODIFIED the Software, as well as, Zebra is
+                Tau HAS MODIFIED the Software, as well as, Tau is
                 providing access via Web Portal, please state:
 
                 "The Source Packages for <package name> are available from the
-                Zebra Internet Portal at <URL Link>.  You may also acquire the 
-                Source Packages from Zebra using the request methods described in the 
+                Tau Internet Portal at <URL Link>.  You may also acquire the 
+                Source Packages from Tau using the request methods described in the 
                 preamble of this Legal Notices Document."
                
 
@@ -343,8 +316,8 @@ Description: 	Brief description of Pacakge.  Typically can cut/paste
                 should be the description that was provided in the
                 PAS Justification Form provided to the OSRB.
 
-                If Zebra has modified the Package, please state:
-                "Zebra has modified the software."
+                If Tau has modified the Package, please state:
+                "Tau has modified the software."
                 
 
 Software Site:  http://www.xxx.com
@@ -355,69 +328,69 @@ Source Code: 	Include Commentary based on Options below:
                 a)  For Packages that do not have Source Distribution Obligations,
                 state: 
 
-    	        " No Source Distribution Obligations.  Zebra will 
+    	        " No Source Distribution Obligations.  Tau will 
                 not provide nor distribute the Source Code for the <package name>
                 Software.  The Source Code may be obtained from the original 
                 Software Site.
 
 
                 b)  For Packages that have Source Code Distribution Obligations, and 
-                Zebra HAS NOT MODIFIED the Software, please state: 
+                Tau HAS NOT MODIFIED the Software, please state: 
  
                 "The Source Packages for <package name> are available from the
-                original Software Site, or may be acquired from Zebra.
-                To obtain the Software from Zebra, please contact 
-                Zebra using the methods described in the preamble of 
+                original Software Site, or may be acquired from Tau.
+                To obtain the Software from Tau, please contact 
+                Tau using the methods described in the preamble of 
                 this Legal Notices Document."
 
   
                 c) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS NOT MODIFIED the Software, as well as, you are including 
-                the Source Code Packages as part of the Zebra Product Release or 
+                Tau HAS NOT MODIFIED the Software, as well as, you are including 
+                the Source Code Packages as part of the Tau Product Release or 
                 Distribution Media, please state:
 
                 "The Source Packages for <package name> are available from the
                 original Software Site, or can be found at <Full Path Location>
-                in the Zebra Product Media.  You may also acquire the 
-                Source Packages from Zebra using the request methods 
+                in the Tau Product Media.  You may also acquire the 
+                Source Packages from Tau using the request methods 
                 described in the preamble of this Legal Notices Document."
 
                 d) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS NOT MODIFIED the Software, as well as, Zebra is
+                Tau HAS NOT MODIFIED the Software, as well as, Tau is
                 providing access via Web Portal, please state:
 
                 "The Source Packages for <package name> are available from the
-                original Software Site, or from the Zebra Internet Portal
+                original Software Site, or from the Tau Internet Portal
                 at <URL Link>.  You may also acquire the Source Packages
-                from Zebra using the request methods described in the preamble of 
+                from Tau using the request methods described in the preamble of 
                 this Legal Notices Document."
 
                 e) For Packages that have Source Code Distribution Obligations, and 
-                Zebra HAS MODIFIED the Software, please state: 
+                Tau HAS MODIFIED the Software, please state: 
  
-                "The Source Packages for <package name> may be acquired from Zebra.
-                To obtain the Software from Zebra, please contact Zebra using 
+                "The Source Packages for <package name> may be acquired from Tau.
+                To obtain the Software from Tau, please contact Tau using 
                 the methods described in the preamble of this Legal Notices Document."
   
 
                 f) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS MODIFIED the Software, as well as, you are including 
-                the Source Code Packages as part of the Zebra Product Release or 
+                Tau HAS MODIFIED the Software, as well as, you are including 
+                the Source Code Packages as part of the Tau Product Release or 
                 Distribution Media, please state:
 
                 "The Source Packages for <package name> can be found at <Full Path Location>
-                in the Zebra Product Media.  You may also acquire the Source 
-                Packages from Zebra using the request methods described in the 
+                in the Tau Product Media.  You may also acquire the Source 
+                Packages from Tau using the request methods described in the 
                 preamble of this Legal Notices Document."
   
   
                 g) For Packages that have Source Code Distribution Obligations, and
-                Zebra HAS MODIFIED the Software, as well as, Zebra is
+                Tau HAS MODIFIED the Software, as well as, Tau is
                 providing access via Web Portal, please state:
 
                 "The Source Packages for <package name> are available from the
-                Zebra Internet Portal at <URL Link>.  You may also acquire the 
-                Source Packages from Zebra using the request methods described in the 
+                Tau Internet Portal at <URL Link>.  You may also acquire the 
+                Source Packages from Tau using the request methods described in the 
                 preamble of this Legal Notices Document."
                
 

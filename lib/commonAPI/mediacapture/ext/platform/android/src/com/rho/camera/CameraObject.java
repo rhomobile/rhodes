@@ -45,56 +45,56 @@ public class CameraObject extends CameraBase implements ICameraObject {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
     void setActualPropertyMap(Map<String, String> props) { mActualPropertyMap = props; }
     Map<String, String> getActualPropertyMap() { return mActualPropertyMap; }
-    
-    
+
+
     private Camera mCamera;
     private int mCameraUsers;
     private Uri fileUri;
     String mCurrentPhotoPath = null;
     public static String userFilePath = null;
     private ContentValues values = null;
-    
+
     int getCameraIndex() {
         return CameraSingletonObject.getCameraIndex(getId());
     }
     @Override
     public void setProperties(Map<String, String> propertyMap, IMethodResult result) {
-		// TODO Auto-generated method stub
-		Map<String, String> temp=getPropertiesMap();
-		temp.putAll(propertyMap);
-		result.set(true);
+        // TODO Auto-generated method stub
+        Map<String, String> temp=getPropertiesMap();
+        temp.putAll(propertyMap);
+        result.set(true);
     }
     @Override
-public void getProperties(List<String> arrayofNames, IMethodResult result) {
-	
-	//super.getProperties(arrayofNames, result);
-	Map<String, Object> props = new HashMap<String, Object>();
-       for (String name: arrayofNames)
-       {
-    	  props.put(name, cameraPropGet(name));
-       }
-       result.set(props);
-       
-}
-    
+    public void getProperties(List<String> arrayofNames, IMethodResult result) {
+
+        //super.getProperties(arrayofNames, result);
+        Map<String, Object> props = new HashMap<String, Object>();
+        for (String name: arrayofNames)
+        {
+            props.put(name, cameraPropGet(name));
+        }
+        result.set(props);
+
+    }
+
     private String cameraPropGet(String name)
     {
-    	String propValue="";
-    	Map<String, String> temp=getPropertiesMap();
-    	if(temp.containsKey(name))
-    	{
-    		
-    		 try{
-    		 	propValue=String.valueOf(temp.get(name));
-    		}
-    		 catch(Exception ex)
-    		 {
-    			
-    		 }
-    	}
-    	return propValue;
+        String propValue="";
+        Map<String, String> temp=getPropertiesMap();
+        if(temp.containsKey(name))
+        {
+
+            try{
+                propValue=String.valueOf(temp.get(name));
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
+        return propValue;
     }
-    
+
     static class CameraSize implements ICameraObject.ISize {
         private Camera.Size mSize;
         CameraSize(Camera.Size size) { mSize = size; }
@@ -103,7 +103,7 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
         @Override public int D2() { return mSize.width * mSize.width + mSize.height * mSize.height; }
         @Override public String toString() { return "" + mSize.width + "X" + mSize.height; }
     }
-    
+
     static class RawSize implements ICameraObject.ISize {
         private int width;
         private int height;
@@ -132,49 +132,49 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
             mPreviewActivity = previewActivity;
         }
         @Override
-        public void onPictureTaken(byte[] data, Camera camera) {        	
+        public void onPictureTaken(byte[] data, Camera camera) {
             Intent intent = new Intent();
             OutputStream stream = null;
             try {
-            	
+
                 final Map<String, String> propertyMap = getActualPropertyMap();
                 if (propertyMap == null) {
                     throw new RuntimeException("Camera property map is undefined");
                 }
-             
+
                 String outputFormat = propertyMap.get("outputFormat");
-                if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){   
-    		  propertyMap.put("deprecated", "false");
-    		  deprecated_take_pic = false;    	
-    	        }
-    	        else
-    		   deprecated_take_pic = true;
+                if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){
+                    propertyMap.put("deprecated", "false");
+                    deprecated_take_pic = false;
+                }
+                else
+                deprecated_take_pic = true;
                 if(propertyMap.containsKey("captureSound")){
                     Runnable music= new Runnable(){
-                		public void run() {
-                			playMusic(propertyMap.get("captureSound"));
-                		}
-                	};
+                        public void run() {
+                            playMusic(propertyMap.get("captureSound"));
+                        }
+                    };
                     ExecutorService exec = Executors.newSingleThreadExecutor();
                     exec.submit(music);
                 }
-                
+
                 String filePath = null;
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");                
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
                 if(!propertyMap.containsKey("fileName")){
-                   filePath = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
-                   userFilePath = filePath;
-         	}
-         	else{
-                   filePath = propertyMap.get("fileName");
-                   userFilePath = filePath;
-				   if(filePath.contains("\\")){
-						intent.putExtra("error", "Invalid file path");
-					}
-         	}
+                    filePath = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
+                    userFilePath = filePath;
+                }
+                else{
+                    filePath = propertyMap.get("fileName");
+                    userFilePath = filePath;
+                    if(filePath.contains("\\")){
+                        intent.putExtra("error", "Invalid file path");
+                    }
+                }
                 Uri resultUri = null;
                 BitmapFactory.Options options=new BitmapFactory.Options();
-		options.inPurgeable = true;
+                options.inPurgeable = true;
                 bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
                 Matrix m = new Matrix();
                 android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
@@ -186,28 +186,31 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                 	}else{
               			m.postRotate(OrientationListnerService.mRotation);
                 	}
-                bitmap = Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
+		if (!Boolean.parseBoolean(getActualPropertyMap().get("useSystemViewfinder"))) {
+                	bitmap = Bitmap.createBitmap(bitmap , 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
+		}
                  if (outputFormat.equalsIgnoreCase("dataUri")) {
                     Logger.T(TAG, "outputFormat: " + outputFormat);   
                 //    filePath = getTemporaryPath(filePath)+ ".jpg";
                     if (Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) 
                     {                        
+
                         ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
                         Logger.T(TAG, "Image size: " + bitmap.getWidth() + "X" + bitmap.getHeight());
                         propertyMap.put("DeviceGallery_Key", "DeviceGallery_Value");
                         String strUri = null;
-						if (!propertyMap.containsKey("fileName")) {
-							strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())), "Camera");
-						}
-							else{
-							strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, new File(propertyMap.get("fileName")).getName(), "Camera");
-						}
-						if (strUri != null) {
-                            resultUri = Uri.parse(strUri);                           
+                        if (!propertyMap.containsKey("fileName")) {
+                            strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())), "Camera");
+                        }
+                        else{
+                            strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, new File(propertyMap.get("fileName")).getName(), "Camera");
+                        }
+                        if (strUri != null) {
+                            resultUri = Uri.parse(strUri);
                         } else {
                             throw new RuntimeException("Failed to save camera image to Gallery");
-                        }                  
-                    } 
+                        }
+                    }
                     else
                     {   
                     	 if(userFilePath.contains("sdcard")){
@@ -232,10 +235,15 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                     					stream = new FileOutputStream(directory +File.separator  + file_name+".jpg");                        
                 	                    resultUri = Uri.fromFile(new File(directory +File.separator  + file_name+".jpg"));                        
                 	                    if(bitmap != null){
-                  	                    	ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
-                  	                    	bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
-                  	                    	byteArray = bytestream.toByteArray();
-                  	                    	stream.write(byteArray);    
+						if (!Boolean.parseBoolean(getActualPropertyMap().get("useSystemViewfinder"))) {
+                  	                    		ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+                  	                    		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
+                  	                    		byteArray = bytestream.toByteArray();
+                  	                    		stream.write(byteArray);    
+						}
+						else {
+							stream.write(data);
+						}
                   		                stream.flush();                        
                   		                stream.close();
                   	                    }
@@ -245,35 +253,48 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
   	                    resultUri = Uri.fromFile(new File(filePath));                         
 	                    byte[] byteArray = null;
   	                    if(bitmap != null){
-  	                    	ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
-  	                    	bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
-  	                    	byteArray = bytestream.toByteArray();
-  	                    	stream.write(byteArray);    
+  	                    	if (!Boolean.parseBoolean(getActualPropertyMap().get("useSystemViewfinder"))) {
+                  	                    		ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+                  	                    		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
+                  	                    		byteArray = bytestream.toByteArray();
+                  	                    		stream.write(byteArray);    
+						}
+						else {
+							stream.write(data);
+						}    
   		                stream.flush();                        
   		                stream.close();
   	                    }
                       }
 	                    //CameraRhoListener.getInstance().copyImgAsUserChoice(filePath);
+
                     }
                     byte[] byteArray = null;
                     stream = new FileOutputStream(filePath);
 	                    if(bitmap != null){
-	                    	ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
-	                    	bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
-	                    	byteArray = bytestream.toByteArray();
-	                    	stream.write(byteArray);    
-		                stream.flush();                        
-		                stream.close();
+	                    	if (!Boolean.parseBoolean(getActualPropertyMap().get("useSystemViewfinder"))) {
+                  	                    		ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+                  	                    		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
+                  	                    		byteArray = bytestream.toByteArray();
+                  	                    		stream.write(byteArray);    
+							stream.flush();                        
+		                			stream.close();
+				}
 	                    }
                     StringBuilder dataBuilder = new StringBuilder();
                     dataBuilder.append("data:image/jpeg;base64,");
-                    dataBuilder.append(Base64.encodeToString(byteArray, false));
+			if (!Boolean.parseBoolean(getActualPropertyMap().get("useSystemViewfinder"))) {
+                    		dataBuilder.append(Base64.encodeToString(byteArray, false));
+			}
+			else {
+				dataBuilder.append(Base64.encodeToString(data, false));
+			}
                     propertyMap.put("captureUri", dataBuilder.toString());
                     propertyMap.put("dataURI", "datauri_value");
                     Logger.T(TAG, dataBuilder.toString());
-                    intent.putExtra("IMAGE_WIDTH", bitmap.getWidth());                    
-                    intent.putExtra("IMAGE_HEIGHT", bitmap.getHeight());                  
-                    mPreviewActivity.setResult(Activity.RESULT_OK, intent);                    
+                    intent.putExtra("IMAGE_WIDTH", bitmap.getWidth());
+                    intent.putExtra("IMAGE_HEIGHT", bitmap.getHeight());
+                    mPreviewActivity.setResult(Activity.RESULT_OK, intent);
                 } else
                 if (outputFormat.equalsIgnoreCase("image")) {
                 //    filePath = getTemporaryPath(filePath)+ ".jpg";
@@ -284,39 +305,44 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                         Logger.T(TAG, "Image size: " + bitmap.getWidth() + "X" + bitmap.getHeight());
                         propertyMap.put("DeviceGallery_Key", "DeviceGallery_Value");
                         String strUri = null;
-			if (!propertyMap.containsKey("fileName")) 
-				strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())), "Camera");
-			else
-				strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, new File(propertyMap.get("fileName")).getName(), "Camera");
-			if (strUri != null) {
-                            resultUri = Uri.parse(strUri);                           
+                        if (!propertyMap.containsKey("fileName"))
+                        strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())), "Camera");
+                        else
+                        strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, new File(propertyMap.get("fileName")).getName(), "Camera");
+                        if (strUri != null) {
+                            resultUri = Uri.parse(strUri);
                         } else {
                             throw new RuntimeException("Failed to save camera image to Gallery");
-                        }                  
-                    } 
+                        }
+                    }
                     else
                     {                    	
                         stream = new FileOutputStream(filePath);                        
                         resultUri = Uri.fromFile(new File(filePath));                        
                         byte[] byteArray = null;
   	                    if(bitmap != null){
-  	                    	ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
-  	                    	bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
-  	                    	byteArray = bytestream.toByteArray();
-  	                    	stream.write(byteArray);                       
+  	                    	if (!Boolean.parseBoolean(getActualPropertyMap().get("useSystemViewfinder"))) {
+                  	                    		ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+                  	                    		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytestream);
+                  	                    		byteArray = bytestream.toByteArray();
+                  	                    		stream.write(byteArray);    
+						}
+						else {
+							stream.write(data);
+						}                      
   	                        stream.flush();                        
   	                        stream.close();
   	                 }                       
                     }
-                       
+
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, resultUri);
-                    intent.putExtra("IMAGE_WIDTH", bitmap.getWidth());                    
-                    intent.putExtra("IMAGE_HEIGHT", bitmap.getHeight());                   
-                    mPreviewActivity.setResult(Activity.RESULT_OK, intent);        
-                }              
-             
+                    intent.putExtra("IMAGE_WIDTH", bitmap.getWidth());
+                    intent.putExtra("IMAGE_HEIGHT", bitmap.getHeight());
+                    mPreviewActivity.setResult(Activity.RESULT_OK, intent);
+                }
+
             } catch (Throwable e) {
-                Logger.E(TAG, e);                
+                Logger.E(TAG, e);
                 if (stream != null) {
                     try {
                         stream.close();
@@ -324,64 +350,64 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                         //Do nothing
                     }
                 }
-                intent.putExtra("error", e.getMessage());              
-                mPreviewActivity.setResult(Activity.RESULT_CANCELED, intent);                
+                intent.putExtra("error", e.getMessage());
+                mPreviewActivity.setResult(Activity.RESULT_CANCELED, intent);
             }
-        if(bitmap != null){
-            bitmap.recycle();
-            bitmap = null;
-	    System.gc();
-	}
+            if(bitmap != null){
+                bitmap.recycle();
+                bitmap = null;
+                System.gc();
+            }
             mPreviewActivity.finish();
-        }	
-	private void playMusic(String musicPath) {
-			 mp = new MediaPlayer();
-			 try {
-			        mp.setDataSource(RhoFileApi.openFd(musicPath));
-			    } catch (IllegalArgumentException e) {
-			        // TODO Auto-generated catch block
-			        e.printStackTrace();
-			    } catch (IllegalStateException e) {
-			        // TODO Auto-generated catch block
-			        e.printStackTrace();
-			    } catch (IOException e) {
-			        // TODO Auto-generated catch block
-			        e.printStackTrace();
-			    }
-			    try {
-			        mp.prepare();
-			    } catch (IllegalStateException e) {
-			        // TODO Auto-generated catch block
-			        e.printStackTrace();
-			    } catch (IOException e) {
-			        // TODO Auto-generated catch block
-			        e.printStackTrace();
-			    }
-			    mp.start();
-			    try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			    mp.stop();
-			    clearMediaPlayerResources();
-		}
+        }
+        private void playMusic(String musicPath) {
+            mp = new MediaPlayer();
+            try {
+                mp.setDataSource(RhoFileApi.openFd(musicPath));
+            } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalStateException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            try {
+                mp.prepare();
+            } catch (IllegalStateException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            mp.start();
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            mp.stop();
+            clearMediaPlayerResources();
+        }
 
-	private void clearMediaPlayerResources() {
-			// TODO Auto-generated method stub
-			if(mp != null){
-				mp.release();
-				mp = null;
-	    	}
-		}		
- }
-	
-	
+        private void clearMediaPlayerResources() {
+            // TODO Auto-generated method stub
+            if(mp != null){
+                mp.release();
+                mp = null;
+            }
+        }
+    }
+
+
 
     protected Camera getCamera() { return mCamera; }
     protected void setCamera(Camera camera) { mCamera = camera; }
-    
+
     synchronized protected void openCamera() {
         if (mCameraUsers == 0) {
             setCamera(android.hardware.Camera.open());
@@ -398,21 +424,26 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
     CameraObject(String id) {
         super(id);
 
-	getPropertiesMap().put("ChoosePicture_Key", "");
+        getPropertiesMap().put("ChoosePicture_Key", "");
         getPropertiesMap().put("cameraType", "back");
         getPropertiesMap().put("compressionFormat", "jpg");
         getPropertiesMap().put("outputFormat", "image");
         getPropertiesMap().put("colorModel", "rgb");
-	getPropertiesMap().put("useSystemViewfinder", "false");
-	getPropertiesMap().put("saveToDeviceGallery", "false");
+        getPropertiesMap().put("useSystemViewfinder", "false");
+        getPropertiesMap().put("useRealBitmapResize", "false");
+        getPropertiesMap().put("saveToDeviceGallery", "false");
         openCamera();
         Camera.Parameters params = getCamera().getParameters();
         closeCamera();
-        
+
         getPropertiesMap().put("maxWidth", String.valueOf(params.getPictureSize().width));
         getPropertiesMap().put("maxHeight", String.valueOf(params.getPictureSize().height));
-        getPropertiesMap().put("desiredWidth", "640");
-	getPropertiesMap().put("desiredHeight", "480");
+
+        // default desired size not specified in documentation and XML !!!
+        //getPropertiesMap().put("desiredWidth", "640");
+        //getPropertiesMap().put("desiredHeight", "480");
+        getPropertiesMap().put("desiredWidth", "0");
+        getPropertiesMap().put("desiredHeight", "0");
     }
 
     @Override
@@ -439,18 +470,19 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
                 Logger.E(TAG, e);
                 return;
             }
-        } 
+        }
     }
 
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
-	@Override
+    @Override
     public ISize setPreviewSize(int width, int height) {
     	Camera camera = getCamera();
         Camera.Parameters parameters = camera.getParameters();       
         List<android.hardware.Camera.Size> sizes = camera.getParameters().getSupportedPictureSizes();        
         android.hardware.Camera.Size maxSize=sizes.get(0);       
-        if(getActualPropertyMap().containsKey("desiredWidth") || getActualPropertyMap().containsKey("desiredHeight")){
+        if((getActualPropertyMap().containsKey("desiredWidth") || getActualPropertyMap().containsKey("desiredHeight")) &&
+        (!Boolean.parseBoolean(getActualPropertyMap().get("useRealBitmapResize")))){
         	int desired_width = Integer.parseInt(getActualPropertyMap().get("desiredWidth"));
             int desired_height = Integer.parseInt(getActualPropertyMap().get("desiredHeight"));               
         	if(desired_width > 0 && desired_width <= maxSize.width && desired_height > 0 && desired_height <= maxSize.height){        	
@@ -475,19 +507,19 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
         	}
         }
         else{
-        Camera.Size previewSize = getOptimalPreviewSize(parameters.getSupportedPictureSizes(), width, height);
-        Logger.T(TAG, "Selected size: " + previewSize.width + "x" + previewSize.height);        
-        parameters.setPreviewSize(previewSize.width, previewSize.height);
-       }
+            Camera.Size previewSize = getOptimalPreviewSize(parameters.getSupportedPictureSizes(), width, height);
+            Logger.T(TAG, "Selected size: " + previewSize.width + "x" + previewSize.height);
+            parameters.setPreviewSize(previewSize.width, previewSize.height);
+        }
         camera.stopPreview();
         try{
-           camera.setParameters(parameters);
+            camera.setParameters(parameters);
         }
-        catch(RuntimeException e){        	
-        	e.printStackTrace();
+        catch(RuntimeException e){
+            e.printStackTrace();
         }
         camera.startPreview();
-        
+
         return new CameraSize(camera.getParameters().getPreviewSize());
     }
 
@@ -508,9 +540,9 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
 
             double scale = (double) size.width / w;
             double ratio = (double) size.width / size.height;
-            
+
             Logger.T(TAG, "Target ratio: " + targetRatio + ", ratio: " + ratio + ", scale: " + scale);
-            
+
             if (size.width > w || size.height > h) continue;
             if (Math.abs(1 - scale) > SCALE_TOLERANCE) continue;
             if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
@@ -573,46 +605,50 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
 
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
+
+        CameraSingletonObject.deprecated_choose_pic = false;
+        deprecated_take_pic = false;
+
         Logger.T(TAG, "takePicture");
         try {
             Map<String, String> actualPropertyMap = new HashMap<String, String>();
             actualPropertyMap.putAll(getPropertiesMap());
             actualPropertyMap.putAll(propertyMap);
             setActualPropertyMap(actualPropertyMap);
-            
+
             String outputFormat = actualPropertyMap.get("outputFormat");
             String filePath = null;
             if(!actualPropertyMap.containsKey("fileName")){
-            	filePath = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())) + ".jpg";
-     	   }
-     	   else{
-     		filePath = actualPropertyMap.get("fileName");
-     	   }
+                filePath = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())) + ".jpg";
+            }
+            else{
+                filePath = actualPropertyMap.get("fileName");
+            }
             if (outputFormat.equalsIgnoreCase("image")) {
-            	filePath = actualPropertyMap.get("fileName") + ".jpg";
-                Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);               
+                filePath = actualPropertyMap.get("fileName") + ".jpg";
+                Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);
             } else
             if (outputFormat.equalsIgnoreCase("dataUri")) {
-                Logger.T(TAG, "outputFormat: " + outputFormat);                
+                Logger.T(TAG, "outputFormat: " + outputFormat);
             } else {
                 throw new RuntimeException("Unknown 'outputFormat' value: " + outputFormat);
             }
-            
+
             Intent intent = null;
             if (Boolean.parseBoolean(actualPropertyMap.get("useSystemViewfinder"))) {
                 if (outputFormat.equalsIgnoreCase("image")) {
                     values = new ContentValues();
-            		fileUri = RhodesActivity.getContext().getContentResolver().insert(
-            				MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                	intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 
-                	actualPropertyMap.put("captureUri", fileUri.toString());
-                	propertyMap.put("dataURI", "");
-                	// intent is null with MediaStore.EXTRA_OUTPUT so adding fileuri to map and get it with same key
-                	// if instead of MediaStore.EXTRA_OUTPUT any other key is used then the bitmap is null though the file is getting created
-            		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+                    fileUri = RhodesActivity.getContext().getContentResolver().insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                    intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    actualPropertyMap.put("captureUri", fileUri.toString());
+                    propertyMap.put("dataURI", "");
+                    // intent is null with MediaStore.EXTRA_OUTPUT so adding fileuri to map and get it with same key
+                    // if instead of MediaStore.EXTRA_OUTPUT any other key is used then the bitmap is null though the file is getting created
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                 } else
                 if (outputFormat.equalsIgnoreCase("dataUri")) {
-                    
+
                 }
             } else {
                 intent = new Intent(ContextFactory.getUiContext(), CameraActivity.class);
@@ -620,7 +656,7 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
             }
             ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
             ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setActualPropertyMap(actualPropertyMap);
-            
+
             RhodesActivity.safeGetInstance().startActivityForResult(intent, RhoExtManager.getInstance().getActivityResultNextRequestCode(CameraRhoListener.getInstance()));
         } catch (RuntimeException e) {
             Logger.E(TAG, e);
@@ -643,13 +679,13 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
             return null;
         }
     }
-    
+
     @Override
     public void getSupportedSizeList(IMethodResult result) {
     }
 
     @SuppressLint("NewApi")
-	@Override
+    @Override
     public void doTakePicture(Activity previewActivity, int rotation) {
         Logger.T(TAG, "doTakePicture: rotation: " + rotation);
         openCamera();
@@ -659,64 +695,64 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
         getCamera().takePicture(null, null, new TakePictureCallback(previewActivity));
         closeCamera();
     }
-    
+
     public void finalize() {
         if (getCamera() != null) {
             getCamera().release();
         }
     }
-	@Override
-	public void showPreview(Map<String, String> propertyMap,
-			IMethodResult result) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void hidePreview(IMethodResult result) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void capture(IMethodResult result) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void setDisplayOrientation(int rotate) {
-	    Camera camera = getCamera();
-	    camera.setDisplayOrientation(rotate);
-	}
-	
-	
-	/**
-	 * Checks the device if it has
-	 * auto focus feature and sets auto focus
-	 * @param Preview Activity
-	 * 
-	 */
-	
-	@Override
-	public void setFocus(final Activity preview) {
-		openCamera();
-		 if (hasAutoFocus()) {
-	            getCamera().autoFocus(new Camera.AutoFocusCallback() {
-	                public void onAutoFocus(boolean success, Camera camera) {
-	                }
-	            });
-	            
-	        } 
-		 closeCamera();
-	}
-	
-	private boolean hasAutoFocus() {
+    @Override
+    public void showPreview(Map<String, String> propertyMap,
+    IMethodResult result) {
+        // TODO Auto-generated method stub
+
+    }
+    @Override
+    public void hidePreview(IMethodResult result) {
+        // TODO Auto-generated method stub
+
+    }
+    @Override
+    public void capture(IMethodResult result) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setDisplayOrientation(int rotate) {
+        Camera camera = getCamera();
+        camera.setDisplayOrientation(rotate);
+    }
+
+
+    /**
+    * Checks the device if it has
+    * auto focus feature and sets auto focus
+    * @param Preview Activity
+    *
+    */
+
+    @Override
+    public void setFocus(final Activity preview) {
+        openCamera();
+        if (hasAutoFocus()) {
+            getCamera().autoFocus(new Camera.AutoFocusCallback() {
+                public void onAutoFocus(boolean success, Camera camera) {
+                }
+            });
+
+        }
+        closeCamera();
+    }
+
+    private boolean hasAutoFocus() {
         String focusMode = getCamera().getParameters().getFocusMode();
         boolean supported = false;
         if (focusMode != null) {
             supported = (focusMode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO)) || (focusMode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_MACRO));
         }
         return supported;
-        
+
     }
-	
+
 }

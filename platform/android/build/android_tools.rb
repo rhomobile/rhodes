@@ -625,7 +625,7 @@ def read_manifest_package(path)
 end
 module_function :read_manifest_package
 
-end
+end #module AndroidTools
 
 def start_emulator(cmd)
   # sometimes emulator fails to add itself to adb device list

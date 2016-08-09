@@ -6,7 +6,6 @@ import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.util.FloatMath;
 
 public class CircleGesture extends ElementsGesture
 {
@@ -65,10 +64,10 @@ public class CircleGesture extends ElementsGesture
 				tan_squared *= tan_squared;
 	
 				dx_squared = ((radius * radius) / (1 + tan_squared));
-				dx =  FloatMath.sqrt (dx_squared);
+				dx =  (float)Math.sqrt ((double)dx_squared);
 	
 				dy_squared = dx_squared * tan_squared;
-				dy = FloatMath.sqrt (dy_squared);
+				dy = (float)Math.sqrt ((double)dy_squared);
 	
 				switch (getQuadrant(angle))
 				{

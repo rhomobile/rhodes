@@ -5,7 +5,7 @@ sdk: ../../
 #applog: rholog.txt
 version: 1.0.0
 vendor: rhomobile
-sdkversion: 3.4
+sdkversion: 5.5
 wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
 iphone: 
   sdk: iphonesimulator8.2
@@ -22,19 +22,20 @@ bb:
       
 capabilities:
   - pim
-  - push
+#  - push
   - calendar
   - gps
    
-extensions: ["json", "rhoxml", "rhospec", "crypt", "fileutils"]  
+extensions: ["json", "rhoxml", "rhospec", "crypt", "fileutils", "gmaps" ]  
 
 wp:
   productid: 'fd55c4d0-51fa-012e-7844-6caec51bd50e'
 
 android:
-  apikey: "0tLch9tZSX1G7PQRWwmqvINECUGtJ8ReArpPJxw"
+  apikey: "AIzaSyBzz8FdVvrXZ2_zutADSb82DXj3zi0sppA"
   mapping: enabled
   capabilities:
     - network_state
   extensions: ["barcode"]
-  version: 2.3.3
+  version: 4.4.2
+

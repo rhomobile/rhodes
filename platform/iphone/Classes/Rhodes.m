@@ -811,12 +811,24 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 {
     pushReceiver = receiver;
 
+    
+//#ifdef __IPHONE_8_0
+//    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
+//        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+//        [[UIApplication sharedApplication] registerForRemoteNotifications];    }
+//    else {
+//        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
+//        UIRemoteNotificationType nt = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
+//        NSLog(@"Enabled notification types: %i", (int)nt);
+//    }
+//#else
 //    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
 //     (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
-//    
 //    UIRemoteNotificationType nt = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
 //    NSLog(@"Enabled notification types: %i", (int)nt);
-    [self registerForRemoteNotification];
+//#endif
+    
+   [self registerForRemoteNotification];
 
 }
 
@@ -1012,8 +1024,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     {
 #ifdef APP_BUILD_CAPABILITY_PUSH
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-            UIRemoteNotificationType nt = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-            NSLog(@"Enabled notification types: %i", (int)nt);
+        UIRemoteNotificationType nt = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
+        NSLog(@"Enabled notification types: %i", (int)nt);
 #else
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge)];
 #endif
@@ -1139,6 +1151,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
+    NSLog(@"PUSH My token is: %@", deviceToken);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushRegistrationSucceed:deviceToken];
     }
@@ -1146,6 +1159,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
+    NSLog(@"PUSH Failed to get token, error: %@", error);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushRegistrationFailed:error];
     }
@@ -1153,6 +1167,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
+    NSLog(@"PUSH Received notification: %@", userInfo);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushMessageReceived:userInfo];
     }

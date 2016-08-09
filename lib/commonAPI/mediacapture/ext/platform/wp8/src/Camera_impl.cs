@@ -109,7 +109,7 @@ namespace rho
             /// <param name="native"></param>
             public override void setNativeImpl(string strID, long native)
             {
-               
+
                 try
                 {
                     CRhoRuntime.getInstance().logEvent(" Camera class--> setNativeImpl" + strID);
@@ -118,10 +118,10 @@ namespace rho
                 }
                 catch (Exception ex)
                 {
-                    
-                  
+
+
                 }
-            
+
             }
             /// <summary>
             /// Set Basic Camera style like type of camera.
@@ -129,7 +129,7 @@ namespace rho
             /// <param name="strId"> Front or Back camera</param>
             public void InitializeCameraProperties(string strId)
             {
-              
+
                     double WidthofScreen = 0;
                     double HeightofScreen = 0;
 
@@ -214,7 +214,7 @@ namespace rho
                             Rho_Flash_Types.Add(FLASH_RED_EYE, 4);
                             Rho_FlashMode = (FlashMode)(Rho_Flash_Types[FLASH_AUTO]);
                             Rho_Flashmodes.Add("flash_mode", FLASH_AUTO);
-                           
+
                             LayoutGrid = MainPage.LayoutGrid();
 
                         }
@@ -282,8 +282,8 @@ namespace rho
 
 
 
-            
-              
+
+
             }
 
 
@@ -295,9 +295,9 @@ namespace rho
             IMethodResult StoregetCameratypeResult = null;
             public override void getCameraType(IMethodResult oResult)
             {
-              
-                           
-                           
+
+
+
                             CRhoRuntime.getInstance().logEvent("Camera class-> getCameraType");
                             using (PhotoCamera TempCamera = new PhotoCamera((CameraType)Rho_Paramenters["camera_type"]))
                             {
@@ -309,9 +309,9 @@ namespace rho
                                 {
                                     string strmessage = ex.Message;
                                 }
-                               
+
                             }
-                  
+
             }
 
             /// <summary>
@@ -320,7 +320,7 @@ namespace rho
             /// <param name="oResult"></param>
             public override void getMaxWidth(IMethodResult oResult)
             {
-               
+
                             CRhoRuntime.getInstance().logEvent("Camera class--> getMaxWidth");
                             try
                             {
@@ -331,7 +331,7 @@ namespace rho
                             {
                                 CRhoRuntime.getInstance().logEvent("Camera class-> getMaxWidth" + ex.Message);
                             }
-                       
+
 
 
             }
@@ -342,7 +342,7 @@ namespace rho
 
             public override void getMaxHeight(IMethodResult oResult)
             {
-               
+
                             CRhoRuntime.getInstance().logEvent("Camera class--> getMaxHeight");
                             try
                             {
@@ -353,7 +353,7 @@ namespace rho
                             {
                                 CRhoRuntime.getInstance().logEvent("Camera class->getMaxHeight" + ex.Message);
                             }
-                       
+
 
 
             }
@@ -364,7 +364,7 @@ namespace rho
             /// <param name="oResult"></param>
             public override void getSupportedSizeList(IMethodResult oResult)
             {
-               
+
                             CRhoRuntime.getInstance().logEvent("Camera class--> Entered getSupportedSizeList");
                             using (PhotoCamera TempCamera = new PhotoCamera((CameraType)Rho_Paramenters["camera_type"]))
                             {
@@ -393,7 +393,7 @@ namespace rho
 
                             }
                             CRhoRuntime.getInstance().logEvent("Camera class--> End getSupportedSizeList");
-                       
+
             }
 
             /// <summary>
@@ -403,10 +403,10 @@ namespace rho
 
             public override void getDesiredWidth(IMethodResult oResult)
             {
-               
+
                             CRhoRuntime.getInstance().logEvent("Camera class--> getDesiredWidth");
                             oResult.set(Rho_Paramenters["desired_width"].ToString());
-                        
+
             }
 
             /// <summary>
@@ -416,7 +416,7 @@ namespace rho
             /// <param name="oResult"></param>
             public override void setDesiredWidth(int desiredWidth, IMethodResult oResult)
             {
-               
+
                             try
                             {
                                 CRhoRuntime.getInstance().logEvent("Camera class--> setDesiredWidth " + desiredWidth);
@@ -427,7 +427,7 @@ namespace rho
                             {
                                 CRhoRuntime.getInstance().logEvent("Camera class-->setDesiredWidth--> Exception" + ex.ToString());
                             }
-                       
+
             }
             /// <summary>
             /// Get the setted Resolution Height of the Camera Type (Back/Front).
@@ -435,10 +435,10 @@ namespace rho
             /// <param name="oResult"></param>
             public override void getDesiredHeight(IMethodResult oResult)
             {
-                
+
                             CRhoRuntime.getInstance().logEvent("Camera class--> getDesiredHeight");
                             oResult.set(Rho_Paramenters["desired_height"].ToString());
-                        
+
             }
             /// <summary>
             /// Sets the  Height from the avaialble Resolution,if not available then sets to the nearest available Resolution.
@@ -447,7 +447,7 @@ namespace rho
             /// <param name="oResult"></param>
             public override void setDesiredHeight(int desiredHeight, IMethodResult oResult)
             {
-               
+
                                try
                                {
                                    CRhoRuntime.getInstance().logEvent("Camera class--> setDesiredHeight" + desiredHeight);
@@ -458,7 +458,7 @@ namespace rho
                                {
                                    CRhoRuntime.getInstance().logEvent("Camera class-->setDesiredHeight--> Exception" + ex.ToString());
                                }
-                          
+
             }
 
             /// <summary>
@@ -467,10 +467,10 @@ namespace rho
             /// <param name="oResult"></param>
             public override void getFileName(IMethodResult oResult)
             {
-               
+
                             CRhoRuntime.getInstance().logEvent("Camera class--> getFileName" + Rho_StringParameters["filename"]);
                             oResult.set(Rho_StringParameters["filename"]);
-                       
+
             }
 
             /// <summary>
@@ -510,7 +510,7 @@ namespace rho
             /// <param name="oResult"></param>
             public override void setCompressionFormat(string compressionFormat, IMethodResult oResult)
             {
-                //AS WP8 does not support any other format apart from jpeg, need to check in 8.1 
+                //AS WP8 does not support any other format apart from jpeg, need to check in 8.1
                 // Rho_StringParameters["ImageFormat"] = compressionFormat;
             }
             /// <summary>
@@ -529,7 +529,7 @@ namespace rho
             /// <param name="oResult"></param>
             public override void setOutputFormat(string outputFormat, IMethodResult oResult)
             {
-               
+
                             CRhoRuntime.getInstance().logEvent("Camera class->setOutputFormat type");
 
                             try
@@ -589,7 +589,7 @@ namespace rho
             /// <param name="oResult"></param>
             public override void getFlashMode(IMethodResult oResult)
             {
-               
+
                             string FlashModeType = FlashMode.Auto.ToString();
                             try
                             {
@@ -606,7 +606,7 @@ namespace rho
                                 CRhoRuntime.getInstance().logEvent("Camera class->invalid getFlashMode " + ex.ToString());
                             }
                             oResult.set(FlashModeType);
-                       
+
             }
 
             /// <summary>
@@ -616,7 +616,7 @@ namespace rho
             /// <param name="oResult"></param>
             public override void setFlashMode(string flashMode, IMethodResult oResult)
             {
-               
+
                             CRhoRuntime.getInstance().logEvent("Camera class--> setFlashMode");
                             try
                             {
@@ -629,7 +629,7 @@ namespace rho
                                 Rho_FlashMode = (FlashMode)(Rho_Flash_Types[FLASH_AUTO]);
                                 CRhoRuntime.getInstance().logEvent("Camera class->invalid setFlashMode " + ex.ToString());
                             }
-                        
+
             }
 
             /// <summary>
@@ -752,6 +752,26 @@ namespace rho
             {
                 // implement this method in C# here
             }
+
+            /// <summary>
+            /// Not supported in WP8.
+            /// </summary>
+            /// <param name="oResult"></param>
+            public override void getUseRealBitmapResize(IMethodResult oResult)
+            {
+                // implement this method in C# here
+            }
+
+            /// <summary>
+            /// Not supported in WP8.
+            /// </summary>
+            /// <param name="useSystemViewfinder"></param>
+            /// <param name="oResult"></param>
+            public override void setUseRealBitmapResize(bool useSystemViewfinder, IMethodResult oResult)
+            {
+                // implement this method in C# here
+            }
+
 
             /// <summary>
             /// Not supported in WP8.
@@ -1266,8 +1286,8 @@ namespace rho
 
                     }
                 }
-               
-                
+
+
                 StorageFile storageFile = await localFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
                 Task<Stream> outputStreamTask = storageFile.OpenStreamForWriteAsync();
                 Stream outputStream = outputStreamTask.Result;
@@ -1511,7 +1531,7 @@ namespace rho
 
                     //Create a desired Camera Object.
                     Rho_StillCamera = new Microsoft.Devices.PhotoCamera((CameraType)Rho_Camera_selected);
-                    //Create a Video Brush for painting in Canvas.  
+                    //Create a Video Brush for painting in Canvas.
                     Rho_PhotoCameraBrush = new VideoBrush();
                     //Create a Camera Rotaion Object.
                     Rho_Camera_Rotation = new CompositeTransform();
@@ -1534,7 +1554,7 @@ namespace rho
                     SetCameraRotation(Rho_MainPage.Orientation);
                     //Set Desired camera as a child for Camera Brush.
                     Rho_PhotoCameraBrush.SetSource(Rho_StillCamera);
-                    //Add Camera Brush as background to the Canvas.            
+                    //Add Camera Brush as background to the Canvas.
                     Rho_PhotoCameraCanvas.Background = Rho_PhotoCameraBrush;
 
                     //Add canvas to the Main screen object.
@@ -1710,7 +1730,7 @@ namespace rho
             /// <param name="e"></param>
             void photoChooserTask_Completed(object sender, PhotoResult e)
             {
-                
+
                        CRhoRuntime.getInstance().logEvent("Camera class-->photoChooserTask_Completed");
                        try
                        {
@@ -1798,7 +1818,7 @@ namespace rho
                            m_StorechoosePictureResult.set(m_choosePicture_output);
                        }
 
-                  
+
             }
             /// <summary>
             /// Stores file in its own virtual drive rho\apps\app
@@ -1875,7 +1895,7 @@ namespace rho
                     }
                 }
 
-                
+
                 StorageFile storageFile = await localFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
                 Task<Stream> outputStreamTask = storageFile.OpenStreamForWriteAsync();
                 Stream outputStream = outputStreamTask.Result;
@@ -1926,7 +1946,7 @@ namespace rho
                     return storecamera;
                 }
             }
-           
+
         }
         #endregion
     }

@@ -5,7 +5,7 @@ Detailed information on unsupported features, known issues or specific notes rel
 
 ##Notes
 
-- **Usage the RMS OSS release is completely free of charge**. All fees and royalties have been dropped from the [RMS open source licensing agreement](https://github.com/rhomobile/rhodes/blob/master/LICENSE).
+- **Usage of RMS OSS release is completely free of charge**. All fees and royalties have been dropped from the [RMS open source licensing agreement](https://github.com/rhomobile/rhodes/blob/master/LICENSE).
 - OSS users will **not have access cloud build** or other features of rhomobile.com. 
 - Users of RMS 5.4 and earlier versions will continue to have access to [rhomobile.com](http://www.rhomobile.com). 
 - **[Zebra's RhoMobile documentation site](http://docs.rhomobile.com/en/5.4/guide/welcome)** will remain available for [API reference](http://docs.rhomobile.com/en/5.4/guide/apisummary). 
@@ -222,10 +222,10 @@ Support for **5.X KeyState API** has been dropped. Developers must use the **Rho
 - On Android, the APD 'SendString' command is not available. 
 - The Signal icon available in 2.2 will no longer function on CE devices. Switch to the Signal API introduced in 4.0 for CE support.
 - The Destination parameter in 2.2 Signature is not working on WM/CE. Use the Network API to upload any files to a remote destination.
-- If **NOT** using use the Barcode API 4.0, applications using the Scanner API should not rely on the following properties: 
+- Applications using the 2.2 Scanner API should not rely on the following properties (Use 4.0 Barcode API to resolve this issue): 
 	- ```sameSymbolTimeout```
 	- ```differentSymbolTimeout```
 	- ```connectionIdleTimeout```
 	- ```enableTimeout```
 
-- Depending on the device, the RawSensors API available in 2.2 may no longer work in 4.0. Use to Sensor API 4.0 instead.
+- Depending on the device, the RawSensors API available in 2.2 may no longer work in 4.0. It is recommended to use Sensor API 4.0 instead.

@@ -273,10 +273,13 @@ platform/osx/bin/rubylib/*
 platform/osx/bin/sqlite3/*
 platform/osx/bin/syncengine/*
 platform/osx/bin/RhoSimulator/generated_files/*
-platform/osx/bin/RhoSimulator/RhoSimulator.app
 platform/osx/bin/RhoSimulator/tmp/*
 platform/build/*.build/*
 
 .qmake.stash
 rendered
 spec/phone_spec/app/Data/big_test.json
+
+res/build-tools/apache-maven-3.3.9/m2/**/_remote.repositories
+res/build-tools/apache-maven-3.3.9/m2/**/*.lastUpdated
+

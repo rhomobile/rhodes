@@ -129,9 +129,18 @@
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
     	<string>application tracks your position</string>
-	<key>NSAppTransportSecurity</key>  
-     <dict>  
-          <key>NSAllowsArbitraryLoads</key><true/>  
+	<key>NSAppTransportSecurity</key>
+     <dict>
+          <key>NSAllowsArbitraryLoads</key>
+		  <true/>
+		  <key>NSAllowsArbitraryLoadsInWebContent</key>
+    	  <true/>
      </dict>
+     <key>UIRequiresFullScreen</key>
+     <true/>
+     <key>UIRequiredDeviceCapabilities</key>
+     <array>
+          <string>gamekit</string>
+     </array>
 </dict>
 </plist>

@@ -110,7 +110,7 @@
 #define HAVE_SYS_TIME_H 1
 #define HAVE_SYS_TIMES_H 1
 #define HAVE_SYS_PARAM_H 1
-#define HAVE_PWD_H 1
+//#define HAVE_PWD_H 1
 #define HAVE_GRP_H 1
 #define HAVE_UTIME_H 1
 #define HAVE_SYS_RESOURCE_H 1
@@ -210,7 +210,7 @@
 #define HAVE_SETEGID 1
 #define HAVE_SETREGID 1
 #define HAVE_SETRESGID 1
-#define HAVE_ISSETUGID 1
+//#define HAVE_ISSETUGID 1
 #define HAVE_PAUSE 1
 #define HAVE_LCHOWN 1
 #define HAVE_GETPGRP 1
@@ -248,7 +248,7 @@
 #define HAVE_PREAD 1
 #define HAVE_SENDFILE 1
 #define HAVE_SHUTDOWN 1
-//#define HAVE_SIGALTSTACK 1
+#define HAVE_SIGALTSTACK 1
 #define RUBY_SETJMP(env) _setjmp(env)
 #define RUBY_LONGJMP(env,val) _longjmp(env,val)
 #define RUBY_JMP_BUF jmp_buf

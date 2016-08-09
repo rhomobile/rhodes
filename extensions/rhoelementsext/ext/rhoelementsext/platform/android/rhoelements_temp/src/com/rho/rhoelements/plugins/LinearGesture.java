@@ -9,7 +9,6 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.util.FloatMath;
 import android.view.Display;
 
 public class LinearGesture extends ElementsGesture
@@ -61,13 +60,13 @@ public class LinearGesture extends ElementsGesture
 			perp_gradient = -(1 / line_gradient);
 
 			// Get offsets to perp. points
-			y_offset = FloatMath.sqrt((tolerance * tolerance * perp_gradient * perp_gradient) / ((perp_gradient * perp_gradient) + 1));
+			y_offset = (float)Math.sqrt( (double)( (tolerance * tolerance * perp_gradient * perp_gradient) / ((perp_gradient * perp_gradient) + 1) ) );
 			x_offset = (y_offset / perp_gradient);
 		}
 
 		// Get length of gesture line, calculate number of segments
-		line_length = FloatMath.sqrt((float) ((mEndPoint.x - mStartPoint.x) * (mEndPoint.x - mStartPoint.x) + (mEndPoint.y - mStartPoint.y) * (mEndPoint.y - mStartPoint.y)));
-		int segments = (int)FloatMath.ceil(line_length / (float)region_width);
+		line_length = (float)Math.sqrt((double) ((mEndPoint.x - mStartPoint.x) * (mEndPoint.x - mStartPoint.x) + (mEndPoint.y - mStartPoint.y) * (mEndPoint.y - mStartPoint.y)));
+		int segments = (int)Math.ceil(line_length / (float)region_width);
 
 		// Get x, y values to divide line into segments
 		float x_region_separation = (float)(mEndPoint.x - mStartPoint.x) / (float)(segments - 1);
@@ -475,13 +474,13 @@ public class LinearGesture extends ElementsGesture
 
 		for (PointF p : points)
 		{
-			float error_distance = Math.abs((least_squares_gradient * p.x) - p.y + least_squares_intercept) /
-				FloatMath.sqrt((least_squares_gradient * least_squares_gradient) + 1);
+			float error_distance = (float)( Math.abs((least_squares_gradient * p.x) - p.y + least_squares_intercept) /
+				Math.sqrt((least_squares_gradient * least_squares_gradient) + 1) );
 
 			total_error += error_distance  * error_distance;
 		}
 
-		float deviation = FloatMath.sqrt(total_error / points.size());
+		float deviation = (float)Math.sqrt(total_error / points.size());
 
 		float skew_angle = 0;
 		float path_gradient = 0;

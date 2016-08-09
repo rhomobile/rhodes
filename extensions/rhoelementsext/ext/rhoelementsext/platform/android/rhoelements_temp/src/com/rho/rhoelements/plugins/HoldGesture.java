@@ -10,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.Paint.Style;
 import android.os.Handler;
-import android.util.FloatMath;
 import android.view.Display;
 
 public class HoldGesture extends ElementsGesture
@@ -188,7 +187,7 @@ public class HoldGesture extends ElementsGesture
 
 	private boolean isInside(PointF point)
 	{
-		float distance = FloatMath.sqrt((float) (((point.x - mCentrePoint.x) * (point.x - mCentrePoint.x)) + ((point.y - mCentrePoint.y) * (point.y - mCentrePoint.y))));
+		float distance = (float)Math.sqrt((((point.x - mCentrePoint.x) * (point.x - mCentrePoint.x)) + ((point.y - mCentrePoint.y) * (point.y - mCentrePoint.y))));
 		return (distance < mRadius);
 	}
 
