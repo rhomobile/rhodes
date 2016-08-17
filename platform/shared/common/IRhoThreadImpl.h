@@ -31,7 +31,7 @@ namespace common{
 
 struct IRhoRunnable
 {
-    enum EPriority{ epNormal = 0, epHigh, epLow};
+    enum EPriority{ epNormal = 0, epHigh, epLow, epCritical};
 
     virtual ~IRhoRunnable(){}
     virtual void runObject() = 0;

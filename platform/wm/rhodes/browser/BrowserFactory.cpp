@@ -44,17 +44,15 @@ IBrowserFactory* BrowserFactory::getInstance()
 IBrowserEngine* BrowserFactory::createWebkit(HWND hwndParent)
 {
 	RHODESAPP().getExtManager().getEngineEventMngr().setEngineType(rho::engineeventlistner::eWebkit);
-	//TODO TAU return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
+	return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 
 	if (RHO_IS_WMDEVICE)
     {
-        //return CIEBrowserEngine::getInstance(hwndParent, rho_wmimpl_get_appinstance());
-		return CWKBrowserEngine::getInstance(hwndParent, rho_wmimpl_get_appinstance());
+        return CIEBrowserEngine::getInstance(hwndParent, rho_wmimpl_get_appinstance());
     }
     else
     {
-        ///return new CEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-		return CWKBrowserEngine::getInstance(hwndParent, rho_wmimpl_get_appinstance());
+        return new CEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
     }
 }
 

@@ -68,6 +68,8 @@ void CRhoThreadImpl::setThreadPriority(IRhoRunnable::EPriority ePriority)
         nPriority = THREAD_PRIORITY_HIGHEST;
     else if (ePriority == IRhoRunnable::epLow)
         nPriority = THREAD_PRIORITY_LOWEST;
+	else if (ePriority == IRhoRunnable::epCritical)
+        nPriority = THREAD_PRIORITY_TIME_CRITICAL;
 
     ::SetThreadPriority(m_hThread,nPriority);
 }

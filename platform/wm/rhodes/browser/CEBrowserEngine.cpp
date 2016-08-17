@@ -1118,26 +1118,6 @@ void CEBrowserEngine::OnDocumentComplete(LPCTSTR url)
     }
 }
 
-bool CEBrowserEngine::RegisterForMessage(unsigned int iMsgId)
-{
-    return true;
-}
-
-bool CEBrowserEngine::DeRegisterForMessage(unsigned int iMsgId)
-{
-    return true;
-}
-
-bool CEBrowserEngine::RegisterForPrimaryMessage(unsigned int iMsgId)
-{
-    return true;
-}
-
-bool CEBrowserEngine::DeRegisterForPrimaryMessage(unsigned int iMsgId)
-{
-    return true;
-}
-
 int CEBrowserEngine::NewTab() { return 0; }
 int CEBrowserEngine::SwitchTab(int iTabID){ return 0;}
 BOOL CEBrowserEngine::CloseTab(int iTabID) { return false; }
