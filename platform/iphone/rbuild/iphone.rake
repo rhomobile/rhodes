@@ -1891,6 +1891,26 @@ namespace "build" do
           end
         end
 
+        #setup Camera access
+        camera_request_text = nil
+        if $app_config["capabilities"].index("camera") != nil
+          camera_request_text = 'application wants to use camera'
+        end
+        if !$app_config["iphone"].nil?
+          if !$app_config["iphone"]["capabilities"].nil?
+            if $app_config["iphone"]["capabilities"].index("camera") != nil
+              camera_request_text = 'application wants to use camera'
+            end
+          end
+        end
+        if camera_request_text != nil
+          if hash['NSCameraUsageDescription'] == nil
+            puts "Info.plist: added key [NSCameraUsageDescription]"
+            hash['NSCameraUsageDescription'] = camera_request_text
+          end
+        end
+
+
         #LSApplicationQueriesSchemes
         if $app_config["iphone"].has_key?("ApplicationQueriesSchemes")
           arr_app_queries_schemes = $app_config["iphone"]["ApplicationQueriesSchemes"]
@@ -1982,6 +2002,26 @@ namespace "build" do
             hash['NSLocationWhenInUseUsageDescription'] = gps_request_text
           end
         end
+
+        #setup Camera access
+        camera_request_text = nil
+        if $app_config["capabilities"].index("camera") != nil
+          camera_request_text = 'application wants to use camera'
+        end
+        if !$app_config["iphone"].nil?
+          if !$app_config["iphone"]["capabilities"].nil?
+            if $app_config["iphone"]["capabilities"].index("camera") != nil
+              camera_request_text = 'application wants to use camera'
+            end
+          end
+        end
+        if camera_request_text != nil
+          if hash['NSCameraUsageDescription'] == nil
+            puts "Info.plist: added key [NSCameraUsageDescription]"
+            hash['NSCameraUsageDescription'] = camera_request_text
+          end
+        end
+
 
         #LSApplicationQueriesSchemes
         if $app_config["iphone"].has_key?("ApplicationQueriesSchemes")

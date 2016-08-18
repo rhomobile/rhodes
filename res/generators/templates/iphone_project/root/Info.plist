@@ -129,6 +129,8 @@
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
     	<string>application tracks your position</string>
+	<key>NSCameraUsageDescription</key>
+    	<string>application wants to use camera</string>
 	<key>NSAppTransportSecurity</key>
      <dict>
           <key>NSAllowsArbitraryLoads</key>
