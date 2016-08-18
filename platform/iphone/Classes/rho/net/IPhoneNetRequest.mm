@@ -365,10 +365,17 @@ public:
       timeout = 30; // 30 seconds by default
     }
 
+      NSString* encodedUrl = nil;
+
+      //encodedUrl = [NSString stringWithUTF8String:url.c_str()];
+      //encodedUrl = [encodedUrl stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
+      
+      encodedUrl = [[NSString stringWithUTF8String:url.c_str()] stringByRemovingPercentEncoding];
+      encodedUrl = [encodedUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+      
     [m_pReq initWithURL:
       [NSURL URLWithString:
-       [[NSString stringWithUTF8String:url.c_str()] stringByAddingPercentEscapesUsingEncoding:
-        NSUTF8StringEncoding]
+       encodedUrl
       ]
       cachePolicy:NSURLRequestUseProtocolCachePolicy
       timeoutInterval:timeout
