@@ -579,7 +579,12 @@ def build_cab
 
   #TODO TAU
   webkit = 'none'
-  $wk_data_dir = File.join($startdir, "lib/tau/webkit")
+  
+  if $is_webkit_engine && $webkit_capability 
+    webkit = 'in_process'
+  end
+  
+  $wk_data_dir = File.join($startdir, "../rho-tau-extensions/libs/webkit/ext/wm/lib")
 
   dir = File.join($startdir, $builddir)
   
