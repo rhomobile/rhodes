@@ -6,9 +6,7 @@
 
 #include "BrowserFactory.h"
 #include "CEBrowserEngine.h"
-//TODO TAU
-//#include "IEBrowserEngine.h"
-#include "WKBrowserEngine.h"
+#include "IEBrowserEngine.h"
 #include "EngineEventListner.h"
 #include <common/RhodesApp.h>
 

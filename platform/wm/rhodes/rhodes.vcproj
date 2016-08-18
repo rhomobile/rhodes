@@ -2999,14 +2999,6 @@
 				RelativePath=".\browser\IEBrowserEngine.h"
 				>
 			</File>
-			<File
-				RelativePath=".\browser\WKBrowserEngine.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\browser\WKBrowserEngine.h"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

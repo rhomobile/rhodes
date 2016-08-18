@@ -1960,6 +1960,7 @@ namespace "config" do
     extpaths << File.join($startdir, "lib","commonAPI")
     extpaths << File.join($startdir, "lib","extensions")
     extpaths << File.join($startdir, "extensions")
+    extpaths << File.join($startdir, "../rho-tau-extensions/libs")
     $app_config["extpaths"] = extpaths
 
     if $app_config["build"] and $app_config["build"].casecmp("release") == 0
@@ -2004,6 +2005,7 @@ namespace "config" do
       if $app_config["app_type"] == 'rhoelements'
 
           $app_config["capabilities"] += ["symbol"] unless $app_config["capabilities"].index("symbol")
+          $app_config["extensions"] += ["webkit"] 
           #$app_config["extensions"] += ["rhoelementsext"] 
           #$app_config["extensions"] += ["symbolapi"] #extension with plug-ins
 
