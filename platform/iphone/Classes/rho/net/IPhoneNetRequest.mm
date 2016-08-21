@@ -337,6 +337,7 @@ public:
     m_multipartBoundary = [[[NSUUID UUID] UUIDString] UTF8String];
     
     m_multipartPostfix = "\r\n";
+    m_multipartPostfix += "--";
     m_multipartPostfix += m_multipartBoundary;
     m_multipartPostfix += "--\r\n";
   }
