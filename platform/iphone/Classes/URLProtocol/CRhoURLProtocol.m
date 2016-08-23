@@ -74,7 +74,10 @@ int on_http_cb(http_parser* parser) { return 0; }
     }
 #endif
 
-    bool canHandle = (rho_conf_is_property_exists("ios_direct_local_requests")!=0) && (rho_conf_getBool("ios_direct_local_requests")!=0);
+    bool canHandle = true;
+    if (rho_conf_is_property_exists("ios_direct_local_requests")!=0) {
+        canHandle = rho_conf_getBool("ios_direct_local_requests")!=0;
+    }
   
     if ( canHandle && [CRhoURLProtocol isLocalURL:theUrl] ) {
       return YES;
