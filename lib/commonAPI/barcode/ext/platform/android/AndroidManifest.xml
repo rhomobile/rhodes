@@ -8,7 +8,7 @@
 
     <activity android:name="com.google.zxing.client.android.CaptureActivity"
               android:screenOrientation="landscape"
-              android:configChanges="orientation|keyboardHidden"
+              android:configChanges="orientation|keyboardHidden|screenSize"
               android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
               android:windowSoftInputMode="stateAlwaysHidden">
       <intent-filter>
