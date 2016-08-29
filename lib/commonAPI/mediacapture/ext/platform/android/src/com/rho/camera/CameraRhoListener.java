@@ -633,8 +633,8 @@ IRhoListener {
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
-			RhodesActivity.safeGetInstance().setScreenAutoRotateMode(CameraActivity.CURRENT_SCREEN_AUTO_ROTATE_MODE);
-			RhodesActivity.safeGetInstance().setFullScreenMode(CameraActivity.CURRENT_FULL_SCREEN_MODE);
+			RhodesActivity.safeGetInstance().setScreenAutoRotateMode(CameraObject.CURRENT_SCREEN_AUTO_ROTATE_MODE);
+			RhodesActivity.safeGetInstance().setFullScreenMode(CameraObject.CURRENT_FULL_SCREEN_MODE);
 			inMethodRes.set(inResultMap);
 			cleanState();
 			releaseMethodResult();

@@ -54,6 +54,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
     public static String userFilePath = null;
     private ContentValues values = null;
 
+    public static boolean CURRENT_SCREEN_AUTO_ROTATE_MODE;
+    public static boolean CURRENT_FULL_SCREEN_MODE;
+
     int getCameraIndex() {
         return CameraSingletonObject.getCameraIndex(getId());
     }
@@ -605,6 +608,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
 
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
+
+        CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
+        CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
 
         CameraSingletonObject.deprecated_choose_pic = false;
         deprecated_take_pic = false;

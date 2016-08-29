@@ -74,10 +74,12 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 
     @Override
     public void choosePicture(Map<String, String> propertyMap, IMethodResult result) {
-	CameraObject.deprecated_take_pic = false;
-    	CameraActivity.CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
-    	CameraActivity.CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
     	if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){   
+
+        CameraObject.deprecated_take_pic = false;
+    	CameraObject.CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
+    	CameraObject.CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
+
     		propertyMap.put("deprecated", "false");
     		deprecated_choose_pic = false;    	
     	}
