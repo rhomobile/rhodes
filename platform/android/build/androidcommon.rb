@@ -237,7 +237,8 @@ def cc_def_args
       args << "-O2"
       args << "-DNDEBUG"
     else
-      args << "-O1"
+      args << "-Og"
+      args << "-ggdb"
       args << "-fstack-protector-all"
       args << "-D_DEBUG"
       args << "-Winit-self"
