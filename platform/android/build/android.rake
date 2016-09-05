@@ -757,7 +757,7 @@ namespace "config" do
                 end
               end
 
-              maven_deps = extconf_android['maven_deps']
+              maven_deps = extconf_android['maven_deps'] if extconf_android
               if maven_deps
                 if maven_deps.is_a? Array
                   maven_deps.each do |dep|
