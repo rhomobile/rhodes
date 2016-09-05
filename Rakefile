@@ -2481,7 +2481,12 @@ def init_extensions(dest, mode = "")
     extpath = nil
     extpaths.each do |p|
       ep = File.join(p, extname)
-      if File.exists?( ep ) && is_ext_supported(ep)
+      if File.exists?( ep )
+
+         if !is_ext_supported(ep)
+          raise "Extension #{extname} is not supported for platform: #{$current_platform}"
+         end
+
         extpath = ep
         break
       end
