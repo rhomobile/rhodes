@@ -1734,8 +1734,8 @@ void CRhodesApp::initAppUrls()
 #ifdef OS_WINCE
     if (!m_isJSFSApp)
     {
-        String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
-        CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
+        /*String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
+        CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));*/
         modifyRhoApiFile();
     }
 #endif

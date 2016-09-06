@@ -1211,12 +1211,12 @@ static void set_bridge_direct_callback()
     int last = rePath.find_last_of('/');
     int pre_last = rePath.substr(0, last).find_last_of('/');
 
-    rho::StringW fullPath = rho::common::convertToStringW(rePath.substr(0, pre_last)) + + L"\\NPAPI\\bridge.dll";
+    rho::StringW fullPath = rho::common::convertToStringW(rePath.substr(0, pre_last)) + + L"\\NPAPI\\rhobridge.dll";
     
     HINSTANCE hInstance = LoadLibrary(fullPath.c_str());
     if (hInstance == NULL)
     {
-        RAWLOG_ERROR("set_bridge_direct_callback: LoadLibrary(L\"bridge.dll\") returns NULL.");
+        RAWLOG_ERROR("set_bridge_direct_callback: LoadLibrary(L\"rhobridge.dll\") returns NULL.");
         return;
     }
 
