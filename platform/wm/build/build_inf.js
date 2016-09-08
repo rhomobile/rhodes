@@ -341,7 +341,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     else
     {
         p("CopyFiles=CopyToInstallDir"+
-           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin" : "") +
+           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI" : "") +
            (!usereruntime && (webkit_mode == 'none') && include_motocaps ? ",CopyConfig" : "") +
            (!usereruntime && include_motocaps ? ",CopySystemFiles" : "") +
            (show_shortcut && usereruntime ? ",Shortcuts" : "")+
@@ -362,9 +362,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         
         if (webkit_mode != 'none')
         {            
-            /*p("4=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
-            p("5=,\"\",," + rhogempath + "\"\\Config\\\"");*/
-            p("4=,\"\",," + rhogempath);
+            p("4=,\"\",," + rhogempath + "\"\\npapi\\\"");
+            /*p("5=,\"\",," + rhogempath + "\"\\Config\\\"");*/
+            p("5=,\"\",," + rhogempath);
         }
         else
         {
@@ -413,6 +413,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             p("\"RegEx.xml\"=5");*/
 
             p("\"rhowebkit.dll\"=3");
+            p("\"rhobridge.dll\"=4");
         }
         else
         {
@@ -474,6 +475,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             p("CopyConfig=0,\"%InstallDir%\\Config\"");
         }*/
         p("CopyWebKitBin=0,\"%InstallDir%\"");
+        p("CopyNPAPI=0,\"%InstallDir%\\npapi\"");
     }
     else if (webkit_mode == 'none')
     {
@@ -533,13 +535,13 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p(webkit_file + "," + webkit_file + ",,0");
                 p("");
 
-                /*p("[CopyNPAPI]");
-                p("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
-                p("\"bridge.dll\",\"bridge.dll\",,0");
-                p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
+                p("[CopyNPAPI]");
+                //p("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
+                p("\"rhobridge.dll\",\"rhobridge.dll\",,0");
+                //p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
                 p("");
-
-                p("[CopyConfig]");
+            
+                /*p("[CopyConfig]");
                 p("\"Config.xml\",\"Config.xml\",,0");
                 p("\"Plugin.xml\",\"Plugin.xml\",,0");
                 p("\"RegEx.xml\",\"RegEx.xml\",,0");
