@@ -100,7 +100,7 @@ unsigned long CRhoTimer::getNextTimeout()
     		}
     		else
     		{	
-        		nInterval=nMinInterval+m_arItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+                nInterval=0;
     		}
 
         if ( nInterval < nMinInterval )
@@ -116,7 +116,7 @@ unsigned long CRhoTimer::getNextTimeout()
     		}
     		else
     		{	
-        		nInterval=nMinInterval+m_arNativeItems.elementAt(i).m_oFireTime.toULong() - curTime.toULong();
+                nInterval=0;
     		}
 
         if ( nInterval < nMinInterval )
