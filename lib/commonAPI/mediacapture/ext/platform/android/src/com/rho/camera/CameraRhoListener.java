@@ -21,7 +21,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Matrix;
 import android.media.MediaScannerConnection;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -109,6 +111,18 @@ IRhoListener {
         return bmpGrayscale;
     }
 
+	public Bitmap rotateBitmap(Bitmap bitmap, int degree) {
+		if (degree == 0) {
+			return bitmap;
+		}
+	    int w = bitmap.getWidth();
+	    int h = bitmap.getHeight();
+
+	    Matrix mtx = new Matrix();
+	    mtx.setRotate(degree);
+
+	    return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
+	}
 
 
 	@SuppressLint("NewApi")
@@ -150,6 +164,7 @@ IRhoListener {
 				if (intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT))
 				{
 					Logger.T(TAG, "intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT)");
+					// used system Camera activity
 					if(intent.hasExtra(MediaStore.EXTRA_OUTPUT)){
 						Logger.T(TAG, "Intent extras: "+ intent.getExtras().keySet());
 						curUri = (Uri) intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
@@ -230,6 +245,9 @@ IRhoListener {
 					//mBitmap.recycle();
 				}else if (captureUri != null )
 				{
+					// not used system activity ?!
+					// unreacheable ?
+
 					Logger.T(TAG, "captureUri != null");
 
 					curUri = captureUri;
@@ -329,6 +347,35 @@ IRhoListener {
 					Logger.T(TAG, "targetPath["+targetPath+"]");
 				}
 
+
+				int rotate_angle = 0;
+
+				String strExifRotation = getActualPropertyMap().get("useRotationBitmapByEXIF");
+				if ((strExifRotation != null) && (Boolean.parseBoolean(strExifRotation))) {
+					// detect original exif rotation
+					String bitmapPath = imgPath;
+					ExifInterface exif=new ExifInterface(bitmapPath);
+					String or_tag = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+
+					if (or_tag != null) {
+						Logger.T(TAG, "$$$ EXIF TAG_ORIENTATION = "+or_tag+" $$$");
+
+				        if(or_tag.equalsIgnoreCase("6")){
+				            rotate_angle = 90;
+				        } else if(or_tag.equalsIgnoreCase("8")){
+				            rotate_angle = 270;
+				        } else if(or_tag.equalsIgnoreCase("3")){
+				            rotate_angle = 180;
+				        } else if(or_tag.equalsIgnoreCase("0")){
+				            // undefined
+				        }
+					}
+				}
+				if (rotate_angle != 0) {
+					Logger.T(TAG, "$$$ Image should be rotated by EXIF !!! angle = "+rotate_angle+" $$$");
+				}
+
+
 				String useRealBitmapResize = getActualPropertyMap().get("useRealBitmapResize");
 				if ((useRealBitmapResize != null) && (Boolean.parseBoolean(useRealBitmapResize))) {
 					Logger.T(TAG, "$$$ real resize start $$$");
@@ -407,6 +454,15 @@ IRhoListener {
 							Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath, bmOptions);
 
 							Bitmap scaledBitmap=Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+
+							if (rotate_angle != 0) {
+								Bitmap savedBitmap = scaledBitmap;
+								scaledBitmap = rotateBitmap(savedBitmap, rotate_angle);
+								savedBitmap.recycle();
+								savedBitmap = null;
+								rotate_angle = 0;
+							}
+
 							ByteArrayOutputStream bos=new ByteArrayOutputStream();
 							scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, bos);
 							bitmap.recycle();
@@ -437,17 +493,57 @@ IRhoListener {
 					Logger.T(TAG, "$$$ recolor to grayscale start $$$");
 
 					try {
-						// resize to preffered size
-
 						Logger.T(TAG, "imgPath ["+imgPath+"]");
 						Logger.T(TAG, "rename ["+rename+"]");
 						String bitmapPath = imgPath;
 
 						Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath);
 						Bitmap gray = toGrayscale(bitmap);
-
+						if (rotate_angle != 0) {
+							Bitmap savedBitmap = gray;
+							gray = rotateBitmap(savedBitmap, rotate_angle);
+							savedBitmap.recycle();
+							savedBitmap = null;
+							rotate_angle = 0;
+						}
 						ByteArrayOutputStream bos=new ByteArrayOutputStream();
 						gray.compress(Bitmap.CompressFormat.JPEG, 75, bos);
+						bitmap.recycle();
+						bitmap=null;
+						OutputStream out;
+						out = new FileOutputStream(bitmapPath+"_tmp");
+						bos.writeTo(out);
+						bos.flush();
+
+						File file= new File(bitmapPath+"_tmp");
+						File file_old = new File(bitmapPath);
+						file_old.delete();
+						file.renameTo(new File(bitmapPath));
+						fixTheGalleryIssue(bitmapPath);
+
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+					}
+
+					Logger.T(TAG, "$$$ recolor to grayscale finished $$$");
+				}
+
+				// EXIF rotation
+				if (rotate_angle != 0) {
+					Logger.T(TAG, "$$$ EXIF rotation start $$$");
+
+					try {
+						Logger.T(TAG, "imgPath ["+imgPath+"]");
+						Logger.T(TAG, "rename ["+rename+"]");
+						String bitmapPath = imgPath;
+
+						Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath);
+
+						Bitmap rotated = rotateBitmap(bitmap, rotate_angle);
+
+						ByteArrayOutputStream bos=new ByteArrayOutputStream();
+						rotated.compress(Bitmap.CompressFormat.JPEG, 75, bos);
 						bitmap.recycle();
 						bitmap=null;
 						OutputStream out;
@@ -467,8 +563,11 @@ IRhoListener {
 						e.printStackTrace();
 					}
 
-					Logger.T(TAG, "$$$ recolor to grayscale finished $$$");
+					Logger.T(TAG, "$$$ EXIF rotation finished $$$");
 				}
+
+
+
 
 				try{
 					DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent, resultCode);

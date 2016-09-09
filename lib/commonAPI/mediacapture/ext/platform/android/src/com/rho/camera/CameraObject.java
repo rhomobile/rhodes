@@ -432,8 +432,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
         getPropertiesMap().put("compressionFormat", "jpg");
         getPropertiesMap().put("outputFormat", "image");
         getPropertiesMap().put("colorModel", "rgb");
-        getPropertiesMap().put("useSystemViewfinder", "false");
-        getPropertiesMap().put("useRealBitmapResize", "false");
+        getPropertiesMap().put("useSystemViewfinder", "true");
+        getPropertiesMap().put("useRealBitmapResize", "true");
+        getPropertiesMap().put("useRotationBitmapByEXIF", "true");
         getPropertiesMap().put("saveToDeviceGallery", "false");
         openCamera();
         Camera.Parameters params = getCamera().getParameters();
