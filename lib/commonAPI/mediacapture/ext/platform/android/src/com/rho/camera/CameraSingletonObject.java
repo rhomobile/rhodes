@@ -13,6 +13,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import java.io.OutputStream;
+import android.content.ContentValues;
+import android.provider.MediaStore.Images;
+import android.graphics.Matrix;
+import android.content.ContentUris;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -74,17 +81,30 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 
     @Override
     public void choosePicture(Map<String, String> propertyMap, IMethodResult result) {
-    	if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){   
-
-        CameraObject.deprecated_take_pic = false;
-    	CameraObject.CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
+        CameraObject.CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
     	CameraObject.CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
 
+    	if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){
+
+        CameraObject.deprecated_take_pic = false;
+
     		propertyMap.put("deprecated", "false");
-    		deprecated_choose_pic = false;    	
+    		deprecated_choose_pic = false;
     	}
     	else
     		deprecated_choose_pic = true;
+
+        // set default values
+        if(propertyMap.get("useSystemViewfinder") == null) {
+            propertyMap.put("useSystemViewfinder", "true");
+        }
+        if(propertyMap.get("useRealBitmapResize") == null) {
+            propertyMap.put("useRealBitmapResize", "true");
+        }
+        if(propertyMap.get("useRotationBitmapByEXIF") == null) {
+            propertyMap.put("useRotationBitmapByEXIF", "true");
+        }
+
         Intent intent = null;
         String outputFormat = null;
         if(propertyMap.get("outputFormat") == null){
@@ -179,8 +199,141 @@ public class CameraSingletonObject implements ICameraSingletonObject {
         return new CameraObject(id);
     }
 
+
+
+    private static String insertImage(ContentResolver cr, String imageFullPath) {
+
+            String filename =  imageFullPath.substring(imageFullPath.lastIndexOf("/")+1, imageFullPath.length());
+            boolean isPNG = false;
+            if (filename.indexOf("png") >= 0) {
+                isPNG = true;
+            }
+
+            ContentValues values = new ContentValues();
+            values.put(Images.Media.TITLE, filename);
+            values.put(Images.Media.DISPLAY_NAME, filename);
+            values.put(Images.Media.DESCRIPTION, filename);
+            if (isPNG) {
+                values.put(Images.Media.MIME_TYPE, "image/png");
+            }
+            else {
+                values.put(Images.Media.MIME_TYPE, "image/jpeg");
+            }
+
+            // Add the date meta data to ensure the image is added at the front of the gallery
+            values.put(Images.Media.DATE_ADDED, System.currentTimeMillis());
+            values.put(Images.Media.DATE_TAKEN, System.currentTimeMillis());
+
+            Uri url = null;
+            String stringUrl = null;    /* value to be returned */
+
+            try {
+                url = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+                if (imageFullPath != null) {
+                    OutputStream imageOut = cr.openOutputStream(url);
+                    try {
+                        //source.compress(Bitmap.CompressFormat.JPEG, 50, imageOut);
+                        copyFile(imageFullPath, imageOut);
+                    } finally {
+                        imageOut.close();
+                    }
+
+                    long id = ContentUris.parseId(url);
+                    // Wait until MINI_KIND thumbnail is generated.
+                    Bitmap miniThumb = Images.Thumbnails.getThumbnail(cr, id, Images.Thumbnails.MINI_KIND, null);
+                    // This is for backward compatibility.
+                    storeThumbnail(cr, miniThumb, id, 50F, 50F,Images.Thumbnails.MICRO_KIND);
+                } else {
+                    cr.delete(url, null, null);
+                    url = null;
+                }
+            } catch (Exception e) {
+                Logger.T(TAG, "ERROR: can not insert image to gallery !");
+                e.printStackTrace();
+                if (url != null) {
+                    cr.delete(url, null, null);
+                    url = null;
+                }
+            }
+
+            if (url != null) {
+                stringUrl = url.toString();
+            }
+
+            return stringUrl;
+        }
+
+        /**
+         * A copy of the Android internals StoreThumbnail method, it used with the insertImage to
+         * populate the android.provider.MediaStore.Images.Media#insertImage with all the correct
+         * meta data. The StoreThumbnail method is private so it must be duplicated here.
+         * @see android.provider.MediaStore.Images.Media (StoreThumbnail private method)
+         */
+
+private static Bitmap storeThumbnail(
+                ContentResolver cr,
+                Bitmap source,
+                long id,
+                float width,
+                float height,
+                int kind) {
+
+            // create the matrix to scale it
+            Matrix matrix = new Matrix();
+
+            float scaleX = width / source.getWidth();
+            float scaleY = height / source.getHeight();
+
+            matrix.setScale(scaleX, scaleY);
+
+            Bitmap thumb = Bitmap.createBitmap(source, 0, 0,
+                source.getWidth(),
+                source.getHeight(), matrix,
+                true
+            );
+
+            ContentValues values = new ContentValues(4);
+            values.put(Images.Thumbnails.KIND,kind);
+            values.put(Images.Thumbnails.IMAGE_ID,(int)id);
+            values.put(Images.Thumbnails.HEIGHT,thumb.getHeight());
+            values.put(Images.Thumbnails.WIDTH,thumb.getWidth());
+
+            Uri url = cr.insert(Images.Thumbnails.EXTERNAL_CONTENT_URI, values);
+
+            try {
+                OutputStream thumbOut = cr.openOutputStream(url);
+                thumb.compress(Bitmap.CompressFormat.JPEG, 100, thumbOut);
+                thumbOut.close();
+                return thumb;
+            } catch (FileNotFoundException ex) {
+                return null;
+            } catch (IOException ex) {
+                return null;
+            }
+
+    }
+
+
+
+    public static void copyImageFileToDeviceGallery(String imageFullPath) {
+
+        String imageName = imageFullPath.substring(imageFullPath.lastIndexOf("/")+1, imageFullPath.length());
+        String abspath = copyImageToDesired(imageFullPath, imageName);
+
+        insertImage(RhodesActivity.getContext().getContentResolver(), abspath);
+    }
+
+
     @Override
     public void copyImageToDeviceGallery(String pathToImage,
+    IMethodResult result) {
+        copyImageFileToDeviceGallery(pathToImage);
+    }
+
+
+
+    public void copyImageToDeviceGalleryOld(String pathToImage,
     IMethodResult result) {
         // TODO Auto-generated method stub
         String imageName = pathToImage.substring(pathToImage.lastIndexOf("/")+1, pathToImage.length());
@@ -194,10 +347,51 @@ public class CameraSingletonObject implements ICameraSingletonObject {
         }
     }
 
-    private String copyImageToDesired(String pathToImage, String imageName) {
+    private static void copyFile(String src, OutputStream dst) {
+
+        InputStream finput= null;
+        //FileOutputStream fout = null;
+        try {
+            finput= RhoFileApi.open(src);
+            //fout = new FileOutputStream(mediafile);
+            byte[] b = new byte[1024];
+            int read = 0;
+            while ((read = finput.read(b)) != -1) {
+                //fout.write(b, 0, read);
+                dst.write(b, 0, read);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(finput != null){
+                try {
+                    finput.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //if(fout != null){
+            //    try {
+            //        fout.close();
+            //    } catch (IOException e) {
+            //        e.printStackTrace();
+            //    }
+            //}
+        }
+
+    }
+
+    private static String copyImageToDesired(String pathToImage, String imageName) {
         // TODO Auto-generated method stub
         File oldFile = new File(RhoFileApi.absolutePath(pathToImage));
         File mediafile  =  new File(RhoFileApi.getDbFilesPath(), imageName);
+
+        if (oldFile.getAbsolutePath().equalsIgnoreCase(mediafile.getAbsolutePath())) {
+            return RhoFileApi.absolutePath(pathToImage);
+        }
 
         InputStream finput= null;
         FileOutputStream fout = null;
