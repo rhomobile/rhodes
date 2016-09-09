@@ -263,8 +263,15 @@ public class BaseActivity extends Activity implements ServiceConnection {
         {
 			// check system options for rotation
 			boolean isSystemAutoRotateEnnabled = true;
-			int str = Settings.System.getInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 1);
-
+			int str = 1;
+			try {
+				str = Settings.System.getInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 1);
+			}
+			catch (Exception e)
+		    {
+				Logger.D(TAG, "ERROR: Can not read Screen Rotation enable from System Settings !");
+		        e.printStackTrace();
+		    }
 			if(str==1)
 			{
 				// rotation is Unlocked
