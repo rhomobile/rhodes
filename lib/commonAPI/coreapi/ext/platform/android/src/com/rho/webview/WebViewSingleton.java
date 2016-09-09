@@ -38,6 +38,13 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     private String originalProxyHost;
     private int originalProxyPort;
 
+    private final int bypassPolicyNever = 0; //never override proxy settings, never restore;
+    private final int bypassPolicyLocalPage = 1; //override proxy on local page load start, restore settings on page load finish;
+    private final int bypassPolicyLocalResource = 2; //override proxy on local resource load start, restore settings on page load finish;
+    private final int bypassPolicyAppActive =3; //override proxy on app activate, restore settings on app deactivate;
+
+    private int bypassPolicy = bypassPolicyLocalPage; //default
+
     public WebViewSingleton() {
         IRhoExtManager extManager = RhoExtManager.getInstance();
 
@@ -304,14 +311,14 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
         boolean haveOriginalProxy = ( ( originalProxyHost!=null ) && ( originalProxyHost.length() > 0 ) );
         boolean isLocalUrl = ( (host!=null) && ( host.equals("localhost") || uri.getHost().equals("127.0.0.1") ) );
 
-        
+        Logger.D( TAG, "adjustProxySettingsForUrl: " + url + " originalProxyHost: " + originalProxyHost );
+
+
         if ( haveOriginalProxy ) {
-            //we have system/rhoelements proxy settings so decide what to do with URL
-            
+            //we have system/rhoelements proxy settings so decide what to do with URL            
             if ( isLocalUrl ) {
-                //local URL, we don't need proxy
-                Logger.D( TAG, "Bypassing system proxy: " + originalProxyHost + ":" + String.valueOf(originalProxyPort) );
-                ProxySettings.setProxy(ContextFactory.getAppContext(),"",0);
+                //local URL, we don't need proxy                
+                dropProxySettings();
             } else {
                 //set original proxy setting
                 restoreProxySettings();
@@ -319,12 +326,17 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
         }
     }
 
+    private void dropProxySettings() {
+        Logger.I( TAG, "Bypassing system proxy: " + originalProxyHost + ":" + String.valueOf(originalProxyPort) );
+        ProxySettings.setProxy(ContextFactory.getAppContext(),"",0);
+    }
+
     private void restoreProxySettings() {
 
         boolean haveOriginalProxy = ( ( originalProxyHost!=null ) && ( originalProxyHost.length() > 0 ) );
 
         if ( haveOriginalProxy ) {
-            Logger.D( TAG, "Restoring proxy settings: " + originalProxyHost + ":" + String.valueOf(originalProxyPort) );
+            Logger.I( TAG, "Restoring proxy settings: " + originalProxyHost + ":" + String.valueOf(originalProxyPort) );
             ProxySettings.setProxy(ContextFactory.getAppContext(),originalProxyHost,originalProxyPort);            
         }
     }
@@ -333,15 +345,35 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     public boolean onBeforeNavigate(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
         Logger.I(TAG, "onBeforeNavigate >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + url );
 
-        adjustProxySettingsForUrl( url );
+        if ( bypassPolicy == bypassPolicyLocalPage ) {
+            adjustProxySettingsForUrl( url );
+        }
 
         return res;
     }
 
     @Override
     public boolean onNavigateStarted(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+        Logger.I(TAG, "onBeforeNavigate >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + url );
+
+        if ( bypassPolicy == bypassPolicyLocalPage ) {
+            adjustProxySettingsForUrl( url );
+        }
+
         return res;
     }
+
+    @Override
+    public boolean onLoadResource(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+        Logger.I(TAG, "onLoadResource >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + url );
+
+        if ( bypassPolicy == bypassPolicyLocalResource ) {
+            adjustProxySettingsForUrl( url );
+        }
+
+        return res;
+    }
+
 
     @Override
     public boolean onNavigateProgress(IRhoExtManager extManager, String url, int pos, int total, IRhoWebView ext, boolean res) {
@@ -352,7 +384,9 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     public boolean onNavigateComplete(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
         Logger.I(TAG, "onNavigateComplete <<<<<<<<<<<<<<<<<<<<<<<<<<<<<" + url );
 
-        restoreProxySettings();
+        if ( (bypassPolicy == bypassPolicyLocalResource ) || (bypassPolicy == bypassPolicyLocalPage ) ) {
+            restoreProxySettings();
+        }
 
         return res;
     }
@@ -414,6 +448,15 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     @Override
     public void onAppActivate(IRhoExtManager extManager, boolean bActivate) {
+
+        if ( bypassPolicy == bypassPolicyAppActive ) {
+            if ( bActivate ) {
+                dropProxySettings();
+            } else {
+                restoreProxySettings();
+            }
+        }
+
     }
 
     @Override
@@ -590,6 +633,21 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
             mConfig.set(WebViewConfig.DISABLE_SCANNER_ON_NAVIGATION, RhoConf.getString(DISABLE_SCANNER_NAVIGATION));
         if (RhoConf.isExist("iswindowskey"))
             mConfig.set("iswindowskey", RhoConf.getString("iswindowskey"));
+
+        if (RhoConf.isExist("android_proxy_bypass_policy")) {
+            String val = RhoConf.getString("android_proxy_bypass_policy");
+            if ( val.equals("never")) {
+                bypassPolicy = bypassPolicyNever;
+            } else if ( val.equals("local_page") ) {
+                bypassPolicy = bypassPolicyLocalPage;
+            } else if ( val.equals("local_resource") ) {
+                bypassPolicy = bypassPolicyLocalResource;
+            } else if ( val.equals("app_active") ) {
+                bypassPolicy = bypassPolicyAppActive;
+            }
+        }
+
+        Logger.I( TAG, "Proxy bypass policy: " + String.valueOf( bypassPolicy ) );
 
         //bypassProxy = RhoConf.isExist("android_webview_bypass_system_proxy") && RhoConf.getBool("android_webview_bypass_system_proxy");
     }
