@@ -32,6 +32,7 @@ public interface IRhoExtension {
     boolean onSetProperty(IRhoExtManager extManager, String name, String value, IRhoWebView ext, boolean res);
     boolean onBeforeNavigate(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res);
     boolean onNavigateStarted(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res);
+    boolean onLoadResource(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res);
     boolean onNavigateProgress(IRhoExtManager extManager, String url, int pos, int total, IRhoWebView ext, boolean res);
     boolean onNavigateComplete(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res);
     boolean onDocumentComplete(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res);
