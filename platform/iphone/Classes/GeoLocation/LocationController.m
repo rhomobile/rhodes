@@ -138,6 +138,18 @@ static LocationController *sharedLC = nil;
 	[self update];
 }
 
+- (void) setAllowsBackgroundLocationUpdatesSafely
+{
+    NSArray* backgroundModes  = [[NSBundle mainBundle].infoDictionary objectForKey:@"UIBackgroundModes"];
+    
+    if(backgroundModes && [backgroundModes containsObject:@"location"]) {
+        if([self._locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
+            // We now have iOS9 and the right capabilities to set this:
+            [self._locationManager setAllowsBackgroundLocationUpdates:YES];
+        }
+    }
+}
+
 - (void) initLocationManager:(NSObject*)param {
 
     self._locationManager = [[[CLLocationManager alloc] init] autorelease];
@@ -148,7 +160,7 @@ static LocationController *sharedLC = nil;
         [self._locationManager requestWhenInUseAuthorization];
     }
     
-    
+    [self setAllowsBackgroundLocationUpdatesSafely];
     
 }
 
