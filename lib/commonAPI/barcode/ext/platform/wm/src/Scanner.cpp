@@ -2,10 +2,6 @@
 #include <pm.h>
 //	TODO: This flag should not need to be global in true multiple instance.
 
-//Reading LowBatteryScan value from config.xml
-extern "C" bool rho_wmimpl_sharedconfig_getboolvalue(const wchar_t* szName);
-extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
-
 #pragma region public_methods
 
 CScanner::CScanner(int iInstanceID)
@@ -60,8 +56,8 @@ CScanner::CScanner(int iInstanceID)
 	m_szScanInvalidWav			= NULL;
 	//Developer - Abhineet Agarwal
 	//Reading value from config.xml
-   	m_bLowBatteryScan = rho_wmimpl_sharedconfig_getboolvalue(L"System\\LowBatteryScan");
-    m_bLegacyNavBehaviour = !rho_wmimpl_sharedconfig_getboolvalue(L"Scanner\\DisableScannerDuringNavigation");
+	m_bLowBatteryScan = RHOCONF().getBool("Scanner.LowBatteryScan");//rho_wmimpl_sharedconfig_getboolvalue(L"System\\LowBatteryScan");
+    m_bLegacyNavBehaviour = !RHOCONF().getBool("Scanner.DisableScannerDuringNavigation");//rho_wmimpl_sharedconfig_getboolvalue(L"Scanner\\DisableScannerDuringNavigation");
 	m_bCurrentlyNavigating		= false;
 	m_bResetScanBuffer			= false;
 	m_bScannedDuringNavigate	= false;
@@ -249,7 +245,7 @@ BOOL CScanner::Initialise(bool bLaunchingAppHasFocus, const WCHAR* szScannerID)
 		m_keyInjector = new CKeyInjector();
 		m_decodeNotifier = new CDecodeNotifier();
 		LPCTSTR pScanDecodeWavValue;
-		pScanDecodeWavValue = rho_wmimpl_sharedconfig_getvalue(L"Sound\\ScanDecodeWav");
+		pScanDecodeWavValue = rho::common::convertToStringW(RHOCONF().getString("Scanner.ScanDecodeWav").c_str()).c_str();
 		if (pScanDecodeWavValue)
 		{
 			if (m_szScanDecodeWav){

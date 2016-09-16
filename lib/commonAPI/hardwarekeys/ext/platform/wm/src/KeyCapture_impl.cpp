@@ -2,8 +2,18 @@
 #include "KeyModule.h"
 #include "common/RhodesApp.h"
 #include <algorithm>
-extern "C" int rho_wmimpl_get_control_keys_count();
-extern "C" int* rho_wmimpl_get_control_keys();
+extern "C" int rho_wmimpl_get_control_keys_count()
+{
+	//TODO TAU
+	return  0;
+}
+extern "C" int* rho_wmimpl_get_control_keys()
+{
+	//TODO TAU
+	int* keys = new int[1];
+	keys[0] = 0;
+	return keys;
+}
 
 namespace rho {
 

@@ -6,7 +6,6 @@
 
 //extern "C" HWND getMainWnd();
 extern "C" const wchar_t* rho_wmimpl_getNavTimeOutVal();
-extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
 
 namespace rho {
 
@@ -22,7 +21,8 @@ public:
 
     CWebViewImpl(): m_nNavigationTimeout(45000), m_dZoomPage(1.0), m_nTextZoom(1), CWebViewSingletonBase()
     {
-        convertFromStringW( rho_wmimpl_getNavTimeOutVal(), m_nNavigationTimeout );
+        //TODO TAU
+		//convertFromStringW( rho_wmimpl_getNavTimeOutVal(), m_nNavigationTimeout );
 		if(m_nNavigationTimeout<=0)
 		{
 			LOG(WARNING)+" NavigationTimeout  value  from config.xml not correct "+m_nNavigationTimeout;
@@ -54,10 +54,10 @@ public:
     virtual void setEnableZoom( bool value, rho::apiGenerator::CMethodResult& oResult){}
     virtual void getEnablePageLoadingIndication(rho::apiGenerator::CMethodResult& oResult)
     {
-        //oResult.set(false);
-        int nValue = 0;
+        oResult.set(false);
+        /*int nValue = 0;
         convertFromStringW( rho_wmimpl_sharedconfig_getvalue( L"GUI\\HourglassEnabled" ), nValue );
-        oResult.set( nValue ? true : false );
+        oResult.set( nValue ? true : false );*/
     }
 
     virtual void setEnablePageLoadingIndication( bool value, rho::apiGenerator::CMethodResult& oResult)
@@ -86,45 +86,45 @@ public:
 
     virtual void getScrollTechnique(rho::apiGenerator::CMethodResult& oResult)
     {
-        //oResult.set( RHOCONF().getString("WebView.scrollTechnique") );
-        oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"Scrolling\\ScrollTechnique" ) ) );
+        oResult.set( RHOCONF().getString("WebView.scrollTechnique") );
+        //oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"Scrolling\\ScrollTechnique" ) ) );
     }
 
     virtual void getFontFamily(rho::apiGenerator::CMethodResult& oResult)
     {
-        //oResult.set( RHOCONF().getString("Webview.fontFamily") );
-        oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"HTMLStyles\\FontFamily" ) ) );
+        oResult.set( RHOCONF().getString("Webview.fontFamily") );
+        //oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"HTMLStyles\\FontFamily" ) ) );
     }
 
     virtual void getUserAgent(rho::apiGenerator::CMethodResult& oResult)
     {
-        //oResult.set( RHOCONF().getString("WebView.userAgent") );
-        oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\UserAgent" ) ) );
+        oResult.set( RHOCONF().getString("WebView.userAgent") );
+        //oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\UserAgent" ) ) );
     }
 
     virtual void getViewportEnabled(rho::apiGenerator::CMethodResult& oResult)
     {
-        //oResult.set( RHOCONF().getBool("WebView.viewportEnabled") );
-        int nValue = 0;
+        oResult.set( RHOCONF().getBool("WebView.viewportEnabled") );
+        /*int nValue = 0;
         convertFromStringW( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\ViewportEnabled" ), nValue );
-        oResult.set( nValue ? true : false );
+        oResult.set( nValue ? true : false );*/
     }
 
     virtual void getViewportWidth(rho::apiGenerator::CMethodResult& oResult)
     {
-        //oResult.set( RHOCONF().getInt("WebView.viewportWidth") );
-        int nValue = 0;
+        oResult.set( RHOCONF().getInt("WebView.viewportWidth") );
+        /*int nValue = 0;
         convertFromStringW( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\ViewportWidth" ), nValue );
-        oResult.set( nValue );
+        oResult.set( nValue );*/
     }
 
     virtual void getCacheSize(rho::apiGenerator::CMethodResult& oResult)
     {
-        int nValue = 0;
+        /*int nValue = 0;
         convertFromStringW( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\Cache" ), nValue );
-        oResult.set( nValue );
+        oResult.set( nValue );*/
 
-        //oResult.set( RHOCONF().getInt("WebView.cacheSize") );
+        oResult.set( RHOCONF().getInt("WebView.cacheSize") );
     }
 
     //TODO: EnableCache - does it supported by Webkit ?

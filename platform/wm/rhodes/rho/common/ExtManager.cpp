@@ -198,44 +198,44 @@ void CExtManager::passSipPositionToEngine()
 
 bool CExtManager::RegisterForBrowserMessage(unsigned int iMsgId)
 {
-#if !defined(OS_WINDOWS_DESKTOP)
-    return getAppWindow().getWebKitEngine()->RegisterForMessage(iMsgId);
-#else
+/*#if !defined(OS_WINDOWS_DESKTOP)
+    //return getAppWindow().getWebKitEngine()->RegisterForMessage(iMsgId);
+#else*/
 	return true;
-#endif
+//#endif
 }
 
 bool CExtManager::DeRegisterForBrowserMessage(unsigned int iMsgId)
 {
-#if !defined(OS_WINDOWS_DESKTOP)
+/*#if !defined(OS_WINDOWS_DESKTOP)
     rho::IBrowserEngine* pEng = getAppWindow().getWebKitEngine();
     if (pEng)
         return pEng->DeRegisterForMessage(iMsgId);
     return false;
-#else
+#else*/
 	return true;
-#endif
+//#endif
 }
 
 bool CExtManager::RegisterForPrimaryBrowserMessage(unsigned int iMsgId)
 {
-#if !defined(OS_WINDOWS_DESKTOP)
+/*#if !defined(OS_WINDOWS_DESKTOP)
     return getAppWindow().getWebKitEngine()->RegisterForPrimaryMessage(iMsgId);
-#else
+#else*/
 	return true;
-#endif
+//#endif
 }
 
 bool CExtManager::DeRegisterForPrimaryBrowserMessage(unsigned int iMsgId)
 {
-#if !defined(OS_WINDOWS_DESKTOP)
+/*#if !defined(OS_WINDOWS_DESKTOP)
     rho::IBrowserEngine* pEng = getAppWindow().getWebKitEngine();
     if (pEng)
         return pEng->DeRegisterForPrimaryMessage(iMsgId);
     return false;
-#else
+#else*/
 	return true;
-#endif
+//#endif
 }
 
 void CExtManager::executeJavascript(const wchar_t* szJSFunction)
@@ -356,11 +356,12 @@ int CExtManager::getTextZoom() //Enum (0 to 4)
 
 StringW CExtManager::getConfigPath()
 {
-#if defined(APP_BUILD_CAPABILITY_SYMBOL)
-    return rho_wmimpl_get_configfilepath();
-#else
+//TODO TAU
+	//#if defined(APP_BUILD_CAPABILITY_SYMBOL)
+ //   return rho_wmimpl_get_configfilepath();
+//#else
     return L"";
-#endif
+//#endif
 }
 
 StringW CExtManager::getPageTitle(UINT iTab)
