@@ -606,9 +606,17 @@ const char* rho_native_rhodbpath()
 
 NSString* rho_sys_get_locale_iphone()
 {
-	NSString *preferredLang = [[NSLocale preferredLanguages] objectAtIndex:0];
+    NSArray* ar = [NSLocale preferredLanguages];
+    NSString *preferredLang = [ar objectAtIndex:0];
+    
+    NSDictionary *languageDic = [NSLocale componentsFromLocaleIdentifier:preferredLang];
+    //NSString *countryCode = [languageDic objectForKey:@"kCFLocaleCountryCodeKey"];
+    NSString *languageCode = [languageDic objectForKey:@"kCFLocaleLanguageCodeKey"];
+    if (languageCode == nil) {
+        languageCode = preferredLang;
+    }
 	
-	return preferredLang;
+	return languageCode;
 }
 
 
