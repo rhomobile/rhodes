@@ -2262,25 +2262,25 @@ namespace "run" do
       #Thread.new {
       thr = Thread.new do
         puts 'start thread with execution of application'
-        if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-          puts  'use old execution way - just open iPhone Simulator'
-          system("open \"#{$sim}/iPhone Simulator.app\"")
-          $ios_run_completed = true
-          sleep(1000)
-        else
+        #if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+        #  puts  'use old execution way - just open iPhone Simulator'
+        #  system("open \"#{$sim}/iPhone Simulator.app\"")
+        #  $ios_run_completed = true
+        #  sleep(1000)
+        #else
           puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
           puts 'Execute command: '+commandis
           system(commandis)
           $ios_run_completed = true
           sleep(1000)
-        end
+        #end
         #}
       end
 
       print_timestamp('application was launched in simulator')
-      if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-        thr.join
-      else
+      #if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+       #    thr.join
+      #else
         puts 'start waiting for run application in Simulator'
         while (!File.exist?(log_name)) && (!$ios_run_completed)
           puts ' ... still waiting'
@@ -2292,7 +2292,7 @@ namespace "run" do
         #thr.join
         puts 'application is started in Simulator'
         exit
-      end
+      #end
       print_timestamp('run:iphone FINISH')
       puts "end build iphone app"
       exit
@@ -2518,24 +2518,24 @@ namespace "run" do
 
         thr = Thread.new do
            puts 'start thread with execution of application'
-           if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-               puts  'use old execution way - just open iPhone Simulator'
-               system("open \"#{$sim}/iPhone Simulator.app\"")
-               $ios_run_completed = true
-               sleep(1000)
-           else
+           #if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+            #   puts  'use old execution way - just open iPhone Simulator'
+            #   system("open \"#{$sim}/iPhone Simulator.app\"")
+            #   $ios_run_completed = true
+            #   sleep(1000)
+           #else
                puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
                puts 'Execute command: '+commandis
                system(commandis)
                $ios_run_completed = true
                sleep(1000)
-           end
+           #end
         #}
         end
 
-        if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-           thr.join
-        else
+        #if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+         #  thr.join
+        #else
            puts 'start waiting for run application in Simulator'
            while (!File.exist?(log_name)) && (!$ios_run_completed)
               puts ' ... still waiting'
@@ -2547,7 +2547,7 @@ namespace "run" do
            #thr.join
            puts 'application is started in Simulator'
            exit
-        end
+        #end
 
         puts "end run iphone app package"
         Dir.chdir currentdir
@@ -2565,8 +2565,8 @@ namespace "run" do
      end
      kill_iphone_simulator
 
-     use_old_scheme = ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-
+     #use_old_scheme = ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+     use_old_scheme = false
 
      $sdkver = $sdk.gsub(/^iphonesimulator/, '')
      # Workaround: sometimes sdkver could differ from emulator version.

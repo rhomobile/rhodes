@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency('json', '~>1.5.4')
   s.add_dependency('rest-client', '~>1.6.6')
   s.add_dependency('CFPropertyList', '>= 2.2.0')
+  s.add_dependency('simctl', '>= 1.5.2')
   s.add_dependency('listen', '3.0.6')
   s.add_dependency('rubyzip', '>= 1.1.7')
   #s.add_dependency('rdoc', '~> 3.6.1')
