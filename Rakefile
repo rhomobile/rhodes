@@ -2005,24 +2005,27 @@ namespace "config" do
       if $app_config["app_type"] == 'rhoelements'
 
           $app_config["capabilities"] += ["symbol"] unless $app_config["capabilities"].index("symbol")
-          $app_config["extensions"] += ["webkit"] 
-          #$app_config["extensions"] += ["rhoelementsext"] 
-          #$app_config["extensions"] += ["symbolapi"] #extension with plug-ins
+          if $current_platform == "wm"
+			$app_config["extensions"] += ["webkit"] 
+          else
+			$app_config["extensions"] += ["rhoelementsext"] 
+			$app_config["extensions"] += ["symbolapi"] #extension with plug-ins
 
-          #check for RE2 plugins
-          #plugins = ""
-          #$app_config["extensions"].each do |ext|
-          #  if ( ext.start_with?('moto-') )
-          #    plugins += ',' if plugins.length() > 0
-          #    plugins += ext[5, ext.length()-5]
-          #  end
-          #end
+			#check for RE2 plugins
+			plugins = ""
+			$app_config["extensions"].each do |ext|
+				if ( ext.start_with?('moto-') )
+				plugins += ',' if plugins.length() > 0
+				plugins += ext[5, ext.length()-5]
+				end
+			end
 
-          #if plugins.length() == 0
-          #  plugins = "ALL"
-          #end
+			if plugins.length() == 0
+				plugins = "ALL"
+			end
 
-          #application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
+			application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
+		end	
 
 
         if !$app_config["capabilities"].index('native_browser') && $current_platform != "android"
@@ -2039,7 +2042,9 @@ namespace "config" do
 
       if  $app_config["capabilities"].index("webkit_browser") || ($app_config["capabilities"].index("symbol") && $current_platform != "android")
         #contains wm and android libs for webkit browser
-        #$app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
+        if $current_platform == "android"
+			$app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
+        end
       end
     end
     if $app_config['capabilities'].index("camera") && $current_platform != 'win32'
