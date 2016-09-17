@@ -2,9 +2,28 @@
 
 require 'simctl'
 require 'cfpropertylist'
+require 'open3'
+require 'pathname'
+require 'fileutils'
 
 #                 0            1                       2                                           3                    4
 #$iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+
+
+def execute_command(command)
+    captured_stdout = ''
+    exit_status = Open3.popen3(ENV, command) {|stdin, stdout, stderr, wait_thr|
+      pid = wait_thr.pid # pid of the started process.
+      stdin.close
+      captured_stdout = stdout.read
+      wait_thr.value # Process::Status object returned.
+    }
+    puts "iphonesim_8 execute_command("+command+") return status : " + (exit_status.success? ? 'succeeded' : 'failed')
+    return captured_stdout
+end
+
+
+
 
 sdk_ver = ARGV[2]
 
@@ -31,11 +50,8 @@ if device == nil
 end
 
 
-# Launch a new Simulator.app instance
-device.launch!
+puts "iphonesim_8 Device UUID: "+device.udid
 
-# Wait for the device to be booted
-device.wait! {|d| d.state == :booted}
 
 app_path = ARGV[1]
 
@@ -47,6 +63,15 @@ plist = CFPropertyList::List.new(:file => info_plist_path)
 info_plist_hash = CFPropertyList.native_types(plist.value)
 
 app_bundle_id = info_plist_hash['CFBundleIdentifier']
+
+puts "iphonesim_8 App bundle ID: "+app_bundle_id
+
+# Launch a new Simulator.app instance
+device.launch!
+
+# Wait for the device to be booted
+device.wait! {|d| d.state == :booted}
+
 
 device.install!(app_path)
 
@@ -62,9 +87,48 @@ device.launch_app!(app_bundle_id)
 # Delete the device
 #device.delete!
 
+#xcrun simctl get_app_container DB4B5FCC-6250-40AF-9FA5-4378A1999893 com.rhomobile.rhodes-system-api-samples
+cmd_get_home_dir = "xcrun simctl get_app_container "+device.udid+" "+app_bundle_id
 
+app_home_dir = execute_command(cmd_get_home_dir)
 
+puts "iphonesim_8 App home dir: "+app_home_dir
 
+apps_files_folders_root_pn = Pathname.new(app_home_dir)
+apps_files_folders_root_pn = apps_files_folders_root_pn + '../../../../Data/Application'
+apps_files_folders_root = apps_files_folders_root_pn.realpath
 
+app_files_root = nil
 
-#require File.join(File.dirname(__FILE__), '..', 'res', 'generators', 'rhogen')
+Dir.entries(apps_files_folders_root).select do |entry|
+    path = File.join(apps_files_folders_root,entry)
+    if File.directory? path and !(entry =='.' || entry == '..')
+        #puts "iphonesim_8      check app files folder ["+path+"]"
+        plist_path = File.join(path, '.com.apple.mobile_container_manager.metadata.plist')
+        plist_obj = CFPropertyList::List.new(:file => plist_path)
+        app_files_info_plist_hash = CFPropertyList.native_types(plist_obj.value)
+
+        app_files_bundle_id = app_files_info_plist_hash['MCMMetadataIdentifier']
+
+        if app_files_bundle_id == app_bundle_id
+            app_files_root = path
+        end
+    end
+end
+
+puts "iphonesim_8 App files dir: "+app_files_root.to_s
+
+if app_files_root == nil
+    puts "iphonesim_8 ERROR: can not find application's files root inside Simulator"
+    exit(1)
+end
+
+app_log_path = File.join(app_files_root, 'Library/Caches/Private Documents/rholog.txt')
+app_log_symlink_path = ARGV[4]
+
+FileUtils.rm_f app_log_symlink_path
+FileUtils.ln_sf app_log_path, app_log_symlink_path
+
+puts "iphonesim_8 make rholog.txt symlink ["+app_log_symlink_path+"] pointed to ["+app_log_path+"]"
+
+exit(0)
