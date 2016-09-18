@@ -584,7 +584,7 @@ def build_cab
     webkit = 'in_process'
   end
   
-  $wk_data_dir = File.join($startdir, "../rho-tau-extensions/libs/webkit/ext/wm/lib")
+  $wk_data_dir = File.join($startdir, "../rho-tau-extensions-"+ENV['rhodes_version']+"/libs/webkit/ext/wm/lib")
 
   dir = File.join($startdir, $builddir)
   

@@ -1973,7 +1973,7 @@ namespace "config" do
     extpaths << File.join($startdir, "lib","commonAPI")
     extpaths << File.join($startdir, "lib","extensions")
     extpaths << File.join($startdir, "extensions")
-    extpaths << File.join($startdir, "../rho-tau-extensions/libs")
+    extpaths << File.join($startdir, "../rho-tau-extensions-"+ENV['rhodes_version']+"/libs")
     $app_config["extpaths"] = extpaths
 
     if $app_config["build"] and $app_config["build"].casecmp("release") == 0

@@ -11,7 +11,7 @@ settings['ce5'] = ['MC3000c50b (ARMV4I)','VersionMin=5.00','VersionMax=7.99'];
 settings['ce7'] = ['WT41N0c70PSDK (ARMV4I)','VersionMin=5.00','VersionMax=7.99'];
 
 var each_file = function(path, f) {
-    stdout.WriteLine(path);
+
     for (var e = new Enumerator(fso.GetFolder(path).files); !e.atEnd(); e.moveNext()) {
         f(e.item().Name);
     }
