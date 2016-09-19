@@ -268,10 +268,28 @@ def  run_emulator(options = {})
     puts "Using Android SDK target: #{$androidtargets[get_api_level($emuversion)].inspect}" if USE_TRACES
 
     abi = nil
-    if $androidtargets[get_api_level($emuversion)][:abis]
-      $androidtargets[get_api_level($emuversion)][:abis].each do |cur_abi|
-        abi = cur_abi if cur_abi =~ /armeabi/
+    sdk_abis = $androidtargets[get_api_level($emuversion)][:abis]
+
+    if sdk_abis            
+      if $abis.include?("x86")
+        #first look for x86 abis
+        sdk_abis.each do |cur_abi|
+          if cur_abi =~ /x86/
+            abi = cur_abi 
+            break
+          end
+        end
       end
+
+      unless abi
+        sdk_abis.each do |cur_abi|
+          if cur_abi =~ /armeabi/
+            abi = cur_abi
+            break
+          end
+        end
+      end
+
       raise "ARM-based emulator image is not found for selected target: #{$androidtargets[get_api_level($emuversion)][:abis].inspect}" unless abi
     end
 
@@ -284,7 +302,7 @@ def  run_emulator(options = {})
       raise "Unable to create AVD image. No appropriate target API for SDK version: #{$emuversion}" unless targetid
       createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{targetid} --sdcard 128M"
       createavd = createavd + " --abi #{abi}" if abi
-      puts "Creating AVD image: #{$avdname}"
+      puts "Creating AVD image: #{createavd}"
       IO.popen(createavd, 'r+') do |io|
         io.puts "\n"
         while line = io.gets
@@ -297,7 +315,7 @@ def  run_emulator(options = {})
     end
 
     # Start the emulator, check on it every 5 seconds until it's running
-    cmd = "\"#{$emulator}\" -cpu-delay 0"
+    cmd = "\"#{$emulator}\""
     cmd << " -no-window" if options[:hidden]
     cmd << " -avd #{$avdname}"
     cmd << " -wipe-data" if options[:wipe]

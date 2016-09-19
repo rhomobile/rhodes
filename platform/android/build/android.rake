@@ -618,9 +618,9 @@ namespace "config" do
         end
 
         if apilevel && $androidtargets[apilevel][:id] == id.to_i
-          if line =~ /^\s+ABIs\s*:\s+(.*)/
+          if line =~ /^\s+(Tag\/)?ABIs\s*:\s+(.*)/
             $androidtargets[apilevel][:abis] = []
-            $1.split(/,\s*/).each do |abi|
+            $2.split(/,\s*/).each do |abi|
               $androidtargets[apilevel][:abis] << abi
             end
             puts $androidtargets[apilevel][:abis].inspect if USE_TRACES
