@@ -368,16 +368,20 @@ public:
 
       NSString* encodedUrl = nil;
 
-      //encodedUrl = [NSString stringWithUTF8String:url.c_str()];
-      //encodedUrl = [encodedUrl stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
-      
-      encodedUrl = [[NSString stringWithUTF8String:url.c_str()] stringByRemovingPercentEncoding];
+      encodedUrl = [NSString stringWithUTF8String:url.c_str()];
+
+      // encode whole URL for NSURLComponents ( url with {id} not pass by NSURLComponents)
       encodedUrl = [encodedUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+      NSURLComponents* components = [NSURLComponents componentsWithString:encodedUrl];
       
-    [m_pReq initWithURL:
-      [NSURL URLWithString:
-       encodedUrl
-      ]
+      // decode query to initial state - all other parts still encoded
+      components.percentEncodedQuery = components.query;
+      
+      // make URL
+      NSURL* nsurl = components.URL;
+      
+      [m_pReq initWithURL:nsurl
       cachePolicy:NSURLRequestUseProtocolCachePolicy
       timeoutInterval:timeout
     ];
