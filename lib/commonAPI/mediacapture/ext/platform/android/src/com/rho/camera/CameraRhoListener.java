@@ -789,6 +789,21 @@ IRhoListener {
 
 
 
+private static void makeDirsForFile(String filepath) {
+	try {
+		String folderPath = filepath.substring(0,filepath.lastIndexOf("/"));
+		File folderFile = new File(folderPath);
+		if (!folderFile.exists()) {
+			folderFile.mkdirs();
+		}
+	}
+	catch (Exception e) {
+	   e.printStackTrace();
+	}
+
+}
+
+
 /**
 * Copy image.
 * Function to copy image from sd card to application root path
@@ -806,6 +821,8 @@ public String copyImg(String imgPath){
 	String file_name= rename.substring(lastIndex+1, rename.length());
 
 	File mediafile  =  new File(RhoFileApi.getDbFilesPath(), file_name);
+
+	makeDirsForFile(mediafile.getAbsolutePath());
 
 	//File mediafile  =  new File(RhoFileApi.getDbFilesPath(), rename);
 	FileInputStream finput= null;
@@ -848,6 +865,8 @@ public String copyImgToTarget(String srcPath, String dstPath) {
 
 	File oldFile = new File(srcPath);
 	File mediafile  =  new File(dstPath);
+
+	makeDirsForFile(mediafile.getAbsolutePath());
 
 	//File mediafile  =  new File(RhoFileApi.getDbFilesPath(), rename);
 	FileInputStream finput= null;
