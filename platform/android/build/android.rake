@@ -1895,10 +1895,13 @@ namespace "build" do
       File.open(File.join($app_rjava_dir, "R", "R.java"), "w") { |f| f.write(buf) }
 
       $ext_android_library_deps.each do |package, path|
+
         if !File.directory?(path)
           puts "[WARN] Path for dependency #{package} does not exists (#{path})"
-          next
+          #next
         end
+
+
         r_dir = File.join $tmpdir, 'gen', package.split('.')
         mkdir_p r_dir
         buf = File.new(File.join($app_rjava_dir, 'R.java'), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage #{package};\n")
