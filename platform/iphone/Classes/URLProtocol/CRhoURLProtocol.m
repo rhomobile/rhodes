@@ -170,7 +170,8 @@ int on_http_cb(http_parser* parser) { return 0; }
             
             if ( [url query] != nil )
             {
-              [s appendFormat:@"?%@",[url query]];
+              // decode query back to original state
+              [s appendFormat:@"?%@", [[url query] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
             }
             
             if ( [url fragment] != nil )
