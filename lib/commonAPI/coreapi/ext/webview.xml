@@ -262,7 +262,7 @@ For most mobile platforms, WebView.execute_js has been implemented via redirecti
 
             <METHOD name="save">
                 <DESC>Save current page to file system.</DESC>
-                <PLATFORM>Android</PLATFORM>
+                <PLATFORM>iOS, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="format" type="STRING">
                         <DESC>Format of the saved page.</DESC>

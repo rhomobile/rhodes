@@ -198,7 +198,7 @@ extern NSString* rho_webview_get_current_url(int tab_index);
 }
 
 -(void) save:(NSString*)format path:(NSString*)path tabIndex:(int)tabIndex methodResult:(id<IMethodResult>)methodResult{
-    //unsupported on iOS
+    rho_webview_save([format UTF8String], [path UTF8String], tabIndex);
 }
 
 -(void) set_menu_items:(NSDictionary*)menuItems methodResult:(id<IMethodResult>)methodResult{
