@@ -3,7 +3,7 @@
 
   vm_opts.h - VM optimize option
 
-  $Author: akr $
+  $Author$
 
   Copyright (C) 2004-2007 Koichi Sasada
 
@@ -18,18 +18,19 @@
  * Following definitions are default values.
  */
 
-#define OPT_TRACE_INSTRUCTION        1
-#define OPT_TAILCALL_OPTIMIZATION    0
-#define OPT_PEEPHOLE_OPTIMIZATION    1
-#define OPT_SPECIALISED_INSTRUCTION  1
-#define OPT_INLINE_CONST_CACHE       1
-
+#define OPT_TRACE_INSTRUCTION           1
+#define OPT_TAILCALL_OPTIMIZATION       0
+#define OPT_PEEPHOLE_OPTIMIZATION       1
+#define OPT_SPECIALISED_INSTRUCTION     1
+#define OPT_INLINE_CONST_CACHE          1
+#define OPT_FROZEN_STRING_LITERAL       0
+#define OPT_DEBUG_FROZEN_STRING_LITERAL 0
 
 /* Build Options.
  * You can't change these options at runtime.
  */
 
-/* C compiler depend */
+/* C compiler dependent */
 #define OPT_DIRECT_THREADED_CODE     1
 #define OPT_TOKEN_THREADED_CODE      0
 #define OPT_CALL_THREADED_CODE       0
@@ -37,15 +38,20 @@
 /* VM running option */
 #define OPT_CHECKED_RUN              1
 #define OPT_INLINE_METHOD_CACHE      1
+#define OPT_GLOBAL_METHOD_CACHE      1
 #define OPT_BLOCKINLINING            0
 
 /* architecture independent, affects generated code */
-#define OPT_OPERANDS_UNIFICATION     0
+#define OPT_OPERANDS_UNIFICATION     1
 #define OPT_INSTRUCTIONS_UNIFICATION 0
 #define OPT_UNIFY_ALL_COMBINATION    0
 #define OPT_STACK_CACHING            0
 
 /* misc */
 #define SUPPORT_JOKE                 0
+
+#ifndef VM_COLLECT_USAGE_DETAILS
+#define VM_COLLECT_USAGE_DETAILS     0
+#endif
 
 #endif /* RUBY_VM_OPTS_H */

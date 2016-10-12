@@ -2,7 +2,7 @@
 
   transcode_data.h -
 
-  $Author: duerst $
+  $Author$
   created at: Mon 10 Dec 2007 14:01:47 JST 2007
 
   Copyright (C) 2007 Martin Duerst
@@ -13,6 +13,8 @@
 
 #ifndef RUBY_TRANSCODE_DATA_H
 #define RUBY_TRANSCODE_DATA_H 1
+
+RUBY_SYMBOL_EXPORT_BEGIN
 
 #define WORDINDEX_SHIFT_BITS 2
 #define WORDINDEX2INFO(widx)      ((widx) << WORDINDEX_SHIFT_BITS)
@@ -44,10 +46,26 @@
 #define makeSTR1LEN(len) ((len)-4)
 
 #define o1(b1)		(PType((((unsigned char)(b1))<<8)|ONEbt))
-#define o2(b1,b2)	(PType((((unsigned char)(b1))<<8)|(((unsigned char)(b2))<<16)|TWObt))
-#define o3(b1,b2,b3)	(PType(((((unsigned char)(b1))<<8)|(((unsigned char)(b2))<<16)|(((unsigned int)(unsigned char)(b3))<<24)|THREEbt)&0xffffffffU))
-#define o4(b0,b1,b2,b3)	(PType(((((unsigned char)(b1))<<8)|(((unsigned char)(b2))<<16)|(((unsigned char)(b3))<<24)|((((unsigned char)(b0))&0x07)<<5)|FOURbt)&0xffffffffU))
-#define g4(b0,b1,b2,b3) (PType(((((unsigned char)(b0))<<8)|(((unsigned char)(b2))<<16)|((((unsigned char)(b1))&0x0f)<<24)|((((unsigned int)(unsigned char)(b3))&0x0f)<<28)|GB4bt)&0xffffffffU))
+#define o2(b1,b2)	(PType((((unsigned char)(b1))<<8)|\
+			       (((unsigned char)(b2))<<16)|\
+			       TWObt))
+#define o3(b1,b2,b3)	(PType(((((unsigned char)(b1))<<8)|\
+				(((unsigned char)(b2))<<16)|\
+				(((unsigned int)(unsigned char)(b3))<<24)|\
+				THREEbt)&\
+			       0xffffffffU))
+#define o4(b0,b1,b2,b3)	(PType(((((unsigned char)(b1))<<8)|\
+				(((unsigned char)(b2))<<16)|\
+				(((unsigned int)(unsigned char)(b3))<<24)|\
+				((((unsigned char)(b0))&0x07)<<5)|\
+				FOURbt)&\
+			       0xffffffffU))
+#define g4(b0,b1,b2,b3) (PType(((((unsigned char)(b0))<<8)|\
+				(((unsigned char)(b2))<<16)|\
+				((((unsigned char)(b1))&0x0f)<<24)|\
+				((((unsigned int)(unsigned char)(b3))&0x0f)<<28)|\
+				GB4bt)&\
+			       0xffffffffU))
 #define funsio(diff)	(PType((((unsigned int)(diff))<<8)|FUNsio))
 
 #define getBT1(a)	((unsigned char)((a)>> 8))
@@ -56,9 +74,9 @@
 #define getBT0(a)	(((unsigned char)((a)>> 5)&0x07)|0xF0)   /* for UTF-8 only!!! */
 
 #define getGB4bt0(a)	((unsigned char)((a)>> 8))
-#define getGB4bt1(a)	((unsigned char)((a)>>24)&0x0F|0x30)
+#define getGB4bt1(a)	(((unsigned char)((a)>>24)&0x0F)|0x30)
 #define getGB4bt2(a)	((unsigned char)((a)>>16))
-#define getGB4bt3(a)	((unsigned char)((a)>>28)&0x0F|0x30)
+#define getGB4bt3(a)	(((unsigned char)((a)>>28)&0x0F)|0x30)
 
 #define o2FUNii(b1,b2)	(PType((((unsigned char)(b1))<<8)|(((unsigned char)(b2))<<16)|FUNii))
 
@@ -68,9 +86,9 @@
 #define THREETRAIL     /* legal but undefined if three more trailing UTF-8 */
 
 typedef enum {
-  asciicompat_converter,        /* ASCII-compatible -> ASCII-compatible */
-  asciicompat_decoder,          /* ASCII-incompatible -> ASCII-compatible */
-  asciicompat_encoder           /* ASCII-compatible -> ASCII-incompatible */
+    asciicompat_converter,        /* ASCII-compatible -> ASCII-compatible */
+    asciicompat_decoder,          /* ASCII-incompatible -> ASCII-compatible */
+    asciicompat_encoder           /* ASCII-compatible -> ASCII-incompatible */
   /* ASCII-incompatible -> ASCII-incompatible is intentionally omitted. */
 } rb_transcoder_asciicompat_type_t;
 
@@ -105,5 +123,17 @@ struct rb_transcoder {
 
 void rb_declare_transcoder(const char *enc1, const char *enc2, const char *lib);
 void rb_register_transcoder(const rb_transcoder *);
+
+/*
+ * To get rid of collision of initializer symbols in statically-linked encodings
+ * and transcoders
+ */
+#if defined(EXTSTATIC) && EXTSTATIC
+# define TRANS_INIT(name) void Init_trans_ ## name(void)
+#else
+# define TRANS_INIT(name) void Init_ ## name(void)
+#endif
+
+RUBY_SYMBOL_EXPORT_END
 
 #endif /* RUBY_TRANSCODE_DATA_H */
