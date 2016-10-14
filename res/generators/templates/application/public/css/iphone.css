@@ -347,7 +347,7 @@ div.itemValue {
 }
 
 .ui-content {
-    min-height: 480px;
+    /*min-height: 480px;*/
     background-image: url(../images/pinstripes.png);
 }
 
