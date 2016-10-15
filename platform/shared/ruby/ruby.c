@@ -1725,8 +1725,10 @@ get_arglen(int argc, char **argv)
 	    }
 	}
 # if defined(HAVE_SETENV) && defined(HAVE_UNSETENV)
-	{
-	    char *t = malloc(s - environ[0] + 1);
+	/*
+     {
+        // comment this block for remove memory overwrite issue
+        char *t = malloc(16000);//malloc(s - environ[0] + 1);
 	    for (i = 0; environ[i]; i++) {
 		size_t len = strlen(environ[i]) + 1;
 		memcpy(t, environ[i], len);
@@ -1734,6 +1736,7 @@ get_arglen(int argc, char **argv)
 		t += len;
 	    }
 	}
+     */
 # else
 	ruby_setenv("", NULL); /* duplicate environ vars */
 # endif

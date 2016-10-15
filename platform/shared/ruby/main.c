@@ -368,3 +368,18 @@ void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE d
 VALUE rho_asynchttp_request(const char* command, rho_param *p){return 0;}
 
 void rho_asynchttp_cancel(const char* cancel_callback){}
+
+
+const char* rho_get_remote_debug_host()
+{
+    return "UNSUPPORTED IN RUBY PURE CONSOLE MODE";
+}
+
+int rho_is_remote_debug()
+{
+    return 0;
+}
+
+int rho_rcclient_have_rhoconnect_client() {
+    return 0;
+}
