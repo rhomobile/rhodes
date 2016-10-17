@@ -3,6 +3,7 @@ package com.rho.camera;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -421,6 +422,22 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		}
 		return mImgPath;
 	}
+
+
+private static void makeDirsForFile(String filepath) {
+	try {
+		String folderPath = filepath.substring(0,filepath.lastIndexOf("/"));
+		File folderFile = new File(folderPath);
+		if (!folderFile.exists()) {
+			folderFile.mkdirs();
+		}
+	}
+	catch (Exception e) {
+	   e.printStackTrace();
+	}
+
+}
+
 	
 	/**
 	 * Copy image.
@@ -439,7 +456,8 @@ public class CameraRhoListener extends AbstractRhoListener implements
 		String file_name= rename.substring(lastIndex+1, rename.length());
 		
 		File mediafile  =  new File(RhoFileApi.getDbFilesPath(), file_name);
-		
+		makeDirsForFile(mediafile.getAbsolutePath());
+
 		//File mediafile  =  new File(RhoFileApi.getDbFilesPath(), rename);
 		FileInputStream finput= null;
 		FileOutputStream fout = null;

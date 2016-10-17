@@ -172,6 +172,16 @@ public void getProperties(List<String> arrayofNames, IMethodResult result) {
 						intent.putExtra("error", "Invalid file path");
 					}
          	}
+                try {
+                    String folderPath = filePath.substring(0,filePath.lastIndexOf("/"));
+                    File folderFile = new File(folderPath);
+                    if (!folderFile.exists()) {
+                        folderFile.mkdirs();
+                    }
+                }
+                catch (Exception e) {
+                   e.printStackTrace();
+                }
                 Uri resultUri = null;
                 BitmapFactory.Options options=new BitmapFactory.Options();
 		options.inPurgeable = true;
