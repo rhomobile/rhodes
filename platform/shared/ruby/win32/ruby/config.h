@@ -195,10 +195,13 @@ config.h: nul
 #endif
 
 //RHO
+#define HAVE_STRUCT_TIMEVAL 1
 #define RUBY_EXPORT 1
 #define HAVE_SOCKADDR_STORAGE 1
 #define HAVE_GETADDRINFO 1
 #define HAVE_GETHOSTNAME 1
+#define HAVE_TYPE_NET_LUID 1
+#define PRI_PIDT_PREFIX ""
 //RHO
 #endif
 #endif
