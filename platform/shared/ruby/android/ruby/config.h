@@ -304,6 +304,8 @@
 #define HAVE_SYS_SYSCALL_H 1
 #define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
 
+#define HAVE_STRUCT_TIMEVAL 1
+
 #  include <sys/select.h>
 //#  include <asm/page.h>
 
