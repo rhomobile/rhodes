@@ -787,6 +787,24 @@ int rho_sysimpl_get_property_iphone(char* szPropName, NSObject** resValue)
 {
     if (strcasecmp("platform", szPropName) == 0)
     {*resValue = [NSString stringWithUTF8String:"APPLE"]; return 1;}
+    else if (strcasecmp("phone_id", szPropName) == 0){
+        NSString* uniqueIdentifier = nil;
+        if( [UIDevice instancesRespondToSelector:@selector(identifierForVendor)] ) {
+            // iOS 6+
+            uniqueIdentifier = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+        } else {
+            // before iOS 6, so just generate an identifier and store it
+            uniqueIdentifier = [[NSUserDefaults standardUserDefaults] objectForKey:@"identiferForVendor"];
+            if( !uniqueIdentifier ) {
+                CFUUIDRef uuid = CFUUIDCreate(NULL);
+                uniqueIdentifier = (NSString*)CFUUIDCreateString(NULL, uuid);
+                CFRelease(uuid);
+                [[NSUserDefaults standardUserDefaults] setObject:uniqueIdentifier forKey:@"identifierForVendor"];
+            }
+        }
+        *resValue = uniqueIdentifier;
+        return 1;
+    }
     else if (strcasecmp("locale", szPropName) == 0)
     {*resValue = rho_sys_get_locale_iphone(); return 1; }
     else if (strcasecmp("country", szPropName) == 0) {
