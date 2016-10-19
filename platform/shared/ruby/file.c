@@ -1530,6 +1530,7 @@ rb_file_exist_p(VALUE obj, VALUE fname)
 {
     struct stat st;
 
+//RHO
 #ifdef DOSISH
 /*    int ret = 1;
     int fd;
@@ -1540,6 +1541,8 @@ rb_file_exist_p(VALUE obj, VALUE fname)
     if (fd == -1) return Qfalse;
     (void)close(fd);
     return Qtrue; */
+
+/*
     if (TYPE(fname) == T_STRING) 
     {
         DWORD res = 0;
@@ -1552,8 +1555,9 @@ rb_file_exist_p(VALUE obj, VALUE fname)
 
         return Qtrue;
     }
+*/
 #endif
-
+//RHO
     if (rb_stat(fname, &st) < 0) return Qfalse;
     return Qtrue;
 }

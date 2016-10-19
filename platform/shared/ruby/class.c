@@ -2,7 +2,7 @@
 
   class.c -
 
-  $Author: yugui $
+  $Author$
   created at: Tue Aug 10 15:05:44 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -547,8 +547,6 @@ boot_defclass(const char *name, VALUE super)
 void
 Init_class_hierarchy(void)
 {
-    id_attached = rb_intern("__attached__");
-
     //RHO 
     rb_cBasicObject = 0;
     rb_cObject = 0;

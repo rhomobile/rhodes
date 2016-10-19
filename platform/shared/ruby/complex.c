@@ -2140,12 +2140,12 @@ Init_Complex(void)
     id_negate = rb_intern("-@");
     id_numerator = rb_intern("numerator");
     id_quo = rb_intern("quo");
-    id_real = rb_intern("real");
     id_real_p = rb_intern("real?");
     id_to_f = rb_intern("to_f");
     id_to_i = rb_intern("to_i");
     id_to_r = rb_intern("to_r");
-    id_to_s = rb_intern("to_s");
+    id_i_real = rb_intern("@real");
+    id_i_imag = rb_intern("@image"); /* @image, not @imag */
 
     rb_cComplex = rb_define_class("Complex", rb_cNumeric);
 
