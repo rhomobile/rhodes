@@ -3,7 +3,7 @@
   missing.h - prototype for *.c in ./missing, and
   	      for missing timeval struct
 
-  $Author: mame $
+  $Author$
   created at: Sat May 11 23:46:03 JST 2002
 
 ************************************************/
@@ -18,18 +18,43 @@ extern "C" {
 #endif
 #endif
 
+#include "ruby/config.h"
+#include <stddef.h>
+#include <math.h> /* for INFINITY and NAN */
+#ifdef RUBY_ALTERNATIVE_MALLOC_HEADER
+# include RUBY_ALTERNATIVE_MALLOC_HEADER
+#endif
+#ifdef RUBY_EXTCONF_H
+#include RUBY_EXTCONF_H
+#endif
+
+#if !defined(HAVE_STRUCT_TIMEVAL) || !defined(HAVE_STRUCT_TIMESPEC)
+#if defined(HAVE_TIME_H)
+# include <time.h>
+#endif
 #if defined(HAVE_SYS_TIME_H)
-#  include <sys/time.h>
-#elif !defined(_WIN32)
-#  define time_t long
+# include <sys/time.h>
+#endif
+#endif
+
+#ifndef M_PI
+# define M_PI 3.14159265358979323846
+#endif
+#ifndef M_PI_2
+# define M_PI_2 (M_PI/2)
+#endif
+
+#ifndef RUBY_SYMBOL_EXPORT_BEGIN
+# define RUBY_SYMBOL_EXPORT_BEGIN /* begin */
+# define RUBY_SYMBOL_EXPORT_END   /* end */
+#endif
+
+#if !defined(HAVE_STRUCT_TIMEVAL)
 struct timeval {
     time_t tv_sec;	/* seconds */
     long tv_usec;	/* microseconds */
 };
-#endif
-#if defined(HAVE_SYS_TYPES_H)
-#  include <sys/types.h>
-#endif
+#endif /* HAVE_STRUCT_TIMEVAL */
 
 #if !defined(HAVE_STRUCT_TIMESPEC)
 struct timespec {
@@ -45,9 +70,14 @@ struct timezone {
 };
 #endif
 
+#ifdef RUBY_EXPORT
+#undef RUBY_EXTERN
+#endif
 #ifndef RUBY_EXTERN
 #define RUBY_EXTERN extern
 #endif
+
+RUBY_SYMBOL_EXPORT_BEGIN
 
 #ifndef HAVE_ACOSH
 RUBY_EXTERN double acosh(double);
@@ -65,6 +95,10 @@ RUBY_EXTERN int dup2(int, int);
 
 #ifndef HAVE_EACCESS
 RUBY_EXTERN int eaccess(const char*, int);
+#endif
+
+#ifndef HAVE_ROUND
+RUBY_EXTERN double round(double);	/* numeric.c */
 #endif
 
 #ifndef HAVE_FINITE
@@ -102,9 +136,31 @@ RUBY_EXTERN double lgamma_r(double, int *);
 RUBY_EXTERN double cbrt(double);
 #endif
 
+#if !defined(HAVE_INFINITY) || !defined(HAVE_NAN)
+union bytesequence4_or_float {
+  unsigned char bytesequence[4];
+  float float_value;
+};
+#endif
+
+#ifndef INFINITY
+/** @internal */
+RUBY_EXTERN const union bytesequence4_or_float rb_infinity;
+# define INFINITY (rb_infinity.float_value)
+#endif
+
+#ifndef NAN
+/** @internal */
+RUBY_EXTERN const union bytesequence4_or_float rb_nan;
+# define NAN (rb_nan.float_value)
+#endif
+
 #ifndef isinf
 # ifndef HAVE_ISINF
 #  if defined(HAVE_FINITE) && defined(HAVE_ISNAN)
+#    ifdef HAVE_IEEEFP_H
+#    include <ieeefp.h>
+#    endif
 #  define isinf(x) (!finite(x) && !isnan(x))
 #  else
 RUBY_EXTERN int isinf(double);
@@ -116,6 +172,17 @@ RUBY_EXTERN int isinf(double);
 # ifndef HAVE_ISNAN
 RUBY_EXTERN int isnan(double);
 # endif
+#endif
+
+#ifndef isfinite
+# ifndef HAVE_ISFINITE
+#   define HAVE_ISFINITE 1
+#   define isfinite(x) finite(x)
+# endif
+#endif
+
+#ifndef HAVE_NEXTAFTER
+RUBY_EXTERN double nextafter(double x, double y);
 #endif
 
 /*
@@ -177,6 +244,19 @@ RUBY_EXTERN int ruby_getsockname(int, struct sockaddr *, socklen_t *);
 RUBY_EXTERN int ruby_shutdown(int, int);
 RUBY_EXTERN int ruby_close(int);
 #endif
+
+#ifndef HAVE_SETPROCTITLE
+RUBY_EXTERN void setproctitle(const char *fmt, ...);
+#endif
+
+#ifndef HAVE_EXPLICIT_BZERO
+RUBY_EXTERN void explicit_bzero(void *b, size_t len);
+# if defined SecureZeroMemory
+#   define explicit_bzero(b, len) SecureZeroMemory(b, len)
+# endif
+#endif
+
+RUBY_SYMBOL_EXPORT_END
 
 #if defined(__cplusplus)
 #if 0

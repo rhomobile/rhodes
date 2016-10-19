@@ -2,7 +2,7 @@
 
   ruby/version.h -
 
-  $Author: akr $
+  $Author$
   created at: Wed May 13 12:56:56 JST 2009
 
   Copyright (C) 1993-2009 Yukihiro Matsumoto
@@ -13,7 +13,7 @@
 
 /*
  * This file contains only
- * - never-changable informations, and
+ * - never-changeable informations, and
  * - interfaces accessible from extension libraries.
  *
  * Never try to check RUBY_VERSION_CODE etc in extension libraries,
@@ -29,6 +29,12 @@
 #define RUBY_BIRTH_MONTH 2
 #define RUBY_BIRTH_DAY 24
 
+/* API version */
+#define RUBY_API_VERSION_MAJOR 2
+#define RUBY_API_VERSION_MINOR 3
+#define RUBY_API_VERSION_TEENY 0
+#define RUBY_API_VERSION_CODE (RUBY_API_VERSION_MAJOR*10000+RUBY_API_VERSION_MINOR*100+RUBY_API_VERSION_TEENY)
+
 #ifdef RUBY_EXTERN
 #if defined(__cplusplus)
 extern "C" {
@@ -36,6 +42,9 @@ extern "C" {
 } /* satisfy cc-mode */
 #endif
 #endif
+
+RUBY_SYMBOL_EXPORT_BEGIN
+
 /*
  * Interfaces from extension libraries.
  *
@@ -43,6 +52,7 @@ extern "C" {
  * necessary or not, and if the answer was yes, think twice a week
  * later again.
  */
+RUBY_EXTERN const int ruby_api_version[3];
 RUBY_EXTERN const char ruby_version[];
 RUBY_EXTERN const char ruby_release_date[];
 RUBY_EXTERN const char ruby_platform[];
@@ -50,6 +60,9 @@ RUBY_EXTERN const int  ruby_patchlevel;
 RUBY_EXTERN const char ruby_description[];
 RUBY_EXTERN const char ruby_copyright[];
 RUBY_EXTERN const char ruby_engine[];
+
+RUBY_SYMBOL_EXPORT_END
+
 #if defined(__cplusplus)
 #if 0
 { /* satisfy cc-mode */
