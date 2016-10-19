@@ -398,12 +398,13 @@ str_conv_enc(VALUE str, rb_encoding *from, rb_encoding *to)
 }
 #endif
 
-void ruby_init_loadpath_safe(int safe_level);
+//RHO: implement szRoot
+void ruby_init_loadpath_safe(int safe_level, const char* szRoot);
 
 void
-ruby_init_loadpath(void)
+ruby_init_loadpath(const char* szRoot)
 {
-    ruby_init_loadpath_safe(0);
+    ruby_init_loadpath_safe(0, szRoot);
 }
 
 #if defined(LOAD_RELATIVE) && defined(HAVE_DLADDR)
@@ -434,7 +435,7 @@ dladdr_path(const void* addr)
 #define INITIAL_LOAD_PATH_MARK rb_intern_const("@gem_prelude_index")
 
 void
-ruby_init_loadpath_safe(int safe_level)
+ruby_init_loadpath_safe(int safe_level, const char* szRoot)
 {
     VALUE load_path;
     ID id_initial_load_path_mark;
@@ -454,6 +455,11 @@ ruby_init_loadpath_safe(int safe_level)
     size_t baselen;
     char *p;
 
+    //RHO
+    if ( szRoot != 0 ) {
+    	strncpy(libpath, szRoot, sizeof(libpath) - 1);
+    } else {
+
 #if defined _WIN32 || defined __CYGWIN__
     sopath = rb_str_new(0, MAXPATHLEN);
     libpath = RSTRING_PTR(sopath);
@@ -462,6 +468,8 @@ ruby_init_loadpath_safe(int safe_level)
     sopath = dladdr_path((void *)(VALUE)expand_include_path);
     libpath = RSTRING_PTR(sopath);
 #endif
+	}
+	//RHO
 
 #if !VARIABLE_LIBPATH
     libpath[sizeof(libpath) - 1] = '\0';

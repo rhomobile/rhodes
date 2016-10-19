@@ -2243,7 +2243,8 @@ void ruby_set_script_name(VALUE name);
 void ruby_prog_init(void);
 void ruby_set_argv(int, char**);
 void *ruby_process_options(int, char**);
-void ruby_init_loadpath(void);
+//RHO
+void ruby_init_loadpath(const char* szRoot);
 void ruby_incpush(const char*);
 void ruby_sig_finalize(void);
 
