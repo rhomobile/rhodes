@@ -1,8 +1,9 @@
 /**********************************************************************
-  ascii.c -  Oniguruma (regular expression library)
+  ascii.c -  Onigmo (Oniguruma-mod) (regular expression library)
 **********************************************************************/
 /*-
  * Copyright (c) 2002-2006  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2011       K.Takata  <kentkt AT csc DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +29,10 @@
  */
 
 #include "regenc.h"
+#include "encindex.h"
+#ifndef ENCINDEX_ASCII
+#define ENCINDEX_ASCII 0
+#endif
 
 OnigEncodingDefine(ascii, ASCII) = {
   onigenc_single_byte_mbc_enc_len,
@@ -45,7 +50,9 @@ OnigEncodingDefine(ascii, ASCII) = {
   onigenc_ascii_is_code_ctype,
   onigenc_not_support_get_ctype_code_range,
   onigenc_single_byte_left_adjust_char_head,
-  onigenc_always_true_is_allowed_reverse_match
+  onigenc_always_true_is_allowed_reverse_match,
+  ENCINDEX_ASCII,
+  ONIGENC_FLAG_NONE,
 };
 ENC_ALIAS("BINARY", "ASCII-8BIT")
 ENC_REPLICATE("IBM437", "ASCII-8BIT")
