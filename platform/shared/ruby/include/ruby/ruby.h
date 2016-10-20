@@ -1715,6 +1715,8 @@ ID rb_check_id(volatile VALUE *);
 ID rb_to_id(VALUE);
 VALUE rb_id2str(ID);
 VALUE rb_sym2str(VALUE);
+VALUE rb_to_symbol(VALUE name);
+VALUE rb_check_symbol(volatile VALUE *namep);
 
 //RHO
 extern int const_cache_version;
@@ -1722,7 +1724,7 @@ extern int const_cache_version;
 
 
 //RHO
-#define CONST_ID_CACHE(result, str)			\
+#define RUBY_CONST_ID_CACHE(result, str)			\
     {							\
     static ID rb_intern_id_cache;               \
     static ID rb_intern_cache_version;               \
@@ -1732,40 +1734,12 @@ extern int const_cache_version;
     }       \
 	result rb_intern_id_cache;			\
     }
-#define CONST_ID(var, str) \
-    do CONST_ID_CACHE(var =, str) while (0)
-#if 0 //#ifdef __GNUC__
-/* __builtin_constant_p and statement expression is available
- * since gcc-2.7.2.3 at least. */
-#define rb_intern(str) \
-    (__builtin_constant_p(str) ? \
-        __extension__ (CONST_ID_CACHE((ID), str)) :     \
-        rb_intern(str))
-#define rb_intern_const(str) \
-    (__builtin_constant_p(str) ? \
-     __extension__ (rb_intern2(str, (long)strlen(str))) : \
-     (rb_intern)(str))
-#else
-#define rb_intern_const(str) rb_intern2(str, (long)strlen(str))
-#define rb_intern(str) rb_intern_const((str))
-#endif
-//RHO
-
-VALUE rb_to_symbol(VALUE name);
-VALUE rb_check_symbol(volatile VALUE *namep);
-
-#define RUBY_CONST_ID_CACHE(result, str)		\
-    {							\
-	static ID rb_intern_id_cache;			\
-	if (!rb_intern_id_cache)			\
-	    rb_intern_id_cache = rb_intern2((str), (long)strlen(str)); \
-	result rb_intern_id_cache;			\
-    }
 #define RUBY_CONST_ID(var, str) \
     do RUBY_CONST_ID_CACHE((var) =, (str)) while (0)
 #define CONST_ID_CACHE(result, str) RUBY_CONST_ID_CACHE(result, str)
 #define CONST_ID(var, str) RUBY_CONST_ID(var, str)
-#ifdef __GNUC__
+#if 0 
+//#ifdef __GNUC__
 /* __builtin_constant_p and statement expression is available
  * since gcc-2.7.2.3 at least. */
 #define rb_intern(str) \
@@ -1778,7 +1752,9 @@ VALUE rb_check_symbol(volatile VALUE *namep);
      (rb_intern)(str))
 #else
 #define rb_intern_const(str) rb_intern2((str), (long)strlen(str))
+#define rb_intern(str) rb_intern_const((str))
 #endif
+//RHO
 
 const char *rb_class2name(VALUE);
 const char *rb_obj_classname(VALUE);

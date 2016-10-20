@@ -58,7 +58,7 @@ extern /*RHO static*/ VALUE eval_string_with_cref(VALUE self, VALUE src, VALUE s
 static VALUE loadISeqFromFile(VALUE path);
 VALUE require_compiled(VALUE fname, VALUE* result, int bLoad);
 VALUE RhoPreparePath(VALUE path);
-VALUE rb_iseq_eval(VALUE iseqval);
+//VALUE rb_iseq_eval(VALUE iseqval);
 static void Init_RhoJSON();
 
 VALUE __rhoGetCurrentDir(void)

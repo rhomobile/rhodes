@@ -1178,6 +1178,7 @@ namespace "build" do
       mkdir_p libdir unless File.directory? libdir
 
       args = []
+      args << "-DRUBY_EXPORT"
       args << "-Wno-uninitialized"
       args << "-Wno-missing-field-initializers"
       args << '-Wno-shadow'
