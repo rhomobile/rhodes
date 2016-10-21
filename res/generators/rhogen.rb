@@ -286,6 +286,232 @@ module Rhogen
     end
   end
 
+  class JavascriptAppGenerator < BaseGenerator
+
+    def self.source_root
+      File.join(File.dirname(__FILE__), 'templates', 'application')
+    end
+
+    desc <<-DESC
+      Generates a new rhodes application.
+
+      Options:
+        --rhoconnect - include rhoconnect-client in application
+
+      Required:
+        name        - application name
+
+      Optional:
+        syncserver  - url to the rhosync application (i.e. "http://localhost:9292")
+        zip_url     - optional url to zipfile download of bundle (this can be your RhoHub Bundle URL)
+    DESC
+
+    #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
+
+    option :rhoconnect, :desc => '', :as => :boolean, :default => false
+
+    first_argument :name, :required => true, :desc => 'application name'
+    second_argument :syncserver, :required => false, :desc => 'url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/")'
+    third_argument :zip_url, :required => false, :desc => 'optional url to zipfile download of bundle'
+
+    template :config do |template|
+      zip_url ||= ''
+      syncserver ||= ''
+      template.source = 'rhoconfig.txt'
+      template.destination = "#{name}/rhoconfig.txt"
+    end
+
+    template :buildyml do |template|
+      @sdk_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+      @sdk_path.gsub!('\\', '/')
+      @app_name = name
+      @app_name_cleared = name.downcase.split(/[^a-zA-Z0-9\.\-]/).map { |w| w.downcase }.join("")
+      puuid = UUID.new
+      generated_uuid = puuid.generate
+      @productid = generated_uuid
+      @uid = '0x'+(0xE0000000 + rand(0xFFFFFFF)).to_s(16)
+      @rhoconnectclient_ext = '"rhoconnect-client"' if rhoconnect
+      template.source = 'build.yml'
+      template.destination = "#{name}/build.yml"
+    end
+
+    template :gitignore do |template|
+      template.source = 'gitignore'
+      template.destination = "#{name}/.gitignore"
+    end
+
+    template :rubyversion do |template|
+      template.source = 'ruby-version'
+      template.destination = "#{name}/.ruby-version"
+    end
+
+    template :gemfile do |template|
+      template.source = 'Gemfile'
+      template.destination = "#{name}/Gemfile"
+    end
+
+    template :application do |template|
+      template.source = 'app/application.rb'
+      template.destination = "#{name}/app/application.rb"
+    end
+
+    template :index do |template|
+      template.source = 'app/index.erb'
+      template.destination = "#{name}/app/index.erb"
+    end
+
+    template :layout do |template|
+      template.source = 'app/layout.erb'
+      template.destination = "#{name}/app/layout.erb"
+    end
+
+    template :loading do |template|
+      template.source = 'app/loading.html'
+      template.destination = "#{name}/app/loading.html"
+    end
+
+    file :loadingpng do |file|
+      file.source = 'app/loading.png'
+      file.destination = "#{name}/app/loading.png"
+    end
+
+    file :loadingpng5 do |file|
+      file.source = 'app/loading-568h@2x.png'
+      file.destination = "#{name}/app/loading-568h@2x.png"
+    end
+
+    file :loadingpng51 do |file|
+      file.source = 'app/loading-667h@2x.png'
+      file.destination = "#{name}/app/loading-667h@2x.png"
+    end
+
+    file :loadingpng52 do |file|
+      file.source = 'app/loading-736h@3x.png'
+      file.destination = "#{name}/app/loading-736h@3x.png"
+    end
+
+    file :loadingpngl do |file|
+      file.source = 'app/loading-Landscape.png'
+      file.destination = "#{name}/app/loading-Landscape.png"
+    end
+
+    file :loadingpngll do |file|
+      file.source = 'app/loading-LandscapeLeft.png'
+      file.destination = "#{name}/app/loading-LandscapeLeft.png"
+    end
+
+    file :loadingpnglr do |file|
+      file.source = 'app/loading-LandscapeRight.png'
+      file.destination = "#{name}/app/loading-LandscapeRight.png"
+    end
+
+    file :loadingpngp do |file|
+      file.source = 'app/loading-Portrait.png'
+      file.destination = "#{name}/app/loading-Portrait.png"
+    end
+
+    file :loadingpngpud do |file|
+      file.source = 'app/loading-PortraitUpsideDown.png'
+      file.destination = "#{name}/app/loading-PortraitUpsideDown.png"
+    end
+
+    file :loadingpngl2 do |file|
+      file.source = 'app/loading-Landscape@2x.png'
+      file.destination = "#{name}/app/loading-Landscape@2x.png"
+    end
+
+    file :loadingpngll2 do |file|
+      file.source = 'app/loading-LandscapeLeft@2x.png'
+      file.destination = "#{name}/app/loading-LandscapeLeft@2x.png"
+    end
+
+    file :loadingpnglr2 do |file|
+      file.source = 'app/loading-LandscapeRight@2x.png'
+      file.destination = "#{name}/app/loading-LandscapeRight@2x.png"
+    end
+
+    file :loadingpngp2 do |file|
+      file.source = 'app/loading-Portrait@2x.png'
+      file.destination = "#{name}/app/loading-Portrait@2x.png"
+    end
+
+    file :loadingpngpud2 do |file|
+      file.source = 'app/loading-PortraitUpsideDown@2x.png'
+      file.destination = "#{name}/app/loading-PortraitUpsideDown@2x.png"
+    end
+
+    file :loadingpngx do |file|
+      file.source = 'app/loading@2x.png'
+      file.destination = "#{name}/app/loading@2x.png"
+    end
+
+
+    directory :helpers do |directory|
+      directory.source = 'app/helpers'
+      directory.destination = "#{name}/app/helpers"
+    end
+
+    directory :icon do |directory|
+      directory.source = 'icon'
+      directory.destination = "#{name}/icon"
+    end
+
+    directory :production do |directory|
+      directory.source = 'production'
+      directory.destination = "#{name}/production"
+    end
+
+    template :settings1 do |template|
+      template.source = 'app/Settings/controller.rb'
+      template.destination = "#{name}/app/Settings/controller.rb"
+    end
+    template :settings2 do |template|
+      template.source = 'app/Settings/err_sync.erb'
+      template.destination = "#{name}/app/Settings/err_sync.erb"
+    end
+    template :settings3 do |template|
+      template.source = 'app/Settings/home.erb'
+      template.destination = "#{name}/app/Settings/home.erb"
+    end
+    template :settings4 do |template|
+      template.source = 'app/Settings/index.erb'
+      template.destination = "#{name}/app/Settings/index.erb"
+    end
+    template :settings5 do |template|
+      template.source = 'app/Settings/login.erb'
+      template.destination = "#{name}/app/Settings/login.erb"
+    end
+    template :settings6 do |template|
+      template.source = 'app/Settings/reset.erb'
+      template.destination = "#{name}/app/Settings/reset.erb"
+    end
+    template :settings7 do |template|
+      template.source = 'app/Settings/wait.erb'
+      template.destination = "#{name}/app/Settings/wait.erb"
+    end
+
+    file :androidmanifesterb do |file|
+      file.source = 'AndroidManifest.erb'
+      file.destination = "#{name}/AndroidManifest.erb"
+    end
+
+=begin
+    directory :settings do |directory|
+      directory.source = 'app/Settings'
+      directory.destination = "#{name}/app/Settings/"
+    end
+=end
+    directory :public do |directory|
+      directory.source = 'public'
+      directory.destination = "#{name}/public/"
+    end
+
+    template :rakefile do |template|
+      template.source = 'Rakefile'
+      template.destination = "#{name}/Rakefile"
+    end
+  end
+
   class ModelGenerator < BaseGenerator
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'model')
@@ -411,9 +637,6 @@ module Rhogen
     end
 
   end
-
-
-
 
   class IphoneProjectGenerator < BaseGenerator
 
@@ -680,12 +903,6 @@ module Rhogen
 
 
   end
-
-
-
-
-
-
 
   class ExtensionGenerator < BaseGenerator
 
@@ -1349,6 +1566,7 @@ module Rhogen
 
 
   add :app, AppGenerator
+  add :jsapp, JavascriptAppGenerator
   add :model, ModelGenerator
   add :spec, SpecGenerator
   add :extension, ExtensionGenerator
