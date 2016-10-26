@@ -1901,6 +1901,7 @@ namespace "build" do
           #next
         end
 
+        next if ((!package) or (package.empty?))
 
         r_dir = File.join $tmpdir, 'gen', package.split('.')
         mkdir_p r_dir
