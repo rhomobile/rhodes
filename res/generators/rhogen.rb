@@ -60,7 +60,7 @@ module Rhogen
     alias_method :module_name, :class_name
   end
 
-  class AppGenerator < BaseGenerator
+  class RubyAppGenerator < BaseGenerator
 
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'application')
@@ -317,7 +317,7 @@ module Rhogen
     template :config do |template|
       zip_url ||= ''
       syncserver ||= ''
-      template.source = 'rhoconfig.txt'
+      template.source = 'javascript_rhoconfig.txt'
       template.destination = "#{name}/rhoconfig.txt"
     end
 
@@ -331,7 +331,7 @@ module Rhogen
       @productid = generated_uuid
       @uid = '0x'+(0xE0000000 + rand(0xFFFFFFF)).to_s(16)
       @rhoconnectclient_ext = '"rhoconnect-client"' if rhoconnect
-      template.source = 'build.yml'
+      template.source = 'javascript_build.yml'
       template.destination = "#{name}/build.yml"
     end
 
@@ -351,18 +351,33 @@ module Rhogen
     end
 
     template :application do |template|
-      template.source = 'app/application.rb'
-      template.destination = "#{name}/app/application.rb"
+      template.source = 'app/javascript_index.html'
+      template.destination = "#{name}/app/index.html"
     end
 
-    template :index do |template|
-      template.source = 'app/index.erb'
-      template.destination = "#{name}/app/index.erb"
+    file :applicationScript do |file|
+      file.source = 'app/javascript_script.js'
+      file.destination = "#{name}/app/script.js"
     end
 
-    template :layout do |template|
-      template.source = 'app/layout.erb'
-      template.destination = "#{name}/app/layout.erb"
+    template :options do |template|
+      template.source = 'app/settings/javascript_index.html'
+      template.destination = "#{name}/app/settings/index.html"
+    end
+
+    file :optionsScript do |file|
+      file.source = 'app/settings/javascript_index.js'
+      file.destination = "#{name}/app/settings/index.js"
+    end
+
+    template :login do |template|
+      template.source = 'app/settings/javascript_login.html'
+      template.destination = "#{name}/app/settings/login.html"
+    end
+
+    file :loginScript do |file|
+      file.source = 'app/settings/javascript_login.js'
+      file.destination = "#{name}/app/settings/login.js"
     end
 
     template :loading do |template|
@@ -445,11 +460,10 @@ module Rhogen
       file.destination = "#{name}/app/loading@2x.png"
     end
 
-
-    directory :helpers do |directory|
-      directory.source = 'app/helpers'
-      directory.destination = "#{name}/app/helpers"
-    end
+    # directory :helpers do |directory|
+    #   directory.source = 'app/helpers'
+    #   directory.destination = "#{name}/app/helpers"
+    # end
 
     directory :icon do |directory|
       directory.source = 'icon'
@@ -461,6 +475,7 @@ module Rhogen
       directory.destination = "#{name}/production"
     end
 
+=begin
     template :settings1 do |template|
       template.source = 'app/Settings/controller.rb'
       template.destination = "#{name}/app/Settings/controller.rb"
@@ -489,6 +504,7 @@ module Rhogen
       template.source = 'app/Settings/wait.erb'
       template.destination = "#{name}/app/Settings/wait.erb"
     end
+=end
 
     file :androidmanifesterb do |file|
       file.source = 'AndroidManifest.erb'
@@ -1565,7 +1581,7 @@ module Rhogen
   end
 
 
-  add :app, AppGenerator
+  add :app, RubyAppGenerator
   add :jsapp, JavascriptAppGenerator
   add :model, ModelGenerator
   add :spec, SpecGenerator
