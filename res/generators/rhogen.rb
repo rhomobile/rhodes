@@ -528,7 +528,7 @@ module Rhogen
     end
   end
 
-  class ModelGenerator < BaseGenerator
+  class RubyModelGenerator < BaseGenerator
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'model')
     end
@@ -596,6 +596,136 @@ module Rhogen
       template.source = 'spec.rb'
       template.destination = "app/test/#{underscore_name}_spec.rb"
     end
+
+    def attributes?
+      self.attributes && !self.attributes.empty?
+    end
+
+    def syncserver_exists?
+      found = true
+      File.open('rhoconfig.txt').each do |line|
+        found = false if line.match("syncserver\ =\ ''") or line.match("syncserver\ =\ \"\"") or line.match("syncserver\ =\ nil")
+      end
+      found
+    end
+  end
+
+  class JavascriptModelGenerator < BaseGenerator
+    def self.source_root
+      File.join(File.dirname(__FILE__), 'templates', 'model')
+    end
+
+    desc <<-DESC
+      Generates a new model for a rhodes application.
+
+      Required:
+        name        - model name
+        attributes  - list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes
+
+      Optional:
+        priority    - sync priority (i.e. 100)
+        type        - DEPRECATED: type of model (i.e. "ask" for an ask model). This will be removed in 1.5, instead use
+                      search method.
+    DESC
+
+    #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
+
+    first_argument :name, :required => true, :desc => 'model name'
+    second_argument :attributes, :as => :array, :required => true, :desc => "list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes"
+    third_argument :priority, :required => false, :desc => "optional sync priority (i.e. 100)"
+    fourth_argument :type, :required => false, :desc => "optional type (i.e. \"ask\" for an ask model)"
+
+    #template :config do |template|
+    #  @model_sync_server = syncserver_exists? ? class_name : ''
+    #  template.source = 'config.rb'
+    #  template.destination = "app/#{name.modulize}/config.rb"
+    #end
+
+
+    template :javascript_model do |template|
+      template.source = "javascript_model.js"
+      template.destination = "app/#{name.modulize}/model.js"
+    end
+
+    template :javascript_index do |template|
+      template.source = "javascript_index.html"
+      template.destination = "app/#{name.modulize}/index.html"
+    end
+
+    template :javascript_index_script do |template|
+      template.source = "javascript_index.js"
+      template.destination = "app/#{name.modulize}/index.js"
+    end
+
+    template :javascript_new do |template|
+      template.source = "javascript_new.html"
+      template.destination = "app/#{name.modulize}/new.html"
+    end
+
+    template :javascript_new_script do |template|
+      template.source = "javascript_new.js"
+      template.destination = "app/#{name.modulize}/new.js"
+    end
+
+    template :javascript_show do |template|
+      template.source = "javascript_show.html"
+      template.destination = "app/#{name.modulize}/show.html"
+    end
+
+    template :javascript_show_script do |template|
+      template.source = "javascript_show.js"
+      template.destination = "app/#{name.modulize}/show.js"
+    end
+
+    template :javascript_edit do |template|
+      template.source = "javascript_edit.html"
+      template.destination = "app/#{name.modulize}/edit.html"
+    end
+
+    template :javascript_edit_script do |template|
+      template.source = "javascript_edit.js"
+      template.destination = "app/#{name.modulize}/edit.js"
+    end
+
+
+
+    # template :index do |template|
+    #   template.source = 'index.erb'
+    #   template.destination = "app/#{name.modulize}/index.erb"
+    # end
+    #
+    # template :edit do |template|
+    #   template.source = 'edit.erb'
+    #   template.destination = "app/#{name.modulize}/edit.erb"
+    # end
+    #
+    # template :new do |template|
+    #   template.source = 'new.erb'
+    #   template.destination = "app/#{name.modulize}/new.erb"
+    # end
+    #
+    # template :new do |template|
+    #   template.source = 'show.erb'
+    #   template.destination = "app/#{name.modulize}/show.erb"
+    # end
+    #
+    # template :controller do |template|
+    #   underscore_name = name.modulize.split(/(?=[A-Z])/).map { |w| w.downcase }.join('_')
+    #   template.source = 'controller.rb'
+    #   template.destination = "app/#{name.modulize}/#{underscore_name}_controller.rb"
+    # end
+    #
+    # template :model do |template|
+    #   underscore_name = name.modulize.split(/(?=[A-Z])/).map { |w| w.downcase }.join('_')
+    #   template.source = 'model.rb'
+    #   template.destination = "app/#{name.modulize}/#{underscore_name}.rb"
+    # end
+    #
+    # template :spec do |template|
+    #   underscore_name = name.modulize.split(/(?=[A-Z])/).map { |w| w.downcase }.join('_')
+    #   template.source = 'spec.rb'
+    #   template.destination = "app/test/#{underscore_name}_spec.rb"
+    # end
 
     def attributes?
       self.attributes && !self.attributes.empty?
@@ -1583,7 +1713,8 @@ module Rhogen
 
   add :app, RubyAppGenerator
   add :jsapp, JavascriptAppGenerator
-  add :model, ModelGenerator
+  add :model, RubyModelGenerator
+  add :jsmodel, JavascriptModelGenerator
   add :spec, SpecGenerator
   add :extension, ExtensionGenerator
   add :api, ApiGenerator
