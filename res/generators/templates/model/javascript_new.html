@@ -6,17 +6,17 @@
     <title><%= class_name %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
     <link rel="stylesheet" href="/public/bootstrap-3.3.7/css/bootstrap.min.css">
-    <script type="text/javascript" src="/public/jquery/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="/public/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="/public/css/style.css">
 
-    <script type="text/javascript" src="/public/api/rhoapi-modules.js"></script>
-    <script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORM.js"></script>
-    <script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORMHelper.js"></script>
-    <script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-Ruby-RunTime.js"></script>
+    <script type="text/javascript" src="/public/jquery/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="/public/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="model.js"></script>
-    <script type="text/javascript" src="new.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-ORM.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-ORMHelper.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-Ruby-RunTime.js"></script>
+
+    <script type="text/javascript" src="index.js"></script>
 </head>
 
 <body>
@@ -50,6 +50,13 @@
     </form>
 
 </div>
+
+<script>
+    window.addEventListener("load", function () {
+        var page = new NewPage();
+        page.init();
+    });
+</script>
 
 </body>
 

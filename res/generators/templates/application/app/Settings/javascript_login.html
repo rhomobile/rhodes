@@ -8,11 +8,15 @@
     <link rel="stylesheet" href="/public/bootstrap-3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="/public/css/style.css">
 
-    <script src="/public/jquery/jquery-3.1.1.min.js" type="text/javascript"></script>
-    <script src="/public/bootstrap-3.3.7/js/bootstrap.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/public/jquery/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="/public/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 
-    <script src="/public/api/rhoapi-modules.js" type="text/javascript"></script>
-    <script src="login.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-ORM.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-ORMHelper.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-Ruby-RunTime.js"></script>
+
+    <script type="text/javascript" src="../index.js"></script>
 </head>
 
 <body>
@@ -46,6 +50,13 @@
     <div id="alert" class="alert alert-danger hidden"></div>
 
 </div>
+
+<script>
+    window.addEventListener("load", function () {
+        var page = new LoginPage();
+        page.init();
+    });
+</script>
 
 </body>
 

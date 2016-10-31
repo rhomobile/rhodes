@@ -356,8 +356,8 @@ module Rhogen
     end
 
     file :applicationScript do |file|
-      file.source = 'app/javascript_script.js'
-      file.destination = "#{name}/app/script.js"
+      file.source = 'app/javascript_index.js'
+      file.destination = "#{name}/app/index.js"
     end
 
     template :options do |template|
@@ -365,20 +365,20 @@ module Rhogen
       template.destination = "#{name}/app/settings/index.html"
     end
 
-    file :optionsScript do |file|
-      file.source = 'app/settings/javascript_index.js'
-      file.destination = "#{name}/app/settings/index.js"
-    end
+    # file :optionsScript do |file|
+    #   file.source = 'app/settings/javascript_settings.js'
+    #   file.destination = "#{name}/app/settings/settings.js"
+    # end
 
     template :login do |template|
       template.source = 'app/settings/javascript_login.html'
       template.destination = "#{name}/app/settings/login.html"
     end
 
-    file :loginScript do |file|
-      file.source = 'app/settings/javascript_login.js'
-      file.destination = "#{name}/app/settings/login.js"
-    end
+    # file :loginScript do |file|
+    #   file.source = 'app/settings/javascript_login.js'
+    #   file.destination = "#{name}/app/settings/login.js"
+    # end
 
     template :loading do |template|
       template.source = 'app/loading.html'
@@ -635,18 +635,6 @@ module Rhogen
     third_argument :priority, :required => false, :desc => "optional sync priority (i.e. 100)"
     fourth_argument :type, :required => false, :desc => "optional type (i.e. \"ask\" for an ask model)"
 
-    #template :config do |template|
-    #  @model_sync_server = syncserver_exists? ? class_name : ''
-    #  template.source = 'config.rb'
-    #  template.destination = "app/#{name.modulize}/config.rb"
-    #end
-
-
-    template :javascript_model do |template|
-      template.source = "javascript_model.js"
-      template.destination = "app/#{name.modulize}/model.js"
-    end
-
     template :javascript_index do |template|
       template.source = "javascript_index.html"
       template.destination = "app/#{name.modulize}/index.html"
@@ -662,31 +650,15 @@ module Rhogen
       template.destination = "app/#{name.modulize}/new.html"
     end
 
-    template :javascript_new_script do |template|
-      template.source = "javascript_new.js"
-      template.destination = "app/#{name.modulize}/new.js"
-    end
-
     template :javascript_show do |template|
       template.source = "javascript_show.html"
       template.destination = "app/#{name.modulize}/show.html"
-    end
-
-    template :javascript_show_script do |template|
-      template.source = "javascript_show.js"
-      template.destination = "app/#{name.modulize}/show.js"
     end
 
     template :javascript_edit do |template|
       template.source = "javascript_edit.html"
       template.destination = "app/#{name.modulize}/edit.html"
     end
-
-    template :javascript_edit_script do |template|
-      template.source = "javascript_edit.js"
-      template.destination = "app/#{name.modulize}/edit.js"
-    end
-
 
 
     # template :index do |template|

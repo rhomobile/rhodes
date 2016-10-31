@@ -6,17 +6,17 @@
     <title><%= class_name %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
     <link rel="stylesheet" href="/public/bootstrap-3.3.7/css/bootstrap.min.css">
-    <script type="text/javascript" src="/public/jquery/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="/public/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="/public/css/style.css">
 
-    <script type="text/javascript" src="/public/api/rhoapi-modules.js"></script>
-    <script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORM.js"></script>
-    <script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-ORMHelper.js"></script>
-    <script type="text/javascript" charset="utf-8" src="/public/api/rhoapi-modules-Ruby-RunTime.js"></script>
+    <script type="text/javascript" src="/public/jquery/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="/public/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="model.js"></script>
-    <script type="text/javascript" src="show.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-ORM.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-ORMHelper.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-Ruby-RunTime.js"></script>
+
+    <script type="text/javascript" src="index.js"></script>
 </head>
 
 <body>
@@ -44,7 +44,8 @@
                     <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
                         <strong class="pull-right"><%= attribute.camelize %></strong>
                     </div>
-                    <div id="<%= name.downcase %><%= attribute.capitalize %>" class="col-xs-8 col-sm-8 col-md-8 col-lg-8"></div>
+                    <div id="<%= name.downcase %><%= attribute.capitalize %>"
+                         class="col-xs-8 col-sm-8 col-md-8 col-lg-8"></div>
                 </div>
             </li>
             <% end %>
@@ -53,6 +54,12 @@
 
 </div>
 
+<script>
+    window.addEventListener("load", function () {
+        var page = new ShowPage();
+        page.init();
+    });
+</script>
 </body>
 
 </html>
