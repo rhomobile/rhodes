@@ -1,19 +1,95 @@
-var IndexPage = function () {
+var App = {
 
-    this.updateRhoClientControlButtons = function () {
-        if (Rho.RhoConnectClient == null) {
-            return;
+    rhoClientErrorByCode: function (aString) {
+        var code = parseInt(aString);
+        if (code === 0) {
+            return "ERR_NONE";
         }
-        var loggedIn = Rho.RhoConnectClient.isLoggedIn();
-        $("#logoutBtn").toggleClass("hidden", !loggedIn);
-        $("#syncBtn").toggleClass("hidden", !loggedIn);
-        $("#loginBtn").toggleClass("hidden", loggedIn);
+        if (code === 1) {
+            return "ERR_NETWORK";
+        }
+        if (code === 2) {
+            return "ERR_REMOTESERVER";
+        }
+        if (code === 3) {
+            return "ERR_RUNTIME";
+        }
+        if (code === 4) {
+            return "ERR_UNEXPECTEDSERVERRESPONSE";
+        }
+        if (code === 5) {
+            return "ERR_DIFFDOMAINSINSYNCSRC";
+        }
+        if (code === 6) {
+            return "ERR_NOSERVERRESPONSE";
+        }
+        if (code === 7) {
+            return "ERR_CLIENTISNOTLOGGEDIN";
+        }
+        if (code === 8) {
+            return "ERR_CUSTOMSYNCSERVER";
+        }
+        if (code === 9) {
+            return "ERR_UNATHORIZED";
+        }
+        return "Unknown error " + code;
+    },
 
-    };
+    IndexPage: function () {
+        var messageTimeout;
+        var that = this;
 
-    var that = this;
-    return {
-        init: function () {
+        this.syncNotify = function (result) {
+            if (result.error_code) {
+                that.showWarning("Error.", App.rhoClientErrorByCode(result.error_code));
+            } else {
+                that.showInfo("Success!", "Database has been synced");
+            }
+        };
+
+        this.showWarning = function (title, text) {
+            var duration = 5000;
+            var alertElement = $("#alert");
+            alertElement.addClass("alert-warning");
+            $("#alert > #title").text(title);
+            $("#alert > #text").text(text);
+            alertElement.removeClass("hidden");
+
+            if (messageTimeout != null) {
+                clearTimeout(messageTimeout);
+            }
+            messageTimeout = setTimeout(function () {
+                alertElement.removeClass("alert-warning");
+                alertElement.addClass("hidden");
+            }, duration);
+        };
+        this.showInfo = function (title, text) {
+            var duration = 5000;
+            var alertElement = $("#alert");
+            alertElement.addClass("alert-info");
+            $("#alert > #title").text(title);
+            $("#alert > #text").text(text);
+            alertElement.removeClass("hidden");
+
+            if (messageTimeout != null) {
+                clearTimeout(messageTimeout);
+            }
+            messageTimeout = setTimeout(function () {
+                alertElement.removeClass("alert-info");
+                alertElement.addClass("hidden");
+            }, duration);
+        };
+        this.updateRhoClientControlButtons = function () {
+            if (Rho.RhoConnectClient == null) {
+                return;
+            }
+            var loggedIn = Rho.RhoConnectClient.isLoggedIn();
+            $("#logoutBtn").toggleClass("hidden", !loggedIn);
+            $("#syncBtn").toggleClass("hidden", !loggedIn);
+            $("#loginBtn").toggleClass("hidden", loggedIn);
+
+        };
+        this.init = function () {
 
             Rho.NativeToolbar.create([
                 {action: "back"},
@@ -22,52 +98,77 @@ var IndexPage = function () {
                 {action: "options"}
             ], {});
 
-            that.updateRhoClientControlButtons();
+            Rho.RhoConnectClient.setNotification("*", that.syncNotify);
 
             $("#logoutBtn").on("click", function () {
-                if (Rho.RhoConnectClient == null) {
-                    return;
-                }
                 Rho.RhoConnectClient.logout();
                 that.updateRhoClientControlButtons();
             });
 
             $("#syncBtn").on("click", function () {
-                if (Rho.RhoConnectClient == null) {
-                    return;
-                }
-                Rho.RhoConnectClient.doSync(true);
-                that.updateRhoClientControlButtons();
+                Rho.RhoConnectClient.doSync();
+                that.showInfo("Please wait.", "Sync has been triggered.");
             });
+
+            that.updateRhoClientControlButtons();
         }
-    }
-};
+    },
 
-var SettingsPage = function () {
+    SettingsPage: function () {
+        var messageTimeout;
+        var that = this;
 
-    this.showAlert = function (aString) {
-        var timeout = 5000;
-        $("#alert").text(aString).removeClass("hidden");
-        setTimeout(function () {
-            $("#alert").empty().addClass("hidden");
-        }, timeout);
-    };
+        this.showWarning = function (title, text) {
+            var duration = 5000;
+            var alertElement = $("#alert");
+            alertElement.addClass("alert-warning");
+            $("#alert > #title").text(title);
+            $("#alert > #text").text(text);
+            alertElement.removeClass("hidden");
 
-    this.updateUI = function () {
-        if (Rho.RhoConnectClient == null) {
-            return;
-        }
-        var loggedIn = Rho.RhoConnectClient.isLoggedIn();
-        $("#logoutItem").toggleClass("hidden", !loggedIn);
-        $("#performSyncItem").toggleClass("hidden", !loggedIn);
-        $("#loginItem").toggleClass("hidden", loggedIn);
-    };
+            if (messageTimeout != null) {
+                clearTimeout(messageTimeout);
+            }
+            messageTimeout = setTimeout(function () {
+                alertElement.removeClass("alert-warning");
+                alertElement.addClass("hidden");
+            }, duration);
+        };
+        this.showInfo = function (title, text) {
+            var duration = 5000;
+            var alertElement = $("#alert");
+            alertElement.addClass("alert-info");
+            $("#alert > #title").text(title);
+            $("#alert > #text").text(text);
+            alertElement.removeClass("hidden");
 
-    var that = this;
+            if (messageTimeout != null) {
+                clearTimeout(messageTimeout);
+            }
+            messageTimeout = setTimeout(function () {
+                alertElement.removeClass("alert-info");
+                alertElement.addClass("hidden");
+            }, duration);
+        };
+        this.syncNotify = function (result) {
+            if (result.error_code) {
+                that.showWarning("Error.", App.rhoClientErrorByCode(result.error_code));
+            } else {
+                that.showInfo("Success!", "Database has been synced");
+            }
+        };
 
-    return {
-        init: function () {
-
+        this.updateUI = function () {
+            if (Rho.RhoConnectClient == null) {
+                return;
+            }
+            var loggedIn = Rho.RhoConnectClient.isLoggedIn();
+            $("#logoutItem").toggleClass("hidden", !loggedIn);
+            $("#performSyncItem").toggleClass("hidden", !loggedIn);
+            $("#loginItem").toggleClass("hidden", loggedIn);
+        };
+        this.init = function () {
+            Rho.RhoConnectClient.setNotification("*", that.syncNotify);
             that.updateUI();
 
             $("#back").on("click", function () {
@@ -77,54 +178,49 @@ var SettingsPage = function () {
             $("#clientId").text(Rho.ORM.getClientId());
 
             $("#resetDatabaseItem").on("click", function () {
-                if (Rho.RhoConnectClient == null) {
-                    return;
-                }
                 $('#resetDatabaseModalDialog').modal('show');
             });
 
             $('#resetDatabaseModalDialog').on('hidden.bs.modal', function () {
-                if (Rho.RhoConnectClient == null) {
-                    return;
-                }
                 Rho.ORM.databaseFullReset();
+                that.showInfo("", "Database has been reset.");
                 Rho.RhoConnectClient.doSync();
-                that.showAlert("Database has been reset.");
             });
 
             $("#performSyncItem").on("click", function () {
-                if (Rho.RhoConnectClient == null) {
-                    return;
-                }
                 Rho.RhoConnectClient.doSync();
-                that.showAlert("Sync has been triggered.");
+                that.showInfo("Please wait.", "Sync has been triggered.");
             });
 
             $("#logoutItem").on("click", function () {
-                if (Rho.RhoConnectClient == null) {
-                    return;
-                }
                 Rho.RhoConnectClient.logout();
                 that.updateUI();
-                that.showAlert("You have been logged out.");
+                that.showInfo("", "You have been logged out.");
             });
         }
-    }
-};
+    },
 
-var LoginPage = function () {
-    this.showAlert = function (aString) {
-        var timeout = 5000;
-        $("#alert").text(aString).removeClass("hidden");
-        setTimeout(function () {
-            $("#alert").empty().addClass("hidden");
-        }, timeout);
-    };
+    LoginPage: function () {
+        var messageTimeout;
+        var that = this;
 
-    var that = this;
+        this.showWarning = function (title, text) {
+            var duration = 5000;
+            var alertElement = $("#alert");
+            alertElement.addClass("alert-warning");
+            $("#alert > #title").text(title);
+            $("#alert > #text").text(text);
+            alertElement.removeClass("hidden");
 
-    return {
-        init: function () {
+            if (messageTimeout != null) {
+                clearTimeout(messageTimeout);
+            }
+            messageTimeout = setTimeout(function () {
+                alertElement.removeClass("alert-warning");
+                alertElement.addClass("hidden");
+            }, duration);
+        };
+        this.init = function () {
             $("#back").on("click", function () {
                 history.back();
             });
@@ -132,12 +228,11 @@ var LoginPage = function () {
             $("#loginBtn").on("click", function () {
                 var username = $("#username").val();
                 var password = $("#password").val();
-                console.log(username, password);
                 Rho.RhoConnectClient.login(username, password, function (err) {
                     //The operation has been failed
                     if (err.error_code != 0) {
                         var errorText = err.error_message != "" ? err.error_message : "Unknown error with code: " + err.error_code;
-                        that.showAlert(errorText);
+                        that.showWarning("Login error.", errorText);
                     }
                     else {
                         //the operation has been completed successfully
@@ -147,4 +242,4 @@ var LoginPage = function () {
             });
         }
     }
-};
+}

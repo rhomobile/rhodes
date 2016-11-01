@@ -16,7 +16,7 @@
     <script type="text/javascript" src="/public/api/rhoapi-modules-ORMHelper.js"></script>
     <script type="text/javascript" src="/public/api/rhoapi-modules-Ruby-RunTime.js"></script>
 
-    <script type="text/javascript" src="../script.js"></script>
+    <script type="text/javascript" src="../index.js"></script>
 </head>
 
 <body>
@@ -32,6 +32,10 @@
         </div>
         <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
         </div>
+    </div>
+
+    <div id="alert" class="alert hidden">
+        <strong id="title"></strong>&nbsp;<span id="text"></span>
     </div>
 
     <div class="row">
@@ -72,8 +76,6 @@
         <% end %>
     </div>
 
-    <div id="alert" class="alert alert-danger hidden"></div>
-
 </div>
 
 <div class="modal" id="resetDatabaseModalDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -85,7 +87,7 @@
                 <h4 class="modal-title" id="myModalLabel">Reset Database</h4>
             </div>
             <div class="modal-body">
-                <div class="text-center alert alert-danger">
+                <div class="text-center alert alert-warning">
                     <h4 class="text-center">Are you sure?</h4>
 
                     <p>Resetting removes all objects from your device.</p>
@@ -93,16 +95,15 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Confirm</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Confirm</button>
             </div>
         </div>
     </div>
 </div>
 
-
 <script>
     window.addEventListener("load", function () {
-        var page = new SettingsPage();
+        var page = new App.SettingsPage();
         page.init();
     });
 </script>

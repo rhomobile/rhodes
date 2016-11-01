@@ -33,6 +33,10 @@
         </div>
     </div>
 
+    <div id="alert" class="alert hidden">
+        <strong id="title"></strong>&nbsp;<span id="text"></span>
+    </div>
+
     <form class="form">
         <div class="form-group">
             <label for="username">Login</label>
@@ -47,13 +51,11 @@
         <button id="loginBtn" type="button" class="btn btn-success btn-block">Login</button>
     </form>
 
-    <div id="alert" class="alert alert-danger hidden"></div>
-
 </div>
 
 <script>
     window.addEventListener("load", function () {
-        var page = new LoginPage();
+        var page = new App.LoginPage();
         page.init();
     });
 </script>
