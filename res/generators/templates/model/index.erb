@@ -1,14 +1,14 @@
 <div class="container-fluid">
 
-  <div class="row">
+  <div class="row page-title">
     <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-      <h3><a href="<%%= Rho::Application.startURI %>" class="btn btn-default btn-sm pull-left">Home</a></h3>
+      <a href="<%%= Rho::Application.startURI %>" class="btn btn-default btn-sm pull-left">Home</a>
     </div>
     <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
       <h3 class="text-center"><%= name.camelize.pluralize %></h3>
     </div>
     <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-      <h3><a href="<%%= url_for :action => :new %>" class="btn btn-primary btn-sm pull-right">New</a></h3>
+      <a href="<%%= url_for :action => :new %>" class="btn btn-primary btn-sm pull-right">New</a>
     </div>
   </div>
 

@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title><%= class_name %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <link rel="stylesheet" href="/public/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/style.css">
+
+    <script type="text/javascript" src="/public/jquery/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="/public/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="/public/api/rhoapi-modules.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-ORM.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-ORMHelper.js"></script>
+    <script type="text/javascript" src="/public/api/rhoapi-modules-Ruby-RunTime.js"></script>
+
+    <script type="text/javascript" src="../index.js"></script>
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+    <div class="row page-title">
+        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+            <a id="back" href="#" class="btn btn-default btn-sm pull-left">Back</a>
+        </div>
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+            <h3 class="text-center">Settings</h3>
+        </div>
+        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+        </div>
+    </div>
+
+    <div id="alert" class="alert hidden">
+        <strong id="title"></strong>&nbsp;<span id="text"></span>
+    </div>
+
+    <div class="row">
+        <% if @rhoconnectclient_ext %>
+        <div id="rhoconnectClientOptions" class="list-group">
+
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                        <span pull-right><strong>Client ID:</strong></span>
+                    </div>
+                    <div id="clientId" class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                    </div>
+                </div>
+            </li>
+
+            <li id="resetDatabaseItem" class="list-group-item">
+                <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
+                <span class=" text-danger">Reset Database</span>
+            </li>
+
+            <li id="performSyncItem" class="list-group-item">
+                <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
+                Perform Sync
+            </li>
+
+            <li id="logoutItem" class="list-group-item">
+                <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
+                Logout
+            </li>
+
+            <a id="loginItem" href="login.html" class="list-group-item">
+                <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
+                Login
+            </a>
+
+        </div>
+        <% end %>
+    </div>
+
+</div>
+
+<div class="modal" id="resetDatabaseModalDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Reset Database</h4>
+            </div>
+            <div class="modal-body">
+                <div class="text-center alert alert-warning">
+                    <h4 class="text-center">Are you sure?</h4>
+
+                    <p>Resetting removes all objects from your device.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener("load", function () {
+        var page = new App.SettingsPage();
+        page.init();
+    });
+</script>
+</body>
+</html>
