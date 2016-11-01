@@ -361,24 +361,14 @@ module Rhogen
     end
 
     template :options do |template|
-      template.source = 'app/settings/javascript_index.html'
-      template.destination = "#{name}/app/settings/index.html"
+      template.source = 'app/Settings/javascript_index.html'
+      template.destination = "#{name}/app/Settings/index.html"
     end
-
-    # file :optionsScript do |file|
-    #   file.source = 'app/settings/javascript_settings.js'
-    #   file.destination = "#{name}/app/settings/settings.js"
-    # end
 
     template :login do |template|
       template.source = 'app/settings/javascript_login.html'
       template.destination = "#{name}/app/settings/login.html"
     end
-
-    # file :loginScript do |file|
-    #   file.source = 'app/settings/javascript_login.js'
-    #   file.destination = "#{name}/app/settings/login.js"
-    # end
 
     template :loading do |template|
       template.source = 'app/loading.html'
