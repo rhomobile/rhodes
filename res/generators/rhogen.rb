@@ -67,7 +67,7 @@ module Rhogen
     end
 
     desc <<-DESC
-      Generates a new rhodes application.
+      Generates a new ruby-based rhodes application.
 
       Options:
         --rhoconnect - include rhoconnect-client in application
@@ -293,7 +293,7 @@ module Rhogen
     end
 
     desc <<-DESC
-      Generates a new rhodes application.
+      Generates a new javascript-based rhodes application.
 
       Options:
         --rhoconnect - include rhoconnect-client in application
@@ -313,6 +313,8 @@ module Rhogen
     first_argument :name, :required => true, :desc => 'application name'
     second_argument :syncserver, :required => false, :desc => 'url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/")'
     third_argument :zip_url, :required => false, :desc => 'optional url to zipfile download of bundle'
+
+    invoke :appResources
 
     template :config do |template|
       zip_url ||= ''
@@ -450,11 +452,6 @@ module Rhogen
       file.destination = "#{name}/app/loading@2x.png"
     end
 
-    # directory :helpers do |directory|
-    #   directory.source = 'app/helpers'
-    #   directory.destination = "#{name}/app/helpers"
-    # end
-
     directory :icon do |directory|
       directory.source = 'icon'
       directory.destination = "#{name}/icon"
@@ -465,48 +462,11 @@ module Rhogen
       directory.destination = "#{name}/production"
     end
 
-=begin
-    template :settings1 do |template|
-      template.source = 'app/Settings/controller.rb'
-      template.destination = "#{name}/app/Settings/controller.rb"
-    end
-    template :settings2 do |template|
-      template.source = 'app/Settings/err_sync.erb'
-      template.destination = "#{name}/app/Settings/err_sync.erb"
-    end
-    template :settings3 do |template|
-      template.source = 'app/Settings/home.erb'
-      template.destination = "#{name}/app/Settings/home.erb"
-    end
-    template :settings4 do |template|
-      template.source = 'app/Settings/index.erb'
-      template.destination = "#{name}/app/Settings/index.erb"
-    end
-    template :settings5 do |template|
-      template.source = 'app/Settings/login.erb'
-      template.destination = "#{name}/app/Settings/login.erb"
-    end
-    template :settings6 do |template|
-      template.source = 'app/Settings/reset.erb'
-      template.destination = "#{name}/app/Settings/reset.erb"
-    end
-    template :settings7 do |template|
-      template.source = 'app/Settings/wait.erb'
-      template.destination = "#{name}/app/Settings/wait.erb"
-    end
-=end
-
     file :androidmanifesterb do |file|
       file.source = 'AndroidManifest.erb'
       file.destination = "#{name}/AndroidManifest.erb"
     end
 
-=begin
-    directory :settings do |directory|
-      directory.source = 'app/Settings'
-      directory.destination = "#{name}/app/Settings/"
-    end
-=end
     directory :public do |directory|
       directory.source = 'public'
       directory.destination = "#{name}/public/"
@@ -524,7 +484,7 @@ module Rhogen
     end
 
     desc <<-DESC
-      Generates a new model for a rhodes application.
+      Generates a new ruby model for a ruby-based rhodes application.
 
       Required:
         name        - model name
@@ -606,7 +566,7 @@ module Rhogen
     end
 
     desc <<-DESC
-      Generates a new model for a rhodes application.
+      Generates a new javascript model for a javascript-based rhodes application.
 
       Required:
         name        - model name
