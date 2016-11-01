@@ -635,6 +635,11 @@ module Rhogen
       template.destination = "app/#{name.modulize}/index.js"
     end
 
+    template :javascript_model_script do |template|
+      template.source = "javascript_model.js"
+      template.destination = "app/#{name.modulize}/model.js"
+    end
+
     template :javascript_new do |template|
       template.source = "javascript_new.html"
       template.destination = "app/#{name.modulize}/new.html"

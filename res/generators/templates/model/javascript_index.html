@@ -16,6 +16,7 @@
     <script type="text/javascript" src="/public/api/rhoapi-modules-ORMHelper.js"></script>
     <script type="text/javascript" src="/public/api/rhoapi-modules-Ruby-RunTime.js"></script>
 
+    <script type="text/javascript" src="model.js"></script>
     <script type="text/javascript" src="index.js"></script>
 </head>
 
@@ -45,7 +46,7 @@
 </div>
 <script>
     window.addEventListener("load", function () {
-        var page = new IndexPage();
+        var page = new App.IndexPage();
         page.init();
     });
 </script>

@@ -1,24 +1,11 @@
-var itemModel = Rho.ORM.getModel("<%= name.camelize %>");
-if (itemModel == null) {
-    itemModel = Rho.ORM.addModel(function (model) {
-        model.modelName("<%= name.camelize %>");
-        <% attributes.each do |attribute| %>
-        model.property("<%= attribute %>", "string");
-        <% end %>
-    });
-}
+var App = {
+    IndexPage: function () {
+        var that = this;
 
-
-var IndexPage = function () {
-
-    var that = this;
-
-    return {
-        init: function () {
-
+        this.init = function () {
             $("#homeBtn").attr({"href": Rho.Application.startURI});
 
-            var items = itemModel.find("all");
+            var items = <%= name.camelize %>Model.find("all");
             var container = $("[data-role=item-list]");
             items.forEach(function (each) {
                 var span = $("<span>", {"class": "glyphicon glyphicon-chevron-right pull-right", "aria-hidden": true});
@@ -28,92 +15,69 @@ var IndexPage = function () {
                 container.append(anchor);
             });
         }
-    }
-};
+    },
 
-var ShowPage = function () {
+    ShowPage: function () {
+        var that = this;
 
-    var that = this;
-
-    return {
-        init: function () {
+        this.init = function () {
             $("#backBtn").on("click", function () {
                 history.back();
             });
 
-            id = window.location.search.slice(1);
-            console.log("object", id);
-            var item = itemModel.find("first", {conditions: {object: id}});
-
+            var id = window.location.search.slice(1);
+            var item = <%= name.camelize %>Model.find("first", {conditions: {object: id}});
             $("#title").text(item.get("<%= attributes[0] %>"));
             $("#editBtn").attr("href", "edit.html?" + item.object());
-
             <% attributes.each do |attribute| %>
             $("#<%= name.downcase %><%= attribute.capitalize %>").text(item.get("<%= attribute %>"));
             <% end %>
         }
-    }
-};
+    },
 
-var NewPage = function () {
+    NewPage: function () {
+        var that = this;
 
-    var that = this;
-
-    return {
-        init: function () {
-
+        this.init = function () {
             $("#cancelBtn").on("click", function () {
                 history.back();
             });
-
             $("#submitBtn").on("click", function () {
                 var properties = {};
                 <% attributes.each do |attribute| %>
                 properties.<%= attribute %> = $("#<%= name.downcase %><%= attribute.capitalize %>").val();
                 <% end %>
-
-                itemModel.create(properties);
+                <%= name.camelize %>Model.create(properties);
                 history.back();
-            });
-
+             });
         }
-    }
-};
+    },
 
-var EditPage = function () {
+    EditPage: function () {
+        var that = this;
 
-    var that = this;
-
-    return {
-        init: function () {
-
-            id = window.location.search.slice(1);
-
-            var item = itemModel.find("first", {conditions: {object: id}});
-
+        this.init = function () {
+            var id = window.location.search.slice(1);
+            var item = <%= name.camelize %>Model.find("first", {conditions: {object: id}});
             $("#cancelBtn").on("click", function () {
                 history.back();
             });
-
             $("#deleteBtn").on("click", function () {
                 item.destroy();
                 window.location = "index.html";
             });
-
             <% attributes.each do |attribute| %>
             $("#<%= name.downcase %><%= attribute.capitalize %>").attr("value", item.get("<%= attribute %>"));
             <% end %>
 
             $("#submitBtn").on("click", function () {
-                var properties = {};
-                <% attributes.each do |attribute| %>
-                properties.<%= attribute %> = $("#<%= name.downcase %><%= attribute.capitalize %>").val();
-                <% end %>
-
-                item.updateAttributes(properties);
-                history.back();
-            });
-
+                 var properties = {};
+                 <% attributes.each do |attribute| %>
+                 properties.<%= attribute %> = $("#<%= name.downcase %><%= attribute.capitalize %>").val();
+                 <% end %>
+                 item.updateAttributes(properties);
+                 history.back();
+                });
         }
     }
-};
+}

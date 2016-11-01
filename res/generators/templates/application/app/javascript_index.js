@@ -95,7 +95,8 @@ var App = {
                 {action: "back"},
                 {action: "separator"},
                 {action: "home"},
-                {action: "options"}
+                {action: "options"},
+                {action: "refresh"}
             ], {});
 
             Rho.RhoConnectClient.setNotification("*", that.syncNotify);
