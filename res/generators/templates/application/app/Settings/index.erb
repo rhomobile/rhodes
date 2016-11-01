@@ -14,7 +14,7 @@
     <div class="list-group">
 
       <%% if @msg %>
-      <li class="error-message"><%%= @msg %></li>
+      <div class="alert alert-danger"><%%= @msg %></div>
       <%% end %>
 
       <% if @rhoconnectclient_ext %>
