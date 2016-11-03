@@ -95,6 +95,8 @@
 #define HAVE_TYPEOF 1
 #define typeof __typeof__
 */
+#define HAVE_UCONTEXT_H 1
+
 #define HAVE_LONG_LONG 1
 #define HAVE_OFF_T 1
 #define SIZEOF_INT 4
@@ -107,6 +109,7 @@
 #define SIZEOF_FLOAT 4
 #define SIZEOF_DOUBLE 8
 #define SIZEOF_TIME_T 4
+#define SIZEOF_CLOCK_T 4
 #define PACKED_STRUCT(x) x __attribute__((packed))
 #define PACKED_STRUCT_UNALIGNED(x) x
 #define PRI_LL_PREFIX "ll"
@@ -248,7 +251,7 @@
 #define SIZEOF_UINTPTR_T 4
 #define HAVE_SSIZE_T 1
 #define SIZEOF_SSIZE_T 4
-#define STACK_END_ADDRESS __libc_stack_end
+//#define STACK_END_ADDRESS __libc_stack_end
 #define GETGROUPS_T gid_t
 #define RETSIGTYPE void
 #define HAVE_ALLOCA_H 1
@@ -367,7 +370,7 @@
 #define HAVE_LIBPTHREAD 1
 #define HAVE_NANOSLEEP 1
 #define HAVE_SCHED_YIELD 1
-#define HAVE_PTHREAD_ATTR_SETINHERITSCHED 1
+//#define HAVE_PTHREAD_ATTR_SETINHERITSCHED 1
 #define HAVE_PTHREAD_ATTR_GETSTACK 1
 #define HAVE_PTHREAD_COND_INIT 1
 #define HAVE_PTHREAD_CONDATTR_SETCLOCK 1
@@ -379,11 +382,11 @@
 #define SET_CURRENT_THREAD_NAME(name) pthread_setname_np(pthread_self(), name)
 #define SET_ANOTHER_THREAD_NAME(thid,name) pthread_setname_np(thid, name)
 #define DEFINE_MCONTEXT_PTR(mc, uc) mcontext_t *mc = &(uc)->uc_mcontext
-#define HAVE_GETCONTEXT 1
-#define HAVE_SETCONTEXT 1
+//#define HAVE_GETCONTEXT 1
+//#define HAVE_SETCONTEXT 1
 #define USE_ELF 1
 #define HAVE_ELF_H 1
-#define HAVE_BACKTRACE 1
+//#define HAVE_BACKTRACE 1
 #define DLEXT_MAXLEN 3
 #define DLEXT ".so"
 #define HAVE_SOCKADDR_STORAGE 1
@@ -411,6 +414,9 @@
 #define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
 
 #define HAVE_STRUCT_TIMEVAL 1
+#define HAVE_POLL 1
+
+#define FIBER_USE_NATIVE 0
 
 //#  include <sys/select.h>
 //#  include <asm/page.h>

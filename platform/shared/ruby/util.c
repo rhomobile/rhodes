@@ -534,7 +534,7 @@ ruby_getcwd(void)
 # else
     char *buf, *cwd = getcwd(NULL, 0);
     if (!cwd) rb_sys_fail("getcwd");
-    buf = ruby_strdup(cwd);	/* allocate by xmalloc */
+    buf = ruby_strdup(cwd);	//allocate by xmalloc
     free(cwd);
 # endif
 #else

@@ -1482,7 +1482,7 @@ process_options(int argc, char **argv, struct cmdline_options *opt)
     }
     else {
        ruby_gc_set_params(opt->safe_level);
-       ruby_init_loadpath_safe(opt->safe_level);
+       ruby_init_loadpath_safe(opt->safe_level,0);
     }
     //RHO
 

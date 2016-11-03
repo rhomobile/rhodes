@@ -100,7 +100,7 @@ rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
     //RAWLOG_INFO1("eval_compiled: %s", RSTRING_PTR(fname));
     
     iseqval = loadISeqFromFile(RhoPreparePath(fname));
-    res = eval_string_with_cref( self, iseqval, scope, 0, file, 1 );
+    res = rb_funcall(rb_cISeq, rb_intern("eval"),1,iseqval);//eval_string_with_cref( self, iseqval, scope, 0, file, 1 );
     //rb_gc_enable();
     
     return res;
@@ -142,7 +142,7 @@ static VALUE loadISeqFromFile(VALUE path)
 //        fiseq.close
         //rb_funcall(fiseq, rb_intern("close"), 0 );
 //        seq = VM::InstructionSequence.load(arr)
-        seq = rb_funcall(rb_cISeq, rb_intern("load"), 1, arr);
+        seq = rb_funcall(rb_cISeq, rb_intern("load_from_binary"), 1, arr);
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);
     
