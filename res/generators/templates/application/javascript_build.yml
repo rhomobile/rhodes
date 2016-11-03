@@ -1,0 +1,41 @@
+#sdk: "<%=@sdk_path%>"
+sdkversion: <%=Rhodes::VERSION%>
+name: <%=@app_name%>
+version: 1.0
+vendor: rhomobile
+build: debug
+applog: rholog.txt
+javascript_application: true
+iphone:
+  configuration: Release
+  sdk: iphonesimulator10.0
+  #provisionprofile:
+  #codesignidentity:
+  #entitlements:
+  BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
+  BundleURLScheme: <%=@app_name_cleared%>
+  production:
+    ipa_itunesartwork_image: "./production/iTunesArtwork.png"
+  # Note: Specifies the URL schemes the app is able to call using Rho.System.runApplication
+  #ApplicationQueriesSchemes: ["scheme1", "scheme2"]
+wp8:
+  productid: '<%=@productid%>'
+android:
+  #manifest_template: 'AndroidManifest.erb'
+  version: 4.1.0
+  # Note: in order to simplify debugging only app messages and system channels with priority informative and higher, and any errors are enabled by default
+  logcatFilter: APP:I StrictMode:I DEBUG:I *:E
+
+wm:
+  #sdk: "MC3000c50b (ARMV4I)"
+  #sdk: "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+
+win32:
+  deployqt: 1
+  deploymsvc: 1
+
+extensions: [<%=@rhoconnectclient_ext%>]
+
+rhobundle:
+  exclude_items:
+  - thumb.db

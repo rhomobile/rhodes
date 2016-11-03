@@ -138,8 +138,7 @@ namespace rho {
     
     void SystemImplIphone::getPhoneId(rho::apiGenerator::CMethodResult& result)
     {
-        //getIphoneProperty("phone_id", result);
-        result.set("");
+        getIphoneProperty("phone_id", result);
     }
     
     void SystemImplIphone::getDeviceName(rho::apiGenerator::CMethodResult& result)

@@ -1,14 +1,23 @@
-<div data-role="page">
+<div class="container-fluid">
 
-  <div data-role="header" data-position="inline">
-    <h1>Reset Database</h1>
-    <a href="<%%= url_for :action => :index %>" class="ui-btn-left" data-icon="back" data-direction="reverse">Cancel</a>
-    <a href="<%%= url_for :action => :do_reset %>" class="ui-btn-right" data-icon="check" data-direction="reverse">Confirm</a>
+  <div class="row">
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+      <h3><a href="<%%= url_for :action => :index %>" class="btn btn-default btn-sm pull-left">Cancel</a></h3>
+    </div>
+    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+      <h3 class="text-center">Reset Database</h3>
+    </div>
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+      <h3><a href="<%%= url_for :action => :do_reset %>" class="btn btn-danger btn-sm pull-right">Confirm</a></h3>
+    </div>
   </div>
 
-  <div data-role="content">
-    <h3>Are you sure?</h3>
-    <div style="margin: 10px;">Resetting removes all objects from your device.</div>
+
+  <div class="text-center alert alert-danger">
+    <h4 class="text-center">Are you sure?</h4>
+
+    <p>Resetting removes all objects from your device.</p>
   </div>
+
 
 </div>

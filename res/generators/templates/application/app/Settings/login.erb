@@ -1,25 +1,31 @@
-<div data-role="page" data-add-back-btn="true">
+<div class="container-fluid">
 
-  <div data-role="header" data-position="inline">
-    <h1>Login</h1>
+  <div class="row">
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+    </div>
+    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+      <h3 class="text-center">Login</h3>
+    </div>
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+    </div>
   </div>
 
-  <div data-role="content">
-    <form method="POST" action="<%%= url_for :action => :do_login %>">
-      <%% if @msg %>
-          <div class="error-message"><%%= @msg %></div>
-      <%% end %>
+  <form method="POST" action="<%%= url_for :action => :do_login %>">
+    <%% if @msg %>
+    <div class="alert alert-warning"><%%= @msg %></div>
+    <%% end %>
 
-      <div data-role="fieldcontain">
-        <label for="login" class="itemLabel">Login</label>
-        <input type="text" id="login" name="login" class="itemValue" <%%= placeholder("Login") %> />
-      </div>
-      <div data-role="fieldcontain">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" class="itemValue" <%%= placeholder("Password") %> />
-      </div>
-      <input type="submit" value="Login"/>
-    </form>
-  </div>
+    <div class="form-group">
+      <label for="login">Login</label>
+      <input type="text" id="login" name="login" <%%= placeholder("Login") %> class="form-control" />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" <%%= placeholder("Password") %> class="form-control" />
+    </div>
+
+   <button type="submit" class="btn btn-success btn-block">Login</button>
+  </form>
 
 </div>

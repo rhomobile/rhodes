@@ -166,8 +166,20 @@ int on_http_cb(http_parser* parser) { return 0; }
           //our URL;
           if ( ([url host] == nil) && ([url port] == nil ) && ( [url scheme]==nil) && ( [url path] != nil ) )
           {
-            NSMutableString* s = [NSMutableString stringWithFormat:@"http://127.0.0.1:%d%@",rho_http_get_port(),[url path]];
+              NSMutableString* s = nil;//[NSMutableString stringWithFormat:@"https://127.0.0.1:%d%@",rho_http_get_port(),[url path]];
             
+            bool force_https = false;
+            if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
+                force_https = rho_conf_getBool("ios_https_local_server")!=0;
+            }
+            if (force_https) {
+                 s = [NSMutableString stringWithFormat:@"https://127.0.0.1:%d%@",rho_http_get_port(),[url path]];
+            }
+            else {
+                s = [NSMutableString stringWithFormat:@"http://127.0.0.1:%d%@",rho_http_get_port(),[url path]];
+            }
+  
+              
             if ( [url query] != nil )
             {
               // decode query back to original state
@@ -332,7 +344,7 @@ int on_http_cb(http_parser* parser) { return 0; }
     int rhoPort = rho_http_get_port();
 
     return (
-      ( (0==scheme) || (strcmp(scheme, "http") ==0 ))
+      ( (0==scheme) || (strcmp(scheme, "http") ==0 ) || (strcmp(scheme, "https") ==0 ))
       && ((port == rhoPort))
       && ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
     );

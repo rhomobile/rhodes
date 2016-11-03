@@ -1718,7 +1718,19 @@ void CRhodesApp::initAppUrls()
         m_isJSFSApp = false; //We need local server for out of process webkit, it use sockets to call common API
 #endif
 
-    m_strHomeUrl = "http://127.0.0.1:";
+    boolean force_https = false;
+#ifdef OS_MACOSX
+    if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
+        force_https = rho_conf_getBool("ios_https_local_server")!=0;
+    }
+#endif
+    if (force_https) {
+        m_strHomeUrl = "https://127.0.0.1:";
+    }
+    else {
+        m_strHomeUrl = "http://127.0.0.1:";
+    }
+    
     m_strHomeUrl += getFreeListeningPort();
 
 #ifndef RHODES_EMULATOR
