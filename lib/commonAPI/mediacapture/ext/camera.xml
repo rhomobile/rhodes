@@ -211,15 +211,20 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM, CE</PLATFORM>
                 <DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
-            <PROPERTY name="useSystemViewfinder" type="BOOLEAN" default="false">
+            <PROPERTY name="useSystemViewfinder" type="BOOLEAN" default="true">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <PLATFORM>Android</PLATFORM>
                 <DESC>Setting the value of this property to "true", shall open the System ViewFinder with its properties. Applicable to takePicture() and choosePicture() both. None of the Rho camera properties shall be applicable except desiredWidth and desiredHeight (desired size aplly if useRealBitmapResize enabled).</DESC>
             </PROPERTY>
-            <PROPERTY name="useRealBitmapResize" type="BOOLEAN" default="false">
+            <PROPERTY name="useRealBitmapResize" type="BOOLEAN" default="true">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <PLATFORM>Android</PLATFORM>
                 <DESC>Setting the value of this property to "true", shall use real resize captured or selected Image and scale image exactly to desired size (with keep aspect ratio). For example 3000x2000 with desired 1500x1500 will be resized to 1500x1000.</DESC>
+            </PROPERTY>
+            <PROPERTY name="useRotationBitmapByEXIF" type="BOOLEAN" default="true">
+                <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+                <PLATFORM>Android</PLATFORM>
+                <DESC>Setting the value of this property to "true", shall use rotation captured Bitmap by EXIF Info. It is actual for Samsung devices - they do not rotate captured images but just add EXIF info about rotation. Default loader do not apply this info. If this property is true then Rhodes rotate image and save rotated  without EXIF rotate info.</DESC>
             </PROPERTY>
             <PROPERTY name="aimMode" type="STRING">
                 <PLATFORM>WM, CE</PLATFORM>

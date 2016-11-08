@@ -618,9 +618,9 @@ namespace "config" do
         end
 
         if apilevel && $androidtargets[apilevel][:id] == id.to_i
-          if line =~ /^\s+ABIs\s*:\s+(.*)/
+          if line =~ /^\s+(Tag\/)?ABIs\s*:\s+(.*)/
             $androidtargets[apilevel][:abis] = []
-            $1.split(/,\s*/).each do |abi|
+            $2.split(/,\s*/).each do |abi|
               $androidtargets[apilevel][:abis] << abi
             end
             puts $androidtargets[apilevel][:abis].inspect if USE_TRACES
@@ -757,7 +757,7 @@ namespace "config" do
                 end
               end
 
-              maven_deps = extconf_android['maven_deps']
+              maven_deps = extconf_android['maven_deps'] if extconf_android
               if maven_deps
                 if maven_deps.is_a? Array
                   maven_deps.each do |dep|
@@ -1895,10 +1895,14 @@ namespace "build" do
       File.open(File.join($app_rjava_dir, "R", "R.java"), "w") { |f| f.write(buf) }
 
       $ext_android_library_deps.each do |package, path|
+
         if !File.directory?(path)
           puts "[WARN] Path for dependency #{package} does not exists (#{path})"
-          next
+          #next
         end
+
+        next if ((!package) or (package.empty?))
+
         r_dir = File.join $tmpdir, 'gen', package.split('.')
         mkdir_p r_dir
         buf = File.new(File.join($app_rjava_dir, 'R.java'), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage #{package};\n")

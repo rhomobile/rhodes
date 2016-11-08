@@ -3,9 +3,21 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include <algorithm>
-extern "C" bool rho_wmimpl_get_function_key_enabled(int iFKey);
-extern "C" bool rho_wmimpl_get_application_key_enabled(int iAKey);
-extern "C" bool rho_wmimpl_get_function_keys_capturable();
+extern "C" bool rho_wmimpl_get_function_key_enabled(int iFKey)
+{
+	//TODO TAU
+	return false;
+}
+extern "C" bool rho_wmimpl_get_application_key_enabled(int iAKey)
+{
+	//TODO TAU
+	return false;
+}
+extern "C" bool rho_wmimpl_get_function_keys_capturable()
+{
+	//TODO TAU
+	return false;
+}
 
 
 CKeyModule::CKeyModule ()

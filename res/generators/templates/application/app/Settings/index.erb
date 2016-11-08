@@ -1,33 +1,62 @@
-<div data-role="page">
+<div class="container-fluid">
 
-  <div data-role="header" data-position="inline">
-    <h1>Settings</h1>
+  <div class="row">
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+    </div>
+    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+      <h3 class="text-center">Settings</h3>
+    </div>
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+    </div>
   </div>
 
-  <div data-role="content">
-    <ul data-role="listview">
+  <div class="row">
+    <div class="list-group">
+
       <%% if @msg %>
-          <li class="error-message"><%%= @msg %></li>
+      <div class="alert alert-danger"><%%= @msg %></div>
       <%% end %>
 
-<% if @rhoconnectclient_ext %>                  
-      <li>
-        <div class="itemLabel">
-          <span class="title">Client ID:</span>
-        </div>
-        <div class="itemValue">
-          <span class="clientID"><%%= Rhom::Rhom::client_id %></span>
-        </div>
-      </li>
+      <% if @rhoconnectclient_ext %>
 
-      <li><a href="<%%= url_for :action => :reset %>">Reset Database</a></li>
-      <li><a href="<%%= url_for :action => :do_sync %>">Perform Sync</a></li>
-      <%% if Rho::RhoConnectClient.isLoggedIn %>
-          <li><a href="<%%= url_for :action => :logout %>">Logout</a></li>
-      <%% else %>
-          <li><a href="<%%= url_for :action => :login %>">Login</a></li>
-      <%% end %>
- <% end %>          
-    </ul>
+          <li class="list-group-item">
+            <div class="row">
+              <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                <span pull-right><strong>Client ID:</strong></span>
+              </div>
+              <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                <%%= Rhom::Rhom::client_id %>
+              </div>
+            </div>
+          </li>
+
+          <a href="<%%= url_for :action => :reset %>" class="list-group-item">
+            <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
+            Reset Database
+          </a>
+
+          <a href="<%%= url_for :action => :do_sync %>" class="list-group-item">
+            <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
+            Perform Sync
+          </a>
+
+          <%% if Rho::RhoConnectClient.isLoggedIn %>
+          <a href="<%%= url_for :action => :logout %>" class="list-group-item">
+            <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
+            Logout
+          </a>
+
+          <%% else %>
+          <a href="<%%= url_for :action => :login %>" class="list-group-item">
+            <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
+            Login
+          </a>
+          <%% end %>
+
+      <% end %>
+
+    </div>
+
   </div>
+
 </div>

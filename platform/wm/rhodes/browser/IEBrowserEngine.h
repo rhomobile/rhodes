@@ -116,10 +116,6 @@ public:
     virtual void setBrowserGesturing(bool bEnableGesturing) {}
     virtual void NotifyEngineOfSipPosition() {}
     virtual void setNavigationTimeout(unsigned int dwMilliseconds);
-    virtual bool RegisterForMessage(unsigned int iMsgId) {return true;}
-    virtual bool DeRegisterForMessage(unsigned int iMsgId) {return true;}
-    virtual bool RegisterForPrimaryMessage(unsigned int iMsgId) {return true;}
-    virtual bool DeRegisterForPrimaryMessage(unsigned int iMsgId) {return true;}
 
     virtual int NewTab() {return 0;}//returns	the new tab ID 
     virtual int SwitchTab(int iTabID) {return 0;}//returns the previous tab ID

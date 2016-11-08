@@ -106,10 +106,6 @@ private:
     virtual bool    isExistJavascript(const wchar_t* szJSFunction, int index);
     virtual void    executeJavascript(const wchar_t* szJSFunction, int index);     
     virtual void    OnDocumentComplete(LPCTSTR url);  
-    virtual bool    RegisterForMessage(unsigned int iMsgId);
-    virtual bool    DeRegisterForMessage(unsigned int iMsgId);
-    virtual bool RegisterForPrimaryMessage(unsigned int iMsgId);
-    virtual bool DeRegisterForPrimaryMessage(unsigned int iMsgId);
 
     virtual int NewTab();//returns	the new tab ID 
 	virtual int SwitchTab(int iTabID);//returns the previous tab ID

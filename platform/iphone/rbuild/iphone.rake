@@ -1891,6 +1891,26 @@ namespace "build" do
           end
         end
 
+        #setup Camera access
+        camera_request_text = nil
+        if $app_config["capabilities"].index("camera") != nil
+          camera_request_text = 'application wants to use camera'
+        end
+        if !$app_config["iphone"].nil?
+          if !$app_config["iphone"]["capabilities"].nil?
+            if $app_config["iphone"]["capabilities"].index("camera") != nil
+              camera_request_text = 'application wants to use camera'
+            end
+          end
+        end
+        if camera_request_text != nil
+          if hash['NSCameraUsageDescription'] == nil
+            puts "Info.plist: added key [NSCameraUsageDescription]"
+            hash['NSCameraUsageDescription'] = camera_request_text
+          end
+        end
+
+
         #LSApplicationQueriesSchemes
         if $app_config["iphone"].has_key?("ApplicationQueriesSchemes")
           arr_app_queries_schemes = $app_config["iphone"]["ApplicationQueriesSchemes"]
@@ -1900,6 +1920,32 @@ namespace "build" do
             hash['LSApplicationQueriesSchemes'] = []
           end
         end
+
+        #http_connection_domains
+        if !hash.has_key?("NSAppTransportSecurity")
+            hash['NSAppTransportSecurity'] = {}
+        end
+        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoads")
+            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoads'] = true
+        end
+        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoadsInWebContent")
+            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoadsInWebContent'] = true
+        end
+        if $app_config["iphone"].has_key?("http_connection_domains")
+          http_connection_domains = $app_config["iphone"]["http_connection_domains"]
+          if http_connection_domains.kind_of?(Array)
+              hash['NSAppTransportSecurity']['NSExceptionDomains'] = {}
+              http_connection_domains.each do |domain|
+                  domain_hash = {}
+                  domain_hash['NSIncludesSubdomains'] = true
+                  domain_hash['NSTemporaryExceptionAllowsInsecureHTTPLoads'] = true
+                  domain_hash['NSTemporaryExceptionMinimumTLSVersion'] = 'TLSv1.0'
+
+                  hash['NSAppTransportSecurity']['NSExceptionDomains'][domain.to_s] = domain_hash
+              end
+          end
+        end
+
 
          set_app_icon(false)
          set_default_images(false, hash)
@@ -1983,6 +2029,26 @@ namespace "build" do
           end
         end
 
+        #setup Camera access
+        camera_request_text = nil
+        if $app_config["capabilities"].index("camera") != nil
+          camera_request_text = 'application wants to use camera'
+        end
+        if !$app_config["iphone"].nil?
+          if !$app_config["iphone"]["capabilities"].nil?
+            if $app_config["iphone"]["capabilities"].index("camera") != nil
+              camera_request_text = 'application wants to use camera'
+            end
+          end
+        end
+        if camera_request_text != nil
+          if hash['NSCameraUsageDescription'] == nil
+            puts "Info.plist: added key [NSCameraUsageDescription]"
+            hash['NSCameraUsageDescription'] = camera_request_text
+          end
+        end
+
+
         #LSApplicationQueriesSchemes
         if $app_config["iphone"].has_key?("ApplicationQueriesSchemes")
           arr_app_queries_schemes = $app_config["iphone"]["ApplicationQueriesSchemes"]
@@ -1990,6 +2056,31 @@ namespace "build" do
             hash['LSApplicationQueriesSchemes'] = arr_app_queries_schemes
           else
             hash['LSApplicationQueriesSchemes'] = []
+          end
+        end
+
+        #http_connection_domains
+        if !hash.has_key?("NSAppTransportSecurity")
+            hash['NSAppTransportSecurity'] = {}
+        end
+        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoads")
+            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoads'] = true
+        end
+        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoadsInWebContent")
+            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoadsInWebContent'] = true
+        end
+        if $app_config["iphone"].has_key?("http_connection_domains")
+          http_connection_domains = $app_config["iphone"]["http_connection_domains"]
+          if http_connection_domains.kind_of?(Array)
+              hash['NSAppTransportSecurity']['NSExceptionDomains'] = {}
+              http_connection_domains.each do |domain|
+                  domain_hash = {}
+                  domain_hash['NSIncludesSubdomains'] = true
+                  domain_hash['NSTemporaryExceptionAllowsInsecureHTTPLoads'] = true
+                  domain_hash['NSTemporaryExceptionMinimumTLSVersion'] = 'TLSv1.0'
+
+                  hash['NSAppTransportSecurity']['NSExceptionDomains'][domain.to_s] = domain_hash
+              end
           end
         end
 
@@ -2222,25 +2313,25 @@ namespace "run" do
       #Thread.new {
       thr = Thread.new do
         puts 'start thread with execution of application'
-        if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-          puts  'use old execution way - just open iPhone Simulator'
-          system("open \"#{$sim}/iPhone Simulator.app\"")
-          $ios_run_completed = true
-          sleep(1000)
-        else
+        #if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+        #  puts  'use old execution way - just open iPhone Simulator'
+        #  system("open \"#{$sim}/iPhone Simulator.app\"")
+        #  $ios_run_completed = true
+        #  sleep(1000)
+        #else
           puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
           puts 'Execute command: '+commandis
           system(commandis)
           $ios_run_completed = true
           sleep(1000)
-        end
+        #end
         #}
       end
 
       print_timestamp('application was launched in simulator')
-      if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-        thr.join
-      else
+      #if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+       #    thr.join
+      #else
         puts 'start waiting for run application in Simulator'
         while (!File.exist?(log_name)) && (!$ios_run_completed)
           puts ' ... still waiting'
@@ -2252,7 +2343,7 @@ namespace "run" do
         #thr.join
         puts 'application is started in Simulator'
         exit
-      end
+      #end
       print_timestamp('run:iphone FINISH')
       puts "end build iphone app"
       exit
@@ -2478,24 +2569,24 @@ namespace "run" do
 
         thr = Thread.new do
            puts 'start thread with execution of application'
-           if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-               puts  'use old execution way - just open iPhone Simulator'
-               system("open \"#{$sim}/iPhone Simulator.app\"")
-               $ios_run_completed = true
-               sleep(1000)
-           else
+           #if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+            #   puts  'use old execution way - just open iPhone Simulator'
+            #   system("open \"#{$sim}/iPhone Simulator.app\"")
+            #   $ios_run_completed = true
+            #   sleep(1000)
+           #else
                puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
                puts 'Execute command: '+commandis
                system(commandis)
                $ios_run_completed = true
                sleep(1000)
-           end
+           #end
         #}
         end
 
-        if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-           thr.join
-        else
+        #if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+         #  thr.join
+        #else
            puts 'start waiting for run application in Simulator'
            while (!File.exist?(log_name)) && (!$ios_run_completed)
               puts ' ... still waiting'
@@ -2507,7 +2598,7 @@ namespace "run" do
            #thr.join
            puts 'application is started in Simulator'
            exit
-        end
+        #end
 
         puts "end run iphone app package"
         Dir.chdir currentdir
@@ -2525,8 +2616,8 @@ namespace "run" do
      end
      kill_iphone_simulator
 
-     use_old_scheme = ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
-
+     #use_old_scheme = ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+     use_old_scheme = false
 
      $sdkver = $sdk.gsub(/^iphonesimulator/, '')
      # Workaround: sometimes sdkver could differ from emulator version.

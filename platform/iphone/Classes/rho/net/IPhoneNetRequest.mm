@@ -337,6 +337,7 @@ public:
     m_multipartBoundary = [[[NSUUID UUID] UUIDString] UTF8String];
     
     m_multipartPostfix = "\r\n";
+    m_multipartPostfix += "--";
     m_multipartPostfix += m_multipartBoundary;
     m_multipartPostfix += "--\r\n";
   }
@@ -365,11 +366,22 @@ public:
       timeout = 30; // 30 seconds by default
     }
 
-    [m_pReq initWithURL:
-      [NSURL URLWithString:
-       [[NSString stringWithUTF8String:url.c_str()] stringByAddingPercentEscapesUsingEncoding:
-        NSUTF8StringEncoding]
-      ]
+      NSString* encodedUrl = nil;
+
+      encodedUrl = [NSString stringWithUTF8String:url.c_str()];
+
+      // encode whole URL for NSURLComponents ( url with {id} not pass by NSURLComponents)
+      encodedUrl = [encodedUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+      NSURLComponents* components = [NSURLComponents componentsWithString:encodedUrl];
+      
+      // decode query to initial state - all other parts still encoded
+      components.percentEncodedQuery = components.query;
+      
+      // make URL
+      NSURL* nsurl = components.URL;
+      
+      [m_pReq initWithURL:nsurl
       cachePolicy:NSURLRequestUseProtocolCachePolicy
       timeoutInterval:timeout
     ];

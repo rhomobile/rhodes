@@ -54,6 +54,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
     public static String userFilePath = null;
     private ContentValues values = null;
 
+    public static boolean CURRENT_SCREEN_AUTO_ROTATE_MODE;
+    public static boolean CURRENT_FULL_SCREEN_MODE;
+
     int getCameraIndex() {
         return CameraSingletonObject.getCameraIndex(getId());
     }
@@ -171,6 +174,16 @@ public class CameraObject extends CameraBase implements ICameraObject {
                     if(filePath.contains("\\")){
                         intent.putExtra("error", "Invalid file path");
                     }
+                }
+                try {
+                    String folderPath = filePath.substring(0,filePath.lastIndexOf("/"));
+                    File folderFile = new File(folderPath);
+                    if (!folderFile.exists()) {
+                        folderFile.mkdirs();
+                    }
+                }
+                catch (Exception e) {
+                   e.printStackTrace();
                 }
                 Uri resultUri = null;
                 BitmapFactory.Options options=new BitmapFactory.Options();
@@ -429,8 +442,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
         getPropertiesMap().put("compressionFormat", "jpg");
         getPropertiesMap().put("outputFormat", "image");
         getPropertiesMap().put("colorModel", "rgb");
-        getPropertiesMap().put("useSystemViewfinder", "false");
-        getPropertiesMap().put("useRealBitmapResize", "false");
+        getPropertiesMap().put("useSystemViewfinder", "true");
+        getPropertiesMap().put("useRealBitmapResize", "true");
+        getPropertiesMap().put("useRotationBitmapByEXIF", "true");
         getPropertiesMap().put("saveToDeviceGallery", "false");
         openCamera();
         Camera.Parameters params = getCamera().getParameters();
@@ -605,6 +619,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
 
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
+
+        CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
+        CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
 
         CameraSingletonObject.deprecated_choose_pic = false;
         deprecated_take_pic = false;

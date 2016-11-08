@@ -306,7 +306,7 @@ void CSystemImpl::getIsSymbolDevice(CMethodResult& oResult)
     memset(szPlatform, 0, MAX_PATH*sizeof(TCHAR));
     SystemParametersInfo(SPI_GETOEMINFO, MAX_PATH, szPlatform, 0);
     _wcslwr(szPlatform);
-    if(wcsstr(szPlatform, L"symbol"))
+    if(wcsstr(szPlatform, L"symbol") || wcsstr(szPlatform, L"motorola"))
         oResult.set(true);
     else
         oResult.set(false);
@@ -973,7 +973,9 @@ void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& oResult)
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 	strRes = "WEBKIT/SYMBOL";
 #else
-	strRes = "IE";
+	//TODO TAU
+	//strRes = "IE";
+	strRes = "WEBKIT/SYMBOL";
     //TODO: get IE version for WM/CE
 #endif
 

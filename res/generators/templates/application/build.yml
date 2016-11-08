@@ -7,7 +7,7 @@ build: debug
 applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator9.3
+  sdk: iphonesimulator10.0
   #provisionprofile:
   #codesignidentity:
   #entitlements:

@@ -11,6 +11,7 @@ settings['ce5'] = ['MC3000c50b (ARMV4I)','VersionMin=5.00','VersionMax=7.99'];
 settings['ce7'] = ['WT41N0c70PSDK (ARMV4I)','VersionMin=5.00','VersionMax=7.99'];
 
 var each_file = function(path, f) {
+
     for (var e = new Enumerator(fso.GetFolder(path).files); !e.atEnd(); e.moveNext()) {
         f(e.item().Name);
     }
@@ -293,7 +294,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
 
     var webkit_file = {
         'out_of_process': '"OutProcessWK.exe"'                       ,
-        'in_process'    : '"WebkitPlatformDeliveryCompiledAsDLL.dll"'
+        'in_process'    : '"rhowebkit.dll"'
     }[webkit_mode];
 
     p("[Version]");
@@ -339,8 +340,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     }
     else
     {
-        p("CopyFiles=CopyToInstallDir,CopyBrowserPlugins"+
-           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI,CopyConfig" : "") +
+        p("CopyFiles=CopyToInstallDir"+
+           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI" : "") +
            (!usereruntime && (webkit_mode == 'none') && include_motocaps ? ",CopyConfig" : "") +
            (!usereruntime && include_motocaps ? ",CopySystemFiles" : "") +
            (show_shortcut && usereruntime ? ",Shortcuts" : "")+
@@ -361,18 +362,21 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         
         if (webkit_mode != 'none')
         {            
-            p("4=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
-            p("5=,\"\",," + rhogempath + "\"\\Config\\\"");
+            p("4=,\"\",," + rhogempath + "\"\\npapi\\\"");
+            /*p("5=,\"\",," + rhogempath + "\"\\Config\\\"");*/
+            p("5=,\"\",," + rhogempath);
         }
         else
         {
-            if(include_motocaps)
+            /*if(include_motocaps)
             {
                 p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
-            }
+            }*/
         }
 
-        p("6=,\"\",," + rhogempath + "\"\\Plugin\\\"");
+        //TODO TAU
+        //p("6=,\"\",," + rhogempath + "\"\\Plugin\\\"");
+        //p("6=,\"\",," + rhogempath);
     }
     get_source_disks_names(es);
     p("");
@@ -391,11 +395,13 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
 
         p("\"" + name + ".exe\"=2");
         p("\"" + "RhoLaunch" + ".exe\"=2");
-        p("\"prtlib.dll\"=3");
+        //TODO TAU
+        //p("\"prtlib.dll\"=3");
+        //p("\"rhowebkit.dll\"=3");
         
         if (webkit_mode != 'none') 
         {           
-            p("\"ipc_manager.dll\"=3");
+            /*p("\"ipc_manager.dll\"=3");
             p(webkit_file + "=3");
             p("\"npwtg_jsobjects.dll\"=4");
             p("\"bridge.dll\"=4");
@@ -404,11 +410,14 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("\"Config.xml\"=5");
             }
             p("\"Plugin.xml\"=5");
-            p("\"RegEx.xml\"=5");
+            p("\"RegEx.xml\"=5");*/
+
+            p("\"rhowebkit.dll\"=3");
+            p("\"rhobridge.dll\"=4");
         }
         else
         {
-            if(include_motocaps)
+            /*if(include_motocaps)
             {
                 if (!is_custom_config) 
                 {
@@ -416,11 +425,12 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 }
                 p("\"Plugin.xml\"=4");
                 p("\"RegEx.xml\"=4");
-            }
+            }*/
         }
-        each_file(rhogempath + "\\Plugin", function(f) {
-            p("\"" + f +"\"=6");
-        });
+        //TODO TAU
+       // each_file(rhogempath + "\\Plugin", function(f) {
+       ///     p("\"" + f +"\"=6");
+       // });
     }
     fill_extensions_source_disk_files(exts);
     var f = get_source_disks_files(es);
@@ -444,15 +454,15 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         p("CopyToInstallDir=0,\"%InstallDir%\"");    
     }    
     
-    if (is_persistent) {
+    /*if (is_persistent) {
         p("CopyBrowserPluginsPers=0,\"Application\\" + name + "\\Plugin\"");
     } else {
         p("CopyBrowserPlugins=0,\"%InstallDir%\\Plugin\"");
-    }
+    }*/
 
     if ((!usereruntime) && (webkit_mode != 'none')) 
     {
-        if (is_persistent) 
+        /*if (is_persistent) 
         {
             p("CopyWebKitBinPers=0,\"Application\\" + name + "\"");
             p("CopyNPAPIPers=0,\"Application\\" + name + "\\NPAPI\"");
@@ -463,7 +473,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
             p("CopyWebKitBin=0,\"%InstallDir%\"");
             p("CopyNPAPI=0,\"%InstallDir%\\NPAPI\"");
             p("CopyConfig=0,\"%InstallDir%\\Config\"");
-        }
+        }*/
+        p("CopyWebKitBin=0,\"%InstallDir%\"");
+        p("CopyNPAPI=0,\"%InstallDir%\\npapi\"");
     }
     else if (webkit_mode == 'none')
     {
@@ -508,35 +520,35 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
         p("\"" + "RhoLaunch" + ".exe\",\"" + "RhoLaunch" + ".exe\",,0");
         
-        p("[" + (is_persistent ? "CopyBrowserPluginsPers" : "CopyBrowserPlugins") + "]");
+        /*p("[" + (is_persistent ? "CopyBrowserPluginsPers" : "CopyBrowserPlugins") + "]");
         each_file(rhogempath + "\\Plugin", function(f) {
             p("\"" + f +"\",\"" + f +"\",,0");
         });
-        p("");
+        p("");*/
 
         if (webkit_mode != 'none') {
             p("");
             if (!is_persistent)
             {
                 p("[CopyWebKitBin]");
-                p("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
+                //p("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
                 p(webkit_file + "," + webkit_file + ",,0");
                 p("");
 
                 p("[CopyNPAPI]");
-                p("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
-                p("\"bridge.dll\",\"bridge.dll\",,0");
-                p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
+                //p("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
+                p("\"rhobridge.dll\",\"rhobridge.dll\",,0");
+                //p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
                 p("");
-
-                p("[CopyConfig]");
+            
+                /*p("[CopyConfig]");
                 p("\"Config.xml\",\"Config.xml\",,0");
                 p("\"Plugin.xml\",\"Plugin.xml\",,0");
                 p("\"RegEx.xml\",\"RegEx.xml\",,0");
                 p("");
 
                 p("[CopySystemFiles]");
-                p("\"prtlib.dll\",\"prtlib.dll\",,0");
+                p("\"prtlib.dll\",\"prtlib.dll\",,0");*/
             }            
             else
             {
@@ -568,12 +580,12 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
                 p("");
                 if (!is_persistent)
                 {
-                    p("[CopyConfig]");
+                   /* p("[CopyConfig]");
                     p("\"Config.xml\",\"Config.xml\",,0");
                     p("\"Plugin.xml\",\"Plugin.xml\",,0");
                     p("\"RegEx.xml\",\"RegEx.xml\",,0");
                     p("[CopySystemFiles]");
-                    p("\"prtlib.dll\",\"prtlib.dll\",,0");                    
+                    p("\"prtlib.dll\",\"prtlib.dll\",,0");  */                  
                 }
                 else
                 {

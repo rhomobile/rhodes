@@ -44,6 +44,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
+import android.provider.Settings;
 
 public class BaseActivity extends Activity implements ServiceConnection {
 	
@@ -260,29 +261,56 @@ public class BaseActivity extends Activity implements ServiceConnection {
         }
         else
         {
-      		//Utils.platformLog("$$$$$", "BaseActivity.onConfigurationChanged() ###3");
+			// check system options for rotation
+			boolean isSystemAutoRotateEnnabled = true;
+			int str = 1;
+			try {
+				str = Settings.System.getInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 1);
+			}
+			catch (Exception e)
+		    {
+				Logger.D(TAG, "ERROR: Can not read Screen Rotation enable from System Settings !");
+		        e.printStackTrace();
+		    }
+			if(str==1)
+			{
+				// rotation is Unlocked
+			} else {
+				// rotation is Locked
+				isSystemAutoRotateEnnabled = false;
+			}
 
-      		ScreenProperties props = getScreenProperties();
-            props.reread(this);
+			if (isSystemAutoRotateEnnabled) {
+				//Utils.platformLog("$$$$$", "BaseActivity.onConfigurationChanged() ###3");
 
-            int rotation = 0;
-            switch(props.getOrientation()) {
-            case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
-                rotation = 90;
-                break;
-            case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
-                rotation = 180;
-                break;
-            case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
-                rotation = 270;
-                break;
-            case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
-            default:
-                rotation = 0;
-                break;
-            }
+	      		ScreenProperties props = getScreenProperties();
+	            props.reread(this);
 
-            RhodesService.onScreenOrientationChanged(props.getWidth(), props.getHeight(), rotation);
+	            int rotation = 0;
+	            switch(props.getOrientation()) {
+	            case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
+	                rotation = 90;
+	                break;
+	            case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
+	                rotation = 180;
+	                break;
+	            case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
+	                rotation = 270;
+	                break;
+	            case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+	            default:
+	                rotation = 0;
+	                break;
+	            }
+	            RhodesService.onScreenOrientationChanged(props.getWidth(), props.getHeight(), rotation);
+			}
+			else {
+				if (!mEnableScreenOrientationOverride) {
+	          		//Utils.platformLog("$$$$$", "BaseActivity.onConfigurationChanged() ###2");
+	        		Logger.D(TAG, "Screen rotation is disabled by Android settings. ##### Force old orientation: " + getScreenProperties().getOrientation());
+	            	setRequestedOrientation(getScreenProperties().getOrientation());
+	        	}
+			}
         }
     }
 

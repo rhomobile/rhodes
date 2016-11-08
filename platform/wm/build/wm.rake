@@ -567,13 +567,24 @@ def build_cab
   end
   
   if $build_persistent_cab && !$use_shared_runtime
-    makePersistentFiles($srcdir, additional_dlls_persistent_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process, reg_keys_filename)
+    #TODO TAU
+    #makePersistentFiles($srcdir, additional_dlls_persistent_paths, $webkit_capability ? $wk_data_dir : nil, $webkit_out_of_process, reg_keys_filename)
+    makePersistentFiles($srcdir, additional_dlls_persistent_paths, nil, $webkit_out_of_process, reg_keys_filename)
   end
 
   webkit = 'none'
   if $is_webkit_engine && $webkit_capability 
     webkit = $webkit_out_of_process ? 'out_of_process' : 'in_process'
   end
+
+  #TODO TAU
+  webkit = 'none'
+  
+  if $is_webkit_engine && $webkit_capability 
+    webkit = 'in_process'
+  end
+  
+  $wk_data_dir = File.join($startdir, "../rho-tau-extensions-"+ENV['rhodes_version']+"/libs/webkit/ext/wm/lib")
 
   dir = File.join($startdir, $builddir)
   
@@ -646,11 +657,11 @@ namespace "config" do
   task :set_wm_platform do
     $current_platform = "wm" unless $current_platform
       if($current_platform=='wm')
-        $webkiLibraryCheck = File.join($startdir,'/thirdpartyWebkit.zip')
-        if !File.exists? ($webkiLibraryCheck)
-          puts "\nWindows Mobile or Windows CE applications require additional components for built. Please refer the documentation available at the below link.\nhttps://github.com/rhomobile/rhodes/blob/master/doc/oss/DeveloperNotes.md#third-party-webkit-dependencies-for-wmce\n"
-          exit 1
-        end
+        #$webkiLibraryCheck = File.join($startdir,'/thirdpartyWebkit.zip')
+        #if !File.exists? ($webkiLibraryCheck)
+        #  puts "\nWindows Mobile or Windows CE applications require additional components for built. Please refer the documentation available at the below link.\nhttps://github.com/rhomobile/rhodes/blob/master/doc/oss/DeveloperNotes.md#third-party-webkit-dependencies-for-wmce\n"
+        #  exit 1
+        #end
       end
   end
 

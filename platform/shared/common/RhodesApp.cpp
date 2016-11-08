@@ -522,13 +522,12 @@ void CRhodesApp::run()
 		RHODESAPP().notifyLocalServerStarted();
   
 #ifdef OS_MACOSX
-  bool shouldRunDirectQueue = false;
+  bool shouldRunDirectQueue = true;
   net::CDirectHttpRequestQueue directQueue(*m_httpServer, *this );
   
-  if ( RHOCONF().getBool("ios_direct_local_requests") )
-  {
-    shouldRunDirectQueue = true;
-  }
+    if (RHOCONF().isExist("ios_direct_local_requests")) {
+        shouldRunDirectQueue = RHOCONF().getBool("ios_direct_local_requests");
+    }
 #endif
 
 
@@ -1719,7 +1718,19 @@ void CRhodesApp::initAppUrls()
         m_isJSFSApp = false; //We need local server for out of process webkit, it use sockets to call common API
 #endif
 
-    m_strHomeUrl = "http://127.0.0.1:";
+    boolean force_https = false;
+#ifdef OS_MACOSX
+    if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
+        force_https = rho_conf_getBool("ios_https_local_server")!=0;
+    }
+#endif
+    if (force_https) {
+        m_strHomeUrl = "https://127.0.0.1:";
+    }
+    else {
+        m_strHomeUrl = "http://127.0.0.1:";
+    }
+    
     m_strHomeUrl += getFreeListeningPort();
 
 #ifndef RHODES_EMULATOR
@@ -1734,8 +1745,8 @@ void CRhodesApp::initAppUrls()
 #ifdef OS_WINCE
     if (!m_isJSFSApp)
     {
-        String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
-        CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));
+        /*String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
+        CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl.substr(7, m_strHomeUrl.length()));*/
         modifyRhoApiFile();
     }
 #endif

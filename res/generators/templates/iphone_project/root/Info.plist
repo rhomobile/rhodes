@@ -129,6 +129,24 @@
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
     	<string>application tracks your position</string>
+	<key>NSCameraUsageDescription</key>
+    	<string>application wants to use camera</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+ 		<string>application wants to use Bluetooth</string>
+	<key>NSCalendarsUsageDescription</key>
+    	<string>application wants to use Calendar</string>
+	<key>NSContactsUsageDescription</key>
+		<string>application wants to use Contacts</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+		<string>application tracks your position</string>
+	<key>NSMicrophoneUsageDescription</key>
+		<string>application wants to use Microphone</string>
+	<key>NSMotionUsageDescription</key>
+		<string>application wants to use Accelerometer</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+		<string>application wants to use Photo Library</string>
+	<key>NSRemindersUsageDescription</key>
+		<string>application wants to use Reminders</string>
 	<key>NSAppTransportSecurity</key>
      <dict>
           <key>NSAllowsArbitraryLoads</key>

@@ -38,25 +38,23 @@ public class BarcodeFactoryRhoListener extends AbstractRhoListener
 			myGoogleWebView = null;
 		}
 
-		if ( null == myGoogleWebView ) {
-			return;
+		if ( myGoogleWebView != null ) {
+			myIRhoConfig=myGoogleWebView.getConfig();
+
+			if(myIRhoConfig.getString("usedwforscanning") != null)
+			 {
+				try
+				{
+					myUseDWScanning = Integer.parseInt(myIRhoConfig.getString("usedwforscanning"));
+					Logger.D(TAG, "BarcodeFactoryRhoListener onResume-usedwsforcanning value"+myUseDWScanning);
+				}
+				catch(Exception e)
+				{
+					Logger.W(TAG, "BarcodeFactoryRhoListener onResume-exception:- "+e.getMessage());
+					myUseDWScanning=0;
+				}
+			 }
 		}
-
-		myIRhoConfig=myGoogleWebView.getConfig();
-
-		if(myIRhoConfig.getString("usedwforscanning") != null)
-		 {
-			try
-			{
-				myUseDWScanning = Integer.parseInt(myIRhoConfig.getString("usedwforscanning"));
-				Logger.D(TAG, "BarcodeFactoryRhoListener onResume-usedwsforcanning value"+myUseDWScanning);
-			}
-			catch(Exception e)
-			{
-				Logger.W(TAG, "BarcodeFactoryRhoListener onResume-exception:- "+e.getMessage());
-				myUseDWScanning=0;
-			}
-		 }
 		
 		if(IsFirstResume)
 		{

@@ -1,3 +1,3 @@
 ext/rhoelementsext/platform/android/jni/src/rhoelementsext.cpp
 ext/rhoelementsext/shared/ruby/rhoelementsext_wrap.c
-ext/rhoelementsext/shared/src/rhoelementsext.c
+ext/rhoelementsext/shared/src/RhoElementsExt.c

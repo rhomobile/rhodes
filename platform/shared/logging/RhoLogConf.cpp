@@ -317,11 +317,17 @@ void LogSettings::setLogFilePath(const String& logFilePath){
     if ( m_strLogFilePath.compare(logFilePath) != 0 ){
         common::CMutexLock oLock(m_FlushLock);
 
-        m_strLogFilePath = logFilePath;
-        if ( m_pFileSink ){
-            delete m_pFileSink;
-            m_pFileSink = new CLogFileSink(*this);
-        }
+        //try to open new path first
+        common::CRhoFile file;
+        if ( file.open( logFilePath.c_str(), common::CRhoFile::OpenForAppend) ) {
+            file.close();
+
+            m_strLogFilePath = logFilePath;
+            if ( m_pFileSink ){
+                delete m_pFileSink;
+                m_pFileSink = new CLogFileSink(*this);
+            }
+        }        
     }
 }
 

@@ -37,6 +37,8 @@
 #include <algorithm>
 #include <iterator>
 
+//#include <errno.h>
+
 
 #if !defined(WINDOWS_PLATFORM)
 #include <arpa/inet.h>
@@ -533,7 +535,12 @@ bool CHttpServer::run()
         unsigned long nTimeout = RHODESAPP().getTimer().getNextTimeout();
         tv.tv_sec = nTimeout/1000;
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
+        
+        
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
+        
+        //int errsv = errno;
+        
 #ifndef RHO_NO_RUBY_API
         if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
             rho_ruby_stop_threadidle();
@@ -588,8 +595,9 @@ bool CHttpServer::run()
         }
         else
         {
-            if (verbose) RAWLOG_ERROR1("select error: %d", ret);
-            return false;
+            if (verbose) RAWLOG_ERROR1("HTTP Server select error: %d", ret);
+            continue;
+            //return false;
         }
 #ifndef RHO_NO_RUBY_API
         if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
@@ -1532,8 +1540,18 @@ bool CDirectHttpRequestQueue::run( )
   
   do
   {
-    m_thread.wait(-1);
-    
+      
+      if (rho_ruby_is_started() ) {
+          rho_ruby_start_threadidle();
+      }
+      
+     m_thread.wait(-1);
+
+      
+      if (rho_ruby_is_started() ) {
+          rho_ruby_stop_threadidle();
+      }
+      
     m_response = "";
     
     if ( m_request != 0 )

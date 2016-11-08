@@ -14,15 +14,6 @@
 extern "C" void rho_sys_app_exit();
 extern "C" void rho_title_change(const int tabIndex, const char* strTitle);
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
-#else
-extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName)
-{
-    return L"";
-}
-#endif// !APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-
 namespace rho {
 
 #ifdef OS_ANDROID
@@ -162,7 +153,7 @@ public:
     virtual void getBadLinkURI(rho::apiGenerator::CMethodResult& oResult)
     {
 #ifdef OS_WINCE
-        oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\BadLinkURI" ) ) );
+        oResult.set( RHOCONF().getString("Application.BadLinkURI") );
 #endif
     }
 

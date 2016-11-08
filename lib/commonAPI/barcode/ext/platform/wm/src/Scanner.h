@@ -10,6 +10,7 @@
 #include "DecodeNotifier.h"
 #include <map>
 #include "common/RhoConf.h"
+#include "common/StringConverter.h"
 #include "logging/RhoLog.h"
 #include "../shared/api_generator/MethodResult.h"
 #include "common/StringConverter.h"

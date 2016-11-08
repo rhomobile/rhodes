@@ -30,6 +30,10 @@
 #import "AppManager.h"
 #import "common/RhodesApp.h"
 
+#import "logging/RhoLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "PickImageDelegate"
 
 //#include "ruby/ext/rho/rhoruby.h"
 
@@ -613,9 +617,43 @@ int save_image_to_device_gallery(const char* image_path) {
 }
 
 
+// cameraPosition: AVCaptureDevicePositionBack, AVCaptureDevicePositionFront
+// return struct CMVideoDimensions {int width, int height}
+CMVideoDimensions getCameraMaxStillImageResolution(AVCaptureDevicePosition cameraPosition) {
+    
+    CMVideoDimensions max_resolution;
+    max_resolution.width = 0;
+    max_resolution.height = 0;
+    
+    AVCaptureDevice *captureDevice = nil;
+    
+    NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    for (AVCaptureDevice *device in devices) {
+        if ([device position] == cameraPosition) {
+            captureDevice = device;
+            break;
+        }
+    }
+    if (captureDevice == nil) {
+        return max_resolution;
+    }
+    
+    NSArray* availFormats=captureDevice.formats;
+    
+    for (AVCaptureDeviceFormat* format in availFormats) {
+        CMVideoDimensions resolution = format.highResolutionStillImageDimensions;
+        int w = resolution.width;
+        int h = resolution.height;
+        if ((w * h) > (max_resolution.width * max_resolution.height)) {
+            max_resolution.width = w;
+            max_resolution.height = h;
+        }
+    }
+    
+    return max_resolution;
+}
 
-
-void get_camera_info(const char* camera_type, int* res_w, int* res_h) {
+void get_camera_info_by_device_name(const char* camera_type, int* res_w, int* res_h) {
     
     int w = 0;
     int h = 0;
@@ -629,94 +667,43 @@ void get_camera_info(const char* camera_type, int* res_w, int* res_h) {
         return;
     }
     
-	size_t size;
+    size_t size;
     sysctlbyname("hw.machine", NULL, &size, NULL, 0);
     char *answer = malloc(size);
-	sysctlbyname("hw.machine", answer, &size, NULL, 0);
-	NSString *platform = [NSString stringWithCString:answer encoding: NSUTF8StringEncoding];
-	free(answer);    
+    sysctlbyname("hw.machine", answer, &size, NULL, 0);
+    NSString *platform = [NSString stringWithCString:answer encoding: NSUTF8StringEncoding];
+    free(answer);
     
-	if ([platform isEqualToString:@"iPhone1,1"]) {
-        // iPhone 1
+    
+    // iPhone 2G
+    if ([platform isEqualToString:@"iPhone1,1"]) {
         if (!isFront) {
             w = 1600;
             h = 1200;
         }
-    } else
-	if ([platform isEqualToString:@"iPhone1,2"]) {
-        // iPhone 3G
+    }
+    
+    // iPhone 3G
+    if ([platform isEqualToString:@"iPhone1,2"]) {
         if (!isFront) {
             w = 1600;
             h = 1200;
         }
-    } else
-	if ([platform hasPrefix:@"iPhone2"]) {
-        // iPhone 3GS
+    }
+
+    // iPhone 3GS
+    if ([platform hasPrefix:@"iPhone2"]) {
         if (!isFront) {
             w = 2048;
             h = 1536;
         }
-    } else
-	if ([platform hasPrefix:@"iPhone3"]) {
-        // iPhone 4
+    }
+    
+    // iPhone 4
+    if ([platform hasPrefix:@"iPhone3"]) {
         if (!isFront) {
             w = 2592;
             h = 1936;
-        }
-        else {
-            w = 640;
-            h = 480;
-        }
-    } else
-	if ([platform hasPrefix:@"iPhone4"]) {
-        // iPhone 4S
-        if (!isFront) {
-            w = 2448;
-            h = 3264;
-        }
-        else {
-            w = 640;
-            h = 480;
-        }
-    } else 
-        if ([platform hasPrefix:@"iPhone"]) {
-            // iPhone 5 ?
-            if (!isFront) {
-                w = 2448;
-                h = 3264;
-            }
-            else {
-                w = 640;
-                h = 480;
-            }
-        } else 
-        
-    
-	if ([platform isEqualToString:@"iPod1,1"]) {
-        // iPod Touch 1
-    }
-	if ([platform isEqualToString:@"iPod2,1"]) {
-        // iPod Touch 2
-    }
-	if ([platform isEqualToString:@"iPod3,1"]) {
-        // iPod Touch 3
-    }
-	if ([platform isEqualToString:@"iPod4,1"]) {
-        // iPod Touch 4
-        if (!isFront) {
-            w = 960;
-            h = 720;
-        }
-        else {
-            w = 640;
-            h = 480;
-        }
-    }
-	if ([platform isEqualToString:@"iPod5"]) {
-        // iPod Touch 5
-        if (!isFront) {
-            w = 960;
-            h = 720;
         }
         else {
             w = 640;
@@ -724,12 +711,122 @@ void get_camera_info(const char* camera_type, int* res_w, int* res_h) {
         }
     }
     
-	if ([platform hasPrefix:@"iPad1"])  {
-        // iPad
+    // iPhone 4S
+    if ([platform hasPrefix:@"iPhone4"]) {
+        if (!isFront) {
+            w = 3264;
+            h = 2448;
+        }
+        else {
+            w = 640;
+            h = 480;
+        }
     }
-    else
-	if ([platform hasPrefix:@"iPad2"])  {
-        // iPad 2
+    
+    
+    // iPhone 5
+    if ([platform isEqualToString:@"iPhone5,1"] || [platform isEqualToString:@"iPhone5,2"]) {
+        if (!isFront) {
+            w = 3264;
+            h = 2448;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+
+    
+    // iPhone 5C
+    if ([platform isEqualToString:@"iPhone5,3"] || [platform isEqualToString:@"iPhone5,4"]) {
+        if (!isFront) {
+            w = 3264;
+            h = 2448;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+    
+    // iPhone 5S
+    if ([platform isEqualToString:@"iPhone6,1"] || [platform isEqualToString:@"iPhone6,2"]) {
+        if (!isFront) {
+            w = 3264;
+            h = 2448;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+
+    // iPhone 6
+    if ([platform isEqualToString:@"iPhone7,2"]) {
+        if (!isFront) {
+            w = 3264;
+            h = 2448;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+    
+    // iPhone 6 Plus
+    if ([platform isEqualToString:@"iPhone7,1"]) {
+        if (!isFront) {
+            w = 3264;
+            h = 2448;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+    
+    // iPhone 6S
+    if ([platform isEqualToString:@"iPhone8,1"]) {
+        if (!isFront) {
+            w = 4032;
+            h = 3024;
+        }
+        else {
+            w = 2556;
+            h = 1932;
+        }
+    }
+    
+    // iPhone 6S Plus
+    if ([platform isEqualToString:@"iPhone8,2"]) {
+        if (!isFront) {
+            w = 4032;
+            h = 3024;
+        }
+        else {
+            w = 2556;
+            h = 1932;
+        }
+    }
+
+    // iPhone 5SE
+    if ([platform isEqualToString:@"iPhone8,4"]) {
+        if (!isFront) {
+            w = 4032;
+            h = 3024;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+    
+    // iPad 1
+    if ([platform hasPrefix:@"iPad1"])  {
+    }
+    
+    // iPad 2
+    if ([platform isEqualToString:@"iPad2,1"] || [platform isEqualToString:@"iPad2,2"] || [platform isEqualToString:@"iPad2,3"] || [platform isEqualToString:@"iPad2,4"])  {
         if (!isFront) {
             w = 960;
             h = 720;
@@ -738,10 +835,10 @@ void get_camera_info(const char* camera_type, int* res_w, int* res_h) {
             w = 640;
             h = 480;
         }
-    } 
-    else 
-    if ([platform hasPrefix:@"iPad3"])  {
-        // iPad 3
+    }
+
+    // iPad 3
+    if ([platform isEqualToString:@"iPad3,1"] || [platform isEqualToString:@"iPad3,2"] || [platform isEqualToString:@"iPad3,3"])  {
         if (!isFront) {
             w = 2592;
             h = 1936;
@@ -750,39 +847,208 @@ void get_camera_info(const char* camera_type, int* res_w, int* res_h) {
             w = 640;
             h = 480;
         }
-    } 
-    else 
-    if ([platform hasPrefix:@"iPad"]) {
-        // iPad 3/4 ?
+    }
+    
+    // iPad 4
+    if ([platform isEqualToString:@"iPad3,4"] || [platform isEqualToString:@"iPad3,5"] || [platform isEqualToString:@"iPad3,6"])  {
         if (!isFront) {
             w = 2592;
             h = 1936;
         }
         else {
+            w = 1280;
+            h = 960;
+        }
+    }
+    
+    // iPad Air
+    if ([platform isEqualToString:@"iPad4,1"] || [platform isEqualToString:@"iPad4,2"] || [platform isEqualToString:@"iPad4,3"])  {
+        if (!isFront) {
+            w = 2592;
+            h = 1936;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+    
+    // iPad Air 2
+    if ([platform isEqualToString:@"iPad5,3"] || [platform isEqualToString:@"iPad5,4"])  {
+        if (!isFront) {
+            w = 3264;
+            h = 2448;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+    
+    // iPad Pro 12
+    if ([platform isEqualToString:@"iPad6,7"] || [platform isEqualToString:@"iPad6,8"])  {
+        if (!isFront) {
+            w = 3264;
+            h = 2448;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+    
+    // iPad Pro 9
+    if ([platform isEqualToString:@"iPad6,3"] || [platform isEqualToString:@"iPad6,4"])  {
+        if (!isFront) {
+            w = 4032;
+            h = 3024;
+        }
+        else {
+            w = 2556;
+            h = 1932;
+        }
+    }
+
+    // iPad mini
+    if ([platform isEqualToString:@"iPad2,5"] || [platform isEqualToString:@"iPad2,6"] || [platform isEqualToString:@"iPad2,7"])  {
+        if (!isFront) {
+            w = 2592;
+            h = 1936;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+    
+    // iPad mini 2
+    if ([platform isEqualToString:@"iPad4,4"] || [platform isEqualToString:@"iPad4,5"] || [platform isEqualToString:@"iPad4,6"])  {
+        if (!isFront) {
+            w = 2592;
+            h = 1936;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+
+    // iPad mini 3
+    if ([platform isEqualToString:@"iPad4,7"] || [platform isEqualToString:@"iPad4,8"] || [platform isEqualToString:@"iPad4,9"])  {
+        if (!isFront) {
+            w = 2592;
+            h = 1936;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+
+    // iPad mini 4
+    if ([platform isEqualToString:@"iPad5,1"] || [platform isEqualToString:@"iPad5,2"])  {
+        if (!isFront) {
+            w = 3264;
+            h = 2448;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+    
+    // iPod Touch
+    if ([platform isEqualToString:@"iPod1,1"]) {
+    }
+    
+    // iPod Touch 2
+    if ([platform isEqualToString:@"iPod2,1"]) {
+    }
+    
+    // iPod Touch 3
+    if ([platform isEqualToString:@"iPod3,1"]) {
+    }
+
+    // iPod Touch 4
+    if ([platform isEqualToString:@"iPod4,1"]) {
+        if (!isFront) {
+            w = 960;
+            h = 720;
+        }
+        else {
             w = 640;
             h = 480;
+        }
+    }
+
+    // iPod Touch 5
+    if ([platform isEqualToString:@"iPod5,1"]) {
+        if (!isFront) {
+            w = 2592;
+            h = 1936;
+        }
+        else {
+            w = 1280;
+            h = 960;
+        }
+    }
+
+    // iPod Touch 6
+    if ([platform isEqualToString:@"iPod7,1"]) {
+        if (!isFront) {
+            w = 3264;
+            h = 2448;
+        }
+        else {
+            w = 1280;
+            h = 960;
         }
     }
     
     *res_w = w;
     *res_h = h;
     
-    //if ((w <= 0) || (h <= 0)) {
-    //    return rho_ruby_get_NIL();
-    //}
-    
-    //VALUE hash = rho_ruby_createHash();
-    
-    //VALUE hash_max_resolution = rho_ruby_createHash();
-    
-    //rho_ruby_add_to_hash(hash_max_resolution, rho_ruby_create_string("width"), rho_ruby_create_integer(w));
-    //rho_ruby_add_to_hash(hash_max_resolution, rho_ruby_create_string("height"), rho_ruby_create_integer(h));
-    
-    //rho_ruby_add_to_hash(hash, rho_ruby_create_string("max_resolution"), hash_max_resolution);
-    
-    //return hash;
-    
 }
+
+
+void get_camera_info(const char* camera_type, int* res_w, int* res_h) {
+    int w = 0;
+    int h = 0;
+    BOOL isFront = strcmp(camera_type, "front") == 0;
+    BOOL isBack = strcmp(camera_type, "back") == 0;
+    
+    if ((!isFront) && (!isBack)) {
+        // unknown camera type
+        *res_w = w;
+        *res_h = h;
+        return;
+    }
+
+    CMVideoDimensions res_from_av;
+    AVCaptureDevicePosition cameraPos = AVCaptureDevicePositionUnspecified;
+    if (isFront) {
+        cameraPos = AVCaptureDevicePositionFront;
+    }
+    if (isBack) {
+        cameraPos = AVCaptureDevicePositionBack;
+    }
+    res_from_av = getCameraMaxStillImageResolution(cameraPos);
+
+    get_camera_info_by_device_name(camera_type, &w, &h);
+    
+    if ((res_from_av.width != w) || (res_from_av.height != h)) {
+        RAWLOG_INFO4("WARNING: unknown device ! predefined image size [ %d x %d ], but actual size is [ %d x %d ] !!!", w, h, res_from_av.width, res_from_av.height);
+    }
+
+    if ((res_from_av.width * res_from_av.height) > (w * h)) {
+        w = res_from_av.width;
+        h = res_from_av.height;
+    }
+    
+    *res_w = w;
+    *res_h = h;
+}
+
 
 int get_camera_max_width(const char* camera_type) {
     int w;

@@ -41,11 +41,11 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_socket_SSLImpl_getRemoteSoc
 {
     jclass clsSockAddr = getJNIClass(RHODES_JAVA_CLASS_RHOSOCKADDR);
     if (!clsSockAddr) return NULL;
-    jclass clsInetAddr = getJNIClass(RHODES_JAVA_CLASS_INET4ADDRESS);
+    jclass clsInetAddr = getJNIClass(RHODES_JAVA_CLASS_INETADDRESS);
     if (!clsInetAddr) return NULL;
     jmethodID midSockAddr = getJNIClassMethod(env, clsSockAddr, "<init>", "()V");
     if (!midSockAddr) return NULL;
-    jmethodID midInetAddr = getJNIClassMethod(env, clsInetAddr, "<init>", "([BLjava/lang/String;)V");
+    jmethodID midInetAddr = getJNIClassStaticMethod(env, clsInetAddr, "getByAddress", "(Ljava/lang/String;[B)Ljava/net/InetAddress;");
     if (!midInetAddr) return NULL;
     jfieldID fidInetAddr = getJNIClassField(env, clsSockAddr, "host", "Ljava/net/InetAddress;");
     if (!fidInetAddr) return NULL;
@@ -75,7 +75,7 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_socket_SSLImpl_getRemoteSoc
     env->ReleaseByteArrayElements(array.get(), arr, 0);
 
     jhstring ipaddrObj = rho_cast<jstring>(env, ::inet_ntoa(sa.sin_addr));
-    jhobject inetaddrObj = env->NewObject(clsInetAddr, midInetAddr, array.get(), ipaddrObj.get());
+    jhobject inetaddrObj = env->CallStaticObjectMethod(clsInetAddr, midInetAddr, ipaddrObj.get(), array.get() );
     if (!inetaddrObj) return NULL;
 
     jhobject sockaddrObj = env->NewObject(clsSockAddr, midSockAddr);
