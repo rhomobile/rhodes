@@ -176,7 +176,7 @@ public class NotificationSingleton implements INotificationSingleton
 			else 
 			{ 
 				AssetFileDescriptor afd = RhoFileApi.openAssetFd(path); 
-				currentMP.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength()); //PG added
+				currentMP.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
 				afd.close();
 			}
 
