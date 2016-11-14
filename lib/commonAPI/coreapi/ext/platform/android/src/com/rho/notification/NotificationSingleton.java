@@ -37,6 +37,7 @@ import com.rho.notification.INotificationSingleton;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.api.MethodResult;
@@ -212,15 +213,26 @@ public class NotificationSingleton implements INotificationSingleton
         
         if (duration != 0)
         {
-            Activity activity = RhodesActivity.safeGetInstance();
-            if(vibrator != null) vibrator.cancel();
-            vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
-            
-            if ( duration > 15000 ) {
-                duration = 15000;
+            Context context = null;
+            try {
+                context = RhodesService.getContext();
             }
-            
-            vibrator.vibrate(duration > 0 ? duration : 1000);
+            catch (IllegalStateException e) {
+                context = null;
+                Logger.D(TAG, "Rhodes main Service (com.rhomobile.rhodes.RhodesService) is not run !!!");
+            }
+            if (context != null) {
+                if(vibrator != null) vibrator.cancel();
+                vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+
+                if ( duration > 15000 ) {
+                    duration = 15000;
+                }
+                vibrator.vibrate(duration > 0 ? duration : 1000);
+            }
+            else {
+                Logger.D(TAG, "Can not vibrate, because can not get Rhodes main Context !!!");
+            }
         }
     }
 
