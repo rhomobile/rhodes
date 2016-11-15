@@ -99,7 +99,9 @@ var App = {
                 {action: "refresh"}
             ], {});
 
-            Rho.RhoConnectClient.setNotification("*", that.syncNotify);
+            if (Rho.RhoConnectClient != null) {
+                Rho.RhoConnectClient.setNotification("*", that.syncNotify);
+            }
 
             $("#logoutBtn").on("click", function () {
                 Rho.RhoConnectClient.logout();
@@ -169,7 +171,9 @@ var App = {
             $("#loginItem").toggleClass("hidden", loggedIn);
         };
         this.init = function () {
-            Rho.RhoConnectClient.setNotification("*", that.syncNotify);
+            if (Rho.RhoConnectClient != null) {
+                Rho.RhoConnectClient.setNotification("*", that.syncNotify);
+            }
             that.updateUI();
 
             $("#back").on("click", function () {
