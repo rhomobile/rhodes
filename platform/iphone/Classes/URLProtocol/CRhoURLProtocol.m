@@ -329,6 +329,13 @@ int on_http_cb(http_parser* parser) { return 0; }
       return NO;
     }
 
+    const char* scheme = [[url scheme] UTF8String];
+    if (scheme != 0) {
+        if ((strcmp(scheme, "http") !=0 ) && (strcmp(scheme, "https") !=0 )) {
+            return NO;
+        }
+    }
+    
     const char* host = [[url host] UTF8String];
   
     if ( 0 == host )
@@ -336,16 +343,13 @@ int on_http_cb(http_parser* parser) { return 0; }
       return YES;
     }
   
-    const char* scheme = [[url scheme] UTF8String];
-  
     NSNumber* p = [url port];
     int port = (nil==p)?80:[[url port] intValue];
   
     int rhoPort = rho_http_get_port();
 
     return (
-      ( (0==scheme) || (strcmp(scheme, "http") ==0 ) || (strcmp(scheme, "https") ==0 ))
-      && ((port == rhoPort))
+      ((port == rhoPort))
       && ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
     );
 }
