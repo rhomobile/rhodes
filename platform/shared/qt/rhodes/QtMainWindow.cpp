@@ -63,16 +63,18 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QDesktopWidget>
+#include <QScroller>
+#include <QScrollArea>
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 #endif
 
-#ifdef OS_SYMBIAN
+//#ifdef OS_SYMBIAN
 #include "qwebviewselectionsuppressor.h"
 #include "qwebviewkineticscroller.h"
-#endif
+//#endif
 
 IMPLEMENT_LOGCLASS(QtMainWindow,"QtMainWindow");
 
@@ -167,11 +169,11 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     main_webInspector->setPage(ui->webView->page());
 #endif
 
-#ifdef OS_SYMBIAN
+//#ifdef OS_SYMBIAN
     QWebViewKineticScroller *newScroller = new QWebViewKineticScroller();
     newScroller->setWidget(this->ui->webView);
     QWebViewSelectionSuppressor* suppressor = new QWebViewSelectionSuppressor(this->ui->webView);
-#endif
+//#endif
 
 #if defined(RHODES_EMULATOR)
     webInspectorWindow->show();
