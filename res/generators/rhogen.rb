@@ -368,8 +368,8 @@ module Rhogen
     end
 
     template :login do |template|
-      template.source = 'app/settings/javascript_login.html'
-      template.destination = "#{name}/app/settings/login.html"
+      template.source = 'app/Settings/javascript_login.html'
+      template.destination = "#{name}/app/Settings/login.html"
     end
 
     template :loading do |template|
