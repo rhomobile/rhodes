@@ -71,10 +71,8 @@
 #define strnicmp strncasecmp
 #endif
 
-//#ifdef OS_SYMBIAN
 #include "qwebviewselectionsuppressor.h"
 #include "qwebviewkineticscroller.h"
-//#endif
 
 IMPLEMENT_LOGCLASS(QtMainWindow,"QtMainWindow");
 
@@ -169,11 +167,13 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     main_webInspector->setPage(ui->webView->page());
 #endif
 
-//#ifdef OS_SYMBIAN
-    QWebViewKineticScroller *newScroller = new QWebViewKineticScroller();
-    newScroller->setWidget(this->ui->webView);
-    QWebViewSelectionSuppressor* suppressor = new QWebViewSelectionSuppressor(this->ui->webView);
-//#endif
+    if (RHOCONF().isExist("use_kinetic_scroll_on_windows") && RHOCONF().getBool("use_kinetic_scroll_on_windows"))
+    {
+        QWebViewKineticScroller *newScroller = new QWebViewKineticScroller();
+        newScroller->setWidget(this->ui->webView);
+        QWebViewSelectionSuppressor* suppressor = new QWebViewSelectionSuppressor(this->ui->webView);
+    }
+
 
 #if defined(RHODES_EMULATOR)
     webInspectorWindow->show();
