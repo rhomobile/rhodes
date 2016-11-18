@@ -238,10 +238,17 @@ static void updateViewRect(CGRect* pRect)
 }
 
 
-- (UIWebView*)detachWebView {
-	RightViewController* rvc = [self getRightViewController];
-	return [rvc detachWebView];
+- (id<RhoWebView,NSObject>)getRhoWebView:(int)tab_index {
+    RightViewController* rvc = [self getRightViewController];
+    return [rvc getRhoWebView:tab_index];
 }
+
+- (id<RhoWebView,NSObject>)detachRhoWebView {
+    RightViewController* rvc = [self getRightViewController];
+    return [rvc detachRhoWebView];
+}
+
+
 
 - (void)loadHTMLString:(NSString*)data {
 	RightViewController* rvc = [self getRightViewController];
@@ -329,10 +336,6 @@ static void updateViewRect(CGRect* pRect)
 	[rvc removeNavBar];
 }
 
-- (UIWebView*)getWebView:(int)tab_index {
-	RightViewController* rvc = [self getRightViewController];
-	return [rvc getWebView:tab_index];
-}
  
 -(void)setTabBarBadge:(NSString*)badge_text tab_index:(int)tab_index {
     // nothing

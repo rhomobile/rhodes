@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		C04F28E019CAF3CA003E34BD /* RunnableWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C04F28DE19CAF3CA003E34BD /* RunnableWrapper.h */; };
 		C04F28E119CAF3CA003E34BD /* RunnableWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */; };
-		C5BA525F1A93ADF90095DE4A /* NetRequestImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5BA525E1A93ADF90095DE4A /* NetRequestImpl.mm */; };
 		C5BA525F1A93ADF90095DE4A /* IPhoneNetRequest.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */; };
 		C5DFBB31185B6FB400DB6BDB /* IAppMessageReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */; };
 		FA11F249192121BF00FB1301 /* IRhoExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = FA11F248192121BF00FB1301 /* IRhoExtension.h */; };
@@ -120,11 +119,18 @@
 		FA89817D18917EB700AF5E39 /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C286182B04140036D304 /* SignatureViewController.m */; };
 		FA89817E18917EBA00AF5E39 /* SignatureParam.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C287182B04140036D304 /* SignatureParam.h */; };
 		FAA5A5AE182B0E9B00590B1F /* rhorunner_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAA5A5AD182B0E9B00590B1F /* rhorunner_Prefix.pch */; };
+		FAA714911DDCA89E00E5E7AD /* RhoWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA714901DDCA89E00E5E7AD /* RhoWebView.h */; };
+		FAA714961DDCAB6D00E5E7AD /* RhoUIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA714921DDCAB6D00E5E7AD /* RhoUIWebView.h */; };
+		FAA714971DDCAB6D00E5E7AD /* RhoUIWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAA714931DDCAB6D00E5E7AD /* RhoUIWebView.m */; };
+		FAA714981DDCAB6D00E5E7AD /* RhoWKWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA714941DDCAB6D00E5E7AD /* RhoWKWebView.h */; };
+		FAA714991DDCAB6D00E5E7AD /* RhoWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.m */; };
+		FAA7149F1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA7149D1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h */; };
+		FAA714A01DDCAE2B00E5E7AD /* RhoWebViewFabrique.m in Sources */ = {isa = PBXBuildFile; fileRef = FAA7149E1DDCAE2B00E5E7AD /* RhoWebViewFabrique.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		C04F28DE19CAF3CA003E34BD /* RunnableWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RunnableWrapper.h; sourceTree = "<group>"; };
-		C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RunnableWrapper.mm; sourceTree = "<group>"; };		
+		C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RunnableWrapper.mm; sourceTree = "<group>"; };
 		C5BA525D1A93AD6D0095DE4A /* IPhoneNetRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IPhoneNetRequest.h; path = rho/net/IPhoneNetRequest.h; sourceTree = "<group>"; };
 		C5BA525E1A93ADF90095DE4A /* IPhoneNetRequest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = IPhoneNetRequest.mm; path = rho/net/IPhoneNetRequest.mm; sourceTree = "<group>"; };
 		C5DFBB30185B6FB400DB6BDB /* IAppMessageReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAppMessageReceiver.h; sourceTree = "<group>"; };
@@ -245,6 +251,14 @@
 		FA20C299182B04140036D304 /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
 		FA20C29A182B04140036D304 /* IPushNotificationsReceiver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IPushNotificationsReceiver.h; sourceTree = "<group>"; };
 		FAA5A5AD182B0E9B00590B1F /* rhorunner_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhorunner_Prefix.pch; path = ../rhorunner_Prefix.pch; sourceTree = "<group>"; };
+		FAA714901DDCA89E00E5E7AD /* RhoWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoWebView.h; sourceTree = "<group>"; };
+		FAA714921DDCAB6D00E5E7AD /* RhoUIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoUIWebView.h; sourceTree = "<group>"; };
+		FAA714931DDCAB6D00E5E7AD /* RhoUIWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoUIWebView.m; sourceTree = "<group>"; };
+		FAA714941DDCAB6D00E5E7AD /* RhoWKWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoWKWebView.h; sourceTree = "<group>"; };
+		FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoWKWebView.m; sourceTree = "<group>"; };
+		FAA7149B1DDCADC100E5E7AD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.1.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
+		FAA7149D1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoWebViewFabrique.h; sourceTree = "<group>"; };
+		FAA7149E1DDCAE2B00E5E7AD /* RhoWebViewFabrique.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoWebViewFabrique.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -265,6 +279,7 @@
 				08FB7795FE84155DC02AAC07 /* Source */,
 				C6A0FF2B0290797F04C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
+				FAA7149A1DDCADC100E5E7AD /* Frameworks */,
 			);
 			name = RhoAppBaseLib;
 			sourceTree = "<group>";
@@ -438,6 +453,13 @@
 		FA20C254182B04140036D304 /* MainView */ = {
 			isa = PBXGroup;
 			children = (
+				FAA7149D1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h */,
+				FAA7149E1DDCAE2B00E5E7AD /* RhoWebViewFabrique.m */,
+				FAA714921DDCAB6D00E5E7AD /* RhoUIWebView.h */,
+				FAA714931DDCAB6D00E5E7AD /* RhoUIWebView.m */,
+				FAA714941DDCAB6D00E5E7AD /* RhoWKWebView.h */,
+				FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.m */,
+				FAA714901DDCA89E00E5E7AD /* RhoWebView.h */,
 				FA20C24E182B04140036D304 /* SplitView */,
 				FA20C24F182B04140036D304 /* RhoMainView.h */,
 				FA20C250182B04140036D304 /* SimpleMainView.h */,
@@ -628,6 +650,14 @@
 			path = ../Classes;
 			sourceTree = "<group>";
 		};
+		FAA7149A1DDCADC100E5E7AD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FAA7149B1DDCADC100E5E7AD /* WebKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -647,9 +677,11 @@
 				FA20C2E1182B07D10036D304 /* RhoMapViewController.h in Headers */,
 				FA20C2BA182B07A50036D304 /* RhoAlert.h in Headers */,
 				FA20C300182B07EE0036D304 /* sslimpl.h in Headers */,
+				FAA714911DDCA89E00E5E7AD /* RhoWebView.h in Headers */,
 				FA20C2CA182B07BA0036D304 /* Event.h in Headers */,
 				FA11F2521921224400FB1301 /* RhoExtManagerSingletone.h in Headers */,
 				FA20C307182B08080036D304 /* NetworkStatusMonitor.h in Headers */,
+				FAA714981DDCAB6D00E5E7AD /* RhoWKWebView.h in Headers */,
 				FA20C2ED182B07DA0036D304 /* NVViewController.h in Headers */,
 				FA20C2EF182B07DA0036D304 /* NVDelegate.h in Headers */,
 				FA20C2F7182B07EB0036D304 /* RhoCryptImpl.h in Headers */,
@@ -658,6 +690,7 @@
 				FA20C30B182B08080036D304 /* RhoDelegate.h in Headers */,
 				FA20C2C0182B07AA0036D304 /* AppManagerI.h in Headers */,
 				FA20C2DF182B07CB0036D304 /* TabbedMainView.h in Headers */,
+				FAA7149F1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h in Headers */,
 				FA20C2FD182B07EB0036D304 /* SplashScreenImpl.h in Headers */,
 				FA20C311182B08080036D304 /* SplashViewController.h in Headers */,
 				FA20C30F182B08080036D304 /* RhoViewController.h in Headers */,
@@ -688,6 +721,7 @@
 				FA20C2EB182B07D50036D304 /* NativeBar.h in Headers */,
 				FA20C313182B08080036D304 /* IPushNotificationsReceiver.h in Headers */,
 				FA20C2BE182B07AA0036D304 /* AppManager.h in Headers */,
+				FAA714961DDCAB6D00E5E7AD /* RhoUIWebView.h in Headers */,
 				FA20C2B8182B07A10036D304 /* CRhoURLProtocol.h in Headers */,
 				FA20C2D2182B07C50036D304 /* LogOptionsController.h in Headers */,
 				FA20C2CF182B07C50036D304 /* InitMemoryInfoCollector.h in Headers */,
@@ -749,8 +783,9 @@
 			files = (
 				FA20C2C9182B07B60036D304 /* DateTimePickerViewController.m in Sources */,
 				FA11F2531921224400FB1301 /* RhoExtManagerSingletone.m in Sources */,
+				FAA714991DDCAB6D00E5E7AD /* RhoWKWebView.m in Sources */,
 				FA11F24F1921221E00FB1301 /* RhoExtManagerImpl.m in Sources */,
-        FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */,
+				FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */,
 				FA20C303182B07F20036D304 /* RingtoneManager.m in Sources */,
 				FA20C2EC182B07D50036D304 /* NativeBar.m in Sources */,
 				FA20C2CE182B07C40036D304 /* InitMemoryInfoCollector.mm in Sources */,
@@ -764,6 +799,7 @@
 				FA20C30C182B08080036D304 /* RhoDelegate.m in Sources */,
 				FA20C2F8182B07EB0036D304 /* RhoCryptImpl.mm in Sources */,
 				FA20C2C7182B07B60036D304 /* DateTimePicker.m in Sources */,
+				FAA714A01DDCAE2B00E5E7AD /* RhoWebViewFabrique.m in Sources */,
 				FA20C2FE182B07EB0036D304 /* SplashScreenImpl.cpp in Sources */,
 				FA89817918917EAD00AF5E39 /* SignatureView.m in Sources */,
 				FA20C2D7182B07CB0036D304 /* RightViewController.m in Sources */,
@@ -772,6 +808,7 @@
 				FA20C2F6182B07E20036D304 /* phonebook.m in Sources */,
 				FA20C2D0182B07C50036D304 /* LogViewController.m in Sources */,
 				FA20C2C6182B07B60036D304 /* DateTime.m in Sources */,
+				FAA714971DDCAB6D00E5E7AD /* RhoUIWebView.m in Sources */,
 				FA20C2CD182B07BE0036D304 /* LocationController.m in Sources */,
 				FA20C2EA182B07D10036D304 /* MapAnnotation.m in Sources */,
 				FA20C2E4182B07D10036D304 /* MapViewManager.m in Sources */,

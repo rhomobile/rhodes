@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
 * 
-* Copyright (c) 2008-2011 Rhomobile, Inc.
+* Copyright (c) 2008-2016 TAU Technologies, Inc.
 * 
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -21,58 +21,52 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 * 
-* http://rhomobile.com
+* http://tau-technologies.com
 *------------------------------------------------------------------------*/
 
 #import <UIKit/UIKit.h>
-//#import <NSMapTable.h>
 
 
-#include "ruby/ext/rho/rhoruby.h"
+@protocol RhoWebView;
 
+@protocol RhoWebViewDelegate <NSObject>
 
-//#define   OC_OPEN_IN_MODAL_FULL_SCREEN_WINDOW  11111
-
-
-@protocol NativeViewOC
-
-- (UIView*)getView;
-- (void)navigate:(NSString*)url;
-
-@end
-
-@protocol NativeViewFactoryOC 
-
--(id)getNativeView:(NSString*)viewType;	
--(void)destroyNativeView:(id)nativeView;
-
-@end
-
-@interface RhoNativeViewManagerOC : NSObject {
-	NSMutableDictionary* mProviders;
-	NSMutableArray* mOpenedViews;
-	
-}
-
-@property (nonatomic, retain) NSMutableDictionary *mProviders;
-@property (nonatomic, retain) NSMutableArray* mOpenedViews;
-
-- (id)init;
-- (void)dealloc;	
-	
-+ (id)getNativeView:(NSString*)viewType;
-+ (void)destroyNativeView:(id)nativeView;
-
-
-+(void)registerViewType:(NSString*)viewType factory:(id)factory;
-+(void)unregisterViewType:(NSString*)viewType;
-+(UIView*)getWebViewObject:(int)tab_index;
-
-+(int)create_native_view:(NSString*)viewType tab_index:(int)tab_index params:(VALUE)params;
-+(void)navigate_native_view:(int)nv_id message:(NSString*)message;
-+(void)destroy_native_view:(int)nv_id;
-+(void)destroy_native_view_by_nview:(void*)nv_view;
+@optional
+- (BOOL)shouldStartLoadWithRequest:(id<RhoWebView,NSObject>)webView request:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
+- (void)webViewDidStartLoad:(id<RhoWebView,NSObject>)webView;
+- (void)webViewDidFinishLoad:(id<RhoWebView,NSObject>)webView;
+- (void)didFailLoadWithError:(id<RhoWebView,NSObject>)webView error:(NSError *)error;
 
 @end
 
 
+
+@protocol RhoWebView <NSObject>
+
+
+- (UIView*)view;
+
+- (void) setupDelegate:(id<RhoWebViewDelegate,NSObject>)delegate;
+
+- (NSString*)currentLocation;
+
+- (UIView*)containerView;
+
+//UIWebView
+
+- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script;
+
+- (void)loadRequest:(NSURLRequest *)request;
+
+- (void)loadHTMLString:(NSString *)string baseURL:(nullable NSURL *)baseURL;
+
+- (void)stopLoading;
+
+- (void)reload;
+
+- (void)goBack;
+
+- (void)goForward;
+
+
+@end

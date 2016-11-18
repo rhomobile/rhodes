@@ -421,8 +421,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
             }
         }
 	}
-    
+    NSLog(@"Create rhodes logging and rhoconfig.txt loading");
 	rho_logconf_Init_with_separate_user_path(rho_native_rhopath(), rho_native_rhopath(), "", rho_native_rhouserpath());
+    NSLog(@"Create rhodes app");
 	rho_rhodesapp_create_with_separate_user_path(rho_native_rhopath(), rho_native_rhouserpath());
 	RAWLOG_INFO("Rhodes started");
 }
