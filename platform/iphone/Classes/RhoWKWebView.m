@@ -176,6 +176,10 @@
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation {
+    // force Ajax CommonAPI calls
+    NSString* jscode = @"window['__rho_nativeBridgeType']='ajax'";
+    [self stringByEvaluatingJavaScriptFromString:jscode];
+    
     [delegate webViewDidFinishLoad:self];
 }
 
