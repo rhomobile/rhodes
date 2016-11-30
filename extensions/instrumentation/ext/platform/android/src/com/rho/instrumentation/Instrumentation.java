@@ -402,4 +402,9 @@ public class Instrumentation extends InstrumentationBase implements IInstrumenta
 	    // TODO Auto-generated method stub
 	    return false;
 	}
+
+	@Override
+	public boolean onLoadResource(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+		return false;
+	}
 }
