@@ -2125,6 +2125,8 @@ namespace "config" do
     #    $app_config["extensions"].delete("audiocapture")
     #end
 
+    $app_config['extensions'].delete('barcode') if ( $app_config['extensions'].index('enterprise-barcode') || $app_config['extensions'].index('allbarcode') )
+
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
 
     #application build configs
