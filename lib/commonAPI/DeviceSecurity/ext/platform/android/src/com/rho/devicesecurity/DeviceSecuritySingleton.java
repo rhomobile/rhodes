@@ -2,6 +2,13 @@ package com.rho.devicesecurity;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import android.content.pm.ApplicationInfo;
+
 import android.content.Context;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.api.IMethodResult;
@@ -12,7 +19,7 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
     protected static String TAG = DeviceSecuritySingleton.class.getSimpleName();
 
     public DeviceSecuritySingleton(DeviceSecurityFactory factory) {
-        super(factory);
+        super();
     }
 
 
@@ -102,7 +109,7 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
         result.set(checkEmulator());
     }
 
-    private static boolean checkDebuggable(Context context){
+    private static boolean checkDebuggable(){
 
         Context context = null;
         try {
@@ -114,7 +121,7 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
         }
         boolean res = false;
         if (context != null) {
-            res = (context.getApplicationInfo().flags & ApplicationInfo.FLAG\_DEBUGGABLE) != 0;
+            res = (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
         }
         return res;
 
