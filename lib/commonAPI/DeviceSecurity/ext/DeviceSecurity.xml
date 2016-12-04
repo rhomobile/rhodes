@@ -14,7 +14,7 @@
         <METHODS>
 
             <METHOD name="isDeviceSecured" access="STATIC" >
-                <DESC>return true is device secured. On iOS checked - device is not JailBraked, on Android checked - device is not rooted</DESC>
+                <DESC>return true is device secured. On iOS checked - device is not JailBraked, on Android checked - device is not rooted + is not simulator + not in debug mode</DESC>
                 <PLATFORM>iOS, Android</PLATFORM>
                 <RETURN type="BOOLEAN"/>
             </METHOD>

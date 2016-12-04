@@ -25,7 +25,7 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
 
     @Override
     public void isDeviceSecured(IMethodResult result) {
-        result.set(true);
+        result.set((!checkDeviceRooted()) && (!checkEmulator()) && (!checkDebuggable()));
     }
 
     @Override
@@ -34,7 +34,7 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
     }
 
 
-    public static boolean isDeviceRooted() {
+    public static boolean checkDeviceRooted() {
             return checkRootMethod1() || checkRootMethod2() || checkRootMethod3();
         }
 
@@ -70,7 +70,7 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
 
     @Override
     public void isDeviceRooted(IMethodResult result) {
-        result.set(isDeviceRooted());
+        result.set(checkDeviceRooted());
     }
 
 
