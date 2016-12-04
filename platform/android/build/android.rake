@@ -2246,17 +2246,22 @@ namespace "package" do
 
     # Workaround: manually add files starting with '_' because aapt silently ignore such files when creating package
     args = [ USE_TRACES ? "uvf" : "uf", resourcepkg]
+
+    skip_underscores = true
     
     Dir.glob(File.join($appassets, "**/*")).each do |f|
       next unless File.basename(f) =~ /^_/
       relpath = Pathname.new(f).relative_path_from(Pathname.new($tmpdir)).to_s
       puts "Add #{relpath} to #{resourcepkg}..."
       args << relpath
+      skip_underscores = false
     end
 
-    Jake.run($jarbin, args, $tmpdir)
-    unless $?.success?
-      raise "Error packaging assets"
+    unless skip_underscores
+      Jake.run($jarbin, args, $tmpdir)
+      unless $?.success?
+        raise "Error packaging assets"
+      end
     end
 
     puts "Packaging Native Libs"
