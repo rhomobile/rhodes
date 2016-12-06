@@ -43,6 +43,13 @@
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
+            <METHOD name="getAppCertificateSignatures" access="STATIC" >
+                <DESC>Returns application certificates signatures.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+
         </METHODS>
 
         <USER_OVERVIEW>

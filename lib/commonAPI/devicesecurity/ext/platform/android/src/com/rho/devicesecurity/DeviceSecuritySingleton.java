@@ -1,13 +1,24 @@
 package com.rho.devicesecurity;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.io.PrintWriter;
+
+import java.security.MessageDigest;
+
+import android.util.Base64;
 
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 
 import android.content.Context;
 import com.rhomobile.rhodes.RhodesService;
@@ -104,13 +115,7 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
 
       }
 
-    @Override
-    public void isRunOnSimulator(IMethodResult result) {
-        result.set(checkEmulator());
-    }
-
-    private static boolean checkDebuggable(){
-
+    private static Context getContext() {
         Context context = null;
         try {
             context = RhodesService.getContext();
@@ -119,6 +124,19 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
             context = null;
             Logger.E(TAG, "Check Debuggable ERROR : Rhodes main Service (com.rhomobile.rhodes.RhodesService) is not run !!!");
         }
+
+        return context;
+    }
+
+    @Override
+    public void isRunOnSimulator(IMethodResult result) {
+        result.set(checkEmulator());
+    }
+
+    private static boolean checkDebuggable(){
+
+        Context context = getContext();
+
         boolean res = false;
         if (context != null) {
             res = (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
@@ -134,8 +152,33 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
 
     }
 
+    @Override
+    public void getAppCertificateSignatures(IMethodResult result) {
 
+        Context context = getContext();
 
+        Collection<Object> signatures = new ArrayList<Object>();
 
+        try {
 
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+            
+            for (Signature signature : packageInfo.signatures) {
+                byte[] signatureBytes = signature.toByteArray();
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                final String currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+
+                signatures.add( currentSignature );
+            }
+
+            result.set(signatures);
+
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);            
+            result.setError( e.toString() + "\n" + sw.toString() );
+        }
+    }
 }
