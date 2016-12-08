@@ -69,6 +69,21 @@
     [methodResult setResult:[NSNumber numberWithBool:NO]];
 }
 
+-(void) getAppCertificateSignatures:(id<IMethodResult>)methodResult {
+
+}
+
+-(void) getAllowedCertificateSignatures:(id<IMethodResult>)methodResult {
+
+}
+
+-(void) getInstallerPackageName:(id<IMethodResult>)methodResult {
+
+}
+
+-(void) getAllowedInstallerPackages:(id<IMethodResult>)methodResult {
+
+}
 
 
 
