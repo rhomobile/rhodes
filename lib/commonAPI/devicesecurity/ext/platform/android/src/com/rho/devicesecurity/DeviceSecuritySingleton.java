@@ -38,7 +38,7 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
 
     @Override
     public void isDeviceSecured(IMethodResult result) {
-        result.set((!checkDeviceRooted()) && (!checkEmulator()) && (!checkDebuggable()));
+        result.set((!checkDeviceRooted()) && (!checkEmulator()) && (!checkDebuggable()) && checkAllowedInstallers() && checkAllowedSignatures() );
     }
 
     @Override
@@ -272,24 +272,42 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
 
     }
 
-    @Override
-    public void getAppCertificateSignatures(IMethodResult result) {
+    //should always be 1 signature really...
+    private Signature[] getSignatures() {
+        try {
+            Context context = getContext();
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+            return packageInfo.signatures;
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
 
-        Context context = getContext();
+        return null;
+    }
+
+    private String signatureToString( Signature signature ) {
+        try {
+            byte[] signatureBytes = signature.toByteArray();
+            MessageDigest md = MessageDigest.getInstance("SHA");
+            md.update(signature.toByteArray());
+            return Base64.encodeToString(md.digest(), Base64.DEFAULT);
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public void getAppCertificateSignatures(IMethodResult result) {        
 
         Collection<Object> signatures = new ArrayList<Object>();
 
         try {
-
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+            Signature[] sigs = getSignatures();
             
-            for (Signature signature : packageInfo.signatures) {
-                byte[] signatureBytes = signature.toByteArray();
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                final String currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT);
-
-                signatures.add( currentSignature );
+            for (Signature signature : sigs ) {
+                signatures.add( signatureToString( signature ) );
             }
 
             result.set(signatures);
@@ -309,12 +327,17 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
         result.set( signatures );
     }
 
+    private String getInsallerPackage() {
+        Context context = getContext();        
+        return context.getPackageManager().getInstallerPackageName(context.getPackageName());
+    }
+
     @Override
     public void getInstallerPackageName(IMethodResult result) {
         Context context = getContext();
 
         try {
-            final String installer = context.getPackageManager().getInstallerPackageName(context.getPackageName());
+            final String installer = getInsallerPackage();
             result.set( installer );
         } catch ( Exception e ) {
             result.setError( Utils.getExceptionDetails(e) );
@@ -331,4 +354,37 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
         result.set( packages );
     }
 
+    private boolean checkAllowedInstallers() {
+        //allow any installer if none specified
+        boolean res = (InbuiltValues.ALLOWED_INSTALLERS.length == 0);
+        final String myInstaller = getInsallerPackage();
+
+        for ( String installer: InbuiltValues.ALLOWED_INSTALLERS ) {
+            if ( installer.equals( myInstaller ) ) {
+                res = true;
+                break;
+            }
+        }
+
+        return res;
+    }
+
+    private boolean checkAllowedSignatures() {                
+        Signature[] mySignatures = getSignatures();
+
+        //allow any signature if none specified
+        final int requiredMatches = (InbuiltValues.ALLOWED_CERT_SIGNATURES.length==0)?0:mySignatures.length;
+        int foundMatches = 0;
+
+        for ( Signature mySignature : mySignatures ) {
+            for ( String allowedSignature : InbuiltValues.ALLOWED_CERT_SIGNATURES ) {
+                if ( signatureToString(mySignature).equals(allowedSignature)) {
+                    ++foundMatches;
+                    break;
+                }
+            }
+        }
+
+        return (foundMatches>=requiredMatches);
+    }
 }
