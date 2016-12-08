@@ -290,7 +290,7 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
             byte[] signatureBytes = signature.toByteArray();
             MessageDigest md = MessageDigest.getInstance("SHA");
             md.update(signature.toByteArray());
-            return Base64.encodeToString(md.digest(), Base64.DEFAULT);
+            return Base64.encodeToString(md.digest(), Base64.DEFAULT).trim();
         } catch ( Exception e ) {
             e.printStackTrace();
         }
@@ -378,12 +378,23 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
 
         for ( Signature mySignature : mySignatures ) {
             for ( String allowedSignature : InbuiltValues.ALLOWED_CERT_SIGNATURES ) {
-                if ( signatureToString(mySignature).equals(allowedSignature)) {
+
+                final String sMySignature = signatureToString( mySignature );
+
+                //Logger.I( TAG, "Comparing signatures, system: " 
+                //    + sMySignature + " ;len:" + String.valueOf(sMySignature.length() ) +
+                //    "; inbuilt: " + allowedSignature + " ;len: " + String.valueOf(allowedSignature.length() ) );
+
+                if ( sMySignature.equals(allowedSignature) ) {
+                    //Logger.I( TAG, "Found matching signature: " + sMySignature );
                     ++foundMatches;
                     break;
                 }
             }
         }
+
+        //Logger.I( TAG, "checkAllowedSignatures, requiredMatches: " 
+        //                + String.valueOf(requiredMatches) + " ; foundMatches: " + String.valueOf( foundMatches ) );
 
         return (foundMatches>=requiredMatches);
     }
