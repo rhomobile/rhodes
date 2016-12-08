@@ -33,6 +33,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 import android.content.res.AssetManager;
 
@@ -220,6 +222,13 @@ public class Utils {
 		s.append("] ");
 		s.append(message);
 		android.util.Log.v(tag, s.toString());
+	}
+
+	public static String getExceptionDetails( Exception e ) {
+		StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return (e.toString() + "\n" + sw.toString());
 	}
 	
 }
