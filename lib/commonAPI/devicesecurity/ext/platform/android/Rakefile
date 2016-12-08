@@ -138,4 +138,29 @@ namespace 'arch' do
   task :mips => TARGETLIB_MIPS
 end
 
+task :generate_inbuilt_values do
+  require File.join(ENV['RHO_ROOT'], 'lib/build/jake.rb')
+
+  cfg = Jake.config( File.open( File.join( ENV['RHO_APP_DIR'], 'build.yml' )))
+  andr_cfg = cfg['android']
+  security_cfg = andr_cfg['security'] if andr_cfg
+
+  allowed_signatures = []
+  allowed_installers = []
+
+  if security_cfg
+    allowed_signatures = security_cfg[ 'allowed_cert_signatures' ] || []
+    allowed_installers = security_cfg[ 'allowed_installers' ] || []
+  end
+
+  require 'erb'
+
+  myroot = File.join(ENV['SOURCEPATH'],'ext/platform/android/')
+
+  inbuilt_template = File.read( File.join(myroot, 'InbuiltValues.erb' ) )
+  result = ERB.new( inbuilt_template ).result( binding )
+
+  File.write(  File.join( myroot, 'generated/src/com/rho/devicesecurity/InbuiltValues.java' ), result )
+end
+
 task :default => ["arch:arm"]

@@ -4,6 +4,7 @@ ext/platform/android/generated/src/com/rho/devicesecurity/DeviceSecuritySingleto
 ext/platform/android/generated/src/com/rho/devicesecurity/IDeviceSecurity.java
 ext/platform/android/generated/src/com/rho/devicesecurity/IDeviceSecurityFactory.java
 ext/platform/android/generated/src/com/rho/devicesecurity/IDeviceSecuritySingleton.java
+ext/platform/android/generated/src/com/rho/devicesecurity/InbuiltValues.java
 ext/platform/android/src/com/rho/devicesecurity/DeviceSecurity.java
 ext/platform/android/src/com/rho/devicesecurity/DeviceSecurityFactory.java
 ext/platform/android/src/com/rho/devicesecurity/DeviceSecuritySingleton.java

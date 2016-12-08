@@ -49,6 +49,23 @@
                 <RETURN type="ARRAY"/>
             </METHOD>
 
+            <METHOD name="getAllowedCertificateSignatures" access="STATIC" >
+                <DESC>Returns allowed certificates signatures inbuilt to application.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="getInstallerPackageName" access="STATIC" >
+                <DESC>Returns application installer package name.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="getAllowedInstallerPackages" access="STATIC" >
+                <DESC>Returns allowed installer package names inbuilt to application.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="ARRAY"/>
+            </METHOD>
 
         </METHODS>
 

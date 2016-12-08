@@ -1,0 +1,16 @@
+package com.rho.devicesecurity;
+
+class InbuiltValues {
+
+  public static final String[] ALLOWED_CERT_SIGNATURES = {
+    <% for s in allowed_signatures %>
+      <%= "\"#{s}\"," %>
+    <% end %>
+  };
+
+  public static final String[] ALLOWED_INSTALLERS = {
+    <% for i in allowed_installers %>
+      <%= "\"#{i}\"," %>
+    <% end %>
+  };
+};

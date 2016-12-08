@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.io.PrintWriter;
 
 import java.security.MessageDigest;
 
 import android.util.Base64;
+import android.os.Build;
+import android.os.Environment;
+import android.bluetooth.BluetoothAdapter;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -24,6 +25,7 @@ import android.content.Context;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.util.Utils;
 
 class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDeviceSecuritySingleton {
 
@@ -92,6 +94,10 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
     }
 
     private static boolean checkEmulator() {
+        return checkEmulatorMethod3();
+    }
+
+    private static boolean checkEmulatorMethod1() {
 
         try {
 
@@ -114,6 +120,120 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
         return false;
 
       }
+
+    private static boolean checkEmulatorMethod2() {
+        return Build.FINGERPRINT.startsWith("generic")
+            || Build.FINGERPRINT.startsWith("unknown")
+            || Build.MODEL.contains("google_sdk")
+            || Build.MODEL.contains("Emulator")
+            || Build.MODEL.contains("Android SDK built for x86")
+            || Build.MANUFACTURER.contains("Genymotion")
+            || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
+            || "google_sdk".equals(Build.PRODUCT)
+            || "goldfish".equals(Build.HARDWARE);
+    }
+
+    private static boolean checkEmulatorMethod3() {
+        int rating = 0;
+
+        if (Build.PRODUCT.contains("sdk") ||
+                Build.PRODUCT.contains("Andy") ||
+                Build.PRODUCT.contains("ttVM_Hdragon") ||
+                Build.PRODUCT.contains("google_sdk") ||
+                Build.PRODUCT.contains("Droid4X") ||
+                Build.PRODUCT.contains("sdk_x86") ||
+                Build.PRODUCT.contains("sdk_google") ||
+                Build.PRODUCT.contains("vbox86p")) {
+            rating++;
+        }
+
+        if (Build.MANUFACTURER.equals("unknown") ||
+                Build.MANUFACTURER.equals("Genymotion") ||
+                Build.MANUFACTURER.contains("Andy") ||
+                Build.MANUFACTURER.contains("TiantianVM")){
+            rating++;
+        }
+
+        if (Build.BRAND.equals("generic") ||
+                Build.BRAND.equals("generic_x86") ||
+                Build.BRAND.equals("TTVM") ||
+                Build.BRAND.contains("Andy")) {
+            rating++;
+        }
+
+        if (Build.DEVICE.contains("generic") ||
+                Build.DEVICE.contains("generic_x86") ||
+                Build.DEVICE.contains("Andy") ||
+                Build.DEVICE.contains("ttVM_Hdragon") ||
+                Build.DEVICE.contains("Droid4X") ||
+                Build.DEVICE.contains("generic_x86_64") ||
+                Build.DEVICE.contains("vbox86p")) {
+            rating++;
+        }
+
+        if (Build.MODEL.equals("sdk") ||
+                Build.MODEL.equals("google_sdk") ||
+                Build.MODEL.contains("Droid4X") ||
+                Build.MODEL.contains("TiantianVM") ||
+                Build.MODEL.contains("Andy") ||
+                Build.MODEL.equals("Android SDK built for x86_64") ||
+                Build.MODEL.equals("Android SDK built for x86")) {
+            rating++;
+        }
+
+        if (Build.HARDWARE.equals("goldfish") ||
+                Build.HARDWARE.equals("vbox86") ||
+                Build.HARDWARE.contains("ttVM_x86")) {
+            rating++;
+        }
+
+        if (Build.FINGERPRINT.contains("generic/sdk/generic") ||
+                Build.FINGERPRINT.contains("generic_x86/sdk_x86/generic_x86") ||
+                Build.FINGERPRINT.contains("Andy") ||
+                Build.FINGERPRINT.contains("ttVM_Hdragon") ||
+                Build.FINGERPRINT.contains("generic_x86_64") ||
+                Build.FINGERPRINT.contains("generic/google_sdk/generic") ||
+                Build.FINGERPRINT.contains("vbox86p") ||
+                Build.FINGERPRINT.contains("generic/vbox86p/vbox86p")) {
+            rating++;
+        }
+/*
+        try {
+            String opengl = android.opengl.GLES20.glGetString(android.opengl.GLES20.GL_RENDERER);
+            if (opengl != null && opengl.contains("Bluestacks")){
+                rating += 10;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+*/
+        try {
+            File sharedFolder = new File(Environment
+                    .getExternalStorageDirectory().toString()
+                    + File.separatorChar
+                    + "windows"
+                    + File.separatorChar
+                    + "BstSharedFolder");
+
+            if (sharedFolder.exists()) {
+                rating += 10;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            BluetoothAdapter m_BluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            String m_bluetoothAdd = m_BluetoothAdapter.getAddress();
+            if (m_bluetoothAdd == null){
+                rating += 3;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }    
+
+        return rating > 3;
+    }
 
     private static Context getContext() {
         Context context = null;
@@ -175,10 +295,40 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
             result.set(signatures);
 
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);            
-            result.setError( e.toString() + "\n" + sw.toString() );
+            result.setError( Utils.getExceptionDetails(e) );
         }
     }
+
+    @Override
+    public void getAllowedCertificateSignatures(IMethodResult result) {
+        Collection<Object> signatures = new ArrayList<Object>();
+        for ( String s : InbuiltValues.ALLOWED_CERT_SIGNATURES ) {
+            signatures.add( s );
+        }
+
+        result.set( signatures );
+    }
+
+    @Override
+    public void getInstallerPackageName(IMethodResult result) {
+        Context context = getContext();
+
+        try {
+            final String installer = context.getPackageManager().getInstallerPackageName(context.getPackageName());
+            result.set( installer );
+        } catch ( Exception e ) {
+            result.setError( Utils.getExceptionDetails(e) );
+        }
+    }
+
+    @Override
+    public void getAllowedInstallerPackages(IMethodResult result) {
+        Collection<Object> packages = new ArrayList<Object>();
+        for ( String p : InbuiltValues.ALLOWED_INSTALLERS ) {
+            packages.add( p );
+        }
+
+        result.set( packages );
+    }
+
 }
