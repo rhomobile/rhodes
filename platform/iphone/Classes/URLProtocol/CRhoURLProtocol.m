@@ -172,18 +172,25 @@ int on_http_cb(http_parser* parser) { return 0; }
             if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
                 force_https = rho_conf_getBool("ios_https_local_server")!=0;
             }
+              
+            NSString* spath = [url path];
+            spath = [spath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+              
             if (force_https) {
-                 s = [NSMutableString stringWithFormat:@"https://127.0.0.1:%d%@",rho_http_get_port(),[url path]];
+                 s = [NSMutableString stringWithFormat:@"https://127.0.0.1:%d%@",rho_http_get_port(),spath];
             }
             else {
-                s = [NSMutableString stringWithFormat:@"http://127.0.0.1:%d%@",rho_http_get_port(),[url path]];
+                s = [NSMutableString stringWithFormat:@"http://127.0.0.1:%d%@",rho_http_get_port(),spath];
             }
   
               
-            if ( [url query] != nil )
+            NSString* squery = [url query];
+            if ( squery != nil )
             {
-              // decode query back to original state
-              [s appendFormat:@"?%@", [[url query] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                // decode query back to original state
+                squery = [squery stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                [s appendFormat:@"?%@", squery];
             }
             
             if ( [url fragment] != nil )
