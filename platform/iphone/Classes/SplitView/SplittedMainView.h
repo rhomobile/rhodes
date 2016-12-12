@@ -50,8 +50,6 @@
 
 //- (UIView*)view;
 
-- (UIWebView*)detachWebView;
-
 - (void)loadHTMLString:(NSString*)data;
 
 - (void)back:(int)index;
@@ -70,7 +68,8 @@
 - (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right;
 - (void)removeNavBar;
 
-- (UIWebView*)getWebView:(int)tab_index;
+- (id<RhoWebView,NSObject>)getRhoWebView:(int)tab_index;
+- (id<RhoWebView,NSObject>)detachRhoWebView;
 
 - (id<RhoMainView>)getCreationTimeMainView;
 

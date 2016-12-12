@@ -1921,6 +1921,32 @@ namespace "build" do
           end
         end
 
+        #http_connection_domains
+        if !hash.has_key?("NSAppTransportSecurity")
+            hash['NSAppTransportSecurity'] = {}
+        end
+        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoads")
+            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoads'] = true
+        end
+        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoadsInWebContent")
+            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoadsInWebContent'] = true
+        end
+        if $app_config["iphone"].has_key?("http_connection_domains")
+          http_connection_domains = $app_config["iphone"]["http_connection_domains"]
+          if http_connection_domains.kind_of?(Array)
+              hash['NSAppTransportSecurity']['NSExceptionDomains'] = {}
+              http_connection_domains.each do |domain|
+                  domain_hash = {}
+                  domain_hash['NSIncludesSubdomains'] = true
+                  domain_hash['NSTemporaryExceptionAllowsInsecureHTTPLoads'] = true
+                  domain_hash['NSTemporaryExceptionMinimumTLSVersion'] = 'TLSv1.0'
+
+                  hash['NSAppTransportSecurity']['NSExceptionDomains'][domain.to_s] = domain_hash
+              end
+          end
+        end
+
+
          set_app_icon(false)
          set_default_images(false, hash)
       end
@@ -2030,6 +2056,31 @@ namespace "build" do
             hash['LSApplicationQueriesSchemes'] = arr_app_queries_schemes
           else
             hash['LSApplicationQueriesSchemes'] = []
+          end
+        end
+
+        #http_connection_domains
+        if !hash.has_key?("NSAppTransportSecurity")
+            hash['NSAppTransportSecurity'] = {}
+        end
+        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoads")
+            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoads'] = true
+        end
+        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoadsInWebContent")
+            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoadsInWebContent'] = true
+        end
+        if $app_config["iphone"].has_key?("http_connection_domains")
+          http_connection_domains = $app_config["iphone"]["http_connection_domains"]
+          if http_connection_domains.kind_of?(Array)
+              hash['NSAppTransportSecurity']['NSExceptionDomains'] = {}
+              http_connection_domains.each do |domain|
+                  domain_hash = {}
+                  domain_hash['NSIncludesSubdomains'] = true
+                  domain_hash['NSTemporaryExceptionAllowsInsecureHTTPLoads'] = true
+                  domain_hash['NSTemporaryExceptionMinimumTLSVersion'] = 'TLSv1.0'
+
+                  hash['NSAppTransportSecurity']['NSExceptionDomains'][domain.to_s] = domain_hash
+              end
           end
         end
 

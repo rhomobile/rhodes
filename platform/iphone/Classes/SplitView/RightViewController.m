@@ -142,7 +142,7 @@ void rho_webview_refresh(int index);
             SimpleMainView *subController = nil;
             //SimpleMainView *subController = [[SimpleMainView alloc] initWithParentView:parent.view frame:rect];
             if (is_use_current_view_for_tab) {
-                subController = [[SimpleMainView alloc] initWithParentView:parent.view frame:rect webview:[[parent getCreationTimeMainView] detachWebView]];
+                subController = [[SimpleMainView alloc] initWithParentView:parent.view frame:rect rhowebview:[[parent getCreationTimeMainView] detachRhoWebView]];
             }
             else {
                 subController = [[SimpleMainView alloc] initWithParentView:parent.view frame:rect];
@@ -262,11 +262,6 @@ void rho_webview_refresh(int index);
 }
 
 
-- (UIWebView*)detachWebView {
-	SimpleMainView* v = [self getSimpleView:-1];
-	return [v detachWebView];
-}
-
 - (void)loadHTMLString:(NSString*)data {
 	SimpleMainView* v = [self getSimpleView:-1];
 	[v loadHTMLString:data];
@@ -376,12 +371,16 @@ void rho_webview_refresh(int index);
 	[v removeNavBar];
 }
 
-- (UIWebView*)getWebView:(int)tab_index {
-	SimpleMainView* v = [self getSimpleView:index];
-	return [v getWebView:tab_index];
+
+- (id<RhoWebView,NSObject>)getRhoWebView:(int)tab_index {
+    SimpleMainView* v = [self getSimpleView:index];
+    return [v getRhoWebView:tab_index];
 }
 
-
+- (id<RhoWebView,NSObject>)detachRhoWebView {
+    SimpleMainView* v = [self getSimpleView:-1];
+    return [v detachRhoWebView];
+}
 
 - (void)dealloc {
 	[itemsData release];

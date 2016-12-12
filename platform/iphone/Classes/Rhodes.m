@@ -659,21 +659,28 @@ static Rhodes *instance = NULL;
     }
 }
 
+- (void)initAppManager {
+    NSLog(@"Init appManager");
+    appManager = [AppManager instance];
+    //Configure AppManager
+    [appManager configure];
+}
+
 - (void)doRhoInit {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     @try {
-        NSLog(@"Init appManager");
-        appManager = [AppManager instance]; 
-        //Configure AppManager
-        [appManager configure];
+        //NSLog(@"Init appManager");
+        //appManager = [AppManager instance];
+        ////Configure AppManager
+        //[appManager configure];
         
         const char *szRootPath = rho_native_rhopath();
         const char *szUserPath = rho_native_rhouserpath();
         //NSLog(@"Init logconf");
         //rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
         InitMemoryInfoCollector();
-        NSLog(@"Create rhodes app");
-        rho_rhodesapp_create_with_separate_user_path(szRootPath, szUserPath);
+        //NSLog(@"Create rhodes app");
+        //rho_rhodesapp_create_with_separate_user_path(szRootPath, szUserPath);
         app_created = YES;
         
         rotationLocked = rho_conf_getBool("disable_screen_rotation");
@@ -744,6 +751,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     const char *szUserPath = rho_native_rhouserpath();
     NSLog(@"Init logconf");
     rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
+
+    [self initAppManager];
     
     NSLog(@"Create new detached thread for initialization stuff");
     [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];
@@ -963,6 +972,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 - (void)doStartUpRe:(NSObject*)arg {
     NSLog(@"Rhodes starting application...");
     rotationLocked = NO;
+    
+    [self initAppManager];
     
     NSLog(@"Create new detached thread for initialization stuff");
     [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];

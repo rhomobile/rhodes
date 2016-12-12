@@ -15,7 +15,7 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
         </MORE_HELP>
-       
+
         <TEMPLATES>
         </TEMPLATES>
 
@@ -37,13 +37,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             <DESC>Properties of Tab elements.</DESC>
                             <PARAMS>
                                 <PARAM name="label" type="STRING">
-                                    <DESC>Visible label to display on the tabbar.</DESC>
+                                    <DESC>Visible label to display on the tabbar. Label is required property. If you do not want to display label - set it to empty string.</DESC>
                                 </PARAM>
                                 <PARAM name="action" type="STRING"  rhoAction="true">
                                     <DESC>URL to page which will be loaded into tab. Predefined actions are not supported. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
                                 </PARAM>
                                 <PARAM name="icon" type="STRING">
-                                    <DESC>Relative path to tabbar item icon in your application; typically located in /public/images/.</DESC>
+                                    <DESC>Relative path to tabbar item icon in your application; typically located in /public/images/. iPhone and Android: Icons must be no more than 30x30 pixels and must be in .png format.</DESC>
                                     <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
                                 </PARAM>
                                 <PARAM name="reload" type="BOOLEAN" default="false">

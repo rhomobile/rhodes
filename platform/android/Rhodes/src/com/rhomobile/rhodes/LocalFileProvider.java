@@ -137,7 +137,7 @@ public class LocalFileProvider extends ContentProvider
     }
     
    @Override
-    public AssetFileDescriptor openAssetFile(Uri uri, String mode) {
+    public AssetFileDescriptor openAssetFile(Uri uri, String mode) throws FileNotFoundException {
         Logger.T(TAG, "Opening asset: " + uri);
         
         if(mode.compareTo("r") != 0)
@@ -148,6 +148,10 @@ public class LocalFileProvider extends ContentProvider
         File path = fileFromUri(uri);
         
         AssetFileDescriptor fd = RhoFileApi.openAssetFd(path.getPath());
+
+        if ( null == fd ) {
+            return super.openAssetFile( uri, mode );
+        }
         
         return fd;
     }

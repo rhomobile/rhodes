@@ -94,6 +94,19 @@ sync_poll_interval=0
 # default value is TRUE. From June 2016 application shoudl support ipv6. So by default libCURL not used - in this case this option should be TRUE for correct work VPN etc.
 #If true, request to local server will be applied directly, bypassing socket intercommunication, no network requests are involved. If false, a legacy client-server intercommunication will be made for local requests. Default is TRUE. To support per-app VPN (i.e. MobileIron) this option should be set to TRUE.
 
+#ios_https_local_server = 0
+#ATTENTION !!! this option works only with ios_net_curl = 0 AND ios_direct_local_requests = 1 !!!
+#default value is FALSE
+# If TRUE local server URL is https://127.0.0.1 instead of http://127.0.0.1
+# It help solve some security issues like work geolocation HTTP5 API in WebView, because this API works only if secure connection.
+# The are not real HTTPS server - just replace URL - it works because with  ios_direct_local_requests = 1 not real connection provided.
+
+#ios_use_WKWebView = 0
+#ATTENTION !!! this option works only with ios_direct_local_requests = 0 !!!
+#default value is FALSE
+# If TRUE WKWebView new iOS high performance(Javascript performance up to 10 times faster than default UIWebView) WebView used instead of default UIWebView.
+# WkWebView can not be used with ios_direct_local_requests !
+
 # show status bar on windows mobile. default 1
 #wm_show_statusbar = 1
 
@@ -118,3 +131,6 @@ jqtouch_mode=1
 splash_screen='zoom'
 
 use_bb_full_browser=6
+
+# finger scroll activation on windows XP/7/8/8.1/10
+use_kinetic_scroll_on_windows = 1

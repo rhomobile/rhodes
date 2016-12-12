@@ -117,6 +117,18 @@ win32 {
 HEADERS += ExternalWebView.h\
 MainWindowCallback.h\
 QtMainWindow.h\
+qwebviewkineticscroller.h\
+qkineticscroller.h\
+qkineticscroller_p.h\
+qwebviewselectionsuppressor.h\
+qtscroller.h\
+qtscroller_p.h\
+qtscrollerproperties.h\
+qtscrollerproperties_p.h\
+qtflickgesture_p.h\
+qtscrollerfilter_p.h\
+qtscrollevent.h\
+qtscrollevent_p.h\
 QtNativeTabBar.h\
 QtWebInspector.h\
 QtWebPage.h\
@@ -140,6 +152,13 @@ QtMainWindow.cpp\
 QtNativeTabBar.cpp\
 QtWebInspector.cpp\
 QtWebPage.cpp\
+qkineticscroller.cpp\
+qwebviewkineticscroller.cpp\
+qtflickgesture.cpp\
+qtscroller.cpp\
+qtscrollerproperties.cpp\
+qtscrollerfilter.cpp\
+qtscrollevent.cpp\
 impl/AlertImpl.cpp\
 impl/BluetoothImpl.cpp\
 impl/CalendarImpl.cpp\

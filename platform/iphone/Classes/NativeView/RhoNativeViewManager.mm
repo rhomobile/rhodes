@@ -269,8 +269,9 @@ static RhoNativeViewManagerOC *instance = NULL;
 	[sharedInstance.mProviders removeObjectForKey:viewType];
 }
 
-+(UIWebView*)getWebViewObject:(int)tab_index {
-	return [[[Rhodes sharedInstance] mainView] getWebView:tab_index];
+// UIView* for iPhone - ATTENTION !!! Now method return CONTAINER VIEW for WebView. For UIWebView is [UIWebView scrollView]. For WkWebView is [WKWebView scrollView] !!!
++(UIView*)getWebViewObject:(int)tab_index {
+	return [[[[Rhodes sharedInstance] mainView] getRhoWebView:tab_index] containerView];
 }
 
 
@@ -428,7 +429,7 @@ void RhoNativeViewManager::unregisterViewType(const char* viewType) {
 }
 
 // that function return native object used for display Web content :
-// UIWebView* for iPhone
+// // UIView* for iPhone - ATTENTION !!! Now method return CONTAINER VIEW for WebView. For UIWebView is [UIWebView scrollView]. For WkWebView is [WKWebView scrollView] !!!
 // jobject for Android - jobect is android.webkit.WebView class type
 // HWND for Windows Mobile 
 void* RhoNativeViewManager::getWebViewObject(int tab_index) {
