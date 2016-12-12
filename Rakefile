@@ -2486,6 +2486,13 @@ def init_extensions(dest, mode = "")
 
   $app_config["extensions"].each do |extname|
     puts 'ext - ' + extname
+    
+    if extname == "webkit"
+    $is_webkit_engine = true
+    File.open("#{$app_path}/rhoconfig.txt", "a") do |f|
+        f << "\nwebengine=webkit"
+      end
+    end
 
     extpath = nil
     extpaths.each do |p|
@@ -2670,6 +2677,23 @@ def init_extensions(dest, mode = "")
 
   end
 
+  stubs = File.join($startdir, "platform", "wm", "rhodes", "browser", "stubs.cpp")
+  if $is_webkit_engine == false
+	File.open(stubs, "w+") do |f|
+        f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+        f.puts "#include \"StdAfx.h\""
+        f.puts "#include \"common/RhoStd.h\""
+        f.puts "#include \"IBrowserEngine.h\""
+        f.puts "rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance) {return 0;}"
+        Jake.modify_file_if_content_changed( stubs, f )
+    end
+  else
+	File.open(stubs, "w+") do |f|
+        f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+        f.puts "#include \"StdAfx.h\""
+        Jake.modify_file_if_content_changed( stubs, f )
+    end
+  end
 
   if ($ruby_only_extensions_list)
     BuildOutput.warning([

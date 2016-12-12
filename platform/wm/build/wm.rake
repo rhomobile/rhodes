@@ -135,8 +135,10 @@ module WM
     $build_persistent_cab = Jake.getBuildBoolProp("persistent")
     $run_on_startup = Jake.getBuildBoolProp("startAtBoot")
     $build_cab = true
-    $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if !$app_config["wm"]["webengine"].nil?
-    $is_webkit_engine = true if $is_webkit_engine.nil?
+    $is_webkit_engine = false
+    #$is_webkit_engine = true if !$app_config["wm"]["extensions"]["webkit"].nil? 
+    #$app_config["wm"]["webengine"] == "webkit" if !$app_config["wm"]["webengine"].nil?
+    #$is_webkit_engine = false if $is_webkit_engine.nil?
 
     if $wk_data_dir.nil?
       $wk_data_dir = File.join($startdir, "libs/data") #"/Program Files" # its fake value for running without symbol extensions. do not delete
@@ -572,15 +574,17 @@ def build_cab
     makePersistentFiles($srcdir, additional_dlls_persistent_paths, nil, $webkit_out_of_process, reg_keys_filename)
   end
 
+=begin
   webkit = 'none'
   if $is_webkit_engine && $webkit_capability 
     webkit = $webkit_out_of_process ? 'out_of_process' : 'in_process'
   end
+=end
 
   #TODO TAU
   webkit = 'none'
   
-  if $is_webkit_engine && $webkit_capability 
+  if $is_webkit_engine #&& $webkit_capability 
     webkit = 'in_process'
   end
   
