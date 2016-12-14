@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/Clipboard.cpp
+ext/platform/android/generated/jni/clipboard_ruby_wrap.cpp
+ext/platform/android/generated/jni/clipboard_js_wrap.cpp
+ext/platform/android/jni/Clipboard_impl.cpp
+ext/shared/generated/clipboard_api_init.cpp
+ext/shared/generated/clipboard_js_api.cpp
+ext/shared/generated/clipboard_ruby_api.c

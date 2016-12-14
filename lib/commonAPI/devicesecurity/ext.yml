@@ -7,3 +7,5 @@ android:
   prebuild_rake_task: 'generate_inbuilt_values'
   
 xml_api_paths: ext/DeviceSecurity.xml
+
+platforms: ["iphone", "android"]
