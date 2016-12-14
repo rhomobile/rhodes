@@ -1,0 +1,49 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Clipboard" parent="Rho">
+        <HELP_OVERVIEW>Clipboard API</HELP_OVERVIEW>
+        <MORE_HELP>API for working with device's Clipboard</MORE_HELP>
+
+
+         <PROPERTIES>
+        </PROPERTIES>
+
+        <METHODS>
+
+            <METHOD name="getText" access="STATIC">
+                <DESC>return text contain in Clipboard</DESC>
+                <PLATFORM>iOS,Android</PLATFORM>
+                <RETURN type="STRING">
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="hasText" access="STATIC">
+                <DESC>return true if Clipboard contain some text</DESC>
+                <PLATFORM>iOS,Android</PLATFORM>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="setText" access="STATIC">
+                <DESC>put text to Clipboard</DESC>
+                <PLATFORM>iOS,Android</PLATFORM>
+                <PARAMS>
+                    <PARAM name="text" type="STRING">
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="clear" access="STATIC">
+                <PLATFORM>iOS,Android</PLATFORM>
+                <DESC>clear Clipboard</DESC>
+            </METHOD>
+
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>iOS,Android</PLATFORM>
+    </MODULE>
+</API>
