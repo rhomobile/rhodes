@@ -591,6 +591,31 @@ def update_xcode_project_files_by_capabilities
         remove_lines_from_xcode_project(['com.apple.Push = {enabled = 1;};'])
     end
 
+    #keychain access
+    enable_keychain = false
+    if $app_config['capabilities'] != nil
+        if $app_config['capabilities'].index('keychain')
+            enable_keychain = true
+        end
+    end
+    if $app_config['iphone'] != nil
+        if $app_config['iphone']['capabilities'] != nil
+            if $app_config['iphone']['capabilities'].index('keychain')
+                enable_keychain = true
+            end
+        end
+    end
+    # required for database encryption
+    if $app_config['encrypt_database'] != nil
+        if $app_config['encrypt_database'] == '1'
+            enable_keychain = true
+        end
+    end
+    if enable_keychain
+    else
+        remove_lines_from_xcode_project(['com.apple.Keychain = {enabled = 1;};'])
+    end
+
     save_plist(info_plist, hash_info_plist)
     save_plist(dev_ent, hash_dev_ent)
     save_plist(prd_ent, hash_prd_ent)
