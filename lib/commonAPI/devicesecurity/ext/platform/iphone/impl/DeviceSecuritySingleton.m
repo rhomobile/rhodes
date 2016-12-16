@@ -45,8 +45,16 @@
     return NO;
 }
 
+-(BOOL) isSimulator {
+#if !(TARGET_IPHONE_SIMULATOR)
+    return NO;
+#else
+    return YES;
+#endif
+}
+
 -(void) isDeviceSecured:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[NSNumber numberWithBool:![self isJailbroken]]];
+    [methodResult setResult:[NSNumber numberWithBool:!([self isJailbroken] || [self isSimulator])]];
 }
 
 -(void) isDeviceJailbroken:(id<IMethodResult>)methodResult {
@@ -58,11 +66,7 @@
 }
 
 -(void) isRunOnSimulator:(id<IMethodResult>)methodResult {
-#if !(TARGET_IPHONE_SIMULATOR)
-    [methodResult setResult:[NSNumber numberWithBool:NO]];
-#else
-    [methodResult setResult:[NSNumber numberWithBool:YES]];
-#endif
+    [methodResult setResult:[NSNumber numberWithBool:[self isSimulator]]];
 }
 
 -(void) isDebugMode:(id<IMethodResult>)methodResult {
