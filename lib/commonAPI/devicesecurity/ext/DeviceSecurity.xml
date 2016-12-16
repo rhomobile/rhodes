@@ -55,10 +55,22 @@
                 <RETURN type="ARRAY"/>
             </METHOD>
 
+            <METHOD name="haveAnySignatureIssues" access="STATIC" >
+                <DESC>Checks if there are mismatches between allowed and runtime certificates.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
             <METHOD name="getInstallerPackageName" access="STATIC" >
                 <DESC>Returns application installer package name.</DESC>
                 <PLATFORM>Android</PLATFORM>
                 <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="haveAnyInstallerIssues" access="STATIC" >
+                <DESC>Checks if there are mismatches between allowed and runtime installer packages.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="getAllowedInstallerPackages" access="STATIC" >
