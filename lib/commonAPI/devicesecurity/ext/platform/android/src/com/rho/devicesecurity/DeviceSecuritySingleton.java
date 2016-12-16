@@ -369,6 +369,11 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
         return res;
     }
 
+    @Override
+    public void haveAnyInstallerIssues(IMethodResult result) {
+        result.set( !checkAllowedInstallers() );
+    }
+
     private boolean checkAllowedSignatures() {                
         Signature[] mySignatures = getSignatures();
 
@@ -398,4 +403,10 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
 
         return (foundMatches>=requiredMatches);
     }
+
+    @Override
+    public void haveAnySignatureIssues(IMethodResult result) {
+        result.set( !checkAllowedSignatures() );
+    }
+
 }

@@ -74,21 +74,33 @@
 }
 
 -(void) getAppCertificateSignatures:(id<IMethodResult>)methodResult {
-
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:1];
+    [methodResult setResult:arr];
 }
 
 -(void) getAllowedCertificateSignatures:(id<IMethodResult>)methodResult {
-
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:1];
+    [methodResult setResult:arr];
 }
 
 -(void) getInstallerPackageName:(id<IMethodResult>)methodResult {
-
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:1];
+    [methodResult setResult:@""];
 }
 
 -(void) getAllowedInstallerPackages:(id<IMethodResult>)methodResult {
-
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:1];
+    [methodResult setResult:arr];
 }
 
+-(void) haveAnySignatureIssues:(id<IMethodResult>)methodResult {
+    [methodResult setResult:[NSNumber numberWithBool:NO]];
+}
+
+
+-(void) haveAnyInstallerIssues:(id<IMethodResult>)methodResult {
+    [methodResult setResult:[NSNumber numberWithBool:NO]];
+}
 
 
 @end
