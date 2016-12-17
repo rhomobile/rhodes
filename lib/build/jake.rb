@@ -878,6 +878,10 @@ class Jake
     app_version += "\r\norg_name='#{$app_config["vendor"]}'"  if $current_platform == "win32"
     app_version += "\r\nrho_app_id='#{$app_config["rho_app_id"]}'" if $app_config['rho_app_id']
 
+    if $is_webkit_engine == true
+		File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write("\r\nwebengine=webkit") }
+	end
+
     File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
     File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
   end
