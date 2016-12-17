@@ -74,6 +74,7 @@ end
 #------------------------------------------------------------------------
 
 $app_basedir = pwd
+$is_webkit_engine = false
 $startdir = File.dirname(__FILE__)
 $startdir.gsub!('\\', '/')
 
@@ -2486,10 +2487,7 @@ def init_extensions(dest, mode = "")
     puts 'ext - ' + extname
     
     if extname == "webkit"
-    $is_webkit_engine = true
-    File.open("#{$app_path}/rhoconfig.txt", "a") do |f|
-        f << "\nwebengine=webkit"
-      end
+		$is_webkit_engine = true
     end
 
     extpath = nil
