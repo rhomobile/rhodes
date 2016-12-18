@@ -127,19 +127,19 @@ class ClipboardSingleton extends ClipboardSingletonBase implements IClipboardSin
         PerformOnUiThread.exec(new Runnable() {
             public void run() {
                 try {
-                    Logger.T(TAG, "$$$ Clipboard.clear()");
+                    Logger.T(TAG, "$$$ Clipboard.clear() ...");
                     ClipboardManager clipMan = (ClipboardManager)getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                     ClipData clip = ClipData.newPlainText("", "");
                     clipMan.setPrimaryClip(clip);
                     // can be removed when Google remove deprecated API
-                    clipMan.setText(null);
+                    //clipMan.setText(null);
                 }
                 catch (Exception e) {
                     Logger.E(TAG, "ERROR : Clipboard.clear() !!!");
                     e.printStackTrace();
                 }
             }
-        }, true);
+        });
     }
 
 
