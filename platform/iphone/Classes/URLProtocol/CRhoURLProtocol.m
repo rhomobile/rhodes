@@ -202,7 +202,16 @@ int on_http_cb(http_parser* parser) { return 0; }
           }
         
         
-          NSURLRequest* redirReq = [NSURLRequest requestWithURL:url];
+          NSMutableURLRequest* redirReq = [NSMutableURLRequest requestWithURL:url];
+
+          // clone headers from original request to redirect request
+          NSDictionary* headers = [[self request] allHTTPHeaderFields];
+          for (NSString* key in headers) {
+              NSString* value = [headers objectForKey:key];
+              [redirReq setValue:value forHTTPHeaderField:key];
+          }
+            
+            
           [[self client] URLProtocol:self wasRedirectedToRequest:redirReq redirectResponse:resp];
           return;
         }
