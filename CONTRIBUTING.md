@@ -4,7 +4,7 @@ Found an issue with Rhodes, give feedback or provide a patch?  Here's how!
 
 ## Reporting issues
 
-We only accept issues that are bug reports or feature requests. Bugs must be isolated and reproducible problems that we can fix within Rhodes. For application-specific or API-related questions, please visit our [Launchpad Disscussion Area](https://developer.zebra.com/community/rhomobile-suite/discussions/rhomobile-discussions). Please read the following guidelines before opening any issue.
+We only accept issues that are bug reports or feature requests. Bugs must be isolated and reproducible problems that we can fix within Rhodes. For application-specific or API-related questions, please visit our [Forums](http://forums.tau-technologies.com). Please read the following guidelines before opening any issue.
 
 1. **Search for existing issues.** We sometimes get duplicate issues, and you'd help us out a lot by first checking if someone else has reported the same issue. Moreover, the issue may have already been resolved with a fix available.
 2. **Create an isolated and reproducible test case.** Be sure the problem exists in Rhodes' code.
