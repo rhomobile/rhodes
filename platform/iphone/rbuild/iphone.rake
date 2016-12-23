@@ -28,6 +28,35 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'iphonecommon'))
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 
 
+$out_file_buf_enable = false
+$out_file_buf_path = 'rhobuildlog.txt'
+$out_file_buf = []
+
+puts 'iphone.rake execute'
+puts 'ENV["RHO_BUNDLE_BUILD_LOG_FILE"] = '+ENV["RHO_BUNDLE_BUILD_LOG_FILE"].to_s
+if (ENV["RHO_BUNDLE_BUILD_LOG_FILE"] != nil)
+    $out_file_buf_path = ENV["RHO_BUNDLE_BUILD_LOG_FILE"]
+    $out_file_buf_enable = true
+    load File.expand_path(File.join(File.dirname(__FILE__), 'putsOverride.rake'))
+end
+
+
+
+def save_out_file
+    if $out_file_buf_enable
+        f = File.new($out_file_buf_path,"w")
+        $out_file_buf.each do |line|
+            f.write(line)
+            f.write("\n")
+        end
+        f.close
+    end
+end
+
+
+
+
+
 def load_plist(fname)
   require 'cfpropertylist'
 
@@ -980,6 +1009,8 @@ namespace "build" do
 
       print_timestamp('build:iphone:rhobundle FINISH')
 
+      save_out_file
+
     end
 
     desc "build upgrade package with full bundle"
@@ -1183,6 +1214,7 @@ namespace "build" do
     end
 
     def is_options_was_changed(options_hash, options_file)
+        puts "      is_options_was_changed( "+options_hash.to_s+", "+options_file.to_s+")"
       if !File.exist?(options_file)
          File.open(options_file,"w") {|f| f.write(YAML::dump(options_hash)) }
          return true
@@ -1221,6 +1253,7 @@ namespace "build" do
       arch = ENV['ARCHS']
       gccbin = bindir + '/gcc-4.2'
       arbin = bindir + '/ar'
+      xcode_version = ENV['XCODE_VERSION_ACTUAL']
 
       iphone_path = '.'
 
@@ -1233,33 +1266,53 @@ namespace "build" do
       result_lib = iphone_path + '/build/' + configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/lib'+xcodetarget+'.a'
       target_lib = targetdir + '/lib'+xcodetarget+'.a'
 
-      if check_for_rebuild(result_lib, depfile) || is_options_was_changed({"configuration" => configuration,"sdk" => sdk}, "lastbuildoptions.yml")
+      puts "BEGIN build xcode extension : ["+extpath+"]"
+      puts "      result_lib : ["+result_lib+"]"
+      puts "      target_lib : ["+target_lib+"]"
+      puts "      depfile : ["+depfile.to_s+"]"
+      puts "      configuration : ["+configuration+"]"
+      puts "      sdk : ["+sdk+"]"
 
-           rm_rf 'build'
-           rm_rf target_lib
 
-           args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
-           additional_string = ''
-           if simulator
-               #args << '-arch'
-               #args << 'i386'
-               additional_string = ' ARCHS="i386 x86_64"'
-           end
+      rm_rf target_lib
 
-           require   rootdir + '/lib/build/jake.rb'
+      check_f_r = check_for_rebuild(result_lib, depfile)
+      puts "      check_for_rebuild = "+check_f_r.to_s
+      is_opt_c = is_options_was_changed({"configuration" => configuration,"sdk" => sdk, "xcode_version" => xcode_version}, "lastbuildoptions.yml")
+      puts "      is_options_was_changed = "+is_opt_c.to_s
 
-           ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
+      if check_f_r || is_opt_c
+          puts "      we should rebuild because previous builded library is not actual or not exist !"
       else
+          puts "      ssskip rebuild because previous builded library is still actual !"
+      end
 
-        puts "ssskip rebuild because previous builded library is still actual !"
-        rm_rf target_lib
+      if !File.exist?(result_lib)
+          # library bot found ! We should build it !
+          puts "      build xcode extension !"
+
+          rm_rf 'build'
+
+          args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
+
+          additional_string = ''
+          if simulator
+              #args << '-arch'
+              #args << 'i386'
+              additional_string = ' ARCHS="i386 x86_64"'
+          end
+
+          require   rootdir + '/lib/build/jake.rb'
+
+          ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
 
       end
 
       cp result_lib,target_lib
 
       Dir.chdir currentdir
+      puts "END build xcode extension : ["+extpath+"]"
 
 
     end
@@ -1271,6 +1324,9 @@ namespace "build" do
 
       puts "build extension START :" + extpath
 
+
+      ENV["SDK_NAME"] ||= sdk
+      sdk = ENV["SDK_NAME"]
       #puts "xcodeproject = "+xcodeproject.to_s
       #puts "xcodetarget = "+xcodetarget.to_s
 
@@ -1301,7 +1357,7 @@ namespace "build" do
       # added by dmitrys
       ENV["XCODEBUILD"] = $xcodebuild
       ENV["CONFIGURATION"] ||= $configuration
-      ENV["SDK_NAME"] ||= sdk
+
 
 
       build_script = File.join(extpath, 'build')
