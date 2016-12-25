@@ -6,6 +6,13 @@
 
 #import "common/RhoConf.h"
 
+
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoURLProtocol"
+
+
+
 extern int rho_http_started();
 extern int rho_http_get_port();
 
@@ -28,6 +35,7 @@ int on_http_data_cb(http_parser* parser, const char *at, size_t length) { return
 int on_http_cb(http_parser* parser) { return 0; }
 
 
+
 @interface CRhoURLResponse : NSHTTPURLResponse {
     
 }
@@ -38,6 +46,16 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 
 @implementation CRhoURLProtocol
+
+
+-(const char*)selfIDstring {
+    return [[NSString stringWithFormat:@"<%p>", self] UTF8String];
+}
+
++ (const char*)requestInfo:(NSURLRequest*)req {
+    return [[NSString stringWithFormat:@"<NSURLRequest:<%p>, URL:[ %@ ], Headers:[ %@ ]", req, req.URL, req.allHTTPHeaderFields] UTF8String];
+}
+
 
 - (void)dealloc
 {
@@ -59,17 +77,21 @@ int on_http_cb(http_parser* parser) { return 0; }
  
 + (BOOL)canInitWithRequest:(NSURLRequest*)theRequest
 {
+    RAWLOG_INFO1("canInitWithRequest BEGIN: { %s }", [CRhoURLProtocol requestInfo:theRequest]);
+    
     NSURL* theUrl = [theRequest URL];
     if ([[theUrl path] isEqualToString:@"/!__rhoNativeApi"]) {
         
         NSString* jsonRequestTest = [theRequest valueForHTTPHeaderField:@"__rhoNativeApiCall"];
         if (jsonRequestTest != nil) {
             //NSLog(@"$$$ process Request: [%@:%@]", [theUrl absoluteString], jsonRequestTest);
+            RAWLOG_INFO("canInitWithRequest END: return YES by !__rhoNativeApi prefix");
             return YES;
         }
     }
 #if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
     if ([theRequest.URL.scheme isEqualToString:@"file"]) {
+        RAWLOG_INFO("canInitWithRequest END: return YES by file scheme when no Ruby API server");
         return YES;
     }
 #endif
@@ -79,10 +101,15 @@ int on_http_cb(http_parser* parser) { return 0; }
         canHandle = rho_conf_getBool("ios_direct_local_requests")!=0;
     }
   
-    if ( canHandle && [CRhoURLProtocol isLocalURL:theUrl] ) {
-      return YES;
+    if ( canHandle ) {
+        RAWLOG_INFO("canInitWithRequest: ios_direct_local_requests = true !");
+        if ([CRhoURLProtocol isLocalURL:theUrl]) {
+            RAWLOG_INFO("canInitWithRequest END: return YES URL is local !");
+            return YES;
+        }
     }
 
+    RAWLOG_INFO("canInitWithRequest END: return NO");
     return NO;
 }
 
@@ -93,10 +120,13 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 - (void)startLoading
 {
+    RAWLOG_INFO2("CRhoURLProtocol %s :: startLoading BEGIN: { %s }", [self selfIDstring], [CRhoURLProtocol requestInfo:[self request]]);
+    
     NSURL* theUrl = [[self request] URL];
     
     
     if ([[theUrl path] isEqualToString:@"/!__rhoNativeApi"]) {
+        RAWLOG_INFO1("CRhoURLProtocol %s :: startLoading URL has !__rhoNativeApi", [self selfIDstring]);
         
         NSString* jsonRequestTest = [[self request] valueForHTTPHeaderField:@"__rhoNativeApiCall"];
         if (jsonRequestTest != nil) {
@@ -104,6 +134,7 @@ int on_http_cb(http_parser* parser) { return 0; }
             if (responseStr != nil) {
                 //NSLog(@"$$$ send responce for[%@:%@] = [%@]", [theUrl absoluteString], jsonRequestTest, responseStr);
                 [self sendResponseWithResponseCode:200 data:[responseStr dataUsingEncoding:NSUTF8StringEncoding]];
+                RAWLOG_INFO1("CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
                 return;
             }
         }
@@ -147,6 +178,8 @@ int on_http_cb(http_parser* parser) { return 0; }
 
   if ( [CRhoURLProtocol isLocalURL:theUrl] )
   {
+    RAWLOG_INFO1("CRhoURLProtocol %s :: URL is local !", [self selfIDstring]);
+  
     NSURL* url = theUrl;
     CRhoURLResponse* resp = nil;
     
@@ -154,7 +187,11 @@ int on_http_cb(http_parser* parser) { return 0; }
     
     if ( resp != nil )
     {
+      RAWLOG_INFO1("CRhoURLProtocol %s :: startLoading has Responce from local server", [self selfIDstring]);
       if ( ((self.httpStatusCode==301)||(self.httpStatusCode==302)) && ( [self.httpHeaders objectForKey:@"location"] != nil ) ) {
+          
+        RAWLOG_INFO1("CRhoURLProtocol %s :: startLoading we have REDIRECT from local server !", [self selfIDstring]);
+  
         NSString* loc = [self.httpHeaders objectForKey:@"location"];
         
         NSString* escaped = [loc stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -211,13 +248,19 @@ int on_http_cb(http_parser* parser) { return 0; }
               [redirReq setValue:value forHTTPHeaderField:key];
           }
             
-            
+          RAWLOG_INFO2("CRhoURLProtocol %s :: startLoading wasRedirectedToRequest with Request { %s }", [self selfIDstring], [CRhoURLProtocol requestInfo:redirReq]);
           [[self client] URLProtocol:self wasRedirectedToRequest:redirReq redirectResponse:resp];
+          RAWLOG_INFO1("CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
           return;
+        }
+        else {
+            RAWLOG_ERROR2("CRhoURLProtocol %s :: startLoading Redirect response has no URL ! Initial request: { %s }", [self selfIDstring], [CRhoURLProtocol requestInfo:[self request]]);
         }
       }
       else
       {
+        RAWLOG_INFO1("CRhoURLProtocol %s :: startLoading just request - no redirection", [self selfIDstring]);
+  
         [[self client] URLProtocol:self didReceiveResponse:resp cacheStoragePolicy:NSURLCacheStorageNotAllowed];
         
         if (self.httpBody != nil) {
@@ -225,20 +268,27 @@ int on_http_cb(http_parser* parser) { return 0; }
         }
         
         [[self client] URLProtocolDidFinishLoading:self];
+        RAWLOG_INFO1("CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
         return;
       }
+    }
+    else {
+        RAWLOG_ERROR2("CRhoURLProtocol %s :: startLoading has NO Responce from local server !!! Initial request: { %s }", [self selfIDstring], [CRhoURLProtocol requestInfo:[self request]]);
     }
   }
   
     //NSLog(@"$$$ responce ERROR: [%@]", [theUrl absoluteString]);
     NSString* body = @"error";
     [self sendResponseWithResponseCode:401 data:[body dataUsingEncoding:NSUTF8StringEncoding]];
- 
+    RAWLOG_INFO1("CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
 }
 
 - (CRhoURLResponse*) makeDirectHttpRequest:(NSURL*)theUrl
 {
-  //NSLog(@"Will make local request to %@", [theUrl absoluteString]);
+
+    RAWLOG_INFO2("CRhoURLProtocol %s :: makeDirectHttpRequest : URL [ %s ]", [self selfIDstring], [[theUrl absoluteString] UTF8String]);
+    
+    //NSLog(@"Will make local request to %@", [theUrl absoluteString]);
   
   const char* uri = [[theUrl path] UTF8String];
   const char* method = [[[self request] HTTPMethod] UTF8String];
@@ -311,6 +361,7 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 - (void)stopLoading
 {
+    RAWLOG_INFO1("CRhoURLProtocol %s :: stopLoading()", [self selfIDstring]);
 
 }
 
@@ -321,6 +372,7 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 - (void)sendResponseWithResponseCode:(NSInteger)statusCode data:(NSData*)data
 {
+    RAWLOG_INFO2("CRhoURLProtocol %s :: sendResponseWithResponseCode : code: [ %d ] ", [self selfIDstring], (int)statusCode);
 
     CRhoURLResponse* response =
     [[CRhoURLResponse alloc] initWithURL:[[self request] URL]
@@ -340,14 +392,17 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 + (BOOL) isLocalURL:(NSURL*)url
 {
+    RAWLOG_INFO1("isLocalURL BEGIN : URL: [ %s ] ", [[url absoluteString] UTF8String]);
     if ( [[url absoluteString] isEqualToString:@""] )
     {
+      RAWLOG_INFO("isLocalURL END : return NO");
       return NO;
     }
 
     const char* scheme = [[url scheme] UTF8String];
     if (scheme != 0) {
         if ((strcmp(scheme, "http") !=0 ) && (strcmp(scheme, "https") !=0 )) {
+            RAWLOG_INFO("isLocalURL END : return NO");
             return NO;
         }
     }
@@ -356,6 +411,7 @@ int on_http_cb(http_parser* parser) { return 0; }
   
     if ( 0 == host )
     {
+      RAWLOG_INFO("isLocalURL END : return YES");
       return YES;
     }
   
@@ -364,10 +420,13 @@ int on_http_cb(http_parser* parser) { return 0; }
   
     int rhoPort = rho_http_get_port();
 
-    return (
+    BOOL ret = (
       ((port == rhoPort))
       && ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
     );
+    RAWLOG_INFO1("isLocalURL END : return [%s]", [[[NSNumber numberWithBool:ret] stringValue] UTF8String]);
+    
+    return ret;
 }
 
 
