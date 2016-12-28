@@ -98,7 +98,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
             <PROPERTY name="phoneId" type="STRING" readOnly="true">
                 <DESC>Hardware based ID. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.</DESC>
-                <PLATFORM>WM, CE, Android</PLATFORM>
+                <PLATFORM>WM, CE, iOS, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceName" type="STRING" readOnly="true">
                 <DESC>Name of device application running on. Examples: '9000' (BB), 'iPhone', 'dream' (Android). In Consumer Android device, name of the Industrial Design along with manufacturer name shall be shown. </DESC>

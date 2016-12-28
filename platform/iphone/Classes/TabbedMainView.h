@@ -64,7 +64,8 @@
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info;
 
-- (UIWebView*)getWebView:(int)tab_index;
+- (id<RhoWebView,NSObject>)getRhoWebView:(int)tab_index;
+- (id<RhoWebView,NSObject>)detachRhoWebView;
 
 - (void)onViewWillActivate:(RhoViewController*)view;
 

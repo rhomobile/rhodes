@@ -104,6 +104,7 @@
 		FA1D452618D9E2BC0010CCF9 /* app_build_capabilities.h in Headers */ = {isa = PBXBuildFile; fileRef = FA1D452518D9E2BC0010CCF9 /* app_build_capabilities.h */; };
 		FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */; };
 		FA6B222617026477009D1398 /* MethodResultConvertor.h in Headers */ = {isa = PBXBuildFile; fileRef = FA6B222517026477009D1398 /* MethodResultConvertor.h */; };
+		FAA714A91DDE5B6F00E5E7AD /* RhoNativeViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA714A81DDE5B6F00E5E7AD /* RhoNativeViewManager.h */; };
 		FAC6EE5B143B1FC800B8E352 /* BaseMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE4F143B1FC800B8E352 /* BaseMapEngine.cpp */; };
 		FAC6EE5C143B1FC800B8E352 /* BaseMapEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE50143B1FC800B8E352 /* BaseMapEngine.h */; };
 		FAC6EE5D143B1FC800B8E352 /* ESRIMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE51143B1FC800B8E352 /* ESRIMapEngine.cpp */; };
@@ -239,6 +240,7 @@
 		FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = ../../shared/common/app_build_configs.c; sourceTree = SOURCE_ROOT; };
 		FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app_build_configs.h; path = ../../shared/common/app_build_configs.h; sourceTree = SOURCE_ROOT; };
 		FA6B222517026477009D1398 /* MethodResultConvertor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MethodResultConvertor.h; path = ../../shared/api_generator/MethodResultConvertor.h; sourceTree = "<group>"; };
+		FAA714A81DDE5B6F00E5E7AD /* RhoNativeViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoNativeViewManager.h; path = ../../shared/common/RhoNativeViewManager.h; sourceTree = "<group>"; };
 		FAC6EE4F143B1FC800B8E352 /* BaseMapEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseMapEngine.cpp; path = ../../shared/common/map/BaseMapEngine.cpp; sourceTree = "<group>"; };
 		FAC6EE50143B1FC800B8E352 /* BaseMapEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseMapEngine.h; path = ../../shared/common/map/BaseMapEngine.h; sourceTree = "<group>"; };
 		FAC6EE51143B1FC800B8E352 /* ESRIMapEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ESRIMapEngine.cpp; path = ../../shared/common/map/ESRIMapEngine.cpp; sourceTree = "<group>"; };
@@ -354,6 +356,7 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				FAA714A81DDE5B6F00E5E7AD /* RhoNativeViewManager.h */,
 				FA1D452518D9E2BC0010CCF9 /* app_build_capabilities.h */,
 				FAC6EE4C143B1F1E00B8E352 /* map */,
 				A22F9EFD14605D12006D8F1A /* phonebook */,
@@ -585,6 +588,7 @@
 				BDD11ECE113664E700349BE3 /* rhoparams.h in Headers */,
 				5C798935113BD148005F8736 /* GeoLocation.h in Headers */,
 				BD8DF8891147C8090041A968 /* SplashScreen.h in Headers */,
+				FAA714A91DDE5B6F00E5E7AD /* RhoNativeViewManager.h in Headers */,
 				5C59BF4E115B4BC300E96ADE /* unzip.h in Headers */,
 				5CCD7EBD116CE2D5005E6CA3 /* AppMenu.h in Headers */,
 				5CA2DE9111B01EF000B868D5 /* ThreadQueue.h in Headers */,

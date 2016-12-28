@@ -48,6 +48,8 @@
 #import "common/app_build_configs.h"
 
 #include <sys/xattr.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -419,8 +421,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
             }
         }
 	}
-    
+    NSLog(@"Create rhodes logging and rhoconfig.txt loading");
 	rho_logconf_Init_with_separate_user_path(rho_native_rhopath(), rho_native_rhopath(), "", rho_native_rhouserpath());
+    NSLog(@"Create rhodes app");
 	rho_rhodesapp_create_with_separate_user_path(rho_native_rhopath(), rho_native_rhouserpath());
 	RAWLOG_INFO("Rhodes started");
 }
@@ -765,6 +768,8 @@ static const double RHO_IPHONE4_PPI = 326.0;
 // http://www.apple.com/ipad/specs/
 static const double RHO_IPAD_PPI = 132.0;
 static const double RHO_NEW_IPAD_PPI = 264.0;
+static const double RHO_IPAD_MINI_PPI = 163.0;
+static const double RHO_IPAD_MINI_RETINA_PPI = 326.0;
 
 static float get_scale() {
     float scales = 1;//[[UIScreen mainScreen] scale];
@@ -787,6 +792,24 @@ int rho_sysimpl_get_property_iphone(char* szPropName, NSObject** resValue)
 {
     if (strcasecmp("platform", szPropName) == 0)
     {*resValue = [NSString stringWithUTF8String:"APPLE"]; return 1;}
+    else if (strcasecmp("phone_id", szPropName) == 0){
+        NSString* uniqueIdentifier = nil;
+        if( [UIDevice instancesRespondToSelector:@selector(identifierForVendor)] ) {
+            // iOS 6+
+            uniqueIdentifier = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+        } else {
+            // before iOS 6, so just generate an identifier and store it
+            uniqueIdentifier = [[NSUserDefaults standardUserDefaults] objectForKey:@"identiferForVendor"];
+            if( !uniqueIdentifier ) {
+                CFUUIDRef uuid = CFUUIDCreate(NULL);
+                uniqueIdentifier = (NSString*)CFUUIDCreateString(NULL, uuid);
+                CFRelease(uuid);
+                [[NSUserDefaults standardUserDefaults] setObject:uniqueIdentifier forKey:@"identifierForVendor"];
+            }
+        }
+        *resValue = uniqueIdentifier;
+        return 1;
+    }
     else if (strcasecmp("locale", szPropName) == 0)
     {*resValue = rho_sys_get_locale_iphone(); return 1; }
     else if (strcasecmp("country", szPropName) == 0) {
@@ -835,8 +858,26 @@ int rho_sysimpl_get_property_iphone(char* szPropName, NSObject** resValue)
              strcasecmp("ppi_y", szPropName) == 0) {
 #ifdef __IPHONE_3_2
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            if (get_scale() > 1.2) {
-                *resValue = [NSNumber numberWithDouble:RHO_NEW_IPAD_PPI];
+			
+			//Fix DPI issue on Ipad Mini
+			//get the device model name
+			size_t size;
+			sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+			char *machine = malloc(size);
+			sysctlbyname("hw.machine", machine, &size, NULL, 0);
+			NSString *platform = [NSString stringWithUTF8String:machine];
+			free(machine);
+				
+			// IPad Mini
+			if([platform isEqualToString:@"iPad2,5"] || [platform isEqualToString:@"iPad2,6"] || [platform isEqualToString:@"iPad2,7"]){
+				*resValue = [NSNumber numberWithDouble:RHO_IPAD_MINI_PPI];
+			}
+            // IPad Mini Retina
+            else if ([platform isEqualToString:@"iPad4,4"] || [platform isEqualToString:@"iPad4,5"] || [platform isEqualToString:@"iPad4,6"] || [platform isEqualToString:@"iPad4,7"] || [platform isEqualToString:@"iPad4,8"] || [platform isEqualToString:@"iPad4,9"] || [platform isEqualToString:@"iPad5,1"] || [platform isEqualToString:@"iPad5,2"]) {
+                *resValue = [NSNumber numberWithDouble:RHO_IPAD_MINI_RETINA_PPI];
+            }
+		    else if (get_scale() > 1.2) {
+		        *resValue = [NSNumber numberWithDouble:RHO_NEW_IPAD_PPI];
             }
             else {
                 *resValue = [NSNumber numberWithDouble:RHO_IPAD_PPI];

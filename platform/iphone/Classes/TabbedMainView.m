@@ -493,7 +493,7 @@
 			}
 			else {
 				if (is_use_current_view_for_tab) {
-					subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame webview:[v detachWebView]];
+					subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame rhowebview:[v detachRhoWebView]];
 				}
 				else {
 					subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame];
@@ -631,10 +631,20 @@
 }
 
 // RhoMainView implementation
-- (UIWebView*)detachWebView {
-    int n = [self activeTab];
-    return [[self subView:n] detachWebView];
+
+
+- (id<RhoWebView,NSObject>)getRhoWebView:(int)tab_index {
+    if (tab_index == -1) {
+        tab_index = [self activeTab];
+    }
+    return [[self subView:tab_index] getRhoWebView:-1];
 }
+
+- (id<RhoWebView,NSObject>)detachRhoWebView {
+    int n = [self activeTab];
+    return [[self subView:n] detachRhoWebView];
+}
+
 
 - (void)loadHTMLString:(NSString *)data {
     [[self subView:[self activeTab]] loadHTMLString:data];
@@ -753,13 +763,6 @@
 
 - (int)activeTab {
     return tabindex;
-}
-
-- (UIWebView*)getWebView:(int)tab_index {
-	if (tab_index == -1) {
-		tab_index = [self activeTab];
-	}
-	return [[self subView:tab_index] getWebView:-1];
 }
 
 

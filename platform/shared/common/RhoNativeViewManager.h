@@ -75,8 +75,8 @@ public:
 	// UIView* for iPhone
 	// jobject for Android - jobect must be android.view.View class type
 	// HWND for Windows Mobile 
-        // this function executed when we make native view by Ruby NativeViewManager (not by URL prefix) 
-        virtual void* createView(VALUE params) {return getView();}
+    // this function executed when we make native view by Ruby NativeViewManager (not by URL prefix)
+    virtual void* createView(VALUE params) {return getView();}
 };
 
 class NativeViewFactory {
@@ -95,21 +95,21 @@ public:
 	static void unregisterViewType(const char* viewType);
 
 	// that function return native object used for display Web content :
-	// UIWebView* for iPhone
+	// UIView* for iPhone - ATTENTION !!! Now method return CONTAINER VIEW for WebView. For UIWebView is [UIWebView scrollView]. For WkWebView is [WKWebView scrollView] !!!
 	// jobject for Android - jobect is android.webkit.WebView class type
 	// HWND for Windows Mobile 
 	static void* getWebViewObject(int tab_index);
 
 
-        // destroy native view (opened with URL prefix or in separated full-screen window)
-        // this function can executed from your native code (from NativeView code, for example)
-        // instead of this function you can execute destroy() for Ruby NativeView object
-        static void destroyNativeView(NativeView* nativeView);
+    // destroy native view (opened with URL prefix or in separated full-screen window)
+    // this function can executed from your native code (from NativeView code, for example)
+    // instead of this function you can execute destroy() for Ruby NativeView object
+    static void destroyNativeView(NativeView* nativeView);
 
 
-        static int openNativeView(const char* viewType, int tab_index, VALUE params);
+    static int openNativeView(const char* viewType, int tab_index, VALUE params);
 
-        static void closeNativeView(int v_id);
+    static void closeNativeView(int v_id);
 
 };
 

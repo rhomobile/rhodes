@@ -353,10 +353,10 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
                 {
                     processUiCreated();
                 }
-                if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateActivated))
-                {
-                    callCallback("/system/activateapp");
-                }
+
+                RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateActivated);
+                callCallback("/system/activateapp");
+
                 m_expected = app_deactivated;
             }
             break;
@@ -388,15 +388,15 @@ void CAppCallbacksQueue::processUiCreated()
     #endif
 
     // at this point JS app is unlikely to set its own handler, just navigate to overriden start path
-    if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
-    {
+    RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated);
+
         if ( rho_ruby_is_started() )
             callCallback("/system/uicreated");
 #if !defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME) || !defined(OS_ANDROID)
         else
             rho_webview_navigate(startPath.c_str(), 0);
 #endif
-    }
+
     m_uistate = ui_created_processed;
 }
 
@@ -742,16 +742,15 @@ void CRhodesApp::callUiDestroyedCallback()
     if ( m_bExit/* || !rho_ruby_is_started()*/ )
         return;
     
-    if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateDestroyed))
+    
+    RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateDestroyed);
+    if ( rho_ruby_is_started() )
     {
-        if ( rho_ruby_is_started() )
+        String strUrl = m_strHomeUrl + "/system/uidestroyed";
+        NetResponse resp = getNetRequest().pullData( strUrl, null );
+        if ( !resp.isOK() )
         {
-          String strUrl = m_strHomeUrl + "/system/uidestroyed";
-          NetResponse resp = getNetRequest().pullData( strUrl, null );
-          if ( !resp.isOK() )
-          {
-              LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-          }
+            LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
         }
     }
 }
@@ -789,8 +788,8 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::app_deactivated));
         
         // TODO: Support stop_local_server command to be parsed from callback result
-        if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateDeactivated))
-        {
+        RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateDeactivated);
+
 #ifndef RHO_NO_RUBY_API 
             if ( rho_ruby_is_started() )
             {
@@ -814,7 +813,6 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
                 }
             }
 #endif
-        }
 
         m_bDeactivationMode = false;
     }
@@ -1718,7 +1716,19 @@ void CRhodesApp::initAppUrls()
         m_isJSFSApp = false; //We need local server for out of process webkit, it use sockets to call common API
 #endif
 
-    m_strHomeUrl = "http://127.0.0.1:";
+    boolean force_https = false;
+#ifdef OS_MACOSX
+    if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
+        force_https = rho_conf_getBool("ios_https_local_server")!=0;
+    }
+#endif
+    if (force_https) {
+        m_strHomeUrl = "https://127.0.0.1:";
+    }
+    else {
+        m_strHomeUrl = "http://127.0.0.1:";
+    }
+    
     m_strHomeUrl += getFreeListeningPort();
 
 #ifndef RHODES_EMULATOR

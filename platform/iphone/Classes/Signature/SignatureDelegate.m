@@ -250,11 +250,10 @@ SignatureDelegate* ourSD = nil;
     signatureInlineView.opaque = NO;
     signatureInlineView.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
 
+
+    UIView* v = [[[[Rhodes sharedInstance] mainView] getRhoWebView:-1] containerView];
     
-    UIWebView* webView = [[[Rhodes sharedInstance] mainView] getWebView:-1];
-    if (webView != nil) {
-        UIView* v = webView;//[[webView subviews] objectAtIndex:0];
-        //UIView* v = [[webView subviews] objectAtIndex:0];
+    if (v != nil) {
         [v addSubview:signatureInlineView];
         [v bringSubviewToFront:signatureInlineView];
         [v setNeedsDisplay];

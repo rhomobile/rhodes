@@ -21,11 +21,20 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <property name="margin">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
      <number>0</number>
     </property>
     <item>
-     <widget class="QtNativeTabBar" name="tabBar">
+     <widget class="QtNativeTabBar" name="tabBar" native="true">
       <property name="visible">
        <bool>false</bool>
       </property>
@@ -158,11 +167,11 @@
   <customwidget>
    <class>QWebView</class>
    <extends>QWidget</extends>
-   <header>QtWebKit/QWebView</header>
+   <header>QtWebKitWidgets/QWebView</header>
   </customwidget>
   <customwidget>
    <class>QtNativeTabBar</class>
-   <extends>QTabBar</extends>
+   <extends>QWidget</extends>
    <header>QtNativeTabBar.h</header>
   </customwidget>
  </customwidgets>

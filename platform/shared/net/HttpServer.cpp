@@ -1540,8 +1540,18 @@ bool CDirectHttpRequestQueue::run( )
   
   do
   {
-    m_thread.wait(-1);
-    
+      
+      if (rho_ruby_is_started() ) {
+          rho_ruby_start_threadidle();
+      }
+      
+     m_thread.wait(-1);
+
+      
+      if (rho_ruby_is_started() ) {
+          rho_ruby_stop_threadidle();
+      }
+      
     m_response = "";
     
     if ( m_request != 0 )

@@ -27,6 +27,8 @@
 #import "SimpleMainView.h"
 #import "AppManager.h"
 #import "Rhodes.h"
+#import "RhoWebViewFabrique.h"
+
 
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
@@ -46,9 +48,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SimpleMainView"
 
-#define RHO_TAG_WEBVIEW 1
-#define RHO_TAG_TOOLBAR 2
-#define RHO_TAG_NAVBAR 3
+
 
 int rho_sys_get_screen_width();
 int rho_sys_get_screen_height();
@@ -89,7 +89,7 @@ int rho_sys_get_screen_height();
 
 @implementation SimpleMainView
 
-@synthesize webView, toolbar, navbar, nativeViewType, nativeViewView, mTabBarCallback, urlBasedNativeView, url_after_set_background, isBackgroundSetted, is_url_after_set_background_redirect, thisTabIndex;
+@synthesize rhoWebView, toolbar, navbar, nativeViewType, nativeViewView, mTabBarCallback, urlBasedNativeView, url_after_set_background, isBackgroundSetted, is_url_after_set_background_redirect, thisTabIndex;
 
 
 static BOOL makeHiddenUntilLoadContent = YES;
@@ -107,14 +107,14 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	if (nativeViewView != nil) {
 		return nativeViewView.bounds;
 	}
-	return webView.bounds;
+	return [rhoWebView view].bounds;
 }
 
 -(CGRect)getContentRect {
 	if (nativeViewView != nil) {
 		return nativeViewView.frame;
 	}
-	return webView.frame;
+	return [rhoWebView view].frame;
 }
 
 -(void)setContentRect:(CGRect)rect {
@@ -122,7 +122,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		nativeViewView.frame = rect;
 		return;
 	}
-	webView.frame = rect;
+	[rhoWebView view].frame = rect;
 }
 
 - (UIBarButtonItem*)makeUIBarButtonWithCustomImage:(UIImage*)image name:(NSString*)name target:(id)target action:(SEL)action colored_icon:(BOOL)colored_icon {
@@ -295,7 +295,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
     NSMutableArray *btns = [NSMutableArray arrayWithCapacity:[items count]];
 	
-    for(int i = 0, lim = [items count]; i < lim; i++) {
+    for(int i = 0, lim = (int)[items count]; i < lim; i++) {
 		NSDictionary* item = (NSDictionary*)[items objectAtIndex:i];
         
 		
@@ -370,26 +370,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
     [self setContentRect:wFrame];
 }
 
-- (UIWebView*)newWebView:(CGRect)frame {
-    UIWebView *w = [[UIWebView alloc] initWithFrame:frame];
-    w.scalesPageToFit = YES;
-    if ( !rho_conf_getBool("WebView.enableBounce") )
-        [[w scrollView] setBounces:NO];
-    w.userInteractionEnabled = YES;
-    w.multipleTouchEnabled = YES;
-    w.clipsToBounds = NO;
-    w.dataDetectorTypes = UIDataDetectorTypeNone;
-    w.delegate = self;
-    w.autoresizesSubviews = YES;
-    //w.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    w.tag = RHO_TAG_WEBVIEW;
-	
-    assert([w retainCount] == 1);
+- (id<RhoWebView,NSObject>)newRhoWebView:(CGRect)frame {
+    id<RhoWebView,NSObject> w = [RhoWebViewFabrique createRhoWebViewWithFrame:frame];
     return w;
 }
 
-- (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame bar_info:(NSDictionary*)bar_info web_bkg_color:(UIColor*)web_bkg_color {
+- (id)init:(UIView*)p rhowebview:(id<RhoWebView,NSObject>)w frame:(CGRect)frame bar_info:(NSDictionary*)bar_info web_bkg_color:(UIColor*)web_bkg_color {
 	[self init];
 	
 	self.mTabBarCallback = nil;
@@ -409,15 +395,19 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		self.view.backgroundColor = web_bkg_color;
 	}
     
-    assert(!webView || [webView retainCount] == 2);
-    [webView removeFromSuperview];
-    assert(!webView || [webView retainCount] == 1);
-    self.webView = nil;
-    webView = w;
+    //assert(!webView || [webView retainCount] == 2);
+    //[webView removeFromSuperview];
+    [[w view] removeFromSuperview];
+    
+    //assert(!webView || [webView retainCount] == 1);
+    self.rhoWebView = nil;
+    rhoWebView = w;
     //Assertion Failed, fix for ios9 app crashed
     //assert(!webView || [webView retainCount] == 1);
-	if (!webView)
-        webView = [self newWebView:frame];
+    if (rhoWebView == nil) {
+        rhoWebView = [self newRhoWebView:frame];
+    }
+    [rhoWebView setupDelegate:self];
     //Assertion Failed, fix for ios9 app crashed
     //assert(webView && [webView retainCount] == 1);
     
@@ -443,17 +433,13 @@ static BOOL makeHiddenUntilLoadContent = YES;
 #endif
     
     
-    webView.frame = wFrame;
+    [rhoWebView view].frame = wFrame;
     
-    
-    
-    
-    
-    webView.autoresizesSubviews = YES;
-    webView.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    [rhoWebView view].autoresizesSubviews = YES;
+    [rhoWebView view].autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 
 	if (web_bkg_color != nil) {
-		self.webView.backgroundColor = web_bkg_color;
+		[self.rhoWebView view].backgroundColor = web_bkg_color;
 		int cr = (int)(CGColorGetComponents([web_bkg_color CGColor])[0] * 255);
 		int cg = (int)(CGColorGetComponents([web_bkg_color CGColor])[1] * 255);
 		int cb = (int)(CGColorGetComponents([web_bkg_color CGColor])[2] * 255);
@@ -463,7 +449,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
         //webView.hidden = YES;
 		[self setWebBackgroundColor:c];
 
-		assert([webView retainCount] == 1);
+		//assert([webView retainCount] == 1);
         
         
         UIView* bkg_v = [[UIView alloc] initWithFrame:wFrame];
@@ -473,7 +459,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
         
 	}
 	else {
-		[root addSubview:webView];
+		[root addSubview:[rhoWebView view]];
         //Assertion Failed, fix for ios9 app crashed
 		//assert([webView retainCount] == 2);
     }
@@ -599,11 +585,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame bar_info:(NSDictionary*)bar_info {
-    return [self init:p webView:nil frame:frame bar_info:bar_info web_bkg_color:nil];
+    return [self init:p rhowebview:nil frame:frame bar_info:bar_info web_bkg_color:nil];
 }
 
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame bar_info:(NSDictionary*)bar_info web_bkg_color:(UIColor*)web_bkg_color {
-    return [self init:p webView:nil frame:frame bar_info:bar_info web_bkg_color:web_bkg_color];
+    return [self init:p rhowebview:nil frame:frame bar_info:bar_info web_bkg_color:web_bkg_color];
 }
 
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame {
@@ -618,8 +604,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
     return [self initWithMainView:v parent:p bar_info:nil];
 }
 
-- (id)initWithParentView:(UIView *)p frame:(CGRect)frame webview:(UIWebView*)webview {
-    id result = [self init:p webView:webview frame:frame bar_info:nil web_bkg_color:nil];
+- (id)initWithParentView:(UIView *)p frame:(CGRect)frame rhowebview:(id<RhoWebView,NSObject>)rhowebview {
+    id result = [self init:p rhowebview:rhowebview frame:frame bar_info:nil web_bkg_color:nil];
     return result;
 }
 
@@ -628,8 +614,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
     CGRect frame = [[v view] frame];
 	frame.origin.x = 0;
     //UIWebView *w = (UIWebView*)[Rhodes subviewWithTag:RHO_TAG_WEBVIEW ofView:[v view]];
-    UIWebView *w = [v detachWebView];
-    id result = [self init:p webView:w frame:frame bar_info:bar_info web_bkg_color:nil];
+    //UIWebView *w = [v detachWebView];
+    
+    id<RhoWebView,NSObject> w = [v detachRhoWebView];
+    
+    id result = [self init:p rhowebview:w frame:frame bar_info:bar_info web_bkg_color:nil];
     return result;
 }
 
@@ -648,12 +637,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	if (nativeView) {
           [root addSubview:[nativeView getView]];
 	}
-	else if (webView) {
-        [root addSubview:webView];
-        webView.delegate = self;
+	else if (rhoWebView != nil) {
+        [root addSubview:[rhoWebView view]];
+        [rhoWebView setupDelegate:self];
 	}
 	assert(!nativeView || [nativeView retainCount] == 2);
-	assert(!webView || [webView retainCount] == 2);
+	//assert(!webView || [webView retainCount] == 2);
     if (toolbar)
         [root addSubview:toolbar];
     assert(!toolbar || [toolbar retainCount] == 2);
@@ -665,16 +654,16 @@ static BOOL makeHiddenUntilLoadContent = YES;
 - (void)viewDidUnload {
     [super viewDidUnload];
     //assert(!nativeView || [nativeView retainCount] == 1);
-    assert(!webView || [webView retainCount] == 1);
+    //assert(!webView || [webView retainCount] == 1);
     assert(!toolbar || [toolbar retainCount] == 1);
     assert(!navbar || [navbar retainCount] == 1);
 }
 
 - (void)dealloc {
-    webView.delegate = nil;
+    [rhoWebView setupDelegate:nil];
     nativeView = nil;
     nativeViewView = nil;
-    self.webView = nil;
+    self.rhoWebView = nil;
     self.toolbar = nil;
     self.navbar = nil;
     [super dealloc];
@@ -707,13 +696,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
     [self reload:0];
 }
 
-
-- (UIWebView*)detachWebView {
+- (id<RhoWebView,NSObject>)detachRhoWebView {
 	[self restoreWebView];
-	UIWebView *w = [webView retain];
-	[w removeFromSuperview];
-    webView.delegate = nil;
-    self.webView = nil;
+	id<RhoWebView,NSObject> w = [rhoWebView retain];
+	[[w view] removeFromSuperview];
+    [rhoWebView setupDelegate:nil];
+    self.rhoWebView = nil;
     
     //Assertion Failed, fix for ios9 app crashed
     //assert(w && [w retainCount] == 1);
@@ -727,16 +715,16 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	int cB = (bkg_color & 0xFF);
 	UIColor* bc = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
 	
-	self.webView.backgroundColor = bc;
+	[self.rhoWebView view].backgroundColor = bc;
 	//self.view.backgroundColor = bc;
 	
 	//NSString* datas = [NSString stringWithFormat:@"<body bgcolor=\"#%6X\"></body>", bkg_color];
-	NSString* datas = [NSString stringWithFormat:@"<body><script type=\"text/javascript\">document.body.style.backgroundColor = \"#%6X\";</script></body>", bkg_color];
+	//NSString* datas = [NSString stringWithFormat:@"<body><script type=\"text/javascript\">document.body.style.backgroundColor = \"#%6X\";</script></body>", bkg_color];
     
 	
 	//[self loadHTMLString:datas];
     NSString* jscode = [NSString stringWithFormat:@"document.body.style.backgroundColor = \"#%6X\";", bkg_color];
-    [self.webView stringByEvaluatingJavaScriptFromString:jscode];
+    [self.rhoWebView stringByEvaluatingJavaScriptFromString:jscode];
 
 	//self.webView.hidden = YES;
 }
@@ -744,8 +732,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void)loadHTMLString:(NSString *)data {
 	[self restoreWebView];
-    [webView stopLoading];
-    [webView loadHTMLString:data baseURL:[NSURL URLWithString:@""]];
+    [rhoWebView stopLoading];
+    [rhoWebView loadHTMLString:data baseURL:[NSURL URLWithString:@""]];
 }
 
 - (void)back:(int)index {
@@ -757,7 +745,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	//}
 	//else {
         [[SignatureDelegate getSharedInstance] hideSignatureInlineView];
-		[webView goBack];
+		[rhoWebView goBack];
 	//}
 }
 
@@ -765,7 +753,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	if ((nativeViewView != nil) && (self.urlBasedNativeView == YES)) {
 		[self restoreWebView];
 	}
-    [webView goForward];
+    [rhoWebView goForward];
 }
 
 - (NSString*)encodeUrl:(NSString*)url {
@@ -792,9 +780,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		[nativeViewView removeFromSuperview];
 		nativeViewView = nil;
 		
-		webView.frame = rect;
-		[root addSubview:webView];
+		[rhoWebView view].frame = rect;
+		[root addSubview:[rhoWebView view]];
+        
+        //[[rhoWebView view] setNeedsDisplay];
 	}
+    [rhoWebView setupDelegate:self];
 	if (nativeView != nil) {
 		[RhoNativeViewManagerOC destroyNativeView:nativeView];
 		nativeView = nil;
@@ -805,8 +796,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 -(void)openNativeView:(UIView*)nv_view tab_index:(int)tab_index {
 	nativeViewView = nv_view;
 	if (nativeViewView != nil) {
-		CGRect rect = [webView frame];
-		[webView removeFromSuperview];
+		CGRect rect = [[rhoWebView view] frame];
+		[[rhoWebView view] removeFromSuperview];
 		nativeViewView.frame = rect;
 		nativeViewView.autoresizesSubviews = YES;
 		nativeViewView.clipsToBounds = NO;
@@ -856,8 +847,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 					// replace webView with NativeView
 					nativeViewView = [nativeView getView];
 					if (nativeViewView != nil) {
-						CGRect rect = [webView frame];
-						[webView removeFromSuperview];
+						CGRect rect = [[rhoWebView view] frame];
+						[[rhoWebView view] removeFromSuperview];
 						nativeViewView.frame = rect;
 						//w.userInteractionEnabled = YES;
 						//w.multipleTouchEnabled = YES;
@@ -890,8 +881,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (void)loadRequestToWebView:(NSURLRequest*)request {
-    [webView stopLoading];
-    [webView loadRequest:request];
+    [rhoWebView stopLoading];
+    [rhoWebView loadRequest:request];
     //[request release];
 }
 
@@ -971,8 +962,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		[nativeViewView setNeedsDisplay];
 	}
 	else {
-        [webView stopLoading];
-		[webView reload];
+        [rhoWebView stopLoading];
+		[rhoWebView reload];
 	}
 }
 
@@ -984,17 +975,17 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		[self.view.superview bringSubviewToFront:self.view];
     }
     RAWLOG_INFO1("Executing JS: %s", [js UTF8String]);
-    [webView stringByEvaluatingJavaScriptFromString:js];
+    [rhoWebView stringByEvaluatingJavaScriptFromString:js];
 }
 
 - (NSString*)currentLocation:(int)index {
-    return [[webView.request mainDocumentURL] absoluteString];
+    return [rhoWebView currentLocation];
 }
 
 #define CUR_URL_DICT_KEY @"CUR_URL_DICT_KEY"
 
 -(void) get_current_url_command:(NSMutableDictionary*)dict {
-    NSString* res = [webView stringByEvaluatingJavaScriptFromString:@"window.location.href"];
+    NSString* res = [rhoWebView stringByEvaluatingJavaScriptFromString:@"window.location.href"];
     //NSString* res = [[webView.request mainDocumentURL] absoluteString];
     [dict setValue:res forKey:CUR_URL_DICT_KEY];
 }
@@ -1015,8 +1006,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
     return 0;
 }
 
-- (UIWebView*)getWebView:(int)tab_index {
-	return webView;
+- (id<RhoWebView,NSObject>)getRhoWebView:(int)tab_index {
+	return rhoWebView;
 }
 
 
@@ -1044,7 +1035,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 #ifdef __IPHONE_7_0
     nFrame.origin.y = wFrame.origin.y;
 #endif
-    nFrame.size.width = webView.bounds.size.width;
+    nFrame.size.width = [rhoWebView view].bounds.size.width;
 	navbar.frame = nFrame;
 	
     wFrame.origin.y += nFrame.size.height;
@@ -1108,10 +1099,10 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 
-// UIWebViewDelegate imlementation
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
- navigationType:(UIWebViewNavigationType)navigationType {
+
+- (BOOL)shouldStartLoadWithRequest:(id<RhoWebView,NSObject>)webView  request:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+
     NSURL *url = [request URL];
     if (!url)
         return NO;
@@ -1132,29 +1123,29 @@ static BOOL makeHiddenUntilLoadContent = YES;
 #if defined(RHO_NO_RUBY_API)
     if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"] && ![scheme isEqualToString:@"file"])
 #else
-    if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"] && ![scheme isEqualToString:@"file"])
+        if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"] && ![scheme isEqualToString:@"file"])
 #endif
-        external = YES;
-    else {
-        NSString *ps = [url query];
-        NSArray *parameters = [ps componentsSeparatedByString:@"&"];
-        for (int i = 0, lim = [parameters count]; i < lim; ++i) {
-            NSString *param = [parameters objectAtIndex:i];
-            NSArray *nv = [param componentsSeparatedByString:@"="];
-            int size = [nv count];
-            if (size == 0 || size > 2)
-                continue;
-            NSString *name = [nv objectAtIndex:0];
-            NSString *value = nil;
-            if (size == 2)
-                value = [nv objectAtIndex:1];
-            
-            if ([name isEqualToString:@"rho_open_target"] && [value isEqualToString:@"_blank"]) {
-                external = YES;
-                break;
+            external = YES;
+        else {
+            NSString *ps = [url query];
+            NSArray *parameters = [ps componentsSeparatedByString:@"&"];
+            for (int i = 0, lim = [parameters count]; i < lim; ++i) {
+                NSString *param = [parameters objectAtIndex:i];
+                NSArray *nv = [param componentsSeparatedByString:@"="];
+                int size = [nv count];
+                if (size == 0 || size > 2)
+                    continue;
+                NSString *name = [nv objectAtIndex:0];
+                NSString *value = nil;
+                if (size == 2)
+                    value = [nv objectAtIndex:1];
+                
+                if ([name isEqualToString:@"rho_open_target"] && [value isEqualToString:@"_blank"]) {
+                    external = YES;
+                    break;
+                }
             }
         }
-    }
     
     if (external) {
         // This is not http url so try to open external application for it
@@ -1171,109 +1162,113 @@ static BOOL makeHiddenUntilLoadContent = YES;
     //}
     [[SignatureDelegate getSharedInstance] hideSignatureInlineView];
     return YES;
+
 }
 
-- (void)webViewDidStartLoad:(UIWebView *)webview {
+- (void)webViewDidStartLoad:(id<RhoWebView,NSObject>)webView {
     // TODO
     //[self active];
     PROF_START("BROWSER_PAGE");
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webview {
+- (void)webViewDidFinishLoad:(id<RhoWebView,NSObject>)webView {
     // Disable default context menu on touch
-    [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
-
+    [rhoWebView stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
+    
     PROF_STOP("BROWSER_PAGE");
     
     // Set empty application cache. Otherwise memory used by UIWebView increased rapidly
     // and finally application got out of memory
     NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
-	[NSURLCache setSharedURLCache:sharedCache];
-	[sharedCache release];
-	
-	if (self.view.hidden) {
-		[[Rhodes sharedInstance] hideSplash];
-		self.view.hidden = NO;
-		[self.view.superview bringSubviewToFront:self.view];
+    [NSURLCache setSharedURLCache:sharedCache];
+    [sharedCache release];
+    
+    if (self.view.hidden) {
+        [[Rhodes sharedInstance] hideSplash];
+        self.view.hidden = NO;
+        [self.view.superview bringSubviewToFront:self.view];
     }
-	if (self.nativeViewView == nil) {
-		if ([self.webView superview] == nil) {
-			[self.view addSubview:self.webView];
-		}
-		if (self.webView.hidden) {
-			self.webView.hidden = NO;
-			[self.webView.superview bringSubviewToFront:self.webView];
-		}
-	}
-	
-	if (!self.isBackgroundSetted) {
-		self.isBackgroundSetted = YES;
-		if (self.url_after_set_background != nil) {
-			if (self.is_url_after_set_background_redirect) {
-				[self navigateRedirect:url_after_set_background tab:0];
-			}
-			else {
-				[self navigate:url_after_set_background tab:0];
-			}
-		}
-	}
-	self.url_after_set_background = nil;
+    if (self.nativeViewView == nil) {
+        if ([[self.rhoWebView view] superview] == nil) {
+            [self.view addSubview:[self.rhoWebView view]];
+        }
+        if ([self.rhoWebView view].hidden) {
+            [self.rhoWebView view].hidden = NO;
+            [[self.rhoWebView view].superview bringSubviewToFront:[self.rhoWebView view]];
+        }
+    }
+    
+    if (!self.isBackgroundSetted) {
+        self.isBackgroundSetted = YES;
+        if (self.url_after_set_background != nil) {
+            if (self.is_url_after_set_background_redirect) {
+                [self navigateRedirect:url_after_set_background tab:0];
+            }
+            else {
+                [self navigate:url_after_set_background tab:0];
+            }
+        }
+    }
+    self.url_after_set_background = nil;
     
     
     NSString* jscode = [NSString stringWithFormat:@"window['__rhoJsVmID']='%@'", [NSNumber numberWithInt:self.thisTabIndex]];
     //[self executeJs:@"alert('hello')" tab:self.thisTabIndex];
     [self executeJs:jscode tab:self.thisTabIndex];
     //[self executeJs:@"alert(window['__rhoJsVmID'])" tab:self.thisTabIndex];
-
     
     
-	// TODO
-    /*
-     [self inactive];
-     
-     if ([webView canGoBack]) {
-     backBtn.enabled = YES;
-     } else {
-     backBtn.enabled = NO;
-     }
-     if ([webView canGoForward]) {
-     forwardBtn.enabled = YES;
-     } else {
-     forwardBtn.enabled = NO;
-     }
-     
-     //NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
-     //rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
-     
-     if ([actionTarget respondsToSelector:@selector(hideSplash)])
-     [actionTarget performSelectorOnMainThread:@selector(hideSplash) withObject:nil waitUntilDone:NO];
-     */
+    
+    // TODO
+    //    [self inactive];
+    //
+    //     if ([webView canGoBack]) {
+    //     backBtn.enabled = YES;
+    //     } else {
+    //     backBtn.enabled = NO;
+    //     }
+    //     if ([webView canGoForward]) {
+    //     forwardBtn.enabled = YES;
+    //     } else {
+    //     forwardBtn.enabled = NO;
+    //     }
+    //
+    //     //NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
+    //     //rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );
+    //
+    //     if ([actionTarget respondsToSelector:@selector(hideSplash)])
+    //     [actionTarget performSelectorOnMainThread:@selector(hideSplash) withObject:nil waitUntilDone:NO];
+    
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
- 
+- (void)didFailLoadWithError:(id<RhoWebView,NSObject>)webView error:(NSError *)error {
+    
     PROF_STOP("BROWSER_PAGE");
-
+    
     NSString* info = [error localizedDescription];
     NSString* reason = [error localizedFailureReason];
     RAWLOG_INFO2("WebView FAIL load with error: [%s] , reason: [%s]", [info UTF8String], [reason UTF8String]);
     
-	if (self.view.hidden) {
-		[[Rhodes sharedInstance] hideSplash];
-		self.view.hidden = NO;
-		[self.view.superview bringSubviewToFront:self.view];
+    if (self.view.hidden) {
+        [[Rhodes sharedInstance] hideSplash];
+        self.view.hidden = NO;
+        [self.view.superview bringSubviewToFront:self.view];
     }
-	if ([self.webView superview] == nil) {
-		[self.view addSubview:self.webView];
-	}
-	if (self.webView.hidden) {
-		self.webView.hidden = NO;
-		[self.webView.superview bringSubviewToFront:self.webView];
+    if ([[self.rhoWebView view] superview] == nil) {
+        [self.view addSubview:[self.rhoWebView view]];
     }
-	self.isBackgroundSetted = YES;
-	self.url_after_set_background = nil;
+    if ([self.rhoWebView view].hidden) {
+        [self.rhoWebView view].hidden = NO;
+        [[self.rhoWebView view].superview bringSubviewToFront:[self.rhoWebView view]];
+    }
+    self.isBackgroundSetted = YES;
+    self.url_after_set_background = nil;
     
 }
+
+
+
+
 
 - (void)viewWillAppear:(BOOL)animated {
 	if (self.mTabBarCallback != nil) {

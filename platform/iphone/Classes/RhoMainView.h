@@ -25,12 +25,18 @@
 *------------------------------------------------------------------------*/
 
 #import <UIKit/UIKit.h>
+#import "RhoWebView.h"
+
+
+#define RHO_TAG_WEBVIEW 1
+#define RHO_TAG_TOOLBAR 2
+#define RHO_TAG_NAVBAR 3
 
 @protocol RhoMainView
 
 - (UIView*)view;
 
-- (UIWebView*)detachWebView;
+- (id<RhoWebView,NSObject>)detachRhoWebView;
 
 - (void)loadHTMLString:(NSString*)data;
 
@@ -51,7 +57,7 @@
 - (void)addNavBar:(NSString*)title left:(NSArray*)left right:(NSArray*)right;
 - (void)removeNavBar;
 
-- (UIWebView*)getWebView:(int)tab_index;
+- (id<RhoWebView,NSObject>)getRhoWebView:(int)tab_index;
 
 -(void)openNativeView:(UIView*)nv_view tab_index:(int)tab_index;
 -(void)closeNativeView:(int)tab_index;

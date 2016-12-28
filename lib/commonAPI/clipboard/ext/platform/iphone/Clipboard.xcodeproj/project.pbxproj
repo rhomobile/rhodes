@@ -1,0 +1,368 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FA3E1F211779EFAA00F5E33A /* Clipboard.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F1B1779EFAA00F5E33A /* Clipboard.h */; };
+		FA3E1F221779EFAA00F5E33A /* Clipboard.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F1C1779EFAA00F5E33A /* Clipboard.m */; };
+		FA3E1F231779EFAA00F5E33A /* ClipboardFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F1D1779EFAA00F5E33A /* ClipboardFactorySingleton.m */; };
+		FA3E1F241779EFAA00F5E33A /* ClipboardSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F1E1779EFAA00F5E33A /* ClipboardSetup.m */; };
+		FA3E1F251779EFAA00F5E33A /* ClipboardSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F1F1779EFAA00F5E33A /* ClipboardSingleton.h */; };
+		FA3E1F261779EFAA00F5E33A /* ClipboardSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F201779EFAA00F5E33A /* ClipboardSingleton.m */; };
+		FA3E1F281779EFB100F5E33A /* IClipboard.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F271779EFB100F5E33A /* IClipboard.h */; };
+		FA3E1F2F1779EFBB00F5E33A /* ClipboardBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F291779EFBB00F5E33A /* ClipboardBase.h */; };
+		FA3E1F301779EFBB00F5E33A /* ClipboardBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F2A1779EFBB00F5E33A /* ClipboardBase.m */; };
+		FA3E1F311779EFBB00F5E33A /* ClipboardFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F2B1779EFBB00F5E33A /* ClipboardFactoryBase.h */; };
+		FA3E1F321779EFBB00F5E33A /* ClipboardFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F2C1779EFBB00F5E33A /* ClipboardFactoryBase.m */; };
+		FA3E1F331779EFBB00F5E33A /* ClipboardSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F2D1779EFBB00F5E33A /* ClipboardSingletonBase.h */; };
+		FA3E1F341779EFBB00F5E33A /* ClipboardSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F2E1779EFBB00F5E33A /* ClipboardSingletonBase.m */; };
+		FA3E1F361779EFC400F5E33A /* clipboard_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F351779EFC400F5E33A /* clipboard_js_wrap.mm */; };
+		FA3E1F381779EFCB00F5E33A /* clipboard_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F371779EFCB00F5E33A /* clipboard_ruby_wrap.m */; };
+		FA3E1F3C1779EFD700F5E33A /* clipboard_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F391779EFD700F5E33A /* clipboard_api_init.cpp */; };
+		FA3E1F3D1779EFD700F5E33A /* clipboard_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3A1779EFD700F5E33A /* clipboard_js_api.cpp */; };
+		FA3E1F3E1779EFD700F5E33A /* clipboard_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3B1779EFD700F5E33A /* clipboard_ruby_api.c */; };
+		FAC155E7145855CF0016F3BD /* Clipboard_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Clipboard_Prefix.pch */; };
+		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FA3E1F1B1779EFAA00F5E33A /* Clipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Clipboard.h; path = impl/Clipboard.h; sourceTree = "<group>"; };
+		FA3E1F1C1779EFAA00F5E33A /* Clipboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Clipboard.m; path = impl/Clipboard.m; sourceTree = "<group>"; };
+		FA3E1F1D1779EFAA00F5E33A /* ClipboardFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ClipboardFactorySingleton.m; path = impl/ClipboardFactorySingleton.m; sourceTree = "<group>"; };
+		FA3E1F1E1779EFAA00F5E33A /* ClipboardSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ClipboardSetup.m; path = impl/ClipboardSetup.m; sourceTree = "<group>"; };
+		FA3E1F1F1779EFAA00F5E33A /* ClipboardSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClipboardSingleton.h; path = impl/ClipboardSingleton.h; sourceTree = "<group>"; };
+		FA3E1F201779EFAA00F5E33A /* ClipboardSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ClipboardSingleton.m; path = impl/ClipboardSingleton.m; sourceTree = "<group>"; };
+		FA3E1F271779EFB100F5E33A /* IClipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IClipboard.h; path = generated/IClipboard.h; sourceTree = "<group>"; };
+		FA3E1F291779EFBB00F5E33A /* ClipboardBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClipboardBase.h; path = generated/base_impl/ClipboardBase.h; sourceTree = "<group>"; };
+		FA3E1F2A1779EFBB00F5E33A /* ClipboardBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ClipboardBase.m; path = generated/base_impl/ClipboardBase.m; sourceTree = "<group>"; };
+		FA3E1F2B1779EFBB00F5E33A /* ClipboardFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClipboardFactoryBase.h; path = generated/base_impl/ClipboardFactoryBase.h; sourceTree = "<group>"; };
+		FA3E1F2C1779EFBB00F5E33A /* ClipboardFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ClipboardFactoryBase.m; path = generated/base_impl/ClipboardFactoryBase.m; sourceTree = "<group>"; };
+		FA3E1F2D1779EFBB00F5E33A /* ClipboardSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClipboardSingletonBase.h; path = generated/base_impl/ClipboardSingletonBase.h; sourceTree = "<group>"; };
+		FA3E1F2E1779EFBB00F5E33A /* ClipboardSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ClipboardSingletonBase.m; path = generated/base_impl/ClipboardSingletonBase.m; sourceTree = "<group>"; };
+		FA3E1F351779EFC400F5E33A /* clipboard_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = clipboard_js_wrap.mm; path = generated/javascript/clipboard_js_wrap.mm; sourceTree = "<group>"; };
+		FA3E1F371779EFCB00F5E33A /* clipboard_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = clipboard_ruby_wrap.m; path = generated/ruby/clipboard_ruby_wrap.m; sourceTree = "<group>"; };
+		FA3E1F391779EFD700F5E33A /* clipboard_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = clipboard_api_init.cpp; path = ../../shared/generated/clipboard_api_init.cpp; sourceTree = "<group>"; };
+		FA3E1F3A1779EFD700F5E33A /* clipboard_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = clipboard_js_api.cpp; path = ../../shared/generated/clipboard_js_api.cpp; sourceTree = "<group>"; };
+		FA3E1F3B1779EFD700F5E33A /* clipboard_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = clipboard_ruby_api.c; path = ../../shared/generated/clipboard_ruby_api.c; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libClipboard.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libClipboard.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD45FD51225FED600141873 /* Clipboard_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clipboard_Prefix.pch; sourceTree = "<group>"; };
+		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
+				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libClipboard.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* Clipboard */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = Clipboard;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FAD4602C12260A8500141873 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F161779EF7600F5E33A /* impl */,
+				FA3E1F151779EF6E00F5E33A /* generated */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* Clipboard_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		FA3E1F151779EF6E00F5E33A /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F1A1779EF9B00F5E33A /* api */,
+				FA3E1F191779EF9400F5E33A /* base_impl */,
+				FA3E1F181779EF8D00F5E33A /* wrappers */,
+				FA3E1F171779EF7D00F5E33A /* shared */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FA3E1F161779EF7600F5E33A /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F1B1779EFAA00F5E33A /* Clipboard.h */,
+				FA3E1F1C1779EFAA00F5E33A /* Clipboard.m */,
+				FA3E1F1D1779EFAA00F5E33A /* ClipboardFactorySingleton.m */,
+				FA3E1F1E1779EFAA00F5E33A /* ClipboardSetup.m */,
+				FA3E1F1F1779EFAA00F5E33A /* ClipboardSingleton.h */,
+				FA3E1F201779EFAA00F5E33A /* ClipboardSingleton.m */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FA3E1F171779EF7D00F5E33A /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F391779EFD700F5E33A /* clipboard_api_init.cpp */,
+				FA3E1F3A1779EFD700F5E33A /* clipboard_js_api.cpp */,
+				FA3E1F3B1779EFD700F5E33A /* clipboard_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FA3E1F181779EF8D00F5E33A /* wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F371779EFCB00F5E33A /* clipboard_ruby_wrap.m */,
+				FA3E1F351779EFC400F5E33A /* clipboard_js_wrap.mm */,
+			);
+			name = wrappers;
+			sourceTree = "<group>";
+		};
+		FA3E1F191779EF9400F5E33A /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F291779EFBB00F5E33A /* ClipboardBase.h */,
+				FA3E1F2A1779EFBB00F5E33A /* ClipboardBase.m */,
+				FA3E1F2B1779EFBB00F5E33A /* ClipboardFactoryBase.h */,
+				FA3E1F2C1779EFBB00F5E33A /* ClipboardFactoryBase.m */,
+				FA3E1F2D1779EFBB00F5E33A /* ClipboardSingletonBase.h */,
+				FA3E1F2E1779EFBB00F5E33A /* ClipboardSingletonBase.m */,
+			);
+			name = base_impl;
+			sourceTree = "<group>";
+		};
+		FA3E1F1A1779EF9B00F5E33A /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F271779EFB100F5E33A /* IClipboard.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155E7145855CF0016F3BD /* Clipboard_Prefix.pch in Headers */,
+				FA3E1F211779EFAA00F5E33A /* Clipboard.h in Headers */,
+				FA3E1F251779EFAA00F5E33A /* ClipboardSingleton.h in Headers */,
+				FA3E1F281779EFB100F5E33A /* IClipboard.h in Headers */,
+				FA3E1F2F1779EFBB00F5E33A /* ClipboardBase.h in Headers */,
+				FA3E1F311779EFBB00F5E33A /* ClipboardFactoryBase.h in Headers */,
+				FA3E1F331779EFBB00F5E33A /* ClipboardSingletonBase.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* Clipboard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Clipboard" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Clipboard;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libClipboard.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Clipboard" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* Clipboard */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* Clipboard */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA3E1F221779EFAA00F5E33A /* Clipboard.m in Sources */,
+				FA3E1F231779EFAA00F5E33A /* ClipboardFactorySingleton.m in Sources */,
+				FA3E1F241779EFAA00F5E33A /* ClipboardSetup.m in Sources */,
+				FA3E1F261779EFAA00F5E33A /* ClipboardSingleton.m in Sources */,
+				FA3E1F301779EFBB00F5E33A /* ClipboardBase.m in Sources */,
+				FA3E1F321779EFBB00F5E33A /* ClipboardFactoryBase.m in Sources */,
+				FA3E1F341779EFBB00F5E33A /* ClipboardSingletonBase.m in Sources */,
+				FA3E1F361779EFC400F5E33A /* clipboard_js_wrap.mm in Sources */,
+				FA3E1F381779EFCB00F5E33A /* clipboard_ruby_wrap.m in Sources */,
+				FA3E1F3C1779EFD700F5E33A /* clipboard_api_init.cpp in Sources */,
+				FA3E1F3D1779EFD700F5E33A /* clipboard_js_api.cpp in Sources */,
+				FA3E1F3E1779EFD700F5E33A /* clipboard_ruby_api.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/Clipboard.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Clipboard_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Clipboard;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/Clipboard.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Clipboard_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Clipboard;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Clipboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Clipboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

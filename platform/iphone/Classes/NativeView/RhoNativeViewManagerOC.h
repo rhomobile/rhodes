@@ -66,7 +66,7 @@
 
 +(void)registerViewType:(NSString*)viewType factory:(id)factory;
 +(void)unregisterViewType:(NSString*)viewType;
-+(UIWebView*)getWebViewObject:(int)tab_index;
++(UIView*)getWebViewObject:(int)tab_index;
 
 +(int)create_native_view:(NSString*)viewType tab_index:(int)tab_index params:(VALUE)params;
 +(void)navigate_native_view:(int)nv_id message:(NSString*)message;

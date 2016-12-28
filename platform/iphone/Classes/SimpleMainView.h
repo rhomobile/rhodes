@@ -25,15 +25,16 @@
 *------------------------------------------------------------------------*/
 
 #import <UIKit/UIKit.h>
+#import "RhoWebView.h"
 #import "RhoMainView.h"
 #import "RhoViewController.h"
 #include "RhoNativeViewManagerOC.h"
 
 
 
-@interface SimpleMainView : RhoViewController <RhoMainView, UIWebViewDelegate> {
+@interface SimpleMainView : RhoViewController <RhoMainView, RhoWebViewDelegate> {
 
-    UIWebView *webView;
+    id<RhoWebView,NSObject> rhoWebView;
     UIToolbar *toolbar;
     UINavigationBar *navbar;
     CGRect rootFrame;
@@ -48,7 +49,7 @@
     int thisTabIndex;
 }
 
-@property (nonatomic,retain) UIWebView *webView;
+@property (nonatomic,retain) id<RhoWebView,NSObject> rhoWebView;
 @property (nonatomic,retain) UIToolbar *toolbar;
 @property (nonatomic,retain) UINavigationBar *navbar;
 @property (nonatomic,retain) NSString *nativeViewType;
@@ -63,7 +64,7 @@
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p;
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info;
-- (id)initWithParentView:(UIView *)p frame:(CGRect)frame webview:(UIWebView*)webview;
+- (id)initWithParentView:(UIView *)p frame:(CGRect)frame rhowebview:(id<RhoWebView,NSObject>)rhowebview;
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame;
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame web_bkg_color:(UIColor*)web_bkg_color;
 
@@ -77,7 +78,8 @@
 	
 -(void)restoreWebView;
 
-- (UIWebView*)getWebView:(int)tab_index;
+- (id<RhoWebView,NSObject>)detachRhoWebView;
+- (id<RhoWebView,NSObject>)getRhoWebView:(int)tab_index;
 
 + (void) disableHiddenOnStart;
 + (void) enableHiddenOnStart;

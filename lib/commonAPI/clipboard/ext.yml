@@ -1,0 +1,17 @@
+entry: Init_Clipboard_extension
+javaentry: com.clipboard.Clipboard
+libraries: ["Clipboard"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+wp8:
+  csharp_impl: yes
+  root_namespace: rho
+
+project_paths:
+  wp8: ext/platform/wp8/ClipboardLib.vcxproj
+  wm: ext/platform/wm/Clipboard.vcproj
+  
+xml_api_paths: ext/Clipboard.xml
+
+platforms: ["iphone", "android"]

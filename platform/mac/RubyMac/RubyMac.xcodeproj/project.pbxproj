@@ -9,8 +9,7 @@
 /* Begin PBXBuildFile section */
 		5C0440920EF7DC550014E5C6 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C0440910EF7DC550014E5C6 /* main.c */; };
 		5C0440C20EF7E3230014E5C6 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0440C10EF7E3230014E5C6 /* libsqlite3.0.dylib */; };
-		5C9F556F10B402D5005644A6 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0440900EF7DC290014E5C6 /* librhorubylib.a */; };
-		8DD76F6A0486A84900D96B5E /* RubyMac.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859E8B029090EE04C91782 /* RubyMac.1 */; };
+		FA3C26301DA6E8FD0064EE64 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0440900EF7DC290014E5C6 /* librhorubylib.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -21,7 +20,7 @@
 			remoteGlobalIDString = D2AAC046055464E500DB518D;
 			remoteInfo = rhorubylib;
 		};
-		5C0440A50EF7E0AC0014E5C6 /* PBXContainerItemProxy */ = {
+		FA3C262E1DA6E8EB0064EE64 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C04408B0EF7DC290014E5C6 /* rhorubylib.xcodeproj */;
 			proxyType = 1;
@@ -29,19 +28,6 @@
 			remoteInfo = rhorubylib;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		8DD76F690486A84900D96B5E /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-				8DD76F6A0486A84900D96B5E /* RubyMac.1 in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		5C04408B0EF7DC290014E5C6 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = ../../iphone/rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -56,7 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5C9F556F10B402D5005644A6 /* librhorubylib.a in Frameworks */,
+				FA3C26301DA6E8FD0064EE64 /* librhorubylib.a in Frameworks */,
 				5C0440C20EF7E3230014E5C6 /* libsqlite3.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -117,12 +103,11 @@
 			buildPhases = (
 				8DD76F640486A84900D96B5E /* Sources */,
 				8DD76F660486A84900D96B5E /* Frameworks */,
-				8DD76F690486A84900D96B5E /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				5C0440A60EF7E0AC0014E5C6 /* PBXTargetDependency */,
+				FA3C262F1DA6E8EB0064EE64 /* PBXTargetDependency */,
 			);
 			name = RubyMac;
 			productInstallPath = "$(HOME)/bin";
@@ -135,6 +120,8 @@
 /* Begin PBXProject section */
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "RubyMac" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -179,10 +166,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5C0440A60EF7E0AC0014E5C6 /* PBXTargetDependency */ = {
+		FA3C262F1DA6E8EB0064EE64 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = rhorubylib;
-			targetProxy = 5C0440A50EF7E0AC0014E5C6 /* PBXContainerItemProxy */;
+			targetProxy = FA3C262E1DA6E8EB0064EE64 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -201,12 +188,12 @@
 					"_GLIBCXX_DEBUG=1",
 					"_GLIBCXX_DEBUG_PEDANTIC=1",
 				);
+				GCC_STRICT_ALIASING = YES;
 				INSTALL_PATH = /usr/local/bin;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../iphone/build/Release\"",
-				);
-				OTHER_LDFLAGS = "-lrhorubylib";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = RubyMac;
 				SDKROOT = macosx;
 				SYMROOT = build;
@@ -221,12 +208,12 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
+				GCC_STRICT_ALIASING = YES;
 				INSTALL_PATH = /usr/local/bin;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../iphone/build/Release\"",
-				);
-				OTHER_LDFLAGS = "-lrhorubylib";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = RubyMac;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "../../shared ../../shared/ruby/iphone ../../shared/ruby/include ../../shared/ruby";

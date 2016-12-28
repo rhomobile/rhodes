@@ -1,26 +1,27 @@
-<div data-role="page">
+<div class="container-fluid">
 
-  <div data-role="header" data-position="inline">
-    <h1>Edit <%%= @<%= name.downcase %>.<%= attributes[0] %> %></h1>
-    <a href="<%%= url_for :action => :show, :id => @<%= name.downcase %>.object %>" class="ui-btn-left" data-icon="back" data-direction="reverse">
-      Cancel
-    </a>
-    <a href="<%%= url_for :action => :delete, :id => @<%= name.downcase %>.object %>" class="ui-btn-right" data-icon="delete" data-direction="reverse">
-      Delete
-    </a>
+  <div class="row page-title">
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+      <a href="<%%= url_for :action => :show, :id => @<%= name.downcase %>.object %>" class="btn btn-default btn-sm pull-left">Cancel</a>
+    </div>
+    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+      <h3 class="text-center">Edit <%%= @<%= name.downcase %>.<%= attributes[0] %> %></h3>
+    </div>
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+      <a href="<%%= url_for :action => :delete, :id => @<%= name.downcase %>.object %>" class="btn btn-danger btn-sm pull-right">Delete</a>
+    </div>
   </div>
 
-  <div data-role="content">
-    <form method="POST" action="<%%= url_for :action => :update %>">
-      <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
-      <% attributes.each do |attribute| %>
-          <div data-role="fieldcontain">
-            <label for="<%= name.downcase %>[<%= attribute %>]" class="fieldLabel"><%= attribute.humanize() %></label>
-            <input type="text" id="<%= name.downcase %>[<%= attribute %>]" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>" <%%= placeholder( "<%= attribute.humanize() %>" ) %> />
-          </div>
-      <% end %>
-      <input type="submit" value="Update"/>
-    </form>
-  </div>
+  <form method="POST" action="<%%= url_for :action => :update %>">
+    <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
+
+    <% attributes.each do |attribute| %>
+        <div class="form-group">
+          <label for="<%= name.downcase %>[<%= attribute %>]"><%= attribute.humanize() %></label>
+          <input type="text" id="<%= name.downcase %>[<%= attribute %>]" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>" <%%= placeholder( "<%= attribute.humanize() %>" ) %> class="form-control" />
+        </div>
+    <% end %>
+    <button type="submit" class="btn btn-success btn-block">Update</button>
+  </form>
 
 </div>

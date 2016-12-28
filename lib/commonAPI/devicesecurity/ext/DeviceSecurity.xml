@@ -1,0 +1,91 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="DeviceSecurity" parent="Rho">
+        <HELP_OVERVIEW>Device Security API</HELP_OVERVIEW>
+        <MORE_HELP>API for check device securty (JailBrake for iOS, root for Android etc.)</MORE_HELP>
+
+        <TEMPLATES>
+        </TEMPLATES>
+
+         <PROPERTIES >
+        </PROPERTIES>
+
+        <METHODS>
+
+            <METHOD name="isDeviceSecured" access="STATIC" >
+                <DESC>return true is device secured. On iOS checked - device is not JailBraked, on Android checked - device is not rooted + is not simulator + not in debug mode</DESC>
+                <PLATFORM>iOS, Android</PLATFORM>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="isDeviceJailbroken" access="STATIC" >
+                <DESC>return true if device Jailbroken</DESC>
+                <PLATFORM>iOS</PLATFORM>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="isDeviceRooted" access="STATIC" >
+                <DESC>return true if device rooted</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="isRunOnSimulator" access="STATIC" >
+                <DESC>return true if application run on simulator</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="isDebugMode" access="STATIC" >
+                <DESC>return true if application run in Debug mode</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="getAppCertificateSignatures" access="STATIC" >
+                <DESC>Returns application certificates signatures.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="getAllowedCertificateSignatures" access="STATIC" >
+                <DESC>Returns allowed certificates signatures inbuilt to application.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+            <METHOD name="haveAnySignatureIssues" access="STATIC" >
+                <DESC>Checks if there are mismatches between allowed and runtime certificates.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="getInstallerPackageName" access="STATIC" >
+                <DESC>Returns application installer package name.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="haveAnyInstallerIssues" access="STATIC" >
+                <DESC>Checks if there are mismatches between allowed and runtime installer packages.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="getAllowedInstallerPackages" access="STATIC" >
+                <DESC>Returns allowed installer package names inbuilt to application.</DESC>
+                <PLATFORM>Android</PLATFORM>
+                <RETURN type="ARRAY"/>
+            </METHOD>
+
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>

@@ -1,0 +1,11 @@
+entry: Init_DeviceSecurity_extension
+javaentry: com.devicesecurity.DeviceSecurity
+libraries: ["DeviceSecurity"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+  prebuild_rake_task: 'generate_inbuilt_values'
+  
+xml_api_paths: ext/DeviceSecurity.xml
+
+platforms: ["iphone", "android"]

@@ -1,31 +1,33 @@
-<div data-role="page">
+<div class="container-fluid">
 
-	<div data-role="header" data-position="inline">
-    <h1><%= name.camelize.pluralize %></h1>
-    <a href="<%%= Rho::Application.startURI %>" class="ui-btn-left" data-icon="home" data-direction="reverse" <%%= "data-ajax='false'" if is_bb6 %>>
-      Home
-    </a>
-    <a href="<%%= url_for :action => :new %>" class="ui-btn-right" data-icon="plus">
-      New
-    </a>
-	</div>
+  <div class="row page-title">
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+      <a href="<%%= Rho::Application.startURI %>" class="btn btn-default btn-sm pull-left">Home</a>
+    </div>
+    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+      <h3 class="text-center"><%= name.camelize.pluralize %></h3>
+    </div>
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+      <a href="<%%= url_for :action => :new %>" class="btn btn-primary btn-sm pull-right">New</a>
+    </div>
+  </div>
 
-  <div data-role="content">
-    <ul data-role="listview">
+  <div class="row">
+    <div class="list-group">
       <%% @<%= name.downcase.pluralize %>.each do |<%= name.downcase %>| %>
       <% if self.attributes? %>
-          <li>
-            <a href="<%%= url_for :action => :show, :id => <%= name.downcase %>.object %>">
-              <%%= <%= name.downcase %>.<%= attributes[0] %> %>
-            </a>
-          </li>
+          <a href="<%%= url_for :action => :show, :id => <%= name.downcase %>.object %>" class="list-group-item">
+            <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
+            <%%= <%= name.downcase %>.<%= attributes[0] %> %>
+          </a>
       <% else %>
-          <li>
-            <a href="#">Some list entry...</a>
-          </li>
+          <a href="#" class="list-group-item">
+            <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
+            Some list entry...
+          </a>
       <% end %>
       <%% end %>
-    </ul>
+    </div>
   </div>
 
 </div>

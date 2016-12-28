@@ -1,0 +1,9 @@
+ext/platform/android/generated/src/com/rho/clipboard/ClipboardBase.java
+ext/platform/android/generated/src/com/rho/clipboard/ClipboardFactorySingleton.java
+ext/platform/android/generated/src/com/rho/clipboard/ClipboardSingletonBase.java
+ext/platform/android/generated/src/com/rho/clipboard/IClipboard.java
+ext/platform/android/generated/src/com/rho/clipboard/IClipboardFactory.java
+ext/platform/android/generated/src/com/rho/clipboard/IClipboardSingleton.java
+ext/platform/android/src/com/rho/clipboard/Clipboard.java
+ext/platform/android/src/com/rho/clipboard/ClipboardFactory.java
+ext/platform/android/src/com/rho/clipboard/ClipboardSingleton.java
