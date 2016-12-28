@@ -7532,9 +7532,8 @@ chopped_length(VALUE str)
  */
 
 //RHO
-///*static*/ VALUE
+/*static*/ VALUE
 //RHO
-static VALUE
 rb_str_chop_bang(VALUE str)
 {
     str_modify_keep_cr(str);

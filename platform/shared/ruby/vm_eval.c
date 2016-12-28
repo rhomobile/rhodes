@@ -1336,10 +1336,10 @@ eval_string_with_cref(VALUE self, VALUE src, VALUE scope, rb_cref_t *const cref_
 	    absolute_path = rb_fstring(absolute_path);
 
 //RHO
-    if ( TYPE(src) != T_STRING ){
-        iseqval = src;
-    }else
-    {
+//    if ( TYPE(src) != T_STRING ){
+//        iseqval = src;
+//    }else
+//    {
 //RHO
 	/* make eval iseq */
 	th->parse_in_eval++;
@@ -1348,7 +1348,7 @@ eval_string_with_cref(VALUE self, VALUE src, VALUE scope, rb_cref_t *const cref_
 	th->mild_compile_error--;
 	th->parse_in_eval--;
 //RHO
-    }
+//    }
 //RHO
 		if (!cref && base_block->iseq) {
 	    if (NIL_P(scope)) {

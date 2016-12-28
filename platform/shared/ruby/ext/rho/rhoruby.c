@@ -158,19 +158,19 @@ extern int native_mutex_unlock(rb_nativethread_lock_t *);
 rb_thread_t * g_th_stored = 0;
 void rho_ruby_start_threadidle()
 {
-    g_th_stored = GET_THREAD();
-    rb_gc_save_machine_context(g_th_stored);
-    native_mutex_unlock(&g_th_stored->vm->gvl.lock);
+//    g_th_stored = GET_THREAD();
+//    rb_gc_save_machine_context(g_th_stored);
+//    native_mutex_unlock(&g_th_stored->vm->gvl.lock);
 }
 
 void rho_ruby_stop_threadidle()
 {
-    if ( g_th_stored )
-    {
-        native_mutex_lock(&g_th_stored->vm->gvl.lock);
-        rb_thread_set_current(g_th_stored);
-        g_th_stored = 0;
-    }
+//    if ( g_th_stored )
+//    {
+//        native_mutex_lock(&g_th_stored->vm->gvl.lock);
+//        rb_thread_set_current(g_th_stored);
+//        g_th_stored = 0;
+//    }
 }
 
 #if !defined(OS_SYMBIAN) && (defined(RHO_SYMBIAN))// || defined (RHODES_EMULATOR))
@@ -241,7 +241,7 @@ void RhoRubyStart()
 
 #if !defined(OS_WP8)
 
-    Init_strscan(); //+
+    //Init_strscan(); //+
     Init_GeoLocation(); //+
 
     Init_Phonebook();
@@ -267,7 +267,7 @@ void RhoRubyStart()
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)
     Init_Camera();
 #endif
-    Init_stringio(); //+
+    //Init_stringio(); //+
     Init_DateTimePicker();
 //#if !defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR) && !defined(OS_ANDROID) && !defined(OS_MACOSX)
 //    Init_NativeBar();
@@ -275,7 +275,7 @@ void RhoRubyStart()
     Init_RhoSupport(); //+
     Init_MapView();                         
     Init_RingtoneManager();
-    Init_socket(); //+
+    //Init_socket(); //+
 //#if !defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR) && !defined(OS_MACOSX)
 //    Init_NavBar();
 //#endif
@@ -304,8 +304,9 @@ void RhoRubyStart()
 #endif //RHO_SYMBIAN
 
 #else // OS_WP8 is set
-	Init_strscan();
-	Init_GeoLocation();
+	//Init_strscan();
+	
+    Init_GeoLocation();
 	Init_NavBar();
 	Init_RhoSupport();
 	Init_RhoConf();
