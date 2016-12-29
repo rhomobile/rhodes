@@ -31,6 +31,9 @@
 
 #USE_TRACES = Rake.application.options.trace
 
+require 'pp'
+require 'open3'
+
 module AndroidTools
 
 def fill_api_levels(sdkpath)
@@ -290,7 +293,7 @@ def  run_emulator(options = {})
         end
       end
 
-      raise "ARM-based emulator image is not found for selected target: #{$androidtargets[get_api_level($emuversion)][:abis].inspect}" unless abi
+      raise "Emulator image is not found for selected target: #{$androidtargets[get_api_level($emuversion)][:abis].inspect}" unless abi
     end
 
     unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
@@ -300,7 +303,7 @@ def  run_emulator(options = {})
         puts "AVD name: #{$avdname}, emulator version: #{$emuversion}, target id: #{targetid}"
       end
       raise "Unable to create AVD image. No appropriate target API for SDK version: #{$emuversion}" unless targetid
-      createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{targetid} --sdcard 128M"
+      createavd = "echo no | \"#{$androidbin}\" create avd --name #{$avdname} --target #{targetid} --sdcard 128M"
       createavd = createavd + " --abi #{abi}" if abi
       puts "Creating AVD image: #{createavd}"
       IO.popen(createavd, 'r+') do |io|
@@ -422,7 +425,6 @@ def load_app_and_run(device_flag, apkfile, pkgname)
   argv << apkfile
 
   cmd = argv.join(' ')
-  argv = cmd if RUBY_VERSION =~ /^1\.8/
 
   count = 0
   done = false
@@ -432,9 +434,9 @@ def load_app_and_run(device_flag, apkfile, pkgname)
     begin
       status = Timeout::timeout(300) do
         puts "CMD: #{cmd}"
-        IO.popen(argv) do |pipe|
-          child = pipe.pid
-          while line = pipe.gets
+        Open3.popen3(cmd) do |pin,pout,perr,wait_thr|
+          child = pout.pid
+          while line = perr.gets
             theoutput << line
             puts "RET: #{line}"
           end
