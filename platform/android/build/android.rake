@@ -431,8 +431,10 @@ namespace "config" do
       # TODO: add ruby executable for Linux
     end
 
-    m = AndroidTools::MavenDepsExtractor.instance.set_temp_dir($tmpdir)
-    m = AndroidTools::MavenDepsExtractor.instance.set_java_home($java)
+    AndroidTools::MavenDepsExtractor.instance.set_logger($logger)
+    AndroidTools::MavenDepsExtractor.instance.set_temp_dir($tmpdir)
+    AndroidTools::MavenDepsExtractor.instance.set_java_home($java)
+
 
     build_tools_path = nil
 

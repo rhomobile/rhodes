@@ -33,6 +33,7 @@ $task_execution_time = false
 
 require 'find'
 require 'erb'
+require 'pp'
 
 #require 'rdoc/task'
 require 'base64'
@@ -114,6 +115,8 @@ $logger.formatter = proc do |severity,datetime,progname,msg|
   "[#{severity}]\t#{msg}\n"
 end
 
+Jake.set_logger( $logger )
+
 
 def print_timestamp(msg = 'just for info')
   if $timestamp_start_milliseconds == 0
@@ -121,7 +124,7 @@ def print_timestamp(msg = 'just for info')
   end
   curmillis = (Time.now.to_f*1000.0).to_i - $timestamp_start_milliseconds
 
-  puts '-$TIME$- message [ '+msg+' ] time is { '+Time.now.utc.iso8601+' } milliseconds from start ('+curmillis.to_s+')'
+  $logger.debug('-$TIME$- message [ '+msg+' ] time is { '+Time.now.utc.iso8601+' } milliseconds from start ('+curmillis.to_s+')')
 end
 
 #------------------------------------------------------------------------
@@ -221,7 +224,7 @@ def make_application_build_config_header_file
 end
 
 def make_application_build_capabilities_header_file
-  puts "%%% Prepare capability header file %%%"
+  puts "%%% Prepare capability header file %%%" if USE_TRACES
 
   f = StringIO.new("", "w+")
   f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -245,11 +248,11 @@ def make_application_build_capabilities_header_file
   f.puts ''
 
   if $js_application
-    puts '#define RHO_NO_RUBY'
+    puts '#define RHO_NO_RUBY' if USE_TRACES
     f.puts '#define RHO_NO_RUBY'
     f.puts '#define RHO_NO_RUBY_API'
   else
-    puts '//#define RHO_NO_RUBY'
+    puts '//#define RHO_NO_RUBY' if USE_TRACES
   end
 
   Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_capabilities.h"), f)
@@ -2188,7 +2191,7 @@ namespace "config" do
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $js_application    = Jake.getBuildBoolProp("javascript_application")
 
-    puts '%%%_%%% $js_application = '+$js_application.to_s
+    puts '%%%_%%% $js_application = '+$js_application.to_s if USE_TRACES
 
     if !$js_application && !Dir.exists?(File.join($app_path, "app"))
       BuildOutput.error([
@@ -2199,7 +2202,7 @@ namespace "config" do
     end
 
     $shared_rt_js_appliction = ($js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime'))
-    puts "%%%_%%% $shared_rt_js_application = #{$shared_rt_js_appliction}"
+    puts "%%%_%%% $shared_rt_js_application = #{$shared_rt_js_appliction}" if USE_TRACES
     $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shared_rt_js_appliction
 
     if $current_platform == "bb"
@@ -2652,10 +2655,10 @@ def init_extensions(dest, mode = "")
 
             Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
               if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
-                puts "add #{f} to extjsmodulefiles_opt.."
+                puts "add #{f} to extjsmodulefiles_opt.." if USE_TRACES
                 extjsmodulefiles_opt << f
               else
-                puts "add #{f} to extjsmodulefiles.."
+                puts "add #{f} to extjsmodulefiles.." if USE_TRACES
                 extjsmodulefiles << f
               end
             end
@@ -2706,7 +2709,7 @@ def init_extensions(dest, mode = "")
     #
     if !$skip_build_js_api_files
       if extjsmodulefiles.count > 0
-        puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
+        puts 'extjsmodulefiles=' + extjsmodulefiles.to_s if USE_TRACES
         write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
 
         $ebfiles_shared_rt_js_appliction = ($js_application and ($current_platform == "wm" or $current_platform == "android") and $app_config["capabilities"].index('shared_runtime'))
@@ -2726,7 +2729,7 @@ def init_extensions(dest, mode = "")
       # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
       if !$shared_rt_js_appliction
         if extjsmodulefiles_opt.count > 0
-          puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
+          puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s if USE_TRACES
           #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
           write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
         end
@@ -3334,7 +3337,7 @@ namespace "build" do
     end
 
     def minify_inplace_batch(files_to_minify)
-      puts "minifying file list: #{files_to_minify}"
+      puts "minifying file list: #{files_to_minify}" if USE_TRACES
 
       cmd = "java -jar #{$minifier} -o \"x$:x\""
 
@@ -3356,17 +3359,17 @@ namespace "build" do
         error = e.inspect
       end
 
-      puts "Minification done: #{status}"
+      puts "Minification done: #{status}" if USE_TRACES
 
       if !status || !status.exitstatus.zero?
-        puts "WARNING: Minification error!"
+        puts "WARNING: Minification error!" if USE_TRACES
         error = output if error.nil?
         BuildOutput.warning(["Minification errors occured. Minificator stderr output: \n" + error], 'Minification error')
       end
     end
 
     def minify_inplace(filename,type)
-      puts "minify file: #{filename}"
+      puts "minify file: #{filename}" if USE_TRACES
 
       f = StringIO.new("", "w+")
       f.write(File.read(filename))
@@ -3403,7 +3406,7 @@ namespace "build" do
       end
 
       if !status || !status.exitstatus.zero?
-        puts "WARNING: Minification error!"
+        puts "WARNING: Minification error!" if USE_TRACES
 
         error = output if error.nil?
 
@@ -3877,7 +3880,7 @@ namespace "run" do
       endJSModules = []
 
       rhoapi_js_folder = File.join( $app_path, "public/api" )
-      puts "rhoapi_js_folder: #{rhoapi_js_folder}"
+      puts "rhoapi_js_folder: #{rhoapi_js_folder}" if USE_TRACES
 
       do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
 
@@ -3987,10 +3990,10 @@ namespace "run" do
             end
             Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
               if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
-                puts "add #{f} to extjsmodulefiles_opt.."
+                puts "add #{f} to extjsmodulefiles_opt.." if USE_TRACES
                 extjsmodulefiles_opt << f
               else
-                puts "add #{f} to extjsmodulefiles.."
+                puts "add #{f} to extjsmodulefiles.." if USE_TRACES
                 extjsmodulefiles << f
               end
             end
@@ -4014,12 +4017,12 @@ namespace "run" do
       end
       #
       if extjsmodulefiles.count > 0
-        puts "extjsmodulefiles: #{extjsmodulefiles}"
+        puts "extjsmodulefiles: #{extjsmodulefiles}" if USE_TRACES
         write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
       end
       #
       if extjsmodulefiles_opt.count > 0
-        puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
+        puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}" if USE_TRACES
         #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
         write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
       end

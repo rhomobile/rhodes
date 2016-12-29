@@ -32,8 +32,8 @@ $out_file_buf_enable = false
 $out_file_buf_path = 'rhobuildlog.txt'
 $out_file_buf = []
 
-puts 'iphone.rake execute'
-puts 'ENV["RHO_BUNDLE_BUILD_LOG_FILE"] = '+ENV["RHO_BUNDLE_BUILD_LOG_FILE"].to_s
+puts 'iphone.rake execute' if USE_TRACES
+puts 'ENV["RHO_BUNDLE_BUILD_LOG_FILE"] = '+ENV["RHO_BUNDLE_BUILD_LOG_FILE"].to_s if USE_TRACES
 if (ENV["RHO_BUNDLE_BUILD_LOG_FILE"] != nil)
     $out_file_buf_path = ENV["RHO_BUNDLE_BUILD_LOG_FILE"]
     $out_file_buf_enable = true

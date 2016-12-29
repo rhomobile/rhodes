@@ -259,7 +259,7 @@ def  run_emulator(options = {})
       #$avdname += "motosol" if $use_motosol_api
     end
 
-    puts $androidtargets.inspect
+    pp $androidtargets if USE_TRACES
 
     raise "Target platform for Android #{$emuversion} is not installed. Please, install corresponding packages in Android SDK Manager or correct build.yml values." if $androidtargets[get_api_level($emuversion)].nil?
 
