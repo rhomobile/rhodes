@@ -1666,6 +1666,7 @@ namespace "build" do
       generator.screenOrientation = $android_orientation unless $android_orientation.nil?
       generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
       generator.apikey = $gapikey if $gapikey
+      generator.debuggable = $debug
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
 
