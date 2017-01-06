@@ -1,0 +1,88 @@
+apply plugin: 'com.android.application'
+
+import java.nio.file.Paths
+
+def projectRoot         = new File('./../..').getCanonicalPath()
+def rhoRoot             = '<%= @rhoRoot %>'
+def rhoBuildDir         = Paths.get( projectRoot, 'bin/tmp' ).toString()
+def rhoOutDir           = Paths.get( projectRoot, 'bin/target/android' ).toString()
+def rhoManifest         = Paths.get( rhoBuildDir, 'AndroidManifest.xml' ).toString()
+def rhoRes              = Paths.get( rhoBuildDir, 'res' ).toString()
+def rhoAssets           = Paths.get( rhoBuildDir, 'assets' ).toString()
+def rhoGen              = Paths.get( rhoBuildDir, 'gen' ).toString()
+def rhoJniLibs          = Paths.get( rhoBuildDir, 'lib' ).toString()
+
+android {
+    compileSdkVersion <%= @compileSdkVersion %>
+    buildToolsVersion "<%= @buildToolsVersion %>"
+    defaultConfig {
+        applicationId "<%= @applicationId %>"
+        minSdkVersion <%= @minSdkVersion %>
+        targetSdkVersion <%= @targetSdkVersion %>
+        versionCode <%= @versionCode %>
+        versionName "<%= @versionName %>"
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile rhoManifest
+            res.srcDirs = [ rhoRes ]
+            assets.srcDirs = [ rhoAssets ]
+            jniLibs.srcDirs = [ rhoJniLibs ]
+
+            java {
+                srcDir Paths.get( rhoRoot, 'platform/android/Rhodes/src' ).toString()
+                srcDir rhoGen
+                exclude 'com/rhomobile/rhodes/mapview/AnnotationsOverlay.java'
+                exclude 'com/rhomobile/rhodes/mapview/GoogleMapView.java'
+                exclude 'com/rhomobile/rhodes/mapview/CalloutOverlay.java'
+                exclude 'com/rhomobile/rhodes/alert/*'
+                exclude 'com/rhomobile/rhodes/R.java'
+            }
+        }
+    }
+}
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+task rhoBuild(type:Exec) {
+    logger.info "Building RHO application"
+
+    workingDir projectRoot
+
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'rake'
+    } else {
+        commandLine 'rake'
+    }
+
+    args 'device:android:production'
+
+    standardOutput = new ByteArrayOutputStream()
+
+    doLast {
+        logger.info standardOutput.toString()
+    }
+}
+
+rhoBuild.outputs.upToDateWhen { new File(rhoBuildDir).exists() }
+
+preBuild.dependsOn rhoBuild
+
+tasks.whenTaskAdded { task ->
+    logger.debug 'TASK ADDED: ' + task.toString();
+
+    if ( task.name == 'lintVitalRelease' ) {
+        logger.debug 'SKIPPING LING CHECKS TASK'
+        task.outputs.upToDateWhen { true }
+    } else if ( task.name =~ /compile.*Ndk/ ) {
+        logger.debug 'SKIPPING NDK BUILD TASK'
+        task.outputs.upToDateWhen { true }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['**/*.jar'], exclude: ['**/Rhodes.jar'], dir: rhoOutDir )
+    compile fileTree(include: ['**/*.jar'], exclude: ['**/Rhodes.jar'], dir: rhoBuildDir )
+    provided fileTree(include: ['**/*.jar'], dir: Paths.get(rhoRoot, 'platform/android/lib').toString() )
+}
