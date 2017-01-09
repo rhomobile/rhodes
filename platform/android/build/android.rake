@@ -29,6 +29,7 @@ require File.dirname(__FILE__) + '/android_tools.rb'
 require File.dirname(__FILE__) + '/maven_deps_extractor.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
+require File.dirname(__FILE__) + '/android_studio_project_generator.rb'
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
@@ -211,8 +212,41 @@ namespace 'project' do
     end
 
     task :studio => ['config:android', 'config:android:extensions','build:android:manifest'] do
-      #TODO
-      raise "Project generation for Android Studio is not implemented yet"
+
+      project_template_path = File.join 'res','generators','templates','project','android_studio_project'
+
+
+      main_gradle_script = File.join( project_template_path, 'build.gradle' )
+      gradle_properties = File.join( project_template_path, 'gradle.properties' )
+      gradlew = File.join( project_template_path, 'gradlew' )
+      gradlew_bat = File.join( project_template_path, 'gradlew.bat' )
+      settings_gradle = File.join( project_template_path, 'settings.gradle' )
+      app_gradle_template = File.join( project_template_path, 'app', 'build.gradle.erb' )
+      project_path = File.join $app_path,'project','android_studio'
+
+      rhodes_path = File.absolute_path '.'
+
+      generator = AndroidStudioProjectGenerator.new
+      generator.rhoRoot = rhodes_path
+      generator.applicationId = $appname
+      generator.buildToolsVersion = $build_tools_ver
+      generator.applicationId = $appname
+      generator.minSdkVersion = $min_sdk_level
+      generator.targetSdkVersion = 12
+      generator.compileSdkVersion = $found_api_level
+      generator.versionName = $app_config["version"]
+
+
+      mkdir_p File.join(project_path,'app')
+
+      app_gradle_path = File.join( project_path, 'app', 'build.gradle')
+      File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
+
+      cp main_gradle_script,  project_path
+      cp gradle_properties,   project_path
+      cp gradlew,             project_path
+      cp gradlew_bat,         project_path
+      cp settings_gradle,     project_path
     end
   end
 end
@@ -529,6 +563,8 @@ namespace "config" do
       $storealias = $app_config["android"]["production"]["alias"] if !$app_config["android"].nil? and !$app_config["android"]["production"].nil?
       $storealias = $config["android"]["production"]["alias"] if $storealias.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
       $storealias = "rhomobile.keystore" if $storealias.nil?
+
+      $build_tools_ver = File.split( build_tools_path )[1]
 
     end
 
@@ -1669,6 +1705,7 @@ namespace "build" do
       generator.screenOrientation = $android_orientation unless $android_orientation.nil?
       generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
       generator.apikey = $gapikey if $gapikey
+      generator.debuggable = $debug
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
 
