@@ -1657,6 +1657,7 @@ eval_under(VALUE under, VALUE self, VALUE src, VALUE file, int line)
     return eval_string_with_cref(self, src, Qnil, cref, file, line);
 }
 
+extern int rho_is_eval_disabled();
 static VALUE
 specific_eval(int argc, const VALUE *argv, VALUE klass, VALUE self)
 {

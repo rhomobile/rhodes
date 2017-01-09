@@ -26,6 +26,16 @@ extern "C" {
 #include RUBY_EXTCONF_H
 #endif
 
+
+//RHO
+#ifdef USE_RGENGC
+//#error "AZAZAZA"
+#else
+#error "BZAZAZA"
+#endif
+
+
+
 #if defined(__cplusplus)
 /* __builtin_choose_expr and __builtin_types_compatible aren't available
  * on C++.  See https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html */
@@ -778,6 +788,7 @@ VALUE rb_obj_setup(VALUE obj, VALUE klass, VALUE type);
 #define DUPSETUP(dup,obj) rb_dup_setup(dup,obj)
 
 #ifndef USE_RGENGC
+#error "AZAZAZA"
 #define USE_RGENGC 1
 #ifndef USE_RINCGC
 #define USE_RINCGC 1
@@ -1458,7 +1469,9 @@ rb_data_typed_object_alloc(VALUE klass, void *datap, const rb_data_type_t *type)
 #define RB_OBJ_WB_UNPROTECT(x)      rb_obj_wb_unprotect(x, __FILE__, __LINE__)
 
 void rb_gc_writebarrier(VALUE a, VALUE b);
-void rb_gc_writebarrier_unprotect(VALUE obj);
+
+//RHO
+//void rb_gc_writebarrier_unprotect(VALUE obj);
 
 #else /* USE_RGENGC */
 #define RB_OBJ_PROMOTED(x)          0
@@ -1498,7 +1511,8 @@ rb_obj_wb_unprotect(VALUE x, RB_UNUSED_VAR(const char *filename), RB_UNUSED_VAR(
     RGENGC_LOGGING_WB_UNPROTECT((void *)x, filename, line);
 #endif
 #if USE_RGENGC
-    rb_gc_writebarrier_unprotect(x);
+#error "AAAAA!!!!"
+    //rb_gc_writebarrier_unprotect(x);
 #endif
     return x;
 }

@@ -504,6 +504,7 @@ ruby_strdup(const char *str)
     return tmp;
 }
 
+extern const char* rho_native_rhopath();
 char *
 ruby_getcwd(void)
 {
