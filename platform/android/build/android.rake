@@ -228,9 +228,8 @@ namespace 'project' do
 
       generator = AndroidStudioProjectGenerator.new
       generator.rhoRoot = rhodes_path
-      generator.applicationId = $appname
       generator.buildToolsVersion = $build_tools_ver
-      generator.applicationId = $appname
+      generator.applicationId = $app_package_name
       generator.minSdkVersion = $min_sdk_level
       generator.targetSdkVersion = 12
       generator.compileSdkVersion = $found_api_level
