@@ -232,7 +232,8 @@ namespace 'project' do
       generator.buildToolsVersion = $build_tools_ver
       generator.applicationId = $appname
       generator.minSdkVersion = $min_sdk_level
-      generator.targetSdkVersion = $found_api_level
+      generator.targetSdkVersion = 12
+      generator.compileSdkVersion = $found_api_level
       generator.versionName = $app_config["version"]
 
 

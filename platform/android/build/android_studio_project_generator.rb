@@ -12,7 +12,7 @@ class AndroidStudioProjectGenerator
 
   def render_app_gradle(erbPath)
     @versionCode = @versionName.to_i
-    @compileSdkVersion = @targetSdkVersion
+    #@compileSdkVersion = @targetSdkVersion
 
     tpl = File.read erbPath
     erb = ERB.new tpl
