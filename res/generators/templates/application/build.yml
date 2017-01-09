@@ -5,9 +5,35 @@ version: 1.0
 vendor: rhomobile
 build: debug
 applog: rholog.txt
+
+## Note: enable specific device capabilities for aplication
+#capabilities:
+  ## allows use of audio hardware (record audio, modify audio settings)
+  #- audio
+  ## allows use of hardware camera
+  #- camera
+  ## allows use of geo location service
+  #- gps
+  ## allows read device network state (connected/disconnected)
+  #- network_state
+  ## allow make calls/read phone state
+  #- phone
+  ## allow read/modify personal information and contacts
+  #- pim
+  ## allows use of PUSH on device
+  #- push
+  ## allows use of hardware vibration mechanism
+  #- vibrate
+  ## allows use of bluetooth hardware
+  #- bluetooth
+  ## allows access to default device calendar
+  #- calendar
+  ## allows writing to the SD card on Android devices
+  #- sdcard
+
 iphone:
   configuration: Release
-  sdk: iphonesimulator10.0
+  sdk: iphonesimulator10.2
   #provisionprofile:
   #codesignidentity:
   #entitlements:
@@ -15,14 +41,37 @@ iphone:
   BundleURLScheme: <%=@app_name_cleared%>
   production:
     ipa_itunesartwork_image: "./production/iTunesArtwork.png"
-  # Note: Specifies the URL schemes the app is able to call using Rho.System.runApplication
-  #ApplicationQueriesSchemes: ["scheme1", "scheme2"]
+  ## Note: Specifies the URL schemes the app is able to call using Rho.System.runApplication
+  #ApplicationQueriesSchemes: ['scheme1', 'scheme2']
+  ## Note: Specifies list of HTTP domains for connect from application
+  #http_connection_domains: ['domain1.com', 'domain2.org']
+  ## Note: Specifies set of Info.plist keys with content(hash) - all of this items will be apply to final Info.plist of application. You can specify any Ino.plist data in this parameter.
+  ## this example content is equal of two upper parameters content (URLS schemes and HTTP domains) - you can use manually setup this parameters for more detailed setup instead default.
+  ## in this example we show additional disable of perfect forward secrecy (PFS) for domain3(https)
+  #info_plist_data:
+  #  LSApplicationQueriesSchemes: ['scheme1', 'scheme2']
+  #  NSAppTransportSecurity:
+  #    NSAllowsArbitraryLoads: true
+  #    NSAllowsArbitraryLoadsInWebContent: true
+  #    NSExceptionDomains:
+  #      domain1.com:
+  #        NSIncludesSubdomains: true
+  #        NSTemporaryExceptionAllowsInsecureHTTPLoads: true
+  #        NSTemporaryExceptionMinimumTLSVersion: 'TLSv1.0'
+  #      domain2.org:
+  #        NSIncludesSubdomains: true
+  #        NSTemporaryExceptionAllowsInsecureHTTPLoads: true
+  #        NSTemporaryExceptionMinimumTLSVersion: 'TLSv1.0'
+  #      domain3.com:
+  #        NSExceptionRequiresForwardSecrecy: false
+
 wp8:
   productid: '<%=@productid%>'
+
 android:
   #manifest_template: 'AndroidManifest.erb'
   version: 4.1.0
-  # Note: in order to simplify debugging only app messages and system channels with priority informative and higher, and any errors are enabled by default
+  ## Note: in order to simplify debugging only app messages and system channels with priority informative and higher, and any errors are enabled by default
   logcatFilter: APP:I StrictMode:I DEBUG:I *:E
 
 wm:
