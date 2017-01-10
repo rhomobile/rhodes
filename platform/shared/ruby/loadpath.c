@@ -60,6 +60,12 @@ const char ruby_exec_prefix[] = RUBY_EXEC_PREFIX;
 #endif
 
 const char ruby_initial_load_paths[] =
+    //RHO
+
+    "/lib\0"
+    "/apps\0"
+    "/apps/app\0"
+
 #ifndef NO_INITIAL_LOAD_PATH
 #ifdef RUBY_SEARCH_PATH
     RUBY_SEARCH_PATH "\0"

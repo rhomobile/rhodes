@@ -755,7 +755,7 @@ ruby_getcwd(void)
 #ifdef DEBUG
 #include "stdio.h"
 //RHO
-void rhoRubyFatalError(x);
+void rhoRubyFatalError(const char* x);
 #define Bug(x) {rhoRubyFatalError(x);}
 //#define Bug(x) {fprintf(stderr, "%s\n", (x)); exit(EXIT_FAILURE);}
 #endif

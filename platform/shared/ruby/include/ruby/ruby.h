@@ -27,15 +27,6 @@ extern "C" {
 #endif
 
 
-//RHO
-#ifdef USE_RGENGC
-//#error "AZAZAZA"
-#else
-#error "BZAZAZA"
-#endif
-
-
-
 #if defined(__cplusplus)
 /* __builtin_choose_expr and __builtin_types_compatible aren't available
  * on C++.  See https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html */

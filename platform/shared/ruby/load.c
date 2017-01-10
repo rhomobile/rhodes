@@ -18,6 +18,10 @@ static VALUE ruby_dln_librefs;
 #define IS_DLEXT(e) (strcmp((e), DLEXT) == 0)
 #endif
 
+//RHO
+extern VALUE rb_require_compiled(VALUE , VALUE );
+//RHO
+
 static const char *const loadable_ext[] = {
     ".rb", DLEXT,
 #ifdef DLEXT2
@@ -1057,7 +1061,13 @@ rb_require(const char *fname)
 {
     VALUE fn = rb_str_new2(fname);
     OBJ_FREEZE(fn);
+    // RHO
+    #ifndef RUBYLINUX
+    return rb_require_compiled(Qnil, fn);
+    #else
     return rb_require_safe(fn, rb_safe_level());
+    #endif
+    // RHO
 }
 
 static int
