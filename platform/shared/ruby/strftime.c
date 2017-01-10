@@ -439,11 +439,11 @@ rb_strftime_with_timespec(char *s, size_t maxsize, const char *format, rb_encodi
 
 		case 'Y':	/* year with century */
                         if (FIXNUM_P(vtm->year)) {
-                            long y = FIX2LONG(vtm->year);
-                            FMT('0', 0 <= y ? 4 : 5, "ld", y);
+				long y = FIX2LONG(vtm->year);
+				FMT('0', 0 <= y ? 4 : 5, "ld", y);
                         }
                         else {
-                            FMTV('0', 4, "d", vtm->year);
+				FMTV('0', 4, "d", vtm->year);
                         }
 			continue;
 
@@ -481,7 +481,7 @@ rb_strftime_with_timespec(char *s, size_t maxsize, const char *format, rb_encodi
 				if (off % 3600 == 0) {
 					precision = precision <= 3 ? 2 : precision-1;
 					NEEDS(precision + 3);
-			}
+				}
 				else if (off % 60 == 0) {
 					precision = precision <= 6 ? 2 : precision-4;
 					NEEDS(precision + 4);

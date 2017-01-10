@@ -230,6 +230,9 @@
 		A8A6D3911E24B3B000016427 /* unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFD241E2413C60006FF68 /* unicode.c */; };
 		A8A6D3921E24B3B000016427 /* us_ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFD251E2413C60006FF68 /* us_ascii.c */; };
 		A8A6D3931E24B3B000016427 /* utf_8.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFD2C1E2413C60006FF68 /* utf_8.c */; };
+		A8A6D3A31E258DD700016427 /* strscan.c in Sources */ = {isa = PBXBuildFile; fileRef = A8A6D3A21E258DBE00016427 /* strscan.c */; };
+		A8A6D3A41E258E5700016427 /* rhoruby.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C806F1E243EBC0090E7E6 /* rhoruby.c */; };
+		A8A6D3A51E258EC200016427 /* rhosupport.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80711E243EBC0090E7E6 /* rhosupport.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -391,6 +394,10 @@
 		A8A6D3291E24AD8200016427 /* constdefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constdefs.h; sourceTree = "<group>"; };
 		A8A6D3861E24B2AC00016427 /* encoding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = encoding.c; path = ../../shared/ruby/encoding.c; sourceTree = "<group>"; };
 		A8A6D3881E24B30900016427 /* dmyenc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dmyenc.c; path = ../../shared/ruby/dmyenc.c; sourceTree = "<group>"; };
+		A8A6D3961E25738E00016427 /* vm_eval.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = vm_eval.c; path = ../../shared/ruby/vm_eval.c; sourceTree = "<group>"; };
+		A8A6D3A01E258DBE00016427 /* depend */ = {isa = PBXFileReference; lastKnownFileType = text; path = depend; sourceTree = "<group>"; };
+		A8A6D3A11E258DBE00016427 /* extconf.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = extconf.rb; sourceTree = "<group>"; };
+		A8A6D3A21E258DBE00016427 /* strscan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = strscan.c; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhorubylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhorubylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -520,6 +527,7 @@
 				A80AFE301E2415390006FF68 /* vm_dump.c */,
 				A80AFE381E2415390006FF68 /* vm_trace.c */,
 				A80AFE391E2415390006FF68 /* vm.c */,
+				A8A6D3961E25738E00016427 /* vm_eval.c */,
 				A8A6D3241E24AD8200016427 /* osx */,
 				A80AFD991E24149A0006FF68 /* missing */,
 				A80AFD931E24148F0006FF68 /* iphone */,
@@ -528,6 +536,7 @@
 				C6A0FF2B0290797F04C91782 /* Documentation */,
 				A8A6D30F1E24AADD00016427 /* rubymac */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
+				A8A6D39F1E258DBE00016427 /* strscan */,
 			);
 			name = rhorubylib;
 			sourceTree = "<group>";
@@ -779,6 +788,17 @@
 			path = ruby;
 			sourceTree = "<group>";
 		};
+		A8A6D39F1E258DBE00016427 /* strscan */ = {
+			isa = PBXGroup;
+			children = (
+				A8A6D3A01E258DBE00016427 /* depend */,
+				A8A6D3A11E258DBE00016427 /* extconf.rb */,
+				A8A6D3A21E258DBE00016427 /* strscan.c */,
+			);
+			name = strscan;
+			path = ../../shared/ruby/ext/strscan;
+			sourceTree = "<group>";
+		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -957,6 +977,7 @@
 				A8A6D38D1E24B3B000016427 /* iso_8859_1.c in Sources */,
 				A8A6D38B1E24B34A00016427 /* setproctitle.c in Sources */,
 				A8A6D36D1E24ADBD00016427 /* signal.c in Sources */,
+				A8A6D3A51E258EC200016427 /* rhosupport.c in Sources */,
 				A8A6D3491E24ADBD00016427 /* marshal.c in Sources */,
 				A8A6D3391E24ADBD00016427 /* dmyext.c in Sources */,
 				A8A6D3451E24ADBD00016427 /* io.c in Sources */,
@@ -976,6 +997,7 @@
 				A8A6D3381E24ADBD00016427 /* dmyencoding.c in Sources */,
 				A8A6D3921E24B3B000016427 /* us_ascii.c in Sources */,
 				A8A6D3131E24AADD00016427 /* rubymac.m in Sources */,
+				A8A6D3A31E258DD700016427 /* strscan.c in Sources */,
 				A8A6D3601E24ADBD00016427 /* regcomp.c in Sources */,
 				A8A6D37E1E24ADBD00016427 /* version.c in Sources */,
 				A8A6D38F1E24B3B000016427 /* encdb.c in Sources */,
@@ -992,6 +1014,7 @@
 				A8A6D36E1E24ADBD00016427 /* sprintf.c in Sources */,
 				A8A6D31D1E24ABF000016427 /* eval.c in Sources */,
 				A8A6D36B1E24ADBD00016427 /* ruby.c in Sources */,
+				A8A6D3A41E258E5700016427 /* rhoruby.c in Sources */,
 				A8A6D3681E24ADBD00016427 /* regsyntax.c in Sources */,
 				A8A6D32C1E24ADBD00016427 /* bignum.c in Sources */,
 				A8A6D3421E24ADBD00016427 /* hash.c in Sources */,
@@ -1285,6 +1308,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					RUBY_EXPORT,
 					"DEBUG=1",
+					RUBYMAC,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -1337,7 +1361,10 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = RUBY_EXPORT;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					RUBY_EXPORT,
+					RUBYMAC,
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -1388,7 +1415,10 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = RUBY_EXPORT;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					RUBY_EXPORT,
+					RUBYMAC,
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -1439,6 +1469,7 @@
 				A8A6D3171E24AADD00016427 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

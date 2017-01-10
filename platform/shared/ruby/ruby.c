@@ -416,7 +416,7 @@ dladdr_path(const void* addr)
 
     if (!dladdr(addr, &dli)) {
 	return rb_str_new(0, 0);
-}
+    }
 #ifdef __linux__
     else if (dli.dli_fname == origarg.argv[0]) {
 	fname = rb_str_new_cstr("/proc/self/exe");
@@ -496,7 +496,7 @@ ruby_init_loadpath_safe(int safe_level, const char* szRoot)
 	static const char bindir[] = "/bin";
 #ifdef LIBDIR_BASENAME
 	static const char libdir[] = "/"LIBDIR_BASENAME;
-# else
+#else
 	static const char libdir[] = "/lib";
 #endif
 	const ptrdiff_t bindir_len = (ptrdiff_t)sizeof(bindir) - 1;
@@ -506,7 +506,7 @@ ruby_init_loadpath_safe(int safe_level, const char* szRoot)
 	char *p2 = NULL;
 
       multiarch:
-# endif
+#endif
 	if (p - libpath >= bindir_len && !STRNCASECMP(p - bindir_len, bindir, bindir_len)) {
 	    p -= bindir_len;
 	}
@@ -522,7 +522,7 @@ ruby_init_loadpath_safe(int safe_level, const char* szRoot)
 	    p = rb_enc_path_last_separator(libpath, p, rb_ascii8bit_encoding());
 	    if (p) goto multiarch;
 	    p = p2;
-    }
+	}
 #endif
 #if !VARIABLE_LIBPATH
 	*p = 0;
@@ -795,7 +795,7 @@ static void
 disable_option(const char *str, int len, void *arg)
 {
     feature_option(str, len, arg, 0U);
-    }
+}
 
 static void
 debug_option(const char *str, int len, void *arg)
@@ -964,7 +964,7 @@ proc_options(long argc, char **argv, struct cmdline_options *opt, int envopt)
 	    forbid_setid("-e");
 	    if (!*++s) {
 		if (!--argc)
-		rb_raise(rb_eRuntimeError, "no code specified for -e");
+		    rb_raise(rb_eRuntimeError, "no code specified for -e");
 		s = *++argv;
 	    }
 	    if (!opt->e_script) {
@@ -1131,7 +1131,7 @@ proc_options(long argc, char **argv, struct cmdline_options *opt, int envopt)
 	    ((*(s) ? !*++(s) : (next_arg) && (!argc || !((s) = argv[1]) || (--argc, ++argv, 0))) && (needs_arg) ? \
 	     rb_raise(rb_eRuntimeError, "missing argument for --" name) \
 	     : (void)0)
-#	define is_option_with_arg(name, allow_hyphen, allow_envopt) \
+#	define is_option_with_arg(name, allow_hyphen, allow_envopt)	\
 	    is_option_with_optarg(name, allow_hyphen, allow_envopt, Qtrue, Qtrue)
 #	define is_option_with_optarg(name, allow_hyphen, allow_envopt, needs_arg, next_arg) \
 	    (strncmp((name), s, n = sizeof(name) - 1) == 0 && is_option_end(s[n], (allow_hyphen)) ? \
@@ -1147,9 +1147,9 @@ proc_options(long argc, char **argv, struct cmdline_options *opt, int envopt)
 		    ruby_each_words(s, debug_option, &opt->features);
 		}
 		else {
-		ruby_debug = Qtrue;
-                ruby_verbose = Qtrue;
-            }
+		    ruby_debug = Qtrue;
+		    ruby_verbose = Qtrue;
+		}
             }
 	    else if (is_option_with_arg("enable", Qtrue, Qtrue)) {
 		ruby_each_words(s, enable_option, &opt->features);
@@ -1283,7 +1283,7 @@ opt_enc_index(VALUE enc_name)
     return i;
 }
 
-#define rb_progname (GET_VM()->progname)
+#define rb_progname      (GET_VM()->progname)
 #define rb_orig_progname (GET_VM()->orig_progname)
 VALUE rb_argv0;
 
@@ -1529,7 +1529,7 @@ process_options(int argc, char **argv, struct cmdline_options *opt)
 	    if (mark) rb_ivar_set(path, id_initial_load_path_mark, path);
 	    RARRAY_ASET(load_path, i, path);
 	}
-	}
+    }
     Init_ext();		/* load statically linked extensions before rubygems */
     if (opt->features & FEATURE_BIT(gems)) {
 	rb_define_module("Gem");
@@ -1578,7 +1578,7 @@ process_options(int argc, char **argv, struct cmdline_options *opt)
 	rb_enc_associate(opt->e_script, eenc);
 	if (!(opt->dump & ~DUMP_BIT(version_v))) {
 	    ruby_set_script_name(opt->script_name);
-	require_libraries(&opt->req_list);
+	    require_libraries(&opt->req_list);
 	}
         ruby_set_script_name(progname);
 
@@ -1774,8 +1774,8 @@ load_file_internal(VALUE argp_v)
 	}
 	if (!(opt->dump & ~DUMP_BIT(version_v))) {
 	    ruby_set_script_name(opt->script_name);
-	require_libraries(&opt->req_list);	/* Why here? unnatural */
-    }
+	    require_libraries(&opt->req_list);	/* Why here? unnatural */
+	}
     }
     if (opt->src.enc.index >= 0) {
 	enc = rb_enc_from_index(opt->src.enc.index);
@@ -1866,7 +1866,7 @@ open_load_file(VALUE fname_v, int *xflag)
 	    e = errno;
 	    (void)close(fd);
 	    rb_load_fail(fname_v, strerror(e));
-    }
+	}
 
 	f = rb_io_fdopen(fd, mode, fname);
     }
@@ -1982,11 +1982,11 @@ set_arg0(VALUE val, ID id)
 	rb_raise(rb_eRuntimeError, "$0 not initialized");
 
     rb_progname = rb_str_new_frozen(proc_setproctitle(rb_mProcess, val));
-    }
+}
 
 static inline VALUE
 external_str_new_cstr(const char *p)
-    {
+{
 #if UTF8_PATH
     VALUE str = rb_utf8_str_new_cstr(p);
     return str_conv_enc(str, NULL, rb_default_external_encoding());

@@ -603,22 +603,34 @@ setup_exception(rb_thread_t *th, int tag, volatile VALUE mesg, VALUE cause)
 	if (sysstack_error_p(mesg)) {
 	    if (NIL_P(rb_attr_get(mesg, idBt))) {
 		at = rb_vm_backtrace_object();
-	if (mesg == sysstack_error) {
+		if (mesg == sysstack_error) {
 		    mesg = ruby_vm_sysstack_error_copy();
 		}
 		rb_ivar_set(mesg, idBt, at);
 		rb_ivar_set(mesg, idBt_locations, at);
-	}
-	}
-	else if (NIL_P(get_backtrace(mesg))) {
-	    at = rb_vm_backtrace_object();
-		if (OBJ_FROZEN(mesg)) {
-		    mesg = rb_obj_dup(mesg);
-		}
-	    rb_ivar_set(mesg, idBt_locations, at);
-		set_backtrace(mesg, at);
 	    }
 	}
+	else {
+	    int status;
+
+	    TH_PUSH_TAG(th);
+	    if ((status = EXEC_TAG()) == 0) {
+		VALUE bt;
+		if (rb_threadptr_set_raised(th)) goto fatal;
+		bt = rb_get_backtrace(mesg);
+		if (NIL_P(bt)) {
+		    at = rb_vm_backtrace_object();
+		    if (OBJ_FROZEN(mesg)) {
+			mesg = rb_obj_dup(mesg);
+		    }
+		    rb_ivar_set(mesg, idBt_locations, at);
+		    set_backtrace(mesg, at);
+		}
+		rb_threadptr_reset_raised(th);
+	    }
+	    TH_POP_TAG();
+	}
+    }
 
     if (!NIL_P(mesg)) {
 	th->errinfo = mesg;
@@ -658,6 +670,7 @@ setup_exception(rb_thread_t *th, int tag, volatile VALUE mesg, VALUE cause)
     }
 
     if (rb_threadptr_set_raised(th)) {
+      fatal:
 	th->errinfo = exception_error;
 	rb_threadptr_reset_raised(th);
 	JUMP_TAG(TAG_FATAL);
@@ -931,12 +944,12 @@ rb_rescue2(VALUE (* b_proc) (ANYARGS), VALUE data1,
 		result = Qnil;
 		state = 0;
 		if (r_proc) {
-			result = (*r_proc) (data2, th->errinfo);
-		    }
-		    th->errinfo = e_info;
+		    result = (*r_proc) (data2, th->errinfo);
 		}
+		th->errinfo = e_info;
 	    }
 	}
+    }
     TH_POP_TAG();
     if (state)
 	JUMP_TAG(state);
@@ -1020,7 +1033,7 @@ frame_func_id(rb_control_frame_t *cfp)
 	return me->def->original_id;
     }
     else {
-    return 0;
+	return 0;
     }
 }
 
@@ -1034,7 +1047,7 @@ frame_called_id(rb_control_frame_t *cfp)
     }
     else {
 	return 0;
-	}
+    }
 }
 
 ID
@@ -1626,7 +1639,7 @@ errat_getter(ID id)
 {
     VALUE err = get_errinfo();
     if (!NIL_P(err)) {
-	return get_backtrace(err);
+	return rb_get_backtrace(err);
     }
     else {
 	return Qnil;
@@ -1736,8 +1749,8 @@ Init_eval(void)
 
     rb_undef_method(rb_cClass, "module_function");
 
-	Init_vm_eval();
-	Init_eval_method();
+    Init_vm_eval();
+    Init_eval_method();
 
     rb_define_singleton_method(rb_cModule, "nesting", rb_mod_nesting, 0);
     rb_define_singleton_method(rb_cModule, "constants", rb_mod_s_constants, -1);

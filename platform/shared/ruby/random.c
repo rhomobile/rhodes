@@ -349,9 +349,9 @@ random_memsize(const void *ptr)
 static const rb_data_type_t random_data_type = {
     "random",
     {
-    random_mark,
-    random_free,
-    random_memsize,
+	random_mark,
+	random_free,
+	random_memsize,
     },
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
@@ -403,8 +403,8 @@ rand_init(struct MT *mt, VALUE vseed)
         sign = -sign;
     if (len == 0) {
         buf[0] = 0;
-	    len = 1;
-	}
+        len = 1;
+    }
     if (len <= 1) {
         init_genrand(mt, buf[0]);
     }
@@ -508,12 +508,12 @@ fill_random_bytes_syscall(void *seed, size_t size, int unused)
 	if (LIKELY(!old_prov)) { /* no other threads acquried */
 	    if (prov != (HCRYPTPROV)INVALID_HANDLE_VALUE) {
 		rb_gc_register_mark_object(Data_Wrap_Struct(0, 0, release_crypt, &perm_prov));
-        }
-    }
+	    }
+	}
 	else {			/* another thread acquried */
 	    if (prov != (HCRYPTPROV)INVALID_HANDLE_VALUE) {
-	CryptReleaseContext(prov, 0);
-    }
+		CryptReleaseContext(prov, 0);
+	    }
 	    prov = old_prov;
 	}
     }
@@ -768,7 +768,7 @@ random_load(VALUE obj, VALUE dump)
 }
 
 /*
- *  call-seq:
+ * call-seq:
  *   srand(number = Random.new_seed) -> old_seed
  *
  * Seeds the system pseudo-random number generator, Random::DEFAULT, with
@@ -1164,26 +1164,26 @@ rand_range(VALUE obj, rb_random_t* rnd, VALUE range)
     if ((v = vmax = range_values(range, &beg, &end, &excl)) == Qfalse)
 	return Qfalse;
     if (!RB_TYPE_P(vmax, T_FLOAT) && (v = rb_check_to_integer(vmax, "to_int"), !NIL_P(v))) {
-	    long max;
-	    vmax = v;
-	    v = Qnil;
-	    if (FIXNUM_P(vmax)) {
-	      fixnum:
-		if ((max = FIX2LONG(vmax) - excl) >= 0) {
+	long max;
+	vmax = v;
+	v = Qnil;
+	if (FIXNUM_P(vmax)) {
+	  fixnum:
+	    if ((max = FIX2LONG(vmax) - excl) >= 0) {
 		unsigned long r = random_ulong_limited(obj, rnd, (unsigned long)max);
-		    v = ULONG2NUM(r);
-		}
-	    }
-	else if (BUILTIN_TYPE(vmax) == T_BIGNUM && BIGNUM_SIGN(vmax) && !rb_bigzero_p(vmax)) {
-		vmax = excl ? rb_big_minus(vmax, INT2FIX(1)) : rb_big_norm(vmax);
-		if (FIXNUM_P(vmax)) {
-		    excl = 0;
-		    goto fixnum;
-		}
-	    v = random_ulong_limited_big(obj, rnd, vmax);
+		v = ULONG2NUM(r);
 	    }
 	}
-	else if (v = rb_check_to_float(vmax), !NIL_P(v)) {
+	else if (BUILTIN_TYPE(vmax) == T_BIGNUM && BIGNUM_SIGN(vmax) && !rb_bigzero_p(vmax)) {
+	    vmax = excl ? rb_big_minus(vmax, INT2FIX(1)) : rb_big_norm(vmax);
+	    if (FIXNUM_P(vmax)) {
+		excl = 0;
+		goto fixnum;
+	    }
+	    v = random_ulong_limited_big(obj, rnd, vmax);
+	}
+    }
+    else if (v = rb_check_to_float(vmax), !NIL_P(v)) {
 	int scale = 1;
 	double max = RFLOAT_VALUE(v), mid = 0.5, r;
 	if (isinf(max)) {
@@ -1196,18 +1196,18 @@ rand_range(VALUE obj, rb_random_t* rnd, VALUE range)
 	else if (isnan(max)) {
 	    domain_error();
 	}
-	    v = Qnil;
-	    if (max > 0.0) {
+	v = Qnil;
+	if (max > 0.0) {
 	    r = random_real(obj, rnd, excl);
 	    if (scale > 1) {
 		return rb_float_new(+(+(+(r - 0.5) * max) * scale) + mid);
-		}
-		v = rb_float_new(r * max);
 	    }
-	    else if (max == 0.0 && !excl) {
-		v = rb_float_new(0.0);
-	    }
+	    v = rb_float_new(r * max);
 	}
+	else if (max == 0.0 && !excl) {
+	    v = rb_float_new(0.0);
+	}
+    }
 
     if (FIXNUM_P(beg) && FIXNUM_P(v)) {
 	long x = FIX2LONG(beg) + FIX2LONG(v);
@@ -1327,7 +1327,7 @@ rand_random_number(int argc, VALUE *argv, VALUE obj)
 
 /*
  * call-seq:
- *     prng1 == prng2 -> true or false
+ *   prng1 == prng2 -> true or false
  *
  * Returns true if the two generators have the same internal state, otherwise
  * false.  Equivalent generators will return the same sequence of
@@ -1364,8 +1364,8 @@ random_equal(VALUE self, VALUE other)
 }
 
 /*
- *  call-seq:
- *     rand(max=0)    -> number
+ * call-seq:
+ *   rand(max=0)    -> number
  *
  * If called without an argument, or if <tt>max.to_i.abs == 0</tt>, rand
  * returns a pseudo-random floating point number between 0.0 and 1.0,

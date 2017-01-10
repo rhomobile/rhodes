@@ -556,7 +556,7 @@ enc_alias(const char *alias, int idx)
 {
     if (!valid_encoding_name_p(alias)) return -1;
     if (!enc_alias_internal(alias, idx))
-    set_encoding_const(alias, rb_enc_from_index(idx));
+	set_encoding_const(alias, rb_enc_from_index(idx));
     return idx;
 }
 
@@ -909,7 +909,7 @@ enc_compatible_latter(VALUE str1, VALUE str2, int idx1, int idx2)
 
     isstr2 = RB_TYPE_P(str2, T_STRING);
     if (isstr2 && RSTRING_LEN(str2) == 0)
-        return enc1;
+	return enc1;
     isstr1 = RB_TYPE_P(str1, T_STRING);
     if (isstr1 && RSTRING_LEN(str1) == 0)
 	return (rb_enc_asciicompat(enc1) && rb_enc_str_asciionly_p(str2)) ? enc1 : enc2;
@@ -1075,8 +1075,8 @@ rb_enc_codepoint_len(const char *p, const char *e, int *len_p, rb_encoding *enc)
     if (!MBCLEN_CHARFOUND_P(r)) {
 	rb_raise(rb_eArgError, "invalid byte sequence in %s", rb_enc_name(enc));
     }
-	if (len_p) *len_p = MBCLEN_CHARFOUND_LEN(r);
-        return rb_enc_mbc_to_codepoint(p, e, enc);
+    if (len_p) *len_p = MBCLEN_CHARFOUND_LEN(r);
+    return rb_enc_mbc_to_codepoint(p, e, enc);
 }
 
 #undef rb_enc_codepoint

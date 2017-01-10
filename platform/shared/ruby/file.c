@@ -1982,7 +1982,7 @@ rb_file_identical_p(VALUE obj, VALUE fname1, VALUE fname2)
 	f2 = (HANDLE)rb_ensure(call_w32_io_info, (VALUE)&arg, close_handle, (VALUE)f1);
     }
     else {
-    f2 = w32_io_info(&fname2, &st2);
+	f2 = w32_io_info(&fname2, &st2);
     }
     if (f2 == INVALID_HANDLE_VALUE) return Qfalse;
     if (f2) CloseHandle(f2);
@@ -1991,7 +1991,7 @@ rb_file_identical_p(VALUE obj, VALUE fname1, VALUE fname2)
 	st1.nFileIndexHigh == st2.nFileIndexHigh &&
 	st1.nFileIndexLow == st2.nFileIndexLow)
 	return Qtrue;
-	return Qfalse;
+    return Qfalse;
 #endif
 }
 
@@ -2388,7 +2388,7 @@ rb_file_chmod(VALUE obj, VALUE vmode)
 #ifdef HAVE_FCHMOD
     if (fchmod(fptr->fd, mode) == -1) {
 	if (HAVE_FCHMOD || errno != ENOSYS)
-	rb_sys_fail_path(fptr->pathv);
+	    rb_sys_fail_path(fptr->pathv);
     }
     else {
 	if (!HAVE_FCHMOD) return INT2FIX(0);
@@ -2709,7 +2709,7 @@ rb_file_s_utime(int argc, VALUE *argv)
 	if (args.atime == args.mtime)
 	    tsp[1] = tsp[0];
 	else
-	tsp[1] = rb_time_timespec(args.mtime);
+	    tsp[1] = rb_time_timespec(args.mtime);
     }
     args.tsp = tsp;
 
@@ -3228,9 +3228,9 @@ copy_home_path(VALUE result, const char *dir)
     long dirlen;
     int encidx;
 
-	dirlen = strlen(dir);
-	rb_str_resize(result, dirlen);
-	memcpy(buf = RSTRING_PTR(result), dir, dirlen);
+    dirlen = strlen(dir);
+    rb_str_resize(result, dirlen);
+    memcpy(buf = RSTRING_PTR(result), dir, dirlen);
     encidx = rb_filesystem_encindex();
     rb_enc_associate_index(result, encidx);
 #if defined DOSISH || defined __CYGWIN__
@@ -3238,7 +3238,7 @@ copy_home_path(VALUE result, const char *dir)
     for (bend = (p = buf) + dirlen; p < bend; Inc(p, bend, enc)) {
 	if (*p == '\\') {
 	    *p = '/';
-    }
+	}
     }
 #endif
     return result;
@@ -3249,14 +3249,14 @@ rb_home_dir_of(VALUE user, VALUE result)
 {
 #ifdef HAVE_PWD_H
     struct passwd *pwPtr = getpwnam(RSTRING_PTR(user));
-	if (!pwPtr) {
-	    endpwent();
+    if (!pwPtr) {
+	endpwent();
 #endif
 	rb_raise(rb_eArgError, "user %"PRIsVALUE" doesn't exist", user);
 #ifdef HAVE_PWD_H
-	}
+    }
     copy_home_path(result, pwPtr->pw_dir);
-	endpwent();
+    endpwent();
 #endif
     return result;
 }
@@ -3296,7 +3296,7 @@ append_fspath(VALUE result, VALUE fname, char *dir, rb_encoding **enc, rb_encodi
 	if (direnc != fsenc) {
 	    dirname = rb_str_conv_enc(dirname, fsenc, direnc);
 	    RSTRING_GETMEM(dirname, cwdp, dirlen);
-    }
+	}
 	else if (NORMALIZE_UTF8PATH) {
 	    RSTRING_GETMEM(dirname, cwdp, dirlen);
 	}
@@ -3601,7 +3601,7 @@ rb_file_expand_path_internal(VALUE fname, VALUE dname, int abs_mode, int long_na
 	    if (lnk_added) {
 		strlcat(w32buf, ".lnk", bufsize);
 	    }
-	    }
+	}
 	else {
 	    lnk_added = 0;
 	}
@@ -3635,7 +3635,7 @@ rb_file_expand_path_internal(VALUE fname, VALUE dname, int abs_mode, int long_na
 	    wlen = (int)len;
 	    len = WideCharToMultiByte(CP_UTF8, 0, wfd.cFileName, wlen, NULL, 0, NULL, NULL);
 	    if (tmp == result) {
-	    BUFCHECK(bdiff + len >= buflen);
+		BUFCHECK(bdiff + len >= buflen);
 		WideCharToMultiByte(CP_UTF8, 0, wfd.cFileName, wlen, p, len + 1, NULL, NULL);
 	    }
 	    else {
@@ -3783,7 +3783,7 @@ realpath_rec(long *prefixlenp, VALUE *resolvedp, const char *unresolved, VALUE l
     while (unresolved < pend) {
 	const char *testname = unresolved;
 	const char *unresolved_firstsep = rb_enc_path_next(unresolved, pend, enc);
-        long testnamelen = unresolved_firstsep - unresolved;
+	long testnamelen = unresolved_firstsep - unresolved;
 	const char *unresolved_nextname = unresolved_firstsep;
         while (unresolved_nextname < pend && isdirsep(*unresolved_nextname))
 	    unresolved_nextname++;
@@ -3852,7 +3852,7 @@ realpath_rec(long *prefixlenp, VALUE *resolvedp, const char *unresolved, VALUE l
 		    link = rb_readlink(testpath, enc);
                     link_prefix = RSTRING_PTR(link);
 		    link_names = skipprefixroot(link_prefix, link_prefix + RSTRING_LEN(link), rb_enc_get(link));
-                    link_prefixlen = link_names - link_prefix;
+		    link_prefixlen = link_names - link_prefix;
 		    if (link_prefixlen > 0) {
 			rb_encoding *enc, *linkenc = rb_enc_get(link);
 			link_orig = link;
@@ -3861,10 +3861,10 @@ realpath_rec(long *prefixlenp, VALUE *resolvedp, const char *unresolved, VALUE l
 			if (enc != linkenc) link = rb_str_conv_enc(link, linkenc, enc);
 			*resolvedp = link;
 			*prefixlenp = link_prefixlen;
-                    }
-                        realpath_rec(prefixlenp, resolvedp, link_names, loopcheck, strict, *unresolved_firstsep == '\0');
+		    }
+		    realpath_rec(prefixlenp, resolvedp, link_names, loopcheck, strict, *unresolved_firstsep == '\0');
 		    RB_GC_GUARD(link_orig);
-                    rb_hash_aset(loopcheck, testpath, rb_str_dup_frozen(*resolvedp));
+		    rb_hash_aset(loopcheck, testpath, rb_str_dup_frozen(*resolvedp));
                 }
                 else
 #endif
@@ -3919,7 +3919,7 @@ rb_realpath_internal(VALUE basedir, VALUE path, int strict)
 	basedir_names = skipprefixroot(ptr, ptr + len, rb_enc_get(basedir));
         if (ptr != basedir_names) {
 	    resolved = rb_str_subseq(basedir, 0, basedir_names - ptr);
-            goto root_found;
+	    goto root_found;
         }
     }
 
@@ -4027,7 +4027,7 @@ rmext(const char *p, long l0, long l1, const char *e, long l2, rb_encoding *enc)
 	while (s < e) {
 	    if (rb_enc_codepoint_len(s, e, &len1, enc) == c) last = s;
 	    s += len1;
-    }
+	}
 	return last - p;
     }
     if (l1 < l2) return l1;
@@ -4136,7 +4136,7 @@ rb_file_s_basename(int argc, VALUE *argv)
     if (rb_scan_args(argc, argv, "11", &fname, &fext) == 2) {
 	StringValue(fext);
 	enc = check_path_encoding(fext);
-	}
+    }
     FilePathStringValue(fname);
     if (NIL_P(fext) || !(enc = rb_enc_compatible(fname, fext))) {
 	enc = rb_enc_get(fname);
@@ -4761,7 +4761,7 @@ test_check(int n, int argc, VALUE *argv)
  *         |         | the real uid/gid
  *    "z"  | boolean | True if file1 exists and has a zero length
  *
- * Tests that take two files:
+ *  Tests that take two files:
  *
  *    "-"  | boolean | True if file1 and file2 are identical
  *    "="  | boolean | True if the modification times of file1
@@ -5711,7 +5711,7 @@ ruby_is_fd_loadable(int fd)
 #ifdef _WIN32
     return 1;
 #else
-	struct stat st;
+    struct stat st;
 
     if (fstat(fd, &st) < 0)
 	return 0;

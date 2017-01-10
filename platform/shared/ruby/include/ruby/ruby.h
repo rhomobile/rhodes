@@ -779,7 +779,6 @@ VALUE rb_obj_setup(VALUE obj, VALUE klass, VALUE type);
 #define DUPSETUP(dup,obj) rb_dup_setup(dup,obj)
 
 #ifndef USE_RGENGC
-#error "AZAZAZA"
 #define USE_RGENGC 1
 #ifndef USE_RINCGC
 #define USE_RINCGC 1
@@ -1462,7 +1461,7 @@ rb_data_typed_object_alloc(VALUE klass, void *datap, const rb_data_type_t *type)
 void rb_gc_writebarrier(VALUE a, VALUE b);
 
 //RHO
-//void rb_gc_writebarrier_unprotect(VALUE obj);
+void rb_gc_writebarrier_unprotect(VALUE obj);
 
 #else /* USE_RGENGC */
 #define RB_OBJ_PROMOTED(x)          0
@@ -1502,8 +1501,7 @@ rb_obj_wb_unprotect(VALUE x, RB_UNUSED_VAR(const char *filename), RB_UNUSED_VAR(
     RGENGC_LOGGING_WB_UNPROTECT((void *)x, filename, line);
 #endif
 #if USE_RGENGC
-#error "AAAAA!!!!"
-    //rb_gc_writebarrier_unprotect(x);
+rb_gc_writebarrier_unprotect(x);
 #endif
     return x;
 }

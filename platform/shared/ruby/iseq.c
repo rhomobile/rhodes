@@ -80,7 +80,7 @@ rb_iseq_free(const rb_iseq_t *iseq)
 		for (i=0; i<iseq->body->ci_kw_size; i++) {
 		    const struct rb_call_info_kw_arg *kw_arg = ci_kw_entries[i].kw_arg;
 		    ruby_xfree((void *)kw_arg);
-	    }
+		}
 		ruby_xfree(iseq->body->ci_entries);
 		ruby_xfree(iseq->body->cc_entries);
 	    }
@@ -121,10 +121,10 @@ rb_iseq_mark(const rb_iseq_t *iseq)
     }
     else if (ISEQ_COMPILE_DATA(iseq) != 0) {
 	const struct iseq_compile_data *const compile_data = ISEQ_COMPILE_DATA(iseq);
-	    RUBY_MARK_UNLESS_NULL(compile_data->mark_ary);
-	    RUBY_MARK_UNLESS_NULL(compile_data->err_info);
-	    RUBY_MARK_UNLESS_NULL(compile_data->catch_table_ary);
-	}
+	RUBY_MARK_UNLESS_NULL(compile_data->mark_ary);
+	RUBY_MARK_UNLESS_NULL(compile_data->err_info);
+	RUBY_MARK_UNLESS_NULL(compile_data->catch_table_ary);
+    }
 
     RUBY_MARK_LEAVE("iseq");
 }
@@ -160,7 +160,7 @@ iseq_memsize(const rb_iseq_t *iseq)
 	size += body->local_table_size * sizeof(ID);
 	if (body->catch_table) {
 	    size += iseq_catch_table_bytes(body->catch_table->size);
-	    }
+	}
 	size += (body->param.opt_num + 1) * sizeof(VALUE);
 	size += param_keyword_size(body->param.keyword);
 
@@ -190,15 +190,15 @@ iseq_memsize(const rb_iseq_t *iseq)
 
     compile_data = ISEQ_COMPILE_DATA(iseq);
     if (compile_data) {
-		struct iseq_compile_data_storage *cur;
+	struct iseq_compile_data_storage *cur;
 
 	size += sizeof(struct iseq_compile_data);
 
 	cur = compile_data->storage_head;
-		while (cur) {
+	while (cur) {
 	    size += cur->size + SIZEOF_ISEQ_COMPILE_DATA_STORAGE;
-		    cur = cur->next;
-		}
+	    cur = cur->next;
+	}
     }
 
     return size;
@@ -351,17 +351,17 @@ set_compile_option_from_hash(rb_compile_option_t *option, VALUE opt)
   { VALUE num = rb_hash_aref(opt, ID2SYM(rb_intern(#mem))); \
       if (!NIL_P(num)) (o)->mem = NUM2INT(num); \
   }
-	SET_COMPILE_OPTION(option, opt, inline_const_cache);
-	SET_COMPILE_OPTION(option, opt, peephole_optimization);
-	SET_COMPILE_OPTION(option, opt, tailcall_optimization);
-	SET_COMPILE_OPTION(option, opt, specialized_instruction);
-	SET_COMPILE_OPTION(option, opt, operands_unification);
-	SET_COMPILE_OPTION(option, opt, instructions_unification);
-	SET_COMPILE_OPTION(option, opt, stack_caching);
-	SET_COMPILE_OPTION(option, opt, trace_instruction);
+    SET_COMPILE_OPTION(option, opt, inline_const_cache);
+    SET_COMPILE_OPTION(option, opt, peephole_optimization);
+    SET_COMPILE_OPTION(option, opt, tailcall_optimization);
+    SET_COMPILE_OPTION(option, opt, specialized_instruction);
+    SET_COMPILE_OPTION(option, opt, operands_unification);
+    SET_COMPILE_OPTION(option, opt, instructions_unification);
+    SET_COMPILE_OPTION(option, opt, stack_caching);
+    SET_COMPILE_OPTION(option, opt, trace_instruction);
     SET_COMPILE_OPTION(option, opt, frozen_string_literal);
     SET_COMPILE_OPTION(option, opt, debug_frozen_string_literal);
-	SET_COMPILE_OPTION_NUM(option, opt, debug_level);
+    SET_COMPILE_OPTION_NUM(option, opt, debug_level);
 #undef SET_COMPILE_OPTION
 #undef SET_COMPILE_OPTION_NUM
 }
@@ -812,8 +812,7 @@ static VALUE
 iseqw_s_compile_file(int argc, VALUE *argv, VALUE self)
 {
     VALUE file, line = INT2FIX(1), opt = Qnil;
-    VALUE parser;
-    VALUE f;
+    VALUE parser, f, exc = Qnil;
     NODE *node;
     const char *fname;
     rb_compile_option_t option;
@@ -827,8 +826,10 @@ iseqw_s_compile_file(int argc, VALUE *argv, VALUE self)
 
     parser = rb_parser_new();
     node = rb_parser_compile_file(parser, fname, f, NUM2INT(line));
+    if (!node) exc = GET_THREAD()->errinfo;
 
     rb_io_close(f);
+    if (!node) rb_exc_raise(exc);
 
     make_compile_option(&option, opt);
 
@@ -942,8 +943,8 @@ iseqw_inspect(VALUE self)
         return rb_sprintf("#<%s: uninitialized>", rb_obj_classname(self));
     }
     else {
-    return rb_sprintf("<%s:%s@%s>",
-                      rb_obj_classname(self),
+	return rb_sprintf("<%s:%s@%s>",
+			  rb_obj_classname(self),
 			  RSTRING_PTR(iseq->body->location.label), RSTRING_PTR(iseq->body->location.path));
     }
 }
@@ -1188,12 +1189,12 @@ get_line_info(const rb_iseq_t *iseq, size_t pos)
 	    if (debug) printf("table[%"PRIdSIZE"]: position: %d, line: %d, pos: %"PRIdSIZE"\n",
 			      i, table[i].position, table[i].line_no, pos);
 
-	if (table[i].position == pos) {
-	    return &table[i];
-	}
+	    if (table[i].position == pos) {
+		return &table[i];
+	    }
 	    if (table[i].position > pos) {
 		return &table[i-1];
-    }
+	    }
 	}
     }
     return &table[i-1];
@@ -1217,10 +1218,10 @@ rb_iseq_line_no(const rb_iseq_t *iseq, size_t pos)
 {
     if (pos == 0) {
 	return find_line_no(iseq, pos);
-	    }
-	    else {
+    }
+    else {
 	return find_line_no(iseq, pos - 1);
-	    }
+    }
 }
 
 static VALUE
@@ -1229,7 +1230,7 @@ id_to_name(ID id, VALUE default_value)
     VALUE str = rb_id2str(id);
     if (!str) {
 	str = default_value;
-	}
+    }
     else if (!rb_str_symname_p(str)) {
 	str = rb_str_inspect(str);
     }
@@ -1238,7 +1239,7 @@ id_to_name(ID id, VALUE default_value)
 
 VALUE
 rb_insn_operand_intern(const rb_iseq_t *iseq,
-		    VALUE insn, int op_no, VALUE op,
+		       VALUE insn, int op_no, VALUE op,
 		       int len, size_t pos, const VALUE *pnop, VALUE child)
 {
     const char *types = insn_op_types(insn);
@@ -1282,8 +1283,8 @@ rb_insn_operand_intern(const rb_iseq_t *iseq,
 	ret = rb_inspect(op);
 	if (CLASS_OF(op) == rb_cISeq) {
 	    if (child) {
-	    rb_ary_push(child, op);
-	}
+		rb_ary_push(child, op);
+	    }
 	}
 	break;
 
@@ -1363,7 +1364,7 @@ rb_insn_operand_intern(const rb_iseq_t *iseq,
 		break;
 	    }
 #endif
-	ret = rb_str_new2("<funcptr>");
+	    ret = rb_str_new2("<funcptr>");
 	}
 	break;
 
@@ -1401,7 +1402,7 @@ rb_iseq_disasm_insn(VALUE ret, const VALUE *code, size_t pos,
 	const char *types = insn_op_types(insn);
 	VALUE opstr = rb_insn_operand_intern(iseq, insn, j, code[pos + j + 1],
 					     len, pos, &code[pos + j + 2],
-					  child);
+					     child);
 	rb_str_concat(str, opstr);
 
 	if (types[j + 1]) {
@@ -1495,14 +1496,14 @@ rb_iseq_disasm(const rb_iseq_t *iseq)
     if (iseq->body->catch_table) {
 	for (i = 0; i < iseq->body->catch_table->size; i++) {
 	    const struct iseq_catch_table_entry *entry = &iseq->body->catch_table->entries[i];
-	rb_str_catf(str,
-		    "| catch type: %-6s st: %04d ed: %04d sp: %04d cont: %04d\n",
-		    catch_type((int)entry->type), (int)entry->start,
-		    (int)entry->end, (int)entry->sp, (int)entry->cont);
-	if (entry->iseq) {
+	    rb_str_catf(str,
+			"| catch type: %-6s st: %04d ed: %04d sp: %04d cont: %04d\n",
+			catch_type((int)entry->type), (int)entry->start,
+			(int)entry->end, (int)entry->sp, (int)entry->cont);
+	    if (entry->iseq) {
 		rb_str_concat(str, rb_iseq_disasm(rb_iseq_check(entry->iseq)));
+	    }
 	}
-    }
     }
     if (iseq->body->catch_table) {
 	rb_str_cat2(str, "|-------------------------------------"
@@ -1857,7 +1858,7 @@ iseq_data_to_ary(const rb_iseq_t *iseq)
               rb_ary_push(arg_opt_labels, l);
           }
           rb_hash_aset(params, ID2SYM(rb_intern("opt")), arg_opt_labels);
-	}
+        }
 
 	/* commit */
 	if (iseq->body->param.flags.has_lead) rb_hash_aset(params, ID2SYM(rb_intern("lead_num")), INT2FIX(iseq->body->param.lead_num));
@@ -1875,7 +1876,7 @@ iseq_data_to_ary(const rb_iseq_t *iseq)
 		VALUE key = rb_ary_new_from_args(1, ID2SYM(iseq->body->param.keyword->table[i]));
 		if (iseq->body->param.keyword->default_values[j] != Qundef) {
 		    rb_ary_push(key, iseq->body->param.keyword->default_values[j]);
-	}
+		}
 		rb_ary_push(keywords, key);
 	    }
 
@@ -1933,7 +1934,7 @@ iseq_data_to_ary(const rb_iseq_t *iseq)
 		{
 		    union iseq_inline_storage_entry *is = (union iseq_inline_storage_entry *)*seq;
 		    rb_ary_push(ary, INT2FIX(is - iseq->body->is_entries));
-	        }
+		}
 		break;
 	      case TS_CALLINFO:
 		{
@@ -2282,7 +2283,7 @@ line_trace_specify(int line, rb_event_flag_t *events_ptr, void *ptr)
 	}
 	else {
 	    *events_ptr = *events_ptr & ~RUBY_EVENT_SPECIFIED_LINE;
-    }
+	}
 	return 0; /* found */
     }
     else {
@@ -2445,6 +2446,8 @@ Init_ISeq(void)
 #if 0 /* TBD */
     rb_define_private_method(rb_cISeq, "marshal_dump", iseqw_marshal_dump, 0);
     rb_define_private_method(rb_cISeq, "marshal_load", iseqw_marshal_load, 1);
+    /* disable this feature because there is no verifier. */
+    rb_define_singleton_method(rb_cISeq, "load", iseq_s_load, -1);
 #endif
     /* disable this feature because there is no verifier. */
 //RHO

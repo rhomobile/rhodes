@@ -165,10 +165,10 @@ class_alloc(VALUE flags, VALUE klass)
     NEWOBJ_OF(obj, struct RClass, klass, (flags & T_MASK) | FL_PROMOTED1 /* start from age == 2 */ | (RGENGC_WB_PROTECTED_CLASS ? FL_WB_PROTECTED : 0));
     obj->ptr = ZALLOC(rb_classext_t);
     /* ZALLOC
-    RCLASS_IV_TBL(obj) = 0;
+      RCLASS_IV_TBL(obj) = 0;
       RCLASS_CONST_TBL(obj) = 0;
-    RCLASS_M_TBL(obj) = 0;
-    RCLASS_IV_INDEX_TBL(obj) = 0;
+      RCLASS_M_TBL(obj) = 0;
+      RCLASS_IV_INDEX_TBL(obj) = 0;
       RCLASS_SET_SUPER((VALUE)obj, 0);
       RCLASS_EXT(obj)->subclasses = NULL;
       RCLASS_EXT(obj)->parent_subclasses = NULL;
@@ -323,10 +323,10 @@ rb_mod_init_copy(VALUE clone, VALUE orig)
     }
     RCLASS_SET_SUPER(clone, RCLASS_SUPER(orig));
     RCLASS_EXT(clone)->allocator = RCLASS_EXT(orig)->allocator;
-	if (RCLASS_IV_TBL(clone)) {
-	    st_free_table(RCLASS_IV_TBL(clone));
+    if (RCLASS_IV_TBL(clone)) {
+	st_free_table(RCLASS_IV_TBL(clone));
 	RCLASS_IV_TBL(clone) = 0;
-	}
+    }
     if (RCLASS_CONST_TBL(clone)) {
 	rb_free_const_table(RCLASS_CONST_TBL(clone));
 	RCLASS_CONST_TBL(clone) = 0;
@@ -350,7 +350,7 @@ rb_mod_init_copy(VALUE clone, VALUE orig)
 	arg.klass = clone;
 	arg.tbl = RCLASS_CONST_TBL(clone);
 	st_foreach(RCLASS_CONST_TBL(orig), clone_const_i, (st_data_t)&arg);
-	}
+    }
     if (RCLASS_M_TBL(orig)) {
 	struct clone_method_arg arg;
 	arg.old_klass = orig;
@@ -781,7 +781,7 @@ rb_define_module(const char *name)
 	    rb_raise(rb_eTypeError, "%s is not a module (%"PRIsVALUE")",
 		     name, rb_obj_class(module));
 	}
-	    return module;
+	return module;
     }
     module = rb_define_module_id(id);
     rb_vm_add_root_module(id, module);
@@ -808,7 +808,7 @@ rb_define_module_id_under(VALUE outer, ID id)
 		     " (%"PRIsVALUE")",
 		     outer, rb_id2str(id), rb_obj_class(module));
 	}
-	    return module;
+	return module;
     }
     module = rb_define_module_id(id);
     rb_const_set(outer, id, module);
@@ -1075,7 +1075,7 @@ rb_mod_include_p(VALUE mod, VALUE mod2)
  *     end
  *
  *     Mod.ancestors        #=> [Enumerable, Mod, Comparable, Math]
- *     Math.ancestors   #=> [Math]
+ *     Math.ancestors       #=> [Math]
  *     Enumerable.ancestors #=> [Enumerable]
  */
 
@@ -1224,9 +1224,9 @@ class_instance_method_list(int argc, const VALUE *argv, VALUE mod, int obj, int 
  *     end
  *
  *     A.instance_methods(false)                   #=> [:method1]
- *     B.instance_methods(false)         #=> [:method2]
+ *     B.instance_methods(false)                   #=> [:method2]
  *     B.instance_methods(true).include?(:method1) #=> true
- *     C.instance_methods(false)         #=> [:method3]
+ *     C.instance_methods(false)                   #=> [:method3]
  *     C.instance_methods.include?(:method2)       #=> true
  */
 
@@ -1588,7 +1588,7 @@ singleton_class_of(VALUE obj)
 	}
     }
 
-	klass = RBASIC(obj)->klass;
+    klass = RBASIC(obj)->klass;
     if (!(FL_TEST(klass, FL_SINGLETON) &&
 	  rb_ivar_get(klass, id_attached) == obj)) {
 	klass = rb_make_metaclass(obj, klass);
@@ -1614,7 +1614,7 @@ rb_freeze_singleton_class(VALUE x)
 	if (klass && (klass = RCLASS_ORIGIN(klass)) != 0 &&
 	    FL_TEST(klass, (FL_SINGLETON|FL_FREEZE)) == FL_SINGLETON) {
 	    OBJ_FREEZE_RAW(klass);
-    }
+	}
     }
 }
 

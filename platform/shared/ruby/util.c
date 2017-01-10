@@ -509,12 +509,13 @@ char *
 ruby_getcwd(void)
 {
 //RHO
+#if !defined(RUBYMAC)
     const char* szRhoPath = rho_native_rhopath();
     int size = strlen(szRhoPath);
     char *buf = xmalloc(size+1);
 
     strcpy(buf, szRhoPath);
-/*
+#else
 #if defined __native_client__
     char *buf = xmalloc(2);
     strcpy(buf, ".");
@@ -535,7 +536,7 @@ ruby_getcwd(void)
 # else
     char *buf, *cwd = getcwd(NULL, 0);
     if (!cwd) rb_sys_fail("getcwd");
-    buf = ruby_strdup(cwd);	//allocate by xmalloc
+    buf = ruby_strdup(cwd);	/* allocate by xmalloc */
     free(cwd);
 # endif
 #else
@@ -550,7 +551,7 @@ ruby_getcwd(void)
 	rb_syserr_fail(e, "getwd");
     }
 #endif
-*/
+#endif //RUBYMAC
 //RHO
     return buf;
 }
@@ -756,8 +757,11 @@ ruby_getcwd(void)
 #include "stdio.h"
 //RHO
 void rhoRubyFatalError(const char* x);
+#if !defined(RUBYMAC)
 #define Bug(x) {rhoRubyFatalError(x);}
-//#define Bug(x) {fprintf(stderr, "%s\n", (x)); exit(EXIT_FAILURE);}
+#else
+#define Bug(x) {fprintf(stderr, "%s\n", (x)); exit(EXIT_FAILURE);}
+#endif //RUBYMAC
 #endif
 
 #include "stdlib.h"

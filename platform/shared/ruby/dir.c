@@ -29,7 +29,7 @@
 # define NAMLEN(dirent) strlen((dirent)->d_name)
 #else
 # define dirent direct
-#  define NAMLEN(dirent) (dirent)->d_namlen
+# define NAMLEN(dirent) (dirent)->d_namlen
 # if HAVE_SYS_NDIR_H
 #  include <sys/ndir.h>
 # endif
@@ -528,7 +528,7 @@ dir_initialize(int argc, VALUE *argv, VALUE dir)
 	    struct attrlist al = {ATTR_BIT_MAP_COUNT, 0};
 	    if (getattrlist(path, &al, attrbuf, sizeof(attrbuf), FSOPT_NOFOLLOW) == 0) {
 		dp->dir = opendir(path);
-	}
+	    }
 	}
 #endif
 	if (dp->dir == NULL) {
@@ -693,7 +693,7 @@ fundamental_encoding_p(rb_encoding *enc)
 	return TRUE;
       default:
 	return FALSE;
-  }
+    }
 }
 # define READDIR(dir, enc) rb_w32_readdir((dir), (enc))
 #else
@@ -1281,7 +1281,7 @@ has_magic(const char *p, const char *pend, int flags, rb_encoding *enc)
 
 	  case '\\':
 	    if (escape && p++ >= pend)
-	    continue;
+		continue;
 	    break;
 
 #ifdef _WIN32
@@ -2345,9 +2345,9 @@ dir_open_dir(int argc, VALUE *argv)
 
 /*
  *  call-seq:
- *     Dir.foreach( dirname ) {| filename | block }  -> nil
+ *     Dir.foreach( dirname ) {| filename | block }                 -> nil
  *     Dir.foreach( dirname, encoding: enc ) {| filename | block }  -> nil
- *     Dir.foreach( dirname )                        -> an_enumerator
+ *     Dir.foreach( dirname )                                       -> an_enumerator
  *     Dir.foreach( dirname, encoding: enc )                        -> an_enumerator
  *
  *  Calls the block once for each entry in the named directory, passing
@@ -2556,7 +2556,7 @@ file_s_fnmatch(int argc, VALUE *argv, VALUE obj)
 	rb_encoding *enc = rb_enc_compatible(pattern, path);
 	if (!enc) return Qfalse;
 	if (fnmatch(RSTRING_PTR(pattern), enc, RSTRING_PTR(path), flags) == 0)
-	return Qtrue;
+	    return Qtrue;
     }
     RB_GC_GUARD(pattern);
 

@@ -266,15 +266,15 @@ rb_memsearch(const void *x0, long m, const void *y0, long n, rb_encoding *enc)
 	if (ys)
 	    return ys - y;
 	else
-	return -1;
+	    return -1;
     }
     else if (LIKELY(rb_enc_mbminlen(enc) == 1)) {
 	if (m <= SIZEOF_VALUE) {
-	return rb_memsearch_ss(x0, m, y0, n);
-    }
-    else if (enc == rb_utf8_encoding()){
-	return rb_memsearch_qs_utf8(x0, m, y0, n);
-    }
+	    return rb_memsearch_ss(x0, m, y0, n);
+	}
+	else if (enc == rb_utf8_encoding()){
+	    return rb_memsearch_qs_utf8(x0, m, y0, n);
+	}
     }
     else if (LIKELY(rb_enc_mbminlen(enc) == 2)) {
 	return rb_memsearch_wchar(x0, m, y0, n);
@@ -282,7 +282,7 @@ rb_memsearch(const void *x0, long m, const void *y0, long n, rb_encoding *enc)
     else if (LIKELY(rb_enc_mbminlen(enc) == 4)) {
 	return rb_memsearch_qchar(x0, m, y0, n);
     }
-	return rb_memsearch_qs(x0, m, y0, n);
+    return rb_memsearch_qs(x0, m, y0, n);
 }
 
 #define REG_LITERAL FL_USER5
@@ -628,8 +628,8 @@ rb_reg_to_s(VALUE re)
 
     rb_str_buf_cat2(str, ":");
     if (rb_enc_asciicompat(enc)) {
-    rb_reg_expr_str(str, (char*)ptr, len, enc, NULL);
-    rb_str_buf_cat2(str, ")");
+	rb_reg_expr_str(str, (char*)ptr, len, enc, NULL);
+	rb_str_buf_cat2(str, ")");
     }
     else {
 	const char *s, *e;
@@ -835,24 +835,24 @@ rb_reg_named_captures(VALUE re)
 
 static int
 onig_new_with_source(regex_t** reg, const UChar* pattern, const UChar* pattern_end,
-	  OnigOptionType option, OnigEncoding enc, const OnigSyntaxType* syntax,
-	  OnigErrorInfo* einfo, const char *sourcefile, int sourceline)
+		     OnigOptionType option, OnigEncoding enc, const OnigSyntaxType* syntax,
+		     OnigErrorInfo* einfo, const char *sourcefile, int sourceline)
 {
-  int r;
+    int r;
 
     *reg = (regex_t* )malloc(sizeof(regex_t));
-  if (IS_NULL(*reg)) return ONIGERR_MEMORY;
+    if (IS_NULL(*reg)) return ONIGERR_MEMORY;
 
-  r = onig_reg_init(*reg, option, ONIGENC_CASE_FOLD_DEFAULT, enc, syntax);
-  if (r) goto err;
+    r = onig_reg_init(*reg, option, ONIGENC_CASE_FOLD_DEFAULT, enc, syntax);
+    if (r) goto err;
 
-  r = onig_compile(*reg, pattern, pattern_end, einfo, sourcefile, sourceline);
-  if (r) {
-  err:
-    onig_free(*reg);
-    *reg = NULL;
-  }
-  return r;
+    r = onig_compile(*reg, pattern, pattern_end, einfo, sourcefile, sourceline);
+    if (r) {
+      err:
+	onig_free(*reg);
+	*reg = NULL;
+    }
+    return r;
 }
 
 static Regexp*
@@ -1539,11 +1539,11 @@ rb_reg_search0(VALUE re, VALUE str, long pos, int reverse, int set_backref_str)
 	if (err) rb_memerror();
     }
     else {
-	    FL_UNSET(match, FL_TAINT);
+	FL_UNSET(match, FL_TAINT);
     }
 
     if (set_backref_str) {
-    RMATCH(match)->str = rb_str_new4(str);
+	RMATCH(match)->str = rb_str_new4(str);
 	OBJ_INFECT(match, str);
     }
 
@@ -2348,8 +2348,8 @@ unescape_nonascii(const char *p, const char *end, rb_encoding *enc,
 		    rb_str_buf_cat(buf, pbeg, p-pbeg);
 		}
 		else {
-                if (unescape_escaped_nonascii(&p, end, enc, buf, encp, err) != 0)
-                    return -1;
+		    if (unescape_escaped_nonascii(&p, end, enc, buf, encp, err) != 0)
+			return -1;
 		}
                 break;
 
@@ -2530,8 +2530,8 @@ rb_reg_initialize(VALUE obj, const char *s, long len, rb_encoding *enc,
     re->ptr = 0;
 
     if (rb_enc_dummy_p(enc)) {
-	    errcpy(err, "can't make regexp with dummy encoding");
-	    return -1;
+	errcpy(err, "can't make regexp with dummy encoding");
+	return -1;
     }
 
     unescaped = rb_reg_preprocess(s, s+len, enc, &fixed_enc, err);
@@ -3020,9 +3020,9 @@ rb_reg_match_m(int argc, VALUE *argv, VALUE re)
 /*
  *  call-seq:
  *     Regexp.new(string, [options])       -> regexp
- *     Regexp.new(regexp)                            -> regexp
+ *     Regexp.new(regexp)                  -> regexp
  *     Regexp.compile(string, [options)    -> regexp
- *     Regexp.compile(regexp)                        -> regexp
+ *     Regexp.compile(regexp)              -> regexp
  *
  *  Constructs a new regular expression from +pattern+, which can be either a
  *  String or a Regexp (in which case that regexp's options are propagated),
@@ -3033,8 +3033,8 @@ rb_reg_match_m(int argc, VALUE *argv, VALUE re)
  *  <em>or</em>-ed together.  Otherwise, if +options+ is not
  *  +nil+ or +false+, the regexp will be case insensitive.
  *
- *     r1 = Regexp.new('^a-z+:\\s+\w+')           #=> /^a-z+:\s+\w+/
- *     r2 = Regexp.new('cat', true)               #=> /cat/i
+ *    r1 = Regexp.new('^a-z+:\\s+\w+') #=> /^a-z+:\s+\w+/
+ *    r2 = Regexp.new('cat', true)     #=> /cat/i
  *    r3 = Regexp.new(r2)              #=> /cat/i
  *    r4 = Regexp.new('dog', Regexp::EXTENDED | Regexp::IGNORECASE) #=> /dog/ix
  */

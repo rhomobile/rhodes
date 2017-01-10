@@ -369,7 +369,7 @@ bug_report_begin(FILE *out, const char *fmt, va_list args)
 {
     char buf[REPORT_BUG_BUFSIZ];
 
-	fputs("[BUG] ", out);
+    fputs("[BUG] ", out);
     vsnprintf(buf, sizeof(buf), fmt, args);
     fputs(buf, out);
     snprintf(buf, sizeof(buf), "\n%s\n\n", ruby_description);
@@ -554,24 +554,24 @@ rb_builtin_type_name(int t)
 static const char *
 builtin_class_name(VALUE x)
 {
-		const char *etype;
+    const char *etype;
 
-		if (NIL_P(x)) {
-		    etype = "nil";
-		}
-		else if (FIXNUM_P(x)) {
-		    etype = "Fixnum";
-		}
-		else if (SYMBOL_P(x)) {
-		    etype = "Symbol";
-		}
+    if (NIL_P(x)) {
+	etype = "nil";
+    }
+    else if (FIXNUM_P(x)) {
+	etype = "Fixnum";
+    }
+    else if (SYMBOL_P(x)) {
+	etype = "Symbol";
+    }
     else if (RB_TYPE_P(x, T_TRUE)) {
 	etype = "true";
     }
     else if (RB_TYPE_P(x, T_FALSE)) {
 	etype = "false";
-		}
-		else {
+    }
+    else {
 	etype = NULL;
     }
     return etype;
@@ -583,8 +583,8 @@ rb_builtin_class_name(VALUE x)
     const char *etype = builtin_class_name(x);
 
     if (!etype) {
-		    etype = rb_obj_classname(x);
-		}
+	etype = rb_obj_classname(x);
+    }
     return etype;
 }
 
@@ -608,7 +608,7 @@ rb_check_type(VALUE x, int t)
 	    else
 		rb_raise(rb_eTypeError, "wrong argument type %"PRIsVALUE" (expected %s)",
 			 rb_obj_class(x), tname);
-	    }
+	}
 	if (xt > T_MASK && xt <= 0x3f) {
 	    rb_fatal("unknown type 0x%x (0x%x given, probably comes from extension library for ruby 1.8)", t, xt);
 	}
@@ -872,6 +872,25 @@ exc_backtrace(VALUE exc)
     return obj;
 }
 
+VALUE
+rb_get_backtrace(VALUE exc)
+{
+    ID mid = id_backtrace;
+    if (rb_method_basic_definition_p(CLASS_OF(exc), id_backtrace)) {
+	VALUE info, klass = rb_eException;
+	rb_thread_t *th = GET_THREAD();
+	if (NIL_P(exc))
+	    return Qnil;
+	EXEC_EVENT_HOOK(th, RUBY_EVENT_C_CALL, exc, mid, klass, Qundef);
+	info = exc_backtrace(exc);
+	EXEC_EVENT_HOOK(th, RUBY_EVENT_C_RETURN, exc, mid, klass, info);
+	if (NIL_P(info))
+	    return Qnil;
+	return rb_check_backtrace(info);
+    }
+    return rb_funcall(exc, mid, 0, 0);
+}
+
 /*
  *  call-seq:
  *     exception.backtrace_locations    -> array
@@ -1029,7 +1048,7 @@ exit_initialize(int argc, VALUE *argv, VALUE exc)
 	  case Qfalse:
 	    status = INT2FIX(EXIT_FAILURE);
 	    ++argv;
-	--argc;
+	    --argc;
 	    break;
 	  default:
 	    status = rb_check_to_int(status);
@@ -1164,7 +1183,7 @@ name_err_name(VALUE self)
 }
 
 /*
- * call-seq:
+ *  call-seq:
  *    name_error.local_variables  ->  array
  *
  *  Return a list of the local variable names defined where this
@@ -1232,9 +1251,9 @@ name_err_mesg_memsize(const void *p)
 static const rb_data_type_t name_err_mesg_data_type = {
     "name_err_mesg",
     {
-    name_err_mesg_mark,
-    name_err_mesg_free,
-    name_err_mesg_memsize,
+	name_err_mesg_mark,
+	name_err_mesg_free,
+	name_err_mesg_memsize,
     },
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY
 };
@@ -2354,7 +2373,7 @@ rb_check_copyable(VALUE obj, VALUE orig)
 	    rb_raise(rb_eSecurityError, "Insecure: can't modify %"PRIsVALUE,
 		     RBASIC(obj)->klass);
 	}
-	}
+    }
 }
 
 void

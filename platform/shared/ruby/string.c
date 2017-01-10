@@ -136,7 +136,7 @@ VALUE rb_cSymbol;
     else {\
 	assert(!FL_TEST((str), STR_SHARED)); \
 	REALLOC_N(RSTRING(str)->as.heap.ptr, char, (capacity)+termlen);\
-	    RSTRING(str)->as.heap.aux.capa = (capacity);\
+	RSTRING(str)->as.heap.aux.capa = (capacity);\
     }\
 } while (0)
 
@@ -461,16 +461,16 @@ coderange_scan(const char *p, long len, rb_encoding *enc)
             if (!MBCLEN_CHARFOUND_P(ret)) return ENC_CODERANGE_BROKEN;
             p += MBCLEN_CHARFOUND_LEN(ret);
             if (p == e) break;
-                p = search_nonascii(p, e);
+            p = search_nonascii(p, e);
             if (!p) break;
-                }
-            }
-    else {
-    while (p < e) {
-        int ret = rb_enc_precise_mbclen(p, e, enc);
-            if (!MBCLEN_CHARFOUND_P(ret)) return ENC_CODERANGE_BROKEN;
-        p += MBCLEN_CHARFOUND_LEN(ret);
+        }
     }
+    else {
+        while (p < e) {
+            int ret = rb_enc_precise_mbclen(p, e, enc);
+            if (!MBCLEN_CHARFOUND_P(ret)) return ENC_CODERANGE_BROKEN;
+            p += MBCLEN_CHARFOUND_LEN(ret);
+        }
     }
     return ENC_CODERANGE_VALID;
 }
@@ -504,10 +504,10 @@ rb_str_coderange_scan_restartable(const char *s, const char *e, rb_encoding *enc
 	    }
 	    p += MBCLEN_CHARFOUND_LEN(ret);
 	    if (p == e) break;
-		p = search_nonascii(p, e);
+	    p = search_nonascii(p, e);
 	    if (!p) break;
-		}
-	    }
+	}
+    }
     else {
 	while (p < e) {
 	    int ret = rb_enc_precise_mbclen(p, e, enc);
@@ -623,7 +623,7 @@ size_t
 rb_str_capacity(VALUE str)
 {
     return str_capacity(str, TERM_LEN(str));
-    }
+}
 
 static inline void
 must_not_null(const char *ptr)
@@ -1100,21 +1100,21 @@ str_new_frozen(VALUE klass, VALUE orig)
 		((RBASIC(shared)->flags ^ RBASIC(orig)->flags) & FL_TAINT) ||
 		ENCODING_GET(shared) != ENCODING_GET(orig)) {
 		str = str_new_shared(klass, shared);
-	    RSTRING(str)->as.heap.ptr += ofs;
+		RSTRING(str)->as.heap.ptr += ofs;
 		RSTRING(str)->as.heap.len -= ofs + rest;
-	}
+	    }
 	    else {
 		return shared;
-    }
-    }
+	    }
+	}
 	else if (RSTRING_LEN(orig)+TERM_LEN(orig) <= RSTRING_EMBED_LEN_MAX+1) {
 	    str = str_alloc(klass);
 	    STR_SET_EMBED(str);
 	    memcpy(RSTRING_PTR(str), RSTRING_PTR(orig), RSTRING_LEN(orig));
 	    STR_SET_EMBED_LEN(str, RSTRING_LEN(orig));
 	    TERM_FILL(RSTRING_END(str), TERM_LEN(orig));
-    }
-    else {
+	}
+	else {
 	    str = str_alloc(klass);
 	    STR_SET_NOEMBED(str);
 	    RSTRING(str)->as.heap.len = RSTRING_LEN(orig);
@@ -1123,7 +1123,7 @@ str_new_frozen(VALUE klass, VALUE orig)
 	    RBASIC(str)->flags |= RBASIC(orig)->flags & STR_NOFREE;
 	    RBASIC(orig)->flags &= ~STR_NOFREE;
 	    STR_SET_SHARED(orig, str);
-    }
+	}
     }
 
     rb_enc_cr_str_exact_copy(str, orig);
@@ -1243,26 +1243,26 @@ str_shared_replace(VALUE str, VALUE str2)
         ENC_CODERANGE_SET(str, cr);
     }
     else {
-    STR_SET_NOEMBED(str);
+	STR_SET_NOEMBED(str);
 	FL_UNSET(str, STR_SHARED);
-    RSTRING(str)->as.heap.ptr = RSTRING_PTR(str2);
-    RSTRING(str)->as.heap.len = RSTRING_LEN(str2);
+	RSTRING(str)->as.heap.ptr = RSTRING_PTR(str2);
+	RSTRING(str)->as.heap.len = RSTRING_LEN(str2);
 
 	if (FL_TEST(str2, STR_SHARED)) {
 	    VALUE shared = RSTRING(str2)->as.heap.aux.shared;
 	    STR_SET_SHARED(str, shared);
-    }
-    else {
-	RSTRING(str)->as.heap.aux.capa = RSTRING(str2)->as.heap.aux.capa;
-    }
+	}
+	else {
+	    RSTRING(str)->as.heap.aux.capa = RSTRING(str2)->as.heap.aux.capa;
+	}
 
 	/* abandon str2 */
 	STR_SET_EMBED(str2);
-    RSTRING_PTR(str2)[0] = 0;
-    STR_SET_EMBED_LEN(str2, 0);
-    rb_enc_associate(str, enc);
-    ENC_CODERANGE_SET(str, cr);
-}
+	RSTRING_PTR(str2)[0] = 0;
+	STR_SET_EMBED_LEN(str2, 0);
+	rb_enc_associate(str, enc);
+	ENC_CODERANGE_SET(str, cr);
+    }
 }
 
 VALUE
@@ -1573,10 +1573,10 @@ str_strlen(VALUE str, rb_encoding *enc)
 	long n = rb_enc_strlen_cr(p, e, enc, &cr);
 	if (cr) ENC_CODERANGE_SET(str, cr);
 	return n;
-	    }
+    }
     else {
 	return enc_strlen(p, e, enc, cr);
-	}
+    }
 }
 
 long
@@ -1887,7 +1887,7 @@ rb_must_asciicompat(VALUE str)
     if (!rb_enc_asciicompat(enc)) {
 	rb_raise(rb_eEncCompatError, "ASCII incompatible encoding: %s", rb_enc_name(enc));
     }
-	    }
+}
 
 VALUE
 rb_string_value(volatile VALUE *ptr)
@@ -1896,16 +1896,16 @@ rb_string_value(volatile VALUE *ptr)
     if (!RB_TYPE_P(s, T_STRING)) {
 	s = rb_str_to_str(s);
 	*ptr = s;
-	}
+    }
     return s;
-	}
+}
 
 char *
 rb_string_value_ptr(volatile VALUE *ptr)
 {
     VALUE str = rb_string_value(ptr);
     return RSTRING_PTR(str);
-	}
+}
 
 static int
 zero_filled(const char *s, int n)
@@ -2075,7 +2075,7 @@ str_nth_len(const char *p, const char *e, long *nthp, rb_encoding *enc)
         return (char *)p;
     }
     else {
-        while (p<e && nth--) {
+        while (p < e && nth--) {
             p += rb_enc_mbclen(p, e, enc);
         }
     }
@@ -2177,7 +2177,7 @@ rb_str_subseq(VALUE str, long beg, long len)
 
     if ((RSTRING_EMBED_LEN_MAX + 1 - TERM_LEN(str)) < len && SHARABLE_SUBSTRING_P(beg, len, RSTRING_LEN(str))) {
 	long olen;
-        str2 = rb_str_new_shared(rb_str_new_frozen(str));
+	str2 = rb_str_new_shared(rb_str_new_frozen(str));
 	RSTRING(str2)->as.heap.ptr += beg;
 	olen = RSTRING(str2)->as.heap.len;
 	if (olen > len) RSTRING(str2)->as.heap.len = len;
@@ -2215,7 +2215,7 @@ rb_str_subpos(VALUE str, long beg, long *lenp)
 	if (beg + len > blen)
 	    len = blen - beg;
 	if (len < 0) return 0;
-	    p = s + beg;
+	p = s + beg;
 	goto end;
     }
     if (beg < 0) {
@@ -2478,11 +2478,11 @@ str_buf_cat(VALUE str, const char *ptr, long len)
     total = olen + len;
     if (capa <= total) {
 	if (LIKELY(capa > 0)) {
-	while (total > capa) {
+	    while (total > capa) {
 		if (capa > LONG_MAX / 2) {
 		    capa = (total + 4095) / 4096 * 4096;
-		break;
-	    }
+		    break;
+		}
 		capa = 2 * capa;
 	    }
 	}
@@ -2714,7 +2714,7 @@ rb_str_concat(VALUE str1, VALUE str2)
 	}
 	else {
 	    rb_raise(rb_eRangeError, "bignum out of char range");
-    }
+	}
     }
     else {
 	return rb_str_append(str1, str2);
@@ -2726,7 +2726,7 @@ rb_str_concat(VALUE str1, VALUE str2)
 	buf[0] = (char)code;
 	if (code > 0xFF) {
 	    rb_raise(rb_eRangeError, "%u out of char range", code);
-    }
+	}
 	rb_str_cat(str1, buf, 1);
 	if (code > 127) {
 	    rb_enc_associate(str1, rb_ascii8bit_encoding());
@@ -2759,8 +2759,8 @@ rb_str_concat(VALUE str1, VALUE str2)
 	    cr = ENC_CODERANGE_VALID;
 	ENC_CODERANGE_SET(str1, cr);
     }
-	return str1;
-    }
+    return str1;
+}
 
 /*
  *  call-seq:
@@ -2891,7 +2891,7 @@ str_eql(const VALUE str1, const VALUE str2)
 
 /*
  *  call-seq:
- *     str == obj   -> true or false
+ *     str == obj    -> true or false
  *     str === obj   -> true or false
  *
  *  === Equality
@@ -3199,8 +3199,8 @@ str_rindex(VALUE str, VALUE sub, const char *s, long pos, rb_encoding *enc)
 	searchlen = adjusted - sbeg;
     } while (searchlen > 0);
 
-	return -1;
-    }
+    return -1;
+}
 #else
 static long
 str_rindex(VALUE str, VALUE sub, const char *s, long pos, rb_encoding *enc)
@@ -3223,7 +3223,7 @@ str_rindex(VALUE str, VALUE sub, const char *s, long pos, rb_encoding *enc)
     }
 
     return -1;
-    }
+}
 #endif
 
 static long
@@ -3251,8 +3251,8 @@ rb_str_rindex(VALUE str, VALUE sub, long pos)
 	if (memcmp(sbeg, RSTRING_PTR(sub), RSTRING_LEN(sub)) == 0)
 	    return 0;
 	else
-    return -1;
-}
+	    return -1;
+    }
 
     s = str_nth(sbeg, RSTRING_END(str), pos, enc, singlebyte);
     return str_rindex(str, sub, s, pos, enc);
@@ -3562,12 +3562,12 @@ enc_succ_alnum_char(char *p, long len, rb_encoding *enc, char *carry)
 
     MEMCPY(save, p, char, len);
     for (try = 0; try <= max_gaps; ++try) {
-    ret = enc_succ_char(p, len, enc);
-    if (ret == NEIGHBOR_FOUND) {
-        c = rb_enc_mbc_to_codepoint(p, p+len, enc);
-        if (rb_enc_isctype(c, ctype, enc))
-            return NEIGHBOR_FOUND;
-    }
+	ret = enc_succ_char(p, len, enc);
+	if (ret == NEIGHBOR_FOUND) {
+	    c = rb_enc_mbc_to_codepoint(p, p+len, enc);
+	    if (rb_enc_isctype(c, ctype, enc))
+		return NEIGHBOR_FOUND;
+	}
     }
     MEMCPY(p, save, char, len);
     range = 1;
@@ -4005,14 +4005,14 @@ rb_str_aref(VALUE str, VALUE indx)
  *  call-seq:
  *     str[index]                 -> new_str or nil
  *     str[start, length]         -> new_str or nil
- *     str[range]                  -> new_str or nil
- *     str[regexp]                 -> new_str or nil
+ *     str[range]                 -> new_str or nil
+ *     str[regexp]                -> new_str or nil
  *     str[regexp, capture]       -> new_str or nil
  *     str[match_str]             -> new_str or nil
  *     str.slice(index)           -> new_str or nil
  *     str.slice(start, length)   -> new_str or nil
- *     str.slice(range)            -> new_str or nil
- *     str.slice(regexp)           -> new_str or nil
+ *     str.slice(range)           -> new_str or nil
+ *     str.slice(regexp)          -> new_str or nil
  *     str.slice(regexp, capture) -> new_str or nil
  *     str.slice(match_str)       -> new_str or nil
  *
@@ -4048,7 +4048,7 @@ rb_str_aref(VALUE str, VALUE indx)
  *     a[2, 3]                #=> "llo"
  *     a[2..3]                #=> "ll"
  *
- *     a[-3,2]                #=> "er"
+ *     a[-3, 2]               #=> "er"
  *     a[7..-2]               #=> "her"
  *     a[-4..-2]              #=> "her"
  *     a[-2..-4]              #=> ""
@@ -4409,7 +4409,7 @@ get_pat(VALUE pat)
     }
 
     return rb_reg_regcomp(pat);
-    }
+}
 
 static VALUE
 get_pat_quoted(VALUE pat, int check)
@@ -4703,8 +4703,8 @@ str_gsub(int argc, VALUE *argv, VALUE str, int bang)
 	    match0 = pat;
 	}
 	else {
-	beg0 = BEG(0);
-	end0 = END(0);
+	    beg0 = BEG(0);
+	    end0 = END(0);
 	    if (mode == ITER) match0 = rb_reg_nth_match(0, match);
 	}
 
@@ -5915,7 +5915,7 @@ rb_str_capitalize(VALUE str)
 
 /*
  *  call-seq:
-*     str.swapcase!   -> str or nil
+ *     str.swapcase!   -> str or nil
  *
  *  Equivalent to <code>String#swapcase</code>, but modifies the receiver in
  *  place, returning <i>str</i>, or <code>nil</code> if no changes were made.
@@ -6027,14 +6027,14 @@ nextpart:
 		}
 	    }
 	    if (t->now < t->max) {
-	    return t->now;
-	}
-	else {
-	    t->gen = 0;
-	    return t->max;
+		return t->now;
+	    }
+	    else {
+		t->gen = 0;
+		return t->max;
+	    }
 	}
     }
-}
 }
 
 static VALUE rb_str_delete_bang(int,VALUE*,VALUE);
@@ -6391,10 +6391,10 @@ tr_setup_table(VALUE str, char stable[TR_TABLE_SIZE], int first,
 		    *ctablep = table;
 		}
 		else {
-		table = rb_hash_new();
-		ptable = *tablep;
-		*tablep = table;
-	    }
+		    table = rb_hash_new();
+		    ptable = *tablep;
+		    *tablep = table;
+		}
 	    }
 	    if (table && (!ptable || (cflag ^ !NIL_P(rb_hash_aref(ptable, key))))) {
 		rb_hash_aset(table, key, Qtrue);
@@ -6683,10 +6683,10 @@ rb_str_tr_s(VALUE str, VALUE src, VALUE repl)
  *  sequence or the end of a +other_str+.
  *
  *     a = "hello world"
- *     a.count "lo"            #=> 5
- *     a.count "lo", "o"       #=> 2
- *     a.count "hello", "^l"   #=> 4
- *     a.count "ej-m"          #=> 4
+ *     a.count "lo"                   #=> 5
+ *     a.count "lo", "o"              #=> 2
+ *     a.count "hello", "^l"          #=> 4
+ *     a.count "ej-m"                 #=> 4
  *
  *     "hello^world".count "\\^aeiou" #=> 4
  *     "hello-world".count "a\\-eo"   #=> 4
@@ -6710,8 +6710,8 @@ rb_str_count(int argc, VALUE *argv, VALUE str)
     rb_check_arity(argc, 1, UNLIMITED_ARGUMENTS);
 
     tstr = argv[0];
-	StringValue(tstr);
-	enc = rb_enc_check(str, tstr);
+    StringValue(tstr);
+    enc = rb_enc_check(str, tstr);
     if (argc == 1) {
 	const char *ptstr;
 	if (RSTRING_LEN(tstr) == 1 && rb_enc_asciicompat(enc) &&
@@ -7223,13 +7223,13 @@ static VALUE
 rb_str_lines(int argc, VALUE *argv, VALUE str)
 {
     return rb_str_enumerate_lines(argc, argv, str, 1);
-    }
+}
 
 static VALUE
 rb_str_each_byte_size(VALUE str, VALUE args, VALUE eobj)
 {
     return LONG2FIX(RSTRING_LEN(str));
-    }
+}
 
 static VALUE
 rb_str_enumerate_bytes(VALUE str, int wantarray)
@@ -7246,8 +7246,8 @@ rb_str_enumerate_bytes(VALUE str, int wantarray)
 	    rb_warning("passing a block to String#bytes is deprecated");
 	    wantarray = 0;
 #endif
-	    }
-	    }
+	}
+    }
     else {
 	if (wantarray)
 	    ary = rb_ary_new2(RSTRING_LEN(str));
@@ -7342,7 +7342,7 @@ rb_str_enumerate_chars(VALUE str, int wantarray)
 	    ary = rb_ary_new_capa(str_strlen(str, enc)); /* str's enc*/
 	else
 	    return SIZED_ENUMERATOR(str, 0, 0, rb_str_each_char_size);
-}
+    }
 
     if (ENC_CODERANGE_CLEAN_P(ENC_CODERANGE(str))) {
 	for (i = 0; i < len; i += n) {
@@ -7438,13 +7438,13 @@ rb_str_enumerate_codepoints(VALUE str, int wantarray)
 	    wantarray = 0;
 #endif
 	}
-	}
+    }
     else {
 	if (wantarray)
 	    ary = rb_ary_new_capa(str_strlen(str, enc)); /* str's enc*/
 	else
 	    return SIZED_ENUMERATOR(str, 0, 0, rb_str_each_char_size);
-	}
+    }
 
     while (ptr < end) {
 	c = rb_enc_codepoint_len(ptr, end, &n, enc);
@@ -7458,7 +7458,7 @@ rb_str_enumerate_codepoints(VALUE str, int wantarray)
     if (wantarray)
 	return ary;
     else
-    return orig;
+	return orig;
 }
 
 /*
@@ -7587,36 +7587,36 @@ chompped_length(VALUE str, VALUE rs)
 
     if (len == 0) return 0;
     e = p + len;
-	if (rs == rb_default_rs) {
-	  smart_chomp:
-	    enc = rb_enc_get(str);
-	    if (rb_enc_mbminlen(enc) > 1) {
-		pp = rb_enc_left_char_head(p, e-rb_enc_mbminlen(enc), e, enc);
-		if (rb_enc_is_newline(pp, e, enc)) {
+    if (rs == rb_default_rs) {
+      smart_chomp:
+	enc = rb_enc_get(str);
+	if (rb_enc_mbminlen(enc) > 1) {
+	    pp = rb_enc_left_char_head(p, e-rb_enc_mbminlen(enc), e, enc);
+	    if (rb_enc_is_newline(pp, e, enc)) {
+		e = pp;
+	    }
+	    pp = e - rb_enc_mbminlen(enc);
+	    if (pp >= p) {
+		pp = rb_enc_left_char_head(p, pp, e, enc);
+		if (rb_enc_ascget(pp, e, 0, enc) == '\r') {
 		    e = pp;
 		}
-		pp = e - rb_enc_mbminlen(enc);
-		if (pp >= p) {
-		    pp = rb_enc_left_char_head(p, pp, e, enc);
-		    if (rb_enc_ascget(pp, e, 0, enc) == '\r') {
-			e = pp;
-		    }
-		}
-		}
+	    }
+	}
 	else {
 	    switch (*(e-1)) { /* not e[-1] to get rid of VC bug */
 	      case '\n':
 		if (--e > p && *(e-1) == '\r') {
 		    --e;
-	    }
+		}
 		break;
 	      case '\r':
 		--e;
 		break;
-		    }
-		}
+	    }
+	}
 	return e - p;
-		}
+    }
 
     enc = rb_enc_get(str);
     RSTRING_GETMEM(rs, rsptr, rslen);
@@ -7631,19 +7631,19 @@ chompped_length(VALUE str, VALUE rs)
 		    pp = rb_enc_left_char_head(p, pp, e, enc);
 		    if (rb_enc_ascget(pp, e, 0, enc) == '\r') {
 			e = pp;
+		    }
 		}
 	    }
 	}
-    }
-    else {
+	else {
 	    while (e > p && *(e-1) == '\n') {
 		--e;
 		if (e > p && *(e-1) == '\r')
 		    --e;
-    }
+	    }
 	}
 	return e - p;
-	}
+    }
     if (rslen > len) return len;
 
     enc = rb_enc_get(rs);
@@ -7652,10 +7652,10 @@ chompped_length(VALUE str, VALUE rs)
 	if (rslen == 1) {
 	    if (newline == '\n')
 		goto smart_chomp;
-    }
+	}
 	else {
 	    if (rb_enc_is_newline(rsptr, rsptr+rslen, enc))
-	goto smart_chomp;
+		goto smart_chomp;
 	}
     }
 
@@ -7708,11 +7708,11 @@ rb_str_chomp_bang(int argc, VALUE *argv, VALUE str)
 	if (len < olen) {
 	    STR_SET_LEN(str, len);
 	    TERM_FILL(&RSTRING_PTR(str)[len], TERM_LEN(str));
-	if (ENC_CODERANGE(str) != ENC_CODERANGE_7BIT) {
-	    ENC_CODERANGE_CLEAR(str);
+	    if (ENC_CODERANGE(str) != ENC_CODERANGE_7BIT) {
+		ENC_CODERANGE_CLEAR(str);
+	    }
+	    return str;
 	}
-	return str;
-    }
     }
     return Qnil;
 }
@@ -7729,13 +7729,13 @@ rb_str_chomp_bang(int argc, VALUE *argv, VALUE str)
  *  <code>\r</code>, and <code>\r\n</code>). If <code>$/</code> is an empty string,
  *  it will remove all trailing newlines from the string.
  *
- *     "hello".chomp            #=> "hello"
- *     "hello\n".chomp          #=> "hello"
- *     "hello\r\n".chomp        #=> "hello"
- *     "hello\n\r".chomp        #=> "hello\n"
- *     "hello\r".chomp          #=> "hello"
- *     "hello \n there".chomp   #=> "hello \n there"
- *     "hello".chomp("llo")     #=> "he"
+ *     "hello".chomp                #=> "hello"
+ *     "hello\n".chomp              #=> "hello"
+ *     "hello\r\n".chomp            #=> "hello"
+ *     "hello\n\r".chomp            #=> "hello\n"
+ *     "hello\r".chomp              #=> "hello"
+ *     "hello \n there".chomp       #=> "hello \n there"
+ *     "hello".chomp("llo")         #=> "he"
  *     "hello\r\n\r\n".chomp('')    #=> "hello"
  *     "hello\r\n\r\r\n".chomp('')  #=> "hello\r\n\r"
  */
@@ -7954,8 +7954,8 @@ rb_str_strip_bang(VALUE str)
 #if !SHARABLE_MIDDLE_SUBSTRING
 	TERM_FILL(start+len, rb_enc_mbminlen(enc));
 #endif
-    return str;
-}
+	return str;
+    }
     return Qnil;
 }
 
@@ -8458,10 +8458,10 @@ rb_str_partition(VALUE str, VALUE sep)
     sep = get_pat_quoted(sep, 0);
     if (RB_TYPE_P(sep, T_REGEXP)) {
 	pos = rb_reg_search(sep, str, 0, 0);
-    if (pos < 0) {
-      failed:
-	return rb_ary_new3(3, str, str_new_empty(str), str_new_empty(str));
-    }
+	if (pos < 0) {
+	  failed:
+	    return rb_ary_new3(3, str, str_new_empty(str), str_new_empty(str));
+	}
 	sep = rb_str_subpat(str, sep, INT2FIX(0));
 	if (pos == 0 && RSTRING_LEN(sep) == 0) goto failed;
     }

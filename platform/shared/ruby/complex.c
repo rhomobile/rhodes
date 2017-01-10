@@ -202,10 +202,10 @@ f_zero_p(VALUE x)
 	return Qfalse;
     }
     else if (RB_TYPE_P(x, T_RATIONAL)) {
-	  VALUE num = RRATIONAL(x)->num;
+	VALUE num = RRATIONAL(x)->num;
 
-	  return f_boolcast(FIXNUM_P(num) && FIX2LONG(num) == 0);
-      }
+	return f_boolcast(FIXNUM_P(num) && FIX2LONG(num) == 0);
+    }
     return rb_funcall(x, id_eqeq_p, 1, ZERO);
 }
 
@@ -221,12 +221,12 @@ f_one_p(VALUE x)
 	return Qfalse;
     }
     else if (RB_TYPE_P(x, T_RATIONAL)) {
-	  VALUE num = RRATIONAL(x)->num;
-	  VALUE den = RRATIONAL(x)->den;
+	VALUE num = RRATIONAL(x)->num;
+	VALUE den = RRATIONAL(x)->den;
 
-	  return f_boolcast(FIXNUM_P(num) && FIX2LONG(num) == 1 &&
-			    FIXNUM_P(den) && FIX2LONG(den) == 1);
-      }
+	return f_boolcast(FIXNUM_P(num) && FIX2LONG(num) == 1 &&
+			  FIXNUM_P(den) && FIX2LONG(den) == 1);
+    }
     return rb_funcall(x, id_eqeq_p, 1, ONE);
 }
 
@@ -907,7 +907,7 @@ f_reciprocal(VALUE x)
  *
  * Performs exponentiation.
  *
- *     Complex('i') ** 2             #=> (-1+0i)
+ *    Complex('i') ** 2              #=> (-1+0i)
  *    Complex(-8) ** Rational(1, 3)  #=> (1.0000000000000002+1.7320508075688772i)
  */
 static VALUE
@@ -1265,7 +1265,7 @@ f_signbit(VALUE x)
     if (RB_TYPE_P(x, T_FLOAT)) {
 	double f = RFLOAT_VALUE(x);
 	return f_boolcast(!isnan(f) && signbit(f));
-      }
+    }
     return f_negative_p(x);
 }
 
@@ -1737,7 +1737,7 @@ read_comp(const char **s, int strict,
 	num = str2num(bb);
 	*ret = rb_complex_new2(num, ZERO);
 	return 0; /* e.g. "-" */
-	}
+    }
     **b = '\0';
     num = str2num(bb);
 
@@ -1745,7 +1745,7 @@ read_comp(const char **s, int strict,
 	(*s)++;
 	*ret = rb_complex_new2(ZERO, num);
 	return 1; /* e.g. "3i" */
-		}
+    }
 
     if (**s == '@') {
 	int st;
@@ -1758,21 +1758,21 @@ read_comp(const char **s, int strict,
 	    !isdecimal(*(bb + strlen(bb) - 1))) {
 	    *ret = rb_complex_new2(num, ZERO);
 	    return 0; /* e.g. "1@-" */
-	    }
+	}
 	num2 = str2num(bb);
 	*ret = rb_complex_polar(num, num2);
 	if (!st)
 	    return 0; /* e.g. "1@2." */
 	else
 	    return 1; /* e.g. "1@2" */
-	}
+    }
 
     if (issign(**s)) {
 	bb = *b;
 	sign = read_sign(s, b);
 	if (isimagunit(**s))
 	    num2 = INT2FIX((sign == '-') ? -1 : + 1);
-	    else {
+	else {
 	    if (!read_rat_nos(s, strict, b)) {
 		*ret = rb_complex_new2(num, ZERO);
 		return 0; /* e.g. "1+xi" */
@@ -1783,16 +1783,16 @@ read_comp(const char **s, int strict,
 	if (!isimagunit(**s)) {
 	    *ret = rb_complex_new2(num, ZERO);
 	    return 0; /* e.g. "1+3x" */
-	    }
+	}
 	(*s)++;
 	*ret = rb_complex_new2(num, num2);
 	return 1; /* e.g. "1+2i" */
-	}
+    }
     /* !(@, - or +) */
     {
 	*ret = rb_complex_new2(num, ZERO);
 	return 1; /* e.g. "3" */
-	}
+    }
 }
 
 inline static void
@@ -1816,7 +1816,7 @@ parse_comp(const char *s, int strict,
     skip_ws(&s);
     if (!read_comp(&s, strict, num, &b)) {
 	ret = 0;
-	}
+    }
     else {
 	skip_ws(&s);
 

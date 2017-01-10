@@ -418,6 +418,8 @@
 
 //RHO
 #define USE_RGENGC 0
+#define RGENGC_CHECK_MODE 4
+
 #define LOAD_RELATIVE 1
 
 #ifndef TRUE
@@ -431,6 +433,10 @@
 #define NO_INITIAL_LOAD_PATH
 #define NO_RUBY_SITE_LIB
 #define NO_RUBY_VENDOR_LIB
+
+#define RHO_STRIP_LOG 999
+
+#define USE_STD_PRINTF
 //RHO
 
 

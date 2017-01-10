@@ -1047,6 +1047,7 @@ rb_require_safe(VALUE fname, int safe)
     int result = rb_require_internal(fname, safe);
 
     if (result > TAG_RETURN) {
+	if (result == TAG_RAISE) rb_exc_raise(rb_errinfo());
 	JUMP_TAG(result);
     }
     if (result < 0) {
@@ -1062,7 +1063,7 @@ rb_require(const char *fname)
     VALUE fn = rb_str_new2(fname);
     OBJ_FREEZE(fn);
     // RHO
-    #ifndef RUBYLINUX
+    #if !defined(RUBYLINUX) && !defined(RUBYMAC)
     return rb_require_compiled(Qnil, fn);
     #else
     return rb_require_safe(fn, rb_safe_level());
