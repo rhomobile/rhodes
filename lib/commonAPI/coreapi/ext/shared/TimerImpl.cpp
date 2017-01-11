@@ -11,35 +11,41 @@
 
 extern "C" void rho_ios_log_console_output(const char* message);
 
-namespace rho 
-{    
+
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "TimerImpl"
+
+
+namespace rho
+{
 	class CTimerFactory;
 
     using namespace apiGenerator;
     using namespace common;
-    
+
     class CTimerSingletonImpl: public CTimerSingletonBase
     {
 		static unsigned int createdTimers;
 
     public:
-        
+
         CTimerSingletonImpl(): CTimerSingletonBase(){}
-        
+
         //methods
-        // create Create a timers objects. 
-        virtual void create(rho::apiGenerator::CMethodResult& oResult) 
+        // create Create a timers objects.
+        virtual void create(rho::apiGenerator::CMethodResult& oResult)
 		{
 			++createdTimers;
 
 			char buf[10];
             sprintf(buf, "%d", createdTimers);
 			oResult.set(buf);
-        } 
-        // enumerate This is documentation 
-        virtual void enumerate(rho::apiGenerator::CMethodResult& oResult) { } 
+        }
+        // enumerate This is documentation
+        virtual void enumerate(rho::apiGenerator::CMethodResult& oResult) { }
     };
-    
+
 	unsigned int  CTimerSingletonImpl::createdTimers = 0;
 
     class CTimerImpl : public CTimerBase, public common::CRhoTimer::ICallback
@@ -55,7 +61,7 @@ namespace rho
 
 			virtual void run()
 			{
-				
+
 				while ( !RHODESAPP().isApplicationActive() ) {
 					wait(10);
 				}
@@ -71,37 +77,40 @@ namespace rho
 
     public:
 		CTimerImpl(const rho::String& timerID) : m_timerID(timerID), m_answerThread(0) {}
-		virtual ~CTimerImpl() 
+		virtual ~CTimerImpl()
 		{
 			if (!m_answerThread)
 				delete m_answerThread;
 		}
 
         //methods
-        virtual void start( int interval, rho::apiGenerator::CMethodResult& oResult) 
+        virtual void start( int interval, rho::apiGenerator::CMethodResult& oResult)
 		{
 			if (interval <= 0)
 			{
+                LOG(ERROR) + "$NetRequestProcess$ PRE SET ERROR CTimerImpl::start";
 				oResult.setError("invalid interval");
-				return;
+                LOG(ERROR) + "$NetRequestProcess$ POST SET ERROR CTimerImpl::start";
+
+                return;
 			}
 
 			m_oResult = oResult;
 			common::CRhoTimer& timerManager = RHODESAPP().getTimer();
 			timerManager.addNativeTimer(interval, this);
-        } 
+        }
 
         virtual void stop(rho::apiGenerator::CMethodResult& oResult)
 		{
 			common::CRhoTimer& timerManager = RHODESAPP().getTimer();
 			timerManager.stopNativeTimer(this);
-        } 
+        }
 
-        virtual void isAlive(rho::apiGenerator::CMethodResult& oResult) 
+        virtual void isAlive(rho::apiGenerator::CMethodResult& oResult)
 		{
 			common::CRhoTimer& timerManager = RHODESAPP().getTimer();
 			oResult.set(timerManager.isNativeTimerExist(this));
-        } 
+        }
 
 		virtual bool onTimer()
 		{
@@ -114,20 +123,20 @@ namespace rho
 			return true;
 		}
     };
-    
+
     ////////////////////////////////////////////////////////////////////////
-    
-    class CTimerFactory: public CTimerFactoryBase    
+
+    class CTimerFactory: public CTimerFactoryBase
 	{
     public:
         CTimerFactory(){}
-        
+
         ITimerSingleton* createModuleSingleton()
-        { 
+        {
             return new CTimerSingletonImpl();
         }
-        
-        virtual ITimer* createModuleByID(const rho::String& strID){ 
+
+        virtual ITimer* createModuleByID(const rho::String& strID){
 			return new CTimerImpl(strID);
 		};
 
@@ -136,7 +145,7 @@ namespace rho
 			return m_hashModules.size();
 		}
     };
-    
+
 }
 
 extern "C" void Init_Timer_extension()

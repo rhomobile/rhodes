@@ -27,6 +27,31 @@
 #include "common/RhoTime.h"
 #include "common/RhodesApp.h"
 
+#import "common/RhoConf.h"
+
+
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoTimer"
+
+
+static bool is_net_trace() {
+    static int res = -1;
+    if (res == -1) {
+        if (rho_conf_getBool("net_trace") ) {
+            res = 1;
+        }
+        else {
+            res = 0;
+        }
+    }
+    return res == 1;
+}
+
+
+
+
+
 namespace rho{
 namespace common{
 
@@ -143,33 +168,34 @@ boolean CRhoTimer::checkTimers()
     for( int i = (int)m_arItems.size()-1; i >= 0; i--)
     {
         CTimerItem oItem = m_arItems.elementAt(i);
-		if(oItem.m_overflow==false)
-		{
-
-			if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
-			{
-                RAWTRACE("CRhoTimer::checkTimers: firing timer");
-				m_arItems.removeElementAt(i);
-				if ( RHODESAPP().callTimerCallback(oItem.m_strCallback, oItem.m_strCallbackData) )
-					bRet = true;
-			}
-
-		}
-		else
-		{
-			if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
-			{
-				if((curTime.toULong()-oItem.m_oFireTime.toULong())<=oItem.m_nInterval)
-				{
+        
+            if(oItem.m_overflow==false)
+            {
+                
+                if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
+                {
                     RAWTRACE("CRhoTimer::checkTimers: firing timer");
-					m_arItems.removeElementAt(i);
-					if ( RHODESAPP().callTimerCallback(oItem.m_strCallback, oItem.m_strCallbackData) )
-						bRet = true;
-				}
-
-			}
-
-		}
+                    m_arItems.removeElementAt(i);
+                    if ( RHODESAPP().callTimerCallback(oItem.m_strCallback, oItem.m_strCallbackData) )
+                        bRet = true;
+                }
+                
+            }
+            else
+            {
+                if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
+                {
+                    if((curTime.toULong()-oItem.m_oFireTime.toULong())<=oItem.m_nInterval)
+                    {
+                        RAWTRACE("CRhoTimer::checkTimers: firing timer");
+                        m_arItems.removeElementAt(i);
+                        if ( RHODESAPP().callTimerCallback(oItem.m_strCallback, oItem.m_strCallbackData) )
+                            bRet = true;
+                    }
+                    
+                }
+                
+            }
     }
 
     for( int i = (int)m_arNativeItems.size()-1; i >= 0; i--)
@@ -177,28 +203,42 @@ boolean CRhoTimer::checkTimers()
         CNativeTimerItem oItem = m_arNativeItems.elementAt(i);
         
         if(oItem.m_overflow==false)
-		{
+        {
             if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
             {
                 RAWTRACE("CRhoTimer::checkTimers: firing native timer");
                 m_arNativeItems.removeElementAt(i);
-                if ( oItem.m_pCallback->onTimer() )
+                if (is_net_trace()) {
+                    RAWTRACE("$NetRequestProcess$ PRE ONTIMER CRhoTimer::checkTimers() 1 TIMER");
+                }
+                if ( oItem.m_pCallback->onTimer() ) {
                     bRet = true;
+                }
+                if (is_net_trace()) {
+                    RAWTRACE("$NetRequestProcess$ POST ONTIMER CRhoTimer::checkTimers() 1 TIMER");
+                }
             }
         }
         else
         {
             if ( curTime.toULong() >= oItem.m_oFireTime.toULong() )
-			{
-				if((curTime.toULong()-oItem.m_oFireTime.toULong())<=oItem.m_nInterval)
-				{
+            {
+                if((curTime.toULong()-oItem.m_oFireTime.toULong())<=oItem.m_nInterval)
+                {
                     RAWTRACE("CRhoTimer::checkTimers: firing native timer");
                     m_arNativeItems.removeElementAt(i);
-                    if ( oItem.m_pCallback->onTimer() )
+                    if (is_net_trace()) {
+                        RAWTRACE("$NetRequestProcess$ PRE ONTIMER CRhoTimer::checkTimers() 2 TIMER");
+                    }
+                    if ( oItem.m_pCallback->onTimer() ) {
                         bRet = true;
-				}
-
-			}
+                    }
+                    if (is_net_trace()) {
+                        RAWTRACE("$NetRequestProcess$ POST ONTIMER CRhoTimer::checkTimers() 2 TIMER");
+                    }
+                }
+                
+            }
         }
     }
 

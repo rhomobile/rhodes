@@ -12,8 +12,30 @@
 #import "common/RhoFilePath.h"
 #import "common/StringConverter.h"
 #import "common/RhoConf.h"
+#import "logging/RhoLog.h"
+
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "iPhoneNetRequest"
 
 extern "C" void rho_net_impl_network_indicator(int active);
+
+
+static bool is_net_trace() {
+    static int res = -1;
+    if (res == -1) {
+        if (rho_conf_getBool("net_trace") ) {
+            res = 1;
+        }
+        else {
+            res = 0;
+        }
+    }
+    return res == 1;
+}
+
+
+
 
 @interface NetRequestDelegateContext : NSObject
 {
@@ -115,6 +137,13 @@ public:
 
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge;
 
+- (nullable NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(nullable NSURLResponse *)response;
+- (void)connection:(NSURLConnection *)connection   didSendBodyData:(NSInteger)bytesWritten
+ totalBytesWritten:(NSInteger)totalBytesWritten
+totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
+
+
+
 //- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response;
 
 @property (retain)NSHTTPURLResponse* response;
@@ -146,18 +175,28 @@ public:
 
   - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)err
   {
+      if (is_net_trace()) {
+          RAWTRACE3("$NetRequestProcess$ DELEGATE IPhoneNetRequest::delegate::didFailWithError uri = %s  ERRCODE = %d,  ERRTEXT = %s", [[[[connection currentRequest] URL] absoluteString] UTF8String], (int)[err code], [err localizedDescription]);
+      }
+      
     self.error = err;
     m_pCppDelegate->onDone();
   }
 
   - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)resp
   {
+      if (is_net_trace()) {
+          RAWTRACE1("$NetRequestProcess$ DELEGATE IPhoneNetRequest::delegate::didReceiveResponse uri = %s ", [[[[connection currentRequest] URL] absoluteString] UTF8String]);
+      }
     self.response = (NSHTTPURLResponse*)resp;
     m_pCppDelegate->onResponse((NSHTTPURLResponse*)resp);
   }
 
   - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
   {
+      if (is_net_trace()) {
+          RAWTRACE1("$NetRequestProcess$ DELEGATE IPhoneNetRequest::delegate::didReceiveData uri = %s ", [[[[connection currentRequest] URL] absoluteString] UTF8String]);
+      }
     if ( m_pCppDelegate->shouldSaveData() )
     {
       [self.data appendData:data];
@@ -167,11 +206,17 @@ public:
 
   - (void)connectionDidFinishLoading:(NSURLConnection *)connection
   {
+      if (is_net_trace()) {
+          RAWTRACE1("$NetRequestProcess$ DELEGATE IPhoneNetRequest::delegate::connectionDidFinishLoading uri = %s ", [[[[connection currentRequest] URL] absoluteString] UTF8String]);
+      }
     m_pCppDelegate->onDone();
   }
 
   - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
   {
+      if (is_net_trace()) {
+          RAWTRACE1("$NetRequestProcess$ DELEGATE IPhoneNetRequest::delegate::willSendRequestForAuthenticationChallenge uri = %s ", [[[[connection currentRequest] URL] absoluteString] UTF8String]);
+      }
     if ( (!m_pCppDelegate->verifySSLPeers()) && [challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust] )
     {
       SecTrustRef trust = challenge.protectionSpace.serverTrust;
@@ -183,6 +228,24 @@ public:
       [challenge.sender performDefaultHandlingForAuthenticationChallenge:challenge];
     }
   }
+
+- (nullable NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(nullable NSURLResponse *)response {
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ DELEGATE IPhoneNetRequest::delegate::willSendRequest uri = %s ", [[[[connection currentRequest] URL] absoluteString] UTF8String]);
+    }
+    return request;
+}
+
+
+- (void)connection:(NSURLConnection *)connection   didSendBodyData:(NSInteger)bytesWritten
+ totalBytesWritten:(NSInteger)totalBytesWritten
+totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ DELEGATE IPhoneNetRequest::delegate::didSendBodyData uri = %s ", [[[[connection currentRequest] URL] absoluteString] UTF8String]);
+    }
+}
+
+
 
 /*
   - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
@@ -651,16 +714,28 @@ public:
   
   INetResponse* perform( Hashtable<String,String>* pHeaders, IRhoSession* pSession )
   {
-  
-    [m_pPerformCond lock];
+      if (is_net_trace()) {
+          RAWLOG_INFO1("$NetRequestProcess$ PRE LOCK IPhoneNetRequest::perform uri = %s", [[[m_pReq URL] absoluteString] UTF8String]);
+      }
+
+      [m_pPerformCond lock];
+      if (is_net_trace()) {
+          RAWLOG_INFO1("$NetRequestProcess$ POST LOCK IPhoneNetRequest::perform uri = %s", [[[m_pReq URL] absoluteString] UTF8String]);
+      }
 
     //start();
     rho_net_impl_network_indicator(1);
 
     [m_pConnDelegate performSelector:@selector(startAsyncRequest) onThread:[[NetRequestDelegateContext sharedInstance] netRequestDelegateThread] withObject:nil waitUntilDone:NO];
 
+      if (is_net_trace()) {
+          RAWTRACE1("$NetRequestProcess$ PRE WAIT IPhoneNetRequest::perform uri = %s", [[[m_pReq URL] absoluteString] UTF8String]);
+      }
     [m_pPerformCond wait];
     [m_pPerformCond unlock];
+      if (is_net_trace()) {
+          RAWTRACE1("$NetRequestProcess$ POST WAIT IPhoneNetRequest::perform uri = %s", [[[m_pReq URL] absoluteString] UTF8String]);
+      }
   
     NSHTTPURLResponse* resp = nil;
     NSError* err = nil;
@@ -739,6 +814,11 @@ public:
       }
     }
     rho_net_impl_network_indicator(0);
+      
+      if (is_net_trace()) {
+          RAWTRACE1("$NetRequestProcess$ FINISH IPhoneNetRequest::perform uri = %s", [[[m_pReq URL] absoluteString] UTF8String]);
+      }
+      
     return ret;
     
   }
@@ -747,8 +827,15 @@ public:
   {
     [m_pConn initWithRequest:m_pReq delegate:m_pConnDelegate startImmediately:NO];
 //    [m_pConn setDelegateQueue:[NSOperationQueue mainQueue]];
-//    [m_pConn scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    //[m_pConn scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+      if (is_net_trace()) {
+          RAWTRACE1("$NetRequestProcess$ PRE START IPhoneNetRequest::start uri = %s", [[[m_pReq URL] absoluteString] UTF8String]);
+      }
+      
     [m_pConn start];
+      if (is_net_trace()) {
+          RAWTRACE1("$NetRequestProcess$ POST START IPhoneNetRequest::start uri = %s", [[[m_pReq URL] absoluteString] UTF8String]);
+      }
   }
   
   void cancel()
