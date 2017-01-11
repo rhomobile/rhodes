@@ -340,8 +340,11 @@ int on_http_cb(http_parser* parser) { return 0; }
     if (is_net_trace()) {
         RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading()", [self selfIDstring]);
     }
-   [self performSelectorInBackground:@selector(startLoadingInThread) withObject:nil];
-}
+    
+    dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 ), ^{
+        [self startLoadingInThread];
+    });
+ }
 
 
 - (CRhoURLResponse*) makeDirectHttpRequest:(NSURL*)theUrl
