@@ -113,11 +113,17 @@ int CPosixThreadImpl::wait(unsigned int nTimeoutMs)
     if (timed_wait)
     {
         gettimeofday(&tp, NULL);
+        
+        
+        unsigned long long nanosecs = tp.tv_usec * 1000 + ((unsigned long long)nTimeoutMs)*((unsigned long long)1000000);
+        unsigned long long nanosec_sec = nanosecs / ((unsigned long long)1000000000);
+        nanosecs = nanosecs - (nanosec_sec * ((unsigned long long)1000000000));
+        
         /* Convert from timeval to timespec */
-        ts.tv_sec  = tp.tv_sec;
-        ts.tv_nsec = tp.tv_usec * 1000 + ((unsigned long long)(nTimeoutMs - nTimeout*1000))*1000000;
-        ts.tv_sec += nTimeout;
-        max = ((unsigned long long)tp.tv_sec + nTimeout)*1000000 + tp.tv_usec;
+        ts.tv_sec  = tp.tv_sec + nanosec_sec;
+        ts.tv_nsec = nanosecs;//tp.tv_usec * 1000 + ((unsigned long long)(nTimeoutMs - nTimeout*1000))*1000000;
+        //ts.tv_sec += nTimeout;
+        max = ((unsigned long long)tp.tv_sec)*1000000 + tp.tv_usec + ((unsigned long long)nTimeoutMs)*((unsigned long long)1000);
     }
 
     common::CMutexLock oLock(m_mxSync);
