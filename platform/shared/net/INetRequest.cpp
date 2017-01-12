@@ -30,6 +30,28 @@
 #include "common/RhodesApp.h"
 #include "common/RhoFilePath.h"
 #include "net/URI.h"
+#import "common/RhoConf.h"
+
+
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "NetRequestTimer"
+
+
+static bool is_net_trace() {
+    static int res = -1;
+    if (res == -1) {
+        if (rho_conf_getBool("net_trace") ) {
+            res = 1;
+        }
+        else {
+            res = 0;
+        }
+    }
+    return res == 1;
+}
+
+
 
 namespace rho {
 namespace net {
@@ -50,12 +72,17 @@ void CNetRequestHolder::setRequest(INetRequestImpl* pReq)
 
 void CNetRequestHolder::cancel()
 {
+    if (is_net_trace()) {
+        RAWTRACE("$NetRequestProcess$ PRE SYNCHRONIZED CNetRequestHolder::cancel() TIMER");
+    }
     synchronized(m_mxReq)
     {
         m_bCancel = true;
         if ( m_pReq != 0 )
             m_pReq->cancel();
-
+        if (is_net_trace()) {
+            RAWTRACE("$NetRequestProcess$ POST SYNCHRONIZED CNetRequestHolder::cancel() TIMER");
+        }
         m_pReq = 0;
     }
 }

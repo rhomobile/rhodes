@@ -81,6 +81,24 @@ typedef unsigned __int16 uint16_t;
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "HttpServer"
 
+
+static bool is_net_trace() {
+    static int res = -1;
+    if (res == -1) {
+        if (rho_conf_getBool("net_trace") ) {
+            res = 1;
+        }
+        else {
+            res = 0;
+        }
+    }
+    return res == 1;
+}
+
+
+
+
+
 //extern "C" void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
 
 namespace rho
@@ -1497,8 +1515,13 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 #ifdef OS_MACOSX
 String CHttpServer::directRequest( const String& method, const String& uri, const String& query, const HeaderList& headers ,const String& body )
 {
+  if (is_net_trace()) {
+      RAWTRACE1("$NetRequestProcess$ PRE LOCK CHttpServer::directRequest uri = %s", uri.c_str());
+  }
   common::CMutexLock lock(m_mxSyncRequest);
-  
+  if (is_net_trace()) {
+      RAWTRACE1("$NetRequestProcess$ POST LOCK CHttpServer::directRequest uri = %s", uri.c_str());
+  }
   String ret;
   if ( m_pQueue != 0 )
   {
@@ -1526,6 +1549,9 @@ String CHttpServer::directRequest( const String& method, const String& uri, cons
     
     ret = m_pQueue->getResponse();
   }
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ FINISH CHttpServer::directRequest uri = %s", uri.c_str());
+    }
   
   return ret;
  

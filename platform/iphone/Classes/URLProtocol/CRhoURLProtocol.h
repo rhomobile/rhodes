@@ -15,4 +15,6 @@
 @property (retain) NSMutableDictionary* httpHeaders;
 @property (retain) NSData* httpBody;
 
+@property (nonatomic) BOOL isStopped;
+
 @end
