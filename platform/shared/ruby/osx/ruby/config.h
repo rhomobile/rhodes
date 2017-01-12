@@ -417,8 +417,8 @@
 #define RUBY_PLATFORM "x86_64-darwin16"
 
 //RHO
-#define USE_RGENGC 0
-#define RGENGC_CHECK_MODE 4
+//#define USE_RGENGC 0
+//#define RGENGC_CHECK_MODE 4
 
 #define LOAD_RELATIVE 1
 
