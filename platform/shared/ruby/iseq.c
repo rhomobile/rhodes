@@ -26,7 +26,8 @@
 #include "insns_info.inc"
 
 VALUE rb_cISeq;
-static VALUE iseqw_new(const rb_iseq_t *iseq);
+//RHO
+/*static*/ VALUE iseqw_new(const rb_iseq_t *iseq);
 static const rb_iseq_t *iseqw_check(VALUE iseqw);
 
 #define hidden_obj_p(obj) (!SPECIAL_CONST_P(obj) && !RBASIC(obj)->klass)
@@ -735,7 +736,8 @@ static const rb_data_type_t iseqw_data_type = {
     0, 0, RUBY_TYPED_FREE_IMMEDIATELY|RUBY_TYPED_WB_PROTECTED
 };
 
-static VALUE
+//RHO
+/*static*/ VALUE
 iseqw_new(const rb_iseq_t *iseq)
 {
     union { const rb_iseq_t *in; void *out; } deconst;
@@ -923,7 +925,12 @@ rb_iseqw_to_iseq(VALUE iseqw)
  *
  *      RubyVM::InstructionSequence.compile("1 + 2").eval #=> 3
  */
-static VALUE
+
+//RHO
+/*
+static
+ */
+VALUE
 iseqw_eval(VALUE self)
 {
     rb_secure(1);

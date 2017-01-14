@@ -100,7 +100,7 @@ rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
     //RAWLOG_INFO1("eval_compiled: %s", RSTRING_PTR(fname));
     
     iseqval = loadISeqFromFile(RhoPreparePath(fname));
-    res = rb_funcall(rb_cISeq, rb_intern("eval"),1,iseqval);//eval_string_with_cref( self, iseqval, scope, 0, file, 1 );
+    res = eval_string_with_cref( self, iseqval, scope, 0, file, 1 );
     //rb_gc_enable();
     
     return res;

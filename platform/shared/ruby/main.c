@@ -75,15 +75,27 @@ main(int argc, char **argv)
     SetEnvironmentVariable("RUBYLIB","");
 #endif //WIN32
     
+    puts (">>>>> RUNNING RUBY MAC");
+    puts (">>>>> WORK DIR");
+    char cwd[1024];
+    getcwd(cwd,sizeof(cwd));
+    puts(cwd);
+    puts (">>>>> ARGS:");
+    for( int i = 0; i<argc;++i) {
+        puts (argv[i]);
+    }
+    
     //    MessageBox(0,"","",MB_OK);
     ruby_sysinit(&argc, &argv);
     {
         RUBY_INIT_STACK;
         ruby_init();
         Init_strscan();
+        
         //Init_sqlite3_api();
-        Init_SyncEngine();
-        Init_System();
+        ////Init_SyncEngine();
+        ////Init_System();
+        
         //Init_prelude();
         
         //rb_gc_disable();
@@ -102,19 +114,21 @@ int rho_rhodesapp_isrubycompiler()
     return 1;
 }
 
+VALUE iseqw_new(const rb_iseq_t *iseq);
+
 static VALUE
 __rho_compile( VALUE obj, VALUE src)
 {
     VALUE result;
-    rb_thread_t *th = GET_THREAD();
+    //rb_thread_t *th = GET_THREAD();
     
     rb_secure(1);
     
-    th->parse_in_eval++;
-    result = rb_iseq_compile(src, rb_str_new2("(eval)"), INT2FIX(1));
+    //th->parse_in_eval++;
+    result = iseqw_new(rb_iseq_compile(src, rb_str_new2("(eval)"), INT2FIX(1)));
     
     //result = rb_iseq_compile_with_option(src, rb_str_new2("(eval)"), Qnil, INT2FIX(1), Qtrue );
-    th->parse_in_eval--;
+    //th->parse_in_eval--;
     
     return result;
 }
