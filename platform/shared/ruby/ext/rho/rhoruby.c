@@ -241,7 +241,7 @@ void RhoRubyStart()
 
 #if !defined(OS_WP8)
 
-    //Init_strscan(); //+
+    Init_strscan(); //+
     Init_GeoLocation(); //+
 
     Init_Phonebook();
@@ -304,7 +304,7 @@ void RhoRubyStart()
 #endif //RHO_SYMBIAN
 
 #else // OS_WP8 is set
-	//Init_strscan();
+	Init_strscan();
 	
     Init_GeoLocation();
 	Init_NavBar();

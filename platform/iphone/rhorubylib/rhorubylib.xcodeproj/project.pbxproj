@@ -220,7 +220,6 @@
 		A8A6D3841E24ADBD00016427 /* vm_trace.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFE381E2415390006FF68 /* vm_trace.c */; };
 		A8A6D3851E24ADBD00016427 /* vm.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFE391E2415390006FF68 /* vm.c */; };
 		A8A6D3871E24B2AC00016427 /* encoding.c in Sources */ = {isa = PBXBuildFile; fileRef = A8A6D3861E24B2AC00016427 /* encoding.c */; };
-		A8A6D3891E24B30900016427 /* dmyenc.c in Sources */ = {isa = PBXBuildFile; fileRef = A8A6D3881E24B30900016427 /* dmyenc.c */; };
 		A8A6D38A1E24B33D00016427 /* explicit_bzero.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80BB1E2441420090E7E6 /* explicit_bzero.c */; };
 		A8A6D38B1E24B34A00016427 /* setproctitle.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80BC1E2441420090E7E6 /* setproctitle.c */; };
 		A8A6D38D1E24B3B000016427 /* iso_8859_1.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFD741E24144B0006FF68 /* iso_8859_1.c */; };
@@ -233,6 +232,7 @@
 		A8A6D3A31E258DD700016427 /* strscan.c in Sources */ = {isa = PBXBuildFile; fileRef = A8A6D3A21E258DBE00016427 /* strscan.c */; };
 		A8A6D3A41E258E5700016427 /* rhoruby.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C806F1E243EBC0090E7E6 /* rhoruby.c */; };
 		A8A6D3A51E258EC200016427 /* rhosupport.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80711E243EBC0090E7E6 /* rhosupport.c */; };
+		A8F6C0171E29BA95001869D0 /* strscan.c in Sources */ = {isa = PBXBuildFile; fileRef = A8A6D3A21E258DBE00016427 /* strscan.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -964,7 +964,6 @@
 				A8A6D34E1E24ADBD00016427 /* localeinit.c in Sources */,
 				A8A6D35B1E24ADBD00016427 /* process.c in Sources */,
 				A8A6D3341E24ADBD00016427 /* dir.c in Sources */,
-				A8A6D3891E24B30900016427 /* dmyenc.c in Sources */,
 				A8A6D3661E24ADBD00016427 /* regparse.c in Sources */,
 				A8A6D35F1E24ADBD00016427 /* re.c in Sources */,
 				A8A6D32D1E24ADBD00016427 /* class.c in Sources */,
@@ -1097,6 +1096,7 @@
 				A80AFE441E2415390006FF68 /* cont.c in Sources */,
 				A80AFE7F1E2415390006FF68 /* proc.c in Sources */,
 				A80AFE891E2415390006FF68 /* regexec.c in Sources */,
+				A8F6C0171E29BA95001869D0 /* strscan.c in Sources */,
 				A80AFE5A1E2415390006FF68 /* gc.c in Sources */,
 				A80AFE581E2415390006FF68 /* eval.c in Sources */,
 				A80AFD761E24144B0006FF68 /* iso_8859_1.c in Sources */,
