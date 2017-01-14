@@ -61,29 +61,51 @@ VALUE rho_sys_has_wifi_network();
 VALUE rho_sys_has_cell_network();
 
 
+
+static BOOL getEnabledStartupLogging() {
+    static int res = -1;
+    if (res == -1) {
+        const char* svalue = get_app_build_config_item("iphone_enable_startup_logging");
+        if (svalue != NULL) {
+            if ((svalue[0] != '0') && (svalue[0] != 'f') && (svalue[0] != 'F') ) {
+                res = 1;
+            }
+            else {
+                res = 0;
+            }
+        }
+    }
+    return res == 1;
+}
+
+// when Application manager is initialize Rhodes logging system is not ready !!!
+#define ENABLE_STARTUP_TRACES getEnabledStartupLogging()
+
+
+
 BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     NSError *error;
     
     NSDictionary *attributes = [fileManager attributesOfItemAtPath:path error:&error]; 
     
     if (attributes == nil) {
-        //NSLog(@"     SymLink  NO : %@", path);
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:      SymLink  NO : %@", path);
         return NO;
     }
     
     NSString* fileType = [attributes objectForKey:NSFileType];
     
     if (fileType == nil) {
-        //NSLog(@"     SymLink  NO : %@", path);
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:      SymLink  NO : %@", path);
         return NO;
     }
 
     BOOL res = [NSFileTypeSymbolicLink isEqualToString:fileType];
     if (res) {
-        //NSLog(@"     SymLink YES : %@", path);
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:      SymLink YES : %@", path);
     }
     else {
-        //NSLog(@"     SymLink  NO : %@", path);
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:      SymLink  NO : %@", path);
     }
     
     return res;
@@ -121,6 +143,19 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 	return(gInstance);
 }
 
+
++ (void) startupLogging:(NSString*)message {
+    if (ENABLE_STARTUP_TRACES) {
+        NSLog(@"Rhodes startup : %@", message);
+    }
+}
+
++ (BOOL) isEnabledStartupLogging {
+    return getEnabledStartupLogging();
+}
+
+
+
 /*
  * Gets root folder of the site
  * Application folders located undern the root
@@ -141,7 +176,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 
 + (NSString *) getApplicationsRosterUrl {
-	return @"http://dev.rhomobile.com/vlad/";
+	return @"http://tau-technologies.com/";
 }
 
 + (bool) installApplication:(NSString*)appName data:(NSData*)appData {
@@ -194,8 +229,8 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 
 - (BOOL)isContentsEqual:(NSFileManager*)fileManager first:(NSString*)filePath1 second:(NSString*)filePath2 {
-    NSLog(@"filePath1: %@", filePath1);
-    NSLog(@"filePath2: %@", filePath2);
+    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: filePath1: %@", filePath1);
+    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: filePath2: %@", filePath2);
     if (![fileManager fileExistsAtPath:filePath1] || ![fileManager fileExistsAtPath:filePath2])
         return NO;
     
@@ -252,12 +287,12 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
             // check exist of sym-link
             NSString* testName = [rhoRoot stringByAppendingPathComponent:@"lib"];
             if (![fileManager fileExistsAtPath:testName]) {
-                NSLog(@" Can not found main Sym-Link - we should restore all sym-links !");
+                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Can not found main Sym-Link - we should restore all sym-links !");
                 contentChanged = YES;
                 restoreSymLinks_only = YES;
             }
             else {
-                NSLog(@" Main Sym-Link founded - disable restoring !");
+                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Main Sym-Link founded - disable restoring !");
             }
         }
         
@@ -266,10 +301,10 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     NSString* testName = [rhoRoot stringByAppendingPathComponent:@"lib"];
     BOOL libExist = [fileManager fileExistsAtPath:testName];
     if (libExist) {
-        NSLog(@" Lib File is Exist: %@", testName);
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Lib File is Exist: %@", testName);
     }
     else {
-        NSLog(@" Lib File is NOT Exist: %@", testName);
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Lib File is NOT Exist: %@", testName);
     }
 	
     
@@ -301,9 +336,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
             
             // Create symlink to "lib"
             NSString *src = [bundleRoot stringByAppendingPathComponent:@"lib"];
-            NSLog(@"src: %@", src);
+            if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: src: %@", src);
             NSString *dst = [rhoRoot stringByAppendingPathComponent:@"lib"];
-            NSLog(@"dst: %@", dst);
+            if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: dst: %@", dst);
             [fileManager removeItemAtPath:dst error:&error];
             
             [fileManager createSymbolicLinkAtPath:dst withDestinationPath:src error:&error];
@@ -313,9 +348,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
             for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
                 // Create directory
                 src = [bundleRoot stringByAppendingPathComponent:dirs[i]];
-                NSLog(@"src: %@", src);
+                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: src: %@", src);
                 dst = [rhoRoot stringByAppendingPathComponent:dirs[i]];
-                NSLog(@"dst: %@", dst);
+                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: dst: %@", dst);
                 if (![fileManager fileExistsAtPath:dst])
                     [fileManager createDirectoryAtPath:dst withIntermediateDirectories:YES attributes:nil error:&error];
                 
@@ -325,9 +360,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                 for (int i = 0, lim = [subelements count]; i < lim; ++i) {
                     NSString *child = [subelements objectAtIndex:i];
                     NSString *fchild = [src stringByAppendingPathComponent:child];
-                    NSLog(@" .. src: %@", fchild);
+                    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  .. src: %@", fchild);
                     NSString *target = [dst stringByAppendingPathComponent:child];
-                    NSLog(@" .. dst: %@", target);
+                    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  .. dst: %@", target);
                     [fileManager removeItemAtPath:target error:&error];
                     if ([child isEqualToString:@"rhoconfig.txt"]) {
                         [fileManager setDelegate:nil];
@@ -360,9 +395,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                     if ([copy_dirs[i] isEqualToString:@"db"] && !hasOldName)
                         remove = NO;
                     NSString *src = [bundleRoot stringByAppendingPathComponent:copy_dirs[i]];
-                    NSLog(@"copy src: %@", src);
+                    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: copy src: %@", src);
                     NSString *dst = [rhoDBRoot stringByAppendingPathComponent:copy_dirs[i]];
-                    NSLog(@"copy dst: %@", dst);
+                    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: copy dst: %@", dst);
                     
                     //[self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
                     
@@ -370,9 +405,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                     for (int i = 0, lim = [subelements count]; i < lim; ++i) {
                         NSString *child = [subelements objectAtIndex:i];
                         NSString *fchild = [src stringByAppendingPathComponent:child];
-                        NSLog(@" .. copy src: %@", fchild);
+                        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  .. copy src: %@", fchild);
                         NSString *target = [dst stringByAppendingPathComponent:child];
-                        NSLog(@" .. copy dst: %@", target);
+                        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  .. copy dst: %@", target);
                         
                         BOOL copyit = YES;
                         
@@ -394,9 +429,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                 NSString *items[] = {@"hash", @"name"};
                 for (int i = 0, lim = sizeof(items)/sizeof(items[0]); i < lim; ++i) {
                     NSString *src = [bundleRoot stringByAppendingPathComponent:items[i]];
-                    NSLog(@"copy src: %@", src);
+                    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: copy src: %@", src);
                     NSString *dst = [rhoRoot stringByAppendingPathComponent:items[i]];
-                    NSLog(@"copy dst: %@", dst);
+                    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: copy dst: %@", dst);
                     [fileManager removeItemAtPath:dst error:&error];
                     [fileManager copyItemAtPath:src toPath:dst error:&error];
                     
@@ -413,19 +448,19 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                     if ([dirs[i] isEqualToString:@"db"] && !hasOldName)
                         remove = NO;
                     NSString *src = [bundleRoot stringByAppendingPathComponent:dirs[i]];
-                    NSLog(@"src: %@", src);
+                    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: src: %@", src);
                     NSString *dst = [rhoRoot stringByAppendingPathComponent:dirs[i]];
-                    NSLog(@"dst: %@", dst);
+                    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: dst: %@", dst);
                     [self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
                 }
             }
         }
 	}
-    NSLog(@"Create rhodes logging and rhoconfig.txt loading");
-	rho_logconf_Init_with_separate_user_path(rho_native_rhopath(), rho_native_rhopath(), "", rho_native_rhouserpath());
-    NSLog(@"Create rhodes app");
-	rho_rhodesapp_create_with_separate_user_path(rho_native_rhopath(), rho_native_rhouserpath());
-	RAWLOG_INFO("Rhodes started");
+    //if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: Create rhodes logging and rhoconfig.txt loading");
+	//rho_logconf_Init_with_separate_user_path(rho_native_rhopath(), rho_native_rhopath(), "", rho_native_rhouserpath());
+    //if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager: Create rhodes app");
+	//rho_rhodesapp_create_with_separate_user_path(rho_native_rhopath(), rho_native_rhouserpath());
+	//RAWLOG_INFO("Rhodes started");
 }
 
 
@@ -677,7 +712,7 @@ int rho_sys_is_app_installed(const char *appname) {
 }
 
 void rho_sys_app_uninstall(const char *appname) {
-	NSLog(@"ALERT: Uninstall of applications is unsupported on iOS platfrom !!!");	
+	RAWLOG_ERROR("ERROR: Uninstall of applications is unsupported on iOS platfrom !!!");
 }
 
 
@@ -1196,11 +1231,11 @@ void setApplicationBadgeNumber(NSInteger badgeNumber)
     {
         if (checkNotificationType(UIUserNotificationTypeBadge))
         {
-            NSLog(@"badge number changed to %d", badgeNumber);
+            RAWLOG_INFO1("badge number changed to %d", (int)badgeNumber);
             [UIApplication sharedApplication].applicationIconBadgeNumber = badgeNumber;
         }
         else
-            NSLog(@"access denied for UIUserNotificationTypeBadge");
+            RAWLOG_INFO("access denied for UIUserNotificationTypeBadge");
     }
 #else
     // compile with Xcode 5 (iOS SDK < 8.0)
@@ -1235,7 +1270,7 @@ int rho_sys_set_do_not_bakup_attribute(const char* path, int value) {
         result = setxattr(path, attrName, &attrValue, sizeof(attrValue), 0, 0);
         
         if (result != 0) {
-            NSLog(@"Can not change [do_not_bakup] attribute for path: %@", [NSString stringWithUTF8String:path]);
+            RAWLOG_WARNING1("WARNING: Can not change [do_not_bakup] attribute for path: %s", path);
         }
     }
     else {
@@ -1245,7 +1280,7 @@ int rho_sys_set_do_not_bakup_attribute(const char* path, int value) {
         if (result != -1) {
             int removeResult = removexattr(path, attrName, 0);
             if (removeResult == 0) {
-                NSLog(@"Removed extended attribute on file %@", pathString);
+                RAWLOG_WARNING1("Removed extended attribute on file %s", [pathString UTF8String]);
             }
         }
         
@@ -1258,7 +1293,7 @@ int rho_sys_set_do_not_bakup_attribute(const char* path, int value) {
         result = success ? 0 : -1;
         
         if (result != 0) {
-            NSLog(@"Can not change [do_not_bakup] attribute for path: %@, error: %@", pathString, error);
+            RAWLOG_WARNING2("Can not change [do_not_bakup] attribute for path: %s, error: %d", [pathString UTF8String], (int)[error localizedDescription]);
         }
     }
 
@@ -1301,9 +1336,13 @@ void rho_title_change(const int tabIndex, const char* strTitle) {
 }
 
 
-
+// this method called from logging system - loggins system add logmessage to log and also copy it to iOS console by NSLog()
 void rho_ios_log_console_output(const char* message) {
     NSLog(@"%@", [NSString stringWithUTF8String:message]);
+}
+
+void rho_startup_logging(const char* message) {
+    [AppManager startupLogging:[NSString stringWithUTF8String:message]];
 }
 
 /*

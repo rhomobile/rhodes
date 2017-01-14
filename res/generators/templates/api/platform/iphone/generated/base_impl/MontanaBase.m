@@ -14,8 +14,8 @@ static NSDictionary* ourPropertyAliases= nil;
 @implementation <%= $cur_module.name %>Base
 
 - (void) resetAllPropertiesToDefault {
-<% if $cur_module.is_template_propertybag 
-%>    mDeclaredProperties = [[NSSet setWithObjects:<% 
+<% if $cur_module.is_template_propertybag
+%>    mDeclaredProperties = [[NSSet setWithObjects:<%
         $cur_module.properties.each do |prop|
           line = '@"'+prop.native_name+'", ' %><%= line %><%
         end
@@ -98,7 +98,7 @@ static NSDictionary* ourPropertyAliases= nil;
     NSObject* value = propertyValue;
     NSString* strValue = propertyValue;
     if ([propertyName isEqualToString:@"ID"] && [value isKindOfClass:[NSString class]] && [strValue isEqualToString:@""]) {
-        NSLog(@"Clearing ID!");
+        //NSLog(@"Clearing ID!");
     }
     if ([value isKindOfClass:[NSNumber class]]) {
         NSNumber* numValue = (NSNumber*)value;
@@ -137,13 +137,13 @@ static NSDictionary* ourPropertyAliases= nil;
 -(void) getProperties:(NSArray*)arrayofNames methodResult:(id<IMethodResult>)methodResult {
     NSMutableDictionary* dict = [[NSMutableDictionary dictionaryWithCapacity:[arrayofNames count]] autorelease];
     CMethodResult_SimpleHolder* resultHolder = [CMethodResult_SimpleHolder makeEmptyHolder];
-    for (NSString* key in arrayofNames) {        
+    for (NSString* key in arrayofNames) {
       [resultHolder setResult:nil];
       [self getProperty:key methodResult:resultHolder];
       if ([resultHolder getResult] != nil) {
           NSString* value = (NSString*)[resultHolder getResult];
           [dict setObject:value forKey:key];
-      } <% 
+      } <%
 if !$cur_module.is_property_bag_limit_to_only_declared_properties && $cur_module.is_template_propertybag %>
       else {
         [dict setObject:@"" forKey:key];
@@ -159,7 +159,7 @@ if !$cur_module.is_property_bag_limit_to_only_declared_properties && $cur_module
 
 
 -(void) setProperties:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
-    for (NSString* key in propertyMap) {    
+    for (NSString* key in propertyMap) {
         NSString* value = (NSString*)[propertyMap objectForKey:key];
         [self setProperty:key propertyValue:value methodResult:methodResult];
     }

@@ -93,7 +93,7 @@ extern     void rho_geocoding_parse_json_responce(const char* data, char* adress
     //    [url appendString:@"&key="];
     //    [url appendString:gapikey];
     //}
-    NSLog(@"Geocoding url = %@\n", url);
+    RAWLOG_INFO1("Geocoding url = %s\n", [url UTF8String]);
     NSURLRequest *request=[NSURLRequest requestWithURL:[NSURL URLWithString:url]							  
                                         cachePolicy:NSURLRequestUseProtocolCachePolicy
                                         timeoutInterval:60.0];	
@@ -138,11 +138,10 @@ extern     void rho_geocoding_parse_json_responce(const char* data, char* adress
         //[self stringCooridinatesToCLLocation];
     }
     @catch (NSException *exception) {
-        NSLog(@"Geocoding failed");
+        RAWLOG_WARNING("Geocoding failed");
         retvar = FALSE;
     }
     @finally {
-        //NSLog(@"finally");
     }
     return retvar;
 }

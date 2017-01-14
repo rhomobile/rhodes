@@ -624,7 +624,7 @@
 	}
     if ((index < 0) || (index >= [tabbar.viewControllers count])) {
         // error
-        NSLog(@"TabBar invalid tab index [%d] !!! ", index);
+        RAWLOG_ERROR1("TabBar invalid tab index [%d] !!! ", (int)index);
         return nil;
     }
     return (SimpleMainView*)[tabbar.viewControllers objectAtIndex:index];

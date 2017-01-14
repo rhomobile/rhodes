@@ -98,7 +98,6 @@ int on_http_cb(http_parser* parser) { return 0; }
         
         NSString* jsonRequestTest = [theRequest valueForHTTPHeaderField:@"__rhoNativeApiCall"];
         if (jsonRequestTest != nil) {
-            //NSLog(@"$$$ process Request: [%@:%@]", [theUrl absoluteString], jsonRequestTest);
             if (is_net_trace()) {
                 RAWTRACE("$NetRequestProcess$ canInitWithRequest END: return YES by !__rhoNativeApi prefix");
             }
@@ -158,7 +157,6 @@ int on_http_cb(http_parser* parser) { return 0; }
         if (jsonRequestTest != nil) {
             NSString* responseStr = [CJSEntryPoint js_entry_point:jsonRequestTest];
             if (responseStr != nil) {
-                //NSLog(@"$$$ send responce for[%@:%@] = [%@]", [theUrl absoluteString], jsonRequestTest, responseStr);
                 [self sendResponseWithResponseCode:200 data:[responseStr dataUsingEncoding:NSUTF8StringEncoding]];
                 if (is_net_trace()) {
                     RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
@@ -326,7 +324,6 @@ int on_http_cb(http_parser* parser) { return 0; }
     }
   }
   
-    //NSLog(@"$$$ responce ERROR: [%@]", [theUrl absoluteString]);
     NSString* body = @"error";
     [self sendResponseWithResponseCode:401 data:[body dataUsingEncoding:NSUTF8StringEncoding]];
     if (is_net_trace()) {
@@ -354,7 +351,6 @@ int on_http_cb(http_parser* parser) { return 0; }
         RAWTRACE2("$NetRequestProcess$ CRhoURLProtocol %s :: makeDirectHttpRequest : URL [ %s ]", [self selfIDstring], [[theUrl absoluteString] UTF8String]);
     }
     
-    //NSLog(@"Will make local request to %@", [theUrl absoluteString]);
   
   const char* uri = [[theUrl path] UTF8String];
   const char* method = [[[self request] HTTPMethod] UTF8String];

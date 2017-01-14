@@ -107,7 +107,8 @@ LogSettings::LogSettings()
     m_bLogToSocket = false;
 
     m_nMaxLogFileSize = 0; 
-    m_bLogPrefix = true; 
+    m_bLogPrefix = true;
+    m_bIsInitialized = false;
 
     m_strLogURL = "";
 
@@ -311,6 +312,7 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
 		int milliseconds = oRhoConf.getInt("LogMemPeriod");
 		setCollectMemoryInfoInterval(milliseconds);
 	}
+    m_bIsInitialized = true;
 }
 
 void LogSettings::setLogFilePath(const String& logFilePath){
@@ -590,6 +592,12 @@ void rho_log_resetup_http_url(const char* http_log_url)
     //LOGCONF().reinitRemoteLog();
 }
 
+bool rho_log_system_is_ready() {
+    return LOGCONF().isReadyForLogging();
+}
+    
+    
+    
 #ifndef RHO_NO_RUBY
 VALUE rho_conf_get_property_by_name(char* name)
 {

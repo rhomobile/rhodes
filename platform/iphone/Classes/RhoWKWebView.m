@@ -94,7 +94,7 @@
                     resultString = [NSString stringWithFormat:@"%@", result];
                 }
             } else {
-                NSLog(@"WKWebView.evaluateJavaScript error : %@", error.localizedDescription);
+                RAWLOG_ERROR1("WKWebView.evaluateJavaScript error : %s", [[error localizedDescription] UTF8String]);
             }
             finished = YES;
         }];
