@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency('rake', '12.0.0')
   s.add_dependency('uuid', '2.3.7')
   s.add_dependency('systemu', '2.6.4')
-  s.add_dependency('json', '1.8.1')
+  s.add_dependency('json', '1.8.3')
   s.add_dependency('rest-client', '1.6.8')
   s.add_dependency('CFPropertyList', '2.2.8')
   s.add_dependency('simctl', '1.5.6')
@@ -55,4 +55,3 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<diff-lcs>, [">= 1.1.2"])
   end
 end
-

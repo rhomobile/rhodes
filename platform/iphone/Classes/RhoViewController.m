@@ -27,10 +27,15 @@
 #import "Rhodes.h"
 #import "RhoViewController.h"
 
+#import "logging/RhoLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoViewController"
+
 @implementation RhoViewController
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-    //NSLog(@"RVC::%@::shouldAutorotateToInterfaceOrientation",[[self class] description]);
+    RAWTRACE1("RVC::%s::shouldAutorotateToInterfaceOrientation", [[[self class] description] UTF8String]);
     if ([[Rhodes sharedInstance] isRotationLocked])
         return toInterfaceOrientation == UIInterfaceOrientationPortrait;
 	return YES;
@@ -38,7 +43,7 @@
 
 #if defined(__IPHONE_6_0)
 - (BOOL)shouldAutorotate {
-    //NSLog(@"RVC::%@::shouldAutorotate",[[self class] description]);
+    RAWTRACE1("RVC::%s::shouldAutorotate", [[[self class] description] UTF8String]);
     if ([[Rhodes sharedInstance] isRotationLocked])
         return NO;
    
@@ -79,7 +84,7 @@
 
 - (NSUInteger)supportedInterfaceOrientations
 {
-    //NSLog(@"RVC::%@::supportedInterfaceOrientations",[[self class] description]);
+    RAWTRACE1("RVC::%s::supportedInterfaceOrientations", [[[self class] description] UTF8String]);
     if ([[Rhodes sharedInstance] isRotationLocked])
          return UIInterfaceOrientationMaskPortrait;
     return UIInterfaceOrientationMaskAll;

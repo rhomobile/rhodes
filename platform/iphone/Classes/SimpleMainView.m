@@ -474,7 +474,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
     // DO NOT REMOVE THIS LINE!!!
     // First call of self.view (when self.view is nil) trigger loadView
     // and viewDidLoad which add all our subviews to the root view
-    NSLog(@"root view: %@", self.view);
+    NSString* s = [NSString stringWithFormat:@"root view: %@", self.view];
+    RAWLOG_INFO([s UTF8String]);
 
     return self;
 }
@@ -1016,7 +1017,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     
     navbar = navb;
     assert([navbar retainCount] == 1);
-    NSLog(@"navbar retain count: %d", [navbar retainCount]);
+    RAWLOG_INFO1("navbar retain count: %d", (int)[navbar retainCount]);
 	navbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	navbar.autoresizesSubviews = YES;
 	

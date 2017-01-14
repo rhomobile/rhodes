@@ -96,6 +96,7 @@ namespace rho {
         //oResult.setError("supported only set IconBadge !");
         int r = (int)([UIApplication sharedApplication].applicationIconBadgeNumber);
         //NSLog(@"badge number is %d", r);
+        RAWLOG_INFO1("badge number is %d", r);
         oResult.set(r);
     }
     

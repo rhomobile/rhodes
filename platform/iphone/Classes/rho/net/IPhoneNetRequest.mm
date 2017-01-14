@@ -696,7 +696,7 @@ public:
     close(fileDescriptor);
     
     if (fileDescriptor == -1) {
-        NSLog(@"Error while creating tmp file");
+        RAWLOG_ERROR("Error while creating tmp file");
         free(tempFileNameCString);
         return nil;
     }

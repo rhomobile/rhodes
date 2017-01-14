@@ -2,7 +2,7 @@
 # NB: each rb_"+$cur_module.name+"_"+module_method.native_name+"_Obj call
 # creates CMethodResult inside and releases it after call
 # in case if call is sheduled result should be retained
-# so makeParams retains it and releases after a call 
+# so makeParams retains it and releases after a call
 %>
 #import "I<%= $cur_module.name %>.h"
 //#import "api_generator/common/ruby_helpers.h"
@@ -246,7 +246,7 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
             }
             // TODO: Handle CMethodResultError
             if (params[i] == nil) {
-                NSLog(<%= '@"' + $cur_module.name + '::' + module_method.native_name + ' parameter %d is nil!"' %>, i);
+                //NSLog(<%= '@"' + $cur_module.name + '::' + module_method.native_name + ' parameter %d is nil!"' %>, i);
                 rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
                 return resValue;
             }
@@ -382,5 +382,3 @@ rho::String js_s_<%= $cur_module.name %>_setDefaultID(const rho::String& strObjI
     return "\"result\":null,\"error\":\"Method parameter should be defined as string!\"";
 }
 <% end %>
-
-

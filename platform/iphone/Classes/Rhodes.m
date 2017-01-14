@@ -648,22 +648,32 @@ static Rhodes *instance = NULL;
 - (void)doRhoActivate {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     @try {
-        NSLog(@"doRhoActivate thread started");
+        [AppManager startupLogging:@"doRhoActivate thread started"];
         while (!app_created)
             [NSThread sleepForTimeInterval:0.1];
         [Rhodes performOnUiThread:[RhoActivateTask class] wait:NO];
     }
     @finally {
-        NSLog(@"doRhoActivate thread finished");
+        [AppManager startupLogging:@"doRhoActivate thread finished"];
         [pool release];
     }
 }
 
 - (void)initAppManager {
-    NSLog(@"Init appManager");
+    // log not ready
+    [AppManager startupLogging:@"Init appManager"];
+
     appManager = [AppManager instance];
-    //Configure AppManager
+    //Configure AppManager - setup files and symlinks etc.
     [appManager configure];
+    
+    // log not ready
+    [AppManager startupLogging:@"Create rhodes logging and rhoconfig.txt loading"];
+    rho_logconf_Init_with_separate_user_path(rho_native_rhopath(), rho_native_rhopath(), "", rho_native_rhouserpath());
+    [AppManager startupLogging:@"Create rhodes app"];
+    rho_rhodesapp_create_with_separate_user_path(rho_native_rhopath(), rho_native_rhouserpath());
+    RAWLOG_INFO("Rhodes started");
+    
 }
 
 - (void)doRhoInit {
@@ -676,25 +686,28 @@ static Rhodes *instance = NULL;
         
         const char *szRootPath = rho_native_rhopath();
         const char *szUserPath = rho_native_rhouserpath();
+
+        // Now this methods executed not in separate thread - executed in thread of app's delegate
         //NSLog(@"Init logconf");
         //rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
         InitMemoryInfoCollector();
         //NSLog(@"Create rhodes app");
         //rho_rhodesapp_create_with_separate_user_path(szRootPath, szUserPath);
+        
         app_created = YES;
         
         rotationLocked = rho_conf_getBool("disable_screen_rotation");
 		
-		NSLog(@"Init network monitor");
+		RAWLOG_INFO("Init network monitor");
         mNetworkPollCondition = [[NSCondition alloc] init];
 
 		initNetworkMonitoring();
 		[self performSelectorInBackground:@selector(monitorNetworkStatus) withObject:nil];
         
-        NSLog(@"Show loading page");
+        RAWLOG_INFO("Show loading page");
         [self performSelectorOnMainThread:@selector(showLoadingPagePost) withObject:nil waitUntilDone:NO];
         
-        NSLog(@"Start rhodes app");
+        RAWLOG_INFO("Start rhodes app");
         rho_rhodesapp_start();
 		rho_rhodesapp_callUiCreatedCallback();
         [self registerForNotifications];
@@ -741,7 +754,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 }
 
 - (void)doStartUp {
-    NSLog(@"Rhodes starting application...");
+    // log not ready
+    [AppManager startupLogging:@"Rhodes starting application..."];
     
     [CRhoURLProtocol initAndRegister];
     
@@ -749,15 +763,17 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     
     const char *szRootPath = rho_native_rhopath();
     const char *szUserPath = rho_native_rhouserpath();
-    NSLog(@"Init logconf");
-    rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
+    //NSLog(@"Init logconf");
+    
+    // now executed in [self initAppManager]
+    //rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
 
     [self initAppManager];
     
-    NSLog(@"Create new detached thread for initialization stuff");
+    RAWLOG_INFO("Create new detached thread for initialization stuff");
     [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];
     
-    NSLog(@"Init all windows");
+    RAWLOG_INFO(@"Init all windows");
     
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     
@@ -799,21 +815,21 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
  
 	CGRect rrr = [application statusBarFrame];
 	
-    NSLog(@"Init cookies");
+    RAWLOG_INFO("Init cookies");
     cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
     
     // Init controllers
-    NSLog(@"Init controllers");
+    RAWLOG_INFO("Init controllers");
     logOptionsController = [[LogOptionsController alloc] init];
     logViewController = [[LogViewController alloc] init];
     
-    NSLog(@"Init delegates");
+    RAWLOG_INFO("Init delegates");
     dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
     pickImageDelegate = [[PickImageDelegate alloc] init];
     signatureDelegate = [SignatureDelegate getSharedInstance];
     nvDelegate = [[NVDelegate alloc] init];
 
-    NSLog(@"Initialization finished");
+    RAWLOG_INFO("Initialization finished");
 }
 
 - (void) registerForPushNotificationsInternal:(id<IPushNotificationsReceiver>)receiver;
@@ -887,10 +903,10 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 		NSEnumerator *enumerator = [do_sync objectEnumerator];
 		id url;
 		
-		NSLog(@"do_sync array: ");
+		RAWLOG_INFO("do_sync array: ");
 		bool sync_all = false;
 		while ( url = [enumerator nextObject] ) {
-			NSLog( @"url = %@", url );
+			RAWLOG_INFO1( "url = %s", [(NSString*)url UTF8String] );
 			if ([@"all" caseInsensitiveCompare:url] == NSOrderedSame) {
 				sync_all = true;
 			} else {
@@ -924,12 +940,12 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     } else{
 		soundFilePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:fileName];
 	}
-	NSLog(@"Playing %@: ", soundFilePath);
+	RAWLOG_INFO1("Playing %s: ", [soundFilePath UTF8String]);
 	
 	NSURL *fileURL = [[NSURL alloc] initFileURLWithPath: soundFilePath];
 	NSError* err = nil;
 	AVAudioPlayer *newPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&err];
-	NSLog(@"Init media player returns: %@", err);
+	RAWLOG_INFO1("Init media player returns: %s", [[err localizedDescription] UTF8String]);
 	
 	[fileURL release];
 	self.player = newPlayer;
@@ -952,12 +968,12 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *) player successfully: (BOOL) flag {
 	if (flag == YES) {
-		NSLog(@"Audio player finished playing...");
+		RAWLOG_INFO("Audio player finished playing...");
 	}	
 }
 
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
-	NSLog(@"Audio player decoding error %@", error);
+	RAWLOG_INFO1("Audio player decoding error %s", [[error localizedDescription] UTF8String]);
 }
 
 
@@ -970,12 +986,12 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 
 - (void)doStartUpRe:(NSObject*)arg {
-    NSLog(@"Rhodes starting application...");
+    RAWLOG_INFO("Rhodes starting application...");
     rotationLocked = NO;
     
     [self initAppManager];
     
-    NSLog(@"Create new detached thread for initialization stuff");
+    RAWLOG_INFO("Create new detached thread for initialization stuff");
     [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];
     
     if (mainView != nil) {
@@ -995,12 +1011,12 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 		[window addSubview:mainView.view];
 	}
 	
-    NSLog(@"Init cookies");
+    RAWLOG_INFO("Init cookies");
     cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
     
     rho_rhodesapp_canstartapp("", ", ");
     
-    NSLog(@"Initialization finished");
+    RAWLOG_INFO("Initialization finished");
 }
 
 
@@ -1036,7 +1052,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 #ifdef APP_BUILD_CAPABILITY_PUSH
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
         UIRemoteNotificationType nt = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-        NSLog(@"Enabled notification types: %i", (int)nt);
+        RAWLOG_INFO1("Enabled notification types: %d", (int)nt);
 #else
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge)];
 #endif
@@ -1073,7 +1089,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     
 
 	NSURL* url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
-    NSLog(@"didFinishLaunchingWithOptions: %@", url);
+    // log not ready
+    [AppManager startupLogging:[NSString stringWithFormat:@"didFinishLaunchingWithOptions: %@", [url absoluteString]]];
 	
     
     //[self registerForRemoteNotification];
@@ -1099,7 +1116,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     if ( !rho_rhodesapp_canstartapp([start_parameter UTF8String], ", ") )
     {
         //const char* szAppSecToken = get_app_build_config_item("security_token");
-		NSLog(@"This is hidden app and can be started only with security key.");
+		RAWLOG_ERROR("This is hidden app and can be started only with security key.");
         /*
         {
             
@@ -1162,7 +1179,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    NSLog(@"PUSH My token is: %@", deviceToken);
+    RAWLOG_INFO([[NSString stringWithFormat:@"PUSH My token is: %@", deviceToken] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushRegistrationSucceed:deviceToken];
     }
@@ -1170,7 +1187,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    NSLog(@"PUSH Failed to get token, error: %@", error);
+    RAWLOG_INFO([[NSString stringWithFormat:@"PUSH Failed to get token, error: %@", error] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushRegistrationFailed:error];
     }
@@ -1178,7 +1195,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    NSLog(@"PUSH Received notification: %@", userInfo);
+    RAWLOG_INFO([[NSString stringWithFormat:@"PUSH Received notification: %@", userInfo] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushMessageReceived:userInfo];
     }
@@ -1198,7 +1215,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 	}
 	
     if (!app_created) {
-        NSLog(@"Application is not created yet so postpone activation callback");
+        RAWLOG_INFO("Application is not created yet so postpone activation callback");
         [NSThread detachNewThreadSelector:@selector(doRhoActivate) toTarget:self withObject:nil];
     }
     else
@@ -1236,7 +1253,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
                 if ([[UIDevice currentDevice] isMultitaskingSupported]) { //Check if device supports mulitasking
                     
                     syncBackgroundTask = [app beginBackgroundTaskWithExpirationHandler: ^ {
-                        NSLog(@"$$$ Background task is terminated by System !!!");
+                        RAWLOG_ERROR("$$$ Background task is terminated by System !!!");
                         
                         // If the background task is already invalid, don't try to end it.
                         if (syncBackgroundTask != UIBackgroundTaskInvalid) {
@@ -1245,18 +1262,18 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
                         }
                     }];
                     
-                    NSLog(@"Will wait sync thread to finish sync");
+                    RAWLOG_INFO("Will wait sync thread to finish sync");
                     
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        NSLog(@"Waiting for sync thread");
+                        RAWLOG_INFO("Waiting for sync thread");
                         
                         do
                         {
-                            NSLog(@"Check sync, rho_rcclient_issyncing = %d", rho_rcclient_issyncing());
+                            RAWLOG_INFO1("Check sync, rho_rcclient_issyncing = %d", rho_rcclient_issyncing());
                             [NSThread sleepForTimeInterval:1];
                         } while (rho_rcclient_issyncing() == 1);
                         
-                        NSLog(@"Sync is finished, rho_rcclient_issyncing = %d", rho_rcclient_issyncing());
+                        RAWLOG_INFO1("Sync is finished, rho_rcclient_issyncing = %d", rho_rcclient_issyncing());
                         
                         // If the background task is already invalid, don't try to end it.
                         if (syncBackgroundTask != UIBackgroundTaskInvalid) {

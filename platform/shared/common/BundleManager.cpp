@@ -68,7 +68,7 @@ void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 }
 #endif
 
-
+extern "C" void rho_startup_logging(const char* message);
 
 
 extern "C" void rho_file_operation_test() {
@@ -456,13 +456,16 @@ void CFileTransaction::commit()
 
 unsigned int CFileTransaction::rollback()
 {
-    LOG(TRACE) + "FileTransaction is rolling back: " + m_strFolder;
-
+    if (rho_log_system_is_ready()) {
+        LOG(TRACE) + "FileTransaction is rolling back: " + m_strFolder;
+    }
     String strFolder = m_strFolder;
     m_strFolder = "";
 
     if ( strFolder.length() == 0 ) {
-        LOG(TRACE) + "FileTransaction rolling back: empty transaction" + m_strFolder;
+        if (rho_log_system_is_ready()) {
+            LOG(TRACE) + "FileTransaction rolling back: empty transaction" + m_strFolder;
+        }
         return 0;
     }
 
@@ -470,6 +473,9 @@ unsigned int CFileTransaction::rollback()
     CRhoFile::deleteFolder( (strFolder + "_temp_journal").c_str() );
 
     if ( !CRhoFile::isFileExist((strFolder + "_journal").c_str()) )
+        if (rho_log_system_is_ready()) {
+            LOG(TRACE) + "FileTransaction stop: file not exist : " + (strFolder + "_journal");
+        }
         return 0;
 
     m_nError = CRhoFile::deleteFolder( (strFolder).c_str() );
@@ -488,7 +494,9 @@ unsigned int CFileTransaction::rollback()
         return m_nError;
     }
 
-    LOG(TRACE) + "FileTransaction has rolled back";
+    if (rho_log_system_is_ready()) {
+        LOG(TRACE) + "FileTransaction has rolled back";
+    }
 
     return m_nError;
 }
@@ -1290,7 +1298,9 @@ void rho_sys_replace_current_bundle(const char* path, rho_param *p)
 
 int rho_sys_check_rollback_bundle(const char* szRhoPath)
 {
-    LOG(INFO) + "rho_sys_check_rollback_bundle()";
+    if (rho_log_system_is_ready()) {
+        LOG(INFO) + "rho_sys_check_rollback_bundle()";
+    }
     CFileTransaction oFT( CFilePath::join(szRhoPath, "apps"), false );
     return oFT.rollback() != 0 ? 0 : 1;
 }
