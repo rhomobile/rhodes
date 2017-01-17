@@ -1084,6 +1084,60 @@ namespace "config" do
       $signidentity = 'iPhone Developer'
     end
 
+    # process special SDK names: latest, latest_simulator, latest_device
+    if ($sdk =~ /latest/) && (!$skip_checking_XCode)
+        args = ['-showsdks']
+        nullversion = Gem::Version.new('0.0')
+        latestsimulator = Gem::Version.new('0.0')
+        latestdevice = Gem::Version.new('0.0')
+        simulatorsdkmask = /(.*)iphonesimulator([0-9]+).([0-9]+)(.*)/
+        devicemask = /(.*)iphoneos([0-9]+).([0-9]+)(.*)/
+
+        Jake.run2($xcodebuild,args,{:rootdir => $startdir, :hide_output => true}) do |line|
+            #puts 'LINE = '+line.to_s
+            if (simulatorsdkmask=~line) == 0
+                parsed = line.scan(simulatorsdkmask)
+                curver = Gem::Version.new(parsed[0][1].to_s+'.'+parsed[0][2].to_s)
+                if curver > latestsimulator
+                    latestsimulator = curver
+                end
+            end
+            if (devicemask=~line) == 0
+                parsed = line.scan(devicemask)
+                curver = Gem::Version.new(parsed[0][1].to_s+'.'+parsed[0][2].to_s)
+                if curver > latestdevice
+                    latestdevice = curver
+                end
+            end
+            true
+        end
+        puts 'detect latestsimulator sdk = '+latestsimulator.to_s
+        puts 'detect latestdevice sdk = '+latestdevice.to_s
+        retx = $?
+        #puts '### +'+retx.to_s
+        if retx == 0
+            if $sdk.to_s.downcase == 'latest'
+                if Rake.application.top_level_tasks.to_s =~ /run/
+                  $sdk = 'latest_simulator'
+                else
+                  $sdk = 'latest_device'
+                end
+            end
+            if $sdk.to_s.downcase == 'latest_simulator'
+                if nullversion != latestsimulator
+                    $sdk = 'iphonesimulator'+latestsimulator.to_s
+                end
+            end
+            if $sdk.to_s.downcase == 'latest_device'
+                if nullversion != latestsimulator
+                    $sdk = 'iphoneos'+latestdevice.to_s
+                end
+            end
+        else
+            puts "ERROR: cannot run xcodebuild for get list of installed SDKs !"
+        end
+    end
+
     if $sdk !~ /iphone/
       if Rake.application.top_level_tasks.to_s =~ /run/
         $sdk = "iphonesimulator#{$sdk}"
@@ -1092,7 +1146,7 @@ namespace "config" do
       end
     end
 
-    puts $sdk
+    puts 'SDK = '+$sdk
 
     if !$skip_checking_XCode
       check_sdk($sdk)
