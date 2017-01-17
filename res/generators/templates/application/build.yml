@@ -1,3 +1,4 @@
+# Note: sdk is full path to Rhodes root. If not defined - automatically find latest installed Rhodes gem
 #sdk: "<%=@sdk_path%>"
 sdkversion: <%=Rhodes::VERSION%>
 name: <%=@app_name%>
@@ -33,10 +34,11 @@ applog: rholog.txt
 
 iphone:
   configuration: Release
-  #sdk can be 3 predefined value : latest, latest_simulator, latest_device
-  #simulator or device detect by rake command for "rake run:iphone" is simulator, for "rake device:iphone:production" is device
-  #sdk also can be defined exactly like:  iphonesimulator10.2 or iphoneos10.2
+  # Note: sdk can be 3 predefined value : latest, latest_simulator, latest_device
+  # simulator or device detect by rake command for "rake run:iphone" is simulator, for "rake device:iphone:production" is device
+  # sdk also can be defined exactly like:  iphonesimulator10.2 or iphoneos10.2
   sdk: latest
+  # Note: provisionprofile can be defined as name or UUID - if you defined provisionprofile then codesignidentity defined automatically if you not defined it in this build.yml
   #provisionprofile:
   #codesignidentity:
   #entitlements:

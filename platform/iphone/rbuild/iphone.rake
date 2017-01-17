@@ -1084,6 +1084,64 @@ namespace "config" do
       $signidentity = 'iPhone Developer'
     end
 
+
+
+    # find UUID for name of mobileprovision
+    if (!$skip_checking_XCode) && ($provisionprofile != nil)
+        $homedir = ENV['HOME']
+        mp_folder = "#{$homedir}/Library/MobileDevice/Provisioning Profiles/"
+
+        mp_latest_UUID = nil
+        mp_latest_Time = nil
+
+        Dir.entries(mp_folder).select do |entry|
+            path = File.join(mp_folder,entry)
+            #puts '$$$ '+path.to_s
+            if !(File.directory? path) and !(entry =='.' || entry == '..' || entry == '.DS_Store')
+                #puts '     $$$ '+path.to_s
+                plist_path = path
+                # make XML
+                xml_lines_arr = []
+                args = ['cms', '-D', '-i', plist_path]
+                Jake.run2('security',args,{:rootdir => $startdir, :hide_output => true}) do |line|
+                    xml_lines_arr << line.to_s
+                    true
+                end
+                xml_lines = xml_lines_arr.join.to_s
+                #puts '%%%%%%% '+xml_lines
+
+                plist_obj = CFPropertyList::List.new(:data => xml_lines)
+                mp_plist_hash = CFPropertyList.native_types(plist_obj.value)
+                #puts '     $$$ '+mp_plist_hash.to_s
+                mp_name = mp_plist_hash['Name']
+                mp_uuid = mp_plist_hash['UUID']
+                mp_creation_date = mp_plist_hash['CreationDate']
+
+                #puts '       '+mp_creation_date.class.to_s+'    '+mp_creation_date.to_s
+
+                #puts '$$$$$   MP: Name: "'+mp_name+'"   UUID: ['+mp_uuid+']'
+
+                if mp_name == $provisionprofile
+                    puts 'Found MobileProvision Name: "'+mp_name+'"   UUID: ['+mp_uuid+']    Creation Time:   '+mp_creation_date.to_s+'    File: '+path.to_s
+                    #$provisionprofile = mp_uuid
+                    if mp_latest_UUID == nil
+                        mp_latest_UUID = mp_uuid
+                        mp_latest_Time = mp_creation_date
+                    else
+                        if mp_creation_date > mp_latest_Time
+                            mp_latest_UUID = mp_uuid
+                            mp_latest_Time = mp_creation_date
+                        end
+                    end
+                end
+            end
+        end
+        if mp_latest_UUID != nil
+            $provisionprofile = mp_latest_UUID
+        end
+        puts 'Processed MobileProvision UUID = '+$provisionprofile.to_s
+    end
+
     # process special SDK names: latest, latest_simulator, latest_device
     if ($sdk =~ /latest/) && (!$skip_checking_XCode)
         args = ['-showsdks']
