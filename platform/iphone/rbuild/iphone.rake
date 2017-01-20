@@ -309,18 +309,12 @@ def update_plist_procedure
         end
 
         #http_connection_domains
-        if !hash.has_key?("NSAppTransportSecurity")
-            hash['NSAppTransportSecurity'] = {}
-        end
-        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoads")
-            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoads'] = true
-        end
-        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoadsInWebContent")
-            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoadsInWebContent'] = true
-        end
         if $app_config["iphone"].has_key?("http_connection_domains")
           http_connection_domains = $app_config["iphone"]["http_connection_domains"]
           if http_connection_domains.kind_of?(Array)
+              if !hash.has_key?("NSAppTransportSecurity")
+                  hash['NSAppTransportSecurity'] = {}
+              end
               hash['NSAppTransportSecurity']['NSExceptionDomains'] = {}
               http_connection_domains.each do |domain|
                   domain_hash = {}
