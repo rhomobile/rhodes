@@ -1,4 +1,4 @@
-# Note: sdk is full path to Rhodes root. If not defined - automatically find latest installed Rhodes gem
+## Note: sdk is full path to Rhodes root. If not defined - automatically find latest installed Rhodes gem
 #sdk: "<%=@sdk_path%>"
 sdkversion: <%=Rhodes::VERSION%>
 name: <%=@app_name%>
@@ -34,11 +34,11 @@ applog: rholog.txt
 
 iphone:
   configuration: Release
-  # Note: sdk can be 3 predefined value : latest, latest_simulator, latest_device
-  # simulator or device detect by rake command for "rake run:iphone" is simulator, for "rake device:iphone:production" is device
-  # sdk also can be defined exactly like:  iphonesimulator10.2 or iphoneos10.2
+  ## Note: sdk can be 3 predefined value : latest, latest_simulator, latest_device
+  ## simulator or device detect by rake command for "rake run:iphone" is simulator, for "rake device:iphone:production" is device
+  ## sdk also can be defined exactly like:  iphonesimulator10.2 or iphoneos10.2
   sdk: latest
-  # Note: provisionprofile can be defined as name or UUID - if you defined provisionprofile then codesignidentity defined automatically if you not defined it in this build.yml
+  ## Note: provisionprofile can be defined as name or UUID - if you defined provisionprofile then codesignidentity defined automatically if you not defined it in this build.yml
   #provisionprofile:
   #codesignidentity:
   #entitlements:
@@ -50,7 +50,12 @@ iphone:
   #ApplicationQueriesSchemes: ['scheme1', 'scheme2']
   ## Note: Specifies list of HTTP domains for connect from application
   #http_connection_domains: ['domain1.com', 'domain2.org']
-  ## Note: Specifies set of Info.plist keys with content(hash) - all of this items will be apply to final Info.plist of application. You can specify any Ino.plist data in this parameter.
+  ## Note: Specify remove of Info.plist keys - use this if you need to remove some keys from Info.plist
+  ## This example remove two keys with unsupported screen orientation and also remove UIRequiredDeviceCapabilities key
+  #info_plist_data_remove:
+  #- UIRequiredDeviceCapabilities
+  #- UISupportedInterfaceOrientations: ['UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight']
+  ## Note: Specifies set/modify of Info.plist keys with content(hash) - all of this items will be apply to final Info.plist of application. You can specify any Ino.plist data in this parameter.
   ## this example content is equal of two upper parameters content (URLS schemes and HTTP domains) - you can use manually setup this parameters for more detailed setup instead default.
   ## in this example we show additional disable of perfect forward secrecy (PFS) for domain3(https)
   #info_plist_data:
