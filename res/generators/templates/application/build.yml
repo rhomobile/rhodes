@@ -61,8 +61,6 @@ iphone:
   #info_plist_data:
   #  LSApplicationQueriesSchemes: ['scheme1', 'scheme2']
   #  NSAppTransportSecurity:
-  #    NSAllowsArbitraryLoads: true
-  #    NSAllowsArbitraryLoadsInWebContent: true
   #    NSExceptionDomains:
   #      domain1.com:
   #        NSIncludesSubdomains: true
