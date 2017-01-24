@@ -226,6 +226,28 @@ def recursive_merge_hash(hash, key, value)
     end
 end
 
+
+def recursive_remove_hash(hash, key)
+    if key.kind_of?(Array)
+        key.each do |element|
+            recursive_remove_hash(hash, element)
+        end
+    elsif key.kind_of?(Hash)
+        key.each do |keykey, keyvalue|
+            if hash.has_key? keykey
+                oldkey = hash[keykey]
+                recursive_remove_hash(oldkey, keyvalue)
+            end
+        end
+    elsif key.kind_of?(String)
+        #if hash.has_key? key
+            hash.delete(key)
+        #end
+    end
+end
+
+
+
 def update_plist_procedure
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
@@ -334,6 +356,14 @@ def update_plist_procedure
         end
 
         # add custom data
+        if $app_config["iphone"].has_key?("info_plist_data_remove")
+            info_plist_data_remove = $app_config["iphone"]["info_plist_data_remove"]
+            if info_plist_data_remove.kind_of?(Array)
+                info_plist_data_remove.each do |key|
+                    recursive_remove_hash(hash, key)
+                end
+            end
+        end
         if $app_config["iphone"].has_key?("info_plist_data")
             info_plist_data = $app_config["iphone"]["info_plist_data"]
             if info_plist_data.kind_of?(Hash)
