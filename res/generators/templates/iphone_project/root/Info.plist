@@ -151,8 +151,6 @@
      <dict>
           <key>NSAllowsArbitraryLoads</key>
 		  <true/>
-		  <key>NSAllowsArbitraryLoadsInWebContent</key>
-    	  <true/>
      </dict>
      <key>UIRequiresFullScreen</key>
      <true/>
