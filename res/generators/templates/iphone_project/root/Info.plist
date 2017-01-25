@@ -147,13 +147,6 @@
 		<string>application wants to use Photo Library</string>
 	<key>NSRemindersUsageDescription</key>
 		<string>application wants to use Reminders</string>
-	<key>NSAppTransportSecurity</key>
-     <dict>
-          <key>NSAllowsArbitraryLoads</key>
-		  <true/>
-		  <key>NSAllowsArbitraryLoadsInWebContent</key>
-    	  <true/>
-     </dict>
      <key>UIRequiresFullScreen</key>
      <true/>
      <key>UIRequiredDeviceCapabilities</key>

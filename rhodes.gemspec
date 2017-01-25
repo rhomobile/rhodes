@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{rhodes}
   s.rubygems_version = %q{1.3.5}
+  s.required_ruby_version = '>= 1.9.1'
   s.add_dependency('templater', '1.0.0')
   s.add_dependency('rake', '12.0.0')
   s.add_dependency('uuid', '2.3.7')
@@ -30,7 +31,9 @@ Gem::Specification.new do |s|
   s.add_dependency('simctl', '1.5.6')
   s.add_dependency('listen', '3.0.6')
   s.add_dependency('rubyzip', '1.2.0')
-  #s.add_dependency('rdoc', '4.1.2')
+  s.add_dependency('ffi', '1.9.14')
+  s.add_dependency('rdoc', '4.2.2')
+  s.post_install_message = "Thanks for installing Rhodes ! Please visit our website: http:/tau-technologies.com" if s.respond_to? :post_install_message=
   s.executables << 'rhogen'
   s.executables << 'rhodes'
   s.executables << 'upgrade-rhodes-app'
@@ -41,7 +44,6 @@ Gem::Specification.new do |s|
   #this is a hack, we dont have an extension, but we want to run postinstall code. It's done via the 'building' of an extension
   s.extensions << 'ext/extconf.rb'
   s.summary = %q{The Rhodes framework is the easiest way to develop NATIVE apps with full device capabilities (GPS, PIM, camera, etc.) for any smartphone.}
-
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 2

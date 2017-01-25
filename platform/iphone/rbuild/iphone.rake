@@ -226,6 +226,28 @@ def recursive_merge_hash(hash, key, value)
     end
 end
 
+
+def recursive_remove_hash(hash, key)
+    if key.kind_of?(Array)
+        key.each do |element|
+            recursive_remove_hash(hash, element)
+        end
+    elsif key.kind_of?(Hash)
+        key.each do |keykey, keyvalue|
+            if hash.has_key? keykey
+                oldkey = hash[keykey]
+                recursive_remove_hash(oldkey, keyvalue)
+            end
+        end
+    elsif key.kind_of?(String)
+        #if hash.has_key? key
+            hash.delete(key)
+        #end
+    end
+end
+
+
+
 def update_plist_procedure
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
@@ -309,18 +331,12 @@ def update_plist_procedure
         end
 
         #http_connection_domains
-        if !hash.has_key?("NSAppTransportSecurity")
-            hash['NSAppTransportSecurity'] = {}
-        end
-        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoads")
-            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoads'] = true
-        end
-        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoadsInWebContent")
-            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoadsInWebContent'] = true
-        end
         if $app_config["iphone"].has_key?("http_connection_domains")
           http_connection_domains = $app_config["iphone"]["http_connection_domains"]
           if http_connection_domains.kind_of?(Array)
+              if !hash.has_key?("NSAppTransportSecurity")
+                  hash['NSAppTransportSecurity'] = {}
+              end
               hash['NSAppTransportSecurity']['NSExceptionDomains'] = {}
               http_connection_domains.each do |domain|
                   domain_hash = {}
@@ -334,6 +350,14 @@ def update_plist_procedure
         end
 
         # add custom data
+        if $app_config["iphone"].has_key?("info_plist_data_remove")
+            info_plist_data_remove = $app_config["iphone"]["info_plist_data_remove"]
+            if info_plist_data_remove.kind_of?(Array)
+                info_plist_data_remove.each do |key|
+                    recursive_remove_hash(hash, key)
+                end
+            end
+        end
         if $app_config["iphone"].has_key?("info_plist_data")
             info_plist_data = $app_config["iphone"]["info_plist_data"]
             if info_plist_data.kind_of?(Hash)
@@ -1084,6 +1108,118 @@ namespace "config" do
       $signidentity = 'iPhone Developer'
     end
 
+
+
+    # find UUID for name of mobileprovision
+    if (!$skip_checking_XCode) && ($provisionprofile != nil)
+        $homedir = ENV['HOME']
+        mp_folder = "#{$homedir}/Library/MobileDevice/Provisioning Profiles/"
+
+        mp_latest_UUID = nil
+        mp_latest_Time = nil
+
+        Dir.entries(mp_folder).select do |entry|
+            path = File.join(mp_folder,entry)
+            #puts '$$$ '+path.to_s
+            if !(File.directory? path) and !(entry =='.' || entry == '..' || entry == '.DS_Store')
+                #puts '     $$$ '+path.to_s
+                plist_path = path
+                # make XML
+                xml_lines_arr = []
+                args = ['cms', '-D', '-i', plist_path]
+                Jake.run2('security',args,{:rootdir => $startdir, :hide_output => true}) do |line|
+                    xml_lines_arr << line.to_s
+                    true
+                end
+                xml_lines = xml_lines_arr.join.to_s
+                #puts '%%%%%%% '+xml_lines
+
+                plist_obj = CFPropertyList::List.new(:data => xml_lines)
+                mp_plist_hash = CFPropertyList.native_types(plist_obj.value)
+                #puts '     $$$ '+mp_plist_hash.to_s
+                mp_name = mp_plist_hash['Name']
+                mp_uuid = mp_plist_hash['UUID']
+                mp_creation_date = mp_plist_hash['CreationDate']
+
+                #puts '       '+mp_creation_date.class.to_s+'    '+mp_creation_date.to_s
+
+                #puts '$$$$$   MP: Name: "'+mp_name+'"   UUID: ['+mp_uuid+']'
+
+                if mp_name == $provisionprofile
+                    puts 'Found MobileProvision Name: "'+mp_name+'"   UUID: ['+mp_uuid+']    Creation Time:   '+mp_creation_date.to_s+'    File: '+path.to_s
+                    #$provisionprofile = mp_uuid
+                    if mp_latest_UUID == nil
+                        mp_latest_UUID = mp_uuid
+                        mp_latest_Time = mp_creation_date
+                    else
+                        if mp_creation_date > mp_latest_Time
+                            mp_latest_UUID = mp_uuid
+                            mp_latest_Time = mp_creation_date
+                        end
+                    end
+                end
+            end
+        end
+        if mp_latest_UUID != nil
+            $provisionprofile = mp_latest_UUID
+        end
+        puts 'Processed MobileProvision UUID = '+$provisionprofile.to_s
+    end
+
+    # process special SDK names: latest, latest_simulator, latest_device
+    if ($sdk =~ /latest/) && (!$skip_checking_XCode)
+        args = ['-showsdks']
+        nullversion = Gem::Version.new('0.0')
+        latestsimulator = Gem::Version.new('0.0')
+        latestdevice = Gem::Version.new('0.0')
+        simulatorsdkmask = /(.*)iphonesimulator([0-9]+).([0-9]+)(.*)/
+        devicemask = /(.*)iphoneos([0-9]+).([0-9]+)(.*)/
+
+        Jake.run2($xcodebuild,args,{:rootdir => $startdir, :hide_output => true}) do |line|
+            #puts 'LINE = '+line.to_s
+            if (simulatorsdkmask=~line) == 0
+                parsed = line.scan(simulatorsdkmask)
+                curver = Gem::Version.new(parsed[0][1].to_s+'.'+parsed[0][2].to_s)
+                if curver > latestsimulator
+                    latestsimulator = curver
+                end
+            end
+            if (devicemask=~line) == 0
+                parsed = line.scan(devicemask)
+                curver = Gem::Version.new(parsed[0][1].to_s+'.'+parsed[0][2].to_s)
+                if curver > latestdevice
+                    latestdevice = curver
+                end
+            end
+            true
+        end
+        puts 'detect latestsimulator sdk = '+latestsimulator.to_s
+        puts 'detect latestdevice sdk = '+latestdevice.to_s
+        retx = $?
+        #puts '### +'+retx.to_s
+        if retx == 0
+            if $sdk.to_s.downcase == 'latest'
+                if Rake.application.top_level_tasks.to_s =~ /run/
+                  $sdk = 'latest_simulator'
+                else
+                  $sdk = 'latest_device'
+                end
+            end
+            if $sdk.to_s.downcase == 'latest_simulator'
+                if nullversion != latestsimulator
+                    $sdk = 'iphonesimulator'+latestsimulator.to_s
+                end
+            end
+            if $sdk.to_s.downcase == 'latest_device'
+                if nullversion != latestsimulator
+                    $sdk = 'iphoneos'+latestdevice.to_s
+                end
+            end
+        else
+            puts "ERROR: cannot run xcodebuild for get list of installed SDKs !"
+        end
+    end
+
     if $sdk !~ /iphone/
       if Rake.application.top_level_tasks.to_s =~ /run/
         $sdk = "iphonesimulator#{$sdk}"
@@ -1092,7 +1228,7 @@ namespace "config" do
       end
     end
 
-    puts $sdk
+    puts 'SDK = '+$sdk
 
     if !$skip_checking_XCode
       check_sdk($sdk)
