@@ -46,6 +46,7 @@ struct INetResponse
     virtual unsigned int getDataSize() = 0;
     virtual int getRespCode() = 0;
     virtual String getCookies() = 0;
+    virtual String getErrorMessage() = 0;
 
     virtual void setCharData(const char* szData) = 0;
 };
@@ -102,6 +103,7 @@ public:
     unsigned int getDataSize(){ return m_netResp->getDataSize(); }
     int getRespCode(){ return m_netResp->getRespCode(); }
     String getCookies(){ return m_netResp->getCookies(); }
+    String getErrorMessage() { return m_netResp->getErrorMessage(); }
 
 	boolean isOK()
 	{

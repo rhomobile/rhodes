@@ -412,6 +412,7 @@ void CNetworkImpl::createResult( NetResponse& resp, Hashtable<String,String>& ma
         mapRes["error_code"] = convertToStringA(RhoAppAdapter.getErrorFromResponse(resp));
         if ( resp.isResponseRecieved())
             mapRes["http_error"] = convertToStringA(resp.getRespCode());
+        mapRes["error_message"] = resp.getErrorMessage();
     }
 
     String cookies = resp.getCookies();
