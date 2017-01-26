@@ -1179,7 +1179,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    RAWLOG_INFO([[NSString stringWithFormat:@"PUSH My token is: %@", deviceToken] UTF8String]);
+    RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH My token is: %@", deviceToken] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushRegistrationSucceed:deviceToken];
     }
@@ -1187,7 +1187,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    RAWLOG_INFO([[NSString stringWithFormat:@"PUSH Failed to get token, error: %@", error] UTF8String]);
+    RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH Failed to get token, error: %@", error] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushRegistrationFailed:error];
     }
@@ -1195,7 +1195,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    RAWLOG_INFO([[NSString stringWithFormat:@"PUSH Received notification: %@", userInfo] UTF8String]);
+    RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH Received notification: %@", userInfo] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushMessageReceived:userInfo];
     }
