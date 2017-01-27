@@ -10,6 +10,7 @@
 
     [obj setProperty:@"ID" propertyValue:ID methodResult:nil];
     [obj setProperty:@"friendlyName" propertyValue:@"ZBar S/W Scanner" methodResult:nil];
+    [obj setProperty:@"scannerType" propertyValue:@"Camera" methodResult:nil];
 
     return obj;
 }
