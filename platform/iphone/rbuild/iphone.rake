@@ -343,7 +343,8 @@ def update_plist_procedure
                   domain_hash['NSIncludesSubdomains'] = true
                   domain_hash['NSTemporaryExceptionAllowsInsecureHTTPLoads'] = true
                   domain_hash['NSTemporaryExceptionMinimumTLSVersion'] = 'TLSv1.0'
-
+                  domain_hash['NSExceptionAllowsInsecureHTTPLoads'] = true
+                  domain_hash['NSExceptionMinimumTLSVersion'] = 'TLSv1.0'
                   hash['NSAppTransportSecurity']['NSExceptionDomains'][domain.to_s] = domain_hash
               end
           end
