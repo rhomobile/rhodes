@@ -2378,7 +2378,7 @@ dir_foreach(int argc, VALUE *argv, VALUE io)
 
 /*
  *  call-seq:
- *     Dir.entries( dirname ) -> array
+ *     Dir.entries( dirname )                -> array
  *     Dir.entries( dirname, encoding: enc ) -> array
  *
  *  Returns an array containing all of the filenames in the given

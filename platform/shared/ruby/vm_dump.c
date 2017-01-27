@@ -278,12 +278,12 @@ vm_stack_dump_each(rb_thread_t *th, rb_control_frame_t *cfp)
 
     /* stack trace header */
 
-    if (VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_METHOD ||
-	VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_TOP ||
+    if (VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_METHOD||
+	VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_TOP   ||
 	VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_BLOCK ||
 	VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_CLASS ||
-	VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_PROC ||
-	VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_LAMBDA ||
+	VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_PROC  ||
+	VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_LAMBDA||
 	VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_CFUNC ||
 	VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_IFUNC ||
 	VM_FRAME_TYPE(cfp) == VM_FRAME_MAGIC_EVAL  ||
@@ -437,7 +437,7 @@ rb_vmdebug_thread_dump_state(VALUE self)
     fprintf(stderr, "cfp: %p, ep : %p\n", (void *)cfp, (void *)cfp->ep);
 
     return Qnil;
-    }
+}
 
 #if defined(HAVE_BACKTRACE)
 # ifdef HAVE_LIBUNWIND
@@ -502,7 +502,7 @@ darwin_sigtramp:
 	}
 	trace[n++] = (void *)ip;
 	unw_set_reg(&cursor, UNW_REG_IP, ip);
-	}
+    }
     while (unw_step(&cursor) > 0) {
 	unw_get_reg(&cursor, UNW_REG_IP, &ip);
 	trace[n++] = (void *)ip;
@@ -682,8 +682,8 @@ dump_thread(void *arg)
 			if (pSymGetLineFromAddr64(ph, addr, &tmp, &line))
 			    fprintf(stderr, " %s:%lu", line.FileName, line.LineNumber);
 			fprintf(stderr, "\n");
-    }
-    }
+		    }
+		}
 
 		ResumeThread(th);
 	    }
@@ -710,9 +710,9 @@ rb_print_backtrace(void)
 	int i;
 	for (i=0; i<n; i++) {
 	    fprintf(stderr, "%s\n", syms[i]);
-	    }
-	free(syms);
 	}
+	free(syms);
+    }
 #endif
 #elif defined(_WIN32)
     DWORD tid = GetCurrentThreadId();
@@ -720,7 +720,7 @@ rb_print_backtrace(void)
     if (th != (HANDLE)-1)
 	WaitForSingleObject(th, INFINITE);
 #endif
-    }
+}
 
 #ifdef HAVE_LIBPROCSTAT
 #include <sys/user.h>
@@ -802,10 +802,10 @@ procstat_vm(struct procstat *procstat, struct kinfo_proc *kipp)
 		default:
 			str = "??";
 			break;
-    }
+		}
 		fprintf(stderr, "%-2s ", str);
 		fprintf(stderr, "%-s\n", kve->kve_path);
-}
+	}
 	free(freep);
 }
 #endif
@@ -844,7 +844,7 @@ print_machine_register(size_t reg, const char *reg_name, int col_count, int max_
 #   define dump_machine_register(reg) (col_count = print_machine_register(mctx->gregs[REG_##reg], #reg, col_count, 80))
 # elif defined __APPLE__
 #   define dump_machine_register(reg) (col_count = print_machine_register(mctx->__ss.__##reg, #reg, col_count, 80))
-#endif
+# endif
 
 static void
 rb_dump_machine_register(const ucontext_t *ctx)
@@ -898,9 +898,9 @@ rb_dump_machine_register(const ucontext_t *ctx)
 	dump_machine_register(UESP);
 	dump_machine_register(SS);
 #   endif
-}
+    }
 # elif defined __APPLE__
-{
+    {
 	const mcontext_t mctx = ctx->uc_mcontext;
 #   if defined __x86_64__
 	dump_machine_register(rax);
@@ -942,7 +942,7 @@ rb_dump_machine_register(const ucontext_t *ctx)
     }
 # endif
     fprintf(stderr, "\n\n");
-    }
+}
 #else
 # define rb_dump_machine_register(ctx) ((void)0)
 #endif /* HAVE_PRINT_MACHINE_REGISTERS */
@@ -1082,7 +1082,7 @@ rb_vm_bugreport(const void *ctx)
 		fclose(fp);
 		fprintf(stderr, "\n\n");
 	    }
-	    }
+	}
 #endif /* __linux__ */
 #ifdef HAVE_LIBPROCSTAT
 # define MIB_KERN_PROC_PID_LEN 4
@@ -1101,8 +1101,8 @@ rb_vm_bugreport(const void *ctx)
 	    fprintf(stderr, "* Process memory map:\n\n");
 	    procstat_vm(prstat, &kp);
 	    procstat_close(prstat);
-	fprintf(stderr, "\n");
-    }
+	    fprintf(stderr, "\n");
+	}
 #endif /* __FreeBSD__ */
     }
 }

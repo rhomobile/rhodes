@@ -26,7 +26,6 @@ extern "C" {
 #include RUBY_EXTCONF_H
 #endif
 
-
 #if defined(__cplusplus)
 /* __builtin_choose_expr and __builtin_types_compatible aren't available
  * on C++.  See https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html */
@@ -1459,8 +1458,6 @@ rb_data_typed_object_alloc(VALUE klass, void *datap, const rb_data_type_t *type)
 #define RB_OBJ_WB_UNPROTECT(x)      rb_obj_wb_unprotect(x, __FILE__, __LINE__)
 
 void rb_gc_writebarrier(VALUE a, VALUE b);
-
-//RHO
 void rb_gc_writebarrier_unprotect(VALUE obj);
 
 #else /* USE_RGENGC */
@@ -1501,7 +1498,7 @@ rb_obj_wb_unprotect(VALUE x, RB_UNUSED_VAR(const char *filename), RB_UNUSED_VAR(
     RGENGC_LOGGING_WB_UNPROTECT((void *)x, filename, line);
 #endif
 #if USE_RGENGC
-rb_gc_writebarrier_unprotect(x);
+    rb_gc_writebarrier_unprotect(x);
 #endif
     return x;
 }
@@ -1727,7 +1724,7 @@ extern int const_cache_version;
 
 
 //RHO
-#define RUBY_CONST_ID_CACHE(result, str)			\
+#define RUBY_CONST_ID_CACHE(result, str)		\			\
     {							\
     static ID rb_intern_id_cache;               \
     static ID rb_intern_cache_version;               \
@@ -1755,7 +1752,6 @@ extern int const_cache_version;
      (rb_intern)(str))
 #else
 #define rb_intern_const(str) rb_intern2((str), (long)strlen(str))
-#define rb_intern(str) rb_intern_const((str))
 #endif
 //RHO
 
