@@ -365,7 +365,7 @@ def update_plist_procedure
             info_plist_data = $app_config["iphone"]["info_plist_data"]
             if info_plist_data.kind_of?(Hash)
                 info_plist_data.each do |key, value|
-                    recursive_replace_bool(value)
+                    value = recursive_replace_bool(value)
                     recursive_merge_hash(hash, key, value)
                 end
             end
