@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.add_dependency('rubyzip', '1.2.0')
   s.add_dependency('ffi', '1.9.14')
   s.add_dependency('rdoc', '4.2.2')
-  s.post_install_message = "Thanks for installing Rhodes ! Please visit our website: http:/tau-technologies.com" if s.respond_to? :post_install_message=
+  s.post_install_message = "Thanks for installing Rhodes ! Please visit our website: http://tau-technologies.com" if s.respond_to? :post_install_message=
   s.executables << 'rhogen'
   s.executables << 'rhodes'
   s.executables << 'upgrade-rhodes-app'

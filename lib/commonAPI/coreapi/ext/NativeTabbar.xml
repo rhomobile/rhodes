@@ -102,6 +102,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                                 <PLATFORM>Android</PLATFORM>
                                 <DESC>Place TabBar to bottom instead of default top - only for Android.</DESC>
                             </PARAM>
+                            <PARAM name="invisibleTabControl" type="BOOLEAN">
+                                <PLATFORM>iOS</PLATFORM>
+                                <DESC>Make TabBar control invisible. Application developer should switch between tabs programatically.</DESC>
+                            </PARAM>
                         </PARAMS>
                     </PARAM>
                 </PARAMS>

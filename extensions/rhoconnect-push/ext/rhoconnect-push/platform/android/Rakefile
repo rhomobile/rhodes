@@ -21,7 +21,7 @@ ARGS = [
     "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\"",
     "-I\"#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details\"",
     "-I\"#{$rootdir}/platform/shared/ruby/include\"",
-    "-I\"#{$rootdir}/lib/commonApi/coreapi/ext/shared\"",
+    "-I\"#{$rootdir}/lib/commonAPI/coreapi/ext/shared\"",
     "-I\"#{$rootdir}/platform/shared\"",
     "-I\"#{$rootdir}/platform/shared/common\"",
     "-I\"#{$rootdir}/platform/shared/api_generator\"",

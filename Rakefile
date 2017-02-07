@@ -2297,6 +2297,10 @@ def add_linker_library(libraryname)
   $ldflags << "#{tmpdir}/#{libraryname}\n" unless $ldflags.nil?
 end
 
+def add_inker_library_absolute(fulllibraryfilepath)
+    $ldflags << fulllibraryfilepath + "\n"
+end
+
 def set_linker_flags
   if $config["platform"] == "iphone"
     simulator = $sdk =~ /iphonesimulator/
@@ -2540,6 +2544,19 @@ def init_extensions(dest, mode = "")
             nlib.each do |libname|
               nativelib << libname
             end
+          end
+
+          # add additional libraries
+          link_libraries = []
+          if (!extconf["link_libraries"].nil?) && (extconf["link_libraries"].is_a? Array)
+              link_libraries += extconf["link_libraries"]
+          end
+          if (!extconf[$config["platform"]].nil?) && (!extconf[$config["platform"]]["link_libraries"].nil?) && (extconf[$config["platform"]]["link_libraries"].is_a? Array)
+              link_libraries += extconf[$config["platform"]]["link_libraries"]
+          end
+          link_libraries.each do |linklib|
+              fulllibpath = File.join(extpath, linklib)
+              add_inker_library_absolute(fulllibpath)
           end
 
           if entry && entry.length() > 0

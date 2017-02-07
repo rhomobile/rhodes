@@ -309,6 +309,7 @@ namespace net {
     String m_data;
     int   m_nRespCode;
     String m_cookies;
+    String m_errorMessage;
     
   public:
     CIPhoneNetResponseImpl(char const *data, size_t size, int nRespCode)
@@ -351,7 +352,17 @@ namespace net {
     {
       m_nRespCode = nRespCode;
     }
-    
+      
+    void setErrorMessage( const char* message )
+    {
+      m_errorMessage = message;
+    }
+      
+    virtual String getErrorMessage()
+    {
+        return m_errorMessage;
+    }
+      
     boolean isOK()
     {
       return m_nRespCode == 200 || m_nRespCode == 206;
@@ -756,6 +767,7 @@ public:
     if ( err != nil )
     {
       ret = new CIPhoneNetResponseImpl(-1);
+      ret->setErrorMessage([[err localizedDescription] UTF8String]);
       
       if ( m_pCallback != 0 )
       {
