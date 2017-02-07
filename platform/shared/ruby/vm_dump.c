@@ -19,13 +19,6 @@
 #define VMDEBUG 0
 #endif
 
-//RHO
-int rhoRubyFPrintf(FILE *, const char *, ...);
-#ifndef USE_STD_PRINTF
-#define fprintf rhoRubyFPrintf
-#endif
-//RHO
-
 #define MAX_POSBUF 128
 
 #define VM_CFP_CNT(th, cfp) \

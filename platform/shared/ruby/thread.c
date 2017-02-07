@@ -65,10 +65,6 @@
 #include "ruby/thread_native.h"
 #include "internal.h"
 
-//RHO
-#define USE_NATIVE_THREAD_PRIORITY  1
-//RHO
-
 #ifndef USE_NATIVE_THREAD_PRIORITY
 #define USE_NATIVE_THREAD_PRIORITY 0
 #define RUBY_THREAD_PRIORITY_MAX 3
@@ -279,14 +275,6 @@ rb_thread_s_debug_set(VALUE self, VALUE val)
 NOINLINE(static int thread_start_func_2(rb_thread_t *th, VALUE *stack_start,
 					VALUE *register_stack_start));
 static void timer_thread_function(void *);
-
-//RHO
-#include "logging/RhoLog.h"
-int rhoRubyPrintf(const char *format, ...);
-#ifndef USE_STD_PRINTF
-#define printf rhoRubyPrintf
-#endif
-//RHO
 
 #if   defined(_WIN32)
 #include "thread_win32.c"

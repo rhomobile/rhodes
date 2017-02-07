@@ -17,15 +17,6 @@
 #include "vm_core.h"
 #include "id.h"
 
-//RHO
-int rhoRubyFPrintf(FILE *, const char *, ...);
-int rhoRubyVFPrintf(FILE *, const char *, va_list);
-#ifndef USE_STD_PRINTF
-#define fprintf rhoRubyFPrintf
-#define vfprintf rhoRubyVFPrintf
-#endif
-//RHO
-
 /* for gdb */
 const union {
     enum ruby_special_consts    special_consts;

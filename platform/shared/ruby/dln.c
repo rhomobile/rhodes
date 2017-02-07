@@ -23,13 +23,6 @@ static void dln_loaderror(const char *format, ...);
 #endif
 #include "dln.h"
 
-//RHO
-int rhoRubyFPrintf(FILE *, const char *, ...);
-#ifndef USE_STD_PRINTF
-#define fprintf rhoRubyFPrintf
-#endif
-//RHO
-
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #endif

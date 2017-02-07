@@ -16,14 +16,6 @@
 #define NDEBUG
 #include <assert.h>
 
-//RHO
-int rhoRubyFPrintf(FILE *, const char *, ...);
-#ifndef USE_STD_PRINTF
-#define fprintf rhoRubyFPrintf
-#endif
-//RHO
-
-
 #if defined(HAVE_LIBGMP) && defined(HAVE_GMP_H)
 #define USE_GMP
 #include <gmp.h>

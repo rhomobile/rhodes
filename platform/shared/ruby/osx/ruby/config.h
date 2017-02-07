@@ -437,6 +437,15 @@
 #define RHO_STRIP_LOG 999
 
 #define USE_STD_PRINTF
+#ifndef USE_STD_PRINTF
+int rhoRubyFPrintf(FILE *, const char *, ...);
+int rhoRubyVFPrintf(FILE *, const char *, va_list);
+#define fprintf rhoRubyFPrintf
+#define vfprintf rhoRubyVFPrintf
+#endif
+
+#define USE_NATIVE_THREAD_PRIORITY  1
+
 //RHO
 
 

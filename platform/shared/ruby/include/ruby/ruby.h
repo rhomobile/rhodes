@@ -1724,12 +1724,12 @@ extern int const_cache_version;
 
 
 //RHO
-#define RUBY_CONST_ID_CACHE(result, str)		\			\
+#define RUBY_CONST_ID_CACHE(result, str)		\
     {							\
-    static ID rb_intern_id_cache;               \
+	static ID rb_intern_id_cache;			\
     static ID rb_intern_cache_version;               \
 	if ((!rb_intern_id_cache) || (rb_intern_cache_version != const_cache_version))	{		\
-        rb_intern_id_cache = rb_intern2(str, (long)strlen(str)); \
+	    rb_intern_id_cache = rb_intern2((str), (long)strlen(str)); \
         rb_intern_cache_version = const_cache_version;  \
     }       \
 	result rb_intern_id_cache;			\

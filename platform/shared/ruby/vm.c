@@ -23,15 +23,6 @@
 #include "probes.h"
 #include "probes_helper.h"
 
-//RHO
-#include "tcmalloc/rhomem.h"
-int rhoRubyFPrintf(FILE *, const char *, ...);
-#ifndef USE_STD_PRINTF
-#define fprintf rhoRubyFPrintf
-#endif
-//RHO
-
-
 VALUE rb_str_append_literal(VALUE str, VALUE str2);
 
 static inline VALUE *
