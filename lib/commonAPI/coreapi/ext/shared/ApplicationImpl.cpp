@@ -176,6 +176,9 @@ public:
             String dbRootFolder = CFilePath::join( rho_native_rhodbpath(), RHO_EMULATOR_DIR);
             if ( !String_startsWith(relativePath, dbRootFolder) )
                 oResult.set( CFilePath::join( dbRootFolder, relativePath ) );
+            else {
+                oResult.set(relativePath);
+            }
         }
     }
 
