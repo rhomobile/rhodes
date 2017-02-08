@@ -39,7 +39,7 @@
 **
 ****************************************************************************/
 
-#include <qwebviewkineticscroller.h>
+#include "qwebviewkineticscroller.h"
 #include <QApplication>
 #include <QGraphicsView>
 #include <QWebView>

@@ -53,7 +53,7 @@
 #include <QTime>
 #include <QPointer>
 #include <QObject>
-#include <qkineticscroller.h>
+#include "qkineticscroller.h"
 #include <QEvent>
 #if QT_VERSION < 0x040700
 #  include <QTime>
