@@ -4,6 +4,9 @@ sdkversion: <%=Rhodes::VERSION%>
 name: <%=@app_name%>
 version: 1.0
 vendor: rhomobile
+## Note: rho_app_id send to RhoConnect server for identify application (used in multi-push configuration only)
+## we recommend make it same with BundleIdentifier
+rho_app_id: com.rhomobile.<%=@app_name_cleared%>
 build: debug
 applog: rholog.txt
 
@@ -51,29 +54,15 @@ iphone:
   ## Note: Specifies list of HTTP domains for connect from application
   #http_connection_domains: ['domain1.com', 'domain2.org']
   ## Note: Specify remove of Info.plist keys - use this if you need to remove some keys from Info.plist
-  ## This example remove two keys with unsupported screen orientation and also remove UIRequiredDeviceCapabilities key
+  ## This example remove two keys with unsupported screen orientation
   #info_plist_data_remove:
-  #- UIRequiredDeviceCapabilities
   #- UISupportedInterfaceOrientations: ['UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight']
   ## Note: Specifies set/modify of Info.plist keys with content(hash) - all of this items will be apply to final Info.plist of application. You can specify any Ino.plist data in this parameter.
-  ## this example content is equal of two upper parameters content (URLS schemes and HTTP domains) - you can use manually setup this parameters for more detailed setup instead default.
-  ## in this example we show additional disable of perfect forward secrecy (PFS) for domain3(https)
+  ## This example allow all HTTP connections in application:
   #info_plist_data:
-  #  LSApplicationQueriesSchemes: ['scheme1', 'scheme2']
   #  NSAppTransportSecurity:
   #    NSAllowsArbitraryLoads: true
-  #    NSAllowsArbitraryLoadsInWebContent: true
-  #    NSExceptionDomains:
-  #      domain1.com:
-  #        NSIncludesSubdomains: true
-  #        NSTemporaryExceptionAllowsInsecureHTTPLoads: true
-  #        NSTemporaryExceptionMinimumTLSVersion: 'TLSv1.0'
-  #      domain2.org:
-  #        NSIncludesSubdomains: true
-  #        NSTemporaryExceptionAllowsInsecureHTTPLoads: true
-  #        NSTemporaryExceptionMinimumTLSVersion: 'TLSv1.0'
-  #      domain3.com:
-  #        NSExceptionRequiresForwardSecrecy: false
+
 
 wp8:
   productid: '<%=@productid%>'

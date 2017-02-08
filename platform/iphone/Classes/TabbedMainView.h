@@ -55,12 +55,14 @@
     int tabindex;
     id<IMethodResult> on_change_tab_callback;
     CGRect rootFrame;
+    BOOL invisible_tab_control;
 }
 
 @property (nonatomic,retain) UITabBarController *tabbar;
 @property (nonatomic,retain) NSArray *tabbarData;
 @property (nonatomic,assign) int tabindex;
 @property (nonatomic,assign) id<IMethodResult> on_change_tab_callback;
+@property (nonatomic,assign) BOOL invisible_tab_control;
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info;
 

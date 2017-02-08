@@ -14,7 +14,7 @@
         </div>
         <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
           <%% if SyncEngine::logged_in > 0 %>
-          <a href="<%%= url_for :controller => :Settings, :action => :logout %" class="btn btn-default btn-sm pull-right">
+          <a href="<%%= url_for :controller => :Settings, :action => :logout %>" class="btn btn-default btn-sm pull-right">
             Logout
           </a>
           <%% else %>

@@ -42,6 +42,7 @@
 #define NATIVE_BAR_DETAIL_COLOR                     @"detailColor"
 #define NATIVE_BAR_MAX_WIDTH                        @"maxWidth"
 #define NATIVE_BAR_FIXED_WIDTH                      @"fixedWidth"
+#define NATIVE_BAR_TABBAR_INVISIBLE                 @"invisibleTabControl"
 
 #define NATIVE_BAR_ITEM_LABEL						@"label"
 #define NATIVE_BAR_ITEM_DETAIL_LABEL				@"detailLabel"

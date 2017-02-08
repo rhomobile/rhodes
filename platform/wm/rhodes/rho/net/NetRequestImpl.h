@@ -50,6 +50,7 @@ class CNetResponseImpl : public INetResponse
     String m_data;
     int    m_nRespCode;
     String m_cookies;
+    String m_errorMessage;
 public:
     CNetResponseImpl() : m_bValid(false),m_nRespCode(-1){}
 
@@ -74,6 +75,8 @@ public:
         return m_cookies;
     }
     virtual int getRespCode(){ return m_nRespCode;}
+
+    virtual String getErrorMessage() { return m_errorMessage; }
 
     bool isValid()const{ return m_bValid; }
     void setValid(bool b){ m_bValid = b; }

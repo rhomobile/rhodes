@@ -343,7 +343,8 @@ def update_plist_procedure
                   domain_hash['NSIncludesSubdomains'] = true
                   domain_hash['NSTemporaryExceptionAllowsInsecureHTTPLoads'] = true
                   domain_hash['NSTemporaryExceptionMinimumTLSVersion'] = 'TLSv1.0'
-
+                  domain_hash['NSExceptionAllowsInsecureHTTPLoads'] = true
+                  domain_hash['NSExceptionMinimumTLSVersion'] = 'TLSv1.0'
                   hash['NSAppTransportSecurity']['NSExceptionDomains'][domain.to_s] = domain_hash
               end
           end
@@ -362,7 +363,7 @@ def update_plist_procedure
             info_plist_data = $app_config["iphone"]["info_plist_data"]
             if info_plist_data.kind_of?(Hash)
                 info_plist_data.each do |key, value|
-                    recursive_replace_bool(value)
+                    value = recursive_replace_bool(value)
                     recursive_merge_hash(hash, key, value)
                 end
             end
