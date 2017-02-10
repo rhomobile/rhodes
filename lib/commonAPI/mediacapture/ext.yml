@@ -19,11 +19,10 @@ wp8:
 project_paths:
   wp8: ext/platform/wp8/Mediacapture.vcxproj
   wm: ext/platform/wm/Mediacapture.vcproj
-  win32: ext/platform/wm/Mediacapture.vcproj
   
 xml_api_paths: ext/camera.xml, ext/videocapture.xml
 
-platforms: ["wm", "iphone", "android", "wp8"]
+platforms: ["wm", "iphone", "android", "wp8", "win32"]
 
 wm:
   files:

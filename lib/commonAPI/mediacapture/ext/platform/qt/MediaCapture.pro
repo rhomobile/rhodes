@@ -66,6 +66,7 @@ HEADERS += \
     src/CCameraDialogWindow.h
 
 SOURCES += \
+..\..\shared\MediacaptureInit.cpp\
 ..\..\shared\generated\cpp\Camera_js_wrap.cpp\
 ..\..\shared\generated\cpp\Camera_ruby_wrap.cpp\
 ..\..\shared\generated\cpp\CameraBase.cpp\

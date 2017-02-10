@@ -1,5 +1,7 @@
 #include "CCameraData.h"
 
+QHash<QString, CCameraData *> CCameraData::camerasKeeper;
+
 CCameraData::CCameraData()
 {
     cameraObject = nullptr;
