@@ -43,9 +43,19 @@ void CCameraDialogWindow::hideInstace(QCamera *camera)
     }
 }
 
+QtMainWindow *CCameraDialogWindow::getQMainWindow()
+{
+    return ((QtMainWindow *) CMainWindow::getInstance()->getQtMainWindow());
+}
+
 void CCameraDialogWindow::closeDialog()
 {
     rejected();
+}
+
+void CCameraDialogWindow::choosePicture(rho::apiGenerator::CMethodResult& oResult) {
+    ImageFileNameGetter * getter = new ImageFileNameGetter(QThread::currentThread(),oResult,getQMainWindow());
+    getter->run();
 }
 
 CCameraDialogWindow::~CCameraDialogWindow()

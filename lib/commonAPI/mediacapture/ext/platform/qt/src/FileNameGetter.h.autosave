@@ -1,0 +1,19 @@
+#ifndef FILENAMEGETTER_H
+#define FILENAMEGETTER_H
+
+#include "../../platform/shared/qt/rhodes/iexecutable.h"
+
+class FileNameGetter : public IExecutable
+{
+    Q_OBJECT
+public:
+    FileNameGetter(QObject * parent):IExecutable(parent){
+                                           
+    }
+signals:
+    
+public slots:
+    
+};
+
+#endif // FILENAMEGETTER_H

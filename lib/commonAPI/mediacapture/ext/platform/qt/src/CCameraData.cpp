@@ -7,12 +7,7 @@ CCameraData::CCameraData()
     cameraObject = nullptr;
     cameraType.clear();
     cameraID.clear();
-}
-
-
-QCamera *CCameraData::getCameraObject() const
-{
-    return cameraObject;
+    capturer = nullptr;
 }
 
 const QString CCameraData::getCameraType() const
@@ -25,11 +20,10 @@ const QString CCameraData::getCameraID() const
     return cameraID;
 }
 
-const CCapturer::Result * CCameraData::takeAPicture()
+void CCameraData::takeAPicture(rho::apiGenerator::CMethodResult &oResult)
 {
-    if (cameraObject == nullptr) return nullptr;
-    CCapturer capturer(cameraObject);
-    return capturer.getResult();
+    qDebug() << "Taking a Picture";
+    emit capture(oResult);
 }
 
 const QList<QString> CCameraData::getKeys()
@@ -40,14 +34,15 @@ const QList<QString> CCameraData::getKeys()
 
 const CCameraData *CCameraData::addNewCamera(QCameraInfo &info){
     CCameraData * data = new CCameraData(info);
-    camerasKeeper.insert(data->cameraID, data);
+    camerasKeeper.insert(data->getCameraID(), data);
     return data;
 }
 
 
 void CCameraData::cleanAll(){
+
     foreach (CCameraData * cameraData, camerasKeeper) {
-        delete cameraData;
+        cameraData->quit();
         camerasKeeper.clear();
     }
 }
@@ -68,8 +63,22 @@ CCameraData *CCameraData::getCameraData(QString &ID)
 
 
 CCameraData::CCameraData(QCameraInfo &info){
-    cameraObject = new QCamera(info);
+    this->info = info;
     cameraID = QString::number(camerasKeeper.size() + 1);
     if (info.position() == QCamera::BackFace){cameraType = "back";}
     else{cameraType = "front";}
+    start(TimeCriticalPriority);
+}
+
+void CCameraData::run()
+{
+
+    cameraObject = new QCamera(info);
+    connect(this, SIGNAL(destroyed(QObject*)), cameraObject, SLOT(deleteLater()));
+
+    capturer = new CCapturer(cameraObject);
+    connect(this, SIGNAL(finished()), capturer, SLOT(deleteLater()));
+    connect(this, SIGNAL(capture(rho::apiGenerator::CMethodResult)), capturer, SLOT(capture(rho::apiGenerator::CMethodResult)));
+
+    exec();
 }

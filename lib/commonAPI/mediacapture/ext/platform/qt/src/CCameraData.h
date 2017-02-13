@@ -9,18 +9,22 @@
 #include <QEventLoopLocker>
 #include "CCapturer.h"
 #include "CCameraDialogWindow.h"
+#include <QThread>
 
-class CCameraData : public QObject{
+class CCameraData : public QThread{
     Q_OBJECT
 private:
     QCamera * cameraObject;
     QString cameraType;
     QString cameraID;
-
+    QThread * cameraThread;
+    CCapturer * capturer;
+    QCameraInfo info;
     CCameraData();
     CCameraData(QCameraInfo &info);
 
     static QHash<QString, CCameraData *> camerasKeeper;
+
 public:
 
     ~CCameraData(){delete cameraObject;}
@@ -30,10 +34,13 @@ public:
     static const bool isEmpty();
     static CCameraData *getCameraData(QString &ID);
 
-    QCamera *getCameraObject() const;
     const QString getCameraType() const;
     const QString getCameraID() const;
-    const CCapturer::Result *takeAPicture();
+    void takeAPicture(rho::apiGenerator::CMethodResult &oResult);
+public slots:
+    void run();
+signals:
+    void capture(rho::apiGenerator::CMethodResult oResult);
 
 };
 

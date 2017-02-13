@@ -579,6 +579,11 @@ int CMainWindow::tabbarGetCurrent()
 {
     return ((QtMainWindow*)qtMainWindow)->tabbarGetCurrent();
 }
+void *CMainWindow::getQtMainWindow() const
+{
+    return qtMainWindow;
+}
+
 
 // Menu
 void CMainWindow::menuClear()

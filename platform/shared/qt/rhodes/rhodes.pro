@@ -144,7 +144,8 @@ impl/DateTimePickerImpl.h\
 impl/AlertImpl.h\
 impl/RhoThreadImpl.h\
 RhoSimulator.h\
-RhoNativeApiCall.h
+RhoNativeApiCall.h \
+    iexecutable.h
 
 SOURCES += main.cpp\
 ExternalWebView.cpp\

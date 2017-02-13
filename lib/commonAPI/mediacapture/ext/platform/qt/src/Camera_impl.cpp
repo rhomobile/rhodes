@@ -1,13 +1,12 @@
 //
 //  CameraImpl.cpp
 #include <Qt>
-#include <QString>
-#include <QList>
-#include <QFileDialog>
-#include <QStandardPaths>
-#include <QImage>
+
 #include <QHash>
+#include <QApplication>
+#include <QWindow>
 #include "CCameraData.h"
+
 
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"
@@ -29,6 +28,8 @@ namespace rho {
 
         CCameraSingletonImpl(): CCameraSingletonBase()
         {
+            qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
+
             foreach (QCameraInfo cameraInfo, QCameraInfo::availableCameras()) {
                 const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
                 defaultCameras.insert(data->getCameraType(), data->getCameraID());
@@ -59,44 +60,15 @@ namespace rho {
         // choosePicture Choose a picture from the album. 
 
         static void getImageData(rho::Hashtable<String,String> & mapRes, QString fileNameToOpen){
-            QImage image(fileNameToOpen);
-            if (image.isNull()){
-                mapRes["status"] = "error";
-                mapRes["message"] = "Image loading error";
-                return;
-            }
-            mapRes["status"] = "ok";
-
-            rho::String uri = fileNameToOpen.toStdString();
-            rho::String height = QString::number(image.height()).toStdString();
-            rho::String width = QString::number(image.width()).toStdString();
-            rho::String format = (QFileInfo(fileNameToOpen)).suffix().toStdString();
-
-            mapRes["imageUri"] = uri;
-            mapRes["imageHeight"] = height;
-            mapRes["imageWidth"] = width;
-            mapRes["imageFormat"] = format;
-
-            mapRes["image_uri"] = uri;
-            mapRes["image_height"] = height;
-            mapRes["image_width"] = width;
-            mapRes["image_format"] = format;
+            CCapturer::getImageData(mapRes, fileNameToOpen);
         }
 
         virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
-            // RAWLOGC_INFO("choosePicture","Camera");
-            QString fileNameToOpen = QFileDialog::getOpenFileName(0, "Open Image",
-                                                                  QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).last()
-                                                                  , "Image Files (*.JPG *.JPE *.PNG *.BMP *.GIF)");
+            // RAWLOGC_INFO("choosePicture","Camera");           
 
-            rho::Hashtable<String,String>& mapRes = oResult.getStringHash();
-            if (fileNameToOpen.isEmpty()){
-                mapRes["status"] = "cancel";
-                mapRes["message"] = "Open file dialog has been canceled";
-                return;
-            }
 
-            getImageData(mapRes, fileNameToOpen);
+            CCameraDialogWindow::choosePicture(oResult);
+
 
 
         } 
@@ -292,37 +264,23 @@ namespace rho {
         } 
 
         virtual void takePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
-
+            capture(oResult);
         } 
 
         virtual void showPreview( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
-            CCameraDialogWindow::showInstace(camera->getCameraObject());
+            //CCameraDialogWindow::showInstace(camera->getCameraObject());
         } 
 
         virtual void hidePreview(rho::apiGenerator::CMethodResult& oResult) {
-            CCameraDialogWindow::hideInstace(camera->getCameraObject());
+            //CCameraDialogWindow::hideInstace(camera->getCameraObject());
         } 
 
         virtual void capture(rho::apiGenerator::CMethodResult& oResult) {
-            rho::Hashtable<String,String>& mapRes = oResult.getStringHash();
-
-            const CCapturer::Result * result = camera->takeAPicture();
-            if (result == nullptr){
-                mapRes["status"] = "error";
-                mapRes["message"] = "Camera ID fail";;
+            if (camera == nullptr) {
+                qDebug() << "\n\nNullPoinerCamera\n\n";
                 return;
             }
-            if (!result->errorFlag){
-
-                CCameraSingletonImpl::getImageData( mapRes, result->savedFileName);
-            }else{
-                mapRes["status"] = "error";
-                mapRes["message"] = result->errorMessage.toStdString();
-                return;
-            }
-
-
-
+            emit camera->takeAPicture(oResult);
         } 
 
         virtual void getProperty( const rho::String& propertyName, rho::apiGenerator::CMethodResult& oResult) {

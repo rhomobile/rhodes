@@ -7,40 +7,34 @@
 #include <QCamera>
 #include <QTimer>
 #include <QThread>
+#include <QDebug>
+#include <QFileInfo>
+#include <QCameraFocus>
+#include <QCameraExposure>
+#include <QImageEncoderSettings>
+#include "../../../../../platform/shared/api_generator/MethodResult.h"
+#include "../../../../../platform/shared/common/RhoStd.h"
 
 class CCapturer : public QObject
 {
     Q_OBJECT
 private:
     CCapturer();
-    QEventLoop looper;
     QCameraImageCapture * imageCapture;
     QTimer timer;
-
+    QCamera * camera;
+    rho::apiGenerator::CMethodResult oResult;
     bool stopCamera;
 public:
-
-    struct Result{
-        bool errorFlag;
-        QString errorMessage;
-        QString savedFileName;
-        Result(){
-            errorFlag = true;
-            errorMessage = "No camera found";
-        }
-    };
-
     explicit CCapturer(QCamera *camera, QObject *parent = 0);
     ~CCapturer();
-    Result * getResult() const;
-
-private:
-    Result * result;
-signals:
-    void workingEnds();
-public slots:
+    static void getImageData(rho::Hashtable<rho::String, rho::String> &mapRes, const QString &fileNameToOpen);
+private slots:
     void imageSaved(int id, const QString &fileName);
     void error();
+public slots:
+    void capture(rho::apiGenerator::CMethodResult result);
+
 };
 
 #endif // CCAPTURER_H

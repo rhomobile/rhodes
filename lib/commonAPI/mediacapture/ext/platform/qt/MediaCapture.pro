@@ -1,5 +1,4 @@
-QT -= core
-QT += multimedia gui widgets multimediawidgets
+QT += multimedia gui widgets multimediawidgets webkitwidgets core network webkit
 
 TARGET = Mediacapture
 TEMPLATE = lib
@@ -63,7 +62,9 @@ HEADERS += \
 ..\..\shared\generated\cpp\CameraBase.h \
     src/CCameraData.h \
     src/CCapturer.h \
-    src/CCameraDialogWindow.h
+    src/CCameraDialogWindow.h \
+    src/ImageFileNameGetter.h \
+    src/ImageFilenameGetterResult.h
 
 SOURCES += \
 ..\..\shared\MediacaptureInit.cpp\
