@@ -2,7 +2,7 @@
 #define IMAGEFILENAMEGETTERRESULT_H
 
 #include "../../platform/shared/qt/rhodes/iexecutable.h"
-#include "CCapturer.h"
+#include "CameraDialogView.h"
 #include <QDebug>
 
 class ImageFileNameGetterResult : public IExecutable
@@ -20,19 +20,15 @@ private:
 
 public slots:
     void execute(){
-
         rho::Hashtable<rho::String,rho::String>& mapRes = result.getStringHash();
-        if (fileName.isEmpty()){
+        if (!fileName.isEmpty()){
+            CameraDialogView::getImageData(mapRes, fileName);
+        }else{
             mapRes["status"] = "cancel";
             mapRes["message"] = "Open file dialog has been canceled";
-            return;
         }
 
-        CCapturer::getImageData(mapRes, fileName);
         result.set(mapRes);
-
-        qDebug() << "File name: " + fileName;
-
         deleteLater();
     }
 };

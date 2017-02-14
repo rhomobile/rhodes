@@ -61,10 +61,11 @@ HEADERS += \
 ..\..\shared\generated\cpp\ICamera.h\
 ..\..\shared\generated\cpp\CameraBase.h \
     src/CCameraData.h \
-    src/CCapturer.h \
-    src/CCameraDialogWindow.h \
     src/ImageFileNameGetter.h \
-    src/ImageFilenameGetterResult.h
+    src/ImageFilenameGetterResult.h \
+    src/CameraDialogController.h \
+    src/CameraDialogView.h \
+    src/CameraDialogBuilder.h
 
 SOURCES += \
 ..\..\shared\MediacaptureInit.cpp\
@@ -76,5 +77,4 @@ SOURCES += \
 ..\..\shared\generated\Camera_ruby_api.c\
 src\Camera_impl.cpp \
     src/CCameraData.cpp \
-    src/CCapturer.cpp \
-    src/CCameraDialogWindow.cpp
+    src/CameraDialogView.cpp

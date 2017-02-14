@@ -29,9 +29,13 @@ namespace rho {
             QMutexLocker locker(CCameraData::getMutex());
 
             if (CCameraData::isEmpty()){
-                qDebug() << "Available cameras " + QString::number(QCameraInfo::availableCameras().size());
-                if (QCameraInfo::availableCameras().isEmpty()) {QThread::currentThread()->msleep(2000);}
-                qDebug() << "Available cameras " + QString::number(QCameraInfo::availableCameras().size());
+                if (QCameraInfo::availableCameras().isEmpty()){
+                    for (int i = 0; i < 100; i++){
+                        if (!QCameraInfo::availableCameras().isEmpty()){break;}
+                        QThread::currentThread()->msleep(50);
+                    }
+                }
+
                 foreach (QCameraInfo cameraInfo, QCameraInfo::availableCameras()) {
                     const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
                     defaultCameras.insert(data->getCameraType(), data->getCameraID());
@@ -64,12 +68,12 @@ namespace rho {
         // choosePicture Choose a picture from the album. 
 
         static void getImageData(rho::Hashtable<String,String> & mapRes, QString fileNameToOpen){
-            CCapturer::getImageData(mapRes, fileNameToOpen);
+            CameraDialogView::getImageData(mapRes, fileNameToOpen);
         }
 
         virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
             // RAWLOGC_INFO("choosePicture","Camera");           
-            CCameraDialogWindows::choosePicture(oResult);
+            CCameraData::choosePicture(oResult);
         } 
         // copyImageToDeviceGallery Save an image to the device gallery. 
         virtual void copyImageToDeviceGallery( const rho::String& pathToImage, rho::apiGenerator::CMethodResult& oResult) {
@@ -267,12 +271,11 @@ namespace rho {
         } 
 
         virtual void showPreview( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
-            qDebug() << "Calling function showPreview()";
-            //CCameraDialogWindows::showInstace(camera->getCameraObject());
+
         } 
 
         virtual void hidePreview(rho::apiGenerator::CMethodResult& oResult) {
-            //CCameraDialogWindows::hideInstace(camera->getCameraObject());
+
         } 
 
         virtual void capture(rho::apiGenerator::CMethodResult& oResult) {
@@ -280,10 +283,8 @@ namespace rho {
                 qDebug() << "NullPoinerCamera";
                 return;
             }
-            CCameraDialogWindows::showInstace(camera->getCameraObject());
-            //emit camera->takeAPicture(oResult);
-
-        } 
+            camera->showView(oResult);
+        }
 
         virtual void getProperty( const rho::String& propertyName, rho::apiGenerator::CMethodResult& oResult) {
 
@@ -315,11 +316,14 @@ namespace rho {
 
         ICameraSingleton* createModuleSingleton()
         { 
-            static CCameraSingletonImpl impl;
-            return &impl;
+            static CCameraSingletonImpl * impl = new CCameraSingletonImpl();
+            return impl;
         }
         
-        virtual ICamera* createModuleByID(const rho::String& strID){ return new CCameraImpl(strID); }
+        virtual ICamera* createModuleByID(const rho::String& strID){
+            createModuleSingleton();
+            return new CCameraImpl(strID);
+        }
         
     };
     

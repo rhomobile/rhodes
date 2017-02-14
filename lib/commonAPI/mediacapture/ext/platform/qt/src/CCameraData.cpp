@@ -2,23 +2,15 @@
 
 QHash<QString, CCameraData *> CCameraData::camerasKeeper;
 
-
-QCamera *CCameraData::getCameraObject()
-{
-    return cameraObject;
-}
-
 QMutex *CCameraData::getMutex()
 {
     static QMutex mutex;
     return & mutex;
 }
-CCameraData::CCameraData()
+CCameraData::CCameraData():CameraDialogController(0)
 {
-    cameraObject = nullptr;
     cameraType.clear();
     cameraID.clear();
-    capturer = nullptr;
 }
 
 const QString CCameraData::getCameraType() const
@@ -29,12 +21,6 @@ const QString CCameraData::getCameraType() const
 const QString CCameraData::getCameraID() const
 {
     return cameraID;
-}
-
-void CCameraData::takeAPicture(rho::apiGenerator::CMethodResult &oResult)
-{
-    qDebug() << "Taking a Picture";
-    emit capture(oResult);
 }
 
 const QList<QString> CCameraData::getKeys()
@@ -53,7 +39,7 @@ const CCameraData *CCameraData::addNewCamera(QCameraInfo &info){
 void CCameraData::cleanAll(){
 QMutexLocker locker(getMutex());
     foreach (CCameraData * cameraData, camerasKeeper) {
-        cameraData->quit();
+        cameraData->deleteLater();
         camerasKeeper.clear();
     }
 }
@@ -66,31 +52,32 @@ const bool CCameraData::isEmpty()
 CCameraData *CCameraData::getCameraData(QString &ID)
 {
     QMutexLocker locker(getMutex());
-    if(camerasKeeper.contains(ID)){
-        return camerasKeeper.value(ID);
-    }else{
-        return nullptr;
-    }
+    if(camerasKeeper.contains(ID)){return camerasKeeper.value(ID);
+    }else{return nullptr;}
 }
 
 
-CCameraData::CCameraData(QCameraInfo &info){
+CCameraData::CCameraData(QCameraInfo &info):CameraDialogController(0){
     this->info = info;
     cameraID = QString::number(camerasKeeper.size() + 1);
     if (info.position() == QCamera::BackFace){cameraType = "back";}
     else{cameraType = "front";}
-    start(TimeCriticalPriority);
 }
 
-void CCameraData::run()
+
+void CCameraData::showView(rho::apiGenerator::CMethodResult &oResult)
 {
+    if (dialogExists()) return;
+    CameraDialogBuilder * builder = new CameraDialogBuilder(this, info, oResult, getQMainWindow());
+    emit builder->run();
+}
 
-    cameraObject = new QCamera(info);
-    connect(this, SIGNAL(destroyed(QObject*)), cameraObject, SLOT(deleteLater()));
+QtMainWindow *CCameraData::getQMainWindow()
+{
+    return ((QtMainWindow *) CMainWindow::getInstance()->getQtMainWindow());
+}
 
-    capturer = new CCapturer(cameraObject);
-    connect(this, SIGNAL(finished()), capturer, SLOT(deleteLater()));
-    connect(this, SIGNAL(capture(rho::apiGenerator::CMethodResult)), capturer, SLOT(capture(rho::apiGenerator::CMethodResult)));
-
-    exec();
+void CCameraData::choosePicture(rho::apiGenerator::CMethodResult& oResult) {
+    ImageFileNameGetter * getter = new ImageFileNameGetter(QThread::currentThread(),oResult,getQMainWindow());
+    getter->run();
 }

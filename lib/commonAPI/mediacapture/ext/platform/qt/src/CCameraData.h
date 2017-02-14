@@ -7,29 +7,30 @@
 #include <QMediaRecorder>
 #include <QCameraImageCapture>
 #include <QEventLoopLocker>
-#include "CCapturer.h"
-#include "CCameraDialogWindows.h"
 #include <QThread>
 #include <QMutex>
 #include <QMutexLocker>
+#include "../../platform/shared/qt/rhodes/QtMainWindow.h"
+#include "../../platform/shared/qt/rhodes/impl/MainWindowImpl.h"
+#include "../../platform/shared/qt/rhodes/iexecutable.h"
+#include "ImageFileNameGetter.h"
+#include "CameraDialogController.h"
+#include "CameraDialogBuilder.h"
 
-class CCameraData : public QThread{
+class CCameraData : public CameraDialogController{
     Q_OBJECT
 private:
-    QCamera * cameraObject;
     QString cameraType;
     QString cameraID;
-    QThread * cameraThread;
-    CCapturer * capturer;
     QCameraInfo info;
+
     CCameraData();
     CCameraData(QCameraInfo &info);
 
     static QHash<QString, CCameraData *> camerasKeeper;
 
 public:
-
-    ~CCameraData(){delete cameraObject;}
+    ~CCameraData() {cleanAll();}
     static const CCameraData *addNewCamera(QCameraInfo &info);
     static void cleanAll();
     static const QList<QString> getKeys();
@@ -38,14 +39,15 @@ public:
 
     const QString getCameraType() const;
     const QString getCameraID() const;
+
     void takeAPicture(rho::apiGenerator::CMethodResult &oResult);
-    QCamera *getCameraObject();
     static QMutex * getMutex();
 
+    void showView(rho::apiGenerator::CMethodResult &oResult);
+    static QtMainWindow *getQMainWindow();
+    static void choosePicture(rho::apiGenerator::CMethodResult &oResult);
 public slots:
-    void run();
-signals:
-    void capture(rho::apiGenerator::CMethodResult oResult);
+
 
 };
 

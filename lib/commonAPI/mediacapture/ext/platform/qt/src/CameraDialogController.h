@@ -2,16 +2,29 @@
 #define CAMERADIALOGCONTROLLER_H
 
 #include <QObject>
+#include <QDebug>
+#include <QMutex>
+#include <QMutexLocker>
 
 class CameraDialogController : public QObject
 {
     Q_OBJECT
-public:
-    explicit CameraDialogController(QObject *parent = 0):QObject(parent){}
+protected:
+    volatile bool exists;
+    QMutex mutex;
 
-signals:
-    void show();
-    void hide();
+public:
+    explicit CameraDialogController(QObject *parent):QObject(parent){
+        exists = false;
+    }
+    virtual ~CameraDialogController(){
+
+    }
+
+    volatile bool dialogExists(){return exists;}
+public slots:
+    void setDialogExists(){exists = true;}
+    void setDialogRejected(){exists = false;}
 
 };
 

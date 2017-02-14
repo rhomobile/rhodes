@@ -10,22 +10,25 @@ class CameraDialogBuilder : public IExecutable
     Q_OBJECT
 private:
     CameraDialogController * controller;
-    QCamera * camera;
+    QCameraInfo info;
     QWidget * parentWidget;
+    rho::apiGenerator::CMethodResult oResult;
 public:
-    explicit CameraDialogBuilder(CameraDialogController * controller, QCamera * camera, QWidget *parent) : IExecutable(parent){
+    explicit CameraDialogBuilder(CameraDialogController * controller, QCameraInfo &info,
+                                 rho::apiGenerator::CMethodResult &oResult, QWidget *parent) : IExecutable(parent){
         this->controller = controller;
-        this->camera = camera;
+        this->info = info;
+        this->oResult = oResult;
         parentWidget = parent;
     }
 
 public slots:
     void execute(){
-        CameraDialogView * dialog = new CameraDialogView(camera, parentWidget);
-        connect(controller, SIGNAL(show()), dialog, SLOT(show()));
-        connect(controller, SIGNAL(hide()), dialog, SLOT(hide()));
-        connect(controller, SIGNAL(destroyed(QObject*)), dialog, SLOT(reject()));
-        connect(controller, SIGNAL(destroyed(QObject*)), dialog, SLOT(deleteLater()));
+        CameraDialogView * dialog = new CameraDialogView(info, oResult, controller, parentWidget);
+        connect(parentWidget, SIGNAL(destroyed(QObject*)), dialog, SLOT(reject()));
+        connect(parentWidget, SIGNAL(destroyed(QObject*)), dialog, SLOT(deleteLater()));
+        dialog->show();
+        controller->setDialogExists();
         deleteLater();
     }
 };

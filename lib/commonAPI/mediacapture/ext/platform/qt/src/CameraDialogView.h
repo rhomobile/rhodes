@@ -8,39 +8,56 @@
 #include <QVideoWidget>
 #include <QEventLoop>
 #include <QThread>
+#include <QDebug>
+#include <QFileInfo>
+#include <QCameraFocus>
+#include <QCameraExposure>
+#include <QImageEncoderSettings>
+#include <QDir>
+#include <QCameraImageCapture>
+#include <QCameraInfo>
+#include <QPushButton>
+#include <QImage>
+#include <QPixmap>
+#include <QLabel>
+#include <QHBoxLayout>
+#include <QTime>
+#include <QDate>
+#include "../../../../../platform/shared/api_generator/MethodResult.h"
+#include "../../../../../platform/shared/common/RhoStd.h"
 #include "../../platform/shared/qt/rhodes/QtMainWindow.h"
 #include "../../platform/shared/qt/rhodes/impl/MainWindowImpl.h"
 #include "../../platform/shared/qt/rhodes/iexecutable.h"
+#include "CameraDialogController.h"
+
 
 class CameraDialogView : public QDialog
 {
     Q_OBJECT
 public:
-    explicit CameraDialogView(QCamera * camera, QWidget *parent) : QDialog(parent){
-        cameraObject = camera;
+    explicit CameraDialogView(QCameraInfo & info, rho::apiGenerator::CMethodResult &oResult,
+                              CameraDialogController * controller, QWidget *parent);
+    ~CameraDialogView();
 
-        setMinimumHeight(200);
-        setMinimumWidth(300);
-
-        QVBoxLayout * vblay = new QVBoxLayout(this);
-        videoWidget = new QVideoWidget(this);
-        vblay->addWidget(videoWidget);
-
-        cameraObject->setCaptureMode(QCamera::CaptureViewfinder);
-        cameraObject->setViewfinder(videoWidget);
-
-        connect(this, SIGNAL(rejected()), this, SLOT(buttonReject()));
-
-        cameraObject->start();
-    }
-
+    static void getImageData(rho::Hashtable<rho::String, rho::String> & mapRes, const QString &fileNameToOpen);
+    static QDir getImageDir();
 private:
-    QCamera * cameraObject;
     QVideoWidget * videoWidget;
-
-signals:
-
+    rho::apiGenerator::CMethodResult oResult;
+    QCameraImageCapture * imageCapture;
+    QCamera * camera;
+    CameraDialogController * controller;
+    QLabel * laPreview;
+    QImage currentImage;
+    bool imageIsSaved;
 public slots:
+    void imageSaved(int id, const QString &fileName);
+    void error();
+    void capture();
+    void imageCaptured(int id, const QImage &preview);
+    void saveCurrentImage();
+
+
 };
 
 #endif // CAMERADIALOGVIEW_H
