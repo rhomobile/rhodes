@@ -2,6 +2,17 @@
 
 QHash<QString, CCameraData *> CCameraData::camerasKeeper;
 
+
+QCamera *CCameraData::getCameraObject()
+{
+    return cameraObject;
+}
+
+QMutex *CCameraData::getMutex()
+{
+    static QMutex mutex;
+    return & mutex;
+}
 CCameraData::CCameraData()
 {
     cameraObject = nullptr;
@@ -40,7 +51,7 @@ const CCameraData *CCameraData::addNewCamera(QCameraInfo &info){
 
 
 void CCameraData::cleanAll(){
-
+QMutexLocker locker(getMutex());
     foreach (CCameraData * cameraData, camerasKeeper) {
         cameraData->quit();
         camerasKeeper.clear();
@@ -54,6 +65,7 @@ const bool CCameraData::isEmpty()
 
 CCameraData *CCameraData::getCameraData(QString &ID)
 {
+    QMutexLocker locker(getMutex());
     if(camerasKeeper.contains(ID)){
         return camerasKeeper.value(ID);
     }else{

@@ -1,13 +1,10 @@
 //
 //  CameraImpl.cpp
 #include <Qt>
-
 #include <QHash>
 #include <QApplication>
 #include <QWindow>
 #include "CCameraData.h"
-
-
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"
 #include "common/RhodesApp.h"
@@ -29,10 +26,16 @@ namespace rho {
         CCameraSingletonImpl(): CCameraSingletonBase()
         {
             qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
+            QMutexLocker locker(CCameraData::getMutex());
 
-            foreach (QCameraInfo cameraInfo, QCameraInfo::availableCameras()) {
-                const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
-                defaultCameras.insert(data->getCameraType(), data->getCameraID());
+            if (CCameraData::isEmpty()){
+                qDebug() << "Available cameras " + QString::number(QCameraInfo::availableCameras().size());
+                if (QCameraInfo::availableCameras().isEmpty()) {QThread::currentThread()->msleep(2000);}
+                qDebug() << "Available cameras " + QString::number(QCameraInfo::availableCameras().size());
+                foreach (QCameraInfo cameraInfo, QCameraInfo::availableCameras()) {
+                    const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
+                    defaultCameras.insert(data->getCameraType(), data->getCameraID());
+                }
             }
         }
 
@@ -43,13 +46,14 @@ namespace rho {
         //methods
         // enumerate Returns the cameras present on your device, allowing you to access your device's front or back camera. 
         virtual void enumerate(rho::apiGenerator::CMethodResult& oResult) {
-            // RAWLOGC_INFO("enumerate","Camera");
-            rho::Vector<rho::String> arIDs;
+
+            qDebug() << "INENUM";
+            QMutexLocker locker(CCameraData::getMutex());
+
+            rho::Vector<rho::String> arIDs = oResult.getStringArray();
             if(!CCameraData::isEmpty()){
                 foreach (QString value, CCameraData::getKeys()) {arIDs.addElement(value.toStdString());}
                 oResult.set(arIDs);
-            }else{
-                oResult.set("");
             }
             
         } 
@@ -65,12 +69,7 @@ namespace rho {
 
         virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
             // RAWLOGC_INFO("choosePicture","Camera");           
-
-
-            CCameraDialogWindow::choosePicture(oResult);
-
-
-
+            CCameraDialogWindows::choosePicture(oResult);
         } 
         // copyImageToDeviceGallery Save an image to the device gallery. 
         virtual void copyImageToDeviceGallery( const rho::String& pathToImage, rho::apiGenerator::CMethodResult& oResult) {
@@ -268,19 +267,22 @@ namespace rho {
         } 
 
         virtual void showPreview( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
-            //CCameraDialogWindow::showInstace(camera->getCameraObject());
+            qDebug() << "Calling function showPreview()";
+            //CCameraDialogWindows::showInstace(camera->getCameraObject());
         } 
 
         virtual void hidePreview(rho::apiGenerator::CMethodResult& oResult) {
-            //CCameraDialogWindow::hideInstace(camera->getCameraObject());
+            //CCameraDialogWindows::hideInstace(camera->getCameraObject());
         } 
 
         virtual void capture(rho::apiGenerator::CMethodResult& oResult) {
             if (camera == nullptr) {
-                qDebug() << "\n\nNullPoinerCamera\n\n";
+                qDebug() << "NullPoinerCamera";
                 return;
             }
-            emit camera->takeAPicture(oResult);
+            CCameraDialogWindows::showInstace(camera->getCameraObject());
+            //emit camera->takeAPicture(oResult);
+
         } 
 
         virtual void getProperty( const rho::String& propertyName, rho::apiGenerator::CMethodResult& oResult) {
@@ -310,10 +312,11 @@ namespace rho {
     class CCameraFactory: public CCameraFactoryBase    {
     public:
         CCameraFactory(){}
-        
+
         ICameraSingleton* createModuleSingleton()
         { 
-            return new CCameraSingletonImpl();
+            static CCameraSingletonImpl impl;
+            return &impl;
         }
         
         virtual ICamera* createModuleByID(const rho::String& strID){ return new CCameraImpl(strID); }

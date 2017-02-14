@@ -6,7 +6,7 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QImage>
-
+#include <QTimer>
 #include "ImageFilenameGetterResult.h"
 
 class ImageFileNameGetter : public IExecutable
@@ -16,10 +16,12 @@ public:
     explicit ImageFileNameGetter(QThread * owner, rho::apiGenerator::CMethodResult &oResult, QObject * parent):IExecutable(parent){
         threadOwner = owner;
         result = oResult;
+
     }
 private:
     QThread * threadOwner;
     rho::apiGenerator::CMethodResult result;
+
 signals:
 
 public slots:

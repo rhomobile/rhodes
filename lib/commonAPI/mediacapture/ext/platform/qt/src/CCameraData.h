@@ -8,8 +8,10 @@
 #include <QCameraImageCapture>
 #include <QEventLoopLocker>
 #include "CCapturer.h"
-#include "CCameraDialogWindow.h"
+#include "CCameraDialogWindows.h"
 #include <QThread>
+#include <QMutex>
+#include <QMutexLocker>
 
 class CCameraData : public QThread{
     Q_OBJECT
@@ -37,6 +39,9 @@ public:
     const QString getCameraType() const;
     const QString getCameraID() const;
     void takeAPicture(rho::apiGenerator::CMethodResult &oResult);
+    QCamera *getCameraObject();
+    static QMutex * getMutex();
+
 public slots:
     void run();
 signals:

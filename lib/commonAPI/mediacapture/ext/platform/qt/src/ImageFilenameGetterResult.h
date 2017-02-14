@@ -31,7 +31,7 @@ public slots:
         CCapturer::getImageData(mapRes, fileName);
         result.set(mapRes);
 
-        qDebug() << "!!!!!!!!! " + fileName + " !!!!!!!!!!!";
+        qDebug() << "File name: " + fileName;
 
         deleteLater();
     }

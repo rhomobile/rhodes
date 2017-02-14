@@ -32,7 +32,7 @@ void CCapturer::imageSaved(int id, const QString &fileName)
 {
     rho::Hashtable<rho::String, rho::String>& mapRes = oResult.getStringHash();
     qDebug() << "FILE SAVED TO " + fileName;
-    getImageData( mapRes, fileName);
+    getImageData(mapRes, fileName);
 
     oResult.set(mapRes);
     timer.stop();
@@ -82,8 +82,9 @@ void CCapturer::capture(rho::apiGenerator::CMethodResult result)
     }
 
     timer.start(10000);
-
-    imageCapture->capture();
+    QDir dir = QDir(QDir::current().absolutePath()+"/db/db-files/");
+    if (!dir.exists()) dir.mkpath(dir.absolutePath());
+    imageCapture->capture(dir.absolutePath() + "/image.jpg");
 }
 
 
@@ -97,7 +98,8 @@ void CCapturer::getImageData(rho::Hashtable<rho::String, rho::String> & mapRes, 
     }
     mapRes["status"] = "ok";
 
-    rho::String uri = fileNameToOpen.toStdString();
+
+    rho::String uri = QDir::current().relativeFilePath(fileNameToOpen).toStdString();
     rho::String height = QString::number(image.height()).toStdString();
     rho::String width = QString::number(image.width()).toStdString();
     rho::String format = (QFileInfo(fileNameToOpen)).suffix().toStdString();

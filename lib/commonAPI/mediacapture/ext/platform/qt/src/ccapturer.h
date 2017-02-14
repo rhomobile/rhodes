@@ -12,6 +12,7 @@
 #include <QCameraFocus>
 #include <QCameraExposure>
 #include <QImageEncoderSettings>
+#include <QDir>
 #include "../../../../../platform/shared/api_generator/MethodResult.h"
 #include "../../../../../platform/shared/common/RhoStd.h"
 
