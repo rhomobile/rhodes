@@ -28,6 +28,35 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'iphonecommon'))
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 
 
+$out_file_buf_enable = false
+$out_file_buf_path = 'rhobuildlog.txt'
+$out_file_buf = []
+
+puts 'iphone.rake execute'
+puts 'ENV["RHO_BUNDLE_BUILD_LOG_FILE"] = '+ENV["RHO_BUNDLE_BUILD_LOG_FILE"].to_s
+if (ENV["RHO_BUNDLE_BUILD_LOG_FILE"] != nil)
+    $out_file_buf_path = ENV["RHO_BUNDLE_BUILD_LOG_FILE"]
+    $out_file_buf_enable = true
+    load File.expand_path(File.join(File.dirname(__FILE__), 'putsOverride.rake'))
+end
+
+
+
+def save_out_file
+    if $out_file_buf_enable
+        f = File.new($out_file_buf_path,"w")
+        $out_file_buf.each do |line|
+            f.write(line)
+            f.write("\n")
+        end
+        f.close
+    end
+end
+
+
+
+
+
 def load_plist(fname)
   require 'cfpropertylist'
 
@@ -148,6 +177,203 @@ end
 #     File.open(fname,"w") { |f| f.write(buf) }
 #     return ret_value
 # end
+
+def recursive_replace_bool(value)
+    if value.kind_of?(Hash)
+        value.each_key do |nkey|
+            value[nkey] = recursive_replace_bool(value[nkey])
+        end
+    elsif value.kind_of?(Array)
+        new_array = []
+        value.each do |el|
+            new_array << recursive_replace_bool(el)
+        end
+    else
+        if (value.to_s.downcase == 'true') || (value.to_s.downcase == 'yes')
+            value = true
+        end
+        if (value.to_s.downcase == 'false') || (value.to_s.downcase == 'no')
+            value = false
+        end
+    end
+    return value
+end
+
+def recursive_merge_hash(hash, key, value)
+    old_value = hash[key]
+    if old_value.nil?
+        hash[key] = value
+    elsif value.kind_of?(Array)
+        if old_value.kind_of?(Array)
+            value.each do |element|
+                if !old_value.include?(element)
+                    old_value << element
+                end
+            end
+        else
+            hash[key] = value
+        end
+    elsif value.kind_of?(Hash)
+        if old_value.kind_of?(Hash)
+            value.each do |nkey, nvalue|
+                recursive_merge_hash(old_value, nkey, nvalue)
+            end
+        else
+            hash[key] = value
+        end
+    else
+        hash[key] = value
+    end
+end
+
+
+def recursive_remove_hash(hash, key)
+    if key.kind_of?(Array)
+        key.each do |element|
+            recursive_remove_hash(hash, element)
+        end
+    elsif key.kind_of?(Hash)
+        key.each do |keykey, keyvalue|
+            if hash.has_key? keykey
+                oldkey = hash[keykey]
+                recursive_remove_hash(oldkey, keyvalue)
+            end
+        end
+    elsif key.kind_of?(String)
+        #if hash.has_key? key
+            hash.delete(key)
+        #end
+    end
+end
+
+
+
+def update_plist_procedure
+      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+      vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
+      bundle_identifier = "com.#{vendor}.#{appname}"
+      bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
+
+      on_suspend = $app_config["iphone"]["UIApplicationExitsOnSuspend"]
+      on_suspend_value = false
+
+      if on_suspend.nil?
+        puts "UIApplicationExitsOnSuspend not configured, using default of false"
+      elsif on_suspend.to_s.downcase == "true" || on_suspend.to_s == "1"
+        on_suspend_value = true
+      elsif on_suspend.to_s.downcase == "false" || on_suspend.to_s == "0"
+        on_suspend_value = false
+      else
+        raise "UIApplicationExitsOnSuspend is not set to a valid value. Current value: '#{$app_config["iphone"]["UIApplicationExitsOnSuspend"]}'"
+      end
+
+      init_extensions( nil, "get_ext_xml_paths")
+
+      ext_name, changed_value = get_ext_plist_changes($app_extension_cfg)
+
+      set_app_plist_options($app_path + "/project/iphone/Info.plist", appname, bundle_identifier, $app_config["version"], $app_config["iphone"]["BundleURLScheme"]) do |hash|
+         hash['UIApplicationExitsOnSuspend'] = on_suspend_value
+
+        changed_value.each do |k, v|
+          puts "Info.plist: Setting key #{k} = #{v} from #{File.basename(ext_name[k])}"
+          hash[k] = v
+        end
+
+        #setup GPS access
+        gps_request_text = nil
+        if $app_config["capabilities"].index("gps") != nil
+          gps_request_text = 'application tracks your position'
+        end
+        if !$app_config["iphone"].nil?
+          if !$app_config["iphone"]["capabilities"].nil?
+            if $app_config["iphone"]["capabilities"].index("gps") != nil
+              gps_request_text = 'application tracks your position'
+            end
+          end
+        end
+        if gps_request_text != nil
+          if hash['NSLocationWhenInUseUsageDescription'] == nil
+            puts "Info.plist: added key [NSLocationWhenInUseUsageDescription]"
+            hash['NSLocationWhenInUseUsageDescription'] = gps_request_text
+          end
+        end
+
+        #setup Camera access
+        camera_request_text = nil
+        if $app_config["capabilities"].index("camera") != nil
+          camera_request_text = 'application wants to use camera'
+        end
+        if !$app_config["iphone"].nil?
+          if !$app_config["iphone"]["capabilities"].nil?
+            if $app_config["iphone"]["capabilities"].index("camera") != nil
+              camera_request_text = 'application wants to use camera'
+            end
+          end
+        end
+        if camera_request_text != nil
+          if hash['NSCameraUsageDescription'] == nil
+            puts "Info.plist: added key [NSCameraUsageDescription]"
+            hash['NSCameraUsageDescription'] = camera_request_text
+          end
+        end
+
+
+        #LSApplicationQueriesSchemes
+        if $app_config["iphone"].has_key?("ApplicationQueriesSchemes")
+          arr_app_queries_schemes = $app_config["iphone"]["ApplicationQueriesSchemes"]
+          if arr_app_queries_schemes.kind_of?(Array)
+            hash['LSApplicationQueriesSchemes'] = arr_app_queries_schemes
+          else
+            hash['LSApplicationQueriesSchemes'] = []
+          end
+        end
+
+        #http_connection_domains
+        if $app_config["iphone"].has_key?("http_connection_domains")
+          http_connection_domains = $app_config["iphone"]["http_connection_domains"]
+          if http_connection_domains.kind_of?(Array)
+              if !hash.has_key?("NSAppTransportSecurity")
+                  hash['NSAppTransportSecurity'] = {}
+              end
+              hash['NSAppTransportSecurity']['NSExceptionDomains'] = {}
+              http_connection_domains.each do |domain|
+                  domain_hash = {}
+                  domain_hash['NSIncludesSubdomains'] = true
+                  domain_hash['NSTemporaryExceptionAllowsInsecureHTTPLoads'] = true
+                  domain_hash['NSTemporaryExceptionMinimumTLSVersion'] = 'TLSv1.0'
+                  domain_hash['NSExceptionAllowsInsecureHTTPLoads'] = true
+                  domain_hash['NSExceptionMinimumTLSVersion'] = 'TLSv1.0'
+                  hash['NSAppTransportSecurity']['NSExceptionDomains'][domain.to_s] = domain_hash
+              end
+          end
+        end
+
+        # add custom data
+        if $app_config["iphone"].has_key?("info_plist_data_remove")
+            info_plist_data_remove = $app_config["iphone"]["info_plist_data_remove"]
+            if info_plist_data_remove.kind_of?(Array)
+                info_plist_data_remove.each do |key|
+                    recursive_remove_hash(hash, key)
+                end
+            end
+        end
+        if $app_config["iphone"].has_key?("info_plist_data")
+            info_plist_data = $app_config["iphone"]["info_plist_data"]
+            if info_plist_data.kind_of?(Hash)
+                info_plist_data.each do |key, value|
+                    value = recursive_replace_bool(value)
+                    recursive_merge_hash(hash, key, value)
+                end
+            end
+        end
+
+
+         set_app_icon(false)
+         set_default_images(false, hash)
+      end
+end
 
 def set_signing_identity(identity,profile,entitlements)
 
@@ -591,6 +817,31 @@ def update_xcode_project_files_by_capabilities
         remove_lines_from_xcode_project(['com.apple.Push = {enabled = 1;};'])
     end
 
+    #keychain access
+    enable_keychain = false
+    if $app_config['capabilities'] != nil
+        if $app_config['capabilities'].index('keychain')
+            enable_keychain = true
+        end
+    end
+    if $app_config['iphone'] != nil
+        if $app_config['iphone']['capabilities'] != nil
+            if $app_config['iphone']['capabilities'].index('keychain')
+                enable_keychain = true
+            end
+        end
+    end
+    # required for database encryption
+    if $app_config['encrypt_database'] != nil
+        if $app_config['encrypt_database'] == '1'
+            enable_keychain = true
+        end
+    end
+    if enable_keychain
+    else
+        remove_lines_from_xcode_project(['com.apple.Keychain = {enabled = 1;};'])
+    end
+
     save_plist(info_plist, hash_info_plist)
     save_plist(dev_ent, hash_dev_ent)
     save_plist(prd_ent, hash_prd_ent)
@@ -858,6 +1109,118 @@ namespace "config" do
       $signidentity = 'iPhone Developer'
     end
 
+
+
+    # find UUID for name of mobileprovision
+    if (!$skip_checking_XCode) && ($provisionprofile != nil)
+        $homedir = ENV['HOME']
+        mp_folder = "#{$homedir}/Library/MobileDevice/Provisioning Profiles/"
+
+        mp_latest_UUID = nil
+        mp_latest_Time = nil
+
+        Dir.entries(mp_folder).select do |entry|
+            path = File.join(mp_folder,entry)
+            #puts '$$$ '+path.to_s
+            if !(File.directory? path) and !(entry =='.' || entry == '..' || entry == '.DS_Store')
+                #puts '     $$$ '+path.to_s
+                plist_path = path
+                # make XML
+                xml_lines_arr = []
+                args = ['cms', '-D', '-i', plist_path]
+                Jake.run2('security',args,{:rootdir => $startdir, :hide_output => true}) do |line|
+                    xml_lines_arr << line.to_s
+                    true
+                end
+                xml_lines = xml_lines_arr.join.to_s
+                #puts '%%%%%%% '+xml_lines
+
+                plist_obj = CFPropertyList::List.new(:data => xml_lines)
+                mp_plist_hash = CFPropertyList.native_types(plist_obj.value)
+                #puts '     $$$ '+mp_plist_hash.to_s
+                mp_name = mp_plist_hash['Name']
+                mp_uuid = mp_plist_hash['UUID']
+                mp_creation_date = mp_plist_hash['CreationDate']
+
+                #puts '       '+mp_creation_date.class.to_s+'    '+mp_creation_date.to_s
+
+                #puts '$$$$$   MP: Name: "'+mp_name+'"   UUID: ['+mp_uuid+']'
+
+                if mp_name == $provisionprofile
+                    puts 'Found MobileProvision Name: "'+mp_name+'"   UUID: ['+mp_uuid+']    Creation Time:   '+mp_creation_date.to_s+'    File: '+path.to_s
+                    #$provisionprofile = mp_uuid
+                    if mp_latest_UUID == nil
+                        mp_latest_UUID = mp_uuid
+                        mp_latest_Time = mp_creation_date
+                    else
+                        if mp_creation_date > mp_latest_Time
+                            mp_latest_UUID = mp_uuid
+                            mp_latest_Time = mp_creation_date
+                        end
+                    end
+                end
+            end
+        end
+        if mp_latest_UUID != nil
+            $provisionprofile = mp_latest_UUID
+        end
+        puts 'Processed MobileProvision UUID = '+$provisionprofile.to_s
+    end
+
+    # process special SDK names: latest, latest_simulator, latest_device
+    if ($sdk =~ /latest/) && (!$skip_checking_XCode)
+        args = ['-showsdks']
+        nullversion = Gem::Version.new('0.0')
+        latestsimulator = Gem::Version.new('0.0')
+        latestdevice = Gem::Version.new('0.0')
+        simulatorsdkmask = /(.*)iphonesimulator([0-9]+).([0-9]+)(.*)/
+        devicemask = /(.*)iphoneos([0-9]+).([0-9]+)(.*)/
+
+        Jake.run2($xcodebuild,args,{:rootdir => $startdir, :hide_output => true}) do |line|
+            #puts 'LINE = '+line.to_s
+            if (simulatorsdkmask=~line) == 0
+                parsed = line.scan(simulatorsdkmask)
+                curver = Gem::Version.new(parsed[0][1].to_s+'.'+parsed[0][2].to_s)
+                if curver > latestsimulator
+                    latestsimulator = curver
+                end
+            end
+            if (devicemask=~line) == 0
+                parsed = line.scan(devicemask)
+                curver = Gem::Version.new(parsed[0][1].to_s+'.'+parsed[0][2].to_s)
+                if curver > latestdevice
+                    latestdevice = curver
+                end
+            end
+            true
+        end
+        puts 'detect latestsimulator sdk = '+latestsimulator.to_s
+        puts 'detect latestdevice sdk = '+latestdevice.to_s
+        retx = $?
+        #puts '### +'+retx.to_s
+        if retx == 0
+            if $sdk.to_s.downcase == 'latest'
+                if Rake.application.top_level_tasks.to_s =~ /run/
+                  $sdk = 'latest_simulator'
+                else
+                  $sdk = 'latest_device'
+                end
+            end
+            if $sdk.to_s.downcase == 'latest_simulator'
+                if nullversion != latestsimulator
+                    $sdk = 'iphonesimulator'+latestsimulator.to_s
+                end
+            end
+            if $sdk.to_s.downcase == 'latest_device'
+                if nullversion != latestsimulator
+                    $sdk = 'iphoneos'+latestdevice.to_s
+                end
+            end
+        else
+            puts "ERROR: cannot run xcodebuild for get list of installed SDKs !"
+        end
+    end
+
     if $sdk !~ /iphone/
       if Rake.application.top_level_tasks.to_s =~ /run/
         $sdk = "iphonesimulator#{$sdk}"
@@ -866,7 +1229,7 @@ namespace "config" do
       end
     end
 
-    puts $sdk
+    puts 'SDK = '+$sdk
 
     if !$skip_checking_XCode
       check_sdk($sdk)
@@ -954,6 +1317,8 @@ namespace "build" do
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
 
       print_timestamp('build:iphone:rhobundle FINISH')
+
+      save_out_file
 
     end
 
@@ -1158,6 +1523,7 @@ namespace "build" do
     end
 
     def is_options_was_changed(options_hash, options_file)
+        puts "      is_options_was_changed( "+options_hash.to_s+", "+options_file.to_s+")"
       if !File.exist?(options_file)
          File.open(options_file,"w") {|f| f.write(YAML::dump(options_hash)) }
          return true
@@ -1196,6 +1562,7 @@ namespace "build" do
       arch = ENV['ARCHS']
       gccbin = bindir + '/gcc-4.2'
       arbin = bindir + '/ar'
+      xcode_version = ENV['XCODE_VERSION_ACTUAL']
 
       iphone_path = '.'
 
@@ -1208,33 +1575,53 @@ namespace "build" do
       result_lib = iphone_path + '/build/' + configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/lib'+xcodetarget+'.a'
       target_lib = targetdir + '/lib'+xcodetarget+'.a'
 
-      if check_for_rebuild(result_lib, depfile) || is_options_was_changed({"configuration" => configuration,"sdk" => sdk}, "lastbuildoptions.yml")
+      puts "BEGIN build xcode extension : ["+extpath+"]"
+      puts "      result_lib : ["+result_lib+"]"
+      puts "      target_lib : ["+target_lib+"]"
+      puts "      depfile : ["+depfile.to_s+"]"
+      puts "      configuration : ["+configuration+"]"
+      puts "      sdk : ["+sdk+"]"
 
-           rm_rf 'build'
-           rm_rf target_lib
 
-           args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
-           additional_string = ''
-           if simulator
-               #args << '-arch'
-               #args << 'i386'
-               additional_string = ' ARCHS="i386 x86_64"'
-           end
+      rm_rf target_lib
 
-           require   rootdir + '/lib/build/jake.rb'
+      check_f_r = check_for_rebuild(result_lib, depfile)
+      puts "      check_for_rebuild = "+check_f_r.to_s
+      is_opt_c = is_options_was_changed({"configuration" => configuration,"sdk" => sdk, "xcode_version" => xcode_version}, "lastbuildoptions.yml")
+      puts "      is_options_was_changed = "+is_opt_c.to_s
 
-           ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
+      if check_f_r || is_opt_c
+          puts "      we should rebuild because previous builded library is not actual or not exist !"
       else
+          puts "      ssskip rebuild because previous builded library is still actual !"
+      end
 
-        puts "ssskip rebuild because previous builded library is still actual !"
-        rm_rf target_lib
+      if !File.exist?(result_lib)
+          # library bot found ! We should build it !
+          puts "      build xcode extension !"
+
+          rm_rf 'build'
+
+          args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
+
+          additional_string = ''
+          if simulator
+              #args << '-arch'
+              #args << 'i386'
+              additional_string = ' ARCHS="i386 x86_64"'
+          end
+
+          require   rootdir + '/lib/build/jake.rb'
+
+          ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
 
       end
 
       cp result_lib,target_lib
 
       Dir.chdir currentdir
+      puts "END build xcode extension : ["+extpath+"]"
 
 
     end
@@ -1246,6 +1633,9 @@ namespace "build" do
 
       puts "build extension START :" + extpath
 
+
+      ENV["SDK_NAME"] ||= sdk
+      sdk = ENV["SDK_NAME"]
       #puts "xcodeproject = "+xcodeproject.to_s
       #puts "xcodetarget = "+xcodetarget.to_s
 
@@ -1276,7 +1666,7 @@ namespace "build" do
       # added by dmitrys
       ENV["XCODEBUILD"] = $xcodebuild
       ENV["CONFIGURATION"] ||= $configuration
-      ENV["SDK_NAME"] ||= sdk
+
 
 
       build_script = File.join(extpath, 'build')
@@ -1836,121 +2226,12 @@ namespace "build" do
 
 
     task :update_plist => ["config:iphone"] do
-      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
       chdir $app_path
 
       puts 'update info.plist'
 
-      vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
-      bundle_identifier = "com.#{vendor}.#{appname}"
-      bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
-
-      on_suspend = $app_config["iphone"]["UIApplicationExitsOnSuspend"]
-      on_suspend_value = false
-
-      if on_suspend.nil?
-        puts "UIApplicationExitsOnSuspend not configured, using default of false"
-      elsif on_suspend.to_s.downcase == "true" || on_suspend.to_s == "1"
-        on_suspend_value = true
-      elsif on_suspend.to_s.downcase == "false" || on_suspend.to_s == "0"
-        on_suspend_value = false
-      else
-        raise "UIApplicationExitsOnSuspend is not set to a valid value. Current value: '#{$app_config["iphone"]["UIApplicationExitsOnSuspend"]}'"
-      end
-
-      init_extensions( nil, "get_ext_xml_paths")
-
-      ext_name, changed_value = get_ext_plist_changes($app_extension_cfg)
-
-      set_app_plist_options($app_path + "/project/iphone/Info.plist", appname, bundle_identifier, $app_config["version"], $app_config["iphone"]["BundleURLScheme"]) do |hash|
-         hash['UIApplicationExitsOnSuspend'] = on_suspend_value
-
-        changed_value.each do |k, v|
-          puts "Info.plist: Setting key #{k} = #{v} from #{File.basename(ext_name[k])}"
-          hash[k] = v
-        end
-
-        #setup GPS access
-        gps_request_text = nil
-        if $app_config["capabilities"].index("gps") != nil
-          gps_request_text = 'application tracks your position'
-        end
-        if !$app_config["iphone"].nil?
-          if !$app_config["iphone"]["capabilities"].nil?
-            if $app_config["iphone"]["capabilities"].index("gps") != nil
-              gps_request_text = 'application tracks your position'
-            end
-          end
-        end
-        if gps_request_text != nil
-          if hash['NSLocationWhenInUseUsageDescription'] == nil
-            puts "Info.plist: added key [NSLocationWhenInUseUsageDescription]"
-            hash['NSLocationWhenInUseUsageDescription'] = gps_request_text
-          end
-        end
-
-        #setup Camera access
-        camera_request_text = nil
-        if $app_config["capabilities"].index("camera") != nil
-          camera_request_text = 'application wants to use camera'
-        end
-        if !$app_config["iphone"].nil?
-          if !$app_config["iphone"]["capabilities"].nil?
-            if $app_config["iphone"]["capabilities"].index("camera") != nil
-              camera_request_text = 'application wants to use camera'
-            end
-          end
-        end
-        if camera_request_text != nil
-          if hash['NSCameraUsageDescription'] == nil
-            puts "Info.plist: added key [NSCameraUsageDescription]"
-            hash['NSCameraUsageDescription'] = camera_request_text
-          end
-        end
-
-
-        #LSApplicationQueriesSchemes
-        if $app_config["iphone"].has_key?("ApplicationQueriesSchemes")
-          arr_app_queries_schemes = $app_config["iphone"]["ApplicationQueriesSchemes"]
-          if arr_app_queries_schemes.kind_of?(Array)
-            hash['LSApplicationQueriesSchemes'] = arr_app_queries_schemes
-          else
-            hash['LSApplicationQueriesSchemes'] = []
-          end
-        end
-
-        #http_connection_domains
-        if !hash.has_key?("NSAppTransportSecurity")
-            hash['NSAppTransportSecurity'] = {}
-        end
-        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoads")
-            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoads'] = true
-        end
-        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoadsInWebContent")
-            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoadsInWebContent'] = true
-        end
-        if $app_config["iphone"].has_key?("http_connection_domains")
-          http_connection_domains = $app_config["iphone"]["http_connection_domains"]
-          if http_connection_domains.kind_of?(Array)
-              hash['NSAppTransportSecurity']['NSExceptionDomains'] = {}
-              http_connection_domains.each do |domain|
-                  domain_hash = {}
-                  domain_hash['NSIncludesSubdomains'] = true
-                  domain_hash['NSTemporaryExceptionAllowsInsecureHTTPLoads'] = true
-                  domain_hash['NSTemporaryExceptionMinimumTLSVersion'] = 'TLSv1.0'
-
-                  hash['NSAppTransportSecurity']['NSExceptionDomains'][domain.to_s] = domain_hash
-              end
-          end
-        end
-
-
-         set_app_icon(false)
-         set_default_images(false, hash)
-      end
-
+      update_plist_procedure
 
       set_signing_identity($signidentity,$provisionprofile,$entitlements) #if $signidentity.to_s != ""
     end
@@ -1981,112 +2262,7 @@ namespace "build" do
       #xml_path = File.join($startdir, "/lib/commonAPI/coreapi/ext/Application.xml")
       #Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
 
-      vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
-      bundle_identifier = "com.#{vendor}.#{appname}"
-      bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
-
-      on_suspend = $app_config["iphone"]["UIApplicationExitsOnSuspend"]
-      on_suspend_value = false
-
-      if on_suspend.nil?
-        puts "UIApplicationExitsOnSuspend not configured, using default of false"
-      elsif on_suspend.to_s.downcase == "true" || on_suspend.to_s == "1"
-        on_suspend_value = true
-      elsif on_suspend.to_s.downcase == "false" || on_suspend.to_s == "0"
-        on_suspend_value = false
-      else
-        raise "UIApplicationExitsOnSuspend is not set to a valid value. Current value: '#{$app_config["iphone"]["UIApplicationExitsOnSuspend"]}'"
-      end
-
-      init_extensions( nil, "get_ext_xml_paths")
-
-      ext_name, changed_value = get_ext_plist_changes($app_extension_cfg)
-
-      set_app_plist_options($app_path + "/project/iphone/Info.plist", appname, bundle_identifier, $app_config["version"], $app_config["iphone"]["BundleURLScheme"]) do |hash|
-        hash['UIApplicationExitsOnSuspend'] = on_suspend_value
-
-        changed_value.each do |k, v|
-          puts "Info.plist: Setting key #{k} = #{v} from #{File.basename(ext_name[k])}"
-          hash[k] = v
-        end
-
-        #setup GPS access
-        gps_request_text = nil
-        if $app_config["capabilities"].index("gps") != nil
-          gps_request_text = 'application tracks your position'
-        end
-        if !$app_config["iphone"].nil?
-          if !$app_config["iphone"]["capabilities"].nil?
-            if $app_config["iphone"]["capabilities"].index("gps") != nil
-              gps_request_text = 'application tracks your position'
-            end
-          end
-        end
-        if gps_request_text != nil
-          if hash['NSLocationWhenInUseUsageDescription'] == nil
-            puts "Info.plist: added key [NSLocationWhenInUseUsageDescription]"
-            hash['NSLocationWhenInUseUsageDescription'] = gps_request_text
-          end
-        end
-
-        #setup Camera access
-        camera_request_text = nil
-        if $app_config["capabilities"].index("camera") != nil
-          camera_request_text = 'application wants to use camera'
-        end
-        if !$app_config["iphone"].nil?
-          if !$app_config["iphone"]["capabilities"].nil?
-            if $app_config["iphone"]["capabilities"].index("camera") != nil
-              camera_request_text = 'application wants to use camera'
-            end
-          end
-        end
-        if camera_request_text != nil
-          if hash['NSCameraUsageDescription'] == nil
-            puts "Info.plist: added key [NSCameraUsageDescription]"
-            hash['NSCameraUsageDescription'] = camera_request_text
-          end
-        end
-
-
-        #LSApplicationQueriesSchemes
-        if $app_config["iphone"].has_key?("ApplicationQueriesSchemes")
-          arr_app_queries_schemes = $app_config["iphone"]["ApplicationQueriesSchemes"]
-          if arr_app_queries_schemes.kind_of?(Array)
-            hash['LSApplicationQueriesSchemes'] = arr_app_queries_schemes
-          else
-            hash['LSApplicationQueriesSchemes'] = []
-          end
-        end
-
-        #http_connection_domains
-        if !hash.has_key?("NSAppTransportSecurity")
-            hash['NSAppTransportSecurity'] = {}
-        end
-        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoads")
-            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoads'] = true
-        end
-        if !hash['NSAppTransportSecurity'].has_key?("NSAllowsArbitraryLoadsInWebContent")
-            hash['NSAppTransportSecurity']['NSAllowsArbitraryLoadsInWebContent'] = true
-        end
-        if $app_config["iphone"].has_key?("http_connection_domains")
-          http_connection_domains = $app_config["iphone"]["http_connection_domains"]
-          if http_connection_domains.kind_of?(Array)
-              hash['NSAppTransportSecurity']['NSExceptionDomains'] = {}
-              http_connection_domains.each do |domain|
-                  domain_hash = {}
-                  domain_hash['NSIncludesSubdomains'] = true
-                  domain_hash['NSTemporaryExceptionAllowsInsecureHTTPLoads'] = true
-                  domain_hash['NSTemporaryExceptionMinimumTLSVersion'] = 'TLSv1.0'
-
-                  hash['NSAppTransportSecurity']['NSExceptionDomains'][domain.to_s] = domain_hash
-              end
-          end
-        end
-
-        set_app_icon(false)
-        set_default_images(false, hash)
-      end
+      update_plist_procedure
 
 
       if $entitlements == ""

@@ -88,6 +88,8 @@ class LogSettings{
 	String      m_strLogURL;
 
     bool        m_bLogPrefix;
+    
+    bool        m_bIsInitialized;
 
     String      m_strEnabledCategories, m_strDisabledCategories;
     Vector<String>     m_arExcludeAttribs;
@@ -130,6 +132,8 @@ public:
 
     bool isLogPrefix()const{ return m_bLogPrefix;}
 	void setLogPrefix(bool bLogPrefix){ m_bLogPrefix = bLogPrefix; }
+    
+    bool isReadyForLogging() { return m_bIsInitialized;}
 
 	const String& getLogURL() const { return m_strLogURL; }
 	void setLogURL(const char* szLogURL);
@@ -218,6 +222,8 @@ int rho_conf_send_log_in_same_thread();
 void rho_conf_clean_log();
     
 void rho_log_resetup_http_url(const char* http_log_url);
+    
+bool rho_log_system_is_ready();
 
 #ifdef __cplusplus
 }

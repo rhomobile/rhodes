@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -30,6 +30,28 @@
 #include "common/RhodesApp.h"
 #include "common/RhoFilePath.h"
 #include "net/URI.h"
+
+#include "common/RhoConf.h"
+#include "logging/RhoLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "NetRequestTimer"
+
+
+static bool is_net_trace() {
+    static int res = -1;
+    if (res == -1) {
+        if (rho_conf_getBool("net_trace") ) {
+            res = 1;
+        }
+        else {
+            res = 0;
+        }
+    }
+    return res == 1;
+}
+
+
 
 namespace rho {
 namespace net {
@@ -50,12 +72,17 @@ void CNetRequestHolder::setRequest(INetRequestImpl* pReq)
 
 void CNetRequestHolder::cancel()
 {
+    if (is_net_trace()) {
+        RAWTRACE("$NetRequestProcess$ PRE SYNCHRONIZED CNetRequestHolder::cancel() TIMER");
+    }
     synchronized(m_mxReq)
     {
         m_bCancel = true;
         if ( m_pReq != 0 )
             m_pReq->cancel();
-
+        if (is_net_trace()) {
+            RAWTRACE("$NetRequestProcess$ POST SYNCHRONIZED CNetRequestHolder::cancel() TIMER");
+        }
         m_pReq = 0;
     }
 }

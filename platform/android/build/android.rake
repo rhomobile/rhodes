@@ -29,6 +29,7 @@ require File.dirname(__FILE__) + '/android_tools.rb'
 require File.dirname(__FILE__) + '/maven_deps_extractor.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
+require File.dirname(__FILE__) + '/android_studio_project_generator.rb'
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
@@ -211,8 +212,40 @@ namespace 'project' do
     end
 
     task :studio => ['config:android', 'config:android:extensions','build:android:manifest'] do
-      #TODO
-      raise "Project generation for Android Studio is not implemented yet"
+
+      project_template_path = File.join 'res','generators','templates','project','android_studio_project'
+
+
+      main_gradle_script = File.join( project_template_path, 'build.gradle' )
+      gradle_properties = File.join( project_template_path, 'gradle.properties' )
+      gradlew = File.join( project_template_path, 'gradlew' )
+      gradlew_bat = File.join( project_template_path, 'gradlew.bat' )
+      settings_gradle = File.join( project_template_path, 'settings.gradle' )
+      app_gradle_template = File.join( project_template_path, 'app', 'build.gradle.erb' )
+      project_path = File.join $app_path,'project','android_studio'
+
+      rhodes_path = File.absolute_path '.'
+
+      generator = AndroidStudioProjectGenerator.new
+      generator.rhoRoot = rhodes_path
+      generator.buildToolsVersion = $build_tools_ver
+      generator.applicationId = $app_package_name
+      generator.minSdkVersion = $min_sdk_level
+      generator.targetSdkVersion = 12
+      generator.compileSdkVersion = $found_api_level
+      generator.versionName = $app_config["version"]
+
+
+      mkdir_p File.join(project_path,'app')
+
+      app_gradle_path = File.join( project_path, 'app', 'build.gradle')
+      File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
+
+      cp main_gradle_script,  project_path
+      cp gradle_properties,   project_path
+      cp gradlew,             project_path
+      cp gradlew_bat,         project_path
+      cp settings_gradle,     project_path
     end
   end
 end
@@ -254,6 +287,30 @@ def find_file(file_name, path_array)
   end
 
   result
+end
+
+def setup_ext_env( extpath, extname )
+  env = {}
+  env['RHO_PLATFORM'] = 'android'
+  env["RHO_APP_DIR"] = $app_path
+  env["ANDROID_SDK"] = $androidsdkpath
+  env["ANDROID_NDK"] = $androidndkpath
+  env["ANDROID_API_LEVEL"] = $found_api_level.to_s
+  env["RHO_ROOT"] = $startdir
+  env["BUILD_DIR"] ||= $startdir + "/platform/android/build"
+  env["RHO_INC"] = $appincdir
+  env["RHO_RES"] = $appres
+  env["RHO_ANDROID_TMP_DIR"] = $tmpdir
+  env["RHO_DEBUG"] = $debug.to_s
+  env['SOURCEPATH'] = extpath
+  sourcelist = Dir.glob(File.join(extpath,'**','android','ext_native.files'))
+  env['SOURCELIST'] = sourcelist.size == 1 ? sourcelist.first : File.join(extpath,'ext_native.files')
+  env["TARGET_TEMP_DIR"] = File.join($app_builddir, 'extensions', extname)
+  env['TARGETPATH'] = File.join($app_builddir, 'extensions', extname)
+  env['TARGETLIB'] = "lib#{extname}.a"
+  env['TEMP_FILES_DIR'] = File.join($tmpdir, extname)
+
+  env
 end
 
 namespace "config" do
@@ -504,6 +561,8 @@ namespace "config" do
       $storealias = $config["android"]["production"]["alias"] if $storealias.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
       $storealias = "rhomobile.keystore" if $storealias.nil?
 
+      $build_tools_ver = File.split( build_tools_path )[1]
+
     end
 
     $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
@@ -709,6 +768,8 @@ namespace "config" do
               manifest_changes = extconf["android_manifest_changes"]
               manifest_changes = extconf_android['manifest_changes'] if manifest_changes.nil? and extconf_android
 
+              prebuild_rake_task = extconf_android['prebuild_rake_task'] if extconf_android
+
               if manifest_changes
                 manifest_changes = [manifest_changes] unless manifest_changes.is_a? Array
                 manifest_changes.map! { |path| File.join(extpath,path) }
@@ -855,6 +916,13 @@ namespace "config" do
                 rakepath = extpath
               end
               $ext_android_build_scripts[ext] = [rakepath, 'rake']
+
+              if prebuild_rake_task                
+                args = [ prebuild_rake_task ]
+                args << '--trace' if USE_TRACES
+                cc_run( 'rake', args, rakepath, true, setup_ext_env( extpath, ext ) ) or raise "Extension prebuild failed: #{extpath}"
+              end
+
             elsif exttype != 'prebuilt'
               build_script = File.join(extpath,'ext','build'+$bat_ext)
               if File.exists? build_script
@@ -1633,6 +1701,7 @@ namespace "build" do
       generator.screenOrientation = $android_orientation unless $android_orientation.nil?
       generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
       generator.apikey = $gapikey if $gapikey
+      generator.debuggable = $debug
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
 
@@ -2245,11 +2314,19 @@ namespace "package" do
     end
 
     # Workaround: manually add files starting with '_' because aapt silently ignore such files when creating package
+    args = [ USE_TRACES ? "uvf" : "uf", resourcepkg]
+
+    skip_underscores = true
+    
     Dir.glob(File.join($appassets, "**/*")).each do |f|
       next unless File.basename(f) =~ /^_/
       relpath = Pathname.new(f).relative_path_from(Pathname.new($tmpdir)).to_s
       puts "Add #{relpath} to #{resourcepkg}..."
-      args = ["uf", resourcepkg, relpath]
+      args << relpath
+      skip_underscores = false
+    end
+
+    unless skip_underscores
       Jake.run($jarbin, args, $tmpdir)
       unless $?.success?
         raise "Error packaging assets"

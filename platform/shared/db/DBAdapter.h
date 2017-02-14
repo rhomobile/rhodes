@@ -359,7 +359,12 @@ public:
 	
     DBResultPtr prepareStatement( const char* szSt );
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res, const char* szSt);
+
+    // unpack object in changed_values with update_type==create to set of objects's attribs
     void updateAllAttribChanges();
+    
+    // add file.blob attrib_type for blob attribs in changed_values
+    void updateAllBlobAttribChanges();
     void updateFullUpdateChanges(int nSrcID);
 
 	String exportDatabase();

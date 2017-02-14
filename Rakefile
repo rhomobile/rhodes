@@ -157,7 +157,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine"]
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
 
 $winxpe_build = false
 
@@ -833,7 +833,7 @@ def cloud_url_git_match(str)
   # else
     server = res[1]; user = res[2]; app = res[3]
   end
- 
+
   (server.nil? || app.nil?) ? {} : { :str => "#{server}:#{user}/#{app}", :server => server,  :user => user, :app => app }
 end
 
@@ -2020,9 +2020,9 @@ namespace "config" do
 
           $app_config["capabilities"] += ["symbol"] unless $app_config["capabilities"].index("symbol")
           if $current_platform == "wm"
-			$app_config["extensions"] += ["webkit"] 
+			$app_config["extensions"] += ["webkit"]
           else
-			$app_config["extensions"] += ["rhoelementsext"] 
+			$app_config["extensions"] += ["rhoelementsext"]
 			$app_config["extensions"] += ["symbolapi"] #extension with plug-ins
 
 			#check for RE2 plugins
@@ -2039,7 +2039,7 @@ namespace "config" do
 			end
 
 			application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
-		end	
+		end
 
 
         if !$app_config["capabilities"].index('native_browser') && $current_platform != "android"
@@ -2100,7 +2100,7 @@ namespace "config" do
         $app_config['extensions'] = $app_config['extensions'] | ['hardwarekeys']
         $app_config['extensions'] = $app_config['extensions'] | ['sensor']
       end
-      
+
       if $current_platform == "wp8"
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
       end
@@ -2125,6 +2125,8 @@ namespace "config" do
     #    #$app_config["extensions"].delete("rawsensors")
     #    $app_config["extensions"].delete("audiocapture")
     #end
+
+    $app_config['extensions'].delete('barcode') if ( $app_config['extensions'].index('enterprise-barcode') || $app_config['extensions'].index('allbarcode') )
 
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
 
@@ -2291,6 +2293,10 @@ def add_linker_library(libraryname)
       ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
   end
   $ldflags << "#{tmpdir}/#{libraryname}\n" unless $ldflags.nil?
+end
+
+def add_inker_library_absolute(fulllibraryfilepath)
+    $ldflags << fulllibraryfilepath + "\n"
 end
 
 def set_linker_flags
@@ -2542,6 +2548,19 @@ def init_extensions(dest, mode = "")
             end
           end
 
+          # add additional libraries
+          link_libraries = []
+          if (!extconf["link_libraries"].nil?) && (extconf["link_libraries"].is_a? Array)
+              link_libraries += extconf["link_libraries"]
+          end
+          if (!extconf[$config["platform"]].nil?) && (!extconf[$config["platform"]]["link_libraries"].nil?) && (extconf[$config["platform"]]["link_libraries"].is_a? Array)
+              link_libraries += extconf[$config["platform"]]["link_libraries"]
+          end
+          link_libraries.each do |linklib|
+              fulllibpath = File.join(extpath, linklib)
+              add_inker_library_absolute(fulllibpath)
+          end
+
           if entry && entry.length() > 0
             if xml_api_paths.nil? #&& !(("rhoelementsext" == extname || "dominjector" == extname ) && ($config["platform"] == "wm"||$config["platform"] == "android"))
 
@@ -2550,7 +2569,7 @@ def init_extensions(dest, mode = "")
 
               if (("rhoelementsext" == extname || "dominjector" == extname) && ($config["platform"] == "wm"||$config["platform"] == "android"))
                 extentries << entry
-                extentries_init << entry             
+                extentries_init << entry
               elsif !$js_application
                 extentries << entry
                 entry =  "if (rho_ruby_is_started()) #{entry}"
@@ -4171,7 +4190,7 @@ namespace "wm_gem" do
       $neon_root = $config["env"]["paths"]["neon"] unless $config["env"]["paths"]["neon"].nil?
       $rhoelementsext_main_dir = File.join($startdir, 'extensions/rhoelementsext/ext')
       $rhoelementsext_wm_dir = File.join($rhoelementsext_main_dir, "rhoelementsext/platform/wm")
-      
+
       $re_version = $config['version']
     end
 
@@ -4181,23 +4200,23 @@ namespace "wm_gem" do
 
 				dest_dir = "./libs/data"
 				mkdir_p dest_dir
-			
+
 				src_dir = File.join($startdir, "neon/R2D1/Build" )
-			
+
 				cp_r File.join(src_dir, "Config"), dest_dir, :preserve => true
 				cp_r File.join(src_dir, "Windows/NPAPI"), dest_dir, :preserve => true
 				cp_r File.join(src_dir, "Windows/Plugins"), File.join(dest_dir, 'Plugin'), :preserve => true
 
 				Dir.glob(File.join(src_dir, "Windows/Binaries/*.*")).each { |f| cp_r f, dest_dir }
 				Dir.glob(File.join(src_dir, "Windows/WebKit/*.*")).each { |f| cp_r f, dest_dir }
-				
+
 				chdir File.dirname(__FILE__)
 				chmod_R 0777, "./libs/data"
 			  end
 			end
-		end	
+		end
 end
-namespace "build" do  
+namespace "build" do
   task :set_neon, :neon_dir do |t, args|
     Jake.edit_yml(File.join(File.dirname(__FILE__), 'rhoelements.yml')) do |yml|
       yml['env']['paths']['neon'] = args[:neon_dir]
@@ -4229,7 +4248,7 @@ namespace :run do
   desc "start rholog(webrick) server"
   task :webrickrhologserver, :app_path  do |t, args|
     require 'webrick'
-    
+
     puts "Args were: #{args}"
     $app_path = args[:app_path]
 

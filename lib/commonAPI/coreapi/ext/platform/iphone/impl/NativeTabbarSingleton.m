@@ -1,6 +1,11 @@
 
 #import "NativeTabbarSingleton.h"
 
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "NativeTabbar"
+
+
 extern void rho_create_tabbar(NSArray* items, NSDictionary* properties, id<IMethodResult>callback);
 extern BOOL nativetabbar_started();
 extern void remove_native_tabbar();
@@ -14,7 +19,7 @@ extern void native_tabbar_switch_tab(int index);
 
 -(void) create:(NSArray*)tabElements tabBarProperties:(NSDictionary*)tabBarProperties methodResult:(id<IMethodResult>)methodResult {
     if (![tabElements isKindOfClass:[NSArray class]]) {
-        NSLog(@"Tabbar.create ERROR - tabElements parameter should be Array !");
+        RAWLOG_ERROR("Tabbar.create ERROR - tabElements parameter should be Array !");
         return;
     }
     rho_create_tabbar(tabElements, tabBarProperties, methodResult);

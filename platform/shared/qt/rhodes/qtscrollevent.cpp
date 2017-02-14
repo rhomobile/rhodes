@@ -1,5 +1,5 @@
-#include <qtscrollevent.h>
-#include <qtscrollevent_p.h>
+#include "qtscrollevent.h"
+#include "qtscrollevent_p.h"
 
 /*!
     \class QtScrollPrepareEvent

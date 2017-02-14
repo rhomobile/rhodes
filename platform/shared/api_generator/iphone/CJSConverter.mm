@@ -4,10 +4,12 @@
 #import "CMethodResult.h"
 
 #import "json/JSONIterator.h"
+#import "logging/RhoLog.h"
 
 @implementation CJSConverter
 
-
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "CJSConverter.h"
 
 + (NSString*) quoteString:(NSString*)str {
     return [NSString stringWithUTF8String:rho::json::CJSONEntry::quoteValue([str UTF8String]).c_str()];
@@ -153,7 +155,7 @@
                 [ns_array addObject:obj];
             }
             else {
-                NSLog(@"ERROR during convert JSON data !");
+                RAWLOG_ERROR1("ERROR during convert JSON data 1 ! data = %s", jsonEntry->getString());
             }
         }
         return ns_array;
@@ -173,7 +175,7 @@
                 [ns_hash setObject:obj forKey:[NSString stringWithUTF8String:(key.c_str())]];
             }
             else {
-                NSLog(@"ERROR during convert JSON data !");
+                RAWLOG_ERROR1("ERROR during convert JSON data 2 ! data = %s", jsonEntry->getString());
             }
             
             js_iterator.next();

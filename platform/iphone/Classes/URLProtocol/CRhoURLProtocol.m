@@ -6,6 +6,25 @@
 
 #import "common/RhoConf.h"
 
+
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoURLProtocol"
+
+static bool is_net_trace() {
+    static int res = -1;
+    if (res == -1) {
+        if (rho_conf_getBool("net_trace") ) {
+            res = 1;
+        }
+        else {
+            res = 0;
+        }
+    }
+    return res == 1;
+}
+
+
 extern int rho_http_started();
 extern int rho_http_get_port();
 
@@ -28,6 +47,7 @@ int on_http_data_cb(http_parser* parser, const char *at, size_t length) { return
 int on_http_cb(http_parser* parser) { return 0; }
 
 
+
 @interface CRhoURLResponse : NSHTTPURLResponse {
     
 }
@@ -38,6 +58,16 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 
 @implementation CRhoURLProtocol
+
+
+-(const char*)selfIDstring {
+    return [[NSString stringWithFormat:@"<%p>", self] UTF8String];
+}
+
++ (const char*)requestInfo:(NSURLRequest*)req {
+    return [[NSString stringWithFormat:@"<NSURLRequest:<%p>, URL:[ %@ ], Headers:[ %@ ]", req, req.URL, req.allHTTPHeaderFields] UTF8String];
+}
+
 
 - (void)dealloc
 {
@@ -59,17 +89,26 @@ int on_http_cb(http_parser* parser) { return 0; }
  
 + (BOOL)canInitWithRequest:(NSURLRequest*)theRequest
 {
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ canInitWithRequest BEGIN: { %s }", [CRhoURLProtocol requestInfo:theRequest]);
+    }
+    
     NSURL* theUrl = [theRequest URL];
     if ([[theUrl path] isEqualToString:@"/!__rhoNativeApi"]) {
         
         NSString* jsonRequestTest = [theRequest valueForHTTPHeaderField:@"__rhoNativeApiCall"];
         if (jsonRequestTest != nil) {
-            //NSLog(@"$$$ process Request: [%@:%@]", [theUrl absoluteString], jsonRequestTest);
+            if (is_net_trace()) {
+                RAWTRACE("$NetRequestProcess$ canInitWithRequest END: return YES by !__rhoNativeApi prefix");
+            }
             return YES;
         }
     }
 #if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
     if ([theRequest.URL.scheme isEqualToString:@"file"]) {
+        if (is_net_trace()) {
+            RAWTRACE("$NetRequestProcess$ canInitWithRequest END: return YES by file scheme when no Ruby API server");
+        }
         return YES;
     }
 #endif
@@ -79,10 +118,21 @@ int on_http_cb(http_parser* parser) { return 0; }
         canHandle = rho_conf_getBool("ios_direct_local_requests")!=0;
     }
   
-    if ( canHandle && [CRhoURLProtocol isLocalURL:theUrl] ) {
-      return YES;
+    if ( canHandle ) {
+        if (is_net_trace()) {
+            RAWTRACE("$NetRequestProcess$ canInitWithRequest: ios_direct_local_requests = true !");
+        }
+        if ([CRhoURLProtocol isLocalURL:theUrl]) {
+            if (is_net_trace()) {
+                RAWTRACE("$NetRequestProcess$ canInitWithRequest END: return YES URL is local !");
+            }
+            return YES;
+        }
     }
 
+    if (is_net_trace()) {
+        RAWTRACE("$NetRequestProcess$ canInitWithRequest END: return NO");
+    }
     return NO;
 }
 
@@ -91,19 +141,26 @@ int on_http_cb(http_parser* parser) { return 0; }
     return request;
 }
 
-- (void)startLoading
+- (void)startLoadingInThread
 {
+    if (is_net_trace()) {
+        RAWTRACE2("$NetRequestProcess$ CRhoURLProtocol %s :: startLoadingInThread BEGIN: { %s }", [self selfIDstring], [CRhoURLProtocol requestInfo:[self request]]);
+    }
     NSURL* theUrl = [[self request] URL];
     
     
     if ([[theUrl path] isEqualToString:@"/!__rhoNativeApi"]) {
-        
+        if (is_net_trace()) {
+            RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading URL has !__rhoNativeApi", [self selfIDstring]);
+        }
         NSString* jsonRequestTest = [[self request] valueForHTTPHeaderField:@"__rhoNativeApiCall"];
         if (jsonRequestTest != nil) {
             NSString* responseStr = [CJSEntryPoint js_entry_point:jsonRequestTest];
             if (responseStr != nil) {
-                //NSLog(@"$$$ send responce for[%@:%@] = [%@]", [theUrl absoluteString], jsonRequestTest, responseStr);
                 [self sendResponseWithResponseCode:200 data:[responseStr dataUsingEncoding:NSUTF8StringEncoding]];
+                if (is_net_trace()) {
+                    RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
+                }
                 return;
             }
         }
@@ -133,12 +190,13 @@ int on_http_cb(http_parser* parser) { return 0; }
                                 textEncodingName:@"UTF-8"];
             response.statusCode = 200;
             
-            [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
-            if (data != nil) {
-                [[self client] URLProtocol:self didLoadData:data];
+            if (!self.isStopped) {
+                [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+                if (data != nil) {
+                    [[self client] URLProtocol:self didLoadData:data];
+                }
+                [[self client] URLProtocolDidFinishLoading:self];
             }
-            [[self client] URLProtocolDidFinishLoading:self];
-            
             
             return;
         }
@@ -147,6 +205,9 @@ int on_http_cb(http_parser* parser) { return 0; }
 
   if ( [CRhoURLProtocol isLocalURL:theUrl] )
   {
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: URL is local !", [self selfIDstring]);
+    }
     NSURL* url = theUrl;
     CRhoURLResponse* resp = nil;
     
@@ -154,7 +215,14 @@ int on_http_cb(http_parser* parser) { return 0; }
     
     if ( resp != nil )
     {
+      if (is_net_trace()) {
+          RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading has Responce from local server", [self selfIDstring]);
+      }
       if ( ((self.httpStatusCode==301)||(self.httpStatusCode==302)) && ( [self.httpHeaders objectForKey:@"location"] != nil ) ) {
+          
+        if (is_net_trace()) {
+            RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading we have REDIRECT from local server !", [self selfIDstring]);
+        }
         NSString* loc = [self.httpHeaders objectForKey:@"location"];
         
         NSString* escaped = [loc stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -172,18 +240,25 @@ int on_http_cb(http_parser* parser) { return 0; }
             if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
                 force_https = rho_conf_getBool("ios_https_local_server")!=0;
             }
+              
+            NSString* spath = [url path];
+            spath = [spath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+              
             if (force_https) {
-                 s = [NSMutableString stringWithFormat:@"https://127.0.0.1:%d%@",rho_http_get_port(),[url path]];
+                 s = [NSMutableString stringWithFormat:@"https://127.0.0.1:%d%@",rho_http_get_port(),spath];
             }
             else {
-                s = [NSMutableString stringWithFormat:@"http://127.0.0.1:%d%@",rho_http_get_port(),[url path]];
+                s = [NSMutableString stringWithFormat:@"http://127.0.0.1:%d%@",rho_http_get_port(),spath];
             }
   
               
-            if ( [url query] != nil )
+            NSString* squery = [url query];
+            if ( squery != nil )
             {
-              // decode query back to original state
-              [s appendFormat:@"?%@", [[url query] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                // decode query back to original state
+                squery = [squery stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                [s appendFormat:@"?%@", squery];
             }
             
             if ( [url fragment] != nil )
@@ -195,34 +270,87 @@ int on_http_cb(http_parser* parser) { return 0; }
           }
         
         
-          NSURLRequest* redirReq = [NSURLRequest requestWithURL:url];
-          [[self client] URLProtocol:self wasRedirectedToRequest:redirReq redirectResponse:resp];
+          NSMutableURLRequest* redirReq = [NSMutableURLRequest requestWithURL:url];
+
+          // clone headers from original request to redirect request
+          NSDictionary* headers = [[self request] allHTTPHeaderFields];
+          for (NSString* key in headers) {
+              NSString* value = [headers objectForKey:key];
+              [redirReq setValue:value forHTTPHeaderField:key];
+          }
+            
+          if (is_net_trace()) {
+              RAWTRACE2("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading wasRedirectedToRequest with Request { %s }", [self selfIDstring], [CRhoURLProtocol requestInfo:redirReq]);
+          }
+            if (!self.isStopped) {
+  
+                [[self client] URLProtocol:self wasRedirectedToRequest:redirReq redirectResponse:resp];
+            }
+            if (is_net_trace()) {
+              RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
+          }
           return;
+        }
+        else {
+            RAWLOG_ERROR2("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading Redirect response has no URL ! Initial request: { %s }", [self selfIDstring], [CRhoURLProtocol requestInfo:[self request]]);
         }
       }
       else
       {
-        [[self client] URLProtocol:self didReceiveResponse:resp cacheStoragePolicy:NSURLCacheStorageNotAllowed];
-        
-        if (self.httpBody != nil) {
-          [[self client] URLProtocol:self didLoadData:self.httpBody];
+        if (is_net_trace()) {
+            RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading just request - no redirection", [self selfIDstring]);
         }
-        
-        [[self client] URLProtocolDidFinishLoading:self];
+          if (!self.isStopped) {
+  
+              [[self client] URLProtocol:self didReceiveResponse:resp cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+          }
+          if (self.httpBody != nil) {
+              if (!self.isStopped) {
+                  [[self client] URLProtocol:self didLoadData:self.httpBody];
+              }
+          }
+          if (!self.isStopped) {
+              [[self client] URLProtocolDidFinishLoading:self];
+          }
+
+        if (is_net_trace()) {
+            RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
+        }
         return;
       }
     }
+    else {
+        RAWLOG_ERROR2("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading has NO Responce from local server !!! Initial request: { %s }", [self selfIDstring], [CRhoURLProtocol requestInfo:[self request]]);
+    }
   }
   
-    //NSLog(@"$$$ responce ERROR: [%@]", [theUrl absoluteString]);
     NSString* body = @"error";
     [self sendResponseWithResponseCode:401 data:[body dataUsingEncoding:NSUTF8StringEncoding]];
- 
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoadingInThread END", [self selfIDstring]);
+    }
 }
+
+- (void)startLoading
+{
+    self.isStopped = NO;
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading()", [self selfIDstring]);
+    }
+    
+    dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 ), ^{
+        [self startLoadingInThread];
+    });
+ }
+
 
 - (CRhoURLResponse*) makeDirectHttpRequest:(NSURL*)theUrl
 {
-  //NSLog(@"Will make local request to %@", [theUrl absoluteString]);
+
+    if (is_net_trace()) {
+        RAWTRACE2("$NetRequestProcess$ CRhoURLProtocol %s :: makeDirectHttpRequest : URL [ %s ]", [self selfIDstring], [[theUrl absoluteString] UTF8String]);
+    }
+    
   
   const char* uri = [[theUrl path] UTF8String];
   const char* method = [[[self request] HTTPMethod] UTF8String];
@@ -295,6 +423,10 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 - (void)stopLoading
 {
+    self.isStopped = YES;
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: stopLoading()", [self selfIDstring]);
+    }
 
 }
 
@@ -305,7 +437,13 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 - (void)sendResponseWithResponseCode:(NSInteger)statusCode data:(NSData*)data
 {
+    if (is_net_trace()) {
+        RAWTRACE2("$NetRequestProcess$ CRhoURLProtocol %s :: sendResponseWithResponseCode : code: [ %d ] ", [self selfIDstring], (int)statusCode);
+    }
 
+    if (self.isStopped) {
+        return;
+    }
     CRhoURLResponse* response =
     [[CRhoURLResponse alloc] initWithURL:[[self request] URL]
                                    MIMEType:@"text/plain"
@@ -313,25 +451,39 @@ int on_http_cb(http_parser* parser) { return 0; }
                            textEncodingName:@"UTF-8"];
     response.statusCode = statusCode;
     
-    [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
-    if (data != nil) {
-        [[self client] URLProtocol:self didLoadData:data];
+    if (!self.isStopped) {
+        [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
     }
-    [[self client] URLProtocolDidFinishLoading:self];
-
+    if (data != nil) {
+        if (!self.isStopped) {
+            [[self client] URLProtocol:self didLoadData:data];
+        }
+    }
+    if (!self.isStopped) {
+        [[self client] URLProtocolDidFinishLoading:self];
+    }
     [response release];
 }
 
 + (BOOL) isLocalURL:(NSURL*)url
 {
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ isLocalURL BEGIN : URL: [ %s ] ", [[url absoluteString] UTF8String]);
+    }
     if ( [[url absoluteString] isEqualToString:@""] )
     {
+      if (is_net_trace()) {
+          RAWTRACE("isLocalURL END : return NO");
+      }
       return NO;
     }
 
     const char* scheme = [[url scheme] UTF8String];
     if (scheme != 0) {
         if ((strcmp(scheme, "http") !=0 ) && (strcmp(scheme, "https") !=0 )) {
+            if (is_net_trace()) {
+                RAWTRACE("$NetRequestProcess$ isLocalURL END : return NO");
+            }
             return NO;
         }
     }
@@ -340,7 +492,10 @@ int on_http_cb(http_parser* parser) { return 0; }
   
     if ( 0 == host )
     {
-      return YES;
+      if (is_net_trace()) {
+          RAWTRACE("$NetRequestProcess$ isLocalURL END : return YES");
+      }
+        return YES;
     }
   
     NSNumber* p = [url port];
@@ -348,10 +503,15 @@ int on_http_cb(http_parser* parser) { return 0; }
   
     int rhoPort = rho_http_get_port();
 
-    return (
+    BOOL ret = (
       ((port == rhoPort))
       && ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
     );
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ isLocalURL END : return [%s]", [[[NSNumber numberWithBool:ret] stringValue] UTF8String]);
+    }
+    
+    return ret;
 }
 
 
@@ -359,6 +519,7 @@ int on_http_cb(http_parser* parser) { return 0; }
 @synthesize httpHeaderName;
 @synthesize httpHeaders;
 @synthesize httpBody;
+@synthesize isStopped;
 
 
 @end

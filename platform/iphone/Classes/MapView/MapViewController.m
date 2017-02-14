@@ -432,7 +432,7 @@ static MapViewController *mc = nil;
 {
     MapAnnotation *ann = (MapAnnotation*)[view annotation];
     NSString* url = [ann url];
-    NSLog(@"Callout tapped... Url = %@\n", url);
+    RAWLOG_INFO1("Callout tapped... Url = %s\n", [url UTF8String]);
     id<RhoMainView> mainView = [[Rhodes sharedInstance] mainView];
     [mainView navigateRedirect:url tab:[mainView activeTab]];
     [self dismissModalViewControllerAnimated:YES]; 
@@ -476,7 +476,7 @@ static MapViewController *mc = nil;
 }*/
 
 - (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFailWithError:(NSError *)error{
-    NSLog(@"Reverse Geocoder Errored");
+    RAWLOG_ERROR("Reverse Geocoder Errored");
 }
 
 - (void)didFindAddress:(MapAnnotation*)annotation {
@@ -496,7 +496,7 @@ static MapViewController *mc = nil;
 }
 	
 - (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFindPlacemark:(MKPlacemark *)placemark{
-    NSLog(@"Reverse Geocoder completed");
+    RAWLOG_INFO("Reverse Geocoder completed");
     //mPlacemark=placemark;
     //[mapView addAnnotation:placemark];
 }

@@ -178,6 +178,8 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
 	const char* ios_7_icon_color = NULL;
 	const char* ios_7_selected_color = NULL;
     const char* detail_color = NULL;
+    const char* tabbar_invisible = NULL;
+    
 	NSNumber* nMaxWidth = NULL, *nFixedWidth = NULL;
     
     NSObject* obj = nil;
@@ -218,6 +220,16 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
         obj = [p_properties objectForKey:NATIVE_BAR_FIXED_WIDTH];
         if (obj != nil) {
             nFixedWidth = (NSNumber*)obj;
+        }
+        obj = [p_properties objectForKey:NATIVE_BAR_TABBAR_INVISIBLE];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            if ([obj_num boolValue]) {
+                tabbar_invisible = "true";
+            }
+            else {
+                tabbar_invisible = "false";
+            }
         }
     }
     
@@ -431,6 +443,9 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
     }
     if (detail_color != NULL) {
 		[properties setObject:[NSString stringWithUTF8String:detail_color] forKey:NATIVE_BAR_DETAIL_COLOR];
+    }
+    if (tabbar_invisible != NULL) {
+        [properties setObject:[NSString stringWithUTF8String:tabbar_invisible] forKey:NATIVE_BAR_TABBAR_INVISIBLE];
     }
     
     //COMMONAPI

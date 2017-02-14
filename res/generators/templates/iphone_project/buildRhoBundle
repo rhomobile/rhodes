@@ -1,26 +1,42 @@
 #!/bin/sh
 
+echo "START buildRhoBundle script"
 
-if [ "$RHO_BUNDLE_ALREADY_BUILDED" = "YES" ]; then
+if [ "$RHO_BUNDLE_ALREADY_BUILDED" = "YES" ]
+then
+
+RHO_BUNDLE_ALREADY_BUILDED="NO"
+echo "RhoBundle already builded !" 
+
+else
+
+echo "RhoBundle should BUILD !"
 
 RHO_BUNDLE_ALREADY_BUILDED="NO"
 
-echo "RhoBundle already builded !"
-
-elif [ "$ACTION" = "build" -o "$ACTION" = "" ]; then
-
-source ~/.profile
+. ~/.profile
 cd ../..
 
-RHO_BUNDLE_ALREADY_BUILDED="NO"
+echo "START Prepare build bundle - switch app"
+
+ruby --version 
+
 rake switch_app
+
+echo "FINISH Prepare build bundle - switch app"
+
 TARGET_RHODESLIBS_DIR=${SRCROOT}
+
 cd <%= rhodes_root_path %>
+
+echo "START build bundle ..."
+
 rake build:iphone:rhobundle
+
+echo "FINISH build bundle ..."
 
 RHO_BUNDLE_ALREADY_BUILDED="NO"
 
 fi
 
-
-
+echo "FINISH buildRhoBundle script"

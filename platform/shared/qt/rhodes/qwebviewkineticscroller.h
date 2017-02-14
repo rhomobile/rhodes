@@ -42,7 +42,7 @@
 #ifndef QWEBVIEWKINETICSCROLLER_H
 #define QWEBVIEWKINETICSCROLLER_H
 
-#include <qkineticscroller.h>
+#include "qkineticscroller.h"
 #include <QWebView>
 
 QT_BEGIN_HEADER

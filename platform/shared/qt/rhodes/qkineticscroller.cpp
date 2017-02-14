@@ -38,8 +38,8 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
-#include <qkineticscroller.h>
-#include <qkineticscroller_p.h>
+#include "qkineticscroller.h"
+#include "qkineticscroller_p.h"
 #include <QMap>
 #include <QApplication>
 #include <QDesktopWidget>

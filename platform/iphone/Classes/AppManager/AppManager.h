@@ -39,6 +39,9 @@
 + (NSString *) getApplicationsRosterUrl;
 + (bool) installApplication:(NSString*)appName data:(NSData*)appData;
 
++ (void) startupLogging:(NSString*)message;
++ (BOOL) isEnabledStartupLogging;
+
 - (void) copyFromMainBundle:(NSFileManager*)fileManager fromPath:(NSString*)source
 					 toPath:(NSString*)target remove:(BOOL)remove;
 - (void) configure;
@@ -49,3 +52,6 @@
 - (void) openURL:(NSString*)url;
 
 @end
+
+
+void rho_startup_logging(const char* message);

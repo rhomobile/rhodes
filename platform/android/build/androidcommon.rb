@@ -313,7 +313,7 @@ def cc_deps(filename, objdir, additional)
   out.split(/\s+/)
 end
 
-def cc_run(command, args, chdir = nil, coloring = true)
+def cc_run(command, args, chdir = nil, coloring = true, env = nil)
   save_cwd = FileUtils.pwd
   FileUtils.cd chdir unless chdir.nil?
   argv = [command]
@@ -325,6 +325,8 @@ def cc_run(command, args, chdir = nil, coloring = true)
     winName = `WMIC OS get Name`
     isWinXP = true if winName =~ /Windows XP/
   end
+
+  env = ENV unless env
   
   if isWinXP
     puts '-' * 80
@@ -332,7 +334,7 @@ def cc_run(command, args, chdir = nil, coloring = true)
   else
     out = StringIO.new
     ret = nil
-    Open3.popen2e(cmdstr) do |i,f,t|
+    Open3.popen2e(env, cmdstr) do |i,f,t|
       warning = false
       error = false
       while data = f.gets

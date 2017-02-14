@@ -94,7 +94,7 @@
                     resultString = [NSString stringWithFormat:@"%@", result];
                 }
             } else {
-                NSLog(@"WKWebView.evaluateJavaScript error : %@", error.localizedDescription);
+                RAWLOG_ERROR1("WKWebView.evaluateJavaScript error : %s", [[error localizedDescription] UTF8String]);
             }
             finished = YES;
         }];
@@ -176,6 +176,10 @@
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation {
+    // force Ajax CommonAPI calls
+    NSString* jscode = @"window['__rho_nativeBridgeType']='ajax'";
+    [self stringByEvaluatingJavaScriptFromString:jscode];
+    
     [delegate webViewDidFinishLoad:self];
 }
 

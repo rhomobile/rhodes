@@ -54,6 +54,7 @@ class CURLNetResponseImpl : public INetResponse
 	String m_data;
     int   m_nRespCode;
     String m_cookies;
+    String m_errorMessage;
 
 public:
     CURLNetResponseImpl(char const *data, size_t size, int nRespCode)
@@ -80,6 +81,11 @@ public:
     virtual String getCookies()
     {
         return m_cookies;
+    }
+    
+    virtual String getErrorMessage()
+    {
+        return m_errorMessage;
     }
 
     virtual void setCharData(const char* szData)

@@ -254,7 +254,7 @@
 
 @implementation TabbedMainView
 
-@synthesize tabbar, tabbarData, tabindex, on_change_tab_callback;
+@synthesize tabbar, tabbarData, tabindex, on_change_tab_callback, invisible_tab_control;
 
 - (UIImage*)recolorImageWithColor:(UIImage*)image color:(UIColor *)color shadowColor:(UIColor *)shadowColor shadowOffset:(CGSize)shadowOffset shadowBlur:(CGFloat)shadowBlur
 {
@@ -344,21 +344,29 @@
     frame.origin.x = 0;
     frame.origin.y = 0;
     
+    invisible_tab_control = NO;
+    
     rootFrame = frame;
 
 	NSString *background_color = nil;
 	NSString *selected_color = nil;
+    NSString *invisibleTabControl = nil;
 	
 	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
 	if (global_properties != nil) {
 		background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
 		selected_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_SELECTED_COLOR];
+        invisibleTabControl = (NSString*)[global_properties objectForKey:NATIVE_BAR_TABBAR_INVISIBLE];
 
         self.on_change_tab_callback = (id<IMethodResult>)[global_properties objectForKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];
         if (self.on_change_tab_callback != nil) {
             //[self.on_change_tab_callback release];
         }
 	}
+    
+    if (invisibleTabControl != nil) {
+            invisible_tab_control = [invisibleTabControl isEqualToString:@"true"];
+    }
 	
     
 #ifdef __IPHONE_7_0
@@ -411,9 +419,11 @@
     // First call of self.view (when self.view is nil) trigger loadView
     // and viewDidLoad which add all our subviews to the root view
     [self.view addSubview:tabbar.view];
-   	
+
     //tabbar.tabBar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
     //tabbar.tabBar.autoresizesSubviews = YES;
+
+    tabbar.tabBar.hidden = invisible_tab_control;
     
     CGRect childFrame = [[v view] bounds];
 	childFrame.origin.x = 0;
@@ -424,7 +434,9 @@
 		//childFrame.size.width -= tbFrame.size.height;
     //}
 	//else {
+    if (!invisible_tab_control) {
 		childFrame.size.height -= tbFrame.size.height;
+    }
 	//}
 	
     NSArray *items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
@@ -624,7 +636,7 @@
 	}
     if ((index < 0) || (index >= [tabbar.viewControllers count])) {
         // error
-        NSLog(@"TabBar invalid tab index [%d] !!! ", index);
+        RAWLOG_ERROR1("TabBar invalid tab index [%d] !!! ", (int)index);
         return nil;
     }
     return (SimpleMainView*)[tabbar.viewControllers objectAtIndex:index];
