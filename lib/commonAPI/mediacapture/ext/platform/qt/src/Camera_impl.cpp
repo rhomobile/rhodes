@@ -28,19 +28,11 @@ namespace rho {
             qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
             QMutexLocker locker(CCameraData::getMutex());
 
-            if (CCameraData::isEmpty()){
-                if (QCameraInfo::availableCameras().isEmpty()){
-                    for (int i = 0; i < 100; i++){
-                        if (!QCameraInfo::availableCameras().isEmpty()){break;}
-                        QThread::currentThread()->msleep(50);
-                    }
-                }
-
-                foreach (QCameraInfo cameraInfo, QCameraInfo::availableCameras()) {
-                    const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
-                    defaultCameras.insert(data->getCameraType(), data->getCameraID());
-                }
+            foreach (QCameraInfo cameraInfo, QCameraInfo::availableCameras()) {
+                const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
+                defaultCameras.insert(data->getCameraType(), data->getCameraID());
             }
+
         }
 
         virtual ~CCameraSingletonImpl(){
@@ -50,16 +42,16 @@ namespace rho {
         //methods
         // enumerate Returns the cameras present on your device, allowing you to access your device's front or back camera. 
         virtual void enumerate(rho::apiGenerator::CMethodResult& oResult) {
-
-            qDebug() << "INENUM";
             QMutexLocker locker(CCameraData::getMutex());
 
             rho::Vector<rho::String> arIDs = oResult.getStringArray();
             if(!CCameraData::isEmpty()){
-                foreach (QString value, CCameraData::getKeys()) {arIDs.addElement(value.toStdString());}
+                foreach (QString value, CCameraData::getKeys()) {
+                    arIDs.addElement(value.toStdString());
+                }
+
                 oResult.set(arIDs);
             }
-            
         } 
         // getCameraByType Returns the camera of requested type if that camera exist - else return nil. 
         virtual void getCameraByType( const rho::String& cameraType, rho::apiGenerator::CMethodResult& oResult) {
@@ -280,7 +272,10 @@ namespace rho {
 
         virtual void capture(rho::apiGenerator::CMethodResult& oResult) {
             if (camera == nullptr) {
-                qDebug() << "NullPoinerCamera";
+                rho::Hashtable<rho::String, rho::String>& mapRes = oResult.getStringHash();
+                mapRes["status"] = "error";
+                mapRes["message"] = "Camera is not available";
+                oResult.set(mapRes);
                 return;
             }
             camera->showView(oResult);
