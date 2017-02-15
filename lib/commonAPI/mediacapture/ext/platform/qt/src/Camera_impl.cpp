@@ -26,13 +26,6 @@ namespace rho {
         CCameraSingletonImpl(): CCameraSingletonBase()
         {
             qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
-            QMutexLocker locker(CCameraData::getMutex());
-
-            foreach (QCameraInfo cameraInfo, QCameraInfo::availableCameras()) {
-                const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
-                defaultCameras.insert(data->getCameraType(), data->getCameraID());
-            }
-
         }
 
         virtual ~CCameraSingletonImpl(){
@@ -42,17 +35,27 @@ namespace rho {
         //methods
         // enumerate Returns the cameras present on your device, allowing you to access your device's front or back camera. 
         virtual void enumerate(rho::apiGenerator::CMethodResult& oResult) {
-            QMutexLocker locker(CCameraData::getMutex());
-
+            initCameras();
             rho::Vector<rho::String> arIDs = oResult.getStringArray();
             if(!CCameraData::isEmpty()){
                 foreach (QString value, CCameraData::getKeys()) {
                     arIDs.addElement(value.toStdString());
                 }
-
                 oResult.set(arIDs);
             }
+
         } 
+
+        void initCameras(){
+            QMutexLocker locker(CCameraData::getMutex());
+            if(CCameraData::isEmpty()){
+                foreach (QCameraInfo cameraInfo, QCameraInfo::availableCameras()) {
+                    const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
+                    defaultCameras.insert(data->getCameraType(), data->getCameraID());
+                }
+            }
+        }
+
         // getCameraByType Returns the camera of requested type if that camera exist - else return nil. 
         virtual void getCameraByType( const rho::String& cameraType, rho::apiGenerator::CMethodResult& oResult) {
             oResult.set(defaultCameras.value(QString::fromStdString(cameraType)).toStdString());
@@ -72,12 +75,13 @@ namespace rho {
             // RAWLOGC_INFO("copyImageToDeviceGallery","Camera");
             QString originalFileName(QString::fromStdString(pathToImage));
             QFileInfo info(originalFileName);
-            QString newFileName(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).last() + "\\" + info.fileName());
-            QFile::copy(originalFileName,newFileName);
+            QString newFileName(CameraDialogView::getImageDir().absolutePath() + "/" + info.fileName());
+            QFile::copy(originalFileName, newFileName);
             oResult.set(newFileName.toStdString());
         } 
 
         virtual rho::String getInitialDefaultID(){
+            initCameras();
             QString defaultId = defaultCameras.value("front");
             if (!defaultId.isEmpty()) return defaultId.toStdString();
             else return defaultCameras.value("back").toStdString();
