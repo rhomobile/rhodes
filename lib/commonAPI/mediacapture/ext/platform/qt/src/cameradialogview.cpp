@@ -22,21 +22,35 @@ CameraDialogView::CameraDialogView(QCameraInfo &info, rho::apiGenerator::CMethod
 
     QVBoxLayout * vblay = new QVBoxLayout();
     videoWidget = new QVideoWidget(this);
-    vblay->addWidget(videoWidget);
+    vblay->addWidget(videoWidget,0,Qt::AlignCenter);
     videoWidget->setFixedWidth(300);
+    Q_INIT_RESOURCE(mediacapture);
 
-    QPushButton * buttonCapture = new QPushButton("Capture");
-    vblay->addWidget(buttonCapture);
+    imageCaptureClose = QIcon(":/mcimages/diaClosed.png");
+
+    imageCaptureOpened = QIcon(":/mcimages/diaOpened.png");
+    imageSave = QIcon(":/mcimages/photoSave.png");
+
+    connect(&timerToRestoreCaptureButtonImage, SIGNAL(timeout()), this, SLOT(restoreCaptureButtonImage()));
+    timerToRestoreCaptureButtonImage.setSingleShot(true);
+
+    buttonCapture = new QPushButton(imageCaptureOpened, "", this);
+    buttonCapture->setFixedSize(50,50);
+    buttonCapture->setIconSize(QSize(40,40));
+    vblay->addWidget(buttonCapture,0,Qt::AlignCenter);
     connect(buttonCapture, SIGNAL(clicked(bool)), this, SLOT(capture()));
     connect(imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(imageCaptured(int,QImage)));
     hblay->addLayout(vblay);
 
     vblay = new QVBoxLayout();
     laPreview = new QLabel(this);
-    vblay->addWidget(laPreview);
-    QPushButton * buttonSave = new QPushButton("Save",this);
+    vblay->addWidget(laPreview,0,Qt::AlignCenter);
+    QPushButton * buttonSave = new QPushButton(imageSave,"",this);
+    buttonSave->setFixedSize(50,50);
+    buttonSave->setIconSize(QSize(35,35));
+
     connect(buttonSave, SIGNAL(clicked(bool)), this, SLOT(saveCurrentImage()));
-    vblay->addWidget(buttonSave);
+    vblay->addWidget(buttonSave,0,Qt::AlignCenter);
     hblay->addSpacing(4);
     hblay->addLayout(vblay);
     hblay->setMargin(1);
@@ -56,6 +70,7 @@ CameraDialogView::CameraDialogView(QCameraInfo &info, rho::apiGenerator::CMethod
     connect(this, SIGNAL(rejected()), this, SLOT(deleteLater()), Qt::QueuedConnection);
     camera->start();
     camera->searchAndLock();
+
     setFixedSize(minimumWidth(), minimumHeight());
 }
 
@@ -85,7 +100,9 @@ void CameraDialogView::error()
 
 void CameraDialogView::capture()
 {
+    buttonCapture->setIcon(imageCaptureClose);
     imageCapture->capture("dev/null");
+    timerToRestoreCaptureButtonImage.start(300);
 }
 
 void CameraDialogView::imageCaptured(int id, const QImage &preview)
@@ -118,6 +135,11 @@ void CameraDialogView::saveCurrentImage()
         oResult.set(mapRes);
         reject();
     }
+}
+
+void CameraDialogView::restoreCaptureButtonImage()
+{
+    buttonCapture->setIcon(imageCaptureOpened);
 }
 
 

@@ -2,7 +2,6 @@ QT += multimedia gui widgets multimediawidgets webkitwidgets core network webkit
 
 TARGET = Mediacapture
 TEMPLATE = lib
-
 CONFIG += staticlib warn_on
 
 isEmpty(RHODES_ROOT) {
@@ -15,7 +14,7 @@ $$RHODES_ROOT/platform/shared/common\
 $$RHODES_ROOT/platform/shared/rubyext\
 $$RHODES_ROOT/platform/shared/ruby/include\
 $$RHODES_ROOT/platform/shared\
-../../shared
+../../shared\
 
 macx {
   DESTDIR = $$RHODES_ROOT/platform/osx/bin/extensions
@@ -33,6 +32,7 @@ win32 {
     DEFINES += _NDEBUG NDEBUG
   }
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/win32
+  RCC_DIR = $$RHODES_ROOT/lib/commonAPI/mediacapture/ext/platform/qt/resources
 }
 
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
@@ -78,3 +78,5 @@ SOURCES += \
 src\Camera_impl.cpp \
     src/CCameraData.cpp \
     src/CameraDialogView.cpp
+
+RESOURCES += $$RHODES_ROOT/lib/commonAPI/mediacapture/ext/platform/qt/resources/mediacapture.qrc

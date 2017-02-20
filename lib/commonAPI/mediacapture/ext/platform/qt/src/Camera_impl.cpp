@@ -29,6 +29,7 @@ namespace rho {
         }
 
         virtual ~CCameraSingletonImpl(){
+            QMutexLocker locker(CCameraData::getMutex());
             CCameraData::cleanAll();
         }
         

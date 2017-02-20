@@ -23,12 +23,17 @@
 #include <QHBoxLayout>
 #include <QTime>
 #include <QDate>
+#include <QTimer>
+#include <QIcon>
 #include "../../../../../platform/shared/api_generator/MethodResult.h"
 #include "../../../../../platform/shared/common/RhoStd.h"
 #include "../../platform/shared/qt/rhodes/QtMainWindow.h"
 #include "../../platform/shared/qt/rhodes/impl/MainWindowImpl.h"
 #include "../../platform/shared/qt/rhodes/iexecutable.h"
 #include "CameraDialogController.h"
+#include <QtPlugin>
+#include <QPluginLoader>
+#include <QJsonObject>
 
 
 class CameraDialogView : public QDialog
@@ -50,13 +55,18 @@ private:
     QLabel * laPreview;
     QImage currentImage;
     bool imageIsSaved;
+    QTimer timerToRestoreCaptureButtonImage;
+    QIcon imageCaptureClose;
+    QIcon imageCaptureOpened;
+    QIcon imageSave;
+    QPushButton * buttonCapture;
 public slots:
     void imageSaved(int id, const QString &fileName);
     void error();
     void capture();
     void imageCaptured(int id, const QImage &preview);
     void saveCurrentImage();
-
+    void restoreCaptureButtonImage();
 
 };
 
