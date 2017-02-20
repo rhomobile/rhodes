@@ -1,5 +1,5 @@
 QT += core gui network webkit
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets multimedia
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets multimedia multimediawidgets
 
 TARGET = RhoSimulator
 TEMPLATE = app
@@ -144,7 +144,8 @@ impl/DateTimePickerImpl.h\
 impl/AlertImpl.h\
 impl/RhoThreadImpl.h\
 RhoSimulator.h\
-RhoNativeApiCall.h
+RhoNativeApiCall.h \
+    iexecutable.h
 
 SOURCES += main.cpp\
 ExternalWebView.cpp\

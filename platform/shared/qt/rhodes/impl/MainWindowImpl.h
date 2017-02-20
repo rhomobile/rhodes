@@ -101,6 +101,7 @@ public:
     void tabbarBadge(int index, const char* badge);
     int tabbarGetCurrent();
 
+
 private:
     bool m_started;
     void* qtMainWindow;
@@ -148,6 +149,8 @@ public:
     void restoreWindowCommand();
     void unsetProxyCommand();
     void setProxyCommand(const char* host, const char* port, const char* login, const char* password);
+
+    void *getQtMainWindow() const;
 
 signals:
     void doExitCommand(void);
