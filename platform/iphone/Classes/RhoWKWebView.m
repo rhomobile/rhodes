@@ -42,7 +42,12 @@
 
 - (id)initWithFrame:(CGRect)frame {
     [self init];
-    WKWebView* w = [[WKWebView alloc] initWithFrame:frame];
+    
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    if ( rho_conf_getBool("enable_media_playback_without_gesture") == 1 )
+        configuration.mediaPlaybackRequiresUserAction = NO;
+    
+    WKWebView* w = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     //w.scalesPageToFit = YES;
     if ( !rho_conf_getBool("WebView.enableBounce") )
         [[w scrollView] setBounces:NO];
