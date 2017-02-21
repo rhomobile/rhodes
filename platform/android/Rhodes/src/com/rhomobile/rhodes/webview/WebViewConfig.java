@@ -20,6 +20,7 @@ public class WebViewConfig implements IRhoConfig {
     public static final String SETTING_SPLASHSCREEN_DURATION = "splashscreenduration";
     public static final String USER_AGENT = "useragent";
     public static final String ENABLE_SCAN = "LowBatteryScan";
+    public static final String ENABLE_MEDIA_PLAYBACK_WITHOUT_GESTURE = "enableMediaPlaybackWithoutGesture";
     public static final String ENABLE_FUNCTION_KEY_F1 = "EnableFunctionKey_F1";
     public static final String ENABLE_FUNCTION_KEY_F2 = "EnableFunctionKey_F2";
     public static final String ENABLE_FUNCTION_KEY_F3 = "EnableFunctionKey_F3";
@@ -71,6 +72,7 @@ public class WebViewConfig implements IRhoConfig {
     public static final String SETTING_SPLASHSCREEN_PATH_DEF = "apps/app/loading.png";
     public static final long SETTING_SPLASHSCREEN_DURATION_DEF = 0;
     public static final String USER_AGENT_DEF = RhoConf.getString("useragent");
+    public static final boolean ENABLE_MEDIA_PLAYBACK_WITHOUT_GESTURE_DEF = false;
    public static String AUTH_USERNAME ="username";
     public static String AUTH_PASSWORD = "password";
     public static String DISABLE_SCANNER_ON_NAVIGATION = "disablescanneronnavigation";
@@ -88,6 +90,7 @@ public class WebViewConfig implements IRhoConfig {
         mConfigMap.put(ENABLE_CACHE, String.valueOf(ENABLE_CACHE_DEF));
         mConfigMap.put(USER_AGENT, USER_AGENT_DEF);
         mConfigMap.put(DISABLE_SCANNER_ON_NAVIGATION, String.valueOf(DISABLE_SCANNER_ON_NAVIGATION_DEFAULT));
+        mConfigMap.put(ENABLE_MEDIA_PLAYBACK_WITHOUT_GESTURE, String.valueOf(ENABLE_MEDIA_PLAYBACK_WITHOUT_GESTURE_DEF));
     }
     
     public void set(String name, boolean val) {
