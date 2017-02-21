@@ -171,14 +171,11 @@ public class SplashScreen implements MainView{
             int loading_id = RhoExtManager.getResourceId("drawable.loading");
             loading_bitmap = BitmapFactory.decodeResource(activity.getResources(), loading_id);
             if (loading_bitmap != null) {
-                type = 2;
+                type = 55;
             }
         }
         catch (Throwable e) {
             Logger.E(TAG, e);
-        }
-        if (loading_bitmap == null) {
-            type = 3;
         }
 
         switch (type) {
@@ -261,7 +258,7 @@ public class SplashScreen implements MainView{
                 mView = webView;
             }
             break;
-        case 2:
+        case 55:
             {
                 try {
                     Logger.I(TAG, "Loading image from resource R.drawable.loading !");
