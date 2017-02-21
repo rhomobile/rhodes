@@ -47,8 +47,6 @@ iphone:
   #entitlements:
   BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
   BundleURLScheme: <%=@app_name_cleared%>
-  production:
-    ipa_itunesartwork_image: "./production/iTunesArtwork.png"
   ## Note: Specifies the URL schemes the app is able to call using Rho.System.runApplication
   #ApplicationQueriesSchemes: ['scheme1', 'scheme2']
   ## Note: Specifies list of HTTP domains for connect from application

@@ -35,6 +35,7 @@ import java.lang.Thread;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Environment;
@@ -164,6 +165,22 @@ public class SplashScreen implements MainView{
             type++;
         }
 
+        Bitmap loading_bitmap = null;
+        try {
+            Logger.I(TAG, "Loading image try to open from resources !!!");
+            int loading_id = RhoExtManager.getResourceId("drawable.loading");
+            loading_bitmap = BitmapFactory.decodeResource(activity.getResources(), loading_id);
+            if (loading_bitmap != null) {
+                type = 2;
+            }
+        }
+        catch (Throwable e) {
+            Logger.E(TAG, e);
+        }
+        if (loading_bitmap == null) {
+            type = 3;
+        }
+
         switch (type) {
         case 0:
             try {
@@ -242,6 +259,25 @@ public class SplashScreen implements MainView{
                 webView.setHorizontalScrollBarEnabled(false);
                 webView.loadUrl("file:///android_asset/" + fn[type]);
                 mView = webView;
+            }
+            break;
+        case 2:
+            {
+                try {
+                    Logger.I(TAG, "Loading image from resource R.drawable.loading !");
+
+                    ImageView imageView = new ImageView(activity);
+                    imageView.setBackgroundColor(mBackgroundColor);
+                 	imageView.setImageBitmap(loading_bitmap);
+                    loading_bitmap = null;
+                    imageView.setAdjustViewBounds(true);
+                    imageView.setScaleType(mScaleType);
+                    mView = imageView;
+                    RhoExtManager.getInstance().registerExtension("SplashScreen", mDocCompleteListener = new SplashScreenExtension());
+                }
+                catch (Throwable e) {
+                    Logger.E(TAG, e);
+                }
             }
             break;
         default:

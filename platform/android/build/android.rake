@@ -77,48 +77,66 @@ ANDROID_PERMISSIONS = {
 ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
 
 def set_app_icon_android
-  iconappbase = File.join $app_path, 'icon', 'icon'
 
-  {'drawable' => '',
-   'drawable-ldpi' => '36',
-   'drawable-mdpi' => '48',
-   'drawable-hdpi' => '72',
-   'drawable-xhdpi' => '96',
-   'drawable-xxhdpi' => '144',
-   'drawable-xxxhdpi' => '192'
-   }.each do |folder, size|
-    drawable = File.join $appres, folder
-    iconresname = File.join(drawable, "icon.png")
-    
-    iconapppath = iconappbase + size + '.png'
-    
-    if File.exists?(iconapppath) or File.exists?(iconresname)
-        iconapppath = iconappbase + '.png' unless File.exists? iconapppath
-        rm_f iconresname
-        mkdir_p drawable
-        cp iconapppath, iconresname if File.exist? drawable
-    end
-  end
+  res_path = File.join($app_path, 'resources', 'android', 'res')
+  if File.exists? res_path
+     # NEW resource - just copy it to res folder
+     puts "add resources from application'sresource folder [#{res_path}] to [#{$tmpdir}]"
+     cp_r res_path, $tmpdir
 
-  {'drawable' => '',
-   'drawable-ldpi' => '18',
-   'drawable-mdpi' => '24',
-   'drawable-hdpi' => '36',
-   'drawable-xhdpi' => '48',
-   'drawable-xxhdpi' => '72',
-   'drawable-xxxhdpi' => '96'
-   }.each do |folder, size|
-    drawable = File.join $appres, folder
-    iconresname = File.join(drawable, "ic_notification.png")
-    
-    iconapppath = iconappbase + size + '.png'
-    
-    if File.exists?(iconapppath) or File.exists?(iconresname)
-        iconapppath = iconappbase + '.png' unless File.exists? iconapppath
-        rm_f iconresname
-        mkdir_p drawable
-        cp iconapppath, iconresname if File.exist? drawable
-    end
+  else
+     # NEW resources not found - use old mechanism
+
+      iconappbase = File.join $app_path, 'icon', 'icon'
+
+      {'drawable' => '',
+       'drawable-ldpi' => '36',
+       'drawable-mdpi' => '48',
+       'drawable-hdpi' => '72',
+       'drawable-xhdpi' => '96',
+       'drawable-xxhdpi' => '144',
+       'drawable-xxxhdpi' => '192',
+       'mipmap' => '',
+       'mipmap-ldpi' => '36',
+       'mipmap-mdpi' => '48',
+       'mipmap-hdpi' => '72',
+       'mipmap-xhdpi' => '96',
+       'mipmap-xxhdpi' => '144',
+       'mipmap-xxxhdpi' => '192'
+        }.each do |folder, size|
+        drawable = File.join $appres, folder
+        iconresname = File.join(drawable, "icon.png")
+
+        iconapppath = iconappbase + size + '.png'
+
+        if File.exists?(iconapppath) or File.exists?(iconresname)
+            iconapppath = iconappbase + '.png' unless File.exists? iconapppath
+            rm_f iconresname
+            mkdir_p drawable
+            cp iconapppath, iconresname if File.exist? drawable
+        end
+      end
+
+      {'drawable' => '',
+       'drawable-ldpi' => '18',
+       'drawable-mdpi' => '24',
+       'drawable-hdpi' => '36',
+       'drawable-xhdpi' => '48',
+       'drawable-xxhdpi' => '72',
+       'drawable-xxxhdpi' => '96'
+       }.each do |folder, size|
+        drawable = File.join $appres, folder
+        iconresname = File.join(drawable, "ic_notification.png")
+
+        iconapppath = iconappbase + size + '.png'
+
+        if File.exists?(iconapppath) or File.exists?(iconresname)
+            iconapppath = iconappbase + '.png' unless File.exists? iconapppath
+            rm_f iconresname
+            mkdir_p drawable
+            cp iconapppath, iconresname if File.exist? drawable
+        end
+      end
   end
 end
 
