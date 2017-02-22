@@ -878,6 +878,12 @@ class Jake
     app_version += "\r\norg_name='#{$app_config["vendor"]}'"  if $current_platform == "win32"
     app_version += "\r\nrho_app_id='#{$app_config["rho_app_id"]}'" if $app_config['rho_app_id']
 
+    #store Rhodes version to rhoconfig
+    version_path = File.join($startdir, 'version')
+    version = ""
+    File.open( version_path, 'rb' ){ |f| version = f.read() }
+    app_version += "\r\nrhodes_gem_version='#{version}'"
+
     if $is_webkit_engine == true
 		  File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write("\r\nwebengine=webkit") }
 	  end

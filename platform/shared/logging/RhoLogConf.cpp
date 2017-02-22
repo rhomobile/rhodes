@@ -524,6 +524,14 @@ void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char*
     rho_conf_Init_with_separate_user_path(szRootPath, szUserPath);
 
     LOGCONF().loadFromConf(RHOCONF());
+
+    // print rhodes gem version
+    if (RHOCONF().isExist("rhodes_gem_version")) {
+        if (LOGCONF().getMinSeverity() < 2) {
+            String rho_gem_version = "RHODES_GEM_VERSION=" + RHOCONF().getString("rhodes_gem_version");
+            LOGCONF().sinkLogMessage(rho_gem_version);
+        }
+    }
 }
 
 void rho_logconf_Init(const char* szLogPath, const char* szRootPath, const char* szLogPort){
