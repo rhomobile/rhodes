@@ -1047,8 +1047,7 @@ public class RhodesService extends Service {
             RhodesService service = getInstance();
             Context ctx = RhodesService.getContext();
 
-            Intent intent = new Intent();
-            service.resolveAppName(appName, intent);
+            Intent intent = service.getPackageManager().getLaunchIntentForPackage(appName);
             service.parseAppParams(params, intent);
 
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
