@@ -2296,7 +2296,7 @@ def add_linker_library(libraryname)
 end
 
 def add_inker_library_absolute(fulllibraryfilepath)
-    $ldflags << fulllibraryfilepath + "\n"
+    $ldflags << fulllibraryfilepath + "\n" unless $ldflags.nil?
 end
 
 def set_linker_flags
