@@ -17,19 +17,22 @@ namespace rho {
     using namespace apiGenerator;
     using namespace common;
 
-    class CCameraSingletonImpl: public CCameraSingletonBase
+    class CCameraSingletonImpl: public CCameraSingletonBase, public QObject
     {
         QHash<QString, QString> defaultCameras;
 
     public:
 
-        CCameraSingletonImpl(): CCameraSingletonBase()
+        CCameraSingletonImpl(): CCameraSingletonBase(), QObject(CCameraData::getQMainWindow())
         {
             qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
+            this->moveToThread(CCameraData::getQMainWindow()->thread());
+            //CCameraData::refreshCameraInfo();
+            //QApplication::instance()->processEvents();
+
         }
 
         virtual ~CCameraSingletonImpl(){
-            QMutexLocker locker(CCameraData::getMutex());
             CCameraData::cleanAll();
         }
         
@@ -50,10 +53,12 @@ namespace rho {
         void initCameras(){
             QMutexLocker locker(CCameraData::getMutex());
             if(CCameraData::isEmpty()){
+
                 foreach (QCameraInfo cameraInfo, QCameraInfo::availableCameras()) {
                     const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
                     defaultCameras.insert(data->getCameraType(), data->getCameraID());
                 }
+
             }
         }
 

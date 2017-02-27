@@ -16,6 +16,7 @@
 #include "ImageFileNameGetter.h"
 #include "CameraDialogController.h"
 #include "CameraDialogBuilder.h"
+#include "camerarefresher.h"
 
 class CCameraData : public CameraDialogController{
     Q_OBJECT
@@ -40,12 +41,13 @@ public:
     const QString getCameraType() const;
     const QString getCameraID() const;
 
-    void takeAPicture(rho::apiGenerator::CMethodResult &oResult);
+    //void takeAPicture(rho::apiGenerator::CMethodResult &oResult);
     static QMutex * getMutex();
 
     void showView(rho::apiGenerator::CMethodResult &oResult);
     static QtMainWindow *getQMainWindow();
     static void choosePicture(rho::apiGenerator::CMethodResult &oResult);
+    static void refreshCameraInfo();
 public slots:
 
 

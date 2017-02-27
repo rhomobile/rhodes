@@ -68,13 +68,14 @@ CMainWindow::CMainWindow():
 #else
     QCoreApplication::setApplicationName("RhoSimulator");
 #endif
-    qtApplication = (void*)new QApplication(argc, 0);
+    //qtApplication = (void*)new QApplication(argc, 0);
+    qtApplication = QApplication::instance();
 }
 
 CMainWindow::~CMainWindow()
 {
     if (qtMainWindow) delete (QtMainWindow*)qtMainWindow;
-    if (qtApplication) delete (QApplication*)qtApplication;
+    //if (qtApplication) delete (QApplication*)qtApplication;
 }
 
 CMainWindow* CMainWindow::getInstance(void)

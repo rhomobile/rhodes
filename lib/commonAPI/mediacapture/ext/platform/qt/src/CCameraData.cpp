@@ -81,3 +81,9 @@ void CCameraData::choosePicture(rho::apiGenerator::CMethodResult& oResult) {
     ImageFileNameGetter * getter = new ImageFileNameGetter(QThread::currentThread(),oResult,getQMainWindow());
     getter->run();
 }
+
+void CCameraData::refreshCameraInfo()
+{
+    CameraRefresher * refresher = new CameraRefresher(getQMainWindow());
+    refresher->run();
+}

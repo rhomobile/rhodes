@@ -11,12 +11,12 @@ class IExecutable : public QObject
 public:
     explicit IExecutable(QObject *parent){
         moveToThread(parent->thread());
-        //setParent(parent);
         connect(parent, SIGNAL(destroyed(QObject*)), this, SLOT(deleteLater()));
         connect(this, SIGNAL(run()), this, SLOT(execute()), Qt::QueuedConnection);
         qDebug() << "Creating Executable in thred ID 0x" + QString::number((quint32)QThread::currentThreadId(), 16);
     }
     virtual ~IExecutable(){}
+protected:
 
 signals:
     void run();
