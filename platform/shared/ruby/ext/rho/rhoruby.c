@@ -267,7 +267,7 @@ void RhoRubyStart()
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)
     Init_Camera();
 #endif
-    //Init_stringio(); //+
+    Init_stringio(); //+
     Init_DateTimePicker();
 //#if !defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR) && !defined(OS_ANDROID) && !defined(OS_MACOSX)
 //    Init_NativeBar();
