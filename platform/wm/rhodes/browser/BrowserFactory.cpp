@@ -85,7 +85,7 @@ IBrowserEngine* BrowserFactory::create(HWND hwndParent)
     //TODO TAU
 	//String             xmlConfigType   = rho_wmimpl_get_webengine();
 	String             xmlConfigType;
-    String             rhoConfigType   = RHOCONF().getString("webengine");  
+    String             rhoConfigType   = RHOCONF().getString("webengine");
     
     if (get_app_build_config_item("webengine"))
     {
@@ -110,12 +110,10 @@ IBrowserEngine* BrowserFactory::create(HWND hwndParent)
 
     if (selBrowserType == eNone)
     {
-        selBrowserType = eWebkit;
-        LOG(INFO) + "Browser engine was not set in config`s. Selected Webkit engine automatically.";
+        selBrowserType = eIE;
+        LOG(INFO) + "WebKit extension missing. Selected Internet Explorer engine automatically.";
     } 
 
-	//TAU
-	selBrowserType = eWebkit;
     m_selBrowserType = selBrowserType;
 
     switch (selBrowserType)

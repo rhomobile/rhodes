@@ -50,8 +50,8 @@
 #include "statistic/RhoProfiler.h"
 #include <QStylePainter>
 #if QT_VERSION >= 0x050000
-#include <QtWebKit/qtwebkitversion.h>
-#include <QNetworkCookieJar>
+    #include <QtWebKit/qtwebkitversion.h>
+    #include <QNetworkCookieJar>
 #endif
 #include <QResizeEvent>
 #include <QWebFrame>

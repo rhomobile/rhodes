@@ -1,6 +1,6 @@
-#include <qtscrollerfilter_p.h>
-#include <qtscrollevent.h>
-#include <qtscroller.h>
+#include "qtscrollerfilter_p.h"
+#include "qtscrollevent.h"
+#include "qtscroller.h"
 #include <QAbstractItemView>
 #include <QScrollBar>
 #include <QGestureEvent>

@@ -135,8 +135,10 @@ module WM
     $build_persistent_cab = Jake.getBuildBoolProp("persistent")
     $run_on_startup = Jake.getBuildBoolProp("startAtBoot")
     $build_cab = true
-    $is_webkit_engine = $app_config["wm"]["webengine"] == "Webkit" if !$app_config["wm"]["webengine"].nil?
-    $is_webkit_engine = true if $is_webkit_engine.nil?
+    $is_webkit_engine = false
+    #$is_webkit_engine = true if !$app_config["wm"]["extensions"]["webkit"].nil? 
+    #$app_config["wm"]["webengine"] == "webkit" if !$app_config["wm"]["webengine"].nil?
+    #$is_webkit_engine = false if $is_webkit_engine.nil?
 
     if $wk_data_dir.nil?
       $wk_data_dir = File.join($startdir, "libs/data") #"/Program Files" # its fake value for running without symbol extensions. do not delete
@@ -572,15 +574,17 @@ def build_cab
     makePersistentFiles($srcdir, additional_dlls_persistent_paths, nil, $webkit_out_of_process, reg_keys_filename)
   end
 
+=begin
   webkit = 'none'
   if $is_webkit_engine && $webkit_capability 
     webkit = $webkit_out_of_process ? 'out_of_process' : 'in_process'
   end
+=end
 
   #TODO TAU
   webkit = 'none'
   
-  if $is_webkit_engine && $webkit_capability 
+  if $is_webkit_engine #&& $webkit_capability 
     webkit = 'in_process'
   end
   
@@ -1288,6 +1292,7 @@ namespace "build" do
                     
                when 3 # 5.5.0.0
                     format ="Found QT Version : #{$QVersion}"
+                    
                     cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
                     cp File.join($qtdir, "bin/Qt5WebKitWidgets.dll"), $target_path
                     cp File.join($qtdir, "bin/Qt5Widgets.dll"), $target_path
@@ -1315,7 +1320,6 @@ namespace "build" do
                       Dir.mkdir(target_if_path)
                     end
                     
-                    
                     cp File.join($qtdir, "plugins/imageformats/qgif.dll"), target_if_path
                     cp File.join($qtdir, "plugins/imageformats/qico.dll"), target_if_path
                     cp File.join($qtdir, "plugins/imageformats/qjpeg.dll"), target_if_path
@@ -1324,7 +1328,21 @@ namespace "build" do
                     cp File.join($qtdir, "plugins/imageformats/qtga.dll"), target_if_path
                     cp File.join($qtdir, "plugins/imageformats/qtiff.dll"), target_if_path
                     cp File.join($qtdir, "plugins/imageformats/qwbmp.dll"), target_if_path
-                    
+
+                    targetFile = File.join($target_path, $appname + ".exe")
+                    if File.exists? targetFile
+                      Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
+                    else
+                      targetFile = File.join($target_path, "Rhodes.exe")
+                      if File.exists? targetFile
+                        Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
+                      else
+                        targetFile = File.join($target_path, "RhoLaunch.exe")
+                        if File.exists? targetFile
+                          Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
+                        end
+                      end
+                    end
                else
                     format ="Unknown QT Version : #{$QVersion}"
           end
@@ -1670,10 +1688,11 @@ namespace "device" do
     if !skip_nsis
       vspec_files = ''
        if Jake.getBuildBoolProp('deployqt', $app_config, true)
-         vspec_files += "  File /r \"imageformats\"\n"
-           if($qtversionindex.nil? || $qtversionindex > 1)
-               vspec_files += "  File /r \"platforms\"\n"
-          end
+         #vspec_files += "  File /r \"imageformats\"\n"
+          #if($qtversionindex.nil? || $qtversionindex > 1)
+             #vspec_files += "  File /r \"platforms\"\n"
+          #end
+          vspec_files += "  File /r *.dll\n"
        end
       if Jake.getBuildBoolProp('deploymsvc', $app_config, true) && ($vs_version == 2008)
         vspec_files += "  File *.manifest\n"

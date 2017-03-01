@@ -149,77 +149,6 @@ module Rhogen
       file.destination = "#{name}/app/loading.png"
     end
 
-    file :loadingpng5 do |file|
-      file.source = 'app/loading-568h@2x.png'
-      file.destination = "#{name}/app/loading-568h@2x.png"
-    end
-
-    file :loadingpng51 do |file|
-      file.source = 'app/loading-667h@2x.png'
-      file.destination = "#{name}/app/loading-667h@2x.png"
-    end
-
-    file :loadingpng52 do |file|
-      file.source = 'app/loading-736h@3x.png'
-      file.destination = "#{name}/app/loading-736h@3x.png"
-    end
-
-    file :loadingpngl do |file|
-      file.source = 'app/loading-Landscape.png'
-      file.destination = "#{name}/app/loading-Landscape.png"
-    end
-
-    file :loadingpngll do |file|
-      file.source = 'app/loading-LandscapeLeft.png'
-      file.destination = "#{name}/app/loading-LandscapeLeft.png"
-    end
-
-    file :loadingpnglr do |file|
-      file.source = 'app/loading-LandscapeRight.png'
-      file.destination = "#{name}/app/loading-LandscapeRight.png"
-    end
-
-    file :loadingpngp do |file|
-      file.source = 'app/loading-Portrait.png'
-      file.destination = "#{name}/app/loading-Portrait.png"
-    end
-
-    file :loadingpngpud do |file|
-      file.source = 'app/loading-PortraitUpsideDown.png'
-      file.destination = "#{name}/app/loading-PortraitUpsideDown.png"
-    end
-
-    file :loadingpngl2 do |file|
-      file.source = 'app/loading-Landscape@2x.png'
-      file.destination = "#{name}/app/loading-Landscape@2x.png"
-    end
-
-    file :loadingpngll2 do |file|
-      file.source = 'app/loading-LandscapeLeft@2x.png'
-      file.destination = "#{name}/app/loading-LandscapeLeft@2x.png"
-    end
-
-    file :loadingpnglr2 do |file|
-      file.source = 'app/loading-LandscapeRight@2x.png'
-      file.destination = "#{name}/app/loading-LandscapeRight@2x.png"
-    end
-
-    file :loadingpngp2 do |file|
-      file.source = 'app/loading-Portrait@2x.png'
-      file.destination = "#{name}/app/loading-Portrait@2x.png"
-    end
-
-    file :loadingpngpud2 do |file|
-      file.source = 'app/loading-PortraitUpsideDown@2x.png'
-      file.destination = "#{name}/app/loading-PortraitUpsideDown@2x.png"
-    end
-
-    file :loadingpngx do |file|
-      file.source = 'app/loading@2x.png'
-      file.destination = "#{name}/app/loading@2x.png"
-    end
-
-
     directory :helpers do |directory|
       directory.source = 'app/helpers'
       directory.destination = "#{name}/app/helpers"
@@ -230,9 +159,9 @@ module Rhogen
       directory.destination = "#{name}/icon"
     end
 
-    directory :production do |directory|
-      directory.source = 'production'
-      directory.destination = "#{name}/production"
+    directory :resources do |directory|
+      directory.source = 'resources'
+      directory.destination = "#{name}/resources"
     end
 
     template :settings1 do |template|
@@ -382,84 +311,14 @@ module Rhogen
       file.destination = "#{name}/app/loading.png"
     end
 
-    file :loadingpng5 do |file|
-      file.source = 'app/loading-568h@2x.png'
-      file.destination = "#{name}/app/loading-568h@2x.png"
-    end
-
-    file :loadingpng51 do |file|
-      file.source = 'app/loading-667h@2x.png'
-      file.destination = "#{name}/app/loading-667h@2x.png"
-    end
-
-    file :loadingpng52 do |file|
-      file.source = 'app/loading-736h@3x.png'
-      file.destination = "#{name}/app/loading-736h@3x.png"
-    end
-
-    file :loadingpngl do |file|
-      file.source = 'app/loading-Landscape.png'
-      file.destination = "#{name}/app/loading-Landscape.png"
-    end
-
-    file :loadingpngll do |file|
-      file.source = 'app/loading-LandscapeLeft.png'
-      file.destination = "#{name}/app/loading-LandscapeLeft.png"
-    end
-
-    file :loadingpnglr do |file|
-      file.source = 'app/loading-LandscapeRight.png'
-      file.destination = "#{name}/app/loading-LandscapeRight.png"
-    end
-
-    file :loadingpngp do |file|
-      file.source = 'app/loading-Portrait.png'
-      file.destination = "#{name}/app/loading-Portrait.png"
-    end
-
-    file :loadingpngpud do |file|
-      file.source = 'app/loading-PortraitUpsideDown.png'
-      file.destination = "#{name}/app/loading-PortraitUpsideDown.png"
-    end
-
-    file :loadingpngl2 do |file|
-      file.source = 'app/loading-Landscape@2x.png'
-      file.destination = "#{name}/app/loading-Landscape@2x.png"
-    end
-
-    file :loadingpngll2 do |file|
-      file.source = 'app/loading-LandscapeLeft@2x.png'
-      file.destination = "#{name}/app/loading-LandscapeLeft@2x.png"
-    end
-
-    file :loadingpnglr2 do |file|
-      file.source = 'app/loading-LandscapeRight@2x.png'
-      file.destination = "#{name}/app/loading-LandscapeRight@2x.png"
-    end
-
-    file :loadingpngp2 do |file|
-      file.source = 'app/loading-Portrait@2x.png'
-      file.destination = "#{name}/app/loading-Portrait@2x.png"
-    end
-
-    file :loadingpngpud2 do |file|
-      file.source = 'app/loading-PortraitUpsideDown@2x.png'
-      file.destination = "#{name}/app/loading-PortraitUpsideDown@2x.png"
-    end
-
-    file :loadingpngx do |file|
-      file.source = 'app/loading@2x.png'
-      file.destination = "#{name}/app/loading@2x.png"
-    end
-
     directory :icon do |directory|
       directory.source = 'icon'
       directory.destination = "#{name}/icon"
     end
 
-    directory :production do |directory|
-      directory.source = 'production'
-      directory.destination = "#{name}/production"
+    directory :resources do |directory|
+      directory.source = 'resources'
+      directory.destination = "#{name}/resources"
     end
 
     file :androidmanifesterb do |file|
