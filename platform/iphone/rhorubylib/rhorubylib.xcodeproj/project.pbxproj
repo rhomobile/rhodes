@@ -232,6 +232,9 @@
 		A8A6D3A31E258DD700016427 /* strscan.c in Sources */ = {isa = PBXBuildFile; fileRef = A8A6D3A21E258DBE00016427 /* strscan.c */; };
 		A8A6D3A41E258E5700016427 /* rhoruby.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C806F1E243EBC0090E7E6 /* rhoruby.c */; };
 		A8A6D3A51E258EC200016427 /* rhosupport.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80711E243EBC0090E7E6 /* rhosupport.c */; };
+		A8CAD3DC1E6741A200ED8E7E /* miniinit.c in Sources */ = {isa = PBXBuildFile; fileRef = A8CAD3DA1E67419C00ED8E7E /* miniinit.c */; };
+		A8CAD3E91E67457200ED8E7E /* stringio.c in Sources */ = {isa = PBXBuildFile; fileRef = A8CAD3E81E67457200ED8E7E /* stringio.c */; };
+		A8CAD3EA1E67458100ED8E7E /* stringio.c in Sources */ = {isa = PBXBuildFile; fileRef = A8CAD3E81E67457200ED8E7E /* stringio.c */; };
 		A8F6C0171E29BA95001869D0 /* strscan.c in Sources */ = {isa = PBXBuildFile; fileRef = A8A6D3A21E258DBE00016427 /* strscan.c */; };
 /* End PBXBuildFile section */
 
@@ -398,6 +401,8 @@
 		A8A6D3A01E258DBE00016427 /* depend */ = {isa = PBXFileReference; lastKnownFileType = text; path = depend; sourceTree = "<group>"; };
 		A8A6D3A11E258DBE00016427 /* extconf.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = extconf.rb; sourceTree = "<group>"; };
 		A8A6D3A21E258DBE00016427 /* strscan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = strscan.c; sourceTree = "<group>"; };
+		A8CAD3DA1E67419C00ED8E7E /* miniinit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = miniinit.c; path = ../../shared/ruby/miniinit.c; sourceTree = "<group>"; };
+		A8CAD3E81E67457200ED8E7E /* stringio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stringio.c; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhorubylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhorubylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -422,6 +427,8 @@
 		08FB7794FE84155DC02AAC07 /* rhorubylib */ = {
 			isa = PBXGroup;
 			children = (
+				A8CAD3E41E67457200ED8E7E /* stringio */,
+				A8CAD3DA1E67419C00ED8E7E /* miniinit.c */,
 				A88C80AA1E2440C70090E7E6 /* datetimepicker */,
 				A88C80AD1E2440C70090E7E6 /* mapview */,
 				A88C80B01E2440C70090E7E6 /* phonebook */,
@@ -799,6 +806,15 @@
 			path = ../../shared/ruby/ext/strscan;
 			sourceTree = "<group>";
 		};
+		A8CAD3E41E67457200ED8E7E /* stringio */ = {
+			isa = PBXGroup;
+			children = (
+				A8CAD3E81E67457200ED8E7E /* stringio.c */,
+			);
+			name = stringio;
+			path = ../../shared/ruby/ext/stringio;
+			sourceTree = "<group>";
+		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -963,11 +979,13 @@
 				A8A6D33D1E24ADBD00016427 /* enumerator.c in Sources */,
 				A8A6D34E1E24ADBD00016427 /* localeinit.c in Sources */,
 				A8A6D35B1E24ADBD00016427 /* process.c in Sources */,
+				A8CAD3EA1E67458100ED8E7E /* stringio.c in Sources */,
 				A8A6D3341E24ADBD00016427 /* dir.c in Sources */,
 				A8A6D3661E24ADBD00016427 /* regparse.c in Sources */,
 				A8A6D35F1E24ADBD00016427 /* re.c in Sources */,
 				A8A6D32D1E24ADBD00016427 /* class.c in Sources */,
 				A8A6D3711E24ADBD00016427 /* string.c in Sources */,
+				A8CAD3DC1E6741A200ED8E7E /* miniinit.c in Sources */,
 				A8A6D3701E24ADBD00016427 /* strftime.c in Sources */,
 				A8A6D35E1E24ADBD00016427 /* rational.c in Sources */,
 				A8A6D3331E24ADBD00016427 /* debug.c in Sources */,
@@ -1092,6 +1110,7 @@
 				A80AFEBA1E2415390006FF68 /* vm.c in Sources */,
 				A88C80A21E243FF80090E7E6 /* calendar_wrap.c in Sources */,
 				A8A6D2E61E2498AC00016427 /* loadpath.c in Sources */,
+				A8CAD3E91E67457200ED8E7E /* stringio.c in Sources */,
 				A80AFE461E2415390006FF68 /* dir.c in Sources */,
 				A80AFE441E2415390006FF68 /* cont.c in Sources */,
 				A80AFE7F1E2415390006FF68 /* proc.c in Sources */,
