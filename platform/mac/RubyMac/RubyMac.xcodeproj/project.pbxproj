@@ -28,12 +28,12 @@
 			remoteGlobalIDString = A8A6D30E1E24AADD00016427;
 			remoteInfo = rubymac;
 		};
-		FA3C262E1DA6E8EB0064EE64 /* PBXContainerItemProxy */ = {
+		A8CAD3D61E67400800ED8E7E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C04408B0EF7DC290014E5C6 /* rhorubylib.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = rhorubylib;
+			remoteGlobalIDString = A8A6D30D1E24AADD00016427;
+			remoteInfo = rubymac;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -127,7 +127,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				FA3C262F1DA6E8EB0064EE64 /* PBXTargetDependency */,
+				A8CAD3D71E67400800ED8E7E /* PBXTargetDependency */,
 			);
 			name = RubyMac;
 			productInstallPath = "$(HOME)/bin";
@@ -193,10 +193,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		FA3C262F1DA6E8EB0064EE64 /* PBXTargetDependency */ = {
+		A8CAD3D71E67400800ED8E7E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = rhorubylib;
-			targetProxy = FA3C262E1DA6E8EB0064EE64 /* PBXContainerItemProxy */;
+			name = rubymac;
+			targetProxy = A8CAD3D61E67400800ED8E7E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
