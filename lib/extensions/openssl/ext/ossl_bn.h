@@ -1,11 +1,10 @@
 /*
- * $Id: ossl_bn.h 25189 2009-10-02 12:04:37Z akr $
  * 'OpenSSL for Ruby' project
  * Copyright (C) 2001-2002  Michal Rokos <m.rokos@sh.cvut.cz>
  * All rights reserved.
  */
 /*
- * This program is licenced under the same licence as Ruby.
+ * This program is licensed under the same licence as Ruby.
  * (See the file 'LICENCE'.)
  */
 #if !defined(_OSSL_BN_H_)
@@ -22,4 +21,3 @@ void Init_ossl_bn(void);
 
 
 #endif /* _OSS_BN_H_ */
-

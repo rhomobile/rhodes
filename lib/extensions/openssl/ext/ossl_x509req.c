@@ -1,30 +1,31 @@
 /*
- * $Id: ossl_x509req.c 27440 2010-04-22 08:21:01Z nobu $
  * 'OpenSSL for Ruby' project
  * Copyright (C) 2001-2002  Michal Rokos <m.rokos@sh.cvut.cz>
  * All rights reserved.
  */
 /*
- * This program is licenced under the same licence as Ruby.
+ * This program is licensed under the same licence as Ruby.
  * (See the file 'LICENCE'.)
  */
 #include "ossl.h"
 
-#define WrapX509Req(klass, obj, req) do { \
-    if (!req) { \
+#define NewX509Req(klass) \
+    TypedData_Wrap_Struct((klass), &ossl_x509req_type, 0)
+#define SetX509Req(obj, req) do { \
+    if (!(req)) { \
 	ossl_raise(rb_eRuntimeError, "Req wasn't initialized!"); \
     } \
-    obj = Data_Wrap_Struct(klass, 0, X509_REQ_free, req); \
+    RTYPEDDATA_DATA(obj) = (req); \
 } while (0)
 #define GetX509Req(obj, req) do { \
-    Data_Get_Struct(obj, X509_REQ, req); \
-    if (!req) { \
+    TypedData_Get_Struct((obj), X509_REQ, &ossl_x509req_type, (req)); \
+    if (!(req)) { \
 	ossl_raise(rb_eRuntimeError, "Req wasn't initialized!"); \
     } \
 } while (0)
 #define SafeGetX509Req(obj, req) do { \
-    OSSL_Check_Kind(obj, cX509Req); \
-    GetX509Req(obj, req); \
+    OSSL_Check_Kind((obj), cX509Req); \
+    GetX509Req((obj), (req)); \
 } while (0)
 
 /*
@@ -32,6 +33,20 @@
  */
 VALUE cX509Req;
 VALUE eX509ReqError;
+
+static void
+ossl_x509req_free(void *ptr)
+{
+    X509_REQ_free(ptr);
+}
+
+static const rb_data_type_t ossl_x509req_type = {
+    "OpenSSL/X509/REQ",
+    {
+	0, ossl_x509req_free,
+    },
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY,
+};
 
 /*
  * Public functions
@@ -42,6 +57,7 @@ ossl_x509req_new(X509_REQ *req)
     X509_REQ *new;
     VALUE obj;
 
+    obj = NewX509Req(cX509Req);
     if (!req) {
 	new = X509_REQ_new();
     } else {
@@ -50,7 +66,7 @@ ossl_x509req_new(X509_REQ *req)
     if (!new) {
 	ossl_raise(eX509ReqError, NULL);
     }
-    WrapX509Req(cX509Req, obj, new);
+    SetX509Req(obj, new);
 
     return obj;
 }
@@ -87,10 +103,11 @@ ossl_x509req_alloc(VALUE klass)
     X509_REQ *req;
     VALUE obj;
 
+    obj = NewX509Req(klass);
     if (!(req = X509_REQ_new())) {
 	ossl_raise(eX509ReqError, NULL);
     }
-    WrapX509Req(klass, obj, req);
+    SetX509Req(obj, req);
 
     return obj;
 }
@@ -110,7 +127,7 @@ ossl_x509req_initialize(int argc, VALUE *argv, VALUE self)
     req = PEM_read_bio_X509_REQ(in, &x, NULL, NULL);
     DATA_PTR(self) = x;
     if (!req) {
-	(void)BIO_reset(in);
+	OSSL_BIO_reset(in);
 	req = d2i_X509_REQ_bio(in, &x);
 	DATA_PTR(self) = x;
     }
@@ -171,7 +188,7 @@ ossl_x509req_to_der(VALUE self)
 
     GetX509Req(self, req);
     if ((len = i2d_X509_REQ(req, NULL)) <= 0)
-	ossl_raise(eX509CertError, NULL);
+	ossl_raise(eX509ReqError, NULL);
     str = rb_str_new(0, len);
     p = (unsigned char *)RSTRING_PTR(str);
     if (i2d_X509_REQ(req, &p) <= 0)
@@ -401,19 +418,19 @@ ossl_x509req_set_attributes(VALUE self, VALUE ary)
 {
     X509_REQ *req;
     X509_ATTRIBUTE *attr;
-    int i;
+    long i;
     VALUE item;
 
     Check_Type(ary, T_ARRAY);
     for (i=0;i<RARRAY_LEN(ary); i++) {
-	OSSL_Check_Kind(RARRAY_PTR(ary)[i], cX509Attr);
+	OSSL_Check_Kind(RARRAY_AREF(ary, i), cX509Attr);
     }
     GetX509Req(self, req);
     sk_X509_ATTRIBUTE_pop_free(req->req_info->attributes, X509_ATTRIBUTE_free);
     req->req_info->attributes = NULL;
     for (i=0;i<RARRAY_LEN(ary); i++) {
-	item = RARRAY_PTR(ary)[i];
-	attr = DupX509AttrPtr(item);
+	item = RARRAY_AREF(ary, i);
+	attr = GetX509AttrPtr(item);
 	if (!X509_REQ_add1_attr(req, attr)) {
 	    ossl_raise(eX509ReqError, NULL);
 	}
@@ -427,7 +444,7 @@ ossl_x509req_add_attribute(VALUE self, VALUE attr)
     X509_REQ *req;
 
     GetX509Req(self, req);
-    if (!X509_REQ_add1_attr(req, DupX509AttrPtr(attr))) {
+    if (!X509_REQ_add1_attr(req, GetX509AttrPtr(attr))) {
 	ossl_raise(eX509ReqError, NULL);
     }
 
@@ -438,7 +455,7 @@ ossl_x509req_add_attribute(VALUE self, VALUE attr)
  * X509_REQUEST init
  */
 void
-Init_ossl_x509req()
+Init_ossl_x509req(void)
 {
     eX509ReqError = rb_define_class_under(mX509, "RequestError", eOSSLError);
 
@@ -465,4 +482,3 @@ Init_ossl_x509req()
     rb_define_method(cX509Req, "attributes=", ossl_x509req_set_attributes, 1);
     rb_define_method(cX509Req, "add_attribute", ossl_x509req_add_attribute, 1);
 }
-

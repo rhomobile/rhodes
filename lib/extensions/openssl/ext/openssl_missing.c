@@ -1,17 +1,17 @@
 /*
- * $Id: openssl_missing.c 29662 2010-11-01 15:03:37Z yugui $
  * 'OpenSSL for Ruby' project
  * Copyright (C) 2001-2002  Michal Rokos <m.rokos@sh.cvut.cz>
  * All rights reserved.
  */
 /*
- * This program is licenced under the same licence as Ruby.
+ * This program is licensed under the same licence as Ruby.
  * (See the file 'LICENCE'.)
  */
+
+//RHO
 #if defined(WIN32) || defined (WINCE)
 #include "windows/extconf.h"
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
-
 #include <TargetConditionals.h>
 
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
@@ -21,13 +21,12 @@
 #else
 #include "macosx/extconf.h"
 #endif
-
-#elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
 #elif defined(ANDROID)
 #include "android/extconf.h"
 #endif
+//RHO
 
-#if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_ST_ENGINE)
+#if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_EVP_CIPHER_CTX_ENGINE)
 # include <openssl/engine.h>
 #endif
 #include <openssl/x509_vfy.h>
@@ -51,20 +50,6 @@ HMAC_CTX_copy(HMAC_CTX *out, HMAC_CTX *in)
 }
 #endif /* HAVE_HMAC_CTX_COPY */
 #endif /* NO_HMAC */
-
-#if !defined(HAVE_X509_STORE_SET_EX_DATA)
-int X509_STORE_set_ex_data(X509_STORE *str, int idx, void *data)
-{
-    return CRYPTO_set_ex_data(&str->ex_data, idx, data);
-}
-#endif
-
-#if !defined(HAVE_X509_STORE_GET_EX_DATA)
-void *X509_STORE_get_ex_data(X509_STORE *str, int idx)
-{
-    return CRYPTO_get_ex_data(&str->ex_data, idx);
-}
-#endif
 
 #if !defined(HAVE_EVP_MD_CTX_CREATE)
 EVP_MD_CTX *
@@ -139,7 +124,7 @@ EVP_CIPHER_CTX_copy(EVP_CIPHER_CTX *out, EVP_CIPHER_CTX *in)
 {
     memcpy(out, in, sizeof(EVP_CIPHER_CTX));
 
-#if defined(HAVE_ENGINE_ADD) && defined(HAVE_ST_ENGINE)
+#if defined(HAVE_ENGINE_ADD) && defined(HAVE_EVP_CIPHER_CTX_ENGINE)
     if (in->engine) ENGINE_add(out->engine);
     if (in->cipher_data) {
 	out->cipher_data = OPENSSL_malloc(in->cipher->ctx_size);
@@ -359,3 +344,14 @@ PEM_def_callback(char *buf, int num, int w, void *key)
 }
 #endif
 
+#if !defined(HAVE_ASN1_PUT_EOC)
+int
+ASN1_put_eoc(unsigned char **pp)
+{
+    unsigned char *p = *pp;
+    *p++ = 0;
+    *p++ = 0;
+    *pp = p;
+    return 2;
+}
+#endif
