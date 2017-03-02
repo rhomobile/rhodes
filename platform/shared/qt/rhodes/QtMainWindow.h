@@ -30,7 +30,10 @@
 #include <vector>
 #include <QMainWindow>
 #include <QUrl>
-#if QT_VERSION >= 0x050000
+#if QT_VERSION > QT_VERSION_CHECK(5,6,0)
+#include <QtWebEngineCore>
+#include <QtWebEngineWidgets>
+#elif  QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #include <QtWebKitWidgets/QWebView>
 #include <QtWebKitWidgets/QWebInspector>
 #else
@@ -50,6 +53,7 @@
 #include "impl/DateTimePickerImpl.h"
 #include "api_generator/MethodResult.h"
 #include "QtLogView.h"
+#include <QCameraInfo>
 
 namespace Ui {
     class QtMainWindow;

@@ -37,6 +37,7 @@
 #if QT_VERSION > QT_VERSION_CHECK(4, 8, 0)
     #include "QtCustomStyle.h"
 #endif
+#include <QtWebEngineWidgets>
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -49,15 +50,20 @@
 #include "RhoNativeApiCall.h"
 #include "statistic/RhoProfiler.h"
 #include <QStylePainter>
-#if QT_VERSION >= 0x050000
+
+#if QT_VERSION > QT_VERSION_CHECK(5, 5, 5)
+    #include <QtWebEngineWidgets>
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     #include <QtWebKit/qtwebkitversion.h>
     #include <QNetworkCookieJar>
 #endif
 #include <QResizeEvent>
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 5)
 #include <QWebFrame>
 #include <QWebSettings>
 #include <QWebSecurityOrigin>
 #include <QWebHistory>
+#endif
 #include <QLabel>
 #include <QtNetwork/QNetworkCookie>
 #include <QFileDialog>
@@ -188,6 +194,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     } else {
         unsetProxy();
     }
+
 }
 
 QtMainWindow::~QtMainWindow()

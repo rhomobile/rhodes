@@ -1,5 +1,8 @@
 QT -= core
-
+    greaterThan(QT_VERSION, 5.5.5): {
+        CONFIG += c++11
+        DEFINES += CPP_ELEVEN
+    }
 TARGET = curl
 TEMPLATE = lib
 
@@ -53,6 +56,8 @@ DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4101 /wd4005
   QMAKE_CFLAGS_RELEASE += /O2
+  QMAKE_CXXFLAGS_RELEASE += -MP9
+  QMAKE_CXXFLAGS_DEBUG += -MP9
 }
 
 HEADERS += ../../curl/lib/arpa_telnet.h\

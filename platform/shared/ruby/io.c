@@ -489,12 +489,39 @@ rb_io_read_pending(rb_io_t *fptr)
     return READ_DATA_PENDING(fptr);
 }
 
+#ifdef CPP_ELEVEN
+typedef struct {
+    union
+    {
+        FILE  _public_file;
+        char* _ptr;
+    };
+
+    char*            _base;
+    int              _cnt;
+    long             _flags;
+    long             _file;
+    int              _charbuf;
+    int              _bufsiz;
+    char*            _tmpfname;
+    CRITICAL_SECTION _lock;
+} vcruntime_file;
+#define GET_STREAM_PTR(stream) ((vcruntime_file*)stream)
+#endif
+
+
 void
 rb_read_check(FILE *fp)
 {
+#ifdef CPP_ELEVEN
+    if (!STDIO_READ_DATA_PENDING(GET_STREAM_PTR(fp)))  {
+    rb_thread_wait_fd(fileno(fp));
+    }
+#else
     if (!STDIO_READ_DATA_PENDING(fp)) {
 	rb_thread_wait_fd(fileno(fp));
     }
+#endif
 }
 
 void

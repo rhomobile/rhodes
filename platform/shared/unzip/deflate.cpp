@@ -905,8 +905,11 @@ int ZEXPORT deflate (z_streamp strm, int flush)
             }
         }
     }
+#ifndef CPP_ELEVEN
     Assert(strm->avail_out > 0, "bug2");
-
+#else
+    Assert2(strm->avail_out > 0, "bug2");
+#endif
     if (flush != Z_FINISH) return Z_OK;
     if (s->wrap <= 0) return Z_STREAM_END;
 
@@ -1131,6 +1134,7 @@ local uInt longest_match(deflate_state* s, IPos cur_match)
     /* The code is optimized for HASH_BITS >= 8 and MAX_MATCH-2 multiple of 16.
      * It is easy to get rid of this optimization if necessary.
      */
+
     Assert(s->hash_bits >= 8 && MAX_MATCH == 258, "Code too clever");
 
     /* Do not waste too much time if we already have a good match: */

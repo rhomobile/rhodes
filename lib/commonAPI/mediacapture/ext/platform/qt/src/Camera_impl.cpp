@@ -2,7 +2,10 @@
 //  CameraImpl.cpp
 #include <Qt>
 #include <QHash>
-#include <QApplication>
+#include <QtGui>
+#include <QtWidgets>
+#include <QtMultimedia>
+#include <QCoreApplication>
 #include <QWindow>
 #include "CCameraData.h"
 #include "common/RhoStd.h"
@@ -26,13 +29,14 @@ namespace rho {
         CCameraSingletonImpl(): CCameraSingletonBase(), QObject(CCameraData::getQMainWindow())
         {
             qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
-            this->moveToThread(CCameraData::getQMainWindow()->thread());
+
             //CCameraData::refreshCameraInfo();
             //QApplication::instance()->processEvents();
 
         }
 
         virtual ~CCameraSingletonImpl(){
+
             CCameraData::cleanAll();
         }
         
@@ -53,7 +57,6 @@ namespace rho {
         void initCameras(){
             QMutexLocker locker(CCameraData::getMutex());
             if(CCameraData::isEmpty()){
-
                 foreach (QCameraInfo cameraInfo, QCameraInfo::availableCameras()) {
                     const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
                     defaultCameras.insert(data->getCameraType(), data->getCameraID());
@@ -73,7 +76,8 @@ namespace rho {
         }
 
         virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
-            // RAWLOGC_INFO("choosePicture","Camera");           
+            // RAWLOGC_INFO("choosePicture","Camera");
+
             CCameraData::choosePicture(oResult);
         } 
         // copyImageToDeviceGallery Save an image to the device gallery. 
@@ -281,6 +285,8 @@ namespace rho {
         } 
 
         virtual void capture(rho::apiGenerator::CMethodResult& oResult) {
+            CCameraData::refreshCameraInfo();
+            return;
             if (camera == nullptr) {
                 rho::Hashtable<rho::String, rho::String>& mapRes = oResult.getStringHash();
                 mapRes["status"] = "error";

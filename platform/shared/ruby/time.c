@@ -1701,6 +1701,10 @@ localtime_with_gmtoff_zone(const time_t *t, struct tm *result, long *gmtoff, con
             *zone = zone_str(tm.tm_zone);
 #elif defined(HAVE_TZNAME) && defined(HAVE_DAYLIGHT)
             /* this needs tzset or localtime, instead of localtime_r */
+#ifdef CPP_ELEVEN
+            int   daylight;
+            char *tzname[2];
+#endif
             *zone = zone_str(tzname[daylight && tm.tm_isdst]);
 #else
             {

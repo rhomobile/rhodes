@@ -1,5 +1,14 @@
-QT += core gui widgets multimedia multimediawidgets
-QT += webkitwidgets network webkit
+QT += core gui widgets multimedia multimediawidgets network
+greaterThan(QT_MAJOR_VERSION, 4):{
+    lessThan(QT_VERSION, 5.5.5): {QT += webkit widgets webkitwidgets}
+    greaterThan(QT_VERSION, 5.5.5): {
+        QT += webenginecore webenginewidgets
+        CONFIG += c++11
+        DEFINES += CPP_ELEVEN
+}
+}
+
+
 
 TARGET = Mediacapture
 TEMPLATE = lib

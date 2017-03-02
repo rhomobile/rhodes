@@ -1,5 +1,10 @@
 QT -= core
 
+    greaterThan(QT_VERSION, 5.5.5): {
+        CONFIG += c++11
+        DEFINES += CPP_ELEVEN
+    }
+
 TARGET = rholib
 TEMPLATE = lib
 
@@ -32,6 +37,8 @@ win32 {
     DEFINES += _NDEBUG NDEBUG
   }
   HEADERS += ../../rubyext/WebView.h
+  QMAKE_CXXFLAGS_RELEASE += -MP9
+  QMAKE_CXXFLAGS_DEBUG += -MP9
 }
 
 unix:!macx {
@@ -69,7 +76,6 @@ win32 {
 HEADERS += ../../common/RhoAppAdapter.h\
 ../../common/IRhoThreadImpl.h\
 ../../common/RhoThread.h\
-../../unzip/unzip.h\
 ../../common/RhodesAppBase.h\
 ../../common/RhodesApp.h\
 ../../common/RhoConf.h\
@@ -106,14 +112,16 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../common/map/ESRIMapEngine.h\
 ../../common/map/GoogleMapEngine.h\
 ../../common/map/MapEngine.h\
-../../unzip/zip.h\
 ../../common/push/IRhoPushClient.h\
 ../../common/push/RhoPushManager.h\
 ../../api_generator/BaseClasses.h\
 ../../api_generator/GeneratorQueue.h\
 ../../api_generator/MethodResult.h\
 ../../api_generator/js_helpers.h\
-../../api_generator/StringifyHelper.h\
+../../api_generator/StringifyHelper.h
+lessThan(QT_VERSION, 5.5.5): {
+HEADERS += ../../unzip/zip.h\
+../../unzip/unzip.h\
 ../../unzip/gunzip.h\
 ../../unzip/crc32.h\
 ../../unzip/deflate.h\
@@ -128,11 +136,10 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../unzip/zip.h\
 ../../unzip/zlib.h\
 ../../unzip/zutil.h
-
+}
 SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/RhoAppAdapter.cpp\
 ../../common/RhoThread.cpp\
-../../unzip/unzip.cpp\
 ../../common/RhodesAppBase.cpp\
 ../../common/RhodesApp.cpp\
 ../../common/RhoConf.cpp\
@@ -165,7 +172,9 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/push/RhoPushManager.cpp\
 ../../api_generator/js_helpers.cpp\
 ../../api_generator/MethodResult.cpp\
-../../api_generator/StringifyHelper.cpp\
+../../api_generator/StringifyHelper.cpp
+lessThan(QT_VERSION, 5.5.5): {
+SOURCES += ../../unzip/unzip.cpp\
 ../../unzip/adler32.cpp\
 ../../unzip/crc32.cpp\
 ../../unzip/deflate.cpp\
@@ -182,3 +191,4 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../unzip/unzip.cpp\
 ../../unzip/zip.cpp\
 ../../unzip/zutil.cpp
+}

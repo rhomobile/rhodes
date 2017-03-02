@@ -1,5 +1,19 @@
-QT += core gui network webkit
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets multimedia multimediawidgets
+QT += core gui network
+
+message(Qt version: $$[QT_VERSION])
+greaterThan(QT_MAJOR_VERSION, 4):{
+    QT += multimedia multimediawidgets
+    lessThan(QT_VERSION, 5.5.5): {
+        QT += webkit widgets webkitwidgets
+        message(Deprecated webkit enabled)
+    }
+    greaterThan(QT_VERSION, 5.5.5): {
+        QT += webenginecore webenginewidgets
+        message(Webengine enabled)
+        CONFIG += c++11
+        DEFINES += CPP_ELEVEN
+    }
+}
 
 TARGET = RhoSimulator
 TEMPLATE = app
@@ -112,6 +126,8 @@ win32 {
   QMAKE_CXXFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
   QMAKE_CFLAGS_RELEASE += /O2
   QMAKE_CXXFLAGS_RELEASE += /O2
+  QMAKE_CXXFLAGS_RELEASE += -MP9
+  QMAKE_CXXFLAGS_DEBUG += -MP9
 }
 
 HEADERS += ExternalWebView.h\

@@ -21,4 +21,4 @@ project_paths:
 
 xml_api_paths: ext/barcode.xml
 
-platforms: ["wm", "iphone", "android", "wp8"]
+platforms: ["wm", "iphone", "android", "wp8", "win32"]

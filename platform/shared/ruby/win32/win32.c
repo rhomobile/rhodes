@@ -2101,13 +2101,13 @@ rb_w32_open_osfhandle(intptr_t osfhandle, int flags)
     fileflags = FDEV;
 
     if (flags & O_APPEND)
-	fileflags |= FAPPEND;
+        fileflags |= FAPPEND;
 
     if (flags & O_TEXT)
-	fileflags |= FTEXT;
+        fileflags |= FTEXT;
 
     if (flags & O_NOINHERIT)
-	fileflags |= FNOINHERIT;
+        fileflags |= FNOINHERIT;
 
     /* attempt to allocate a C Runtime file handle */
     hF = CreateFile("NUL", 0, 0, NULL, OPEN_ALWAYS, 0, NULL);
@@ -2131,6 +2131,27 @@ rb_w32_open_osfhandle(intptr_t osfhandle, int flags)
     return fh;			/* return handle */
 }
 
+#ifdef CPP_ELEVEN
+typedef struct {
+    union
+    {
+        FILE  _public_file;
+        char* _ptr;
+    };
+
+    char*            _base;
+    int              _cnt;
+    long             _flags;
+    long             _file;
+    int              _charbuf;
+    int              _bufsiz;
+    char*            _tmpfname;
+    CRITICAL_SECTION _lock;
+} vcruntime_file;
+#define FILE_FILENO(stream) ((vcruntime_file*)stream)->_file
+#define GET_STREAM_PTR(stream) ((vcruntime_file*)stream)
+#endif
+
 static void
 init_stdhandle(void)
 {
@@ -2138,31 +2159,49 @@ init_stdhandle(void)
     int keep = 0;
 #define open_null(fd)						\
     (((nullfd < 0) ?						\
-      (nullfd = open("NUL", O_RDWR|O_BINARY)) : 0),		\
+      (nullfd = open("NUL", O_RDWR)) : 0),		\
      ((nullfd == (fd)) ? (keep = 1) : dup2(nullfd, fd)),	\
      (fd))
 
+#ifdef CPP_ELEVEN
     if (fileno(stdin) < 0) {
-	stdin->_file = open_null(0);
+    FILE_FILENO(stdin) = open_null(0);
     }
     else {
-	setmode(fileno(stdin), O_BINARY);
+    setmode(fileno(stdin), O_BINARY);
     }
     if (fileno(stdout) < 0) {
-	stdout->_file = open_null(1);
-    }
-    else {
-	setmode(fileno(stdout), O_BINARY);
+    FILE_FILENO(stdout) = open_null(1);
     }
     if (fileno(stderr) < 0) {
-	stderr->_file = open_null(2);
+    FILE_FILENO(stderr) = open_null(2);
+    }
+
+#else
+    if (fileno(stdin) < 0) {
+    stdin->_file = open_null(0);
     }
     else {
-	setmode(fileno(stderr), O_BINARY);
+    setmode(fileno(stdin), O_BINARY);
     }
+    if (fileno(stdout) < 0) {
+    stdout->_file = open_null(1);
+    }
+    else {
+    setmode(fileno(stdout), O_BINARY);
+    }
+    if (fileno(stderr) < 0) {
+    stderr->_file = open_null(2);
+    }
+    else {
+    setmode(fileno(stderr), O_BINARY);
+    }
+
+#endif
     if (nullfd >= 0 && !keep) close(nullfd);
     setvbuf(stderr, NULL, _IONBF, 0);
 }
+
 #else
 
 #define _set_osfhnd(fh, osfh) (void)((fh), (osfh))
@@ -4612,9 +4651,17 @@ int
 rb_w32_getc(FILE* stream)
 {
     int c;
+
 #ifndef _WIN32_WCE
+#ifdef CPP_ELEVEN
+    if (enough_to_get(GET_STREAM_PTR(stream)->FILE_COUNT)) {
+    c = (unsigned char)*GET_STREAM_PTR(stream)->FILE_READPTR++;
+#else
     if (enough_to_get(stream->FILE_COUNT)) {
-	c = (unsigned char)*stream->FILE_READPTR++;
+    c = (unsigned char)*stream->FILE_READPTR++;
+
+#endif
+
     }
     else 
 #endif
@@ -4635,8 +4682,13 @@ int
 rb_w32_putc(int c, FILE* stream)
 {
 #ifndef _WIN32_WCE
+#ifdef CPP_ELEVEN
+    if (enough_to_put(GET_STREAM_PTR(stream)->FILE_COUNT)) {
+    c = (unsigned char)(*GET_STREAM_PTR(stream)->FILE_READPTR++ = (char)c);
+#else
     if (enough_to_put(stream->FILE_COUNT)) {
-	c = (unsigned char)(*stream->FILE_READPTR++ = (char)c);
+    c = (unsigned char)(*stream->FILE_READPTR++ = (char)c);
+#endif
     }
     else 
 #endif
@@ -5340,22 +5392,22 @@ rb_w32_write(int fd, const void *buf, size_t size)
     OVERLAPPED ol, *pol = NULL;
 
     if (is_socket(sock))
-	return rb_w32_send(fd, buf, size, 0);
+        return rb_w32_send(fd, buf, size, 0);
 
     // validate fd by using _get_osfhandle() because we cannot access _nhandle
     if (_get_osfhandle(fd) == -1) {
-	return -1;
+        return -1;
     }
 
     if (_osfile(fd) & FTEXT) {
-	return _write(fd, buf, size);
+    return _write(fd, buf, size);
     }
 
     MTHREAD_ONLY(EnterCriticalSection(&(_pioinfo(fd)->lock)));
 
     if (!size || _osfile(fd) & FEOFLAG) {
-	MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
-	return 0;
+        MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+        return 0;
     }
 
     ret = 0;
@@ -5366,7 +5418,7 @@ rb_w32_write(int fd, const void *buf, size_t size)
 
     /* if have cancel_io, use Overlapped I/O */
     if (cancel_io) {
-	memset(&ol, 0, sizeof(ol));
+        memset(&ol, 0, sizeof(ol));
 	if (!(_osfile(fd) & (FDEV | FPIPE))) {
 	    LONG high = 0;
 	    DWORD method = _osfile(fd) & FAPPEND ? FILE_END : FILE_CURRENT;
@@ -5375,9 +5427,9 @@ rb_w32_write(int fd, const void *buf, size_t size)
 #define INVALID_SET_FILE_POINTER ((DWORD)-1)
 #endif
 	    if (low == INVALID_SET_FILE_POINTER) {
-		errno = map_errno(GetLastError());
-		MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
-		return -1;
+            errno = map_errno(GetLastError());
+            MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+            return -1;
 	    }
 	    ol.Offset = low;
 	    ol.OffsetHigh = high;

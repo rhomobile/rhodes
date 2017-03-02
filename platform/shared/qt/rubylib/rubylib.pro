@@ -1,5 +1,9 @@
 QT -= core
-
+greaterThan(QT_VERSION, 5.6.0): {
+    message(C++11)
+    CONFIG += c++11
+    DEFINES += CPP_ELEVEN
+}
 TARGET = rubylib
 TEMPLATE = lib
 
