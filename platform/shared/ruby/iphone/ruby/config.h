@@ -256,9 +256,11 @@
 #define HAVE_TGAMMA 1
 #define SPT_TYPE SPT_REUSEARGV
 #define HAVE_SIGNBIT 1
-#define HAVE_FORK 1
-#define vfork fork
-#define HAVE_WORKING_FORK 1
+//RHO
+//#define HAVE_FORK 1
+//#define vfork fork
+//#define HAVE_WORKING_FORK 1
+//RHO
 #define HAVE___SYSCALL 1
 #define HAVE__LONGJMP 1
 #define HAVE_ARC4RANDOM_BUF 1
@@ -417,6 +419,7 @@
 #define RUBY_PLATFORM "x86_64-darwin16"
 
 //RHO
+#include <TargetConditionals.h>
 
 //#define USE_RGENGC 0
 #define LOAD_RELATIVE 1

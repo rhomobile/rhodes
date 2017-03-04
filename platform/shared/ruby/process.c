@@ -4002,6 +4002,13 @@ rb_execarg_spawn(VALUE execarg_obj, char *errmsg, size_t errmsg_buflen)
 static rb_pid_t
 rb_spawn_internal(int argc, const VALUE *argv, char *errmsg, size_t errmsg_buflen)
 {
+    
+//RHO
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR //can't fork or spawn on iOS
+    return -1;
+#endif
+//RHO
+
     VALUE execarg_obj;
 
     execarg_obj = rb_execarg_new(argc, argv, TRUE);
