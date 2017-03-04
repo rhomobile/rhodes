@@ -28,7 +28,7 @@ static bool is_net_trace() {
 extern int rho_http_started();
 extern int rho_http_get_port();
 
-const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int* responseLength );
+const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int bodylen, int* responseLength );
 void rho_http_free_response( const char* data );
 
 void* rho_http_init_headers_list();
@@ -361,6 +361,7 @@ int on_http_cb(http_parser* parser) { return 0; }
   const char* uri = [[theUrl path] UTF8String];
   const char* method = [[[self request] HTTPMethod] UTF8String];
   const char* body = [[[self request] HTTPBody] bytes];
+  int bodylen = (int)[[self request] HTTPBody].length;
   const char* query = [[theUrl query] UTF8String];
   
   NSDictionary* headers = [[self request] allHTTPHeaderFields];
@@ -376,7 +377,7 @@ int on_http_cb(http_parser* parser) { return 0; }
   
   int len = 0;
   
-  const char* response = rho_http_direct_request(method, uri, query, cHeaders, body, &len);
+  const char* response = rho_http_direct_request(method, uri, query, cHeaders, body, bodylen, &len);
   
   rho_http_free_headers_list(cHeaders);
   
