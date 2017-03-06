@@ -41,7 +41,7 @@
 #include <QtGui/QAction>
 #endif
 #include <QHash>
-#include "../QtMainWindow.h"
+#include "../mainwindowinterface.h"
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
@@ -68,14 +68,13 @@ CMainWindow::CMainWindow():
 #else
     QCoreApplication::setApplicationName("RhoSimulator");
 #endif
-    //qtApplication = (void*)new QApplication(argc, 0);
-    qtApplication = QApplication::instance();
+    qtApplication = (void*)new QApplication(argc, 0);
 }
 
 CMainWindow::~CMainWindow()
 {
     if (qtMainWindow) delete (QtMainWindow*)qtMainWindow;
-    //if (qtApplication) delete (QApplication*)qtApplication;
+    if (qtApplication) delete (QApplication*)qtApplication;
 }
 
 CMainWindow* CMainWindow::getInstance(void)

@@ -705,7 +705,7 @@ namespace "config" do
 
       $msvc_version = $app_config["win32"]["msvc"] if $app_config && $app_config["win32"] && $app_config["win32"]["msvc"]
 
-      # use Visual Studio 2012 by default
+      # use Visual Studio 2015 by default
       $vs_version = 2015
       $vscommontools = ENV['VS140COMNTOOLS']
       $qmake_makespec = 'win32-msvc2015'

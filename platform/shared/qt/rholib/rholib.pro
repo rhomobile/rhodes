@@ -1,6 +1,6 @@
 QT -= core
 
-    greaterThan(QT_VERSION, 5.5.5): {
+    greaterThan(QT_VERSION, 5.6.0): {
         CONFIG += c++11
         DEFINES += CPP_ELEVEN
     }
@@ -156,7 +156,7 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../api_generator/js_helpers.cpp\
 ../../api_generator/MethodResult.cpp\
 ../../api_generator/StringifyHelper.cpp
-lessThan(QT_VERSION, 5.5.5): {
+lessThan(QT_VERSION, 5.6.0): {
 HEADERS += ../../unzip/zip.h\
 ../../unzip/unzip.h\
 ../../unzip/gunzip.h\

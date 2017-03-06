@@ -27,8 +27,6 @@
 #include <QIcon>
 #include "../../../../../platform/shared/api_generator/MethodResult.h"
 #include "../../../../../platform/shared/common/RhoStd.h"
-#include "../../platform/shared/qt/rhodes/QtMainWindow.h"
-#include "../../platform/shared/qt/rhodes/impl/MainWindowImpl.h"
 #include "../../platform/shared/qt/rhodes/iexecutable.h"
 #include "CameraDialogController.h"
 #include <QtPlugin>

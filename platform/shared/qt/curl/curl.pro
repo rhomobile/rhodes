@@ -1,5 +1,5 @@
 QT -= core
-    greaterThan(QT_VERSION, 5.5.5): {
+    greaterThan(QT_VERSION, 5.6.0): {
         CONFIG += c++11
         DEFINES += CPP_ELEVEN
     }

@@ -72,9 +72,9 @@ void CCameraData::showView(rho::apiGenerator::CMethodResult &oResult)
     emit builder->run();
 }
 
-QtMainWindow *CCameraData::getQMainWindow()
+QMainWindow *CCameraData::getQMainWindow()
 {
-    return ((QtMainWindow *) CMainWindow::getInstance()->getQtMainWindow());
+    return IExecutable::getMainWindow();
 }
 
 void CCameraData::choosePicture(rho::apiGenerator::CMethodResult& oResult) {

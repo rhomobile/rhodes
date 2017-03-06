@@ -1,14 +1,13 @@
 QT += core gui widgets multimedia multimediawidgets network
-greaterThan(QT_MAJOR_VERSION, 4):{
-    lessThan(QT_VERSION, 5.5.5): {QT += webkit widgets webkitwidgets}
-    greaterThan(QT_VERSION, 5.5.5): {
-        QT += webenginecore webenginewidgets
+    lessThan(QT_VERSION, 5.6.0): {
+        QT += webkit widgets webkitwidgets
+        DEFINES += RHODES_VERSION_1
+    }
+    greaterThan(QT_VERSION, 5.6.0): {
+        QT += webengine webenginecore webenginewidgets
         CONFIG += c++11
-        DEFINES += CPP_ELEVEN
-}
-}
-
-
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+    }
 
 TARGET = Mediacapture
 TEMPLATE = lib
@@ -76,7 +75,8 @@ HEADERS += \
     src/CameraDialogController.h \
     src/CameraDialogView.h \
     src/CameraDialogBuilder.h \
-    src/CameraRefresher.h
+    src/CameraRefresher.h\
+    $$RHODES_ROOT\platform\shared\qt\rhodes\iexecutable.h
 
 SOURCES += \
 ..\..\shared\MediacaptureInit.cpp\

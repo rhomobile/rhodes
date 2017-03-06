@@ -10,8 +10,6 @@
 #include <QThread>
 #include <QMutex>
 #include <QMutexLocker>
-#include "../../platform/shared/qt/rhodes/QtMainWindow.h"
-#include "../../platform/shared/qt/rhodes/impl/MainWindowImpl.h"
 #include "../../platform/shared/qt/rhodes/iexecutable.h"
 #include "ImageFileNameGetter.h"
 #include "CameraDialogController.h"
@@ -45,7 +43,7 @@ public:
     static QMutex * getMutex();
 
     void showView(rho::apiGenerator::CMethodResult &oResult);
-    static QtMainWindow *getQMainWindow();
+    static QMainWindow *getQMainWindow();
     static void choosePicture(rho::apiGenerator::CMethodResult &oResult);
     static void refreshCameraInfo();
 public slots:

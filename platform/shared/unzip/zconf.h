@@ -380,8 +380,8 @@ typedef uLong FAR uLongf;
 
 #ifdef STDC
    typedef void const *voidpc;
-    typedef void FAR   *voidpf;
-    typedef void       *voidp;
+   typedef void FAR   *voidpf;
+   typedef void       *voidp;
 #else
    typedef Byte const *voidpc;
    typedef Byte FAR   *voidpf;

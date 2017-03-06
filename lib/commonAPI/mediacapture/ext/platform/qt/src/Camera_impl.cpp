@@ -4,7 +4,6 @@
 #include <QHash>
 #include <QtGui>
 #include <QtWidgets>
-#include <QtMultimedia>
 #include <QCoreApplication>
 #include <QWindow>
 #include "CCameraData.h"
@@ -285,8 +284,8 @@ namespace rho {
         } 
 
         virtual void capture(rho::apiGenerator::CMethodResult& oResult) {
-            CCameraData::refreshCameraInfo();
-            return;
+            //CCameraData::refreshCameraInfo();
+            //return;
             if (camera == nullptr) {
                 rho::Hashtable<rho::String, rho::String>& mapRes = oResult.getStringHash();
                 mapRes["status"] = "error";

@@ -1,4 +1,4 @@
-greaterThan(QT_VERSION, 5.5.5): {
+greaterThan(QT_VERSION, 5.6.0): {
     CONFIG += c++11
     DEFINES += CPP_ELEVEN
 }
@@ -14,7 +14,7 @@ SUBDIRS = rubylib rholib sqlite3 syncengine \
 #../../../lib/extensions/fcntl/ext/fcntl.pro \
 #../../../lib/extensions/openssl/ext/openssl.pro \
 #../../../lib/extensions/serialport/ext/serialport.pro \
-../../../lib/extensions/zlib/ext/zlib.pro\
+#../../../lib/extensions/zlib/ext/zlib.pro\
 ../../../lib/commonAPI/mediacapture/ext/platform/qt/MediaCapture.pro
 
 unix:!macx {

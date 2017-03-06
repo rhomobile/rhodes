@@ -31,23 +31,16 @@
 #include "logging/RhoLog.h"
 #undef null
 #include <qglobal.h>
-#if QT_VERSION > QT_VERSION_CHECK(5,6,0)
-#include "WebKitAdapter/qwebpage.h"
-#include <QtWebEngine/qtwebengineversion.h>
-#else
 #include <QWebPage>
+#include <QLocale>
+#include <QDesktopServices>
+#include <QMessageBox>
+#include "MainWindowImpl.h"
 #if QT_VERSION >= 0x050000
 #include <QtWebKit/qtwebkitversion.h>
 #else
 #include <QtWebKit/qwebkitversion.h>
 #endif
-#endif
-
-#include <QLocale>
-#include <QDesktopServices>
-#include <QMessageBox>
-#include "MainWindowImpl.h"
-
 #include "../RhoSimulator.h"
 
 using namespace rho;
@@ -60,11 +53,7 @@ extern "C" {
 const char* rho_sys_qt_getWebviewFramework()
 {
     if (qt_webview_framework[0] == '\0') {
-        #if QT_VERSION > QT_VERSION_CHECK(5,6,0)
-        const QByteArray ver = QString("WEBENGINE/").append(QTWEBENGINE_VERSION_STR).toLatin1();
-        #else
         const QByteArray ver = QString("WEBKIT/").append(qWebKitVersion()).toLatin1();
-        #endif
         if (ver.length() < 32) {
             strncpy(qt_webview_framework, ver.constData(), ver.length());
             qt_webview_framework[ver.length()] = '\0';
