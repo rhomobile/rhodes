@@ -42,6 +42,7 @@
 #ifndef QWEBVIEWSELECTIONSUPPRESSOR_H
 #define QWEBVIEWSELECTIONSUPPRESSOR_H
 
+
 #include <QtWebKitWidgets/qwebview.h>
 #include <QtGui/qevent.h>
 #include <QDebug>

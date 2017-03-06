@@ -28,7 +28,11 @@
 #define QTWEBINSPECTOR_H
 
 #include <QWidget>
+#if QT_VERSION <= QT_VERSION_CHECK(5,6,0)
 #include <QWebInspector>
+#else
+#include "WebKitAdapter/qwebinspector.h"
+#endif
 
 namespace Ui {
     class QtWebInspector;

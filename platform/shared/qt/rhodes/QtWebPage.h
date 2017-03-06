@@ -27,7 +27,12 @@
 #ifndef QTWEBPAGE_H
 #define QTWEBPAGE_H
 
+#if QT_VERSION > QT_VERSION_CHECK(5,6,0)
 #include <QWebPage>
+#else
+#include "WebKitAdapter/qwebpage.h"
+#endif
+
 #include "logging/RhoLog.h"
 
 class QtWebPage : public QWebPage

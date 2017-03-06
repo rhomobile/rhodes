@@ -29,7 +29,7 @@
 #pragma warning(disable:4996)
 #endif
 #include "QtMainWindow.h"
-#include "ui_QtMainWindow.h"
+
 #include "ExternalWebView.h"
 #include "RhoSimulator.h"
 #include <sstream>
@@ -51,19 +51,25 @@
 #include "statistic/RhoProfiler.h"
 #include <QStylePainter>
 
-#if QT_VERSION > QT_VERSION_CHECK(5, 5, 5)
+#if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
     #include <QtWebEngineWidgets>
+    #include "WebKitAdapter/qwebview.h"
+    #include "WebKitAdapter/ui_QtMainWindow.h"
 #elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     #include <QtWebKit/qtwebkitversion.h>
     #include <QNetworkCookieJar>
 #endif
+
 #include <QResizeEvent>
 #if QT_VERSION < QT_VERSION_CHECK(5, 5, 5)
+#include "ui_QtMainWindow.h"
 #include <QWebFrame>
 #include <QWebSettings>
 #include <QWebSecurityOrigin>
 #include <QWebHistory>
+#include "qwebviewkineticscroller.h"
 #endif
+
 #include <QLabel>
 #include <QtNetwork/QNetworkCookie>
 #include <QFileDialog>
@@ -78,7 +84,7 @@
 #endif
 
 #include "qwebviewselectionsuppressor.h"
-#include "qwebviewkineticscroller.h"
+
 
 IMPLEMENT_LOGCLASS(QtMainWindow,"QtMainWindow");
 
@@ -175,8 +181,10 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 
     if (RHOCONF().isExist("use_kinetic_scroll_on_windows") && RHOCONF().getBool("use_kinetic_scroll_on_windows"))
     {
+        #if QT_VERSION <= QT_VERSION_CHECK(5, 6, 0)
         QWebViewKineticScroller *newScroller = new QWebViewKineticScroller();
         newScroller->setWidget(this->ui->webView);
+        #endif
         QWebViewSelectionSuppressor* suppressor = new QWebViewSelectionSuppressor(this->ui->webView);
     }
 

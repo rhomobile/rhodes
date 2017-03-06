@@ -39,11 +39,16 @@
 **
 ****************************************************************************/
 
-#include "qwebviewkineticscroller.h"
+
 #include <QApplication>
 #include <QGraphicsView>
+#if QT_VERSION > QT_VERSION_CHECK(5,6,0)
+#include "WebKitAdapter/qwebview.h"
+#else
+#include "qwebviewkineticscroller.h"
 #include <QWebView>
 #include <QWebFrame>
+#endif
 #include <QScrollBar>
 #include <QPointF>
 #include <QPointer>
@@ -140,9 +145,12 @@ void QWebViewKineticScroller::setWidget(QWebView *widget)
         d->web->removeEventFilter(this);
         d->web->setAttribute(Qt::WA_AcceptTouchEvents, false);
 
+#if QT_VERSION <= QT_VERSION_CHECK(5,6,0)
         QWebFrame *mainFrame = d->web->page()->mainFrame();
         mainFrame->setScrollBarPolicy(Qt::Vertical, d->oldVerticalSBP);
         mainFrame->setScrollBarPolicy(Qt::Horizontal, d->oldHorizontalSBP);
+#endif
+
     }
 
     d->scrollFrame = 0;
@@ -152,11 +160,13 @@ void QWebViewKineticScroller::setWidget(QWebView *widget)
     setParent(d->web);
 
     if (d->web) {
+#if QT_VERSION <= QT_VERSION_CHECK(5,6,0)
         QWebFrame *mainFrame = d->web->page()->mainFrame();
         d->oldVerticalSBP = mainFrame->scrollBarPolicy(Qt::Vertical);
         d->oldHorizontalSBP = mainFrame->scrollBarPolicy(Qt::Horizontal);
         mainFrame->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
         mainFrame->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
+#endif
         d->web->setAttribute(Qt::WA_AcceptTouchEvents, true);
         d->web->installEventFilter(this);
     }
@@ -288,7 +298,11 @@ QWebFrame *QWebViewKineticScrollerPrivate::currentFrame() const
     if (web && scrollFrame)
         return scrollFrame;
     else if (web)
+#if QT_VERSION > QT_VERSION_CHECK(5,6,0)
+        return web->page();
+#else
         return web->page()->mainFrame();
+#endif
     else
         return 0;
 }

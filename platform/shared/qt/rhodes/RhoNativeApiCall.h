@@ -28,8 +28,11 @@
 #define RHONATIVEAPICALL_H
 
 #include <QObject>
+#if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
+#include "WebKitAdapter/qwebframe.h"
+#else
 #include <QWebFrame>
-
+#endif
 class RhoNativeApiCall: public QObject
 {
     Q_OBJECT

@@ -43,7 +43,12 @@
 #define QWEBVIEWKINETICSCROLLER_H
 
 #include "qkineticscroller.h"
+
+#if QT_VERSION > QT_VERSION_CHECK(5,6,0)
+#include "WebKitAdapter/qwebview.h"
+#else
 #include <QWebView>
+#endif
 
 QT_BEGIN_HEADER
 

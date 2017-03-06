@@ -119,24 +119,7 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../api_generator/MethodResult.h\
 ../../api_generator/js_helpers.h\
 ../../api_generator/StringifyHelper.h
-lessThan(QT_VERSION, 5.5.5): {
-HEADERS += ../../unzip/zip.h\
-../../unzip/unzip.h\
-../../unzip/gunzip.h\
-../../unzip/crc32.h\
-../../unzip/deflate.h\
-../../unzip/inffast.h\
-../../unzip/inffixed.h\
-../../unzip/inflate.h\
-../../unzip/gzguts.h\
-../../unzip/inftrees.h\
-../../unzip/trees.h\
-../../unzip/unzip.h\
-../../unzip/zconf.h\
-../../unzip/zip.h\
-../../unzip/zlib.h\
-../../unzip/zutil.h
-}
+
 SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/RhoAppAdapter.cpp\
 ../../common/RhoThread.cpp\
@@ -174,6 +157,22 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../api_generator/MethodResult.cpp\
 ../../api_generator/StringifyHelper.cpp
 lessThan(QT_VERSION, 5.5.5): {
+HEADERS += ../../unzip/zip.h\
+../../unzip/unzip.h\
+../../unzip/gunzip.h\
+../../unzip/crc32.h\
+../../unzip/deflate.h\
+../../unzip/inffast.h\
+../../unzip/inffixed.h\
+../../unzip/inflate.h\
+../../unzip/gzguts.h\
+../../unzip/inftrees.h\
+../../unzip/trees.h\
+../../unzip/unzip.h\
+../../unzip/zconf.h\
+../../unzip/zip.h\
+../../unzip/zlib.h\
+../../unzip/zutil.h
 SOURCES += ../../unzip/unzip.cpp\
 ../../unzip/adler32.cpp\
 ../../unzip/crc32.cpp\

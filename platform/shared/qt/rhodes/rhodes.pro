@@ -3,12 +3,13 @@ QT += core gui network
 message(Qt version: $$[QT_VERSION])
 greaterThan(QT_MAJOR_VERSION, 4):{
     QT += multimedia multimediawidgets
+
     lessThan(QT_VERSION, 5.5.5): {
         QT += webkit widgets webkitwidgets
         message(Deprecated webkit enabled)
     }
     greaterThan(QT_VERSION, 5.5.5): {
-        QT += webenginecore webenginewidgets
+        QT += webengine webenginecore webenginewidgets
         message(Webengine enabled)
         CONFIG += c++11
         DEFINES += CPP_ELEVEN
@@ -133,21 +134,8 @@ win32 {
 HEADERS += ExternalWebView.h\
 MainWindowCallback.h\
 QtMainWindow.h\
-qwebviewkineticscroller.h\
-qkineticscroller.h\
-qkineticscroller_p.h\
 qwebviewselectionsuppressor.h\
-qtscroller.h\
-qtscroller_p.h\
-qtscrollerproperties.h\
-qtscrollerproperties_p.h\
-qtflickgesture_p.h\
-qtscrollerfilter_p.h\
-qtscrollevent.h\
-qtscrollevent_p.h\
 QtNativeTabBar.h\
-QtWebInspector.h\
-QtWebPage.h\
 QtLogView.h\
 QtCustomStyle.h\
 impl/RhoClassFactoryImpl.h\
@@ -161,21 +149,15 @@ impl/AlertImpl.h\
 impl/RhoThreadImpl.h\
 RhoSimulator.h\
 RhoNativeApiCall.h \
-    iexecutable.h
+iexecutable.h \
+QtWebInspector.h\
+QtWebPage.h
 
 SOURCES += main.cpp\
 ExternalWebView.cpp\
 QtMainWindow.cpp\
 QtNativeTabBar.cpp\
-QtWebInspector.cpp\
-QtWebPage.cpp\
-qkineticscroller.cpp\
-qwebviewkineticscroller.cpp\
 qtflickgesture.cpp\
-qtscroller.cpp\
-qtscrollerproperties.cpp\
-qtscrollerfilter.cpp\
-qtscrollevent.cpp\
 impl/AlertImpl.cpp\
 impl/BluetoothImpl.cpp\
 impl/CalendarImpl.cpp\
@@ -198,9 +180,46 @@ impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
 DateTimeDialog.cpp\
 RhoNativeApiCall.cpp\
-../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp
+../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp \
+QtWebInspector.cpp\
+QtWebPage.cpp
 
+
+FORMS += DateTimeDialog.ui
+
+
+lessThan(QT_VERSION, 5.5.5): {
+HEADERS += qwebviewkineticscroller.h\
+qtscroller.h\
+qtscroller_p.h\
+qtscrollerproperties.h\
+qtscrollerproperties_p.h\
+qtflickgesture_p.h\
+qtscrollerfilter_p.h\
+qtscrollevent.h\
+qtscrollevent_p.h\
+qkineticscroller.h\
+qkineticscroller_p.h
+SOURCES += qwebviewkineticscroller.cpp\
+qtscroller.cpp\
+qtscrollerproperties.cpp\
+qtscrollerfilter.cpp\
+qtscrollevent.cpp\
+qkineticscroller.cpp
 FORMS += ExternalWebView.ui\
 QtMainWindow.ui\
-QtWebInspector.ui\
-DateTimeDialog.ui
+QtWebInspector.ui
+}
+
+greaterThan(QT_VERSION, 5.5.5): {
+HEADERS += WebKitAdapter/qwebpage.h\
+    WebKitAdapter/qwebview.h\
+    WebKitAdapter/qwebinspector.h\
+    WebKitAdapter/qwebframe.h\
+    WebKitAdapter/ui_ExternalWebView.h \
+    WebKitAdapter/ui_QtMainWindow.h \
+    WebKitAdapter/ui_QtWebInspector.h
+SOURCES += WebKitAdapter/qwebpage.cpp\
+    WebKitAdapter/qwebview.cpp\
+    WebKitAdapter/qwebinspector.cpp
+}

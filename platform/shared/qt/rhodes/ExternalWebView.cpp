@@ -25,7 +25,11 @@
 *------------------------------------------------------------------------*/
 
 #include "ExternalWebView.h"
+#if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
+#include "WebKitAdapter/ui_ExternalWebView.h"
+#else
 #include "ui_ExternalWebView.h"
+#endif
 
 ExternalWebView::ExternalWebView(QWidget *parent) :
     QWidget(parent),

@@ -25,8 +25,11 @@
 *------------------------------------------------------------------------*/
 
 #include "QtWebInspector.h"
+#if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
+#include "WebKitAdapter/ui_QtWebInspector.h"
+#else
 #include "ui_QtWebInspector.h"
-
+#endif
 QtWebInspector::QtWebInspector(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QtWebInspector)

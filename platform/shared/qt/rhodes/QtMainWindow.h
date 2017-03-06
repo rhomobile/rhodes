@@ -33,6 +33,8 @@
 #if QT_VERSION > QT_VERSION_CHECK(5,6,0)
 #include <QtWebEngineCore>
 #include <QtWebEngineWidgets>
+#include "WebKitAdapter/qwebpage.h"
+#include "WebKitAdapter/qwebview.h"
 #elif  QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #include <QtWebKitWidgets/QWebView>
 #include <QtWebKitWidgets/QWebInspector>
@@ -40,11 +42,11 @@
 #include <QtWebKit/QWebView>
 #include <QtWebKit/QWebInspector>
 #endif
+#include "QtWebInspector.h"
 #include <QAction>
 #include <QMessageBox>
 #include <QBasicTimer>
 #include <QNetworkProxy>
-#include "QtWebInspector.h"
 #include "MainWindowCallback.h"
 #include "common/IRhoThreadImpl.h"
 #include "common/RhoNativeViewManager.h"
@@ -113,22 +115,25 @@ public:
     void tabbarSetSwitchCallback(rho::apiGenerator::CMethodResult& oResult);
 private:
     void tabbarWebViewRestore(bool reload);
-    void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);
-    void tabbarDisconnectWebView(QWebView* webView, QWebInspector* webInspector);
     bool internalUrlProcessing(const QUrl& url);
-    void setUpWebPage(QWebPage* page);
     void doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button);
     void internalSetProxy();
 
+    void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);
+    void tabbarDisconnectWebView(QWebView* webView, QWebInspector* webInspector);
+    void setUpWebPage(QWebPage* page);
+
+
 private:
-    Ui::QtMainWindow *ui;
     QWebInspector *main_webInspector;
     QtWebInspector* webInspectorWindow;
-    IMainWindowCallback* mainWindowCallback;
     std::vector<QWebView*> tabViews;
     std::vector<QWebInspector*> tabInspect;
     QWebView* main_webView;
     QWebInspector* cur_webInspector;
+
+    Ui::QtMainWindow *ui;
+    IMainWindowCallback* mainWindowCallback;
     QTabBarRuntimeParams* cur_tbrp;
     QMessageBox *m_alertDialog;
     //TODO: CSyncStatusDlg *m_SyncStatusDlg;
