@@ -214,6 +214,20 @@ oldVersion/DateTimeDialog.ui
 }
 
 contains(DEFINES, RHODES_VERSION_2) {
-HEADERS += newVersion/QtMainWindow.h
-SOURCES += newVersion/QtMainWindow.cpp
+HEADERS += newVersion/QtMainWindow.h\
+newVersion/RhoNativeApiCall.h\
+newVersion/QtNativeTabBar.h\
+newVersion/QtWebEngineView.h\
+newVersion/QtWebEnginePage.h\
+newVersion/QtWebInspector.h\
+newVersion/ExternalWebView.h\
+newVersion/QWebEngineViewSelectionSuppressor.h
+
+SOURCES += newVersion/QtMainWindow.cpp\
+newVersion/RhoNativeApiCall.cpp\
+newVersion/QtNativeTabBar.cpp\
+newVersion/QtWebEngineView.cpp\
+newVersion/QtWebEnginePage.cpp\
+newVersion/ExternalWebView.cpp\
+newVersion/QtWebInspector.cpp
 }
