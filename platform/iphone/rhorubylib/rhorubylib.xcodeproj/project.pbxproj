@@ -232,7 +232,7 @@
 		A8A6D3A31E258DD700016427 /* strscan.c in Sources */ = {isa = PBXBuildFile; fileRef = A8A6D3A21E258DBE00016427 /* strscan.c */; };
 		A8A6D3A41E258E5700016427 /* rhoruby.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C806F1E243EBC0090E7E6 /* rhoruby.c */; };
 		A8A6D3A51E258EC200016427 /* rhosupport.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80711E243EBC0090E7E6 /* rhosupport.c */; };
-		A8CAD3DC1E6741A200ED8E7E /* miniinit.c in Sources */ = {isa = PBXBuildFile; fileRef = A8CAD3DA1E67419C00ED8E7E /* miniinit.c */; };
+		A8CAD3DC1E6741A200ED8E7E /* rhoinit.c in Sources */ = {isa = PBXBuildFile; fileRef = A8CAD3DA1E67419C00ED8E7E /* rhoinit.c */; };
 		A8CAD3E91E67457200ED8E7E /* stringio.c in Sources */ = {isa = PBXBuildFile; fileRef = A8CAD3E81E67457200ED8E7E /* stringio.c */; };
 		A8CAD3EA1E67458100ED8E7E /* stringio.c in Sources */ = {isa = PBXBuildFile; fileRef = A8CAD3E81E67457200ED8E7E /* stringio.c */; };
 		A8F6C0171E29BA95001869D0 /* strscan.c in Sources */ = {isa = PBXBuildFile; fileRef = A8A6D3A21E258DBE00016427 /* strscan.c */; };
@@ -401,7 +401,7 @@
 		A8A6D3A01E258DBE00016427 /* depend */ = {isa = PBXFileReference; lastKnownFileType = text; path = depend; sourceTree = "<group>"; };
 		A8A6D3A11E258DBE00016427 /* extconf.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = extconf.rb; sourceTree = "<group>"; };
 		A8A6D3A21E258DBE00016427 /* strscan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = strscan.c; sourceTree = "<group>"; };
-		A8CAD3DA1E67419C00ED8E7E /* miniinit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = miniinit.c; path = ../../shared/ruby/miniinit.c; sourceTree = "<group>"; };
+		A8CAD3DA1E67419C00ED8E7E /* rhoinit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoinit.c; path = ../../shared/ruby/rhoinit.c; sourceTree = "<group>"; };
 		A8CAD3E81E67457200ED8E7E /* stringio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stringio.c; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhorubylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhorubylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -428,7 +428,7 @@
 			isa = PBXGroup;
 			children = (
 				A8CAD3E41E67457200ED8E7E /* stringio */,
-				A8CAD3DA1E67419C00ED8E7E /* miniinit.c */,
+				A8CAD3DA1E67419C00ED8E7E /* rhoinit.c */,
 				A88C80AA1E2440C70090E7E6 /* datetimepicker */,
 				A88C80AD1E2440C70090E7E6 /* mapview */,
 				A88C80B01E2440C70090E7E6 /* phonebook */,
@@ -985,7 +985,7 @@
 				A8A6D35F1E24ADBD00016427 /* re.c in Sources */,
 				A8A6D32D1E24ADBD00016427 /* class.c in Sources */,
 				A8A6D3711E24ADBD00016427 /* string.c in Sources */,
-				A8CAD3DC1E6741A200ED8E7E /* miniinit.c in Sources */,
+				A8CAD3DC1E6741A200ED8E7E /* rhoinit.c in Sources */,
 				A8A6D3701E24ADBD00016427 /* strftime.c in Sources */,
 				A8A6D35E1E24ADBD00016427 /* rational.c in Sources */,
 				A8A6D3331E24ADBD00016427 /* debug.c in Sources */,
