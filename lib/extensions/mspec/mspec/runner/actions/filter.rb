@@ -13,7 +13,8 @@ class ActionFilter
   def initialize(tags=nil, descs=nil)
     @tags = Array(tags)
     descs = Array(descs)
-    @sfilter = MatchFilter.new(nil, *descs) unless descs.empty?
+    @sfilter = descs.empty? ? nil : MatchFilter.new(nil, *descs)
+    @tfilter = nil
   end
 
   def ===(string)
@@ -21,7 +22,6 @@ class ActionFilter
   end
 
   def load
-    @tfilter = nil
     return if @tags.empty?
 
     desc = MSpec.read_tags(@tags).map { |t| t.description }

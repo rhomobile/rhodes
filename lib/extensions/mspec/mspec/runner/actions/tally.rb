@@ -1,8 +1,8 @@
 class Tally
-  attr_accessor :files, :examples, :expectations, :failures, :errors, :guards
+  attr_accessor :files, :examples, :expectations, :failures, :errors, :guards, :tagged
 
   def initialize
-    @files = @examples = @expectations = @failures = @errors = @guards = 0
+    @files = @examples = @expectations = @failures = @errors = @guards = @tagged = 0
   end
 
   def files!(add=1)
@@ -29,6 +29,10 @@ class Tally
     @guards += add
   end
 
+  def tagged!(add=1)
+    @tagged += add
+  end
+
   def file
     pluralize files, "file"
   end
@@ -53,9 +57,15 @@ class Tally
     pluralize guards, "guard"
   end
 
+  def tag
+    "#{tagged} tagged"
+  end
+
   def format
-    results = [ file, example, expectation, failure, error ]
-    results << guard if [:report, :report_on, :verify].any? { |m| MSpec.mode? m }
+    results = [ file, example, expectation, failure, error, tag ]
+    if [:report, :report_on, :verify].any? { |m| MSpec.mode? m }
+      results << guard
+    end
     results.join(", ")
   end
 
@@ -78,6 +88,7 @@ class TallyAction
     MSpec.register :load,        self
     MSpec.register :exception,   self
     MSpec.register :example,     self
+    MSpec.register :tagged,      self
     MSpec.register :expectation, self
   end
 
@@ -85,6 +96,7 @@ class TallyAction
     MSpec.unregister :load,        self
     MSpec.unregister :exception,   self
     MSpec.unregister :example,     self
+    MSpec.unregister :tagged,      self
     MSpec.unregister :expectation, self
   end
 
@@ -108,6 +120,11 @@ class TallyAction
   # of examples.
   def example(state, block)
     @counter.examples!
+  end
+
+  def tagged(state)
+    @counter.examples!
+    @counter.tagged!
   end
 
   def format

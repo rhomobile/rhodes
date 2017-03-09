@@ -2,32 +2,38 @@ require 'mspec/guards/guard'
 
 class Object
   def env
-    env = ""
     if PlatformGuard.windows?
-      env = Hash[*`cmd.exe /C set`.split("\n").map { |e| e.split("=", 2) }.flatten]
+      Hash[*`cmd.exe /C set`.split("\n").map { |e| e.split("=", 2) }.flatten]
+    elsif PlatformGuard.opal?
+      {}
     else
-      env = Hash[*`env`.split("\n").map { |e| e.split("=", 2) }.flatten]
+      Hash[*`env`.split("\n").map { |e| e.split("=", 2) }.flatten]
     end
-    env
   end
 
   def windows_env_echo(var)
-    `cmd.exe /C ECHO %#{var}%`.strip
+    platform_is_not :opal do
+      `cmd.exe /C ECHO %#{var}%`.strip
+    end
   end
 
   def username
-    user = ""
     if PlatformGuard.windows?
-      user = windows_env_echo('USERNAME')
+      windows_env_echo('USERNAME')
+    elsif PlatformGuard.opal?
+      ""
     else
-      user = `whoami`.strip
+      `whoami`.strip
     end
-    user
   end
 
   def home_directory
-    return ENV['HOME'] unless PlatformGuard.windows?
-    windows_env_echo('HOMEDRIVE') + windows_env_echo('HOMEPATH')
+    if PlatformGuard.windows?
+      path = windows_env_echo('HOMEDRIVE') + windows_env_echo('HOMEPATH')
+      path.tr('\\', '/').chomp('/')
+    else
+      ENV['HOME']
+    end
   end
 
   def dev_null
@@ -36,5 +42,17 @@ class Object
     else
       "/dev/null"
     end
+  end
+
+  def hostname
+    commands = ['hostname', 'uname -n']
+    commands.each do |command|
+      name = ''
+      platform_is_not :opal do
+        name = `#{command}`
+      end
+      return name.strip if $?.success?
+    end
+    raise Exception, "hostname: unable to find a working command"
   end
 end

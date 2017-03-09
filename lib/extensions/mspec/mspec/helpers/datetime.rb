@@ -1,5 +1,3 @@
-require 'date'
-
 class Object
   # The new_datetime helper makes writing DateTime specs more simple by
   # providing default constructor values and accepting a Hash of only the
@@ -10,21 +8,44 @@ class Object
   # Possible keys are:
   #   :year, :month, :day, :hour, :minute, :second, :offset and :sg.
 
-  MSPEC_DATETIME_OPTIONS = {
-    :year   => -4712,
-    :month  => 1,
-    :day    => 1,
-    :hour   => 0,
-    :minute => 0,
-    :second => 0,
-    :offset => 0,
-    :sg     => Date::ITALY
-  }
-
   def new_datetime(opts={})
-    value = MSPEC_DATETIME_OPTIONS.dup.merge opts
+    require 'date'
+
+    value = {
+      :year   => -4712,
+      :month  => 1,
+      :day    => 1,
+      :hour   => 0,
+      :minute => 0,
+      :second => 0,
+      :offset => 0,
+      :sg     => Date::ITALY
+    }.merge opts
 
     DateTime.new value[:year], value[:month], value[:day], value[:hour],
       value[:minute], value[:second], value[:offset], value[:sg]
   end
+
+  def with_timezone(name, offset = nil, daylight_saving_zone = "")
+    zone = name.dup
+
+    if offset
+      # TZ convention is backwards
+      offset = -offset
+
+      zone += offset.to_s
+      zone += ":00:00"
+    end
+    zone += daylight_saving_zone
+
+    old = ENV["TZ"]
+    ENV["TZ"] = zone
+
+    begin
+      yield
+    ensure
+      ENV["TZ"] = old
+    end
+  end
+
 end

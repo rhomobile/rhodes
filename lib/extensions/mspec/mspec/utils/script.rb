@@ -1,5 +1,4 @@
 require 'mspec/guards/guard'
-require 'mspec/runner/formatters/dotted'
 
 # MSpecScript provides a skeleton for all the MSpec runner scripts.
 
@@ -62,22 +61,24 @@ class MSpecScript
   # Returns +true+ if the file was located in +config[:path]+,
   # possibly appending +config[:config_ext]. Returns +false+
   # otherwise.
-  def load(target)
+  def try_load(target)
     names = [target]
     unless target[-6..-1] == config[:config_ext]
       names << target + config[:config_ext]
     end
 
     names.each do |name|
-      return Kernel.load(name) if File.exist?(File.expand_path(name))
-
       config[:path].each do |dir|
-        file = File.join dir, name
+        file = File.expand_path name, dir
         return Kernel.load(file) if File.exist? file
       end
     end
 
     false
+  end
+
+  def load(target)
+    try_load(target) or abort "Could not load config file #{target}"
   end
 
   # Attempts to load a default config file. First tries to load
@@ -86,14 +87,15 @@ class MSpecScript
   # first two numbers in RUBY_VERSION. For example, on MRI 1.8.6,
   # the file name would be 'ruby.1.8.mspec'.
   def load_default
-    return if load 'default.mspec'
+    try_load 'default.mspec'
 
     if Object.const_defined?(:RUBY_ENGINE)
       engine = RUBY_ENGINE
     else
       engine = 'ruby'
     end
-    load "#{engine}.#{SpecGuard.ruby_version}.mspec"
+    try_load "#{engine}.#{SpecGuard.ruby_version}.mspec"
+    try_load "#{engine}.mspec"
   end
 
   # Callback for enabling custom options. This version is a no-op.
@@ -105,8 +107,13 @@ class MSpecScript
 
   # Registers all filters and actions.
   def register
+    require 'mspec/runner/formatters/dotted'
+    require 'mspec/runner/formatters/spinner'
+    require 'mspec/runner/formatters/file'
+    require 'mspec/runner/filters'
+
     if config[:formatter].nil?
-      config[:formatter] = @files.size < 50 ? DottedFormatter : FileFormatter
+      config[:formatter] = STDOUT.tty? ? SpinnerFormatter : @files.size < 50 ? DottedFormatter : FileFormatter
     end
 
     if config[:formatter]
@@ -125,7 +132,6 @@ class MSpecScript
     ProfileFilter.new(:exclude, *config[:xprofiles]).register unless config[:xprofiles].empty?
 
     DebugAction.new(config[:atags], config[:astrings]).register if config[:debugger]
-    GdbAction.new(config[:atags], config[:astrings]).register   if config[:gdb]
 
     custom_register
   end
@@ -160,11 +166,10 @@ class MSpecScript
   # If it is a directory, returns all *_spec.rb files in the
   # directory and subdirectories.
   #
-  # If unable to resolve +partial+, returns <tt>Dir[partial]</tt>.
+  # If unable to resolve +partial+, +Kernel.abort+ is called.
   def entries(partial)
     file = partial + "_spec.rb"
-    patterns = [partial]
-    patterns << file
+    patterns = [partial, file]
     if config[:prefix]
       patterns << File.join(config[:prefix], partial)
       patterns << File.join(config[:prefix], file)
@@ -172,14 +177,14 @@ class MSpecScript
 
     patterns.each do |pattern|
       expanded = File.expand_path(pattern)
-      return [expanded] if File.file?(expanded)
-
-      specs = File.join(pattern, "/**/*_spec.rb")
-      specs = File.expand_path(specs) rescue specs
-      return Dir[specs].sort if File.directory?(expanded)
+      if File.file?(expanded)
+        return [expanded]
+      elsif File.directory?(expanded)
+        return Dir["#{expanded}/**/*_spec.rb"].sort
+      end
     end
 
-    Dir[partial]
+    abort "Could not find spec file #{partial}"
   end
 
   # Resolves each entry in +list+ to a set of files.
@@ -205,16 +210,30 @@ class MSpecScript
     end
   end
 
+  def setup_env
+    ENV['MSPEC_RUNNER'] = '1'
+
+    unless ENV['RUBY_EXE']
+      ENV['RUBY_EXE'] = config[:target] if config[:target]
+    end
+
+    unless ENV['RUBY_FLAGS']
+      ENV['RUBY_FLAGS'] = config[:flags].join(" ") if config[:flags]
+    end
+  end
+
   # Instantiates an instance and calls the series of methods to
   # invoke the script.
   def self.main
     $VERBOSE = nil unless ENV['OUTPUT_WARNINGS']
     script = new
     script.load_default
-    script.load '~/.mspecrc'
+    script.try_load '~/.mspecrc'
     script.options
     script.signals
     script.register
+    script.setup_env
+    require 'mspec'
     script.run
   end
 end
