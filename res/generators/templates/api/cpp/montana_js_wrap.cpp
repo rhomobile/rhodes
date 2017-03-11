@@ -211,7 +211,7 @@ end
 
 if module_method.has_callback != ModuleMethod::CALLBACK_NONE %>
     oRes.setCallInUIThread(<%= (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) ? "true" : "false" %>);
-    oRes.setJSCallback( strCallbackID );
+    oRes.setJSCallback( strCallbackID, strJsVmID);
     oRes.setCallbackParam( strCallbackParam );
 <% 
 end 

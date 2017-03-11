@@ -6,7 +6,7 @@
 #import "CJSConverter.h"
 #import "RubyCallbackHelper.h"
 
-
+#include "../js_helpers.h"
 
 extern const char* rho_webview_execute_js(const char* js, int index);
 
@@ -242,7 +242,11 @@ extern int rho_webview_active_tab();
     //    tabIndex = [mJSWebViewUID intValue];
     //}
     //[[[Rhodes sharedInstance] mainView] executeJs:jscode tab:tabIndex];
-    rho_webview_execute_js([jscode UTF8String], tabIndex);
+    
+    const char* js_code = [jscode UTF8String];
+    if (callCustomJVMCallbackProvider([mJSWebViewUID UTF8String], js_code) != 1) {
+        rho_webview_execute_js(js_code, tabIndex);
+    }
 }
 
 -(void) callCallback {

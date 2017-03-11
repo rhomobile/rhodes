@@ -8,6 +8,7 @@
 #include "MethodResultConvertor.h"
 #include "RubyResultConvertor.h"
 #include "JSONResultConvertor.h"
+#include "js_helpers.h"
 
 namespace rho
 {
@@ -256,12 +257,16 @@ void CMethodResult::callCallback()
                     strCallback += "},\"";
                     strCallback += m_strCallbackParam + "\")";
                     
-                    if (m_synchronousCallback)
-                    {
-                        rho_webview_execute_js_sync(strCallback.c_str(), m_iTabId);
-                    } else
-                    {
-                        rho_webview_execute_js(strCallback.c_str(), m_iTabId);
+                    
+                    if (callCustomJVMCallbackProvider(m_strJVMID.c_str(), strCallback.c_str()) != 1) {
+                        
+                        if (m_synchronousCallback)
+                        {
+                            rho_webview_execute_js_sync(strCallback.c_str(), m_iTabId);
+                        } else
+                        {
+                            rho_webview_execute_js(strCallback.c_str(), m_iTabId);
+                        }
                     }
                     break;
                 }
@@ -298,10 +303,20 @@ void CMethodResult::setRubyCallbackProc(unsigned long oRubyCallbackProc)
 
 void CMethodResult::setJSCallback(const rho::String& strCallback)
 {
-    LOG(TRACE) + "setJSCallback: " + strCallback;
+    LOG(TRACE) + "setJSCallback: " + strCallback + " without JVMID";
+        
+    m_strJSCallback = strCallback;
+    m_iTabId = rho_webview_active_tab();
+}
+    
+
+void CMethodResult::setJSCallback(const rho::String& strCallback, const rho::String& strJVMID)
+{
+    LOG(TRACE) + "setJSCallback: " + strCallback + " JVMID: "+strJVMID;
 
     m_strJSCallback = strCallback;
     m_iTabId = rho_webview_active_tab();
+    m_strJVMID = strJVMID;
 }
     
 bool CMethodResult::isSynchronousCallback()
