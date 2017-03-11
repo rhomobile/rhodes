@@ -55,7 +55,7 @@ public:
         virtual void execute(){}
     };
 
-private:
+protected:
 
 	int           m_nPollInterval;
    	common::CMutex m_mxStackCommands;
