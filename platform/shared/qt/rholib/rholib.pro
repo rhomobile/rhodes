@@ -1,8 +1,12 @@
 QT -= core
-
     greaterThan(QT_VERSION, 5.6.0): {
-        CONFIG += c++11
+        CONFIG += c++14
         DEFINES += CPP_ELEVEN
+        DEFINES += RHODES_VERSION_2
+    }
+
+    lessThan(QT_VERSION, 5.6.0): {
+        DEFINES += RHODES_VERSION_1
     }
 
 TARGET = rholib
@@ -156,7 +160,7 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../api_generator/js_helpers.cpp\
 ../../api_generator/MethodResult.cpp\
 ../../api_generator/StringifyHelper.cpp
-lessThan(QT_VERSION, 5.6.0): {
+
 HEADERS += ../../unzip/zip.h\
 ../../unzip/unzip.h\
 ../../unzip/gunzip.h\
@@ -190,4 +194,4 @@ SOURCES += ../../unzip/unzip.cpp\
 ../../unzip/unzip.cpp\
 ../../unzip/zip.cpp\
 ../../unzip/zutil.cpp
-}
+

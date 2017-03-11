@@ -1315,7 +1315,12 @@ local void check_match(deflate_state *s, IPos start,IPos match, int length)
         do {
             fprintf(stderr, "%c%c", s->window[match++], s->window[start++]);
         } while (--length != 0);
+#ifdef RHODES_VERSION_2
+        char ch [] = "invalid match";
+        z_error(ch);
+#else
         z_error("invalid match");
+#endif
     }
     if (z_verbose > 1) {
         fprintf(stderr,"\\[%d,%d]", start-match, length);

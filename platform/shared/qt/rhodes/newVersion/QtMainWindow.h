@@ -30,6 +30,7 @@
 #include <QUrl>
 #include <QtWebEngine>
 #include <QtWebEngineWidgets>
+
 #include <QWebEnginePage>
 #include <QWebEngineSettings>
 #include <QWebEngineHistory>
@@ -50,11 +51,12 @@
 #include <QWebEngineSettings>
 #include "QtWebEnginePage.h"
 #include "QtWebEngineView.h"
-#include "QtWebInspector.h"
 #include "QWebEngineViewSelectionSuppressor.h"
 #include "ExternalWebView.h"
 #include <QWebEngineCookieStore>
 #include "QtNativeTabBar.h"
+#include "DateTimeDialog.h"
+#include <QWebEngineProfile>
 
 
 class QtMainWindow : public QMainWindow
@@ -76,7 +78,6 @@ public:
     int getLogicalDpiX();
     int getLogicalDpiY();
     void bringToFront();
-    void adjustWebInspector();
     // webview
     void navigate(QString url, int index);
     void GoBack(int index);
@@ -109,23 +110,21 @@ public:
     int tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbri);
     void tabbarSetBadge(int index, const char* badge);
     void tabbarSetSwitchCallback(rho::apiGenerator::CMethodResult& oResult);
+    static quint16 getDebPort();
 private:
     void tabbarWebViewRestore(bool reload);
-    void tabbarConnectWebView(QWebEngineView *webView, QtWebInspector* webInspector);
-    void tabbarDisconnectWebView(QWebEngineView* webView, QtWebInspector* webInspector);
+    void tabbarConnectWebView(QWebEngineView *webView);
+    void tabbarDisconnectWebView(QWebEngineView* webView);
     bool internalUrlProcessing(const QUrl& url);
-    void setUpWebPage(const QWebEnginePage *page);
+    void setUpWebPage(QWebEnginePage *page);
     void doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button);
     void internalSetProxy();
 
+
 private:
-    QtWebInspector *main_webInspector;
-    QtWebInspector *webInspectorWindow;
     IMainWindowCallback* mainWindowCallback;
     std::vector<QWebEngineView*> tabViews;
-    std::vector<QtWebInspector*> tabInspect;
     QWebEngineView* main_webView;
-    QtWebInspector* cur_webInspector;
     QTabBarRuntimeParams* cur_tbrp;
     QMessageBox *m_alertDialog;
     //TODO: CSyncStatusDlg *m_SyncStatusDlg;
@@ -141,6 +140,9 @@ private:
     QToolBar * toolBarRight;
     QWebEngineView * webView;
     QtNativeTabBar * tabBar;
+    QVBoxLayout * verticalLayout;
+    QMenu * menuMain;
+    QWebEngineCookieStore * cookieStore;
 
 private slots:
     void on_webView_urlChanged(QUrl );

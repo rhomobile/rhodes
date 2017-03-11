@@ -43,7 +43,6 @@
 #include "RhoNativeApiCall.h"
 #include "statistic/RhoProfiler.h"
 #include <QStylePainter>
-#include <QNetworkCookieJar>
 #include <QResizeEvent>
 #include <QLabel>
 #include <QtNetwork/QNetworkCookie>
@@ -85,17 +84,17 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     QApplication::setStyle(new QtCustomStyle());
 
     setCentralWidget(new QWidget(this));
-    QVBoxLayout * vblayCentral = new QVBoxLayout(centralWidget());
+    verticalLayout = new QVBoxLayout(centralWidget());
 
     tabBar = new QtNativeTabBar(this);
-    vblayCentral->addWidget(tabBar);
+    verticalLayout->addWidget(tabBar);
     QWebEngineView * webView = new QtWebEngineView(this);
-    vblayCentral->addWidget(webView);
+    verticalLayout->addWidget(webView);
 
     QMenuBar * menuBar = new QMenuBar(this);
     setMenuBar(menuBar);
 
-    QMenu * menuMain = new QMenu("Main", this);
+    menuMain = new QMenu("Main", this);
     menuMain->addAction("Exit", this, SLOT(on_actionExit_triggered()));
     menuBar->addMenu(menuMain);
 
@@ -125,13 +124,23 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     toolBar->setFixedSize(396,12);
     this->addToolBar(Qt::BottomToolBarArea, toolBarRight);
 
+    if (RHOCONF().isExist("http_proxy_host"))
+    {
+        setProxy(QString::fromStdString(RHOCONF().getString("http_proxy_host")),
+                 QString::fromStdString(RHOCONF().getString("http_proxy_port")),
+                 QString::fromStdString(RHOCONF().getString("http_proxy_login")),
+                 QString::fromStdString(RHOCONF().getString("http_proxy_password")));
+    } else {
+        unsetProxy();
+    }
 
-    QWebEngineSettings* qs = QWebEngineSettings::globalSettings();
-    //qs->setAttribute(QWebEngineSettings::DeveloperExtrasEnabled, true);
-    //qs->setOfflineStorageDefaultQuota(1024*1024*1024);
-
+    QWebEngineProfile * profile = QWebEngineProfile::defaultProfile();
     rho::String rs_dir = RHODESAPP().getRhoRootPath()+RHO_EMULATOR_DIR;
-    //qs->enablePersistentStorage(rs_dir.c_str());
+    QString path(QString(rs_dir.c_str()));
+    profile->setPersistentStoragePath(path);
+    profile->setCachePath(path);
+    profile->setHttpCacheMaximumSize(0x40000000);
+    profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
 
     webView->setContextMenuPolicy(Qt::NoContextMenu);
     webView->setPage(new QtWebEnginePage());
@@ -139,10 +148,6 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
 
     setUpWebPage(webView->page());
     this->main_webView = webView;
-    webInspectorWindow = new QtWebInspector(this);
-
-    this->main_webInspector = webInspectorWindow;
-    this->cur_webInspector = this->main_webInspector;
 
     this->move(0,0);
     toolBar->hide();
@@ -161,30 +166,12 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     else if (width>0) this->setSize(width, this->height());
     else if (height>0) this->setSize(this->width(), height);
 
-#if defined(RHODES_EMULATOR)
-    // connecting WebInspector
-    main_webInspector->setPage(webView->page());
-#endif
-
     if (RHOCONF().isExist("use_kinetic_scroll_on_windows") && RHOCONF().getBool("use_kinetic_scroll_on_windows"))
     {
         QWebEngineViewSelectionSuppressor* suppressor = new QWebEngineViewSelectionSuppressor(webView);
     }
 
 
-#if defined(RHODES_EMULATOR)
-    webInspectorWindow->show();
-#endif
-
-    if (RHOCONF().isExist("http_proxy_host"))
-    {
-        setProxy(QString::fromStdString(RHOCONF().getString("http_proxy_host")),
-                 QString::fromStdString(RHOCONF().getString("http_proxy_port")),
-                 QString::fromStdString(RHOCONF().getString("http_proxy_login")),
-                 QString::fromStdString(RHOCONF().getString("http_proxy_password")));
-    } else {
-        unsetProxy();
-    }
 }
 
 QtMainWindow::~QtMainWindow()
@@ -198,7 +185,6 @@ QtMainWindow::~QtMainWindow()
         delete m_logView;
         m_logView = 0;
     }
-    delete webInspectorWindow;
 
 }
 
@@ -259,7 +245,6 @@ void QtMainWindow::closeEvent(QCloseEvent *ce)
 
     if (mainWindowCallback) mainWindowCallback->onWindowClose();
     tabbarRemoveAllTabs(false);
-    webInspectorWindow->close();
     if (m_logView)
         m_logView->close();
     QMainWindow::closeEvent(ce);
@@ -277,15 +262,6 @@ void QtMainWindow::resizeEvent(QResizeEvent *event)
     }
 }
 
-void QtMainWindow::adjustWebInspector()
-{
-	int screen_width = QApplication::desktop()->screenGeometry().width();
-	int wi_x = this->x() + this->width() + 16;
-	if ((wi_x + webInspectorWindow->width() + 16) > screen_width)
-		wi_x = screen_width - webInspectorWindow->width() - 16;
-	webInspectorWindow->move(wi_x, webInspectorWindow->y());
-}
-
 bool QtMainWindow::isStarted(void)
 {
     return (tabViews.size() > 0) ||
@@ -298,6 +274,7 @@ void QtMainWindow::unsetProxy()
 {
     m_proxy = QNetworkProxy(QNetworkProxy::DefaultProxy);
     internalSetProxy();
+
 }
 
 void QtMainWindow::setProxy(QString host, QString port, QString login, QString password)
@@ -319,14 +296,12 @@ void QtMainWindow::on_actionBack_triggered()
 void QtMainWindow::on_actionRotateRight_triggered()
 {
 	this->resize(this->height(), this->width());
-	this->adjustWebInspector();
-	RHODESAPP().callScreenRotationCallback(this->width(), this->height(), 90);
+    RHODESAPP().callScreenRotationCallback(this->width(), this->height(), 90);
 }
 
 void QtMainWindow::on_actionRotateLeft_triggered()
 {
 	this->resize(this->height(), this->width());
-	this->adjustWebInspector();
 	RHODESAPP().callScreenRotationCallback(this->width(), this->height(), -90);
 }
 
@@ -522,7 +497,7 @@ void QtMainWindow::tabbarRemoveAllTabs(bool restore)
 {
     // removing WebViews
     for (int i=0; i<tabViews.size(); ++i) {
-        tabbarDisconnectWebView(tabViews[i], tabInspect[i]);
+        tabbarDisconnectWebView(tabViews[i]);
         if (tabViews[i] != main_webView) {
             // destroy connected RhoNativeApiCall object
             QVariant v = tabViews[i]->page()->property("__rhoNativeApi");
@@ -535,15 +510,8 @@ void QtMainWindow::tabbarRemoveAllTabs(bool restore)
                 webView = 0;
             delete tabViews[i];
         }
-        if (tabInspect[i] != main_webInspector) {
-            webInspectorWindow->removeWebInspector(tabInspect[i]);
-            if (cur_webInspector==tabInspect[i])
-                cur_webInspector = 0;
-            delete tabInspect[i];
-        }
     }
     tabViews.clear();
-    tabInspect.clear();
 
     // removing Tabs
     for (int i=tabBar->count()-1; i >= 0; --i)
@@ -561,51 +529,38 @@ void QtMainWindow::tabbarInitialize()
     tabBar->clearStyleSheet();
 }
 
-void QtMainWindow::setUpWebPage(const QWebEnginePage *page)
+void QtMainWindow::setUpWebPage(QWebEnginePage *page)
 {
     //page->networkAccessManager()->setProxy(m_proxy);
-    page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    page->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
-    quint16 webkit_debug_port = 
-#ifdef RHODES_EMULATOR        
-        RHOSIMCONF().getInt("webkit_debug_port");
-#else
-        0;
-#endif
+    //page->setLinkDelegationPolicy(QWebEnginePage::DelegateAllLinks);
+    //page->securityOrigin().setDatabaseQuota(0x40000000);
+    //TODO Check this
+    page->setProperty("_q_webInspectorServerPort", getDebPort());
 
-    if (webkit_debug_port == 0)
-        webkit_debug_port = 9090;
-    page->setProperty("_q_webInspectorServerPort", webkit_debug_port);
-    RhoNativeApiCall* rhoNativeApiCall = new RhoNativeApiCall(page->mainFrame());
-    page->setProperty("__rhoNativeApi", QVariant::fromValue(rhoNativeApiCall));
-    connect(page->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
-        rhoNativeApiCall, SLOT(populateJavaScriptWindowObject()));
+    RhoNativeApiCall* rhoNativeApiCall = new RhoNativeApiCall(page);
+    //page->setProperty("__rhoNativeApi", QVariant::fromValue(rhoNativeApiCall));
+    connect(page, SIGNAL(javaScriptWindowObjectCleared()),rhoNativeApiCall, SLOT(populateJavaScriptWindowObject()));
 }
 
-int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbrp)
+int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color,
+                               QTabBarRuntimeParams& tbrp)
 {
     QWebEngineView* wv = main_webView;
-    QtWebInspector* wI = main_webInspector;
-    if (!tbrp["use_current_view_for_tab"].toBool()) {
+        if (!tbrp["use_current_view_for_tab"].toBool()) {
         // creating web view
         wv = new QtWebEngineView();
         wv->setMaximumSize(0,0);
-        wv->setParent(centralWidget);
+        wv->setParent(centralWidget());
         wv->setAttribute(Qt::WA_AcceptTouchEvents, false);
         verticalLayout->addWidget(wv);
-		wv->setPage(new QtWebPage());
+        wv->setPage(new QtWebEnginePage());
         setUpWebPage(wv->page());
         if (web_bkg_color && (web_bkg_color->name().length()>0))
-            wv->setHtml( QString("<!DOCTYPE html><html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
+            wv->setHtml( QString("<!DOCTYPE html><html><body style=\"background:") + web_bkg_color->name() +
+                         QString("\"></body></html>") );
         // creating and attaching web inspector
-        wI = new QtWebInspector();
-        wI->setWindowTitle("Web Inspector");
-        wI->setPage(wv->page());
     }
-
     tabViews.push_back(wv);
-    tabInspect.push_back(wI);
-    webInspectorWindow->addWebInspector(wI);
 
     cur_tbrp = &tbrp;
     if (icon && (strlen(icon) > 0))
@@ -626,7 +581,7 @@ void QtMainWindow::tabbarShow()
     tabBar->show();
 }
 
-void QtMainWindow::tabbarConnectWebView(QWebEngineView *webView, QtWebInspector* webInspector)
+void QtMainWindow::tabbarConnectWebView(QWebEngineView *webView)
 {
     if (webView) {
         webView->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX); //->show();
@@ -638,13 +593,9 @@ void QtMainWindow::tabbarConnectWebView(QWebEngineView *webView, QtWebInspector*
         }
         webView = webView;
     }
-    if (webInspectorWindow) {
-        webInspectorWindow->showWebInspector(webInspector);
-        cur_webInspector = webInspector;
-    }
 }
 
-void QtMainWindow::tabbarDisconnectWebView(QWebEngineView* webView, QtWebInspector* webInspector)
+void QtMainWindow::tabbarDisconnectWebView(QWebEngineView* webView)
 {
     if (webView) {
         webView->setMaximumSize(0,0); //->hide();
@@ -655,18 +606,16 @@ void QtMainWindow::tabbarDisconnectWebView(QWebEngineView* webView, QtWebInspect
             QObject::disconnect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(on_webView_urlChanged(QUrl)));
         }
     }
-    if (webInspector)
-        webInspectorWindow->hideWebInspector(webInspector);
 }
 
 void QtMainWindow::tabbarWebViewRestore(bool reload)
 {
     if ((webView == 0) || (webView != main_webView)) {
-        tabbarDisconnectWebView(webView, cur_webInspector);
-        tabbarConnectWebView(main_webView, main_webInspector);
+        tabbarDisconnectWebView(webView);
+        tabbarConnectWebView(main_webView);
     } else if (reload) {
         main_webView->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX); //->show();
-        main_webInspector->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX); //->show();
+
     }
 }
 
@@ -700,27 +649,36 @@ void QtMainWindow::tabbarSetSwitchCallback(rho::apiGenerator::CMethodResult& oRe
     m_oTabBarSwitchCallback = oResult;
 }
 
+quint16 QtMainWindow::getDebPort()
+{
+    quint16 webkit_debug_port =
+#ifdef RHODES_EMULATOR
+        RHOSIMCONF().getInt("webkit_debug_port");
+#else
+        0;
+#endif
+    if (webkit_debug_port == 0) webkit_debug_port = 9090;
+    return webkit_debug_port;
+}
+
 void QtMainWindow::on_tabBar_currentChanged(int index)
 {
     if ((index < tabViews.size()) && (index >= 0)) {
         QTabBarRuntimeParams tbrp = cur_tbrp != 0 ? *cur_tbrp : tabBar->tabData(index).toHash();
         bool use_current_view_for_tab = tbrp["use_current_view_for_tab"].toBool();
 
-        webInspectorWindow->setWindowTitle(QString("Web Inspector - Tab ") + QVariant(index+1).toString() +
-            QString(" - ") + tbrp["label"].toString());
-
-        if (use_current_view_for_tab) {
-            tabbarConnectWebView(main_webView, main_webInspector);
+                if (use_current_view_for_tab) {
+            tabbarConnectWebView(main_webView);
         } else {
-            tabbarDisconnectWebView(main_webView, main_webInspector);
+            tabbarDisconnectWebView(main_webView);
         }
 
         for (unsigned int i=0; i<tabViews.size(); ++i) {
             if (tabViews[i] != main_webView) {
                 if (use_current_view_for_tab || (i != index)) {
-                    tabbarDisconnectWebView(tabViews[i], tabInspect[i]);
+                    tabbarDisconnectWebView(tabViews[i]);
                 } else {
-                    tabbarConnectWebView(tabViews[i], tabInspect[i]);
+                    tabbarConnectWebView(tabViews[i]);
                 }
             }
         }
@@ -864,7 +822,7 @@ void QtMainWindow::on_actionAbout_triggered()
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
 #ifndef RHO_SYMBIAN
 #ifdef RHODES_EMULATOR
-    QMessageBox::about(this, RHOSIMULATOR_NAME, QString(RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebKit v" QTWEBKIT_VERSION_STR ")\n(WebKit v%1) \nPlatform : %2 %3").arg(qWebKitVersion())
+    QMessageBox::about(this, RHOSIMULATOR_NAME, QString(RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebEngine v" QTWEBENGINECORE_VERSION_STR ")\n(WebKit v%1) \nPlatform : %2 %3").arg(QTWEBENGINECORE_VERSION_STR)
        .arg(RHOSIMCONF().getString( "platform").c_str())
        .arg(OSDetails)
        );
@@ -929,7 +887,7 @@ void QtMainWindow::executeJavaScriptCommand(TNavigateData* nd)
         if (nd->url) {
             QWebEngineView* wv = (nd->index < tabViews.size()) && (nd->index >= 0) ? tabViews[nd->index] : webView;
             if (wv)
-                wv->page()->mainFrame()->evaluateJavaScript(QString::fromWCharArray(nd->url));
+                wv->page()->runJavaScript(QString::fromWCharArray(nd->url));
             free(nd->url);
         }
         free(nd);
@@ -945,7 +903,8 @@ void QtMainWindow::selectPicture(char* callbackUrl)
 {
     bool wasError = false;
     rho::StringW strBlobRoot = rho::common::convertToStringW( RHODESAPP().getBlobsDirPath() );
-    QString fileName = QFileDialog::getOpenFileName(this, "Open Image", QString::fromStdWString(strBlobRoot), "Image Files (*.png *.jpg *.gif *.bmp)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Open Image", QString::fromStdWString(strBlobRoot),
+                                                    "Image Files (*.png *.jpg *.gif *.bmp)");
     char image_uri[4096];
     image_uri[0] = '\0';
 
@@ -1050,10 +1009,14 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
 #ifdef OS_SYMBIAN
                 if(i == 0)
 #endif
-                    m_alertDialog->addButton(QString::fromWCharArray(rho::common::convertToStringW(params->m_buttons[i].m_strCaption).c_str()), QMessageBox::ActionRole);
+                    m_alertDialog->addButton(QString::fromWCharArray(
+                                                 rho::common::convertToStringW(params->m_buttons[i].m_strCaption).c_str()),
+                                             QMessageBox::ActionRole);
 #ifdef OS_SYMBIAN
                 else if( i == 1)
-                    m_alertDialog->addButton(QString::fromWCharArray(rho::common::convertToStringW(params->m_buttons[i].m_strCaption).c_str()), QMessageBox::RejectRole);
+                    m_alertDialog->addButton(QString::fromWCharArray(
+                                                 rho::common::convertToStringW(params->m_buttons[i].m_strCaption).c_str()),
+                                             QMessageBox::RejectRole);
                 else if(i == 2)
                     break;
 #endif
@@ -1065,7 +1028,9 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
                     for (int i = 0; i < m_alertDialog->buttons().count(); ++i) {
                         if (btn == m_alertDialog->buttons().at(i)) {
 #ifdef OS_SYMBIAN
-                            RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strID, params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strCaption);
+                            RHODESAPP().callPopupCallback(params->m_callback,
+                                                          params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strID,
+                                    params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strCaption);
 #else
                             doAlertCallback(params, i, params->m_buttons[i]);
 #endif
@@ -1136,7 +1101,7 @@ void QtMainWindow::fullscreenCommand(int enable)
 {
 #if defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
     if ((enable && !isFullScreen()) || (!enable && isFullScreen())) {
-        menubar->setVisible(RHOCONF().getBool("w32_fullscreen_menu") || (!enable));
+        this->menuBar()->setVisible(RHOCONF().getBool("w32_fullscreen_menu") || (!enable));
         setWindowModality(enable ? Qt::ApplicationModal : Qt::NonModal);
         setWindowState(windowState() ^ Qt::WindowFullScreen);
     }
@@ -1160,10 +1125,12 @@ void QtMainWindow::setCookie(const char* url, const char* cookie)
 {
     if (url && cookie) {
         QUrl urlStr = QUrl(QString::fromUtf8(url));
-        QNetworkCookieJar* cj = webView->page()->networkAccessManager()->cookieJar();
+        cookieStore = main_webView->page()->profile()->cookieStore();
         QStringList cookieList = QString::fromUtf8(cookie).split(";");
         for (int i=0; i<cookieList.size(); ++i)
-            cj->setCookiesFromUrl(QNetworkCookie::parseCookies(cookieList.at(i).toLatin1()), urlStr);
+            foreach (QNetworkCookie cookie, QNetworkCookie::parseCookies(cookieList.at(i).toLatin1())) {
+                 cookieStore->setCookie(cookie, urlStr);
+            }
     }
 }
 
@@ -1179,7 +1146,6 @@ void QtMainWindow::setFrame(int x, int y, int width, int height)
 {
     this->move(x, y);
     this->resize(width, height);
-    this->adjustWebInspector();
 }
 
 void QtMainWindow::setPosition(int x, int y)
@@ -1190,7 +1156,6 @@ void QtMainWindow::setPosition(int x, int y)
 void QtMainWindow::setSize(int width, int height)
 {
     this->resize(width, height);
-    this->adjustWebInspector();
 }
 
 void QtMainWindow::lockSize(int locked)

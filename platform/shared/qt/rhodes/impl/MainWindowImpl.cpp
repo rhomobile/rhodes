@@ -56,10 +56,7 @@ int CMainWindow::m_screenHeight;
 
 bool CMainWindow::mainWindowClosed = false;
 
-CMainWindow::CMainWindow():
-    QObject(),
-    m_started(true),
-    qtMainWindow(NULL)
+CMainWindow::CMainWindow(): QObject(), m_started(true), qtMainWindow(NULL)
 {
     int argc = 0;
     QCoreApplication::setOrganizationName("Rhomobile");

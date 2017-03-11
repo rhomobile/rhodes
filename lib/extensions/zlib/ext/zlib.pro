@@ -1,8 +1,12 @@
 QT -= core
-
-    greaterThan(QT_VERSION, 5.5.5): {
-        CONFIG += c++11
+    greaterThan(QT_VERSION, 5.6.0): {
+        CONFIG += c++14
         DEFINES += CPP_ELEVEN
+        DEFINES += RHODES_VERSION_2
+    }
+
+    lessThan(QT_VERSION, 5.6.0): {
+        DEFINES += RHODES_VERSION_1
     }
 
 TARGET = zlib

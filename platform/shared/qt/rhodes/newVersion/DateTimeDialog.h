@@ -24,22 +24,31 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#include "ExternalWebView.h"
+#ifndef DATETIMEDIALOG_H
+#define DATETIMEDIALOG_H
 
-ExternalWebView::ExternalWebView(QWidget *parent) : QWidget(parent)
-{
-    //this->ui->webView->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-    QVBoxLayout * vblay = new QVBoxLayout(this);
-    webView = new QWebEngineView(this);
-    vblay->addWidget(webView);
-    this->move(0,0);
-}
+#include "impl/DateTimePickerImpl.h"
+#undef null
+#undef min
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
+#include <QSizePolicy>
 
-ExternalWebView::~ExternalWebView()
-{
-}
 
-void ExternalWebView::navigate(QUrl url)
+class DateTimeDialog : public QDialog
 {
-    webView->setUrl(url);
-}
+    Q_OBJECT
+
+public:
+    explicit DateTimeDialog(CDateTimeMessage* msg, QWidget *parent = 0);
+    ~DateTimeDialog();
+    time_t getUnixTime(void);
+
+private:
+
+    void * mv_dte;
+    int m_type;
+};
+
+#endif // DATETIMEDIALOG_H

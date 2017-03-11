@@ -1,6 +1,7 @@
 #include "zip.h"
 #include <vector>
 #include <memory>
+#include <stdio.h>
 
 // THIS FILE is almost entirely based upon code by info-zip.
 // It has been modified by Lucian Wischik. The modifications
@@ -2091,17 +2092,6 @@ ulg deflate(TState &state)
     return FLUSH_BLOCK(state,1); /* eof */
 }
 
-
-
-
-
-
-
-
-
-
-
-
 int putlocal(struct zlist *z, WRITEFUNC wfunc,void *param)
 { // Write a local header described by *z to file *f.  Return a ZE_ error code.
   PUTLG(LOCSIG, f);
@@ -2264,12 +2254,6 @@ char zencode(unsigned long *keys, char c)
   return (char)(t^c);
 }
 
-
-
-
-
-
-
 int lustricmp(const TCHAR *sa, const TCHAR *sb)
 { for (const TCHAR *ca=sa, *cb=sb; ; ca++, cb++)
   { int ia=tolower(*ca), ib=tolower(*cb);
@@ -2279,7 +2263,6 @@ int lustricmp(const TCHAR *sa, const TCHAR *sb)
     if (ia>ib) return 1;
   }
 }
-
 
 bool HasZipSuffix(const TCHAR *fn)
 { const TCHAR *ext = fn+_tcslen(fn);
@@ -2295,13 +2278,6 @@ bool HasZipSuffix(const TCHAR *fn)
   if (lustricmp(ext,_T(".tgz"))==0) return true;
   return false;
 }
-
-
-
-
-
-
-
 
 class TZip
 { public:

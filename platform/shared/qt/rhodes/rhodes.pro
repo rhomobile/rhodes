@@ -13,13 +13,13 @@ greaterThan(QT_MAJOR_VERSION, 4):{
     greaterThan(QT_VERSION, 5.6.0): {
         QT += webengine webenginecore webenginewidgets
         message(Webengine enabled)
-        CONFIG += c++11
+        CONFIG += c++14
         DEFINES += CPP_ELEVEN RHODES_VERSION_2
         INCLUDEPATH += newVersion
     }
 }
 
-
+#DEFINES += RHODES_EMULATOR
 TARGET = RhoSimulator
 TEMPLATE = app
 
@@ -219,9 +219,9 @@ newVersion/RhoNativeApiCall.h\
 newVersion/QtNativeTabBar.h\
 newVersion/QtWebEngineView.h\
 newVersion/QtWebEnginePage.h\
-newVersion/QtWebInspector.h\
 newVersion/ExternalWebView.h\
-newVersion/QWebEngineViewSelectionSuppressor.h
+newVersion/QWebEngineViewSelectionSuppressor.h\
+newVersion/DateTimeDialog.h
 
 SOURCES += newVersion/QtMainWindow.cpp\
 newVersion/RhoNativeApiCall.cpp\
@@ -229,5 +229,6 @@ newVersion/QtNativeTabBar.cpp\
 newVersion/QtWebEngineView.cpp\
 newVersion/QtWebEnginePage.cpp\
 newVersion/ExternalWebView.cpp\
-newVersion/QtWebInspector.cpp
+newVersion/DateTimeDialog.cpp\
+newVersion/main.cpp
 }
