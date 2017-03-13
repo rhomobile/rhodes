@@ -124,6 +124,49 @@ IRhoListener {
 	    return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
 	}
 
+	private boolean outputToDataUri() {
+		return getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri");
+	}
+
+	private Uri makeDataUri() {
+
+		ByteArrayOutputStream stream = null;
+		Uri ret = null;
+		try {
+			stream = new ByteArrayOutputStream();
+			mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+			byte[] byteArray = stream.toByteArray();
+			StringBuilder dataBuilder = new StringBuilder();
+			dataBuilder.append("data:image/jpeg;base64,");
+			try {
+				System.gc();
+				dataBuilder.append(Base64.encodeToString(byteArray, false));
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			catch(OutOfMemoryError e){
+				stream = new ByteArrayOutputStream();
+				mBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+				byteArray = stream.toByteArray();
+				dataBuilder.append(Base64.encodeToString(byteArray, false));
+			}
+			getActualPropertyMap().put("curUri", dataBuilder.toString());
+			ret = Uri.parse(dataBuilder.toString());
+		} catch ( Throwable e ) {
+			if (stream != null) {
+				try {
+					stream.reset();
+					stream.close();
+				} catch (Throwable e1) {
+					// Do nothing
+				}
+			}
+		}
+
+		return ret;
+	}
+
 
 	@SuppressLint("NewApi")
 	@Override
@@ -134,8 +177,7 @@ IRhoListener {
 			return;
 		}
 		Uri captureUri = null;
-		String targetPath = " ";
-		ByteArrayOutputStream stream = null;
+		String targetPath = " ";		
 		Logger.T(TAG, "CameraRhoListener.onActivityResult() START");
 		Logger.T(TAG, "ActualProperties: ["+getActualPropertyMap()+"]");
 		Logger.T(TAG, "Properties: ["+propertyMap+"]");
@@ -178,14 +220,14 @@ IRhoListener {
 						System.gc();
 						if (getActualPropertyMap().get("DeviceGallery_Key") == null){
 							BitmapFactory.decodeFile(curUri.getPath(), options_only_size);
-							if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){
+							if( outputToDataUri() ){
 								mBitmap = BitmapFactory.decodeFile(curUri.getPath());
 							}
 
 						}else{
 							imgPath = getFilePath(curUri);
 							BitmapFactory.decodeFile(imgPath, options_only_size);
-							if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){
+							if( outputToDataUri() ){
 								mBitmap = BitmapFactory.decodeFile(imgPath);
 							}
 							File f= new File(imgPath);
@@ -218,27 +260,8 @@ IRhoListener {
 					picChoosen_imageheight = options_only_size.outHeight;
 
 
-					if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){
-						stream = new ByteArrayOutputStream();
-						mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-						byte[] byteArray = stream.toByteArray();
-						StringBuilder dataBuilder = new StringBuilder();
-						dataBuilder.append("data:image/jpeg;base64,");
-						try {
-							System.gc();
-							dataBuilder.append(Base64.encodeToString(byteArray, false));
-						} catch (Exception e) {
-							// TODO: handle exception
-							e.printStackTrace();
-						}
-						catch(OutOfMemoryError e){
-							stream = new ByteArrayOutputStream();
-							mBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-							byteArray = stream.toByteArray();
-							dataBuilder.append(Base64.encodeToString(byteArray, false));
-						}
-						getActualPropertyMap().put("curUri", dataBuilder.toString());
-						curUri=Uri.parse(dataBuilder.toString());
+					if( outputToDataUri() ){
+						curUri = makeDataUri();						
 						mBitmap.recycle();
 					}
 					Logger.T(TAG, "Photo is captured: " + curUri);
@@ -301,6 +324,13 @@ IRhoListener {
 					}
 
 				}
+				else if ( outputToDataUri() ) {
+					Logger.T( TAG, "Making image URI from intent data" );
+					mBitmap = (Bitmap)intent.getExtras().get("data");
+					curUri = makeDataUri();
+					mBitmap.recycle();
+					Logger.T(TAG, "Photo is captured: " + curUri);
+				}
 				else
 				{
 					Logger.T(TAG, "else(2)");
@@ -347,227 +377,9 @@ IRhoListener {
 					Logger.T(TAG, "targetPath["+targetPath+"]");
 				}
 
-
-				int rotate_angle = 0;
-
-				String strExifRotation = getActualPropertyMap().get("useRotationBitmapByEXIF");
-				if ((strExifRotation != null) && (Boolean.parseBoolean(strExifRotation))) {
-					// detect original exif rotation
-					String bitmapPath = imgPath;
-					ExifInterface exif=new ExifInterface(bitmapPath);
-					String or_tag = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
-
-					if (or_tag != null) {
-						Logger.T(TAG, "$$$ EXIF TAG_ORIENTATION = "+or_tag+" $$$");
-
-				        if(or_tag.equalsIgnoreCase("6")){
-				            rotate_angle = 90;
-				        } else if(or_tag.equalsIgnoreCase("8")){
-				            rotate_angle = 270;
-				        } else if(or_tag.equalsIgnoreCase("3")){
-				            rotate_angle = 180;
-				        } else if(or_tag.equalsIgnoreCase("0")){
-				            // undefined
-				        }
-					}
+				if (!outputToDataUri()) {
+					applyPostCaptureTransforms(options_only_size);
 				}
-				if (rotate_angle != 0) {
-					Logger.T(TAG, "$$$ Image should be rotated by EXIF !!! angle = "+rotate_angle+" $$$");
-				}
-
-
-				String useRealBitmapResize = getActualPropertyMap().get("useRealBitmapResize");
-				if ((useRealBitmapResize != null) && (Boolean.parseBoolean(useRealBitmapResize))) {
-					Logger.T(TAG, "$$$ real resize start $$$");
-					try {
-						// resize to preffered size
-
-						Logger.T(TAG, "imgPath ["+imgPath+"]");
-						Logger.T(TAG, "rename ["+rename+"]");
-						String bitmapPath = imgPath;
-
-
-						BitmapFactory.decodeFile(bitmapPath, options_only_size);
-						picChoosen_imagewidth = options_only_size.outWidth;
-						picChoosen_imageheight = options_only_size.outHeight;
-
-						int idesiredWidth = 0;
-						int idesiredHeight = 0;
-						if (getActualPropertyMap().get("desiredWidth") != null) {
-							idesiredWidth = Integer.valueOf(getActualPropertyMap().get("desiredWidth"));
-						}
-						if (getActualPropertyMap().get("desiredHeight") != null) {
-							idesiredHeight = Integer.valueOf(getActualPropertyMap().get("desiredHeight"));
-						}
-						Logger.T(TAG, " FILE ["+bitmapPath+"]	 orig["+picChoosen_imagewidth+"x"+picChoosen_imageheight+"] scaleto ["+idesiredHeight+"x"+idesiredHeight+"]");
-						if ((idesiredHeight > 0) && (idesiredWidth > 0)) {
-							// process resize
-							Logger.T(TAG, "Do SCALE  orig["+picChoosen_imagewidth+"x"+picChoosen_imageheight+"] scaleto ["+idesiredHeight+"x"+idesiredHeight+"]");
-
-
-							float fcurWidth = picChoosen_imagewidth;
-							float fcurHeight = picChoosen_imageheight;
-
-							float desiredWidth = idesiredWidth;
-							float desiredHeight = idesiredHeight;
-
-							float kw = desiredWidth / fcurWidth;
-							float kh = desiredHeight / fcurHeight;
-
-							if (kw > 1.0) {
-								if (kh > kw) {
-									kw = kw/kh;
-									kh = 1.0f;
-								}
-								else {
-									kh = kh/kw;
-									kw = 1.0f;
-								}
-							}
-							else {
-								if (kh > 1.0) {
-									kw = kw/kh;
-									kh = 1.0f;
-								}
-							}
-
-							float k = kw;
-							if (kw > kh) {
-								k = kh;
-							}
-
-							int newWidth = (int)(picChoosen_imagewidth*k);
-							int newHeight = (int)(picChoosen_imageheight*k);
-
-							BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-							bmOptions.inJustDecodeBounds = false;
-							bmOptions.inSampleSize = picChoosen_imagewidth / newWidth;
-
-							picChoosen_imagewidth = newWidth;
-							picChoosen_imageheight = newHeight;
-
-
-							Logger.T(TAG, "Load samle scale ["+bmOptions.inSampleSize+"]");
-
-							bmOptions.inPurgeable = true;
-
-							Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath, bmOptions);
-
-							Bitmap scaledBitmap=Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
-
-							if (rotate_angle != 0) {
-								Bitmap savedBitmap = scaledBitmap;
-								scaledBitmap = rotateBitmap(savedBitmap, rotate_angle);
-								savedBitmap.recycle();
-								savedBitmap = null;
-								rotate_angle = 0;
-							}
-
-							ByteArrayOutputStream bos=new ByteArrayOutputStream();
-							scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, bos);
-							bitmap.recycle();
-							bitmap=null;
-							OutputStream out;
-							out = new FileOutputStream(bitmapPath+"_tmp");
-							bos.writeTo(out);
-							bos.flush();
-
-							File file= new File(bitmapPath+"_tmp");
-							File file_old = new File(bitmapPath);
-							file_old.delete();
-							file.renameTo(new File(bitmapPath));
-							fixTheGalleryIssue(bitmapPath);
-
-
-						}
-					} catch (Exception e) {
-						// TODO: handle exception
-						e.printStackTrace();
-					}
-					Logger.T(TAG, "$$$ resize finished $$$");
-				}
-
-				// Grayscale
-				String strColorMode = getActualPropertyMap().get("colorModel");
-				if ((strColorMode != null) && (strColorMode.equalsIgnoreCase("grayscale")) ) {
-					Logger.T(TAG, "$$$ recolor to grayscale start $$$");
-
-					try {
-						Logger.T(TAG, "imgPath ["+imgPath+"]");
-						Logger.T(TAG, "rename ["+rename+"]");
-						String bitmapPath = imgPath;
-
-						Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath);
-						Bitmap gray = toGrayscale(bitmap);
-						if (rotate_angle != 0) {
-							Bitmap savedBitmap = gray;
-							gray = rotateBitmap(savedBitmap, rotate_angle);
-							savedBitmap.recycle();
-							savedBitmap = null;
-							rotate_angle = 0;
-						}
-						ByteArrayOutputStream bos=new ByteArrayOutputStream();
-						gray.compress(Bitmap.CompressFormat.JPEG, 75, bos);
-						bitmap.recycle();
-						bitmap=null;
-						OutputStream out;
-						out = new FileOutputStream(bitmapPath+"_tmp");
-						bos.writeTo(out);
-						bos.flush();
-
-						File file= new File(bitmapPath+"_tmp");
-						File file_old = new File(bitmapPath);
-						file_old.delete();
-						file.renameTo(new File(bitmapPath));
-						fixTheGalleryIssue(bitmapPath);
-
-					} catch (Exception e) {
-						// TODO: handle exception
-						e.printStackTrace();
-					}
-
-					Logger.T(TAG, "$$$ recolor to grayscale finished $$$");
-				}
-
-				// EXIF rotation
-				if (rotate_angle != 0) {
-					Logger.T(TAG, "$$$ EXIF rotation start $$$");
-
-					try {
-						Logger.T(TAG, "imgPath ["+imgPath+"]");
-						Logger.T(TAG, "rename ["+rename+"]");
-						String bitmapPath = imgPath;
-
-						Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath);
-
-						Bitmap rotated = rotateBitmap(bitmap, rotate_angle);
-
-						ByteArrayOutputStream bos=new ByteArrayOutputStream();
-						rotated.compress(Bitmap.CompressFormat.JPEG, 75, bos);
-						bitmap.recycle();
-						bitmap=null;
-						OutputStream out;
-						out = new FileOutputStream(bitmapPath+"_tmp");
-						bos.writeTo(out);
-						bos.flush();
-
-						File file= new File(bitmapPath+"_tmp");
-						File file_old = new File(bitmapPath);
-						file_old.delete();
-						file.renameTo(new File(bitmapPath));
-						fixTheGalleryIssue(bitmapPath);
-
-
-					} catch (Exception e) {
-						// TODO: handle exception
-						e.printStackTrace();
-					}
-
-					Logger.T(TAG, "$$$ EXIF rotation finished $$$");
-				}
-
-
-
 
 				try{
 					DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent, resultCode);
@@ -587,18 +399,236 @@ IRhoListener {
 				mMethodResult.setError("Unknown error");
 			}
 		} catch (Throwable err) {
-			Logger.E(TAG, err);
-			if (stream != null) {
-				try {
-					stream.reset();
-					stream.close();
-				} catch (Throwable e1) {
-					// Do nothing
-				}
-			}
+			Logger.E(TAG, err);			
 			mMethodResult.setError(err.getMessage());
 		}
 
+	}
+
+	private void applyPostCaptureTransforms(BitmapFactory.Options options_only_size) {
+		int rotate_angle = 0;
+
+		String strExifRotation = getActualPropertyMap().get("useRotationBitmapByEXIF");
+		if ((strExifRotation != null) && (Boolean.parseBoolean(strExifRotation))) {
+			// detect original exif rotation
+			String bitmapPath = imgPath;
+
+			try {
+
+				ExifInterface exif=new ExifInterface(bitmapPath);
+				String or_tag = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+
+				if (or_tag != null) {
+					Logger.T(TAG, "$$$ EXIF TAG_ORIENTATION = "+or_tag+" $$$");
+
+			        if(or_tag.equalsIgnoreCase("6")){
+			            rotate_angle = 90;
+			        } else if(or_tag.equalsIgnoreCase("8")){
+			            rotate_angle = 270;
+			        } else if(or_tag.equalsIgnoreCase("3")){
+			            rotate_angle = 180;
+			        } else if(or_tag.equalsIgnoreCase("0")){
+			            // undefined
+			        }
+				}
+			} catch (IOException ioerror) {
+				Logger.T( TAG, "EXIF attributes can't be read from file: " + bitmapPath );
+			}
+		}
+		if (rotate_angle != 0) {
+			Logger.T(TAG, "$$$ Image should be rotated by EXIF !!! angle = "+rotate_angle+" $$$");
+		}
+
+
+		String useRealBitmapResize = getActualPropertyMap().get("useRealBitmapResize");
+		if ((useRealBitmapResize != null) && (Boolean.parseBoolean(useRealBitmapResize))) {
+			Logger.T(TAG, "$$$ real resize start $$$");
+			try {
+				// resize to preffered size
+
+				Logger.T(TAG, "imgPath ["+imgPath+"]");
+				Logger.T(TAG, "rename ["+rename+"]");
+				String bitmapPath = imgPath;
+
+
+				BitmapFactory.decodeFile(bitmapPath, options_only_size);
+				picChoosen_imagewidth = options_only_size.outWidth;
+				picChoosen_imageheight = options_only_size.outHeight;
+
+				int idesiredWidth = 0;
+				int idesiredHeight = 0;
+				if (getActualPropertyMap().get("desiredWidth") != null) {
+					idesiredWidth = Integer.valueOf(getActualPropertyMap().get("desiredWidth"));
+				}
+				if (getActualPropertyMap().get("desiredHeight") != null) {
+					idesiredHeight = Integer.valueOf(getActualPropertyMap().get("desiredHeight"));
+				}
+				Logger.T(TAG, " FILE ["+bitmapPath+"]	 orig["+picChoosen_imagewidth+"x"+picChoosen_imageheight+"] scaleto ["+idesiredHeight+"x"+idesiredHeight+"]");
+				if ((idesiredHeight > 0) && (idesiredWidth > 0)) {
+					// process resize
+					Logger.T(TAG, "Do SCALE  orig["+picChoosen_imagewidth+"x"+picChoosen_imageheight+"] scaleto ["+idesiredHeight+"x"+idesiredHeight+"]");
+
+
+					float fcurWidth = picChoosen_imagewidth;
+					float fcurHeight = picChoosen_imageheight;
+
+					float desiredWidth = idesiredWidth;
+					float desiredHeight = idesiredHeight;
+
+					float kw = desiredWidth / fcurWidth;
+					float kh = desiredHeight / fcurHeight;
+
+					if (kw > 1.0) {
+						if (kh > kw) {
+							kw = kw/kh;
+							kh = 1.0f;
+						}
+						else {
+							kh = kh/kw;
+							kw = 1.0f;
+						}
+					}
+					else {
+						if (kh > 1.0) {
+							kw = kw/kh;
+							kh = 1.0f;
+						}
+					}
+
+					float k = kw;
+					if (kw > kh) {
+						k = kh;
+					}
+
+					int newWidth = (int)(picChoosen_imagewidth*k);
+					int newHeight = (int)(picChoosen_imageheight*k);
+
+					BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+					bmOptions.inJustDecodeBounds = false;
+					bmOptions.inSampleSize = picChoosen_imagewidth / newWidth;
+
+					picChoosen_imagewidth = newWidth;
+					picChoosen_imageheight = newHeight;
+
+
+					Logger.T(TAG, "Load samle scale ["+bmOptions.inSampleSize+"]");
+
+					bmOptions.inPurgeable = true;
+
+					Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath, bmOptions);
+
+					Bitmap scaledBitmap=Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+
+					if (rotate_angle != 0) {
+						Bitmap savedBitmap = scaledBitmap;
+						scaledBitmap = rotateBitmap(savedBitmap, rotate_angle);
+						savedBitmap.recycle();
+						savedBitmap = null;
+						rotate_angle = 0;
+					}
+
+					ByteArrayOutputStream bos=new ByteArrayOutputStream();
+					scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, bos);
+					bitmap.recycle();
+					bitmap=null;
+					OutputStream out;
+					out = new FileOutputStream(bitmapPath+"_tmp");
+					bos.writeTo(out);
+					bos.flush();
+
+					File file= new File(bitmapPath+"_tmp");
+					File file_old = new File(bitmapPath);
+					file_old.delete();
+					file.renameTo(new File(bitmapPath));
+					fixTheGalleryIssue(bitmapPath);
+
+
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			Logger.T(TAG, "$$$ resize finished $$$");
+		}
+
+		// Grayscale
+		String strColorMode = getActualPropertyMap().get("colorModel");
+		if ((strColorMode != null) && (strColorMode.equalsIgnoreCase("grayscale")) ) {
+			Logger.T(TAG, "$$$ recolor to grayscale start $$$");
+
+			try {
+				Logger.T(TAG, "imgPath ["+imgPath+"]");
+				Logger.T(TAG, "rename ["+rename+"]");
+				String bitmapPath = imgPath;
+
+				Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath);
+				Bitmap gray = toGrayscale(bitmap);
+				if (rotate_angle != 0) {
+					Bitmap savedBitmap = gray;
+					gray = rotateBitmap(savedBitmap, rotate_angle);
+					savedBitmap.recycle();
+					savedBitmap = null;
+					rotate_angle = 0;
+				}
+				ByteArrayOutputStream bos=new ByteArrayOutputStream();
+				gray.compress(Bitmap.CompressFormat.JPEG, 75, bos);
+				bitmap.recycle();
+				bitmap=null;
+				OutputStream out;
+				out = new FileOutputStream(bitmapPath+"_tmp");
+				bos.writeTo(out);
+				bos.flush();
+
+				File file= new File(bitmapPath+"_tmp");
+				File file_old = new File(bitmapPath);
+				file_old.delete();
+				file.renameTo(new File(bitmapPath));
+				fixTheGalleryIssue(bitmapPath);
+
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+
+			Logger.T(TAG, "$$$ recolor to grayscale finished $$$");
+		}
+
+		// EXIF rotation
+		if (rotate_angle != 0) {
+			Logger.T(TAG, "$$$ EXIF rotation start $$$");
+
+			try {
+				Logger.T(TAG, "imgPath ["+imgPath+"]");
+				Logger.T(TAG, "rename ["+rename+"]");
+				String bitmapPath = imgPath;
+
+				Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath);
+
+				Bitmap rotated = rotateBitmap(bitmap, rotate_angle);
+
+				ByteArrayOutputStream bos=new ByteArrayOutputStream();
+				rotated.compress(Bitmap.CompressFormat.JPEG, 75, bos);
+				bitmap.recycle();
+				bitmap=null;
+				OutputStream out;
+				out = new FileOutputStream(bitmapPath+"_tmp");
+				bos.writeTo(out);
+				bos.flush();
+
+				File file= new File(bitmapPath+"_tmp");
+				File file_old = new File(bitmapPath);
+				file_old.delete();
+				file.renameTo(new File(bitmapPath));
+				fixTheGalleryIssue(bitmapPath);
+
+
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+
+			Logger.T(TAG, "$$$ EXIF rotation finished $$$");
+		}
 	}
 
 
