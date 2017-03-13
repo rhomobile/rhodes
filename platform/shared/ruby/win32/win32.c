@@ -67,8 +67,8 @@
 #undef close
 #undef setsockopt
 #ifdef RHODES_VERSION_2
-#define _filbuf fgetc
-#define _flsbuf fputc
+    #define _filbuf fgetc
+    #define _flsbuf fputc
 #endif
 
 #if defined __BORLANDC__ || defined _WIN32_WCE
@@ -2064,15 +2064,22 @@ typedef struct{
 #endif
 }	ioinfo;
 #endif
+
+
 #if !defined _CRTIMP || defined __MINGW32__
 #undef _CRTIMP
 #define _CRTIMP __declspec(dllimport)
 #endif
 
 #if !defined(__BORLANDC__) && !defined(_WIN32_WCE)
+#ifdef RHODES_VERSION_2
+static ioinfo ** __pioinfo = NULL;
+#define IOINFO_L2E 6
+#else
 EXTERN_C _CRTIMP ioinfo * __pioinfo[];
-
 #define IOINFO_L2E			5
+#endif
+
 #define IOINFO_ARRAY_ELTS	(1 << IOINFO_L2E)
 #define _pioinfo(i)	((ioinfo*)((char*)(__pioinfo[i >> IOINFO_L2E]) + (i & (IOINFO_ARRAY_ELTS - 1)) * (sizeof(ioinfo) + pioinfo_extra)))
 #define _osfhnd(i)  (_pioinfo(i)->osfhnd)
@@ -2082,8 +2089,7 @@ EXTERN_C _CRTIMP ioinfo * __pioinfo[];
 #if RT_VER >= 80
 static size_t pioinfo_extra = 0;	/* workaround for VC++8 SP1 */
 
-static void
-set_pioinfo_extra(void)
+static void set_pioinfo_extra(void)
 {
     int fd;
 
@@ -2115,8 +2121,7 @@ set_pioinfo_extra(void)
 #define FDEV			0x40	/* file handle refers to device */
 #define FTEXT			0x80	/* file handle is in text mode */
 
-static int
-rb_w32_open_osfhandle(intptr_t osfhandle, int flags)
+static int rb_w32_open_osfhandle(intptr_t osfhandle, int flags)
 {
     int fh;
     char fileflags;		/* _osfile flags */
@@ -2177,8 +2182,7 @@ typedef struct {
 #define GET_STREAM_PTR(stream) ((vcruntime_file*)stream)
 #endif
 
-static void
-init_stdhandle(void)
+static void init_stdhandle(void)
 {
     int nullfd = -1;
     int keep = 0;
@@ -2188,7 +2192,7 @@ init_stdhandle(void)
      ((nullfd == (fd)) ? (keep = 1) : dup2(nullfd, fd)),	\
      (fd))
 
-#ifdef CPP_ELEVEN
+#ifdef RHODES_VERSION_2
     if (fileno(stdin) < 0) {
     FILE_FILENO(stdin) = open_null(0);
     }
@@ -4809,8 +4813,7 @@ rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self,
     return val;
 }
 
-char **
-rb_w32_get_environ(void)
+char ** rb_w32_get_environ(void)
 {
     char *envtop, *env;
     char **myenvtop, **myenv;
@@ -4844,8 +4847,7 @@ rb_w32_get_environ(void)
     return myenvtop;
 }
 
-void
-rb_w32_free_environ(char **env)
+void rb_w32_free_environ(char **env)
 {
     char **t = env;
 
@@ -4854,8 +4856,7 @@ rb_w32_free_environ(char **env)
 }
 
 #ifndef _WIN32_WCE
-rb_pid_t
-rb_w32_getpid(void)
+rb_pid_t rb_w32_getpid(void)
 {
     rb_pid_t pid;
 
@@ -4867,8 +4868,7 @@ rb_w32_getpid(void)
 }
 
 
-rb_pid_t
-rb_w32_getppid(void)
+rb_pid_t rb_w32_getppid(void)
 {
     static long (WINAPI *pNtQueryInformationProcess)(HANDLE, int, void *, ULONG, ULONG *) = NULL;
     rb_pid_t ppid = 0;
@@ -4900,8 +4900,7 @@ rb_w32_getppid(void)
     return ppid;
 }
 #endif
-int
-rb_w32_uopen(const char *file, int oflag, ...)
+int rb_w32_uopen(const char *file, int oflag, ...)
 {
     WCHAR *wfile;
     int ret;
@@ -4919,8 +4918,7 @@ rb_w32_uopen(const char *file, int oflag, ...)
     return ret;
 }
 #ifndef _WIN32_WCE
-int
-rb_w32_open(const char *file, int oflag, ...)
+int rb_w32_open(const char *file, int oflag, ...)
 {
     WCHAR *wfile;
     int ret;
@@ -4941,8 +4939,7 @@ rb_w32_open(const char *file, int oflag, ...)
     return ret;
 }
 
-int
-rb_w32_wopen(const WCHAR *file, int oflag, ...)
+int rb_w32_wopen(const WCHAR *file, int oflag, ...)
 {
     char flags = 0;
     int fd;
@@ -5223,8 +5220,7 @@ rb_w32_pipe(int fds[2])
 }
 #endif
 
-int
-rb_w32_close(int fd)
+int rb_w32_close(int fd)
 {
     SOCKET sock = TO_SOCKET(fd);
     int save_errno = errno;
@@ -5249,8 +5245,7 @@ rb_w32_close(int fd)
 
 #ifndef _WIN32_WCE
 #undef read
-size_t
-rb_w32_read(int fd, void *buf, size_t size)
+size_t rb_w32_read(int fd, void *buf, size_t size)
 {
     SOCKET sock = TO_SOCKET(fd);
     DWORD read;
@@ -5405,8 +5400,7 @@ rb_w32_read(int fd, void *buf, size_t size)
 }
 
 #undef write
-size_t
-rb_w32_write(int fd, const void *buf, size_t size)
+size_t rb_w32_write(int fd, const void *buf, size_t size)
 {
     SOCKET sock = TO_SOCKET(fd);
     DWORD written;
@@ -5531,8 +5525,7 @@ rb_w32_write(int fd, const void *buf, size_t size)
 }
 #endif //WINCE
 
-static int
-unixtime_to_filetime(time_t time, FILETIME *ft)
+static int unixtime_to_filetime(time_t time, FILETIME *ft)
 {
     struct tm *tm;
     SYSTEMTIME st;
@@ -5555,8 +5548,7 @@ unixtime_to_filetime(time_t time, FILETIME *ft)
     return 0;
 }
 
-static int
-wutime(const WCHAR *path, const struct utimbuf *times)
+static int wutime(const WCHAR *path, const struct utimbuf *times)
 {
     HANDLE hFile;
     FILETIME atime, mtime;
@@ -5617,8 +5609,7 @@ rb_w32_uutime(const char *path, const struct utimbuf *times)
     return ret;
 }
 
-int
-rb_w32_utime(const char *path, const struct utimbuf *times)
+int rb_w32_utime(const char *path, const struct utimbuf *times)
 {
     WCHAR *wpath;
     int ret;
@@ -5630,8 +5621,7 @@ rb_w32_utime(const char *path, const struct utimbuf *times)
     return ret;
 }
 
-int
-rb_w32_uchdir(const char *path)
+int rb_w32_uchdir(const char *path)
 {
     WCHAR *wpath;
     int ret;
@@ -5643,8 +5633,7 @@ rb_w32_uchdir(const char *path)
     return ret;
 }
 
-static int
-wmkdir(const WCHAR *wpath, int mode)
+static int wmkdir(const WCHAR *wpath, int mode)
 {
     int ret = -1;
 
@@ -5662,8 +5651,7 @@ wmkdir(const WCHAR *wpath, int mode)
     return ret;
 }
 
-int
-rb_w32_umkdir(const char *path, int mode)
+int rb_w32_umkdir(const char *path, int mode)
 {
     WCHAR *wpath;
     int ret;
@@ -5675,8 +5663,7 @@ rb_w32_umkdir(const char *path, int mode)
     return ret;
 }
 
-int
-rb_w32_mkdir(const char *path, int mode)
+int rb_w32_mkdir(const char *path, int mode)
 {
     WCHAR *wpath;
     int ret;
@@ -5688,8 +5675,7 @@ rb_w32_mkdir(const char *path, int mode)
     return ret;
 }
 
-static int
-wrmdir(const WCHAR *wpath)
+static int wrmdir(const WCHAR *wpath)
 {
     int ret = 0;
     RUBY_CRITICAL({
@@ -5708,8 +5694,7 @@ wrmdir(const WCHAR *wpath)
     return ret;
 }
 
-int
-rb_w32_rmdir(const char *path)
+int rb_w32_rmdir(const char *path)
 {
     WCHAR *wpath;
     int ret;
@@ -5721,8 +5706,7 @@ rb_w32_rmdir(const char *path)
     return ret;
 }
 
-int
-rb_w32_urmdir(const char *path)
+int rb_w32_urmdir(const char *path)
 {
     WCHAR *wpath;
     int ret;
@@ -5734,8 +5718,7 @@ rb_w32_urmdir(const char *path)
     return ret;
 }
 
-static int
-wunlink(const WCHAR *path)
+static int wunlink(const WCHAR *path)
 {
     int ret = 0;
     RUBY_CRITICAL({
@@ -5754,8 +5737,7 @@ wunlink(const WCHAR *path)
     return ret;
 }
 
-int
-rb_w32_uunlink(const char *path)
+int rb_w32_uunlink(const char *path)
 {
     WCHAR *wpath;
     int ret;
@@ -5767,8 +5749,7 @@ rb_w32_uunlink(const char *path)
     return ret;
 }
 
-int
-rb_w32_unlink(const char *path)
+int rb_w32_unlink(const char *path)
 {
     WCHAR *wpath;
     int ret;
@@ -5780,8 +5761,7 @@ rb_w32_unlink(const char *path)
     return ret;
 }
 
-int
-rb_w32_uchmod(const char *path, int mode)
+int rb_w32_uchmod(const char *path, int mode)
 {
     WCHAR *wpath;
     int ret;
@@ -5794,8 +5774,7 @@ rb_w32_uchmod(const char *path, int mode)
 }
 
 #if !defined(__BORLANDC__)&& !defined(_WIN32_WCE)
-int
-rb_w32_isatty(int fd)
+int rb_w32_isatty(int fd)
 {
     // validate fd by using _get_osfhandle() because we cannot access _nhandle
 /*    if (_get_osfhandle(fd) == -1) {
@@ -5814,8 +5793,7 @@ rb_w32_isatty(int fd)
 //
 
 #ifdef __BORLANDC__
-static int
-too_many_files(void)
+static int too_many_files(void)
 {
     FILE *f;
     for (f = _streams; f < _streams + _nfile; f++) {
@@ -5825,8 +5803,7 @@ too_many_files(void)
 }
 
 #undef fopen
-FILE *
-rb_w32_fopen(const char *path, const char *mode)
+FILE * rb_w32_fopen(const char *path, const char *mode)
 {
     FILE *f = (errno = 0, fopen(path, mode));
     if (f == NULL && errno == 0) {
@@ -5836,8 +5813,7 @@ rb_w32_fopen(const char *path, const char *mode)
     return f;
 }
 
-FILE *
-rb_w32_fdopen(int handle, const char *type)
+FILE * rb_w32_fdopen(int handle, const char *type)
 {
     FILE *f = (errno = 0, _fdopen(handle, (char *)type));
     if (f == NULL && errno == 0) {
@@ -5849,8 +5825,7 @@ rb_w32_fdopen(int handle, const char *type)
     return f;
 }
 
-FILE *
-rb_w32_fsopen(const char *path, const char *mode, int shflags)
+FILE * rb_w32_fsopen(const char *path, const char *mode, int shflags)
 {
     FILE *f = (errno = 0, _fsopen(path, mode, shflags));
     if (f == NULL && errno == 0) {
@@ -5863,21 +5838,18 @@ rb_w32_fsopen(const char *path, const char *mode, int shflags)
 
 #if defined(_MSC_VER) && RT_VER <= 60
 extern long _ftol(double);
-long
-_ftol2(double d)
+long _ftol2(double d)
 {
     return _ftol(d);
 }
-long
-_ftol2_sse(double d)
+long _ftol2_sse(double d)
 {
     return _ftol(d);
 }
 #endif
 
 #ifndef signbit
-int
-signbit(double x)
+int signbit(double x)
 {
     int *ip = (int *)(&x + 1) - 1;
     return *ip < 0;

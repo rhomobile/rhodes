@@ -182,7 +182,7 @@ int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 	}
 	else
 	{
-	LOG(TRACE) + "RHOQT wait-m_waitThread does not existdo not call stopWait";
+        LOG(TRACE) + "RHOQT wait-m_waitThread does not existdo not call stopWait";
 	}
 
 	LOG(TRACE) + "RHOQT wait-before m_waitThread->start";
@@ -194,15 +194,15 @@ int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 	
 	if(isVeyBigTimeoutvalue)
 	{
-	LOG(INFO) + "RHOQT wait-before wait for a long time nTimeoutMs:-  "+nTimeoutMs;
-	result = m_waitThread->wait(1000UL*nTimeoutMs) ? 0 : 1;
-	LOG(INFO) + "RHOQT wait-after wait for a long time Result:-  "+result;
+        LOG(INFO) + "RHOQT wait-before wait for a long time nTimeoutMs:-  "+nTimeoutMs;
+        result = m_waitThread->wait(1000UL*nTimeoutMs) ? 0 : 1;
+        LOG(INFO) + "RHOQT wait-after wait for a long time Result:-  "+result;
 	}
 	else
 	{
-	LOG(INFO) + "RHOQT wait-before wait for a short time nTimeoutMs:-  "+nTimeoutMs;
-	result = m_waitThread->wait(1UL*nTimeoutMs) ? 0 : 1;
-	LOG(INFO) + "RHOQT wait-after wait for a short time Result:-  "+result;
+        LOG(INFO) + "RHOQT wait-before wait for a short time nTimeoutMs:-  "+nTimeoutMs;
+        result = m_waitThread->wait(1UL*nTimeoutMs) ? 0 : 1;
+        LOG(INFO) + "RHOQT wait-after wait for a short time Result:-  "+result;
 	}
 
 
