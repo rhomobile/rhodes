@@ -653,11 +653,12 @@ public class CameraObject extends CameraBase implements ICameraObject {
 
             Intent intent = null;
             if (Boolean.parseBoolean(actualPropertyMap.get("useSystemViewfinder"))) {
+                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
                 if (outputFormat.equalsIgnoreCase("image")) {
                     values = new ContentValues();
                     fileUri = RhodesActivity.getContext().getContentResolver().insert(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                    intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);                    
                     actualPropertyMap.put("captureUri", fileUri.toString());
                     propertyMap.put("dataURI", "");
                     // intent is null with MediaStore.EXTRA_OUTPUT so adding fileuri to map and get it with same key
