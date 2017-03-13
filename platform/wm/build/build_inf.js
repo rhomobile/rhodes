@@ -359,18 +359,19 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     else 
     {
         p("2=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
-        p("3=,\"\",," + rhogempath + "\"\\\"");
+        p("3=,\"\",," + rhogempath + "\"\\libs\\webkit\\ext\\wm\\lib\\\"");
         
         if (webkit_mode != 'none')
         {            
-            p("4=,\"\",," + rhogempath + "\"\\npapi\\\"");
+            p("4=,\"\",," + rhogempath + "\"\\libs\\webkit\\ext\\wm\\lib\\npapi\\\"");
             /*p("5=,\"\",," + rhogempath + "\"\\Config\\\"");*/
             //p("5=,\"\",," + rhogempath);
             p("5=,\"\",," + rhogempath + "\"\\libs\\webkit\\ext\\wm\\lib\\fonts\\\"");
         }
         else
         {
-            /*if(include_motocaps)
+            p("4=,\"\",," + rhogempath + "\"\\libs\\ie\\\"");
+	    /*if(include_motocaps)
             {
                 p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
             }*/
@@ -422,6 +423,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         }
         else
         {
+            p("\"rhobrowser.dll\"=4");
             /*if(include_motocaps)
             {
                 if (!is_custom_config) 
@@ -588,6 +590,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         }
         else
         {
+
+            p("\"rhobrowser.dll\",\"rhobrowser.dll\",,0");   
             if(include_motocaps)
             {
                 p("");
