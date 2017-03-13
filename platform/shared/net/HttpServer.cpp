@@ -554,7 +554,6 @@ bool CHttpServer::run()
         tv.tv_sec = nTimeout/1000;
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
         
-        
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
         
         //int errsv = errno;

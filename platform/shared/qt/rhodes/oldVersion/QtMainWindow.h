@@ -72,6 +72,7 @@ public:
     virtual void paintEvent(QPaintEvent *);
     virtual void timerEvent(QTimerEvent *ev);
     void setCallback(IMainWindowCallback* callback);
+
     int getLogicalDpiX();
     int getLogicalDpiY();
     void bringToFront();
@@ -179,6 +180,7 @@ public slots:
     void setSize(int width, int height);
     void lockSize(int locked);
     void setTitle(const char* title);
+
 protected:
     void resizeEvent(QResizeEvent *);
 };

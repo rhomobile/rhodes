@@ -73,6 +73,7 @@
 
 #include "qwebviewselectionsuppressor.h"
 #include "qwebviewkineticscroller.h"
+#include "../guithreadfunchelper.h"
 
 IMPLEMENT_LOGCLASS(QtMainWindow,"QtMainWindow");
 
@@ -98,6 +99,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     m_logView(0)
     //TODO: m_SyncStatusDlg
 {
+
 #if !defined(RHODES_EMULATOR)
     QPixmap icon(QCoreApplication::applicationDirPath().append(QDir::separator()).append("icon.png"));
     QApplication::setWindowIcon(icon);
@@ -148,6 +150,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     //this->ui->centralWidget->setStyleSheet("background-color: yellow");
     //this->ui->centralWidget->setStyleSheet("QWidget {background-image: url(test.jpg)}" );
 
+    GuiThreadFuncHelper::getInstance(this);
 #ifdef RHODES_EMULATOR
 	int width = RHOSIMCONF().getInt("screen_width");
 	int height = RHOSIMCONF().getInt("screen_height");

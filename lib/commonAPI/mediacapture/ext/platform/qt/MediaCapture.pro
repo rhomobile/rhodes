@@ -1,4 +1,5 @@
 QT += core gui widgets multimedia multimediawidgets network
+
     lessThan(QT_VERSION, 5.6.0): {
         QT += webkit widgets webkitwidgets
         DEFINES += RHODES_VERSION_1
@@ -77,6 +78,7 @@ HEADERS += \
     src/CameraDialogBuilder.h \
     src/CameraRefresher.h\
     $$RHODES_ROOT\platform\shared\qt\rhodes\iexecutable.h
+    $$RHODES_ROOT\platform\shared\qt\rhodes\guithreadfunchelper.h
 
 SOURCES += \
 ..\..\shared\MediacaptureInit.cpp\

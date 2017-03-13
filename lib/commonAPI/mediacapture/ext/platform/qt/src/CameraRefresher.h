@@ -1,42 +1,51 @@
 #ifndef CAMERAREFRESHER_H
 #define CAMERAREFRESHER_H
 
-#include "../../platform/shared/qt/rhodes/iexecutable.h"
+#include "CCameraData.h"
+#include <QObject>
 #include <QCameraInfo>
-#include <QMessageBox>
 #include <QString>
 #include <QList>
-#include <QTimer>
-#include <QDialog>
-#include <QFileDialog>
-#include <QStandardPaths>
 #include <QEventLoop>
 #include <QtGui>
+#include <QApplication>
+#include "../../platform/shared/qt/rhodes/guithreadfunchelper.h"
 
-class CameraRefresher : public IExecutable
+class CameraRefresher : public QObject
 {
     Q_OBJECT
-public:
-    explicit CameraRefresher(QWidget *parent):IExecutable(parent){
 
-
+    explicit CameraRefresher(QObject *parent) : QObject(parent){
+        qRegisterMetaType<QList<QCameraInfo> >("QList<QCameraInfo>");
     }
-private:
+    QEventLoop loop;
+public:
+    static CameraRefresher * getInstance(QObject * parent = 0){
+        static CameraRefresher instance(parent);
+        return &instance;
+    }
+    static void refresh(){
+        getInstance()->getCameraInfo();
+    }
 
 public slots:
-    void execute(){
-        QWidget * par = qobject_cast<QWidget *>(this->parent());
+    void getCameraInfo(){
+        qDebug () << "MARKCAM 1";
+        QMetaObject::invokeMethod(GuiThreadFuncHelper::getInstance(), "availableCameras", Qt::QueuedConnection, Q_ARG(QObject *, this));
+        QTimer::singleShot(100, &(this->loop), SLOT(quit()));
+        loop.exec();
 
-        /*QString fileNameToOpen = QFileDialog::getOpenFileName(0, QString::number(QCameraInfo::availableCameras().size()),
-                                                              QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).last()
-                                                              , "Image Files (*.JPG *.PNG *.BMP *.GIF)");*/
-        /*QMessageBox::information(0,"Mess",
-                              QString::number(quint32(parent()->thread()->currentThreadId()), 16) + " " +
-                              QString::number(quint32(this->thread()->currentThreadId()), 16));*/
+    }
 
-
-
-        deleteLater();
+    void availableCameras(QList<QCameraInfo> info){
+        QMutexLocker locker(CCameraData::getMutex());
+        if(CCameraData::isEmpty()){
+            qDebug () << "MARKCAM 3";
+            foreach (QCameraInfo cameraInfo, info) {
+                const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
+            }
+        }
+        loop.quit();
     }
 };
 

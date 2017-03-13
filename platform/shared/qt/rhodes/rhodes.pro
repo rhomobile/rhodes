@@ -146,7 +146,8 @@ MainWindowCallback.h\
 RhoSimulator.h\
 QtLogView.h \
 QtCustomStyle.h\
-mainwindowinterface.h
+mainwindowinterface.h \
+    guithreadfunchelper.h
 
 SOURCES += impl/AlertImpl.cpp\
 impl/BluetoothImpl.cpp\

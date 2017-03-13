@@ -28,6 +28,11 @@ const QList<QString> CCameraData::getKeys()
     return camerasKeeper.keys();
 }
 
+const QList<CCameraData *> CCameraData::getValues()
+{
+    return camerasKeeper.values();
+}
+
 
 const CCameraData *CCameraData::addNewCamera(QCameraInfo &info){
     CCameraData * data = new CCameraData(info);
@@ -82,8 +87,3 @@ void CCameraData::choosePicture(rho::apiGenerator::CMethodResult& oResult) {
     getter->run();
 }
 
-void CCameraData::refreshCameraInfo()
-{
-    CameraRefresher * refresher = new CameraRefresher(getQMainWindow());
-    refresher->run();
-}

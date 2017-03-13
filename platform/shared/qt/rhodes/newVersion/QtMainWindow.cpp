@@ -51,6 +51,7 @@
 #include <QDesktopWidget>
 #include <QScroller>
 #include <QScrollArea>
+#include "../guithreadfunchelper.h"
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
 #define stricmp strcasecmp
@@ -154,6 +155,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     toolBarRight->hide();
     main_webView->hide();
 
+    GuiThreadFuncHelper::getInstance(this);
 #ifdef RHODES_EMULATOR
 	int width = RHOSIMCONF().getInt("screen_width");
 	int height = RHOSIMCONF().getInt("screen_height");
