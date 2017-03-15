@@ -18,6 +18,8 @@ public:
     virtual void getIsSymbolDevice(CMethodResult& oResult);
     virtual void getLocalServerPort(CMethodResult& oResult);
     virtual void setLocalServerPort( int value, CMethodResult& oResult);
+    virtual void getNodejsServerPort(CMethodResult& oResult);
+    virtual void setNodejsServerPort( int value, CMethodResult& oResult);
     virtual void getFreeServerPort(rho::apiGenerator::CMethodResult& oResult);
     virtual void getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult);
     virtual void getHasSqlite(rho::apiGenerator::CMethodResult& oResult);

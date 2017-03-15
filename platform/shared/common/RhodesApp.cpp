@@ -481,7 +481,7 @@ void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
 #ifndef RHO_NO_RUBY_API
-    if (!isJSApplication())
+    if (!isJSApplication() && !isNodeJSApplication())
     {
         RhoRubyStart();
         rubyext::CGeoLocation::Create();
@@ -496,7 +496,7 @@ void CRhodesApp::run()
 		sync::RhoconnectClientManager::syncThreadCreate();
 	}
 #ifndef RHO_NO_RUBY_API
-    if (!isJSApplication())
+    if (!isJSApplication() && !isNodeJSApplication())
     {
         LOG(INFO) + "RhoRubyInitApp...";
         RhoRubyInitApp();
@@ -570,7 +570,7 @@ void CRhodesApp::run()
 
     getExtManager().close();
 
-    if (!isJSApplication())
+    if (!isJSApplication() && !isNodeJSApplication())
     {
         rubyext::CGeoLocation::Destroy();
     }
@@ -583,7 +583,7 @@ void CRhodesApp::run()
 
     db::CDBAdapter::closeAll();
 #ifndef RHO_NO_RUBY_API
-    if (!isJSApplication())
+    if (!isJSApplication() && !isNodeJSApplication())
     {
         RhoRubyStop();
     }
@@ -672,7 +672,7 @@ void CRhodesApp::runCallbackInThread(const String& strCallback, const String& st
 static void callback_activateapp(void *arg, String const &strQuery)
 {
 #ifndef RHO_NO_RUBY_API
-    if (!RHODESAPP().isJSApplication())
+    if (!RHODESAPP().isJSApplication() && !RHODESAPP().isNodeJSApplication())
         rho_ruby_activateApp();
 #endif
 
@@ -683,7 +683,7 @@ static void callback_activateapp(void *arg, String const &strQuery)
 static void callback_deactivateapp(void *arg, String const &strQuery)
 {
 #ifndef RHO_NO_RUBY_API
-    if (!RHODESAPP().isJSApplication())
+    if (!RHODESAPP().isJSApplication() && !RHODESAPP().isNodeJSApplication())
         rho_ruby_deactivateApp();
 #endif
 
@@ -694,7 +694,7 @@ static void callback_deactivateapp(void *arg, String const &strQuery)
 static void callback_uicreated(void *arg, String const &strQuery)
 {
 #ifndef RHO_NO_RUBY_API
-    if (!RHODESAPP().isJSApplication())
+    if (!RHODESAPP().isJSApplication() && !RHODESAPP().isNodeJSApplication())
         rho_ruby_uiCreated();
 #endif
 
@@ -704,7 +704,7 @@ static void callback_uicreated(void *arg, String const &strQuery)
 static void callback_uidestroyed(void *arg, String const &strQuery)
 {
 #ifndef RHO_NO_RUBY_API
-    if (!RHODESAPP().isJSApplication())
+    if (!RHODESAPP().isJSApplication() && !RHODESAPP().isNodeJSApplication())
         rho_ruby_uiDestroyed();
 #endif
 
@@ -1587,6 +1587,27 @@ const char* CRhodesApp::getFreeListeningPort()
 
     return m_strListeningPorts.c_str();
 }
+    
+const char* CRhodesApp::getNodeJSListeningPort() {
+    if ( m_strNodeJSListeningPorts.length() > 0 )
+        return m_strNodeJSListeningPorts.c_str();
+    
+    int port = rho_conf_getInt("nodejs_local_server_port");
+    if (port == 0) {
+        port = determineFreeListeningPort();
+    }
+    if (port < 0)
+        port = 0;
+    if (port > 65535)
+        port = 0;
+    
+    m_strNodeJSListeningPorts = convertToStringA(port);
+    m_nNodeJSListeningPorts = port;
+    
+    LOG(INFO) + "Free Node.js listening port: " + m_strNodeJSListeningPorts;
+    
+    return m_strNodeJSListeningPorts.c_str();
+}
 
 int CRhodesApp::determineFreeListeningPort()
 {
@@ -1729,7 +1750,12 @@ void CRhodesApp::initAppUrls()
         m_strHomeUrl = "http://127.0.0.1:";
     }
     
-    m_strHomeUrl += getFreeListeningPort();
+    if (isNodeJSApplication()) {
+        m_strHomeUrl += getNodeJSListeningPort();
+    }
+    else {
+        m_strHomeUrl += getFreeListeningPort();
+    }
 
 #ifndef RHODES_EMULATOR
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/app/loading.html";
@@ -2640,6 +2666,12 @@ int rho_http_get_port()
   return RHODESAPP().getLocalServerPort();
 }
 
+int rho_nodejs_get_port()
+{
+  return RHODESAPP().getNodeJSServerPort();
+}
+    
+    
 #ifdef OS_MACOSX
 const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int bodylen, int* responseLength )
 {
@@ -2972,6 +3004,10 @@ void rho_rhodesapp_setStartParametersOriginal(const char* szParams)
 
 int rho_rhodesapp_is_application_active() {
     return RHODESAPP().isApplicationActive() ? 1 : 0;
+}
+    
+int rho_rhodesapp_is_nodejs_app() {
+    return RHODESAPP().isNodeJSApplication() ? 1 : 0;
 }
     
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
