@@ -548,6 +548,11 @@ ruby_thread_init_stack(rb_thread_t *th)
     native_thread_init_stack(th);
 }
 
+//RHO
+void *rho_nativethread_start();
+void rho_nativethread_end(void *);
+//RHO
+
 static int
 thread_start_func_2(rb_thread_t *th, VALUE *stack_start, VALUE *register_stack_start)
 {
@@ -568,6 +573,9 @@ thread_start_func_2(rb_thread_t *th, VALUE *stack_start, VALUE *register_stack_s
 
     ruby_thread_set_native(th);
 
+    //RHO
+    void* rho_thread = rho_nativethread_start();
+    //RHO
     th->machine.stack_start = stack_start;
 #ifdef __ia64
     th->machine.register_stack_start = register_stack_start;
@@ -667,6 +675,10 @@ thread_start_func_2(rb_thread_t *th, VALUE *stack_start, VALUE *register_stack_s
     native_mutex_unlock(&th->vm->thread_destruct_lock);
     thread_cleanup_func(th, FALSE);
     gvl_release(th->vm);
+
+    //RHO
+    rho_nativethread_end(rho_thread);
+    //RHO
 
     return 0;
 }
