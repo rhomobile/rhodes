@@ -405,7 +405,3 @@ void *rho_nativethread_start() {
 void rho_nativethread_end(void *p) {
 
 }
-
-void Init_enc() {
-    
-}

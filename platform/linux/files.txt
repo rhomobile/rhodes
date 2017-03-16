@@ -88,3 +88,4 @@ ruby/vm_dump
 ruby/vm_trace
 ruby/ext/strscan/strscan
 ruby/main
+ruby/rhoinit
