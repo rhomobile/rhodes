@@ -1,6 +1,17 @@
 #ifndef INCLUDE_RUBY_CONFIG_H
 #define INCLUDE_RUBY_CONFIG_H 1
 /* confdefs.h */
+
+//RHO
+#if defined(__i386__) || defined(__x86_64__)
+#warning ">>>>> Building for x86 <<<<<"
+#elif defined(__arm__)
+#warning ">>>>> Building for ARM <<<<<"
+#else
+#error ">>>>> UNKNOWN ARCH! <<<<<"
+#endif
+//RHO
+
 #define CANONICALIZATION_FOR_MATHN 1
 #define STDC_HEADERS 1
 #define HAVE_SYS_TYPES_H 1
@@ -21,22 +32,20 @@
 #define HAVE_NAN 1
 #define RUBY_SYMBOL_EXPORT_BEGIN _Pragma("GCC visibility push(default)")
 #define RUBY_SYMBOL_EXPORT_END _Pragma("GCC visibility pop")
-#define HAVE_LIBCRYPT 1
 #define HAVE_LIBDL 1
 #define HAVE_DIRENT_H 1
 #define HAVE__BOOL 1
 #define HAVE_STDBOOL_H 1
 #define HAVE_SYS_WAIT_H 1
-#define HAVE_A_OUT_H 1
 #define HAVE_GRP_H 1
 #define HAVE_FCNTL_H 1
 #define HAVE_FLOAT_H 1
-#define HAVE_LANGINFO_H 1
 #define HAVE_LIMITS_H 1
 #define HAVE_LOCALE_H 1
 #define HAVE_MALLOC_H 1
-#define HAVE_PWD_H 1
-#define HAVE_SYS_FCNTL_H 1
+//RHO
+//#define HAVE_PWD_H 1
+//RHO
 #define HAVE_SYS_FILE_H 1
 #define HAVE_SYS_IOCTL_H 1
 #define HAVE_SYS_PARAM_H 1
@@ -45,21 +54,14 @@
 #define HAVE_SYS_SELECT_H 1
 #define HAVE_SYS_SENDFILE_H 1
 #define HAVE_SYS_SOCKET_H 1
-
-//RHO
-//#define HAVE_SYS_SYSCALL_H 1
-
+#define HAVE_SYS_SYSCALL_H 1
 #define HAVE_SYS_TIME_H 1
 #define HAVE_SYS_TIMES_H 1
 #define HAVE_SYS_UIO_H 1
-#define HAVE_SYSCALL_H 1
+#define HAVE_SYS_UTIME_H 1
 #define HAVE_TIME_H 1
 #define HAVE_UCONTEXT_H 1
 #define HAVE_UTIME_H 1
-
-//RHO
-//#define HAVE_GMP_H 1
-#define HAVE_LIBGMP 1
 #define HAVE_TYPEOF 1
 #define typeof __typeof__
 #define HAVE_LONG_LONG 1
@@ -100,9 +102,9 @@
 #define PRI_TIMET_PREFIX PRI_LONG_PREFIX
 #define rb_dev_t dev_t
 #define SIGNEDNESS_OF_DEV_T +1
-#define DEVT2NUM(v) ULONG2NUM(v)
-#define NUM2DEVT(v) NUM2ULONG(v)
-#define PRI_DEVT_PREFIX PRI_LONG_PREFIX
+#define DEVT2NUM(v) UINT2NUM(v)
+#define NUM2DEVT(v) NUM2UINT(v)
+#define PRI_DEVT_PREFIX PRI_INT_PREFIX
 #define rb_mode_t mode_t
 #define SIGNEDNESS_OF_MODE_T +1
 #define MODET2NUM(v) UINT2NUM(v)
@@ -135,6 +137,13 @@
 #define NOINLINE(x) __attribute__ ((noinline)) x
 #define WEAK(x) __attribute__ ((weak)) x
 #define HAVE_FUNC_WEAK 1
+//RHO
+#if defined(__i386__) || defined(__x86_64__)
+#define FUNC_STDCALL(x) __attribute__ ((stdcall)) x
+#define FUNC_CDECL(x) __attribute__ ((cdecl)) x
+#define FUNC_FASTCALL(x) __attribute__ ((fastcall)) x
+#endif
+//RHO
 #define FUNC_UNOPTIMIZED(x) __attribute__ ((optimize("O0"))) x
 #define FUNC_MINIMIZED(x) __attribute__ ((optimize("-Os","-fomit-frame-pointer"))) x
 #define HAVE_ATTRIBUTE_FUNCTION_ALIAS 1
@@ -148,8 +157,8 @@
 #define ENUM_OVER_INT 1
 #define HAVE_DECL_SYS_NERR 1
 #define HAVE_DECL_GETENV 1
-#define SIZEOF_SIZE_T 8
-#define SIZEOF_PTRDIFF_T 8
+#define SIZEOF_SIZE_T 4
+#define SIZEOF_PTRDIFF_T 4
 #define PRI_SIZE_PREFIX "z"
 #define PRI_PTRDIFF_PREFIX "t"
 #define HAVE_STRUCT_STAT_ST_BLKSIZE 1
@@ -158,21 +167,17 @@
 #define HAVE_ST_BLOCKS 1
 #define HAVE_STRUCT_STAT_ST_RDEV 1
 #define HAVE_ST_RDEV 1
-#define SIZEOF_STRUCT_STAT_ST_SIZE SIZEOF_OFF_T
-#define SIZEOF_STRUCT_STAT_ST_BLOCKS SIZEOF_OFF_T
-#define SIZEOF_STRUCT_STAT_ST_INO SIZEOF_LONG
-
-//RHO
-//#define HAVE_STRUCT_STAT_ST_ATIM 1
-//#define HAVE_STRUCT_STAT_ST_MTIM 1
-//#define HAVE_STRUCT_STAT_ST_CTIM 1
-
+#define SIZEOF_STRUCT_STAT_ST_SIZE SIZEOF_LONG_LONG
+#define SIZEOF_STRUCT_STAT_ST_BLOCKS SIZEOF_LONG_LONG
+#define SIZEOF_STRUCT_STAT_ST_INO SIZEOF_LONG_LONG
+#define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
+#define HAVE_STRUCT_STAT_ST_MTIMENSEC 1
+#define HAVE_STRUCT_STAT_ST_CTIMENSEC 1
 #define HAVE_STRUCT_TIMEVAL 1
 #define SIZEOF_STRUCT_TIMEVAL_TV_SEC SIZEOF_TIME_T
 #define HAVE_STRUCT_TIMESPEC 1
 #define HAVE_STRUCT_TIMEZONE 1
 #define HAVE_CLOCKID_T 1
-#define HAVE_RB_FD_INIT 1
 #define HAVE_INT8_T 1
 #define SIZEOF_INT8_T 1
 #define HAVE_UINT8_T 1
@@ -195,30 +200,28 @@
 #define SIZEOF_UINTPTR_T 4
 #define HAVE_SSIZE_T 1
 #define SIZEOF_SSIZE_T 4
-//#define STACK_END_ADDRESS __libc_stack_end
 #define GETGROUPS_T gid_t
 #define RETSIGTYPE void
 #define HAVE_ALLOCA_H 1
 #define HAVE_ALLOCA 1
 #define HAVE_ACOSH 1
 #define HAVE_CBRT 1
-#define HAVE_CRYPT 1
 #define HAVE_DUP2 1
 #define HAVE_ERF 1
 #define HAVE_FFS 1
 #define HAVE_FINITE 1
 #define HAVE_FLOCK 1
 #define HAVE_HYPOT 1
-#define HAVE_ISINF 1
 #define HAVE_ISNAN 1
 #define HAVE_LGAMMA_R 1
 #define HAVE_MEMMOVE 1
 #define HAVE_NEXTAFTER 1
 #define HAVE_STRCHR 1
 #define HAVE_STRERROR 1
+#define HAVE_STRLCAT 1
+#define HAVE_STRLCPY 1
 #define HAVE_STRSTR 1
 #define HAVE_TGAMMA 1
-#define SPT_TYPE SPT_REUSEARGV
 #define HAVE_SIGNBIT 1
 #define HAVE_FORK 1
 #define HAVE_VFORK 1
@@ -226,19 +229,20 @@
 #define HAVE_WORKING_FORK 1
 #define HAVE__LONGJMP 1
 #define HAVE__SETJMP 1
-#define HAVE_ATAN2L 1
 #define HAVE_ATAN2F 1
 #define HAVE_CHROOT 1
 #define HAVE_CLOCK_GETTIME 1
 #define HAVE_COSH 1
+//RHO
+#if defined(__i386__) || defined(__x86_64__)
 #define HAVE_DIRFD 1
-#define HAVE_DL_ITERATE_PHDR 1
+#endif
+//RHO
 #define HAVE_DLOPEN 1
-#define HAVE_DLADDR 1
+//RHO
+//#define HAVE_DLADDR 1
+//RHO
 #define HAVE_DUP 1
-#define HAVE_DUP3 1
-#define HAVE_EACCESS 1
-#define HAVE_ENDGRENT 1
 #define HAVE_FCHMOD 1
 #define HAVE_FCHOWN 1
 #define HAVE_FCNTL 1
@@ -249,7 +253,6 @@
 #define HAVE_FTRUNCATE64 1
 #define HAVE_GETCWD 1
 #define HAVE_GETGRNAM 1
-#define HAVE_GETGRNAM_R 1
 #define HAVE_GETGROUPS 1
 #define HAVE_GETPGID 1
 #define HAVE_GETPGRP 1
@@ -267,29 +270,21 @@
 #define HAVE_LCHOWN 1
 #define HAVE_LINK 1
 #define HAVE_LLABS 1
-#define HAVE_LOCKF 1
 #define HAVE_LOG2 1
 #define HAVE_LSTAT 1
 #define HAVE_MALLOC_USABLE_SIZE 1
-#define HAVE_MBLEN 1
 #define HAVE_MEMALIGN 1
 #define HAVE_WRITEV 1
 #define HAVE_MEMRCHR 1
-#define HAVE_MEMMEM 1
-#define HAVE_MKFIFO 1
 #define HAVE_MKNOD 1
 #define HAVE_MKTIME 1
 #define HAVE_PIPE2 1
 #define HAVE_POLL 1
-#define HAVE_POSIX_FADVISE 1
 #define HAVE_POSIX_MEMALIGN 1
-#define HAVE_PPOLL 1
 #define HAVE_PREAD 1
-#define HAVE_QSORT_R 1
 #define HAVE_READLINK 1
 #define HAVE_ROUND 1
 #define HAVE_SCHED_GETAFFINITY 1
-#define HAVE_SEEKDIR 1
 #define HAVE_SENDFILE 1
 #define HAVE_SETEGID 1
 #define HAVE_SETENV 1
@@ -311,36 +306,29 @@
 #define HAVE_SIGPROCMASK 1
 #define HAVE_SINH 1
 #define HAVE_SYMLINK 1
-
-//RHO
 #define HAVE_SYSCALL 1
-
 #define HAVE_SYSCONF 1
 #define HAVE_TANH 1
-#define HAVE_TELLDIR 1
 #define HAVE_TIMEGM 1
 #define HAVE_TIMES 1
 #define HAVE_TRUNCATE 1
-#define HAVE_TRUNCATE64 1
 #define HAVE_UNSETENV 1
 #define HAVE_UTIMENSAT 1
 #define HAVE_UTIMES 1
 #define HAVE_WAIT4 1
 #define HAVE_WAITPID 1
+#define NO_GETCWD_MALLOC 1
 #define HAVE_BUILTIN___BUILTIN_BSWAP16 1
 #define HAVE_BUILTIN___BUILTIN_BSWAP32 1
 #define HAVE_BUILTIN___BUILTIN_BSWAP64 1
 #define HAVE_BUILTIN___BUILTIN_CLZ 1
 #define HAVE_BUILTIN___BUILTIN_CLZL 1
 #define HAVE_BUILTIN___BUILTIN_CLZLL 1
-
+#define HAVE_BUILTIN___BUILTIN_CHOOSE_EXPR 1
 //RHO
-//#define HAVE_BUILTIN___BUILTIN_CHOOSE_EXPR 1
 //#define HAVE_BUILTIN___BUILTIN_CHOOSE_EXPR_CONSTANT_P 1
-
-#define HAVE_BUILTIN___BUILTIN_TYPES_COMPATIBLE_P 1
-#define HAVE_GNU_QSORT_R 1
-#define ATAN2_INF_C99 1
+//#define HAVE_BUILTIN___BUILTIN_TYPES_COMPATIBLE_P 1
+//RHO
 #define HAVE_CLOCK_GETRES 1
 #define HAVE_STRUCT_TM_TM_ZONE 1
 #define HAVE_TM_ZONE 1
@@ -351,18 +339,25 @@
 #define HAVE_TIMEZONE 1
 #define TIMEZONE_VOID 1
 #define NEGATIVE_TIME_T 1
+#define LOCALTIME_OVERFLOW_PROBLEM 1
 #define POSIX_SIGNAL 1
 #define RSHIFT(x,y) ((x)>>(int)(y))
 #define HAVE__SC_CLK_TCK 1
+//RHO
+#if defined(__i386__) || defined(__x86_64__)
 #define STACK_GROW_DIRECTION -1
+#elif defined (__arm__)
+#define STACK_GROW_DIRECTION 0
+#else
+#error "Unknown arch!"
+#endif
+//RHO
 #define _REENTRANT 1
 #define _THREAD_SAFE 1
 #define HAVE_LIBPTHREAD 1
 #define HAVE_SCHED_YIELD 1
-#define HAVE_PTHREAD_ATTR_SETINHERITSCHED 1
 #define HAVE_PTHREAD_ATTR_GETSTACK 1
 #define HAVE_PTHREAD_COND_INIT 1
-#define HAVE_PTHREAD_CONDATTR_SETCLOCK 1
 #define HAVE_PTHREAD_CONDATTR_INIT 1
 #define HAVE_PTHREAD_SIGMASK 1
 #define HAVE_PTHREAD_SETNAME_NP 1
@@ -371,24 +366,28 @@
 #define SET_CURRENT_THREAD_NAME(name) pthread_setname_np(pthread_self(), name)
 #define SET_ANOTHER_THREAD_NAME(thid,name) pthread_setname_np(thid, name)
 #define DEFINE_MCONTEXT_PTR(mc, uc) mcontext_t *mc = &(uc)->uc_mcontext
-#define HAVE_GETCONTEXT 1
-#define HAVE_SETCONTEXT 1
 #define USE_ELF 1
 #define HAVE_ELF_H 1
-#define HAVE_BACKTRACE 1
 #define DLEXT_MAXLEN 3
 #define DLEXT ".so"
 #define RUBY_SETJMP(env) __builtin_setjmp((env))
 #define RUBY_LONGJMP(env,val) __builtin_longjmp((env),val)
 #define RUBY_JMP_BUF jmp_buf
 #define HAVE_PTHREAD_H 1
-#define RUBY_PLATFORM "arm-linux-androideabi"
-
-
 //RHO
-
+#if defined(__i386__) || defined(__x86_64__)
+#define RUBY_PLATFORM "android-x86"
+#elif defined (__arm__)
+#define RUBY_PLATFORM "arm-linux-androideabi"
+#else
+#error "Unknown arch!"
+#endif
+//RHO
+//RHO
 //#define USE_RGENGC 0
 #define LOAD_RELATIVE 1
+
+#define DTRACE_PROBES_DISABLED 1
 
 #ifndef TRUE
 #define TRUE    1

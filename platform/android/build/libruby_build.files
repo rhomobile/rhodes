@@ -45,9 +45,9 @@ platform/shared/ruby/inits.c
 platform/shared/ruby/io.c
 platform/shared/ruby/iseq.c
 platform/shared/ruby/load.c
+platform/shared/ruby/loadpath.c
 platform/shared/ruby/marshal.c
 platform/shared/ruby/math.c
-platform/shared/ruby/miniinit.c
 platform/shared/ruby/miniprelude.c
 platform/shared/ruby/missing/acosh.c
 platform/shared/ruby/missing/cbrt.c
@@ -98,3 +98,5 @@ platform/shared/ruby/vm.c
 platform/shared/ruby/vm_backtrace.c
 platform/shared/ruby/vm_dump.c
 platform/shared/ruby/vm_trace.c
+platform/shared/ruby/ext/strscan/strscan.c
+platform/shared/ruby/ext/stringio/stringio.c
