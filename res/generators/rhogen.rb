@@ -192,7 +192,7 @@ module Rhogen
       template.source = 'app/Settings/wait.erb'
       template.destination = "#{name}/app/Settings/wait.erb"
     end
-    
+
     file :androidmanifesterb do |file|
       file.source = 'AndroidManifest.erb'
       file.destination = "#{name}/AndroidManifest.erb"
@@ -329,6 +329,84 @@ module Rhogen
     directory :public do |directory|
       directory.source = 'public'
       directory.destination = "#{name}/public/"
+    end
+
+    template :rakefile do |template|
+      template.source = 'Rakefile'
+      template.destination = "#{name}/Rakefile"
+    end
+  end
+
+
+  class NodeJSAppGenerator < BaseGenerator
+
+    def self.source_root
+      File.join(File.dirname(__FILE__), 'templates', 'application')
+    end
+
+    desc <<-DESC
+      Generates a new Node.js-based rhodes application.
+
+      Options:
+        --rhoconnect - include rhoconnect-client in application
+
+      Required:
+        name        - application name
+
+      Optional:
+        syncserver  - url to the rhosync application (i.e. "http://localhost:9292")
+        zip_url     - optional url to zipfile download of bundle (this can be your RhoHub Bundle URL)
+    DESC
+
+    #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
+
+    option :rhoconnect, :desc => '', :as => :boolean, :default => false
+
+    first_argument :name, :required => true, :desc => 'application name'
+    second_argument :syncserver, :required => false, :desc => 'url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/")'
+    third_argument :zip_url, :required => false, :desc => 'optional url to zipfile download of bundle'
+
+    invoke :appResources
+
+    template :config do |template|
+      zip_url ||= ''
+      syncserver ||= ''
+      template.source = 'nodejs_rhoconfig.txt'
+      template.destination = "#{name}/rhoconfig.txt"
+    end
+
+    template :buildyml do |template|
+      @sdk_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+      @sdk_path.gsub!('\\', '/')
+      @app_name = name
+      @app_name_cleared = name.downcase.split(/[^a-zA-Z0-9\.\-]/).map { |w| w.downcase }.join("")
+      puuid = UUID.new
+      generated_uuid = puuid.generate
+      @productid = generated_uuid
+      @uid = '0x'+(0xE0000000 + rand(0xFFFFFFF)).to_s(16)
+      @rhoconnectclient_ext = '"rhoconnect-client"' if rhoconnect
+      template.source = 'nodejs_build.yml'
+      template.destination = "#{name}/build.yml"
+    end
+
+    template :gitignore do |template|
+      template.source = 'gitignore'
+      template.destination = "#{name}/.gitignore"
+    end
+
+    directory :resources do |directory|
+      directory.source = 'resources'
+      directory.destination = "#{name}/resources"
+    end
+
+    file :androidmanifesterb do |file|
+      file.source = 'AndroidManifest.erb'
+      file.destination = "#{name}/AndroidManifest.erb"
+    end
+
+    directory :public do |directory|
+      directory.source = 'nodejs'
+      directory.destination = "#{name}/nodejs/"
     end
 
     template :rakefile do |template|
@@ -596,14 +674,14 @@ module Rhogen
     def rhodes_root_path
       return rhodes_root
     end
-    
+
     def load_plist(fname)
        require 'cfpropertylist'
        plist = CFPropertyList::List.new(:file => fname)
        data = CFPropertyList.native_types(plist.value)
        data
-    end    
-    
+    end
+
 	def get_xcode_version
   		info_path = '/Applications/XCode.app/Contents/version.plist'
   		ret_value = '0.0'
@@ -615,9 +693,9 @@ module Rhogen
   		end
   		puts '$$$ XCode version is '+ret_value
   		return ret_value
-	end    
-    
-    
+	end
+
+
 
     directory :root do |directory|
       @options[:force] = true
@@ -1177,7 +1255,7 @@ module Rhogen
               fname = File.join('/Users/snowyowl/work/rhomobile/rhodes/rendered/',comosite_name)
               File.open(fname,'w') { |io| io << action.render.to_lines.join() }
             end
-          rescue 
+          rescue
             puts "Error processing: #{action.source.inspect}".bold.red
             raise
           end
@@ -1499,6 +1577,7 @@ module Rhogen
 
   add :app, RubyAppGenerator
   add :jsapp, JavascriptAppGenerator
+  add :nodejsapp, NodeJSAppGenerator
   add :model, RubyModelGenerator
   add :jsmodel, JavascriptModelGenerator
   add :spec, SpecGenerator

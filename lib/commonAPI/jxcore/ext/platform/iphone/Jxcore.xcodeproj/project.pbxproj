@@ -1,0 +1,448 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FA3E1F211779EFAA00F5E33A /* Jxcore.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F1B1779EFAA00F5E33A /* Jxcore.h */; };
+		FA3E1F221779EFAA00F5E33A /* Jxcore.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F1C1779EFAA00F5E33A /* Jxcore.m */; };
+		FA3E1F231779EFAA00F5E33A /* JxcoreFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F1D1779EFAA00F5E33A /* JxcoreFactorySingleton.m */; };
+		FA3E1F241779EFAA00F5E33A /* JxcoreSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F1E1779EFAA00F5E33A /* JxcoreSetup.m */; };
+		FA3E1F251779EFAA00F5E33A /* JxcoreSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F1F1779EFAA00F5E33A /* JxcoreSingleton.h */; };
+		FA3E1F261779EFAA00F5E33A /* JxcoreSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F201779EFAA00F5E33A /* JxcoreSingleton.m */; };
+		FA3E1F281779EFB100F5E33A /* IJxcore.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F271779EFB100F5E33A /* IJxcore.h */; };
+		FA3E1F2F1779EFBB00F5E33A /* JxcoreBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F291779EFBB00F5E33A /* JxcoreBase.h */; };
+		FA3E1F301779EFBB00F5E33A /* JxcoreBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F2A1779EFBB00F5E33A /* JxcoreBase.m */; };
+		FA3E1F311779EFBB00F5E33A /* JxcoreFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F2B1779EFBB00F5E33A /* JxcoreFactoryBase.h */; };
+		FA3E1F321779EFBB00F5E33A /* JxcoreFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F2C1779EFBB00F5E33A /* JxcoreFactoryBase.m */; };
+		FA3E1F331779EFBB00F5E33A /* JxcoreSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3E1F2D1779EFBB00F5E33A /* JxcoreSingletonBase.h */; };
+		FA3E1F341779EFBB00F5E33A /* JxcoreSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F2E1779EFBB00F5E33A /* JxcoreSingletonBase.m */; };
+		FA3E1F361779EFC400F5E33A /* jxcore_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F351779EFC400F5E33A /* jxcore_js_wrap.mm */; };
+		FA3E1F381779EFCB00F5E33A /* jxcore_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F371779EFCB00F5E33A /* jxcore_ruby_wrap.m */; };
+		FA3E1F3C1779EFD700F5E33A /* jxcore_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F391779EFD700F5E33A /* jxcore_api_init.cpp */; };
+		FA3E1F3D1779EFD700F5E33A /* jxcore_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3A1779EFD700F5E33A /* jxcore_js_api.cpp */; };
+		FA3E1F3E1779EFD700F5E33A /* jxcore_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA3E1F3B1779EFD700F5E33A /* jxcore_ruby_api.c */; };
+		FA3FB2851E627D6300B281FF /* jxcoretau.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA3FB2831E627D6300B281FF /* jxcoretau.cpp */; };
+		FA3FB2861E627D6300B281FF /* jxcoretau.h in Headers */ = {isa = PBXBuildFile; fileRef = FA3FB2841E627D6300B281FF /* jxcoretau.h */; };
+		FAB4AAAC1E7A1E6E00A5BC5C /* jx_result.h in Headers */ = {isa = PBXBuildFile; fileRef = FAB4AAAA1E7A1E6E00A5BC5C /* jx_result.h */; };
+		FAB4AAAD1E7A1E6E00A5BC5C /* jx.h in Headers */ = {isa = PBXBuildFile; fileRef = FAB4AAAB1E7A1E6E00A5BC5C /* jx.h */; };
+		FAC155E7145855CF0016F3BD /* Jxcore_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Jxcore_Prefix.pch */; };
+		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FA3E1F1B1779EFAA00F5E33A /* Jxcore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Jxcore.h; path = impl/Jxcore.h; sourceTree = "<group>"; };
+		FA3E1F1C1779EFAA00F5E33A /* Jxcore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Jxcore.m; path = impl/Jxcore.m; sourceTree = "<group>"; };
+		FA3E1F1D1779EFAA00F5E33A /* JxcoreFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JxcoreFactorySingleton.m; path = impl/JxcoreFactorySingleton.m; sourceTree = "<group>"; };
+		FA3E1F1E1779EFAA00F5E33A /* JxcoreSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JxcoreSetup.m; path = impl/JxcoreSetup.m; sourceTree = "<group>"; };
+		FA3E1F1F1779EFAA00F5E33A /* JxcoreSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JxcoreSingleton.h; path = impl/JxcoreSingleton.h; sourceTree = "<group>"; };
+		FA3E1F201779EFAA00F5E33A /* JxcoreSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JxcoreSingleton.m; path = impl/JxcoreSingleton.m; sourceTree = "<group>"; };
+		FA3E1F271779EFB100F5E33A /* IJxcore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IJxcore.h; path = generated/IJxcore.h; sourceTree = "<group>"; };
+		FA3E1F291779EFBB00F5E33A /* JxcoreBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JxcoreBase.h; path = generated/base_impl/JxcoreBase.h; sourceTree = "<group>"; };
+		FA3E1F2A1779EFBB00F5E33A /* JxcoreBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JxcoreBase.m; path = generated/base_impl/JxcoreBase.m; sourceTree = "<group>"; };
+		FA3E1F2B1779EFBB00F5E33A /* JxcoreFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JxcoreFactoryBase.h; path = generated/base_impl/JxcoreFactoryBase.h; sourceTree = "<group>"; };
+		FA3E1F2C1779EFBB00F5E33A /* JxcoreFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JxcoreFactoryBase.m; path = generated/base_impl/JxcoreFactoryBase.m; sourceTree = "<group>"; };
+		FA3E1F2D1779EFBB00F5E33A /* JxcoreSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JxcoreSingletonBase.h; path = generated/base_impl/JxcoreSingletonBase.h; sourceTree = "<group>"; };
+		FA3E1F2E1779EFBB00F5E33A /* JxcoreSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JxcoreSingletonBase.m; path = generated/base_impl/JxcoreSingletonBase.m; sourceTree = "<group>"; };
+		FA3E1F351779EFC400F5E33A /* jxcore_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = jxcore_js_wrap.mm; path = generated/javascript/jxcore_js_wrap.mm; sourceTree = "<group>"; };
+		FA3E1F371779EFCB00F5E33A /* jxcore_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = jxcore_ruby_wrap.m; path = generated/ruby/jxcore_ruby_wrap.m; sourceTree = "<group>"; };
+		FA3E1F391779EFD700F5E33A /* jxcore_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = jxcore_api_init.cpp; path = ../../shared/generated/jxcore_api_init.cpp; sourceTree = "<group>"; };
+		FA3E1F3A1779EFD700F5E33A /* jxcore_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = jxcore_js_api.cpp; path = ../../shared/generated/jxcore_js_api.cpp; sourceTree = "<group>"; };
+		FA3E1F3B1779EFD700F5E33A /* jxcore_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = jxcore_ruby_api.c; path = ../../shared/generated/jxcore_ruby_api.c; sourceTree = "<group>"; };
+		FA3FB2831E627D6300B281FF /* jxcoretau.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = jxcoretau.cpp; path = ../../shared/jxcoretau.cpp; sourceTree = "<group>"; };
+		FA3FB2841E627D6300B281FF /* jxcoretau.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = jxcoretau.h; path = ../../shared/jxcoretau.h; sourceTree = "<group>"; };
+		FAB4AAAA1E7A1E6E00A5BC5C /* jx_result.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jx_result.h; sourceTree = "<group>"; };
+		FAB4AAAB1E7A1E6E00A5BC5C /* jx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jx.h; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libJxcore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libJxcore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD45FD51225FED600141873 /* Jxcore_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Jxcore_Prefix.pch; sourceTree = "<group>"; };
+		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
+				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libJxcore.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* Jxcore */ = {
+			isa = PBXGroup;
+			children = (
+				FA3FB2821E627C4700B281FF /* shared */,
+				FAB65FAC1C7177A700C37524 /* JXcore */,
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = Jxcore;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FAD4602C12260A8500141873 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F161779EF7600F5E33A /* impl */,
+				FA3E1F151779EF6E00F5E33A /* generated */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* Jxcore_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		FA3E1F151779EF6E00F5E33A /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F1A1779EF9B00F5E33A /* api */,
+				FA3E1F191779EF9400F5E33A /* base_impl */,
+				FA3E1F181779EF8D00F5E33A /* wrappers */,
+				FA3E1F171779EF7D00F5E33A /* shared */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FA3E1F161779EF7600F5E33A /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F1B1779EFAA00F5E33A /* Jxcore.h */,
+				FA3E1F1C1779EFAA00F5E33A /* Jxcore.m */,
+				FA3E1F1D1779EFAA00F5E33A /* JxcoreFactorySingleton.m */,
+				FA3E1F1E1779EFAA00F5E33A /* JxcoreSetup.m */,
+				FA3E1F1F1779EFAA00F5E33A /* JxcoreSingleton.h */,
+				FA3E1F201779EFAA00F5E33A /* JxcoreSingleton.m */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FA3E1F171779EF7D00F5E33A /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F391779EFD700F5E33A /* jxcore_api_init.cpp */,
+				FA3E1F3A1779EFD700F5E33A /* jxcore_js_api.cpp */,
+				FA3E1F3B1779EFD700F5E33A /* jxcore_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FA3E1F181779EF8D00F5E33A /* wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F371779EFCB00F5E33A /* jxcore_ruby_wrap.m */,
+				FA3E1F351779EFC400F5E33A /* jxcore_js_wrap.mm */,
+			);
+			name = wrappers;
+			sourceTree = "<group>";
+		};
+		FA3E1F191779EF9400F5E33A /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F291779EFBB00F5E33A /* JxcoreBase.h */,
+				FA3E1F2A1779EFBB00F5E33A /* JxcoreBase.m */,
+				FA3E1F2B1779EFBB00F5E33A /* JxcoreFactoryBase.h */,
+				FA3E1F2C1779EFBB00F5E33A /* JxcoreFactoryBase.m */,
+				FA3E1F2D1779EFBB00F5E33A /* JxcoreSingletonBase.h */,
+				FA3E1F2E1779EFBB00F5E33A /* JxcoreSingletonBase.m */,
+			);
+			name = base_impl;
+			sourceTree = "<group>";
+		};
+		FA3E1F1A1779EF9B00F5E33A /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F271779EFB100F5E33A /* IJxcore.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
+		FA3FB2821E627C4700B281FF /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FA3FB2831E627D6300B281FF /* jxcoretau.cpp */,
+				FA3FB2841E627D6300B281FF /* jxcoretau.h */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FAB65FAC1C7177A700C37524 /* JXcore */ = {
+			isa = PBXGroup;
+			children = (
+				FAB4AAAA1E7A1E6E00A5BC5C /* jx_result.h */,
+				FAB4AAAB1E7A1E6E00A5BC5C /* jx.h */,
+			);
+			path = JXcore;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155E7145855CF0016F3BD /* Jxcore_Prefix.pch in Headers */,
+				FA3E1F211779EFAA00F5E33A /* Jxcore.h in Headers */,
+				FA3E1F251779EFAA00F5E33A /* JxcoreSingleton.h in Headers */,
+				FA3E1F281779EFB100F5E33A /* IJxcore.h in Headers */,
+				FA3FB2861E627D6300B281FF /* jxcoretau.h in Headers */,
+				FAB4AAAC1E7A1E6E00A5BC5C /* jx_result.h in Headers */,
+				FA3E1F2F1779EFBB00F5E33A /* JxcoreBase.h in Headers */,
+				FA3E1F311779EFBB00F5E33A /* JxcoreFactoryBase.h in Headers */,
+				FAB4AAAD1E7A1E6E00A5BC5C /* jx.h in Headers */,
+				FA3E1F331779EFBB00F5E33A /* JxcoreSingletonBase.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* Jxcore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Jxcore" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Jxcore;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libJxcore.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Jxcore" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* Jxcore */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* Jxcore */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA3E1F221779EFAA00F5E33A /* Jxcore.m in Sources */,
+				FA3E1F231779EFAA00F5E33A /* JxcoreFactorySingleton.m in Sources */,
+				FA3FB2851E627D6300B281FF /* jxcoretau.cpp in Sources */,
+				FA3E1F241779EFAA00F5E33A /* JxcoreSetup.m in Sources */,
+				FA3E1F261779EFAA00F5E33A /* JxcoreSingleton.m in Sources */,
+				FA3E1F301779EFBB00F5E33A /* JxcoreBase.m in Sources */,
+				FA3E1F321779EFBB00F5E33A /* JxcoreFactoryBase.m in Sources */,
+				FA3E1F341779EFBB00F5E33A /* JxcoreSingletonBase.m in Sources */,
+				FA3E1F361779EFC400F5E33A /* jxcore_js_wrap.mm in Sources */,
+				FA3E1F381779EFCB00F5E33A /* jxcore_ruby_wrap.m in Sources */,
+				FA3E1F3C1779EFD700F5E33A /* jxcore_api_init.cpp in Sources */,
+				FA3E1F3D1779EFD700F5E33A /* jxcore_js_api.cpp in Sources */,
+				FA3E1F3E1779EFD700F5E33A /* jxcore_ruby_api.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					/Users/MOHUS/tauplatform/tau/platform/shared/common,
+					/Users/MOHUS/tauplatform/tau/platform/shared/rubyext,
+					/Users/MOHUS/tauplatform/tau/platform/shared/ruby/include,
+					/Users/MOHUS/tauplatform/tau/platform/shared/ruby/iphone,
+					/Users/MOHUS/tauplatform/tau/platform/shared,
+					/Users/MOHUS/tauplatform/tau/platform/iphone/Classes,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					/Users/MOHUS/tauplatform/tau/platform/shared/common,
+					/Users/MOHUS/tauplatform/tau/platform/shared/rubyext,
+					/Users/MOHUS/tauplatform/tau/platform/shared/ruby/include,
+					/Users/MOHUS/tauplatform/tau/platform/shared/ruby/iphone,
+					/Users/MOHUS/tauplatform/tau/platform/shared,
+					/Users/MOHUS/tauplatform/tau/platform/iphone/Classes,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/Jxcore.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Jxcore_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/common,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/JXcore/bin",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Jxcore;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/Jxcore.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Jxcore_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/common,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/JXcore/bin",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Jxcore;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Jxcore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Jxcore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

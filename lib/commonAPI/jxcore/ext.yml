@@ -1,0 +1,29 @@
+entry: Init_Jxcore_extension
+javaentry: com.jxcore.Jxcore
+libraries: ["Jxcore"]
+
+iphone:
+  link_libraries:
+  - ext/platform/iphone/JXcore/libcares.a
+  - ext/platform/iphone/JXcore/libchrome_zlib.a
+  - ext/platform/iphone/JXcore/libjx.a
+  - ext/platform/iphone/JXcore/libleveldb.a
+  - ext/platform/iphone/JXcore/libleveldown.a
+  - ext/platform/iphone/JXcore/libmozjs.a
+  - ext/platform/iphone/JXcore/libopenssl.a
+  - ext/platform/iphone/JXcore/libsnappy.a
+  - ext/platform/iphone/JXcore/libuv.a
+
+android:
+  source_list: ext/platform/android/ext_java.files
+  rhodes_listener: io.jxcore.node.jxcore  
+  exttype: rakefile
+wp8:
+  csharp_impl: yes
+  root_namespace: rho
+
+project_paths:
+  wp8: ext/platform/wp8/JxcoreLib.vcxproj
+  wm: ext/platform/wm/Jxcore.vcproj
+  
+xml_api_paths: ext/Jxcore.xml

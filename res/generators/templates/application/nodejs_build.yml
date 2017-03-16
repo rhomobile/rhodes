@@ -1,0 +1,76 @@
+## Note: sdk is full path to Rhodes root. If not defined - automatically find latest installed Rhodes gem
+#sdk: "<%=@sdk_path%>"
+sdkversion: <%=Rhodes::VERSION%>
+name: <%=@app_name%>
+version: 1.0
+vendor: rhomobile
+## Note: rho_app_id send to RhoConnect server for identify application (used in multi-push configuration only)
+## we recommend make it same with BundleIdentifier
+rho_app_id: com.rhomobile.<%=@app_name_cleared%>
+build: debug
+applog: rholog.txt
+
+nodejs_application: true
+
+## Note: enable specific device capabilities for aplication
+#capabilities:
+  ## allows use of audio hardware (record audio, modify audio settings)
+  #- audio
+  ## allows use of hardware camera
+  #- camera
+  ## allows use of geo location service
+  #- gps
+  ## allows read device network state (connected/disconnected)
+  #- network_state
+  ## allow make calls/read phone state
+  #- phone
+  ## allow read/modify personal information and contacts
+  #- pim
+  ## allows use of PUSH on device
+  #- push
+  ## allows use of hardware vibration mechanism
+  #- vibrate
+  ## allows use of bluetooth hardware
+  #- bluetooth
+  ## allows access to default device calendar
+  #- calendar
+  ## allows writing to the SD card on Android devices
+  #- sdcard
+
+iphone:
+  configuration: Release
+  ## Note: sdk can be 3 predefined value : latest, latest_simulator, latest_device
+  ## simulator or device detect by rake command for "rake run:iphone" is simulator, for "rake device:iphone:production" is device
+  ## sdk also can be defined exactly like:  iphonesimulator10.2 or iphoneos10.2
+  sdk: latest
+  ## Note: provisionprofile can be defined as name or UUID - if you defined provisionprofile then codesignidentity defined automatically if you not defined it in this build.yml
+  #provisionprofile:
+  #codesignidentity:
+  #entitlements:
+  BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
+  BundleURLScheme: <%=@app_name_cleared%>
+  ## Note: Specifies the URL schemes the app is able to call using Rho.System.runApplication
+  #ApplicationQueriesSchemes: ['scheme1', 'scheme2']
+  ## Note: Specifies list of HTTP domains for connect from application
+  #http_connection_domains: ['domain1.com', 'domain2.org']
+  ## Note: Specify remove of Info.plist keys - use this if you need to remove some keys from Info.plist
+  ## This example remove two keys with unsupported screen orientation
+  #info_plist_data_remove:
+  #- UISupportedInterfaceOrientations: ['UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight']
+  ## Note: Specifies set/modify of Info.plist keys with content(hash) - all of this items will be apply to final Info.plist of application. You can specify any Ino.plist data in this parameter.
+  ## This example allow all HTTP connections in application:
+  #info_plist_data:
+  #  NSAppTransportSecurity:
+  #    NSAllowsArbitraryLoads: true
+
+android:
+  #manifest_template: 'AndroidManifest.erb'
+  version: 4.1.0
+  ## Note: in order to simplify debugging only app messages and system channels with priority informative and higher, and any errors are enabled by default
+  logcatFilter: APP:I StrictMode:I DEBUG:I *:E
+
+extensions: ["jxcore"]
+
+rhobundle:
+  exclude_items:
+  - thumb.db
