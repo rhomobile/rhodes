@@ -46,6 +46,7 @@ platform/shared/ruby/io.c
 platform/shared/ruby/iseq.c
 platform/shared/ruby/load.c
 platform/shared/ruby/loadpath.c
+platform/shared/ruby/localeinit.c
 platform/shared/ruby/marshal.c
 platform/shared/ruby/math.c
 platform/shared/ruby/miniprelude.c
@@ -100,3 +101,4 @@ platform/shared/ruby/vm_dump.c
 platform/shared/ruby/vm_trace.c
 platform/shared/ruby/ext/strscan/strscan.c
 platform/shared/ruby/ext/stringio/stringio.c
+platform/shared/ruby/rhoinit.c
