@@ -686,3 +686,33 @@ def stop_emulator
   end
 end
 
+def find_sdklibjar(sdk_root)
+  libdir = File.join($androidsdkpath, 'tools', 'lib' )
+  libpattern = 'sdklib*.jar'
+  sdklibjar = File.join(libdir,'sdklib.jar')
+
+  sdklibversion = [0,0,0]
+
+  Dir.glob( File.join( libdir, libpattern )).each do |lib|
+
+    fname = File.basename( lib, '.jar' )
+
+    version = fname.match(/^.*-(\d+)\.(\d+).(\d+)/).captures
+
+    $logger.debug "Parsed version for #{lib}: #{version[0]}.#{version[1]}.#{version[2]}"
+
+    version.each_with_index do |d,i|
+      if d && (d.to_i > sdklibversion[i])
+        sdklibversion = [version[0].to_i,version[1].to_i,version[2].to_i]
+        sdklibjar = lib
+        break
+      end
+    end
+  end
+
+  raise "Could not find sdklib*.jar: #{sdklibjar}" unless File.file?(sdklibjar)
+
+  $logger.info "Using SDK library: #{sdklibjar}"
+
+  sdklibjar
+end
