@@ -17,8 +17,12 @@ wp8:
 project_paths:
   wp8: ext/platform/wp8/BarcodeLib.vcxproj
   wm: ext/platform/wm/Barcode.vcproj
-  win32: ext/platform/wm/Barcode.vcproj
+  #win32: ext/platform/wm/Barcode.vcproj
 
 xml_api_paths: ext/barcode.xml
 
 platforms: ["wm", "iphone", "android", "wp8", "win32"]
+
+wm:
+  files:
+   common: ext\platform\wm\bin

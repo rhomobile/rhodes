@@ -7,20 +7,51 @@ using namespace apiGenerator;
 class CBarcodeImpl: public CBarcodeBase
 {
 public:
-    CBarcodeImpl(const rho::String& strID): CBarcodeBase()
-    {
+    CBarcodeImpl(const rho::String& strID): CBarcodeBase(){
+
     }
 
-    virtual void getPlatformName(rho::apiGenerator::CMethodResult& oResult) {
-         oResult.set("Win32");
+    void enable( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){
+
     }
 
-    virtual void calcSumm( int a,  int b, rho::apiGenerator::CMethodResult& oResult) {
-         oResult.set(a+b);
+    void registerBluetoothStatus(rho::apiGenerator::CMethodResult& oResult){
+
     }
-    
-    virtual void joinStrings( const rho::String& a,  const rho::String& b, rho::apiGenerator::CMethodResult& oResult) {
-         oResult.set(a+b);
+
+    void start(rho::apiGenerator::CMethodResult& oResult){
+
+    }
+
+    void stop(rho::apiGenerator::CMethodResult& oResult){
+
+    }
+
+    void disable(rho::apiGenerator::CMethodResult& oResult){
+
+    }
+
+    void barcode_recognize( const rho::String& imageFilePath, rho::apiGenerator::CMethodResult& oResult){
+
+    }
+
+    void getSupportedProperties(rho::apiGenerator::CMethodResult& oResult){
+
+    }
+
+    void take( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){
+
+
+    }
+
+    void take_barcode( const rho::String& rubyCallbackURL,  const rho::Hashtable<rho::String,
+                               rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){
+
+    }
+
+    void commandRemoteScanner( const rho::String& command, rho::apiGenerator::CMethodResult& oResult){
+
+
     }
 
 };

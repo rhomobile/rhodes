@@ -1,6 +1,8 @@
 #include "qtwebenginepage.h"
 
-QtWebEnginePage::QtWebEnginePage(QObject *parent) : QWebEnginePage(parent){}
+QtWebEnginePage::QtWebEnginePage(QObject *parent) : QWebEnginePage(parent){
+
+}
 
 IMPLEMENT_LOGCLASS(QtWebEnginePage,"JavaScript");
 

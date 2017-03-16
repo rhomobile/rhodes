@@ -78,9 +78,9 @@ namespace rho {
         } 
 
         virtual rho::String getInitialDefaultID(){
-            QString defaultId = defaultCameras.value("front");
+            QString defaultId = defaultCameras.value(ICamera::CAMERA_TYPE_FRONT);
             if (!defaultId.isEmpty()) return defaultId.toStdString();
-            else return defaultCameras.value("back").toStdString();
+            else return defaultCameras.value(ICamera::CAMERA_TYPE_BACK).toStdString();
         }
 
     };

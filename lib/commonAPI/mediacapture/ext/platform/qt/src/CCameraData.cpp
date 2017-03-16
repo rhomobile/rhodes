@@ -1,4 +1,5 @@
 #include "CCameraData.h"
+#include "generated/cpp/ICamera.h"
 
 QHash<QString, CCameraData *> CCameraData::camerasKeeper;
 
@@ -65,8 +66,8 @@ CCameraData *CCameraData::getCameraData(QString &ID)
 CCameraData::CCameraData(QCameraInfo &info):CameraDialogController(0){
     this->info = info;
     cameraID = QString::number(camerasKeeper.size() + 1);
-    if (info.position() == QCamera::BackFace){cameraType = "back";}
-    else{cameraType = "front";}
+    if (info.position() == QCamera::BackFace){cameraType = QString::fromStdString(rho::ICamera::CAMERA_TYPE_BACK);}
+    else{cameraType = QString::fromStdString(rho::ICamera::CAMERA_TYPE_FRONT);}
 }
 
 

@@ -15,7 +15,6 @@
 #include "CameraDialogController.h"
 #include "CameraDialogBuilder.h"
 
-
 class CCameraData : public CameraDialogController{
     Q_OBJECT
 private:

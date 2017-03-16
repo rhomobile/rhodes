@@ -1,12 +1,21 @@
-QT -= core
+QT += core gui widgets multimedia multimediawidgets network
+
+    lessThan(QT_VERSION, 5.6.0): {
+        QT += webkit widgets webkitwidgets
+        DEFINES += RHODES_VERSION_1
+    }
+    greaterThan(QT_VERSION, 5.6.0): {
+        QT += webengine webenginecore webenginewidgets
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+    }
 
 TARGET = Barcode
 TEMPLATE = lib
-
 CONFIG += staticlib warn_on
 
 isEmpty(RHODES_ROOT) {
-  RHODES_ROOT = ../../../../../../rhodes
+   RHODES_ROOT = ../../../../../..
 }
 
 INCLUDEPATH += \

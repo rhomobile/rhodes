@@ -550,8 +550,7 @@ setup_exception(rb_thread_t *th, int tag, volatile VALUE mesg)
     }
 }
 
-static void
-rb_longjmp(int tag, volatile VALUE mesg)
+static void rb_longjmp(int tag, volatile VALUE mesg)
 {
     rb_thread_t *th = GET_THREAD();
     setup_exception(th, tag, mesg);

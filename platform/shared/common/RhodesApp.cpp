@@ -402,8 +402,7 @@ void CAppCallbacksQueue::processUiCreated()
 
 /*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
 {
-    if ( m_pInstance != null) 
-        return (CRhodesApp*)m_pInstance;
+    if ( m_pInstance != null) return (CRhodesApp*)m_pInstance;
 
     m_pInstance = new CRhodesApp(strRootPath, strUserPath, strRuntimePath);
 

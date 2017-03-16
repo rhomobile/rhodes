@@ -51,6 +51,7 @@
 #include <QDesktopWidget>
 #include <QScroller>
 #include <QScrollArea>
+#include <QWebEngineSettings>
 #include "../guithreadfunchelper.h"
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
@@ -117,6 +118,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     menuHelp->addAction("About", this, SLOT(on_actionAbout_triggered()));
     menuBar->addMenu(menuHelp);
 
+    connect(this, SIGNAL(navigate(QString,int)), this,
+            SLOT(slotNavigate(QString,int)), Qt::QueuedConnection);
+
     toolBar = new QToolBar(this);
     toolBar->setFixedSize(4,12);
     this->addToolBar(Qt::BottomToolBarArea, toolBar);
@@ -136,6 +140,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     }
 
     QWebEngineProfile * profile = QWebEngineProfile::defaultProfile();
+
     rho::String rs_dir = RHODESAPP().getRhoRootPath()+RHO_EMULATOR_DIR;
     QString path(QString(rs_dir.c_str()));
     profile->setPersistentStoragePath(path);
@@ -144,7 +149,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
 
     webView->setContextMenuPolicy(Qt::NoContextMenu);
-    webView->setPage(new QtWebEnginePage());
+    webView->setPage(new QtWebEnginePage(this));
     webView->setAttribute(Qt::WA_AcceptTouchEvents, false);
 
     setUpWebPage(webView->page());
@@ -433,7 +438,7 @@ void QtMainWindow::on_menuMain_aboutToShow()
     if (mainWindowCallback) mainWindowCallback->createCustomMenu();
 }
 
-void QtMainWindow::navigate(QString url, int index)
+void QtMainWindow::slotNavigate(QString url, int index)
 {
     QWebEngineView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : webView;
     if (wv) {
@@ -445,14 +450,15 @@ void QtMainWindow::navigate(QString url, int index)
         } else if (!internalUrlProcessing(url)) {
             if (mainWindowCallback) {
                 const QByteArray asc_url = url.toLatin1();
-                mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
+                mainWindowCallback->onWebViewUrlChanged(std::string(asc_url.constData(),
+                                                                    asc_url.length()));
             }
 			QUrl test(url);
 			QString errStr = test.errorString();
 			if (errStr.length() > 0 )
 				LOG(ERROR) + "WebView navigate: failed to parse URL: " + errStr.toStdString();
 
-            wv->load(QUrl(url));
+            wv->load(test);
         }
     }
 }
@@ -550,12 +556,12 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
     QWebEngineView* wv = main_webView;
         if (!tbrp["use_current_view_for_tab"].toBool()) {
         // creating web view
-        wv = new QtWebEngineView();
+        wv = new QtWebEngineView(this);
         wv->setMaximumSize(0,0);
         wv->setParent(centralWidget());
         wv->setAttribute(Qt::WA_AcceptTouchEvents, false);
         verticalLayout->addWidget(wv);
-        wv->setPage(new QtWebEnginePage());
+        wv->setPage(new QtWebEnginePage(this));
         setUpWebPage(wv->page());
         if (web_bkg_color && (web_bkg_color->name().length()>0))
             wv->setHtml( QString("<!DOCTYPE html><html><body style=\"background:") + web_bkg_color->name() +
@@ -1172,3 +1178,4 @@ void QtMainWindow::setTitle(const char* title)
 {
     this->setWindowTitle(QString::fromUtf8(title));
 }
+

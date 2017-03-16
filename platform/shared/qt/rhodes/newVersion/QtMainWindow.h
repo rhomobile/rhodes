@@ -28,6 +28,7 @@
 #include <vector>
 #include <QMainWindow>
 #include <QUrl>
+#include <qtwebenginewidgetsglobal.h>
 #include <QtWebEngine>
 #include <QtWebEngineWidgets>
 
@@ -35,6 +36,7 @@
 #include <QWebEngineSettings>
 #include <QWebEngineHistory>
 #include <QWebEngineView>
+#include <QWebEngineProfile>
 #include <QAction>
 #include <QMessageBox>
 #include <QBasicTimer>
@@ -56,8 +58,6 @@
 #include <QWebEngineCookieStore>
 #include "QtNativeTabBar.h"
 #include "DateTimeDialog.h"
-#include <QWebEngineProfile>
-
 
 class QtMainWindow : public QMainWindow
 {
@@ -79,7 +79,6 @@ public:
     int getLogicalDpiY();
     void bringToFront();
     // webview
-    void navigate(QString url, int index);
     void GoBack(int index);
     void GoForward(void);
     void Refresh(int index);
@@ -185,6 +184,9 @@ public slots:
     void setSize(int width, int height);
     void lockSize(int locked);
     void setTitle(const char* title);
+    void slotNavigate(QString url, int index);
+signals:
+    void navigate(QString url, int index);
 protected:
     void resizeEvent(QResizeEvent *);
 };
