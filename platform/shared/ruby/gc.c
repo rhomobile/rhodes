@@ -35,6 +35,7 @@
 #include <assert.h>
 
 //RHO
+/*
 #include "tcmalloc/rhomem.h"
 int rhoRubyFPrintf(FILE *, const char *, ...);
 int rhoRubyPrintf(const char *, ...);
@@ -42,7 +43,7 @@ int rhoRubyPrintf(const char *, ...);
 #define fprintf rhoRubyFPrintf
 #define printf rhoRubyPrintf
 #endif
-
+*/
 static VALUE gc_profile_result(void);
 //RHO
 

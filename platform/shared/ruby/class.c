@@ -547,13 +547,6 @@ boot_defclass(const char *name, VALUE super)
 void
 Init_class_hierarchy(void)
 {
-    //RHO 
-    rb_cBasicObject = 0;
-    rb_cObject = 0;
-    rb_cModule = 0;
-    rb_cClass =  0;
-    //RHO
-
     rb_cBasicObject = boot_defclass("BasicObject", 0);
     rb_cObject = boot_defclass("Object", rb_cBasicObject);
     rb_cModule = boot_defclass("Module", rb_cObject);
