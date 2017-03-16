@@ -699,7 +699,12 @@ def find_sdklibjar(sdk_root)
 
     fname = File.basename( lib, '.jar' )
 
-    version = fname.match(/^.*-(\d+)\.(\d+).(\d+)/).captures
+    $logger.debug("Parsing version for: #{fname}")
+
+    m = fname.match(/^.*-(\d+)\.(\d+).(\d+)/)
+    next unless m
+    
+    version = m.captures
 
     $logger.debug "Parsed version for #{lib}: #{version[0]}.#{version[1]}.#{version[2]}"
 
