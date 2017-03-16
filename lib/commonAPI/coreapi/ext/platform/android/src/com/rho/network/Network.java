@@ -5,7 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesService;
 
 public class Network
 {
@@ -15,28 +15,42 @@ public class Network
 	
 	private Network()
 	{
-		connectivityManager = (ConnectivityManager)RhodesActivity.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+		tryInit();
 	}
 	
-	public static Network getNetworkObject()
+	private void tryInit() {
+		if ( null == connectivityManager ) {
+			try {
+				connectivityManager = (ConnectivityManager)RhodesService.getInstance().getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+			} catch ( Exception e ) {
+				Logger.E(TAG, "tryInit Cannot get connectivity manager: " + e.toString() );
+			}
+		}
+	}
+
+	private static Network getNetworkObjectSafe()
 	{
-		if(network == null) network = new Network();
+		if(network == null) {
+			network = new Network();
+		}
+		network.tryInit();
+
 		return network;
 	}
 	
 	public static int hasNetwork()
 	{
-		return getNetworkObject().doHasNetwork();
+		return getNetworkObjectSafe().doHasNetwork();
 	}
 	
 	public static int hasCellNetwork()
 	{
-		return getNetworkObject().doHasCellNetwork();
+		return getNetworkObjectSafe().doHasCellNetwork();
 	}
 	
 	public static int hasWifiNetwork()
 	{
-		return getNetworkObject().doHasWifiNetwork();
+		return getNetworkObjectSafe().doHasWifiNetwork();
 	}
 	
 	private int doHasNetwork()
