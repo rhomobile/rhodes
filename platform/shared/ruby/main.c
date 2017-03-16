@@ -397,3 +397,15 @@ int rho_is_remote_debug()
 int rho_rcclient_have_rhoconnect_client() {
     return 0;
 }
+
+void *rho_nativethread_start() {
+
+}
+
+void rho_nativethread_end(void *p) {
+
+}
+
+void Init_enc() {
+    
+}
