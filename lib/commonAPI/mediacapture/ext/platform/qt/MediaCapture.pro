@@ -24,7 +24,7 @@ $$RHODES_ROOT/platform/shared/common\
 $$RHODES_ROOT/platform/shared/rubyext\
 $$RHODES_ROOT/platform/shared/ruby/include\
 $$RHODES_ROOT/platform/shared\
-../../shared\
+../../shared
 
 macx {
   DESTDIR = $$RHODES_ROOT/platform/osx/bin/extensions
@@ -40,6 +40,7 @@ win32 {
   }
   release {
     DEFINES += _NDEBUG NDEBUG
+    #DEFINES += _ITERATOR_DEBUG_LEVEL=2
   }
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/win32
   RCC_DIR = $$RHODES_ROOT/lib/commonAPI/mediacapture/ext/platform/qt/resources
@@ -64,8 +65,6 @@ win32 {
   QMAKE_CXXFLAGS_RELEASE += -MP9
   QMAKE_CXXFLAGS_DEBUG += -MP9
 }
-
-
 
 HEADERS += \
 ..\..\shared\generated\cpp\ICamera.h\

@@ -21,7 +21,6 @@ signals:
 
 public slots:
     void availableCameras(QObject * getter){
-        qDebug () << "MARKCAM 2 " << getter->metaObject()->className();
         QMetaObject::invokeMethod(getter, "availableCameras", Qt::QueuedConnection,
         Q_ARG(QList<QCameraInfo>, QCameraInfo::availableCameras()));
     }

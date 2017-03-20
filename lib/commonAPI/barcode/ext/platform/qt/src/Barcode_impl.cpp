@@ -1,3 +1,4 @@
+#include "BarcodeController.h"
 #include "../../../shared/generated/cpp/BarcodeBase.h"
 
 namespace rho {
@@ -6,9 +7,10 @@ using namespace apiGenerator;
 
 class CBarcodeImpl: public CBarcodeBase
 {
+    QString cameraID;
 public:
     CBarcodeImpl(const rho::String& strID): CBarcodeBase(){
-
+        cameraID = QString::fromStdString(strID);
     }
 
     void enable( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){
@@ -40,7 +42,7 @@ public:
     }
 
     void take( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){
-
+        BarCodeController::openDialog(oResult, cameraID);
 
     }
 
@@ -83,25 +85,21 @@ IBarcode* CBarcodeFactory::createModuleByID(const rho::String& strID)
 
 IBarcodeSingleton* CBarcodeFactory::createModuleSingleton()
 {
-    return new CBarcodeSingleton();
+    BarCodeController::refresh();
+    static IBarcodeSingleton* instance = new CBarcodeSingleton();
+    return instance;
 }
 
 void CBarcodeSingleton::enumerate(CMethodResult& oResult)
 {
-    rho::Vector<rho::String> arIDs;
-    arIDs.addElement("SC1");
-    arIDs.addElement("SC2");
-
-    oResult.set(arIDs);
+    BarCodeController::getInstance()->enumerate(oResult);
 }
 
 rho::String CBarcodeSingleton::getInitialDefaultID()
 {
     CMethodResult oRes;
     enumerate(oRes);
-
     rho::Vector<rho::String>& arIDs = oRes.getStringArray();
-        
     return arIDs[0];
 }
 

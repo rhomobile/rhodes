@@ -23,19 +23,17 @@ namespace rho {
     class CCameraSingletonImpl: public CCameraSingletonBase
     {
         QHash<QString, QString> defaultCameras;
-
     public:
 
         CCameraSingletonImpl(): CCameraSingletonBase() {
-            qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
-            CameraRefresher::refresh();
+            if (CCameraData::getValues().isEmpty()){CameraRefresher::refresh();}
             foreach (CCameraData * data, CCameraData::getValues()) {
                 defaultCameras.insert(data->getCameraType(), data->getCameraID());
             }
         }
 
         virtual ~CCameraSingletonImpl(){
-            CCameraData::cleanAll();
+
         }
         
         //methods

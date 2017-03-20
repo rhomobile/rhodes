@@ -28,7 +28,7 @@ private:
     static QHash<QString, CCameraData *> camerasKeeper;
 
 public:
-    ~CCameraData() {cleanAll();}
+    ~CCameraData() {}//cleanAll();}
     static const CCameraData *addNewCamera(QCameraInfo &info);
     static void cleanAll();
     static const QList<QString> getKeys();

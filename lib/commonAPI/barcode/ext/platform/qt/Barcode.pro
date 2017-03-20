@@ -10,6 +10,8 @@ QT += core gui widgets multimedia multimediawidgets network
         DEFINES += CPP_ELEVEN RHODES_VERSION_2
     }
 
+include(src/qzxing/QZXing.pri)
+
 TARGET = Barcode
 TEMPLATE = lib
 CONFIG += staticlib warn_on
@@ -40,6 +42,7 @@ win32 {
   }
   release {
     DEFINES += _NDEBUG NDEBUG
+    #DEFINES += _ITERATOR_DEBUG_LEVEL=2
   }
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/win32
 }
@@ -59,11 +62,18 @@ win32 {
   QMAKE_CXXFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
   QMAKE_CFLAGS_RELEASE += /O2
   QMAKE_CXXFLAGS_RELEASE += /O2
+
+  QMAKE_CXXFLAGS_RELEASE += -MP9
+  QMAKE_CXXFLAGS_DEBUG += -MP9
 }
 
 HEADERS += \
 ..\..\shared\generated\cpp\IBarcode.h\
-..\..\shared\generated\cpp\BarcodeBase.h
+..\..\shared\generated\cpp\BarcodeBase.h \
+    src/BarcodeController.h \
+    src/BarcodeDialogBuilder.h \
+    src/BarcodeDialogView.h \
+    src/decoderthread.h
 
 SOURCES += \
 ..\..\shared\generated\cpp\Barcode_js_wrap.cpp\
@@ -72,4 +82,7 @@ SOURCES += \
 ..\..\shared\generated\Barcode_api_init.cpp\
 ..\..\shared\generated\Barcode_js_api.cpp\
 ..\..\shared\generated\Barcode_ruby_api.c\
-src\Barcode_impl.cpp
+src\Barcode_impl.cpp \
+    src/BarcodeController.cpp \
+    src/BarcodeDialogView.cpp \
+    src/decoderthread.cpp

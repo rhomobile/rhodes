@@ -1,7 +1,6 @@
 #ifndef CAMERAREFRESHER_H
 #define CAMERAREFRESHER_H
 
-#include "CCameraData.h"
 #include <QObject>
 #include <QCameraInfo>
 #include <QString>
@@ -9,6 +8,7 @@
 #include <QEventLoop>
 #include <QtGui>
 #include <QApplication>
+#include "CCameraData.h"
 #include "../../platform/shared/qt/rhodes/guithreadfunchelper.h"
 
 class CameraRefresher : public QObject
@@ -17,6 +17,7 @@ class CameraRefresher : public QObject
 
     explicit CameraRefresher(QObject *parent) : QObject(parent){
         qRegisterMetaType<QList<QCameraInfo> >("QList<QCameraInfo>");
+        qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
     }
     QEventLoop loop;
 public:
@@ -27,20 +28,21 @@ public:
     static void refresh(){
         getInstance()->getCameraInfo();
     }
+    ~CameraRefresher(){
+        CCameraData::cleanAll();
+    }
 
 public slots:
     void getCameraInfo(){
-        qDebug () << "MARKCAM 1";
-        QMetaObject::invokeMethod(GuiThreadFuncHelper::getInstance(), "availableCameras", Qt::QueuedConnection, Q_ARG(QObject *, this));
+        QMetaObject::invokeMethod(GuiThreadFuncHelper::getInstance(), "availableCameras",
+                                  Qt::QueuedConnection, Q_ARG(QObject *, this));
         QTimer::singleShot(100, &(this->loop), SLOT(quit()));
         loop.exec();
-
     }
 
     void availableCameras(QList<QCameraInfo> info){
         QMutexLocker locker(CCameraData::getMutex());
         if(CCameraData::isEmpty()){
-            qDebug () << "MARKCAM 3";
             foreach (QCameraInfo cameraInfo, info) {
                 const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
             }
