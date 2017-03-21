@@ -126,7 +126,6 @@ void BarcodeDialogView::buttonClicked()
     }else{
         buttonCapture->setEnabled(true);
     }
-
 }
 
 void BarcodeDialogView::buttonSaveClicked()
@@ -142,12 +141,12 @@ void BarcodeDialogView::scanningProcessMsg()
     static QString msg = "Scanning";
     static int msgFirstSize = msg.size();
 
-    msg.append(".");
-    if (msg.size() > (msgFirstSize + 3)){
+    if (msg.size() < (msgFirstSize + 6)){
+        msg.append(" .");
+    }else{
         msg = "Scanning";
     }
     laDecodeResult->setText(msg);
     qApp->processEvents();
-
 }
 

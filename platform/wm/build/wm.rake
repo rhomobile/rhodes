@@ -1178,19 +1178,19 @@ namespace "build" do
       FileUtils.rm_rf(Dir.glob(File.join($target_path, 'vccorlib*0.dll')), {:secure => true})
       FileUtils.rm_rf(Dir.glob(File.join($target_path, 'D3Dcompiler*.dll')), {:secure => true})
       FileUtils.rm_rf(Dir.glob(File.join($target_path, 'Microsoft.VC*.manifest')), {:secure => true})
-
       deploymsvc = Jake.getBuildBoolProp('deploymsvc', $app_config, true)
-       if(deploymsvc)
-            puts "Microsoft Visual C++ Runtime Binaries for #{$vs_version} included in App Setup Bundle"
-       else
-          puts "Microsoft Visual C++ Runtime Binaries for #{$vs_version} Excluded in App Setup Bundle"
-       end 
-       if($rhosimulator_build)
-           puts "Build for Rhosimulator...msvc"
-            deploymsvc = true;
+      if(deploymsvc)
+        puts "Microsoft Visual C++ Runtime Binaries for #{$vs_version} included in App Setup Bundle"
+      else
+        puts "Microsoft Visual C++ Runtime Binaries for #{$vs_version} Excluded in App Setup Bundle"
+      end 
+      if($rhosimulator_build)
+        puts "Build for Rhosimulator...msvc"
+        deploymsvc = true;
       end
-      if $vs_version == 2008
+      if ($vs_version == 2008)
         # Visual Studio 2008
+        puts "Deploy libs from msvc #{$vs_version}"
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.CRT")
         vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.OPENMP")
         if deploymsvc
@@ -1203,8 +1203,9 @@ namespace "build" do
         end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/ssleay32.dll"), $target_path
-      elseif $vs_version == 2012
+      elsif ($vs_version == 2012)
         # Visual Studio 2012
+        puts "Deploy libs from msvc #{$vs_version}"
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.CRT")
         vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.OPENMP")
         if deploymsvc
@@ -1213,11 +1214,13 @@ namespace "build" do
           cp File.join(vsredistdir, "vccorlib110.dll"), $target_path
           cp File.join(vsredistdir2, "vcomp110.dll"), $target_path
           cp File.join($vscommontools, "../../VC/bin/D3Dcompiler_46.dll"), $target_path
+          puts "Joining msvc110 libs"
         end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
-      elseif $vs_version == 2015
+      elsif ($vs_version == 2015)
         # Visual Studio 2015
+        puts "Deploy libs from msvc #{$vs_version}"
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.CRT")
         vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.OPENMP")
         if deploymsvc
@@ -1229,6 +1232,8 @@ namespace "build" do
         end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
+      else
+        puts "Libs version not correct"
       end
 
       FileUtils.rm_rf(File.join($target_path, 'phonon4.dll'), {:secure => true})
@@ -1918,6 +1923,7 @@ namespace "clean" do
     rm_rf $targetdir
     rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
     rm_rf File.join($startdir, 'platform/win32/bin')
+    rm_rf File.join($startdir, 'platform/wm/bin')
     
     rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
     rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")

@@ -38,7 +38,10 @@ public:
     }
 
     void getSupportedProperties(rho::apiGenerator::CMethodResult& oResult){
-
+        rho::Hashtable<rho::String, rho::String> propsHash = oResult.getStringHash();
+        propsHash.put(barcode::PROPERTY_SCANNER_TYPE, "Camera");
+        propsHash.put(barcode::PROPERTY_FRIENDLY_NAME, QString("Camera"+cameraID).toStdString());
+        oResult.set(propsHash);
     }
 
     void take( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){
