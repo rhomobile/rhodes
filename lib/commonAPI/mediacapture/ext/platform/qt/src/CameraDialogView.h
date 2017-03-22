@@ -32,7 +32,7 @@
 #include <QtPlugin>
 #include <QPluginLoader>
 #include <QJsonObject>
-
+#include <QTextCodec>
 
 class CameraDialogView : public QDialog
 {
@@ -50,13 +50,10 @@ private:
     QCameraImageCapture * imageCapture;
     QCamera * camera;
     CameraDialogController * controller;
-    QLabel * laPreview;
     QImage currentImage;
     bool imageIsSaved;
-    QTimer timerToRestoreCaptureButtonImage;
     QIcon imageCaptureClose;
     QIcon imageCaptureOpened;
-    QIcon imageSave;
     QPushButton * buttonCapture;
 public slots:
     void imageSaved(int id, const QString &fileName);

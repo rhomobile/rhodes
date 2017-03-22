@@ -28,22 +28,23 @@ public slots:
             connect(parentWidget, SIGNAL(destroyed(QObject*)), dialog, SLOT(reject()));
             connect(parentWidget, SIGNAL(destroyed(QObject*)), dialog, SLOT(deleteLater()));
             connect(dialog, SIGNAL(rejected()), this, SLOT(rejected()));
-            connect(dialog, SIGNAL(saveResult(QString)), this, SLOT(resultHandler(QString)));
+            connect(dialog, SIGNAL(saveResult(QString, QString)), this, SLOT(resultHandler(QString, QString)));
             connect(dialog, SIGNAL(destroyed(QObject*)), this, SLOT(deleteLater()));
             dialog->show();
         }else{
             deleteLater();
         }
     }
-    void resultHandler(QString tag){
+    void resultHandler(QString tag, QString format){
         rho::Hashtable<rho::String, rho::String>& mapRes = oResult.getStringHash();
         mapRes[rho::barcode::HK_STATUS] = "ok";
         mapRes[rho::barcode::HK_BARCODE] = tag.toStdString();
+        mapRes["format"] = format.toStdString();
         oResult.set(mapRes);
     }
     void rejected(){
         rho::Hashtable<rho::String, rho::String>& mapRes = oResult.getStringHash();
-        mapRes[rho::barcode::HK_SOURCE] = "cancel";
+        mapRes[rho::barcode::HK_STATUS] = "cancel";
         oResult.set(mapRes);
     }
 };

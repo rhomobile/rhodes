@@ -1,8 +1,10 @@
 #include "CameraDialogView.h"
 
-
 CameraDialogView::CameraDialogView(QCameraInfo &info, rho::apiGenerator::CMethodResult &oResult,
                                    CameraDialogController *controller, QWidget *parent) : QDialog(parent){
+    this->showFullScreen();
+    this->setStyleSheet("QDialog { background-color: black }");
+
     camera = new QCamera(info, this);
     this->oResult = oResult;
     this->controller = controller;
@@ -23,41 +25,27 @@ CameraDialogView::CameraDialogView(QCameraInfo &info, rho::apiGenerator::CMethod
     QVBoxLayout * vblay = new QVBoxLayout();
     videoWidget = new QVideoWidget(this);
     vblay->addWidget(videoWidget,0,Qt::AlignCenter);
-    videoWidget->setFixedWidth(300);
     Q_INIT_RESOURCE(mediacapture);
 
     imageCaptureClose = QIcon(":/mcimages/diaClosed.png");
-
     imageCaptureOpened = QIcon(":/mcimages/diaOpened.png");
-    imageSave = QIcon(":/mcimages/photoSave.png");
-
-    connect(&timerToRestoreCaptureButtonImage, SIGNAL(timeout()), this, SLOT(restoreCaptureButtonImage()));
-    timerToRestoreCaptureButtonImage.setSingleShot(true);
 
     buttonCapture = new QPushButton(imageCaptureOpened, "", this);
+
     buttonCapture->setFixedSize(50,50);
     buttonCapture->setIconSize(QSize(40,40));
     vblay->addWidget(buttonCapture,0,Qt::AlignCenter);
     connect(buttonCapture, SIGNAL(clicked(bool)), this, SLOT(capture()));
     connect(imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(imageCaptured(int,QImage)));
+
     hblay->addLayout(vblay);
 
-    vblay = new QVBoxLayout();
-    laPreview = new QLabel(this);
-    vblay->addWidget(laPreview,0,Qt::AlignCenter);
-    QPushButton * buttonSave = new QPushButton(imageSave,"",this);
-    buttonSave->setFixedSize(50,50);
-    buttonSave->setIconSize(QSize(35,35));
-
-    connect(buttonSave, SIGNAL(clicked(bool)), this, SLOT(saveCurrentImage()));
-    vblay->addWidget(buttonSave,0,Qt::AlignCenter);
     hblay->addSpacing(4);
-    hblay->addLayout(vblay);
+
     hblay->setMargin(1);
     hblay->setSpacing(1);
 
     currentImage = QImage(640,480,QImage::Format_ARGB32);
-    laPreview->setPixmap(QPixmap::fromImage(currentImage.scaledToWidth(videoWidget->size().width())));
 
     camera->setCaptureMode(QCamera::CaptureViewfinder);
     camera->focus()->setFocusMode(QCameraFocus::AutoFocus);
@@ -70,8 +58,6 @@ CameraDialogView::CameraDialogView(QCameraInfo &info, rho::apiGenerator::CMethod
     connect(this, SIGNAL(rejected()), this, SLOT(deleteLater()), Qt::QueuedConnection);
     camera->start();
     camera->searchAndLock();
-
-    setFixedSize(minimumWidth(), minimumHeight());
 }
 
 CameraDialogView::~CameraDialogView()
@@ -92,7 +78,7 @@ void CameraDialogView::error()
     qDebug() << "Error in Taking Picture";
 
     rho::Hashtable<rho::String, rho::String>& mapRes = oResult.getStringHash();
-    mapRes["status"] = "error";
+    mapRes["status"] = "cancel";
     mapRes["message"] = "Dialog canceled without saving";
     oResult.set(mapRes);
 }
@@ -102,13 +88,12 @@ void CameraDialogView::capture()
 {
     buttonCapture->setIcon(imageCaptureClose);
     imageCapture->capture("dev/null");
-    timerToRestoreCaptureButtonImage.start(300);
+    QTimer::singleShot(300, this, SLOT(restoreCaptureButtonImage()));
 }
 
 void CameraDialogView::imageCaptured(int id, const QImage &preview)
 {
     currentImage = preview;
-    laPreview->setPixmap(QPixmap::fromImage(currentImage.scaledToWidth(videoWidget->size().width())));
 }
 
 
@@ -140,6 +125,7 @@ void CameraDialogView::saveCurrentImage()
 void CameraDialogView::restoreCaptureButtonImage()
 {
     buttonCapture->setIcon(imageCaptureOpened);
+    QTimer::singleShot(300, this, SLOT(saveCurrentImage()));
 }
 
 
@@ -170,9 +156,10 @@ void CameraDialogView::getImageData(rho::Hashtable<rho::String, rho::String> &ma
 
 QDir CameraDialogView::getImageDir()
 {
-    QDir dir = QDir(QDir::current().absolutePath()+"/db/db-files/");
+    QDir dir = QDir(qApp->applicationDirPath()+"/db/db-files/");
     if (!dir.exists()) dir.mkpath(dir.absolutePath());
-    return dir;
+    if (dir.exists()){return dir;}
+    else{QDir::current();}
 }
 
 

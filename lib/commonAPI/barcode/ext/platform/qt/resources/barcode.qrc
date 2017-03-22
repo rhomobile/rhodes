@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="barcodesounds">
+        <file>scanner_sound.wav</file>
+    </qresource>
+</RCC>

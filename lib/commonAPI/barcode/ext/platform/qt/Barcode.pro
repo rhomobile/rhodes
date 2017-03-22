@@ -86,3 +86,5 @@ src\Barcode_impl.cpp \
     src/BarcodeController.cpp \
     src/BarcodeDialogView.cpp \
     src/decoderthread.cpp
+
+RESOURCES += $$RHODES_ROOT/lib/commonAPI/barcode/ext/platform/qt/resources/barcode.qrc

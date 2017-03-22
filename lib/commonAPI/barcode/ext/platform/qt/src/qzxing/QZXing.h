@@ -4,6 +4,7 @@
 #include "QZXing_global.h"
 #include <QObject>
 #include <QImage>
+#include <QPair>
 
 #if QT_VERSION >= 0x040700 && QT_VERSION < 0x050000
 #include <QtDeclarative>

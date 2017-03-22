@@ -2,12 +2,16 @@
 QSet<QString> BarcodeDialogView::keeper;
 
 BarcodeDialogView::BarcodeDialogView(QCameraInfo &info, QWidget *parent) : QDialog(parent){
+
+    this->showFullScreen();
+    this->setStyleSheet("QDialog { background-color: black }");
+
     camera = nullptr;
     imageCapture = nullptr;
     localInfo = info;
 
     decThread = new DecoderThread(this);
-    connect(decThread, SIGNAL(encoded(QString)), this, SLOT(encoded(QString)));
+    connect(decThread, SIGNAL(encoded(QString, QString)), this, SLOT(encoded(QString, QString)));
     connect(decThread, SIGNAL(scanningProcessMsg()), this, SLOT(scanningProcessMsg()));
 
     connect(this, SIGNAL(accepted()), this, SLOT(deleteLater()));
@@ -18,27 +22,14 @@ BarcodeDialogView::BarcodeDialogView(QCameraInfo &info, QWidget *parent) : QDial
     videoWidget = new QVideoWidget(this);
     vblay->addWidget(videoWidget,0,Qt::AlignCenter);
 
-    vblay->addSpacing(30);
+    vblay->addSpacing(20);
 
     laDecodeResult = new QLabel(this);
     laDecodeResult->setAlignment(Qt::AlignCenter);
+    laDecodeResult->setStyleSheet("QLabel {color : white; }");
     vblay->addWidget(laDecodeResult,0,Qt::AlignHCenter);
 
-    vblay->addSpacing(30);
-
-    QHBoxLayout * hblay = new QHBoxLayout();
-    vblay->addLayout(hblay);
-
-    buttonCapture = new QPushButton("Scan", this);
-    hblay->addWidget(buttonCapture,0,Qt::AlignCenter);
-    connect(buttonCapture, SIGNAL(clicked(bool)), this, SLOT(buttonClicked()));
-
-    QPushButton * buttonSave = new QPushButton("Save", this);
-    hblay->addWidget(buttonSave,0,Qt::AlignCenter);
-    connect(buttonSave, SIGNAL(clicked(bool)), this, SLOT(buttonSaveClicked()));
-
-    this->setMinimumHeight(400);
-
+    vblay->addSpacing(20);
     vblay->setMargin(1);
     vblay->setSpacing(1);
 
@@ -48,9 +39,11 @@ BarcodeDialogView::BarcodeDialogView(QCameraInfo &info, QWidget *parent) : QDial
     connect(timer, SIGNAL(timeout()), this, SLOT(timeOut()));
 
     createCamera(localInfo);
-    buttonClicked();
 
     keeper.insert(localInfo.deviceName());
+
+    Q_INIT_RESOURCE(barcode);
+    timer->start(50);
 }
 
 BarcodeDialogView::~BarcodeDialogView()
@@ -80,6 +73,7 @@ void BarcodeDialogView::createCamera(QCameraInfo &info)
 
     camera = new QCamera(info, this);
     camera->focus()->setFocusMode(QCameraFocus::AutoFocus);
+    camera->focus()->setFocusPointMode(QCameraFocus::FocusPointCenter);
     camera->exposure()->setExposureMode(QCameraExposure::ExposureAuto);
     camera->exposure()->setAutoIsoSensitivity();
     camera->setViewfinder(videoWidget);
@@ -104,13 +98,15 @@ void BarcodeDialogView::capture()
     imageCapture->capture("dev/null");
 }
 
-void BarcodeDialogView::encoded(QString text)
+void BarcodeDialogView::encoded(QString text, QString format)
 {
-    laDecodeResult->setText(text);
-    qApp->processEvents();
-    currentDecodeResult = text;
     timer->stop();
-    buttonCapture->setEnabled(true);
+    disconnect(decThread, SIGNAL(scanningProcessMsg()), this, SLOT(scanningProcessMsg()));
+    QSound::play(":/barcodesounds/scanner_sound.wav");
+    laDecodeResult->setText(text);
+    qApp->processEvents();  
+    emit saveResult(text, format);
+    QTimer::singleShot(500,this,SLOT(accept()));
 }
 
 void BarcodeDialogView::timeOut()
@@ -118,30 +114,13 @@ void BarcodeDialogView::timeOut()
     if (!decThread->isRunning()){capture();}
 }
 
-void BarcodeDialogView::buttonClicked()
-{   
-    if (!timer->isActive()){
-        timer->start(20);
-        buttonCapture->setEnabled(false);
-    }else{
-        buttonCapture->setEnabled(true);
-    }
-}
-
-void BarcodeDialogView::buttonSaveClicked()
-{
-    timer->stop();
-    emit saveResult(currentDecodeResult);
-    this->accept();
-    deleteLater();
-}
 
 void BarcodeDialogView::scanningProcessMsg()
 {
     static QString msg = "Scanning";
     static int msgFirstSize = msg.size();
 
-    if (msg.size() < (msgFirstSize + 6)){
+    if (msg.size() < (msgFirstSize + 10)){
         msg.append(" .");
     }else{
         msg = "Scanning";

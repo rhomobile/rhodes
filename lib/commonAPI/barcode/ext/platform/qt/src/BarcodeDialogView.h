@@ -29,6 +29,7 @@
 #include <QTimer>
 #include <QLabel>
 #include <QSet>
+#include <QSound>
 
 class BarcodeDialogView : public QDialog
 {
@@ -41,23 +42,19 @@ public:
 private:
     QVideoWidget * videoWidget;
     QCamera * camera;
-    QPushButton * buttonCapture;
     QCameraImageCapture * imageCapture;
     QTimer * timer;
     DecoderThread * decThread;
     QLabel * laDecodeResult;
-    QString currentDecodeResult;
     QCameraInfo localInfo;
     static QSet<QString> keeper;
 signals:
-    void saveResult(QString);
+    void saveResult(QString, QString);
 public slots:
     void createCamera(QCameraInfo & info);
     void capture();
-    void encoded(QString text);
+    void encoded(QString text, QString format);
     void timeOut();
-    void buttonClicked();
-    void buttonSaveClicked();
     void scanningProcessMsg();
 
 

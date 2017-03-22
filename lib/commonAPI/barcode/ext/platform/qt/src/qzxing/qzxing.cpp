@@ -212,7 +212,7 @@ QString QZXing::decodeImage(QImage &image, int maxWidth, int maxHeight, bool smo
         res = decoder->decode(ref, DecodeHints((int)enabledDecoders));
 
         QString string = QString(res->getText()->getText().c_str());
-        if (!string.isEmpty() && (string.length() > 0)) {
+        if (!string.isEmpty()) {
             int fmt = res->getBarcodeFormat().value;
             foundedFmt = decoderFormatToString(fmt);
             charSet_ = QString::fromStdString(res->getCharSet());
