@@ -20,9 +20,9 @@ CameraDialogView::CameraDialogView(QCameraInfo &info, rho::apiGenerator::CMethod
 
     connect(imageCapture, SIGNAL(imageSaved(int, const QString)), this, SLOT(imageSaved(int,const QString)));
 
-    QHBoxLayout * hblay = new QHBoxLayout(this);
 
-    QVBoxLayout * vblay = new QVBoxLayout();
+
+    QVBoxLayout * vblay = new QVBoxLayout(this);
     videoWidget = new QVideoWidget(this);
     vblay->addWidget(videoWidget,0,Qt::AlignCenter);
     Q_INIT_RESOURCE(mediacapture);
@@ -30,20 +30,35 @@ CameraDialogView::CameraDialogView(QCameraInfo &info, rho::apiGenerator::CMethod
     imageCaptureClose = QIcon(":/mcimages/diaClosed.png");
     imageCaptureOpened = QIcon(":/mcimages/diaOpened.png");
 
-    buttonCapture = new QPushButton(imageCaptureOpened, "", this);
+    QHBoxLayout * hblay = new QHBoxLayout();
 
+    buttonCapture = new QPushButton(imageCaptureOpened, "", this);
     buttonCapture->setFixedSize(50,50);
     buttonCapture->setIconSize(QSize(40,40));
-    vblay->addWidget(buttonCapture,0,Qt::AlignCenter);
     connect(buttonCapture, SIGNAL(clicked(bool)), this, SLOT(capture()));
     connect(imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(imageCaptured(int,QImage)));
 
-    hblay->addLayout(vblay);
+    QIcon iconBack = QIcon(":/mcimages/buttonBack.png");
+    QPushButton * buttonBack = new QPushButton(iconBack,"",this);
+    connect(buttonBack, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    hblay->addWidget(buttonBack);
+    buttonBack->setFixedSize(50,50);
+    buttonBack->setIconSize(QSize(40,40));
 
-    hblay->addSpacing(4);
 
-    hblay->setMargin(1);
-    hblay->setSpacing(1);
+    QLabel * empty = new QLabel(this);
+    empty->setFixedWidth(50);
+
+    vblay->addSpacing(20);
+    vblay->addLayout(hblay);
+    hblay->addWidget(buttonBack);
+    hblay->addWidget(buttonCapture);
+    hblay->addWidget(empty);
+
+    vblay->addSpacing(20);
+
+    vblay->setMargin(1);
+    vblay->setSpacing(1);
 
     currentImage = QImage(640,480,QImage::Format_ARGB32);
 

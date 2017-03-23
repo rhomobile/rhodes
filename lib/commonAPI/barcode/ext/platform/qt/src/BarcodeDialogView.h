@@ -30,6 +30,7 @@
 #include <QLabel>
 #include <QSet>
 #include <QSound>
+#include <QIcon>
 
 class BarcodeDialogView : public QDialog
 {
@@ -48,15 +49,19 @@ private:
     QLabel * laDecodeResult;
     QCameraInfo localInfo;
     static QSet<QString> keeper;
+    QString text;
+    QString format;
 signals:
     void saveResult(QString, QString);
+    void enableButtons(bool);
 public slots:
     void createCamera(QCameraInfo & info);
     void capture();
     void encoded(QString text, QString format);
     void timeOut();
     void scanningProcessMsg();
-
+    void saveBarcode();
+    void retry();
 
 };
 

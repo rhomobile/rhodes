@@ -709,6 +709,7 @@ namespace "config" do
       $vs_version = 2015
       $vscommontools = ENV['VS140COMNTOOLS']
       $qmake_makespec = 'win32-msvc2015'
+      $qtdir = ENV['QTDIR580']
 
       # if win32:msvc is not defined in build.yml, then automatically detect installed Visual Studio
       if $msvc_version.nil?
@@ -721,6 +722,7 @@ namespace "config" do
           $vs_version = 2012
           $vscommontools = ENV['VS110COMNTOOLS']
           $qmake_makespec = 'win32-msvc2012'
+          $qtdir = ENV['QTDIR550']
         end
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set either VS110COMNTOOLS or VS90COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2012 or 2008 respectively."
@@ -738,6 +740,8 @@ namespace "config" do
         $vs_version = 2012
         $vscommontools = ENV['VS110COMNTOOLS']
         $qmake_makespec = 'win32-msvc2012'
+        $qtdir = ENV['QTDIR550']
+        puts "Env2012"
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2012"
           exit 1
@@ -746,6 +750,7 @@ namespace "config" do
         $vs_version = 2015
         $vscommontools = ENV['VS140COMNTOOLS']
         $qmake_makespec = 'win32-msvc2015'
+        $qtdir = ENV['QTDIR580']
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2015"
           exit 1
@@ -761,11 +766,15 @@ namespace "config" do
 
       $vscommontools << '\\' unless $vscommontools.end_with?('\\') || $vscommontools.end_with?('/')
 
-      $qtdir = ENV['QTDIR']
+
+      if $qtdir.nil?
+        $qtdir = ENV['QTDIR']
+      end
       unless !$qtdir.nil? && ($qtdir !~ /^\s*$/) && File.directory?($qtdir)
         puts "\nPlease, set QTDIR environment variable to Qt root directory path"
         exit 1
       end
+
        
        
      # Search for QT 5 or QT 4 files
@@ -1225,10 +1234,11 @@ namespace "build" do
         vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.OPENMP")
         if deploymsvc
           cp File.join(vsredistdir, "msvcp140.dll"), $target_path
-          cp File.join(vsredistdir, "msvcr140.dll"), $target_path
+          cp File.join(vsredistdir, "concrt140.dll"), $target_path
           cp File.join(vsredistdir, "vccorlib140.dll"), $target_path
+          cp File.join(vsredistdir, "vcruntime140.dll"), $target_path
           cp File.join(vsredistdir2, "vcomp140.dll"), $target_path
-          cp File.join($vscommontools, "../../VC/bin/D3Dcompiler_46.dll"), $target_path
+          cp File.join($vscommontools, "../../VC/bin/d3dcompiler_47.dll"), $target_path
         end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path

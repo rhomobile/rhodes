@@ -32,9 +32,35 @@ BarcodeDialogView::BarcodeDialogView(QCameraInfo &info, QWidget *parent) : QDial
     vblay->addSpacing(20);
     vblay->setMargin(1);
     vblay->setSpacing(1);
-
+    Q_INIT_RESOURCE(barcode);
     // setFixedSize(minimumWidth(), minimumHeight());
+    QHBoxLayout * hblay = new QHBoxLayout();
+    vblay->addLayout(hblay);
 
+    QIcon iconBack = QIcon(":/barcodeimages/buttonBack.png");
+    QPushButton * buttonBack = new QPushButton(iconBack,"",this);
+    connect(buttonBack, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    hblay->addWidget(buttonBack);
+    buttonBack->setFixedSize(50,50);
+    buttonBack->setIconSize(QSize(40,40));
+
+    QIcon iconRetry = QIcon(":/barcodeimages/buttonRetry.png");
+    QPushButton * buttonRetry = new QPushButton(iconRetry,"",this);
+    connect(buttonRetry, SIGNAL(clicked(bool)), this, SLOT(retry()));
+    connect(this, SIGNAL(enableButtons(bool)), buttonRetry, SLOT(setEnabled(bool)));
+    hblay->addWidget(buttonRetry);
+    buttonRetry->setFixedSize(50,50);
+    buttonRetry->setIconSize(QSize(40,40));
+
+    QIcon iconSave = QIcon(":/barcodeimages/buttonSave.png");
+    QPushButton * buttonSave = new QPushButton(iconSave,"",this);
+    connect(buttonSave, SIGNAL(clicked(bool)), this, SLOT(saveBarcode()));
+    connect(this, SIGNAL(enableButtons(bool)), buttonSave, SLOT(setEnabled(bool)));
+    hblay->addWidget(buttonSave);
+    buttonSave->setFixedSize(50,50);
+    buttonSave->setIconSize(QSize(40,40));
+
+    vblay->addSpacing(20);
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timeOut()));
 
@@ -42,8 +68,9 @@ BarcodeDialogView::BarcodeDialogView(QCameraInfo &info, QWidget *parent) : QDial
 
     keeper.insert(localInfo.deviceName());
 
-    Q_INIT_RESOURCE(barcode);
-    timer->start(50);
+
+    enableButtons(false);
+    retry();
 }
 
 BarcodeDialogView::~BarcodeDialogView()
@@ -101,13 +128,16 @@ void BarcodeDialogView::capture()
 void BarcodeDialogView::encoded(QString text, QString format)
 {
     timer->stop();
-    disconnect(decThread, SIGNAL(scanningProcessMsg()), this, SLOT(scanningProcessMsg()));
+    this->text = text;
+    this->format = format;
+    qApp->processEvents();
     QSound::play(":/barcodesounds/scanner_sound.wav");
-    laDecodeResult->setText(text);
+    laDecodeResult->setText(format + " : " + text);
     qApp->processEvents();  
-    emit saveResult(text, format);
-    QTimer::singleShot(500,this,SLOT(accept()));
+    emit enableButtons(true);
 }
+
+
 
 void BarcodeDialogView::timeOut()
 {
@@ -127,5 +157,19 @@ void BarcodeDialogView::scanningProcessMsg()
     }
     laDecodeResult->setText(msg);
     qApp->processEvents();
+}
+
+void BarcodeDialogView::saveBarcode()
+{
+    timer->stop();
+    emit saveResult(text, format);
+    qApp->processEvents();
+    accept();
+}
+
+void BarcodeDialogView::retry()
+{
+    timer->start(50);
+    emit enableButtons(false);
 }
 
