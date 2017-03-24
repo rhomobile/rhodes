@@ -129,9 +129,21 @@ NORETURN(void _longjmp(jmp_buf, int));
 #define EXEC_TAG() \
   TH_EXEC_TAG()
 
+#ifdef RHODES_VERSION_2
+NORETURN(static inline void rb_threadptr_tag_jump(rb_thread_t *, int));
+static inline void
+rb_threadptr_tag_jump(rb_thread_t *th, int st)
+{
+    th->state = st;
+    ruby_longjmp(th->tag->buf, 1);
+}
+#define TH_JUMP_TAG(th, st) rb_threadptr_tag_jump(th, st)
+#else
 #define TH_JUMP_TAG(th, st) do { \
   ruby_longjmp(th->tag->buf,(st)); \
 } while (0)
+#endif
+
 
 #define JUMP_TAG(st) TH_JUMP_TAG(GET_THREAD(), st)
 

@@ -709,8 +709,7 @@ namespace "config" do
       $vs_version = 2015
       $vscommontools = ENV['VS140COMNTOOLS']
       $qmake_makespec = 'win32-msvc2015'
-      $qtdir = ENV['QTDIR580']
-
+      
       # if win32:msvc is not defined in build.yml, then automatically detect installed Visual Studio
       if $msvc_version.nil?
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
@@ -722,7 +721,7 @@ namespace "config" do
           $vs_version = 2012
           $vscommontools = ENV['VS110COMNTOOLS']
           $qmake_makespec = 'win32-msvc2012'
-          $qtdir = ENV['QTDIR550']
+          
         end
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set either VS110COMNTOOLS or VS90COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2012 or 2008 respectively."
@@ -740,8 +739,6 @@ namespace "config" do
         $vs_version = 2012
         $vscommontools = ENV['VS110COMNTOOLS']
         $qmake_makespec = 'win32-msvc2012'
-        $qtdir = ENV['QTDIR550']
-        puts "Env2012"
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2012"
           exit 1
@@ -750,7 +747,7 @@ namespace "config" do
         $vs_version = 2015
         $vscommontools = ENV['VS140COMNTOOLS']
         $qmake_makespec = 'win32-msvc2015'
-        $qtdir = ENV['QTDIR580']
+        
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2015"
           exit 1
@@ -766,17 +763,12 @@ namespace "config" do
 
       $vscommontools << '\\' unless $vscommontools.end_with?('\\') || $vscommontools.end_with?('/')
 
-
-      if $qtdir.nil?
-        $qtdir = ENV['QTDIR']
-      end
+      $qtdir = ENV['QTDIR']
       unless !$qtdir.nil? && ($qtdir !~ /^\s*$/) && File.directory?($qtdir)
         puts "\nPlease, set QTDIR environment variable to Qt root directory path"
         exit 1
       end
 
-       
-       
      # Search for QT 5 or QT 4 files
      qt5corefile =File.join($qtdir, "bin/Qt5Core.dll");
      qt4corefile =File.join($qtdir, "bin/QtCore4.dll");
