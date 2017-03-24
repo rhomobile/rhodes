@@ -1,5 +1,13 @@
 QT -= core
+    greaterThan(QT_VERSION, 5.6.0): {
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN
+        DEFINES += RHODES_VERSION_2
+    }
 
+    lessThan(QT_VERSION, 5.6.0): {
+        DEFINES += RHODES_VERSION_1
+    }
 TARGET = sqlite3
 TEMPLATE = lib
 
@@ -42,6 +50,8 @@ DEFINES += RHODES_QT_PLATFORM
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4101
   QMAKE_CFLAGS_RELEASE += /O2
+  QMAKE_CXXFLAGS_RELEASE += -MP9
+  QMAKE_CXXFLAGS_DEBUG += -MP9
 }
 
 HEADERS += ../../sqlite/sqlite3.h\

@@ -32,10 +32,12 @@ struct timeval {
 #endif
 
 #if !defined(HAVE_STRUCT_TIMESPEC)
-struct timespec {
-    time_t tv_sec;	/* seconds */
-    long tv_nsec;	/* nanoseconds */
-};
+    #ifndef CPP_ELEVEN
+    struct timespec {
+        time_t tv_sec;	/* seconds */
+        long tv_nsec;	/* nanoseconds */
+    };
+    #endif
 #endif
 
 #if !defined(HAVE_STRUCT_TIMEZONE)

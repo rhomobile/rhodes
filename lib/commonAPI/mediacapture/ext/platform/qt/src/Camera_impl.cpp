@@ -2,6 +2,8 @@
 //  CameraImpl.cpp
 #include <Qt>
 #include <QHash>
+#include <QtGui>
+#include <QtWidgets>
 #include <QApplication>
 #include <QWindow>
 #include "CCameraData.h"
@@ -11,6 +13,7 @@
 #include "common/RhoConf.h"
 #include "generated/cpp/CameraBase.h"
 #include "logging/RhoLog.h"
+#include "camerarefresher.h"
 
 namespace rho {
     
@@ -20,24 +23,24 @@ namespace rho {
     class CCameraSingletonImpl: public CCameraSingletonBase
     {
         QHash<QString, QString> defaultCameras;
-
     public:
 
-        CCameraSingletonImpl(): CCameraSingletonBase()
-        {
-            qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
+        CCameraSingletonImpl(): CCameraSingletonBase() {
+            if (CCameraData::getValues().isEmpty()){CameraRefresher::refresh();}
+            foreach (CCameraData * data, CCameraData::getValues()) {
+                defaultCameras.insert(data->getCameraType(), data->getCameraID());
+            }
         }
 
         virtual ~CCameraSingletonImpl(){
-            QMutexLocker locker(CCameraData::getMutex());
-            CCameraData::cleanAll();
+
         }
         
         //methods
         // enumerate Returns the cameras present on your device, allowing you to access your device's front or back camera. 
         virtual void enumerate(rho::apiGenerator::CMethodResult& oResult) {
-            initCameras();
             rho::Vector<rho::String> arIDs = oResult.getStringArray();
+
             if(!CCameraData::isEmpty()){
                 foreach (QString value, CCameraData::getKeys()) {
                     arIDs.addElement(value.toStdString());
@@ -46,16 +49,6 @@ namespace rho {
             }
 
         } 
-
-        void initCameras(){
-            QMutexLocker locker(CCameraData::getMutex());
-            if(CCameraData::isEmpty()){
-                foreach (QCameraInfo cameraInfo, QCameraInfo::availableCameras()) {
-                    const CCameraData * data = CCameraData::addNewCamera(cameraInfo);
-                    defaultCameras.insert(data->getCameraType(), data->getCameraID());
-                }
-            }
-        }
 
         // getCameraByType Returns the camera of requested type if that camera exist - else return nil. 
         virtual void getCameraByType( const rho::String& cameraType, rho::apiGenerator::CMethodResult& oResult) {
@@ -68,7 +61,8 @@ namespace rho {
         }
 
         virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
-            // RAWLOGC_INFO("choosePicture","Camera");           
+            // RAWLOGC_INFO("choosePicture","Camera");
+
             CCameraData::choosePicture(oResult);
         } 
         // copyImageToDeviceGallery Save an image to the device gallery. 
@@ -82,10 +76,9 @@ namespace rho {
         } 
 
         virtual rho::String getInitialDefaultID(){
-            initCameras();
-            QString defaultId = defaultCameras.value("front");
+            QString defaultId = defaultCameras.value(ICamera::CAMERA_TYPE_FRONT);
             if (!defaultId.isEmpty()) return defaultId.toStdString();
-            else return defaultCameras.value("back").toStdString();
+            else return defaultCameras.value(ICamera::CAMERA_TYPE_BACK).toStdString();
         }
 
     };
@@ -276,6 +269,7 @@ namespace rho {
         } 
 
         virtual void capture(rho::apiGenerator::CMethodResult& oResult) {
+
             if (camera == nullptr) {
                 rho::Hashtable<rho::String, rho::String>& mapRes = oResult.getStringHash();
                 mapRes["status"] = "error";

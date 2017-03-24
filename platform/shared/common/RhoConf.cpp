@@ -226,7 +226,6 @@ int RhoSettings::getInt(const char* szName){
 	std::map<String,String>::iterator it = m_mapValues.find(szName);
 	if ( it != m_mapValues.end() )
         return atoi(it->second.c_str());
-
     return 0;
 }
 

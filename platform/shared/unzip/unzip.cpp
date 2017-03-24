@@ -4254,10 +4254,6 @@ ZRESULT TUnzip::Close()
   return ZR_OK;
 }
 
-
-
-
-
 ZRESULT lasterrorU=ZR_OK;
 
 unsigned int FormatZipMessageU(ZRESULT code, TCHAR *buf,unsigned int len)
@@ -4296,7 +4292,8 @@ unsigned int FormatZipMessageU(ZRESULT code, TCHAR *buf,unsigned int len)
 
 
 typedef struct
-{ DWORD flag;
+{
+  DWORD flag;
   TUnzip *unz;
 } TUnzipHandleData;
 
@@ -4304,7 +4301,7 @@ HZIP OpenZipInternal(void *z,unsigned int len,DWORD flags, const char *password)
 { TUnzip *unz = new TUnzip(password);
   lasterrorU = unz->Open(z,len,flags);
   if (lasterrorU!=ZR_OK) {delete unz; return 0;}
-  TUnzipHandleData *han = new TUnzipHandleData;
+  TUnzipHandleData *han;// = new TUnzipHandleData;
   han->flag=1; han->unz=unz; return (HZIP)han;
 }
 HZIP OpenZipHandle(HANDLE h, const char *password) {return OpenZipInternal((void*)h,0,ZIP_HANDLE,password);}

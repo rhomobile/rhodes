@@ -1,4 +1,14 @@
-QT += multimedia gui widgets multimediawidgets webkitwidgets core network webkit
+QT += core gui widgets multimedia multimediawidgets network
+
+    lessThan(QT_VERSION, 5.6.0): {
+        QT += webkit widgets webkitwidgets
+        DEFINES += RHODES_VERSION_1
+    }
+    greaterThan(QT_VERSION, 5.6.0): {
+        QT += webengine webenginecore webenginewidgets
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+    }
 
 TARGET = Mediacapture
 TEMPLATE = lib
@@ -14,7 +24,7 @@ $$RHODES_ROOT/platform/shared/common\
 $$RHODES_ROOT/platform/shared/rubyext\
 $$RHODES_ROOT/platform/shared/ruby/include\
 $$RHODES_ROOT/platform/shared\
-../../shared\
+../../shared
 
 macx {
   DESTDIR = $$RHODES_ROOT/platform/osx/bin/extensions
@@ -30,6 +40,7 @@ win32 {
   }
   release {
     DEFINES += _NDEBUG NDEBUG
+    #DEFINES += _ITERATOR_DEBUG_LEVEL=2
   }
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/win32
   RCC_DIR = $$RHODES_ROOT/lib/commonAPI/mediacapture/ext/platform/qt/resources
@@ -55,8 +66,6 @@ win32 {
   QMAKE_CXXFLAGS_DEBUG += -MP9
 }
 
-
-
 HEADERS += \
 ..\..\shared\generated\cpp\ICamera.h\
 ..\..\shared\generated\cpp\CameraBase.h \
@@ -65,7 +74,10 @@ HEADERS += \
     src/ImageFilenameGetterResult.h \
     src/CameraDialogController.h \
     src/CameraDialogView.h \
-    src/CameraDialogBuilder.h
+    src/CameraDialogBuilder.h \
+    src/CameraRefresher.h\
+    $$RHODES_ROOT\platform\shared\qt\rhodes\iexecutable.h
+    $$RHODES_ROOT\platform\shared\qt\rhodes\guithreadfunchelper.h
 
 SOURCES += \
 ..\..\shared\MediacaptureInit.cpp\

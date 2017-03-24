@@ -1,4 +1,13 @@
 QT -= core
+    greaterThan(QT_VERSION, 5.6.0): {
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN
+        DEFINES += RHODES_VERSION_2
+    }
+
+    lessThan(QT_VERSION, 5.6.0): {
+        DEFINES += RHODES_VERSION_1
+    }
 
 TARGET = zlib
 TEMPLATE = lib
@@ -45,6 +54,8 @@ win32 {
   QMAKE_CXXFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
   QMAKE_CFLAGS_RELEASE += /O2
   QMAKE_CXXFLAGS_RELEASE += /O2
+  QMAKE_CXXFLAGS_RELEASE += -MP9
+  QMAKE_CXXFLAGS_DEBUG += -MP9
 }
 
 HEADERS += \

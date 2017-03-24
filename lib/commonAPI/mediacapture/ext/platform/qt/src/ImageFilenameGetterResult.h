@@ -3,6 +3,8 @@
 
 #include "../../platform/shared/qt/rhodes/iexecutable.h"
 #include "CameraDialogView.h"
+#include <QFile>
+#include <QFileInfo>
 #include <QDebug>
 
 class ImageFileNameGetterResult : public IExecutable
@@ -21,8 +23,11 @@ private:
 public slots:
     void execute(){
         rho::Hashtable<rho::String,rho::String>& mapRes = result.getStringHash();
-        if (!fileName.isEmpty()){
-            CameraDialogView::getImageData(mapRes, fileName);
+        QFileInfo fInfo(fileName);
+        QString newFileName = CameraDialogView::getImageDir().absolutePath() + "/" + fInfo.fileName();
+
+        if(fInfo.isFile() && !newFileName.isEmpty() && QFile::copy(fileName,newFileName)){
+            CameraDialogView::getImageData(mapRes, newFileName);
         }else{
             mapRes["status"] = "cancel";
             mapRes["message"] = "Open file dialog has been canceled";

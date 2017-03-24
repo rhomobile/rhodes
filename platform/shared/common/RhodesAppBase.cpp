@@ -351,7 +351,7 @@ int rho_sys_unzip_file(const char* szZipPath, const char* psw, const char* outpu
   case RHO_ZIP_FORMAT_ZIP:  return rho_internal_unzip_zip(szZipPath, psw); break;
   case RHO_ZIP_FORMAT_GZIP: return rho_internal_unzip_gzip(szZipPath, outputFilename); break;
   }
-  
+
   return -1;
 }
 

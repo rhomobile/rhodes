@@ -1,6 +1,25 @@
-QT += core gui network webkit
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets multimedia multimediawidgets
+QT += core gui network
 
+message(Qt version: $$[QT_VERSION])
+greaterThan(QT_MAJOR_VERSION, 4):{
+    QT += multimedia multimediawidgets
+
+    lessThan(QT_VERSION, 5.6.0): {
+        QT += webkit widgets webkitwidgets
+        message(Deprecated webkit enabled)
+        DEFINES += RHODES_VERSION_1
+        INCLUDEPATH += oldVersion
+    }
+    greaterThan(QT_VERSION, 5.6.0): {
+        QT += webengine webenginecore webenginewidgets
+        message(Webengine enabled)
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+        INCLUDEPATH += newVersion
+    }
+}
+
+#DEFINES += RHODES_EMULATOR
 TARGET = RhoSimulator
 TEMPLATE = app
 
@@ -114,53 +133,23 @@ win32 {
   QMAKE_CXXFLAGS_RELEASE += /O2
 }
 
-HEADERS += ExternalWebView.h\
-MainWindowCallback.h\
-QtMainWindow.h\
-qwebviewkineticscroller.h\
-qkineticscroller.h\
-qkineticscroller_p.h\
-qwebviewselectionsuppressor.h\
-qtscroller.h\
-qtscroller_p.h\
-qtscrollerproperties.h\
-qtscrollerproperties_p.h\
-qtflickgesture_p.h\
-qtscrollerfilter_p.h\
-qtscrollevent.h\
-qtscrollevent_p.h\
-QtNativeTabBar.h\
-QtWebInspector.h\
-QtWebPage.h\
-QtLogView.h\
-QtCustomStyle.h\
-impl/RhoClassFactoryImpl.h\
+HEADERS += impl/RhoClassFactoryImpl.h\
 impl/MainWindowImpl.h\
 impl/NativeToolbarImpl.h\
 impl/NativeTabbarImpl.h\
 ../../rubyext/NativeToolbarExt.h\
-DateTimeDialog.h\
 impl/DateTimePickerImpl.h\
 impl/AlertImpl.h\
 impl/RhoThreadImpl.h\
+iexecutable.h\
+MainWindowCallback.h\
 RhoSimulator.h\
-RhoNativeApiCall.h \
-    iexecutable.h
+QtLogView.h \
+QtCustomStyle.h\
+mainwindowinterface.h \
+    guithreadfunchelper.h
 
-SOURCES += main.cpp\
-ExternalWebView.cpp\
-QtMainWindow.cpp\
-QtNativeTabBar.cpp\
-QtWebInspector.cpp\
-QtWebPage.cpp\
-qkineticscroller.cpp\
-qwebviewkineticscroller.cpp\
-qtflickgesture.cpp\
-qtscroller.cpp\
-qtscrollerproperties.cpp\
-qtscrollerfilter.cpp\
-qtscrollevent.cpp\
-impl/AlertImpl.cpp\
+SOURCES += impl/AlertImpl.cpp\
 impl/BluetoothImpl.cpp\
 impl/CalendarImpl.cpp\
 impl/CameraImpl.cpp\
@@ -180,11 +169,67 @@ impl/QtSystemImpl.cpp\
 impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
-DateTimeDialog.cpp\
-RhoNativeApiCall.cpp\
 ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp
 
-FORMS += ExternalWebView.ui\
-QtMainWindow.ui\
-QtWebInspector.ui\
-DateTimeDialog.ui
+contains(DEFINES, RHODES_VERSION_1)  {
+HEADERS += oldVersion/ExternalWebView.h\
+oldVersion/qwebviewkineticscroller.h\
+oldVersion/QtMainWindow.h\
+oldVersion/qkineticscroller.h\
+oldVersion/qkineticscroller_p.h\
+oldVersion/qwebviewselectionsuppressor.h\
+oldVersion/qtscroller.h\
+oldVersion/qtscroller_p.h\
+oldVersion/qtscrollerproperties.h\
+oldVersion/qtscrollerproperties_p.h\
+oldVersion/qtflickgesture_p.h\
+oldVersion/qtscrollerfilter_p.h\
+oldVersion/qtscrollevent.h\
+oldVersion/qtscrollevent_p.h\
+oldVersion/QtNativeTabBar.h\
+oldVersion/QtWebInspector.h\
+oldVersion/QtWebPage.h\
+oldVersion/DateTimeDialog.h\
+oldVersion/RhoNativeApiCall.h
+
+SOURCES += oldVersion/main.cpp\
+oldVersion/ExternalWebView.cpp\
+oldVersion/QtMainWindow.cpp\
+oldVersion/QtNativeTabBar.cpp\
+oldVersion/QtWebInspector.cpp\
+oldVersion/QtWebPage.cpp\
+oldVersion/qkineticscroller.cpp\
+oldVersion/qwebviewkineticscroller.cpp\
+oldVersion/qtflickgesture.cpp\
+oldVersion/qtscroller.cpp\
+oldVersion/qtscrollerproperties.cpp\
+oldVersion/qtscrollerfilter.cpp\
+oldVersion/qtscrollevent.cpp\
+oldVersion/DateTimeDialog.cpp\
+oldVersion/RhoNativeApiCall.cpp
+
+FORMS += oldVersion/ExternalWebView.ui\
+oldVersion/QtMainWindow.ui\
+oldVersion/QtWebInspector.ui\
+oldVersion/DateTimeDialog.ui
+}
+
+contains(DEFINES, RHODES_VERSION_2) {
+HEADERS += newVersion/QtMainWindow.h\
+newVersion/RhoNativeApiCall.h\
+newVersion/QtNativeTabBar.h\
+newVersion/QtWebEngineView.h\
+newVersion/QtWebEnginePage.h\
+newVersion/ExternalWebView.h\
+newVersion/QWebEngineViewSelectionSuppressor.h\
+newVersion/DateTimeDialog.h
+
+SOURCES += newVersion/QtMainWindow.cpp\
+newVersion/RhoNativeApiCall.cpp\
+newVersion/QtNativeTabBar.cpp\
+newVersion/QtWebEngineView.cpp\
+newVersion/QtWebEnginePage.cpp\
+newVersion/ExternalWebView.cpp\
+newVersion/DateTimeDialog.cpp\
+newVersion/main.cpp
+}

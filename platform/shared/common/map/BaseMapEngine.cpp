@@ -37,6 +37,8 @@
 #include "common/RhoFile.h"
 #include "net/INetRequest.h"
 
+#include <algorithm>
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "BaseMapEngine"

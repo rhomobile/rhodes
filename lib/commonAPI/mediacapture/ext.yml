@@ -1,5 +1,6 @@
 entry: Init_Mediacapture_extension	
 libraries: ["mediacapture"]
+
 android:
   source_list: ext/platform/android/ext_java.files
   rhodes_listener: com.rho.mediacapture.RhoListener

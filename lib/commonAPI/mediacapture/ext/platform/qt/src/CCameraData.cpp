@@ -1,4 +1,5 @@
 #include "CCameraData.h"
+#include "generated/cpp/ICamera.h"
 
 QHash<QString, CCameraData *> CCameraData::camerasKeeper;
 
@@ -26,6 +27,11 @@ const QString CCameraData::getCameraID() const
 const QList<QString> CCameraData::getKeys()
 {
     return camerasKeeper.keys();
+}
+
+const QList<CCameraData *> CCameraData::getValues()
+{
+    return camerasKeeper.values();
 }
 
 
@@ -60,8 +66,8 @@ CCameraData *CCameraData::getCameraData(QString &ID)
 CCameraData::CCameraData(QCameraInfo &info):CameraDialogController(0){
     this->info = info;
     cameraID = QString::number(camerasKeeper.size() + 1);
-    if (info.position() == QCamera::BackFace){cameraType = "back";}
-    else{cameraType = "front";}
+    if (info.position() == QCamera::BackFace){cameraType = QString::fromStdString(rho::ICamera::CAMERA_TYPE_BACK);}
+    else{cameraType = QString::fromStdString(rho::ICamera::CAMERA_TYPE_FRONT);}
 }
 
 
@@ -72,12 +78,13 @@ void CCameraData::showView(rho::apiGenerator::CMethodResult &oResult)
     emit builder->run();
 }
 
-QtMainWindow *CCameraData::getQMainWindow()
+QMainWindow *CCameraData::getQMainWindow()
 {
-    return ((QtMainWindow *) CMainWindow::getInstance()->getQtMainWindow());
+    return IExecutable::getMainWindow();
 }
 
 void CCameraData::choosePicture(rho::apiGenerator::CMethodResult& oResult) {
     ImageFileNameGetter * getter = new ImageFileNameGetter(QThread::currentThread(),oResult,getQMainWindow());
     getter->run();
 }
+

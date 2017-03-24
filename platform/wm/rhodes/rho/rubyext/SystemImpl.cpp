@@ -33,7 +33,9 @@
 #include "common/RhoStd.h"
 #undef null
 #include <qglobal.h>
-#if QT_VERSION >= 0x050000
+#if QT_VERSION > QT_VERSION_CHECK(5,6,0)
+#include <QtWebEngine/qtwebengineversion.h>
+#elif  QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #include <QtWebKit/qtwebkitversion.h>
 #else
 #include <QtWebKit/qwebkitversion.h>

@@ -1,5 +1,17 @@
 QT -= core
+    greaterThan(QT_VERSION, 5.6.0): {
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN
+        DEFINES += RHODES_VERSION_2
+        QMAKE_CXXFLAGS += -nologo -DNT=1 -ML -Zi -O2b2x -G5
+        #LIBS += -lmsvcrt.lib
+        LIBS += -lvcruntime.lib
+        LIBS += -lucrt.lib
+    }
 
+    lessThan(QT_VERSION, 5.6.0): {
+        DEFINES += RHODES_VERSION_1
+    }
 TARGET = rubylib
 TEMPLATE = lib
 
