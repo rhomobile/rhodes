@@ -69,7 +69,7 @@ android:
   ## Note: in order to simplify debugging only app messages and system channels with priority informative and higher, and any errors are enabled by default
   logcatFilter: APP:I StrictMode:I DEBUG:I *:E
 
-extensions: ["jxcore"]
+extensions: ["nodejs"]
 
 rhobundle:
   exclude_items:
