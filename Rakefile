@@ -157,7 +157,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
+$application_build_configs_keys = ['nodejs_application', 'security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
 
 $winxpe_build = false
 
@@ -245,7 +245,7 @@ def make_application_build_capabilities_header_file
 
   f.puts ''
 
-  if $js_application
+  if $js_application || $nodejs_application
     puts '#define RHO_NO_RUBY'
     f.puts '#define RHO_NO_RUBY'
     f.puts '#define RHO_NO_RUBY_API'
@@ -410,6 +410,7 @@ namespace :dev do
       updater = RhoDevelopment::AutoUpdater.new
       updater.add_directory(File.join($app_basedir, '/public'))
       updater.add_directory(File.join($app_basedir, '/app'))
+      updater.add_directory(File.join($app_basedir, '/nodejs')) if File.exists? File.join($app_basedir, '/nodejs')
       updater.run
     end
 
@@ -2188,10 +2189,12 @@ namespace "config" do
 
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $js_application    = Jake.getBuildBoolProp("javascript_application")
+    $nodejs_application    = Jake.getBuildBoolProp("nodejs_application")
 
     puts '%%%_%%% $js_application = '+$js_application.to_s
+    puts '%%%_%%% $nodejs_application = '+$nodejs_application.to_s
 
-    if !$js_application && !Dir.exists?(File.join($app_path, "app"))
+    if !$js_application && !$nodejs_application && !Dir.exists?(File.join($app_path, "app"))
       BuildOutput.error([
                           "Add javascript_application:true to build.yml, since application does not contain app folder.",
                           "See: http://docs.rhomobile.com/guide/api_js#javascript-rhomobile-application-structure"
@@ -2329,7 +2332,7 @@ def add_extension(path,dest)
   chdir path if File.directory?(path)
   puts 'chdir path=' + path.to_s
 
-  if !$js_application
+  if !$js_application && !$nodejs_application
     Dir.glob("*").each do |f|
       cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ || f =~ /^app/  || f =~ /^public/
     end
@@ -2339,8 +2342,10 @@ def add_extension(path,dest)
     FileUtils.cp_r 'app', File.join( dest, "apps/app" ) if File.exist? 'app'
     FileUtils.cp_r 'public', File.join( dest, "apps/public" ) if File.exist? 'public'
   else
-    FileUtils.cp_r('app', File.join( File.dirname(dest), "apps/app" ).to_s) if File.exist? 'app'
-    FileUtils.cp_r('public', File.join( File.dirname(dest), "apps").to_s) if File.exist? 'public'
+    if !$nodejs_application
+      FileUtils.cp_r('app', File.join( File.dirname(dest), "apps/app" ).to_s) if File.exist? 'app'
+      FileUtils.cp_r('public', File.join( File.dirname(dest), "apps").to_s) if File.exist? 'public'
+    end
   end
 
   chdir start
@@ -2462,6 +2467,7 @@ def init_extensions(dest, mode = "")
   extjsmodulefiles = []
   extjsmodulefiles_opt = []
   startJSModules = []
+  startNodeJSModules = []
   startJSModules_opt = []
   endJSModules = []
   extcsharplibs = []
@@ -2474,10 +2480,21 @@ def init_extensions(dest, mode = "")
   extpaths = $app_config["extpaths"]
 
   rhoapi_js_folder = nil
+  rhoapi_nodejs_folder = nil
   if !dest.nil?
-    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
+    if $nodejs_application
+        rhoapi_js_folder = File.join( File.dirname(dest), "apps/nodejs/server/public/api" )
+    else
+        rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
+    end
+    rhoapi_nodejs_folder = File.join( File.dirname(dest), "apps/nodejs/rhoapi" )
   elsif mode == "update_rho_modules_js"
-    rhoapi_js_folder = File.join( $app_path, "public/api" )
+      if $nodejs_application
+          rhoapi_js_folder = File.join( $app_path, "nodejs/server/public/api" )
+      else
+          rhoapi_js_folder = File.join( $app_path, "public/api" )
+      end
+    rhoapi_nodejs_folder = File.join( $app_path, "nodejs/rhoapi" )
   end
 
   do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
@@ -2491,7 +2508,7 @@ def init_extensions(dest, mode = "")
 
   $app_config["extensions"].each do |extname|
     puts 'ext - ' + extname
-    
+
     if extname == "webkit"
 		$is_webkit_engine = true
     end
@@ -2570,7 +2587,7 @@ def init_extensions(dest, mode = "")
               if (("rhoelementsext" == extname || "dominjector" == extname) && ($config["platform"] == "wm"||$config["platform"] == "android"))
                 extentries << entry
                 extentries_init << entry
-              elsif !$js_application
+            elsif !$js_application && !$nodejs_application
                 extentries << entry
                 entry =  "if (rho_ruby_is_started()) #{entry}"
                 extentries_init << entry
@@ -2658,6 +2675,8 @@ def init_extensions(dest, mode = "")
                 startJSModules.unshift(f)
               elsif f.downcase().end_with?("rhoapi.js")
                 startJSModules << f
+            elsif f.downcase().end_with?("rhonodejsapi.js")
+                startNodeJSModules << f
               elsif f.downcase().end_with?("rho.application.js")
                 endJSModules << f
               elsif f.downcase().end_with?("rho.database.js")
@@ -2733,6 +2752,7 @@ def init_extensions(dest, mode = "")
   puts "exts " + exts
 
   # deploy Common API JS implementation
+  extnodejsmodulefiles = startNodeJSModules.concat( extjsmodulefiles )
   extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
   extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
   extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
@@ -2741,6 +2761,10 @@ def init_extensions(dest, mode = "")
     if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
       rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
       mkdir_p rhoapi_js_folder
+    end
+    if extnodejsmodulefiles.count > 0
+      rm_rf rhoapi_nodejs_folder if Dir.exist?(rhoapi_nodejs_folder)
+      mkdir_p rhoapi_nodejs_folder
     end
     #
     if !$skip_build_js_api_files
@@ -2761,6 +2785,10 @@ def init_extensions(dest, mode = "")
 
           chdir start_path
         end
+      end
+      if extnodejsmodulefiles.count > 0
+        puts 'extnodejsmodulefiles=' + extnodejsmodulefiles.to_s
+        write_modules_js(rhoapi_nodejs_folder, "rhoapi.js", extnodejsmodulefiles, false)
       end
       # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
       if !$shared_rt_js_appliction
@@ -2929,7 +2957,7 @@ def common_bundle_start( startdir, dest)
 
   start = pwd
 
-  if !$js_application
+  if !$js_application && !$nodejs_application
     Dir.glob('lib/framework/*').each do |f|
       cp_r(f, dest, :preserve => true) unless f.to_s == 'lib/framework/autocomplete'
     end
@@ -2958,6 +2986,13 @@ def common_bundle_start( startdir, dest)
   if File.exists? app + '/public'
     public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, file_map, app
   end
+
+  file_map = Jake.build_file_map(File.join($srcdir,'apps/nodejs'), $file_map_name, true)
+
+  if File.exists? app + '/nodejs'
+    public_folder_cp_r app + '/nodejs', File.join($srcdir,'apps/nodejs'), 0, file_map, app
+  end
+
 
   if $app_config["app_type"] == 'rhoelements'
     $config_xml = nil
@@ -3106,7 +3141,7 @@ namespace "build" do
 
     task :xruby do
 
-      if $js_application
+      if $js_application || $nodejs_application
         return
       end
 
@@ -3266,7 +3301,7 @@ namespace "build" do
       process_exclude_folders(excluded_dirs)
       chdir startdir
 
-      if !$js_application
+      if !$js_application && !$nodejs_application
 
         create_manifest
         cp compileERB, $srcdir

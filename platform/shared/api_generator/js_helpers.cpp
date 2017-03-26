@@ -154,3 +154,22 @@ void rho_http_js_entry_point(void *arg, rho::String const &query )
 
 }
 }
+
+static std::map<rho::String, JVM_Callback_Provider> g_jvm_providers;
+
+
+
+
+void setCustomJVMCallbackProvider(const char* jvm_id, JVM_Callback_Provider provider) {
+    g_jvm_providers[jvm_id] = provider;
+}
+
+
+int callCustomJVMCallbackProvider(const char* jvm_id, const char* js_code) {
+    JVM_Callback_Provider provider = g_jvm_providers[jvm_id];
+    if (provider != NULL) {
+        provider(js_code);
+        return 1;
+    }
+    return 0;
+}
