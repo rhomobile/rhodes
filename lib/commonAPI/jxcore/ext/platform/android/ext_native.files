@@ -1,9 +1,0 @@
-ext/platform/android/generated/jni/Jxcore.cpp
-ext/platform/android/generated/jni/jxcore_ruby_wrap.cpp
-ext/platform/android/generated/jni/jxcore_js_wrap.cpp
-ext/platform/android/jni/Jxcore_impl.cpp
-ext/platform/android/jni/jxcore.cpp
-ext/platform/android/jni/JniHelper.cpp
-ext/shared/generated/jxcore_api_init.cpp
-ext/shared/generated/jxcore_js_api.cpp
-ext/shared/generated/jxcore_ruby_api.c
