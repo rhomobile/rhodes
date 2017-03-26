@@ -217,8 +217,6 @@ If you open your page in WebView, and after it makes a few jumps by linking (for
                 <DESC>Execute JavaScript on the current page from your controller.
 
 For most mobile platforms, WebView.execute_js has been implemented via redirection to URL with 'javascript:' schema. If WebView.execute_js used in an AJAX call handler method in the controller, it may lead to the situation where the success javascript handler will never be executed. This may happen because, at the moment of success handler should be executed, a URL of the page already has been changed. This means no handlers from the previous page are valid.</DESC>
-                <APPLIES rubyOnly="true"/>
-
                 <PARAMS>
                     <PARAM name="javascriptText" type="STRING">
                         <DESC>The call to the JavaScript method on the current page, such as "test();".</DESC>
