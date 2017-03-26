@@ -21,7 +21,7 @@ JXmobile.prototype.call = function () {
   return this;
 };
 
-var isAndroid = process.platform == "android";
+var isAndroid = false; //process.platform == "android";
 
 global.Mobile = JXmobile;
 
