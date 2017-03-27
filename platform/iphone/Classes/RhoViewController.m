@@ -41,6 +41,12 @@
 	return YES;
 }
 
+#if defined(__IPHONE_7_0)
+- (BOOL)prefersStatusBarHidden {
+    return [[Rhodes sharedInstance] getFullScreen];
+}
+#endif
+
 #if defined(__IPHONE_6_0)
 - (BOOL)shouldAutorotate {
     RAWTRACE1("RVC::%s::shouldAutorotate", [[[self class] description] UTF8String]);
