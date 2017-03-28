@@ -1207,6 +1207,18 @@ char *ruby_hdtoa(double d, const char *xdigs, int ndigits, int *decpt, int *sign
 /* utf_8.c */
 extern rb_encoding OnigEncodingUTF_8;
 
+//RHO
+extern rb_encoding OnigEncodingWindows_31J;
+extern rb_encoding OnigEncodingUTF_16BE;
+extern rb_encoding OnigEncodingUTF_16LE;
+extern rb_encoding OnigEncodingUTF_32BE;
+extern rb_encoding OnigEncodingUTF_32LE;
+extern rb_encoding OnigEncodingEUC_JP;
+extern rb_encoding OnigEncodingWindows_31J;
+extern rb_encoding OnigEncodingISO_8859_1;
+extern rb_encoding OnigEncodingISO_8859_9;
+//RHO
+
 /* variable.c */
 size_t rb_generic_ivar_memsize(VALUE);
 VALUE rb_search_class_path(VALUE);
