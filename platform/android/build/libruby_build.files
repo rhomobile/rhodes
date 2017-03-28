@@ -18,6 +18,12 @@ platform/shared/ruby/enc/utf_8.c
 platform/shared/ruby/enc/encdb.c
 platform/shared/ruby/enc/iso_8859_1.c
 platform/shared/ruby/enc/iso_8859_9.c
+platform/shared/ruby/enc/utf_16be.c
+platform/shared/ruby/enc/utf_16le.c
+platform/shared/ruby/enc/utf_32be.c
+platform/shared/ruby/enc/utf_32le.c
+platform/shared/ruby/enc/euc_jp.c
+platform/shared/ruby/enc/windows_31j.c
 platform/shared/ruby/enum.c
 platform/shared/ruby/enumerator.c
 platform/shared/ruby/error.c
