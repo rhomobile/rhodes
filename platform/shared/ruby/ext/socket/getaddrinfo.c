@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -13,7 +13,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,10 +38,6 @@
  * - PF_UNSPEC case would be handled in getipnodebyname() with the AI_ALL flag.
  */
 
-#ifndef EAI_NODATA
-#define	EAI_NODATA 7
-#endif
-
 #include "ruby/config.h"
 #ifdef RUBY_EXTCONF_H
 #include RUBY_EXTCONF_H
@@ -49,11 +45,7 @@
 #include <sys/types.h>
 #ifndef _WIN32
 #include <sys/param.h>
-#if defined(__BEOS__) && !defined(__HAIKU__) && !defined(BONE) 
-# include <net/socket.h>
-#else
-# include <sys/socket.h>
-#endif
+#include <sys/socket.h>
 #include <netinet/in.h>
 #if defined(HAVE_ARPA_INET_H)
 #include <arpa/inet.h>
@@ -70,6 +62,9 @@
 #endif
 #include <unistd.h>
 #else
+#if defined(_MSC_VER) && _MSC_VER <= 1200
+#include <windows.h>
+#endif
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <io.h>
@@ -84,12 +79,12 @@
 #include <socks.h>
 #endif
 
+#ifndef HAVE_TYPE_SOCKLEN_T
+typedef int socklen_t;
+#endif
+
 #include "addrinfo.h"
 #include "sockport.h"
-
-#if defined(__KAME__) && defined(INET6)
-# define FAITH
-#endif
 
 #define SUCCESS 0
 #define ANY 0
@@ -105,7 +100,7 @@ static const char in_addrany[] = { 0, 0, 0, 0 };
 static const char in6_addrany[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
-static const char in_loopback[] = { 127, 0, 0, 1 }; 
+static const char in_loopback[] = { 127, 0, 0, 1 };
 static const char in6_loopback[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
 };
@@ -122,7 +117,7 @@ static const struct afd {
 	int a_socklen;
 	int a_off;
 	const char *a_addrany;
-	const char *a_loopback;	
+	const char *a_loopback;
 } afdl [] = {
 #ifdef INET6
 #define N_INET6 0
@@ -153,7 +148,7 @@ static int get_name __P((const char *, const struct afd *,
 static int get_addr __P((const char *, int, struct addrinfo **,
 			struct addrinfo *, int));
 static int str_isnumber __P((const char *));
-	
+
 static const char *const ai_errlist[] = {
 	"success.",
 	"address family for hostname not supported.",	/* EAI_ADDRFAMILY */
@@ -190,12 +185,12 @@ if (pai->ai_flags & AI_CANONNAME) {\
 		error = EAI_MEMORY;\
 		goto free;\
 	}\
-	memcpy(ai, pai, sizeof(struct addrinfo));\
+	memcpy((ai), pai, sizeof(struct addrinfo));\
 	(ai)->ai_addr = (struct sockaddr *)((ai) + 1);\
-	memset((ai)->ai_addr, 0, (afd)->a_socklen);\
-	SET_SA_LEN((ai)->ai_addr, (ai)->ai_addrlen = (afd)->a_socklen);\
-	(ai)->ai_addr->sa_family = (ai)->ai_family = (afd)->a_af;\
-	((struct sockinet *)(ai)->ai_addr)->si_port = port;\
+	(ai)->ai_family = (afd)->a_af;\
+	(ai)->ai_addrlen = (afd)->a_socklen;\
+	INIT_SOCKADDR((ai)->ai_addr, (afd)->a_af, (afd)->a_socklen);\
+	((struct sockinet *)(ai)->ai_addr)->si_port = (port);\
 	p = (char *)((ai)->ai_addr);\
 	memcpy(p + (afd)->a_off, (addr), (afd)->a_addrlen);\
 }
@@ -240,10 +235,6 @@ str_isnumber(const char *p)
 	}
 	return YES;
 }
-
-#if _MSC_VER > 1400
-#define HAVE_INET_PTON 1
-#endif //_MSC_VER > 1400
 
 #ifndef HAVE_INET_PTON
 
@@ -314,7 +305,7 @@ getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *h
 	pai->ai_addr = NULL;
 	pai->ai_next = NULL;
 	port = ANY;
-	
+
 	if (hostname == NULL && servname == NULL)
 		return EAI_NONAME;
 	if (hints) {
@@ -386,6 +377,8 @@ getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *h
 				pai->ai_protocol = IPPROTO_UDP;
 			}
 			port = htons((unsigned short)atoi(servname));
+                } else if (pai->ai_flags & AI_NUMERICSERV) {
+                        ERR(EAI_NONAME);
 		} else {
 			struct servent *sp;
 			const char *proto;
@@ -408,7 +401,7 @@ getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *h
 			if ((sp = getservbyname((char*)servname, proto)) == NULL)
 				ERR(EAI_SERVICE);
 			port = sp->s_port;
-			if (pai->ai_socktype == ANY) {
+			if (pai->ai_socktype == ANY)
 				if (strcmp(sp->s_proto, "udp") == 0) {
 					pai->ai_socktype = SOCK_DGRAM;
 					pai->ai_protocol = IPPROTO_UDP;
@@ -417,10 +410,9 @@ getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *h
 					pai->ai_protocol = IPPROTO_TCP;
 				} else
 					ERR(EAI_PROTOCOL);	/*xxx*/
-			}
 		}
 	}
-	
+
 	/*
 	 * hostname == NULL.
 	 * passive socket -> anyaddr (0.0.0.0 or ::)
@@ -443,11 +435,8 @@ getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *h
 			s = socket(afd->a_af, SOCK_DGRAM, 0);
 			if (s < 0)
 				continue;
-#if defined(__BEOS__)
-			closesocket(s);
-#else
+
 			close(s);
-#endif
 
 			if (pai->ai_flags & AI_PASSIVE) {
 				GET_AI(cur->ai_next, afd, afd->a_addrany, port);
@@ -469,7 +458,7 @@ getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *h
 		else
 			ERR(EAI_FAMILY);
 	}
-	
+
 	/* hostname as numeric name */
 	for (i = 0; afdl[i].a_af; i++) {
 		if (inet_pton(afdl[i].a_af, hostname, pton)) {
@@ -489,17 +478,13 @@ getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *h
 				break;
 #ifdef INET6
 			case AF_INET6:
-#ifdef HAVE_ADDR8
-				pfx = ((struct in6_addr *)pton)->s6_addr8[0];
-#else
 				pfx = ((struct in6_addr *)pton)->s6_addr[0];
-#endif
 				if (pfx == 0 || pfx == 0xfe || pfx == 0xff)
 					pai->ai_flags &= ~AI_CANONNAME;
 				break;
 #endif
 			}
-			
+
 			if (pai->ai_family == afdl[i].a_af ||
 			    pai->ai_family == PF_UNSPEC) {
 				if (! (pai->ai_flags & AI_CANONNAME)) {
@@ -517,7 +502,7 @@ getaddrinfo(const char *hostname, const char *servname, const struct addrinfo *h
 				 */
 				get_name(pton, &afdl[i], &top, pton, pai, port);
 				goto good;
-			} else 
+			} else
 				ERR(EAI_FAMILY);	/*xxx*/
 		}
 	}
@@ -564,7 +549,7 @@ get_name(const char *addr, const struct afd *afd, struct addrinfo **res, char *n
 		GET_CANONNAME(cur, hp->h_name);
 	} else
 		GET_AI(cur, afd, numaddr, port);
-	
+
 #ifdef INET6
 	if (hp)
 		freehostent(hp);
@@ -604,6 +589,7 @@ get_addr(const char *hostname, int af, struct addrinfo **res, struct addrinfo *p
 	} else
 		hp = getipnodebyname(hostname, af, AI_ADDRCONFIG, &h_error);
 #else
+	if (strlen(hostname) >= NI_MAXHOST) ERR(EAI_NODATA);
 	hp = gethostbyname((char*)hostname);
 	h_error = h_errno;
 #endif
@@ -627,7 +613,7 @@ get_addr(const char *hostname, int af, struct addrinfo **res, struct addrinfo *p
 	if ((hp->h_name == NULL) || (hp->h_name[0] == 0) ||
 	    (hp->h_addr_list[0] == NULL))
 		ERR(EAI_FAIL);
-	
+
 	for (i = 0; (ap = hp->h_addr_list[i]) != NULL; i++) {
 		switch (af) {
 #ifdef INET6
@@ -658,9 +644,10 @@ get_addr(const char *hostname, int af, struct addrinfo **res, struct addrinfo *p
 
 			GET_AI(cur->ai_next, &afdl[N_INET6], ap, port);
 			in6 = &((struct sockaddr_in6 *)cur->ai_next->ai_addr)->sin6_addr;
-			memcpy(&in6->s6_addr32[0], &faith_prefix,
-			    sizeof(struct in6_addr) - sizeof(struct in_addr));
-			memcpy(&in6->s6_addr32[3], ap, sizeof(struct in_addr));
+			memcpy(&in6->s6_addr, &faith_prefix,
+			       sizeof(struct in6_addr) - sizeof(struct in_addr));
+			memcpy(&in6->s6_addr + sizeof(struct in_addr), ap,
+			       sizeof(struct in_addr));
 		} else
 #endif /* FAITH */
 		GET_AI(cur->ai_next, afd, ap, port);

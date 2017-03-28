@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 1995, 1996, 1997, 1998, and 1999 WIDE Project.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -13,7 +13,7 @@
  * 3. Neither the name of the project nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,7 +29,6 @@
 
 #ifndef ADDR_INFO_H
 #define ADDR_INFO_H
-#ifndef HAVE_GETADDRINFO
 
 /* special compatibility hack */
 #undef EAI_ADDRFAMILY
@@ -50,6 +49,7 @@
 #undef AI_PASSIVE
 #undef AI_CANONNAME
 #undef AI_NUMERICHOST
+#undef AI_NUMERICSERV
 #undef AI_ALL
 #undef AI_ADDRCONFIG
 #undef AI_V4MAPPED
@@ -60,17 +60,6 @@
 #undef NI_NAMEREQD
 #undef NI_NUMERICSERV
 #undef NI_DGRAM
-
-#undef addrinfo
-#define addrinfo addrinfo__compat
-#undef getaddrinfo
-#define getaddrinfo getaddrinfo__compat
-#undef getnameinfo
-#define getnameinfo getnameinfo__compat
-#undef freehostent
-#define freehostent freehostent__compat
-#undef freeaddrinfo
-#define freeaddrinfo freeaddrinfo__compat
 
 #ifndef __P
 # ifdef HAVE_PROTOTYPES
@@ -107,9 +96,11 @@
 #define	AI_PASSIVE	0x00000001 /* get address to use bind() */
 #define	AI_CANONNAME	0x00000002 /* fill ai_canonname */
 #define	AI_NUMERICHOST	0x00000004 /* prevent name resolution */
+#define	AI_NUMERICSERV	0x00000008 /* prevent service name resolution */
 /* valid flags for addrinfo */
 #ifndef __HAIKU__
-#define	AI_MASK		(AI_PASSIVE | AI_CANONNAME | AI_NUMERICHOST)
+#undef AI_MASK
+#define	AI_MASK		(AI_PASSIVE | AI_CANONNAME | AI_NUMERICHOST | AI_NUMERICSERV)
 #endif
 
 #define	AI_ALL		0x00000100 /* IPv6 and IPv4-mapped (with AI_V4MAPPED) */
@@ -136,6 +127,7 @@
 #define	NI_NUMERICSERV	0x00000008
 #define	NI_DGRAM	0x00000010
 
+#ifndef HAVE_TYPE_STRUCT_ADDRINFO
 struct addrinfo {
 	int	ai_flags;	/* AI_PASSIVE, AI_CANONNAME */
 	int	ai_family;	/* PF_xxx */
@@ -146,6 +138,24 @@ struct addrinfo {
 	struct sockaddr *ai_addr;	/* binary address */
 	struct addrinfo *ai_next;	/* next structure in linked list */
 };
+#endif
+
+#ifndef HAVE_GETADDRINFO
+#undef getaddrinfo
+#define getaddrinfo getaddrinfo__compat
+#endif
+#ifndef HAVE_GETNAMEINFO
+#undef getnameinfo
+#define getnameinfo getnameinfo__compat
+#endif
+#ifndef HAVE_FREEHOSTENT
+#undef freehostent
+#define freehostent freehostent__compat
+#endif
+#ifndef HAVE_FREEADDRINFO
+#undef freeaddrinfo
+#define freeaddrinfo freeaddrinfo__compat
+#endif
 
 extern int getaddrinfo __P((
 	const char *hostname, const char *servname,
@@ -154,21 +164,20 @@ extern int getaddrinfo __P((
 
 extern int getnameinfo __P((
 	const struct sockaddr *sa,
-	size_t salen,
+	socklen_t salen,
 	char *host,
-	size_t hostlen,
+	socklen_t hostlen,
 	char *serv,
-	size_t servlen,
+	socklen_t servlen,
 	int flags));
 
 extern void freehostent __P((struct hostent *));
 extern void freeaddrinfo __P((struct addrinfo *));
-#if defined __UCLIBC__
+extern
+#ifdef GAI_STRERROR_CONST
 const
 #endif
-//#ifndef __HAIKU__
-//extern char *gai_strerror __P((int));
-//#endif
+char *gai_strerror __P((int));
 
 /* In case there is no definition of offsetof() provided - though any proper
 Standard C system should have one. */
@@ -177,5 +186,4 @@ Standard C system should have one. */
 #define offsetof(p_type,field) ((size_t)&(((p_type *)0)->field))
 #endif
 
-#endif
 #endif
