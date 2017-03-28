@@ -52,4 +52,7 @@
 #define HAVE_ST_FLAGS 1
 #define HAVE_ST_ENGINE 1
 #define HAVE_ST_SINGLE 1
+//RHO
+#define HAVE_ASN1_PUT_EOC 1
+
 #endif
