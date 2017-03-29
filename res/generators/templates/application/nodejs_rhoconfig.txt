@@ -1,0 +1,137 @@
+# startup page for your application
+start_path = '/'
+
+# path to the options page (in this case handled by javascript)
+options_path = '/settings'
+
+# location of bundle url (i.e. from rhohub.com); used by desktop win32 simulator
+rhobundle_zip_url = '<%=zip_url%>'
+
+# optional password to access bundle (usually not required); used by desktop win32 simulator
+rhobundle_zip_pwd = nil
+
+# Rhodes log properties
+# log level
+# 0-trace, 1-info(app level), 2-warnings, 3-errors
+# for production set to 3
+MinSeverity  = 1
+
+# enable copy log messages to standard output, useful for debugging
+LogToOutput = 1
+
+# '*' means all categories, otherwise list them : Cat1, Cat2
+LogCategories = *
+
+# what categories to exclude
+ExcludeLogCategories =
+
+# max log file size in Bytes, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
+MaxLogFileSize=50000
+
+# turn on local http server traces, off by default
+#net_trace = 0
+
+# timeout of network requests in seconds (30 by default)
+#net_timeout = 60
+
+# where log will be posted by RhoConf.send_log or from the log menu
+# source is also open and up on http://github.com/rhomobile/rhologs, so you can deploy your own logserver
+logserver = 'http://rhologs.heroku.com'
+
+# log file prefix - contain human-readable text
+logname='<%=@app_name%>'
+
+# Keep track of the last visited page
+KeepTrackOfLastVisitedPage = 0
+LastVisitedPage = ''
+
+# sync server url, typically this will look like 'http://<hostname>:<port>'
+# for example: 'http://localhost:9292'
+syncserver = '<%=syncserver%>'
+sync_poll_interval=0
+
+# geo location inactivity timeout (in seconds)
+#geo_location_inactivity_timeout = 30
+
+# open rhodes app in full screen mode
+# default 1 for Android up to Rhodes 2.2.5.
+# on all other platforms and on Android from Rhodes >2.2.5 default 0
+#full_screen = 1
+
+# show top menu on Windows desktop in full screen mode (default is 0=don't show top menu)
+#w32_fullscreen_menu = 1
+
+# disable the Android page loading progress bar
+#disable_loading_indication = 0
+
+# Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes.
+# If not specified, application will use dynamically selected one.
+# WARNING!!! Remove this parameter before put application to production.
+#nodejs_local_server_port = 8080
+
+# Address and port of proxy server. This settings uses Network module.
+# Do not include 'http://' while setting the http_proxy_host
+#http_proxy_host = 'server'
+#http_proxy_port = port
+
+# Login and password for access to proxy server. Only basic authentication is supported
+#http_proxy_login  = 'user'
+#http_proxy_password = 'password'
+
+# CLient SSL Configuration. The path to the p12 formatted certificate file and the password used with the client certificate.
+# The path to the p12 formatted certificate file used for client SSL authentication. This setting is used in any Network API calls which setting up secured SSL
+# connections requiring client authentication (get, post, downloadFile, uploadFile). This setting only takes effect if `verifyPeerCertificate` is enabled.
+# Therefore, if `verifyPeerCertificate` is set to fail and remote server requests the client certificate, connection will fail.
+# These two settings are only supported for use on Android devices.
+#clientSSLCertificate     = 'certificate path'
+#clientSSLCertificatePassword = 'password'
+
+#ios_net_curl = 0
+# default value is FALSE. from June 2016 iOS application should support ipv6. libCURL does not support it - so by default application use Apple's network framework.
+#If true, an old libCURL-based Net request will be used. This option can be enabled for regression testing or if custom proxy support is required. Default is FALSE. To support per-app VPN (i.e. MobileIron) this option should be set to FALSE.
+
+#ios_direct_local_requests = 1
+# default value is TRUE. From June 2016 application shoudl support ipv6. So by default libCURL not used - in this case this option should be TRUE for correct work VPN etc.
+#If true, request to local server will be applied directly, bypassing socket intercommunication, no network requests are involved. If false, a legacy client-server intercommunication will be made for local requests. Default is TRUE. To support per-app VPN (i.e. MobileIron) this option should be set to TRUE.
+
+#ios_https_local_server = 0
+#ATTENTION !!! this option works only with ios_net_curl = 0 AND ios_direct_local_requests = 1 !!!
+#default value is FALSE
+# If TRUE local server URL is https://127.0.0.1 instead of http://127.0.0.1
+# It help solve some security issues like work geolocation HTTP5 API in WebView, because this API works only if secure connection.
+# The are not real HTTPS server - just replace URL - it works because with  ios_direct_local_requests = 1 not real connection provided.
+
+#ios_use_WKWebView = 0
+#ATTENTION !!! this option works only with ios_direct_local_requests = 0 !!!
+#default value is FALSE
+# If TRUE WKWebView new iOS high performance(Javascript performance up to 10 times faster than default UIWebView) WebView used instead of default UIWebView.
+# WkWebView can not be used with ios_direct_local_requests !
+
+# show status bar on windows mobile. default 1
+#wm_show_statusbar = 1
+
+# disable screen rotation (enabled by default) - disable possible for ANDROID and iPhone ONLY
+#disable_screen_rotation = 1
+
+# disable close app when pressing back on home screen on blackberry
+#bb_disable_closebyback = 0
+
+# load images in background, this improve reaction speed on user actions, 0 by default
+#bb_loadimages_async = 0
+
+# set to 0 to reset the bulksync_state and trigger a bulk sync the next time rhodes synchronizes
+#bulksync_state = 1
+
+# hides forward button and animates back button transition
+jqtouch_mode=1
+
+# disables barcode on page navigation on android, default value is 1, means barcode will be disabled on page navigation
+#disable_scanner_during_navigation = 1
+
+#dealy in seconds for splash screen image
+splash_screen='zoom;delay=3'
+
+use_bb_full_browser=6
+
+# finger scroll activation on windows XP/7/8/8.1/10
+use_kinetic_scroll_on_windows = 1

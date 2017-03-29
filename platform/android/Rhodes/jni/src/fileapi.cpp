@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -166,6 +166,7 @@ typedef int (*func_readlink_t)(const char *path, char *buf, size_t bufsize);
 typedef int (*func_mkdir_t)(const char *path, mode_t mode);
 typedef int (*func_fchdir_t)(int fd);
 typedef int (*func_fcntl_t)(int fd, int command, ...);
+typedef int (*func_ioctl_t)(int fd, int command, ...);
 typedef int (*func_fdatasync_t)(int fd);
 typedef int (*func_flock_t)(int fd, int operation);
 typedef int (*func_fstat_t)(int filedes, struct stat *buf);
@@ -206,6 +207,7 @@ static func_readlink_t real_readlink;
 static func_mkdir_t real_mkdir;
 static func_fchdir_t real_fchdir;
 static func_fcntl_t real_fcntl;
+static func_ioctl_t real_ioctl;
 static func_fdatasync_t real_fdatasync;
 static func_flock_t real_flock;
 static func_fstat_t real_fstat;
@@ -531,6 +533,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_mkdir = (func_mkdir_t)dlsym(pc, "mkdir");
     real_fchdir = (func_fchdir_t)dlsym(pc, "fchdir");
     real_fcntl = (func_fcntl_t)dlsym(pc, "fcntl");
+    real_ioctl = (func_ioctl_t)dlsym(pc, "ioctl");
     real_fsync = (func_fsync_t)dlsym(pc, "fsync");
     real_fdatasync = (func_fdatasync_t)dlsym(pc, "fdatasync");
 
@@ -1335,10 +1338,21 @@ RHO_GLOBAL int flock(int fd, int operation)
     RHO_NOT_IMPLEMENTED;
 }
 
-RHO_GLOBAL int ioctl(int, int, ...)
+RHO_GLOBAL int ioctl(int fd, int command, ...)
 {
-    RHO_NOT_IMPLEMENTED;
+     RHO_LOG("ioctl: fd %d, command: %d", fd, command);
+     if ((rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE) && (real_ioctl!=0) )
+     {
+         va_list vl;
+         va_start(vl, command);
+         int arg = va_arg(vl, int);
+         va_end(vl);
+         return real_ioctl(fd, command, arg);
+     }
+
+     RHO_NOT_IMPLEMENTED;
 }
+
 
 RHO_GLOBAL int fsync(int fd)
 {
@@ -1421,13 +1435,13 @@ RHO_GLOBAL int stat(const char *path, struct stat *buf)
 {
     RHO_LOG("stat: %s", path);
     std::string fpath = make_full_path(path);
-    
+
     /* fail immediately if found invalid symbol */
     if (fpath.find(':')!=std::string::npos)
     {
         return -1;
     }
-    
+
     if (!need_emulate(fpath))
     {
         int e = real_stat(path, buf);
@@ -1466,13 +1480,13 @@ RHO_GLOBAL int lstat(const char *path, struct stat *buf)
 {
     RHO_LOG("lstat: %s", path);
     std::string fpath = make_full_path(path);
-    
+
     /* fail immediately if found invalid symbol */
     if (fpath.find(':')!=std::string::npos)
     {
         return -1;
     }
-    
+
     if (!need_emulate(fpath))
         return real_lstat(path, buf);
 
@@ -1593,16 +1607,16 @@ RHO_GLOBAL int select(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct t
             {
              if (FD_ISSET(i, rfd))
                 {
-                    
+
                  FD_SET(i, &fds);
                     ++count;
-	
-	
+
+
                 }
             }
             if (count > 0)
           {
-	    
+
                 RHO_LOG("select: return %d (rho)", count);
                 memmove(rfd, &fds, sizeof(fds));
                 if (wfd)
@@ -1958,25 +1972,25 @@ RHO_GLOBAL int rho_file_get_fs_mode()
 }
 
 RHO_GLOBAL void rho_android_file_reload_stat_table() {
-    
+
     RHO_LOG("rho_android_file_reload_stat_table() START");
-    
+
     rho_stat_map.clear();
-    
+
     JNIEnv *env = jnienv();
     env->CallStaticVoidMethod(clsFileApi, midReloadStatTable);
-    
+
     RHO_LOG("rho_android_file_reload_stat_table() FINISH");
 }
 
 RHO_GLOBAL void rho_android_force_all_files() {
-    
+
     RHO_LOG("rho_android_force_all_files() START");
-    
+
     JNIEnv *env = jnienv();
 
     env->CallStaticVoidMethod(clsFileApi, midForceAllFiles);
-    
+
     RHO_LOG("rho_android_force_all_files() FINISH");
 }
 

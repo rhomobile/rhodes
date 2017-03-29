@@ -128,7 +128,12 @@ jqtouch_mode=1
 # disables barcode on page navigation on android, default value is 1, means barcode will be disabled on page navigation
 #disable_scanner_during_navigation = 1
 
-splash_screen='zoom'
+#dealy in seconds for splash screen image
+splash_screen='zoom;delay=3'
+
+# enable full screen mode - remove top status bar (with battery info etc.) from screen
+# also setup iphone_use_new_ios7_status_bar_style, iphone_full_screen and android_title in build.yml !
+#full_screen = 1
 
 use_bb_full_browser=6
 

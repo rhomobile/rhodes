@@ -1,5 +1,8 @@
 #pragma once
 
+
+#ifdef __cplusplus
+
 #include "json/JSONIterator.h"
 
 namespace rho
@@ -18,3 +21,23 @@ void rho_http_js_entry_point(void *arg, rho::String const &query );
 
 }
 }
+
+#endif
+//__cplusplus
+
+
+#ifdef __cplusplus
+extern "C"{
+#endif //__cplusplus
+    
+typedef void (*JVM_Callback_Provider)(const char* js_code);
+    
+void setCustomJVMCallbackProvider(const char* jvm_id, JVM_Callback_Provider provider);
+
+//return 1 if callback called (has JVM with defined ID
+// if not found return zero
+int callCustomJVMCallbackProvider(const char* jvm_id, const char* js_code);
+    
+#ifdef __cplusplus
+}
+#endif //__cplusplus

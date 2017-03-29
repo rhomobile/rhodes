@@ -633,6 +633,39 @@ void CDBAdapter::copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbT
         }
     }
 }
+    
+// add file.blob attrib_type for blob attribs in changed_values
+void CDBAdapter::updateAllBlobAttribChanges()
+    {
+        //Check for attrib = object
+        IDBResult res = executeSQL("SELECT object, source_id, attrib "
+                                   "FROM changed_values where update_type = 'update' and sent=0");
+        
+        if ( res.isEnd() )
+            return;
+        
+        startTransaction();
+        
+        Vector<String> arObj, arAttrib;
+        Vector<int> arSrcID;
+        for( ; !res.isEnd(); res.next() )
+        {
+            arObj.addElement(res.getStringByIdx(0));
+            arSrcID.addElement(res.getIntByIdx(1));
+            arAttrib.addElement(res.getStringByIdx(2));
+        }
+        
+        for( int i = 0; i < (int)arObj.size(); i++ )
+        {
+            String attribType = getAttrMgr().isBlobAttr(arSrcID.elementAt(i), arAttrib.elementAt(i).c_str()) ? "blob.file" : "";
+            if (attribType.length() > 0) {
+                executeSQL("UPDATE changed_values SET attrib_type=? WHERE source_id=? and object=? and attrib=? and sent=0", attribType, arSrcID.elementAt(i), arObj.elementAt(i), arAttrib.elementAt(i));
+            }
+        }
+        
+        endTransaction();
+    }
+    
 
 void CDBAdapter::updateAllAttribChanges()
 {

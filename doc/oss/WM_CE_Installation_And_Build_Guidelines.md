@@ -1,4 +1,4 @@
-#**WM/CE Installation Guidelines:**
+# **WM/CE Installation Guidelines:**
 
 ## Note: It is recommended to install in this order only.
 

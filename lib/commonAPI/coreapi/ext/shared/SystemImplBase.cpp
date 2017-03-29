@@ -157,6 +157,17 @@ void CSystemImplBase::setLocalServerPort( int value, CMethodResult& oResult)
     //Local port can be set only in confuguration file
 }
 
+void CSystemImplBase::getNodejsServerPort(CMethodResult& oResult)
+{
+    oResult.set( atoi(RHODESAPP().getNodeJSListeningPort()) );
+}
+
+void CSystemImplBase::setNodejsServerPort( int value, CMethodResult& oResult)
+{
+    //Local port can be set only in confuguration file
+}
+
+
 void CSystemImplBase::getFreeServerPort(rho::apiGenerator::CMethodResult& oResult)
 {
     oResult.set( RHODESAPP().determineFreeListeningPort() );

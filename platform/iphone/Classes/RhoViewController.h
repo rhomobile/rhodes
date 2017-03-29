@@ -31,6 +31,10 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation;
 
+#if defined(__IPHONE_7_0)
+- (BOOL)prefersStatusBarHidden;
+#endif
+
 #if defined(__IPHONE_6_0)
 - (BOOL)shouldAutorotate;
 - (NSUInteger)supportedInterfaceOrientations;

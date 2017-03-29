@@ -1047,8 +1047,15 @@ public class RhodesService extends Service {
             RhodesService service = getInstance();
             Context ctx = RhodesService.getContext();
 
-            Intent intent = new Intent();
-            service.resolveAppName(appName, intent);
+            Intent intent = service.getPackageManager().getLaunchIntentForPackage(appName);
+
+            try {
+            	service.resolveAppName(appName, intent);
+            } catch ( Throwable e ) {
+            	Logger.W(TAG, "Can't resolve app name, will run with default intent: " + appName);
+            	Logger.W(TAG, e);
+            }
+
             service.parseAppParams(params, intent);
 
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

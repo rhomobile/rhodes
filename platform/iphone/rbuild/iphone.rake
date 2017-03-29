@@ -478,29 +478,6 @@ def prepare_production_ipa (app_path, app_name)
 
   #cp mprovision_in_app, mprovision_in_payload
 
-
-  itunes_artwork = File.join($app_path, "/project/iphone/iTunesArtwork")
-  #itunes_artwork = File.join($config["build"]["iphonepath"], "iTunesArtwork.jpg")
-  itunes_artwork_dst = File.join(tmp_dir, "iTunesArtwork")
-
-  if !$app_config["iphone"].nil?
-    if !$app_config["iphone"]["production"].nil?
-      if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
-        art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
-        if File.exists? art_test_name
-          itunes_artwork = art_test_name
-        else
-          art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
-          if File.exists? art_test_name
-            itunes_artwork = art_test_name
-          else
-            itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
-          end
-        end
-      end
-    end
-  end
-
   # now iTunesArtwork should be placed into application bundle !
   #cp itunes_artwork, itunes_artwork_dst
 
@@ -517,10 +494,19 @@ def prepare_production_ipa (app_path, app_name)
 end
 
 def copy_all_png_from_icon_folder_to_product(app_path)
-   app_icon_folder = File.join($app_path, 'icon')
    rm_rf File.join(app_path, "*.png")
-   Dir.glob(File.join(app_icon_folder, "*.png")).each do |icon_file|
-     cp icon_file, app_path
+
+   app_icon_folder = File.join($app_path, 'resources', 'ios')
+   if File.exists? app_icon_folder
+       # NEW resources
+       Dir.glob(File.join(app_icon_folder, "icon*.png")).each do |icon_file|
+         cp icon_file, app_path
+       end
+   else
+       app_icon_folder = File.join($app_path, 'icon')
+       Dir.glob(File.join(app_icon_folder, "*.png")).each do |icon_file|
+         cp icon_file, app_path
+       end
    end
 end
 
@@ -588,7 +574,14 @@ def set_app_icon(make_bak)
       name = pair[0]
       #ibak = File.join(ipath, name + '.bak')
       icon = File.join(ipath, name + '.png')
-      appicon = File.join($app_path, 'icon', pair[1] + '.png')
+      appicon_old = File.join($app_path, 'icon', pair[1] + '.png')
+      appicon = appicon_old
+      appicon_new = File.join($app_path, 'resources', 'ios', pair[1] + '.png')
+
+      if File.exists? appicon_new
+          appicon = appicon_new
+      end
+
       #if make_bak
       #   cp icon, ibak unless File.exists? ibak
       #end
@@ -667,6 +660,14 @@ def set_default_images(make_bak, plist_hash)
       imag = File.join(ipath, defname + '.png')
       appimage = File.join($app_path, 'app', name + '.png')
       appsimage = File.join($app_path, 'app', name + '.iphone.png')
+      resourcesiamge = File.join($app_path, 'resources', 'ios', defname + '.png')
+      if File.exists? appsimage
+         appimage =  appsimage
+      end
+      if File.exists? resourcesiamge
+         appimage =  resourcesiamge
+      end
+
       if File.exists? imag
         #if make_bak
         #   cp imag, ibak unless File.exists? ibak
@@ -675,14 +676,9 @@ def set_default_images(make_bak, plist_hash)
       end
       #bundlei = File.join($srcdir, defname + '.png')
       #cp appimage, bundlei unless !File.exist? appimage
-      if File.exists? appsimage
-          cp appsimage, imag
-          existing_loading_images << (defname + '.png')
-      else
-          if File.exists? appimage
-             cp appimage, imag
-             existing_loading_images << (defname + '.png')
-          end
+      if File.exists? appimage
+         cp appimage, imag
+         existing_loading_images << (defname + '.png')
       end
     end
   rescue => e
@@ -2281,6 +2277,12 @@ namespace "build" do
         itunes_artwork_in_project_2 = File.join($app_path, "project","iphone","iTunesArtwork@2x")
         itunes_artwork = File.join($app_path, "project","iphone","iTunesArtwork")
 
+      itunes_artwork_new = File.join($app_path, "resources","ios","iTunesArtwork.png")
+      if File.exists? itunes_artwork_new
+          itunes_artwork = itunes_artwork_new
+      end
+
+
       if !$app_config["iphone"].nil?
         if !$app_config["iphone"]["production"].nil?
           if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
@@ -3442,6 +3444,12 @@ namespace "device" do
 
       itunes_artwork_default = File.join($app_path, "/project/iphone/iTunesArtwork")
       itunes_artwork  = itunes_artwork_default
+
+      itunes_artwork_new = File.join($app_path, "resources","ios","iTunesArtwork.png")
+      if File.exists? itunes_artwork_new
+          itunes_artwork = itunes_artwork_new
+      end
+
 
       if !$app_config["iphone"].nil?
         if !$app_config["iphone"]["production"].nil?

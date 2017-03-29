@@ -191,6 +191,7 @@ static Rhodes *instance = NULL;
         [[Rhodes sharedInstance] setFullScreen:NO];
 		[Rhodes performOnUiThread:[RhoFullScreenDisableTask class] wait:NO];
 	}
+    [[[[Rhodes sharedInstance] mainView] getMainViewController] setNeedsStatusBarAppearanceUpdate];
 }
 
 - (BOOL)getFullScreen {
@@ -788,7 +789,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     if ((rho_conf_getBool("full_screen") != 0) || (fs[0] != '0')) {
         [Rhodes setStatusBarHidden:YES];
 #ifdef __IPHONE_3_2
-        [[Rhodes application] setStatusBarHidden:YES withAnimation:NO];
+        if ([[Rhodes application] respondsToSelector:@selector(setStatusBarHidden:withAnimation:)]) {
+            [[Rhodes application] setStatusBarHidden:YES withAnimation:NO];
+        }
 #else
         [[Rhodes application] setStatusBarHidden:YES animated:NO];
 #endif    

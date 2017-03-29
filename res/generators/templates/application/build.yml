@@ -10,6 +10,16 @@ rho_app_id: com.rhomobile.<%=@app_name_cleared%>
 build: debug
 applog: rholog.txt
 
+## Note: enbale it for use new style of iOS top status bar(battery info, etc.) - status bar is transparency and over application window
+#iphone_use_new_ios7_status_bar_style: 1
+
+## Note: enable this for force iOS full screen (top status bar with battery info etc. is hidden)
+#iphone_full_screen: 1
+
+## Note: set this to 0 for remove title bar of Android application
+## also setup "full_screen" in rhoconfig.txt
+#android_title: 0
+
 ## Note: enable specific device capabilities for aplication
 #capabilities:
   ## allows use of audio hardware (record audio, modify audio settings)
@@ -47,8 +57,6 @@ iphone:
   #entitlements:
   BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
   BundleURLScheme: <%=@app_name_cleared%>
-  production:
-    ipa_itunesartwork_image: "./production/iTunesArtwork.png"
   ## Note: Specifies the URL schemes the app is able to call using Rho.System.runApplication
   #ApplicationQueriesSchemes: ['scheme1', 'scheme2']
   ## Note: Specifies list of HTTP domains for connect from application

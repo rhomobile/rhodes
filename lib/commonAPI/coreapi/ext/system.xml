@@ -165,6 +165,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <PROPERTY name="localServerPort" type="INTEGER" default="8080" readOnly="true">
                 <DESC>Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, the platform will detect a free port on the device and use that one.</DESC>
             </PROPERTY>
+            <PROPERTY name="NodejsServerPort" type="INTEGER" default="3000" readOnly="true">
+                <DESC>Port of the local (embedded) Node.js HTTP server if it started (only for Node.js type applications).</DESC>
+            </PROPERTY>
             <PROPERTY name="freeServerPort" type="INTEGER" readOnly="true">
                 <DESC>Get free local server port, available for binding.</DESC>
             </PROPERTY>
