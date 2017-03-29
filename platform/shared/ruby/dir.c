@@ -93,7 +93,9 @@ char *strchr(char*,char);
 # define USE_NAME_ON_FS 0
 #endif
 
-#ifdef __APPLE__
+//RHO, just for OS X, don't use for iOS
+//#ifdef __APPLE__
+#if TARGET_OS_OSX
 # define NORMALIZE_UTF8PATH 1
 #else
 # define NORMALIZE_UTF8PATH 0
