@@ -1,5 +1,10 @@
 #ifndef INCLUDE_RUBY_CONFIG_H
 #define INCLUDE_RUBY_CONFIG_H 1
+
+//RHO
+#include <TargetConditionals.h>
+
+
 /* confdefs.h */
 #define CANONICALIZATION_FOR_MATHN 1
 #define STDC_HEADERS 1
@@ -21,11 +26,6 @@
 #define HAVE_NAN 1
 #define RUBY_SYMBOL_EXPORT_BEGIN _Pragma("GCC visibility push(default)")
 #define RUBY_SYMBOL_EXPORT_END _Pragma("GCC visibility pop")
-#define BROKEN_CRYPT 1
-
-//RHO
-//#define HAVE_CRT_EXTERNS_H 1
-
 #define HAVE_LIBDL 1
 #define HAVE_DIRENT_H 1
 #define HAVE__BOOL 1
@@ -52,47 +52,31 @@
 #define HAVE_SYS_TIMES_H 1
 #define HAVE_SYS_UIO_H 1
 #define HAVE_TIME_H 1
-
-//RHO
-//#define HAVE_UCONTEXT_H 1
-
-
 #define HAVE_UTIME_H 1
-
-//RHO
-//#define HAVE_TYPEOF 1
-
+#define HAVE_TYPEOF 1
+#define typeof __typeof__
 #define HAVE_LONG_LONG 1
 #define HAVE_OFF_T 1
 #define SIZEOF_INT 4
 #define SIZEOF_SHORT 2
 
 //RHO
-#ifdef RHODES_QT_PLATFORM
-#define SIZEOF_LONG 8
-#else
-#ifdef __LP64__
+#if TARGET_RT_64_BIT
 #define SIZEOF_LONG 8
 #else
 #define SIZEOF_LONG 4
-#endif
 #endif
 //RHO
 
 #define SIZEOF_LONG_LONG 8
 #define SIZEOF___INT64 0
-#define SIZEOF___INT128 16
 #define SIZEOF_OFF_T 8
 
 //RHO
-#ifdef RHODES_EMULATOR
-#define SIZEOF_VOIDP 8
-#else
-#ifdef __LP64__
+#if TARGET_RT_64_BIT
 #define SIZEOF_VOIDP 8
 #else
 #define SIZEOF_VOIDP 4
-#endif
 #endif
 //RHO
 
@@ -153,29 +137,39 @@
 #define STRINGIZE(expr) STRINGIZE0(expr)
 #define HAVE_STDARG_PROTOTYPES 1
 #define HAVE_VA_ARGS_MACRO 1
-#define CONSTFUNC(x) __attribute__ ((__const__)) x
-#define PUREFUNC(x) __attribute__ ((__pure__)) x
-#define NORETURN(x) __attribute__ ((__noreturn__)) x
-#define DEPRECATED(x) __attribute__ ((__deprecated__)) x
-#define DEPRECATED_BY(n,x) __attribute__ ((__deprecated__("by "#n))) x
-#define DEPRECATED_TYPE(mesg,x) x __attribute__ ((__deprecated__ mesg))
-#define NOINLINE(x) __attribute__ ((__noinline__)) x
-#define ALWAYS_INLINE(x) __attribute__ ((__always_inline__)) x
-#define WARN_UNUSED_RESULT(x) __attribute__ ((__warn_unused_result__)) x
-#define MAYBE_UNUSED(x) __attribute__ ((__unused__)) x
-#define WEAK(x) __attribute__ ((__weak__)) x
+#define NORETURN(x) __attribute__ ((noreturn)) x
+#define DEPRECATED(x) __attribute__ ((deprecated)) x
+#define DEPRECATED_BY(n,x) __attribute__ ((deprecated("by "#n))) x
+#define DEPRECATED_TYPE(mesg,x) x __attribute__ ((deprecated mesg))
+#define NOINLINE(x) __attribute__ ((noinline)) x
+#define WEAK(x) __attribute__ ((weak)) x
 #define HAVE_FUNC_WEAK 1
-#define FUNC_CDECL(x) __attribute__ ((__cdecl__)) x
+
+//RHO
+#if TARGET_OS_SIMULATOR
+#define FUNC_CDECL(x) __attribute__ ((cdecl)) x
+#endif
+//RHO
+
 #define HAVE_GCC_ATOMIC_BUILTINS 1
 #define HAVE_GCC_SYNC_BUILTINS 1
 #define UNREACHABLE __builtin_unreachable()
-#define RUBY_FUNC_EXPORTED __attribute__ ((__visibility__("default"))) extern
+#define RUBY_FUNC_EXPORTED __attribute__ ((visibility("default"))) extern
 #define RUBY_FUNCTION_NAME_STRING __func__
 #define ENUM_OVER_INT 1
 #define HAVE_DECL_SYS_NERR 1
 #define HAVE_DECL_GETENV 1
+
+//RHO
+#if TARGET_RT_64_BIT
 #define SIZEOF_SIZE_T 8
 #define SIZEOF_PTRDIFF_T 8
+#else
+#define SIZEOF_SIZE_T 4
+#define SIZEOF_PTRDIFF_T 4
+#endif
+//RHO
+
 #define PRI_SIZE_PREFIX "z"
 #define PRI_PTRDIFF_PREFIX "t"
 #define HAVE_STRUCT_STAT_ST_BLKSIZE 1
@@ -186,7 +180,15 @@
 #define HAVE_ST_RDEV 1
 #define SIZEOF_STRUCT_STAT_ST_SIZE SIZEOF_OFF_T
 #define SIZEOF_STRUCT_STAT_ST_BLOCKS SIZEOF_OFF_T
+
+//RHO
+#if TARGET_RT_64_BIT
 #define SIZEOF_STRUCT_STAT_ST_INO SIZEOF_LONG
+#else
+#define SIZEOF_STRUCT_STAT_ST_INO SIZEOF_LONG_LONG
+#endif
+//RHO
+
 #define HAVE_STRUCT_STAT_ST_ATIMESPEC 1
 #define HAVE_STRUCT_STAT_ST_MTIMESPEC 1
 #define HAVE_STRUCT_STAT_ST_CTIMESPEC 1
@@ -212,24 +214,39 @@
 #define SIZEOF_INT64_T 8
 #define HAVE_UINT64_T 1
 #define SIZEOF_UINT64_T 8
-
-//RHO
-/*
-#define HAVE_INT128_T 1
-#define int128_t __int128
-#define SIZEOF_INT128_T SIZEOF___INT128
-#define HAVE_UINT128_T 1
-#define uint128_t unsigned __int128
-#define SIZEOF_UINT128_T SIZEOF___INT128
-*/
-//RHO
-
 #define HAVE_INTPTR_T 1
+
+//RHO
+#if TARGET_RT_64_BIT
 #define SIZEOF_INTPTR_T 8
+#else
+#define SIZEOF_INTPTR_T 4
+#endif
+//RHO
+
+
 #define HAVE_UINTPTR_T 1
+
+//RHO
+#if TARGET_RT_64_BIT
 #define SIZEOF_UINTPTR_T 8
+#else
+#define SIZEOF_UINTPTR_T 4
+#endif
+//RHO
+
+
 #define HAVE_SSIZE_T 1
+
+//RHO
+#if TARGET_RT_64_BIT
 #define SIZEOF_SSIZE_T 8
+#else
+#define SIZEOF_SSIZE_T 4
+#endif
+//RHO
+
+
 #define GETGROUPS_T gid_t
 #define RETSIGTYPE void
 #define HAVE_ALLOCA_H 1
@@ -240,7 +257,6 @@
 #define HAVE_DUP2 1
 #define HAVE_ERF 1
 #define HAVE_FFS 1
-#define HAVE_FINITE 1
 #define HAVE_FLOCK 1
 #define HAVE_HYPOT 1
 #define HAVE_ISINF 1
@@ -254,16 +270,16 @@
 #define HAVE_STRLCPY 1
 #define HAVE_STRSTR 1
 #define HAVE_TGAMMA 1
-#define SPT_TYPE SPT_REUSEARGV
 #define HAVE_SIGNBIT 1
+
 //RHO
 //#define HAVE_FORK 1
 //#define vfork fork
 //#define HAVE_WORKING_FORK 1
 //RHO
+
 #define HAVE___SYSCALL 1
 #define HAVE__LONGJMP 1
-#define HAVE_ARC4RANDOM_BUF 1
 #define HAVE_ATAN2L 1
 #define HAVE_ATAN2F 1
 #define HAVE_CHROOT 1
@@ -280,11 +296,20 @@
 #define HAVE_FCHMOD 1
 #define HAVE_FCHOWN 1
 #define HAVE_FCNTL 1
+
+//RHO
+//#define HAVE_FDATASYNC 1
+//RHO
+
 #define HAVE_FGETATTRLIST 1
 #define HAVE_FMOD 1
 #define HAVE_FSYNC 1
 #define HAVE_FTRUNCATE 1
-#define HAVE_GETATTRLIST 1
+
+//RHO
+//#define HAVE_GETATTRLIST 1
+//RHO
+
 #define HAVE_GETCWD 1
 #define HAVE_GETGRNAM 1
 #define HAVE_GETGRNAM_R 1
@@ -357,24 +382,30 @@
 #if !defined __STDC_WANT_LIB_EXT1__
 #define __STDC_WANT_LIB_EXT1__ 1
 #endif /* !defined __STDC_WANT_LIB_EXT1__ */
+
+//RHO
+#if TARGET_OS_SIMULATOR
+#define NO_GETCWD_MALLOC 1
+#endif
+//RHO
+
 #define HAVE_BUILTIN___BUILTIN_BSWAP16 1
 #define HAVE_BUILTIN___BUILTIN_BSWAP32 1
 #define HAVE_BUILTIN___BUILTIN_BSWAP64 1
-#define HAVE_BUILTIN___BUILTIN_POPCOUNT 1
-#define HAVE_BUILTIN___BUILTIN_POPCOUNTLL 1
 #define HAVE_BUILTIN___BUILTIN_CLZ 1
 #define HAVE_BUILTIN___BUILTIN_CLZL 1
 #define HAVE_BUILTIN___BUILTIN_CLZLL 1
-#define HAVE_BUILTIN___BUILTIN_CTZ 1
-#define HAVE_BUILTIN___BUILTIN_CTZLL 1
-#define HAVE_BUILTIN___BUILTIN_CONSTANT_P 1
 #define HAVE_BUILTIN___BUILTIN_CHOOSE_EXPR 1
+
 //RHO
-//#define HAVE_BUILTIN___BUILTIN_CHOOSE_EXPR_CONSTANT_P 1
-//#define HAVE_BUILTIN___BUILTIN_TYPES_COMPATIBLE_P 1
+#if TARGET_OS_SIMULATOR
+#define HAVE_BUILTIN___BUILTIN_CHOOSE_EXPR_CONSTANT_P 1
+#define HAVE_BUILTIN___BUILTIN_TYPES_COMPATIBLE_P 1
+#endif
+//RHO
+
 #define HAVE_BSD_QSORT_R 1
 #define ATAN2_INF_C99 1
-#define LGAMMA_R_PM0_FIX 1
 #define HAVE_CLOCK_GETRES 1
 #define HAVE_STRUCT_TM_TM_ZONE 1
 #define HAVE_TM_ZONE 1
@@ -385,11 +416,19 @@
 #define HAVE_TIMEZONE 1
 #define TIMEZONE_VOID 1
 #define NEGATIVE_TIME_T 1
+#define LOCALTIME_OVERFLOW_PROBLEM 1
 #define POSIX_SIGNAL 1
-#define HAVE_SIG_T 1
 #define RSHIFT(x,y) ((x)>>(int)(y))
 #define HAVE__SC_CLK_TCK 1
+
+//RHO
+#if TARGET_OS_SIMULATOR
 #define STACK_GROW_DIRECTION -1
+#else
+#define STACK_GROW_DIRECTION 0
+#endif
+//RHO
+
 #define _REENTRANT 1
 #define _THREAD_SAFE 1
 #define HAVE_LIBPTHREAD 1
@@ -403,28 +442,41 @@
 #define HAVE_PTHREAD_SIGMASK 1
 #define HAVE_PTHREAD_SETNAME_NP 1
 #define HAVE_PTHREAD_ATTR_INIT 1
-#define SET_CURRENT_THREAD_NAME(name) pthread_setname_np(name)
-#define DEFINE_MCONTEXT_PTR(mc, uc) mcontext_t mc = (uc)->uc_mcontext
-#define HAVE_EXECINFO_H 1
-#define HAVE_LIBUNWIND_H 1
-#define HAVE_BACKTRACE 1
-#define BROKEN_BACKTRACE 1
-#define DLEXT_MAXLEN 7
-#define DLEXT ".bundle"
-#define HAVE__SETJMP 1
-#define HAVE_SIGSETJMP 1
-#define RUBY_SETJMP(env) _setjmp((env))
-#define RUBY_LONGJMP(env,val) _longjmp((env),val)
-#define RUBY_JMP_BUF jmp_buf
-#define HAVE_PTHREAD_H 1
-#define RUBY_PLATFORM "x86_64-darwin16"
 
 //RHO
-#include <TargetConditionals.h>
+//#define SET_CURRENT_THREAD_NAME(name) pthread_setname_np(name)
+//RHO
+
+#define UCONTEXT_IN_SIGNAL_H 1
+#define DEFINE_MCONTEXT_PTR(mc, uc) mcontext_t mc = (uc)->uc_mcontext
+#define HAVE_GETCONTEXT 1
+#define HAVE_SETCONTEXT 1
+#define HAVE_BACKTRACE 1
+#define DLEXT_MAXLEN 3
+#define DLEXT ".so"
+
+//RHO
+//#define RUBY_SETJMP(env) __builtin_setjmp((void **)(env))
+//#define RUBY_LONGJMP(env,val) __builtin_longjmp((void **)(env),val)
+#define RUBY_SETJMP(env) _setjmp((env))
+#define RUBY_LONGJMP(env,val) _longjmp((env),val)
+//RHO
+
+#define RUBY_JMP_BUF jmp_buf
+#define HAVE_PTHREAD_H 1
+
+//RHO
+#if TARGET_OS_SIMULATOR
+#define RUBY_PLATFORM "x86_64-darwin"
+#else
+#define RUBY_PLATFORM "arm-darwin"
+#endif
+
 
 //#define USE_RGENGC 0
 #define LOAD_RELATIVE 1
 
+/*
 #ifndef TRUE
 #define TRUE    1
 #endif
@@ -432,6 +484,10 @@
 #ifndef FALSE
 #define FALSE   0
 #endif
+*/
+
+#define _XOPEN_SOURCE
+
 
 #define NO_INITIAL_LOAD_PATH
 #define NO_RUBY_SITE_LIB
