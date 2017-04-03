@@ -154,6 +154,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
 
     setUpWebPage(webView->page());
     this->main_webView = webView;
+    this->webView = webView;
 
     this->move(0,0);
     toolBar->hide();
@@ -178,6 +179,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
         QWebEngineViewSelectionSuppressor* suppressor = new QWebEngineViewSelectionSuppressor(webView);
     }
 
+    setMinimumSize(350,550);
 
 }
 
@@ -547,7 +549,9 @@ void QtMainWindow::setUpWebPage(QWebEnginePage *page)
 
     RhoNativeApiCall* rhoNativeApiCall = new RhoNativeApiCall(page);
     //page->setProperty("__rhoNativeApi", QVariant::fromValue(rhoNativeApiCall));
-    connect(page, SIGNAL(javaScriptWindowObjectCleared()),rhoNativeApiCall, SLOT(populateJavaScriptWindowObject()));
+
+   // connect(page, SIGNAL(javaScriptWindowObjectCleared()),rhoNativeApiCall, SLOT(populateJavaScriptWindowObject()));
+    //TODO: fix this
 }
 
 int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color,

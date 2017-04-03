@@ -9,14 +9,17 @@
 #include <windows.h>
 #include "rhoruntime/rhoruntime.h"
 #include "rhoruntime/common/RhodesHelperWP8.h"
+#include <windows.system.profile.h>
+#include <windows.system.h>
 
 using namespace Windows::Graphics::Display;
 using namespace Windows::Devices::Input;
 using namespace Windows::UI::Core;
 using namespace Windows::Foundation;
-using namespace Windows::Phone::Management::Deployment;
 using namespace Windows::ApplicationModel;
 using namespace Windows::Foundation::Collections;
+using namespace Windows::System::Profile;
+using namespace Windows::System;
 
 Platform::String^ A2PS(char* str)
 {
@@ -154,6 +157,11 @@ void CSystemImpl::getPpiY(CMethodResult& oResult)
 void CSystemImpl::getPhoneId(CMethodResult& oResult)
 {
 	oResult.set(Windows::Phone::System::Analytics::HostInformation::PublisherHostId->Data());
+	/*
+	auto token = Windows::System::Profile::HardwareIdentification::GetPackageSpecificToken(nullptr).Id.ToArray();
+	IBuffer hardwareId = token.Id;
+
+	Windows::Storage::Streams::DataReader::FromBuffer(hardwareId);*/
 }
 
 void CSystemImpl::getDeviceName(CMethodResult& oResult)
