@@ -70,6 +70,16 @@ int flock(int, int);
 #define lstat stat
 #endif
 
+#if defined(POSIXNAME)
+#define fpaccess _access
+#define fpchmod _chmod
+#define fpumask _umask
+#else
+#define fpaccess access
+#define fpchmod chmod
+#define fpumask umask
+#endif
+
 /* define system APIs */
 #ifdef _WIN32__
 #define STAT(p, s)	rb_w32_ustati64(p, s)
@@ -123,7 +133,9 @@ be_fchown(int fd, uid_t owner, gid_t group)
 #ifdef _WP8_LIB
 #include "../../wp8/rhoruntime/common/RhodesHelperWP8.h"
 #endif
-
+#ifdef _UWP_LIB
+#include "../../uwp/rhoruntime/common/RhodesHelperWP8.h"
+#endif
 VALUE rb_cFile;
 VALUE rb_mFileTest;
 VALUE rb_cStat;
@@ -844,7 +856,7 @@ w32_io_info(VALUE *file, BY_HANDLE_FILE_INFORMATION *st)
 	if (f == INVALID_HANDLE_VALUE) return f;
 	ret = f;
     }
-#if !defined(_WP8_LIB)
+#if !defined(_WP8_LIB) && !defined(_UWP_LIB)
     if (GetFileType(f) == FILE_TYPE_DISK) {
 	ZeroMemory(st, sizeof(*st));
 	if (GetFileInformationByHandle(f, st)) return ret;
@@ -1050,8 +1062,7 @@ eaccess(const char *path, int mode)
 # if defined(_MSC_VER) || defined(__MINGW32__)
     mode &= ~1;
 # endif
-
-    return access(path, mode);
+    return fpaccess(path, mode);
 #endif
 }
 #endif
@@ -1059,7 +1070,7 @@ eaccess(const char *path, int mode)
 static inline int
 access_internal(const char *path, int mode)
 {
-    return access(path, mode);
+    return fpaccess(path, mode);
 }
 
 
@@ -1990,7 +2001,7 @@ rb_file_size(VALUE obj)
 static void
 chmod_internal(const char *path, void *mode)
 {
-    if (chmod(path, *(int *)mode) < 0)
+    if (fpchmod(path, *(int *)mode) < 0)
 	rb_sys_fail(path);
 }
 
@@ -2055,7 +2066,7 @@ rb_file_chmod(VALUE obj, VALUE vmode)
 #else
     if (NIL_P(fptr->pathv)) return Qnil;
     path = rb_str_encode_ospath(fptr->pathv);
-    if (chmod(RSTRING_PTR(path), mode) == -1)
+    if (fpchmod(RSTRING_PTR(path), mode) == -1)
 	rb_sys_fail_path(fptr->pathv);
 #endif
 
@@ -2580,7 +2591,7 @@ rb_file_s_rename(VALUE klass, VALUE from, VALUE to)
 #if defined (__EMX__)
 	  case EACCES:
 #endif
-	    if (chmod(dst, 0666) == 0 &&
+	    if (fpchmod(dst, 0666) == 0 &&
 		unlink(dst) == 0 &&
 		rename(src, dst) == 0)
 		return INT2FIX(0);
@@ -2614,11 +2625,11 @@ rb_file_s_umask(int argc, VALUE *argv)
 
     rb_secure(2);
     if (argc == 0) {
-	omask = umask(0);
-	umask(omask);
+	omask = fpumask(0);
+	fpumask(omask);
     }
     else if (argc == 1) {
-	omask = umask(NUM2INT(argv[0]));
+	omask = fpumask(NUM2INT(argv[0]));
     }
     else {
 	rb_raise(rb_eArgError, "wrong number of arguments (%d for 0..1)", argc);
@@ -2906,7 +2917,7 @@ rb_home_dir(const char *user, VALUE result)
 static VALUE
 file_expand_path(VALUE fname, VALUE dname, int abs_mode, VALUE result)
 {
-    const char *s, *b;
+    const char *s, *b = 0;
     char *buf, *p, *pend, *root;
     size_t buflen, dirlen, bdiff;
     int tainted;

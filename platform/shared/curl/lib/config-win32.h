@@ -16,7 +16,7 @@
 #define CURL_DISABLE_TELNET 1
 #define CURL_DISABLE_TFTP 1
 
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_UWP)
 #define _WIN32_WINNT  0x0600 
 #endif 
 
@@ -48,7 +48,7 @@
 /* Define if you have the <limits.h> header file.  */
 #define HAVE_LIMITS_H 1
 
-#ifndef OS_WP8
+#if !defined(OS_WP8) && !defined(OS_UWP)
 /* if zlib is available */
 #define HAVE_LIBZ 1
 /* if you have the zlib.h header file */

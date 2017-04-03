@@ -33,7 +33,12 @@ local int gz_load(gz_statep state, unsigned char* buf, unsigned len, unsigned* h
 
     *have = 0;
     do {
+#if !defined(_UWP_LIB) && !defined(POSIXNAME)
         ret = read(state->fd, buf + *have, len - *have);
+#else
+		ret = _read(state->fd, buf + *have, len - *have);
+#endif
+
         if (ret <= 0)
             break;
         *have += ret;
@@ -571,7 +576,11 @@ int ZEXPORT gzclose_r(gzFile file)
     err = state->err == Z_BUF_ERROR ? Z_BUF_ERROR : Z_OK;
     gz_error(state, Z_OK, NULL);
     free(state->path);
+#if !defined(_UWP_LIB) && !defined(POSIXNAME)
     ret = close(state->fd);
+#else
+	ret = _close(state->fd);
+#endif
     free(state);
     return ret ? Z_ERRNO : err;
 }

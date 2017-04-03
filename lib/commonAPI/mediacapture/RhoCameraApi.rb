@@ -25,7 +25,7 @@
 #------------------------------------------------------------------------
 
 
-if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::System.platform == 'WP8'
+if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID' || Rho::System.platform == 'WP8' || Rho::System.platform == 'UWP'
 
    class Camera
 	

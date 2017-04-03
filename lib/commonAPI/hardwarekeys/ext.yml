@@ -10,9 +10,10 @@ android:
 
 project_paths:
   wp8: ext/platform/wp8/HardwareKeys.vcxproj
+  uwp: ext/platform/uwp/HardwareKeys.vcxproj
   wm: ext/platform/wm/HardwareKeys.vcproj
   win32: ext/platform/wm/HardwareKeys.vcproj
   
 xml_api_paths: ext/keycapture.xml
 
-platforms: ["wm", "iphone", "android"]
+platforms: ["uwp", "wm", "iphone", "android"]

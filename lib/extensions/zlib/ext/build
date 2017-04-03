@@ -10,6 +10,11 @@ elif [ "$RHO_PLATFORM" = "wp8" ]; then
 cd wp8
 rake --trace
 
+elif [ "$RHO_PLATFORM" = "uwp" ]; then
+
+cd uwp
+rake --trace
+
 else
 
 rake --trace

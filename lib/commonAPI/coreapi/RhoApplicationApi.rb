@@ -78,7 +78,7 @@ module Rho
         start_url = Rho::Application.startURI
         start_url = "" unless start_url
 
-        if System.get_property('platform') != 'WP8'
+        if ((System.get_property('platform') != 'WP8') && (System.get_property('platform') != 'UWP'))
 
           invalid_security_token_start_path = Rho::Application.invalidSecurityTokenStartPath
           

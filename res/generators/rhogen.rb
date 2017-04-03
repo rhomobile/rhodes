@@ -948,6 +948,8 @@ module Rhogen
       @productid = generated_uuid
       @wp8LibGUID = puuid.generate
       @wp8StubImplGUID = puuid.generate
+      @uwpLibGUID = puuid.generate
+      @uwpStubImplGUID = puuid.generate
       @@noapp = noapp
     end
 
@@ -1523,6 +1525,42 @@ module Rhogen
     template :wp8_lib_montana_impl_h do |template|
       template.source = 'platform/wp8/lib/Montana_impl.h'
       template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_impl.h"
+    end
+
+ # uwp
+    template :uwp_stub_impl_montana_impl do |template|
+      template.source = 'platform/uwp/stub_impl/Montana_impl.cs'
+      template.destination = "platform/uwp/generated/stub_impl/#{$cur_module.name}_impl.cs"
+    end
+
+    template :uwp_montana_base_cs do |template|
+      template.source = 'platform/uwp/MontanaBase.cs'
+      template.destination = "platform/uwp/generated/#{$cur_module.name}Base.cs"
+    end
+
+    template :uwp_runtime_montana_runtime_h do |template|
+      template.source = 'platform/uwp/lib/MontanaRuntime.h'
+      template.destination = "platform/uwp/generated/lib/#{$cur_module.name}Runtime.h"
+    end
+
+    template :uwp_runtime_montana_runtime_cpp do |template|
+      template.source = 'platform/uwp/lib/MontanaRuntime.cpp'
+      template.destination = "platform/uwp/generated/lib/#{$cur_module.name}Runtime.cpp"
+    end
+
+    template :uwp_lib_montana_factory_h do |template|
+      template.source = 'platform/uwp/lib/MontanaFactory.h'
+      template.destination = "platform/uwp/generated/lib/#{$cur_module.name}Factory.h"
+    end
+
+    template :uwp_lib_montana_impl do |template|
+      template.source = 'platform/uwp/lib/Montana_impl.cpp'
+      template.destination = "platform/uwp/generated/lib/#{$cur_module.name}_impl.cpp"
+    end
+
+    template :uwp_lib_montana_impl_h do |template|
+      template.source = 'platform/uwp/lib/Montana_impl.h'
+      template.destination = "platform/uwp/generated/lib/#{$cur_module.name}_impl.h"
     end
 
 

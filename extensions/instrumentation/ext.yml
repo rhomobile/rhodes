@@ -7,6 +7,7 @@ android:
 
 project_paths:
   wp8: ext/platform/wp8/Instrumentation.vcxproj
+  uwp: ext/platform/uwp/Instrumentation.vcxproj
   wm: ext/platform/wm/Instrumentation.vcproj
   win32: ext/platform/wm/Instrumentation.vcproj
   

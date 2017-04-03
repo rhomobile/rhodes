@@ -77,7 +77,7 @@ extern long _timezone;
 #define _USE_MATH_DEFINES
 #endif
 
-#if defined(OS_WINCE) || defined(OS_WP8)
+#if defined(OS_WINCE) || defined(OS_WP8) || defined(OS_UWP)
 #define M_PI 3.14159265358979323846
 #define M_LN2 0.69314718055994530942
 #endif
@@ -174,7 +174,7 @@ RHO_GLOBAL int vswnprintf(wchar_t *, size_t, const wchar_t *, void *);
 #  define	vswnprintf vswprintf
 #endif //OS_WINCE
 
-#if defined( OS_WP8 )
+#if defined( OS_WP8 ) || defined( OS_UWP )
 #  include <stdlib.h>
 #  include <errno.h>
 
@@ -252,7 +252,7 @@ GetEnvironmentStrings(
     VOID
     );
 
-#if !defined(_WP8_LIB)
+#if !defined(_WP8_LIB) && !defined(_UWP_LIB)
 _NullNull_terminated_
 LPWCH
 WINAPI

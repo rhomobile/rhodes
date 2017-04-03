@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
     "./platform/wm/build",
     "./platform/wp7/build",
     "./platform/wp8/build",
+    "./platform/uwp/build",
     "./platform/linux/tasks/linux.rake",
     "./platform/osx/build/osx.rake",
     "./res/build-tools/ruby-standalone",

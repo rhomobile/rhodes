@@ -96,6 +96,9 @@ platform/wp7/WPApplication/rho/*
 platform/wp8/*/obj/*
 platform/wp8/bin/*
 platform/wp8/ipch/*
+platform/uwp/*/obj/*
+platform/uwp/bin/*
+platform/uwp/ipch/*
 rhodes/*/pkg/
 rhodes/rhodes-framework/spec/bin/
 rhoconnect-client/build/*
@@ -214,6 +217,7 @@ platform/android/**/default.properties
 *.idb
 *.sdf
 *.opensdf
+*.VC.db
 
 *.mode1v3
 *.mode2v3

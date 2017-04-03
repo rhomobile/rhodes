@@ -14,7 +14,7 @@
 #include <process.h>
 
 #define WIN32_WAIT_TIMEOUT 10	/* 10 ms */
-#if !defined(OS_WP8)
+#if !defined(OS_WP8) && !defined(OS_UWP)
 #undef Sleep
 #endif
 
@@ -71,7 +71,7 @@ Init_native_thread(void)
 static void
 w32_error(const char *func)
 {
-#if defined(OS_WP8)
+#if defined(OS_WP8) || defined(OS_UWP)
     LPVOID lpMsgBuf = malloc( 1001 );
     int nError = GetLastError();
 

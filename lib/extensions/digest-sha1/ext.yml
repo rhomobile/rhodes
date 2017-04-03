@@ -5,3 +5,4 @@ android:
 
 project_paths:
   wp8: ext/wp8/digest-sha1.vcxproj
+  uwp: ext/uwp/digest-sha1.vcxproj

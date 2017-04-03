@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>5fd0e509-b6ae-4f29-bd2a-4d2cc10f3aa0</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{bf0c8341-f452-446c-a451-bdc1ac77a16b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="api_generator">
+      <UniqueIdentifier>{f9a8a970-8c40-4714-915d-98aeaacf1a3c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="rhoruntime.cpp" />
+    <ClCompile Include=".\pch_rhoruntime.cpp" />
+    <ClCompile Include="common\ExtManager.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\RhoClassFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\RhoCryptImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="FakeDefs.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="WebViewImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\ThreadEmulation.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\net\CURLNetRequest.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="GeoLocationImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\SSLImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\AlertImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\RhoConvertWP8.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="CSharpExtensions.cpp" />
+    <ClCompile Include="..\..\shared\api_generator\uwp\MethodResultImpl.cpp">
+      <Filter>api_generator</Filter>
+    </ClCompile>
+    <ClCompile Include="common\RhodesHelperWP8.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="rhoruntime.h" />
+    <ClInclude Include=".\pch_rhoruntime.h" />
+    <ClInclude Include="common\RhoClassFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RhoCryptImpl.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\net\CURLNetRequest.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\SSLImpl.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RhoConvertWP8.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\uwp\IMethodResult.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\uwp\MethodResultImpl.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RhodesHelperWP8.h">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

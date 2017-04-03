@@ -424,7 +424,7 @@ static VALUE find_file(VALUE fname)
     else
 #endif
 
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_UWP)
 	res = find_file_in_load_paths(fname);
 
 	if (res)
@@ -814,7 +814,7 @@ static void Init_RhoLog(){
     rb_gv_set("$stdout", appStdout);
     rb_gv_set("$stderr", appStdout);
 
-#if !defined( OS_WINDOWS_DESKTOP ) && !defined(OS_WINCE) && !defined(OS_WP8)
+#if !defined( OS_WINDOWS_DESKTOP ) && !defined(OS_WINCE) && !defined(OS_WP8) && !defined(OS_UWP)
     rb_RhoLogModule = rb_define_module("RhoLog");
     rb_define_module_function(rb_RhoLogModule, "info", rb_RhoLogInfo, 2);
     rb_define_module_function(rb_RhoLogModule, "error", rb_RhoLogError, 2);

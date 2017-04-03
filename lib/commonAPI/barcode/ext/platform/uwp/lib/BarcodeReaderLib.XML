@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BarcodeReaderLib</name>
+    </assembly>
+    <members>
+        <member name="M:BarcodeReaderLib.CameraNavigatePage.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="P:BarcodeReaderLib.ProcessResult.Text">
+            <summary>
+            Textual representation of the result content.
+            </summary>
+        </member>
+        <member name="P:BarcodeReaderLib.ProcessResult.Data">
+            <summary>
+            Raw result data.
+            </summary>
+        </member>
+        <member name="P:BarcodeReaderLib.ProcessResult.Format">
+            <summary>
+            Raw result data type.
+            </summary>
+        </member>
+        <member name="T:BarcodeReaderLib.OpticalReaderResult">
+            <summary>
+            Optical reader task result event arguments.
+            </summary>
+        </member>
+        <member name="P:BarcodeReaderLib.OpticalReaderResult.Text">
+            <summary>
+            Textual representation of the result content.
+            </summary>
+        </member>
+        <member name="P:BarcodeReaderLib.OpticalReaderResult.Data">
+            <summary>
+            Raw result data.
+            </summary>
+        </member>
+        <member name="P:BarcodeReaderLib.OpticalReaderResult.Format">
+            <summary>
+            Raw result data type.
+            </summary>
+        </member>
+        <member name="P:BarcodeReaderLib.OpticalReaderResult.Thumbnail">
+            <summary>
+            Thumbnail preview of the detected optical code.
+            </summary>
+        </member>
+        <member name="T:BarcodeReaderLib.OpticalReaderTask">
+            <summary>
+            Optical reader task is a Windows Phone chooser task implementation that allows
+            easy and quick integration of 1D and 2D optical code reading functionality.
+            </summary>
+        </member>
+        <member name="M:BarcodeReaderLib.OpticalReaderTask.Show">
+            <summary>
+            Show the optical reader viewfinder.
+            
+            Application is navigated to a optical reader viewfinder page and the Completed
+            event is fired when user either navigates away from the viewfinder or if an
+            optical code is detected.
+            </summary>
+        </member>
+    </members>
+</doc>

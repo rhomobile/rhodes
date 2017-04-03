@@ -24,6 +24,11 @@
 
 #include "timev.h"
 
+#if defined(POSIXNAME)
+#define fpstrdup _strdup
+#else
+#define fpstrdup strdup
+#endif
 static ID id_divmod, id_mul, id_submicro, id_nano_num, id_nano_den, id_offset;
 static ID id_eq, id_ne, id_quo, id_div, id_cmp, id_lshift;
 
@@ -1031,7 +1036,7 @@ zone_str(const char *s)
     if (st_lookup(zone_table, k, &v)) {
         return (const char *)v;
     }
-    s = strdup(s);
+    s = fpstrdup(s);
     k = (st_data_t)s;
     st_add_direct(zone_table, k, k);
 

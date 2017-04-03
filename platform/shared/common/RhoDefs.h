@@ -32,6 +32,8 @@
 # undef UNICODE
 #elif defined(_WINRT_DLL) || defined(_WP8_LIB)
 #define OS_WP8
+#elif defined(_WINRT_DLL) || defined(_UWP_LIB)
+#define OS_UWP
 #elif defined(_WIN32_WCE)
 # define OS_WINCE _WIN32_WINCE
 #elif defined(WIN32)
@@ -47,7 +49,7 @@
 #else
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8)|| defined(OS_UWP)
 // 0 - win32 desktop, 1 - wm, 2 - mot ce
 extern int winversion;
 

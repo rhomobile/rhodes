@@ -177,7 +177,7 @@ CONVERT_TYPE_W( int64, L"%I64d" );
 
 // Special case for bool
 template<> inline void convertFromStringW<bool>( const wchar_t* szValue, bool& value )
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_UWP)
 { value = _wcsicmp(szValue, L"true") ==0 ? true:false; }
 #else
 { value = wcsicmp(szValue, L"true") ==0 ? true:false; }

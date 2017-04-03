@@ -7,9 +7,13 @@ android:
 wp8:
   csharp_impl: yes
   root_namespace: rho
+uwp:
+  csharp_impl: yes
+  root_namespace: rho
 
 project_paths:
   wp8: ext/platform/wp8/DevelopmentLib.vcxproj
+  uwp: ext/platform/uwp/DevelopmentLib.vcxproj
   wm: ext/platform/wm/Development.vcproj
   
 xml_api_paths: ext/Development.xml

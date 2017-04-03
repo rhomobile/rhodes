@@ -29,7 +29,7 @@
 
 #include "common/RhoStd.h"
 
-#if defined(OS_WP8)
+#if defined(OS_WP8) || defined(OS_UWP)
 #define TOOLBAR_TYPE		0
 #define TABBAR_TYPE			1
 #define NOBAR_TYPE			2

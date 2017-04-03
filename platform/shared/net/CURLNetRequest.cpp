@@ -750,7 +750,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
         curl_easy_setopt(m_curl,CURLOPT_NOPROXY,"127.0.0.1,localhost");
     }
     
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_UWP)
 		if(strcasecmp(method, "POST") == 0 && strBody.length() == 0)
 		{
 			mStrBody = " ";

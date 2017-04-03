@@ -3,6 +3,11 @@
 #include <memory>
 #include <stdio.h>
 
+#if defined(POSIXNAME)
+#define fpfileno _fileno
+#else
+#define fpfileno fileno
+#endif
 // THIS FILE is almost entirely based upon code by info-zip.
 // It has been modified by Lucian Wischik. The modifications
 // were a complete rewrite of the bit of code that generates the
@@ -616,7 +621,7 @@ void GetNow(lutime_t *ft, WORD *dosdate, WORD *dostime)
 }
 
 DWORD GetFilePosZ(HANDLE hfout)
-{ struct stat st; fstat(fileno(hfout),&st); 
+{ struct stat st; fstat(fpfileno(hfout),&st); 
   if ((st.st_mode&S_IFREG)==0) return 0xFFFFFFFF;
   return ftell(hfout);
 }
@@ -626,7 +631,7 @@ ZRESULT GetFileInfo(FILE *hf, ulg *attr, long *size, iztimes *times, ulg *timest
   // The date and time is returned in a long with the date most significant to allow
   // unsigned integer comparison of absolute times. The attributes have two
   // high bytes unix attr, and two low bytes a mapping of that to DOS attr.
-  struct stat bhi; int res=fstat(fileno(hf),&bhi); if (res==-1) return ZR_NOFILE;
+  struct stat bhi; int res=fstat(fpfileno(hf),&bhi); if (res==-1) return ZR_NOFILE;
   ulg fa=bhi.st_mode; ulg a=0;
   // Zip uses the lower word for its interpretation of windows stuff
   if ((fa&S_IWUSR)==0) a|=0x01;
@@ -2508,7 +2513,7 @@ ZRESULT TZip::open_handle(HANDLE hf,unsigned int len)
   if (hf==0 || hf==INVALID_HANDLE_VALUE) return ZR_ARGS;
   bool canseek;
 #ifdef ZIP_STD
-    struct stat st; fstat(fileno(hf),&st); canseek = S_ISREG(st.st_mode);
+    struct stat st; fstat(fpfileno(hf),&st); canseek = S_ISREG(st.st_mode);
 #else
   DWORD res = SetFilePointer(hfout,0,0,FILE_CURRENT);
   canseek = (res!=0xFFFFFFFF);
@@ -2678,7 +2683,7 @@ ZRESULT TZip::Add(const TCHAR *odstzn, void *src,unsigned int len, DWORD flags)
   // Initialize the local header
   TZipFileInfo zfi; zfi.nxt=NULL;
   strcpy(zfi.name,"");
-#if defined(UNICODE) && !defined(_WP8_LIB)
+#if defined(UNICODE) && !defined(_WP8_LIB) && !defined(_UWP_LIB)
   WideCharToMultiByte(CP_UTF8,0,dstzn,-1,zfi.iname,MAX_PATH,0,0);
 #else
   strncpy(zfi.iname,dstzn,MAX_PATH); zfi.iname[MAX_PATH-1]=0;

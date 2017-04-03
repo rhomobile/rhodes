@@ -7,9 +7,12 @@ android:
 wp8:
   csharp_impl: yes
   root_namespace: rho
-
+uwp:
+  csharp_impl: yes
+  root_namespace: rho
 project_paths:
   wp8: ext/platform/wp8/ClipboardLib.vcxproj
+  uwp: ext/platform/uwp/ClipboardLib.vcxproj
   wm: ext/platform/wm/Clipboard.vcproj
   
 xml_api_paths: ext/Clipboard.xml

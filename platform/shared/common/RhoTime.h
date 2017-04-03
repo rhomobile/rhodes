@@ -174,7 +174,7 @@ public:
         CTimeInterval res;
 
 #if defined( WINDOWS_PLATFORM )
-#if defined( OS_WP8 )
+#if defined( OS_WP8 ) || defined( OS_UWP )
 		res.m_nativeTime = GetTickCount64();
 #else
         res.m_nativeTime = GetTickCount();
@@ -191,7 +191,7 @@ public:
     bool isEmpty()const{ return m_nativeTime == 0 ; }
     
 private:
-#if defined( OS_WP8 )
+#if defined( OS_WP8 ) || defined( OS_UWP )
 	ULONGLONG m_nativeTime;
 #else
 	unsigned long m_nativeTime;

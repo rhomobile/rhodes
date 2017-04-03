@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT! -->
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <WEBVIEW_ROOT>D:/TAU/rhodes/lib/commonAPI/coreapi/ext</WEBVIEW_ROOT>
+    <NATIVETOOLBAR_ROOT>D:/TAU/rhodes/lib/commonAPI/coreapi/ext</NATIVETOOLBAR_ROOT>
+    <NATIVETABBAR_ROOT>D:/TAU/rhodes/lib/commonAPI/coreapi/ext</NATIVETABBAR_ROOT>
+  </PropertyGroup>
+  <Import Project="$(WEBVIEW_ROOT)\platform\uwp\WebViewImpl.targets" />
+  <Import Project="$(NATIVETOOLBAR_ROOT)\platform\uwp\NativeToolbarImpl.targets" />
+  <Import Project="$(NATIVETABBAR_ROOT)\platform\uwp\NativeTabbarImpl.targets" />
+</Project>

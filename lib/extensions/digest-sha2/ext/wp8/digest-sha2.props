@@ -4,7 +4,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
     <_RHO_ROOT>c:/rhomobile/rhodes</_RHO_ROOT>
-    <_TEMP_FILES_DIR>$(_RHO_ROOT)\platform\wp8\bin\$(Platform)\extensions\$(ProjectName)</_TEMP_FILES_DIR>
+    <_TEMP_FILES_DIR>$(_RHO_ROOT)\platform\wm8\bin\$(Platform)\extensions\$(ProjectName)</_TEMP_FILES_DIR>
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup>

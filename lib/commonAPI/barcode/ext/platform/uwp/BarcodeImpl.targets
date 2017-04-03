@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Compile Include="$(BARCODE_ROOT)\platform\uwp\generated\BarcodeBase.cs" />
+    <Compile Include="$(BARCODE_ROOT)\platform\uwp\src\Barcode_impl.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Nokia.Graphics.Imaging">
+      <HintPath>$(MSBuildThisFileDirectory)\lib\$(Platform)\Nokia.Graphics.Imaging.winmd</HintPath>
+    </Reference>
+    <Reference Include="Nokia.InteropServices.WindowsRuntime">
+      <HintPath>$(MSBuildThisFileDirectory)\lib\$(Platform)\Nokia.InteropServices.WindowsRuntime.winmd</HintPath>
+    </Reference>
+    <Reference Include="zxing.wp8.0">
+      <HintPath>$(MSBuildThisFileDirectory)\lib\zxing.wp8.0.winmd</HintPath>
+    </Reference>
+    <Reference Include="Nokia.Graphics.Imaging.Managed">
+      <HintPath>$(MSBuildThisFileDirectory)\lib\Nokia.Graphics.Imaging.Managed.winmd</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="zxing.wp8.0">
+      <HintPath>$(MSBuildThisFileDirectory)\lib\zxing.wp8.0.dll</HintPath>
+    </Reference>
+    <Reference Include="Nokia.Graphics.Imaging.Managed">
+      <HintPath>$(MSBuildThisFileDirectory)\lib\Nokia.Graphics.Imaging.Managed.dll</HintPath>
+    </Reference>
+    <Reference Include="OpticalReaderLib">
+      <HintPath>$(MSBuildThisFileDirectory)\lib\$(Platform)\OpticalReaderLib.dll</HintPath>
+    </Reference>
+    <Reference Include="BarcodeReaderLib">
+      <HintPath>$(MSBuildThisFileDirectory)\lib\BarcodeReaderLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

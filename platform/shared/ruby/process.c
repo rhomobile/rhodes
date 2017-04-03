@@ -144,7 +144,19 @@ static VALUE rb_cProcessTms;
 #define preserving_errno(stmts) \
 	do {int saved_errno = errno; stmts; errno = saved_errno;} while (0)
 
-
+#if defined(POSIXNAME)
+#define fpumask _umask
+#define fpdup _dup
+#define fpdup2 _dup2
+#define fpopen _open
+#define fpclose _close
+#else
+#define fpumask umask
+#define fpdup dup
+#define fpdup2 dup2
+#define fpopen open
+#define fpclose close
+#endif
 /*
  *  call-seq:
  *     Process.pid   -> fixnum
@@ -1858,10 +1870,10 @@ redirect_open(const char *pathname, int flags, mode_t perm)
 }
 
 #else
-#define redirect_dup(oldfd) dup(oldfd)
-#define redirect_dup2(oldfd, newfd) dup2(oldfd, newfd)
-#define redirect_close(fd) close(fd)
-#define redirect_open(pathname, flags, perm) open(pathname, flags, perm)
+#define redirect_dup(oldfd) fpdup(oldfd)
+#define redirect_dup2(oldfd, newfd) fpdup2(oldfd, newfd)
+#define redirect_close(fd) fpclose(fd)
+#define redirect_open(pathname, flags, perm) fpopen(pathname, flags, perm)
 #endif
 
 static int
@@ -2284,7 +2296,7 @@ rb_run_exec_options_err(const struct rb_exec_arg *e, struct rb_exec_arg *s, char
     obj = rb_ary_entry(options, EXEC_OPTION_UMASK);
     if (!NIL_P(obj)) {
         mode_t mask = NUM2LONG(obj);
-        mode_t oldmask = umask(mask); /* never fail */
+        mode_t oldmask = fpumask(mask); /* never fail */
         if (!NIL_P(soptions))
             rb_ary_store(soptions, EXEC_OPTION_UMASK, LONG2NUM(oldmask));
     }

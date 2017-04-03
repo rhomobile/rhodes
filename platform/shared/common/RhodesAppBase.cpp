@@ -42,7 +42,7 @@ namespace common{
 
 IMPLEMENT_LOGCLASS(CRhodesAppBase,"RhodesApp");
 CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_UWP)
 	String CRhodesAppBase::m_strHomeUrl = "";
 #endif
 
@@ -179,7 +179,7 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
 				retPath.insert( 5, "/");
 
 			return retPath;
-#elif defined(OS_WP8)
+#elif defined(OS_WP8) || defined(OS_UWP)
             return retPath.substr(7);
 #else
             return retPath;
@@ -363,7 +363,7 @@ static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
 {
     rho::common::CFilePath oPath(szZipPath);
     rho::String strBaseDir = oPath.getFolderName();
-#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8)
+#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8) && !defined(OS_UWP)
     rho::StringW strZipPathW;
     rho::common::convertToStringW(szZipPath, strZipPathW);
     HZIP hz = OpenZipFile(strZipPathW.c_str(), psw);
@@ -399,7 +399,7 @@ static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
     		res = UnzipItem(hz, zi, ze.name);
             if ( res != 0 )
                 LOG(ERROR) + "Unzip item failed: " + res + "; " +
-				#if defined(OS_WP8)
+				#if defined(OS_WP8) || defined(OS_UWP)
 				(char*)
 				#endif
 				ze.name;
@@ -440,7 +440,8 @@ const char* rho_rhodesapp_getplatform()
 
     if ( strPlatform.compare("wp8") == 0 )
         return "WP8";
-
+    if ( strPlatform.compare("uwp") == 0 )
+        return "UWP";
     if ( strPlatform.compare("android") == 0 )
         return "ANDROID";
 
@@ -459,6 +460,8 @@ const char* rho_rhodesapp_getplatform()
 #elif defined(WINDOWS_PLATFORM)
 #if defined(OS_WP8)
 	return "WP8";
+#elif defined(OS_UWP)
+    return "UWP";
 #else
 	return "WINDOWS";
 #endif

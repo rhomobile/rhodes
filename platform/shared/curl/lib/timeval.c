@@ -32,7 +32,7 @@ struct timeval curlx_tvnow(void)
   ** increases monotonically and wraps once 49.7 days have elapsed.
   */
   struct timeval now;
-#ifndef OS_WP8
+#if  !defined (OS_WP8) && !defined(OS_UWP)
   DWORD milliseconds = GetTickCount();
 #else
   ULONGLONG milliseconds = GetTickCount64();
