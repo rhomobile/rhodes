@@ -7,13 +7,16 @@ android:
 wp8:
   csharp_impl: yes
   root_namespace: rho
-
+uwp:
+  csharp_impl: yes
+  root_namespace: rho
 project_paths:
   wp8: ext/platform/wp8/PrintingLib.vcxproj
+  uwp: ext/platform/uwp/PrintingLib.vcxproj
   wm: ext/platform/wm/Printing.vcproj
   win32: ext/platform/wm/Printing.vcproj
   
 xml_api_paths: ext/Printing.xml
 
-platforms: ["wm", "iphone", "android"]
+platforms: ["wm", "iphone", "android", "uwp"]
 

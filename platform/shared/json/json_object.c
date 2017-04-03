@@ -28,6 +28,14 @@
 #include "json_object_private.h"
 #include "json_tokener.h"
 
+
+#if defined(POSIXNAME)
+#define fpstrdup _strdup
+#else
+#define fpstrdup strdup
+#endif
+
+
 #if !HAVE_STRNDUP
   char* strndup(const char* str, size_t n);
 #endif /* !HAVE_STRNDUP */
@@ -269,7 +277,7 @@ void json_object_object_add(struct json_object* this, char *key,
 			    struct json_object *val)
 {
   lh_table_delete(this->o.c_object, key);
-  lh_table_insert(this->o.c_object, strdup(key), val);
+  lh_table_insert(this->o.c_object, fpstrdup(key), val);
 }
 
 struct json_object* json_object_object_get(struct json_object* this, char *key)
@@ -416,7 +424,7 @@ struct json_object* json_object_new_string(char *s)
   if(!this) return NULL;
   this->_delete = &json_object_string_delete;
   this->_to_json_string = &json_object_string_to_json_string;
-  this->o.c_string = strdup(s);
+  this->o.c_string = fpstrdup(s);
   this->str_len = strlen(s);
 
   return this;

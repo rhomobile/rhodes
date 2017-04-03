@@ -33,7 +33,7 @@
 #include <arpa/inet.h>
 #endif
 
-#if !defined(OS_WINCE) && !defined(OS_WP8)
+#if !defined(OS_WINCE) && !defined(OS_WP8) && !defined(OS_UWP)
 #include <common/stat.h>
 
 #ifdef EAGAIN

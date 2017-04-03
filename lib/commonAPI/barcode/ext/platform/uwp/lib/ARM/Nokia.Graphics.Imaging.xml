@@ -1,0 +1,4813 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>Nokia.Graphics.Imaging</name>
+  </assembly>
+  <members>
+    <member name="T:Nokia.Graphics.Imaging.AntiqueFilter">
+      <summary>
+Produces the look of an old color photo.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AntiqueFilter.#ctor">
+      <summary>
+Creates a new AntiqueFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AntiqueFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AntiqueFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AntiqueFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.AutoEnhanceFilter">
+      <summary>
+Automatically enhances white balance, brightness and contrast, and/or applies local boost to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoEnhanceFilter.#ctor">
+      <summary>
+Creates a new AutoEnhanceFilter with disabled white balance and with automatic local boost, contrast and brightness enabled.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoEnhanceFilter.#ctor(System.Boolean,System.Boolean)">
+      <summary>
+Creates a new AutoEnhanceFilter with disabled white balance and settings for local boost. 
+</summary>
+      <param name="isContrastAndBrightnessEnhancementEnabled">
+Enables or disables contrast and brightness enhancement.
+</param>
+      <param name="isLocalBoostEnhancementEnabled">
+Enables or disables local boost enhancement.
+</param>
+      <param name="isWhiteBalanceEnhancementEnabled">
+Enables or disables white balance enhancement.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoEnhanceFilter.#ctor(System.Boolean,System.Boolean,Windows.UI.Color)">
+      <summary>
+Creates a new AutoEnhanceFilter with automatic white balance and settings for contrast and brightness, local boost and target white point.
+</summary>
+      <param name="isContrastAndBrightnessEnhancementEnabled">
+Enables or disables contrast and brightness enhancement.
+</param>
+      <param name="isLocalBoostEnhancementEnabled">
+Enables or disables local boost enhancement.
+</param>
+      <param name="isWhiteBalanceEnhancementEnabled">
+Enables or disables white balance enhancement.
+</param>
+      <param name="targetWhitePoint">
+The target white point.
+<para>The alpha component of the color is not used.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoEnhanceFilter.#ctor(System.Boolean,System.Boolean,Windows.UI.Color,Windows.UI.Color)">
+      <summary>
+Creates a new AutoEnhanceFilter with manual white balance and settings for for contrast and brightness, local boost and source and target white points.
+</summary>
+      <param name="isContrastAndBrightnessEnhancementEnabled">
+Enables or disables contrast and brightness enhancement.
+</param>
+      <param name="isLocalBoostEnhancementEnabled">
+Enables or disables local boost enhancement.
+</param>
+      <param name="targetWhitePoint">
+The target white point.
+<para>The alpha component of the color is not used.</para></param>
+      <param name="sourceWhitePoint">
+The source white point.
+<para>The alpha component of the color is not used.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoEnhanceFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.AutoEnhanceFilter.IsContrastAndBrightnessEnhancementEnabled">
+      <summary>
+Enables or disables automatic enhancement of contrast and brightness.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.AutoEnhanceFilter.IsLocalBoostEnhancementEnabled">
+      <summary>
+Enables or disables automatic local boost.
+<remarks>
+When enabled, the filter automatically adjusts 
+gamma correction and contrast locally to enhance an image with uneven illumination.
+</remarks></summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoEnhanceFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoEnhanceFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.AutoEnhanceFilter.SourceWhitePoint">
+      <summary>
+The desired source white point. The luminance of the provided 
+color is ignored, only the chrominance information is used.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.AutoEnhanceFilter.TargetWhitePoint">
+      <summary>
+The desired target white point. The luminance of the provided 
+color is ignored, only the chrominance information is used.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.AutoEnhanceFilter.WhiteBalanceMode">
+      <summary>
+Sets the white balance mode to use.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.AutoLevelsFilter">
+      <summary>
+Balances the intensity level of the image, for
+example making dark images lighter and vice versa.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoLevelsFilter.#ctor">
+      <summary>
+Creates and initializes a new AutoLevelsFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoLevelsFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoLevelsFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoLevelsFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.AutoResizeConfiguration">
+      <summary>
+Configuration settings for the JpegTools resize.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoResizeConfiguration.#ctor(System.UInt32,Windows.Foundation.Size,Windows.Foundation.Size,Nokia.Graphics.Imaging.AutoResizeMode,System.Double,Nokia.Graphics.Imaging.ColorSpace)">
+      <summary>
+Creates a new resize configuration object for the JpegTools.
+</summary>
+      <param name="maxBufferSize">
+Maximum output buffer size in bytes.
+</param>
+      <param name="maxImageSize">
+        <para>
+Maximum image size to achieve. The rendered image will fit within this outer bounding box when
+allowing for rotation. The size must be larger than minImageSize.
+A maxImageSize of {640, 480} will, for the following different source
+image sizes, give this maximum size:
+</para>
+        <para>{1024, 1024} will be at most {480, 480}</para>
+        <para>{1280, 640}  will be at most {640, 320}</para>
+        <para>{640, 1280}  will be at most {320, 640}</para>
+      </param>
+      <param name="minImageSize">
+        <para>
+Minimum image size to achieve. The rendered image will be at least as large as this size in at least
+one dimension. The size must be smaller than maxImageSize.
+A minImageSize of {160, 120} will, for the following different source
+image sizes, give this minimum size:
+</para>
+        <para>{1024, 1024} will be at least {120, 120}</para>
+        <para>{1280, 640}  will be at least {160, 80}</para>
+        <para>{640, 1280}  will be at least {80, 160}</para>
+      </param>
+      <param name="resizeMode">
+One of the AutoResizeModes
+</param>
+      <param name="minEncodingQuality">
+The lowest desired encoding quality. Must be in the range [0.0, 1.0]
+</param>
+      <param name="colorSpacing">
+Color spacing will affect how the color channels are sub-sampled when encoding the
+JPEG file. Sub-sampling of the color channels will reduce the resulting file size.
+YUV 4:2:0 color spacing is recommended for achieving the lowest file size.
+</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.AutoResizeConfiguration.ColorSpacing">
+      <summary>
+One of the supported color spaces.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.AutoResizeConfiguration.MaxBufferSize">
+      <summary>
+Maximum output buffer size in bytes.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.AutoResizeConfiguration.MaxImageSize">
+      <summary>
+Maximum image size to achieve. 
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.AutoResizeConfiguration.MinEncodingQuality">
+      <summary>
+        <para>The lowest desired encoding quality.</para>
+        <para>Range [0.0, 1.0]</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.AutoResizeConfiguration.MinImageSize">
+      <summary>
+Minimum image size to achieve. 
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.AutoResizeConfiguration.ResizeMode">
+      <summary>
+One of the AutoResizeModes
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.AutoResizeConfiguration.ToString">
+      <summary>
+Returns a string that represents the current object.
+</summary>
+      <returns>
+A string that represents the current object.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.AutoResizeMode">
+      <summary>
+Resize modes used with JpegTools::AutoResizeAsync.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.AutoResizeMode.Automatic">
+      <summary>Auto resize will simultaneously lower the encoding quality and shrink
+the width and height of the image.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.AutoResizeMode.PreserveSourceEncodingQuality">
+      <summary>Auto resize will try to preserve the source encoding quality while
+shrinking the width and height of the image.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.AutoResizeMode.PrioritizeLargeImageSize">
+      <summary>Auto resize will try to preserve the maxImageSize while lowering
+the encoding quality.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.AutoResizeMode.PrioritizeHighEncodingQuality">
+      <summary>Auto resize will try to preserve the highest possible encoding quality
+while shrinking the width and height of the image. This might be
+useful if you substantially reduce the size of the image.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.Bitmap">
+      <summary>
+Contains pixel data for an image. 
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Bitmap.#ctor(Nokia.Graphics.Imaging.Bitmap,Windows.Foundation.Rect)">
+      <summary>
+Creates a Bitmap that points to the same image data as another Bitmap, cropped to a smaller rectangle.
+</summary>
+      <param name="sourceBitmap"> a Bitmap </param>
+      <param name="cropArea"> Crop area rectangle. Must fit within dimensions of sourceBitmap. </param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Bitmap.#ctor(Windows.Foundation.Size,Nokia.Graphics.Imaging.ColorMode)">
+      <summary>
+Creates an empty Bitmap where data can be rendered to.
+</summary>
+      <param name="size">The size in pixels of the bitmap to be created.</param>
+      <param name="colorMode">The color mode of the bitmap to be created.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Bitmap.#ctor(Windows.Foundation.Size,Nokia.Graphics.Imaging.ColorMode,System.UInt32,Windows.Storage.Streams.IBuffer)">
+      <summary>
+Creates a Bitmap referencing the data in the provided IBuffer. Use only with interleaved, non-planar color modes.
+</summary>
+      <param name="size">The size in pixels of the bitmap to be created.</param>
+      <param name="colorMode">The color mode of the bitmap to be created.</param>
+      <param name="scanlineByteSize">The size in bytes of the scanline of the bitmap to be created.</param>
+      <param name="pixels">The pixel data that the bitmap will reference, provided in an IBuffer.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Bitmap.#ctor(Windows.Foundation.Size,Nokia.Graphics.Imaging.ColorMode,System.UInt32[],Windows.Storage.Streams.IBuffer[])">
+      <summary>
+Creates a bitmap referencing the data in the provided IBuffers. Suitable for planar and semi-planar color modes.
+</summary>
+      <param name="size">The size in pixels of the bitmap to be created.</param>
+      <param name="colorMode">The color mode of the bitmap to be created.</param>
+      <param name="scanlineByteSizes">The size in bytes of the scanline of each of the color planes of the bitmap to be created.</param>
+      <param name="colorPlanes">The color planes that the bitmap will reference, provided in IBuffers.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.Bitmap.Buffers">
+      <summary>
+The buffers underlying this Bitmap.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.Bitmap.ColorMode">
+      <summary>
+The color mode of the bitmap.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Bitmap.CopyDataFrom(Nokia.Graphics.Imaging.IReadableBitmap)">
+      <summary>
+Copies the image data from the passed bitmap
+</summary>
+      <param name="sourceBitmap">The bitmap to copy the data from.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.Bitmap.Dimensions">
+      <summary>
+The dimensions of the bitmap.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.BitmapImageSource">
+      <summary>
+An image source created from a bitmap.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BitmapImageSource.#ctor(Nokia.Graphics.Imaging.IReadableBitmap)">
+      <summary>
+Creates and initializes a new image source with a bitmap. The bitmap is not copied.
+</summary>
+      <param name="bitmap">An input bitmap to use as source.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BitmapImageSource.Bitmap">
+      <summary>
+The bitmap to use as source.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BitmapImageSource.CanSetSize">
+      <summary>Indicates whether the <see cref="P:Nokia.Graphics.Imaging.IImageSize.Size" /> property can be set.</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BitmapImageSource.GetBitmapAsync(Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>Create a Bitmap with the contents of the image provider.</summary>
+      <param name="bitmap">An input bitmap to fill. If null, a bitmap will be created and returned.</param>
+      <param name="outputOption">Specifies how to adjust if the source image has different aspect ratio from the bitmap passed into this method.</param>
+      <returns>An async result with the bitmap.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BitmapImageSource.GetInfoAsync">
+      <summary>Asynchronously get information about this image provider.</summary>
+      <returns>An async result with an ImageProviderInfo containing the information.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BitmapImageSource.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>Lock the image provider for the purpose of rendering.</summary>
+      <param name="renderRequest">The render request to lock with.</param>
+      <returns>True if the RenderRequest owns the lock. False if the lock was already taken.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BitmapImageSource.PreloadAsync">
+      <summary>Perform any loading (expensive operations typically involving I/O) needed to render or get info from this image provider.</summary>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BitmapImageSource.Size">
+      <summary>The inherent size of the image.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.BitmapRenderer">
+      <summary>
+Renders an image source to a bitmap.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BitmapRenderer.#ctor">
+      <summary>
+Creates and initializes a new bitmap renderer.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BitmapRenderer.#ctor(Nokia.Graphics.Imaging.IImageProvider)">
+      <summary>
+Creates and initializes a new bitmap renderer with an image source.
+</summary>
+      <param name="imageSource">The image source that will be rendered.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BitmapRenderer.#ctor(Nokia.Graphics.Imaging.IImageProvider,Nokia.Graphics.Imaging.Bitmap)">
+      <summary>
+Creates and initializes a new bitmap renderer with an image source and a target bitmap.
+</summary>
+      <param name="imageSource">The image source that will be rendered.</param>
+      <param name="bitmap">The bitmap that will be rendered to.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BitmapRenderer.#ctor(Nokia.Graphics.Imaging.IImageProvider,Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>
+Creates and initializes a new bitmap renderer with an image source and a target bitmap.
+</summary>
+      <param name="imageSource">The image source that will be rendered.</param>
+      <param name="bitmap">The bitmap that will be rendered to.</param>
+      <param name="outputOption">Controls how the image is rendered.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BitmapRenderer.Bitmap">
+      <summary>
+The bitmap that will be rendered to.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BitmapRenderer.OutputOption">
+      <summary>
+Controls how the image is rendered.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BitmapRenderer.RenderAsync">
+      <summary>
+Renders the image source to the bitmap.
+</summary>
+      <returns>An asynchronous operation representing the rendering operation.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BitmapRenderer.Size">
+      <summary>
+The output size to use if no bitmap has been specified.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BitmapRenderer.Source">
+      <summary>
+The <see cref="T:Nokia.Graphics.Imaging.IImageProvider" /> that will be used as source.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.BlendFilter">
+      <summary>
+Blends an image source onto the image using a blend function.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlendFilter.#ctor">
+      <summary>
+Creates and initializes a new BlendFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlendFilter.#ctor(Nokia.Graphics.Imaging.IImageProvider)">
+      <summary>
+Creates and initializes a new BlendFilter with an image source.
+</summary>
+      <param name="foregroundSource">
+The foreground image source that will be blended onto the filter effect's image.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlendFilter.#ctor(Nokia.Graphics.Imaging.IImageProvider,Nokia.Graphics.Imaging.BlendFunction)">
+      <summary>
+Creates and initializes a new BlendFilter with an image source and a blend function.
+</summary>
+      <param name="foregroundSource">
+The foreground image source that will be blended onto the filter effect's image.
+</param>
+      <param name="blendFunction">
+Blend function to use when blending the two images.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlendFilter.#ctor(Nokia.Graphics.Imaging.IImageProvider,Nokia.Graphics.Imaging.BlendFunction,System.Double)">
+      <summary>
+Creates and initializes a new BlendFilter with an image source, a blend function and a level.
+</summary>
+      <param name="foregroundSource">
+The foreground image source that will be blended onto the filter effect's image.
+</param>
+      <param name="blendFunction">
+Blend function to use when blending the two images.
+</param>
+      <param name="level">
+Amount that the blend operation will affect the final result.
+<para>Range [0, 1], where 0 implies no effect and 1 means full effect.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlendFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BlendFilter.BlendFunction">
+      <summary>
+Blend function to use when blending the two images.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BlendFilter.ForegroundSource">
+      <summary>
+The foreground image source that will be blended onto the filter effect's image.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BlendFilter.Level">
+      <summary>
+        <para>Amount that the blend operation will affect the final result.</para>
+        <para>Range [0, 1], where 0 implies no effect and 1 means full effect.</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlendFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlendFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.BlendFunction">
+      <summary>
+The blend function to use whith the blend filter.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Normal">
+      <summary>Blend mode normal</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Multiply">
+      <summary>Blend mode multiply</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Add">
+      <summary>Blend mode add</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Color">
+      <summary>Blend mode color</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Colorburn">
+      <summary>Blend mode color burn</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Colordodge">
+      <summary>Blend mode color dodge</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Overlay">
+      <summary>Blend mode overlay</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Softlight">
+      <summary>Blend mode soft light</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Screen">
+      <summary>Blend mode screen</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Hardlight">
+      <summary>Blend mode hard light</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Darken">
+      <summary>Blend mode darken</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Lighten">
+      <summary>Blend mode lighten</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Hue">
+      <summary>Blend mode hue</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Exclusion">
+      <summary>Blend mode exclusion</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlendFunction.Difference">
+      <summary>Blend mode difference</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.BlurFilter">
+      <summary>
+Applies a blur effect to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlurFilter.#ctor">
+      <summary>
+Creates and initializes a new BlurFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlurFilter.#ctor(System.Int32)">
+      <summary>
+Creates and initializes a new BlurFilter with a specific level and default region.
+</summary>
+      <param name="kernelSize">
+The kernel size in pixels.
+<para>Range [1, 256]. Larger kernel size results in more blur.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlurFilter.#ctor(System.Int32,Windows.Foundation.Rect,Nokia.Graphics.Imaging.BlurRegionShape)">
+      <summary>
+Creates and initializes a new BlurFilter with a specific level and region.
+</summary>
+      <param name="kernelSize">
+The kernel size in pixels.
+<para>Range [1, 256]. Larger kernel size results in more blur.</para></param>
+      <param name="region">
+The region to blur within the image. 
+<para>The coordinates are relative to the current coordinate system, which may be affected by preceding filters.</para></param>
+      <param name="regionShape">
+The region shape of the blur effect.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlurFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BlurFilter.BlurRegionShape">
+      <summary>
+The region shape of the blur effect.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BlurFilter.KernelSize">
+      <summary>
+        <para>The kernel size in pixels.Larger kernel size results in more blur.</para>
+        <para>Range [1, 256]. Default is 1.</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlurFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BlurFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BlurFilter.Region">
+      <summary>
+The region to blur within the image.
+<para>The coordinates are relative to the current coordinate system, which may be affected by preceding filters.</para></summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.BlurRegionShape">
+      <summary>
+Describes how the blur region is interpreted by the blur filter.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlurRegionShape.Rectangular">
+      <summary>The region is a rectangle.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.BlurRegionShape.Elliptical">
+      <summary>The region is an ellipse fitted into a rectangle.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.BrightnessFilter">
+      <summary>
+Adjusts the brightness in the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BrightnessFilter.#ctor">
+      <summary>
+Creates and initializes a new BrightnessFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BrightnessFilter.#ctor(System.Double)">
+      <summary>
+Creates and initializes a new BrightnessFilter with a brightness level.
+</summary>
+      <param name="level">
+        <para>The brightness level.</para>
+        <para>Range [-1.0, 1.0], where 0.0 results in no adjustment.</para>
+      </param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BrightnessFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BrightnessFilter.Level">
+      <summary>
+        <para>Image brightness level.</para>
+        <para>Range [-1.0, 1.0], where 0.0 results in no adjustment.</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BrightnessFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BrightnessFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.BufferImageSource">
+      <summary>
+An image source created from a compressed image buffer.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BufferImageSource.#ctor(Windows.Storage.Streams.IBuffer)">
+      <summary>
+Creates and initializes a new image source with a compressed image buffer. The buffer is not copied.
+</summary>
+      <param name="buffer">Buffer containing the compressed image data.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BufferImageSource.#ctor(Windows.Storage.Streams.IBuffer,Nokia.Graphics.Imaging.ImageFormat)">
+      <summary>
+Creates and initializes a new image source with a compressed image buffer with a known image format. 
+The buffer is not copied.
+</summary>
+      <param name="buffer">Buffer containing the compressed image data.</param>
+      <param name="imageFormat">The image format of the image in the provided buffer.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BufferImageSource.Buffer">
+      <summary>
+The buffer containing the compressed image data.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BufferImageSource.GetBitmapAsync(Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>Create a Bitmap with the contents of the image provider.</summary>
+      <param name="bitmap">An input bitmap to fill. If null, a bitmap will be created and returned.</param>
+      <param name="outputOption">Specifies how to adjust if the source image has different aspect ratio from the bitmap passed into this method.</param>
+      <returns>An async result with the bitmap.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BufferImageSource.GetInfoAsync">
+      <summary>Asynchronously get information about this image provider.</summary>
+      <returns>An async result with an ImageProviderInfo containing the information.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.BufferImageSource.ImageFormat">
+      <summary>
+The format of the compressed image data.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BufferImageSource.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>Lock the image provider for the purpose of rendering.</summary>
+      <param name="renderRequest">The render request to lock with.</param>
+      <returns>True if the RenderRequest owns the lock. False if the lock was already taken.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.BufferImageSource.PreloadAsync">
+      <summary>Perform any loading (expensive operations typically involving I/O) needed to render or get info from this image provider.</summary>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.CameraPreviewImageSource">
+      <summary>
+An image source taking the preview buffer from a ICameraCaptureDevice.
+Implementations of ICameraCaptureDevice include PhotoCaptureDevice and AudioVideoCaptureDevice.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CameraPreviewImageSource.#ctor(Windows.Phone.Media.Capture.ICameraCaptureDevice)">
+      <summary>
+Creates and initializes a new image source with a camera capture device.
+</summary>
+      <param name="cameraCaptureDevice">The camera device that will provide the image data.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.CameraPreviewImageSource.CameraCaptureDevice">
+      <summary>
+The camera device that will provide the image data.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CameraPreviewImageSource.GetBitmapAsync(Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>Create a Bitmap with the contents of the image provider.</summary>
+      <param name="bitmap">An input bitmap to fill. If null, a bitmap will be created and returned.</param>
+      <param name="outputOption">Specifies how to adjust if the source image has different aspect ratio from the bitmap passed into this method.</param>
+      <returns>An async result with the bitmap.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CameraPreviewImageSource.GetInfoAsync">
+      <summary>Asynchronously get information about this image provider.</summary>
+      <returns>An async result with an ImageProviderInfo containing the information.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CameraPreviewImageSource.InvalidateLoad">
+      <summary>Invalidates any camera preview image loaded in a previous call to <see cref="M:Nokia.Graphics.Imaging.CameraPreviewImageSource.PreloadAsync" />.</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CameraPreviewImageSource.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>Lock the image provider for the purpose of rendering.</summary>
+      <param name="renderRequest">The render request to lock with.</param>
+      <returns>True if the RenderRequest owns the lock. False if the lock was already taken.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CameraPreviewImageSource.PreloadAsync">
+      <summary>Perform any loading (expensive operations typically involving I/O) needed to render or get info from this image provider.</summary>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CameraPreviewImageSource.PreloadFrameAsync(Windows.Phone.Media.Capture.ICameraCaptureFrame)">
+      <summary>Loads a specific frame from a CameraCaptureSequence.</summary>
+      <param name="cameraCaptureFrame">The photo, in a capture sequence, that will provide the image data.</param>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.CartoonFilter">
+      <summary>
+Transforms the image into a cartoon graphic style.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CartoonFilter.#ctor">
+      <summary>
+Creates and initializes a new CartoonFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CartoonFilter.#ctor(System.Boolean)">
+      <summary>
+Creates and initializes a new CartoonFilter with distinctEdges settings.
+</summary>
+      <param name="distinctEdges">
+Specifies if detected edges in the image should be rendered distinctively.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CartoonFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.CartoonFilter.DistinctEdges">
+      <summary>
+Specifies if detected edges in the image should be rendered distinctively.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CartoonFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CartoonFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ChromaKeyFilter">
+      <summary>
+Adds transparency to the pixels of a specific color.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ChromaKeyFilter.#ctor">
+      <summary>
+Creates and initializes a new ChromaKeyFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ChromaKeyFilter.#ctor(Windows.UI.Color)">
+      <summary>
+Creates and initializes a new ChromaKeyFilter with specified color.
+</summary>
+      <param name="color">
+The chroma key color that will be made transparent.
+<para>The alpha component will be ignored.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ChromaKeyFilter.#ctor(Windows.UI.Color,System.Double)">
+      <summary>
+Creates and initializes a new ChromaKeyFilter with specified color and distance values.
+</summary>
+      <param name="color">
+The chroma key color that will be made transparent.
+<para>The alpha component will be ignored.</para></param>
+      <param name="colorDistance">
+Specifies how much variation around the chroma key color will be considered for transparency.
+<para>Range [0.0, 1.0].</para><para>If the color distance is small, only a small variation around the chroma key color will be considered for transparency.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ChromaKeyFilter.#ctor(Windows.UI.Color,System.Double,System.Double)">
+      <summary>
+Creates and initializes a new ChromaKeyFilter with specified specified color, distance and noiseSuppression values.
+</summary>
+      <param name="color">
+The chroma key color that will be made transparent. 
+<para>The alpha component will be ignored.</para></param>
+      <param name="colorDistance">
+Specifies how much variation around the chroma key color will be considered for transparency.
+<para>If the color distance is small, only a small variation around the chroma key color will be considered for transparency.</para><para>Range [0.0, 1.0].</para></param>
+      <param name="noiseSuppression">
+Specifies the noise suppression level.
+<para>If the noise suppression level is low, only a small amount of noise will be supressed.</para><para>Range [0.0, 1.0].</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ChromaKeyFilter.#ctor(Windows.UI.Color,System.Double,System.Double,System.Boolean)">
+      <summary>
+Creates and initializes a new ChromaKeyFilter with specified settings.
+</summary>
+      <param name="color">
+The chroma key color that will be made transparent. 
+<para>The alpha component will be ignored.</para></param>
+      <param name="colorDistance">
+Specifies how much variation around the chroma key color will be considered for transparency.
+<para>If the color distance is small, only a small variation around the chroma key color will be considered for transparency.</para><para>Range [0.0, 1.0].</para></param>
+      <param name="noiseSuppression">
+Specifies the noise suppression level.
+<para>If the noise suppression level is low, only a small amount of noise will be supressed.</para><para>Range [0.0, 1.0].</para></param>
+      <param name="invertAlpha">
+Controls how the alpha channel is generated.
+<para>If false, full transparency in the resulting alpha channel is the value 0.</para><para>If true, full transparency in the resulting alpha channel is the value 255.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ChromaKeyFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ChromaKeyFilter.Color">
+      <summary>
+The chroma key color that will be made transparent.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ChromaKeyFilter.ColorDistance">
+      <summary>
+        <para>Specifies how much variation around the chroma key color will be considered for transparency.</para>
+        <para>Range [0.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ChromaKeyFilter.InvertAlpha">
+      <summary>
+Controls how the alpha channel is generated.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ChromaKeyFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ChromaKeyFilter.NoiseSuppression">
+      <summary>
+        <para>Specifies the noise suppression level</para>
+        <para>Range [0.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ChromaKeyFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ColorAdjustFilter">
+      <summary>
+Adjusts the RGB color composition of the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorAdjustFilter.#ctor">
+      <summary>
+Creates and initializes a new ColorAdjustFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorAdjustFilter.#ctor(System.Double,System.Double,System.Double)">
+      <summary>
+Creates and initializes a new ColorAdjustFilter with specified channel adjustment values.
+</summary>
+      <param name="red">
+Red channel adjustment.
+<para>Range [-1.0, 1.0].</para></param>
+      <param name="green">
+Green channel adjustment.
+<para>Range [-1.0, 1.0].</para></param>
+      <param name="blue">
+Blue channel adjustment.
+<para>Range [-1.0, 1.0].</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorAdjustFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorAdjustFilter.Blue">
+      <summary>
+        <para>Blue channel adjustment.</para>
+        <para>Range [-1.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorAdjustFilter.Green">
+      <summary>
+        <para>Green channel adjustment.</para>
+        <para>Range [-1.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorAdjustFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorAdjustFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorAdjustFilter.Red">
+      <summary>
+        <para>Red channel adjustment.</para>
+        <para>Range [-1.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ColorBoostFilter">
+      <summary>
+Amplifies the colors of the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorBoostFilter.#ctor">
+      <summary>
+Creates and initializes a new ColorBoostFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorBoostFilter.#ctor(System.Double)">
+      <summary>
+Creates a new ColorBoostFilter with the specified gain level.
+</summary>
+      <param name="gain">
+The color boost gain level.
+<para>Range [-1.0, 20.0]. Negative values reduce the colors.</para><para>Recommended values are in the range [-1.0, 1.0].</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorBoostFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorBoostFilter.Gain">
+      <summary>
+        <para>The color boost gain level.</para>
+        <para>Range [-1.0, 20.0]. Negative values reduce the colors.</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorBoostFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorBoostFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ColorImageSource">
+      <summary>An image source that provides an image based on a constant color.</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorImageSource.#ctor(Windows.Foundation.Size,Windows.UI.Color)">
+      <summary>
+Creates and initializes a new image source with a specific size and color.
+</summary>
+      <param name="size">The size of the image.</param>
+      <param name="color">The color to give the image.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorImageSource.CanSetSize">
+      <summary>Indicates whether the <see cref="P:Nokia.Graphics.Imaging.IImageSize.Size" /> property can be set.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorImageSource.Color">
+      <summary>
+The color to give the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorImageSource.GetBitmapAsync(Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>Create a Bitmap with the contents of the image provider.</summary>
+      <param name="bitmap">An input bitmap to fill. If null, a bitmap will be created and returned.</param>
+      <param name="outputOption">Specifies how to adjust if the source image has different aspect ratio from the bitmap passed into this method.</param>
+      <returns>An async result with the bitmap.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorImageSource.GetInfoAsync">
+      <summary>Asynchronously get information about this image provider.</summary>
+      <returns>An async result with an ImageProviderInfo containing the information.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorImageSource.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>Lock the image provider for the purpose of rendering.</summary>
+      <param name="renderRequest">The render request to lock with.</param>
+      <returns>True if the RenderRequest owns the lock. False if the lock was already taken.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorImageSource.PreloadAsync">
+      <summary>Perform any loading (expensive operations typically involving I/O) needed to render or get info from this image provider.</summary>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorImageSource.Size">
+      <summary>The inherent size of the image.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ColorizationFilter">
+      <summary>
+Adjusts color tone and luminance/chrominance levels, 
+adds a single color to an image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorizationFilter.#ctor">
+      <summary>
+Creates and initializes a new ColorizationFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorizationFilter.#ctor(Windows.UI.Color,System.Double,System.Double)">
+      <summary>
+Creates and initializes a new ColorizationFilter with the specified values.
+</summary>
+      <param name="color">
+The reference color.
+<para>The alpha-component is ignored.</para></param>
+      <param name="luminance">
+The luminance adjustment.
+<para>Range: [-1.0, 2.0]. </para></param>
+      <param name="chrominance">
+The chrominance adjustment.
+<para>Range: [-1.0, 2.0]. </para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorizationFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorizationFilter.Chrominance">
+      <summary>
+        <para>Strength of chrominance adjustment. </para>
+        <para>Range: [-1.0, 2.0].</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorizationFilter.Color">
+      <summary>
+The reference color. 
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorizationFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorizationFilter.Luminance">
+      <summary>
+        <para>Strength of luminance adjustment.</para>
+        <para>Range: [-1.0, 2.0].</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorizationFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ColorMode">
+      <summary>
+Color formats
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Ayuv4444">
+      <summary>
+Standard interleaved AYUV.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Rgb565">
+      <summary>
+5 bits red, 6 bits green, 5 bits blue, interleaved.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Rgb565D">
+      <summary>
+5 bits red, 6 bits green, 5 bits blue, interleaved, with dithering to minimize gradient errors.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Argb8888">
+      <summary>
+4 bytes per pixel, interleaved.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Bgra8888">
+      <summary>
+4 bytes per pixel, interleaved.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Pbgra8888">
+      <summary>
+4 bytes per pixel, interleaved, with premultiplied alpha.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Gray8">
+      <summary>
+8 bit grayscale, 8 bit per pixel.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Gray16">
+      <summary>
+16 bit grayscale, 16 bit per pixel.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Gray32">
+      <summary>
+32 bit grayscale, 32 bit per pixel.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Yuv422P">
+      <summary>
+Planar YUV422. YYY..., UUU..., VVV...
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Yuv420Sp">
+      <summary>
+Semi-planar YUV422. YYY..., UVUVUV...
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Yvu420Sp">
+      <summary>
+Semi-planar YVU420. YYY..., VUVUVU...
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Yuv422Sp">
+      <summary>
+Semi-planar YUV422. YYY..., UVUVUV...
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Yvu422Sp">
+      <summary>
+Semi-planar YVU422. YYY..., VUVUVU...
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Yuv420P">
+      <summary>
+Planar YUV420. YYY..., UUU..., VVV...
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Yuv444P">
+      <summary>
+Planar YUV444. YYY..., UUU..., VVV...
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Yuv422_Y1UY2V">
+      <summary>
+Y, U, Y, V, interleaved.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Y">
+      <summary>
+Represents the Y channel (luma) in a planar format.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.U">
+      <summary>
+Represents the U channel (chroma) in a planar format.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.V">
+      <summary>
+Represents the V channel (chroma) in a planar format.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Uv">
+      <summary>
+Represent a single UV channel, UVUVUV...
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Vu">
+      <summary>
+Represent a single VU channel, VUVUVU...
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Float16">
+      <summary>
+16 bit float16 per pixel.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorMode.Float32">
+      <summary>
+32 bit float32 per pixel.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ColorModeDescriptor">
+      <summary>
+Provides information about a color mode.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorModeDescriptor.#ctor(Nokia.Graphics.Imaging.ColorMode)">
+      <summary>
+Creates a new descriptor for a colormode.
+</summary>
+      <param name="colorMode">
+The color mode to create a descriptor for.
+</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorModeDescriptor.BitsPerPixel">
+      <summary>
+The number of bits needed for storing a pixel.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorModeDescriptor.BytesPerPixel">
+      <summary>
+The number of bytes needed for storing a pixel.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorModeDescriptor.PlaneDescriptors">
+      <summary>
+Descriptors for the planes used.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ColorPlaneDescriptor">
+      <summary>
+Provides details about a color mode plane.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorPlaneDescriptor.BitsPerSample">
+      <summary>
+The number of bits needed for storing a plane element.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorPlaneDescriptor.BytesPerSample">
+      <summary>
+The number of bytes needed for storing a plane element.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorPlaneDescriptor.ColorMode">
+      <summary>
+The color mode of the plane.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorPlaneDescriptor.GetSize(Windows.Foundation.Size)">
+      <summary>
+Returns the size of this plane given an image size, taking subsampling into account.
+</summary>
+      <param name="imageSize">The size of the image, in pixels.</param>
+      <returns>The size of the plane, in elements.</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ColorSpace">
+      <summary>
+Color spacing modes for YUV component data.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorSpace.Undefined">
+      <summary>Unknown or undefined colorspacing.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorSpace.Yuv420">
+      <summary>YUV420</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorSpace.Yuv422">
+      <summary>YUV422</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorSpace.Yuv422ROT">
+      <summary>YUV422 Rotated</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorSpace.Yuv444">
+      <summary>YUV444</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ColorSpace.Yuv400">
+      <summary>YUV400 (Grayscale)</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ColorSwapFilter">
+      <summary>
+Adjusts the parameters of the Color-swap filter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorSwapFilter.#ctor">
+      <summary>
+Creates and initializes a new ColorSwapFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorSwapFilter.#ctor(Windows.UI.Color,Windows.UI.Color,System.Double,System.Boolean,System.Boolean)">
+      <summary>
+Creates and initializes a new ColorSwapFilter with specified settings.
+</summary>
+      <param name="sourceColor">
+Specifies the color that should be converted.
+<para>The alpha-component is ignored.</para></param>
+      <param name="swapColor">
+Specifies which color sourceColor should be converted to.
+<para>The alpha-component is ignored.</para></param>
+      <param name="colorDistance">
+Specifies the tolerance level of the effect. 
+<para>Range [0.0, 1.0].</para></param>
+      <param name="isMonoColor">
+Specifies if the other colors should be converted to grayscale or be preserved.
+</param>
+      <param name="swapLuminance">
+Controls if the luminance should be included in the color swap.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorSwapFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorSwapFilter.ColorDistance">
+      <summary>
+        <para>Specifies the tolerance level of the effect. </para>
+        <para>Range [0.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorSwapFilter.IsMonoColor">
+      <summary>
+Specifies if the other colors should be converted to grayscale or be preserved.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorSwapFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ColorSwapFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorSwapFilter.SourceColor">
+      <summary>
+Specifies the color that should be converted.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorSwapFilter.SwapColor">
+      <summary>
+Specifies which color SourceColor should be converted to.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ColorSwapFilter.SwapLuminance">
+      <summary>
+Controls if the luminance should be included in the color swap.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ContrastFilter">
+      <summary>
+Adjusts the contrast in the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ContrastFilter.#ctor">
+      <summary>
+Creates and initializes a new ContrastFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ContrastFilter.#ctor(System.Double)">
+      <summary>
+Creates and initializes a new ContrastFilter with a contrast level.
+</summary>
+      <param name="contrastLevel">
+The contrast level.
+<para>Range [-1.0, 1.0], where values below zero decreases contrast and above zero increases it.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ContrastFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ContrastFilter.Level">
+      <summary>
+        <para>Contrast level. </para>
+        <para>Range [-1.0, 1.0], where values below zero decrease the contrast and above zero increase it.</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ContrastFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ContrastFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.CropFilter">
+      <summary>
+Crops the image to a specified region.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CropFilter.#ctor">
+      <summary>
+Creates and initializes a new CropFilter with a default crop area.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CropFilter.#ctor(Windows.Foundation.Rect)">
+      <summary>
+Creates and initializes a new CropFilter with a specified crop area.
+</summary>
+      <param name="cropArea">
+The crop area.
+<para>The coordinates are relative to the current coordinate system, which may be affected by preceding filters. 
+The crop area can only be within the image area, otherwise ArgumentException will be thrown when applying the filter.</para><para>The crop area has to be within the image area, range x: [0, min(16383, image width)] y: [0, min(16383, image height)].</para><para>If the crop area has a width or height of 0, this filter will not be applied.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CropFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.CropFilter.CropArea">
+      <summary>
+Rectangle describing the crop area. 
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CropFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CropFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.Curve">
+      <summary>
+A curve represented by 256 points created by interpolation between specified control points.
+<para>If not explicitly set, the value for x=0 is 0, and the value for x=255 is 255.</para></summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Curve.#ctor">
+      <summary>
+Creates and initializes a new curve with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Curve.#ctor(Nokia.Graphics.Imaging.CurveInterpolation)">
+      <summary>
+Creates and initializes a new curve with the specified interpolation mode.
+</summary>
+      <param name="curveInterpolation">
+The mode of interpolation between points
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Curve.Clear">
+      <summary>
+Clears all points currently set
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.Curve.CurveInterpolation">
+      <summary>
+The mode of interpolation between points
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Curve.GetInterpolatedValues">
+      <summary>
+Gets a list containing the interpolated y-values representing the curve.
+</summary>
+      <returns>Array with y-values which defines the curve.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.Curve.Points">
+      <summary>
+The set of points used to generate the interpolated curve. 
+When setting points, previously set points will be deleted. 
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Curve.RemovePoint(System.Int32)">
+      <summary>
+Remove a point from the Curve. 
+</summary>
+      <param name="x">
+The x-value for the point to be removed
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Curve.SetPoint(System.Int32,System.Int32)">
+      <summary>
+Set a point on the Curve. 
+</summary>
+      <param name="x">
+The x-value of the point to set
+</param>
+      <param name="y">
+The y-value of the point to set
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Curve.SetPoint(Windows.Foundation.Point)">
+      <summary>
+Set a point on the Curve. 
+</summary>
+      <param name="point">
+The point to set
+</param>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.CurveInterpolation">
+      <summary>
+Curve interpolation modes that are used with Curves.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.CurveInterpolation.Linear">
+      <summary>
+Use linear interpolation between the points.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.CurveInterpolation.NaturalCubicSpline">
+      <summary>
+Use natural cubic spline interpolation between the points.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.CurvesFilter">
+      <summary>
+Transforms colors in the image using color curves.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CurvesFilter.#ctor">
+      <summary>
+Creates and initializes a new CurvesFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CurvesFilter.#ctor(Nokia.Graphics.Imaging.Curve,Nokia.Graphics.Imaging.Curve,Nokia.Graphics.Imaging.Curve)">
+      <summary>
+Creates and initializes a new CurvesFilter with a set of color curves.
+</summary>
+      <param name="red">
+Color curve for the red channel. 
+</param>
+      <param name="green">
+Color curve for the green channel. 
+</param>
+      <param name="blue">
+Color curve for the blue channel. 
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CurvesFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.CurvesFilter.Blue">
+      <summary>
+Color curve for the blue channel. 
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.CurvesFilter.Green">
+      <summary>
+Color curve for the green channel. 
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CurvesFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.CurvesFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.CurvesFilter.Red">
+      <summary>
+Color curve for the red channel. 
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.DelegatingEffect">
+      <summary>
+An effect that couples to a user implementation of <see cref="T:Nokia.Graphics.Imaging.ICustomEffect" />, which can process pixels and manage any buffers needed.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DelegatingEffect.#ctor(Nokia.Graphics.Imaging.ICustomEffect)">
+      <summary>
+Creates and initializes a new DelegatingEffect which will couple to the provided <see cref="T:Nokia.Graphics.Imaging.ICustomEffect" />.
+</summary>
+      <param name="customEffect">An <see cref="T:Nokia.Graphics.Imaging.ICustomEffect" /> implementation.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DelegatingEffect.#ctor(Nokia.Graphics.Imaging.IImageProvider,Nokia.Graphics.Imaging.ICustomEffect)">
+      <summary>
+Creates and initializes a new DelegatingEffect that uses the provided image source and will couple to the provided <see cref="T:Nokia.Graphics.Imaging.ICustomEffect" />.
+</summary>
+      <param name="imageSource">An image source for the effect.</param>
+      <param name="customEffect">An <see cref="T:Nokia.Graphics.Imaging.ICustomEffect" /> implementation.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DelegatingEffect.GetBitmapAsync(Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>Create a Bitmap with the contents of the image provider.</summary>
+      <param name="bitmap">An input bitmap to fill. If null, a bitmap will be created and returned.</param>
+      <param name="outputOption">Specifies how to adjust if the source image has different aspect ratio from the bitmap passed into this method.</param>
+      <returns>An async result with the bitmap.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DelegatingEffect.GetInfoAsync">
+      <summary>Asynchronously get information about this image provider.</summary>
+      <returns>An async result with an ImageProviderInfo containing the information.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DelegatingEffect.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>Lock the image provider for the purpose of rendering.</summary>
+      <param name="renderRequest">The render request to lock with.</param>
+      <returns>True if the RenderRequest owns the lock. False if the lock was already taken.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DelegatingEffect.PreloadAsync">
+      <summary>Perform any loading (expensive operations typically involving I/O) needed to render or get info from this image provider.</summary>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.DelegatingEffect.Source">
+      <summary>
+The <see cref="T:Nokia.Graphics.Imaging.IImageProvider" /> that will be used as source.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.DelegatingImageSource">
+      <summary>
+An <see cref="T:Nokia.Graphics.Imaging.IImageProvider" /> that couples to a user implementation of <see cref="T:Nokia.Graphics.Imaging.ICustomImageSource" /> object, which can provide an image and manage any buffers needed.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DelegatingImageSource.#ctor(Windows.Foundation.Size,Nokia.Graphics.Imaging.ICustomImageSource)">
+      <summary>
+Create and initialize a DelegatingImageSource which will be coupled to the specified ICustomImageSource.
+</summary>
+      <param name="size">The size of the image.</param>
+      <param name="customImageSource">An <see cref="T:Nokia.Graphics.Imaging.ICustomImageSource" /> implementation.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.DelegatingImageSource.CanSetSize">
+      <summary>Indicates whether the <see cref="P:Nokia.Graphics.Imaging.IImageSize.Size" /> property can be set.</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DelegatingImageSource.GetBitmapAsync(Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>Create a Bitmap with the contents of the image provider.</summary>
+      <param name="bitmap">An input bitmap to fill. If null, a bitmap will be created and returned.</param>
+      <param name="outputOption">Specifies how to adjust if the source image has different aspect ratio from the bitmap passed into this method.</param>
+      <returns>An async result with the bitmap.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DelegatingImageSource.GetInfoAsync">
+      <summary>Asynchronously get information about this image provider.</summary>
+      <returns>An async result with an ImageProviderInfo containing the information.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DelegatingImageSource.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>Lock the image provider for the purpose of rendering.</summary>
+      <param name="renderRequest">The render request to lock with.</param>
+      <returns>True if the RenderRequest owns the lock. False if the lock was already taken.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DelegatingImageSource.PreloadAsync">
+      <summary>Perform any loading (expensive operations typically involving I/O) needed to render or get info from this image provider.</summary>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.DelegatingImageSource.Size">
+      <summary>The inherent size of the image.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.DespeckleFilter">
+      <summary>
+Applies a despeckle effect, removing noise from the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DespeckleFilter.#ctor">
+      <summary>
+Creates and initializes a new DespeckleFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DespeckleFilter.#ctor(Nokia.Graphics.Imaging.DespeckleLevel)">
+      <summary>
+Creates and initializes a new DespeckleFilter with a specified level.
+</summary>
+      <param name="despeckleLevel">
+The despeckle level.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DespeckleFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.DespeckleFilter.DespeckleLevel">
+      <summary>
+Despeckle level. 
+<remarks>
+Default is DespeckleLevel::Minimum.
+</remarks></summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DespeckleFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DespeckleFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.DespeckleLevel">
+      <summary>
+The amount of despeckling done by the despeckle filter.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.DespeckleLevel.Minimum">
+      <summary>Minimum</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.DespeckleLevel.Low">
+      <summary>Low</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.DespeckleLevel.High">
+      <summary>High</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.DespeckleLevel.Maximum">
+      <summary>Maximum</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.DiagnosticsReport">
+      <summary>A report containing diagnostic properties from Nokia.Graphics.Imaging.</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.DiagnosticsReport.CreateAsync">
+      <summary>Create a diagnostics report.</summary>
+      <returns>An asynchronous result with the report.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.DiagnosticsReport.Properties">
+      <summary>The diagnostic properties.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.DiagnosticsReport.Text">
+      <summary>A textual representation of the diagnostic properties.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.EllipseRadius">
+      <summary>
+Defines the radious of the ellipse by defining its radious in x and y dimension.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.EllipseRadius.#ctor(System.Double,System.Double)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>Nokia.Graphics.Imaging.EllipseRadius</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="x">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>x</parameter>
+            <parameter>M:Nokia.Graphics.Imaging.EllipseRadius.#ctor(System.Double,System.Double)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="y">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>y</parameter>
+            <parameter>M:Nokia.Graphics.Imaging.EllipseRadius.#ctor(System.Double,System.Double)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.EllipseRadius.X">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:Nokia.Graphics.Imaging.EllipseRadius.X</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.EllipseRadius.Y">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:Nokia.Graphics.Imaging.EllipseRadius.Y</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.EmbossFilter">
+      <summary>
+Applies an emboss effect in grayscale.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.EmbossFilter.#ctor">
+      <summary>
+Creates and initializes a new EmbossFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.EmbossFilter.#ctor(System.Double)">
+      <summary>
+Creates and initializes a new EmbossFilter with a specified level.
+</summary>
+      <param name="level">
+The level of the emboss effect.
+<para>Range: [0.0, 1.0].</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.EmbossFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.EmbossFilter.Level">
+      <summary>
+        <para>The level of the emboss effect.</para>
+        <para>Range: [0.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.EmbossFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.EmbossFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ExposureFilter">
+      <summary>
+Adjust the brightness of an image using one of the modes in ExposureMode.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ExposureFilter.#ctor">
+      <summary>
+Creates and initializes a new ExposureFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ExposureFilter.#ctor(Nokia.Graphics.Imaging.ExposureMode,System.Double)">
+      <summary>
+Creates and initializes a new ExposureFilter with specified mode and gain.
+</summary>
+      <param name="exposureMode">
+The exposure mode.
+</param>
+      <param name="gain">
+The desired exposure level. 
+<para>Positive values will make the image
+brighter, negative values will make it darker.</para><para>Range is [-1.0, 1.5], but for gamma mode the effect saturates 
+at 1.0, which means that everything between [1.0, 1.5]
+will be interpreted as 1.0. </para><para>Recommended range for both gamma and natural mode for normal 
+usage is [-1.0, 1.0]. 0.0 equals no change of exposure.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ExposureFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ExposureFilter.ExposureMode">
+      <summary>
+The exposure mode.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ExposureFilter.Gain">
+      <summary>
+The desired exposure level. 
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ExposureFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ExposureFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ExposureMode">
+      <summary>
+Exposure modes to use with the exposure filter.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ExposureMode.Natural">
+      <summary>
+Adjust the brightness of an image using a "natural" curve inspired
+by a film characteristic curve. This mode preserves
+the blacks in an image much better than the gamma mode.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ExposureMode.Gamma">
+      <summary>Adjust the brightness of an image using a gamma correction curve.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.FilterEffect">
+      <summary>
+Applies filters of type IFilter to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FilterEffect.#ctor">
+      <summary>
+Creates and initializes a new filter effect.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FilterEffect.#ctor(Nokia.Graphics.Imaging.IImageProvider)">
+      <summary>
+Creates and initializes a new filter effect with an image source.
+</summary>
+      <param name="imageSource">
+The image provider that will be used as source.
+</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.FilterEffect.Filters">
+      <summary>
+Sets the filters that will be applied to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FilterEffect.GetBitmapAsync(Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>Create a Bitmap with the contents of the image provider.</summary>
+      <param name="bitmap">An input bitmap to fill. If null, a bitmap will be created and returned.</param>
+      <param name="outputOption">Specifies how to adjust if the source image has different aspect ratio from the bitmap passed into this method.</param>
+      <returns>An async result with the bitmap.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FilterEffect.GetInfoAsync">
+      <summary>Asynchronously get information about this image provider.</summary>
+      <returns>An async result with an ImageProviderInfo containing the information.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FilterEffect.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>Lock the image provider for the purpose of rendering.</summary>
+      <param name="renderRequest">The render request to lock with.</param>
+      <returns>True if the RenderRequest owns the lock. False if the lock was already taken.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FilterEffect.PreloadAsync">
+      <summary>Perform any loading (expensive operations typically involving I/O) needed to render or get info from this image provider.</summary>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.FilterEffect.Source">
+      <summary>
+The <see cref="T:Nokia.Graphics.Imaging.IImageProvider" /> that will be used as source.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.FlipFilter">
+      <summary>
+Flips the image horizontally and/or vertically.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FlipFilter.#ctor">
+      <summary>
+Creates and initializes a new FlipFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FlipFilter.#ctor(Nokia.Graphics.Imaging.FlipMode)">
+      <summary>
+Creates and initializes a new FlipFilter with a specified flip mode.
+</summary>
+      <param name="flipMode">
+The flip mode.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FlipFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.FlipFilter.FlipMode">
+      <summary>
+Flip mode, around horizontal, vertical or both axes.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FlipFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FlipFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.FlipMode">
+      <summary>
+Flip modes employed by the flip filter. An image can be flipped around its horizontal or vertical
+axis as well as around both axes at once.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.FlipMode.None">
+      <summary>Do not flip the image</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.FlipMode.Vertical">
+      <summary>Flip the image vertically</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.FlipMode.Horizontal">
+      <summary>Flip the image horizontally</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.FlipMode.Both">
+      <summary>Flip the image vertically and horizontally</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.FogFilter">
+      <summary>
+Applies a fog effect.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FogFilter.#ctor">
+      <summary>
+Creates and initializes a new FogFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FogFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FogFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FogFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.FoundationFilter">
+      <summary>
+Applies a foundation effect on a specified region of the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FoundationFilter.#ctor">
+      <summary>
+Creates and initializes a new FoundationFilter that will be applied to the whole image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FoundationFilter.#ctor(Windows.Foundation.Rect)">
+      <summary>
+Creates and initializes a new FoundationFilter that will be applied to a specific region in the image.
+</summary>
+      <param name="region">
+The region in which the effect is applied, for instance a face.
+<para>The coordinates are relative to the current coordinate system, which may be affected by preceding filters.</para><para>If a region with zero width or height is specified, the effect will be applied to the whole image.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FoundationFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FoundationFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.FoundationFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.FoundationFilter.Region">
+      <summary>
+The region in which the effect is applied, for instance a face.
+<para>The coordinates are relative to the current coordinate system, which may be affected by preceding filters.</para></summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.GradientImageSource">
+      <summary>
+An image source that generates pixels based on a gradient.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GradientImageSource.#ctor(Windows.Foundation.Size,Nokia.Graphics.Imaging.IGradient)">
+      <summary>
+Creates an image source from a gradient.
+</summary>
+      <param name="size">The inherent size of the image.</param>
+      <param name="gradient">The gradient to use when generating the image.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.GradientImageSource.CanSetSize">
+      <summary>Indicates whether the <see cref="P:Nokia.Graphics.Imaging.IImageSize.Size" /> property can be set.</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GradientImageSource.GetBitmapAsync(Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>Create a Bitmap with the contents of the image provider.</summary>
+      <param name="bitmap">An input bitmap to fill. If null, a bitmap will be created and returned.</param>
+      <param name="outputOption">Specifies how to adjust if the source image has different aspect ratio from the bitmap passed into this method.</param>
+      <returns>An async result with the bitmap.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GradientImageSource.GetInfoAsync">
+      <summary>Asynchronously get information about this image provider.</summary>
+      <returns>An async result with an ImageProviderInfo containing the information.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.GradientImageSource.Gradient">
+      <summary>
+The gradient to use when generating the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GradientImageSource.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>Lock the image provider for the purpose of rendering.</summary>
+      <param name="renderRequest">The render request to lock with.</param>
+      <returns>True if the RenderRequest owns the lock. False if the lock was already taken.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GradientImageSource.PreloadAsync">
+      <summary>Perform any loading (expensive operations typically involving I/O) needed to render or get info from this image provider.</summary>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.GradientImageSource.Size">
+      <summary>The inherent size of the image.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.GradientStop">
+      <summary>Represents a stop in a gradient.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.GradientStop.Color">
+      <summary>The color for this stop.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.GradientStop.Offset">
+      <summary>The offset for this stop.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.GrayscaleFilter">
+      <summary>
+Converts the image to grayscale.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GrayscaleFilter.#ctor">
+      <summary>
+Creates and initializes a new GrayscaleFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GrayscaleFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GrayscaleFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GrayscaleFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.GrayscaleNegativeFilter">
+      <summary>
+Converts the image to a grayscale negative.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GrayscaleNegativeFilter.#ctor">
+      <summary>
+Creates and initializes a new GrayscaleNegativeFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GrayscaleNegativeFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GrayscaleNegativeFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.GrayscaleNegativeFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.HueSaturationFilter">
+      <summary>
+Adjusts the hue and saturation of the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.HueSaturationFilter.#ctor">
+      <summary>
+Creates and initializes a new HueSaturationFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.HueSaturationFilter.#ctor(System.Double,System.Double)">
+      <summary>
+Creates and initializes a new HueSaturationFilter with specified hue and saturation.
+</summary>
+      <param name="hue">
+Hue adjustment level. 
+<para>Range [-1.0, 1.0] where 0 implies no adjustment.</para></param>
+      <param name="saturation">
+Saturation adjustment level. 
+<para>Range [-1.0, 1.0] where 0 implies no adjustment.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.HueSaturationFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.HueSaturationFilter.Hue">
+      <summary>
+        <para>Hue adjustment level. </para>
+        <para>Range [-1.0, 1.0] where 0 implies no adjustment.</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.HueSaturationFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.HueSaturationFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.HueSaturationFilter.Saturation">
+      <summary>
+        <para>Saturation adjustment level.</para>
+        <para>Range [-1.0, 1.0] where 0 implies no adjustment.</para>
+      </summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ICustomEffect">
+      <summary>
+A custom effect that can be used with a <see cref="T:Nokia.Graphics.Imaging.DelegatingEffect" />.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ICustomEffect.LoadAsync">
+      <summary>Load/prepare for rendering.</summary>
+      <returns>An async action representing the load operation.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ICustomEffect.Process(Windows.Foundation.Rect)">
+      <summary>Called when the image should be processed.</summary>
+      <param name="rect">The part of the image to process.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ICustomEffect.ProvideSourceBuffer(Windows.Foundation.Size)">
+      <summary>Provide an <see cref="T:Windows.Storage.Streams.IBuffer" /> sufficiently sized to hold an image of the specified size.</summary>
+      <param name="imageSize">The size of the image.</param>
+      <returns>An <see cref="T:Windows.Storage.Streams.IBuffer" /> of length 4 * imageSize.Width * imageSize.Height bytes.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ICustomEffect.ProvideTargetBuffer(Windows.Foundation.Size)">
+      <summary>Provide an <see cref="T:Windows.Storage.Streams.IBuffer" /> sufficiently sized to hold an image of the specified size.</summary>
+      <param name="imageSize">The size of the image.</param>
+      <returns>An <see cref="T:Windows.Storage.Streams.IBuffer" /> of length 4 * imageSize.Width * imageSize.Height bytes.</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ICustomImageSource">
+      <summary>
+A custom image source that can be used with a <see cref="T:Nokia.Graphics.Imaging.DelegatingImageSource" />.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ICustomImageSource.LoadAsync">
+      <summary>Load/prepare for rendering.</summary>
+      <returns>An async action representing the load operation.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ICustomImageSource.Process(Windows.Foundation.Rect)">
+      <summary>Called when the image should be generated.</summary>
+      <param name="rect">The part of the image to generate.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ICustomImageSource.ProvideBuffer(Windows.Foundation.Size)">
+      <summary>Provide an <see cref="T:Windows.Storage.Streams.IBuffer" /> sufficiently sized to hold an image of the specified size.</summary>
+      <param name="imageSize">The size of the image.</param>
+      <returns>An <see cref="T:Windows.Storage.Streams.IBuffer" /> of length 4 * imageSize.Width * imageSize.Height bytes.</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.IFilter">
+      <summary>
+An image filter for use with an IFilterEffect.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.IFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.IFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.IFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.IFilterEffect">
+      <summary>
+Applies filters of type IFilter to an image.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.IFilterEffect.Filters">
+      <summary>
+Sets the filters that will be applied to the image.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.IGradient">
+      <summary>A gradient.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.IGradient.Stops">
+      <summary>List of <see cref="T:Nokia.Graphics.Imaging.GradientStop" /> defining the color changes within the gradient.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.IImageConsumer">
+      <summary>
+A consumer of images.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.IImageConsumer.Source">
+      <summary>
+The <see cref="T:Nokia.Graphics.Imaging.IImageProvider" /> that will be used as source.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.IImageProvider">
+      <summary>
+A provider of images.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.IImageProvider.GetBitmapAsync(Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>Create a Bitmap with the contents of the image provider.</summary>
+      <param name="bitmap">An input bitmap to fill. If null, a bitmap will be created and returned.</param>
+      <param name="outputOption">Specifies how to adjust if the source image has different aspect ratio from the bitmap passed into this method.</param>
+      <returns>An async result with the bitmap.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.IImageProvider.GetInfoAsync">
+      <summary>Asynchronously get information about this image provider.</summary>
+      <returns>An async result with an ImageProviderInfo containing the information.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.IImageProvider.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>Lock the image provider for the purpose of rendering.</summary>
+      <param name="renderRequest">The render request to lock with.</param>
+      <returns>True if the RenderRequest owns the lock. False if the lock was already taken.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.IImageProvider.PreloadAsync">
+      <summary>Perform any loading (expensive operations typically involving I/O) needed to render or get info from this image provider.</summary>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.IImageSize">
+      <summary>An interface for querying image size directly, with optional support for also changing it.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.IImageSize.CanSetSize">
+      <summary>Indicates whether the <see cref="P:Nokia.Graphics.Imaging.IImageSize.Size" /> property can be set.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.IImageSize.Size">
+      <summary>The inherent size of the image.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ImageFormat">
+      <summary>
+Supported image formats.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ImageFormat.Undefined">
+      <summary>
+The image format is undefined (or should be auto-detected).
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ImageFormat.Jpeg">
+      <summary>
+The image is in JPEG format.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ImageFormat.Png">
+      <summary>
+The image is in PNG format.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ImageFormat.Gif">
+      <summary>
+The image is in GIF format.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ImageFormat.Bmp">
+      <summary>
+The image is in BMP format.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ImageFormat.Wbmp">
+      <summary>
+The image is in WBMP format.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.ImageFormat.Tiff">
+      <summary>
+The image is in TIFF format.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ImageFusionFilter">
+      <summary>
+Inserts an image on the current image with a separately defined alpha mask.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ImageFusionFilter.#ctor">
+      <summary>
+Creates and initializes a new ImageFusionFilter with default settings.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ImageFusionFilter.#ctor(Nokia.Graphics.Imaging.IImageProvider,Nokia.Graphics.Imaging.IImageProvider,System.Boolean)">
+      <summary>
+Creates and initializes a new ImageFusionFilter with specified sources and settings.
+</summary>
+      <param name="fusionImageSource">
+Source for the image to be merged with the current image.
+</param>
+      <param name="maskImageSource">
+Source for the image containing the alpha mask. 
+<para>The mask is assumed to be a gray scale image. If the image is 
+of a richer color format it will first automatically be converted into grayscale and any alpha channel 
+will be ignored.</para></param>
+      <param name="invertAlpha">
+The invert alpha.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ImageFusionFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ImageFusionFilter.FusionImageSource">
+      <summary>
+An image to be merged with the current image.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ImageFusionFilter.InvertAlpha">
+      <summary>
+Controls how the alpha channel fades the fusion image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ImageFusionFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ImageFusionFilter.MaskImageSource">
+      <summary>
+A raw image containing the alpha mask. 
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ImageFusionFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ImageProviderInfo">
+      <summary>
+Information about an IImageProvider.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ImageProviderInfo.#ctor">
+      <summary>
+Creates and initializes a new ImageProviderInfo object with default values.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ImageProviderInfo.ImageSize">
+      <summary>
+Size of the image provided, in pixels.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.IReadableBitmap">
+      <summary>
+A readable bitmap.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.IReadableBitmap.ColorMode">
+      <summary>
+The color mode of the bitmap.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.IReadableBitmap.Dimensions">
+      <summary>
+The dimensions of the bitmap.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.JpegOperation">
+      <summary>
+The types of operation supported by JpegTools::FlipAndRotateAsync.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.JpegOperation.Lossless">
+      <summary>
+Only lossless operations allowed
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.JpegOperation.AllowLossy">
+      <summary>
+Allow falling back on lossy operations when lossless is not available.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.JpegRenderer">
+      <summary>
+Renders an image source to jpeg buffer.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.JpegRenderer.#ctor">
+      <summary>
+Creates and initializes a new JPEG renderer.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.JpegRenderer.#ctor(Nokia.Graphics.Imaging.IImageProvider)">
+      <summary>
+Creates and initializes a new JPEG renderer, with the source already specified.
+</summary>
+      <param name="source">The <see cref="T:Nokia.Graphics.Imaging.IImageProvider" /> that will provide the image to be rendered.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.JpegRenderer.OutputColorSpacing">
+      <summary>
+Color space to use in the JPEG image.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.JpegRenderer.OutputOption">
+      <summary>
+Specifies how to handle an aspect ratio difference between the source and the JPEG image.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.JpegRenderer.Quality">
+      <summary>
+        <para>Quality of the JPEG image. </para>
+        <para>Range (0.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.JpegRenderer.RemoveExif">
+      <summary>
+If true, the JPEG image will have any EXIF metadata removed.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.JpegRenderer.RenderAsync">
+      <summary>
+Renders the source to a JPEG image, according to the current settings.
+</summary>
+      <returns>An aynchronous operation which yields an IBuffer with the JPEG file.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.JpegRenderer.Size">
+      <summary>
+Size of the JPEG image, in pixels.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.JpegRenderer.Source">
+      <summary>
+The <see cref="T:Nokia.Graphics.Imaging.IImageProvider" /> that will be used as source.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.JpegTools">
+      <summary>
+Operations on JPEG images. The operations are done on the JPEG compressed data directly, which is efficient and can avoid quality reduction.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.JpegTools.AutoResizeAsync(Windows.Storage.Streams.IBuffer,Nokia.Graphics.Imaging.AutoResizeConfiguration)">
+      <summary>
+Jpeg squeeze of an image into a new smaller jpeg  
+using configured auto resize parameters.
+</summary>
+      <param name="jpegSource">
+Source jpeg buffer to be squeezed.
+</param>
+      <param name="autoConfiguration">
+Resize configuration parameters.
+</param>
+      <returns> Asynchronously returns buffer with squeezed jpeg </returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.JpegTools.BlendAsync(Windows.Storage.Streams.IBuffer,Nokia.Graphics.Imaging.IReadableBitmap,Windows.Foundation.Point)">
+      <summary>
+Blends a jpeg image with another bitmap image into a new jpeg.
+The source jpeg image dimensions cannot be smaller than 
+the dimensions of the bitmap image to blend. 
+</summary>
+      <param name="jpegSource">
+Source jpeg to be blended.
+</param>
+      <param name="bitmapSource">
+Bitmap image to be blended with jpeg image. Image must be in ARGB8888 or AYUV4444 color mode.
+</param>
+      <param name="blendPosition">
+Blend start position in the jpeg image (upper left corner).
+</param>
+      <returns> Asynchroniously returns buffer with blended jpeg </returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.JpegTools.FlipAndRotateAsync(Windows.Storage.Streams.IBuffer,Nokia.Graphics.Imaging.FlipMode,Nokia.Graphics.Imaging.Rotation,Nokia.Graphics.Imaging.JpegOperation)">
+      <summary>
+Performs a lossless flip followed by a rotation of a jpeg image into a new jpeg. Optionally falls back on a lossy operation if lossless cannot be performed.
+</summary>
+      <param name="jpegSource">
+Source jpeg to be rotated.
+</param>
+      <param name="flipMode">
+Specifies if and how the image should be flipped.
+</param>
+      <param name="rotation">
+Specifies if and how the image should be rotated.
+</param>
+      <param name="jpegOperation">
+Specifies if only lossless operations are permitted, or if a fallback on lossy operations should be used when needed.
+</param>
+      <returns> Asynchroniously returns buffer with rotated jpeg </returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.JpegTools.SqueezeAsync(Windows.Storage.Streams.IBuffer,System.UInt32)">
+      <summary>
+Jpeg squeeze of an image into a new smaller jpeg  
+with a desired maximum buffer size in bytes.
+</summary>
+      <param name="jpegSource">
+Source jpeg buffer to be squeezed.
+</param>
+      <param name="toSize">
+Desired maximum output jpeg size.
+</param>
+      <returns> Asynchronously returns buffer with squeezed jpeg </returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.LevelsFilter">
+      <summary>
+Adjusts levels in the current image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LevelsFilter.#ctor">
+      <summary>
+Creates and initializes a new LevelsFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LevelsFilter.#ctor(System.Double,System.Double,System.Double)">
+      <summary>
+Creates and initializes a new LevelsFilter with specified settings.
+</summary>
+      <param name="white">
+The position of the white saturating point. 
+<para>
+Range [0.0, 1.0].
+</para></param>
+      <param name="gray">
+The relative position of the middle gray point. 
+<para>
+Range [0.0, 1.0], where 0.0 is at the bright saturating 
+point and 1.0 is at the dark saturating point.
+</para></param>
+      <param name="black">
+The position of the black saturating point.
+<para>
+Range [0.0, 1.0]. The value of black should be smaller 
+than, or equal to the value of white.
+</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LevelsFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LevelsFilter.Black">
+      <summary>
+        <para>The position of the black saturating point.</para>
+        <para>Range [0.0, 1.0]. The value of Black should be smaller 
+than, or equal to the value of White.</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LevelsFilter.Gray">
+      <summary>
+        <para>The relative position of the middle gray point. </para>
+        <para>Range [0.0, 1.0], where 0.0 is at the white saturating 
+point and 1.0 is at the black saturating point.</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LevelsFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LevelsFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LevelsFilter.White">
+      <summary>
+        <para>The position of the white saturating point. The value of White should be larger 
+than, or equal to the value of Black.</para>
+        <para>Range [0.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.LinearGradient">
+      <summary>A linear gradient.</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LinearGradient.#ctor">
+      <summary>Creates and initializes a new linear gradient with default values.</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LinearGradient.#ctor(Windows.Foundation.Point,Windows.Foundation.Point)">
+      <summary>Creates and initializes a new linear gradient, using the specified start point and end point.</summary>
+      <param name="startPoint">The start point of the gradient.</param>
+      <param name="endPoint">The end point of the gradient.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LinearGradient.#ctor(Windows.Foundation.Point,Windows.Foundation.Point,Nokia.Graphics.Imaging.GradientStop[])">
+      <summary>Creates and initializes a new linear gradient, using the specified start point, end point and stops.</summary>
+      <param name="startPoint">The start point of the gradient.</param>
+      <param name="endPoint">The end point of the gradient.</param>
+      <param name="stops">The stops that define the gradient.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LinearGradient.EndPoint">
+      <summary>The end point of the gradient, where a <see cref="T:Nokia.Graphics.Imaging.GradientStop" /> with Offset equal to 1 would be.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LinearGradient.StartPoint">
+      <summary>The start point of the gradient, where a <see cref="T:Nokia.Graphics.Imaging.GradientStop" /> with Offset equal to 0 would be.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LinearGradient.Stops">
+      <summary>List of <see cref="T:Nokia.Graphics.Imaging.GradientStop" /> defining the color changes within the gradient.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.LocalBoostAutomaticFilter">
+      <summary>
+Automatically boost and enhance images with unequal illumination.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LocalBoostAutomaticFilter.#ctor">
+      <summary>
+Creates and initializes a new LocalBoostAutomaticFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LocalBoostAutomaticFilter.#ctor(System.Int32)">
+      <summary>
+Creates and initializes a new LocalBoostAutomaticFilter with the specified level.
+</summary>
+      <param name="level">
+Intensity of the filter.
+<para>Range [0, 14].</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LocalBoostAutomaticFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LocalBoostAutomaticFilter.Level">
+      <summary>
+        <para>Intensity of the filter.</para>
+        <para>Range [0, 14].</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LocalBoostAutomaticFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LocalBoostAutomaticFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.LocalBoostFilter">
+      <summary>
+Manually boost and enhance images with unequal illumination.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LocalBoostFilter.#ctor">
+      <summary>
+Creates and initializes a new LocalBoostFilter with default settings.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LocalBoostFilter.#ctor(System.Double,System.Double,System.Double,System.Double)">
+      <summary>
+Creates and initializes a new LocalBoostFilter with specified settings.
+</summary>
+      <param name="gamma">
+Gamma correction for the dark part of the image.
+<para>Range [0.1, 5.0)</para></param>
+      <param name="darkContrast">
+Contrast amplification of the dark part.
+<para>Range [0.5, 1.0)</para></param>
+      <param name="lightContrast">
+Contrast amplification of the light part.
+<para>Range [0.5, 1.0)</para></param>
+      <param name="sensitivityLevel">
+Specifies how much of the processed image that will be blended in the original image.
+<para>Range: [0.0, 1.0]</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LocalBoostFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LocalBoostFilter.DarkContrast">
+      <summary>
+        <para>Contrast amplification of the dark part.</para>
+        <para>Range [0.5, 1.0)</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LocalBoostFilter.Gamma">
+      <summary>
+        <para>Gamma correction for the dark part of the image.</para>
+        <para>Range [0.1, 5.0)</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LocalBoostFilter.LightContrast">
+      <summary>
+Contrast amplification of the light part.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LocalBoostFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LocalBoostFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LocalBoostFilter.SensitivityLevel">
+      <summary>
+Specifies how much of the processed image that will be blended in the original image.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.LomoFilter">
+      <summary>
+Applies a lomo effect on the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LomoFilter.#ctor">
+      <summary>
+Creates and initializes a new LomoFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LomoFilter.#ctor(System.Double,System.Double,Nokia.Graphics.Imaging.LomoVignetting,Nokia.Graphics.Imaging.LomoStyle)">
+      <summary>
+Creates and initializes a new LomoFilter with specified settings.
+</summary>
+      <param name="brightness">
+The brightness adjustment.
+<para>Range [0.0, 1.0], where 0.0 gives a bright image and 1.0 a dark image.</para></param>
+      <param name="saturation">
+The color saturation adjustment. 
+Range [0.0, 1.0], where 0.0 implies no saturation.
+</param>
+      <param name="vignetting">
+The vignetting level.
+</param>
+      <param name="style">
+The color style.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LomoFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LomoFilter.Brightness">
+      <summary>
+        <para>The brightness of the image.</para>
+        <para>Range [0.0, 1.0], where 0.0 gives a bright image and 1.0 a dark image.</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LomoFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LomoFilter.LomoStyle">
+      <summary>
+Color style.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LomoFilter.LomoVignetting">
+      <summary>
+The vignetting level.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.LomoFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.LomoFilter.Saturation">
+      <summary>
+        <para>The color saturation of the image.</para>
+        <para>Range [0.0, 1.0], where 0.0 implies no saturation.</para>
+      </summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.LomoStyle">
+      <summary>
+Color styles to use with the lomo filter.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.LomoStyle.Neutral">
+      <summary>Neutral</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.LomoStyle.Red">
+      <summary>Red</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.LomoStyle.Green">
+      <summary>Green</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.LomoStyle.Blue">
+      <summary>Blue</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.LomoStyle.Yellow">
+      <summary>Yellow</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.LomoVignetting">
+      <summary>
+Vignetting impact levels to use with the lomo filter.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.LomoVignetting.Low">
+      <summary>Low</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.LomoVignetting.Medium">
+      <summary>Medium</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.LomoVignetting.High">
+      <summary>High</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.MagicPenFilter">
+      <summary>
+Applies a mix of edge distinction and color manipulation to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MagicPenFilter.#ctor">
+      <summary>
+Creates and initializes a new MagicPenFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MagicPenFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MagicPenFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MagicPenFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.MilkyFilter">
+      <summary>
+Applies a milky surface to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MilkyFilter.#ctor">
+      <summary>
+Creates and initializes a new MilkyFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MilkyFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MilkyFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MilkyFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.MirrorFilter">
+      <summary>
+Mirrors the left half of the image onto the right half.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MirrorFilter.#ctor">
+      <summary>
+Creates and initializes a new MirrorFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MirrorFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MirrorFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MirrorFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.MonoColorFilter">
+      <summary>
+Preserves one color tone while other colors
+are converted to grayscale.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MonoColorFilter.#ctor">
+      <summary>
+Creates and initializes a new MonoColorFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MonoColorFilter.#ctor(Windows.UI.Color,System.Double)">
+      <summary>
+Creates and initializes a new MonoColorFilter with specified settings for the color to be preserved.
+</summary>
+      <param name="preserveColor">
+The color that will be preserved.
+</param>
+      <param name="colorDistance">
+Specifies the tolerance level of the effect. 
+<para>Range [0.0, 1.0].</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MonoColorFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.MonoColorFilter.ColorDistance">
+      <summary>
+        <para>Specifies the tolerance level of the effect. </para>
+        <para>Range [0.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MonoColorFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MonoColorFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.MonoColorFilter.PreserveColor">
+      <summary>
+The color that will be preserved.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.MoonlightFilter">
+      <summary>
+Applies a moonlight effect to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MoonlightFilter.#ctor">
+      <summary>
+Creates and initializes a new MoonlightFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MoonlightFilter.#ctor(System.Int32)">
+      <summary>
+Creates and initializes a new MoonlightFilter specifying the time of day.
+</summary>
+      <param name="clock">
+Time of night in clock time [0, 23].
+<para>The filter has effect only at night time, between 17 and 7. </para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MoonlightFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.MoonlightFilter.Clock">
+      <summary>
+Time of night in clock time [0, 23].
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MoonlightFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.MoonlightFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.NegativeFilter">
+      <summary>
+Converts the image to a negative.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.NegativeFilter.#ctor">
+      <summary>
+Creates and initializes a new NegativeFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.NegativeFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.NegativeFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.NegativeFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.NoiseFilter">
+      <summary>
+Applies noise to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.NoiseFilter.#ctor">
+      <summary>
+Creates and initializes a new NoiseFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.NoiseFilter.#ctor(Nokia.Graphics.Imaging.NoiseLevel)">
+      <summary>
+Creates and initializes a new NoiseFilter with a specified level.
+</summary>
+      <param name="level">
+The amount of noise.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.NoiseFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.NoiseFilter.Level">
+      <summary>
+The amount of noise. Default is NoiseLevel::Minimum
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.NoiseFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.NoiseFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.NoiseLevel">
+      <summary>
+The amount of noise added by the noise filter.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.NoiseLevel.Minimum">
+      <summary>Minimum</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.NoiseLevel.Medium">
+      <summary>Medium</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.NoiseLevel.Maximum">
+      <summary>Maximum</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.OilyFilter">
+      <summary>
+Applies an oil painting-like effect to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.OilyFilter.#ctor">
+      <summary>
+Creates and initializes a new OilyFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.OilyFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.OilyFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.OilyFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.OutputColorSpacing">
+      <summary>
+Color spacing for the output image.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.OutputColorSpacing.Yuv420">
+      <summary>YUV420</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.OutputColorSpacing.Yuv422">
+      <summary>YUV422</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.OutputOption">
+      <summary>
+Behavior when rendering to a target with different aspect ratio than the source.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.OutputOption.PreserveAspectRatio">
+      <summary>
+Preserve the aspect ration of the input image. Excess areas will be black.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.OutputOption.Stretch">
+      <summary>
+Stretch the input image to fit the output size.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.PaintFilter">
+      <summary>
+Applies a painting-like effect to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.PaintFilter.#ctor">
+      <summary>
+Creates and initializes a new PaintFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.PaintFilter.#ctor(System.Int32)">
+      <summary>
+Creates and initializes a new PaintFilter with the specified level.
+</summary>
+      <param name="level">
+Paint effect level. 
+<para>Range [1, 4].</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.PaintFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.PaintFilter.Level">
+      <summary>
+        <para>Paint effect level. </para>
+        <para>Range [1, 4].</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.PaintFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.PaintFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.PixelBufferInfo">
+      <summary>Describes a buffer containing two-dimensional pixel data.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.PixelBufferInfo.Buffer">
+      <summary>A buffer containing the pixel data.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.PixelBufferInfo.ColorMode">
+      <summary>The color mode of the pixel data.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.PixelBufferInfo.Pitch">
+      <summary>Distance, in bytes, between consecutive rows in the buffer.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.PosterizeFilter">
+      <summary>
+Applies a posterize effect, reducing the number of colors in the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.PosterizeFilter.#ctor">
+      <summary>
+Creates and initializes a new PosterizeFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.PosterizeFilter.#ctor(System.Int32)">
+      <summary>
+Creates and initializes a new PosterizeFilter with a specified color component count.
+</summary>
+      <param name="colorComponentValueCount">
+The number of allowed values for each color component.
+<para>Range [2, 16]</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.PosterizeFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.PosterizeFilter.ColorComponentValueCount">
+      <summary>
+        <para>The number of allowed values for each color component.</para>
+        <para>Range [2, 16]</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.PosterizeFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.PosterizeFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.RadialGradient">
+      <summary>A radial gradient, changing color from a center point outwards.</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RadialGradient.#ctor">
+      <summary>Creates and initializes a new radial gradient with default values.</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RadialGradient.#ctor(Windows.Foundation.Point,Nokia.Graphics.Imaging.EllipseRadius)">
+      <summary>Creates and initializes a new radial gradient, with the specified center point and radius.</summary>
+      <param name="centerPoint">The center point of the gradient, to which a <see cref="T:Nokia.Graphics.Imaging.GradientStop" /> with Offset equal to 0 would map.
+<para>Expressed in the unit coordinate space of the gradient image area, i.e. the top left corner of the gradient image is at (0.0), and the bottom right corner is at (1, 1).</para></param>
+      <param name="radius">The radius of the gradient. This is the distance from <see cref="P:Nokia.Graphics.Imaging.RadialGradient.CenterPoint" /> that a <see cref="T:Nokia.Graphics.Imaging.GradientStop" /> with Offset equal to 1 would map to.
+<para>Expressed in the unit coordinate space of the gradient image area, i.e. the top left corner of the gradient image is at (0.0), and the bottom right corner is at (1, 1).</para><para>To create a circle specify value for only one dimension and set the other one to 0.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RadialGradient.#ctor(Windows.Foundation.Point,Nokia.Graphics.Imaging.EllipseRadius,Nokia.Graphics.Imaging.GradientStop[])">
+      <summary>Creates and initializes a new radial gradient, with the specified center point, radius and stops.</summary>
+      <param name="centerPoint">The center point of the gradient, to which a <see cref="T:Nokia.Graphics.Imaging.GradientStop" /> with Offset equal to 0 would map.
+<para>Expressed in the unit coordinate space of the gradient image area, i.e. the top left corner of the gradient image is at (0.0), and the bottom right corner is at (1, 1).</para></param>
+      <param name="radius">The radius of the gradient. This is the distance from <see cref="P:Nokia.Graphics.Imaging.RadialGradient.CenterPoint" /> that a <see cref="T:Nokia.Graphics.Imaging.GradientStop" /> with Offset equal to 1 would map to.
+<para>Expressed in the unit coordinate space of the gradient image area, i.e. the top left corner of the gradient image is at (0.0), and the bottom right corner is at (1, 1).</para><para>To create a circle specify value for only one dimension and set the other one to 0.</para></param>
+      <param name="stops">The stops that define the gradient.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.RadialGradient.CenterPoint">
+      <summary>The center point of the gradient, to which a <see cref="T:Nokia.Graphics.Imaging.GradientStop" /> with Offset equal to 0 would map.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.RadialGradient.EllipseRadius">
+      <summary>The radius of the gradient, in relative space. This is the distance from <see cref="P:Nokia.Graphics.Imaging.RadialGradient.CenterPoint" /> that a <see cref="T:Nokia.Graphics.Imaging.GradientStop" /> with Offset equal to 1 would map to.</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.RadialGradient.Stops">
+      <summary>List of <see cref="T:Nokia.Graphics.Imaging.GradientStop" /> defining the color changes within the gradient.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.RandomAccessStreamImageSource">
+      <summary>
+An image source created from a windows storage random access stream.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RandomAccessStreamImageSource.#ctor(Windows.Storage.Streams.IRandomAccessStream)">
+      <summary>
+Creates and initializes a new image source with a <see cref="T:Windows.Storage.Streams.IRandomAccessStream" />.
+</summary>
+      <param name="stream">The random access stream to create the image source with.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RandomAccessStreamImageSource.#ctor(Windows.Storage.Streams.IRandomAccessStream,Nokia.Graphics.Imaging.ImageFormat)">
+      <summary>
+Creates and initializes a new image source with a windows storage random access stream with a known image format.
+</summary>
+      <param name="stream">The random access stream to create the image source with.</param>
+      <param name="imageFormat">The image format of the image in the provided stream.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RandomAccessStreamImageSource.GetBitmapAsync(Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>Create a Bitmap with the contents of the image provider.</summary>
+      <param name="bitmap">An input bitmap to fill. If null, a bitmap will be created and returned.</param>
+      <param name="outputOption">Specifies how to adjust if the source image has different aspect ratio from the bitmap passed into this method.</param>
+      <returns>An async result with the bitmap.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RandomAccessStreamImageSource.GetInfoAsync">
+      <summary>Asynchronously get information about this image provider.</summary>
+      <returns>An async result with an ImageProviderInfo containing the information.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.RandomAccessStreamImageSource.ImageFormat">
+      <summary>
+The format of the compressed image data.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RandomAccessStreamImageSource.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>Lock the image provider for the purpose of rendering.</summary>
+      <param name="renderRequest">The render request to lock with.</param>
+      <returns>True if the RenderRequest owns the lock. False if the lock was already taken.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RandomAccessStreamImageSource.PreloadAsync">
+      <summary>Perform any loading (expensive operations typically involving I/O) needed to render or get info from this image provider.</summary>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.RandomAccessStreamImageSource.Stream">
+      <summary>
+The random access stream containing compressed image data.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.ReframingFilter">
+      <summary>
+Reframes the image to comprise a rectangle of any size inside or outside the current image.
+Reframing is done by specifying a reframing area by position and size, an angle of clockwise rotation, 
+and a pivot point around which the reframing area is rotated.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ReframingFilter.#ctor">
+      <summary>
+Creates and initializes a new ReframingFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ReframingFilter.#ctor(Windows.Foundation.Rect,System.Double)">
+      <summary>
+Creates and initializes a new ReframingFilter with a default pivot point and specified reframing area and angle of rotation.
+</summary>
+      <param name="reframingArea">
+The position and size of the reframing area.
+If the reframing area has a width or height of 0, this filter will not be applied.
+<para>When reframing without rotation, width and height must be in the range [0, 16383].</para><para>When reframing with rotation, width and height must be in the range [0, X], where X is in the range [5792, 16383] depending on the reframing area and the source image size.
+An exception will be thrown during rendering if this limit is exceeded.</para><para>The ReframingFilter supports reframing to areas larger than the source or outside of source's bounds.
+Areas outside the original image are rendered as transparent black pixels, ARGB(0, 0, 0, 0).</para></param>
+      <param name="angle">
+Rotation of the reframing area clockwise around the pivot point in degrees.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ReframingFilter.#ctor(Windows.Foundation.Rect,System.Double,Windows.Foundation.Point)">
+      <summary>
+Creates and initializes a new ReframingFilter with specified reframing area, angle of rotation and pivot point.
+</summary>
+      <param name="reframingArea">
+The position and size of the reframing area.
+If the reframing area has a width or height of 0, this filter will not be applied.
+<para>When reframing without rotation, width and height must be in the range [0, 16383].</para><para>When reframing with rotation, width and height must be in the range [0, X], where X is in the range [5792, 16383] depending on the reframing area and the source image size.
+An exception will be thrown during rendering if this limit is exceeded.</para><para>The ReframingFilter supports reframing to areas larger than the source or outside of source's bounds.
+Areas outside the original image are rendered as transparent black pixels, ARGB(0, 0, 0, 0).</para></param>
+      <param name="angle">
+Rotation of the reframing area clockwise around the pivot point in degrees.
+</param>
+      <param name="pivotPoint">
+The point around which rotation is done. Expressed in the unit coordinate space of the reframing area,
+i.e. the top left corner of the reframing area is at (0.0), and the bottom right corner is at (1, 1).
+</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ReframingFilter.Angle">
+      <summary>
+Rotation of the reframing area clockwise around its top-left corner in degrees.
+<remarks><para>Default is 0</para></remarks></summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ReframingFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ReframingFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ReframingFilter.PivotPoint">
+      <summary>
+The point around which rotation is done. Expressed in the unit coordinate space of the reframing area,
+i.e. the top left corner of the reframing area is at (0.0), and the bottom right corner is at (1, 1).
+<para>Default is (0.5, 0.5), the center of the reframing area.</para></summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.ReframingFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.ReframingFilter.ReframingArea">
+      <summary>
+Rectangle describing the position and size of the reframing area.
+<para>The coordinates are relative to the current coordinate system, which may be affected by preceding filters.</para></summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.RenderRequest">
+      <summary>
+Represents a user-initiated rendering request. 
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RenderRequest.#ctor">
+      <summary>Creates and initializes a new RenderRequest.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.Rotation">
+      <summary>
+Stepwise rotation. Can be done 0, 90, 180 and 270 degrees clockwise.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.Rotation.Rotate0">
+      <summary>Rotates the image zero degrees clockwise.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.Rotation.Rotate90">
+      <summary>Rotates the image 90 degrees clockwise.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.Rotation.Rotate180">
+      <summary>Rotates the image 180 degrees clockwise.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.Rotation.Rotate270">
+      <summary>Rotates the image 270 degrees clockwise.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.RotationFilter">
+      <summary>
+Rotates the image around its center in a clock-wise direction. 
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RotationFilter.#ctor">
+      <summary>
+Creates and initializes a new RotationFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RotationFilter.#ctor(System.Double)">
+      <summary>
+Creates and initializes a new RotationFilter with a specified angle.
+</summary>
+      <param name="rotationAngle">
+The rotation angle in degrees.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RotationFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RotationFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.RotationFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.RotationFilter.RotationAngle">
+      <summary>
+Rotation angle in degrees.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.RotationResizeMode">
+      <summary>
+Image resizing behaviors when rotating. The image can be resized to fit within
+the original image dimensions during rotation, or it could go over the dimension border.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.RotationResizeMode.Ignore">
+      <summary>Do not  resize while rotating</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.RotationResizeMode.FitInside">
+      <summary>Resize the rotated image so that it fits inside the original image dimensions.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.RotationResizeMode.FitOutside">
+      <summary>Resize the rotated image so that the original image dimensions fit inside the rotated image.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.SdkInfo">
+      <summary>
+Provides general information about the Imaging SDK.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.SdkInfo.Version">
+      <summary>
+The current version of the Imaging SDK.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.SepiaFilter">
+      <summary>
+Applies a sepia tone to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SepiaFilter.#ctor">
+      <summary>
+Creates and initializes a new SepiaFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SepiaFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SepiaFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SepiaFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.SharpnessFilter">
+      <summary>
+Enhances the sharpness of the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SharpnessFilter.#ctor">
+      <summary>
+Creates and initializes a new SharpnessFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SharpnessFilter.#ctor(System.Int32)">
+      <summary>
+Creates and initializes a new SharpnessFilter with a specified level.
+</summary>
+      <param name="level">
+Image sharpness level.
+<para>Range [0, 7].</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SharpnessFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.SharpnessFilter.Level">
+      <summary>
+        <para>Image sharpness level.</para>
+        <para>Range [0, 7].</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SharpnessFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SharpnessFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.SketchFilter">
+      <summary>
+Produces the look of a sketched image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SketchFilter.#ctor">
+      <summary>
+Creates and initializes a new SketchFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SketchFilter.#ctor(Nokia.Graphics.Imaging.SketchMode)">
+      <summary>
+Creates and initializes a new SketchFilter with a specified mode.
+</summary>
+      <param name="sketchMode">
+The sketch mode.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SketchFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SketchFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SketchFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.SketchFilter.SketchMode">
+      <summary>
+Sketch mode, grey or color.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.SketchMode">
+      <summary>
+Modes for the sketch filter. 
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.SketchMode.Gray">
+      <summary>Sketch in grayscale.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.SketchMode.Color">
+      <summary>Sketch in color.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.SolarizeFilter">
+      <summary>
+Applies a solarize effect.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SolarizeFilter.#ctor">
+      <summary>
+Creates and initializes a new SolarizeFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SolarizeFilter.#ctor(System.Double)">
+      <summary>
+Creates and initializes a new SolarizeFilter with a specified threshold.
+</summary>
+      <param name="threshold">
+The threshold level of the solarize effect.
+Range [0.0, 1.0]
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SolarizeFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SolarizeFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SolarizeFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.SolarizeFilter.Threshold">
+      <summary>
+        <para>The threshold level of the solarize effect.</para>
+        <para>Range [0.0, 1.0]</para>
+      </summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.SplitToneFilter">
+      <summary>
+Applies a given color to pixels with luminance values within a specified range, while retaining some luminance information.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SplitToneFilter.#ctor">
+      <summary>
+Creates and initializes a new SplitToneFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SplitToneFilter.#ctor(Windows.Foundation.Collections.IVector{Nokia.Graphics.Imaging.SplitToneRange})">
+      <summary>
+Creates and initializes a new SplitToneFilter with a list of split tone ranges.
+</summary>
+      <param name="splitToneRanges">
+List of SplitToneRanges.
+<para>Any number of ranges can be provided. Overlaps and gaps between ranges will be handled by interpolating between known values.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SplitToneFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SplitToneFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SplitToneFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.SplitToneFilter.SplitToneRanges">
+      <summary>
+List of SplitToneRanges.
+<remarks>
+Any number of ranges can be provided. Overlaps and gaps between ranges will be handled by interpolating between known values.
+</remarks></summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.SplitToneRange">
+      <summary>
+Defines a luminance range and the color to be applied by the split tone filter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SplitToneRange.#ctor">
+      <summary>
+Creates and initializes a new SplitToneRange with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SplitToneRange.#ctor(System.Byte,System.Byte,Windows.UI.Color)">
+      <summary>
+Creates and initializes a new SplitToneRange with specified luminance and color values.
+</summary>
+      <param name="luminanceLow">
+Defines the lower luminance value.
+Range [0, 255]. Must be lower than LuminanceHigh.
+</param>
+      <param name="luminanceHigh">
+Defines the higher luminance value.
+Range [0, 255]. Must be higher than LuminanceLow.
+</param>
+      <param name="color">
+Defines the RGB color to be set for the luminance.
+Range [0, 255].
+</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.SplitToneRange.Color">
+      <summary>
+The RGB color to be set for the luminance.
+Range [0, 255], for each color component.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.SplitToneRange.LuminanceHigh">
+      <summary>
+        <para>The higher luminance value.</para>
+        <para>Range [0, 255]. Must be higher than LuminanceLow.</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.SplitToneRange.LuminanceLow">
+      <summary>
+        <para>The lower luminance value.</para>
+        <para>Range [0, 255]. Must be lower than LuminanceHigh.</para>
+      </summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.SpotlightFilter">
+      <summary>
+Applies a spotlight effect to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SpotlightFilter.#ctor">
+      <summary>
+Creates a new SpotlightFilter.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SpotlightFilter.#ctor(Windows.Foundation.Point,System.Int32,System.Double)">
+      <summary>
+Creates a new SpotlightFilter.
+</summary>
+      <param name="position">
+The position of the center of spotlight circle.
+</param>
+      <param name="radius">
+The radius of the spotlight circle in pixels. Current coordinates.
+<para>Range [0, 64511].</para></param>
+      <param name="transitionSize">
+The size of the transition region given as a fraction of the radius.
+<para>Range [0.0, 1.0].</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SpotlightFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SpotlightFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.SpotlightFilter.Position">
+      <summary>
+The position of the center of spotlight circle.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.SpotlightFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.SpotlightFilter.Radius">
+      <summary>
+        <para>The radius of the spotlight circle in pixels. Current coordinates.</para>
+        <para>Range [0, 64511].</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.SpotlightFilter.TransitionSize">
+      <summary>
+        <para>The size of the transition region given as a fraction of the radius.</para>
+        <para>Range [0.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.StampFilter">
+      <summary>
+Applies a stamp-like effect, resulting in a black and white image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.StampFilter.#ctor">
+      <summary>
+Creates and initializes a new StampFilter with deafult values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.StampFilter.#ctor(System.Int32,System.Double)">
+      <summary>
+Creates and initializes a new StampFilter with specified smoothness and threshold values.
+</summary>
+      <param name="smoothness">
+The smoothness level.
+<para>Range [0, 6].</para></param>
+      <param name="threshold">
+The threshold level.
+<para>Range [0.0, 1.0].</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.StampFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.StampFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.StampFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.StampFilter.Smoothness">
+      <summary>
+        <para>Smoothness level. </para>
+        <para>Range [0, 6].</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.StampFilter.Threshold">
+      <summary>
+        <para>Threshold level. </para>
+        <para>Range [0.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.StorageFileImageSource">
+      <summary>
+An image source created with a windows storage file.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.StorageFileImageSource.#ctor(Windows.Storage.IStorageFile)">
+      <summary>
+Creates and initializes a new image source with a storage file.
+</summary>
+      <param name="storageFile">The storage file that will provide the image data.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.StorageFileImageSource.#ctor(Windows.Storage.IStorageFile,Nokia.Graphics.Imaging.ImageFormat)">
+      <summary>
+Creates and initializes a new image source with a storage file with a known image format.
+</summary>
+      <param name="storageFile">The storage file that will provide the image data.</param>
+      <param name="imageFormat">The image format of the image in the provided storage file.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.StorageFileImageSource.GetBitmapAsync(Nokia.Graphics.Imaging.Bitmap,Nokia.Graphics.Imaging.OutputOption)">
+      <summary>Create a Bitmap with the contents of the image provider.</summary>
+      <param name="bitmap">An input bitmap to fill. If null, a bitmap will be created and returned.</param>
+      <param name="outputOption">Specifies how to adjust if the source image has different aspect ratio from the bitmap passed into this method.</param>
+      <returns>An async result with the bitmap.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.StorageFileImageSource.GetInfoAsync">
+      <summary>Asynchronously get information about this image provider.</summary>
+      <returns>An async result with an ImageProviderInfo containing the information.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.StorageFileImageSource.ImageFormat">
+      <summary>
+The format of the compressed image data.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.StorageFileImageSource.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>Lock the image provider for the purpose of rendering.</summary>
+      <param name="renderRequest">The render request to lock with.</param>
+      <returns>True if the RenderRequest owns the lock. False if the lock was already taken.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.StorageFileImageSource.PreloadAsync">
+      <summary>Perform any loading (expensive operations typically involving I/O) needed to render or get info from this image provider.</summary>
+      <returns>An async action, which completes when the loading is done.</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.StorageFileImageSource.StorageFile">
+      <summary>
+The storage file containing compressed image data.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.TemperatureAndTintFilter">
+      <summary>
+Adjusts the color temperature and tint of the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.TemperatureAndTintFilter.#ctor">
+      <summary>
+Creates and initializes a new TemperatureAndTintFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.TemperatureAndTintFilter.#ctor(System.Double,System.Double)">
+      <summary>
+Creates and initializes a new TemperatureAndTintFilter with specified temperature and tint.
+</summary>
+      <param name="temperature">
+The temperature adjustment value.
+<para>Range [-1.0, 1.0] where 0 implies an unmodified color temperature.</para></param>
+      <param name="tint">
+The tint adjustment.
+<para>Range [-1.0, 1.0] where 0 implies an unmodified color tint.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.TemperatureAndTintFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.TemperatureAndTintFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.TemperatureAndTintFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.TemperatureAndTintFilter.Temperature">
+      <summary>
+        <para>Color temperature adjustment.</para>
+        <para>Range [-1.0, 1.0] where 0 implies an unmodified color temperature.</para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.TemperatureAndTintFilter.Tint">
+      <summary>
+        <para>Color tint adjustment.</para>
+        <para>Range [-1.0, 1.0] where 0 implies an unmodified color tint. </para>
+      </summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.Version">
+      <summary>
+Represents a version number.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Version.#ctor">
+      <summary>
+Creates a new Version object.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Version.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+      <summary>
+Creates a new Version object.
+</summary>
+      <param name="major">
+The value of the major component of the version number.
+</param>
+      <param name="minor">
+The value of the minor component of the version number.
+</param>
+      <param name="build">
+The value of the build component of the version number.
+</param>
+      <param name="revision">
+The value of the revision component of the version number.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Version.#ctor(System.String)">
+      <summary>
+Creates a new Version object.
+</summary>
+      <param name="version">
+A version string in the form of "Major.Minor.Build.Revision".
+</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.Version.Build">
+      <summary>
+Gets the value of the build component of the version number for the current Version object.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.Version.Major">
+      <summary>
+Gets the value of the major component of the version number for the current Version object.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.Version.Minor">
+      <summary>
+Gets the value of the minor component of the version number for the current Version object.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.Version.Revision">
+      <summary>
+Gets the value of the revision component of the version number for the current Version object.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Version.ToLongVersionString">
+      <summary>
+Gets the value of the major component of the version number for the current Version object.
+</summary>
+      <returns>A long string representation of the version number.</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.Version.ToShortVersionString">
+      <summary>
+Converts the value of the current Version object to its equivalent short version string representation.
+</summary>
+      <returns>A short string representation of the version number.</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.VignettingFilter">
+      <summary>
+Applies vignetting effect to the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.VignettingFilter.#ctor">
+      <summary>
+Creates and initializes a new VignettingFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.VignettingFilter.#ctor(System.Double,Windows.UI.Color)">
+      <summary>
+Creates and initializes a new VignettingFilter with specified transition size and vignetting color.
+</summary>
+      <param name="transitionSize">
+The size of the transition region as a fraction of the radius.
+<para>Range [0.0, 15.0].</para></param>
+      <param name="color">
+The color to use for the vignetting effect.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.VignettingFilter.#ctor(System.Double,Windows.UI.Color,Windows.Foundation.Rect)">
+      <summary>
+Creates and initializes a new VignettingFilter with specified transition size, vignetting color and region of application.
+</summary>
+      <param name="transitionSize">
+The size of the transition region as a fraction of the radius.
+<para>Range [0.0, 15.0].</para></param>
+      <param name="color">
+The color to use for the vignetting effect.
+</param>
+      <param name="region">
+A rectangle defining where the vignetting should be applied. 
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.VignettingFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.VignettingFilter.Color">
+      <summary>
+The color to use for the vignetting effect.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.VignettingFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.VignettingFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.VignettingFilter.Region">
+      <summary>
+A rectangle defining where the vignetting should be applied. 
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.VignettingFilter.TransitionSize">
+      <summary>
+        <para>The size of the transition region as a fraction of the radius.</para>
+        <para>Range [0.0, 15.0].</para>
+      </summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.WarpEffect">
+      <summary>
+Effects for the warp filter.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.Upnose">
+      <summary>Upnose</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.Twister">
+      <summary>Twister</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.SmallNose">
+      <summary>SmallNose</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.WideSmile">
+      <summary>WideSmile</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.Grit">
+      <summary>Grit</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.BigFace">
+      <summary>BigFace</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.Professor">
+      <summary>Professor</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.Alien">
+      <summary>Alien</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.BigNose">
+      <summary>BigNose</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.AlienHybrid">
+      <summary>AlienHybrid</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.Gobbler">
+      <summary>Gobbler</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.Square">
+      <summary>Square</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.Sharpchin">
+      <summary>Sharpchin</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.LongFaced">
+      <summary>LongFaced</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.HappyFool">
+      <summary>HappyFool</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WarpEffect.Insect">
+      <summary>Insect</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.WarpFilter">
+      <summary>
+Applies a warp effect to an image or parts of an image .
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WarpFilter.#ctor">
+      <summary>
+Creates and initializes a new WarpFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WarpFilter.#ctor(Nokia.Graphics.Imaging.WarpEffect,System.Double)">
+      <summary>
+Creates and initializes a new WarpFilter with specified warp effect and level.
+</summary>
+      <param name="effect">
+The warp effect to apply. 
+</param>
+      <param name="level">
+Amount of effect applied.
+Range [0.0, 1.0], where 0.0 means no effect and 1.0 means full effect.
+Default is 0.5.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WarpFilter.#ctor(Nokia.Graphics.Imaging.WarpEffect,System.Double,Nokia.Graphics.Imaging.Rotation,Windows.Foundation.Collections.IVector{Windows.Foundation.Rect})">
+      <summary>
+Creates and initializes a new WarpFilter.
+</summary>
+      <param name="effect">
+The warp effect to apply. 
+</param>
+      <param name="level">
+Amount of effect applied.
+Range [0.0, 1.0], where 0.0 means no effect and 1.0 means full effect.
+Default is 0.5.
+</param>
+      <param name="rotation">
+Rotation of the effect.
+</param>
+      <param name="regions">
+Array of rectangles where warp is applied. 
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WarpFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.WarpFilter.Level">
+      <summary>
+        <para>Amount of effect applied.</para>
+        <para>Range [0.0, 1.0], where 0.0 means no effect and 1.0 means full effect.</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WarpFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WarpFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.WarpFilter.Regions">
+      <summary>
+List of rectangles where warp is applied. 
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.WarpFilter.Rotation">
+      <summary>
+Rotation of the effect.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.WarpFilter.WarpEffect">
+      <summary>
+The warp effect to apply. Default is WarpEffect::Upnose.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.WatercolorFilter">
+      <summary>
+Applies a watercolor effect to the to image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WatercolorFilter.#ctor">
+      <summary>
+Creates and initializes a new WatercolorFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WatercolorFilter.#ctor(System.Double,System.Double)">
+      <summary>
+Creates and initializes a new WatercolorFilter with specified intesities.
+</summary>
+      <param name="lightIntensity">
+The light intensity. 
+<para>Range [0.0, 1.0].</para></param>
+      <param name="colorIntensity">
+The color intensity.
+<para>Range [0.0, 1.0].</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WatercolorFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.WatercolorFilter.ColorIntensity">
+      <summary>
+        <para>Specifies color intensity. </para>
+        <para>Range [0.0, 1.0]. </para>
+      </summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.WatercolorFilter.LightIntensity">
+      <summary>
+        <para>Specifies light intensity. </para>
+        <para>Range [0.0, 1.0].</para>
+      </summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WatercolorFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WatercolorFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.WhiteBalanceFilter">
+      <summary>
+Adjusts the white balance in the image.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WhiteBalanceFilter.#ctor">
+      <summary>
+Creates and initializes a new WhiteBalanceFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WhiteBalanceFilter.#ctor(Nokia.Graphics.Imaging.WhitePointCalculationMode)">
+      <summary>
+Creates and initializes a new WhiteBalanceFilter with specified white point calculation mode.
+</summary>
+      <param name="whitePointCalculationMode">
+The white point calculation mode.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WhiteBalanceFilter.#ctor(Nokia.Graphics.Imaging.WhitePointCalculationMode,Windows.UI.Color)">
+      <summary>
+Creates and initializes a new WhiteBalanceFilter with specified white point calculation mode and source whitepoint.
+</summary>
+      <param name="whitePointCalculationMode">
+The white point calculation mode.
+</param>
+      <param name="sourceWhitePoint">
+The source white point reference color.
+<para>Ignored unless mode is set to Manual.</para></param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WhiteBalanceFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WhiteBalanceFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WhiteBalanceFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.WhiteBalanceFilter.SourceWhitePoint">
+      <summary>
+The source white point reference color.
+</summary>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.WhiteBalanceFilter.WhitePointCalculationMode">
+      <summary>
+The white balance mode. 
+<para>Default is WhitePointCalculationMode::Cluster.</para></summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.WhiteBalanceMode">
+      <summary>
+The white balance modes used with the AutoEnhanceFilter.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WhiteBalanceMode.Off">
+      <summary>Does not apply white balance filter.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WhiteBalanceMode.Automatic">
+      <summary>Automatically calculates the white point in the source image, uses a manually set target white point.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WhiteBalanceMode.Manual">
+      <summary>Uses manually set source and target white points.</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.WhiteboardEnhancementFilter">
+      <summary>
+Enhances text and drawings in an image of a whiteboard.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WhiteboardEnhancementFilter.#ctor">
+      <summary>
+Creates and initializes a new WhiteboardEnhancementFilter with default values.
+</summary>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WhiteboardEnhancementFilter.#ctor(Nokia.Graphics.Imaging.WhiteboardEnhancementMode)">
+      <summary>
+Creates and initializes a new WhiteboardEnhancementFilter with a specified mode.
+</summary>
+      <param name="whiteboardEnhancementMode">
+Specifies if the whiteboard effect should be hard or soft.
+</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WhiteboardEnhancementFilter.Apply(Nokia.Graphics.Imaging.IFilterEffect)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="filterEffect">This parameter is passed internally.</param>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WhiteboardEnhancementFilter.Lock(Nokia.Graphics.Imaging.RenderRequest)">
+      <summary>
+Internal framework method.
+</summary>
+      <param name="renderRequest">This parameter is passed internally.</param>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="M:Nokia.Graphics.Imaging.WhiteboardEnhancementFilter.PrepareAsync">
+      <summary>
+Internal framework method.
+</summary>
+      <returns>
+The returned value is for internal use.
+</returns>
+    </member>
+    <member name="P:Nokia.Graphics.Imaging.WhiteboardEnhancementFilter.WhiteboardEnhancementMode">
+      <summary>
+Specifies if the whiteboard effect should be hard or soft.
+</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.WhiteboardEnhancementMode">
+      <summary>
+The whiteboard enhancement modes used with the WhiteBoardEnhancementFilter.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WhiteboardEnhancementMode.Hard">
+      <summary>Enhances the contrast</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WhiteboardEnhancementMode.Soft">
+      <summary>Preserve colors better</summary>
+    </member>
+    <member name="T:Nokia.Graphics.Imaging.WhitePointCalculationMode">
+      <summary>
+The ways in which the white point can be calculated by the white balance filter.
+</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WhitePointCalculationMode.Cluster">
+      <summary>Uses the mean value of the 256-bin distribution.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WhitePointCalculationMode.Mean">
+      <summary> Uses the estimated mean gray for the color correction.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WhitePointCalculationMode.Maximum">
+      <summary> Uses the estimated maximum intensity color.</summary>
+    </member>
+    <member name="F:Nokia.Graphics.Imaging.WhitePointCalculationMode.Manual">
+      <summary> Uses a specified white reference color.</summary>
+    </member>
+  </members>
+</doc>

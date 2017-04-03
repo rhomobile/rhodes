@@ -41,7 +41,7 @@ typedef int SOCKET;
 #else
 #  if defined(OS_WINCE)
 #    include <winsock.h>
-#  elif defined(OS_WP8)
+#  elif defined(OS_WP8) || defined(OS_UWP)
 #    //include "ruby/wp8/winsock_wp8.h"
 #      include <winsock2.h>
 #  endif

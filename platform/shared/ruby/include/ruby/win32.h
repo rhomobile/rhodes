@@ -8,6 +8,9 @@
 #include "wp8.h"
 #endif
 //RHO
+#ifdef OS_UWP
+#include "wp8.h"
+#endif
 
 #if defined(__cplusplus)
 extern "C" {
@@ -149,7 +152,7 @@ extern DWORD rb_w32_osid(void);
 #define getpid()		rb_w32_getpid()
 #define getppid()		rb_w32_getppid()
 #define sleep(x)		rb_w32_Sleep((x)*1000)
-#if !defined(OS_WP8)
+#if !defined(OS_WP8) && !defined(OS_UWP)
 #define Sleep(msec)		(void)rb_w32_Sleep(msec)
 #endif
 #ifdef __BORLANDC__

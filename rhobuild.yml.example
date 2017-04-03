@@ -12,6 +12,7 @@ env:
 build:
   wmpath: platform/wm
   wp8path: platform/wp8
+  uwppath: platform/uwp
   androidpath: platform/android
   iphonepath: platform/iphone
 

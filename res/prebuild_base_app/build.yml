@@ -16,6 +16,8 @@ iphone:
   BundleURLScheme: prebuildbaseapp
 wp8:
   productid: 'd781e2f0-9593-0131-e3bf-482a1411841f'
+uwp:
+  productid: 'd781e2f0-9593-0131-e3bf-482a1411841f'
 android:
   manifest_template: 'AndroidManifest.erb'
   version: 2.3.3

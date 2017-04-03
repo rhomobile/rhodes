@@ -14,14 +14,19 @@ wp8:
   csharp_impl: yes
   root_namespace: rho
 
+uwp:
+  csharp_impl: yes
+  root_namespace: rho
+
 project_paths:
   wp8: ext/platform/wp8/BarcodeLib.vcxproj
+  uwp: ext/platform/uwp/BarcodeLib.vcxproj
   wm: ext/platform/wm/Barcode.vcproj
   #win32: ext/platform/wm/Barcode.vcproj
 
 xml_api_paths: ext/barcode.xml
 
-platforms: ["wm", "iphone", "android", "wp8", "win32"]
+platforms: ["wm", "iphone", "android", "wp8", "win32", "uwp"]
 
 wm:
   files:

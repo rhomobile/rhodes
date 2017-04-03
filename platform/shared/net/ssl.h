@@ -30,7 +30,7 @@
 #include "common/AutoPointer.h"
 #include "curl/curl.h"
 
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_UWP)
 #define ssize_t int
 #endif
 

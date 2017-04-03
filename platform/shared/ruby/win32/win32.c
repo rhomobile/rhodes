@@ -34,7 +34,7 @@
 #include <share.h>
 #endif
 
-#ifndef _WP8_LIB
+#if !defined(_WP8_LIB) && !defined(_UWP_LIB)
 #include <shlobj.h>
 #endif
 

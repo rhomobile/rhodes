@@ -49,7 +49,7 @@
 #define HAVE_STRERROR 1
 
 /* Define to 1 if you have the <strings.h> header file. */
-#if !defined(_WIN32_WCE)&& !defined(WIN32) && !defined(_WP8_LIB)
+#if !defined(_WIN32_WCE)&& !defined(WIN32) && !defined(_WP8_LIB)  && !defined(_UWP_LIB)
 #define HAVE_STRINGS_H 1
 #endif
 
@@ -85,12 +85,12 @@
 #endif
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#if !defined(_WIN32_WCE)&& !defined(WIN32) && !defined(_WP8_LIB)
+#if !defined(_WIN32_WCE)&& !defined(WIN32) && !defined(_WP8_LIB) && !defined(_UWP_LIB)
 #define HAVE_UNISTD_H 1
 #endif
 
 /* Define to 1 if you have the `vasprintf' function. */
-#if !defined(_WIN32_WCE)&& !defined(WIN32)&& !defined(_WP8_LIB)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)&& !defined(_WP8_LIB) && !defined(_UWP_LIB)
 #define HAVE_VASPRINTF 1
 #endif
 

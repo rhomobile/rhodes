@@ -50,6 +50,9 @@
 #ifdef _WP8_LIB
 #include "../../wp8/rhoruntime/common/RhodesHelperWP8.h"
 #endif
+#ifdef _UWP_LIB
+#include "../../uwp/rhoruntime/common/RhodesHelperWP8.h"
+#endif
 
 #ifndef HAVE_STDLIB_H
 char *getenv();

@@ -111,6 +111,18 @@ extern void Init_File(void);
 # endif
 #endif
 
+#if defined(POSIXNAME)
+#define fpfileno _fileno
+#define fpdup _dup
+#define fpfdopen _fdopen
+#define fpdup2 _dup2
+#else
+#define fpfileno fileno
+#define fpdup dup
+#define fpfdopen fdopen
+#define fpdup2 dup2
+#endif
+
 #define numberof(array) (int)(sizeof(array) / sizeof((array)[0]))
 
 #define IO_RBUF_CAPA_MIN  8192
@@ -519,7 +531,7 @@ rb_read_check(FILE *fp)
     }
 #else
     if (!STDIO_READ_DATA_PENDING(fp)) {
-	rb_thread_wait_fd(fileno(fp));
+	rb_thread_wait_fd(fpfileno(fp));
     }
 #endif
 }
@@ -538,11 +550,11 @@ ruby_dup(int orig)
 {
     int fd;
 
-    fd = dup(orig);
+    fd = fpdup(orig);
     if (fd < 0) {
 	if (errno == EMFILE || errno == ENFILE || errno == ENOMEM) {
 	    rb_gc();
-	    fd = dup(orig);
+	    fd = fpdup(orig);
 	}
 	if (fd < 0) {
 	    rb_sys_fail(0);
@@ -4600,7 +4612,7 @@ rb_fdopen(int fd, const char *modestr)
 #if defined(sun)
     errno = 0;
 #endif
-    file = fdopen(fd, modestr);
+    file = fpfdopen(fd, modestr);
     if (!file) {
 	if (
 #if defined(sun)
@@ -4611,7 +4623,7 @@ rb_fdopen(int fd, const char *modestr)
 #if defined(sun)
 	    errno = 0;
 #endif
-	    file = fdopen(fd, modestr);
+	    file = fpfdopen(fd, modestr);
 	}
 	if (!file) {
 #ifdef _WIN32
@@ -5772,14 +5784,14 @@ io_reopen(VALUE io, VALUE nfile)
     if (fd != fd2) {
 	if (IS_PREP_STDIO(fptr) || fd <= 2 || !fptr->stdio_file) {
 	    /* need to keep FILE objects of stdin, stdout and stderr */
-	    if (dup2(fd2, fd) < 0)
+	    if (fpdup2(fd2, fd) < 0)
 		rb_sys_fail_path(orig->pathv);
 	}
 	else {
             fclose(fptr->stdio_file);
             fptr->stdio_file = 0;
             fptr->fd = -1;
-            if (dup2(fd2, fd) < 0)
+            if (fpdup2(fd2, fd) < 0)
                 rb_sys_fail_path(orig->pathv);
             fptr->fd = fd;
 	}
@@ -5875,7 +5887,7 @@ rb_io_reopen(int argc, VALUE *argv, VALUE file)
         if (freopen(RSTRING_PTR(fptr->pathv), rb_io_oflags_modestr(oflags), fptr->stdio_file) == 0) {
             rb_sys_fail_path(fptr->pathv);
         }
-        fptr->fd = fileno(fptr->stdio_file);
+        fptr->fd = fpfileno(fptr->stdio_file);
 #ifdef USE_SETVBUF
         if (setvbuf(fptr->stdio_file, NULL, _IOFBF, 0) != 0)
             rb_warn("setvbuf() can't be honoured for %s", RSTRING_PTR(fptr->pathv));
@@ -6533,11 +6545,11 @@ rb_io_initialize(int argc, VALUE *argv, VALUE io)
     fp->encs = convconfig;
     clear_codeconv(fp);
     io_check_tty(fp);
-    if (fileno(stdin) == fd)
+    if (fpfileno(stdin) == fd)
 	fp->stdio_file = stdin;
-    else if (fileno(stdout) == fd)
+    else if (fpfileno(stdout) == fd)
 	fp->stdio_file = stdout;
-    else if (fileno(stderr) == fd)
+    else if (fpfileno(stderr) == fd)
 	fp->stdio_file = stderr;
 
     if (fmode & FMODE_SETENC_BY_BOM) io_set_encoding_by_bom(io);

@@ -1,0 +1,391 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{cd33c829-366c-422a-94ff-8cbc8487dedc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{6803dbb8-d52f-4e4d-9a43-c8622319e814}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="statistic">
+      <UniqueIdentifier>{cde3bef2-371a-4c03-b1bf-b38b9e87b1e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="logging">
+      <UniqueIdentifier>{0b3e879e-e0a7-45f0-aeee-8aef0ef8e2b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rubyext">
+      <UniqueIdentifier>{f16a6317-d277-4312-8eb0-0a9ee7dcabee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="unzip">
+      <UniqueIdentifier>{b2b4f421-cc0d-4e39-9bd0-11462bf0c2f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\push">
+      <UniqueIdentifier>{5aea6e7e-181a-4b00-918e-affafc9305c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="api_generator">
+      <UniqueIdentifier>{f8d479aa-3d3e-4d1c-8b95-802d236c7b84}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shared\common\app_build_capabilities.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\app_build_configs.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\AppMenu.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\AutoPointer.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\emml.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\ExtManager.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\InputStream.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\IRhoBrowser.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\IRhoClassFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\IRhoCrypt.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\IRhoThreadImpl.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoAppAdapter.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoConf.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoDefs.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhodesApp.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhodesAppBase.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoFatalError.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoFile.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoFilePath.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoMath.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoMutexLock.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoNativeViewManager.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\rhoparams.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoPort.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoSettingsDefs.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoSimConf.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoStd.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoSystem.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoThread.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\RhoTime.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\SplashScreen.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\stat.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\StringConverter.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\ThreadQueue.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\Tokenizer.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\logging\RhoLog.h">
+      <Filter>logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\logging\RhoLogCat.h">
+      <Filter>logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\logging\RhoLogConf.h">
+      <Filter>logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\logging\RhoLogSink.h">
+      <Filter>logging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\unzip.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\zip.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\statistic\RhoProfiler.h">
+      <Filter>statistic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\net\CompatWince.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\net\HttpServer.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\net\INetRequest.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\net\RawSocket.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\net\URI.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\rubyext\WebView.h">
+      <Filter>rubyext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\push\IRhoPushClient.h">
+      <Filter>common\push</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\common\push\RhoPushManager.h">
+      <Filter>common\push</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\rubyext\GeoLocation.h">
+      <Filter>rubyext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\BaseClasses.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\GeneratorQueue.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\js_helpers.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\MethodResult.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\StringifyHelper.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\net\ssl.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\crc32.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\deflate.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\gunzip.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\gzguts.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\inffast.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\inffixed.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\inflate.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\inftrees.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\trees.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\zconf.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\zlib.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\unzip\zutil.h">
+      <Filter>unzip</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\shared\common\app_build_configs.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\AppMenu.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\BundleManager.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\RhoConf.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\RhodesApp.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\RhodesAppBase.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\RhoFile.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\RhoMath.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\rhoparams.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\RhoSimConf.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\RhoThread.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\RhoTime.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\SplashScreen.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\ThreadQueue.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\Tokenizer.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\logging\RhoLog.cpp">
+      <Filter>logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\logging\RhoLogConf.cpp">
+      <Filter>logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\logging\RhoLogSink.cpp">
+      <Filter>logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\logging\RhoPlainLog.cpp">
+      <Filter>logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\unzip.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\statistic\RhoProfiler.cpp">
+      <Filter>statistic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\net\CompatWince.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\net\HttpServer.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\net\INetRequest.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\net\RawSocket.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\net\URI.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\rubyext\RhoAppAdapter.cpp">
+      <Filter>rubyext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\common\push\RhoPushManager.cpp">
+      <Filter>common\push</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\rubyext\GeoLocation.cpp">
+      <Filter>rubyext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\rubyext\ZipFiles.cpp">
+      <Filter>rubyext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\zip.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\api_generator\js_helpers.cpp">
+      <Filter>api_generator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\api_generator\MethodResult.cpp">
+      <Filter>api_generator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\api_generator\StringifyHelper.cpp">
+      <Filter>api_generator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\net\ssl.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\adler32.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\crc32.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\deflate.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\gunzip.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\gzclose.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\gzlib.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\gzread.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\gzwrite.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\infback.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\inffast.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\inflate.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\inftrees.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\trees.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\zutil.cpp">
+      <Filter>unzip</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

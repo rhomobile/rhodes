@@ -500,7 +500,7 @@ int netware_init(void);
 #include "setup_once.h"
 #endif
 
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_UWP)
 extern VOID WINAPI SleepWP8(_In_ DWORD dwMilliseconds);
 #define Sleep SleepWP8
 extern DWORD

@@ -7,9 +7,13 @@ libraries: ["RubyvmStub"]
 #wp8:
 #  csharp_impl: yes
 #  root_namespace: rho
+#uwp:
+#  csharp_impl: yes
+#  root_namespace: rho
 
 project_paths:
   #wp8: ext/platform/wp8/RubyvmStubLib.vcxproj
+  #uwp: ext/platform/uwp/RubyvmStubLib.vcxproj
   wm: ext/platform/wm/RubyvmStub.vcproj
   #win32: ext/platform/wm/RubyvmStub.vcproj
   

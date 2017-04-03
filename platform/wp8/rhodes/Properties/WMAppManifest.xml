@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <Deployment AppPlatformVersion='8.0' xmlns='http://schemas.microsoft.com/windowsphone/2012/deployment'>
   <DefaultLanguage code='en-US' xmlns=''/>
-  <App Author='rhomobile' Description='RhodesTestApp' Genre='apps.normal' ProductID='{db3f2549-5ba6-4ac0-b5c7-7fcec86fffd6}' Publisher='rhomobile' PublisherID='{ebb6c370-14cc-415e-8d6a-1e948ef4d58d}' RuntimeType='Silverlight' Title='RhodesTestApp' Version='1.0.0.0' xmlns=''>
+  <App Author='rhomobile' Description='kitchensinkJS' Genre='apps.normal' ProductID='{98cef7b0-88bb-0134-7b78-60f81db5e3c0}' Publisher='rhomobile' PublisherID='{ebb6c370-14cc-415e-8d6a-1e948ef4d58d}' RuntimeType='Silverlight' Title='kitchensinkJS' Version='1.0.0.0' xmlns=''>
     <IconPath IsRelative='true' IsResource='false'>Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name='ID_CAP_NETWORKING'/>

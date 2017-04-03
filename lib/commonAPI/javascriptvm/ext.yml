@@ -7,6 +7,7 @@ android:
 
 project_paths:
   wp8: ext/platform/wp8/JavascriptVM.vcxproj
+  uwp: ext/platform/uwp/JavascriptVM.vcxproj
   wm: ext/platform/wm/JavascriptVM.vcproj
   win32: ext/platform/wm/JavascriptVM.vcproj
   

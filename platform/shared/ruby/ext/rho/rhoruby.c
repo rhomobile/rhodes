@@ -46,6 +46,12 @@
 #include "sync/RhoconnectClientManager.h"
 
 
+#if defined(POSIXNAME)
+#define fpstrdup _strdup
+#else
+#define fpstrdup strdup
+#endif
+
 int rho_is_remote_debug();
 
 #undef DEFAULT_LOGCATEGORY
@@ -202,7 +208,7 @@ void RhoRubyStart()
     //rb_funcall(rb_mGC, rb_intern("stress="), 1, Qtrue);
 
     ruby_init_loadpath(szRoot);
-#if defined(RHODES_EMULATOR) || defined(APP_BUILD_CAPABILITY_SYMBOL) || defined(OS_WP8)
+#if defined(RHODES_EMULATOR) || defined(APP_BUILD_CAPABILITY_SYMBOL) || defined(OS_WP8) || defined(OS_UWP)
     {
         VALUE load_path = GET_VM()->load_path;
         char* app_path = malloc(strlen(szRoot)+100);
@@ -212,7 +218,7 @@ void RhoRubyStart()
         strcpy(app_path, szRoot);
 #if defined(RHODES_EMULATOR)
         strcat(app_path, "app");
-#elif defined(OS_WP8)
+#elif defined(OS_WP8) || defined(OS_UWP)
 		strcat(app_path, "/apps/app");
 #else
         strcat(app_path, "apps/app");
@@ -222,7 +228,7 @@ void RhoRubyStart()
 #if defined(APP_BUILD_CAPABILITY_SYMBOL)
         strcpy(app_path, rho_native_reruntimepath());
         strcat(app_path, "lib");
-#elif defined(OS_WP8)
+#elif defined(OS_WP8) || defined(OS_UWP)
 		strcpy(app_path, szRoot);
         strcat(app_path, "/lib");
 #else
@@ -239,7 +245,7 @@ void RhoRubyStart()
     rb_const_set(rb_cObject, rb_intern("RHODES_EMULATOR"), Qtrue);
 #endif
 
-#if !defined(OS_WP8)
+#if !defined(OS_WP8) && !defined(OS_UWP)
 
     Init_strscan(); //+
     Init_GeoLocation(); //+
@@ -913,7 +919,7 @@ rho_param *rho_param_fromvalue(VALUE v)
             for (i = 0; i < size; ++i) {
                 VALUE key = rb_ary_entry(keys, i);
                 VALUE value = rb_hash_aref(v, key);
-                p->v.hash->name[i] = strdup(RSTRING_PTR(rb_String(key)));
+                p->v.hash->name[i] = fpstrdup(RSTRING_PTR(rb_String(key)));
                 p->v.hash->value[i] = rho_param_fromvalue(value);
             }
             return p;

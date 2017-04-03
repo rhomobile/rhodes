@@ -435,8 +435,8 @@ ruby_thread_init_stack(rb_thread_t *th)
 }
 
 //RHO
- void *rho_nativethread_start();
- void rho_nativethread_end(void *);
+void * rho_nativethread_start();
+void rho_nativethread_end(void *);
  //RHO
 
 static int
@@ -448,6 +448,8 @@ thread_start_func_2(rb_thread_t *th, VALUE *stack_start, VALUE *register_stack_s
     rb_thread_t *join_th;
     rb_thread_t *main_th;
     VALUE errinfo = Qnil;
+    void * rho_thread;
+
 # ifdef USE_SIGALTSTACK
     void rb_register_sigaltstack(rb_thread_t *th);
 
@@ -457,7 +459,7 @@ thread_start_func_2(rb_thread_t *th, VALUE *stack_start, VALUE *register_stack_s
     ruby_thread_set_native(th);
 
     //RHO
-    void* rho_thread = rho_nativethread_start();
+    rho_thread = rho_nativethread_start();
     //RHO
 
     th->machine_stack_start = stack_start;
@@ -564,7 +566,7 @@ thread_start_func_2(rb_thread_t *th, VALUE *stack_start, VALUE *register_stack_s
     }
 
     //RHO
-    rho_nativethread_end(rho_thread);
+    //rho_nativethread_end(rho_thread);
     //RHO
 
     return 0;

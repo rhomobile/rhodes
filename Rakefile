@@ -99,6 +99,7 @@ load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp8/build/wp.rake')
+load File.join(pwd, 'platform/uwp/build/uwp.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 
 
@@ -553,6 +554,7 @@ namespace "clean" do
             rm_rf  File.join(extpath, "ext", "platform", "osx", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "wm", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "wp8", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "uwp", "generated")
             rm_rf  File.join(extpath, "ext", "public", "api", "generated")
           end
         end
@@ -2105,6 +2107,10 @@ namespace "config" do
       if $current_platform == "wp8"
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
       end
+
+      if $current_platform == "uwp"
+        $app_config['extensions'] = $app_config['extensions'] | ['barcode']
+      end
    end
 
    if $current_platform == "android"
@@ -2557,7 +2563,12 @@ def init_extensions(dest, mode = "")
           type            = Jake.getBuildProp( "exttype", extconf )
           xml_api_paths   = extconf["xml_api_paths"]
           extconf_wp8     = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) ? extconf['wp8'] : Hash.new
-          csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
+          extconf_uwp     = $config["platform"] == "uwp" && (!extconf['uwp'].nil?) ? extconf['uwp'] : Hash.new
+          if ($config["platform"] == "wp8")
+            csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
+          else
+            csharp_impl_all = (!extconf_uwp['csharp_impl'].nil?) ? true : false
+          end
 
           if nlib != nil
             nlib.each do |libname|
@@ -2607,20 +2618,33 @@ def init_extensions(dest, mode = "")
               libs = libs + extconf[$config["platform"]]["libraries"]
             end
 
-            if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
+            if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8" || $config["platform"] == "uwp"
               libs.each do |lib|
                 extconf_wp8_lib = !extconf_wp8[lib.downcase].nil? ? extconf_wp8[lib.downcase] : Hash.new
-                csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?)
+                extconf_uwp_lib = !extconf_uwp[lib.downcase].nil? ? extconf_uwp[lib.downcase] : Hash.new
+                csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?) || (!extconf_uwp_lib['csharp_impl'].nil?)
                 if extconf_wp8_lib['libname'].nil?
+                  extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
+                end
+                if extconf_uwp_lib['libname'].nil?
                   extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
                 end
 
                 if csharp_impl
-                  wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
-                  extcsharplibs << (extconf_wp8_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_wp8_lib['libname'] + ".lib"))
-                  extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
-                  extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />'
-                  extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{wp8_root_namespace}.#{lib}Impl.#{lib}Factory())"
+                  if ($config["platform"] == "wp8" )
+                    wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
+                    extcsharplibs << (extconf_wp8_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_wp8_lib['libname'] + ".lib"))
+                    extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
+                    extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />'
+                    extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{wp8_root_namespace}.#{lib}Impl.#{lib}Factory())"
+                  else
+                    uwp_root_namespace = !extconf_uwp_lib['root_namespace'].nil? ? extconf_uwp_lib['root_namespace'] : (!extconf_uwp['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
+                    extcsharplibs << (extconf_uwp_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_uwp_lib['libname'] + ".lib"))
+                    extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
+                    extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\uwp\\' + lib + 'Impl.targets" />'
+                    extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{uwp_root_namespace}.#{lib}Impl.#{lib}Factory())"
+                  end
+                  
                 end
               end
             else
@@ -2747,6 +2771,10 @@ def init_extensions(dest, mode = "")
     extscsharp = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.cs")
     extscsharptargets = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.targets")
     extscsharpcpp = File.join($startdir, "platform", "wp8", "rhoruntime", "CSharpExtensions.cpp")
+  elsif $config["platform"] == "uwp"
+    extscsharp = File.join($startdir, "platform", "uwp", "rhodes", "CSharpExtensions.cs")
+    extscsharptargets = File.join($startdir, "platform", "uwp", "rhodes", "CSharpExtensions.targets")
+    extscsharpcpp = File.join($startdir, "platform", "uwp", "rhoruntime", "CSharpExtensions.cpp")
   end
 
   puts "exts " + exts
@@ -2812,7 +2840,7 @@ def init_extensions(dest, mode = "")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     f.puts "int rho_ruby_is_started();"
 
-    if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
+    if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8" || $config["platform"] == "uwp"
       # Add libraries through pragma
       extlibs.each do |lib|
         f.puts "#pragma comment(lib, \"#{lib}\")"
@@ -3040,6 +3068,7 @@ def common_bundle_start( startdir, dest)
     Dir.glob("**/*.win32.*").each { |f| rm f }
     Dir.glob("**/*.wp.*").each { |f| rm f }
     Dir.glob("**/*.wp8.*").each { |f| rm f }
+    Dir.glob("**/*.uwp.*").each { |f| rm f }
     Dir.glob("**/*.sym.*").each { |f| rm f }
     Dir.glob("**/*.iphone.*").each { |f| rm f }
     Dir.glob("**/*.bb.*").each { |f| rm f }
@@ -3578,7 +3607,7 @@ namespace "build" do
 end
 
 task :get_ext_xml_paths, [:platform] do |t,args|
-  throw "You must pass in platform(win32, wm, android, iphone, wp8)" if args.platform.nil?
+  throw "You must pass in platform(win32, wm, android, iphone, wp8, uwp)" if args.platform.nil?
 
   $current_platform = args.platform
   $current_platform_bridge = args.platform
@@ -3592,7 +3621,7 @@ end
 
 desc "Generate rhoapi-modules.js file with coreapi and javascript parts of extensions"
 task :update_rho_modules_js, [:platform] do |t,args|
-  throw "You must pass in platform(win32, wm, android, iphone, wp8, all)" if args.platform.nil?
+  throw "You must pass in platform(win32, wm, android, iphone, wp8, uwp, all)" if args.platform.nil?
 
   $current_platform = args.platform
   $current_platform = 'wm' if args.platform == 'all'

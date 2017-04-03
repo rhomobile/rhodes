@@ -11,9 +11,10 @@ android:
 
 project_paths:
   wp8: ext/platform/wp8/Indicators.vcxproj
+  uwp: ext/platform/uwp/Indicators.vcxproj
   wm: ext/platform/wm/Indicators.vcproj
   win32: ext/platform/wm/Indicators.vcproj
   
 xml_api_paths: ext/battery.xml, ext/signalindicators.xml, ext/keystate.xml
 
-platforms: ["wm", "iphone", "android", "wp8"]
+platforms: ["wm", "iphone", "android", "wp8", "uwp"]

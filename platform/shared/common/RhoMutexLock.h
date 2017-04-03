@@ -55,7 +55,7 @@ private:
 };
 
 #if defined(WINDOWS_PLATFORM)
-#if defined(OS_WP8)
+#if defined(OS_WP8) || defined(OS_UWP)
 CMutex::CMutex()             { InitializeCriticalSectionEx(&m_nativeMutex, 0, 0); }
 #else
 CMutex::CMutex()             { InitializeCriticalSection(&m_nativeMutex); }

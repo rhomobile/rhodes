@@ -52,7 +52,7 @@ protected:
     static CRhodesAppBase* m_pInstance;
 
     String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath, m_strAppRootPath, m_strAppUserPath, m_strRuntimePath;//, m_strRhodesPath;
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_UWP)
 	static String m_strHomeUrl;
 #else
 	String m_strHomeUrl;

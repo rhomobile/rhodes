@@ -78,6 +78,10 @@
 #include <ws2tcpip.h>
 #endif
 
+#ifdef _UWP_LIB
+#include <ws2tcpip.h>
+#endif
+
 #include "sockport.h"
 
 static int do_not_reverse_lookup = 0;

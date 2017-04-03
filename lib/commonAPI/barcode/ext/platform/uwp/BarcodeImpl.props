@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_RHO_ROOT>D:\Rhomobile\rhodes</_RHO_ROOT>
+    <_TEMP_FILES_ROOT>$(RHO_ROOT)\platform\uwp\bin</_TEMP_FILES_ROOT>
+    <BARCODE_ROOT>..\..</BARCODE_ROOT>
+  </PropertyGroup>
+</Project>

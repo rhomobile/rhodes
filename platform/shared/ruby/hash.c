@@ -2144,7 +2144,7 @@ void
 ruby_setenv(const char *name, const char *value)
 {
 #if defined(_WIN32)
-#if !defined( _WIN32_WCE ) && !defined(OS_WP8)
+#if !defined( _WIN32_WCE ) && !defined(OS_WP8) && !defined(OS_UWP)
 
     int len;
     char *buf;

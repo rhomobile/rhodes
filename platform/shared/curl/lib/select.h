@@ -34,7 +34,7 @@
 /*
  * poll() function on Windows Vista and later is called WSAPoll()
  */
-#if !defined(OS_WP8) && defined(USE_WINSOCK) && (USE_WINSOCK > 1) && \
+#if !defined(OS_WP8) && !defined(OS_UWP) && defined(USE_WINSOCK) && (USE_WINSOCK > 1) && \
     defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0600)
 #  undef  HAVE_POLL
 #  define HAVE_POLL 1
@@ -52,7 +52,7 @@
  * Definition of pollfd struct and constants for platforms lacking them.
  */
 
-#if !defined(OS_WP8) && !defined(HAVE_STRUCT_POLLFD) && \
+#if !defined(OS_WP8) && !defined(OS_UWP) && !defined(HAVE_STRUCT_POLLFD) && \
     !defined(HAVE_SYS_POLL_H) && \
     !defined(HAVE_POLL_H)
 

@@ -8,9 +8,10 @@ android:
 
 project_paths:
   wp8: ext/platform/wp8/Screenorientation.vcxproj
+  uwp: ext/platform/uwp/Screenorientation.vcxproj
   wm: ext/platform/wm/Screenorientation.vcproj
   win32: ext/platform/wm/Screenorientation.vcproj
   
 xml_api_paths: ext/screenorientation.xml
 
-platforms: ["wm", "iphone", "android"]
+platforms: ["wm", "iphone", "android", "uwp"]
