@@ -566,7 +566,7 @@ thread_start_func_2(rb_thread_t *th, VALUE *stack_start, VALUE *register_stack_s
     }
 
     //RHO
-    //rho_nativethread_end(rho_thread);
+    rho_nativethread_end(rho_thread);
     //RHO
 
     return 0;
