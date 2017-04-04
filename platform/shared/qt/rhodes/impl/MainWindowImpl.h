@@ -105,7 +105,7 @@ public:
 private:
     bool m_started;
     void* qtMainWindow;
-    void* qtApplication;
+    //void* qtApplication;
 
 private:
     static int m_screenWidth;

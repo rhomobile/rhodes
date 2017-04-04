@@ -652,7 +652,7 @@ namespace rhodes
             toolbarItems.Add(text, action);
             updateAppBarModeAndVisibility();
         }
-
+        
         public void toolbarAddSeparator()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddSeparator(); }); return; }

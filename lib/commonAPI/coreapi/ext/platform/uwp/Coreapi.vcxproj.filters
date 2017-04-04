@@ -1,0 +1,430 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{80352120-70d6-42bb-98e3-1c361e52bcc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\shared">
+      <UniqueIdentifier>{60f58091-37ba-4e88-a355-14f7fd6cb57e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\shared\generated">
+      <UniqueIdentifier>{e385e312-d9a0-4097-8630-ed93f91838f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\shared\generated\cpp">
+      <UniqueIdentifier>{dd423364-566a-4ce9-9775-2e900845a2df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SQLite3">
+      <UniqueIdentifier>{d42746e2-e21c-4696-b575-56a7c8a67952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SQLite3\shared">
+      <UniqueIdentifier>{106ebca7-65c8-489c-aee7-991dc698395c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SQLite3\shared\generated">
+      <UniqueIdentifier>{b6f6b51e-7c0b-4d38-961f-5fe755de9730}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SQLite3\shared\generated\cpp">
+      <UniqueIdentifier>{c0ca87c1-cd56-4d2d-add0-eed89529bfac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetworkAccess">
+      <UniqueIdentifier>{7d519287-4698-4563-9486-2f32724e42ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetworkAccess\shared">
+      <UniqueIdentifier>{119e3d1e-4f64-48a3-a951-b7f06016aa8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetworkAccess\shared\generated">
+      <UniqueIdentifier>{e177e9db-7dff-4f04-9cba-86cefeb583b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetworkAccess\shared\generated\cpp">
+      <UniqueIdentifier>{994eff05-97f8-410f-bdc6-32dde6f45b6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log">
+      <UniqueIdentifier>{1c7c8e90-c86b-45d8-8810-1637cd69d37d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\shared">
+      <UniqueIdentifier>{4e62bbda-7fa3-4804-8855-3809f64a3b58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\shared\generated">
+      <UniqueIdentifier>{7a719eda-a5ca-4470-bda1-51dc8a8c8ad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\shared\generated\cpp">
+      <UniqueIdentifier>{3be1faf4-03bc-449d-9433-54c3c3e9d49a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application">
+      <UniqueIdentifier>{68dba4f8-5431-4647-b2f2-75bd07518707}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\shared">
+      <UniqueIdentifier>{3c97d9a1-6c28-4ca4-adf8-1e6915909ab4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\shared\generated">
+      <UniqueIdentifier>{be7f8488-1286-4995-8bf5-ba6c68e51341}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\shared\generated\cpp">
+      <UniqueIdentifier>{bff6005b-7570-4feb-96d5-25d710087ea5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File">
+      <UniqueIdentifier>{088acb4a-b407-4d33-a880-18bfd3ac74f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File\shared">
+      <UniqueIdentifier>{4358b604-0ae8-469e-91c7-7535bb697b33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File\shared\generated">
+      <UniqueIdentifier>{c510a969-a7ce-44a5-b7de-cd4e46970b32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File\shared\generated\cpp">
+      <UniqueIdentifier>{d10fda35-44c4-40d5-89ad-f4f51ed6af22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Push">
+      <UniqueIdentifier>{0b6cdafc-6376-4c8a-8e51-98f7deb12ec0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Push\shared">
+      <UniqueIdentifier>{f85e8987-0a2e-4179-8afb-79a4a2fa1243}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Push\shared\generated">
+      <UniqueIdentifier>{0c62b512-e0a9-4ae5-a0dd-faf811aee780}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Push\shared\generated\cpp">
+      <UniqueIdentifier>{cf61144c-82ea-4911-89b4-69eb7935244c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NewORM">
+      <UniqueIdentifier>{e66c7026-a1e5-4f75-aae4-a27254e9ec33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NewORM\shared">
+      <UniqueIdentifier>{754c2bba-46a3-41b3-b9d2-11144bea4f42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NewORM\shared\generated">
+      <UniqueIdentifier>{d538c375-ba68-4e45-b718-5254f33c8877}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{2d584fc0-26c2-4726-b00e-0eaa6abb5a5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config\shared">
+      <UniqueIdentifier>{825d611a-8532-443f-b504-af5a21158fdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config\shared\generated">
+      <UniqueIdentifier>{39572473-db03-4de7-a50d-c26b831ceb0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config\shared\generated\cpp">
+      <UniqueIdentifier>{95c252f8-1007-4508-b4eb-fc1152aad30c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\shared\generated\system_api_init.cpp">
+      <Filter>System\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\system_js_api.cpp">
+      <Filter>System\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\system_ruby_api.c">
+      <Filter>System\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\System_js_wrap.cpp">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\System_ruby_wrap.cpp">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\SystemBase.cpp">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\SystemImplBase.cpp">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\InitExtension.cpp" />
+    <ClCompile Include="..\..\shared\generated\sqlite3_api_init.cpp">
+      <Filter>SQLite3\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\sqlite3_js_api.cpp">
+      <Filter>SQLite3\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\sqlite3_ruby_api.c">
+      <Filter>SQLite3\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\SQLite3_js_wrap.cpp">
+      <Filter>SQLite3\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\SQLite3_ruby_wrap.cpp">
+      <Filter>SQLite3\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\SQLite3Base.cpp">
+      <Filter>SQLite3\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\SQLite3ImplRuby.c">
+      <Filter>SQLite3\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\SQLite3Impl.cpp">
+      <Filter>SQLite3\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\network_api_init.cpp">
+      <Filter>NetworkAccess\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\network_js_api.cpp">
+      <Filter>NetworkAccess\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\network_ruby_api.c">
+      <Filter>NetworkAccess\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NetworkBase.cpp">
+      <Filter>NetworkAccess\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Network_js_wrap.cpp">
+      <Filter>NetworkAccess\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Network_ruby_wrap.cpp">
+      <Filter>NetworkAccess\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SystemImpl.cpp">
+      <Filter>System\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\NetworkImpl.cpp">
+      <Filter>NetworkAccess\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\LogImpl.cpp">
+      <Filter>Log\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\log_api_init.cpp">
+      <Filter>Log\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\log_js_api.cpp">
+      <Filter>Log\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\log_ruby_api.c">
+      <Filter>Log\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Log_js_wrap.cpp">
+      <Filter>Log\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Log_ruby_wrap.cpp">
+      <Filter>Log\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\LogBase.cpp">
+      <Filter>Log\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wm\src\NetworkDetect.cpp">
+      <Filter>NetworkAccess\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ApplicationImpl.cpp">
+      <Filter>Application\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\application_api_init.cpp">
+      <Filter>Application\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\application_js_api.cpp">
+      <Filter>Application\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\application_ruby_api.c">
+      <Filter>Application\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Application_js_wrap.cpp">
+      <Filter>Application\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Application_ruby_wrap.cpp">
+      <Filter>Application\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\ApplicationBase.cpp">
+      <Filter>Application\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\NetworkDetectBase.cpp" />
+    <ClCompile Include="..\..\shared\FileImpl.cpp">
+      <Filter>File\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\rhofile_api_init.cpp">
+      <Filter>File\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\rhofile_js_api.cpp">
+      <Filter>File\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\rhofile_ruby_api.c">
+      <Filter>File\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\RhoFile_js_wrap.cpp">
+      <Filter>File\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\RhoFile_ruby_wrap.cpp">
+      <Filter>File\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\RhoFileBase.cpp">
+      <Filter>File\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\PushImpl.cpp">
+      <Filter>Push\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\push_api_init.cpp">
+      <Filter>Push\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\push_js_api.cpp">
+      <Filter>Push\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\push_ruby_api.c">
+      <Filter>Push\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Push_js_wrap.cpp">
+      <Filter>Push\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Push_ruby_wrap.cpp">
+      <Filter>Push\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\PushBase.cpp">
+      <Filter>Push\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\NewORMImpl.cpp">
+      <Filter>NewORM\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\NewORMModelImpl.cpp">
+      <Filter>NewORM\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\neworm_api_init.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\neworm_js_api.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\neworm_ruby_api.c">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\newormmodel_api_init.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\newormmodel_js_api.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\newormmodel_ruby_api.c">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORM_js_wrap.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORM_ruby_wrap.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMBase.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMModel_js_wrap.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMModel_ruby_wrap.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\NewORMModelBase.cpp">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\config_api_init.cpp">
+      <Filter>Config\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\config_js_api.cpp">
+      <Filter>Config\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\config_ruby_api.c">
+      <Filter>Config\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Config_js_wrap.cpp">
+      <Filter>Config\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Config_ruby_wrap.cpp">
+      <Filter>Config\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\ConfigBase.cpp">
+      <Filter>Config\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ConfigImpl.cpp">
+      <Filter>Config\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\TimerBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Timer_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Timer_ruby_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\timer_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\timer_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\timer_ruby_api.c" />
+    <ClCompile Include="..\..\shared\TimerImpl.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shared\generated\cpp\ISystem.h">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\ISQLite3.h">
+      <Filter>SQLite3\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\SQLite3Base.h">
+      <Filter>SQLite3\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\INetwork.h">
+      <Filter>NetworkAccess\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\NetworkBase.h">
+      <Filter>NetworkAccess\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\ILog.h">
+      <Filter>Log\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\LogBase.h">
+      <Filter>Log\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wm\src\NetworkDetect.h">
+      <Filter>NetworkAccess\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\ApplicationBase.h">
+      <Filter>Application\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\IApplication.h">
+      <Filter>Application\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\RhoFileBase.h">
+      <Filter>File\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\IRhoFile.h">
+      <Filter>File\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\NewORMModelImpl.h">
+      <Filter>NewORM\shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\NewORMBase.h">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\NewORMModelBase.h">
+      <Filter>NewORM\shared\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\ConfigBase.h">
+      <Filter>Config\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\IConfig.h">
+      <Filter>Config\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\ITimer.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\TimerBase.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\Network.xml">
+      <Filter>NetworkAccess</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\sqlite3.xml">
+      <Filter>SQLite3</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\system.xml">
+      <Filter>System</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Log.xml">
+      <Filter>Log</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Application.xml">
+      <Filter>Application</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\File.xml">
+      <Filter>File</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\push.xml">
+      <Filter>Push</Filter>
+    </Xml>
+    <Xml Include="..\..\Config.xml">
+      <Filter>Config</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>

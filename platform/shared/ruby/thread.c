@@ -562,6 +562,7 @@ thread_start_func_2(rb_thread_t *th, VALUE *stack_start, VALUE *register_stack_s
     rb_thread_list_t *join_list;
     rb_thread_t *main_th;
     VALUE errinfo = Qnil;
+    void* rho_thread = 0; //RHO
 # ifdef USE_SIGALTSTACK
     void rb_register_sigaltstack(rb_thread_t *th);
 
@@ -574,7 +575,7 @@ thread_start_func_2(rb_thread_t *th, VALUE *stack_start, VALUE *register_stack_s
     ruby_thread_set_native(th);
 
     //RHO
-    void* rho_thread = rho_nativethread_start();
+    rho_thread = rho_nativethread_start();
     //RHO
     th->machine.stack_start = stack_start;
 #ifdef __ia64

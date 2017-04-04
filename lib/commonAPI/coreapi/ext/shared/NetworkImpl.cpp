@@ -2,7 +2,7 @@
 #include "INetworkDetect.h"
 #include <list>
 
-#if (defined OS_WINCE || defined OS_WP8)
+#if (defined OS_WINCE || defined OS_WP8 || defined(OS_UWP))
 #if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
 #include "../platform/wm/src/ConnectionManager.h"
 #endif

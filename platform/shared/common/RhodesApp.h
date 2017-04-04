@@ -147,6 +147,8 @@ private:
     boolean m_bExit, m_bRestartServer;
 
     String m_strListeningPorts;
+    String m_strNodeJSListeningPorts;
+    int m_nNodeJSListeningPorts;
 
     common::CAutoPtr<net::CHttpServer> m_httpServer;
     CSplashScreen m_oSplashScreen;
@@ -270,6 +272,7 @@ public:
 
     void notifyLocalServerStarted();
     const char* getFreeListeningPort();
+    const char* getNodeJSListeningPort();
     int determineFreeListeningPort();
 	
     void setNetworkStatusNotify(const apiGenerator::CMethodResult& oResult, int poll_interval);
@@ -284,6 +287,7 @@ public:
     bool isLocalServerRunning() { return ( (m_httpServer) && (m_httpServer->started()) ); }
   
     unsigned int getLocalServerPort() { return (m_httpServer!=0)?(m_httpServer->getPort()):0; }
+    unsigned int getNodeJSServerPort() { return m_nNodeJSListeningPorts; }
 #ifdef OS_MACOSX
     String directHttpRequest( const String& method, const String& uri, const String& query, const rho::net::HttpHeaderList& headers, const String& body ) {  return m_httpServer->directRequest(method, uri, query, headers, body ); }
 #endif
@@ -359,6 +363,8 @@ void rho_http_free(void* data);
 
 int rho_http_started();
 int rho_http_get_port();
+int rho_nodejs_get_port();
+    
 
 #ifdef OS_MACOSX
 const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int bodylen, int* responseLength );
@@ -414,6 +420,7 @@ void rho_platform_restart_application();
 void rho_sys_set_network_status_notify(const char* url, int poll_interval);
 void rho_sys_clear_network_status_notify();
 int rho_rhodesapp_is_application_active();
+int rho_rhodesapp_is_nodejs_app();
     
 #ifdef __cplusplus
 };

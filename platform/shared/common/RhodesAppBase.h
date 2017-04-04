@@ -33,6 +33,8 @@
 #include "common/IRhoClassFactory.h"
 #include "push/RhoPushManager.h"
 #include "api_generator/MethodResult.h"
+#include "common/app_build_capabilities.h"
+#include "common/app_build_configs.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -50,7 +52,7 @@ protected:
     static CRhodesAppBase* m_pInstance;
 
     String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath, m_strAppRootPath, m_strAppUserPath, m_strRuntimePath;//, m_strRhodesPath;
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_UWP)
 	static String m_strHomeUrl;
 #else
 	String m_strHomeUrl;
@@ -62,6 +64,7 @@ protected:
     String m_strPushCallback, m_strPushCallbackParams;
     PushManager m_appPushMgr;
     bool m_bJSApplication;
+    bool m_bNodeJSApplication;
 
     CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
 public:
@@ -92,7 +95,11 @@ public:
 	
     void setJSApplication(bool bJSApp){ m_bJSApplication = bJSApp; }
     bool isJSApplication()const{ return m_bJSApplication; }
-	// Deprecated
+
+    void setNodeJSApplication(bool bJSApp){ m_bNodeJSApplication = bJSApp; }
+    bool isNodeJSApplication()const{ return m_bNodeJSApplication; }
+
+    // Deprecated
     boolean callPushCallback(const String& strData) const;
 
 protected:

@@ -332,7 +332,7 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 #else // !RHODES_EMULATOR
     m_strRhoRoot = m_root.substr(0, m_root.length()-5);
     m_strRuntimeRoot = runtime_root.substr(0, runtime_root.length()-5) +
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_UWP)
          "rho";
 #else
          "/rho/apps";
@@ -356,7 +356,7 @@ CHttpServer::CHttpServer(int port, String const &root)
     
 	m_root = CFilePath::normalizePath(root);
     m_strRuntimeRoot = (m_strRhoRoot = m_root.substr(0, m_root.length()-5)) +
-#ifdef OS_WP8
+#if defined(OS_WP8) || defined(OS_UWP)
          "rho";
 #else
          "/rho/apps";
@@ -554,7 +554,6 @@ bool CHttpServer::run()
         tv.tv_sec = nTimeout/1000;
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
         
-        
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
         
         //int errsv = errno;
@@ -696,7 +695,7 @@ bool CHttpServer::receive_request(ByteVector &request)
 				continue;
 #endif
 
-#if defined(OS_WP8) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)) || defined(OS_WINCE)
+#if defined(OS_WP8) || defined(OS_UWP) || (defined(RHODES_QT_PLATFORM) && defined(OS_WINDOWS_DESKTOP)) || defined(OS_WINCE)
             if (e == EAGAIN || e == WSAEWOULDBLOCK) {
 #else
             if (e == EAGAIN) {

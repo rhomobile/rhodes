@@ -1,0 +1,16 @@
+{
+  "name": "rhonodejsapplication",
+  "version": "0.0.1",
+  "engines": {
+	    "node": "0.10.x",
+	    "npm":  "1.3.x"
+	  },
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "3.3.7",
+    "jade": "*"
+  }
+}

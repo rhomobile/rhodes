@@ -167,7 +167,7 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 		::OutputDebugStringA(szMsg);
 #elif defined( OS_PLATFORM_MOTCE )
 		::OutputDebugStringW(common::convertToStringW(strMsg).c_str());
-#elif defined(OS_WP8)
+#elif defined(OS_WP8) || defined(OS_UWP)
 		::OutputDebugStringW(common::convertToStringW(strMsg).c_str());
 #elif defined( OS_SYMBIAN )
         TPtrC8 des((const TUint8*)szMsg);

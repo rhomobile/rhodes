@@ -1,0 +1,325 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{ddcdeb35-e294-4421-bb60-7249a7ce5150}</ProjectGuid>
+    <RootNamespace>rholib</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.10586.0</WindowsTargetPlatformMinVersion>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>../../shared/ruby;../../shared;;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;POSIXNAME;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ClCompile>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <ClCompile>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Reference Include="Windows">
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="platform.winmd">
+      <IsWinMDFile>true</IsWinMDFile>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shared\api_generator\BaseClasses.h" />
+    <ClInclude Include="..\..\shared\api_generator\GeneratorQueue.h" />
+    <ClInclude Include="..\..\shared\api_generator\js_helpers.h" />
+    <ClInclude Include="..\..\shared\api_generator\MethodResult.h" />
+    <ClInclude Include="..\..\shared\api_generator\StringifyHelper.h" />
+    <ClInclude Include="..\..\shared\common\AppMenu.h" />
+    <ClInclude Include="..\..\shared\common\app_build_capabilities.h" />
+    <ClInclude Include="..\..\shared\common\app_build_configs.h" />
+    <ClInclude Include="..\..\shared\common\AutoPointer.h" />
+    <ClInclude Include="..\..\shared\common\emml.h" />
+    <ClInclude Include="..\..\shared\common\ExtManager.h" />
+    <ClInclude Include="..\..\shared\common\InputStream.h" />
+    <ClInclude Include="..\..\shared\common\IRhoBrowser.h" />
+    <ClInclude Include="..\..\shared\common\IRhoClassFactory.h" />
+    <ClInclude Include="..\..\shared\common\IRhoCrypt.h" />
+    <ClInclude Include="..\..\shared\common\IRhoThreadImpl.h" />
+    <ClInclude Include="..\..\shared\common\push\IRhoPushClient.h" />
+    <ClInclude Include="..\..\shared\common\push\RhoPushManager.h" />
+    <ClInclude Include="..\..\shared\common\RhoAppAdapter.h" />
+    <ClInclude Include="..\..\shared\common\RhoConf.h" />
+    <ClInclude Include="..\..\shared\common\RhoDefs.h" />
+    <ClInclude Include="..\..\shared\common\RhodesApp.h" />
+    <ClInclude Include="..\..\shared\common\RhodesAppBase.h" />
+    <ClInclude Include="..\..\shared\common\RhoFatalError.h" />
+    <ClInclude Include="..\..\shared\common\RhoFile.h" />
+    <ClInclude Include="..\..\shared\common\RhoFilePath.h" />
+    <ClInclude Include="..\..\shared\common\RhoMath.h" />
+    <ClInclude Include="..\..\shared\common\RhoMutexLock.h" />
+    <ClInclude Include="..\..\shared\common\RhoNativeViewManager.h" />
+    <ClInclude Include="..\..\shared\common\rhoparams.h" />
+    <ClInclude Include="..\..\shared\common\RhoPort.h" />
+    <ClInclude Include="..\..\shared\common\RhoSettingsDefs.h" />
+    <ClInclude Include="..\..\shared\common\RhoSimConf.h" />
+    <ClInclude Include="..\..\shared\common\RhoStd.h" />
+    <ClInclude Include="..\..\shared\common\RhoSystem.h" />
+    <ClInclude Include="..\..\shared\common\RhoThread.h" />
+    <ClInclude Include="..\..\shared\common\RhoTime.h" />
+    <ClInclude Include="..\..\shared\common\SplashScreen.h" />
+    <ClInclude Include="..\..\shared\common\stat.h" />
+    <ClInclude Include="..\..\shared\common\StringConverter.h" />
+    <ClInclude Include="..\..\shared\common\ThreadQueue.h" />
+    <ClInclude Include="..\..\shared\common\Tokenizer.h" />
+    <ClInclude Include="..\..\shared\logging\RhoLog.h" />
+    <ClInclude Include="..\..\shared\logging\RhoLogCat.h" />
+    <ClInclude Include="..\..\shared\logging\RhoLogConf.h" />
+    <ClInclude Include="..\..\shared\logging\RhoLogSink.h" />
+    <ClInclude Include="..\..\shared\net\CompatWince.h" />
+    <ClInclude Include="..\..\shared\net\HttpServer.h" />
+    <ClInclude Include="..\..\shared\net\INetRequest.h" />
+    <ClInclude Include="..\..\shared\net\RawSocket.h" />
+    <ClInclude Include="..\..\shared\net\ssl.h" />
+    <ClInclude Include="..\..\shared\net\URI.h" />
+    <ClInclude Include="..\..\shared\rubyext\GeoLocation.h" />
+    <ClInclude Include="..\..\shared\rubyext\WebView.h" />
+    <ClInclude Include="..\..\shared\statistic\RhoProfiler.h" />
+    <ClInclude Include="..\..\shared\unzip\crc32.h" />
+    <ClInclude Include="..\..\shared\unzip\deflate.h" />
+    <ClInclude Include="..\..\shared\unzip\gunzip.h" />
+    <ClInclude Include="..\..\shared\unzip\gzguts.h" />
+    <ClInclude Include="..\..\shared\unzip\inffast.h" />
+    <ClInclude Include="..\..\shared\unzip\inffixed.h" />
+    <ClInclude Include="..\..\shared\unzip\inflate.h" />
+    <ClInclude Include="..\..\shared\unzip\inftrees.h" />
+    <ClInclude Include="..\..\shared\unzip\trees.h" />
+    <ClInclude Include="..\..\shared\unzip\unzip.h" />
+    <ClInclude Include="..\..\shared\unzip\zconf.h" />
+    <ClInclude Include="..\..\shared\unzip\zip.h" />
+    <ClInclude Include="..\..\shared\unzip\zlib.h" />
+    <ClInclude Include="..\..\shared\unzip\zutil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\shared\api_generator\js_helpers.cpp" />
+    <ClCompile Include="..\..\shared\api_generator\MethodResult.cpp" />
+    <ClCompile Include="..\..\shared\api_generator\StringifyHelper.cpp" />
+    <ClCompile Include="..\..\shared\common\AppMenu.cpp" />
+    <ClCompile Include="..\..\shared\common\app_build_configs.c" />
+    <ClCompile Include="..\..\shared\common\BundleManager.cpp" />
+    <ClCompile Include="..\..\shared\common\push\RhoPushManager.cpp" />
+    <ClCompile Include="..\..\shared\common\RhoConf.cpp" />
+    <ClCompile Include="..\..\shared\common\RhodesApp.cpp" />
+    <ClCompile Include="..\..\shared\common\RhodesAppBase.cpp" />
+    <ClCompile Include="..\..\shared\common\RhoFile.cpp" />
+    <ClCompile Include="..\..\shared\common\RhoMath.cpp" />
+    <ClCompile Include="..\..\shared\common\rhoparams.cpp" />
+    <ClCompile Include="..\..\shared\common\RhoSimConf.cpp" />
+    <ClCompile Include="..\..\shared\common\RhoThread.cpp" />
+    <ClCompile Include="..\..\shared\common\RhoTime.cpp" />
+    <ClCompile Include="..\..\shared\common\SplashScreen.cpp" />
+    <ClCompile Include="..\..\shared\common\ThreadQueue.cpp" />
+    <ClCompile Include="..\..\shared\common\Tokenizer.cpp" />
+    <ClCompile Include="..\..\shared\logging\RhoLog.cpp" />
+    <ClCompile Include="..\..\shared\logging\RhoLogConf.cpp" />
+    <ClCompile Include="..\..\shared\logging\RhoLogSink.cpp" />
+    <ClCompile Include="..\..\shared\logging\RhoPlainLog.cpp" />
+    <ClCompile Include="..\..\shared\net\CompatWince.cpp" />
+    <ClCompile Include="..\..\shared\net\HttpServer.cpp" />
+    <ClCompile Include="..\..\shared\net\INetRequest.cpp" />
+    <ClCompile Include="..\..\shared\net\RawSocket.cpp" />
+    <ClCompile Include="..\..\shared\net\ssl.cpp" />
+    <ClCompile Include="..\..\shared\net\URI.cpp" />
+    <ClCompile Include="..\..\shared\rubyext\GeoLocation.cpp" />
+    <ClCompile Include="..\..\shared\rubyext\RhoAppAdapter.cpp" />
+    <ClCompile Include="..\..\shared\rubyext\ZipFiles.cpp" />
+    <ClCompile Include="..\..\shared\statistic\RhoProfiler.cpp" />
+    <ClCompile Include="..\..\shared\unzip\adler32.cpp" />
+    <ClCompile Include="..\..\shared\unzip\crc32.cpp" />
+    <ClCompile Include="..\..\shared\unzip\deflate.cpp" />
+    <ClCompile Include="..\..\shared\unzip\gunzip.cpp" />
+    <ClCompile Include="..\..\shared\unzip\gzclose.cpp" />
+    <ClCompile Include="..\..\shared\unzip\gzlib.cpp" />
+    <ClCompile Include="..\..\shared\unzip\gzread.cpp" />
+    <ClCompile Include="..\..\shared\unzip\gzwrite.cpp" />
+    <ClCompile Include="..\..\shared\unzip\infback.cpp" />
+    <ClCompile Include="..\..\shared\unzip\inffast.cpp" />
+    <ClCompile Include="..\..\shared\unzip\inflate.cpp" />
+    <ClCompile Include="..\..\shared\unzip\inftrees.cpp" />
+    <ClCompile Include="..\..\shared\unzip\trees.cpp" />
+    <ClCompile Include="..\..\shared\unzip\unzip.cpp" />
+    <ClCompile Include="..\..\shared\unzip\zip.cpp" />
+    <ClCompile Include="..\..\shared\unzip\zutil.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -37,7 +37,7 @@ typedef int SOCKET;
 #  define RHO_NET_ERROR_CODE errno
 #  define closesocket close
 #else
-#  if defined(OS_WINCE) || defined(OS_WP8)
+#  if defined(OS_WINCE) || defined(OS_WP8) || defined(OS_UWP)
 #    include <winsock2.h>
 #    include <ws2tcpip.h>
 #  endif
@@ -49,7 +49,7 @@ namespace rho
 namespace net
 {
 
-#if !defined(OS_WINCE) && !defined(OS_WP8)
+#if !defined(OS_WINCE) && !defined(OS_WP8) && !defined(OS_UWP)
 
 class RawSocket
 {

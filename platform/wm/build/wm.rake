@@ -79,6 +79,12 @@ def QTInfo(qtcurrentversion)
        if(eqstatus)
           value =3 # 5.5.0.0
       end
+
+      eqstatus = is_equal("5.8.0.0",qtcurrentversion)
+      puts "Checking for 5.8.0.0 - #{eqstatus}"
+       if(eqstatus)
+          value = 4 # 5.8.0.0
+      end
       return value
 end
 
@@ -704,17 +710,23 @@ namespace "config" do
 
       $msvc_version = $app_config["win32"]["msvc"] if $app_config && $app_config["win32"] && $app_config["win32"]["msvc"]
 
-      # use Visual Studio 2012 by default
-      $vs_version = 2012
-      $vscommontools = ENV['VS110COMNTOOLS']
-      $qmake_makespec = 'win32-msvc2012'
-
+      # use Visual Studio 2015 by default
+      $vs_version = 2015
+      $vscommontools = ENV['VS140COMNTOOLS']
+      $qmake_makespec = 'win32-msvc2015'
+      
       # if win32:msvc is not defined in build.yml, then automatically detect installed Visual Studio
       if $msvc_version.nil?
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           $vs_version = 2008
           $vscommontools = ENV['VS90COMNTOOLS']
           $qmake_makespec = 'win32-msvc2008'
+        end
+        unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
+          $vs_version = 2012
+          $vscommontools = ENV['VS110COMNTOOLS']
+          $qmake_makespec = 'win32-msvc2012'
+          
         end
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set either VS110COMNTOOLS or VS90COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2012 or 2008 respectively."
@@ -729,12 +741,24 @@ namespace "config" do
           exit 1
         end
       elsif $msvc_version == "2012"
+        $vs_version = 2012
+        $vscommontools = ENV['VS110COMNTOOLS']
+        $qmake_makespec = 'win32-msvc2012'
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2012"
           exit 1
         end
+      elsif $msvc_version == "2015"
+        $vs_version = 2015
+        $vscommontools = ENV['VS140COMNTOOLS']
+        $qmake_makespec = 'win32-msvc2015'
+        
+        unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
+          puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2015"
+          exit 1
+        end
       else
-        puts "\nPlease, specify Visual Studio version as either 2008 or 2012 in win32:msvc section of build.yml"
+        puts "\nPlease, specify Visual Studio version as either 2008 or 2012 or 2015 in win32:msvc section of build.yml"
         exit 1
       end
 
@@ -749,8 +773,7 @@ namespace "config" do
         puts "\nPlease, set QTDIR environment variable to Qt root directory path"
         exit 1
       end
-       
-       
+
      # Search for QT 5 or QT 4 files
      qt5corefile =File.join($qtdir, "bin/Qt5Core.dll");
      qt4corefile =File.join($qtdir, "bin/QtCore4.dll");
@@ -777,6 +800,8 @@ namespace "config" do
                     format ="Found QT Version : #{$QVersion}"
                when 3
                     format ="Found QT Version : #{$QVersion}"
+               when 4
+                    format ="Found QT Version : #{$QVersion}"
                else
                     format ="Unknown QT Version : #{$QVersion}"
           end
@@ -786,7 +811,11 @@ namespace "config" do
          if $vs_version == 2008 &&  $qtversionindex == 3
                puts "\n Visual Studio 2008 is not currently supported for this QT version "
           exit 1
-       end
+        end
+          if $vs_version != 2015 &&  $qtversionindex == 4
+               puts "\n Visual Studio  #{$vs_version} is not currently supported for this QT version "
+          exit 1
+        end
        
       $qt_project_dir = File.join( $startdir, 'platform/shared/qt/' )
     end
@@ -1155,19 +1184,19 @@ namespace "build" do
       FileUtils.rm_rf(Dir.glob(File.join($target_path, 'vccorlib*0.dll')), {:secure => true})
       FileUtils.rm_rf(Dir.glob(File.join($target_path, 'D3Dcompiler*.dll')), {:secure => true})
       FileUtils.rm_rf(Dir.glob(File.join($target_path, 'Microsoft.VC*.manifest')), {:secure => true})
-
       deploymsvc = Jake.getBuildBoolProp('deploymsvc', $app_config, true)
-       if(deploymsvc)
-            puts "Microsoft Visual C++ Runtime Binaries for #{$vs_version} included in App Setup Bundle"
-       else
-          puts "Microsoft Visual C++ Runtime Binaries for #{$vs_version} Excluded in App Setup Bundle"
-       end 
-       if($rhosimulator_build)
-           puts "Build for Rhosimulator...msvc"
-            deploymsvc = true;
+      if(deploymsvc)
+        puts "Microsoft Visual C++ Runtime Binaries for #{$vs_version} included in App Setup Bundle"
+      else
+        puts "Microsoft Visual C++ Runtime Binaries for #{$vs_version} Excluded in App Setup Bundle"
+      end 
+      if($rhosimulator_build)
+        puts "Build for Rhosimulator...msvc"
+        deploymsvc = true;
       end
-      if $vs_version == 2008
+      if ($vs_version == 2008)
         # Visual Studio 2008
+        puts "Deploy libs from msvc #{$vs_version}"
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.CRT")
         vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.OPENMP")
         if deploymsvc
@@ -1180,8 +1209,9 @@ namespace "build" do
         end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/ssleay32.dll"), $target_path
-      else
+      elsif ($vs_version == 2012)
         # Visual Studio 2012
+        puts "Deploy libs from msvc #{$vs_version}"
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.CRT")
         vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.OPENMP")
         if deploymsvc
@@ -1190,9 +1220,27 @@ namespace "build" do
           cp File.join(vsredistdir, "vccorlib110.dll"), $target_path
           cp File.join(vsredistdir2, "vcomp110.dll"), $target_path
           cp File.join($vscommontools, "../../VC/bin/D3Dcompiler_46.dll"), $target_path
+          puts "Joining msvc110 libs"
         end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
+      elsif ($vs_version == 2015)
+        # Visual Studio 2015
+        puts "Deploy libs from msvc #{$vs_version}"
+        vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.CRT")
+        vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.OPENMP")
+        if deploymsvc
+          cp File.join(vsredistdir, "msvcp140.dll"), $target_path
+          cp File.join(vsredistdir, "concrt140.dll"), $target_path
+          cp File.join(vsredistdir, "vccorlib140.dll"), $target_path
+          cp File.join(vsredistdir, "vcruntime140.dll"), $target_path
+          cp File.join(vsredistdir2, "vcomp140.dll"), $target_path
+          cp File.join($vscommontools, "../../VC/bin/d3dcompiler_47.dll"), $target_path
+        end
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
+      else
+        puts "Libs version not correct"
       end
 
       FileUtils.rm_rf(File.join($target_path, 'phonon4.dll'), {:secure => true})
@@ -1225,6 +1273,7 @@ namespace "build" do
      #1 - 4.7.4.0     
      #2- 5.1.1.0 
      #3 - 5.5.0.0
+     #4 - 5.8.0.0
        case $qtversionindex
                  when 1 # 4.7.4.0
                     format ="Found QT Version : #{$QVersion}"
@@ -1242,8 +1291,7 @@ namespace "build" do
                     cp File.join($qtdir, "plugins/imageformats/qmng4.dll"), target_if_path
                     cp File.join($qtdir, "plugins/imageformats/qsvg4.dll"), target_if_path
                     cp File.join($qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
-
-               when 2 # 5.1.1.0
+                 when 2 # 5.1.1.0
                     format= "Found QT Version : #{$QVersion}"
                     if File.exists?(File.join($qtdir, "bin/icudt53.dll"))
                       cp File.join($qtdir, "bin/icudt53.dll"), $target_path
@@ -1344,9 +1392,25 @@ namespace "build" do
                         end
                       end
                     end
+               when 4 #5.8.0.0
+                   format ="Found QT Version : #{$QVersion}" 
+                   targetFile = File.join($target_path, $appname + ".exe")
+                    if File.exists? targetFile
+                      Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
+                    else
+                      targetFile = File.join($target_path, "Rhodes.exe")
+                      if File.exists? targetFile
+                        Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
+                      else
+                        targetFile = File.join($target_path, "RhoLaunch.exe")
+                        if File.exists? targetFile
+                          Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
+                        end
+                      end
+                    end
                else
                     format ="Unknown QT Version : #{$QVersion}"
-          end
+              end
           puts format
     end
 
@@ -1866,6 +1930,7 @@ namespace "clean" do
     rm_rf $targetdir
     rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
     rm_rf File.join($startdir, 'platform/win32/bin')
+    rm_rf File.join($startdir, 'platform/wm/bin')
     
     rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
     rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")

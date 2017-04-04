@@ -66,7 +66,7 @@ module Rho
             res = IO.read(filename)
           end
 
-          if System.get_property('platform') != 'WP8'
+          if System.get_property('platform') != 'WP8' && System.get_property('platform') != 'UWP'
             RhoController.start_objectnotify()
             RhoController.start_geoview_notification()
           end

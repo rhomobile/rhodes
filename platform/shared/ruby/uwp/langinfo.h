@@ -1,0 +1,1 @@
+char *getenv(const char *charstuff);

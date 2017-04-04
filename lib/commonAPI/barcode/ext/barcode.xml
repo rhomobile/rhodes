@@ -480,7 +480,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             </PROPERTY>
             <PROPERTY name="scannerType" type="STRING" generateAccessors="true" readOnly="true">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <PLATFORM>WM, CE, Android, WP8</PLATFORM>
+                <PLATFORM>WM, CE, Android, WP8, WIN32</PLATFORM>
                 <APPLIES msiOnly="false">All Scanners</APPLIES>
                 <DESC>The type of scanner in use, will be one of 'Camera', 'Imager' or 'Laser'. Camera scanners capture and process an image taken via the devices camera. Imager scanners rely on capturing and processing an image of the barcode via dedicated scanning hardware. Both camera and imager scanners are capable of decoding 1D and 2D barcodes. Laser scanners are only capable of decoding 1D barcodes and rely on a sweeping laser.</DESC>
             </PROPERTY>

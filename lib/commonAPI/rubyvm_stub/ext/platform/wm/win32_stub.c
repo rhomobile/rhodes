@@ -13,7 +13,7 @@ int rb_w32_map_errno(unsigned long winerr);
 #define map_errno(e) rb_w32_map_errno(e)
 #define AreFileApisANSI() 1
 
-#if defined(_WIN32_WCE) || defined(WIN32) || defined(_WINRT_DLL) || defined(_WP8_LIB)
+#if defined(_WIN32_WCE) || defined(WIN32) || defined(_WINRT_DLL) || defined(_WP8_LIB) || defined(_UWP_LIB)
 # define strncasecmp _strnicmp
 #endif
 

@@ -47,7 +47,7 @@ public:
 
 //extern "C" void Init_Navbar_API();
 
-extern "C"void Init_Navbar()
+extern "C" void Init_Navbar()
 {
     rho::CNavbarFactory::setInstance( new rho::CNavbarFactory() );
     rho::Init_Navbar_API();

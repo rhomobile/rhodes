@@ -41,7 +41,7 @@
 #include <QtGui/QAction>
 #endif
 #include <QHash>
-#include "../QtMainWindow.h"
+#include "../mainwindowinterface.h"
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
@@ -56,32 +56,27 @@ int CMainWindow::m_screenHeight;
 
 bool CMainWindow::mainWindowClosed = false;
 
-CMainWindow::CMainWindow():
-    QObject(),
-    m_started(true),
-    qtMainWindow(NULL)
+CMainWindow::CMainWindow(): QObject(), m_started(true), qtMainWindow(NULL)
 {
-    int argc = 0;
+    //int argc = 0;
     QCoreApplication::setOrganizationName("Rhomobile");
 #ifndef RHODES_EMULATOR
     QCoreApplication::setApplicationName(RHODESAPP().getAppName().c_str());
 #else
     QCoreApplication::setApplicationName("RhoSimulator");
 #endif
-    qtApplication = (void*)new QApplication(argc, 0);
+    //qtApplication = (void*)new QApplication(argc, 0);
 }
 
 CMainWindow::~CMainWindow()
 {
     if (qtMainWindow) delete (QtMainWindow*)qtMainWindow;
-    if (qtApplication) delete (QApplication*)qtApplication;
+    //if (qtApplication) delete (QApplication*)qtApplication;
 }
 
 CMainWindow* CMainWindow::getInstance(void)
 {
-    static CMainWindow* instance = 0;
-    if (instance==0)
-        instance = new CMainWindow();
+    static CMainWindow* instance = new CMainWindow();
     return instance;
 }
 
@@ -117,18 +112,12 @@ void CMainWindow::createCustomMenu(void)
          RHODESAPP().getCurrentUrl().compare(strIndexPage) == 0 )
         m_arAppMenuItems.addElement(CAppMenuItem("Reload RhoBundle","reload_rhobundle"));
 #endif //ENABLE_DYNAMIC_RHOBUNDLE
-
     //update UI with custom menu items
     menuClear();
-    for ( unsigned int i = 0; i < m_arAppMenuItems.size(); i++)
-    {
+    for ( unsigned int i = 0; i < m_arAppMenuItems.size(); i++)  {
         CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
-        if (oItem.m_eType == CAppMenuItem::emtSeparator) 
-            menuAddSeparator();
-        else
-        {
-            menuAddAction((oItem.m_strLink == "close" ? "Exit" : oItem.m_strLabel.c_str()), i, oItem.m_isEnable);
-        }
+        if (oItem.m_eType == CAppMenuItem::emtSeparator) { menuAddSeparator();}
+        else {menuAddAction((oItem.m_strLink == "close" ? "Exit" : oItem.m_strLabel.c_str()), i, oItem.m_isEnable);}
     }
 }
 
@@ -269,7 +258,7 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
 
 void CMainWindow::messageLoop(void)
 {
-    ((QApplication*)qtApplication)->exec();
+    //((QApplication*)qtApplication)->exec();
 }
 
 bool CMainWindow::getFullScreen()

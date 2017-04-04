@@ -36,7 +36,7 @@ typedef unsigned short WORD;
 //
 #else
 
-#if !defined(OS_WP8)
+#if !defined(OS_WP8) && !defined(OS_UWP)
 #include <windows.h>
 #endif
 
@@ -80,7 +80,7 @@ DECLARE_HANDLE(HZIP);
 typedef DWORD ZRESULT;
 // return codes from any of the zip functions. Listed later.
 
-#if defined(OS_WP8) || defined(RHODES_QT_PLATFORM)
+#if defined(OS_WP8) || defined(RHODES_QT_PLATFORM) || defined(OS_UWP)
 extern "C"
 #endif
 HZIP CreateZip(const TCHAR *fn, const char *password);
@@ -116,14 +116,14 @@ HZIP CreateZipHandle(HANDLE h, const char *password);
 // but for real windows, the zip makes its own copy of your handle, so you
 // can close yours anytime.
 
-#if defined(OS_WP8) || defined(RHODES_QT_PLATFORM)
+#if defined(OS_WP8) || defined(RHODES_QT_PLATFORM) || defined(OS_UWP)
 extern "C"
 #endif
 ZRESULT ZipAdd(HZIP hz,const TCHAR *dstzn, const TCHAR *fn);
 ZRESULT ZipAdd(HZIP hz,const TCHAR *dstzn, void *src,unsigned int len);
 ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h);
 ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h, unsigned int len);
-#if defined(OS_WP8) || defined(RHODES_QT_PLATFORM)
+#if defined(OS_WP8) || defined(RHODES_QT_PLATFORM) || defined(OS_UWP)
 extern "C"
 #endif
 ZRESULT ZipAddFolder(HZIP hz,const TCHAR *dstzn, const TCHAR *fn);

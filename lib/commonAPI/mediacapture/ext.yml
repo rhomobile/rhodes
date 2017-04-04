@@ -1,5 +1,6 @@
 entry: Init_Mediacapture_extension	
 libraries: ["mediacapture"]
+
 android:
   source_list: ext/platform/android/ext_java.files
   rhodes_listener: com.rho.mediacapture.RhoListener
@@ -15,14 +16,21 @@ wp8:
     csharp_impl: yes
     root_namespace: rho
     project_path: ext/platform/wp8/CameraLib.vcxproj
+
+wp8:
+  libraries: ["Camera"]
+  camera:
+    csharp_impl: yes
+    root_namespace: rho
+    project_path: ext/platform/uwp/CameraLib.vcxproj
   
 project_paths:
-  wp8: ext/platform/wp8/Mediacapture.vcxproj
+  wp8: ext/platform/uwp/Mediacapture.vcxproj
   wm: ext/platform/wm/Mediacapture.vcproj
   
 xml_api_paths: ext/camera.xml, ext/videocapture.xml
 
-platforms: ["wm", "iphone", "android", "wp8", "win32"]
+platforms: ["wm", "iphone", "android", "wp8" , "uwp", "win32"]
 
 wm:
   files:

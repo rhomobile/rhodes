@@ -62,7 +62,7 @@ namespace RhoAppRunner
             try
             {
                 if (useEmulator)
-                    cDevice = WP8SDK.GetConnectableDevices(false).First(d => d.Name.StartsWith("Emulator WVGA"));
+                    cDevice = WP8SDK.GetConnectableDevices(false).First(d => d.Name.StartsWith("Mobile "));
                 else
                     cDevice = WP8SDK.GetConnectableDevices(false).First(d => d.Name.StartsWith("Device") || d.Name.StartsWith("Windows Phone 8 Device") || d.Name.StartsWith("Windows Phone Device"));
             }

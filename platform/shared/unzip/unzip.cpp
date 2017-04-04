@@ -1,4 +1,4 @@
-#if defined (WIN32)
+#if defined (WIN32) || defined(OS_UWP)
 #ifndef _CRT_NON_CONFORMING_SWPRINTFS
 #define _CRT_NON_CONFORMING_SWPRINTFS
 #endif
@@ -13,6 +13,15 @@
 #define ZIP_STD
 #endif
 
+#if defined(POSIXNAME)
+#define fpfileno _fileno
+#define fpmkdir _mkdir
+#else
+#define fpfileno fileno
+#define fpmkdir mkdir
+#endif
+
+
 #ifdef ZIP_STD
 #include <stdio.h>
 #include <string.h>
@@ -25,10 +34,10 @@
 #endif
 #if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__MINGW32__)
 #include <direct.h>
-#define lumkdir(t) (mkdir(t))
+#define lumkdir(t) (fpmkdir(t))
 #else
 #include <unistd.h>
-#define lumkdir(t) (mkdir(t,0755))
+#define lumkdir(t) (fpmkdir(t,0755))
 #endif
 #include <sys/types.h>
 /* RHO BEGIN */
@@ -73,11 +82,17 @@ typedef unsigned short WORD;
 
 #if defined(WIN32) || defined(_WIN32_WCE)
 #define _tsprintf wsprintf
-#elif defined(_WP8_LIB)
+#elif defined(_WP8_LIB) || defined(_UWP_LIB)
 #define _tsprintf sprintf
 #endif
 #else
 #define _tsprintf sprintf
+#endif
+
+#if defined(POSIXNAME)
+#define ffileno _fileno
+#else
+#define ffileno fileno
 #endif
 
 // THIS FILE is almost entirely based upon code by Jean-loup Gailly
@@ -200,7 +215,7 @@ typedef struct tm_unz_s
 // some windows<->linux portability things
 #ifdef ZIP_STD
 DWORD GetFilePosU(HANDLE hfout)
-{ struct stat st; fstat(fileno(hfout),&st);
+{ struct stat st; fstat(ffileno(hfout),&st);
   if ((st.st_mode&S_IFREG)==0) return 0xFFFFFFFF;
   return ftell(hfout);
 }
@@ -3990,7 +4005,7 @@ ZRESULT TUnzip::Get(int index,ZIPENTRY *ze)
   ze->index=uf->num_file;
   TCHAR tfn[UNZIP_MAX_PATH];
 #ifdef UNICODE
-#if (defined(__SYMBIAN32__) && !defined(WIN32)) || defined(_WP8_LIB)
+#if (defined(__SYMBIAN32__) && !defined(WIN32)) || defined(_WP8_LIB) || defined(_UWP_LIB)
   strcpy(tfn,fn);
 #else  
   MultiByteToWideChar(CP_UTF8,0,fn,-1,tfn,UNZIP_MAX_PATH);
@@ -4098,7 +4113,7 @@ ZRESULT TUnzip::Find(const TCHAR *tname,bool ic,int *index,ZIPENTRY *ze)
 { char name[UNZIP_MAX_PATH];
 #ifdef UNICODE
 
-#if (defined(__SYMBIAN32__) && !defined(WIN32)) || defined(_WP8_LIB)
+#if (defined(__SYMBIAN32__) && !defined(WIN32)) || defined(_WP8_LIB) || defined(_UWP_LIB)
   strcpy(name,tname);
 #else
   WideCharToMultiByte(CP_UTF8,0,tname,-1,name,UNZIP_MAX_PATH,0,0);
@@ -4254,10 +4269,6 @@ ZRESULT TUnzip::Close()
   return ZR_OK;
 }
 
-
-
-
-
 ZRESULT lasterrorU=ZR_OK;
 
 unsigned int FormatZipMessageU(ZRESULT code, TCHAR *buf,unsigned int len)
@@ -4296,7 +4307,8 @@ unsigned int FormatZipMessageU(ZRESULT code, TCHAR *buf,unsigned int len)
 
 
 typedef struct
-{ DWORD flag;
+{
+  DWORD flag;
   TUnzip *unz;
 } TUnzipHandleData;
 
@@ -4304,7 +4316,11 @@ HZIP OpenZipInternal(void *z,unsigned int len,DWORD flags, const char *password)
 { TUnzip *unz = new TUnzip(password);
   lasterrorU = unz->Open(z,len,flags);
   if (lasterrorU!=ZR_OK) {delete unz; return 0;}
+#ifndef _UWP_LIB
+  TUnzipHandleData *han;// = new TUnzipHandleData;
+#else
   TUnzipHandleData *han = new TUnzipHandleData;
+#endif
   han->flag=1; han->unz=unz; return (HZIP)han;
 }
 HZIP OpenZipHandle(HANDLE h, const char *password) {return OpenZipInternal((void*)h,0,ZIP_HANDLE,password);}

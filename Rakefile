@@ -33,7 +33,6 @@ $task_execution_time = false
 
 require 'find'
 require 'erb'
-require 'pp'
 
 #require 'rdoc/task'
 require 'base64'
@@ -100,6 +99,7 @@ load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp8/build/wp.rake')
+load File.join(pwd, 'platform/uwp/build/uwp.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 
 
@@ -160,7 +160,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
+$application_build_configs_keys = ['nodejs_application', 'security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
 
 $winxpe_build = false
 
@@ -248,7 +248,7 @@ def make_application_build_capabilities_header_file
 
   f.puts ''
 
-  if $js_application
+  if $js_application || $nodejs_application
     puts '#define RHO_NO_RUBY' if USE_TRACES
     f.puts '#define RHO_NO_RUBY'
     f.puts '#define RHO_NO_RUBY_API'
@@ -413,6 +413,7 @@ namespace :dev do
       updater = RhoDevelopment::AutoUpdater.new
       updater.add_directory(File.join($app_basedir, '/public'))
       updater.add_directory(File.join($app_basedir, '/app'))
+      updater.add_directory(File.join($app_basedir, '/nodejs')) if File.exists? File.join($app_basedir, '/nodejs')
       updater.run
     end
 
@@ -555,6 +556,7 @@ namespace "clean" do
             rm_rf  File.join(extpath, "ext", "platform", "osx", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "wm", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "wp8", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "uwp", "generated")
             rm_rf  File.join(extpath, "ext", "public", "api", "generated")
           end
         end
@@ -2107,6 +2109,10 @@ namespace "config" do
       if $current_platform == "wp8"
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
       end
+
+      if $current_platform == "uwp"
+        $app_config['extensions'] = $app_config['extensions'] | ['barcode']
+      end
    end
 
    if $current_platform == "android"
@@ -2191,10 +2197,12 @@ namespace "config" do
 
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $js_application    = Jake.getBuildBoolProp("javascript_application")
+    $nodejs_application    = Jake.getBuildBoolProp("nodejs_application")
 
     puts '%%%_%%% $js_application = '+$js_application.to_s if USE_TRACES
+    puts '%%%_%%% $nodejs_application = '+$nodejs_application.to_s if USE_TRACES
 
-    if !$js_application && !Dir.exists?(File.join($app_path, "app"))
+    if !$js_application && !$nodejs_application && !Dir.exists?(File.join($app_path, "app"))
       BuildOutput.error([
                           "Add javascript_application:true to build.yml, since application does not contain app folder.",
                           "See: http://docs.rhomobile.com/guide/api_js#javascript-rhomobile-application-structure"
@@ -2332,7 +2340,7 @@ def add_extension(path,dest)
   chdir path if File.directory?(path)
   puts 'chdir path=' + path.to_s
 
-  if !$js_application
+  if !$js_application && !$nodejs_application
     Dir.glob("*").each do |f|
       cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ || f =~ /^app/  || f =~ /^public/
     end
@@ -2342,8 +2350,10 @@ def add_extension(path,dest)
     FileUtils.cp_r 'app', File.join( dest, "apps/app" ) if File.exist? 'app'
     FileUtils.cp_r 'public', File.join( dest, "apps/public" ) if File.exist? 'public'
   else
-    FileUtils.cp_r('app', File.join( File.dirname(dest), "apps/app" ).to_s) if File.exist? 'app'
-    FileUtils.cp_r('public', File.join( File.dirname(dest), "apps").to_s) if File.exist? 'public'
+    if !$nodejs_application
+      FileUtils.cp_r('app', File.join( File.dirname(dest), "apps/app" ).to_s) if File.exist? 'app'
+      FileUtils.cp_r('public', File.join( File.dirname(dest), "apps").to_s) if File.exist? 'public'
+    end
   end
 
   chdir start
@@ -2465,6 +2475,7 @@ def init_extensions(dest, mode = "")
   extjsmodulefiles = []
   extjsmodulefiles_opt = []
   startJSModules = []
+  startNodeJSModules = []
   startJSModules_opt = []
   endJSModules = []
   extcsharplibs = []
@@ -2477,10 +2488,21 @@ def init_extensions(dest, mode = "")
   extpaths = $app_config["extpaths"]
 
   rhoapi_js_folder = nil
+  rhoapi_nodejs_folder = nil
   if !dest.nil?
-    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
+    if $nodejs_application
+        rhoapi_js_folder = File.join( File.dirname(dest), "apps/nodejs/server/public/api" )
+    else
+        rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
+    end
+    rhoapi_nodejs_folder = File.join( File.dirname(dest), "apps/nodejs/rhoapi" )
   elsif mode == "update_rho_modules_js"
-    rhoapi_js_folder = File.join( $app_path, "public/api" )
+      if $nodejs_application
+          rhoapi_js_folder = File.join( $app_path, "nodejs/server/public/api" )
+      else
+          rhoapi_js_folder = File.join( $app_path, "public/api" )
+      end
+    rhoapi_nodejs_folder = File.join( $app_path, "nodejs/rhoapi" )
   end
 
   do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
@@ -2494,7 +2516,7 @@ def init_extensions(dest, mode = "")
 
   $app_config["extensions"].each do |extname|
     puts 'ext - ' + extname
-    
+
     if extname == "webkit"
 		$is_webkit_engine = true
     end
@@ -2543,7 +2565,12 @@ def init_extensions(dest, mode = "")
           type            = Jake.getBuildProp( "exttype", extconf )
           xml_api_paths   = extconf["xml_api_paths"]
           extconf_wp8     = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) ? extconf['wp8'] : Hash.new
-          csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
+          extconf_uwp     = $config["platform"] == "uwp" && (!extconf['uwp'].nil?) ? extconf['uwp'] : Hash.new
+          if ($config["platform"] == "wp8")
+            csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
+          else
+            csharp_impl_all = (!extconf_uwp['csharp_impl'].nil?) ? true : false
+          end
 
           if nlib != nil
             nlib.each do |libname|
@@ -2573,7 +2600,7 @@ def init_extensions(dest, mode = "")
               if (("rhoelementsext" == extname || "dominjector" == extname) && ($config["platform"] == "wm"||$config["platform"] == "android"))
                 extentries << entry
                 extentries_init << entry
-              elsif !$js_application
+            elsif !$js_application && !$nodejs_application
                 extentries << entry
                 entry =  "if (rho_ruby_is_started()) #{entry}"
                 extentries_init << entry
@@ -2593,20 +2620,33 @@ def init_extensions(dest, mode = "")
               libs = libs + extconf[$config["platform"]]["libraries"]
             end
 
-            if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
+            if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8" || $config["platform"] == "uwp"
               libs.each do |lib|
                 extconf_wp8_lib = !extconf_wp8[lib.downcase].nil? ? extconf_wp8[lib.downcase] : Hash.new
-                csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?)
+                extconf_uwp_lib = !extconf_uwp[lib.downcase].nil? ? extconf_uwp[lib.downcase] : Hash.new
+                csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?) || (!extconf_uwp_lib['csharp_impl'].nil?)
                 if extconf_wp8_lib['libname'].nil?
+                  extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
+                end
+                if extconf_uwp_lib['libname'].nil?
                   extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
                 end
 
                 if csharp_impl
-                  wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
-                  extcsharplibs << (extconf_wp8_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_wp8_lib['libname'] + ".lib"))
-                  extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
-                  extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />'
-                  extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{wp8_root_namespace}.#{lib}Impl.#{lib}Factory())"
+                  if ($config["platform"] == "wp8" )
+                    wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
+                    extcsharplibs << (extconf_wp8_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_wp8_lib['libname'] + ".lib"))
+                    extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
+                    extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />'
+                    extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{wp8_root_namespace}.#{lib}Impl.#{lib}Factory())"
+                  else
+                    uwp_root_namespace = !extconf_uwp_lib['root_namespace'].nil? ? extconf_uwp_lib['root_namespace'] : (!extconf_uwp['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
+                    extcsharplibs << (extconf_uwp_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_uwp_lib['libname'] + ".lib"))
+                    extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
+                    extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\uwp\\' + lib + 'Impl.targets" />'
+                    extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{uwp_root_namespace}.#{lib}Impl.#{lib}Factory())"
+                  end
+                  
                 end
               end
             else
@@ -2661,6 +2701,8 @@ def init_extensions(dest, mode = "")
                 startJSModules.unshift(f)
               elsif f.downcase().end_with?("rhoapi.js")
                 startJSModules << f
+            elsif f.downcase().end_with?("rhonodejsapi.js")
+                startNodeJSModules << f
               elsif f.downcase().end_with?("rho.application.js")
                 endJSModules << f
               elsif f.downcase().end_with?("rho.database.js")
@@ -2731,11 +2773,16 @@ def init_extensions(dest, mode = "")
     extscsharp = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.cs")
     extscsharptargets = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.targets")
     extscsharpcpp = File.join($startdir, "platform", "wp8", "rhoruntime", "CSharpExtensions.cpp")
+  elsif $config["platform"] == "uwp"
+    extscsharp = File.join($startdir, "platform", "uwp", "rhodes", "CSharpExtensions.cs")
+    extscsharptargets = File.join($startdir, "platform", "uwp", "rhodes", "CSharpExtensions.targets")
+    extscsharpcpp = File.join($startdir, "platform", "uwp", "rhoruntime", "CSharpExtensions.cpp")
   end
 
   puts "exts " + exts
 
   # deploy Common API JS implementation
+  extnodejsmodulefiles = startNodeJSModules.concat( extjsmodulefiles )
   extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
   extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
   extjsmodulefiles_opt = startJSModules_opt.concat( extjsmodulefiles_opt )
@@ -2744,6 +2791,10 @@ def init_extensions(dest, mode = "")
     if extjsmodulefiles.count > 0 || extjsmodulefiles_opt.count > 0
       rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
       mkdir_p rhoapi_js_folder
+    end
+    if extnodejsmodulefiles.count > 0
+      rm_rf rhoapi_nodejs_folder if Dir.exist?(rhoapi_nodejs_folder)
+      mkdir_p rhoapi_nodejs_folder
     end
     #
     if !$skip_build_js_api_files
@@ -2764,6 +2815,10 @@ def init_extensions(dest, mode = "")
 
           chdir start_path
         end
+      end
+      if extnodejsmodulefiles.count > 0
+        puts 'extnodejsmodulefiles=' + extnodejsmodulefiles.to_s
+        write_modules_js(rhoapi_nodejs_folder, "rhoapi.js", extnodejsmodulefiles, false)
       end
       # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
       if !$shared_rt_js_appliction
@@ -2787,7 +2842,7 @@ def init_extensions(dest, mode = "")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     f.puts "int rho_ruby_is_started();"
 
-    if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
+    if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8" || $config["platform"] == "uwp"
       # Add libraries through pragma
       extlibs.each do |lib|
         f.puts "#pragma comment(lib, \"#{lib}\")"
@@ -2932,7 +2987,7 @@ def common_bundle_start( startdir, dest)
 
   start = pwd
 
-  if !$js_application
+  if !$js_application && !$nodejs_application
     Dir.glob('lib/framework/*').each do |f|
       cp_r(f, dest, :preserve => true) unless f.to_s == 'lib/framework/autocomplete'
     end
@@ -2961,6 +3016,13 @@ def common_bundle_start( startdir, dest)
   if File.exists? app + '/public'
     public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, file_map, app
   end
+
+  file_map = Jake.build_file_map(File.join($srcdir,'apps/nodejs'), $file_map_name, true)
+
+  if File.exists? app + '/nodejs'
+    public_folder_cp_r app + '/nodejs', File.join($srcdir,'apps/nodejs'), 0, file_map, app
+  end
+
 
   if $app_config["app_type"] == 'rhoelements'
     $config_xml = nil
@@ -3008,6 +3070,7 @@ def common_bundle_start( startdir, dest)
     Dir.glob("**/*.win32.*").each { |f| rm f }
     Dir.glob("**/*.wp.*").each { |f| rm f }
     Dir.glob("**/*.wp8.*").each { |f| rm f }
+    Dir.glob("**/*.uwp.*").each { |f| rm f }
     Dir.glob("**/*.sym.*").each { |f| rm f }
     Dir.glob("**/*.iphone.*").each { |f| rm f }
     Dir.glob("**/*.bb.*").each { |f| rm f }
@@ -3109,7 +3172,7 @@ namespace "build" do
 
     task :xruby do
 
-      if $js_application
+      if $js_application || $nodejs_application
         return
       end
 
@@ -3269,7 +3332,7 @@ namespace "build" do
       process_exclude_folders(excluded_dirs)
       chdir startdir
 
-      if !$js_application
+      if !$js_application && !$nodejs_application
 
         create_manifest
         cp compileERB, $srcdir
@@ -3546,7 +3609,7 @@ namespace "build" do
 end
 
 task :get_ext_xml_paths, [:platform] do |t,args|
-  throw "You must pass in platform(win32, wm, android, iphone, wp8)" if args.platform.nil?
+  throw "You must pass in platform(win32, wm, android, iphone, wp8, uwp)" if args.platform.nil?
 
   $current_platform = args.platform
   $current_platform_bridge = args.platform
@@ -3560,7 +3623,7 @@ end
 
 desc "Generate rhoapi-modules.js file with coreapi and javascript parts of extensions"
 task :update_rho_modules_js, [:platform] do |t,args|
-  throw "You must pass in platform(win32, wm, android, iphone, wp8, all)" if args.platform.nil?
+  throw "You must pass in platform(win32, wm, android, iphone, wp8, uwp, all)" if args.platform.nil?
 
   $current_platform = args.platform
   $current_platform = 'wm' if args.platform == 'all'

@@ -4,6 +4,7 @@ libraries: ["LogCapture"]
 
 project_paths:
   wp8: ext/platform/wp8/LogCapture.vcxproj
+  uwp: ext/platform/uwp/LogCapture.vcxproj
   wm: ext/platform/wm/LogCapture.vcproj
   
 xml_api_paths: ext/LogCapture.xml
