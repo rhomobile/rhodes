@@ -125,7 +125,8 @@ typedef void CURL;
 
 #ifndef curl_socket_typedef
 /* socket typedef */
-#ifdef WIN32
+
+#if defined( WIN32) && defined (SOCKET)
 typedef SOCKET curl_socket_t;
 #define CURL_SOCKET_BAD INVALID_SOCKET
 #else
@@ -229,9 +230,7 @@ typedef enum  {
   CURLSOCKTYPE_LAST   /* never use */
 } curlsocktype;
 
-typedef int (*curl_sockopt_callback)(void *clientp,
-                                     curl_socket_t curlfd,
-                                     curlsocktype purpose);
+typedef int (*curl_sockopt_callback)(void *clientp,  curl_socket_t curlfd, curlsocktype purpose);
 
 struct curl_sockaddr {
   int family;
@@ -243,10 +242,7 @@ struct curl_sockaddr {
   struct sockaddr addr;
 };
 
-typedef curl_socket_t
-(*curl_opensocket_callback)(void *clientp,
-                            curlsocktype purpose,
-                            struct curl_sockaddr *address);
+typedef curl_socket_t (*curl_opensocket_callback)(void *clientp, curlsocktype purpose, struct curl_sockaddr *address);
 
 #ifndef CURL_NO_OLDIES
   /* not used since 7.10.8, will be removed in a future release */

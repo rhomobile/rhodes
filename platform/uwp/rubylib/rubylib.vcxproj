@@ -111,7 +111,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;POSIXNAME;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;POSIXNAME;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;RHODES_VERSION_2;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -138,11 +138,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;POSIXNAME;%(PreprocessorDefinitions);CPP_ELEVEN;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAs>CompileAsC</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,11 +152,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;POSIXNAME;%(PreprocessorDefinitions);CPP_ELEVEN;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAs>CompileAsC</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

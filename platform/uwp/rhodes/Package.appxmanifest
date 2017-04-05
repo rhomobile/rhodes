@@ -1,22 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
+﻿<?xml version="1.0" encoding="utf-8"?>
 
-  <Identity Name="785f1c6d-0e1e-4161-80a9-b4dc98458299"
-            Publisher="CN=Hramovnik"
-            Version="1.0.0.0" />
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  IgnorableNamespaces="uap mp">
 
-  <mp:PhoneIdentity PhoneProductId="1ef3a390-a41a-0134-eff9-60f81db5e3c0" PhonePublisherId="ebb6c370-14cc-415e-8d6a-1e948ef4d58d"/>
+  <Identity
+    Name="caa0300f-1021-40aa-bb98-27c5547616fa"
+    Publisher="CN=TauTechnology"
+    Version="1.0.0.0" />
+
+  <mp:PhoneIdentity PhoneProductId="caa0300f-1021-40aa-bb98-27c5547616fa" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>rhodes</DisplayName>
-    <PublisherDisplayName>Hramovnik</PublisherDisplayName>
+    <PublisherDisplayName>Tau Technology</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
-  <Prerequisites>
-    <OSMinVersion>6.3.1</OSMinVersion>
-    <OSMaxVersionTested>6.3.1</OSMaxVersionTested>
-  </Prerequisites>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+  </Dependencies>
 
   <Resources>
     <Resource Language="x-generate"/>
@@ -24,19 +29,18 @@
 
   <Applications>
     <Application Id="x1ef3a390ya41ay0134yeff9y60f81db5e3c0x"
-        Executable="AGHost.exe"
-        EntryPoint="MainPage.xaml">
-      <m3:VisualElements
-          DisplayName="rhodes"
+      Executable="AGHost.exe"
+      EntryPoint="MainPage.xaml">
+      <uap:VisualElements
+        DisplayName="rhodes"
           Square150x150Logo="Assets\SquareTile150x150.png"
           Square44x44Logo="Assets\Logo.png"
-          Description="rhodes"
-          ForegroundText="light"
+        Description="rhodes"
           BackgroundColor="#464646">
-        <m3:DefaultTile Square71x71Logo="Assets\SquareTile71x71.png"/>
-        <m3:SplashScreen Image="Assets\Splashscreen.png" />
-      </m3:VisualElements>
-      <Extensions>
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+      </uap:VisualElements>
+       <Extensions>
         <Extension Category="windows.backgroundTasks" EntryPoint="AgHost.BackgroundTask">
           <BackgroundTasks>
           <Task Type="systemEvent" />
@@ -45,7 +49,9 @@
       </Extensions>
     </Application>
   </Applications>
+
   <Capabilities>
+    <Capability Name="internetClient" />
   </Capabilities>
   <Extensions>
     <Extension Category="windows.activatableClass.inProcessServer">

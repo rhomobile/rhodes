@@ -151,7 +151,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>OS_UWP;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;_UNICODE;UNICODE;USE_BLOCKING_SOCKETS;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>OS_UWP;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;_UNICODE;UNICODE;USE_BLOCKING_SOCKETS;%(PreprocessorDefinitions);CPP_ELEVEN;_WINSOCK_DEPRECATED_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
@@ -165,10 +165,11 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>OS_UWP;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>OS_UWP;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN;_WINSOCK_DEPRECATED_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
+      <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -178,10 +179,11 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>OS_UWP;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>OS_UWP;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN;_WINSOCK_DEPRECATED_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
+      <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -189,9 +191,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\curl\lib\amigaos.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-    </ClCompile>
+    <ClCompile Include="..\..\shared\curl\lib\amigaos.c" />
     <ClCompile Include="..\..\shared\curl\lib\base64.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
     </ClCompile>

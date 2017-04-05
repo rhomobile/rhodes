@@ -271,9 +271,10 @@ int main(int argc, char *argv[])
 
     // stopping Rhodes application
     rho_ringtone_manager_stop();
-    m_appWindow->DestroyUi();
-    rho::common::CRhodesApp::Destroy();
 
+    m_appWindow->DestroyUi();
+
+    rho::common::CRhodesApp::Destroy();
     return 0;
 }
 

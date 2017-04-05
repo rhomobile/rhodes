@@ -527,7 +527,7 @@ rb_read_check(FILE *fp)
 {
 #ifdef CPP_ELEVEN
     if (!STDIO_READ_DATA_PENDING(GET_STREAM_PTR(fp)))  {
-    rb_thread_wait_fd(fileno(fp));
+    rb_thread_wait_fd(fpfileno(fp));
     }
 #else
     if (!STDIO_READ_DATA_PENDING(fp)) {

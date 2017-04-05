@@ -2278,6 +2278,8 @@ static void init_stdhandle(void)
     }
     if (fileno(stderr) < 0) {
     FILE_FILENO(stderr) = open_null(2);
+    }else {
+    setmode(fileno(stderr), O_BINARY);
     }
 
 #else

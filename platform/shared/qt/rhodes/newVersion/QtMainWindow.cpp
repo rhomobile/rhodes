@@ -90,7 +90,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
 
     tabBar = new QtNativeTabBar(this);
     verticalLayout->addWidget(tabBar);
-    QWebEngineView * webView = new QtWebEngineView(this);
+    webView = new QtWebEngineView(this);
     verticalLayout->addWidget(webView);
 
     QMenuBar * menuBar = new QMenuBar(this);
@@ -154,12 +154,11 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
 
     setUpWebPage(webView->page());
     this->main_webView = webView;
-    this->webView = webView;
 
     this->move(0,0);
     toolBar->hide();
     toolBarRight->hide();
-    main_webView->hide();
+    //main_webView->hide();
 
     GuiThreadFuncHelper::getInstance(this);
 #ifdef RHODES_EMULATOR
@@ -397,8 +396,7 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
         mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));
     }
 
-    if ( m_bFirstLoad )
-    {
+    if ( m_bFirstLoad )  {
         if ( webView->url().toString() != "about:blank" )
         {
             long lMS = RHODESAPP().getSplashScreen().howLongWaitMs();
@@ -474,8 +472,7 @@ void QtMainWindow::GoBack(int index)
 
 void QtMainWindow::GoForward(void)
 {
-    if (webView)
-        webView->forward();
+    if (webView) webView->forward();
 }
 
 void QtMainWindow::Refresh(int index)
@@ -533,8 +530,7 @@ void QtMainWindow::tabbarRemoveAllTabs(bool restore)
 
 void QtMainWindow::tabbarInitialize()
 {
-    if (webView)
-        webView->stop();
+    if (webView)  webView->stop();
     tabbarRemoveAllTabs(false);
     tabBar->clearStyleSheet();
 }
@@ -1018,20 +1014,10 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
                 QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
             m_alertDialog->setStandardButtons(0);
             for (int i = 0; i < (int)params->m_buttons.size(); i++) {
-#ifdef OS_SYMBIAN
-                if(i == 0)
-#endif
-                    m_alertDialog->addButton(QString::fromWCharArray(
+
+            m_alertDialog->addButton(QString::fromWCharArray(
                                                  rho::common::convertToStringW(params->m_buttons[i].m_strCaption).c_str()),
                                              QMessageBox::ActionRole);
-#ifdef OS_SYMBIAN
-                else if( i == 1)
-                    m_alertDialog->addButton(QString::fromWCharArray(
-                                                 rho::common::convertToStringW(params->m_buttons[i].m_strCaption).c_str()),
-                                             QMessageBox::RejectRole);
-                else if(i == 2)
-                    break;
-#endif
             }
             m_alertDialog->exec();
             if (m_alertDialog) {
@@ -1039,13 +1025,7 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
                 if (btn) {
                     for (int i = 0; i < m_alertDialog->buttons().count(); ++i) {
                         if (btn == m_alertDialog->buttons().at(i)) {
-#ifdef OS_SYMBIAN
-                            RHODESAPP().callPopupCallback(params->m_callback,
-                                                          params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strID,
-                                    params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strCaption);
-#else
                             doAlertCallback(params, i, params->m_buttons[i]);
-#endif
                             break;
                         }
                     }

@@ -30,7 +30,7 @@ ExternalWebView::ExternalWebView(QWidget *parent) : QWidget(parent)
 {
     //this->ui->webView->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     QVBoxLayout * vblay = new QVBoxLayout(this);
-    webView = new QWebEngineView(this);
+    webView = new QtWebEngineView(this);
     vblay->addWidget(webView);
     this->move(0,0);
 }

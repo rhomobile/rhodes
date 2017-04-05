@@ -2146,8 +2146,28 @@ rb_w32_open_osfhandle(intptr_t osfhandle, int flags)
     return fh;			/* return handle */
 }
 
-static void
-init_stdhandle(void)
+
+typedef struct {
+	union
+	{
+		FILE  _public_file;
+		char* _ptr;
+	};
+
+	char*            _base;
+	int              _cnt;
+	long             _flags;
+	long             _file;
+	int              _charbuf;
+	int              _bufsiz;
+	char*            _tmpfname;
+	CRITICAL_SECTION _lock;
+} vcruntime_file;
+#define FILE_FILENO(stream) ((vcruntime_file*)stream)->_file
+#define GET_STREAM_PTR(stream) ((vcruntime_file*)stream)
+
+
+static void init_stdhandle(void)
 {
     int nullfd = -1;
     int keep = 0;
@@ -2157,24 +2177,23 @@ init_stdhandle(void)
      ((nullfd == (fd)) ? (keep = 1) : fdup2(nullfd, fd)),	\
      (fd))
 
-    if (ffileno(stdin) < 0) {
-	stdin->_file = open_null(0);
-    }
-    else {
-	fsetmode(ffileno(stdin), O_BINARY);
-    }
-    if (ffileno(stdout) < 0) {
-	stdout->_file = open_null(1);
-    }
-    else {
-	fsetmode(ffileno(stdout), O_BINARY);
-    }
-    if (ffileno(stderr) < 0) {
-	stderr->_file = open_null(2);
-    }
-    else {
-	fsetmode(ffileno(stderr), O_BINARY);
-    }
+
+	if (fpfileno(stdin) < 0) {
+		FILE_FILENO(stdin) = open_null(0);
+	}
+	else {
+		fpsetmode(fpfileno(stdin), O_BINARY);
+	}
+	if (fpfileno(stdout) < 0) {
+		FILE_FILENO(stdout) = open_null(1);
+	}
+	if (fpfileno(stderr) < 0) {
+		FILE_FILENO(stderr) = open_null(2);
+	}
+	else {
+		fpsetmode(fpfileno(stderr), O_BINARY);
+	}
+
     if (nullfd >= 0 && !keep) fclose(nullfd);
     setvbuf(stderr, NULL, _IONBF, 0);
 }
@@ -4628,8 +4647,8 @@ rb_w32_getc(FILE* stream)
 {
     int c;
 #ifndef _WIN32_WCE
-    if (enough_to_get(stream->FILE_COUNT)) {
-	c = (unsigned char)*stream->FILE_READPTR++;
+	if (enough_to_get(GET_STREAM_PTR(stream)->FILE_COUNT)) {
+		c = (unsigned char)*GET_STREAM_PTR(stream)->FILE_READPTR++;
     }
     else 
 #endif
@@ -4650,8 +4669,8 @@ int
 rb_w32_putc(int c, FILE* stream)
 {
 #ifndef _WIN32_WCE
-    if (enough_to_put(stream->FILE_COUNT)) {
-	c = (unsigned char)(*stream->FILE_READPTR++ = (char)c);
+	if (enough_to_put(GET_STREAM_PTR(stream)->FILE_COUNT)) {
+		c = (unsigned char)(*GET_STREAM_PTR(stream)->FILE_READPTR++ = (char)c);
     }
     else 
 #endif

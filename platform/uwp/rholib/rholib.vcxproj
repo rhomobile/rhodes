@@ -111,7 +111,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;POSIXNAME;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;POSIXNAME;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions);CPP_ELEVEN;POSIXNAMES</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -138,11 +138,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN;_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;POSIXNAMES;POSIXNAME</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,11 +152,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN;_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;POSIXNAMES;POSIXNAME</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
