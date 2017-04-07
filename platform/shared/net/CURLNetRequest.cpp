@@ -263,8 +263,9 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     int nRespCode = -1;
     Vector<char> respBody;
     long nStartFrom = 0;
-    if (oFile)
+    if (oFile) {
         nStartFrom = oFile->size();
+    }
 
 	if( !RHODESAPP().isBaseUrl(strUrl.c_str()) )
     {
@@ -274,87 +275,84 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     }
 
     Hashtable<String,String> h;
-    if (pHeaders)
+    if (pHeaders) {
         h = *pHeaders;
-
-    for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
-        Vector<char> respChunk;
-        
-        RequestState state;
-        state.respChunk = &respChunk;
-        state.headers = pHeaders;
-        state.pFile = oFile;
-        state.request = this;
-        
-        ProxySettings proxySettings;
-        proxySettings.initFromConfig();
-		curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h, proxySettings );
-
-        CURL *curl = m_curl.curl();
-        if (pHeaders) {
-            curl_easy_setopt(curl, CURLOPT_HEADERDATA, &state);
-            curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &CURLNetRequest::curlHeaderCallback);
-        }
-
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &state);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CURLNetRequest::curlBodyDataCallback);
-		
-        if (nStartFrom > 0)
-		{
-			RAWLOG_INFO1("CURLNetRequest::doPull - resuming from %d",nStartFrom);
-            curl_easy_setopt(curl, CURLOPT_RESUME_FROM, nStartFrom);
-		}
-
-        CURLcode err = doCURLPerform(strUrl);
-        curl_slist_free_all(hdrs);
-        
-        long statusCode = 0;
-        if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
-            statusCode = 500;
-        
-        RAWTRACE2("CURLNetRequest::doPull - Status code: %d, response size: %d", (int)statusCode, respChunk.size() );
-        
-        switch (statusCode) {
-        case 416:
-    		//Do nothing, file is already loaded
-            break;
-            
-        case 206:
-            if ( oFile!= 0 ) {
-                oFile->flush();
-            } else {
-                std::copy(respChunk.begin(), respChunk.end(), std::back_inserter(respBody));
-            }
-            // Clear counter of attempts because 206 response does not considered to be failed attempt
-            nAttempts = 0;
-            break;
-
-        default:
-            if ( 0 == oFile ) {
-                respBody = respChunk;
-            }
-            break;
-        }
-        
-		if (err == CURLE_OPERATION_TIMEDOUT ) {
-            RAWLOG_INFO("Connection was closed by timeout, but we have part of data received; try to restore connection");
-            nRespCode = -1;
-            
-			if ( oFile != 0 ) {
-				oFile->flush();
-				nStartFrom = oFile->size();
-			} else if ( respChunk.size() > 0 ) {
-				nStartFrom = respBody.size();
-			}
-            continue;
-        }
-        
-        nRespCode = getResponseCode(err, respBody, oSession);
-        break;
     }
 
-	if( !RHODESAPP().isBaseUrl(strUrl.c_str()) )		   
+    Vector<char> respChunk;
+    
+    RequestState state;
+    state.respChunk = &respChunk;
+    state.headers = pHeaders;
+    state.pFile = oFile;
+    state.request = this;
+    
+    ProxySettings proxySettings;
+    proxySettings.initFromConfig();
+	curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h, proxySettings );
+
+    CURL *curl = m_curl.curl();
+    if (pHeaders) {
+        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &state);
+        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &CURLNetRequest::curlHeaderCallback);
+    }
+
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &state);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CURLNetRequest::curlBodyDataCallback);
+	
+    if (nStartFrom > 0)
+	{
+		RAWLOG_INFO1("CURLNetRequest::doPull - resuming from %d",nStartFrom);
+        curl_easy_setopt(curl, CURLOPT_RESUME_FROM, nStartFrom);
+	}
+
+    CURLcode err = doCURLPerform(strUrl);
+    curl_slist_free_all(hdrs);
+    
+    long statusCode = 0;
+    if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0) {
+        statusCode = 500;
+    }
+    
+    RAWTRACE2("CURLNetRequest::doPull - Status code: %d, response size: %d", (int)statusCode, respChunk.size() );
+    
+    switch (statusCode) {
+    case 416:
+		//Do nothing, file is already loaded
+        break;
+        
+    case 206:
+        if ( oFile!= 0 ) {
+            oFile->flush();
+        } else {
+            std::copy(respChunk.begin(), respChunk.end(), std::back_inserter(respBody));
+        }
+        break;
+
+    default:
+        if ( 0 == oFile ) {
+            respBody = respChunk;
+        }
+        break;
+    }
+    
+	if (err == CURLE_OPERATION_TIMEDOUT ) {
+        RAWLOG_INFO("Connection was closed by timeout, but we have part of data received; try to restore connection");
+        nRespCode = -1;
+        
+		if ( oFile != 0 ) {
+			oFile->flush();
+			nStartFrom = oFile->size();
+		} else if ( respChunk.size() > 0 ) {
+			nStartFrom = respBody.size();
+		}
+    } else {        
+        nRespCode = getResponseCode(err, respBody, oSession);
+    }
+
+	if( !RHODESAPP().isBaseUrl(strUrl.c_str()) ) {
 	   rho_net_impl_network_indicator(0);
+    }
     
     if ( m_pCallback != 0 )
     {
