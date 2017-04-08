@@ -56,6 +56,7 @@
 #include "QWebEngineViewSelectionSuppressor.h"
 #include "ExternalWebView.h"
 #include <QWebEngineCookieStore>
+#include <QWebEngineUrlRequestInfo>
 #include "QtNativeTabBar.h"
 #include "DateTimeDialog.h"
 

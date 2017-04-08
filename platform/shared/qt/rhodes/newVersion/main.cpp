@@ -42,6 +42,7 @@
 #include "impl/MainWindowImpl.h"
 #include "QtMainWindow.h"
 #include "QtLogView.h"
+
 #include "../../platform/shared/qt/rhodes/RhoSimulator.h"
 
 using namespace rho;
@@ -110,6 +111,8 @@ char* parseToken(const char* start)
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    QtWebEngine::initialize();
+    qRegisterMetaType<QTextCursor>("QTextCursor");
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QString OSDetailsString= QString("Running on : %1 Application Compiled with QT Version :  %2 Running with QT Version %3")
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());

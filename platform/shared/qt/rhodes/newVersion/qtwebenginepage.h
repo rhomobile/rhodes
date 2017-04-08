@@ -13,8 +13,10 @@ public:
     explicit QtWebEnginePage(QObject *parent = 0);
 
     virtual void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
+protected:
+    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame);
 signals:
-
+    void linkClicked();
 public slots:
 };
 
