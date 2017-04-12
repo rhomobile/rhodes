@@ -52,7 +52,7 @@
 #define WIN32
 #endif
 
-#ifdef OS_UWP
+#if defined(OS_UWP) || defined(_UWP_LIB)
 #include <WinSock2.h>
 #endif
 
