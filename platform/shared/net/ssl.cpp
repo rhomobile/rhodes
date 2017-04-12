@@ -33,6 +33,8 @@ extern "C" {
 
 #define GETSSL rho_get_RhoClassFactory()->createSSLEngine()
 
+
+
 void *rho_ssl_create_storage()
 {
     RAWTRACEC("rho_ssl", "rho_ssl_create_storage");

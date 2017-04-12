@@ -76,11 +76,13 @@
     <IncludePath>$(IncludePath)</IncludePath>
     <OutDir>$(RHO_ROOT)\Platform\uwp\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\</IntDir>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(IncludePath)</IncludePath>
     <OutDir>$(RHO_ROOT)\Platform\uwp\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\</IntDir>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IncludePath>$(IncludePath)</IncludePath>
@@ -99,7 +101,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\uwp;$(RHO_ROOT)\platform\shared\ruby\uwp;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAsWinRT>true</CompileAsWinRT>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
@@ -133,7 +135,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\uwp;$(RHO_ROOT)\platform\shared\ruby\uwp;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAsWinRT>true</CompileAsWinRT>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -162,10 +164,16 @@
     <ClCompile Include="..\..\shared\FileImpl.cpp" />
     <ClCompile Include="..\..\shared\generated\application_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\application_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\application_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\application_ruby_api.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="..\..\shared\generated\config_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\config_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\config_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\config_ruby_api.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="..\..\shared\generated\cpp\ApplicationBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Application_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Application_ruby_wrap.cpp" />
@@ -231,22 +239,40 @@
     <ClCompile Include="..\..\shared\generated\cpp\Timer_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\log_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\log_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\log_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\log_ruby_api.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="..\..\shared\generated\network_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\network_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\network_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\network_ruby_api.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="..\..\shared\generated\newormmodel_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\newormmodel_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\newormmodel_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\newormmodel_ruby_api.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="..\..\shared\generated\neworm_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\neworm_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\neworm_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\neworm_ruby_api.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="..\..\shared\generated\push_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\push_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\push_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\push_ruby_api.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="..\..\shared\generated\rhofile_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\rhofile_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\rhofile_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\rhofile_ruby_api.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="..\..\shared\generated\sqlite3_api_init.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -286,7 +312,10 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\generated\timer_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\timer_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\timer_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\timer_ruby_api.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="..\..\shared\InitExtension.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>

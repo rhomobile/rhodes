@@ -19,6 +19,9 @@ using rhoruntime;
 using System.IO.IsolatedStorage;
 using rhodes.common;
 using System.ComponentModel;
+using Windows.System.Profile;
+using Windows.UI.ViewManagement;
+
 
 namespace rhodes
 {
@@ -95,13 +98,17 @@ namespace rhodes
         <body onload=""notifyUA();""></body>
         </html>";
         // web browser user agent string (initialized with fabricated default value)
-        private string _userAgent = "Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone " +
-            System.Environment.OSVersion.Version.Major.ToString() + "." +
-            System.Environment.OSVersion.Version.Minor.ToString() +
-            "; Trident/6.0; IEMobile/10.0; ARM; Touch; " +
-            Microsoft.Phone.Info.DeviceStatus.DeviceManufacturer + "; " +
-            Microsoft.Phone.Info.DeviceStatus.DeviceName + ")";
 
+        private static readonly Windows.Security.ExchangeActiveSyncProvisioning.EasClientDeviceInformation DEVICE_INFO =
+                new Windows.Security.ExchangeActiveSyncProvisioning.EasClientDeviceInformation();
+
+        private string _userAgent = "Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone " +
+            DEVICE_INFO.OperatingSystem + "." +
+            DEVICE_INFO.SystemManufacturer+
+            "; Trident/6.0; IEMobile/10.0; ARM; Touch; " +
+            DEVICE_INFO.SystemFirmwareVersion + "; " +
+            DEVICE_INFO.SystemHardwareVersion + ")";
+        
         private Dictionary<int, TabProps> _tabProps = new Dictionary<int, TabProps>();
 
         private string initUri = "";
@@ -220,8 +227,8 @@ namespace rhodes
 
         public string getWebviewFramework()
         {
-            return "IE/" + System.Environment.OSVersion.Version.Major.ToString() + "." +
-                System.Environment.OSVersion.Version.Minor.ToString();
+            return "IE/" + DEVICE_INFO.OperatingSystem + "." +
+                DEVICE_INFO.SystemFirmwareVersion;
         }
 
         public string getScreenOrientation()

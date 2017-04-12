@@ -48,6 +48,7 @@
  * but with this warning attached.
  */
 #include "curl.h"
+#include <WinSock2.h>
 
 #ifdef  __cplusplus
 extern "C" {

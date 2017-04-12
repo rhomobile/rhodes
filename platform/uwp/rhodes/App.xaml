@@ -3,9 +3,16 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:rhodes"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
     RequestedTheme="Light">
+    
     <!--Application Resources-->
     <Application.Resources>
-        <LocalizedStrings xmlns:local="clr-namespace:rhodes" x:Key="LocalizedStrings"/>
+        <!--<local:LocalizedStrings xmlns:local="clr-namespace:rhodes" x:Key="LocalizedStrings"/>-->
     </Application.Resources>
+
+    
+
 </Application>

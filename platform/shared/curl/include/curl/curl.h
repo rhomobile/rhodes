@@ -52,6 +52,10 @@
 #define WIN32
 #endif
 
+#ifdef OS_UWP
+#include <WinSock2.h>
+#endif
+
 #include <stdio.h>
 #include <limits.h>
 
@@ -68,6 +72,8 @@
 #include <ws2tcpip.h>
 #endif
 #else
+
+
 
 /* HP-UX systems version 9, 10 and 11 lack sys/select.h and so does oldish
    libc5-based Linux systems. Only include it on system that are known to
@@ -231,6 +237,7 @@ typedef enum  {
 } curlsocktype;
 
 typedef int (*curl_sockopt_callback)(void *clientp,  curl_socket_t curlfd, curlsocktype purpose);
+
 
 struct curl_sockaddr {
   int family;
