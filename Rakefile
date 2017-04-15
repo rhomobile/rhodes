@@ -1843,6 +1843,8 @@ namespace "config" do
 
     # read shared config
     $rhodes_home = create_rhodes_home()
+
+    #TODO: put rhobuild.yml to the user's homedir/.rhomobile
     conf_file = File.join($rhodes_home,buildyml)
     $shared_conf = {}
     if File.exists?(conf_file)

@@ -88,7 +88,7 @@
 #define RUBY_FUNCTION_NAME_STRING __FUNCTION__
 #define PACKED_STRUCT(x) __pragma(pack(push, 1)) x __pragma(pack(pop))
 #define PACKED_STRUCT_UNALIGNED(x) x
-#define RUBY_EXTERN extern __declspec(dllimport)
+#define RUBY_EXTERN extern //RHO: __declspec(dllimport)
 #define HAVE_DECL_SYS_NERR 1
 #define HAVE_LIMITS_H 1
 #define HAVE_FCNTL_H 1
