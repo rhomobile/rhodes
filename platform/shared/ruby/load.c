@@ -1063,7 +1063,7 @@ rb_require(const char *fname)
     VALUE fn = rb_str_new2(fname);
     OBJ_FREEZE(fn);
     // RHO
-    #if !defined(RUBYLINUX) && !defined(RUBYMAC)
+    #if !defined(RHO_RUBY_COMPILER)
     return rb_require_compiled(Qnil, fn);
     #else
     return rb_require_safe(fn, rb_safe_level());

@@ -28,10 +28,11 @@
 
 cc = "gcc"
 cflags = "-ffunction-sections -fdata-sections -Os -fno-fast-math -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wno-maybe-uninitialized -std=iso9899:1999"
+#cflags = "-ffunction-sections -fdata-sections -O0 -g -ggdb -fno-fast-math -Wall -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wunused-variable -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wimplicit-function-declaration -Wdeprecated-declarations -Wno-packed-bitfield-compat -Wno-maybe-uninitialized -std=iso9899:1999"
 xcflags = "-D_FORTIFY_SOURCE=2 -fstack-protector -fno-strict-overflow -fvisibility=hidden -DRUBY_EXPORT -fPIE"
 lnk_flags = "-L. -rdynamic -Wl,-export-dynamic"
 incl = "-I../shared/ruby -I../shared/ruby/linux -I../shared/ruby/include -I../shared/ruby/generated -I../shared -I../shared/ruby/rhoruby -I../shared/sqlite"
-compile = "#{cc} #{cflags} #{xcflags} #{incl} -DRUBYLINUX -DRUBY_EXPORT -c "
+compile = "#{cc} #{cflags} #{xcflags} #{incl} -DRUBYLINUX -DRHO_RUBY_COMPILER -DRUBY_EXPORT -c "
 link = "#{cc} #{lnk_flags}"
 strip = "strip -s -R .comment -R .gnu.version --strip-unneeded"
 target = "target/compiler/rubylinux"

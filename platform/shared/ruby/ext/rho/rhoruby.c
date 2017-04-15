@@ -36,7 +36,10 @@
 #include "../stat/stat.h"
 #endif
 
+#ifndef RHO_RUBY_COMPILER
 #include "common/app_build_capabilities.h"
+#endif
+
 #include "logging/RhoLog.h"
 
 #ifdef RHODES_EMULATOR

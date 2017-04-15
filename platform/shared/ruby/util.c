@@ -509,7 +509,7 @@ char *
 ruby_getcwd(void)
 {
 //RHO
-#if !defined(RUBYMAC)
+#if !defined(RHO_RUBY_COMPILER)
     const char* szRhoPath = rho_native_rhopath();
     int size = strlen(szRhoPath);
     char *buf = xmalloc(size+1);
@@ -551,7 +551,7 @@ ruby_getcwd(void)
 	rb_syserr_fail(e, "getwd");
     }
 #endif
-#endif //RUBYMAC
+#endif //RHO_RUBY_COMPILER
 //RHO
     return buf;
 }
@@ -757,11 +757,11 @@ ruby_getcwd(void)
 #include "stdio.h"
 //RHO
 void rhoRubyFatalError(const char* x);
-#if !defined(RUBYMAC)
+#if !defined(RHO_RUBY_COMPILER)
 #define Bug(x) {rhoRubyFatalError(x);}
 #else
 #define Bug(x) {fprintf(stderr, "%s\n", (x)); exit(EXIT_FAILURE);}
-#endif //RUBYMAC
+#endif //RHO_RUBY_COMPILER
 #endif
 
 #include "stdlib.h"

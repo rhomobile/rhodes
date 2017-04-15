@@ -20,6 +20,10 @@
 #include <sys/fcntl.h>
 #endif
 
+#ifndef RB_INTEGER_TYPE_P
+# define RB_INTEGER_TYPE_P(c) (FIXNUM_P(c) || RB_TYPE_P(c, T_BIGNUM))
+#endif
+
 struct StringIO {
     VALUE string;
     rb_encoding *enc;
@@ -741,13 +745,15 @@ strio_ungetc(VALUE self, VALUE c)
 
     check_modifiable(ptr);
     if (NIL_P(c)) return Qnil;
-    if (FIXNUM_P(c)) {
-	int cc = FIX2INT(c);
+    if (RB_INTEGER_TYPE_P(c)) {
+	int len, cc = NUM2INT(c);
 	char buf[16];
 
 	enc = rb_enc_get(ptr->string);
+	len = rb_enc_codelen(cc, enc);
+	if (len <= 0) rb_enc_uint_chr(cc, enc);
 	rb_enc_mbcput(cc, buf, enc);
-	return strio_unget_bytes(ptr, buf, rb_enc_codelen(cc, enc));
+	return strio_unget_bytes(ptr, buf, len);
     }
     else {
 	SafeStringValue(c);

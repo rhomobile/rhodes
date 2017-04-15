@@ -286,9 +286,14 @@ rb_gcd_gmp(VALUE x, VALUE y)
 
     mpz_gcd(mz, mx, my);
 
+    mpz_clear(mx);
+    mpz_clear(my);
+
     zn = (mpz_sizeinbase(mz, 16) + SIZEOF_BDIGIT*2 - 1) / (SIZEOF_BDIGIT*2);
     z = rb_big_new(zn, 1);
     mpz_export(BIGNUM_DIGITS(z), &count, -1, sizeof(BDIGIT), 0, nails, mz);
+
+    mpz_clear(mz);
 
     return rb_big_norm(z);
 }
@@ -739,7 +744,7 @@ f_addsub(VALUE self, VALUE anum, VALUE aden, VALUE bnum, VALUE bden, int k)
  * Performs addition.
  *
  *    Rational(2, 3)  + Rational(2, 3)   #=> (4/3)
- *    Rational(900)   + Rational(1)      #=> (900/1)
+ *    Rational(900)   + Rational(1)      #=> (901/1)
  *    Rational(-2, 9) + Rational(-9, 2)  #=> (-85/18)
  *    Rational(9, 8)  + 4                #=> (41/8)
  *    Rational(20, 9) + 9.8              #=> 12.022222222222222
@@ -1037,6 +1042,14 @@ nurat_expt(VALUE self, VALUE other)
 		num = ONE;
 		den = ONE;
 		break;
+	    }
+	    if (RB_FLOAT_TYPE_P(num)) { /* infinity due to overflow */
+		if (RB_FLOAT_TYPE_P(den)) return DBL2NUM(NAN);
+		return num;
+	    }
+	    if (RB_FLOAT_TYPE_P(den)) { /* infinity due to overflow */
+		num = ZERO;
+		den = ONE;
 	    }
 	    return f_rational_new2(CLASS_OF(self), num, den);
 	}

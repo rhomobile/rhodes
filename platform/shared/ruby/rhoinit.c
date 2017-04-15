@@ -44,6 +44,7 @@ Init_enc(void)
     rb_encdb_declare("ASCII-8BIT");
     rb_encdb_declare("US-ASCII");
     rb_encdb_declare("UTF-8");
+    rb_encdb_declare("WINDOWS-31J");
     rb_encdb_alias("BINARY", "ASCII-8BIT");
     rb_encdb_alias("ASCII", "US-ASCII");
 }

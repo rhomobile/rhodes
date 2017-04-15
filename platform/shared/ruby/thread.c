@@ -85,6 +85,7 @@ static ID id_locals;
 static void sleep_timeval(rb_thread_t *th, struct timeval time, int spurious_check);
 static void sleep_wait_for_interrupt(rb_thread_t *th, double sleepsec, int spurious_check);
 static void sleep_forever(rb_thread_t *th, int nodeadlock, int spurious_check);
+static void rb_thread_sleep_deadly_allow_spurious_wakeup(void);
 static double timeofday(void);
 static int rb_threadptr_dead(rb_thread_t *th);
 static void rb_check_deadlock(rb_vm_t *vm);
@@ -853,7 +854,7 @@ thread_join_sleep(VALUE arg)
 
     while (target_th->status != THREAD_KILLED) {
 	if (forever) {
-	    sleep_forever(th, 1, 0);
+	    sleep_forever(th, TRUE, FALSE);
 	}
 	else {
 	    double now = timeofday();
@@ -1144,14 +1145,21 @@ void
 rb_thread_sleep_forever(void)
 {
     thread_debug("rb_thread_sleep_forever\n");
-    sleep_forever(GET_THREAD(), 0, 1);
+    sleep_forever(GET_THREAD(), FALSE, TRUE);
 }
 
 void
 rb_thread_sleep_deadly(void)
 {
     thread_debug("rb_thread_sleep_deadly\n");
-    sleep_forever(GET_THREAD(), 1, 1);
+    sleep_forever(GET_THREAD(), TRUE, TRUE);
+}
+
+static void
+rb_thread_sleep_deadly_allow_spurious_wakeup(void)
+{
+    thread_debug("rb_thread_sleep_deadly_allow_spurious_wakeup\n");
+    sleep_forever(GET_THREAD(), TRUE, FALSE);
 }
 
 static double
@@ -2086,6 +2094,8 @@ rb_threadptr_ready(rb_thread_t *th)
     rb_threadptr_interrupt(th);
 }
 
+void rb_threadptr_setup_exception(rb_thread_t *th, VALUE mesg, VALUE cause);
+
 static VALUE
 rb_threadptr_raise(rb_thread_t *th, int argc, VALUE *argv)
 {
@@ -2101,6 +2111,14 @@ rb_threadptr_raise(rb_thread_t *th, int argc, VALUE *argv)
     else {
 	exc = rb_make_exception(argc, argv);
     }
+
+    /* making an exception object can switch thread,
+       so we need to check thread deadness again */
+    if (rb_threadptr_dead(th)) {
+	return Qnil;
+    }
+
+    rb_threadptr_setup_exception(GET_THREAD(), exc, Qundef);
     rb_threadptr_pending_interrupt_enque(th, exc);
     rb_threadptr_interrupt(th);
     return Qnil;
@@ -2163,19 +2181,23 @@ rb_threadptr_reset_raised(rb_thread_t *th)
     return 1;
 }
 
-void
-rb_thread_fd_close(int fd)
+int
+rb_notify_fd_close(int fd)
 {
     rb_vm_t *vm = GET_THREAD()->vm;
     rb_thread_t *th = 0;
+    int busy;
 
+    busy = 0;
     list_for_each(&vm->living_threads, th, vmlt_node) {
 	if (th->waiting_fd == fd) {
 	    VALUE err = th->vm->special_exceptions[ruby_error_closed_stream];
 	    rb_threadptr_pending_interrupt_enque(th, err);
 	    rb_threadptr_interrupt(th);
+	    busy = 1;
 	}
     }
+    return busy;
 }
 
 /*
@@ -2499,8 +2521,8 @@ rb_thread_s_main(VALUE klass)
  *
  *  The default is +false+.
  *
- *  When set to +true+, all threads will abort (the process will
- *  <code>exit(0)</code>) if an exception is raised in any thread.
+ *  When set to +true+, if any thread is aborted by an exception, the
+ *  raised exception will be re-raised in the main thread.
  *
  *  Can also be specified by the global $DEBUG flag or command line option
  *  +-d+.
@@ -2522,7 +2544,8 @@ rb_thread_s_abort_exc(void)
  *  call-seq:
  *     Thread.abort_on_exception= boolean   -> true or false
  *
- *  When set to +true+, all threads will abort if an exception is raised.
+ *  When set to +true+, if any thread is aborted by an exception, the
+ *  raised exception will be re-raised in the main thread.
  *  Returns the new state.
  *
  *     Thread.abort_on_exception = true
@@ -2583,10 +2606,8 @@ rb_thread_abort_exc(VALUE thread)
  *  call-seq:
  *     thr.abort_on_exception= boolean   -> true or false
  *
- *  When set to +true+, all threads (including the main program) will abort if
- *  an exception is raised in this +thr+.
- *
- *  The process will effectively <code>exit(0)</code>.
+ *  When set to +true+, if this +thr+ is aborted by an exception, the
+ *  raised exception will be re-raised in the main thread.
  *
  *  See also #abort_on_exception.
  *

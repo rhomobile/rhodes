@@ -120,7 +120,7 @@ vm_call0_cfunc_with_frame(rb_thread_t* th, struct rb_calling_info *calling, cons
     rb_block_t *blockptr = calling->blockptr;
 
     RUBY_DTRACE_CMETHOD_ENTRY_HOOK(th, me->owner, mid);
-    EXEC_EVENT_HOOK(th, RUBY_EVENT_C_CALL, recv, mid, me->owner, Qnil);
+    EXEC_EVENT_HOOK(th, RUBY_EVENT_C_CALL, recv, me->def->original_id, me->owner, Qnil);
     {
 	rb_control_frame_t *reg_cfp = th->cfp;
 
@@ -139,7 +139,7 @@ vm_call0_cfunc_with_frame(rb_thread_t* th, struct rb_calling_info *calling, cons
 	VM_PROFILE_UP(C2C_POPF);
 	vm_pop_frame(th);
     }
-    EXEC_EVENT_HOOK(th, RUBY_EVENT_C_RETURN, recv, mid, me->owner, val);
+    EXEC_EVENT_HOOK(th, RUBY_EVENT_C_RETURN, recv, me->def->original_id, me->owner, val);
     RUBY_DTRACE_CMETHOD_RETURN_HOOK(th, me->owner, mid);
 
     return val;
@@ -1700,6 +1700,8 @@ singleton_class_for_eval(VALUE self)
     switch (BUILTIN_TYPE(self)) {
       case T_FLOAT: case T_BIGNUM: case T_SYMBOL:
 	return Qnil;
+      case T_STRING:
+	if (FL_TEST_RAW(self, RSTRING_FSTR)) return Qnil;
       default:
 	return rb_singleton_class(self);
     }

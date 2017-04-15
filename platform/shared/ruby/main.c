@@ -24,7 +24,6 @@
 extern void Init_SyncEngine(void);
 extern void Init_strscan(void);
 extern void Init_System(void);
-#define COMPILER 1
 /*
  if (rb_safe_level() == 0) {
  ruby_incpush(getenv("RUBYLIB"));
@@ -34,7 +33,7 @@ extern void Init_System(void);
  */
 //RUBY_GLOBAL_SETUP
 
-#ifndef COMPILER
+#ifndef RHO_RUBY_COMPILER
 int
 main(int argc, char **argv)
 {
@@ -75,7 +74,9 @@ main(int argc, char **argv)
     SetEnvironmentVariable("RUBYLIB","");
 #endif //WIN32
     
-    puts (">>>>> RUNNING RUBY MAC");
+    puts( __DATE__ );
+    puts( __TIME__ );
+    puts (">>>>> RUNNING RUBY COMPILER");
     puts (">>>>> WORK DIR");
     char cwd[1024];
     getcwd(cwd,sizeof(cwd));
