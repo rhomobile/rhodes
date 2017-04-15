@@ -400,7 +400,7 @@ int rho_rcclient_have_rhoconnect_client() {
 }
 
 void *rho_nativethread_start() {
-
+	return 0;
 }
 
 void rho_nativethread_end(void *p) {
