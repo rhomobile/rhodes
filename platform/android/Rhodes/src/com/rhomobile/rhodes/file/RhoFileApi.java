@@ -156,7 +156,6 @@ public class RhoFileApi {
     {
         am = ctx.getAssets();
         nativeInitAssetManager(am);
-        nativeInit();
 
         if (resetFileTree) {
             Log.i(TAG, "Application hash was changed");
@@ -169,6 +168,7 @@ public class RhoFileApi {
             
             RhoFileApi.initialCopy(ctx, new String[] {"hash", "apps/rhoconfig.txt"});
         }
+		nativeInit();
     }
     
     public static void finalSetup(Context ctx, boolean resetFileTree, boolean emulateFileTree) throws IOException

@@ -42,6 +42,7 @@ static rho::common::CAutoPtr<rho::common::AndroidLogSink> s_logSink(new rho::com
 static rho::common::CAutoPtr<rho::common::AndroidMemoryInfoCollector> s_memory_info_collector(new rho::common::AndroidMemoryInfoCollector());
 
 static rho::String s_root_path;
+static rho::String s_root_path_real;
 static rho::String s_sqlite_path;
 static rho::String s_shared_path;
 static rho::String s_log_path;
@@ -50,6 +51,14 @@ static rho::String s_log_path;
 RHO_GLOBAL void android_set_path(const rho::String& root, const rho::String& sqlite, const rho::String& shared)
 {
     s_root_path = root;
+
+    char resolved[PATH_MAX];
+    realpath(root.c_str(), resolved);
+    s_root_path_real = resolved;
+    if (s_root_path_real[s_root_path_real.length()-1] != '/') {
+        s_root_path_real = s_root_path_real + "/";
+    }
+
     s_sqlite_path = sqlite;
     s_shared_path = shared;
 }
@@ -62,6 +71,10 @@ RHO_GLOBAL void android_set_log_path(const rho::String& path)
 rho::String const &rho_root_path()
 {
     return s_root_path;
+}
+rho::String const &rho_root_path_real()
+{
+    return s_root_path_real;
 }
 //--------------------------------------------------------------------------------------------------
 rho::String const &rho_shared_path()
