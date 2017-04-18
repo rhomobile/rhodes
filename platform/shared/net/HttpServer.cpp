@@ -306,10 +306,10 @@ static VALUE create_request_hash(String const &application, String const &model,
 
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root, bool enable_external_access, bool started_as_separated_simple_server)
     :m_active(false), m_port(port), verbose(true), m_IP_adress("")
-#ifdef OS_MACOSX
+//#ifdef OS_MACOSX
     , m_localResponseWriter(0)
     , m_pQueue(0)    
-#endif
+//#endif
 {
     m_enable_external_access = enable_external_access;
     m_started_as_separated_simple_server = started_as_separated_simple_server;
@@ -318,10 +318,10 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
     :m_active(false), m_port(port), verbose(true), m_IP_adress("")
-#ifdef OS_MACOSX
+//#ifdef OS_MACOSX
     , m_localResponseWriter(0)
     , m_pQueue(0)
-#endif
+//#endif
 {
     m_enable_external_access = false;
     m_started_as_separated_simple_server = false;
@@ -346,10 +346,10 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     
 CHttpServer::CHttpServer(int port, String const &root)
     :m_active(false), m_port(port), verbose(true), m_IP_adress("")
-#ifdef OS_MACOSX
+//#ifdef OS_MACOSX
     , m_localResponseWriter(0)
     , m_pQueue(0)
-#endif
+//#endif
 {
     m_enable_external_access = false;
     m_started_as_separated_simple_server = false;
@@ -748,12 +748,12 @@ bool CHttpServer::receive_request(ByteVector &request)
 
 bool CHttpServer::send_response_impl(String const &data, bool continuation)
 {
-#ifdef OS_MACOSX
+//#ifdef OS_MACOSX
     if ( m_localResponseWriter != 0 ) {
       m_localResponseWriter->writeResponse( data );
       return true;
     }
-#endif
+//#endif
 
     if (verbose) {
         if (continuation)
@@ -1511,7 +1511,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
     return bRes;
 }
 
-#ifdef OS_MACOSX
+//#ifdef OS_MACOSX
 String CHttpServer::directRequest( const String& method, const String& uri, const String& query, const HeaderList& headers ,const String& body )
 {
   if (is_net_trace()) {
@@ -1649,7 +1649,7 @@ bool CDirectHttpRequestQueue::run( )
     m_thread.stopWait();
   }
 
-#endif
+//#endif
 
 } // namespace net
 } // namespace rho

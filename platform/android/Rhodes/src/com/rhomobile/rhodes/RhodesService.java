@@ -303,8 +303,7 @@ public class RhodesService extends Service {
 	public static native void resetFileLogging(String log_path);
 		
 	public native void notifyNetworkStatusChanged( int status );
-	
-	
+
 	public static RhodesService getInstance() {
 		return sInstance;
 	}

@@ -520,26 +520,31 @@ void CRhodesApp::run()
 	if(m_isJSFSApp)
 		RHODESAPP().notifyLocalServerStarted();
   
-#ifdef OS_MACOSX
-  bool shouldRunDirectQueue = true;
+//#ifdef OS_MACOSX
+  bool shouldRunDirectQueue = false;
   net::CDirectHttpRequestQueue directQueue(*m_httpServer, *this );
   
     if (RHOCONF().isExist("ios_direct_local_requests")) {
         shouldRunDirectQueue = RHOCONF().getBool("ios_direct_local_requests");
     }
-#endif
+
+    if (RHOCONF().isExist("android_direct_local_requests")) {
+        shouldRunDirectQueue = RHOCONF().getBool("android_direct_local_requests");
+    }
+
+//#endif
 
 
 	while (!m_bExit) {
 		if(!m_isJSFSApp)
     {
-#ifdef OS_MACOSX
+//#ifdef OS_MACOSX
       if ( shouldRunDirectQueue )
       {
         directQueue.run();
       }
       else
-#endif
+//#endif
       {
         m_httpServer->run();
       }
@@ -2671,7 +2676,7 @@ int rho_nodejs_get_port()
 }
     
     
-#ifdef OS_MACOSX
+//#ifdef OS_MACOSX
 const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int bodylen, int* responseLength )
 {
 
@@ -2739,7 +2744,7 @@ void rho_http_free_headers_list( void* list )
 {
   delete (rho::net::HttpHeaderList*)list;
 }
-#endif
+//#endif
 
 	
 void rho_rhodesapp_create(const char* szRootPath)

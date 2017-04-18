@@ -350,6 +350,17 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_resetFileLogging
     LOGCONF().setLogFilePath(path);
 }
 
+void *rho_nativethread_start();
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoNativeAPI_initJNIThread
+(JNIEnv *env, jobject)
+{
+    if ( jnienv() == 0 ) {
+        rho_nativethread_start();
+    }
+}
+
+
 RHO_GLOBAL char *rho_timezone()
 {
     static char *tz = NULL;
@@ -398,3 +409,130 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_notifyNetworkSta
     }
     s_network_status_monitor->notifyReceiver(s);
 }
+/*
+RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_RhodesNativeAPI_directLocalRequest(JNIEnv *env, jobject, jstring jUrl) {
+
+ if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: URL is local !", [self selfIDstring]);
+    }
+    NSURL* url = theUrl;
+    CRhoURLResponse* resp = nil;
+    
+    resp = [self makeDirectHttpRequest:url];
+    
+    if ( resp != nil )
+    {
+      {
+
+          if (!self.isStopped) {
+  
+              [[self client] URLProtocol:self didReceiveResponse:resp cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+          }
+          if (self.httpBody != nil) {
+              if (!self.isStopped) {
+                  [[self client] URLProtocol:self didLoadData:self.httpBody];
+              }
+          }
+          if (!self.isStopped) {
+              [[self client] URLProtocolDidFinishLoading:self];
+          }
+
+        if (is_net_trace()) {
+            RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
+        }
+        return;
+      }
+    }
+    else {
+        RAWLOG_ERROR2("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading has NO Responce from local server !!! Initial request: { %s }", [self selfIDstring], [CRhoURLProtocol requestInfo:[self request]]);
+    }
+  }
+  
+    NSString* body = @"error";
+    [self sendResponseWithResponseCode:401 data:[body dataUsingEncoding:NSUTF8StringEncoding]];
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoadingInThread END", [self selfIDstring]);
+    }
+}
+
+
+
+
+
+(CRhoURLResponse*) makeDirectHttpRequest:(NSURL*)theUrl
+{
+
+    if (is_net_trace()) {
+        RAWTRACE2("$NetRequestProcess$ CRhoURLProtocol %s :: makeDirectHttpRequest : URL [ %s ]", [self selfIDstring], [[theUrl absoluteString] UTF8String]);
+    }
+    
+  
+  const char* uri = [[theUrl path] UTF8String];
+  const char* method = [[[self request] HTTPMethod] UTF8String];
+  const char* body = [[[self request] HTTPBody] bytes];
+  int bodylen = (int)[[self request] HTTPBody].length;
+  const char* query = [[theUrl query] UTF8String];
+  
+  NSDictionary* headers = [[self request] allHTTPHeaderFields];
+  
+  void* cHeaders = rho_http_init_headers_list();
+  
+  for (NSString* key in headers) {
+    NSString* value = [headers objectForKey:key];
+    
+    rho_http_add_header(cHeaders, [key UTF8String], [value UTF8String]);
+    
+  }
+  
+  int len = 0;
+  
+  const char* response = rho_http_direct_request(method, uri, query, cHeaders, body, bodylen, &len);
+  
+  rho_http_free_headers_list(cHeaders);
+  
+  CRhoURLResponse* resp = nil;
+  
+  if ( response != 0 ) {
+    
+    self.httpStatusCode = 0;
+    self.httpBody = nil;
+    self.httpHeaderName = nil;
+    self.httpHeaders = nil;
+    
+    http_parser_settings settings;
+    settings.on_header_field = on_http_header;
+    settings.on_header_value = on_http_header_value;
+    settings.on_body = on_http_body;
+    settings.on_status = on_http_status;
+    
+    settings.on_headers_complete = on_http_cb;
+    settings.on_message_begin = on_http_cb;
+    settings.on_message_complete = on_http_cb;
+    settings.on_url = on_http_data_cb;
+    
+    http_parser *parser = malloc(sizeof(http_parser));
+    parser->data = self;
+    http_parser_init(parser, HTTP_RESPONSE);
+    http_parser_execute(parser, &settings, response, len);
+    
+    NSString* strHttpVer = [NSString stringWithFormat:@"%d.%d",parser->http_major,parser->http_minor];
+    
+    self.httpStatusCode = parser->status_code;
+    
+    free(parser);
+    
+    rho_http_free_response(response);
+    
+    resp =
+    [[CRhoURLResponse alloc] initWithURL:
+     [[self request] URL]
+                              statusCode:self.httpStatusCode
+                             HTTPVersion:strHttpVer
+                            headerFields:self.httpHeaders
+     ];
+    
+    resp.statusCode = self.httpStatusCode;
+  }
+  
+  return resp;
+}*/

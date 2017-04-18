@@ -33,6 +33,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.RhoNativeAPI;
 import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
@@ -50,6 +51,9 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.CookieSyncManager;
+
+import  java.io.ByteArrayInputStream;
+import  java.nio.charset.StandardCharsets;
 
 public class RhoWebViewClient extends WebViewClient
 {
@@ -108,12 +112,67 @@ public class RhoWebViewClient extends WebViewClient
         mWebView = webView;
     }
 
-//    @Override
-//    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-//        Logger.I(TAG, "Resource request: " + url);
-//        return null;
-//    }
-//
+    @Override
+    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+        Logger.I(TAG, "Resource request: " + url);
+
+        RhoNativeAPI.initJNIThread();
+
+        if ( RhoConf.isExist("android_direct_local_requests") && RhoConf.getBool("android_direct_local_requests") ) {
+
+            Logger.T( TAG, "Direct local requests enabled for Android" );
+
+            if ( isLocalURL( url )) {
+
+                Logger.T( TAG, "Requested URL is local, will perform direct call" );
+
+                return directLocalRequest( url );
+            }
+
+        }
+
+        return null;
+    }
+
+    private WebResourceResponse directLocalRequest( String url ) {
+        return RhoNativeAPI.directLocalRequest( url );
+    }
+
+    private boolean isLocalURL( String url ) {
+
+        if ( url.equals("") ) {
+            return false;
+        }
+
+        Uri uri = Uri.parse(url);
+
+        String scheme = uri.getScheme();        
+
+        if ( (!scheme.equals("http")) && (!scheme.equals("https")) ) {
+            return false;
+        }
+
+        String host = uri.getHost();
+
+        if ( null==host || host.equals("") ) {
+            return true;
+        }
+
+        int port = uri.getPort();
+        if ( -1 == port ) {
+            port = 80;
+        }
+
+        //int rhoPort = rho_http_get_port();
+
+        boolean ret = (
+            //(port == rhoPort) && 
+            ( host.equals("127.0.0.1") || host.equals("localhost") )
+        );    
+        
+        return ret;
+    }
+
     public void onLoadResource(WebView view, String url) {
         Logger.I(TAG, "Load resource" + url);
 
