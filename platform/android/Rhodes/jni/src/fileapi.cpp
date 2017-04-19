@@ -70,6 +70,9 @@
       (unsigned long)pthread_self(), ##__VA_ARGS__)
 
 
+#define RESET_ERRNO {errno = 0;}
+
+
 #define RHO_TRACE_POINT RHO_LOG("trace point")
 
 enum rho_fileapi_type_t
@@ -102,6 +105,7 @@ struct rho_fd_data_t
     DIR *dirp;
     std::string fpath;
     loff_t pos;
+    int refCount;
 };
 
 typedef rho::common::CMutexLock scoped_lock_t;
@@ -153,6 +157,26 @@ typedef int (*func_sflags_t)(const char *mode, int *optr);
 static func_sflags_t __sflags;
 static func_sfp_t __sfp;
 
+// ssize_t pread(int fd, void *buf, size_t count, off_t offset);
+// ssize_t pwrite(int fd, const void *buf, size_t count, off_t offset);
+
+// ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count);
+// int utime(const char *filename, const struct utimbuf *times);
+
+// int utimes(const char *filename, const struct timeval times[2]);
+// int futimes(int fd, const struct timeval tv[2]);
+
+// int pipe2(int pipefd[2], int flags);
+
+// int pipe(int pipefd[2]);
+
+
+
+
+
+
+
+
 typedef int (*func_access_t)(const char *path, int mode);
 typedef int (*func_close_t)(int fd);
 typedef int (*func_dup2_t)(int fd, int fd2);
@@ -181,6 +205,19 @@ typedef loff_t (*func_lseek64_t)(int fd, loff_t offset, int whence);
 typedef off_t (*func_lseek_t)(int fd, off_t offset, int whence);
 typedef ssize_t (*func_read_t)(int fd, void *buf, size_t count);
 typedef ssize_t (*func_write_t)(int fd, const void *buf, size_t count);
+
+typedef ssize_t (*func_pread_t)(int fd, void *buf, size_t count, off_t offset);
+typedef ssize_t (*func_pwrite_t)(int fd, const void *buf, size_t count, off_t offset);
+
+typedef ssize_t (*func_sendfile_t)(int out_fd, int in_fd, off_t *offset, size_t count);
+
+typedef int (*func_utime_t)(const char *filename, const struct utimbuf *times);
+typedef int (*func_utimes_t)(const char *filename, const struct timeval times[2]);
+typedef int (*func_futimes_t)(int fd, const struct timeval tv[2]);
+
+typedef int (*func_pipe2_t)(int pipefd[2], int flags);
+typedef int (*func_pipe_t)(int pipefd[2]);
+
 typedef int (*func_getdents_t)(unsigned int, struct dirent *, unsigned int);
 typedef int (*func_rmdir_t)(const char *path);
 typedef DIR *(*func_opendir_t)(const char *dirpath);
@@ -218,6 +255,18 @@ static func_lseek_t real_lseek;
 static func_lstat_t real_lstat;
 static func_open_t real_open;
 static func_read_t real_read;
+
+static func_pread_t real_pread;
+static func_pwrite_t real_pwrite;
+
+static func_sendfile_t real_sendfile;
+
+static func_utime_t real_utime;
+static func_utimes_t real_utimes;
+static func_futimes_t real_futimes;
+static func_pipe2_t real_pipe2;
+static func_pipe_t real_pipe;
+
 static func_select_t real_select;
 static func_stat_t real_stat;
 static func_unlink_t real_unlink;
@@ -244,9 +293,21 @@ std::string const &rho_apk_path()
     return g_apk_path;
 }
 
+extern "C" void *rho_nativethread_start();
+
+JNIEnv* jnienv_fileapi() {
+    JNIEnv *env = jnienv();
+    if (!env) {
+        __android_log_print(ANDROID_LOG_ERROR, "fileapi", "ERROR!!! thread is not initialised by Rhodes !!!");
+        rho_nativethread_start();
+    }
+    env = jnienv();
+    return env;
+}
+
 static bool has_pending_exception()
 {
-    JNIEnv *env = jnienv();
+    JNIEnv *env = jnienv_fileapi();
     if (env->ExceptionCheck())
     {
         __android_log_print(ANDROID_LOG_ERROR, "fileapi", "ERROR!!! Pending exception exist!");
@@ -337,7 +398,6 @@ void copyFileFromAsset(const std::string& relPath)
     fclose(dst);
 
     delete[] buf;
-
     RHO_LOG("File has written: %s", fullPath.c_str());
 }
 
@@ -551,6 +611,17 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_lstat = (func_lstat_t)dlsym(pc, "lstat");
     real_open = (func_open_t)dlsym(pc, "open");
     real_read = (func_read_t)dlsym(pc, "read");
+
+    real_pread = (func_pread_t)dlsym(pc, "pread");
+    real_pwrite = (func_pwrite_t)dlsym(pc, "pwrite");
+    real_sendfile = (func_sendfile_t)dlsym(pc, "sendfile");
+
+    real_utime = (func_utime_t)dlsym(pc, "utime");
+    real_utimes = (func_utimes_t)dlsym(pc, "utimes");
+    real_futimes = (func_futimes_t)dlsym(pc, "futimes");
+    real_pipe2 = (func_pipe2_t)dlsym(pc, "pipe2");
+    real_pipe = (func_pipe_t)dlsym(pc, "pipe");
+
     real_select = (func_select_t)dlsym(pc, "select");
     real_stat = (func_stat_t)dlsym(pc, "stat");
     real_unlink = (func_unlink_t)dlsym(pc, "unlink");
@@ -578,6 +649,21 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     librhodes_st.st_gid = getgid();
 
     RHO_LOG("Library stat (mode: %d, uid: %d, gid: %d)", librhodes_st.st_mode, librhodes_st.st_uid, librhodes_st.st_gid);
+
+    // fill stat structure by stat of rhoconfig.txt
+    {
+        std::string rhoconfig = rho_root_path() + "apps/rhoconfig.txt";
+        if (-1 == real_stat(rhoconfig.c_str(), &librhodes_st) ) {
+            RHO_ERROR_LOG("Cannot open RHOCONFIG.TXT file: %s", rhoconfig.c_str());
+        }
+        else {
+            RHO_ERROR_LOG("base stat copied from RHOCONFIG.TXT file: %s", rhoconfig.c_str());
+        }
+
+
+    }
+
+
 }
 
 
@@ -649,17 +735,22 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_normalizePa
 
 static std::string make_full_path(const char *path)
 {
-    //RHO_LOG("make_full_path: %s", path);
-    if (path == NULL || *path == '\0')
+    if (path == NULL || *path == '\0') {
+        RHO_LOG("make_full_path(%s) = %s", path, "''");
         return "";
+    }
 
-    if (*path == '/')
-        return normalize_path(path);
-
+    if (*path == '/') {
+        std::string np = normalize_path(path);
+        RHO_LOG("make_full_path(%s) = %s", path, np.c_str());
+        return np;
+    }
     //std::string fpath = rho_root_path() + "/" + path;
     std::string fpath = rho_cur_path() + "/" + path;
 
-    return normalize_path(fpath);
+    std::string np = normalize_path(fpath);
+    RHO_LOG("make_full_path(%s) = %s", path, np.c_str());
+    return np;
 }
 
 static std::string make_full_path(std::string const &path)
@@ -670,7 +761,14 @@ static std::string make_full_path(std::string const &path)
 static std::string make_rel_path(std::string const &fpath)
 {
     std::string const &root_path = rho_root_path();
-    return (fpath.find(root_path) == 0) ? fpath.substr(root_path.size()) : fpath;
+    std::string const &root_path_real = rho_root_path_real();
+    if (fpath.find(root_path) == 0) {
+        return fpath.substr(root_path.size());
+    }
+    if (fpath.find(root_path_real) == 0) {
+        return fpath.substr(root_path_real.size());
+    }
+    return fpath;
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_makeRelativePath
@@ -691,9 +789,18 @@ static rho_stat_t *rho_stat(const char *path)
 {
     std::string relpath = make_rel_path(make_full_path(path));
     rho_stat_map_t::iterator it = rho_stat_map.find(relpath);
-    if (it == rho_stat_map.end())
-        return NULL;
-    return &(it->second);
+
+    rho_stat_t *result = NULL;
+
+    if (it == rho_stat_map.end()) {
+        result = NULL;
+    }
+    else {
+        result =  &(it->second);
+    }
+    RHO_LOG("rho_stat(%s), relpath = %s, RESULT = %s", path, relpath.c_str(), (result==NULL)?"NONE":"FOUND");
+
+    return result;
 }
 
 static rho_stat_t *rho_stat(std::string const &path)
@@ -743,9 +850,27 @@ inline bool need_emulate_dir(std::string const &path)
 
     std::string fpath = make_full_path(path);
     std::string const &root_path = rho_root_path();
-    if (fpath.size() < root_path.size())
-        return false;
-    return ::strncmp(fpath.c_str(), root_path.c_str(), root_path.size()) == 0;
+    std::string const &root_path_real = rho_root_path_real();
+
+    //RHO_LOG("$$$$$ root_path = %s, root_path_real = %s", root_path.c_str(), root_path_real.c_str());
+
+
+    bool result = false;
+
+    // check for exist
+    struct stat st;
+    if (real_stat(fpath.c_str(), &st) == -1) {
+        //RHO_LOG("$$$$$ need_emulate_dir(%s), full_path =%s", path.c_str(), fpath.c_str());
+        if ((fpath.size() < root_path.size()) && (fpath.size() < root_path_real.size())) {
+
+        }
+        else {
+            result = ((::strncmp(fpath.c_str(), root_path.c_str(), root_path.size()) == 0) || (::strncmp(fpath.c_str(), root_path_real.c_str(), root_path_real.size()) == 0));
+        }
+    }
+    RESET_ERRNO
+    RHO_LOG("need_emulate_dir(%s) = %s", path.c_str(), result?"true":"false");
+    return result;
 }
 
 inline bool need_emulate_dir(const char *path)
@@ -759,21 +884,30 @@ static bool need_emulate(std::string const &path)
 
     std::string fpath = make_full_path(path);
     std::string const &root_path = rho_root_path();
-    if (::strncmp(fpath.c_str(), root_path.c_str(), root_path.size()) == 0)
+    std::string const &root_path_real = rho_root_path_real();
+    bool result = false;
+    //RHO_LOG("$$$$$ need_emulate(%s), full_path =%s", path.c_str(), fpath.c_str());
+    if ((::strncmp(fpath.c_str(), root_path.c_str(), root_path.size()) == 0) ||
+        (::strncmp(fpath.c_str(), root_path_real.c_str(), root_path_real.size()) == 0))
     {
+        //RHO_LOG("$$$$$ need_emulate(%s) $$$ 01", path.c_str());
         struct stat st;
         if (real_stat(fpath.c_str(), &st) == -1)
         {
+            //RHO_LOG("$$$$$ need_emulate(%s) $$$ 02", path.c_str());
             if (errno == ENOENT)
             {
+                //RHO_LOG("$$$$$ need_emulate(%s) $$$ 03", path.c_str());
                 rho_stat_t *rst = rho_stat(fpath);
-                return rst != NULL;
+                result = (rst != NULL);
             }
 
         }
+        RESET_ERRNO
     }
+    RHO_LOG("$$$$$ need_emulate(%s) = %s", path.c_str(), result?"true":"false");
 
-    return false;
+    return result;
 }
 
 inline bool need_emulate(const char *path)
@@ -806,8 +940,14 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
     }
 
     RHO_LOG("open: %s...", path);
+
+    //scoped_lock_t guard(rho_file_mtx);
+
     fpath = make_full_path(fpath);
     RHO_LOG("open: %s: fpath: %s", path, fpath.c_str());
+
+    // try to found from opened
+
 
     bool emulate = need_emulate(fpath);
     RHO_LOG("open: %s: emulate: %d", path, (int)emulate);
@@ -818,9 +958,10 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
         return -1;
     }
     if (emulate && (oflag & (O_WRONLY | O_RDWR)))
+    //if (emulate)
     {
         RHO_LOG("open: %s: copy from Android package", path);
-        JNIEnv *env = jnienv();
+        JNIEnv *env = jnienv_fileapi();
         jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath));
         env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
         if (has_pending_exception())
@@ -832,13 +973,13 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
 
         emulate = false;
     }
-    RHO_LOG("open: %s: emulate: %d", path, (int)emulate);
+    RHO_LOG("open2: %s: emulate: %d", path, (int)emulate);
 
-    int fd;
+    int fd = -1;
     if (emulate)
     {
-        RHO_LOG("open: %s: emulate", path);
-        JNIEnv *env = jnienv();
+        RHO_LOG("open3: %s: emulate", path);
+        JNIEnv *env = jnienv_fileapi();
         jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath));
         jhobject is = env->CallStaticObjectMethod(clsFileApi, midOpen, relPathObj.get());
 
@@ -863,6 +1004,7 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
             d.dirp = NULL;
             d.fpath = fpath;
             d.pos = 0;
+            d.refCount = 1;
             rho_fd_map[fd] = d;
         }
     }
@@ -879,7 +1021,7 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
         }
         fd = real_open(path, oflag, mode);
     }
-    RHO_LOG("open: %s => %d", path, fd);
+    RHO_LOG("openRESULT: %s => %d", path, fd);
     return fd;
 }
 
@@ -940,13 +1082,18 @@ RHO_GLOBAL int fcntl(int fd, int command, ...)
 
 RHO_GLOBAL int close(int fd)
 {
-    RHO_LOG("close: fd %d", fd);
-    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
-        return real_close(fd);
+    RHO_LOG("close: BEGIN fd %d", fd);
+
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE) {
+        int result =  real_close(fd);
+        RHO_LOG("close: fd %d", fd);
+        return result;
+    }
 
     if (has_pending_exception())
     {
         errno = EFAULT;
+        RHO_LOG("close: ERROR 1 fd %d", fd);
         return -1;
     }
 
@@ -958,6 +1105,7 @@ RHO_GLOBAL int close(int fd)
         if (it == rho_fd_map.end())
         {
             errno = EBADF;
+            RHO_LOG("close: ERROR 2 fd %d", fd);
             return -1;
         }
 
@@ -969,16 +1117,208 @@ RHO_GLOBAL int close(int fd)
 
     if (is)
     {
-        JNIEnv *env = jnienv();
+        JNIEnv *env = jnienv_fileapi();
         env->CallStaticVoidMethod(clsFileApi, midClose, is);
         env->DeleteGlobalRef(is);
     }
+
+    RHO_LOG("close: fd %d emulate", fd);
     return 0;
 }
 
+
+
+RHO_GLOBAL ssize_t pread(int fd, void *buf, size_t count, off_t offset)
+{
+    RHO_LOG("pread: BEGIN fd %d: offset: %ld: count: %ld", fd, (long)offset, (long)count);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+    {
+        ssize_t ret = real_pread(fd, buf, count, offset);
+        RHO_LOG("pread: fd %d: offset: %ld: count: %ld: return %ld bytes (native)", fd, (long)offset, (long)count, (long)ret);
+        return ret;
+    }
+
+    off_t saved_offset = lseek(fd, 0, SEEK_CUR);
+    lseek(fd, offset, SEEK_SET);
+
+    ssize_t result = read(fd, buf, count);
+
+    lseek(fd, saved_offset, SEEK_SET);
+
+
+    RHO_LOG("pread: fd %d: offset: %ld: count: %ld: return %ld bytes (rho): errno: %d", fd, (long)offset, (long)count, (long)result, (int)errno);
+
+    return result;
+}
+
+RHO_GLOBAL ssize_t pwrite(int fd, const void *buf, size_t count, off_t offset)
+{
+    RHO_LOG("pwrite: BEGIN fd %d: offset: %ld: count: %ld", fd, (long)offset, (long)count);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+    {
+        ssize_t ret = real_pwrite(fd, buf, count, offset);
+        RHO_LOG("pwrite: fd %d: offset: %ld: count: %ld: return %ld bytes (native)", fd, (long)offset, (long)count, (long)ret);
+        return ret;
+    }
+
+    off_t saved_offset = lseek(fd, 0, SEEK_CUR);
+    lseek(fd, offset, SEEK_SET);
+
+    ssize_t result = write(fd, buf, count);
+
+    lseek(fd, saved_offset, SEEK_SET);
+
+    RHO_LOG("pwrite: fd %d: offset: %ld: count: %ld: return %ld bytes (rho)", fd, (long)offset, (long)count, (long)result);
+    return result;
+}
+
+
+RHO_GLOBAL ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count)
+{
+    RHO_LOG("sendfile: BEGIN out_fd %d: in_fd: %d: count: %ld", out_fd, in_fd, (long)count);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || in_fd < RHO_FD_BASE)
+    {
+        ssize_t ret = real_sendfile(out_fd, in_fd, offset, count);
+        RHO_LOG("sendfile: out_fd %d: in_fd: %d: count: %ld: return %ld bytes (native)", out_fd, in_fd, (long)count, (long)ret);
+        return ret;
+    }
+
+    off_t saved_offset = lseek(in_fd, 0, SEEK_CUR);
+    if (offset != NULL) {
+        lseek(in_fd, *offset, SEEK_SET);
+    }
+
+    unsigned char* buf = (unsigned char*)malloc(count);
+
+    ssize_t readed_count = read(in_fd, buf, count);
+    ssize_t result = write(out_fd, buf, readed_count);
+
+    free(buf);
+
+    if (offset != NULL) {
+        lseek(in_fd, saved_offset, SEEK_SET);
+        *offset = (long)saved_offset + (long)result;
+    }
+
+    RHO_LOG("sendfile: out_fd %d: in_fd: %d: count: %ld: return %ld bytes (rho)", out_fd, in_fd, (long)count, (long)result);
+    return result;
+
+}
+
+RHO_GLOBAL int utime(const char *filename, const struct utimbuf *times)
+{
+    std::string fpath;
+    if (filename)
+        fpath = filename;
+
+    if (fpath.empty())
+    {
+        RHO_LOG("utime: path is empty");
+        errno = EFAULT;
+        return -1;
+    }
+
+    //RHO_LOG("utime: %s...", filename);
+
+    fpath = make_full_path(fpath);
+    //RHO_LOG("open: %s: fpath: %s", path, fpath.c_str());
+
+    bool emulate = need_emulate(fpath);
+    RHO_LOG("utime: %s: emulate: %d", filename, (int)emulate);
+    if (emulate && has_pending_exception())
+    {
+        RHO_LOG("utime: %s: has_pending_exception, return -1", filename);
+        errno = EFAULT;
+        return -1;
+    }
+
+    if (emulate) {
+
+    }
+    else {
+        return real_utime(filename, times);
+    }
+
+    return 0;
+}
+
+RHO_GLOBAL int utimes(const char *filename, const struct timeval times[2]) {
+    std::string fpath;
+    if (filename)
+        fpath = filename;
+
+    if (fpath.empty())
+    {
+        RHO_LOG("utimes: path is empty");
+        errno = EFAULT;
+        return -1;
+    }
+
+    //RHO_LOG("utime: %s...", filename);
+
+    fpath = make_full_path(fpath);
+    //RHO_LOG("open: %s: fpath: %s", path, fpath.c_str());
+
+    bool emulate = need_emulate(fpath);
+    RHO_LOG("utimes: %s: emulate: %d", filename, (int)emulate);
+    if (emulate && has_pending_exception())
+    {
+        RHO_LOG("utimes: %s: has_pending_exception, return -1", filename);
+        errno = EFAULT;
+        return -1;
+    }
+
+    if (emulate) {
+
+    }
+    else {
+        return real_utimes(filename, times);
+    }
+
+    return 0;
+}
+
+RHO_GLOBAL int futimes(int fd, const struct timeval tv[2]) {
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+    {
+        int ret = real_futimes(fd, tv);
+        RHO_LOG("futimes: fd %d: return %d (native)", fd, ret);
+        return ret;
+    }
+    RHO_LOG("futimes: fd: %d: emulate UNIMPLEMENTED !!!", fd);
+    return 0;
+}
+
+RHO_GLOBAL int pipe2(int pipefd[2], int flags)
+{
+    RHO_LOG("pipe2: BEGIN fd_read %d: : fd_write: $d", pipefd[0], pipefd[1]);
+    //if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+    {
+        int ret = real_pipe2(pipefd, flags);
+        RHO_LOG("pipe2: fd_read %d: : fd_write: $d: return %d (native)", pipefd[0], pipefd[1], ret);
+        return ret;
+    }
+    //RHO_LOG("futimes: fd: %d: emulate UNIMPLEMENTED !!!", fd);
+    //return 0;
+}
+
+RHO_GLOBAL int pipe(int pipefd[2])
+{
+    RHO_LOG("pipe: BEGIN fd_read %d: : fd_write: $d", pipefd[0], pipefd[1]);
+    //if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+    {
+        int ret = real_pipe(pipefd);
+        RHO_LOG("pipe2: fd_read %d: : fd_write: $d: return %d (native)", pipefd[0], pipefd[1], ret);
+        return ret;
+    }
+    //RHO_LOG("futimes: fd: %d: emulate UNIMPLEMENTED !!!", fd);
+    //return 0;
+}
+
+
 RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
 {
-    RHO_LOG("read: fd %d", fd);
+    RHO_LOG("read: fd %d, maxcount= %d", fd, (int)count);
     if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
     {
         ssize_t ret = real_read(fd, buf, count);
@@ -992,6 +1332,7 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
         return -1;
     }
 
+    //scoped_lock_t guard(rho_file_mtx);
     jobject is = NULL;
     {
         scoped_lock_t guard(rho_file_mtx);
@@ -1006,7 +1347,7 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
         is = it->second.is;
     }
 
-    JNIEnv *env = jnienv();
+    JNIEnv *env = jnienv_fileapi();
 
     jbyteArray array = env->NewByteArray(count);
     jint result = env->CallStaticIntMethod(clsFileApi, midRead, is, array);
@@ -1040,10 +1381,18 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
 
 RHO_GLOBAL ssize_t write(int fd, const void *buf, size_t count)
 {
-    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
-        return real_write(fd, buf, count);
+    RHO_LOG("write: BEGIN fd %d: count: %ld", fd, (long)count);
+
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE) {
+        ssize_t result = real_write(fd, buf, count);
+        RHO_LOG("write: fd %d: count: %ld: result: %ld (native)", fd, (long)count, (long)result);
+        return result;
+    }
 
     errno = EBADF;
+
+    RHO_LOG("write: fd %d: count: %ld UNIMPLEMENTED !!!", fd, (long)count);
+
     return -1;
 }
 
@@ -1155,7 +1504,7 @@ RHO_GLOBAL int link(const char *src, const char *dst)
     if (need_emulate(fsrc))
     {
         RHO_LOG("link: %s: copy from Android package", src);
-        JNIEnv *env = jnienv();
+        JNIEnv *env = jnienv_fileapi();
         jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fsrc));
         env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
         if (has_pending_exception())
@@ -1182,7 +1531,7 @@ RHO_GLOBAL int symlink(const char *src, const char *dst)
     if (need_emulate(fsrc))
     {
         RHO_LOG("symlink: %s: copy from Android package", src);
-        JNIEnv *env = jnienv();
+        JNIEnv *env = jnienv_fileapi();
         jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fsrc));
         env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
         if (has_pending_exception())
@@ -1233,6 +1582,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
 
     RHO_LOG("lseek64: fd %d: java", fd);
 
+    //scoped_lock_t guard(rho_file_mtx);
     {
         scoped_lock_t guard(rho_file_mtx);
 
@@ -1298,7 +1648,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
         return -1;
     }
 
-    JNIEnv *env = jnienv();
+    JNIEnv *env = jnienv_fileapi();
     env->CallStaticVoidMethod(clsFileApi, midSeek, is, pos);
 
     RHO_LOG("lseek64: fd %d: return %lld (java)", fd, (long long)pos);
@@ -1307,7 +1657,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
 
 RHO_GLOBAL off_t lseek(int fd, off_t offset, int whence)
 {
-    //RHO_LOG("lseek: fd %d", fd);
+    RHO_LOG("lseek: fd %d", fd);
     if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_lseek(fd, offset, whence);
 
@@ -1516,6 +1866,9 @@ RHO_GLOBAL int unlink(const char *path)
 static int __sread(void *cookie, char *buf, int n)
 {
     RHO_LOG("__sread: %p", cookie);
+
+    //scoped_lock_t guard(rho_file_mtx);
+
     FILE *fp = (FILE*)cookie;
     int ret;
 
@@ -1530,6 +1883,9 @@ static int __sread(void *cookie, char *buf, int n)
 static int __swrite(void *cookie, const char *buf, int n)
 {
     RHO_LOG("__swrite: %p", cookie);
+
+    //scoped_lock_t guard(rho_file_mtx);
+
     FILE *fp = (FILE*)cookie;
 
     if (fp->_flags & __SAPP)
@@ -1541,6 +1897,9 @@ static int __swrite(void *cookie, const char *buf, int n)
 static fpos_t __sseek(void *cookie, fpos_t offset, int whence)
 {
     RHO_LOG("__sseek: %p", cookie);
+
+    //scoped_lock_t guard(rho_file_mtx);
+
     FILE *fp = (FILE*)cookie;
     off_t ret = lseek(fp->_file, (off_t)offset, whence);
     if (ret == (off_t)-1)
@@ -1655,6 +2014,8 @@ RHO_GLOBAL DIR *opendir(const char *dirpath)
 
     RHO_LOG("opendir: dirpath=%s", dirpath);
 
+    //scoped_lock_t guard(rho_file_mtx);
+
     bool emulate = need_emulate_dir(fpath);
     if (emulate && has_pending_exception())
     {
@@ -1679,7 +2040,7 @@ RHO_GLOBAL DIR *opendir(const char *dirpath)
         children.push_back(".");
         children.push_back("..");
         {
-            JNIEnv *env = jnienv();
+            JNIEnv *env = jnienv_fileapi();
             jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath));
             jharray jChildren = static_cast<jobjectArray>(env->CallStaticObjectMethod(clsFileApi, midGetChildren, relPathObj.get()));
 
@@ -1768,6 +2129,7 @@ RHO_GLOBAL DIR *fdopendir(int fd)
         return real_fdopendir(fd);
 
     scoped_lock_t guard(rho_file_mtx);
+
     for (rho_dir_map_t::const_iterator it = rho_dir_map.begin(), lim = rho_dir_map.end(); it != lim; ++it)
     {
         if (it->second.fd != fd)
@@ -1783,7 +2145,9 @@ RHO_GLOBAL DIR *fdopendir(int fd)
 RHO_GLOBAL int dirfd(DIR *dirp)
 {
     RHO_LOG("dirfd: dirp=%p", (void*)dirp);
+
     scoped_lock_t guard(rho_file_mtx);
+
     rho_dir_map_t::const_iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
         return real_dirfd(dirp);
@@ -1794,7 +2158,9 @@ RHO_GLOBAL int dirfd(DIR *dirp)
 RHO_GLOBAL struct dirent *readdir(DIR *dirp)
 {
     RHO_LOG("readdir: dirp=%p", (void*)dirp);
+
     scoped_lock_t guard(rho_file_mtx);
+
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
     {
@@ -1819,7 +2185,9 @@ RHO_GLOBAL struct dirent *readdir(DIR *dirp)
 RHO_GLOBAL int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
 {
     RHO_LOG("readdir_r: dirp=%p", (void*)dirp);
+
     scoped_lock_t guard(rho_file_mtx);
+
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
     {
@@ -1853,7 +2221,9 @@ RHO_GLOBAL int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result
 RHO_GLOBAL int closedir(DIR *dirp)
 {
     RHO_LOG("closedir: dirp=%p", (void*)dirp);
+
     scoped_lock_t guard(rho_file_mtx);
+
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
     {
@@ -1881,7 +2251,9 @@ RHO_GLOBAL int closedir(DIR *dirp)
 RHO_GLOBAL void seekdir(DIR *dirp, long offset)
 {
     RHO_LOG("seekdir: dirp=%p, offset=%ld", (void*)dirp, offset);
+
     scoped_lock_t guard(rho_file_mtx);
+
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
         return;
@@ -1904,7 +2276,9 @@ RHO_GLOBAL void seekdir(DIR *dirp, long offset)
 RHO_GLOBAL long telldir(DIR *dirp)
 {
     RHO_LOG("telldir: dirp=%p", (void*)dirp);
+
     scoped_lock_t guard(rho_file_mtx);
+
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
         return 0;
@@ -1924,7 +2298,9 @@ RHO_GLOBAL long telldir(DIR *dirp)
 RHO_GLOBAL void rewinddir(DIR *dirp)
 {
     RHO_LOG("rewinddir: dirp=%p", (void*)dirp);
+
     scoped_lock_t guard(rho_file_mtx);
+
     rho_dir_map_t::iterator it = rho_dir_map.find(dirp);
     if (it == rho_dir_map.end())
         real_rewinddir(dirp);
@@ -1937,6 +2313,127 @@ RHO_GLOBAL void rewinddir(DIR *dirp)
     }
 }
 
+
+
+
+
+
+
+
+
+
+int scandir_emulate(       const char *dirname,
+	                       struct dirent ***namelist,
+	                       int (*select) (const struct dirent *),
+	                       int (*dcomp) (const struct dirent **, const struct dirent **) )
+{
+	register struct dirent *d, *p, **names;
+	register size_t nitems;
+	struct stat stb;
+	long arraysz;
+	DIR *dirp;
+	int successful = 0;
+	int rc = 0;
+	dirp = NULL;
+	names = NULL;
+	if ((dirp = opendir(dirname)) == NULL) {
+        RHO_LOG("@@@@@ scandir_emulate 01 ");
+		return(-1);
+    }
+	if (fstat(dirfd(dirp), &stb) < 0) {
+        RHO_LOG("@@@@@ scandir_emulate 02 ");
+		goto cleanup;
+    }
+	/*
+ 	 * If there were no directory entries, then bail.
+ 	 */
+	if (stb.st_size == 0) {
+        RHO_LOG("@@@@@ scandir_emulate 03 ");
+		goto cleanup;
+    }
+	/*
+	 * estimate the array size by taking the size of the directory file
+	 * and dividing it by a multiple of the minimum size entry.
+	 */
+	arraysz = (stb.st_size / 6);
+	names = (struct dirent **)malloc(arraysz * sizeof(struct dirent *));
+	if (names == NULL) {
+        RHO_LOG("@@@@@ scandir_emulate 04 ");
+		goto cleanup;
+    }
+	nitems = 0;
+	while ((d = readdir(dirp)) != NULL) {
+		if (select != NULL && !(*select)(d))
+			continue;	/* just selected names */
+		/*
+		 * Make a minimum size copy of the data
+		 */
+		p = (struct dirent *)malloc(sizeof (struct dirent) + 2048);
+		if (p == NULL) {
+            RHO_LOG("@@@@@ scandir_emulate 05 ");
+			goto cleanup;
+        }
+		p->d_ino = d->d_ino;
+		p->d_reclen = d->d_reclen;
+#ifdef _DIRENT_HAVE_D_NAMLEN
+		p->d_namlen = d->d_namlen;
+		bcopy(d->d_name, p->d_name, p->d_namlen + 1);
+#else
+               strcpy(p->d_name, d->d_name);
+#endif
+		/*
+		 * Check to make sure the array has space left and
+		 * realloc the maximum size.
+		 */
+		if (++nitems >= arraysz) {
+            RHO_LOG("@@@@@ scandir_emulate 06 ");
+
+			if (fstat(dirfd(dirp), &stb) < 0) {
+                RHO_LOG("@@@@@ scandir_emulate 07 ");
+				goto cleanup;
+            }
+			arraysz = stb.st_size / 12;
+			names = (struct dirent **)realloc((char *)names,
+				arraysz * sizeof(struct dirent *));
+			if (names == NULL) {
+                RHO_LOG("@@@@@ scandir_emulate 08 ");
+				goto cleanup;
+            }
+		}
+		names[nitems-1] = p;
+	}
+	successful = 1;
+cleanup:
+	closedir(dirp);
+	if (successful) {
+        RHO_LOG("@@@@@ scandir_emulate 09 ");
+
+		if (nitems && dcomp != NULL) {
+            RHO_LOG("@@@@@ scandir_emulate 10 ");
+			qsort(names, nitems, sizeof(struct dirent *), (int (*)(const void*, const void*))dcomp);
+        }
+		*namelist = names;
+		rc = nitems;
+	} else {  /* We were unsuccessful, clean up storage and return -1.  */
+        RHO_LOG("@@@@@ scandir_emulate 11 ");
+		if ( names ) {
+            RHO_LOG("@@@@@ scandir_emulate 12 ");
+
+			int i;
+			for (i=0; i < nitems; i++ )
+				free( names[i] );
+			free( names );
+		}
+		rc = -1;
+	}
+	return(rc);
+}
+
+
+
+
+
+
 RHO_GLOBAL int scandir(const char *dir, struct dirent ***namelist, int (*filter)(const struct dirent *),
     int (*compar)(const struct dirent **, const struct dirent **))
 {
@@ -1948,6 +2445,17 @@ RHO_GLOBAL int scandir(const char *dir, struct dirent ***namelist, int (*filter)
         RHO_LOG("scandir: return %d (native)", ret);
         return ret;
     }
+    else {
+        int ret = scandir_emulate(dir, namelist, filter, compar);
+        RHO_LOG("scandir: return %d (emulate)", ret);
+        return ret;
+
+    }
+
+
+
+
+
 
     RHO_NOT_IMPLEMENTED;
 }
@@ -1977,7 +2485,7 @@ RHO_GLOBAL void rho_android_file_reload_stat_table() {
 
     rho_stat_map.clear();
 
-    JNIEnv *env = jnienv();
+    JNIEnv *env = jnienv_fileapi();
     env->CallStaticVoidMethod(clsFileApi, midReloadStatTable);
 
     RHO_LOG("rho_android_file_reload_stat_table() FINISH");
@@ -1987,7 +2495,7 @@ RHO_GLOBAL void rho_android_force_all_files() {
 
     RHO_LOG("rho_android_force_all_files() START");
 
-    JNIEnv *env = jnienv();
+    JNIEnv *env = jnienv_fileapi();
 
     env->CallStaticVoidMethod(clsFileApi, midForceAllFiles);
 
@@ -1998,7 +2506,7 @@ RHO_GLOBAL int rho_android_remove_item(const char* path) {
 
     RHO_LOG("rho_android_remove_item() START");
 
-    JNIEnv *env = jnienv();
+    JNIEnv *env = jnienv_fileapi();
 
     jhstring objStr = rho_cast<jstring>(env, path);
 

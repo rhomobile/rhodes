@@ -112,6 +112,9 @@ else
   $logger.level = Logger::INFO
 end
 
+Rake::FileUtilsExt.verbose(Rake.application.options.trace)
+
+
 $logger.formatter = proc do |severity,datetime,progname,msg|
   "[#{severity}]\t#{msg}\n"
 end
@@ -119,13 +122,13 @@ end
 Jake.set_logger( $logger )
 
 
-def print_timestamp(msg = 'just for info')
+def print_timestamp(msg = 'just for info')  
   if $timestamp_start_milliseconds == 0
     $timestamp_start_milliseconds = (Time.now.to_f*1000.0).to_i
   end
   curmillis = (Time.now.to_f*1000.0).to_i - $timestamp_start_milliseconds
 
-  $logger.debug('-$TIME$- message [ '+msg+' ] time is { '+Time.now.utc.iso8601+' } milliseconds from start ('+curmillis.to_s+')')
+  $logger.debug '-$TIME$- message [ '+msg+' ] time is { '+Time.now.utc.iso8601+' } milliseconds from start ('+curmillis.to_s+')'
 end
 
 #------------------------------------------------------------------------
@@ -225,7 +228,7 @@ def make_application_build_config_header_file
 end
 
 def make_application_build_capabilities_header_file
-  puts "%%% Prepare capability header file %%%" if USE_TRACES
+  $logger.debug "%%% Prepare capability header file %%%"
 
   f = StringIO.new("", "w+")
   f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -253,7 +256,7 @@ def make_application_build_capabilities_header_file
     f.puts '#define RHO_NO_RUBY'
     f.puts '#define RHO_NO_RUBY_API'
   else
-    puts '//#define RHO_NO_RUBY' if USE_TRACES
+    $logger.debug '//#define RHO_NO_RUBY'
   end
 
   Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_capabilities.h"), f)
@@ -1942,7 +1945,7 @@ namespace "config" do
   end
 
   task :common => [:initialize] do
-    puts "Starting rhodes build system using ruby version: #{RUBY_VERSION}"
+    $logger.info "Starting rhodes build system using ruby version: #{RUBY_VERSION}"
     print_timestamp('config:common')
 
     if $app_config && !$app_config["sdk"].nil?
@@ -2201,8 +2204,8 @@ namespace "config" do
     $js_application    = Jake.getBuildBoolProp("javascript_application")
     $nodejs_application    = Jake.getBuildBoolProp("nodejs_application")
 
-    puts '%%%_%%% $js_application = '+$js_application.to_s if USE_TRACES
-    puts '%%%_%%% $nodejs_application = '+$nodejs_application.to_s if USE_TRACES
+    $logger.debug '%%%_%%% $js_application = '+$js_application.to_s
+    $logger.debug '%%%_%%% $nodejs_application = '+$nodejs_application.to_s
 
     if !$js_application && !$nodejs_application && !Dir.exists?(File.join($app_path, "app"))
       BuildOutput.error([
@@ -2213,7 +2216,7 @@ namespace "config" do
     end
 
     $shared_rt_js_appliction = ($js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime'))
-    puts "%%%_%%% $shared_rt_js_application = #{$shared_rt_js_appliction}" if USE_TRACES
+    $logger.debug "%%%_%%% $shared_rt_js_application = #{$shared_rt_js_appliction}"
     $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shared_rt_js_appliction
 
     if $current_platform == "bb"
@@ -2239,8 +2242,8 @@ namespace "config" do
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
 
-    puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"
-    puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"
+    $logger.debug "$app_config['extensions'] : #{$app_config['extensions'].inspect}"
+    $logger.debug "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"
 
   end # end of config:common
 
@@ -3346,7 +3349,7 @@ namespace "build" do
           end
         else
           puts `#{cmd_str}`
-        end
+        end        
         unless $? == 0
           puts "Error interpreting erb code"
           exit 1

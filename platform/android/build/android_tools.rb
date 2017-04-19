@@ -458,7 +458,7 @@ def load_app_and_run(device_flag, apkfile, pkgname)
     device_id = device_flag
   end
 
-  puts "Loading package..."
+  @@logger.info "Loading package..."
 
   argv = [$adb] + device_options(device_flag)
   argv << 'install'
@@ -471,46 +471,52 @@ def load_app_and_run(device_flag, apkfile, pkgname)
   done = false
   child = nil
   while count < 20
-    theoutput = ""
+    poutres = ""
+    perrres = ""
     begin
       status = Timeout::timeout(300) do
-        puts "CMD: #{cmd}"
+        @@logger.debug "CMD: #{cmd}"
+
         Open3.popen3(cmd) do |pin,pout,perr,wait_thr|
           child = pout.pid
-          while line = perr.gets
-            theoutput << line
-            puts "RET: #{line}"
+          while line = pout.gets
+            poutres << line
+            @@logger.debug "POUT RET: #{line}"
           end
+
+          while line = perr.gets
+            perrres << line
+            @@logger.debug "PERR RET: #{line}"
+          end
+
         end
       end
     rescue Timeout::Error
+      @@logger.error "Timeout error, killing #{child}"
+
       Process.kill 9, child if child
       if theoutput == ""
-        puts "Timeout reached while empty output: killing adb server and retrying..."
+        @@logger.error "Timeout reached while empty output: killing adb server and retrying..."
         `#{$adb} kill-server`
         count += 1
         sleep 1
         next
       else
-        puts "Timeout reached: try to run application"
+        @@logger.error "Timeout reached: try to run application"
         done = true
         break
       end
     end
 
-    if theoutput.to_s.match(/Success/)
+    @@logger.info( "Upload output: #{poutres.to_s}")
+    @@logger.info( "Upload error output: #{perrres.to_s}")
+
+    if poutres.to_s.match(/Success/) or perrres.to_s.match(/Success/)
       done = true
       break
     end
-
-    if theoutput.to_s.match(/INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES/)
-      raise "Inconsistent certificates: please, uninstall application signed with another sertificate from #{device} first"
-    end
-    if theoutput.to_s.match(/INSTALL_FAILED_MISSING_SHARED_LIBRARY/)
-      raise "Missing shared library: application is not compatible with #{device} due to lack of required libraries"
-    end
-
-    puts "Failed to load (possibly because emulator/device is still offline) - retrying"
+    
+    @@logger.error "Failed to load (possibly because emulator/device is still offline) - retrying"
     $stdout.flush
     sleep 1
     count += 1
@@ -687,6 +693,136 @@ def read_manifest_package(path)
 end
 module_function :read_manifest_package
 
+
+  def self.jarsigner= v
+    @@jarsigner=v
+  end
+
+  def self.zipalign= v
+    @@zipalign=v
+  end
+
+  def self.keytool= v
+    @@keytool=v
+  end
+
+  def self.logger= v
+    @@logger=v
+  end
+
+  def signApk( inputApk, outputApk, keystore, keypass, storepass, storealias  )
+    @@logger.info "Signing APK file"
+
+    args = []
+    args << "-sigalg"
+    args << "MD5withRSA"
+    args << "-digestalg"
+    args << "SHA1"
+    args << "-verbose"
+    args << "-keystore"
+    args << keystore
+    args << "-storepass"
+    args << storepass
+    args << "-signedjar"
+    args << outputApk
+    args << inputApk
+    args << storealias if storealias
+    
+    Jake.run2(@@jarsigner, args, :hide_output => !USE_TRACES )
+    unless $?.success?
+      @@logger.error "Error running jarsigner"
+      exit 1
+    end
+  end
+  module_function :signApk
+
+  def signApkDebug( inputApk, outputApk )
+    @@logger.info "Align Debug APK file"
+    signApk( inputApk, outputApk, File.join(Dir.home,'/.android/debug.keystore'), 'android', 'android', 'androiddebugkey' )
+  end
+  module_function :signApkDebug
+
+  def alignApk( inputApk, outputApk )
+    args = []
+    args << "-f"
+    args << "-v"
+    args << "4"
+    args << inputApk
+    args << outputApk
+    out = Jake.run2(@@zipalign, args, :hide_output => !USE_TRACES )
+    puts out if USE_TRACES
+    unless $?.success?
+      @@logger.error "Error running zipalign"
+      exit 1
+    end
+  end
+  module_function :alignApk
+
+  def generateKeystore( keystore, storealias, storepass, keypass )
+    @@logger.info "Generating private keystore..."
+    
+    mkdir_p File.dirname($keystore) unless File.directory? File.dirname($keystore)
+
+    args = []
+    args << "-genkey"
+    args << "-alias"
+    args << storealias
+    args << "-keyalg"
+    args << "RSA"
+    args << "-validity"
+    args << "20000"
+    args << "-keystore"
+    args << keystore
+    args << "-storepass"
+    args << storepass
+    args << "-keypass"
+    args << keypass
+    Jake.run(@@keytool, args)
+    unless $?.success?
+      @@logger.error "Error generating keystore file"
+      exit 1
+    end
+  end
+  module_function :generateKeystore
+
+  def findSdkLibJar(sdk_root)
+    libdir = File.join(sdk_root, 'tools', 'lib' )
+    libpattern = 'sdklib*.jar'
+    sdklibjar = File.join(libdir,'sdklib.jar')
+
+    sdklibversion = [0,0,0]
+
+    Dir.glob( File.join( libdir, libpattern )).each do |lib|
+
+      fname = File.basename( lib, '.jar' )
+
+      @@logger.debug("Parsing version for: #{fname}")
+
+      m = fname.match(/^.*-(\d+)\.(\d+).(\d+)/)
+      next unless m
+      
+      version = m.captures
+
+      $logger.debug "Parsed version for #{lib}: #{version[0]}.#{version[1]}.#{version[2]}"
+
+      version.each_with_index do |d,i|
+        if d && (d.to_i > sdklibversion[i])
+          sdklibversion = [version[0].to_i,version[1].to_i,version[2].to_i]
+          sdklibjar = lib
+          break
+        end
+      end
+    end
+
+    raise "Could not find sdklib*.jar: #{sdklibjar}" unless File.file?(sdklibjar)
+
+    @@logger.info "Using SDK library: #{sdklibjar}"
+
+    sdklibjar
+  end
+  module_function :findSdkLibJar
+
+
 end #module AndroidTools
 
 def start_emulator(cmd)
@@ -727,40 +863,4 @@ def stop_emulator
     Jake.run3_dont_fail('killall -9 emulator64-arm 2> /dev/null')
     Jake.run3_dont_fail('killall -9 emulator 2> /dev/null')
   end
-end
-
-def find_sdklibjar(sdk_root)
-  libdir = File.join($androidsdkpath, 'tools', 'lib' )
-  libpattern = 'sdklib*.jar'
-  sdklibjar = File.join(libdir,'sdklib.jar')
-
-  sdklibversion = [0,0,0]
-
-  Dir.glob( File.join( libdir, libpattern )).each do |lib|
-
-    fname = File.basename( lib, '.jar' )
-
-    $logger.debug("Parsing version for: #{fname}")
-
-    m = fname.match(/^.*-(\d+)\.(\d+).(\d+)/)
-    next unless m
-    
-    version = m.captures
-
-    $logger.debug "Parsed version for #{lib}: #{version[0]}.#{version[1]}.#{version[2]}"
-
-    version.each_with_index do |d,i|
-      if d && (d.to_i > sdklibversion[i])
-        sdklibversion = [version[0].to_i,version[1].to_i,version[2].to_i]
-        sdklibjar = lib
-        break
-      end
-    end
-  end
-
-  raise "Could not find sdklib*.jar: #{sdklibjar}" unless File.file?(sdklibjar)
-
-  $logger.info "Using SDK library: #{sdklibjar}"
-
-  sdklibjar
 end

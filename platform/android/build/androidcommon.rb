@@ -559,11 +559,8 @@ def apk_build(sdk, apk_name, res_name, dex_name, debug)
     Dir.chdir File.join(sdk, "tools")
 
     params = ['-Xmx1024m', '-classpath', $sdklibjar, 'com.android.sdklib.build.ApkBuilderMain', apk_name]
-    if debug
-        params += ['-z', res_name, '-f', dex_name]
-    else
-        params += ['-u', '-z', res_name, '-f', dex_name]
-    end
+
+    params += ['-u', '-z', res_name, '-f', dex_name]
     
     Jake.run File.join($java, 'java'+$exe_ext), params
     unless $?.success?
