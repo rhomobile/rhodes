@@ -556,7 +556,6 @@ namespace "config" do
       )
 
       $androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
-      $sdklibjar = find_sdklibjar $androidsdkpath
 
       $keytool = File.join($java, "keytool" + $exe_ext)
       $jarsigner = File.join($java, "jarsigner" + $exe_ext)
@@ -581,6 +580,12 @@ namespace "config" do
 
       $build_tools_ver = File.split( build_tools_path )[1]
 
+      AndroidTools.logger = $logger
+      AndroidTools.jarsigner = $jarsigner
+      AndroidTools.zipalign = $zipalign
+      AndroidTools.keytool = $keytool
+
+      $sdklibjar = AndroidTools.findSdkLibJar $androidsdkpath
     end
 
     $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
@@ -2374,26 +2379,18 @@ namespace "device" do
       print_timestamp('device:android:debug START')
       dexfile = $bindir + "/classes.dex"
       simple_apkfile = $targetdir + "/" + $appname + "-tmp.apk"
+      signed_apkfile = $targetdir + "/" + $appname + "-tmp_signed.apk"
       final_apkfile = $targetdir + "/" + $appname + "-debug.apk"
       resourcepkg = $bindir + "/rhodes.ap_"
 
       apk_build $androidsdkpath, simple_apkfile, resourcepkg, dexfile, true
 
-      puts "Align Debug APK file"
-      args = []
-      args << "-f"
-      args << "-v"
-      args << "4"
-      args << simple_apkfile
-      args << final_apkfile
-      out = Jake.run2($zipalign, args, :hide_output => true)
-      puts out if USE_TRACES
-      unless $?.success?
-        puts "Error running zipalign"
-        exit 1
-      end
+      AndroidTools.signApkDebug( simple_apkfile, signed_apkfile )
+      AndroidTools.alignApk( signed_apkfile, final_apkfile )
+
       #remove temporary files
       rm_rf simple_apkfile
+      rm_rf signed_apkfile
 
       File.open(File.join(File.dirname(final_apkfile), "app_info.txt"), "w") do |f|
         f.puts $app_package_name
@@ -2424,63 +2421,13 @@ namespace "device" do
       apk_build $androidsdkpath, simple_apkfile, resourcepkg, dexfile, false
 
       if not File.exists? $keystore
-        puts "Generating private keystore..."
-        mkdir_p File.dirname($keystore) unless File.directory? File.dirname($keystore)
-
-        args = []
-        args << "-genkey"
-        args << "-alias"
-        args << $storealias
-        args << "-keyalg"
-        args << "RSA"
-        args << "-validity"
-        args << "20000"
-        args << "-keystore"
-        args << $keystore
-        args << "-storepass"
-        args << $storepass
-        args << "-keypass"
-        args << $keypass
-        Jake.run($keytool, args)
-        unless $?.success?
-          puts "Error generating keystore file"
-          exit 1
-        end
+        AndroidTools.generateKeystore( $keystore, $storealias, $storepass, $keypass )        
       end
 
-      puts "Signing APK file"
-      args = []
-      args << "-sigalg"
-      args << "MD5withRSA"
-      args << "-digestalg"
-      args << "SHA1"
-      args << "-verbose"
-      args << "-keystore"
-      args << $keystore
-      args << "-storepass"
-      args << $storepass
-      args << "-signedjar"
-      args << signed_apkfile
-      args << simple_apkfile
-      args << $storealias
-      Jake.run($jarsigner, args)
-      unless $?.success?
-        puts "Error running jarsigner"
-        exit 1
-      end
 
-      puts "Align APK file"
-      args = []
-      args << "-f"
-      args << "-v"
-      args << "4"
-      args << '"' + signed_apkfile + '"'
-      args << '"' + final_apkfile + '"'
-      Jake.run($zipalign, args)
-      unless $?.success?
-        puts "Error running zipalign"
-        exit 1
-      end
+      AndroidTools.signApk( simple_apkfile, signed_apkfile, $keystore, $keypass, $storepass, $storealias )
+      AndroidTools.alignApk( signed_apkfile, final_apkfile )
+
       #remove temporary files
       rm_rf simple_apkfile
       rm_rf signed_apkfile
