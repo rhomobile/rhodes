@@ -8,9 +8,13 @@
     mc:Ignorable="d"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     
-    SizeChanged="PhoneApplicationPage_SizeChanged" Loaded="PhoneApplicationPage_Loaded">
+    SizeChanged="ApplicationPage_SizeChanged" Loaded="ApplicationPage_Loaded">
     <Page.TopAppBar>
-        <AppBar />
+        <CommandBar x:Name="TopCommandBar">
+            <CommandBar.PrimaryCommands>
+                
+            </CommandBar.PrimaryCommands>
+        </CommandBar>
     </Page.TopAppBar>
 
 

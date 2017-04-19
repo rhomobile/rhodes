@@ -7,6 +7,9 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using System;
+using System.Reflection;
+
 
 namespace rhodes.Resources {
     using System;
@@ -39,7 +42,8 @@ namespace rhodes.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("rhodes.Resources.AppResources", typeof(AppResources).Assembly);
+                    global::System.Resources.ResourceManager temp = 
+                        new global::System.Resources.ResourceManager("rhodes.Resources.AppResources", (typeof(AppResources)).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

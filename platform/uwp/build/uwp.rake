@@ -309,7 +309,7 @@ namespace "build" do
 
       Rake::Task["build:uwp:rhobundle_noext"].invoke
 
-      addRhobundleFilesToCacheFileUWP()
+      #addRhobundleFilesToCacheFileUWP() TODO: check and redo
       addbundletoxapUWP()
 
     end
