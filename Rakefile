@@ -4299,8 +4299,10 @@ namespace "build" do
       Rake::Task["build:win32:rhosimulator"].invoke
     elsif RUBY_PLATFORM =~ /darwin/
       Rake::Task["build:osx:rhosimulator"].invoke
+    elsif RUBY_PLATFORM =~ /linux/
+      Rake::Task["build:linux:rhosimulator"].invoke
     else
-      puts "Sorry, at this time RhoSimulator can be built for Windows and Mac OS X only"
+      puts "Sorry, at this time RhoSimulator can be built for Windows, Mac OS X or Linux only"
       exit 1
     end
   end
