@@ -16,7 +16,8 @@ CONFIG += staticlib warn_on
 
 INCLUDEPATH += ../..\
 ../../ruby\
-../../../../lib/commonAPI
+../../../../lib/commonAPI\
+../../../win32/include
 
 macx {
   DESTDIR = ../../../osx/bin/rholib
