@@ -29,8 +29,8 @@
 
   <Applications>
     <Application Id="x1ef3a390ya41ay0134yeff9y60f81db5e3c0x"
-      Executable="AGHost.exe"
-      EntryPoint="MainPage.xaml">
+      Executable="$targetnametoken$.exe"
+      EntryPoint="rhodes.App">
       <uap:VisualElements
         DisplayName="rhodes"
           Square150x150Logo="Assets\SquareTile150x150.png"
@@ -53,12 +53,4 @@
   <Capabilities>
     <Capability Name="internetClient" />
   </Capabilities>
-  <Extensions>
-    <Extension Category="windows.activatableClass.inProcessServer">
-      <InProcessServer>
-        <Path>AgHostSvcs.dll</Path>
-        <ActivatableClass ActivatableClassId="AgHost.BackgroundTask" ThreadingModel="both" />
-      </InProcessServer>
-    </Extension>
-  </Extensions>
 </Package>

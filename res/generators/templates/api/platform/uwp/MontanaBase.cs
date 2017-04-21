@@ -66,11 +66,13 @@ namespace <%= $cur_module.name %>Impl
     {
         protected string _strID = "1";
         protected long _nativeImpl = 0;
+        protected CoreDispatcher dispatcher = null;
         protected <%= $cur_module.name %>RuntimeComponent _runtime;
 <%= dynamic_constants %>
         public <%= $cur_module.name %>Base()
         {
             _runtime = new <%= $cur_module.name %>RuntimeComponent(this);
+            dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
         }
 
         public long getNativeImpl()
@@ -86,10 +88,9 @@ namespace <%= $cur_module.name %>Impl
 
         public void DispatchInvoke(Action a)
         {
-            CoreDispatcher dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
-            if (dispatcher == null) {
-            var ignore = dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {try{a();} catch (Exception ex) {} });
+            if (dispatcher != null) {
+              var ignore = dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+              {try{a();} catch (Exception ex) {System.Diagnostics.Debug.WriteLine("Invoke in UI Thread exception");} });
             }else{a();}
         }
 <% if has_getProperty

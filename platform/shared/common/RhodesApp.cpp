@@ -531,18 +531,18 @@ void CRhodesApp::run()
 
 
 	while (!m_bExit) {
-		if(!m_isJSFSApp)
-    {
+
+		if(!m_isJSFSApp){
 #ifdef OS_MACOSX
-      if ( shouldRunDirectQueue )
-      {
-        directQueue.run();
-      }
-      else
+		  if ( shouldRunDirectQueue )
+		  {
+			directQueue.run();
+		  }
+		  else
 #endif
-      {
-        m_httpServer->run();
-      }
+		  {
+			m_httpServer->run();
+		  }
       
     }
 		else

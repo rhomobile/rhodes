@@ -111,6 +111,7 @@ char* parseToken(const char* start)
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    qputenv("QTWEBENGINE_REMOTE_DEBUGGING", QString::number(QtMainWindow::getDebPort()).toLocal8Bit());
     QtWebEngine::initialize();
     qRegisterMetaType<QTextCursor>("QTextCursor");
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -120,7 +121,7 @@ int main(int argc, char *argv[])
     bool isJSApp = false;
 #endif
 
-    //qputenv("QTWEBENGINE_REMOTE_DEBUGGING", QString::number(QtMainWindow::getDebPort()).toLocal8Bit());
+
     CMainWindow* m_appWindow = CMainWindow::getInstance();
 
     m_logPort = String("11000");
