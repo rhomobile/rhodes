@@ -147,7 +147,7 @@ RhoSimulator.h\
 QtLogView.h \
 QtCustomStyle.h\
 mainwindowinterface.h \
-    guithreadfunchelper.h
+guithreadfunchelper.h
 
 SOURCES += impl/AlertImpl.cpp\
 impl/BluetoothImpl.cpp\
@@ -222,7 +222,8 @@ newVersion/QtWebEngineView.h\
 newVersion/QtWebEnginePage.h\
 newVersion/ExternalWebView.h\
 newVersion/QWebEngineViewSelectionSuppressor.h\
-newVersion/DateTimeDialog.h
+newVersion/DateTimeDialog.h \
+newVersion/WebUrlRequestInterceptor.h
 
 SOURCES += newVersion/QtMainWindow.cpp\
 newVersion/RhoNativeApiCall.cpp\
@@ -231,5 +232,7 @@ newVersion/QtWebEngineView.cpp\
 newVersion/QtWebEnginePage.cpp\
 newVersion/ExternalWebView.cpp\
 newVersion/DateTimeDialog.cpp\
-newVersion/main.cpp
+newVersion/main.cpp\
+newVersion/WebUrlRequestInterceptor.cpp
+
 }

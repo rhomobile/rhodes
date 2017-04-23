@@ -29,7 +29,7 @@
 
 #include <QWidget>
 #include <QUrl>
-#include <QWebEngineView>
+#include "QtWebEngineView.h"
 #include <QVBoxLayout>
 
 class ExternalWebView : public QWidget
@@ -41,7 +41,7 @@ public:
     ~ExternalWebView();
     void navigate(QUrl url);
 private:
-    QWebEngineView * webView;
+    QtWebEngineView * webView;
 };
 
 #endif // EXTERNALWEBVIEW_H

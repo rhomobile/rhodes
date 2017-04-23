@@ -30,13 +30,14 @@
 #include <QObject>
 #include <QWebEnginePage>
 #include <QWebChannel>
+#include <QFile>
 
 class RhoNativeApiCall: public QObject
 {
     Q_OBJECT
 
 public:
-    RhoNativeApiCall(QWebEnginePage* page, QObject* parent = 0): m_page(page) {}
+    RhoNativeApiCall(QWebEnginePage* page, QObject* parent = 0);
     Q_INVOKABLE const QString apiCall(const QString& msg);
     Q_INVOKABLE const QString toLowerCase(const QString& msg);
 

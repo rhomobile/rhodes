@@ -31,15 +31,22 @@
 
 void RhoNativeApiCall::populateJavaScriptWindowObject()
 {
-    m_page->webChannel()->registerObject("__rhoNativeApi", this);
+    if (m_page->webChannel() == nullptr){m_page->setWebChannel(new QWebChannel(m_page));}
+    if (m_page->webChannel()->registeredObjects().value(QString("__rhoNativeApi")) != this){
+        m_page->webChannel()->registerObject(QString("__rhoNativeApi"), this);
+        qDebug() << "Registring native api object";
+    }
+}
+
+RhoNativeApiCall::RhoNativeApiCall(QWebEnginePage *page, QObject *parent): QObject(parent), m_page(page) {
+    if (m_page->webChannel() == nullptr){m_page->setWebChannel(new QWebChannel(m_page));}
+    connect(m_page, SIGNAL(loadStarted()), this, SLOT(populateJavaScriptWindowObject()));
 }
 
 const QString RhoNativeApiCall::apiCall(const QString& msg)
 {
     //RAWLOGC_INFO1("RhoNativeApiCall", "JS API call: %s", msg.toStdString().c_str());
-
     const QByteArray asc = msg.toLatin1(); 
-    
     rho::String res = rho::apiGenerator::js_entry_point( std::string(asc.constData(), asc.length()).c_str() );
     return QString(res.c_str());
     // how to return JS-object instance: (QVariant) return m_frame->evaluateJavascript("__rhoNativeApi;");
