@@ -524,12 +524,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\win32\file.c" />
+    <ClCompile Include="..\..\shared\ruby\win32\file_win32.c" />
     <ClCompile Include="..\..\shared\ruby\win32\miniprelude.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\win32\newline.c" />
+    <ClCompile Include="..\..\shared\ruby\win32\newline_win32.c" />
     <ClCompile Include="..\..\shared\ruby\win32\stub.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>

@@ -352,9 +352,6 @@
     <ClCompile Include="..\..\shared\ruby\win32\miniprelude.c">
       <Filter>Source Files\win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\win32\newline.c">
-      <Filter>Source Files\win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\win32\win32.c">
       <Filter>Source Files\win32</Filter>
     </ClCompile>
@@ -613,9 +610,6 @@
     <ClCompile Include="..\..\shared\ruby\missing\strtol.c">
       <Filter>Source Files\missing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\win32\file.c">
-      <Filter>Source Files\win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\win32\stub.c">
       <Filter>Source Files\win32</Filter>
     </ClCompile>
@@ -639,6 +633,12 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\enc\windows_31j.c">
       <Filter>Source Files\enc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\win32\file_win32.c">
+      <Filter>Source Files\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\win32\newline_win32.c">
+      <Filter>Source Files\win32</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
