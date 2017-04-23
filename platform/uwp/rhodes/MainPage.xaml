@@ -1,42 +1,46 @@
-﻿<phone:PhoneApplicationPage
+﻿<Page
     x:Class="rhodes.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
-    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:local="using:rhodes"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    SizeChanged="ApplicationPage_SizeChanged" Loaded="ApplicationPage_Loaded">
+<!--FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
-    SupportedOrientations="PortraitOrLandscape" Orientation="Portrait"
-    shell:SystemTray.IsVisible="True" BackKeyPress="PhoneApplicationPage_BackKeyPress" OrientationChanged="PhoneApplicationPage_OrientationChanged" SizeChanged="PhoneApplicationPage_SizeChanged" Loaded="PhoneApplicationPage_Loaded">
-    <phone:PhoneApplicationPage.ApplicationBar>
-        <shell:ApplicationBar/>
-    </phone:PhoneApplicationPage.ApplicationBar>
+    SupportedOrientations="PortraitOrLandscape" Orientation="Portrait" 
+    shell:SystemTray.IsVisible="True" BackKeyPress="PhoneApplicationPage_BackKeyPress" OrientationChanged="PhoneApplicationPage_OrientationChanged" SizeChanged="PhoneApplicationPage_SizeChanged" Loaded="PhoneApplicationPage_Loaded"  -->
 
-    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Page.TopAppBar>
+        <CommandBar x:Name="TopCommandBar">
+            <CommandBar.PrimaryCommands>
+                
+            </CommandBar.PrimaryCommands>
+        </CommandBar>
+    </Page.TopAppBar>
+
+
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="0"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid x:Name="TabbarPanel" Grid.Row="0" Margin="0,0,0,0">
-            <phone:Pivot x:Name="TabbarPivot" Height="Auto" Title="" Width="Auto" SelectionChanged="TabbarPivot_SelectionChanged">
-                <phone:Pivot.HeaderTemplate>
+            <Pivot x:Name="TabbarPivot" Height="Auto" Title="" Width="Auto" SelectionChanged="TabbarPivot_SelectionChanged">
+                <Pivot.HeaderTemplate>
                     <DataTemplate>
                         <StackPanel Background="{Binding Background}" Margin="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
                             <Image Source="{Binding IconImage}" Height="Auto" Width="Auto"/>
                             <TextBlock FontSize="48" Margin="0" Text="{Binding Label}"/>
                         </StackPanel>
                     </DataTemplate>
-                </phone:Pivot.HeaderTemplate>
-            </phone:Pivot>
+                </Pivot.HeaderTemplate>
+            </Pivot>
         </Grid>
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="0,0,0,0">
-            <phone:WebBrowser x:Name="RhodesWebBrowser" Source="about:blank" Height="Auto" Width="Auto" TabIndex="-1" IsScriptEnabled="True" SizeChanged="RhodesWebBrowser_SizeChanged" Navigated="RhodesWebBrowser_Navigated" NavigationFailed="RhodesWebBrowser_NavigationFailed" LoadCompleted="RhodesWebBrowser_LoadCompleted" Loaded="RhodesWebBrowser_Loaded" Unloaded="RhodesWebBrowser_Unloaded" ScriptNotify="RhodesWebBrowser_JSNotify"/>
+            <WebView x:Name="RhodesWebBrowser" Source="about:blank" Height="Auto" Width="Auto" SizeChanged="RhodesWebBrowser_SizeChanged" NavigationCompleted="RhodesWebBrowser_Navigated" NavigationFailed="RhodesWebBrowser_NavigationFailed" LoadCompleted="RhodesWebBrowser_LoadCompleted" Loaded="RhodesWebBrowser_Loaded" Unloaded="RhodesWebBrowser_Unloaded" ScriptNotify="RhodesWebBrowser_JSNotify"/>
         </Grid>
     </Grid>
-
-</phone:PhoneApplicationPage>
+</Page>

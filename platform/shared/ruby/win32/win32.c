@@ -2112,6 +2112,28 @@ EXTERN_C _CRTIMP ioinfo * __pioinfo[];
 #define IOINFO_L2E			5
 #endif
 
+#ifdef CPP_ELEVEN
+typedef struct {
+	union
+	{
+		FILE  _public_file;
+		char* _ptr;
+	};
+
+	char*            _base;
+	int              _cnt;
+	long             _flags;
+	long             _file;
+	int              _charbuf;
+	int              _bufsiz;
+	char*            _tmpfname;
+	CRITICAL_SECTION _lock;
+} vcruntime_file;
+#define FILE_FILENO(stream) ((vcruntime_file*)stream)->_file
+#define GET_STREAM_PTR(stream) ((vcruntime_file*)stream)
+#endif
+
+#define IOINFO_L2E			5
 #define IOINFO_ARRAY_ELTS	(1 << IOINFO_L2E)
 #define _pioinfo(i)	((ioinfo*)((char*)(__pioinfo[i >> IOINFO_L2E]) + (i & (IOINFO_ARRAY_ELTS - 1)) * (sizeof(ioinfo) + pioinfo_extra)))
 #define _osfhnd(i)  (_pioinfo(i)->osfhnd)
@@ -2235,27 +2257,6 @@ static int rb_w32_open_osfhandle(intptr_t osfhandle, int flags)
     return fh;			/* return handle */
 }
 
-#ifdef CPP_ELEVEN
-typedef struct {
-    union
-    {
-        FILE  _public_file;
-        char* _ptr;
-    };
-
-    char*            _base;
-    int              _cnt;
-    long             _flags;
-    long             _file;
-    int              _charbuf;
-    int              _bufsiz;
-    char*            _tmpfname;
-    CRITICAL_SECTION _lock;
-} vcruntime_file;
-#define FILE_FILENO(stream) ((vcruntime_file*)stream)->_file
-#define GET_STREAM_PTR(stream) ((vcruntime_file*)stream)
-#endif
-
 static void init_stdhandle(void)
 {
     int nullfd = -1;
@@ -2278,6 +2279,8 @@ static void init_stdhandle(void)
     }
     if (fileno(stderr) < 0) {
     FILE_FILENO(stderr) = open_null(2);
+    }else {
+    setmode(fileno(stderr), O_BINARY);
     }
 
 #else

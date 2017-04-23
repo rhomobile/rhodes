@@ -27,9 +27,9 @@
 using System;
 using System.IO.IsolatedStorage;
 using System.Windows;
-using System.Windows.Resources;
 using System.Text;
 using System.IO;
+using Windows.Storage;
 
 namespace rho.common
 {
@@ -125,7 +125,7 @@ namespace rho.common
             if (!isOpened())
                 return;
 
-            m_st.Close();
+            //m_st.Close();
             m_st = null;
         }
 
@@ -230,10 +230,9 @@ namespace rho.common
 
         public static bool isResourceFileExist(String path)
         {
-            StreamResourceInfo sr = Application.GetResourceStream(new Uri(CFilePath.removeFirstSlash(path), UriKind.Relative));
-            if (sr == null)
-                return false;
-
+            var task = StorageFile.GetFileFromApplicationUriAsync(new Uri(path, UriKind.Relative)).AsTask();
+            task.Wait();
+            var sr = task.Result;
             return sr != null;
         }
 
@@ -322,11 +321,15 @@ namespace rho.common
             if (!CRhoFile.isResourceFileExist(path)) 
                 return content;
 
-            StreamResourceInfo sr = Application.GetResourceStream(new Uri(path, UriKind.Relative));
+            var task = StorageFile.GetFileFromApplicationUriAsync(new Uri(path, UriKind.Relative)).AsTask();
+            task.Wait();
+            var sr = task.Result;
+            var streamTask = sr.OpenStreamForReadAsync();
+            streamTask.Wait();
 
-            using (System.IO.BinaryReader br = new BinaryReader(sr.Stream))
+            using (System.IO.BinaryReader br = new BinaryReader(streamTask.Result))
             {
-                char[] str = br.ReadChars((int)sr.Stream.Length);
+                char[] str = br.ReadChars((int)streamTask.Result.Length);
                 content = new string(str);
             }
 
@@ -341,11 +344,15 @@ namespace rho.common
             if (!CRhoFile.isResourceFileExist(path))
                 return content;
 
-            StreamResourceInfo sr = Application.GetResourceStream(new Uri(path, UriKind.Relative));
-
-            using (System.IO.BinaryReader br = new BinaryReader(sr.Stream))
+            var task = StorageFile.GetFileFromApplicationUriAsync(new Uri(path, UriKind.Relative)).AsTask();
+            task.Wait();
+            var sr = task.Result;
+            var streamTask = sr.OpenStreamForReadAsync();
+            streamTask.Wait();
+           
+            using (System.IO.BinaryReader br = new BinaryReader(streamTask.Result))
             {
-                content = br.ReadBytes((int)sr.Stream.Length);
+                content = br.ReadBytes((int)streamTask.Result.Length);
             }
 
             return content;

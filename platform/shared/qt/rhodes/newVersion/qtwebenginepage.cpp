@@ -17,3 +17,10 @@ void QtWebEnginePage::javaScriptConsoleMessage(const QString& message, int lineN
     rho::String str_message = ::std::string(asc_message.constData(), asc_message.length());
     LOG(INFO) + str_message.c_str();
 }
+
+bool QtWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
+{
+    bool flag = QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
+    emit linkClicked();
+    return flag;
+}

@@ -1,48 +1,42 @@
-﻿/*------------------------------------------------------------------------
-* (The MIT License)
-* 
-* Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in 
-* all copies or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE     
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,    
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
-* THE SOFTWARE.
-*        
-* http://rhomobile.com
-*------------------------------------------------------------------------*/
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Microsoft.Phone.Info;
-using System.Threading;
-using System.Windows;
-using Microsoft.Devices;
-using Microsoft.Phone.Controls;
-using rhodes.Resources;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using rhodes.Resources;
 using rhoruntime;
-using Microsoft.Phone.Shell;
-using System.Windows.Media;
-using System.Windows.Controls;
 using System.IO.IsolatedStorage;
 using rhodes.common;
 using System.ComponentModel;
-using System.Windows.Media.Imaging;
+using Windows.System.Profile;
+using Windows.UI.ViewManagement;
+using Windows.Devices.Sensors;
+using Windows.Devices.Sensors.Custom;
+using Windows.UI.Core;
+using Windows.Security.ExchangeActiveSyncProvisioning;
+using Windows.UI;
 
 namespace rhodes
 {
+    class WebViewTag
+    {
+        public WebViewTag(int tabIndex){ this.tabIndex = tabIndex; }
+        public int getTabIndex(){ return tabIndex;}
+        private int tabIndex = 0;
+    }
+
     public partial class TabProps
     {
         public bool _isInitialized = false;
@@ -85,15 +79,18 @@ namespace rhodes
         }
     };
 
-    public partial class MainPage : PhoneApplicationPage
+    public partial class MainPage : Page
     {
+
+        static CoreDispatcher dispatcher;
+
         // saved singletone instance of MainPage
         static private MainPage _instance = null;
         private IMethodResult _oTabResult = null;
         // saved id of the UI thread
         private int _uiThreadID = -1;
         // rhodes main thread
-        private Thread _rhoruntimeThread;
+        private Task _rhoruntimeThread;
         private bool _isCallbackFired = false;
         // internal variables
         private double _screenWidth;
@@ -116,22 +113,28 @@ namespace rhodes
         <body onload=""notifyUA();""></body>
         </html>";
         // web browser user agent string (initialized with fabricated default value)
-        private string _userAgent = "Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone " +
-            System.Environment.OSVersion.Version.Major.ToString() + "." +
-            System.Environment.OSVersion.Version.Minor.ToString() +
-            "; Trident/6.0; IEMobile/10.0; ARM; Touch; " +
-            Microsoft.Phone.Info.DeviceStatus.DeviceManufacturer + "; " +
-            Microsoft.Phone.Info.DeviceStatus.DeviceName + ")";
 
+        private static readonly Windows.Security.ExchangeActiveSyncProvisioning.EasClientDeviceInformation DEVICE_INFO =
+                new Windows.Security.ExchangeActiveSyncProvisioning.EasClientDeviceInformation();
+
+        private string _userAgent = "Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone " +
+            DEVICE_INFO.OperatingSystem + "." +
+            DEVICE_INFO.SystemManufacturer+
+            "; Trident/6.0; IEMobile/10.0; ARM; Touch; " +
+            DEVICE_INFO.SystemFirmwareVersion + "; " +
+            DEVICE_INFO.SystemHardwareVersion + ")";
+        
         private Dictionary<int, TabProps> _tabProps = new Dictionary<int, TabProps>();
 
         private string initUri = "";
-        private PageOrientation _screenOrientation = PageOrientation.None;
+        private SimpleOrientation _screenOrientation = SimpleOrientation.Faceup;
+
         // menu items hash table
         private Dictionary<string, int> menuItems = new Dictionary<string, int>();
         // toolbar items hash table
         private Dictionary<string, string> toolbarItems = new Dictionary<string, string>();
-        private List<ApplicationBarMenuItem> toolbarMenuItems = new List<ApplicationBarMenuItem>();
+        
+        private List<AppBarButton> toolbarMenuItems = new List<AppBarButton>();
 
         public bool isBrowserInitialized(int index)
         {
@@ -140,7 +143,7 @@ namespace rhodes
 
         private bool isUIThread
         {
-            get { return _uiThreadID == System.Threading.Thread.CurrentThread.ManagedThreadId; }
+            get { return _uiThreadID == Environment.CurrentManagedThreadId; }
         }
 
 
@@ -166,50 +169,82 @@ namespace rhodes
         {
             return _instance.LayoutRoot;
         }
-        public UIElement RootVisual()
+        /*public UIElement RootVisual()
         {
+            DependencyObject parent = VisualTreeHelper.GetParent((DependencyObject)Content);
             return App.Current.RootVisual;
-        }
+        }*/
         public bool isEmulator()
         {
-            return DeviceStatus.DeviceName.Contains("Emulator") == true ? true : false;
+            return DEVICE_INFO.SystemProductName.Contains("Emulator") == true ? true : false;
         }
         public void ApplicationBarEnable(bool Visible)
         {
-            ApplicationBar.IsVisible = Visible;
+            getAppBar().IsOpen = Visible;
         }
         public bool ApplicationBarStatus()
         {
-            return ApplicationBar.IsVisible;
+            return getAppBar().IsOpen;
         }
 
         public MainPage()
         {
+            System.Diagnostics.Debug.WriteLine("Running constructor");
+            dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            try
+            {
+                _screenOrientation = SimpleOrientationSensor.GetDefault().GetCurrentOrientation();
+                SimpleOrientationSensor.GetDefault().OrientationChanged +=
+                new TypedEventHandler<SimpleOrientationSensor, SimpleOrientationSensorOrientationChangedEventArgs>(ApplicationPage_OrientationChanged);
+            }
+            catch{ _screenOrientation = SimpleOrientation.Faceup; }
             _instance = this;
-            _uiThreadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            _uiThreadID = Environment.CurrentManagedThreadId;
             updateScreenSize();
             InitializeComponent();
-            ApplicationBar.IsVisible = false;
-            _screenOrientation = Orientation;
+            RhodesWebBrowser.Tag = new WebViewTag(-1); 
+            
+            if ((TopAppBar == null) || (TopAppBar.Content == null))
+            {
+                CommandBar commandBar = new CommandBar();
+                if (this.TopAppBar == null)
+                {
+                    this.TopAppBar = new AppBar();
+                    this.TopAppBar.IsOpen = true;
+                    this.TopAppBar.IsSticky = true;
+                }
+                TopAppBar.Content = commandBar;
+            }
+            
             try
             {
                 // initialize C# extensions factories
+                System.Diagnostics.Debug.WriteLine("InitializeExtensions()");
                 CSharpExtensions.InitializeExtensions();
+
                 // create rhodes runtime object
                 var _rhoruntime = CRhoRuntime.getInstance(new MainPageWrapper(this));
                 _rhoruntime.setCryptoEngine(new CryptoEngineWrapper(new RhoCrypt()));
                 // create and start rhodes main thread               
-                _rhoruntimeThread = new Thread(_rhoruntime.Execute);
-                _rhoruntimeThread.Start();
+                _rhoruntimeThread = Task.Run(() => {
+                    _rhoruntime.Execute();
+                    System.Diagnostics.Debug.WriteLine("rhoruntime thread loop closed"); });
 
                 //temporary solutions, to do refactoring
                 //Thread.Sleep(200);
+                DoWait(200);
                 _rhoruntime.onActivate(0);
             }
             catch (Exception e)
             {
                 RhodesWebBrowser.NavigateToString("<html><head><title>Exception</title></head><body>Exception: " + e.Message + "</body></html>");
+                System.Diagnostics.Debug.WriteLine("InitializeExtensions exceptions " + e.Message);
             }
+
+            Windows.Storage.StorageFolder appInstalledFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            System.Diagnostics.Debug.WriteLine("Storage foleder is " + appInstalledFolder.Path);
+            System.Diagnostics.Debug.WriteLine("Constructor ended");
+            
         }
 
         public int getLogicalDpiX()
@@ -241,16 +276,17 @@ namespace rhodes
 
         public string getWebviewFramework()
         {
-            return "IE/" + System.Environment.OSVersion.Version.Major.ToString() + "." +
-                System.Environment.OSVersion.Version.Minor.ToString();
+            return "IE/" + DEVICE_INFO.OperatingSystem + "." +
+                DEVICE_INFO.SystemFirmwareVersion;
         }
 
         public string getScreenOrientation()
         {
-            if (_screenOrientation == PageOrientation.Portrait ||
-                _screenOrientation == PageOrientation.PortraitDown ||
-                _screenOrientation == PageOrientation.PortraitUp ||
-                _screenOrientation == PageOrientation.None)
+            //SensorReadingType
+            if (_screenOrientation == SimpleOrientation.Facedown ||
+                _screenOrientation == SimpleOrientation.Faceup ||
+                _screenOrientation == SimpleOrientation.NotRotated ||
+                _screenOrientation == SimpleOrientation.Rotated180DegreesCounterclockwise)
             {
                 return "portrait";
             }
@@ -263,15 +299,39 @@ namespace rhodes
             }
         }
 
+
+        public static Task InvokeInUIThread(Action action)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            if (dispatcher == null) {
+                action();
+                tcs.TrySetResult(true);
+                return tcs.Task;
+            }
+            var ignore = dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>{
+                try{
+                    action();
+                    tcs.TrySetResult(true);
+                }
+                catch (Exception ex){
+                    tcs.TrySetException(ex);
+                    System.Diagnostics.Debug.WriteLine("Invoke in UI Thread exception");
+                }
+            });
+            return tcs.Task;
+        }
+
+
         public void bringToFront()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { bringToFront(); }); return; }
+           
+            if (!isUIThread) { InvokeInUIThread(delegate() { bringToFront(); }); return; }
             this.bringToFront();
         }
 
         public void performOnUiThread(Int64 native)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { performOnUiThread(native); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { performOnUiThread(native); }); return; }
             CRhoRuntime.getInstance().executeRhoRunnable(native);
         }
 
@@ -280,7 +340,7 @@ namespace rhodes
             //e.Cancel = CRhoRuntime.getInstance().onBackKeyPress();
         }
 
-        private void updateOrientation(PageOrientation orientation)
+        private void updateOrientation(SimpleOrientation orientation)
         {
             _screenOrientation = orientation;
             updateScreenSize();
@@ -288,12 +348,24 @@ namespace rhodes
 
         private void updateScreenSize()
         {
-            _screenWidth = Application.Current.Host.Content.ActualWidth;
-            _screenHeight = Application.Current.Host.Content.ActualHeight;
-            _screenPhysicalHeight = 4; // assuming 4 inches
-            _screenPhysicalWidth = (_screenPhysicalHeight / _screenHeight) * _screenWidth; // assuming square pixels
+            if (!isUIThread) { InvokeInUIThread(delegate () { updateScreenSize(); }); return; }
+            var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
+            var scaleFactor = Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
+            var size = new Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor);
 
-            if ((_screenOrientation == PageOrientation.Landscape) || (_screenOrientation == PageOrientation.LandscapeLeft) || (_screenOrientation == PageOrientation.LandscapeRight))
+            var dpi = Windows.Graphics.Display.DisplayInformation.GetForCurrentView().RawDpiY;
+
+            _screenWidth = size.Width;
+            _screenHeight = size.Height;
+            _screenPhysicalHeight = size.Width/dpi; // assuming 4 inches
+            _screenPhysicalWidth = size.Height/dpi; // assuming square pixels
+
+            try { _screenOrientation = SimpleOrientationSensor.GetDefault().GetCurrentOrientation(); }
+            catch {
+                _screenOrientation = SimpleOrientation.Faceup;
+                System.Diagnostics.Debug.WriteLine("Screen orientation exception");
+            }
+            if ((_screenOrientation == SimpleOrientation.Rotated270DegreesCounterclockwise) || (_screenOrientation == SimpleOrientation.Rotated90DegreesCounterclockwise))
             {
                 double w = _screenWidth;
                 _screenWidth = _screenHeight;
@@ -304,20 +376,19 @@ namespace rhodes
             }
         }
 
-        private void PhoneApplicationPage_OrientationChanged(object sender, OrientationChangedEventArgs e)
+        private void ApplicationPage_OrientationChanged(object sender, SimpleOrientationSensorOrientationChangedEventArgs e)
         {
             updateOrientation(e.Orientation);
         }
 
-        private void PhoneApplicationPage_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void ApplicationPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             updateScreenSize();
         }
 
-        private void PhoneApplicationPage_Loaded(object sender, RoutedEventArgs e)
+        private void ApplicationPage_Loaded(object sender, RoutedEventArgs e)
         {
-            var browser = new Microsoft.Phone.Controls.WebBrowser();
-            browser.IsScriptEnabled = true;
+            var browser = new WebView();
             browser.Visibility = Visibility.Collapsed;
             browser.Loaded += (asender, args) => browser.NavigateToString(getUserAgentHtml);
             browser.ScriptNotify += (asender, args) =>
@@ -338,8 +409,8 @@ namespace rhodes
 
         public void navigate(string url, int index)
         {
-
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigate(url, index); }); return; }
+            System.Diagnostics.Debug.WriteLine("Navigating");
+            if (!isUIThread) { InvokeInUIThread(delegate() { navigate(url, index); }); return; }
 
             /*if(url.Contains("http://") == false)
             {
@@ -347,26 +418,31 @@ namespace rhodes
                 url = "file:///" + appdir.Replace(@"\", "/") +"/" + url;
                
             }*/
-
+            
             if (_tabProps.Count == 0) index = -1;
-
+            System.Diagnostics.Debug.WriteLine("Navigated to " + url);
             if (url == "") return;
-
+            System.Diagnostics.Debug.WriteLine("Navigated 1");
             if (index == -1 && !_isBrowserInitialized)
             {
                 initUri = url;
+                System.Diagnostics.Debug.WriteLine("Navigated 2");
                 return;
             }
             else if (index > -1 && _tabProps.ContainsKey(index) && _tabProps[index]._isInitialized == false)
             {
                 _tabProps[index]._action = url;
+                System.Diagnostics.Debug.WriteLine("Navigated 3");
                 return;
             }
 
+            System.Diagnostics.Debug.WriteLine("Navigated 4");
             if (TabbarPivot.Items.Count == 0)
                 RhodesWebBrowser.Navigate(new Uri(url, UriKind.RelativeOrAbsolute));
             else
-                ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url, UriKind.RelativeOrAbsolute));
+                ((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url, UriKind.RelativeOrAbsolute));
+
+            System.Diagnostics.Debug.WriteLine("Navigated 5");
         }
 
         public string executeScriptFunc(string script, int index)
@@ -375,10 +451,11 @@ namespace rhodes
             if (TabbarPivot.Items.Count == 0 || _isCallbackFired)//_tabProps[index]._isInitialized == false)
             {
                 _isCallbackFired = false;
-                return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
+                
+                return RhodesWebBrowser.InvokeScript("eval", codeString);
             }
             else
-                return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
+                return ((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString);
         }
 
         public string executeScript(string script, int index)
@@ -398,7 +475,7 @@ namespace rhodes
 
         public void GoBack(int index)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoBack(index); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { GoBack(index); }); return; }
             if ((TabbarPivot.Items.Count == 0)/* || (index < 0) || (index >= TabbarPivot.Items.Count)*/)
             {
                 if (RhodesWebBrowser.CanGoBack)
@@ -406,8 +483,8 @@ namespace rhodes
             }
             else
             {
-                if (((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).CanGoBack)
-                    ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).GoBack();
+                if (((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).CanGoBack)
+                    ((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).GoBack();
             }
         }
 
@@ -418,7 +495,7 @@ namespace rhodes
 
         public void GoForward(int index)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoForward(index); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { GoForward(index); }); return; }
             if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
             {
                 if (RhodesWebBrowser.CanGoForward)
@@ -426,20 +503,20 @@ namespace rhodes
             }
             else
             {
-                if (((WebBrowser)((PivotItem)TabbarPivot.Items[index]).Content).CanGoForward)
-                    ((WebBrowser)((PivotItem)TabbarPivot.Items[index]).Content).GoForward();
+                if (((WebView)((PivotItem)TabbarPivot.Items[index]).Content).CanGoForward)
+                    ((WebView)((PivotItem)TabbarPivot.Items[index]).Content).GoForward();
             }
         }
 
         public void Refresh(int index)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { Refresh(index); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { Refresh(index); }); return; }
             if (TabbarPivot.Items.Count == 0)
                 RhodesWebBrowser.Navigate(new Uri(RhodesWebBrowser.Source.AbsoluteUri, UriKind.Absolute));
             // another possible implementation: RhodesWebBrowser.InvokeScript("eval", "history.go()");
             else
-                ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(
-                    new Uri(((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Source.AbsoluteUri, UriKind.Absolute));
+                ((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(
+                    new Uri(((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Source.AbsoluteUri, UriKind.Absolute));
         }
 
         public bool isStarted()
@@ -460,10 +537,11 @@ namespace rhodes
                 if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
                     return RhodesWebBrowser.Source.ToString();
                 else
-                    return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Source.ToString();
+                    return ((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Source.ToString();
             }
             catch (Exception)
             {
+                System.Diagnostics.Debug.WriteLine("getCurrentURLFunc exception");
                 return "";
             }
         }
@@ -478,22 +556,22 @@ namespace rhodes
             return StringValueByIntReturnAgent(getCurrentURLFunc, index);
         }
 
-        private void RhodesWebBrowser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        private void RhodesWebBrowser_Navigated(object sender, WebViewNavigationCompletedEventArgs e)
         {
-            String url = getCurrentURLFunc((sender as WebBrowser).TabIndex);
+            String url = getCurrentURLFunc(((WebViewTag)((sender as WebView).Tag)).getTabIndex());
             CRhoRuntime.getInstance().onWebViewUrlChanged(url);
         }
 
-        private void RhodesWebBrowser_NavigationFailed(object sender, System.Windows.Navigation.NavigationFailedEventArgs e)
+        private void RhodesWebBrowser_NavigationFailed(object sender, WebViewNavigationFailedEventArgs e)
         {
             // TODO: WebView NavigationFailed - do we need this?
         }
 
-        private void RhodesWebBrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        private void RhodesWebBrowser_LoadCompleted(object sender, /*WebViewContentLoadingEventArgs*/NavigationEventArgs e)
         {
-            String url = getCurrentURLFunc((sender as WebBrowser).TabIndex);
+            String url = getCurrentURLFunc(((WebViewTag)((sender as WebView).Tag)).getTabIndex());
             CRhoRuntime.getInstance().onWebViewUrlChanged(url);
-            int index = (sender as WebBrowser).TabIndex;
+            int index = ((WebViewTag)((sender as WebView).Tag)).getTabIndex();
             if (index > -1 && _tabProps.ContainsKey(index) && !_tabProps[index]._isInitialized)
             {
                 _tabProps[index]._isInitialized = true;
@@ -517,13 +595,24 @@ namespace rhodes
 
         private void RhodesWebBrowser_Loaded(object sender, RoutedEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc((sender as WebBrowser).TabIndex));
+            try { CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(((WebViewTag)((sender as WebView).Tag)).getTabIndex())); }
+            catch { 
+                System.Diagnostics.Debug.WriteLine("RhodesWebBrowser_Loaded exception");
+                try{
+                    System.Diagnostics.Debug.WriteLine("Trying to load getCurrentURLFunc(0) exception");
+                    CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(0));
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("onWebViewUrlChanged(getCurrentURLFunc(0)) exception");
+                }
+            }
         }
 
 
         private void RhodesWebBrowser_Unloaded(object sender, RoutedEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc((sender as WebBrowser).TabIndex));
+            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(((WebViewTag)((sender as WebView).Tag)).getTabIndex()));
         }
 
         private void RhodesWebBrowser_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -531,28 +620,33 @@ namespace rhodes
             // TODO: webview size changed event handler ?
         }
 
+        private CommandBar getAppBar()
+        {
+            return TopAppBar.Content as CommandBar;
+        }
+
         private void updateAppBarModeAndVisibility(bool autoToolbarVisibility = true)
         {
-            if (autoToolbarVisibility && (ApplicationBar.Buttons.Count > 0))
+            if (autoToolbarVisibility && (getAppBar().PrimaryCommands.Count > 0))
             {
-                ApplicationBar.Mode = ApplicationBarMode.Default;
-                ApplicationBar.IsVisible = true;
-                ApplicationBar.IsMenuEnabled = ApplicationBar.MenuItems.Count > 0;
-                ApplicationBar.Opacity = 1.0;
+                getAppBar().ClosedDisplayMode = AppBarClosedDisplayMode.Compact;
+                getAppBar().IsOpen = true;
+                //ApplicationBar.IsMenuEnabled = true;
+                getAppBar().Opacity = 1.0;
             }
-            else if (ApplicationBar.MenuItems.Count > 0)
+            else if (getAppBar().PrimaryCommands.Count > 0)
             {
-                ApplicationBar.Mode = ApplicationBarMode.Minimized;
-                ApplicationBar.IsVisible = true;
-                ApplicationBar.IsMenuEnabled = true;
-                ApplicationBar.Opacity = 0.75;
+                getAppBar().ClosedDisplayMode = AppBarClosedDisplayMode.Minimal;
+                getAppBar().IsOpen = true;
+                //ApplicationBar.IsMenuEnabled = true;
+                getAppBar().Opacity = 0.75;
             }
             else
             {
-                ApplicationBar.Mode = ApplicationBarMode.Default;
-                ApplicationBar.IsVisible = false;
-                ApplicationBar.IsMenuEnabled = false;
-                ApplicationBar.Opacity = 1.0;
+                getAppBar().ClosedDisplayMode = AppBarClosedDisplayMode.Compact;
+                getAppBar().IsOpen = false;
+                //ApplicationBar.IsMenuEnabled = false;
+                getAppBar().Opacity = 1.0;
             }
         }
 
@@ -560,20 +654,24 @@ namespace rhodes
 
         public void toolbarRemoveAllButtons()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarRemoveAllButtons(); }); return; }
-            ApplicationBar.Buttons.Clear();
+            
+            if (!isUIThread) { InvokeInUIThread(delegate() { toolbarRemoveAllButtons(); }); return; }
+
+            foreach(ICommandBarElement value in getAppBar().PrimaryCommands.ToList()){
+                if (value.GetType() == typeof(AppBarButton)){
+                    getAppBar().PrimaryCommands.Remove(value);
+                }
+            }
+            
             toolbarItems.Clear();
+
             // remove all toolbar items added to menu (uwp toolbar allows 4 buttons only)
             int j = toolbarMenuItems.Count - 1;
-            if (j >= 0)
-            {
-                for (int i = ApplicationBar.MenuItems.Count - 1; i >= 0; i--)
-                {
-                    if (ApplicationBar.MenuItems[i].Equals(toolbarMenuItems[j]))
-                    {
-                        ApplicationBar.MenuItems.RemoveAt(i);
-                        if ((--j) < 0)
-                            break;
+            if (j >= 0){
+                for (int i = getAppBar().SecondaryCommands.Count - 1; i >= 0; i--){
+                    if (getAppBar().SecondaryCommands.ToList()[i].Equals(toolbarMenuItems[j])){
+                        getAppBar().SecondaryCommands.RemoveAt(i);
+                        if ((--j) < 0) break;
                     }
                 }
             }
@@ -583,19 +681,26 @@ namespace rhodes
 
         public void toolbarShow()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarShow(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { toolbarShow(); }); return; }
             updateAppBarModeAndVisibility();
         }
 
         public void toolbarHide()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarHide(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { toolbarHide(); }); return; }
             updateAppBarModeAndVisibility(false);
         }
 
         private int toolbarIsStartedFunc()
         {
-            return ApplicationBar.Buttons.Count > 0 ? 1 : 0;
+            foreach (ICommandBarElement value in getAppBar().PrimaryCommands.ToList())
+            {
+                if (value.GetType() == typeof(AppBarButton))
+                {
+                    return 1;
+                }
+            }
+            return 0;
         }
 
         public int toolbarIsStarted()
@@ -605,7 +710,7 @@ namespace rhodes
 
         private int toolbarGetHeightFunc()
         {
-            return ApplicationBar.IsVisible ? (ApplicationBar.Mode == ApplicationBarMode.Default ? 72 : 30) : 0;
+            return getAppBar().Visibility == Windows.UI.Xaml.Visibility.Visible? (int)getAppBar().Height : 0;
         }
 
         public int toolbarGetHeight()
@@ -633,21 +738,30 @@ namespace rhodes
                         text = text.Substring(text.LastIndexOf('/') + 1);
                 }
             }
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddAction(icon, text, action); }); return; }
-            if (ApplicationBar.Buttons.Count < 4)
+            if (!isUIThread) { InvokeInUIThread(delegate() { toolbarAddAction(icon, text, action); }); return; }
+
+            int buttonsCount = 0;
+            foreach (ICommandBarElement value in getAppBar().PrimaryCommands.ToList()) {
+                if (value.GetType() == typeof(AppBarButton)) buttonsCount++;    
+            }
+            if (buttonsCount < 4)
             {
-                ApplicationBarIconButton toolbarButton = new ApplicationBarIconButton();
-                toolbarButton.IconUri = new Uri((icon != null) && (icon.Length > 0) ? prependWithSlash(icon) : "/rho/apps/public/images/cancel.png", UriKind.Relative);
-                toolbarButton.Text = text;
-                ApplicationBar.Buttons.Add(toolbarButton);
-                toolbarButton.Click += new EventHandler(toolbarButton_Click);
+                AppBarButton toolbarButton = new AppBarButton();
+                Uri iconUri = new Uri((icon != null) && (icon.Length > 0) ? prependWithSlash(icon) : "/rho/apps/public/images/cancel.png", UriKind.Relative);
+                BitmapIcon bitmapIcon = new BitmapIcon();
+                bitmapIcon.UriSource = iconUri;
+                toolbarButton.Icon = bitmapIcon;
+                toolbarButton.Label = text;
+                getAppBar().PrimaryCommands.Add(toolbarButton);
+                toolbarButton.Click += new RoutedEventHandler(toolbarButton_Click);
             }
             else
             {
-                ApplicationBarMenuItem menuItem = new ApplicationBarMenuItem(text);
-                ApplicationBar.MenuItems.Add(menuItem);
-                menuItem.Click += new EventHandler(toolbarMenuItem_Click);
-                toolbarMenuItems.Add(menuItem);
+                AppBarButton toolbarMenuButton = new AppBarButton();
+                toolbarMenuButton.Label = text;
+                getAppBar().SecondaryCommands.Add(toolbarMenuButton);
+                toolbarMenuButton.Click += new RoutedEventHandler(toolbarButton_Click);
+                toolbarMenuItems.Add(toolbarMenuButton);
             }
             toolbarItems.Add(text, action);
             updateAppBarModeAndVisibility();
@@ -655,60 +769,58 @@ namespace rhodes
         
         public void toolbarAddSeparator()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddSeparator(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { toolbarAddSeparator(); }); return; }
             CRhoRuntime.getInstance().logEvent("Toolbar separator is unimplemented on UWP");
         }
 
         public void setToolbarStyle(bool border, string background, string mask)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { setToolbarStyle(border, background, mask); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { setToolbarStyle(border, background, mask); }); return; }
             // TODO: implement setToolbarStyle
-            if (background != "")
-                ApplicationBar.BackgroundColor = getColorFromString(background);
+            if (background != "") getAppBar().Background = new SolidColorBrush(getColorFromString(background));
             // TODO: implement opacity for pictures
-            //if(mask != "")
-            //    ApplicationBar.ForegroundColor = getColorFromString(mask);
         }
 
-        private void toolbarButton_Click(object sender, EventArgs e)
+        private void toolbarButton_Click(object sender, RoutedEventArgs e)
         {
-            CRhoRuntime.getInstance().onToolbarAction(toolbarItems[(sender as ApplicationBarIconButton).Text]);
+            CRhoRuntime.getInstance().onToolbarAction(toolbarItems[(sender as AppBarButton).Label]);
         }
 
-        private void toolbarMenuItem_Click(object sender, EventArgs e)
+        /*private void toolbarMenuItem_Click(object sender, EventArgs e)
         {
-            CRhoRuntime.getInstance().onToolbarAction(toolbarItems[(sender as ApplicationBarMenuItem).Text]);
-        }
+            CRhoRuntime.getInstance().onToolbarAction(toolbarItems[(sender as AppBarButton).Text]);
+        }*/
 
 
         // *** MENU ***
 
         public void menuClear()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuClear(); }); return; }
-            ApplicationBar.MenuItems.Clear();
-            // restore menu items converted from toolbar buttons (UWP allows 4 actual buttons only)
-            toolbarMenuItems.ForEach(item => ApplicationBar.MenuItems.Add(item));
+            if (!isUIThread) { InvokeInUIThread(delegate() { menuClear(); }); return; }
+            getAppBar().SecondaryCommands.Clear();
+            // restore menu items converted from toolbar buttons
+            toolbarMenuItems.ForEach(item => getAppBar().SecondaryCommands.Add(item));
             menuItems.Clear();
             updateAppBarModeAndVisibility();
         }
 
         public void menuAddAction(string label, int item)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuAddAction(label, item); }); return; }
-            ApplicationBarMenuItem menuItem = new ApplicationBarMenuItem(label);
-            ApplicationBar.MenuItems.Add(menuItem);
-            menuItem.Click += delegate(object sender, EventArgs e) { menuItem_Click(sender, e, item); };
+            if (!isUIThread) { InvokeInUIThread(delegate() { menuAddAction(label, item); }); return; }
+            AppBarButton menuItem = new AppBarButton();
+            menuItem.Label = label;
+            getAppBar().SecondaryCommands.Add(menuItem);
+            menuItem.Click += (e,f) => { menuItem_Click(item); };
             updateAppBarModeAndVisibility();
         }
 
         public void menuAddSeparator()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuAddSeparator(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { menuAddSeparator(); }); return; }
             CRhoRuntime.getInstance().logEvent("Menu separator is unimplemented on UWP");
         }
 
-        private void menuItem_Click(object sender, EventArgs e, int index)
+        private void menuItem_Click(int index)
         {
             CRhoRuntime.getInstance().onCustomMenuItemCommand(index);
         }
@@ -718,14 +830,14 @@ namespace rhodes
 
         public void tabbarInitialize()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarInitialize(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { tabbarInitialize(); }); return; }
             tabbarRemoveAllTabs();
             // TODO: clear style of tabBar!
         }
 
         public void tabbarRemoveAllTabs()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarRemoveAllTabs(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { tabbarRemoveAllTabs(); }); return; }
             TabbarPivot.Items.Clear();
             _tabProps.Clear();
             _oTabResult = null;
@@ -733,13 +845,13 @@ namespace rhodes
 
         public void tabbarRemove(int index)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarRemove(index); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { tabbarRemove(index); }); return; }
             TabbarPivot.Items.RemoveAt(index);
         }
 
         public void tabbarShow()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarShow(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { tabbarShow(); }); return; }
             LayoutRoot.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
             LayoutRoot.RowDefinitions[1].Height = new GridLength(0, GridUnitType.Pixel);
             // not needed: TabbarPanel.Visibility = System.Windows.Visibility.Visible;
@@ -747,7 +859,7 @@ namespace rhodes
 
         public void tabbarHide()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarHide(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { tabbarHide(); }); return; }
             LayoutRoot.RowDefinitions[0].Height = new GridLength(0, GridUnitType.Pixel);
             LayoutRoot.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
             tabbarRemoveAllTabs();
@@ -766,7 +878,7 @@ namespace rhodes
 
         private int tabbarGetHeightFunc()
         {
-            return TabbarPivot.Items.Count > 0 ? (int)(TabbarPivot.ActualHeight - ((WebBrowser)TabbarPivot.SelectedItem).ActualHeight) : 0;
+            return TabbarPivot.Items.Count > 0 ? (int)(TabbarPivot.ActualHeight - ((WebView)TabbarPivot.SelectedItem).ActualHeight) : 0;
         }
 
         public int tabbarGetHeight()
@@ -776,7 +888,7 @@ namespace rhodes
 
         public void tabbarSwitch(int index)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSwitch(index); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { tabbarSwitch(index); }); return; }
             if ((index >= 0) && (index < TabbarPivot.Items.Count))
             {
                 //raiseTabEvent("onTabFocus", TabbarPivot.SelectedIndex, index);
@@ -796,10 +908,10 @@ namespace rhodes
 
         // TODO: in create support: place_tabs_bottom, background_color, on_change_tab_callback
 
-        private static Color getColorFromString(string strColor)
+        private static Windows.UI.Color getColorFromString(string strColor)
         {
             if (strColor == null || strColor == "")
-                return Color.FromArgb(255, 0, 0, 0);
+                return Windows.UI.Color.FromArgb(255, 0, 0, 0);
 
             int c = Convert.ToInt32(strColor);
 
@@ -807,31 +919,30 @@ namespace rhodes
             int cG = (c & 0xFF00) >> 8;
             int cB = (c & 0xFF);
 
-            return Color.FromArgb(255, Convert.ToByte(cR), Convert.ToByte(cG), Convert.ToByte(cB));
+            return Windows.UI.Color.FromArgb(255, Convert.ToByte(cR), Convert.ToByte(cG), Convert.ToByte(cB));
         }
 
         public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, string background_color, bool reload, bool use_current_view_for_tab, bool hasCallback, IMethodResult oResult)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, background_color, reload, use_current_view_for_tab, hasCallback, oResult); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate () { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, background_color, reload, use_current_view_for_tab, hasCallback, oResult); }); return; }
             PivotItem tab = new PivotItem();
             TabHeader th = new TabHeader();
             th.Label = label;
             th.Background = th.UnselectedBackground = new SolidColorBrush(
                 (background_color != null) && (background_color.Length > 0) ?
                 getColorFromString(background_color) :
-                Color.FromArgb(255, 0, 0, 0)
+                Windows.UI.Color.FromArgb(255, 0, 0, 0)
                 );
             th.SelectedBackground = (selected_color != null) && (selected_color.Length > 0) ?
                 new SolidColorBrush(getColorFromString(selected_color)) :
                 th.UnselectedBackground;
             th.IconImage = (icon == null) || (icon.Length == 0) ?
-                new BitmapImage() : new BitmapImage(new Uri(prependWithSlash(icon), UriKind.Relative));
+                new Windows.UI.Xaml.Media.Imaging.BitmapImage() : new Windows.UI.Xaml.Media.Imaging.BitmapImage(new Uri(prependWithSlash(icon), UriKind.Relative));
             tab.Header = th;
 
             _tabProps[TabbarPivot.Items.Count] = new TabProps();
             _tabProps[TabbarPivot.Items.Count]._isReload = reload;
-            if (hasCallback == true)
-                _oTabResult = oResult;
+            if (hasCallback == true) _oTabResult = oResult;
 
             // TODO: implement useCurrentViewForTab
             // throws expection:
@@ -842,21 +953,19 @@ namespace rhodes
             //else
             //{
 
-            WebBrowser wv = new WebBrowser();
+            Windows.UI.Xaml.Controls.WebView wv = new Windows.UI.Xaml.Controls.WebView();
             wv.Height = double.NaN;
             wv.Width = double.NaN;
-            wv.IsScriptEnabled = true;
             wv.SizeChanged += RhodesWebBrowser_SizeChanged;
-            wv.Navigated += RhodesWebBrowser_Navigated;
+            wv.NavigationCompleted += RhodesWebBrowser_Navigated;
             wv.NavigationFailed += RhodesWebBrowser_NavigationFailed;
             wv.LoadCompleted += RhodesWebBrowser_LoadCompleted;
             wv.Loaded += RhodesWebBrowser_Loaded;
             wv.Unloaded += RhodesWebBrowser_Unloaded;
             wv.ScriptNotify += RhodesWebBrowser_JSNotify;
             wv.Source = new Uri("about:blank");
-            wv.TabIndex = TabbarPivot.Items.Count;
-            if ((web_bkg_color != null) && (web_bkg_color.Length > 0))
-                wv.Background = new SolidColorBrush(getColorFromString(web_bkg_color));
+            wv.Tag = new WebViewTag(TabbarPivot.Items.Count);
+            if ((web_bkg_color != null) && (web_bkg_color.Length > 0)) wv.DefaultBackgroundColor = getColorFromString(web_bkg_color);
             //wv.SetValue(FrameworkElement.NameProperty, "tabWeb" + TabbarPivot.Items.Count.ToString());
             //if ((action != null) && (action.Length > 0))
             //    wv.Navigate(new Uri(CRhoRuntime.getInstance().canonicalizeRhoUrl(action)));
@@ -870,7 +979,7 @@ namespace rhodes
             TabbarPivot.Items.Add(tab);
         }
 
-        private void TabbarPivot_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void TabbarPivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count))
             {
@@ -907,72 +1016,78 @@ namespace rhodes
         // this method is an example of application exit technique (see Quit method in App.xaml.cs)
         public void exitCommand()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { exitCommand(); }); return; }
-            IsolatedStorageSettings.ApplicationSettings.Save();
-            App.Current.Terminate();
+            if (!isUIThread) { InvokeInUIThread(delegate() { exitCommand(); }); return; }
+            var propertySet = Windows.Storage.ApplicationData.Current.LocalSettings.Values;
+            Application.Current.Exit();
         }
 
         public void navigateBackCommand()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigateBackCommand(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { navigateBackCommand(); }); return; }
             this.GoBack();
         }
 
         public void navigateForwardCommand()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigateForwardCommand(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { navigateForwardCommand(); }); return; }
             this.GoForward();
         }
 
         public void logCommand()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { logCommand(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { logCommand(); }); return; }
         }
 
         public void refreshCommand(int tab_index)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { refreshCommand(tab_index); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { refreshCommand(tab_index); }); return; }
             this.Refresh(tab_index);
         }
 
         public void takePicture(string callbackUrl)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { takePicture(callbackUrl); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { takePicture(callbackUrl); }); return; }
         }
 
         public void selectPicture(string callbackUrl)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { selectPicture(callbackUrl); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { selectPicture(callbackUrl); }); return; }
         }
 
         public void alertHidePopup()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { alertHidePopup(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { alertHidePopup(); }); return; }
         }
 
         //public void dateTimePicker(CDateTimeMessage *) {}
 
         //public void takeSignature(void*); // Signature::Params*
 
-        private int isFullscreenFunc()
+        /*private int isFullscreenFunc()
         {
+
             return SystemTray.IsVisible ? 0 : 1;
-        }
+        }*/
 
         public bool isFullscreen()
         {
-            return IntValueReturnAgent(isFullscreenFunc) != 0;
+            return ApplicationView.GetForCurrentView().IsFullScreenMode;
         }
 
         public void fullscreenCommand(int fullScreen)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { fullscreenCommand(fullScreen); }); return; }
-            SystemTray.IsVisible = fullScreen == 0;
+            if (!isUIThread) { InvokeInUIThread(delegate() { fullscreenCommand(fullScreen); }); return; }
+            if (fullScreen != 0) {
+                ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
+                //var statusBar = StatusBar.GetForCurrentView();
+                //await statusBar.HideAsync();
+            }
+            else { ApplicationView.GetForCurrentView().ExitFullScreenMode(); }
         }
 
         public void setCookie(string url, string cookie)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { setCookie(url, cookie); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { setCookie(url, cookie); }); return; }
             // TODO: implement
         }
 
@@ -981,32 +1096,28 @@ namespace rhodes
         // this method is used as a callback for calling the C# API methods from C++
         public void DoWait(int timeout)
         {
-            Thread.Sleep(timeout);
+            Task task = Task.Delay(TimeSpan.FromMilliseconds(timeout));
+            task.Wait();            
         }
 
         public void DisplayMessage(string msg)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { DisplayMessage(msg); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { DisplayMessage(msg); }); return; }
             RhodesWebBrowser.NavigateToString("<html><head><title>Message</title></head><body>" + msg + "</body></html>");
         }
 
         private int IntValueReturnAgent(Func<int> func)
         {
-            if (isUIThread)
-                return func();
+            if (isUIThread) return func();
 
             Exception exception = null;
             var waitEvent = new System.Threading.ManualResetEvent(false);
             int return_value = 0;
-            Dispatcher.BeginInvoke(() =>
-            {
-                try
-                {
-                    return_value = func();
-                }
-                catch (Exception ex)
-                {
+            InvokeInUIThread(() =>{
+                try{return_value = func();}
+                catch (Exception ex){
                     exception = ex;
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
                 waitEvent.Set();
             });
@@ -1026,7 +1137,7 @@ namespace rhodes
             Exception exception = null;
             var waitEvent = new System.Threading.ManualResetEvent(false);
             string return_value = "";
-            Dispatcher.BeginInvoke(() =>
+            InvokeInUIThread(() =>
             {
                 try
                 {
@@ -1035,6 +1146,7 @@ namespace rhodes
                 catch (Exception ex)
                 {
                     exception = ex;
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
                 waitEvent.Set();
             });
@@ -1054,7 +1166,7 @@ namespace rhodes
             Exception exception = null;
             var waitEvent = new System.Threading.ManualResetEvent(false);
             string return_value = "";
-            Dispatcher.BeginInvoke(() =>
+            InvokeInUIThread(() =>
             {
                 try
                 {
@@ -1063,6 +1175,7 @@ namespace rhodes
                 catch (Exception ex)
                 {
                     exception = ex;
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
                 waitEvent.Set();
             });
@@ -1081,7 +1194,7 @@ namespace rhodes
 
             Exception exception = null;
             string return_value = "";
-            Dispatcher.BeginInvoke(() =>
+            InvokeInUIThread(() =>
             {
                 try
                 {
@@ -1090,6 +1203,7 @@ namespace rhodes
                 catch (Exception ex)
                 {
                     exception = ex;
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
             });
 
@@ -1102,9 +1216,28 @@ namespace rhodes
         private void RhodesWebBrowser_JSNotify(object sender, NotifyEventArgs e)
         {
             String answer = CRhoRuntime.getInstance().onJSInvoke(e.Value);
-            WebBrowser wb = sender as WebBrowser;
-            wb.IsScriptEnabled = true;
+            Windows.UI.Xaml.Controls.WebView wb = sender as Windows.UI.Xaml.Controls.WebView;
             wb.InvokeScript("__rhoNativeApiResult", new string[] { answer });
         }
+
+        /*private void RhodesWebBrowser_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            var a = 0;
+        }*/
     }
 }
+// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+/*
+namespace rhodes
+{
+    /// <summary>
+    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// </summary>
+    public sealed partial class MainPage : Page
+    {
+        public MainPage()
+        {
+            this.InitializeComponent();
+        }
+    }
+}*/

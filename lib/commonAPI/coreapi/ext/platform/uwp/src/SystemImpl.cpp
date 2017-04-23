@@ -11,6 +11,7 @@
 #include "rhoruntime/common/RhodesHelperWP8.h"
 #include <windows.system.profile.h>
 #include <windows.system.h>
+#include <windows.storage.streams.h>
 
 using namespace Windows::Graphics::Display;
 using namespace Windows::Devices::Input;
@@ -20,6 +21,8 @@ using namespace Windows::ApplicationModel;
 using namespace Windows::Foundation::Collections;
 using namespace Windows::System::Profile;
 using namespace Windows::System;
+
+
 
 Platform::String^ A2PS(char* str)
 {
@@ -156,12 +159,13 @@ void CSystemImpl::getPpiY(CMethodResult& oResult)
 
 void CSystemImpl::getPhoneId(CMethodResult& oResult)
 {
-	oResult.set(Windows::Phone::System::Analytics::HostInformation::PublisherHostId->Data());
-	/*
-	auto token = Windows::System::Profile::HardwareIdentification::GetPackageSpecificToken(nullptr).Id.ToArray();
-	IBuffer hardwareId = token.Id;
-
-	Windows::Storage::Streams::DataReader::FromBuffer(hardwareId);*/
+	Windows::System::Profile::HardwareToken ^ token = Windows::System::Profile::HardwareIdentification::GetPackageSpecificToken(nullptr);
+	Windows::Storage::Streams::IBuffer ^ hardwareId = token->Id;
+	Windows::Storage::Streams::DataReader ^ dataReader = Windows::Storage::Streams::DataReader::FromBuffer(hardwareId);
+	Platform::String ^ platformStr = dataReader->ReadString(hardwareId->Length);
+	std::wstring fooW(platformStr->Begin());
+	std::string fooA(fooW.begin(), fooW.end());
+	oResult.set(fooA);
 }
 
 void CSystemImpl::getDeviceName(CMethodResult& oResult)
@@ -199,7 +203,8 @@ void CSystemImpl::getOemInfo(CMethodResult& oResult)
 
 void CSystemImpl::getUuid(CMethodResult& oResult)
 {
-	oResult.set(Windows::Phone::System::Analytics::HostInformation::PublisherHostId->Data());
+	getPhoneId(oResult);
+	//oResult.set(Windows::Phone::System::Analytics::HostInformation::PublisherHostId->Data());
 }
 
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
@@ -247,6 +252,7 @@ void CSystemImpl::applicationInstall( const rho::String& applicationUrl, CMethod
 
 void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult)
 {
+	/*
 	IIterable<Package^>^ packages = InstallationManager::FindPackagesForCurrentPublisher();
 	IIterator<Package^>^ it = packages->First();
 	do
@@ -260,6 +266,9 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
 	}while(it->MoveNext());
 
 	oResult.set(false);
+
+	Not supported
+	*/
 }
 
 void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMethodResult& oResult)
@@ -275,6 +284,7 @@ void CSystemImpl::openUrl( const rho::String& url, CMethodResult& oResult)
 
 void CSystemImpl::runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, CMethodResult& oResult)
 {
+	/*
 	IIterable<Package^>^ packages = InstallationManager::FindPackagesForCurrentPublisher();
 	IIterator<Package^>^ it = packages->First();
 	do
@@ -287,6 +297,10 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
         
         }
 	}while(it->MoveNext());
+
+	Not supported
+	
+	*/
 }
 
 void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
@@ -346,12 +360,17 @@ void CSystemImpl::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult)
 
 void CSystemImpl::getScreenSleeping(rho::apiGenerator::CMethodResult& oResult)
 {
-	oResult.set(Windows::Phone::System::SystemProtection::ScreenLocked);
+	//Windows::System::Display::DisplayRequest().RequestActive;
+	//Windows::System::Profile::AnalyticsInfo info
+	//
+	//oResult.set(Windows::Phone::System::SystemProtection::ScreenLocked);
 }
 
 void CSystemImpl::setScreenSleeping( bool value, rho::apiGenerator::CMethodResult& oResult)
 {
 	//http://msdn.microsoft.com/en-us/library/windowsphone/develop/jj206968(v=vs.105).aspx
+
+
 }
 
 void CSystemImpl::setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult)
