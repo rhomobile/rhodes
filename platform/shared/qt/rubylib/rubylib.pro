@@ -77,12 +77,13 @@ win32 {
 ../../ruby/missing/strstr.c \
 ../../ruby/missing/tgamma.c \
 #../../ruby/win32/miniprelude.c\
-../../ruby/win32/newline.c\
-../../ruby/win32/win32.c\
+../../ruby/win32/win32.c \
 #../../ruby/wince/io_wce.c\
 #../../ruby/wince/process_wce.c\
 #../../ruby/wince/time_wce.c
-../../ruby/win32/file.c
+    ../../ruby/win32/file_win32.c \
+    ../../ruby/win32/newline_win32.c
+
 }
 
 unix:!macx {
