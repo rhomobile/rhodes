@@ -48,6 +48,7 @@ require 'rexml/document'
 require 'securerandom'
 require 'uri'
 require 'logger'
+require 'rake'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
@@ -80,6 +81,7 @@ $startdir.gsub!('\\', '/')
 
 chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 
+
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
@@ -92,18 +94,52 @@ require File.join(pwd, 'lib/build/RhoHubAccount.rb')
 
 require File.join(pwd, 'lib/build/rhoDevelopment.rb')
 
-load File.join(pwd, 'lib/commonAPI/printing_zebra/ext/platform/wm/PrintingService/PrintingService/installer/Rakefile')
-#load File.join(pwd, 'platform/bb/build/bb.rake')
-load File.join(pwd, 'platform/android/build/android.rake')
-load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
-load File.join(pwd, 'platform/wm/build/wm.rake')
-load File.join(pwd, 'platform/linux/tasks/linux.rake')
-load File.join(pwd, 'platform/wp8/build/wp.rake')
-load File.join(pwd, 'platform/uwp/build/uwp.rake')
-load File.join(pwd, 'platform/osx/build/osx.rake')
 
 
 $timestamp_start_milliseconds = 0
+
+
+module Rake
+  class Application
+    attr_accessor :current_task
+  end
+  class Task
+    alias :old_execute :execute 
+    def execute(args=nil)
+      Rake.application.current_task = @name  
+      old_execute(args)
+    end
+  end #class Task
+end #module Rake
+
+class Logger
+  alias :original_add :add
+
+  def add(severity, message = nil, progname = nil)
+    if (self.level == Logger::DEBUG)
+      begin
+        #try to get rake task name
+        taskName = Rake.application.current_task
+      rescue Exception => e
+      end
+      
+      if message
+        message = "#{taskName}|\t#{message}"
+      else
+        progname = "#{taskName}|\t#{progname}"
+      end
+    end
+    original_add( severity, message, progname )
+  end
+end
+
+def puts( s )
+  if $logger
+    $logger.info(s)
+  else
+    Kernel::puts( s )
+  end
+end  
 
 $logger = Logger.new(STDOUT)
 if Rake.application.options.trace
@@ -130,6 +166,20 @@ def print_timestamp(msg = 'just for info')
 
   $logger.debug '-$TIME$- message [ '+msg+' ] time is { '+Time.now.utc.iso8601+' } milliseconds from start ('+curmillis.to_s+')'
 end
+
+
+
+
+load File.join(pwd, 'lib/commonAPI/printing_zebra/ext/platform/wm/PrintingService/PrintingService/installer/Rakefile')
+#load File.join(pwd, 'platform/bb/build/bb.rake')
+load File.join(pwd, 'platform/android/build/android.rake')
+load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
+load File.join(pwd, 'platform/wm/build/wm.rake')
+load File.join(pwd, 'platform/linux/tasks/linux.rake')
+load File.join(pwd, 'platform/wp8/build/wp.rake')
+load File.join(pwd, 'platform/uwp/build/uwp.rake')
+load File.join(pwd, 'platform/osx/build/osx.rake')
+
 
 #------------------------------------------------------------------------
 
@@ -2512,8 +2562,11 @@ def init_extensions(dest, mode = "")
 
   do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
 
-  puts "rhoapi_js_folder: #{rhoapi_js_folder}"
-  puts 'init extensions'
+  $logger.debug "rhoapi_js_folder: #{rhoapi_js_folder}"
+
+  $logger.info 'Init extensions'
+
+  $logger.debug "Extensions list: #{$app_config['extensions'].to_s}"
 
   # TODO: checker init
   gen_checker = GeneratorTimeChecker.new
