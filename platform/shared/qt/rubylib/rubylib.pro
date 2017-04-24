@@ -76,7 +76,6 @@ win32 {
 ../../ruby/missing/strlcpy.c \
 ../../ruby/missing/strstr.c \
 ../../ruby/missing/tgamma.c \
-#../../ruby/win32/miniprelude.c\
 ../../ruby/win32/win32.c \
 #../../ruby/wince/io_wce.c\
 #../../ruby/wince/process_wce.c\
@@ -122,7 +121,6 @@ win32 {
 
 HEADERS += ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/ext/calendar/event.h\
-../../ruby/debug.h\
 ../../ruby/dln.h\
 ../../ruby/eval_intern.h\
 ../../ruby/gc.h\
@@ -171,6 +169,7 @@ SOURCES += \
 ../../ruby/ext/bluetooth/bluetooth_wrap.c \
 ../../ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c \
 ../../ruby/ext/calendar/calendar_wrap.c \
+../../ruby/ext/camera/camera_wrap.c \
 ../../ruby/ext/calendar/event_wrap.c \
 ../../ruby/ext/datetimepicker/datetimepicker_wrap.c \
 ../../ruby/ext/geolocation/geolocation_wrap.c \
