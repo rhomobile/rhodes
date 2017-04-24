@@ -16,7 +16,7 @@ macx {
 win32 {
   DESTDIR = ../../../../platform/win32/bin/extensions
   OBJECTS_DIR = ../../../../platform/win32/bin/extensions/serialport
-  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE OS_MSWIN
   Debug {
     DEFINES += _DEBUG DEBUG
   }

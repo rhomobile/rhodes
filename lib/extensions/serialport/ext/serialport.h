@@ -21,15 +21,6 @@
 #ifndef _RUBY_SERIAL_PORT_H_
 #define _RUBY_SERIAL_PORT_H_
 
-//RHO
-#if defined( _WIN32_WCE ) || defined (WIN32)
-#define OS_MSWIN 1
-#endif
-
-//RHO
-
-#define RUBY_SERIAL_PORT_VERSION   "1.0.4"
-
 #include <ruby.h>    /* ruby inclusion */
 #ifdef HAVE_RUBY_IO_H      /* ruby io inclusion */
    #include <ruby/io.h>
@@ -63,7 +54,7 @@ struct line_signals
    #define SPACE  SPACEPARITY
    #define MARK   MARKPARITY
    #define EVEN   EVENPARITY
-   #define ODD    ODDPARITY 
+   #define ODD    ODDPARITY
 
    #ifndef RB_SERIAL_EXPORT
 	 #ifndef HAVE_RUBY_IO_H
@@ -74,11 +65,11 @@ struct line_signals
    #endif
 
 #else
-   #define SPACE  0
-   #define MARK   0
    #define EVEN   1
    #define ODD    2
-   
+   #define SPACE  3
+   #define MARK   4
+
    #define RB_SERIAL_EXPORT
 #endif
 
@@ -102,5 +93,8 @@ VALUE RB_SERIAL_EXPORT sp_set_rts_impl(VALUE self, VALUE val);
 VALUE RB_SERIAL_EXPORT sp_set_dtr_impl(VALUE self, VALUE val);
 VALUE RB_SERIAL_EXPORT sp_get_rts_impl(VALUE self);
 VALUE RB_SERIAL_EXPORT sp_get_dtr_impl(VALUE self);
+
+VALUE RB_SERIAL_EXPORT sp_flush_input_data_impl(VALUE self);
+VALUE RB_SERIAL_EXPORT sp_flush_output_data_impl(VALUE self);
 
 #endif
