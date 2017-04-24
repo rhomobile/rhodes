@@ -115,14 +115,12 @@ namespace "build" do
     elsif ENV['RHO_PLATFORM'] == 'wm'
       $vcbuild = ENV['VCBUILD']
       raise "VCBUILD is not set" if $vcbuild.nil?
-      $sdk = ENV['SDK']
+      $sdk = ENV['RHO_VSPROJ_SDK_PLATFORM']
       raise "SDK is not set" if $sdk.nil?
 
     elsif ENV['RHO_PLATFORM'] == 'win32'
       $vcbuild = ENV['VCBUILD']
       raise "VCBUILD is not set" if $vcbuild.nil?
-      $sdk = ENV['SDK']
-      raise "SDK is not set" if $sdk.nil?
 
       $qmake = ENV['RHO_QMAKE']
       raise "RHO_QMAKE is not set" if $qmake.nil?

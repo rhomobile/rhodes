@@ -958,7 +958,7 @@ namespace "build" do
           
               ENV['RHO_PLATFORM'] = $current_platform
               ENV['RHO_ROOT'] = $startdir
-              ENV['SDK'] = $sdk
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
               ENV['RHO_BUILD_CONFIG'] = $buildcfg
               ENV['VCBUILD'] = $vcbuild
               ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
@@ -1022,7 +1022,7 @@ namespace "build" do
               end
 
               ENV['VCBUILD'] = $vcbuild
-              ENV['SDK'] = $sdk
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
               ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
               ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
@@ -1453,7 +1453,7 @@ namespace "build" do
               ENV['RHO_PLATFORM'] = 'win32'
               ENV['PWD'] = $startdir
               ENV['RHO_ROOT'] = $startdir
-              ENV['SDK'] = $sdk
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
               if ext.downcase() == "coreapi" && $rhosimulator_build
                   ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
               else    
@@ -1480,7 +1480,7 @@ namespace "build" do
               ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
               ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions", ext)
               ENV['VCBUILD'] = $vcbuild
-              ENV['SDK'] = $sdk
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
               ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
               ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
