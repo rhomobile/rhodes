@@ -1229,14 +1229,14 @@ namespace "build" do
         puts "Deploy libs from msvc #{$vs_version}"
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.CRT")
         vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.OPENMP")
-        if deploymsvc
-          cp File.join(vsredistdir, "msvcp140.dll"), $target_path
-          cp File.join(vsredistdir, "concrt140.dll"), $target_path
-          cp File.join(vsredistdir, "vccorlib140.dll"), $target_path
-          cp File.join(vsredistdir, "vcruntime140.dll"), $target_path
-          cp File.join(vsredistdir2, "vcomp140.dll"), $target_path
-          cp File.join($vscommontools, "../../VC/bin/d3dcompiler_47.dll"), $target_path
-        end
+        #if deploymsvc
+          #cp File.join(vsredistdir, "msvcp140.dll"), $target_path
+          #cp File.join(vsredistdir, "concrt140.dll"), $target_path
+          #cp File.join(vsredistdir, "vccorlib140.dll"), $target_path
+          #cp File.join(vsredistdir, "vcruntime140.dll"), $target_path
+          #cp File.join(vsredistdir2, "vcomp140.dll"), $target_path
+          #cp File.join($vscommontools, "../../VC/bin/d3dcompiler_47.dll"), $target_path
+        #end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
       else
@@ -1394,7 +1394,35 @@ namespace "build" do
                     end
                when 4 #5.8.0.0
                    format ="Found QT Version : #{$QVersion}" 
-                   targetFile = File.join($target_path, $appname + ".exe")
+
+                   begin
+
+                    targetFile = File.join($target_path, $appname + ".exe")
+
+                    if !File.file?(targetFile)
+
+                      Dir.glob( File.join($target_path,"*.exe") ) do |f|
+                        targetFile = f
+                        break
+                      end
+                    end
+
+
+
+                    $logger.debug "Looking for app executable: #{targetFile}"
+
+                   
+                    raise "#{targetFile} not found" unless File.file?(targetFile)
+
+                  rescue Exception => e
+
+                    $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
+
+
+                  end
+
+
+
                     if File.exists? targetFile
                       Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
                     else
