@@ -277,7 +277,7 @@ namespace "build" do
 
       File.open($startdir + "/"+$config["build"]["uwppath"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
 
-      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}", '/p:VisualStudioVersion=12.0', '/t:Build'] #'/p:PlatformToolset=v110'
+      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}", '/p:VisualStudioVersion=15.0', '/t:Build'] #'/p:PlatformToolset=v110'
 
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       Jake.run($msbuild, args)
@@ -309,7 +309,7 @@ namespace "build" do
 
       Rake::Task["build:uwp:rhobundle_noext"].invoke
 
-      #addRhobundleFilesToCacheFileUWP() TODO: check and redo
+      #addRhobundleFilesToCacheFileUWP() #TODO: check and redo
       addbundletoxapUWP()
 
     end

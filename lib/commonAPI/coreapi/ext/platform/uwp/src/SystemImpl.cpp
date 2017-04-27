@@ -159,13 +159,19 @@ void CSystemImpl::getPpiY(CMethodResult& oResult)
 
 void CSystemImpl::getPhoneId(CMethodResult& oResult)
 {
-	Windows::System::Profile::HardwareToken ^ token = Windows::System::Profile::HardwareIdentification::GetPackageSpecificToken(nullptr);
-	Windows::Storage::Streams::IBuffer ^ hardwareId = token->Id;
-	Windows::Storage::Streams::DataReader ^ dataReader = Windows::Storage::Streams::DataReader::FromBuffer(hardwareId);
-	Platform::String ^ platformStr = dataReader->ReadString(hardwareId->Length);
-	std::wstring fooW(platformStr->Begin());
-	std::string fooA(fooW.begin(), fooW.end());
-	oResult.set(fooA);
+	try {
+		Windows::System::Profile::HardwareToken ^ token = Windows::System::Profile::HardwareIdentification::GetPackageSpecificToken(nullptr);
+		Windows::Storage::Streams::IBuffer ^ hardwareId = token->Id;
+		Windows::Storage::Streams::DataReader ^ dataReader = Windows::Storage::Streams::DataReader::FromBuffer(hardwareId);
+	
+		Platform::String ^ platformStr = dataReader->ReadString(hardwareId->Length);
+		std::wstring fooW(platformStr->Begin());
+		std::string fooA(fooW.begin(), fooW.end());
+		oResult.set(fooA);
+	}
+	catch(std::exception e){
+
+	}
 }
 
 void CSystemImpl::getDeviceName(CMethodResult& oResult)

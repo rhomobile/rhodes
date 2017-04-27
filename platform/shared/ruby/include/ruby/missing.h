@@ -31,13 +31,12 @@ struct timeval {
 #  include <sys/types.h>
 #endif
 
-#if !defined(HAVE_STRUCT_TIMESPEC)
-    #ifndef CPP_ELEVEN
+#if !defined(HAVE_STRUCT_TIMESPEC) && !defined(CPP_ELEVEN)
+    #define HAVE_STRUCT_TIMESPEC
     struct timespec {
         time_t tv_sec;	/* seconds */
         long tv_nsec;	/* nanoseconds */
     };
-    #endif
 #endif
 
 #if !defined(HAVE_STRUCT_TIMEZONE)

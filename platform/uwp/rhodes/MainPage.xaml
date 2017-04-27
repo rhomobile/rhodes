@@ -33,14 +33,14 @@
                     <DataTemplate>
                         <StackPanel Background="{Binding Background}" Margin="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
                             <Image Source="{Binding IconImage}" Height="Auto" Width="Auto"/>
-                            <TextBlock FontSize="48" Margin="0" Text="{Binding Label}"/>
+                            <TextBlock FontSize="26" Margin="0" Text="{Binding Label}"/>
                         </StackPanel>
                     </DataTemplate>
                 </Pivot.HeaderTemplate>
             </Pivot>
         </Grid>
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="0,0,0,0">
-            <WebView x:Name="RhodesWebBrowser" Source="about:blank" Height="Auto" Width="Auto" SizeChanged="RhodesWebBrowser_SizeChanged" NavigationCompleted="RhodesWebBrowser_Navigated" NavigationFailed="RhodesWebBrowser_NavigationFailed" LoadCompleted="RhodesWebBrowser_LoadCompleted" Loaded="RhodesWebBrowser_Loaded" Unloaded="RhodesWebBrowser_Unloaded" ScriptNotify="RhodesWebBrowser_JSNotify"/>
+            <WebView x:Name="RhodesWebBrowser" Source="about:blank" Height="Auto" Width="Auto" SizeChanged="RhodesWebBrowser_SizeChanged" NavigationCompleted="RhodesWebBrowser_Navigated" NavigationFailed="RhodesWebBrowser_NavigationFailed" NavigationStarting="webViewNavigationStarting" LoadCompleted="RhodesWebBrowser_LoadCompleted" Loaded="RhodesWebBrowser_Loaded" Unloaded="RhodesWebBrowser_Unloaded"/>
         </Grid>
     </Grid>
 </Page>
