@@ -225,7 +225,6 @@ namespace "build" do
           else
             extpath = File.join(p, ext, 'ext')
             next unless File.exists? File.join(extpath, "build.bat")
-
             Jake.run3('build.bat', extpath)
             break
 
@@ -277,7 +276,7 @@ namespace "build" do
 
       File.open($startdir + "/"+$config["build"]["uwppath"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
 
-      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}", '/p:VisualStudioVersion=15.0', '/t:Build'] #'/p:PlatformToolset=v110'
+      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}", '/p:VisualStudioVersion=14.0', '/t:Build'] #'/p:PlatformToolset=v110'
 
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       Jake.run($msbuild, args)
@@ -384,7 +383,7 @@ namespace "device" do
   namespace "uwp" do
 
     desc "Build production for device"
-    task :production => ["config:uwp_ARM_Release", "build:uwp:package"] do
+    task :production => ["config:uwp_Win32_Release", "build:uwp:package"] do
     end
 
 	task :getlog => ["config:uwp"] do

@@ -3,6 +3,7 @@ QT -= core
         CONFIG += c++14
         DEFINES += CPP_ELEVEN
         DEFINES += RHODES_VERSION_2
+        DEFINES += AJAXSERVER
     }
 
     lessThan(QT_VERSION, 5.6.0): {

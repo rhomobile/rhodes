@@ -3,12 +3,14 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{F717A72F-5985-4D3E-A9BA-C3BE0E004962}</ProjectGuid>
     <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RhoRuntimeInvoker</RootNamespace>
     <AssemblyName>RhoRuntimeInvoker</AssemblyName>
+    <RHO_ROOT>..\..\..</RHO_ROOT>
+    <TEMP_FILES_DIR>$(RHO_ROOT)\platform\uwp\bin\$(Platform)\extensions\$(ProjectName)</TEMP_FILES_DIR>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
@@ -23,6 +25,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
+    <BaseIntermediateOutputPath>..\bin\anycpu\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\anycpu\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <OutputPath>Bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -36,15 +40,19 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <BaseIntermediateOutputPath>..\bin\anycpu\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\anycpu\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
+    <OutputPath>..\bin\anycpu\rhodes\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin\%24%28Platform%29\%24%28ProjectName%29\%24%28Configuration%29\</OutputPath>
+    <BaseIntermediateOutputPath>..\bin\Win32\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\Win32\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
+    <OutputPath>Bin\x86\Debug</OutputPath>
     <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
     <NoWarn>2008</NoWarn>
     <DebugType>full</DebugType>
@@ -59,18 +67,23 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
-    <OutputPath>..\bin\%24%28Platform%29\%24%28ProjectName%29\%24%28Configuration%29\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
+    <BaseIntermediateOutputPath>..\bin\Win32\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\Win32\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
+    <OutputPath>Bin\x86\Release</OutputPath>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <PlatformTarget>ARM</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
+    <BaseIntermediateOutputPath>..\bin\arm\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\arm\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <OutputPath>Bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoWarn>2008</NoWarn>
@@ -84,9 +97,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <PlatformTarget>ARM</PlatformTarget>
-    <OutputPath>bin\ARM\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <Optimize>true</Optimize>
+    <BaseIntermediateOutputPath>..\bin\arm\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\arm\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
+    <OutputPath>Bin\ARM\Release</OutputPath>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>ARM</PlatformTarget>
@@ -96,6 +111,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
+    <BaseIntermediateOutputPath>..\bin\x64\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\x64\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <OutputPath>Bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoWarn>2008</NoWarn>
@@ -109,7 +126,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\Release\</OutputPath>
+    <BaseIntermediateOutputPath>..\bin\x64\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\x64\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
+    <OutputPath>..\bin\x64\rhodes\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>

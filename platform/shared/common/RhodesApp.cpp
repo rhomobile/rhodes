@@ -438,9 +438,11 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 #endif
 
     initAppUrls();
-
-	if(!m_isJSFSApp)
-		initHttpServer();
+#ifndef AJAXSERVER
+    if(!m_isJSFSApp) initHttpServer();
+#else
+    initHttpServer();
+#endif
 
     getSplashScreen().init();
 }
