@@ -1393,49 +1393,29 @@ namespace "build" do
                       end
                     end
                when 4 #5.8.0.0
+
+                  possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
+
                    format ="Found QT Version : #{$QVersion}" 
 
                    begin
 
-                    targetFile = File.join($target_path, $appname + ".exe")
-
-                    if !File.file?(targetFile)
-
-                      Dir.glob( File.join($target_path,"*.exe") ) do |f|
-                        targetFile = f
-                        break
-                      end
+                    possible_targets.each do |target|
+                      targetFile = File.join($target_path, target + ".exe")
+                      break if File.file?(targetFile)
                     end
 
-
-
                     $logger.debug "Looking for app executable: #{targetFile}"
-
                    
                     raise "#{targetFile} not found" unless File.file?(targetFile)
+
+                    Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
 
                   rescue Exception => e
 
                     $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
 
-
                   end
-
-
-
-                    if File.exists? targetFile
-                      Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
-                    else
-                      targetFile = File.join($target_path, "Rhodes.exe")
-                      if File.exists? targetFile
-                        Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
-                      else
-                        targetFile = File.join($target_path, "RhoLaunch.exe")
-                        if File.exists? targetFile
-                          Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
-                        end
-                      end
-                    end
                else
                     format ="Unknown QT Version : #{$QVersion}"
               end
