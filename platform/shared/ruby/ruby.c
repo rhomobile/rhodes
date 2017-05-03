@@ -1455,6 +1455,12 @@ process_options(int argc, char **argv, struct cmdline_options *opt)
 	    else if (opt->do_search) {
 		char *path = getenv("RUBYPATH");
 
+//RHO
+#ifdef _WIN32
+#define dln_find_file_r rb_w32_udln_find_file_r
+extern char *dln_find_file_r(const char *fname, const char *path, char *buf, size_t size DLN_FIND_EXTRA_ARG_DECL);
+#endif
+
 		opt->script = 0;
 		if (path) {
 		    opt->script = dln_find_file_r(argv[0], path, fbuf, sizeof(fbuf));

@@ -2180,6 +2180,11 @@ rb_exec_fillarg(VALUE prog, int argc, VALUE *argv, VALUE env, VALUE opthash, VAL
     }
 #endif
 
+//RHO
+#ifdef _WIN32
+#define dln_find_exe_r rb_w32_udln_find_exe_r
+#endif
+
     if (!eargp->use_shell) {
 	const char *abspath;
         abspath = dln_find_exe_r(RSTRING_PTR(eargp->invoke.cmd.command_name), 0, fbuf, sizeof(fbuf));
