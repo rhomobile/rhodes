@@ -48,7 +48,10 @@
  * but with this warning attached.
  */
 #include "curl.h"
+
+#if defined(OS_UWP) || defined(_UWP_LIB) || defined (CPP_ELEVEN) || defined (RHODES_VERSION_2)
 #include <WinSock2.h>
+#endif
 
 #ifdef  __cplusplus
 extern "C" {
