@@ -27,6 +27,12 @@ using Windows.Devices.Sensors.Custom;
 using Windows.UI.Core;
 using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.UI;
+using System.Net.Http.Headers;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.Web;
+using RhoRuntimeInvoker;
+using System.Reflection;
 
 namespace rhodes
 {
@@ -44,6 +50,8 @@ namespace rhodes
         public bool _isLoaded = false;
         public bool _isReload = false;
     };
+
+    
 
     public partial class TabHeader : INotifyPropertyChanged
     {
@@ -83,7 +91,7 @@ namespace rhodes
     {
 
         static CoreDispatcher dispatcher;
-
+        
         // saved singletone instance of MainPage
         static private MainPage _instance = null;
         private IMethodResult _oTabResult = null;
@@ -119,7 +127,7 @@ namespace rhodes
 
         private string _userAgent = "Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone " +
             DEVICE_INFO.OperatingSystem + "." +
-            DEVICE_INFO.SystemManufacturer+
+            DEVICE_INFO.SystemManufacturer +
             "; Trident/6.0; IEMobile/10.0; ARM; Touch; " +
             DEVICE_INFO.SystemFirmwareVersion + "; " +
             DEVICE_INFO.SystemHardwareVersion + ")";
@@ -189,7 +197,7 @@ namespace rhodes
 
         public MainPage()
         {
-            System.Diagnostics.Debug.WriteLine("Running constructor");
+            deb("Running constructor");
             dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
             try
             {
@@ -202,24 +210,26 @@ namespace rhodes
             _uiThreadID = Environment.CurrentManagedThreadId;
             updateScreenSize();
             InitializeComponent();
-            RhodesWebBrowser.Tag = new WebViewTag(-1); 
-            
-            if ((TopAppBar == null) || (TopAppBar.Content == null))
-            {
+            RhodesWebBrowser.Tag = new WebViewTag(-1);
+            RhodesWebBrowser.Settings.IsJavaScriptEnabled = true;
+            RhodesWebBrowser.Settings.IsIndexedDBEnabled = true;
+
+
+            if ((TopAppBar == null) || (TopAppBar.Content == null)) {
                 CommandBar commandBar = new CommandBar();
-                if (this.TopAppBar == null)
-                {
+                if (this.TopAppBar == null) {
                     this.TopAppBar = new AppBar();
-                    this.TopAppBar.IsOpen = true;
-                    this.TopAppBar.IsSticky = true;
+                    this.TopAppBar.IsOpen = false;
+                    this.TopAppBar.IsSticky = false;
                 }
                 TopAppBar.Content = commandBar;
             }
+            TopAppBar.Visibility = Visibility.Collapsed;
             
-            try
-            {
+            
+            try{
                 // initialize C# extensions factories
-                System.Diagnostics.Debug.WriteLine("InitializeExtensions()");
+                deb("InitializeExtensions()");
                 CSharpExtensions.InitializeExtensions();
 
                 // create rhodes runtime object
@@ -228,7 +238,7 @@ namespace rhodes
                 // create and start rhodes main thread               
                 _rhoruntimeThread = Task.Run(() => {
                     _rhoruntime.Execute();
-                    System.Diagnostics.Debug.WriteLine("rhoruntime thread loop closed"); });
+                    deb("rhoruntime thread loop closed"); });
 
                 //temporary solutions, to do refactoring
                 //Thread.Sleep(200);
@@ -238,13 +248,20 @@ namespace rhodes
             catch (Exception e)
             {
                 RhodesWebBrowser.NavigateToString("<html><head><title>Exception</title></head><body>Exception: " + e.Message + "</body></html>");
-                System.Diagnostics.Debug.WriteLine("InitializeExtensions exceptions " + e.Message);
+                deb("InitializeExtensions exceptions " + e.Message);
             }
-
-            Windows.Storage.StorageFolder appInstalledFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            System.Diagnostics.Debug.WriteLine("Storage foleder is " + appInstalledFolder.Path);
-            System.Diagnostics.Debug.WriteLine("Constructor ended");
             
+            Windows.Storage.StorageFolder appInstalledFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            deb("User agent: " + _userAgent);
+            deb("Storage foleder is " + appInstalledFolder.Path);
+            deb("Constructor ended");
+
+        }
+
+        //[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public static void deb(String s)
+        {
+            System.Diagnostics.Debug.WriteLine(s);
         }
 
         public int getLogicalDpiX()
@@ -315,7 +332,7 @@ namespace rhodes
                 }
                 catch (Exception ex){
                     tcs.TrySetException(ex);
-                    System.Diagnostics.Debug.WriteLine("Invoke in UI Thread exception");
+                    deb("Invoke in UI Thread exception");
                 }
             });
             return tcs.Task;
@@ -363,7 +380,7 @@ namespace rhodes
             try { _screenOrientation = SimpleOrientationSensor.GetDefault().GetCurrentOrientation(); }
             catch {
                 _screenOrientation = SimpleOrientation.Faceup;
-                System.Diagnostics.Debug.WriteLine("Screen orientation exception");
+                deb("Screen orientation exception");
             }
             if ((_screenOrientation == SimpleOrientation.Rotated270DegreesCounterclockwise) || (_screenOrientation == SimpleOrientation.Rotated90DegreesCounterclockwise))
             {
@@ -387,8 +404,9 @@ namespace rhodes
         }
 
         private void ApplicationPage_Loaded(object sender, RoutedEventArgs e)
-        {
+        {   
             var browser = new WebView();
+            browser.Settings.IsJavaScriptEnabled = true;
             browser.Visibility = Visibility.Collapsed;
             browser.Loaded += (asender, args) => browser.NavigateToString(getUserAgentHtml);
             browser.ScriptNotify += (asender, args) =>
@@ -409,40 +427,38 @@ namespace rhodes
 
         public void navigate(string url, int index)
         {
-            System.Diagnostics.Debug.WriteLine("Navigating");
             if (!isUIThread) { InvokeInUIThread(delegate() { navigate(url, index); }); return; }
-
             /*if(url.Contains("http://") == false)
             {
                 String appdir = Windows.Storage.ApplicationData.Current.LocalFolder.Path;
                 url = "file:///" + appdir.Replace(@"\", "/") +"/" + url;
                
             }*/
-            
+
             if (_tabProps.Count == 0) index = -1;
-            System.Diagnostics.Debug.WriteLine("Navigated to " + url);
+            deb("Navigated to " + url);
             if (url == "") return;
-            System.Diagnostics.Debug.WriteLine("Navigated 1");
+
             if (index == -1 && !_isBrowserInitialized)
             {
                 initUri = url;
-                System.Diagnostics.Debug.WriteLine("Navigated 2");
+                deb("Browser not Initialized");
                 return;
             }
             else if (index > -1 && _tabProps.ContainsKey(index) && _tabProps[index]._isInitialized == false)
             {
                 _tabProps[index]._action = url;
-                System.Diagnostics.Debug.WriteLine("Navigated 3");
                 return;
             }
 
-            System.Diagnostics.Debug.WriteLine("Navigated 4");
             if (TabbarPivot.Items.Count == 0)
-                RhodesWebBrowser.Navigate(new Uri(url, UriKind.RelativeOrAbsolute));
+                navigateWebViewToLink(RhodesWebBrowser, url);
             else
-                ((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url, UriKind.RelativeOrAbsolute));
+            {
+                WebView wv = (WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content;
+                navigateWebViewToLink(wv, url);
+            }
 
-            System.Diagnostics.Debug.WriteLine("Navigated 5");
         }
 
         public string executeScriptFunc(string script, int index)
@@ -451,11 +467,16 @@ namespace rhodes
             if (TabbarPivot.Items.Count == 0 || _isCallbackFired)//_tabProps[index]._isInitialized == false)
             {
                 _isCallbackFired = false;
-                
-                return RhodesWebBrowser.InvokeScript("eval", codeString);
+
+                var task = RhodesWebBrowser.InvokeScriptAsync("eval", codeString);
+                task.AsTask().Wait();
+                return task.GetResults();
             }
-            else
-                return ((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString);
+            else {
+                var task = ((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScriptAsync("eval", codeString);
+                task.AsTask().Wait();
+                return task.GetResults();
+            }
         }
 
         public string executeScript(string script, int index)
@@ -512,11 +533,22 @@ namespace rhodes
         {
             if (!isUIThread) { InvokeInUIThread(delegate() { Refresh(index); }); return; }
             if (TabbarPivot.Items.Count == 0)
-                RhodesWebBrowser.Navigate(new Uri(RhodesWebBrowser.Source.AbsoluteUri, UriKind.Absolute));
+                navigateWebViewToLink(RhodesWebBrowser, RhodesWebBrowser.Source.AbsoluteUri);
             // another possible implementation: RhodesWebBrowser.InvokeScript("eval", "history.go()");
             else
-                ((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(
-                    new Uri(((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Source.AbsoluteUri, UriKind.Absolute));
+            {
+                WebView wv = (WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content;
+                navigateWebViewToLink(wv, wv.Source.AbsoluteUri);
+            }                
+        }
+
+        public void navigateWebViewToLink(WebView currentBrowser, String link)
+        {
+            //currentBrowser.Settings.IsJavaScriptEnabled = true;
+            //currentBrowser.NavigateToLocalStreamUri(currentBrowser.BuildLocalStreamUri("Content", link), new UriToStreamResolver());
+            //currentBrowser.NavigateToLocalStreamUri(new Uri(link, UriKind.Absolute), uriResolver);
+            
+            currentBrowser.Navigate(new Uri(link, UriKind.Absolute));
         }
 
         public bool isStarted()
@@ -541,7 +573,7 @@ namespace rhodes
             }
             catch (Exception)
             {
-                System.Diagnostics.Debug.WriteLine("getCurrentURLFunc exception");
+                deb("getCurrentURLFunc exception");
                 return "";
             }
         }
@@ -571,7 +603,9 @@ namespace rhodes
         {
             String url = getCurrentURLFunc(((WebViewTag)((sender as WebView).Tag)).getTabIndex());
             CRhoRuntime.getInstance().onWebViewUrlChanged(url);
-            int index = ((WebViewTag)((sender as WebView).Tag)).getTabIndex();
+            WebView wView = (sender as WebView);
+            int index = ((WebViewTag)(wView.Tag)).getTabIndex();
+            //(asender, args) => browser.NavigateToString(getUserAgentHtml);
             if (index > -1 && _tabProps.ContainsKey(index) && !_tabProps[index]._isInitialized)
             {
                 _tabProps[index]._isInitialized = true;
@@ -597,14 +631,14 @@ namespace rhodes
         {
             try { CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(((WebViewTag)((sender as WebView).Tag)).getTabIndex())); }
             catch { 
-                System.Diagnostics.Debug.WriteLine("RhodesWebBrowser_Loaded exception");
+                deb("RhodesWebBrowser_Loaded exception");
                 try{
-                    System.Diagnostics.Debug.WriteLine("Trying to load getCurrentURLFunc(0) exception");
+                    deb("Trying to load getCurrentURLFunc(0) exception");
                     CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(0));
                 }
                 catch
                 {
-                    System.Diagnostics.Debug.WriteLine("onWebViewUrlChanged(getCurrentURLFunc(0)) exception");
+                    deb("onWebViewUrlChanged(getCurrentURLFunc(0)) exception");
                 }
             }
         }
@@ -627,6 +661,7 @@ namespace rhodes
 
         private void updateAppBarModeAndVisibility(bool autoToolbarVisibility = true)
         {
+            getAppBar().Visibility = autoToolbarVisibility ? Visibility.Visible : Visibility.Collapsed;
             if (autoToolbarVisibility && (getAppBar().PrimaryCommands.Count > 0))
             {
                 getAppBar().ClosedDisplayMode = AppBarClosedDisplayMode.Compact;
@@ -677,18 +712,23 @@ namespace rhodes
             }
             toolbarMenuItems.Clear();
             updateAppBarModeAndVisibility();
+            getAppBar().Visibility = Visibility.Collapsed;
         }
 
         public void toolbarShow()
         {
+            
             if (!isUIThread) { InvokeInUIThread(delegate() { toolbarShow(); }); return; }
             updateAppBarModeAndVisibility();
+            getAppBar().Visibility = Visibility.Visible;
         }
 
         public void toolbarHide()
         {
+            
             if (!isUIThread) { InvokeInUIThread(delegate() { toolbarHide(); }); return; }
             updateAppBarModeAndVisibility(false);
+            getAppBar().Visibility = Visibility.Collapsed;
         }
 
         private int toolbarIsStartedFunc()
@@ -720,11 +760,13 @@ namespace rhodes
 
         public void toolbarAddAction(string text)
         {
+            getAppBar().Visibility = Visibility.Visible;
             toolbarAddAction(null, text, text);
         }
 
         public void toolbarAddAction(string icon, string text, string action)
         {
+            getAppBar().Visibility = Visibility.Visible;
             if ((action == null) || (action.Length == 0))
                 return;
             if ((text == null) || (text.Length == 0))
@@ -747,9 +789,15 @@ namespace rhodes
             if (buttonsCount < 4)
             {
                 AppBarButton toolbarButton = new AppBarButton();
-                Uri iconUri = new Uri((icon != null) && (icon.Length > 0) ? prependWithSlash(icon) : "/rho/apps/public/images/cancel.png", UriKind.Relative);
                 BitmapIcon bitmapIcon = new BitmapIcon();
-                bitmapIcon.UriSource = iconUri;
+                try
+                {
+                    Uri iconUri = new Uri((icon != null) && (icon.Length > 0) ? prependWithSlash(icon) : "/rho/apps/public/images/cancel.png", UriKind.Relative);
+                    bitmapIcon.UriSource = iconUri;
+                }catch(Exception e)
+                {
+                    deb("Add ToolBar exception: " + e.Message);
+                }
                 toolbarButton.Icon = bitmapIcon;
                 toolbarButton.Label = text;
                 getAppBar().PrimaryCommands.Add(toolbarButton);
@@ -799,13 +847,15 @@ namespace rhodes
             if (!isUIThread) { InvokeInUIThread(delegate() { menuClear(); }); return; }
             getAppBar().SecondaryCommands.Clear();
             // restore menu items converted from toolbar buttons
-            toolbarMenuItems.ForEach(item => getAppBar().SecondaryCommands.Add(item));
+            toolbarMenuItems.ForEach(item => getAppBar().SecondaryCommands.Remove(item));
             menuItems.Clear();
             updateAppBarModeAndVisibility();
+            getAppBar().Visibility = Visibility.Collapsed;
         }
 
         public void menuAddAction(string label, int item)
         {
+            getAppBar().Visibility = Visibility.Visible;
             if (!isUIThread) { InvokeInUIThread(delegate() { menuAddAction(label, item); }); return; }
             AppBarButton menuItem = new AppBarButton();
             menuItem.Label = label;
@@ -927,6 +977,7 @@ namespace rhodes
             if (!isUIThread) { InvokeInUIThread(delegate () { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, background_color, reload, use_current_view_for_tab, hasCallback, oResult); }); return; }
             PivotItem tab = new PivotItem();
             TabHeader th = new TabHeader();
+
             th.Label = label;
             th.Background = th.UnselectedBackground = new SolidColorBrush(
                 (background_color != null) && (background_color.Length > 0) ?
@@ -936,22 +987,22 @@ namespace rhodes
             th.SelectedBackground = (selected_color != null) && (selected_color.Length > 0) ?
                 new SolidColorBrush(getColorFromString(selected_color)) :
                 th.UnselectedBackground;
-            th.IconImage = (icon == null) || (icon.Length == 0) ?
-                new Windows.UI.Xaml.Media.Imaging.BitmapImage() : new Windows.UI.Xaml.Media.Imaging.BitmapImage(new Uri(prependWithSlash(icon), UriKind.Relative));
+            try
+            {               
+                th.IconImage = (icon == null) || (icon.Length == 0) ?
+                    new Windows.UI.Xaml.Media.Imaging.BitmapImage() : 
+                    new Windows.UI.Xaml.Media.Imaging.BitmapImage(new Uri(prependWithSlash(icon), UriKind.Relative));
+            }catch(Exception e)
+            {
+                th.IconImage = new Windows.UI.Xaml.Media.Imaging.BitmapImage();
+                deb("TabHeader creater: " +  e.Message);
+            }
+            
             tab.Header = th;
 
             _tabProps[TabbarPivot.Items.Count] = new TabProps();
             _tabProps[TabbarPivot.Items.Count]._isReload = reload;
             if (hasCallback == true) _oTabResult = oResult;
-
-            // TODO: implement useCurrentViewForTab
-            // throws expection:
-            //if (use_current_view_for_tab)
-            //{
-            //    tab.Content = RhodesWebBrowser;
-            //}
-            //else
-            //{
 
             Windows.UI.Xaml.Controls.WebView wv = new Windows.UI.Xaml.Controls.WebView();
             wv.Height = double.NaN;
@@ -962,9 +1013,13 @@ namespace rhodes
             wv.LoadCompleted += RhodesWebBrowser_LoadCompleted;
             wv.Loaded += RhodesWebBrowser_Loaded;
             wv.Unloaded += RhodesWebBrowser_Unloaded;
-            wv.ScriptNotify += RhodesWebBrowser_JSNotify;
+            wv.NavigationStarting += webViewNavigationStarting;
+
             wv.Source = new Uri("about:blank");
             wv.Tag = new WebViewTag(TabbarPivot.Items.Count);
+            wv.Settings.IsJavaScriptEnabled = true;
+            wv.Settings.IsIndexedDBEnabled = true;
+
             if ((web_bkg_color != null) && (web_bkg_color.Length > 0)) wv.DefaultBackgroundColor = getColorFromString(web_bkg_color);
             //wv.SetValue(FrameworkElement.NameProperty, "tabWeb" + TabbarPivot.Items.Count.ToString());
             //if ((action != null) && (action.Length > 0))
@@ -974,6 +1029,7 @@ namespace rhodes
 
             tab.IsEnabled = !disabled;
             tab.Tag = action;
+            
             //tab.SetValue(FrameworkElement.NameProperty, "tabItem" + TabbarPivot.Items.Count.ToString());
 
             TabbarPivot.Items.Add(tab);
@@ -1068,6 +1124,11 @@ namespace rhodes
 
             return SystemTray.IsVisible ? 0 : 1;
         }*/
+        private void webViewNavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
+        {
+            sender.Settings.IsJavaScriptEnabled = true;
+            sender.AddWebAllowedObject("rhoRuntimeInvoker", new RuntimeInvoker());
+        }
 
         public bool isFullscreen()
         {
@@ -1117,7 +1178,7 @@ namespace rhodes
                 try{return_value = func();}
                 catch (Exception ex){
                     exception = ex;
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    deb(ex.Message);
                 }
                 waitEvent.Set();
             });
@@ -1146,7 +1207,7 @@ namespace rhodes
                 catch (Exception ex)
                 {
                     exception = ex;
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    deb(ex.Message);
                 }
                 waitEvent.Set();
             });
@@ -1175,7 +1236,7 @@ namespace rhodes
                 catch (Exception ex)
                 {
                     exception = ex;
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    deb(ex.Message);
                 }
                 waitEvent.Set();
             });
@@ -1203,7 +1264,7 @@ namespace rhodes
                 catch (Exception ex)
                 {
                     exception = ex;
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    deb(ex.Message);
                 }
             });
 
@@ -1213,17 +1274,17 @@ namespace rhodes
             return return_value;
         }
 
-        private void RhodesWebBrowser_JSNotify(object sender, NotifyEventArgs e)
+/*        private void RhodesWebBrowser_JSNotify(object sender, NotifyEventArgs e)
         {
+            deb("Invoking JS: " + e.Value);
             String answer = CRhoRuntime.getInstance().onJSInvoke(e.Value);
             Windows.UI.Xaml.Controls.WebView wb = sender as Windows.UI.Xaml.Controls.WebView;
-            wb.InvokeScript("__rhoNativeApiResult", new string[] { answer });
-        }
-
-        /*private void RhodesWebBrowser_LoadCompleted(object sender, NavigationEventArgs e)
-        {
-            var a = 0;
+            wb.Settings.IsJavaScriptEnabled = true;
+            
+            var result = wb.InvokeScriptAsync("__rhoNativeApiResult", new string[] { answer });
+            result.AsTask().Wait();
         }*/
+        
     }
 }
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409

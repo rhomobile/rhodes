@@ -29,10 +29,6 @@ namespace "config" do
     $current_platform = "uwp" unless $current_platform
   end
 
-  #task :set_uwp_app_path do
-  #	ENV['RHO_APP_PATH'] = $app_path
-  # end
-
   task :uwp_ARM_Release do
     $sdk = 'ARM'
     $build_config = 'Release'
@@ -75,10 +71,11 @@ namespace "config" do
     $msbuild = $config["env"]["paths"]["msbuild"]
     $msbuild = "msbuild" if $msbuild.nil?
 
-    #$sdk          = "Windows Phone 8 SDK"
-    #$sdk          = $app_config["wpsdk"] unless $app_config["wpsdk"].nil?
+    $appxbuilder = "C:/Program Files (x86)/Windows Kits/10/bin/x86/makeappx.exe" 
 
     $rhodes_bin_dir = "#{$startdir}/#{$vcbindir}/#{$sdk}/rhodes/#{$build_config}"
+    $targetpath = $rhodes_bin_dir + "/AppxPackageDir/"
+    $targetAppxFileName = File.join($rhodes_bin_dir, 'AppxPackageDir/rhodes.appx')
 
     $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
 
@@ -98,20 +95,18 @@ namespace "config" do
 end
 
 def addRhobundleFilesToCacheFileUWP()
-  xml_path = File.join($rhodes_bin_dir, "XapCacheFile.xml")
-  doc = REXML::Document.new(File.open(xml_path))
-  chdir $srcdir
+  #xml_path = File.join($rhodes_bin_dir, "XapCacheFile.xml")
+  #doc = REXML::Document.new(File.open(xml_path))
+  #chdir $srcdir
 
-  Dir.glob(File.join("**", '*.*')).each do |f|
-    doc.root[1, 0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'"
-  end
+  #Dir.glob(File.join("**", '*.*')).each do |f|
+  #  doc.root[1, 0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'"
+  #end
 
-  File.open(xml_path, "w") { |f| doc.write f, 2; f.close }
-
-  chdir $startdir
-
-  mkdir_p $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}" if not File.exists? $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}"
-  cp xml_path, $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}"
+  #File.open(xml_path, "w") { |f| doc.write f, 2; f.close }
+  #chdir $startdir
+  #mkdir_p $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}" if not File.exists? $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}"
+  #cp xml_path, $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}"
 end
 
 def addbundletoxapUWP()
@@ -123,24 +118,37 @@ def addbundletoxapUWP()
   mkdir File.join(tmp_dir, 'rho')
   mkdir File.join(tmp_dir, 'rho', 'apps')
 
-  appsFiles = FileList.new
-  appsFiles.include(File.join($srcdir, "apps", "*.*"))
-
-  #cp_r File.join($srcdir, "public"), tmp_dir
   cp File.join($srcdir, "RhoBundleMap.txt"), tmp_dir
   cp_r File.join($srcdir, "apps"), rho_dir
-  #cp_r appsFiles, File.join(rho_dir, 'apps')
-  #cp_r File.join($srcdir, "public"), File.join(rho_dir, 'apps')
   cp_r File.join($srcdir, "lib"), rho_dir
   cp_r File.join($srcdir, "db"), rho_dir
 
+  rm_rf $targetpath + "rhodes"
+
   chdir $startdir
   args = []
-  args << "a"
-  args << "-tzip"
-  args << File.join($rhodes_bin_dir, "rhodes.xap")
-  args << tmp_dir + "/*"
-  puts Jake.run($zippath, args)
+  args << "unpack"
+  args << "/p"
+  args << $targetAppxFileName
+  args << "/d"
+  args << $targetpath + "rhodes"
+  args << "/l"
+  puts Jake.run($appxbuilder, args)
+
+  cp_r rho_dir, $targetpath + "rhodes"
+  rm_rf $targetAppxFileName
+
+  args = []
+  args << "pack"
+  args << "/d"
+  args << $targetpath + "rhodes"
+  args << "/p"
+  args << $targetAppxFileName
+
+  args << "/l"
+  puts Jake.run($appxbuilder, args)
+
+  
 end
 
 def addconfigtoxapUWP()
@@ -158,7 +166,7 @@ def addconfigtoxapUWP()
   args = []
   args << "a"
   args << "-tzip"
-  args << File.join($rhodes_bin_dir, "rhodes.xap")
+  args << $targetAppxFileName
   args << tmp_dir + "/*"
   puts Jake.run($zippath, args)
 end
@@ -225,7 +233,6 @@ namespace "build" do
           else
             extpath = File.join(p, ext, 'ext')
             next unless File.exists? File.join(extpath, "build.bat")
-
             Jake.run3('build.bat', extpath)
             break
 
@@ -277,10 +284,16 @@ namespace "build" do
 
       File.open($startdir + "/"+$config["build"]["uwppath"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
 
-      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}", '/p:VisualStudioVersion=12.0', '/t:Build'] #'/p:PlatformToolset=v110'
+      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}", '/p:VisualStudioVersion=14.0', 
+        '/t:Build', '/p:UapAppxPackageBuildMode=StoreUpload','/p:AppxPackageDir=' + $rhodes_bin_dir + '/AppxPackageDir'] 
 
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       Jake.run($msbuild, args)
+
+      appxFileName = ""
+      Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/rhodes*.appx'].each { |f|  appxFileName = f if File.file?(f) }
+      cp appxFileName, $targetAppxFileName
+
       unless $? == 0
         puts "Error building"
         exit 1
@@ -290,13 +303,15 @@ namespace "build" do
     end
 
     task :package => [:rhobundle_noext, :extensions, :rhodes] do
-      #addbundletoxapUWP()
+      addbundletoxapUWP()
 
-      cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
+      #cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
 
       mkdir_p $bindir if not File.exists? $bindir
       mkdir_p $targetdir if not File.exists? $targetdir
-      mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
+      mv $targetAppxFileName, $targetdir
+
+    puts $rhodes_bin_dir
 
     end
 
@@ -309,8 +324,8 @@ namespace "build" do
 
       Rake::Task["build:uwp:rhobundle_noext"].invoke
 
-      #addRhobundleFilesToCacheFileUWP() TODO: check and redo
-      addbundletoxapUWP()
+      #addRhobundleFilesToCacheFileUWP()
+      #addbundletoxapUWP()
 
     end
 
@@ -384,24 +399,24 @@ namespace "device" do
   namespace "uwp" do
 
     desc "Build production for device"
-    task :production => ["config:uwp_ARM_Release", "build:uwp:package"] do
+    task :production => ["config:uwp_Win32_Release", "build:uwp:package"] do
     end
 
-	task :getlog => ["config:uwp"] do
-		args = []
-		args << $productid
-		args << $app_config["name"]
-		args << $app_path + "/icon/icon.png"
-		args << $targetdir + "/" + $appname + ".xap"
-		args << "dev"
-		$path = $app_path+"/rholog.txt"
-		$path.gsub!('/', '\\')
-		args << $path
-		puts Jake.run($wp7runner, args)
+  	task :getlog => ["config:uwp"] do
+  		args = []
+  		args << $productid
+  		args << $app_config["name"]
+  		args << $app_path + "/icon/icon.png"
+  		args << $targetdir + "/" + $appname + ".xap"
+  		args << "dev"
+  		$path = $app_path+"/rholog.txt"
+  		$path.gsub!('/', '\\')
+  		args << $path
+  		puts Jake.run($wp7runner, args)
 
-		cc_run($wp7runner, args) or return false
-		puts "RhoLog.txt stored to " + $app_path
-	end
+  		cc_run($wp7runner, args) or return false
+  		puts "RhoLog.txt stored to " + $app_path
+  	end
   end
 end
 
@@ -534,14 +549,14 @@ namespace "run" do
 
 	  #addconfigtoxapUWP()
 
-      cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
-      mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
+      cp $targetAppxFileName, File.join($rhodes_bin_dir, $appname + ".appx")
+      mv File.join($rhodes_bin_dir, $appname + ".appx"), $targetdir
 
       args = []
       args << $productid
       args << $app_config["name"]
       args << $app_path + "/icon/icon.png"
-      args << $targetdir + "/" + $appname + ".xap"
+      args << $targetdir + "/" + $appname + ".appx"
       args << "emu"
       puts Jake.run($wp7runner, args)
 
@@ -601,16 +616,16 @@ namespace "run" do
         #  end
         #end
 
-		#addconfigtoxapUWP()
+		    #addconfigtoxapUWP()
 
-        cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
-        mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
+        cp $targetAppxFileName, File.join($rhodes_bin_dir, $appname + ".appx")
+        mv File.join($rhodes_bin_dir, $appname + ".appx"), $targetdir
 
         args = []
         args << $productid
         args << $app_config["name"]
         args << $app_path + "/icon/icon.png"
-        args << $targetdir + "/" + $appname + ".xap"
+        args << $targetdir + "/" + $appname + ".appx"
         args << "dev"
         puts Jake.run($wp7runner, args)
 

@@ -99,6 +99,9 @@ platform/wp8/ipch/*
 platform/uwp/*/obj/*
 platform/uwp/bin/*
 platform/uwp/ipch/*
+platform/uwp/RhoRuntimeInvoker/bin/*
+platform/uwp/rhodes/Bin/*
+platform/uwp/rhodes/AppPackages/*
 rhodes/*/pkg/
 rhodes/rhodes-framework/spec/bin/
 rhoconnect-client/build/*
@@ -251,6 +254,7 @@ Manifest.java
 platform/shared/qt/rhodes/GeneratedFiles/*
 platform/shared/qt/*/Makefile*
 platform/shared/qt/Makefile*
+platform/shared/build-RhoSimulator_dev*
 lib/commonAPI/*/ext/platform/qt/Makefile*
 lib/extensions/*/ext/Makefile*
 platform/shared/qtrhodes/generatedfiles/*

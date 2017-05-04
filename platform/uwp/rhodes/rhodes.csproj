@@ -34,12 +34,13 @@
     <Optimize>false</Optimize>
     <BaseIntermediateOutputPath>..\bin\anycpu\$(RootNamespace)</BaseIntermediateOutputPath>
     <IntermediateOutputPath>..\bin\anycpu\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
-    <OutputPath>..\bin\anycpu\rhodes\debug\</OutputPath>
+    <OutputPath>Bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>2008</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -72,7 +73,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <BaseIntermediateOutputPath>..\bin\Win32\$(RootNamespace)</BaseIntermediateOutputPath>
     <IntermediateOutputPath>..\bin\Win32\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <OutputPath>Bin\x86\Release</OutputPath>
@@ -84,14 +85,14 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <UseDotNetNativeToolchain>false</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
     <BaseIntermediateOutputPath>..\bin\arm\$(RootNamespace)</BaseIntermediateOutputPath>
     <IntermediateOutputPath>..\bin\arm\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
-    <OutputPath>Bin\ARM\Debug</OutputPath>
+    <OutputPath>Bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -100,6 +101,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <NoWarn>2008</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <DebugType>pdbonly</DebugType>
@@ -121,10 +123,10 @@
     <DebugSymbols>true</DebugSymbols>
     <BaseIntermediateOutputPath>..\bin\x64\$(RootNamespace)</BaseIntermediateOutputPath>
     <IntermediateOutputPath>..\bin\x64\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
-    <OutputPath>..\bin\x64\rhodes\Debug\</OutputPath>
+    <OutputPath>Bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoStdLib>true</NoStdLib>
-    <NoWarn>;2008</NoWarn>
+    <NoWarn>2008</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
@@ -180,29 +182,13 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Properties\AppManifest.xml" />
+    <None Include="Properties\AppManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="rhodes_TemporaryKey.pfx" />
     <None Include="Properties\WMAppManifest.xml">
       <SubType>Designer</SubType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\ApplicationIcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\BadgeLogo.png" />
-    <Content Include="Assets\Logo.png" />
-    <Content Include="Assets\SplashScreen.png" />
-    <Content Include="Assets\SquareTile150x150.png" />
-    <Content Include="Assets\SquareTile71x71.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Tiles\FlipCycleTileMedium.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Tiles\FlipCycleTileSmall.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\WideLogo.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -226,10 +212,21 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RhoRuntimeInvoker\RhoRuntimeInvoker.csproj">
+      <Project>{f717a72f-5985-4d3e-a9ba-c3be0e004962}</Project>
+      <Name>RhoRuntimeInvoker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\rhoruntime\rhoruntime.vcxproj">
       <Project>{19b2cb23-b0fc-44c0-bd59-3da4f3113585}</Project>
       <Name>rhoruntime</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\SplashScreen.scale-400.png" />
+    <Content Include="Assets\Square150x150Logo.scale-400.png" />
+    <Content Include="Assets\Square44x44Logo.scale-400.png" />
+    <Content Include="Assets\Square71x71Logo.scale-400.png" />
+    <Content Include="Assets\StoreLogo.scale-400.png" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
