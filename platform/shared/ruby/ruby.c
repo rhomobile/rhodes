@@ -440,8 +440,9 @@ ruby_init_loadpath_safe(int safe_level, const char* szRoot)
     VALUE load_path;
     ID id_initial_load_path_mark;
     const char *paths = ruby_initial_load_paths;
+
 #if defined LOAD_RELATIVE
-# if defined HAVE_DLADDR || defined __CYGWIN__ || defined _WIN32
+# if defined HAVE_DLADDR || defined __CYGWIN__//RHO: || defined _WIN32
 #   define VARIABLE_LIBPATH 1
 # else
 #   define VARIABLE_LIBPATH 0
@@ -460,7 +461,8 @@ ruby_init_loadpath_safe(int safe_level, const char* szRoot)
     	strncpy(libpath, szRoot, sizeof(libpath) - 1);
     } else {
 
-#if defined _WIN32 || defined __CYGWIN__
+//#if defined _WIN32 || defined __CYGWIN__
+#if 0 //RHO
     sopath = rb_str_new(0, MAXPATHLEN);
     libpath = RSTRING_PTR(sopath);
     GetModuleFileName(libruby, libpath, MAXPATHLEN);
@@ -560,7 +562,7 @@ ruby_init_loadpath_safe(int safe_level, const char* szRoot)
     while (*paths) {
 	size_t len = strlen(paths);
 	VALUE path = RUBY_RELATIVE(paths, len);
-	rb_ivar_set(path, id_initial_load_path_mark, path);
+    rb_ivar_set(path, id_initial_load_path_mark, path);
 	rb_ary_push(load_path, path);
 	paths += len + 1;
     }
@@ -1935,6 +1937,7 @@ load_file(VALUE parser, VALUE fname, int script, struct cmdline_options *opt)
     arg.xflag = 0;
     arg.lineno = rb_gv_get("$.");
     arg.f = open_load_file(rb_str_encode_ospath(fname), &arg.xflag);
+
     return (NODE *)rb_ensure(load_file_internal, (VALUE)&arg,
 			     restore_load_file, (VALUE)&arg);
 }
