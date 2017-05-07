@@ -7393,9 +7393,18 @@ static VALUE
 prep_stdio(FILE *f, int fmode, VALUE klass, const char *path)
 {
     rb_io_t *fptr;
-    VALUE io = prep_io(fileno(f), fmode|FMODE_PREP|DEFAULT_TEXTMODE, klass, path);
+
+//RHO    
+#ifdef WINCE
+    int fn = -1;
+#else
+    int fn = fileno(f);
+#endif
+    VALUE io = prep_io(fn, fmode|FMODE_PREP|DEFAULT_TEXTMODE, klass, path);
+//RHO
 
     GetOpenFile(io, fptr);
+
     fptr->encs.ecflags |= ECONV_DEFAULT_NEWLINE_DECORATOR;
 #ifdef TEXTMODE_NEWLINE_DECORATOR_ON_WRITE
     fptr->encs.ecflags |= TEXTMODE_NEWLINE_DECORATOR_ON_WRITE;
