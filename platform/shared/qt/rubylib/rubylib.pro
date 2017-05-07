@@ -41,15 +41,17 @@ win32 {
   OBJECTS_DIR = ../../../win32/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/win32
   DEFINES -= _UNICODE UNICODE
-  DEFINES += WIN32 _WINDOWS _LIB BUFSIZ=512 TLS_OUT_OF_INDEXES=0xFFFFFFFF FILENAME_MAX=MAX_PATH STATIC_LINKED RUBY_EXPORT
+  DEFINES += _WIN32 WIN32 _WINDOWS _LIB BUFSIZ=512 STATIC_LINKED RUBY_EXPORT
   Debug {
     DEFINES += _DEBUG DEBUG
   }
   Release {
     DEFINES += _NDEBUG NDEBUG
   }
+
   HEADERS += ../../ruby/win32/ruby/config.h\
 ../../ruby/win32/dir.h
+
   SOURCES += ../../ruby/missing/acosh.c \
 ../../ruby/missing/alloca.c \
 ../../ruby/missing/cbrt.c \
@@ -80,9 +82,8 @@ win32 {
 #../../ruby/wince/io_wce.c\
 #../../ruby/wince/process_wce.c\
 #../../ruby/wince/time_wce.c
-    ../../ruby/win32/file_win32.c \
-    ../../ruby/win32/newline_win32.c
-
+../../ruby/win32/file_win32.c \
+../../ruby/win32/newline_win32.c
 }
 
 unix:!macx {
@@ -195,7 +196,7 @@ SOURCES += \
 ../../ruby/marshal.c \
 ../../ruby/math.c \
 ../../ruby/miniprelude.c \
-../../ruby/newline.c \
+#../../ruby/newline.c \
 ../../ruby/node.c \
 ../../ruby/numeric.c \
 ../../ruby/object.c \
@@ -234,4 +235,3 @@ SOURCES += \
 ../../ruby/ext/strscan/strscan.c \
 ../../ruby/ext/stringio/stringio.c \
 ../../ruby/rhoinit.c
-
