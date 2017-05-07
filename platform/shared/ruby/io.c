@@ -650,7 +650,17 @@ void
 rb_io_check_closed(rb_io_t *fptr)
 {
     rb_io_check_initialized(fptr);
+
+//RHO, MSDN docs:
+//In Visual C++ 2005, there is a behavior change. 
+//If stdout or stderr is not associated with an output stream (for example, in a Windows application without a console window), the file descriptor returned is -2.
+//In previous versions, the file descriptor returned was -1. This change allows applications to distinguish this condition from an error.    
+#ifdef _WIN32
+    if ((fptr->fd < 0) && (fptr->fd != -2) ) {
+#else
     if (fptr->fd < 0) {
+#endif
+//RHO        
 	rb_raise(rb_eIOError, closed_stream);
     }
 }
