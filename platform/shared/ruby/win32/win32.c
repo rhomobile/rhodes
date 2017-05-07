@@ -764,12 +764,14 @@ void
 rb_w32_sysinit(int *argc, char ***argv)
 {
 #if RUBY_MSVCRT_VERSION >= 80
-    static void set_pioinfo_extra(void);
+//RHO
+//    static void set_pioinfo_extra(void);
 
     _CrtSetReportMode(_CRT_ASSERT, 0);
     _set_invalid_parameter_handler(invalid_parameter);
     _RTC_SetErrorFunc(rtc_error_handler);
-    set_pioinfo_extra();
+//RHO
+//    set_pioinfo_extra();
 #else
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);
 #endif
@@ -2366,6 +2368,8 @@ typedef struct	{
 #define _CRTIMP __declspec(dllimport)
 #endif
 
+//RHO
+/*
 #if RUBY_MSVCRT_VERSION >= 140
 static ioinfo ** __pioinfo = NULL;
 #define IOINFO_L2E 6
@@ -2376,15 +2380,21 @@ EXTERN_C _CRTIMP ioinfo * __pioinfo[];
 static inline ioinfo* _pioinfo(int);
 
 #define IOINFO_ARRAY_ELTS	(1 << IOINFO_L2E)
-#define _osfhnd(i)  (_pioinfo(i)->osfhnd)
-#define _osfile(i)  (_pioinfo(i)->osfile)
-#define rb_acrt_lowio_lock_fh(i)   EnterCriticalSection(&_pioinfo(i)->lock)
-#define rb_acrt_lowio_unlock_fh(i) LeaveCriticalSection(&_pioinfo(i)->lock)
+*/
+
+//RHO
+#define _osfhnd _get_osfhandle
+#define _osfile(i) 0// (_pioinfo(i)->osfile)
+#define rb_acrt_lowio_lock_fh(i)//   EnterCriticalSection(&_pioinfo(i)->lock)
+#define rb_acrt_lowio_unlock_fh(i)// LeaveCriticalSection(&_pioinfo(i)->lock)
+//RHO
 
 #if RUBY_MSVCRT_VERSION >= 80
 static size_t pioinfo_extra = 0;	/* workaround for VC++8 SP1 */
 
 /* License: Ruby's */
+
+#if 0 //RHO
 static void
 set_pioinfo_extra(void)
 {
@@ -2470,16 +2480,20 @@ set_pioinfo_extra(void)
 #define pioinfo_extra 0
 #endif
 
+#endif //RHO
 static inline ioinfo*
 _pioinfo(int fd)
 {
     const size_t sizeof_ioinfo = sizeof(ioinfo) + pioinfo_extra;
     return (ioinfo*)((char*)__pioinfo[fd >> IOINFO_L2E] +
-		     (fd & (IOINFO_ARRAY_ELTS - 1)) * sizeof_ioinfo);
+                    (fd & (IOINFO_ARRAY_ELTS - 1)) * sizeof_ioinfo);
 }
 
-#define _set_osfhnd(fh, osfh) (void)(_osfhnd(fh) = osfh)
-#define _set_osflags(fh, flags) (_osfile(fh) = (flags))
+//RHO
+#define _set_osfhnd(fh, osfh)// (void)(_osfhnd(fh) = osfh)
+#define _set_osflags(fh, flags)// (_osfile(fh) = (flags))
+//RHO
+
 
 #define FOPEN			0x01	/* file handle open */
 #define FEOFLAG			0x02	/* end of file has been encountered */
@@ -4307,10 +4321,16 @@ fcntl(int fd, int cmd, ...)
 	    errno = map_errno(GetLastError());
 	    return -1;
 	}
+
+    //RHO
+    /*
 	if (arg & FD_CLOEXEC)
 	    _osfile(fd) |= FNOINHERIT;
 	else
 	    _osfile(fd) &= ~FNOINHERIT;
+     */
+    //RHO
+
 	return 0;
       }
       default:
@@ -6852,7 +6872,7 @@ setup_overlapped(OVERLAPPED *ol, int fd, int iswrite)
 	 * it can read from everywhere.
 	 */
 	DWORD method = ((_osfile(fd) & FAPPEND) && iswrite) ? FILE_END : FILE_CURRENT;
-	DWORD low = SetFilePointer((HANDLE)_osfhnd(fd), 0, &high, method);
+    DWORD low = SetFilePointer((HANDLE)_osfhnd(fd), 0, &high, method);
 #ifndef INVALID_SET_FILE_POINTER
 #define INVALID_SET_FILE_POINTER ((DWORD)-1)
 #endif
