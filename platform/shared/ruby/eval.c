@@ -616,6 +616,16 @@ rb_exc_raise(VALUE mesg)
     if (!NIL_P(mesg)) {
 	mesg = make_exception(1, &mesg, FALSE);
     }
+
+    VALUE e = rb_funcall( mesg, rb_intern("to_s"),0 );
+    RAWLOGC_ERROR1(">DEBUG<", "Ruby error:\n%s", RSTRING_PTR(e) );
+
+    VALUE trace = rb_get_backtrace(mesg);
+    trace = rb_funcall( trace, rb_intern("to_s"),0 );
+
+    RAWLOGC_ERROR1(">DEBUG<", "Trace:\n%s", RSTRING_PTR(trace));
+
+
     rb_longjmp(TAG_RAISE, mesg, Qundef);
 }
 
