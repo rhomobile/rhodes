@@ -63,7 +63,6 @@ extern void Init_strscan();
 extern void Init_sqlite3_api();
 extern void Init_GeoLocation(void);
 extern void print_profile_report();
-extern void enable_gc_profile(void);
 extern void Init_System(void);
 extern void Init_Phonebook(void);
 extern void Init_WebView(void);
@@ -187,10 +186,11 @@ int   daylight;
 char *tzname[2];
 #endif
 
+void RhoModifyRubyLoadPath( const char* );
+
 void RhoRubyStart()
 {
     const char* szRoot = rho_native_rhopath();
-    //VALUE moduleRhom;
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
 #endif
@@ -211,42 +211,8 @@ void RhoRubyStart()
     //rb_funcall(rb_mGC, rb_intern("stress="), 1, Qtrue);
 
     ruby_init_loadpath(szRoot);
-#if defined(RHODES_EMULATOR) || defined(APP_BUILD_CAPABILITY_SYMBOL) || defined(OS_WP8) || defined(OS_UWP)
-    {
-        VALUE load_path = GET_VM()->load_path;
-        char* app_path = malloc(strlen(szRoot)+100);
 
-        rb_ary_clear(load_path);
-
-        strcpy(app_path, szRoot);
-#if defined(RHODES_EMULATOR)
-        strcat(app_path, "app");
-#elif defined(OS_WP8) || defined(OS_UWP)
-		strcat(app_path, "/apps/app");
-#else
-        strcat(app_path, "apps/app");
-#endif
-        rb_ary_push(load_path, rb_str_new2(app_path) );
-
-#if defined(APP_BUILD_CAPABILITY_SYMBOL)
-        strcpy(app_path, rho_native_reruntimepath());
-        strcat(app_path, "lib");
-#elif defined(OS_WP8) || defined(OS_UWP)
-		strcpy(app_path, szRoot);
-        strcat(app_path, "/lib");
-#else
-        strcpy(app_path, rho_simconf_getRhodesPath());
-        strcat(app_path, "/lib/framework");
-#endif
-        rb_ary_push(load_path, rb_str_new2(app_path) );
-    }
-
-#endif
-
-//DO not use it! Keeps for backward compatibility with ruby extensions. Use Rho::System.isRhoSimulator
-#ifdef RHODES_EMULATOR
-    rb_const_set(rb_cObject, rb_intern("RHODES_EMULATOR"), Qtrue);
-#endif
+    RhoModifyRubyLoadPath( szRoot );
 
 #if !defined(OS_WP8) && !defined(OS_UWP)
 
@@ -366,6 +332,77 @@ void RhoRubyStart()
 #endif
 
     }
+}
+
+
+
+void RhoModifyRubyLoadPath( const char* szRoot ) {
+#if defined(RHODES_EMULATOR) || defined(APP_BUILD_CAPABILITY_SYMBOL) || defined(OS_WP8) || defined(OS_UWP)
+        VALUE load_path = GET_VM()->load_path;
+
+        const int app_path_len = strlen(szRoot)+100;
+        char* app_path = malloc(app_path_len);
+
+        rb_ary_clear(load_path);
+
+        strcpy(app_path, szRoot);
+#if defined(RHODES_EMULATOR)
+        strcat(app_path, "app");
+#elif defined(OS_WP8) || defined(OS_UWP)
+        strcat(app_path, "/apps/app");
+#else
+        strcat(app_path, "apps/app");
+#endif
+
+        rb_ary_push(load_path, rb_str_new2(app_path) );
+
+#if defined(APP_BUILD_CAPABILITY_SYMBOL)
+        strcpy(app_path, rho_native_reruntimepath());
+        strcat(app_path, "lib");
+#elif defined(OS_WP8) || defined(OS_UWP)
+        strcpy(app_path, szRoot);
+        strcat(app_path, "/lib");
+#else
+        strcpy(app_path, rho_simconf_getRhodesPath());
+        strcat(app_path, "/lib/framework");
+#endif
+
+        rb_ary_push(load_path, rb_str_new2(app_path) );
+
+/*
+#ifdef RHODES_EMULATOR
+        const char*p0, *p1;
+
+        p0=p1=rho_simconf_getString( "ext_path" );
+
+        while ((*p0 != 0)) {
+
+            //find next token
+            for ( ; (*p1!=0 && *p1!=';'); ++p1 ) ;
+
+            int len = p1-p0;
+
+            if ( len > (app_path_len-1) ) {
+                RAWLOG_FATAL( "Buffer length for ext path is too short" );
+                return;
+            }
+
+            strncpy(app_path,p0,len);
+            app_path[len]=0;
+            rb_ary_push(load_path, rb_str_new2(app_path) );
+
+            ++p1;
+            p0=p1;
+        }
+
+
+        strcpy(app_path, rho_simconf_getRhodesPath());
+        strcat(app_path, "/lib/framework");
+        rb_ary_push(load_path, rb_str_new2(app_path) );
+
+#endif
+*/
+#endif
 }
 
 int  rho_ruby_is_started()
