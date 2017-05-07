@@ -448,8 +448,11 @@ static VALUE find_file(VALUE fname)
 		}
     }
 
-    //RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
-    res = RhoPreparePath(res);
+    if ( res != 0 ) {
+        RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
+        res = RhoPreparePath(res);
+    }
+
     if ( !nOK )
         nOK = 1;//eaccess(RSTRING_PTR(res), R_OK) == 0 ? 1 : 0;
 
@@ -526,7 +529,7 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
     {
         VALUE seq;
 
-        RAWLOG_INFO1("require_compiled: %s", szName1);
+        RAWLOG_INFO2("require_compiled: %s, full path: %s", szName1, RSTRING_PTR(path));
 
         //optimize require
         //rb_ary_push(GET_VM()->loaded_features, path);
@@ -537,7 +540,19 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
             rb_str_cat(path,".rb",3);
 
         GET_VM()->src_encoding_index = rb_utf8_encindex();
-        rb_load(path, 0);
+
+        PUSH_TAG();
+        if ((state = EXEC_TAG()) == 0) {
+            rb_load(path, 0);
+        } else {
+            RAWLOG_ERROR2("Error loading %s: %d", RSTRING_PTR(path), state);
+        }
+        POP_TAG();
+
+        if ( state != 0 ) {
+            rb_raise( th->errinfo, RSTRING_PTR(rb_funcall(th->errinfo,rb_intern("to_s"),0)) );
+        }
+
 
         if( rho_simconf_getBool("reload_app_changes") )
         {
@@ -578,16 +593,9 @@ translate_char(char *p, int from, int to)
 }
 
 VALUE RhoPreparePath(VALUE path){
-#ifdef __SYMBIAN32__
-
-	VALUE fname2 = rb_str_dup(path);
-	
-	translate_char(RSTRING_PTR(fname2),'/', '\\');
-	
+    //Looks like the path is frozen now at least on win32, so we dup it.
+	VALUE fname2 = rb_str_dup(path);	
 	return fname2;
-#endif //__SYMBIAN32__
-	
-	return path;
 }
 
 static void Init_RhoLog();
