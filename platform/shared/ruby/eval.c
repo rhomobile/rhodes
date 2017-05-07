@@ -34,6 +34,8 @@ static ID id_cause;
 #include "eval_error.c"
 #include "eval_jump.c"
 
+#include "logging/RhoLog.h"
+
 #define CLASS_OR_MODULE_P(obj) \
     (!SPECIAL_CONST_P(obj) && \
      (BUILTIN_TYPE(obj) == T_CLASS || BUILTIN_TYPE(obj) == T_MODULE))

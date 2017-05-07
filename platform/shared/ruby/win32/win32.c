@@ -2481,6 +2481,8 @@ set_pioinfo_extra(void)
 #endif
 
 #endif //RHO
+
+/*
 static inline ioinfo*
 _pioinfo(int fd)
 {
@@ -2488,6 +2490,7 @@ _pioinfo(int fd)
     return (ioinfo*)((char*)__pioinfo[fd >> IOINFO_L2E] +
                     (fd & (IOINFO_ARRAY_ELTS - 1)) * sizeof_ioinfo);
 }
+*/
 
 //RHO
 #define _set_osfhnd(fh, osfh)// (void)(_osfhnd(fh) = osfh)

@@ -45,6 +45,8 @@
 #endif
 #include "statistic/RhoProfiler.h"
 
+#include "eval_intern.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 
@@ -501,6 +503,8 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
     char* szName1 = 0;
 	char* la = 0;
     VALUE retval = Qtrue;
+    int state = 0;
+    rb_thread_t *th = GET_THREAD();
     
     if (TYPE(fname) != T_STRING)
         rb_raise(rb_eLoadError, "can not load non-string");
