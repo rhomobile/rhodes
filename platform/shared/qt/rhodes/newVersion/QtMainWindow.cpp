@@ -94,6 +94,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
                      "\n"
                      "new QWebChannel(qt.webChannelTransport, function(channel) {"
                      "     window['__rhoNativeApi'] = channel.objects.__rhoNativeApi;"
+                     "     window['__callBacks'] = [];"
                      "});"
             );
 
@@ -104,26 +105,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
             script.setInjectionPoint(QWebEngineScript::DocumentCreation);
             script.setRunsOnSubFrames(false);
             QWebEngineProfile::defaultProfile()->scripts()->insert(script);
+
     }
     QWebEngineProfile::defaultProfile()->setRequestInterceptor(wuri);
-
- /*   QDir dir = QDir(qApp->applicationDirPath()+"/rho/apps/app");
-    if (!dir.exists()) dir.mkpath(dir.absolutePath());
-    QString newFilePathForJSQWC = dir.absolutePath() + "/qwebchannel.js";
-    QFileInfo infoJSQWC(newFilePathForJSQWC);
-    if (!infoJSQWC.exists()){
-        if (dir.exists()){
-            if (QFile::copy(":/qtwebchannel/qwebchannel.js", newFilePathForJSQWC)){
-                qDebug() << "Creating qwebchannel.js - successfully";
-            }else{
-                qDebug() << "Creating qwebchannel.js - not successfully";
-            }
-
-        }else{
-            qDebug() << "Creating qwebchannel.js - successfully";
-        }
-    }*/
-
 
     QApplication::setStyle(new QtCustomStyle());
 

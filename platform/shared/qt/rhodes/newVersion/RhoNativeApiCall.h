@@ -31,6 +31,15 @@
 #include <QWebEnginePage>
 #include <QWebChannel>
 #include <QFile>
+#include <QApplication>
+#include <QEventLoop>
+#include <QTimer>
+#include <QThread>
+#include <QMutex>
+#include <QWebEngineProfile>
+#include <QWebEngineScript>
+#include <QJsonObject>
+#include <QJsonValue>
 
 class RhoNativeApiCall: public QObject
 {
@@ -38,16 +47,34 @@ class RhoNativeApiCall: public QObject
 
 public:
     RhoNativeApiCall(QWebEnginePage* page, QObject* parent = 0);
-    Q_INVOKABLE const QString apiCall(const QString& msg);
+    ~RhoNativeApiCall();
     Q_INVOKABLE const QString toLowerCase(const QString& msg);
+    Q_INVOKABLE QString apiCall(const QString& msg, bool async);
 
+    Q_INVOKABLE QString read(){return currentResult;}
+    Q_INVOKABLE void write(const QString &value){currentResult = value; resultChanged(value); qApp->processEvents();}
+    QString currentResult;
+    Q_PROPERTY(QString CurrentResult READ read NOTIFY resultChanged)
+
+private:
+    QTimer timer;
+    QEventLoop loop;
+    QMutex mutex;
 public slots:
     void populateJavaScriptWindowObject();
 
+signals:
+    void resultChanged(QString);
+
 private:
     QWebEnginePage* m_page;
+
+
 };
 
 Q_DECLARE_METATYPE(RhoNativeApiCall*)
+Q_DECLARE_METATYPE(QString)
+Q_DECLARE_METATYPE(QJsonObject)
+Q_DECLARE_METATYPE(QJsonValue)
 
 #endif // RHONATIVEAPICALL_H

@@ -149,6 +149,7 @@ QtCustomStyle.h\
 mainwindowinterface.h \
 guithreadfunchelper.h
 
+
 SOURCES += impl/AlertImpl.cpp\
 impl/BluetoothImpl.cpp\
 impl/CalendarImpl.cpp\
@@ -170,6 +171,7 @@ impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
 ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp
+
 
 contains(DEFINES, RHODES_VERSION_1)  {
 HEADERS += oldVersion/ExternalWebView.h\

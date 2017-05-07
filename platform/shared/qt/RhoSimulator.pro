@@ -7,6 +7,7 @@
     lessThan(QT_VERSION, 5.6.0): {
         DEFINES += RHODES_VERSION_1
     }
+#DEFINES += RHODES_EMULATOR
 
 TEMPLATE = subdirs
 SUBDIRS = rubylib rholib sqlite3 syncengine
