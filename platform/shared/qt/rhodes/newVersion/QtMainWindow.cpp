@@ -308,8 +308,8 @@ void QtMainWindow::resizeEvent(QResizeEvent *event)
     if (mainWindowCallback)
         mainWindowCallback->updateSizeProperties(event->size().width(), event->size().height());
     if (m_logView == 0) {
-        m_logView = new QtLogView();
-        LOGCONF().setLogView(m_logView);
+        //m_logView = new QtLogView();
+        //LOGCONF().setLogView(m_logView);
     }
 }
 
