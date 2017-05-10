@@ -117,6 +117,10 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     tabBar = new QtNativeTabBar(this);
     verticalLayout->addWidget(tabBar);
     webView = new QtWebEngineView(this);
+    QObject::connect(webView, SIGNAL(linkClicked(const QUrl&)), this, SLOT(on_webView_linkClicked(const QUrl&)));
+    QObject::connect(webView, SIGNAL(loadStarted()), this, SLOT(on_webView_loadStarted()));
+    QObject::connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(on_webView_loadFinished(bool)));
+    QObject::connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(on_webView_urlChanged(QUrl)));
     verticalLayout->addWidget(webView);
 
     QMenuBar * menuBar = new QMenuBar(this);
@@ -185,7 +189,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     this->move(0,0);
     toolBar->hide();
     toolBarRight->hide();
-    //main_webView->hide();
+    main_webView->hide();
 
     GuiThreadFuncHelper::getInstance(this);
 #ifdef RHODES_EMULATOR
@@ -292,8 +296,8 @@ void QtMainWindow::resizeEvent(QResizeEvent *event)
     if (mainWindowCallback)
         mainWindowCallback->updateSizeProperties(event->size().width(), event->size().height());
     if (m_logView == 0) {
-        //m_logView = new QtLogView();
-        //LOGCONF().setLogView(m_logView);
+        m_logView = new QtLogView();
+        LOGCONF().setLogView(m_logView);
     }
 }
 
