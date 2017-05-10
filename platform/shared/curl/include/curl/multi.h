@@ -49,7 +49,7 @@
  */
 #include "curl.h"
 
-#if defined(OS_UWP) || defined(_UWP_LIB) || defined (CPP_ELEVEN) || defined (RHODES_VERSION_2)
+#if defined(OS_UWP) || defined(_UWP_LIB)
 #include <WinSock2.h>
 #endif
 
