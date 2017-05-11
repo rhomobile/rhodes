@@ -6,10 +6,15 @@
 #include "../../platform/shared/qt/rhodes/RhoSimulator.h"
 
 #undef null
-#include <qwebkitglobal.h>
-#if QT_VERSION >= 0x050000
-#include <QtWebKit/qtwebkitversion.h>
-#endif
+
+// commented for OSX build, but headers seems to unused
+//#include <qwebkitglobal.h>
+//#if QT_VERSION >= 0x050000
+//#include <QtWebKit/qtwebkitversion.h>
+//#endif
+//#include <qtwebkitversion.h>
+//#include <qwebkitglobal.h>
+
 #include <QLocale>
 #include <QDesktopServices>
 #include <QUrl>

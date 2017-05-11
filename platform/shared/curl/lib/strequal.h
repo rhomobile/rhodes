@@ -31,6 +31,10 @@
 #ifndef HAVE_STRLCAT
 #define strlcat(x,y,z) Curl_strlcat(x,y,z)
 #endif
+
+#ifndef RHODES_MAC_BUILD
+// on Mac OS X SDK "strlcat" is define ! this line is not compiled !
 size_t strlcat(char *dst, const char *src, size_t siz);
+#endif
 
 #endif
