@@ -10,6 +10,8 @@
 
 #include "rubysocket.h"
 
+#include "logging/RhoLog.h"
+
 /*
  * call-seq:
  *    TCPSocket.new(remote_host, remote_port, local_host=nil, local_port=nil)
@@ -21,11 +23,16 @@
 static VALUE
 tcp_init(int argc, VALUE *argv, VALUE sock)
 {
+
+    RAWLOGC_ERROR(">DEBUG<", "tcp_init TRACE0");
+
     VALUE remote_host, remote_serv;
     VALUE local_host, local_serv;
 
     rb_scan_args(argc, argv, "22", &remote_host, &remote_serv,
 			&local_host, &local_serv);
+
+    RAWLOGC_ERROR(">DEBUG<", "tcp_init TRACE1");
 
     return rsock_init_inetsock(sock, remote_host, remote_serv,
 			       local_host, local_serv, INET_CLIENT);

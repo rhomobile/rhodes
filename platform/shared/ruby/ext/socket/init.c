@@ -10,6 +10,8 @@
 
 #include "rubysocket.h"
 
+#include "logging/RhoLog.h"
+
 VALUE rb_cBasicSocket;
 VALUE rb_cIPSocket;
 VALUE rb_cTCPSocket;
@@ -343,11 +345,21 @@ update_max_fd:
 static int
 rsock_socket0(int domain, int type, int proto)
 {
+
+    RAWLOGC_INFO3(">DEBUG<","rsock_socket0 TRACE0: %d %d %d", domain, type, proto);
+
     int ret = socket(domain, type, proto);
+
+    RAWLOGC_INFO(">DEBUG<","rsock_socket0 TRACE1");
 
     if (ret == -1)
         return -1;
+
+    RAWLOGC_INFO(">DEBUG<","rsock_socket0 TRACE2");
+
     rb_fd_fix_cloexec(ret);
+
+    RAWLOGC_INFO(">DEBUG<","rsock_socket0 TRACE3");
 
     return ret;
 }
@@ -358,14 +370,33 @@ rsock_socket(int domain, int type, int proto)
 {
     int fd;
 
+    RAWLOGC_INFO(">DEBUG<","rsock_socket TRACE0");
+
     fd = rsock_socket0(domain, type, proto);
+
+    RAWLOGC_INFO(">DEBUG<","rsock_socket TRACE1");
+
     if (fd < 0) {
+
+        RAWLOGC_INFO(">DEBUG<","rsock_socket TRACE2");
+
        if (rb_gc_for_fd(errno)) {
+
+           RAWLOGC_INFO(">DEBUG<","rsock_socket TRACE3");
+
            fd = rsock_socket0(domain, type, proto);
+
+           RAWLOGC_INFO(">DEBUG<","rsock_socket TRACE4");
        }
     }
+
+    RAWLOGC_INFO(">DEBUG<","rsock_socket TRACE5");
+
     if (0 <= fd)
         rb_update_max_fd(fd);
+
+    RAWLOGC_INFO(">DEBUG<","rsock_socket TRACE6");
+
     return fd;
 }
 
@@ -457,6 +488,8 @@ rsock_connect(int fd, const struct sockaddr *sockaddr, int len, int socks)
     rb_blocking_function_t *func = connect_blocking;
     struct connect_arg arg;
 
+    RAWLOGC_INFO1(">DEBUG<", "rsock_connect TRACE0: %d", fd );
+
     arg.fd = fd;
     arg.sockaddr = sockaddr;
     arg.len = len;
@@ -464,6 +497,8 @@ rsock_connect(int fd, const struct sockaddr *sockaddr, int len, int socks)
     if (socks) func = socks_connect_blocking;
 #endif
     status = (int)BLOCKING_REGION_FD(func, &arg);
+
+    RAWLOGC_INFO1(">DEBUG<", "rsock_connect TRACE1: %d", status );
 
     if (status < 0) {
         switch (errno) {
@@ -476,8 +511,11 @@ rsock_connect(int fd, const struct sockaddr *sockaddr, int len, int socks)
           case EINPROGRESS:
 #endif
             return wait_connectable(fd);
-        }
+        }    
     }
+
+    RAWLOGC_INFO1(">DEBUG<", "rsock_connect TRACE2: %d", fd );
+
     return status;
 }
 
@@ -664,6 +702,7 @@ rsock_init_socket_init(void)
     /*
      * SocketError is the error class for socket.
      */
+
     rb_eSocket = rb_define_class("SocketError", rb_eStandardError);
     rsock_init_ipsocket();
     rsock_init_tcpsocket();
