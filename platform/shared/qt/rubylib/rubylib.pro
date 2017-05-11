@@ -24,18 +24,21 @@ INCLUDEPATH += ../../ruby/include\
 macx {
   greaterThan(QT_VERSION, 5.6.0): {
       DEFINES += RHODES_MAC_BUILD
+      DEFINES += CPP_ELEVEN
   }
+  DEFINES += RUBY_EXPORT
   DESTDIR = ../../../osx/bin/rubylib
   OBJECTS_DIR = ../../../osx/bin/rubylib/tmp
-  INCLUDEPATH += ../../ruby/iphone
+  INCLUDEPATH += ../../ruby/osx
   HEADERS += ../../ruby/ext/socket/constants.h\
-../../ruby/iphone/ruby/config.h\
-../../ruby/iphone/crt_externs.h\
+../../ruby/osx/ruby/config.h\
+../../ruby/osx/crt_externs.h\
 ../../ruby/iseq.h\
 ../../ruby/thread_pthread.h
-  SOURCES += ../../ruby/miniprelude.c\
-../../ruby/newline.c\
-../../ruby/thread_pthread.c
+  SOURCES += ../../ruby/newline.c\
+../../ruby/thread_pthread.c\
+../../ruby/missing/setproctitle.c \
+../../ruby/missing/explicit_bzero.c
 }
 
 win32 {

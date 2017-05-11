@@ -51,6 +51,7 @@ macx {
   LIBS += -L../../../osx/bin/syncengine -lsyncengine
   LIBS += -L/Users/MOHUS/tauplatform/openssl-1.0.2 -lcrypto
   LIBS += -L/Users/MOHUS/tauplatform/openssl-1.0.2 -lssl
+  LIBS += -framework CoreFoundation
   PRE_TARGETDEPS += ../../../osx/bin/rubylib/librubylib.a\
 ../../../osx/bin/rholib/librholib.a\
 ../../../osx/bin/sqlite3/libsqlite3.a\

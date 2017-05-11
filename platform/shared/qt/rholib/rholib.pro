@@ -16,8 +16,7 @@ CONFIG += staticlib warn_on
 
 INCLUDEPATH += ../..\
 ../../ruby\
-../../../../lib/commonAPI\
-../../../win32/include
+../../../../lib/commonAPI
 
 macx {
   greaterThan(QT_VERSION, 5.6.0): {
@@ -47,6 +46,7 @@ win32 {
   Release {
     DEFINES += _NDEBUG NDEBUG
   }
+  INCLUDEPATH += ../../../win32/include
   HEADERS += ../../rubyext/WebView.h
   QMAKE_CXXFLAGS_RELEASE += -MP9
   QMAKE_CXXFLAGS_DEBUG += -MP9
