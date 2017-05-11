@@ -1247,6 +1247,7 @@ static CURLcode verifyhost(struct connectdata *conn,
 
 static const char *ssl_msg_type(int ssl_ver, int msg)
 {
+#ifndef RHODES_MAC_BUILD
   if(ssl_ver == SSL2_VERSION_MAJOR) {
     switch (msg) {
       case SSL2_MT_ERROR:
@@ -1269,7 +1270,9 @@ static const char *ssl_msg_type(int ssl_ver, int msg)
         return "Client CERT";
     }
   }
-  else if(ssl_ver == SSL3_VERSION_MAJOR) {
+  else
+#endif
+  if(ssl_ver == SSL3_VERSION_MAJOR) {
     switch (msg) {
       case SSL3_MT_HELLO_REQUEST:
         return "Hello request";
@@ -1325,8 +1328,13 @@ static void ssl_tls_trace(int direction, int ssl_ver, int content_type,
 
   data = conn->data;
   ssl_ver >>= 8;
-  ver = (ssl_ver == SSL2_VERSION_MAJOR ? '2' :
-         ssl_ver == SSL3_VERSION_MAJOR ? '3' : '?');
+
+#ifndef RHODES_MAC_BUILD
+ver = (ssl_ver == SSL2_VERSION_MAJOR ? '2' :
+       ssl_ver == SSL3_VERSION_MAJOR ? '3' : '?');
+#else
+ver =  ssl_ver == SSL3_VERSION_MAJOR ? '3' : '?';
+#endif
 
   /* SSLv2 doesn't seem to have TLS record-type headers, so OpenSSL
    * always pass-up content-type as 0. But the interesting message-type

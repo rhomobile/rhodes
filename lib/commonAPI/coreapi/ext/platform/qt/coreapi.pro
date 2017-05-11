@@ -1,7 +1,6 @@
 QT -= core
     greaterThan(QT_VERSION, 5.6.0): {
         CONFIG += c++14
-        DEFINES += CPP_ELEVEN
         DEFINES += RHODES_VERSION_2
     }
 
@@ -28,6 +27,9 @@ macx {
   SOURCES += src/CNetworkDetect.cpp
 }
 win32 {
+  greaterThan(QT_VERSION, 5.6.0): {
+      DEFINES += CPP_ELEVEN
+  }
   DESTDIR = ../../../../../../platform/win32/bin/extensions
   OBJECTS_DIR = ../../../../../../platform/win32/bin/extensions/coreapi
   DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE

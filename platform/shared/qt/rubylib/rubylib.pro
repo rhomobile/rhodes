@@ -1,7 +1,6 @@
 QT -= core
     greaterThan(QT_VERSION, 5.6.0): {
         CONFIG += c++14
-        DEFINES += CPP_ELEVEN
         DEFINES += RHODES_VERSION_2
         QMAKE_CXXFLAGS += -nologo -DNT=1 -ML -Zi -O2b2x -G5
         LIBS += -lmsvcrt.lib
@@ -23,6 +22,9 @@ INCLUDEPATH += ../../ruby/include\
 ../..
 
 macx {
+  greaterThan(QT_VERSION, 5.6.0): {
+      DEFINES += RHODES_MAC_BUILD
+  }
   DESTDIR = ../../../osx/bin/rubylib
   OBJECTS_DIR = ../../../osx/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/iphone
@@ -37,6 +39,9 @@ macx {
 }
 
 win32 {
+  greaterThan(QT_VERSION, 5.6.0): {
+      DEFINES += CPP_ELEVEN
+  }
   DESTDIR = ../../../win32/bin/rubylib
   OBJECTS_DIR = ../../../win32/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/win32

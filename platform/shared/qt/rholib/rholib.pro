@@ -1,7 +1,6 @@
 QT -= core
     greaterThan(QT_VERSION, 5.6.0): {
         CONFIG += c++14
-        DEFINES += CPP_ELEVEN
         DEFINES += RHODES_VERSION_2
         DEFINES += AJAXSERVER
     }
@@ -21,6 +20,9 @@ INCLUDEPATH += ../..\
 ../../../win32/include
 
 macx {
+  greaterThan(QT_VERSION, 5.6.0): {
+      DEFINES += RHODES_MAC_BUILD
+  }
   DESTDIR = ../../../osx/bin/rholib
   OBJECTS_DIR = ../../../osx/bin/rholib/tmp
   INCLUDEPATH += ../../curl/include
@@ -33,6 +35,9 @@ macx {
 }
 
 win32 {
+  greaterThan(QT_VERSION, 5.6.0): {
+      DEFINES += CPP_ELEVEN
+  }
   DESTDIR = ../../../win32/bin/rholib
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
   DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS _UNICODE UNICODE
@@ -196,4 +201,3 @@ SOURCES += ../../unzip/unzip.cpp\
 ../../unzip/unzip.cpp\
 ../../unzip/zip.cpp\
 ../../unzip/zutil.cpp
-

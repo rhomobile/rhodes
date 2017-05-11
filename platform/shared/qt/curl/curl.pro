@@ -1,7 +1,6 @@
 QT -= core
     greaterThan(QT_VERSION, 5.6.0): {
         CONFIG += c++14
-        DEFINES += CPP_ELEVEN
         DEFINES += RHODES_VERSION_2
     }
 
@@ -17,16 +16,23 @@ INCLUDEPATH += ../..\
 ../../curl/include
 
 macx {
+  greaterThan(QT_VERSION, 5.6.0): {
+      DEFINES += RHODES_MAC_BUILD
+  }
   DESTDIR = ../../../osx/bin/curl
   OBJECTS_DIR = ../../../osx/bin/curl/tmp
   DEFINES += USE_SSLEAY USE_OPENSSL # USE_RHOSSL
   HEADERS += ../../curl/lib/config-mac.h
+  INCLUDEPATH += /Users/MOHUS/tauplatform/openssl-1.0.2/include
 SOURCES += ../../curl/lib/http_ntlm.c\
 ../../curl/lib/qssl.c\
 ../../curl/lib/ssluse.c
 }
 
 win32 {
+  greaterThan(QT_VERSION, 5.6.0): {
+      DEFINES += CPP_ELEVEN
+  }
   DESTDIR = ../../../win32/bin/curl
   OBJECTS_DIR = ../../../win32/bin/curl/tmp
   DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE

@@ -14,7 +14,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
         QT += webengine webenginecore webenginewidgets
         message(Webengine enabled)
         CONFIG += c++14
-        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+        DEFINES += RHODES_VERSION_2
         INCLUDEPATH += newVersion
     }
 }
@@ -30,6 +30,9 @@ INCLUDEPATH += ../..\
 ../../ruby/include
 
 macx {
+  greaterThan(QT_VERSION, 5.6.0): {
+      DEFINES += RHODES_MAC_BUILD
+  }
   ICON = resources/rho.icns
   QMAKE_INFO_PLIST = resources/Info.plist
   DESTDIR = ../../../osx/bin/RhoSimulator
@@ -40,12 +43,14 @@ macx {
   HEADERS += impl/SSLImpl.h
   SOURCES += impl/SSLImpl.cpp\
 ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
-  LIBS += -lcrypto -lssl -lz -lldap
+  LIBS += -lz -lldap
   LIBS += -L../../../osx/bin/curl -lcurl
   LIBS += -L../../../osx/bin/rubylib -lrubylib
   LIBS += -L../../../osx/bin/rholib -lrholib
   LIBS += -L../../../osx/bin/sqlite3 -lsqlite3
   LIBS += -L../../../osx/bin/syncengine -lsyncengine
+  LIBS += -L/Users/MOHUS/tauplatform/openssl-1.0.2 -lcrypto
+  LIBS += -L/Users/MOHUS/tauplatform/openssl-1.0.2 -lssl
   PRE_TARGETDEPS += ../../../osx/bin/rubylib/librubylib.a\
 ../../../osx/bin/rholib/librholib.a\
 ../../../osx/bin/sqlite3/libsqlite3.a\
@@ -56,6 +61,9 @@ macx {
 }
 
 win32 {
+  greaterThan(QT_VERSION, 5.6.0): {
+      DEFINES += CPP_ELEVEN
+  }
   CONFIG += embed_manifest_exe
   CONFIG += no_batch
   DESTDIR = ../../../win32/bin/RhoSimulator
