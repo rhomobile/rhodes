@@ -10,8 +10,6 @@
 
 #include "rubysocket.h"
 
-#include "logging/RhoLog.h"
-
 struct inetsock_arg
 {
     VALUE sock;
@@ -50,8 +48,6 @@ init_inetsock_internal(struct inetsock_arg *arg)
     int family = AF_UNSPEC;
     const char *syscall = 0;
 
-    RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE0");
-
     arg->remote.res = rsock_addrinfo(arg->remote.host, arg->remote.serv,
 				     family, SOCK_STREAM,
 				     (type == INET_SERVER) ? AI_PASSIVE : 0);
@@ -59,27 +55,17 @@ init_inetsock_internal(struct inetsock_arg *arg)
      * Maybe also accept a local address
      */
 
-    RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE1");
-
     if (type != INET_SERVER && (!NIL_P(arg->local.host) || !NIL_P(arg->local.serv))) {
 	arg->local.res = rsock_addrinfo(arg->local.host, arg->local.serv,
 					family, SOCK_STREAM, 0);
     }
 
-    RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE2");
-
     arg->fd = fd = -1;
     for (res = arg->remote.res->ai; res; res = res->ai_next) {
-
-        RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE20");
-
 #if !defined(INET6) && defined(AF_INET6)
 	if (res->ai_family == AF_INET6)
 	    continue;
 #endif
-
-        RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE21");
-
         lres = NULL;
         if (arg->local.res) {
             for (lres = arg->local.res->ai; lres; lres = lres->ai_next) {
@@ -94,22 +80,13 @@ init_inetsock_internal(struct inetsock_arg *arg)
                 lres = arg->local.res->ai;
             }
         }
-
-        RAWLOGC_INFO3(">DEBUG<","init_inetsock_internal TRACE22: %d %d %d", res->ai_family, res->ai_socktype, res->ai_protocol);
-
 	status = rsock_socket(res->ai_family,res->ai_socktype,res->ai_protocol);
 	syscall = "socket(2)";
 	fd = status;
-
-    RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE23");
-
 	if (fd < 0) {
 	    error = errno;
 	    continue;
 	}
-
-    RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE24");
-
 	arg->fd = fd;
 	if (type == INET_SERVER) {
 #if !defined(_WIN32) && !defined(__CYGWIN__)
@@ -128,16 +105,11 @@ init_inetsock_internal(struct inetsock_arg *arg)
 	    }
 
 	    if (status >= 0) {
-
-            RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE25");
-
 		status = rsock_connect(fd, res->ai_addr, res->ai_addrlen,
 				       (type == INET_SOCKS));
 		syscall = "connect(2)";
 	    }
 	}
-
-    RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE3");
 
 	if (status < 0) {
 	    error = errno;
@@ -147,9 +119,6 @@ init_inetsock_internal(struct inetsock_arg *arg)
 	} else
 	    break;
     }
-
-    RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE4");
-
     if (status < 0) {
 	VALUE host, port;
 
@@ -159,12 +128,10 @@ init_inetsock_internal(struct inetsock_arg *arg)
 	} else {
 	    host = arg->remote.host;
 	    port = arg->remote.serv;
-    }
+	}
 
 	rsock_syserr_fail_host_port(error, syscall, host, port);
     }
-
-    RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE5");
 
     arg->fd = -1;
 
@@ -176,8 +143,6 @@ init_inetsock_internal(struct inetsock_arg *arg)
 	    rb_syserr_fail(error, "listen(2)");
 	}
     }
-
-    RAWLOGC_INFO(">DEBUG<","init_inetsock_internal TRACE6");
 
     /* create new instance */
     return rsock_init_sock(arg->sock, fd);

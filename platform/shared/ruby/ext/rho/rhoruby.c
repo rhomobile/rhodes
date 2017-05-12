@@ -239,7 +239,7 @@ void RhoRubyStart()
     Init_RhoSupport(); //+
     Init_MapView();                         
     Init_RingtoneManager();
-    //Init_socket(); //+
+    Init_socket(); //+
     Init_RhoEvent();
     Init_Calendar();
 

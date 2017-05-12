@@ -10,8 +10,6 @@
 
 #include "rubysocket.h"
 
-#include "logging/RhoLog.h"
-
 #if defined(INET6) && (defined(LOOKUP_ORDER_HACK_INET) || defined(LOOKUP_ORDER_HACK_INET6))
 #define LOOKUP_ORDERS (sizeof(lookup_order_table) / sizeof(lookup_order_table[0]))
 static const int lookup_order_table[] = {
@@ -295,8 +293,6 @@ rb_getaddrinfo(const char *node, const char *service,
     int ret;
     int allocated_by_malloc = 0;
 
-    RAWLOGC_INFO2(">DEBUG<","rb_getaddrinfo TRACE0: %s %s", node, service);
-
     ret = numeric_getaddrinfo(node, service, hints, &ai);
     if (ret == 0)
         allocated_by_malloc = 1;
@@ -314,19 +310,11 @@ rb_getaddrinfo(const char *node, const char *service,
 #endif
     }
 
-    RAWLOGC_INFO(">DEBUG<","rb_getaddrinfo TRACE1");
-
     if (ret == 0) {
-
-        RAWLOGC_INFO(">DEBUG<","rb_getaddrinfo TRACE2");
-
         *res = (struct rb_addrinfo *)xmalloc(sizeof(struct rb_addrinfo));
         (*res)->allocated_by_malloc = allocated_by_malloc;
         (*res)->ai = ai;
     }
-
-    RAWLOGC_INFO(">DEBUG<","rb_getaddrinfo TRACE3");
-
     return ret;
 }
 

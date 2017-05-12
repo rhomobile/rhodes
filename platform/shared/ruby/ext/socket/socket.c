@@ -10,8 +10,6 @@
 
 #include "rubysocket.h"
 
-#include "logging/RhoLog.h"
-
 static VALUE sym_wait_writable;
 
 static VALUE sock_s_unpack_sockaddr_in(VALUE, VALUE);
@@ -1904,10 +1902,6 @@ socket_s_ip_address_list(VALUE self)
 void
 Init_socket(void)
 {
-
-    RAWLOGC_INFO(">DEBUG<", "Init_socket TRACE0");
-
-
     rsock_init_basicsocket();
 
     /*
@@ -2027,16 +2021,9 @@ Init_socket(void)
      * Much material in this documentation is taken with permission from
      * <em>Programming Ruby</em> from The Pragmatic Bookshelf.
      */
-
-    RAWLOGC_INFO(">DEBUG<", "Init_socket TRACE1");
-
     rb_cSocket = rb_define_class("Socket", rb_cBasicSocket);
 
-    RAWLOGC_INFO(">DEBUG<", "Init_socket TRACE2");
-
     rsock_init_socket_init();
-
-    RAWLOGC_INFO(">DEBUG<", "Init_socket TRACE3");
 
     rb_define_method(rb_cSocket, "initialize", sock_initialize, -1);
     rb_define_method(rb_cSocket, "connect", sock_connect, 1);
@@ -2079,12 +2066,8 @@ Init_socket(void)
     rb_define_singleton_method(rb_cSocket, "unpack_sockaddr_un", sock_s_unpack_sockaddr_un, 1);
 #endif
 
-    RAWLOGC_INFO(">DEBUG<", "Init_socket TRACE4");
-
     rb_define_singleton_method(rb_cSocket, "ip_address_list", socket_s_ip_address_list, 0);
 
 #undef rb_intern
     sym_wait_writable = ID2SYM(rb_intern("wait_writable"));
-
-    RAWLOGC_INFO(">DEBUG<", "Init_socket TRACE5");
 }
