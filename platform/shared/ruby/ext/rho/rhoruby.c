@@ -200,10 +200,13 @@ void RhoRubyStart()
 #endif
 
     RUBY_INIT_STACK;
-    ruby_init();
-#if defined(WIN32)
-    rb_w32_sysinit(NULL,NULL);
+
+#if defined(_WIN32)
+    char* av[] = { "" };
+    rb_w32_sysinit(0,av);
 #endif
+
+    ruby_init();
 
 #if defined(DEBUG)
     //enable_gc_profile();
