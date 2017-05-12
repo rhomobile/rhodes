@@ -460,7 +460,10 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\missing\stdlib.c" />
     <ClCompile Include="..\..\shared\ruby\missing\strchr.c" />
-    <ClCompile Include="..\..\shared\ruby\missing\strerror.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\strerror.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\missing\strlcat.c" />
     <ClCompile Include="..\..\shared\ruby\missing\strlcpy.c" />
     <ClCompile Include="..\..\shared\ruby\missing\strstr.c" />
