@@ -3261,6 +3261,7 @@ rb_home_dir_of(VALUE user, VALUE result)
     return result;
 }
 
+#ifndef _WIN32
 VALUE
 rb_default_home_dir(VALUE result)
 {
@@ -3271,7 +3272,6 @@ rb_default_home_dir(VALUE result)
     return copy_home_path(result, dir);
 }
 
-#ifndef _WIN32
 static VALUE
 ospath_new(const char *ptr, long len, rb_encoding *fsenc)
 {
