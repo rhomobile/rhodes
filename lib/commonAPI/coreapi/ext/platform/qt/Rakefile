@@ -2,6 +2,7 @@ require File.join(pwd, '../../../../../build/jake.rb')
 
 def build_extension(name)
   dir = File.join($rootdir, "lib/commonAPI/#{name}/ext/platform/qt")
+#  qmake = "#{$qmake} -o Makefile -r -spec #{$qmake_spec} #{name}.pro CONFIG+=debug CONFIG-=release #{$qmakevars}"
   qmake = "#{$qmake} -o Makefile -r -spec #{$qmake_spec} #{name}.pro CONFIG-=debug CONFIG+=release #{$qmakevars}"
 
   Jake.run3(qmake           , dir)
