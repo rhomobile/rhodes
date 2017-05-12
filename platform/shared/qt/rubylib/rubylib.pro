@@ -195,8 +195,8 @@ SOURCES += \
 ../../ruby/ext/socket/basicsocket.c \
 ../../ruby/ext/socket/constants.c \
 ../../ruby/ext/socket/constdefs.c \
-../../ruby/ext/socket/getaddrinfo.c \
-../../ruby/ext/socket/getnameinfo.c \
+#../../ruby/ext/socket/getaddrinfo.c \
+#../../ruby/ext/socket/getnameinfo.c \
 ../../ruby/ext/socket/ifaddr.c \
 ../../ruby/ext/socket/init.c \
 ../../ruby/ext/socket/ipsocket.c \
