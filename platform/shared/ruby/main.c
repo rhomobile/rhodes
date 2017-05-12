@@ -85,8 +85,6 @@ main(int argc, char **argv)
     for( int i = 0; i<argc;++i) {
         puts (argv[i]);
     }
-    
-    //    MessageBox(0,"","",MB_OK);
     ruby_sysinit(&argc, &argv);
     {
         RUBY_INIT_STACK;
