@@ -221,16 +221,28 @@ rb_maygvl_fd_fix_cloexec(int fd)
   /* MinGW don't have F_GETFD and FD_CLOEXEC.  [ruby-core:40281] */
 #if defined(HAVE_FCNTL) && defined(F_GETFD) && defined(F_SETFD) && defined(FD_CLOEXEC)
     int flags, flags2, ret;
+
     flags = fcntl(fd, F_GETFD); /* should not fail except EBADF. */
+
     if (flags == -1) {
+
+//RHO
+        RAWLOGC_ERROR2(">DEBUG<", "rb_maygvl_fd_fix_cloexec errno: %d fd: %d",errno,fd);        
+#ifndef _WIN32 //on win32 F_GETFD returns -1 with errno 22 invalid argument
         rb_bug("rb_maygvl_fd_fix_cloexec: fcntl(%d, F_GETFD) failed: %s", fd, strerror(errno));
+#else
+        return;
+#endif
+//RHO
     }
     if (fd <= 2)
         flags2 = flags & ~FD_CLOEXEC; /* Clear CLOEXEC for standard file descriptors: 0, 1, 2. */
     else
         flags2 = flags | FD_CLOEXEC; /* Set CLOEXEC for non-standard file descriptors: 3, 4, 5, ... */
+
     if (flags != flags2) {
         ret = fcntl(fd, F_SETFD, flags2);
+
         if (ret == -1) {
             rb_bug("rb_maygvl_fd_fix_cloexec: fcntl(%d, F_SETFD, %d) failed: %s", fd, flags2, strerror(errno));
         }
