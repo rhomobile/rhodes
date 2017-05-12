@@ -39,7 +39,8 @@ function expand_source(es,name,path,section,destination,flag) {
     else {
       s.destination = destination+"\\"+name;	
     }
-    
+
+    //WScript.Echo(path);
     s.folder = fso.GetFolder(path);
     es.push(s);
 
@@ -341,7 +342,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     else
     {
         p("CopyFiles=CopyToInstallDir"+
-           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI" : "") +
+           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI,CopyBrowserFonts" : "") +
            (!usereruntime && (webkit_mode == 'none') && include_motocaps ? ",CopyConfig" : "") +
            (!usereruntime && include_motocaps ? ",CopySystemFiles" : "") +
            (show_shortcut && usereruntime ? ",Shortcuts" : "")+
@@ -364,7 +365,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         {            
             p("4=,\"\",," + rhogempath + "\"\\npapi\\\"");
             /*p("5=,\"\",," + rhogempath + "\"\\Config\\\"");*/
-            p("5=,\"\",," + rhogempath);
+            //p("5=,\"\",," + rhogempath);
+            p("5=,\"\",," + rhogempath + "\"\\libs\\webkit\\ext\\wm\\lib\\fonts\\\"");
         }
         else
         {
@@ -414,6 +416,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
 
             p("\"rhowebkit.dll\"=3");
             p("\"rhobridge.dll\"=4");
+            each_file(rhogempath + "\\libs\\webkit\\ext\\wm\\lib\\fonts\\", function(f) {
+                 p("\"" + f +"\"=5");
+             });
         }
         else
         {
@@ -459,6 +464,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     } else {
         p("CopyBrowserPlugins=0,\"%InstallDir%\\Plugin\"");
     }*/
+
+    p("CopyBrowserFonts=0,\"%InstallDir%\\fonts\"");
 
     if ((!usereruntime) && (webkit_mode != 'none')) 
     {
@@ -527,6 +534,12 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         p("");*/
 
         if (webkit_mode != 'none') {
+
+            p("[CopyBrowserFonts]");
+            each_file(rhogempath + "\\libs\\webkit\\ext\\wm\\lib\\fonts", function(f) {
+                p("\"" + f + "\",\"" + f + "\",,0");
+            }); 
+        
             p("");
             if (!is_persistent)
             {
