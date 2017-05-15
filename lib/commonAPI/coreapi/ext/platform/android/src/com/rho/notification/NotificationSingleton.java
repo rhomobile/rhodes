@@ -20,6 +20,7 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
+import android.os.Build; 
 import android.support.v4.app.NotificationCompat;
 import android.util.SparseArray;
 import android.view.Gravity;
@@ -32,6 +33,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.content.res.AssetFileDescriptor; 
 
 import com.rho.notification.INotificationSingleton;
 import com.rhomobile.rhodes.Logger;
@@ -166,7 +168,18 @@ public class NotificationSingleton implements INotificationSingleton
 					return false;
 				}
 			});
-			currentMP.setDataSource(RhoFileApi.openFd(path));
+			//currentMP.setDataSource(RhoFileApi.openFd(path));
+			// Fix for Play Audio notification in Marshmallow and allow backwards compatibility.
+			if(android.os.Build.VERSION.SDK_INT < 23)
+			{
+			    currentMP.setDataSource(RhoFileApi.openFd(path)); 
+			} 
+			else 
+			{ 
+				AssetFileDescriptor afd = RhoFileApi.openAssetFd(path); 
+				currentMP.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+				afd.close();
+			}
 
 			currentMP.prepare();
 			currentMP.start();
