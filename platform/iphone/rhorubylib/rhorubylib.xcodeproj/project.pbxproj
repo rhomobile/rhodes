@@ -248,6 +248,21 @@
 		A8CAD3E91E67457200ED8E7E /* stringio.c in Sources */ = {isa = PBXBuildFile; fileRef = A8CAD3E81E67457200ED8E7E /* stringio.c */; };
 		A8CAD3EA1E67458100ED8E7E /* stringio.c in Sources */ = {isa = PBXBuildFile; fileRef = A8CAD3E81E67457200ED8E7E /* stringio.c */; };
 		A8F6C0171E29BA95001869D0 /* strscan.c in Sources */ = {isa = PBXBuildFile; fileRef = A8A6D3A21E258DBE00016427 /* strscan.c */; };
+		FA4CE28F1ECB316100DBA581 /* init.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE27F1ECB316100DBA581 /* init.c */; };
+		FA4CE2901ECB316100DBA581 /* ancdata.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE2801ECB316100DBA581 /* ancdata.c */; };
+		FA4CE2911ECB316100DBA581 /* basicsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE2811ECB316100DBA581 /* basicsocket.c */; };
+		FA4CE2921ECB316100DBA581 /* ipsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE2821ECB316100DBA581 /* ipsocket.c */; };
+		FA4CE2931ECB316100DBA581 /* option.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE2831ECB316100DBA581 /* option.c */; };
+		FA4CE2941ECB316100DBA581 /* raddrinfo.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE2841ECB316100DBA581 /* raddrinfo.c */; };
+		FA4CE2951ECB316100DBA581 /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE2851ECB316100DBA581 /* socket.c */; };
+		FA4CE2961ECB316100DBA581 /* udpsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE2861ECB316100DBA581 /* udpsocket.c */; };
+		FA4CE2971ECB316100DBA581 /* unixserver.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE2871ECB316100DBA581 /* unixserver.c */; };
+		FA4CE2981ECB316100DBA581 /* unixsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE2881ECB316100DBA581 /* unixsocket.c */; };
+		FA4CE2991ECB316100DBA581 /* constants.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE2891ECB316100DBA581 /* constants.c */; };
+		FA4CE29B1ECB316100DBA581 /* ifaddr.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE28B1ECB316100DBA581 /* ifaddr.c */; };
+		FA4CE29C1ECB316100DBA581 /* sockssocket.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE28C1ECB316100DBA581 /* sockssocket.c */; };
+		FA4CE29D1ECB316100DBA581 /* tcpserver.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE28D1ECB316100DBA581 /* tcpserver.c */; };
+		FA4CE29E1ECB316100DBA581 /* tcpsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE28E1ECB316100DBA581 /* tcpsocket.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -422,6 +437,22 @@
 		A8CAD3DA1E67419C00ED8E7E /* rhoinit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhoinit.c; path = ../../shared/ruby/rhoinit.c; sourceTree = "<group>"; };
 		A8CAD3E81E67457200ED8E7E /* stringio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stringio.c; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhorubylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhorubylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA4CE27F1ECB316100DBA581 /* init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = init.c; path = ../../shared/ruby/ext/socket/init.c; sourceTree = "<group>"; };
+		FA4CE2801ECB316100DBA581 /* ancdata.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ancdata.c; path = ../../shared/ruby/ext/socket/ancdata.c; sourceTree = "<group>"; };
+		FA4CE2811ECB316100DBA581 /* basicsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = basicsocket.c; path = ../../shared/ruby/ext/socket/basicsocket.c; sourceTree = "<group>"; };
+		FA4CE2821ECB316100DBA581 /* ipsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ipsocket.c; path = ../../shared/ruby/ext/socket/ipsocket.c; sourceTree = "<group>"; };
+		FA4CE2831ECB316100DBA581 /* option.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = option.c; path = ../../shared/ruby/ext/socket/option.c; sourceTree = "<group>"; };
+		FA4CE2841ECB316100DBA581 /* raddrinfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = raddrinfo.c; path = ../../shared/ruby/ext/socket/raddrinfo.c; sourceTree = "<group>"; };
+		FA4CE2851ECB316100DBA581 /* socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = socket.c; path = ../../shared/ruby/ext/socket/socket.c; sourceTree = "<group>"; };
+		FA4CE2861ECB316100DBA581 /* udpsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = udpsocket.c; path = ../../shared/ruby/ext/socket/udpsocket.c; sourceTree = "<group>"; };
+		FA4CE2871ECB316100DBA581 /* unixserver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unixserver.c; path = ../../shared/ruby/ext/socket/unixserver.c; sourceTree = "<group>"; };
+		FA4CE2881ECB316100DBA581 /* unixsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unixsocket.c; path = ../../shared/ruby/ext/socket/unixsocket.c; sourceTree = "<group>"; };
+		FA4CE2891ECB316100DBA581 /* constants.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = constants.c; path = ../../shared/ruby/ext/socket/constants.c; sourceTree = "<group>"; };
+		FA4CE28A1ECB316100DBA581 /* constdefs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = constdefs.c; path = ../../shared/ruby/ext/socket/constdefs.c; sourceTree = "<group>"; };
+		FA4CE28B1ECB316100DBA581 /* ifaddr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ifaddr.c; path = ../../shared/ruby/ext/socket/ifaddr.c; sourceTree = "<group>"; };
+		FA4CE28C1ECB316100DBA581 /* sockssocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sockssocket.c; path = ../../shared/ruby/ext/socket/sockssocket.c; sourceTree = "<group>"; };
+		FA4CE28D1ECB316100DBA581 /* tcpserver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tcpserver.c; path = ../../shared/ruby/ext/socket/tcpserver.c; sourceTree = "<group>"; };
+		FA4CE28E1ECB316100DBA581 /* tcpsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tcpsocket.c; path = ../../shared/ruby/ext/socket/tcpsocket.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -445,6 +476,7 @@
 		08FB7794FE84155DC02AAC07 /* rhorubylib */ = {
 			isa = PBXGroup;
 			children = (
+				FA4CE27E1ECB306800DBA581 /* socket */,
 				A80AFDBC1E2415380006FF68 /* array.c */,
 				A80AFDBD1E2415380006FF68 /* bignum.c */,
 				A80AFDBE1E2415380006FF68 /* class.c */,
@@ -846,6 +878,29 @@
 			name = Documentation;
 			sourceTree = "<group>";
 		};
+		FA4CE27E1ECB306800DBA581 /* socket */ = {
+			isa = PBXGroup;
+			children = (
+				FA4CE27F1ECB316100DBA581 /* init.c */,
+				FA4CE2801ECB316100DBA581 /* ancdata.c */,
+				FA4CE2811ECB316100DBA581 /* basicsocket.c */,
+				FA4CE2821ECB316100DBA581 /* ipsocket.c */,
+				FA4CE2831ECB316100DBA581 /* option.c */,
+				FA4CE2841ECB316100DBA581 /* raddrinfo.c */,
+				FA4CE2851ECB316100DBA581 /* socket.c */,
+				FA4CE2861ECB316100DBA581 /* udpsocket.c */,
+				FA4CE2871ECB316100DBA581 /* unixserver.c */,
+				FA4CE2881ECB316100DBA581 /* unixsocket.c */,
+				FA4CE2891ECB316100DBA581 /* constants.c */,
+				FA4CE28A1ECB316100DBA581 /* constdefs.c */,
+				FA4CE28B1ECB316100DBA581 /* ifaddr.c */,
+				FA4CE28C1ECB316100DBA581 /* sockssocket.c */,
+				FA4CE28D1ECB316100DBA581 /* tcpserver.c */,
+				FA4CE28E1ECB316100DBA581 /* tcpsocket.c */,
+			);
+			name = socket;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1109,16 +1164,23 @@
 				A80AFEA81E2415390006FF68 /* util.c in Sources */,
 				A80AFE531E2415390006FF68 /* enumerator.c in Sources */,
 				A816101A1E8B519200B4C51D /* utf_16le.c in Sources */,
+				FA4CE28F1ECB316100DBA581 /* init.c in Sources */,
 				A80AFE671E2415390006FF68 /* iseq.c in Sources */,
 				A80AFE811E2415390006FF68 /* random.c in Sources */,
 				A80AFE4C1E2415390006FF68 /* dmyencoding.c in Sources */,
 				A80AFE661E2415390006FF68 /* io.c in Sources */,
+				FA4CE2981ECB316100DBA581 /* unixsocket.c in Sources */,
+				FA4CE2971ECB316100DBA581 /* unixserver.c in Sources */,
 				A80AFD641E2413C70006FF68 /* unicode.c in Sources */,
 				A80AFE481E2415390006FF68 /* dln.c in Sources */,
+				FA4CE2951ECB316100DBA581 /* socket.c in Sources */,
 				A88C80A01E243FF80090E7E6 /* bluetooth_wrap.c in Sources */,
 				A88C80731E243EBC0090E7E6 /* rhoruby.c in Sources */,
+				FA4CE29B1ECB316100DBA581 /* ifaddr.c in Sources */,
 				A80AFE541E2415390006FF68 /* error.c in Sources */,
+				FA4CE2941ECB316100DBA581 /* raddrinfo.c in Sources */,
 				A80AFEB91E2415390006FF68 /* vm_trace.c in Sources */,
+				FA4CE2961ECB316100DBA581 /* udpsocket.c in Sources */,
 				A80AFE6E1E2415390006FF68 /* marshal.c in Sources */,
 				A80AFE401E2415390006FF68 /* compar.c in Sources */,
 				A80AFEB11E2415390006FF68 /* vm_dump.c in Sources */,
@@ -1132,6 +1194,7 @@
 				A80AFD321E2413C60006FF68 /* ascii.c in Sources */,
 				A80AFE961E2415390006FF68 /* sprintf.c in Sources */,
 				A80AFEAE1E2415390006FF68 /* vm_backtrace.c in Sources */,
+				FA4CE2921ECB316100DBA581 /* ipsocket.c in Sources */,
 				A88C80A71E243FF80090E7E6 /* nativeviewmanager_wrap.c in Sources */,
 				A80AFE8D1E2415390006FF68 /* regsyntax.c in Sources */,
 				A80AFE8B1E2415390006FF68 /* regparse.c in Sources */,
@@ -1144,10 +1207,12 @@
 				A88C80A21E243FF80090E7E6 /* calendar_wrap.c in Sources */,
 				A8A6D2E61E2498AC00016427 /* loadpath.c in Sources */,
 				A8CAD3E91E67457200ED8E7E /* stringio.c in Sources */,
+				FA4CE29E1ECB316100DBA581 /* tcpsocket.c in Sources */,
 				A80AFE461E2415390006FF68 /* dir.c in Sources */,
 				A80AFE441E2415390006FF68 /* cont.c in Sources */,
 				A80AFE7F1E2415390006FF68 /* proc.c in Sources */,
 				A80AFE891E2415390006FF68 /* regexec.c in Sources */,
+				FA4CE2991ECB316100DBA581 /* constants.c in Sources */,
 				A8F6C0171E29BA95001869D0 /* strscan.c in Sources */,
 				A80AFE5A1E2415390006FF68 /* gc.c in Sources */,
 				A80AFE581E2415390006FF68 /* eval.c in Sources */,
@@ -1156,6 +1221,7 @@
 				A88C80A51E243FF80090E7E6 /* event_wrap.c in Sources */,
 				A80AFE591E2415390006FF68 /* file.c in Sources */,
 				A80AFE411E2415390006FF68 /* compile.c in Sources */,
+				FA4CE2911ECB316100DBA581 /* basicsocket.c in Sources */,
 				A80AFE641E2415390006FF68 /* inits.c in Sources */,
 				A80AFE7C1E2415390006FF68 /* prelude.c in Sources */,
 				A80AFD771E24144B0006FF68 /* iso_8859_9.c in Sources */,
@@ -1169,6 +1235,7 @@
 				A80AFEA31E2415390006FF68 /* time.c in Sources */,
 				A80AFE911E2415390006FF68 /* safe.c in Sources */,
 				A80AFEBD1E2417020006FF68 /* hash.c in Sources */,
+				FA4CE2931ECB316100DBA581 /* option.c in Sources */,
 				A80AFE991E2415390006FF68 /* string.c in Sources */,
 				A80AFE3E1E2415390006FF68 /* bignum.c in Sources */,
 				A8A6D2E81E24998400016427 /* localeinit.c in Sources */,
@@ -1183,11 +1250,14 @@
 				A88C80B71E2440C70090E7E6 /* mapview_wrap.c in Sources */,
 				A80AFE791E2415390006FF68 /* parse.c in Sources */,
 				A80AFE781E2415390006FF68 /* pack.c in Sources */,
+				FA4CE2901ECB316100DBA581 /* ancdata.c in Sources */,
+				FA4CE29C1ECB316100DBA581 /* sockssocket.c in Sources */,
 				A80AFE9B1E2415390006FF68 /* symbol.c in Sources */,
 				A88C80BE1E2441420090E7E6 /* setproctitle.c in Sources */,
 				A80AFEAB1E2415390006FF68 /* version.c in Sources */,
 				A816101C1E8B519200B4C51D /* utf_32le.c in Sources */,
 				A80AFE801E2415390006FF68 /* process.c in Sources */,
+				FA4CE29D1ECB316100DBA581 /* tcpserver.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
