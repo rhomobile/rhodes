@@ -3254,7 +3254,7 @@ namespace "build" do
         create_manifest
         cp compileERB, $srcdir
         puts "Running default.rb"
-        cmd_str = "#{$rubypath} -I#{rhodeslib} #{$srcdir}/default.rb"
+        cmd_str = "#{$rubypath} -E UTF-8 -I#{rhodeslib} #{$srcdir}/default.rb"
         if defined?(Bundler)
           Bundler.with_clean_env do
             puts `#{cmd_str}`
@@ -3271,7 +3271,7 @@ namespace "build" do
 
         cp   compileRB, $srcdir
         puts "Running compileRB"
-        cmd_str = "#{$rubypath} -I#{rhodeslib} #{$srcdir}/compileRB.rb"
+        cmd_str = "#{$rubypath} -E UTF-8 -I#{rhodeslib} #{$srcdir}/compileRB.rb"
         if defined?(Bundler)
           Bundler.with_clean_env do
             puts `#{cmd_str}`
