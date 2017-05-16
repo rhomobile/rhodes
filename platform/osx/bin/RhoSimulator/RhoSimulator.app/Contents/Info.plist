@@ -7,7 +7,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleGetInfoString</key>
-	<string>RhoSimulator 5.5.18, Copyright 2010-2016 Symbol Technologies LLC.</string>
+	<string>RhoSimulator 6.0.0, Copyright 2017 Tau Technologies.</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
