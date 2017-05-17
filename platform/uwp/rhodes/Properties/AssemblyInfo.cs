@@ -9,9 +9,9 @@ using System.Resources;
 [assembly: AssemblyTitle("rhodes")]
 [assembly: AssemblyDescription("Rhodes")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Symbol Technologies, Inc.")]
+[assembly: AssemblyCompany("Tau Technologies, Inc.")]
 [assembly: AssemblyProduct("rhodes")]
-[assembly: AssemblyCopyright("Copyright © 2013")]
+[assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -30,8 +30,9 @@ using System.Resources;
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Revision and Build Numbers 
+// You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("4.0.0")]
-[assembly: AssemblyFileVersion("4.0.0")]
+// [assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
