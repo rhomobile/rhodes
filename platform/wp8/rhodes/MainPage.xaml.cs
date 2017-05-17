@@ -185,6 +185,7 @@ namespace rhodes
 
         public MainPage()
         {
+            System.Diagnostics.Debug.WriteLine("UserAgent: " + getUserAgent());
             _instance = this;
             _uiThreadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
             updateScreenSize();

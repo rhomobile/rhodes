@@ -78,6 +78,9 @@ platform/symbian/syncengine/Makefile
 platform/symbian/syncengine/Makefile_syncengine_lib.mk
 platform/symbian/syncengine/syncengine_l
 platform/symbian/syncengine/syncengine_lib.mmp
+lib/commonAPI/*/ext/platform/qt/debug
+lib/commonAPI/*/ext/platform/qt/release
+lib/commonAPI/*/ext/platform/qt/resources/*.cpp
 platform/win32/**/*.pch
 platform/win32/bin/*
 platform/wm/**/*.pch
@@ -101,6 +104,7 @@ platform/uwp/bin/*
 platform/uwp/ipch/*
 platform/uwp/RhoRuntimeInvoker/bin/*
 platform/uwp/rhodes/Bin/*
+platform/uwp/rhodes/rho/*
 platform/uwp/rhodes/AppPackages/*
 rhodes/*/pkg/
 rhodes/rhodes-framework/spec/bin/

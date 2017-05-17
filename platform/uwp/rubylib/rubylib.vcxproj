@@ -120,7 +120,9 @@
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAs>Default</CompileAs>
-      <CompileAsWinRT>true</CompileAsWinRT>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAsManaged>false</CompileAsManaged>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,12 +148,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;POSIXNAME;OS_UWP;CPP_ELEVEN;RHODES_VERSION_2;%(PreprocessorDefinitions);CPP_ELEVEN;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;POSIXNAME;OS_UWP;CPP_ELEVEN;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;RHODES_VERSION_2;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions);CPP_ELEVEN</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <CompileAs>CompileAsC</CompileAs>
-      <CompileAsWinRT>true</CompileAsWinRT>
+      <CompileAs>Default</CompileAs>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAsManaged>false</CompileAsManaged>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,12 +164,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;POSIXNAME;OS_UWP;CPP_ELEVEN;RHODES_VERSION_2;%(PreprocessorDefinitions);CPP_ELEVEN;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;POSIXNAME;OS_UWP;_UWP_LIB;CPP_ELEVEN;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAs>CompileAsC</CompileAs>
-      <CompileAsWinRT>true</CompileAsWinRT>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAsManaged>false</CompileAsManaged>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -174,13 +180,15 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;POSIXNAME;OS_UWP;_UWP_LIB;CPP_ELEVEN;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAs>CompileAsC</CompileAs>
       <CompileAsManaged>false</CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
+      <Optimization>Disabled</Optimization>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -221,8 +229,6 @@
     <ClInclude Include="..\..\shared\ruby\version.h" />
     <ClInclude Include="..\..\shared\ruby\vm_core.h" />
     <ClInclude Include="..\..\shared\ruby\vm_opts.h" />
-    <ClInclude Include="..\..\shared\ruby\win32\dir.h" />
-    <ClInclude Include="..\..\shared\ruby\win32\ruby\config.h" />
     <ClInclude Include="..\..\shared\ruby\uwp\ruby\config.h" />
     <ClInclude Include="..\..\shared\ruby\uwp\wp8.h" />
   </ItemGroup>
@@ -696,6 +702,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\uwp\newline.c" />
     <ClCompile Include="..\..\shared\ruby\variable.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -712,16 +719,6 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\vm_dump.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\win32\miniprelude.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\win32\newline.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>

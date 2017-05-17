@@ -38,8 +38,6 @@ namespace RhoAppRunner
         static int Main(string[] args)
         {
             MultiTargetingConnectivity UWPSDK = new MultiTargetingConnectivity(CultureInfo.CurrentCulture.LCID, false);
-            //foreach (ConnectableDevice device in UWPSDK.GetConnectableDevices(false))
-            //    Console.WriteLine(device.Name);
 
             bool useEmulator = true;
             ConnectableDevice cDevice = null;
@@ -62,33 +60,40 @@ namespace RhoAppRunner
             try
             {
                 if (useEmulator)
-                    cDevice = UWPSDK.GetConnectableDevices(false).First(d => d.Name.StartsWith("Mobile "));
+                    cDevice = UWPSDK.GetConnectableDevices(false).First(d => (d.Name.StartsWith("Mobile ") && d.Name.Contains("2GB") && d.IsEmulator()));
                 else
-                    cDevice = UWPSDK.GetConnectableDevices(false).First(d => d.Name.StartsWith("Device") || d.Name.StartsWith("Windows Phone 8 Device") || d.Name.StartsWith("Windows Phone Device"));
+                    cDevice = UWPSDK.GetConnectableDevices(false).First(d => d.Name.StartsWith("Device") || d.Name.StartsWith("Windows Phone 10 Device") || 
+                    d.Name.StartsWith("Windows Phone Device") || d.Name.StartsWith("Windows phone"));
             }
             catch
             {
-                Console.WriteLine("Cannot find Windows Phone 8.0 Emulator/Device.");
+                Console.WriteLine("Cannot find Windows Phone Emulator/Device.");
                 return 3;
             }
 
             Console.WriteLine("Connecting to " + cDevice.Name);
             try
             {
-                UWPDevice = cDevice.Connect();
+                UWPDevice = cDevice.Connect(true);
             }
             catch
             {
-                Console.WriteLine("Failed to connect to Windows Phone 8 Emulator/Device.");
+                Console.WriteLine("Failed to connect to Windows Phone Emulator/Device.");
                 return 4;
             }
-            Console.WriteLine("Windows Phone 8 Emulator/Device Connected...");
+            Console.WriteLine("Windows Phone Emulator/Device Connected...");
 
-            Guid appID = new Guid(args[0]);
+            Guid appID = Guid.Parse(args[0]);
+
             IRemoteApplication app;
             if (UWPDevice.IsApplicationInstalled(appID))
             {
-                Console.WriteLine("Updating sample XAP to Windows Phone 8 Emulator/Device...");
+                if (args[4] == "emulibs")
+                {
+                    Console.WriteLine("Library is already installed");
+                    return 0;
+                }
+                Console.WriteLine("Updating sample APPX to Windows Phone Emulator/Device...");
 
                 app = UWPDevice.GetApplication(appID);
 
@@ -111,16 +116,9 @@ namespace RhoAppRunner
                 app.Uninstall();
             }            
 
-            Console.WriteLine("Installing sample XAP to Windows Phone Emulator/Device...");
-
-            app = UWPDevice.InstallApplication(
-                appID,
-                appID,
-                args[1],
-                args[2],
-                args[3]);
-
-            Console.WriteLine("Sample XAP installed to Windows Phone Emulator...");
+            Console.WriteLine("Installing sample APPX to Windows Phone Emulator/Device...");
+            app = UWPDevice.InstallApplication(appID, appID, args[1], args[2], args[3]);
+            Console.WriteLine("Sample APPX installed to Windows Phone Emulator...");
 
             Console.WriteLine("Launching sample app on Windows Phone Emulator...");
             app.Launch();
