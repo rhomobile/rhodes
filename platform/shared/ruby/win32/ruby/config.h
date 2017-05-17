@@ -1,8 +1,3 @@
-#ifdef _WIN32_WCE
-#ifndef CONFIG_RUBY_H
-#include "../../wince/ruby/config.h"
-#endif
-#else
 #ifndef CONFIG_RUBY_H
 #define CONFIG_RUBY_H 1
 
@@ -46,7 +41,7 @@
 #define SIZEOF_LONG_LONG 8
 #define SIZEOF___INT64 8
 #define _INTEGRAL_MAX_BITS 64
-#define SIZEOF_OFF_T 8
+#define SIZEOF_OFF_T 4
 #define SIZEOF_VOIDP 4
 #define SIZEOF_FLOAT 4
 #define SIZEOF_DOUBLE 8
@@ -162,7 +157,7 @@
 #define HAVE_SINH 1
 #define HAVE_TANH 1
 #define HAVE_SIGNBIT 1
-#define HAVE_TZNAME 1
+//#define HAVE_TZNAME 1
 #define HAVE_DAYLIGHT 1
 #define SETPGRP_VOID 1
 #define RSHIFT(x,y) ((x)>>(int)y)
@@ -200,5 +195,4 @@ config.h: nul
 #define HAVE_GETADDRINFO 1
 #define HAVE_GETHOSTNAME 1
 //RHO
-#endif
 #endif

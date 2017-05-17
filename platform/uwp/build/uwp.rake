@@ -68,7 +68,7 @@ namespace "config" do
     $srcdir = $bindir + "/RhoBundle"
     $targetdir = $bindir + "/target/uwp"
     $tmpdir = $bindir +"/tmp"
-
+    $winAppDeploy = "C:/Program Files (x86)/Windows Kits/10/bin/x86/WinAppDeployCmd.exe"
     $msbuild = $config["env"]["paths"]["msbuild"]
     $msbuild = "msbuild" if $msbuild.nil?
 
@@ -650,6 +650,16 @@ namespace "run" do
 
   namespace "uwp" do
 
+    def deployApplication(deviceGuid, targetAppxFN)
+          args = []
+          args << "install"
+          args << "-file"
+          args << "\""+targetAppxFN+"\""
+          args << "-g"
+          args << "\"" + deviceGuid + "\""
+          puts Jake.run($winAppDeploy, args)
+    end
+
     task :get_log => "config:uwp" do
       puts "log_file=" + getLogPath
     end
@@ -684,31 +694,18 @@ namespace "run" do
 
       if $productid != nil
         cp $targetAppxFileName, $targetdir
-
-        winAppDeploy = "C:/Program Files (x86)/Windows Kits/10/bin/x86/WinAppDeployCmd.exe"
+       
         arg = ["devices"] 
-        devicesResult =Jake.run(winAppDeploy, arg)
+        devicesResult =Jake.run($winAppDeploy, arg)
         deviceGuid = devicesResult[/\w+-\w+-\w+-\w+-\w+/]
         if ((deviceGuid != nil) && (deviceGuid != ""))
-          args = []
-          args << "install"
-          args << "-file"
-          args << "\""+$targetAppxFileName+"\""
-          args << "-g"
-          args << "\"" + deviceGuid + "\""
-          puts Jake.run(winAppDeploy, args)
+
+          Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies/ARM/*.appx'].each { |f|  deployApplication(deviceGuid, f) if File.file?(f) }  
+          deployApplication(deviceGuid, $targetAppxFileName)
 
         else
           puts "Error: no available devices connected"
         end
-
-        #args << $productid
-        #args << $app_config["name"]
-        #args << $app_path + "/icon/icon.png"
-        #args << $targetAppxFileName
-        #args << "dev"
-        #puts Jake.run($wp7runner, args)
-
       else
         puts "productid must be set in build.yml"
         puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
