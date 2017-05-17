@@ -616,11 +616,11 @@ def build_cab
     ($build_persistent_cab ? "1" : "0")       #12
   ]
 
-  if $build_persistent_cab
-    args.concat(additional_dlls_persistent_paths)
-  elsif !$use_shared_runtime
-    args.concat(additional_dlls_paths)
-  end
+  #if $build_persistent_cab
+  #  args.concat(additional_dlls_persistent_paths)
+  #elsif !$use_shared_runtime
+  #  args.concat(additional_dlls_paths)
+  #end
   
   Jake.run3("cscript #{args.join(' ')}", dir)
 
