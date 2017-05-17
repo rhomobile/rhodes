@@ -57,59 +57,49 @@ namespace "config" do
 
     $rubypath = "res/build-tools/RhoRuby.exe"
     $zippath = "res/build-tools/7za.exe"
-    $wp7runner = "res/build-tools/RhoAppRunnerWP8.exe"
+    $wp7runner = "res/build-tools/RhoAppRunnerUWP.exe"
     $wp7logserver = "res/build-tools/RhoLogserver.exe"
-    $builddir = $config["build"]["uwppath"] + "/build"
-    $vcbindir = $config["build"]["uwppath"] + "/bin"
+    $uwppath = $config["build"]["uwppath"]
+    $builddir = $uwppath + "/build"
+    $vcbindir = $uwppath + "/bin"
     $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
     $bindir = $app_path + "/bin"
     $rhobundledir = $app_path + "/RhoBundle"
     $srcdir = $bindir + "/RhoBundle"
     $targetdir = $bindir + "/target/uwp"
     $tmpdir = $bindir +"/tmp"
-
+    $winAppDeploy = "C:/Program Files (x86)/Windows Kits/10/bin/x86/WinAppDeployCmd.exe"
     $msbuild = $config["env"]["paths"]["msbuild"]
     $msbuild = "msbuild" if $msbuild.nil?
 
     $appxbuilder = "C:/Program Files (x86)/Windows Kits/10/bin/x86/makeappx.exe" 
 
+
     $rhodes_bin_dir = "#{$startdir}/#{$vcbindir}/#{$sdk}/rhodes/#{$build_config}"
     $targetpath = $rhodes_bin_dir + "/AppxPackageDir/"
     $targetAppxFileName = File.join($rhodes_bin_dir, 'AppxPackageDir/rhodes.appx')
+    $sertificateFileName = "#{$startdir}/#{$config["build"]["uwppath"]}/rhodes/rhodes_TemporaryKey.pfx"
 
     $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
 
     $productid = $app_config["uwp"]["productid"] if $app_config["uwp"]
-    $productid = $app_config["wp"]["productid"] if $app_config["wp"] && !$productid
+    $productid = $app_config["wp"]["productid"] if ($app_config["wp"] && !$productid)
 
     if !$productid
       puts "Add uwp:productid to application build.yml"
       puts "productid is GUID in format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
       puts "for example:"
       puts "uwp:"
-      puts "  productid: 'fd55c4d0-51fa-012e-7844-3caec51bd50e'"
+      puts "  productid: 'caa0300f-1021-40aa-bb98-27c5547616fa'"
 
       exit 1
     end
   end
 end
 
-def addRhobundleFilesToCacheFileUWP()
-  #xml_path = File.join($rhodes_bin_dir, "XapCacheFile.xml")
-  #doc = REXML::Document.new(File.open(xml_path))
-  #chdir $srcdir
 
-  #Dir.glob(File.join("**", '*.*')).each do |f|
-  #  doc.root[1, 0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'"
-  #end
 
-  #File.open(xml_path, "w") { |f| doc.write f, 2; f.close }
-  #chdir $startdir
-  #mkdir_p $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}" if not File.exists? $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}"
-  #cp xml_path, $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}"
-end
-
-def addbundletoxapUWP()
+def createBoundleInTemp()
   tmp_dir = File.join($srcdir, "tmp")
   rho_dir = File.join(tmp_dir, "rho")
 
@@ -122,8 +112,14 @@ def addbundletoxapUWP()
   cp_r File.join($srcdir, "apps"), rho_dir
   cp_r File.join($srcdir, "lib"), rho_dir
   cp_r File.join($srcdir, "db"), rho_dir
+  return rho_dir
+end
 
-  rm_rf $targetpath + "rhodes"
+def addbundletoxapUWP()
+  rho_dir = createBoundleInTemp()
+
+  tempRhodesPath = $targetpath + "rhodes"
+  rm_rf tempRhodesPath
 
   chdir $startdir
   args = []
@@ -131,24 +127,24 @@ def addbundletoxapUWP()
   args << "/p"
   args << $targetAppxFileName
   args << "/d"
-  args << $targetpath + "rhodes"
+  args << tempRhodesPath
   args << "/l"
   puts Jake.run($appxbuilder, args)
 
-  cp_r rho_dir, $targetpath + "rhodes"
+  cp_r rho_dir, tempRhodesPath
   rm_rf $targetAppxFileName
 
   args = []
   args << "pack"
   args << "/d"
-  args << $targetpath + "rhodes"
+  args << tempRhodesPath
   args << "/p"
   args << $targetAppxFileName
-
   args << "/l"
   puts Jake.run($appxbuilder, args)
 
-  
+  rm_rf tempRhodesPath
+
 end
 
 def addconfigtoxapUWP()
@@ -161,14 +157,38 @@ def addconfigtoxapUWP()
   mkdir File.join(tmp_dir, 'rho', 'apps')
 
   cp File.join($srcdir, "apps/rhoconfig.txt"), rho_dir
+  return rho_dir
+end
 
-  chdir $startdir
+def signApplication()  
   args = []
-  args << "a"
-  args << "-tzip"
+  args << "sign"
+  args << "/fd"
+  args << "SHA256"
+  args << "/a"
+  args << "/f"
+  args << $sertificateFileName
   args << $targetAppxFileName
-  args << tmp_dir + "/*"
-  puts Jake.run($zippath, args)
+
+  Jake.run("C:/Program Files (x86)/Windows Kits/10/bin/x86/signtool.exe", args) if File.exists?($targetAppxFileName)
+end
+
+def addRhobundleFilesToCacheFileUWP()
+  addconfigtoxapUWP()
+  addbundletoxapUWP()
+  signApplication()
+  #xml_path = File.join($rhodes_bin_dir, "XapCacheFile.xml")
+  #doc = REXML::Document.new(File.open(xml_path))
+  #chdir $srcdir
+
+  #Dir.glob(File.join("**", '*.*')).each do |f|
+  #  doc.root[1, 0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'"
+  #end
+
+  #File.open(xml_path, "w") { |f| doc.write f, 2; f.close }
+  #chdir $startdir
+  #mkdir_p $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}" if not File.exists? $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}"
+  #cp xml_path, $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}"
 end
 
 def setCSharpEnvironmentUWP(csharp_impl)
@@ -251,6 +271,26 @@ namespace "build" do
 
       #cp_r $srcdir + "/apps/public", $srcdir + "/public"
       #rm_r $srcdir + "/apps/public"
+      addconfigtoxapUWP()
+      rho_dir = createBoundleInTemp()
+      signApplication()
+
+      appx_dir = File.join($rhodes_bin_dir, "AppX")
+      #rm_rf appx_dir
+      FileUtils.mkpath appx_dir
+      cp_r rho_dir, appx_dir
+    end
+
+    task :copy_files_to_rho => ["config:uwp", "build:bundle:noxruby", :rhobundlemap] do
+      target_dir = File.join($uwppath, "rhodes")
+
+      addconfigtoxapUWP()
+      rho_dir = createBoundleInTemp()
+
+      rm_rf File.join(target_dir, "rho") if Dir.exist?(File.join(target_dir, "rho"))
+
+      FileUtils.mkpath target_dir
+      cp_r rho_dir, target_dir
     end
 
     task :upgrade_package => [:rhobundle_noext, :extensions] do        
@@ -263,6 +303,8 @@ namespace "build" do
     task :rhobundlemap do
 
     end
+
+
 
     # build native code
     task :rhodes => ["config:uwp"] do
@@ -303,15 +345,19 @@ namespace "build" do
     end
 
     task :package => [:rhobundle_noext, :extensions, :rhodes] do
-      addbundletoxapUWP()
-
+      addRhobundleFilesToCacheFileUWP()
+      
       #cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
 
       mkdir_p $bindir if not File.exists? $bindir
       mkdir_p $targetdir if not File.exists? $targetdir
-      mv $targetAppxFileName, $targetdir
+      cp $targetAppxFileName, $targetdir
 
-    puts $rhodes_bin_dir
+      dependenciesDir = ""
+      Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies'].each { |f|  dependenciesDir = f if Dir.exist?(f) }
+      cp_r dependenciesDir, $targetdir if Dir.exist?(dependenciesDir) 
+
+      puts $targetdir
 
     end
 
@@ -326,8 +372,18 @@ namespace "build" do
 
       #addRhobundleFilesToCacheFileUWP()
       #addbundletoxapUWP()
-
     end
+
+    task :prepare_rhobundle, [:sdk, :configuration] do |t, args|
+      throw "You must pass in sdk(x86, ARM)" if args.sdk.nil?
+      throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
+
+      $sdk = args.sdk == 'x86' ? 'Win32' : args.sdk
+      $build_config = args.configuration
+
+      Rake::Task["build:uwp:copy_files_to_rho"].invoke
+    end
+
 
     task :devrhobundle, [:sdk, :configuration] do |t, args|
       throw "You must pass in sdk(Win32, ARM)" if args.sdk.nil?
@@ -399,7 +455,8 @@ namespace "device" do
   namespace "uwp" do
 
     desc "Build production for device"
-    task :production => ["config:uwp_Win32_Release", "build:uwp:package"] do
+    task :production => ["config:uwp_ARM_Release", "build:uwp:package"] do
+      puts "Now you can install application and dependencies by using the Windows PowerShell command [Add-AppxPackage -Path \"Path to Appx file\"]."
     end
 
   	task :getlog => ["config:uwp"] do
@@ -425,7 +482,7 @@ namespace "emulator" do
 
     desc "Build production for device"
     task :production => ["config:uwp_Win32_Release", "build:uwp:package"] do
-      addRhobundleFilesToCacheFileUWP()
+     addRhobundleFilesToCacheFileUWP()
     end
 
 	task :getlog => ["config:uwp"] do
@@ -525,6 +582,40 @@ def runuwpspec(rakeCommand)
       end
 end
 
+def getProductIdFromAPPX(filename)
+  filedir = filename[0..-5]
+  rm_rf filedir if Dir.exist?(filedir)
+
+  args = []
+  args << "unpack"
+  args << "/p"
+  args << filename
+  args << "/d"
+  args << filedir
+  args << "/l"
+  puts Jake.run($appxbuilder, args)
+
+  prID = ""
+  manifest = File.join(filedir, "AppxManifest.xml")
+  File.open manifest do |file|
+    prID = file.find { |line| line =~ /ProductId=\"\w+-\w+-\w+-\w+-\w+/ }
+  end
+  prID = prID[/ProductId=\"\w+-\w+-\w+-\w+-\w+\"/]
+  prID = prID[/\w+-\w+-\w+-\w+-\w+/]
+  rm_rf filedir if Dir.exist?(filedir)
+  return prID
+end
+
+def deployLibToEmulator(filename)
+  args = []
+  args << getProductIdFromAPPX(filename)
+  args << "0"
+  args << "2"
+  args << filename
+  args << "emulibs"
+  puts Jake.run($wp7runner, args) 
+end
+
 namespace "run" do
 
   def getLogPath
@@ -532,38 +623,25 @@ namespace "run" do
     return log_file_path
   end
 
-  desc "Build, install .xap and run on universal windows platform emulator"
+  desc "Build, install .appx and run on universal windows platform emulator"
   task :uwp => ["emulator:uwp:production"] do
 
     if $productid != nil
 
-      #File.delete($app_path + "/started") if File.exists?($app_path + "/started")
-      #Jake.run_rho_log_server($app_path)
-      #puts "RhoLogServer is starting"
-
-      #while (1)
-      #  if File.exists?($app_path + "/started")
-      #    break
-      #  end
-      #end
-
-	  #addconfigtoxapUWP()
-
       cp $targetAppxFileName, File.join($rhodes_bin_dir, $appname + ".appx")
-      mv File.join($rhodes_bin_dir, $appname + ".appx"), $targetdir
+      #mv File.join($rhodes_bin_dir, $appname + ".appx"), $targetdir
+
+      Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies/x86/*.appx'].each { |f|  deployLibToEmulator(f) if File.file?(f) }
+      Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies/Win32/*.appx'].each { |f|  deployLibToEmulator(f) if File.file?(f) }
 
       args = []
       args << $productid
-      args << $app_config["name"]
-      args << $app_path + "/icon/icon.png"
-      args << $targetdir + "/" + $appname + ".appx"
+      args << "32"
+      args << "2"
+      args << $targetAppxFileName
       args << "emu"
       puts Jake.run($wp7runner, args)
 
-      #while(1)
-      #	sleep(1000)
-      #end
-      #$rhologfile.close
     else
       puts "productid must be set in build.yml"
       puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
@@ -571,6 +649,16 @@ namespace "run" do
   end
 
   namespace "uwp" do
+
+    def deployApplication(deviceGuid, targetAppxFN)
+          args = []
+          args << "install"
+          args << "-file"
+          args << "\""+targetAppxFN+"\""
+          args << "-g"
+          args << "\"" + deviceGuid + "\""
+          puts Jake.run($winAppDeploy, args)
+    end
 
     task :get_log => "config:uwp" do
       puts "log_file=" + getLogPath
@@ -600,39 +688,24 @@ namespace "run" do
       end
     end
 
-    desc "Build, install .xap and run on universal windows platform device"
+    desc "Build, install .AppX and run on universal windows platform device"
     task :device => ["device:uwp:production"] do
       addRhobundleFilesToCacheFileUWP()
 
       if $productid != nil
-        #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
-        #File.delete($app_path + "/started") if File.exists?($app_path + "/started")
-        #Jake.run_rho_log_server($app_path)
+        cp $targetAppxFileName, $targetdir
+       
+        arg = ["devices"] 
+        devicesResult =Jake.run($winAppDeploy, arg)
+        deviceGuid = devicesResult[/\w+-\w+-\w+-\w+-\w+/]
+        if ((deviceGuid != nil) && (deviceGuid != ""))
 
-        #puts "RhoLogServer is starting"
-        #while (1)
-        #  if File.exists?($app_path + "/started")
-        #    break
-        #  end
-        #end
+          Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies/ARM/*.appx'].each { |f|  deployApplication(deviceGuid, f) if File.file?(f) }  
+          deployApplication(deviceGuid, $targetAppxFileName)
 
-		    #addconfigtoxapUWP()
-
-        cp $targetAppxFileName, File.join($rhodes_bin_dir, $appname + ".appx")
-        mv File.join($rhodes_bin_dir, $appname + ".appx"), $targetdir
-
-        args = []
-        args << $productid
-        args << $app_config["name"]
-        args << $app_path + "/icon/icon.png"
-        args << $targetdir + "/" + $appname + ".appx"
-        args << "dev"
-        puts Jake.run($wp7runner, args)
-
-        #while(1)
-        #sleep(1000)
-        #end
-        #$rhologfile.close
+        else
+          puts "Error: no available devices connected"
+        end
       else
         puts "productid must be set in build.yml"
         puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

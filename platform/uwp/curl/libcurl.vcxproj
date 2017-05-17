@@ -135,16 +135,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>OS_UWP;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>POSIXNAME;OS_UWP;_UWP_LIB;CPP_ELEVEN;RHODES_VERSION_2;_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <CompileAsWinRT>false</CompileAsWinRT>
-      <SDLCheck>true</SDLCheck>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAsManaged>false</CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
     </ClCompile>
@@ -207,17 +204,15 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\shared\curl\include;..\..\shared\curl\lib;..\..\shared</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>POSIXNAME;OS_UWP;_UWP_LIB;CPP_ELEVEN;RHODES_VERSION_2;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN;_WINSOCK_DEPRECATED_NO_WARNINGS</PreprocessorDefinitions>
-      <CompileAsWinRT>false</CompileAsWinRT>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <PreprocessorDefinitions>POSIXNAME;OS_UWP;_UWP_LIB;CPP_ELEVEN;RHODES_VERSION_2;_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;USE_RHOSSL;CURL_DISABLE_CRYPTO_AUTH;CURL_DISABLE_SMTP;CURL_DISABLE_POP3;CURL_DISABLE_LDAP;CURL_DISABLE_TELNET;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;_UNICODE;UNICODE;USE_BLOCKING_SOCKETS;%(PreprocessorDefinitions);CPP_ELEVEN;_WINSOCK_DEPRECATED_NO_WARNINGS</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <DisableSpecificWarnings>4005</DisableSpecificWarnings>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <MinimalRebuild>false</MinimalRebuild>
+      <SDLCheck>true</SDLCheck>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsManaged>false</CompileAsManaged>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
@@ -232,6 +227,9 @@
       </ModuleDefinitionFile>
       <Name>rhoruntime</Name>
     </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

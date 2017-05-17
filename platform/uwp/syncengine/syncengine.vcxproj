@@ -158,7 +158,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;POSIXNAME;OS_UWP;_UWP_LIB;CPP_ELEVEN;RHODES_VERSION_2;_UNICODE;UNICODE;%(PreprocessorDefinitions);CPP_ELEVEN;_CRT_SECURE_NO_WARNINGS;POSIXNAME</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;POSIXNAME;OS_UWP;_UWP_LIB;CPP_ELEVEN;RHODES_VERSION_2;_UNICODE;UNICODE;_CRT_SECURE_NO_WARNINGS;POSIXNAME;%(PreprocessorDefinitions);CPP_ELEVEN;_CRT_SECURE_NO_WARNINGS;POSIXNAME</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_syncengine.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -188,7 +188,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;POSIXNAME;OS_UWP;_UWP_LIB;CPP_ELEVEN;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;NDEBUG;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_syncengine.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -196,6 +196,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -17,12 +17,6 @@
     <Filter Include="missing">
       <UniqueIdentifier>{c9e54149-eb9e-4b1c-b9c9-0f64aa8fba88}</UniqueIdentifier>
     </Filter>
-    <Filter Include="win32">
-      <UniqueIdentifier>{4968da22-df0d-4aac-b386-4d28c2a97826}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="win32\ruby">
-      <UniqueIdentifier>{812e72d1-c995-4087-8f56-9f48defe77eb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="uwp">
       <UniqueIdentifier>{b988a266-d101-4eae-afe4-ac7e0bb6a3cd}</UniqueIdentifier>
     </Filter>
@@ -87,12 +81,6 @@
     <ClInclude Include="..\..\shared\ruby\version.h" />
     <ClInclude Include="..\..\shared\ruby\vm_core.h" />
     <ClInclude Include="..\..\shared\ruby\vm_opts.h" />
-    <ClInclude Include="..\..\shared\ruby\win32\dir.h">
-      <Filter>win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\win32\ruby\config.h">
-      <Filter>win32\ruby</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\ruby\ext\rho\rhoruby.h">
       <Filter>ext\rho</Filter>
     </ClInclude>
@@ -207,12 +195,6 @@
     <ClCompile Include="..\..\shared\ruby\missing\tgamma.c">
       <Filter>missing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\win32\miniprelude.c">
-      <Filter>win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\win32\newline.c">
-      <Filter>win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\rhoconf\rhoconf_wrap.c">
       <Filter>ext\rhoconf</Filter>
     </ClCompile>
@@ -293,6 +275,9 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\socket_192\unixsocket.c">
       <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\uwp\newline.c">
+      <Filter>uwp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -12,7 +12,9 @@ namespace RhoRuntimeInvoker
     {
         public String invoke(String cmd)
         {
-            return CRhoRuntime.getInstance().onJSInvoke(cmd);
+            String str = CRhoRuntime.getInstance().onJSInvoke(cmd);
+            System.Diagnostics.Debug.WriteLine(cmd + " : " + str);
+            return str;
         }
     }    
 

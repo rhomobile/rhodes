@@ -27,7 +27,6 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>rhodes_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>6A414B7B6CAD295A395E55CD7477A9EE3DDC5437</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -228,9 +227,6 @@
     <Content Include="Assets\Square44x44Logo.scale-400.png" />
     <Content Include="Assets\Square71x71Logo.scale-400.png" />
     <Content Include="Assets\StoreLogo.scale-400.png" />
-    <Content Include="rho\**">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
@@ -252,10 +248,6 @@
   -->
   <ProjectExtensions />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>rake build:uwp:prepare_rhobundle[$(Platform),$(Configuration)]</PreBuildEvent>
+    <PostBuildEvent>rake build:uwp:package_rhobundle[$(Platform),$(Configuration)]</PostBuildEvent>
   </PropertyGroup>
 </Project>
