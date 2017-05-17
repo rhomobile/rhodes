@@ -229,8 +229,6 @@
     <ClInclude Include="..\..\shared\ruby\version.h" />
     <ClInclude Include="..\..\shared\ruby\vm_core.h" />
     <ClInclude Include="..\..\shared\ruby\vm_opts.h" />
-    <ClInclude Include="..\..\shared\ruby\win32\dir.h" />
-    <ClInclude Include="..\..\shared\ruby\win32\ruby\config.h" />
     <ClInclude Include="..\..\shared\ruby\uwp\ruby\config.h" />
     <ClInclude Include="..\..\shared\ruby\uwp\wp8.h" />
   </ItemGroup>
@@ -704,6 +702,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\uwp\newline.c" />
     <ClCompile Include="..\..\shared\ruby\variable.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -720,16 +719,6 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\vm_dump.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\win32\miniprelude.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\win32\newline.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
