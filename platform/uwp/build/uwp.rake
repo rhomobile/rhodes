@@ -170,7 +170,7 @@ def signApplication()
   args << $sertificateFileName
   args << $targetAppxFileName
 
-  puts (Jake.run("C:/Program Files (x86)/Windows Kits/10/bin/x86/signtool.exe", args) if File.exists?($targetAppxFileName))
+  Jake.run("C:/Program Files (x86)/Windows Kits/10/bin/x86/signtool.exe", args) if File.exists?($targetAppxFileName)
 end
 
 def addRhobundleFilesToCacheFileUWP()
@@ -582,11 +582,8 @@ def runuwpspec(rakeCommand)
       end
 end
 
-def deployToEmulator(filename)
-
-  #chdir $startdir
+def getProductIdFromAPPX(filename)
   filedir = filename[0..-5]
-
   rm_rf filedir if Dir.exist?(filedir)
 
   args = []
@@ -605,17 +602,18 @@ def deployToEmulator(filename)
   end
   prID = prID[/ProductId=\"\w+-\w+-\w+-\w+-\w+\"/]
   prID = prID[/\w+-\w+-\w+-\w+-\w+/]
+  rm_rf filedir if Dir.exist?(filedir)
+  return prID
+end
 
+def deployLibToEmulator(filename)
   args = []
-  args << prID
-  args << "32"
+  args << getProductIdFromAPPX(filename)
+  args << "0"
   args << "2"
   args << filename
   args << "emulibs"
-  puts Jake.run($wp7runner, args)
-
-  rm_rf filedir if Dir.exist?(filedir)
-
+  puts Jake.run($wp7runner, args) 
 end
 
 namespace "run" do
@@ -633,8 +631,8 @@ namespace "run" do
       cp $targetAppxFileName, File.join($rhodes_bin_dir, $appname + ".appx")
       #mv File.join($rhodes_bin_dir, $appname + ".appx"), $targetdir
 
-      #Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies/x86/*.appx'].each { |f|  deployToEmulator(f) if File.file?(f) }
-      #Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies/Win32/*.appx'].each { |f|  deployToEmulator(f) if File.file?(f) }
+      Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies/x86/*.appx'].each { |f|  deployLibToEmulator(f) if File.file?(f) }
+      Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies/Win32/*.appx'].each { |f|  deployLibToEmulator(f) if File.file?(f) }
 
       args = []
       args << $productid
@@ -643,7 +641,6 @@ namespace "run" do
       args << $targetAppxFileName
       args << "emu"
       puts Jake.run($wp7runner, args)
-
 
     else
       puts "productid must be set in build.yml"
