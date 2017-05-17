@@ -181,7 +181,6 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
 
     setUpWebPage(webView->page());
 
-
     this->move(0,0);
     toolBar->hide();
     toolBarRight->hide();

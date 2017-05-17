@@ -4,7 +4,7 @@
   <mp:PhoneIdentity PhoneProductId="caa0300f-1021-40aa-bb98-27c5547616fa" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>rhodes</DisplayName>
-    <PublisherDisplayName>Tau Technology</PublisherDisplayName>
+    <PublisherDisplayName>TauTechnology</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>

@@ -76,36 +76,40 @@
 #define HAVE_STRUCT_STAT_ST_RDEV 1
 #define HAVE_ST_RDEV 1
 #define HAVE_INT8_T 1
-#define int8_t signed char
 #define HAVE_UINT8_T 1
-#define uint8_t unsigned char
 #define SIZEOF_INT8_T 1
 #define SIZEOF_UINT8_T 1
 #define INT8_MIN _I8_MIN
 #define INT8_MAX _I8_MAX
 #define UINT8_MAX _UI8_MAX
 #define HAVE_INT16_T 1
-#define int16_t short
 #define HAVE_UINT16_T 1
-#define uint16_t unsigned short
 #define SIZEOF_INT16_T 2
 #define SIZEOF_UINT16_T 2
 #define INT16_MIN _I16_MIN
 #define INT16_MAX _I16_MAX
 #define UINT16_MAX _UI16_MAX
 #define HAVE_INT32_T 1
-#define int32_t int
 #define HAVE_UINT32_T 1
-#define uint32_t unsigned int
 #define SIZEOF_INT32_T 4
 #define SIZEOF_UINT32_T 4
 #define INT32_MIN _I32_MIN
 #define INT32_MAX _I32_MAX
 #define UINT32_MAX _UI32_MAX
 #define HAVE_INT64_T 1
-#define int64_t __int64
 #define HAVE_UINT64_T 1
+#if !defined(OS_UWP)
+#define int8_t signed char
+#define uint8_t unsigned char
+#define int16_t short
+#define uint16_t unsigned short
+#define int32_t int
+#define uint32_t unsigned int
+#define int64_t __int64
 #define uint64_t unsigned __int64
+#else
+#include <stdint.h>
+#endif
 #define SIZEOF_INT64_T 8
 #define SIZEOF_UINT64_T 8
 #define INT64_MIN _I64_MIN
