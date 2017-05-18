@@ -52,10 +52,6 @@
 #define WIN32
 #endif
 
-#if defined(OS_UWP) || defined(_UWP_LIB)
-#include <WinSock2.h>
-#endif
-
 #include <stdio.h>
 #include <limits.h>
 
@@ -72,8 +68,6 @@
 #include <ws2tcpip.h>
 #endif
 #else
-
-
 
 /* HP-UX systems version 9, 10 and 11 lack sys/select.h and so does oldish
    libc5-based Linux systems. Only include it on system that are known to
@@ -131,8 +125,7 @@ typedef void CURL;
 
 #ifndef curl_socket_typedef
 /* socket typedef */
-
-#if defined( WIN32) && defined (SOCKET)
+#ifdef WIN32
 typedef SOCKET curl_socket_t;
 #define CURL_SOCKET_BAD INVALID_SOCKET
 #else
@@ -236,8 +229,9 @@ typedef enum  {
   CURLSOCKTYPE_LAST   /* never use */
 } curlsocktype;
 
-typedef int (*curl_sockopt_callback)(void *clientp,  curl_socket_t curlfd, curlsocktype purpose);
-
+typedef int (*curl_sockopt_callback)(void *clientp,
+                                     curl_socket_t curlfd,
+                                     curlsocktype purpose);
 
 struct curl_sockaddr {
   int family;
@@ -249,7 +243,10 @@ struct curl_sockaddr {
   struct sockaddr addr;
 };
 
-typedef curl_socket_t (*curl_opensocket_callback)(void *clientp, curlsocktype purpose, struct curl_sockaddr *address);
+typedef curl_socket_t
+(*curl_opensocket_callback)(void *clientp,
+                            curlsocktype purpose,
+                            struct curl_sockaddr *address);
 
 #ifndef CURL_NO_OLDIES
   /* not used since 7.10.8, will be removed in a future release */

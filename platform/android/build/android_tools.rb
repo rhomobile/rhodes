@@ -248,7 +248,46 @@ def is_device_running
 end
 module_function :is_device_running
 
-def  run_emulator(options = {})
+def avd_path( avdname )
+  File.join(ENV['HOME'], ".android", "avd", "#{avdname}.avd" )
+end
+module_function :avd_path
+
+def patch_avd_config( avdname )
+  config_path = File.join( avd_path( avdname ), 'config.ini' ) 
+
+  patch = ["disk.dataPartition.size=200M",
+          "hw.accelerometer=yes",
+          "hw.audioInput=yes",
+          "hw.battery=yes",
+          "hw.camera.back=none",
+          "hw.camera.front=none",
+          "hw.dPad=no",
+          "hw.device.manufacturer=Google",
+          "hw.device.name=Nexus 6",
+          "hw.gps=yes",
+          "hw.gpu.enabled=yes",
+          "hw.keyboard=yes",
+          "hw.mainKeys=no",
+          "hw.sensors.orientation=yes",
+          "hw.sensors.proximity=yes",
+          "hw.trackBall=no"
+        ]
+
+  begin
+    File.open( config_path, 'a' ) do |file|
+      patch.each do |line|
+        file.puts line
+      end
+    end
+  rescue Exception => e
+    p "Error patching AVD config file: #{config_path}"
+    pp e
+  end
+end
+module_function :patch_avd_config
+
+def run_emulator(options = {})
   system("\"#{$adb}\" start-server")
 
   unless is_emulator_running
@@ -262,7 +301,7 @@ def  run_emulator(options = {})
       #$avdname += "motosol" if $use_motosol_api
     end
 
-    puts $androidtargets.inspect
+    pp $androidtargets if USE_TRACES
 
     raise "Target platform for Android #{$emuversion} is not installed. Please, install corresponding packages in Android SDK Manager or correct build.yml values." if $androidtargets[get_api_level($emuversion)].nil?
 
@@ -296,14 +335,14 @@ def  run_emulator(options = {})
       raise "Emulator image is not found for selected target: #{$androidtargets[get_api_level($emuversion)][:abis].inspect}" unless abi
     end
 
-    unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
+    unless File.directory?( avd_path($avdname) )
       puts "Emulator API level: #{get_api_level($emuversion)}"
       puts "Emulator params: #{$androidtargets[get_api_level($emuversion)].inspect}"
       if USE_TRACES
         puts "AVD name: #{$avdname}, emulator version: #{$emuversion}, target id: #{targetid}"
       end
       raise "Unable to create AVD image. No appropriate target API for SDK version: #{$emuversion}" unless targetid
-      createavd = "echo no | \"#{$androidbin}\" create avd --name #{$avdname} --target #{targetid} --sdcard 128M"
+      createavd = "echo no | \"#{$androidbin}\" create avd --name #{$avdname} --target #{targetid} --sdcard 512M"
       createavd = createavd + " --abi #{abi}" if abi
       puts "Creating AVD image: #{createavd}"
       IO.popen(createavd, 'r+') do |io|
@@ -312,6 +351,8 @@ def  run_emulator(options = {})
           puts line
         end
       end
+
+      patch_avd_config( $avdname )
 
     else
       raise "Unable to run Android emulator. No appropriate target API for SDK version: #{$emuversion}" unless targetid

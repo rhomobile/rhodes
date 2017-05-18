@@ -1,9 +1,11 @@
 /* Ignore ECONNRESET of FreeBSD */
+#include "ruby/missing.h"
 #include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#undef getpeername
 int
 ruby_getpeername(int s, struct sockaddr * name,
          socklen_t * namelen)
@@ -20,6 +22,7 @@ ruby_getpeername(int s, struct sockaddr * name,
     return s;
 }
 
+#undef getsockname
 int
 ruby_getsockname(int s, struct sockaddr * name,
          socklen_t * namelen)
@@ -36,6 +39,7 @@ ruby_getsockname(int s, struct sockaddr * name,
     return s;
 }
 
+#undef shutdown
 int
 ruby_shutdown(int s, int how)
 {
@@ -51,6 +55,7 @@ ruby_shutdown(int s, int how)
     return s;
 }
 
+#undef close
 int
 ruby_close(int s)
 {

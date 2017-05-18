@@ -2,14 +2,20 @@
 
   iseq.c -
 
-  $Author: yugui $
+  $Author$
   created at: 2006-07-11(Tue) 09:00:03 +0900
 
   Copyright (C) 2006 Koichi Sasada
 
 **********************************************************************/
 
-#include "ruby/ruby.h"
+#include "internal.h"
+#include "ruby/util.h"
+#include "eval_intern.h"
+
+#ifdef HAVE_DLADDR
+# include <dlfcn.h>
+#endif
 
 /* #define RUBY_MARK_FREE_DEBUG 1 */
 #include "gc.h"
@@ -20,6 +26,9 @@
 #include "insns_info.inc"
 
 VALUE rb_cISeq;
+//RHO
+/*static*/ VALUE iseqw_new(const rb_iseq_t *iseq);
+static const rb_iseq_t *iseqw_check(VALUE iseqw);
 
 #define hidden_obj_p(obj) (!SPECIAL_CONST_P(obj) && !RBASIC(obj)->klass)
 
@@ -54,228 +63,247 @@ compile_data_free(struct iseq_compile_data *compile_data)
     }
 }
 
-static void
-iseq_free(void *ptr)
+void
+rb_iseq_free(const rb_iseq_t *iseq)
 {
-    rb_iseq_t *iseq;
     RUBY_FREE_ENTER("iseq");
 
-    if (ptr) {
-	iseq = ptr;
-	if (!iseq->orig) {
-	    /* It's possible that strings are freed */
-	    if (0) {
-		RUBY_GC_INFO("%s @ %s\n", RSTRING_PTR(iseq->name),
-					  RSTRING_PTR(iseq->filename));
-	    }
+    if (iseq) {
+	if (iseq->body) {
+	    ruby_xfree((void *)iseq->body->iseq_encoded);
+	    ruby_xfree((void *)iseq->body->line_info_table);
+	    ruby_xfree((void *)iseq->body->local_table);
+	    ruby_xfree((void *)iseq->body->is_entries);
 
-	    if (iseq->iseq != iseq->iseq_encoded) {
-		RUBY_FREE_UNLESS_NULL(iseq->iseq_encoded);
+	    if (iseq->body->ci_entries) {
+		unsigned int i;
+		struct rb_call_info_with_kwarg *ci_kw_entries = (struct rb_call_info_with_kwarg *)&iseq->body->ci_entries[iseq->body->ci_size];
+		for (i=0; i<iseq->body->ci_kw_size; i++) {
+		    const struct rb_call_info_kw_arg *kw_arg = ci_kw_entries[i].kw_arg;
+		    ruby_xfree((void *)kw_arg);
+		}
+		ruby_xfree(iseq->body->ci_entries);
+		ruby_xfree(iseq->body->cc_entries);
 	    }
+	    ruby_xfree((void *)iseq->body->catch_table);
+	    ruby_xfree((void *)iseq->body->param.opt_table);
 
-	    RUBY_FREE_UNLESS_NULL(iseq->iseq);
-	    RUBY_FREE_UNLESS_NULL(iseq->insn_info_table);
-	    RUBY_FREE_UNLESS_NULL(iseq->local_table);
-	    RUBY_FREE_UNLESS_NULL(iseq->ic_entries);
-	    RUBY_FREE_UNLESS_NULL(iseq->catch_table);
-	    RUBY_FREE_UNLESS_NULL(iseq->arg_opt_table);
-	    compile_data_free(iseq->compile_data);
+	    if (iseq->body->param.keyword != NULL) {
+		ruby_xfree((void *)iseq->body->param.keyword->default_values);
+		ruby_xfree((void *)iseq->body->param.keyword);
+	    }
+	    compile_data_free(ISEQ_COMPILE_DATA(iseq));
+	    ruby_xfree(iseq->body);
 	}
-	ruby_xfree(ptr);
     }
     RUBY_FREE_LEAVE("iseq");
 }
 
-static void
-iseq_mark(void *ptr)
+void
+rb_iseq_mark(const rb_iseq_t *iseq)
 {
     RUBY_MARK_ENTER("iseq");
 
-    if (ptr) {
-	rb_iseq_t *iseq = ptr;
+    RUBY_GC_INFO("%s @ %s\n", RSTRING_PTR(iseq->body->location.label), RSTRING_PTR(iseq->body->location.path));
 
-	RUBY_GC_INFO("%s @ %s\n", RSTRING_PTR(iseq->name), RSTRING_PTR(iseq->filename));
-	RUBY_MARK_UNLESS_NULL(iseq->mark_ary);
-	RUBY_MARK_UNLESS_NULL(iseq->name);
-	RUBY_MARK_UNLESS_NULL(iseq->filename);
-	RUBY_MARK_UNLESS_NULL(iseq->filepath);
-	RUBY_MARK_UNLESS_NULL((VALUE)iseq->cref_stack);
-	RUBY_MARK_UNLESS_NULL(iseq->klass);
-	RUBY_MARK_UNLESS_NULL(iseq->coverage);
-#if 0
-	RUBY_MARK_UNLESS_NULL((VALUE)iseq->node);
-	RUBY_MARK_UNLESS_NULL(iseq->cached_special_block);
-#endif
-	RUBY_MARK_UNLESS_NULL(iseq->orig);
+    if (iseq->body) {
+	const struct rb_iseq_constant_body *body = iseq->body;
 
-	if (iseq->compile_data != 0) {
-	    struct iseq_compile_data *const compile_data = iseq->compile_data;
-	    RUBY_MARK_UNLESS_NULL(compile_data->mark_ary);
-	    RUBY_MARK_UNLESS_NULL(compile_data->err_info);
-	    RUBY_MARK_UNLESS_NULL(compile_data->catch_table_ary);
-	}
+	RUBY_MARK_UNLESS_NULL(body->mark_ary);
+	rb_gc_mark(body->location.label);
+	rb_gc_mark(body->location.base_label);
+	rb_gc_mark(body->location.path);
+	RUBY_MARK_UNLESS_NULL(body->location.absolute_path);
+	RUBY_MARK_UNLESS_NULL((VALUE)body->parent_iseq);
     }
+
+    if (FL_TEST(iseq, ISEQ_NOT_LOADED_YET)) {
+	rb_gc_mark(iseq->aux.loader.obj);
+    }
+    else if (ISEQ_COMPILE_DATA(iseq) != 0) {
+	const struct iseq_compile_data *const compile_data = ISEQ_COMPILE_DATA(iseq);
+	RUBY_MARK_UNLESS_NULL(compile_data->mark_ary);
+	RUBY_MARK_UNLESS_NULL(compile_data->err_info);
+	RUBY_MARK_UNLESS_NULL(compile_data->catch_table_ary);
+    }
+
     RUBY_MARK_LEAVE("iseq");
 }
 
 static size_t
-iseq_memsize(const void *ptr)
+param_keyword_size(const struct rb_iseq_param_keyword *pkw)
 {
-    size_t size = sizeof(rb_iseq_t);
-    const rb_iseq_t *iseq;
+    size_t size = 0;
 
-    if (ptr) {
-	iseq = ptr;
-	if (!iseq->orig) {
-	    if (iseq->iseq != iseq->iseq_encoded) {
-		size += iseq->iseq_size * sizeof(VALUE);
-	    }
+    if (!pkw) return size;
 
-	    size += iseq->iseq_size * sizeof(VALUE);
-	    size += iseq->insn_info_size * sizeof(struct iseq_insn_info_entry);
-	    size += iseq->local_table_size * sizeof(ID);
-	    size += iseq->catch_table_size * sizeof(struct iseq_catch_table_entry);
-	    size += iseq->arg_opts * sizeof(VALUE);
-	    size += iseq->ic_size * sizeof(struct iseq_inline_cache_entry);
+    size += sizeof(struct rb_iseq_param_keyword);
+    size += sizeof(VALUE) * (pkw->num - pkw->required_num);
 
-	    if (iseq->compile_data) {
-		struct iseq_compile_data_storage *cur;
+    return size;
+}
 
-		cur = iseq->compile_data->storage_head;
-		while (cur) {
-		    size += cur->size + sizeof(struct iseq_compile_data_storage);
-		    cur = cur->next;
+static size_t
+iseq_memsize(const rb_iseq_t *iseq)
+{
+    size_t size = 0; /* struct already counted as RVALUE size */
+    const struct rb_iseq_constant_body *body = iseq->body;
+    const struct iseq_compile_data *compile_data;
+
+    /* TODO: should we count original_iseq? */
+
+    if (body) {
+	struct rb_call_info_with_kwarg *ci_kw_entries = (struct rb_call_info_with_kwarg *)&body->ci_entries[body->ci_size];
+
+	size += sizeof(struct rb_iseq_constant_body);
+	size += body->iseq_size * sizeof(VALUE);
+	size += body->line_info_size * sizeof(struct iseq_line_info_entry);
+	size += body->local_table_size * sizeof(ID);
+	if (body->catch_table) {
+	    size += iseq_catch_table_bytes(body->catch_table->size);
+	}
+	size += (body->param.opt_num + 1) * sizeof(VALUE);
+	size += param_keyword_size(body->param.keyword);
+
+	/* body->is_entries */
+	size += body->is_size * sizeof(union iseq_inline_storage_entry);
+
+	/* body->ci_entries */
+	size += body->ci_size * sizeof(struct rb_call_info);
+	size += body->ci_kw_size * sizeof(struct rb_call_info_with_kwarg);
+
+	/* body->cc_entries */
+	size += body->ci_size * sizeof(struct rb_call_cache);
+	size += body->ci_kw_size * sizeof(struct rb_call_cache);
+
+	if (ci_kw_entries) {
+	    unsigned int i;
+
+	    for (i = 0; i < body->ci_kw_size; i++) {
+		const struct rb_call_info_kw_arg *kw_arg = ci_kw_entries[i].kw_arg;
+
+		if (kw_arg) {
+		    size += rb_call_info_kw_arg_bytes(kw_arg->keyword_len);
 		}
-		size += sizeof(struct iseq_compile_data);
 	    }
+	}
+    }
+
+    compile_data = ISEQ_COMPILE_DATA(iseq);
+    if (compile_data) {
+	struct iseq_compile_data_storage *cur;
+
+	size += sizeof(struct iseq_compile_data);
+
+	cur = compile_data->storage_head;
+	while (cur) {
+	    size += cur->size + SIZEOF_ISEQ_COMPILE_DATA_STORAGE;
+	    cur = cur->next;
 	}
     }
 
     return size;
 }
 
-static const rb_data_type_t iseq_data_type = {
-    "iseq",
-    iseq_mark,
-    iseq_free,
-    iseq_memsize,
-};
-
-static VALUE
-iseq_alloc(VALUE klass)
+static rb_iseq_t *
+iseq_alloc(void)
 {
-    rb_iseq_t *iseq;
-    return TypedData_Make_Struct(klass, rb_iseq_t, &iseq_data_type, iseq);
+    rb_iseq_t *iseq = iseq_imemo_alloc();
+    iseq->body = ZALLOC(struct rb_iseq_constant_body);
+    return iseq;
+}
+
+static rb_iseq_location_t *
+iseq_location_setup(rb_iseq_t *iseq, VALUE path, VALUE absolute_path, VALUE name, VALUE first_lineno)
+{
+    rb_iseq_location_t *loc = &iseq->body->location;
+    RB_OBJ_WRITE(iseq, &loc->path, path);
+    if (RTEST(absolute_path) && rb_str_cmp(path, absolute_path) == 0) {
+	RB_OBJ_WRITE(iseq, &loc->absolute_path, path);
+    }
+    else {
+	RB_OBJ_WRITE(iseq, &loc->absolute_path, absolute_path);
+    }
+    RB_OBJ_WRITE(iseq, &loc->label, name);
+    RB_OBJ_WRITE(iseq, &loc->base_label, name);
+    loc->first_lineno = first_lineno;
+    return loc;
 }
 
 static void
-set_relation(rb_iseq_t *iseq, const VALUE parent)
+set_relation(rb_iseq_t *iseq, const rb_iseq_t *piseq)
 {
-    const VALUE type = iseq->type;
-    rb_thread_t *th = GET_THREAD();
+    const VALUE type = iseq->body->type;
 
     /* set class nest stack */
     if (type == ISEQ_TYPE_TOP) {
-	/* toplevel is private */
-	iseq->cref_stack = NEW_BLOCK(rb_cObject);
-	iseq->cref_stack->nd_file = 0;
-	iseq->cref_stack->nd_visi = NOEX_PRIVATE;
-	if (th->top_wrapper) {
-	    NODE *cref = NEW_BLOCK(th->top_wrapper);
-	    cref->nd_file = 0;
-	    cref->nd_visi = NOEX_PRIVATE;
-	    cref->nd_next = iseq->cref_stack;
-	    iseq->cref_stack = cref;
-	}
+	iseq->body->local_iseq = iseq;
     }
     else if (type == ISEQ_TYPE_METHOD || type == ISEQ_TYPE_CLASS) {
-	iseq->cref_stack = NEW_BLOCK(0); /* place holder */
-	iseq->cref_stack->nd_file = 0;
+	iseq->body->local_iseq = iseq;
     }
-    else if (RTEST(parent)) {
-	rb_iseq_t *piseq;
-	GetISeqPtr(parent, piseq);
-	iseq->cref_stack = piseq->cref_stack;
+    else if (piseq) {
+	iseq->body->local_iseq = piseq->body->local_iseq;
     }
 
-    if (type == ISEQ_TYPE_TOP ||
-	type == ISEQ_TYPE_METHOD || type == ISEQ_TYPE_CLASS) {
-	iseq->local_iseq = iseq;
-    }
-    else if (RTEST(parent)) {
-	rb_iseq_t *piseq;
-	GetISeqPtr(parent, piseq);
-	iseq->local_iseq = piseq->local_iseq;
+    if (piseq) {
+	iseq->body->parent_iseq = piseq;
     }
 
-    if (RTEST(parent)) {
-	rb_iseq_t *piseq;
-	GetISeqPtr(parent, piseq);
-	iseq->parent_iseq = piseq;
+    if (type == ISEQ_TYPE_MAIN) {
+	iseq->body->local_iseq = iseq;
     }
 }
 
-VALUE rb_realpath_internal(VALUE basedir, VALUE path, int strict);
+void
+rb_iseq_add_mark_object(const rb_iseq_t *iseq, VALUE obj)
+{
+    /* TODO: check dedup */
+    rb_ary_push(ISEQ_MARK_ARY(iseq), obj);
+}
 
 static VALUE
 prepare_iseq_build(rb_iseq_t *iseq,
-		   VALUE name, VALUE filename, VALUE filepath, VALUE line_no,
-		   VALUE parent, VALUE type, VALUE block_opt,
+		   VALUE name, VALUE path, VALUE absolute_path, VALUE first_lineno,
+		   const rb_iseq_t *parent, enum iseq_type type,
 		   const rb_compile_option_t *option)
 {
-    OBJ_FREEZE(name);
-    OBJ_FREEZE(filename);
-
-    iseq->name = name;
-    iseq->filename = filename;
-//RHO
-    iseq->filepath = Qnil;//filepath == Qnil ? Qnil : rb_realpath_internal(Qnil, filepath, 1);
-//RHO
-    iseq->line_no = line_no;
-    iseq->defined_method_id = 0;
-    iseq->mark_ary = rb_ary_tmp_new(3);
-    OBJ_UNTRUST(iseq->mark_ary);
-    RBASIC(iseq->mark_ary)->klass = 0;
-
-    iseq->type = type;
-    iseq->arg_rest = -1;
-    iseq->arg_block = -1;
-    iseq->klass = 0;
-
-    /*
-     * iseq->special_block_builder = GC_GUARDED_PTR_REF(block_opt);
-     * iseq->cached_special_block_builder = 0;
-     * iseq->cached_special_block = 0;
-     */
-
-    iseq->compile_data = ALLOC(struct iseq_compile_data);
-    MEMZERO(iseq->compile_data, struct iseq_compile_data, 1);
-    iseq->compile_data->mark_ary = rb_ary_tmp_new(3);
-
-    iseq->compile_data->storage_head = iseq->compile_data->storage_current =
-      (struct iseq_compile_data_storage *)
-	ALLOC_N(char, INITIAL_ISEQ_COMPILE_DATA_STORAGE_BUFF_SIZE +
-		sizeof(struct iseq_compile_data_storage));
-
-    iseq->compile_data->catch_table_ary = rb_ary_new();
-    iseq->compile_data->storage_head->pos = 0;
-    iseq->compile_data->storage_head->next = 0;
-    iseq->compile_data->storage_head->size =
-      INITIAL_ISEQ_COMPILE_DATA_STORAGE_BUFF_SIZE;
-    iseq->compile_data->storage_head->buff =
-      (char *)(&iseq->compile_data->storage_head->buff + 1);
-    iseq->compile_data->option = option;
-    iseq->compile_data->last_coverable_line = -1;
-
+    iseq->body->type = type;
     set_relation(iseq, parent);
 
-    iseq->coverage = Qfalse;
+    name = rb_fstring(name);
+    path = rb_fstring(path);
+    if (RTEST(absolute_path)) absolute_path = rb_fstring(absolute_path);
+    iseq_location_setup(iseq, path, absolute_path, name, first_lineno);
+    if (iseq != iseq->body->local_iseq) {
+	RB_OBJ_WRITE(iseq, &iseq->body->location.base_label, iseq->body->local_iseq->body->location.label);
+    }
+    RB_OBJ_WRITE(iseq, &iseq->body->mark_ary, iseq_mark_ary_create(0));
+
+    ISEQ_COMPILE_DATA(iseq) = ZALLOC(struct iseq_compile_data);
+    RB_OBJ_WRITE(iseq, &ISEQ_COMPILE_DATA(iseq)->err_info, Qnil);
+    RB_OBJ_WRITE(iseq, &ISEQ_COMPILE_DATA(iseq)->mark_ary, rb_ary_tmp_new(3));
+
+    ISEQ_COMPILE_DATA(iseq)->storage_head = ISEQ_COMPILE_DATA(iseq)->storage_current =
+      (struct iseq_compile_data_storage *)
+	ALLOC_N(char, INITIAL_ISEQ_COMPILE_DATA_STORAGE_BUFF_SIZE +
+		SIZEOF_ISEQ_COMPILE_DATA_STORAGE);
+
+    RB_OBJ_WRITE(iseq, &ISEQ_COMPILE_DATA(iseq)->catch_table_ary, rb_ary_tmp_new(3));
+    ISEQ_COMPILE_DATA(iseq)->storage_head->pos = 0;
+    ISEQ_COMPILE_DATA(iseq)->storage_head->next = 0;
+    ISEQ_COMPILE_DATA(iseq)->storage_head->size =
+      INITIAL_ISEQ_COMPILE_DATA_STORAGE_BUFF_SIZE;
+    ISEQ_COMPILE_DATA(iseq)->option = option;
+    ISEQ_COMPILE_DATA(iseq)->last_coverable_line = -1;
+
+    ISEQ_COVERAGE_SET(iseq, Qfalse);
+
     if (!GET_THREAD()->parse_in_eval) {
-	extern VALUE rb_get_coverages(void);
 	VALUE coverages = rb_get_coverages();
 	if (RTEST(coverages)) {
-	    iseq->coverage = rb_hash_lookup(coverages, filename);
-	    if (NIL_P(iseq->coverage)) iseq->coverage = Qfalse;
+	    ISEQ_COVERAGE_SET(iseq, rb_hash_lookup(coverages, path));
+	    if (NIL_P(ISEQ_COVERAGE(iseq))) ISEQ_COVERAGE_SET(iseq, Qfalse);
 	}
     }
 
@@ -285,13 +313,13 @@ prepare_iseq_build(rb_iseq_t *iseq,
 static VALUE
 cleanup_iseq_build(rb_iseq_t *iseq)
 {
-    struct iseq_compile_data *data = iseq->compile_data;
+    struct iseq_compile_data *data = ISEQ_COMPILE_DATA(iseq);
     VALUE err = data->err_info;
-    iseq->compile_data = 0;
+    ISEQ_COMPILE_DATA(iseq) = 0;
     compile_data_free(data);
 
     if (RTEST(err)) {
-	rb_funcall2(err, rb_intern("set_backtrace"), 1, &iseq->filename);
+	rb_funcall2(err, rb_intern("set_backtrace"), 1, &iseq->body->location.path);
 	rb_exc_raise(err);
     }
     return Qtrue;
@@ -306,8 +334,45 @@ static rb_compile_option_t COMPILE_OPTION_DEFAULT = {
     OPT_INSTRUCTIONS_UNIFICATION, /* int instructions_unification; */
     OPT_STACK_CACHING, /* int stack_caching; */
     OPT_TRACE_INSTRUCTION, /* int trace_instruction */
+    OPT_FROZEN_STRING_LITERAL,
+    OPT_DEBUG_FROZEN_STRING_LITERAL,
 };
+
 static const rb_compile_option_t COMPILE_OPTION_FALSE = {0};
+
+static void
+set_compile_option_from_hash(rb_compile_option_t *option, VALUE opt)
+{
+#define SET_COMPILE_OPTION(o, h, mem) \
+  { VALUE flag = rb_hash_aref((h), ID2SYM(rb_intern(#mem))); \
+      if (flag == Qtrue)  { (o)->mem = 1; } \
+      else if (flag == Qfalse)  { (o)->mem = 0; } \
+  }
+#define SET_COMPILE_OPTION_NUM(o, h, mem) \
+  { VALUE num = rb_hash_aref(opt, ID2SYM(rb_intern(#mem))); \
+      if (!NIL_P(num)) (o)->mem = NUM2INT(num); \
+  }
+    SET_COMPILE_OPTION(option, opt, inline_const_cache);
+    SET_COMPILE_OPTION(option, opt, peephole_optimization);
+    SET_COMPILE_OPTION(option, opt, tailcall_optimization);
+    SET_COMPILE_OPTION(option, opt, specialized_instruction);
+    SET_COMPILE_OPTION(option, opt, operands_unification);
+    SET_COMPILE_OPTION(option, opt, instructions_unification);
+    SET_COMPILE_OPTION(option, opt, stack_caching);
+    SET_COMPILE_OPTION(option, opt, trace_instruction);
+    SET_COMPILE_OPTION(option, opt, frozen_string_literal);
+    SET_COMPILE_OPTION(option, opt, debug_frozen_string_literal);
+    SET_COMPILE_OPTION_NUM(option, opt, debug_level);
+#undef SET_COMPILE_OPTION
+#undef SET_COMPILE_OPTION_NUM
+}
+
+void
+rb_iseq_make_compile_option(rb_compile_option_t *option, VALUE opt)
+{
+    Check_Type(opt, T_HASH);
+    set_compile_option_from_hash(option, opt);
+}
 
 static void
 make_compile_option(rb_compile_option_t *option, VALUE opt)
@@ -319,31 +384,13 @@ make_compile_option(rb_compile_option_t *option, VALUE opt)
 	*option = COMPILE_OPTION_FALSE;
     }
     else if (opt == Qtrue) {
-	memset(option, 1, sizeof(rb_compile_option_t));
+	int i;
+	for (i = 0; i < (int)(sizeof(rb_compile_option_t) / sizeof(int)); ++i)
+	    ((int *)option)[i] = 1;
     }
     else if (CLASS_OF(opt) == rb_cHash) {
 	*option = COMPILE_OPTION_DEFAULT;
-
-#define SET_COMPILE_OPTION(o, h, mem) \
-  { VALUE flag = rb_hash_aref(h, ID2SYM(rb_intern(#mem))); \
-      if (flag == Qtrue)  { o->mem = 1; } \
-      else if (flag == Qfalse)  { o->mem = 0; } \
-  }
-#define SET_COMPILE_OPTION_NUM(o, h, mem) \
-  { VALUE num = rb_hash_aref(opt, ID2SYM(rb_intern(#mem))); \
-      if (!NIL_P(num)) o->mem = NUM2INT(num); \
-  }
-	SET_COMPILE_OPTION(option, opt, inline_const_cache);
-	SET_COMPILE_OPTION(option, opt, peephole_optimization);
-	SET_COMPILE_OPTION(option, opt, tailcall_optimization);
-	SET_COMPILE_OPTION(option, opt, specialized_instruction);
-	SET_COMPILE_OPTION(option, opt, operands_unification);
-	SET_COMPILE_OPTION(option, opt, instructions_unification);
-	SET_COMPILE_OPTION(option, opt, stack_caching);
-	SET_COMPILE_OPTION(option, opt, trace_instruction);
-	SET_COMPILE_OPTION_NUM(option, opt, debug_level);
-#undef SET_COMPILE_OPTION
-#undef SET_COMPILE_OPTION_NUM
+	set_compile_option_from_hash(option, opt);
     }
     else {
 	rb_raise(rb_eTypeError, "Compile option must be Hash/true/false/nil");
@@ -355,9 +402,9 @@ make_compile_option_value(rb_compile_option_t *option)
 {
     VALUE opt = rb_hash_new();
 #define SET_COMPILE_OPTION(o, h, mem) \
-  rb_hash_aset(h, ID2SYM(rb_intern(#mem)), o->mem ? Qtrue : Qfalse)
+  rb_hash_aset((h), ID2SYM(rb_intern(#mem)), (o)->mem ? Qtrue : Qfalse)
 #define SET_COMPILE_OPTION_NUM(o, h, mem) \
-  rb_hash_aset(h, ID2SYM(rb_intern(#mem)), INT2NUM(o->mem))
+  rb_hash_aset((h), ID2SYM(rb_intern(#mem)), INT2NUM((o)->mem))
     {
 	SET_COMPILE_OPTION(option, opt, inline_const_cache);
 	SET_COMPILE_OPTION(option, opt, peephole_optimization);
@@ -366,6 +413,9 @@ make_compile_option_value(rb_compile_option_t *option)
 	SET_COMPILE_OPTION(option, opt, operands_unification);
 	SET_COMPILE_OPTION(option, opt, instructions_unification);
 	SET_COMPILE_OPTION(option, opt, stack_caching);
+	SET_COMPILE_OPTION(option, opt, trace_instruction);
+	SET_COMPILE_OPTION(option, opt, frozen_string_literal);
+	SET_COMPILE_OPTION(option, opt, debug_frozen_string_literal);
 	SET_COMPILE_OPTION_NUM(option, opt, debug_level);
     }
 #undef SET_COMPILE_OPTION
@@ -373,87 +423,121 @@ make_compile_option_value(rb_compile_option_t *option)
     return opt;
 }
 
-VALUE
-rb_iseq_new(NODE *node, VALUE name, VALUE filename, VALUE filepath,
-	      VALUE parent, VALUE type)
+rb_iseq_t *
+rb_iseq_new(NODE *node, VALUE name, VALUE path, VALUE absolute_path,
+	    const rb_iseq_t *parent, enum iseq_type type)
 {
-    return rb_iseq_new_with_opt(node, name, filename, filepath, INT2FIX(0), parent, type,
+    return rb_iseq_new_with_opt(node, name, path, absolute_path, INT2FIX(0), parent, type,
 				&COMPILE_OPTION_DEFAULT);
 }
 
-VALUE
-rb_iseq_new_top(NODE *node, VALUE name, VALUE filename, VALUE filepath, VALUE parent)
+rb_iseq_t *
+rb_iseq_new_top(NODE *node, VALUE name, VALUE path, VALUE absolute_path, const rb_iseq_t *parent)
 {
-    return rb_iseq_new_with_opt(node, name, filename, filepath, INT2FIX(0), parent, ISEQ_TYPE_TOP,
+    return rb_iseq_new_with_opt(node, name, path, absolute_path, INT2FIX(0), parent, ISEQ_TYPE_TOP,
 				&COMPILE_OPTION_DEFAULT);
 }
 
-VALUE
-rb_iseq_new_main(NODE *node, VALUE filename, VALUE filepath)
+rb_iseq_t *
+rb_iseq_new_main(NODE *node, VALUE path, VALUE absolute_path)
 {
     rb_thread_t *th = GET_THREAD();
-    VALUE parent = th->base_block->iseq->self;
-    return rb_iseq_new_with_opt(node, rb_str_new2("<main>"), filename, filepath, INT2FIX(0),
+    const rb_iseq_t *parent = th->base_block->iseq;
+    return rb_iseq_new_with_opt(node, rb_str_new2("<main>"), path, absolute_path, INT2FIX(0),
 				parent, ISEQ_TYPE_MAIN, &COMPILE_OPTION_DEFAULT);
 }
 
-static VALUE
-rb_iseq_new_with_bopt_and_opt(NODE *node, VALUE name, VALUE filename, VALUE filepath, VALUE line_no,
-				VALUE parent, VALUE type, VALUE bopt,
-				const rb_compile_option_t *option)
+static inline rb_iseq_t *
+iseq_translate(rb_iseq_t *iseq)
 {
-    rb_iseq_t *iseq;
-    VALUE self = iseq_alloc(rb_cISeq);
+    if (rb_respond_to(rb_cISeq, rb_intern("translate"))) {
+	VALUE v1 = iseqw_new(iseq);
+	VALUE v2 = rb_funcall(rb_cISeq, rb_intern("translate"), 1, v1);
+	if (v1 != v2 && CLASS_OF(v2) == rb_cISeq) {
+	    iseq = (rb_iseq_t *)iseqw_check(v2);
+	}
+    }
 
-    GetISeqPtr(self, iseq);
-    iseq->self = self;
+    return iseq;
+}
 
-    prepare_iseq_build(iseq, name, filename, filepath, line_no, parent, type, bopt, option);
-    rb_iseq_compile_node(self, node);
+rb_iseq_t *
+rb_iseq_new_with_opt(NODE *node, VALUE name, VALUE path, VALUE absolute_path,
+		     VALUE first_lineno, const rb_iseq_t *parent,
+		     enum iseq_type type, const rb_compile_option_t *option)
+{
+    /* TODO: argument check */
+    rb_iseq_t *iseq = iseq_alloc();
+
+    if (!option) option = &COMPILE_OPTION_DEFAULT;
+    prepare_iseq_build(iseq, name, path, absolute_path, first_lineno, parent, type, option);
+
+    rb_iseq_compile_node(iseq, node);
     cleanup_iseq_build(iseq);
-    return self;
+
+    return iseq_translate(iseq);
 }
 
-VALUE
-rb_iseq_new_with_opt(NODE *node, VALUE name, VALUE filename, VALUE filepath, VALUE line_no,
-		     VALUE parent, VALUE type,
-		     const rb_compile_option_t *option)
+const rb_iseq_t *
+rb_iseq_load_iseq(VALUE fname)
 {
-    /* TODO: argument check */
-    return rb_iseq_new_with_bopt_and_opt(node, name, filename, filepath, line_no, parent, type,
-					   Qfalse, option);
+    VALUE iseqv = rb_check_funcall(rb_cISeq, rb_intern("load_iseq"), 1, &fname);
+
+    if (!SPECIAL_CONST_P(iseqv) && RBASIC_CLASS(iseqv) == rb_cISeq) {
+	return  iseqw_check(iseqv);
+    }
+
+    return NULL;
 }
 
-VALUE
-rb_iseq_new_with_bopt(NODE *node, VALUE name, VALUE filename, VALUE filepath, VALUE line_no,
-		       VALUE parent, VALUE type, VALUE bopt)
+#define CHECK_ARRAY(v)   rb_convert_type((v), T_ARRAY, "Array", "to_ary")
+#define CHECK_HASH(v)    rb_convert_type((v), T_HASH, "Hash", "to_hash")
+#define CHECK_STRING(v)  rb_convert_type((v), T_STRING, "String", "to_str")
+#define CHECK_SYMBOL(v)  rb_convert_type((v), T_SYMBOL, "Symbol", "to_sym")
+static inline VALUE CHECK_INTEGER(VALUE v) {(void)NUM2LONG(v); return v;}
+
+static enum iseq_type
+iseq_type_from_sym(VALUE type)
 {
-    /* TODO: argument check */
-    return rb_iseq_new_with_bopt_and_opt(node, name, filename, filepath, line_no, parent, type,
-					   bopt, &COMPILE_OPTION_DEFAULT);
+    const ID id_top = rb_intern("top");
+    const ID id_method = rb_intern("method");
+    const ID id_block = rb_intern("block");
+    const ID id_class = rb_intern("class");
+    const ID id_rescue = rb_intern("rescue");
+    const ID id_ensure = rb_intern("ensure");
+    const ID id_eval = rb_intern("eval");
+    const ID id_main = rb_intern("main");
+    const ID id_defined_guard = rb_intern("defined_guard");
+    /* ensure all symbols are static or pinned down before
+     * conversion */
+    const ID typeid = rb_check_id(&type);
+    if (typeid == id_top) return ISEQ_TYPE_TOP;
+    if (typeid == id_method) return ISEQ_TYPE_METHOD;
+    if (typeid == id_block) return ISEQ_TYPE_BLOCK;
+    if (typeid == id_class) return ISEQ_TYPE_CLASS;
+    if (typeid == id_rescue) return ISEQ_TYPE_RESCUE;
+    if (typeid == id_ensure) return ISEQ_TYPE_ENSURE;
+    if (typeid == id_eval) return ISEQ_TYPE_EVAL;
+    if (typeid == id_main) return ISEQ_TYPE_MAIN;
+    if (typeid == id_defined_guard) return ISEQ_TYPE_DEFINED_GUARD;
+    return (enum iseq_type)-1;
 }
 
-#define CHECK_ARRAY(v)   rb_convert_type(v, T_ARRAY, "Array", "to_ary")
-#define CHECK_STRING(v)  rb_convert_type(v, T_STRING, "String", "to_str")
-#define CHECK_SYMBOL(v)  rb_convert_type(v, T_SYMBOL, "Symbol", "to_sym")
-static inline VALUE CHECK_INTEGER(VALUE v) {NUM2LONG(v); return v;}
 static VALUE
-iseq_load(VALUE self, VALUE data, VALUE parent, VALUE opt)
+iseq_load(VALUE data, const rb_iseq_t *parent, VALUE opt)
 {
-    VALUE iseqval = iseq_alloc(self);
+    rb_iseq_t *iseq = iseq_alloc();
 
     VALUE magic, version1, version2, format_type, misc;
-    VALUE name, filename, filepath, line_no;
-    VALUE type, body, locals, args, exception;
+    VALUE name, path, absolute_path, first_lineno;
+    VALUE type, body, locals, params, exception;
 
-    VALUE iseq_type;
-    struct st_table *type_map = 0;
-    rb_iseq_t *iseq;
+    st_data_t iseq_type;
     rb_compile_option_t option;
     int i = 0;
 
     /* [magic, major_version, minor_version, format_type, misc,
-     *  name, filename, line_no,
+     *  label, path, first_lineno,
      *  type, locals, args, exception_table, body]
      */
 
@@ -463,139 +547,274 @@ iseq_load(VALUE self, VALUE data, VALUE parent, VALUE opt)
     version1    = CHECK_INTEGER(rb_ary_entry(data, i++));
     version2    = CHECK_INTEGER(rb_ary_entry(data, i++));
     format_type = CHECK_INTEGER(rb_ary_entry(data, i++));
-    misc        = rb_ary_entry(data, i++); /* TODO */
+    misc        = CHECK_HASH(rb_ary_entry(data, i++));
+    ((void)magic, (void)version1, (void)version2, (void)format_type);
 
     name        = CHECK_STRING(rb_ary_entry(data, i++));
-    filename    = CHECK_STRING(rb_ary_entry(data, i++));
-    filepath    = rb_ary_entry(data, i++);
-    filepath    = NIL_P(filepath) ? Qnil : CHECK_STRING(filepath);
-    line_no     = CHECK_INTEGER(rb_ary_entry(data, i++));
+    path        = CHECK_STRING(rb_ary_entry(data, i++));
+    absolute_path = rb_ary_entry(data, i++);
+    absolute_path = NIL_P(absolute_path) ? Qnil : CHECK_STRING(absolute_path);
+    first_lineno = CHECK_INTEGER(rb_ary_entry(data, i++));
 
     type        = CHECK_SYMBOL(rb_ary_entry(data, i++));
     locals      = CHECK_ARRAY(rb_ary_entry(data, i++));
-
-    args        = rb_ary_entry(data, i++);
-    if (FIXNUM_P(args) || (args = CHECK_ARRAY(args))) {
-	/* */
-    }
-
+    params      = CHECK_HASH(rb_ary_entry(data, i++));
     exception   = CHECK_ARRAY(rb_ary_entry(data, i++));
     body        = CHECK_ARRAY(rb_ary_entry(data, i++));
 
-    GetISeqPtr(iseqval, iseq);
-    iseq->self = iseqval;
+    iseq->body->local_iseq = iseq;
 
-    if (type_map == 0) {
-	type_map = st_init_numtable();
-	st_insert(type_map, ID2SYM(rb_intern("top")), ISEQ_TYPE_TOP);
-	st_insert(type_map, ID2SYM(rb_intern("method")), ISEQ_TYPE_METHOD);
-	st_insert(type_map, ID2SYM(rb_intern("block")), ISEQ_TYPE_BLOCK);
-	st_insert(type_map, ID2SYM(rb_intern("class")), ISEQ_TYPE_CLASS);
-	st_insert(type_map, ID2SYM(rb_intern("rescue")), ISEQ_TYPE_RESCUE);
-	st_insert(type_map, ID2SYM(rb_intern("ensure")), ISEQ_TYPE_ENSURE);
-	st_insert(type_map, ID2SYM(rb_intern("eval")), ISEQ_TYPE_EVAL);
-	st_insert(type_map, ID2SYM(rb_intern("main")), ISEQ_TYPE_MAIN);
-	st_insert(type_map, ID2SYM(rb_intern("defined_guard")), ISEQ_TYPE_DEFINED_GUARD);
-    }
-
-    if (st_lookup(type_map, type, &iseq_type) == 0) {
-	const char *typename = rb_id2name(type);
-	if (typename)
-	    rb_raise(rb_eTypeError, "unsupport type: :%s", typename);
-	else
-	    rb_raise(rb_eTypeError, "unsupport type: %p", (void *)type);
-    }
-
-    if (parent == Qnil) {
-	parent = 0;
+    iseq_type = iseq_type_from_sym(type);
+    if (iseq_type == (enum iseq_type)-1) {
+	rb_raise(rb_eTypeError, "unsupport type: :%"PRIsVALUE, rb_sym2str(type));
     }
 
     make_compile_option(&option, opt);
-    prepare_iseq_build(iseq, name, filename, filepath, line_no,
-		       parent, iseq_type, 0, &option);
+    option.peephole_optimization = FALSE; /* because peephole optimization can modify original iseq */
+    prepare_iseq_build(iseq, name, path, absolute_path, first_lineno,
+		       parent, (enum iseq_type)iseq_type, &option);
 
-//RHO : misc
-    rb_iseq_build_from_ary(iseq, locals, args, exception, body, misc);
-//RHO
+    rb_iseq_build_from_ary(iseq, misc, locals, params, exception, body);
 
     cleanup_iseq_build(iseq);
-    return iseqval;
+
+    return iseqw_new(iseq);
 }
 
+/*
+ * :nodoc:
+ */
 static VALUE
 iseq_s_load(int argc, VALUE *argv, VALUE self)
 {
     VALUE data, opt=Qnil;
     rb_scan_args(argc, argv, "11", &data, &opt);
-
-    return iseq_load(self, data, 0, opt);
+    return iseq_load(data, NULL, opt);
 }
 
 VALUE
 rb_iseq_load(VALUE data, VALUE parent, VALUE opt)
 {
-    return iseq_load(rb_cISeq, data, parent, opt);
+    return iseq_load(data, RTEST(parent) ? (rb_iseq_t *)parent : NULL, opt);
 }
 
-static NODE *
-parse_string(VALUE str, const char *file, int line)
+rb_iseq_t *
+rb_iseq_compile_with_option(VALUE src, VALUE file, VALUE absolute_path, VALUE line, rb_block_t *base_block, VALUE opt)
 {
-    VALUE parser = rb_parser_new();
-    NODE *node = rb_parser_compile_string(parser, file, str, line);
-
-    if (!node) {
-	rb_exc_raise(GET_THREAD()->errinfo);	/* TODO: check err */
-    }
-    return node;
-}
-
-VALUE
-rb_iseq_compile_with_option(VALUE src, VALUE file, VALUE filepath, VALUE line, VALUE opt)
-{
-    rb_compile_option_t option;
-    const char *fn = StringValueCStr(file);
-    int ln = NUM2INT(line);
-    NODE *node = parse_string(StringValue(src), fn, ln);
+    int state;
     rb_thread_t *th = GET_THREAD();
-    make_compile_option(&option, opt);
+    rb_block_t *prev_base_block = th->base_block;
+    rb_iseq_t *iseq = NULL;
+    const rb_iseq_t *parent = NULL;
+    rb_compile_option_t option;
+    VALUE label;
+    enum iseq_type type;
+    NODE *(*parse)(VALUE vparser, VALUE fname, VALUE file, int start);
+    int ln = NUM2INT(line);
 
-    if (th->base_block && th->base_block->iseq) {
-	return rb_iseq_new_with_opt(node, th->base_block->iseq->name,
-				    file, filepath, line, th->base_block->iseq->self,
-				    ISEQ_TYPE_EVAL, &option);
+    StringValueCStr(file);
+    if (RB_TYPE_P(src, T_FILE)) {
+	parse = rb_parser_compile_file_path;
     }
     else {
-	return rb_iseq_new_with_opt(node, rb_str_new2("<compiled>"), file, filepath, line, Qfalse,
-				    ISEQ_TYPE_TOP, &option);
+	StringValue(src);
+	parse = rb_parser_compile_string_path;
+    }
+
+    make_compile_option(&option, opt);
+
+    if (base_block && (parent = base_block->iseq) != NULL) {
+	label = parent->body->location.label;
+	type = ISEQ_TYPE_EVAL;
+    }
+    else {
+	label = rb_fstring_cstr("<compiled>");
+	type = ISEQ_TYPE_TOP;
+    }
+
+    th->base_block = base_block;
+    TH_PUSH_TAG(th);
+    if ((state = EXEC_TAG()) == 0) {
+	NODE *node = (*parse)(rb_parser_new(), file, src, ln);
+	if (node) { /* TODO: check err */
+	    iseq = rb_iseq_new_with_opt(node, label, file, absolute_path, line,
+					parent, type, &option);
+	}
+    }
+    TH_POP_TAG();
+
+    th->base_block = prev_base_block;
+
+    if (!iseq) rb_exc_raise(th->errinfo);
+    if (state) {
+	JUMP_TAG(state);
+    }
+
+    return iseq;
+}
+
+rb_iseq_t *
+rb_iseq_compile(VALUE src, VALUE file, VALUE line)
+{
+    return rb_iseq_compile_with_option(src, file, Qnil, line, 0, Qnil);
+}
+
+rb_iseq_t *
+rb_iseq_compile_on_base(VALUE src, VALUE file, VALUE line, rb_block_t *base_block)
+{
+    return rb_iseq_compile_with_option(src, file, Qnil, line, base_block, Qnil);
+}
+
+VALUE
+rb_iseq_path(const rb_iseq_t *iseq)
+{
+    return iseq->body->location.path;
+}
+
+VALUE
+rb_iseq_absolute_path(const rb_iseq_t *iseq)
+{
+    return iseq->body->location.absolute_path;
+}
+
+VALUE
+rb_iseq_label(const rb_iseq_t *iseq)
+{
+    return iseq->body->location.label;
+}
+
+VALUE
+rb_iseq_base_label(const rb_iseq_t *iseq)
+{
+    return iseq->body->location.base_label;
+}
+
+VALUE
+rb_iseq_first_lineno(const rb_iseq_t *iseq)
+{
+    return iseq->body->location.first_lineno;
+}
+
+VALUE
+rb_iseq_method_name(const rb_iseq_t *iseq)
+{
+    const rb_iseq_t *local_iseq;
+
+    local_iseq = iseq->body->local_iseq;
+
+    if (local_iseq->body->type == ISEQ_TYPE_METHOD) {
+	return local_iseq->body->location.base_label;
+    }
+    else {
+	return Qnil;
     }
 }
 
 VALUE
-rb_iseq_compile(VALUE src, VALUE file, VALUE line)
+rb_iseq_coverage(const rb_iseq_t *iseq)
 {
-    return rb_iseq_compile_with_option(src, file, Qnil, line, Qnil);
+    return ISEQ_COVERAGE(iseq);
 }
 
+/* define wrapper class methods (RubyVM::InstructionSequence) */
+
+static void
+iseqw_mark(void *ptr)
+{
+    rb_gc_mark((VALUE)ptr);
+}
+
+static size_t
+iseqw_memsize(const void *ptr)
+{
+    return iseq_memsize((const rb_iseq_t *)ptr);
+}
+
+static const rb_data_type_t iseqw_data_type = {
+    "T_IMEMO/iseq",
+    {iseqw_mark, NULL, iseqw_memsize,},
+    0, 0, RUBY_TYPED_FREE_IMMEDIATELY|RUBY_TYPED_WB_PROTECTED
+};
+
+//RHO
+/*static*/ VALUE
+iseqw_new(const rb_iseq_t *iseq)
+{
+    union { const rb_iseq_t *in; void *out; } deconst;
+    VALUE obj;
+
+    deconst.in = iseq;
+    obj = TypedData_Wrap_Struct(rb_cISeq, &iseqw_data_type, deconst.out);
+    RB_OBJ_WRITTEN(obj, Qundef, iseq);
+
+    return obj;
+}
+
+VALUE
+rb_iseqw_new(const rb_iseq_t *iseq)
+{
+    return iseqw_new(iseq);
+}
+
+/*
+ *  call-seq:
+ *     InstructionSequence.compile(source[, file[, path[, line[, options]]]]) -> iseq
+ *     InstructionSequence.new(source[, file[, path[, line[, options]]]]) -> iseq
+ *
+ *  Takes +source+, a String of Ruby code and compiles it to an
+ *  InstructionSequence.
+ *
+ *  Optionally takes +file+, +path+, and +line+ which describe the filename,
+ *  absolute path and first line number of the ruby code in +source+ which are
+ *  metadata attached to the returned +iseq+.
+ *
+ *  +options+, which can be +true+, +false+ or a +Hash+, is used to
+ *  modify the default behavior of the Ruby iseq compiler.
+ *
+ *  For details regarding valid compile options see ::compile_option=.
+ *
+ *     RubyVM::InstructionSequence.compile("a = 1 + 2")
+ *     #=> <RubyVM::InstructionSequence:<compiled>@<compiled>>
+ *
+ */
 static VALUE
-iseq_s_compile(int argc, VALUE *argv, VALUE self)
+iseqw_s_compile(int argc, VALUE *argv, VALUE self)
 {
     VALUE src, file = Qnil, path = Qnil, line = INT2FIX(1), opt = Qnil;
-
     rb_secure(1);
 
     rb_scan_args(argc, argv, "14", &src, &file, &path, &line, &opt);
     if (NIL_P(file)) file = rb_str_new2("<compiled>");
     if (NIL_P(line)) line = INT2FIX(1);
 
-    return rb_iseq_compile_with_option(src, file, path, line, opt);
+    return iseqw_new(rb_iseq_compile_with_option(src, file, path, line, 0, opt));
 }
 
+/*
+ *  call-seq:
+ *      InstructionSequence.compile_file(file[, options]) -> iseq
+ *
+ *  Takes +file+, a String with the location of a Ruby source file, reads,
+ *  parses and compiles the file, and returns +iseq+, the compiled
+ *  InstructionSequence with source location metadata set.
+ *
+ *  Optionally takes +options+, which can be +true+, +false+ or a +Hash+, to
+ *  modify the default behavior of the Ruby iseq compiler.
+ *
+ *  For details regarding valid compile options see ::compile_option=.
+ *
+ *      # /tmp/hello.rb
+ *      puts "Hello, world!"
+ *
+ *      # elsewhere
+ *      RubyVM::InstructionSequence.compile_file("/tmp/hello.rb")
+ *      #=> <RubyVM::InstructionSequence:<main>@/tmp/hello.rb>
+ */
 static VALUE
-iseq_s_compile_file(int argc, VALUE *argv, VALUE self)
+iseqw_s_compile_file(int argc, VALUE *argv, VALUE self)
 {
     VALUE file, line = INT2FIX(1), opt = Qnil;
-    VALUE parser;
-    VALUE f;
+    VALUE parser, f, exc = Qnil;
     NODE *node;
     const char *fname;
     rb_compile_option_t option;
@@ -609,13 +828,52 @@ iseq_s_compile_file(int argc, VALUE *argv, VALUE self)
 
     parser = rb_parser_new();
     node = rb_parser_compile_file(parser, fname, f, NUM2INT(line));
+    if (!node) exc = GET_THREAD()->errinfo;
+
+    rb_io_close(f);
+    if (!node) rb_exc_raise(exc);
+
     make_compile_option(&option, opt);
-    return rb_iseq_new_with_opt(node, rb_str_new2("<main>"), file, file, line, Qfalse,
-				ISEQ_TYPE_TOP, &option);
+
+    return iseqw_new(rb_iseq_new_with_opt(node, rb_str_new2("<main>"), file,
+					  rb_realpath_internal(Qnil, file, 1), line, NULL,
+					  ISEQ_TYPE_TOP, &option));
 }
 
+/*
+ *  call-seq:
+ *     InstructionSequence.compile_option = options
+ *
+ *  Sets the default values for various optimizations in the Ruby iseq
+ *  compiler.
+ *
+ *  Possible values for +options+ include +true+, which enables all options,
+ *  +false+ which disables all options, and +nil+ which leaves all options
+ *  unchanged.
+ *
+ *  You can also pass a +Hash+ of +options+ that you want to change, any
+ *  options not present in the hash will be left unchanged.
+ *
+ *  Possible option names (which are keys in +options+) which can be set to
+ *  +true+ or +false+ include:
+ *
+ *  * +:inline_const_cache+
+ *  * +:instructions_unification+
+ *  * +:operands_unification+
+ *  * +:peephole_optimization+
+ *  * +:specialized_instruction+
+ *  * +:stack_caching+
+ *  * +:tailcall_optimization+
+ *  * +:trace_instruction+
+ *
+ *  Additionally, +:debug_level+ can be set to an integer.
+ *
+ *  These default options can be overwritten for a single run of the iseq
+ *  compiler by passing any of the above values as the +options+ parameter to
+ *  ::new, ::compile and ::compile_file.
+ */
 static VALUE
-iseq_s_compile_option_set(VALUE self, VALUE opt)
+iseqw_s_compile_option_set(VALUE self, VALUE opt)
 {
     rb_compile_option_t option;
     rb_secure(1);
@@ -624,83 +882,336 @@ iseq_s_compile_option_set(VALUE self, VALUE opt)
     return opt;
 }
 
+/*
+ *  call-seq:
+ *     InstructionSequence.compile_option -> options
+ *
+ *  Returns a hash of default options used by the Ruby iseq compiler.
+ *
+ *  For details, see InstructionSequence.compile_option=.
+ */
 static VALUE
-iseq_s_compile_option_get(VALUE self)
+iseqw_s_compile_option_get(VALUE self)
 {
     return make_compile_option_value(&COMPILE_OPTION_DEFAULT);
 }
 
-static rb_iseq_t *
-iseq_check(VALUE val)
+static const rb_iseq_t *
+iseqw_check(VALUE iseqw)
 {
-    rb_iseq_t *iseq;
-    GetISeqPtr(val, iseq);
-    if (!iseq->name) {
+    rb_iseq_t *iseq = DATA_PTR(iseqw);
+
+    if (!iseq->body) {
+	ibf_load_iseq_complete(iseq);
+    }
+
+    if (!iseq->body->location.label) {
 	rb_raise(rb_eTypeError, "uninitialized InstructionSequence");
     }
     return iseq;
 }
 
-static VALUE
-iseq_eval(VALUE self)
+const rb_iseq_t *
+rb_iseqw_to_iseq(VALUE iseqw)
 {
-    rb_secure(1);
-    return rb_iseq_eval(self);
+    return iseqw_check(iseqw);
 }
 
-static VALUE
-iseq_inspect(VALUE self)
+/*
+ *  call-seq:
+ *     iseq.eval -> obj
+ *
+ *  Evaluates the instruction sequence and returns the result.
+ *
+ *      RubyVM::InstructionSequence.compile("1 + 2").eval #=> 3
+ */
+
+//RHO
+/*
+static
+ */
+VALUE
+iseqw_eval(VALUE self)
 {
-    rb_iseq_t *iseq;
-    GetISeqPtr(self, iseq);
-    if (!iseq->name) {
+    rb_secure(1);
+    return rb_iseq_eval(iseqw_check(self));
+}
+
+/*
+ *  Returns a human-readable string representation of this instruction
+ *  sequence, including the #label and #path.
+ */
+static VALUE
+iseqw_inspect(VALUE self)
+{
+    const rb_iseq_t *iseq = iseqw_check(self);
+
+    if (!iseq->body->location.label) {
         return rb_sprintf("#<%s: uninitialized>", rb_obj_classname(self));
     }
-
-    return rb_sprintf("<%s:%s@%s>",
-                      rb_obj_classname(self),
-		      RSTRING_PTR(iseq->name), RSTRING_PTR(iseq->filename));
+    else {
+	return rb_sprintf("<%s:%s@%s>",
+			  rb_obj_classname(self),
+			  RSTRING_PTR(iseq->body->location.label), RSTRING_PTR(iseq->body->location.path));
+    }
 }
 
-static
-VALUE iseq_data_to_ary(rb_iseq_t *iseq);
-
+/*
+ *  Returns the path of this instruction sequence.
+ *
+ *  <code><compiled></code> if the iseq was evaluated from a string.
+ *
+ *  For example, using irb:
+ *
+ *	iseq = RubyVM::InstructionSequence.compile('num = 1 + 2')
+ *	#=> <RubyVM::InstructionSequence:<compiled>@<compiled>>
+ *	iseq.path
+ *	#=> "<compiled>"
+ *
+ *  Using ::compile_file:
+ *
+ *	# /tmp/method.rb
+ *	def hello
+ *	  puts "hello, world"
+ *	end
+ *
+ *	# in irb
+ *	> iseq = RubyVM::InstructionSequence.compile_file('/tmp/method.rb')
+ *	> iseq.path #=> /tmp/method.rb
+ */
 static VALUE
-iseq_to_a(VALUE self)
+iseqw_path(VALUE self)
 {
-    rb_iseq_t *iseq = iseq_check(self);
+    return rb_iseq_path(iseqw_check(self));
+}
+
+/*
+ *  Returns the absolute path of this instruction sequence.
+ *
+ *  +nil+ if the iseq was evaluated from a string.
+ *
+ *  For example, using ::compile_file:
+ *
+ *	# /tmp/method.rb
+ *	def hello
+ *	  puts "hello, world"
+ *	end
+ *
+ *	# in irb
+ *	> iseq = RubyVM::InstructionSequence.compile_file('/tmp/method.rb')
+ *	> iseq.absolute_path #=> /tmp/method.rb
+ */
+static VALUE
+iseqw_absolute_path(VALUE self)
+{
+    return rb_iseq_absolute_path(iseqw_check(self));
+}
+
+/*  Returns the label of this instruction sequence.
+ *
+ *  <code><main></code> if it's at the top level, <code><compiled></code> if it
+ *  was evaluated from a string.
+ *
+ *  For example, using irb:
+ *
+ *	iseq = RubyVM::InstructionSequence.compile('num = 1 + 2')
+ *	#=> <RubyVM::InstructionSequence:<compiled>@<compiled>>
+ *	iseq.label
+ *	#=> "<compiled>"
+ *
+ *  Using ::compile_file:
+ *
+ *	# /tmp/method.rb
+ *	def hello
+ *	  puts "hello, world"
+ *	end
+ *
+ *	# in irb
+ *	> iseq = RubyVM::InstructionSequence.compile_file('/tmp/method.rb')
+ *	> iseq.label #=> <main>
+ */
+static VALUE
+iseqw_label(VALUE self)
+{
+    return rb_iseq_label(iseqw_check(self));
+}
+
+/*  Returns the base label of this instruction sequence.
+ *
+ *  For example, using irb:
+ *
+ *	iseq = RubyVM::InstructionSequence.compile('num = 1 + 2')
+ *	#=> <RubyVM::InstructionSequence:<compiled>@<compiled>>
+ *	iseq.base_label
+ *	#=> "<compiled>"
+ *
+ *  Using ::compile_file:
+ *
+ *	# /tmp/method.rb
+ *	def hello
+ *	  puts "hello, world"
+ *	end
+ *
+ *	# in irb
+ *	> iseq = RubyVM::InstructionSequence.compile_file('/tmp/method.rb')
+ *	> iseq.base_label #=> <main>
+ */
+static VALUE
+iseqw_base_label(VALUE self)
+{
+    return rb_iseq_base_label(iseqw_check(self));
+}
+
+/*  Returns the number of the first source line where the instruction sequence
+ *  was loaded from.
+ *
+ *  For example, using irb:
+ *
+ *	iseq = RubyVM::InstructionSequence.compile('num = 1 + 2')
+ *	#=> <RubyVM::InstructionSequence:<compiled>@<compiled>>
+ *	iseq.first_lineno
+ *	#=> 1
+ */
+static VALUE
+iseqw_first_lineno(VALUE self)
+{
+    return rb_iseq_first_lineno(iseqw_check(self));
+}
+
+static VALUE iseq_data_to_ary(const rb_iseq_t *iseq);
+
+/*
+ *  call-seq:
+ *     iseq.to_a -> ary
+ *
+ *  Returns an Array with 14 elements representing the instruction sequence
+ *  with the following data:
+ *
+ *  [magic]
+ *    A string identifying the data format. <b>Always
+ *    +YARVInstructionSequence/SimpleDataFormat+.</b>
+ *
+ *  [major_version]
+ *    The major version of the instruction sequence.
+ *
+ *  [minor_version]
+ *    The minor version of the instruction sequence.
+ *
+ *  [format_type]
+ *    A number identifying the data format. <b>Always 1</b>.
+ *
+ *  [misc]
+ *    A hash containing:
+ *
+ *    [+:arg_size+]
+ *	the total number of arguments taken by the method or the block (0 if
+ *	_iseq_ doesn't represent a method or block)
+ *    [+:local_size+]
+ *	the number of local variables + 1
+ *    [+:stack_max+]
+ *	used in calculating the stack depth at which a SystemStackError is
+ *	thrown.
+ *
+ *  [#label]
+ *    The name of the context (block, method, class, module, etc.) that this
+ *    instruction sequence belongs to.
+ *
+ *    <code><main></code> if it's at the top level, <code><compiled></code> if
+ *    it was evaluated from a string.
+ *
+ *  [#path]
+ *    The relative path to the Ruby file where the instruction sequence was
+ *    loaded from.
+ *
+ *    <code><compiled></code> if the iseq was evaluated from a string.
+ *
+ *  [#absolute_path]
+ *    The absolute path to the Ruby file where the instruction sequence was
+ *    loaded from.
+ *
+ *    +nil+ if the iseq was evaluated from a string.
+ *
+ *  [#first_lineno]
+ *    The number of the first source line where the instruction sequence was
+ *    loaded from.
+ *
+ *  [type]
+ *    The type of the instruction sequence.
+ *
+ *    Valid values are +:top+, +:method+, +:block+, +:class+, +:rescue+,
+ *    +:ensure+, +:eval+, +:main+, and +:defined_guard+.
+ *
+ *  [locals]
+ *    An array containing the names of all arguments and local variables as
+ *    symbols.
+ *
+ *  [params]
+ *    An Hash object containing parameter information.
+ *
+ *    More info about these values can be found in +vm_core.h+.
+ *
+ *  [catch_table]
+ *    A list of exceptions and control flow operators (rescue, next, redo,
+ *    break, etc.).
+ *
+ *  [bytecode]
+ *    An array of arrays containing the instruction names and operands that
+ *    make up the body of the instruction sequence.
+ *
+ *  Note that this format is MRI specific and version dependent.
+ *
+ */
+static VALUE
+iseqw_to_a(VALUE self)
+{
+    const rb_iseq_t *iseq = iseqw_check(self);
     rb_secure(1);
     return iseq_data_to_ary(iseq);
-}
-
-int
-rb_iseq_first_lineno(rb_iseq_t *iseq)
-{
-    return FIX2INT(iseq->line_no);
 }
 
 /* TODO: search algorithm is brute force.
          this should be binary search or so. */
 
-static struct iseq_insn_info_entry *
-get_insn_info(const rb_iseq_t *iseq, const unsigned long pos)
+static const struct iseq_line_info_entry *
+get_line_info(const rb_iseq_t *iseq, size_t pos)
 {
-    unsigned long i, size = iseq->insn_info_size;
-    struct iseq_insn_info_entry *table = iseq->insn_info_table;
+    size_t i = 0, size = iseq->body->line_info_size;
+    const struct iseq_line_info_entry *table = iseq->body->line_info_table;
+    const int debug = 0;
 
-    for (i = 0; i < size; i++) {
-	if (table[i].position == pos) {
-	    return &table[i];
-	}
+    if (debug) {
+	printf("size: %"PRIdSIZE"\n", size);
+	printf("table[%"PRIdSIZE"]: position: %d, line: %d, pos: %"PRIdSIZE"\n",
+	       i, table[i].position, table[i].line_no, pos);
     }
 
-    return 0;
+    if (size == 0) {
+	return 0;
+    }
+    else if (size == 1) {
+	return &table[0];
+    }
+    else {
+	for (i=1; i<size; i++) {
+	    if (debug) printf("table[%"PRIdSIZE"]: position: %d, line: %d, pos: %"PRIdSIZE"\n",
+			      i, table[i].position, table[i].line_no, pos);
+
+	    if (table[i].position == pos) {
+		return &table[i];
+	    }
+	    if (table[i].position > pos) {
+		return &table[i-1];
+	    }
+	}
+    }
+    return &table[i-1];
 }
 
-static unsigned short
-find_line_no(rb_iseq_t *iseq, unsigned long pos)
+static unsigned int
+find_line_no(const rb_iseq_t *iseq, size_t pos)
 {
-    struct iseq_insn_info_entry *entry = get_insn_info(iseq, pos);
+    const struct iseq_line_info_entry *entry = get_line_info(iseq, pos);
+
     if (entry) {
 	return entry->line_no;
     }
@@ -709,72 +1220,62 @@ find_line_no(rb_iseq_t *iseq, unsigned long pos)
     }
 }
 
-static unsigned short
-find_prev_line_no(rb_iseq_t *iseqdat, unsigned long pos)
+unsigned int
+rb_iseq_line_no(const rb_iseq_t *iseq, size_t pos)
 {
-    unsigned long i, size = iseqdat->insn_info_size;
-    struct iseq_insn_info_entry *iiary = iseqdat->insn_info_table;
-
-    for (i = 0; i < size; i++) {
-	if (iiary[i].position == pos) {
-	    if (i > 0) {
-		return iiary[i - 1].line_no;
-	    }
-	    else {
-		return 0;
-	    }
-	}
+    if (pos == 0) {
+	return find_line_no(iseq, pos);
     }
-
-    return 0;
+    else {
+	return find_line_no(iseq, pos - 1);
+    }
 }
 
 static VALUE
-insn_operand_intern(rb_iseq_t *iseq,
-		    VALUE insn, int op_no, VALUE op,
-		    int len, size_t pos, VALUE *pnop, VALUE child)
+id_to_name(ID id, VALUE default_value)
+{
+    VALUE str = rb_id2str(id);
+    if (!str) {
+	str = default_value;
+    }
+    else if (!rb_str_symname_p(str)) {
+	str = rb_str_inspect(str);
+    }
+    return str;
+}
+
+VALUE
+rb_insn_operand_intern(const rb_iseq_t *iseq,
+		       VALUE insn, int op_no, VALUE op,
+		       int len, size_t pos, const VALUE *pnop, VALUE child)
 {
     const char *types = insn_op_types(insn);
     char type = types[op_no];
-    VALUE ret;
+    VALUE ret = Qundef;
 
     switch (type) {
       case TS_OFFSET:		/* LONG */
-	ret = rb_sprintf("%ld", pos + len + op);
+	ret = rb_sprintf("%"PRIdVALUE, (VALUE)(pos + len + op));
 	break;
 
       case TS_NUM:		/* ULONG */
-	ret = rb_sprintf("%lu", op);
+	ret = rb_sprintf("%"PRIuVALUE, op);
 	break;
 
-      case TS_LINDEX:
-	{
-	    rb_iseq_t *ip = iseq->local_iseq;
-	    int lidx = ip->local_size - (int)op;
-	    const char *name = rb_id2name(ip->local_table[lidx]);
+      case TS_LINDEX:{
+	if (insn == BIN(getlocal) || insn == BIN(setlocal)) {
+	    if (pnop) {
+		const rb_iseq_t *diseq = iseq;
+		VALUE level = *pnop, i;
 
-	    if (name) {
-		ret = rb_str_new2(name);
+		for (i = 0; i < level; i++) {
+		    diseq = diseq->body->parent_iseq;
+		}
+		ret = id_to_name(diseq->body->local_table[diseq->body->local_size - op], INT2FIX('*'));
 	    }
 	    else {
-		ret = rb_str_new2("*");
+		ret = rb_sprintf("%"PRIuVALUE, op);
 	    }
-	    break;
-	}
-      case TS_DINDEX:{
-	if (insn == BIN(getdynamic) || insn == BIN(setdynamic)) {
-	    rb_iseq_t *ip = iseq;
-	    VALUE level = *pnop, i;
-	    const char *name;
-	    for (i = 0; i < level; i++) {
-		ip = ip->parent_iseq;
-	    }
-	    name = rb_id2name(ip->local_table[ip->local_size - op]);
-
-	    if (!name) {
-		name = "*";
-	    }
-	    ret = rb_str_new2(name);
 	}
 	else {
 	    ret = rb_inspect(INT2FIX(op));
@@ -788,17 +1289,19 @@ insn_operand_intern(rb_iseq_t *iseq,
 	op = obj_resurrect(op);
 	ret = rb_inspect(op);
 	if (CLASS_OF(op) == rb_cISeq) {
-	    rb_ary_push(child, op);
+	    if (child) {
+		rb_ary_push(child, op);
+	    }
 	}
 	break;
 
       case TS_ISEQ:		/* iseq */
 	{
-	    rb_iseq_t *iseq = (rb_iseq_t *)op;
-	    if (iseq) {
-		ret = iseq->name;
+	    if (op) {
+		const rb_iseq_t *iseq = rb_iseq_check((rb_iseq_t *)op);
+		ret = iseq->body->location.label;
 		if (child) {
-		    rb_ary_push(child, iseq->self);
+		    rb_ary_push(child, (VALUE)iseq);
 		}
 	    }
 	    else {
@@ -814,7 +1317,45 @@ insn_operand_intern(rb_iseq_t *iseq,
 	break;
 
       case TS_IC:
-	ret = rb_sprintf("<ic:%"PRIdPTRDIFF">", (struct iseq_inline_cache_entry *)op - iseq->ic_entries);
+	ret = rb_sprintf("<is:%"PRIdPTRDIFF">", (union iseq_inline_storage_entry *)op - iseq->body->is_entries);
+	break;
+
+      case TS_CALLINFO:
+	{
+	    struct rb_call_info *ci = (struct rb_call_info *)op;
+	    VALUE ary = rb_ary_new();
+
+	    if (ci->mid) {
+		rb_ary_push(ary, rb_sprintf("mid:%"PRIsVALUE, rb_id2str(ci->mid)));
+	    }
+
+	    rb_ary_push(ary, rb_sprintf("argc:%d", ci->orig_argc));
+
+	    if (ci->flag & VM_CALL_KWARG) {
+		struct rb_call_info_kw_arg *kw_args = ((struct rb_call_info_with_kwarg *)ci)->kw_arg;
+		VALUE kw_ary = rb_ary_new_from_values(kw_args->keyword_len, kw_args->keywords);
+		rb_ary_push(ary, rb_sprintf("kw:[%"PRIsVALUE"]", rb_ary_join(kw_ary, rb_str_new2(","))));
+	    }
+
+	    if (ci->flag) {
+		VALUE flags = rb_ary_new();
+		if (ci->flag & VM_CALL_ARGS_SPLAT) rb_ary_push(flags, rb_str_new2("ARGS_SPLAT"));
+		if (ci->flag & VM_CALL_ARGS_BLOCKARG) rb_ary_push(flags, rb_str_new2("ARGS_BLOCKARG"));
+		if (ci->flag & VM_CALL_FCALL) rb_ary_push(flags, rb_str_new2("FCALL"));
+		if (ci->flag & VM_CALL_VCALL) rb_ary_push(flags, rb_str_new2("VCALL"));
+		if (ci->flag & VM_CALL_TAILCALL) rb_ary_push(flags, rb_str_new2("TAILCALL"));
+		if (ci->flag & VM_CALL_SUPER) rb_ary_push(flags, rb_str_new2("SUPER"));
+		if (ci->flag & VM_CALL_KWARG) rb_ary_push(flags, rb_str_new2("KWARG"));
+		if (ci->flag & VM_CALL_OPT_SEND) rb_ary_push(flags, rb_str_new2("SNED")); /* maybe not reachable */
+		if (ci->flag & VM_CALL_ARGS_SIMPLE) rb_ary_push(flags, rb_str_new2("ARGS_SIMPLE")); /* maybe not reachable */
+		rb_ary_push(ary, rb_ary_join(flags, rb_str_new2("|")));
+	    }
+	    ret = rb_sprintf("<callinfo!%"PRIsVALUE">", rb_ary_join(ary, rb_str_new2(", ")));
+	}
+	break;
+
+      case TS_CALLCACHE:
+	ret = rb_str_new2("<callcache>");
 	break;
 
       case TS_CDHASH:
@@ -822,11 +1363,20 @@ insn_operand_intern(rb_iseq_t *iseq,
 	break;
 
       case TS_FUNCPTR:
-	ret = rb_str_new2("<funcptr>");
+	{
+#ifdef HAVE_DLADDR
+	    Dl_info info;
+	    if (dladdr((void *)op, &info) && info.dli_sname) {
+		ret = rb_str_new_cstr(info.dli_sname);
+		break;
+	    }
+#endif
+	    ret = rb_str_new2("<funcptr>");
+	}
 	break;
 
       default:
-	rb_bug("rb_iseq_disasm: unknown operand type: %c", type);
+	rb_bug("insn_operand_intern: unknown operand type: %c", type);
     }
     return ret;
 }
@@ -836,10 +1386,10 @@ insn_operand_intern(rb_iseq_t *iseq,
  * Iseq -> Iseq inspect object
  */
 int
-rb_iseq_disasm_insn(VALUE ret, VALUE *iseq, size_t pos,
-		    rb_iseq_t *iseqdat, VALUE child)
+rb_iseq_disasm_insn(VALUE ret, const VALUE *code, size_t pos,
+		    const rb_iseq_t *iseq, VALUE child)
 {
-    VALUE insn = iseq[pos];
+    VALUE insn = code[pos];
     int len = insn_len(insn);
     int j;
     const char *types = insn_op_types(insn);
@@ -857,9 +1407,9 @@ rb_iseq_disasm_insn(VALUE ret, VALUE *iseq, size_t pos,
 
     for (j = 0; types[j]; j++) {
 	const char *types = insn_op_types(insn);
-	VALUE opstr = insn_operand_intern(iseqdat, insn, j, iseq[pos + j + 1],
-					  len, pos, &iseq[pos + j + 2],
-					  child);
+	VALUE opstr = rb_insn_operand_intern(iseq, insn, j, code[pos + j + 1],
+					     len, pos, &code[pos + j + 2],
+					     child);
 	rb_str_concat(str, opstr);
 
 	if (types[j + 1]) {
@@ -867,22 +1417,14 @@ rb_iseq_disasm_insn(VALUE ret, VALUE *iseq, size_t pos,
 	}
     }
 
-    if (1) {
-	int line_no = find_line_no(iseqdat, pos);
-	int prev = find_prev_line_no(iseqdat, pos);
+    {
+	unsigned int line_no = find_line_no(iseq, pos);
+	unsigned int prev = pos == 0 ? 0 : find_line_no(iseq, pos - 1);
 	if (line_no && line_no != prev) {
 	    long slen = RSTRING_LEN(str);
 	    slen = (slen > 70) ? 0 : (70 - slen);
 	    str = rb_str_catf(str, "%*s(%4d)", (int)slen, "", line_no);
 	}
-    }
-    else {
-	/* for debug */
-	struct iseq_insn_info_entry *entry = get_insn_info(iseqdat, pos);
-	long slen = RSTRING_LEN(str);
-	slen = (slen > 60) ? 0 : (60 - slen);
-	str = rb_str_catf(str, "%*s(line: %d, sp: %d)",
-			  (int)slen, "", entry->line_no, entry->sp);
     }
 
     if (ret) {
@@ -917,28 +1459,37 @@ catch_type(int type)
     }
 }
 
-VALUE
-rb_iseq_disasm(VALUE self)
+static VALUE
+iseq_inspect(const rb_iseq_t *iseq)
 {
-    rb_iseq_t *iseqdat = iseq_check(self);
-    VALUE *iseq;
+    if (!iseq->body->location.label) {
+	return rb_sprintf("#<ISeq: uninitialized>");
+    }
+    else {
+	return rb_sprintf("#<ISeq:%s@%s>", RSTRING_PTR(iseq->body->location.label), RSTRING_PTR(iseq->body->location.path));
+    }
+}
+
+VALUE
+rb_iseq_disasm(const rb_iseq_t *iseq)
+{
+    VALUE *code;
     VALUE str = rb_str_new(0, 0);
-    VALUE child = rb_ary_new();
-    unsigned long size;
-    int i;
+    VALUE child = rb_ary_tmp_new(3);
+    unsigned int size;
+    unsigned int i;
     long l;
-    ID *tbl;
+    const ID *tbl;
     size_t n;
     enum {header_minlen = 72};
 
     rb_secure(1);
 
-    iseq = iseqdat->iseq;
-    size = iseqdat->iseq_size;
+    size = iseq->body->iseq_size;
 
     rb_str_cat2(str, "== disasm: ");
 
-    rb_str_concat(str, iseq_inspect(iseqdat->self));
+    rb_str_concat(str, iseq_inspect(iseq));
     if ((l = RSTRING_LEN(str)) < header_minlen) {
 	rb_str_resize(str, header_minlen);
 	memset(RSTRING_PTR(str) + l, '=', header_minlen - l);
@@ -946,103 +1497,231 @@ rb_iseq_disasm(VALUE self)
     rb_str_cat2(str, "\n");
 
     /* show catch table information */
-    if (iseqdat->catch_table_size != 0) {
+    if (iseq->body->catch_table) {
 	rb_str_cat2(str, "== catch table\n");
     }
-    for (i = 0; i < iseqdat->catch_table_size; i++) {
-	struct iseq_catch_table_entry *entry = &iseqdat->catch_table[i];
-	rb_str_catf(str,
-		    "| catch type: %-6s st: %04d ed: %04d sp: %04d cont: %04d\n",
-		    catch_type((int)entry->type), (int)entry->start,
-		    (int)entry->end, (int)entry->sp, (int)entry->cont);
-	if (entry->iseq) {
-	    rb_str_concat(str, rb_iseq_disasm(entry->iseq));
+    if (iseq->body->catch_table) {
+	for (i = 0; i < iseq->body->catch_table->size; i++) {
+	    const struct iseq_catch_table_entry *entry = &iseq->body->catch_table->entries[i];
+	    rb_str_catf(str,
+			"| catch type: %-6s st: %04d ed: %04d sp: %04d cont: %04d\n",
+			catch_type((int)entry->type), (int)entry->start,
+			(int)entry->end, (int)entry->sp, (int)entry->cont);
+	    if (entry->iseq) {
+		rb_str_concat(str, rb_iseq_disasm(rb_iseq_check(entry->iseq)));
+	    }
 	}
     }
-    if (iseqdat->catch_table_size != 0) {
+    if (iseq->body->catch_table) {
 	rb_str_cat2(str, "|-------------------------------------"
 		    "-----------------------------------\n");
     }
 
     /* show local table information */
-    tbl = iseqdat->local_table;
+    tbl = iseq->body->local_table;
 
     if (tbl) {
 	rb_str_catf(str,
 		    "local table (size: %d, argc: %d "
-		    "[opts: %d, rest: %d, post: %d, block: %d] s%d)\n",
-		    iseqdat->local_size, iseqdat->argc,
-		    iseqdat->arg_opts, iseqdat->arg_rest,
-		    iseqdat->arg_post_len, iseqdat->arg_block,
-		    iseqdat->arg_simple);
+		    "[opts: %d, rest: %d, post: %d, block: %d, kw: %d@%d, kwrest: %d])\n",
+		    iseq->body->local_size,
+		    iseq->body->param.lead_num,
+		    iseq->body->param.opt_num,
+		    iseq->body->param.flags.has_rest ? iseq->body->param.rest_start : -1,
+		    iseq->body->param.post_num,
+		    iseq->body->param.flags.has_block ? iseq->body->param.block_start : -1,
+		    iseq->body->param.flags.has_kw ? iseq->body->param.keyword->num : -1,
+		    iseq->body->param.flags.has_kw ? iseq->body->param.keyword->required_num : -1,
+		    iseq->body->param.flags.has_kwrest ? iseq->body->param.keyword->rest_start : -1);
 
-	for (i = 0; i < iseqdat->local_table_size; i++) {
-	    const char *name = rb_id2name(tbl[i]);
-	    char info[0x100];
+	for (i = 0; i < iseq->body->local_table_size; i++) {
+	    int li = (int)i;
+	    long width;
+	    VALUE name = id_to_name(tbl[i], 0);
 	    char argi[0x100] = "";
 	    char opti[0x100] = "";
 
-	    if (iseqdat->arg_opts) {
-		int argc = iseqdat->argc;
-		int opts = iseqdat->arg_opts;
-		if (i >= argc && i < argc + opts - 1) {
-		    snprintf(opti, sizeof(opti), "Opt=%ld",
-			     iseqdat->arg_opt_table[i - argc]);
+	    if (iseq->body->param.flags.has_opt) {
+		int argc = iseq->body->param.lead_num;
+		int opts = iseq->body->param.opt_num;
+		if (li >= argc && li < argc + opts) {
+		    snprintf(opti, sizeof(opti), "Opt=%"PRIdVALUE,
+			     iseq->body->param.opt_table[li - argc]);
 		}
 	    }
 
 	    snprintf(argi, sizeof(argi), "%s%s%s%s%s",	/* arg, opts, rest, post  block */
-		     iseqdat->argc > i ? "Arg" : "",
+		     iseq->body->param.lead_num > li ? "Arg" : "",
 		     opti,
-		     iseqdat->arg_rest == i ? "Rest" : "",
-		     (iseqdat->arg_post_start <= i &&
-		      i < iseqdat->arg_post_start + iseqdat->arg_post_len) ? "Post" : "",
-		     iseqdat->arg_block == i ? "Block" : "");
+		     (iseq->body->param.flags.has_rest && iseq->body->param.rest_start == li) ? "Rest" : "",
+		     (iseq->body->param.flags.has_post && iseq->body->param.post_start <= li && li < iseq->body->param.post_start + iseq->body->param.post_num) ? "Post" : "",
+		     (iseq->body->param.flags.has_block && iseq->body->param.block_start == li) ? "Block" : "");
 
-	    snprintf(info, sizeof(info), "%s%s%s%s", name ? name : "?",
-		     *argi ? "<" : "", argi, *argi ? ">" : "");
-
-	    rb_str_catf(str, "[%2d] %-11s", iseqdat->local_size - i, info);
+	    rb_str_catf(str, "[%2d] ", iseq->body->local_size - i);
+	    width = RSTRING_LEN(str) + 11;
+	    if (name)
+		rb_str_append(str, name);
+	    else
+		rb_str_cat2(str, "?");
+	    if (*argi) rb_str_catf(str, "<%s>", argi);
+	    if ((width -= RSTRING_LEN(str)) > 0) rb_str_catf(str, "%*s", (int)width, "");
 	}
 	rb_str_cat2(str, "\n");
     }
 
     /* show each line */
+    code = rb_iseq_original_iseq(iseq);
     for (n = 0; n < size;) {
-	n += rb_iseq_disasm_insn(str, iseq, n, iseqdat, child);
+	n += rb_iseq_disasm_insn(str, code, n, iseq, child);
     }
 
-    for (i = 0; i < RARRAY_LEN(child); i++) {
-	VALUE isv = rb_ary_entry(child, i);
-	rb_str_concat(str, rb_iseq_disasm(isv));
+    for (l = 0; l < RARRAY_LEN(child); l++) {
+	VALUE isv = rb_ary_entry(child, l);
+	rb_str_concat(str, rb_iseq_disasm(rb_iseq_check((rb_iseq_t *)isv)));
     }
 
     return str;
 }
 
+/*
+ *  call-seq:
+ *     iseq.disasm -> str
+ *     iseq.disassemble -> str
+ *
+ *  Returns the instruction sequence as a +String+ in human readable form.
+ *
+ *    puts RubyVM::InstructionSequence.compile('1 + 2').disasm
+ *
+ *  Produces:
+ *
+ *    == disasm: <RubyVM::InstructionSequence:<compiled>@<compiled>>==========
+ *    0000 trace            1                                               (   1)
+ *    0002 putobject        1
+ *    0004 putobject        2
+ *    0006 opt_plus         <ic:1>
+ *    0008 leave
+ */
 static VALUE
-iseq_s_disasm(VALUE klass, VALUE body)
+iseqw_disasm(VALUE self)
 {
-    VALUE ret = Qnil;
-    rb_iseq_t *iseq;
-    extern rb_iseq_t *rb_method_get_iseq(VALUE body);
+    return rb_iseq_disasm(iseqw_check(self));
+}
+
+/*
+ *  Returns the instruction sequence containing the given proc or method.
+ *
+ *  For example, using irb:
+ *
+ *	# a proc
+ *	> p = proc { num = 1 + 2 }
+ *	> RubyVM::InstructionSequence.of(p)
+ *	> #=> <RubyVM::InstructionSequence:block in irb_binding@(irb)>
+ *
+ *	# for a method
+ *	> def foo(bar); puts bar; end
+ *	> RubyVM::InstructionSequence.of(method(:foo))
+ *	> #=> <RubyVM::InstructionSequence:foo@(irb)>
+ *
+ *  Using ::compile_file:
+ *
+ *	# /tmp/iseq_of.rb
+ *	def hello
+ *	  puts "hello, world"
+ *	end
+ *
+ *	$a_global_proc = proc { str = 'a' + 'b' }
+ *
+ *	# in irb
+ *	> require '/tmp/iseq_of.rb'
+ *
+ *	# first the method hello
+ *	> RubyVM::InstructionSequence.of(method(:hello))
+ *	> #=> #<RubyVM::InstructionSequence:0x007fb73d7cb1d0>
+ *
+ *	# then the global proc
+ *	> RubyVM::InstructionSequence.of($a_global_proc)
+ *	> #=> #<RubyVM::InstructionSequence:0x007fb73d7caf78>
+ */
+static VALUE
+iseqw_s_of(VALUE klass, VALUE body)
+{
+    const rb_iseq_t *iseq = NULL;
 
     rb_secure(1);
 
     if (rb_obj_is_proc(body)) {
 	rb_proc_t *proc;
-	VALUE iseqval;
 	GetProcPtr(body, proc);
-	iseqval = proc->block.iseq->self;
-	if (RUBY_VM_NORMAL_ISEQ_P(iseqval)) {
-	    ret = rb_iseq_disasm(iseqval);
+	iseq = proc->block.iseq;
+
+	if (!RUBY_VM_NORMAL_ISEQ_P(iseq)) {
+	    iseq = NULL;
 	}
     }
-    else if ((iseq = rb_method_get_iseq(body)) != 0) {
-	ret = rb_iseq_disasm(iseq->self);
+    else {
+	iseq = rb_method_iseq(body);
     }
 
-    return ret;
+    return iseq ? iseqw_new(iseq) : Qnil;
+}
+
+/*
+ *  call-seq:
+ *     InstructionSequence.disasm(body) -> str
+ *     InstructionSequence.disassemble(body) -> str
+ *
+ *  Takes +body+, a Method or Proc object, and returns a String with the
+ *  human readable instructions for +body+.
+ *
+ *  For a Method object:
+ *
+ *    # /tmp/method.rb
+ *    def hello
+ *      puts "hello, world"
+ *    end
+ *
+ *    puts RubyVM::InstructionSequence.disasm(method(:hello))
+ *
+ *  Produces:
+ *
+ *    == disasm: <RubyVM::InstructionSequence:hello@/tmp/method.rb>============
+ *    0000 trace            8                                               (   1)
+ *    0002 trace            1                                               (   2)
+ *    0004 putself
+ *    0005 putstring        "hello, world"
+ *    0007 send             :puts, 1, nil, 8, <ic:0>
+ *    0013 trace            16                                              (   3)
+ *    0015 leave                                                            (   2)
+ *
+ *  For a Proc:
+ *
+ *    # /tmp/proc.rb
+ *    p = proc { num = 1 + 2 }
+ *    puts RubyVM::InstructionSequence.disasm(p)
+ *
+ *  Produces:
+ *
+ *    == disasm: <RubyVM::InstructionSequence:block in <main>@/tmp/proc.rb>===
+ *    == catch table
+ *    | catch type: redo   st: 0000 ed: 0012 sp: 0000 cont: 0000
+ *    | catch type: next   st: 0000 ed: 0012 sp: 0000 cont: 0012
+ *    |------------------------------------------------------------------------
+ *    local table (size: 2, argc: 0 [opts: 0, rest: -1, post: 0, block: -1] s1)
+ *    [ 2] num
+ *    0000 trace            1                                               (   1)
+ *    0002 putobject        1
+ *    0004 putobject        2
+ *    0006 opt_plus         <ic:1>
+ *    0008 dup
+ *    0009 setlocal         num, 0
+ *    0012 leave
+ *
+ */
+static VALUE
+iseqw_s_disasm(VALUE klass, VALUE body)
+{
+    VALUE iseqw = iseqw_s_of(klass, body);
+    return NIL_P(iseqw) ? Qnil : rb_iseq_disasm(iseqw_check(iseqw));
 }
 
 const char *
@@ -1065,11 +1744,7 @@ ruby_node_name(int node)
 static VALUE
 register_label(struct st_table *table, unsigned long idx)
 {
-    VALUE sym;
-    char buff[8 + (sizeof(idx) * CHAR_BIT * 32 / 100)];
-
-    snprintf(buff, sizeof(buff), "label_%lu", idx);
-    sym = ID2SYM(rb_intern(buff));
+    VALUE sym = rb_str_intern(rb_sprintf("label_%lu", idx));
     st_insert(table, idx, sym);
     return sym;
 }
@@ -1078,7 +1753,7 @@ static VALUE
 exception_type2symbol(VALUE type)
 {
     ID id;
-    switch(type) {
+    switch (type) {
       case CATCH_TYPE_RESCUE: CONST_ID(id, "rescue"); break;
       case CATCH_TYPE_ENSURE: CONST_ID(id, "ensure"); break;
       case CATCH_TYPE_RETRY:  CONST_ID(id, "retry");  break;
@@ -1086,7 +1761,7 @@ exception_type2symbol(VALUE type)
       case CATCH_TYPE_REDO:   CONST_ID(id, "redo");   break;
       case CATCH_TYPE_NEXT:   CONST_ID(id, "next");   break;
       default:
-	rb_bug("...");
+	rb_bug("exception_type2symbol: unknown type %d", (int)type);
     }
     return ID2SYM(id);
 }
@@ -1100,16 +1775,19 @@ cdhash_each(VALUE key, VALUE value, VALUE ary)
 }
 
 static VALUE
-iseq_data_to_ary(rb_iseq_t *iseq)
+iseq_data_to_ary(const rb_iseq_t *iseq)
 {
-    long i, pos;
-    int line = 0;
-    VALUE *seq;
+    unsigned int i;
+    long l;
+    size_t ti;
+    unsigned int pos;
+    unsigned int line = 0;
+    VALUE *seq, *iseq_original;
 
     VALUE val = rb_ary_new();
     VALUE type; /* Symbol */
     VALUE locals = rb_ary_new();
-    VALUE args = rb_ary_new();
+    VALUE params = rb_hash_new();
     VALUE body = rb_ary_new(); /* [[:insn1, ...], ...] */
     VALUE nbody;
     VALUE exception = rb_ary_new(); /* [[....]] */
@@ -1145,7 +1823,7 @@ iseq_data_to_ary(rb_iseq_t *iseq)
     }
 
     /* type */
-    switch(iseq->type) {
+    switch (iseq->body->type) {
       case ISEQ_TYPE_TOP:    type = sym_top;    break;
       case ISEQ_TYPE_METHOD: type = sym_method; break;
       case ISEQ_TYPE_BLOCK:  type = sym_block;  break;
@@ -1159,53 +1837,68 @@ iseq_data_to_ary(rb_iseq_t *iseq)
     };
 
     /* locals */
-    for (i=0; i<iseq->local_table_size; i++) {
-	ID lid = iseq->local_table[i];
+    for (i=0; i<iseq->body->local_table_size; i++) {
+	ID lid = iseq->body->local_table[i];
 	if (lid) {
-	    if (rb_id2str(lid)) rb_ary_push(locals, ID2SYM(lid));
+	    if (rb_id2str(lid)) {
+		rb_ary_push(locals, ID2SYM(lid));
+	    }
+	    else { /* hidden variable from id_internal() */
+		rb_ary_push(locals, ULONG2NUM(iseq->body->local_table_size-i+1));
+	    }
 	}
 	else {
 	    rb_ary_push(locals, ID2SYM(rb_intern("#arg_rest")));
 	}
     }
 
-    /* args */
+    /* params */
     {
-	/*
-	 * [argc,                 # argc
-	 *  [label1, label2, ...] # opts
-	 *  rest index,
-	 *  post_len
-	 *  post_start
-	 *  block index,
-	 *  simple,
-         * ]
-	 */
-	VALUE arg_opt_labels = rb_ary_new();
 	int j;
 
-	for (j=0; j<iseq->arg_opts; j++) {
-	    rb_ary_push(arg_opt_labels,
-			register_label(labels_table, iseq->arg_opt_table[j]));
-	}
+	if (iseq->body->param.flags.has_opt) {
+          int len = iseq->body->param.opt_num + 1;
+          VALUE arg_opt_labels = rb_ary_new2(len);
+
+          for (j = 0; j < len; j++) {
+              VALUE l = register_label(labels_table, iseq->body->param.opt_table[j]);
+              rb_ary_push(arg_opt_labels, l);
+          }
+          rb_hash_aset(params, ID2SYM(rb_intern("opt")), arg_opt_labels);
+        }
 
 	/* commit */
-	if (iseq->arg_simple == 1) {
-	    args = INT2FIX(iseq->argc);
+	if (iseq->body->param.flags.has_lead) rb_hash_aset(params, ID2SYM(rb_intern("lead_num")), INT2FIX(iseq->body->param.lead_num));
+	if (iseq->body->param.flags.has_post) rb_hash_aset(params, ID2SYM(rb_intern("post_num")), INT2FIX(iseq->body->param.post_num));
+	if (iseq->body->param.flags.has_post) rb_hash_aset(params, ID2SYM(rb_intern("post_start")), INT2FIX(iseq->body->param.post_start));
+	if (iseq->body->param.flags.has_rest) rb_hash_aset(params, ID2SYM(rb_intern("rest_start")), INT2FIX(iseq->body->param.rest_start));
+	if (iseq->body->param.flags.has_block) rb_hash_aset(params, ID2SYM(rb_intern("block_start")), INT2FIX(iseq->body->param.block_start));
+	if (iseq->body->param.flags.has_kw) {
+	    VALUE keywords = rb_ary_new();
+	    int i, j;
+	    for (i=0; i<iseq->body->param.keyword->required_num; i++) {
+		rb_ary_push(keywords, ID2SYM(iseq->body->param.keyword->table[i]));
+	    }
+	    for (j=0; i<iseq->body->param.keyword->num; i++, j++) {
+		VALUE key = rb_ary_new_from_args(1, ID2SYM(iseq->body->param.keyword->table[i]));
+		if (iseq->body->param.keyword->default_values[j] != Qundef) {
+		    rb_ary_push(key, iseq->body->param.keyword->default_values[j]);
+		}
+		rb_ary_push(keywords, key);
+	    }
+
+	    rb_hash_aset(params, ID2SYM(rb_intern("kwbits")),
+	                 INT2FIX(iseq->body->param.keyword->bits_start));
+	    rb_hash_aset(params, ID2SYM(rb_intern("keyword")), keywords);
 	}
-	else {
-	    rb_ary_push(args, INT2FIX(iseq->argc));
-	    rb_ary_push(args, arg_opt_labels);
-	    rb_ary_push(args, INT2FIX(iseq->arg_post_len));
-	    rb_ary_push(args, INT2FIX(iseq->arg_post_start));
-	    rb_ary_push(args, INT2FIX(iseq->arg_rest));
-	    rb_ary_push(args, INT2FIX(iseq->arg_block));
-	    rb_ary_push(args, INT2FIX(iseq->arg_simple));
-	}
+	if (iseq->body->param.flags.has_kwrest) rb_hash_aset(params, ID2SYM(rb_intern("kwrest")), INT2FIX(iseq->body->param.keyword->rest_start));
+	if (iseq->body->param.flags.ambiguous_param0) rb_hash_aset(params, ID2SYM(rb_intern("ambiguous_param0")), Qtrue);
     }
 
     /* body */
-    for (seq = iseq->iseq; seq < iseq->iseq + iseq->iseq_size; ) {
+    iseq_original = rb_iseq_original_iseq((rb_iseq_t *)iseq);
+
+    for (seq = iseq_original; seq < iseq_original + iseq->body->iseq_size; ) {
 	VALUE insn = *seq++;
 	int j, len = insn_len(insn);
 	VALUE *nseq = seq + len - 1;
@@ -1215,12 +1908,11 @@ iseq_data_to_ary(rb_iseq_t *iseq)
 	for (j=0; j<len-1; j++, seq++) {
 	    switch (insn_op_type(insn, j)) {
 	      case TS_OFFSET: {
-		unsigned long idx = nseq - iseq->iseq + *seq;
+		unsigned long idx = nseq - iseq_original + *seq;
 		rb_ary_push(ary, register_label(labels_table, idx));
 		break;
 	      }
 	      case TS_LINDEX:
-	      case TS_DINDEX:
 	      case TS_NUM:
 		rb_ary_push(ary, INT2FIX(*seq));
 		break;
@@ -1229,9 +1921,9 @@ iseq_data_to_ary(rb_iseq_t *iseq)
 		break;
 	      case TS_ISEQ:
 		{
-		    rb_iseq_t *iseq = (rb_iseq_t *)*seq;
+		    const rb_iseq_t *iseq = (rb_iseq_t *)*seq;
 		    if (iseq) {
-			VALUE val = iseq_data_to_ary(iseq);
+			VALUE val = iseq_data_to_ary(rb_iseq_check(iseq));
 			rb_ary_push(ary, val);
 		    }
 		    else {
@@ -1245,10 +1937,40 @@ iseq_data_to_ary(rb_iseq_t *iseq)
 		    rb_ary_push(ary, ID2SYM(entry->id));
 		}
 		break;
-	      case TS_IC: {
-		  struct iseq_inline_cache_entry *ic = (struct iseq_inline_cache_entry *)*seq;
-		    rb_ary_push(ary, INT2FIX(ic - iseq->ic_entries));
+	      case TS_IC:
+		{
+		    union iseq_inline_storage_entry *is = (union iseq_inline_storage_entry *)*seq;
+		    rb_ary_push(ary, INT2FIX(is - iseq->body->is_entries));
+		}
+		break;
+	      case TS_CALLINFO:
+		{
+		    struct rb_call_info *ci = (struct rb_call_info *)*seq;
+		    VALUE e = rb_hash_new();
+		    int orig_argc = ci->orig_argc;
+
+		    rb_hash_aset(e, ID2SYM(rb_intern("mid")), ci->mid ? ID2SYM(ci->mid) : Qnil);
+		    rb_hash_aset(e, ID2SYM(rb_intern("flag")), UINT2NUM(ci->flag));
+
+		    if (ci->flag & VM_CALL_KWARG) {
+			struct rb_call_info_with_kwarg *ci_kw = (struct rb_call_info_with_kwarg *)ci;
+			int i;
+			VALUE kw = rb_ary_new2((long)ci_kw->kw_arg->keyword_len);
+
+			orig_argc -= ci_kw->kw_arg->keyword_len;
+			for (i = 0; i < ci_kw->kw_arg->keyword_len; i++) {
+			    rb_ary_push(kw, ci_kw->kw_arg->keywords[i]);
+			}
+			rb_hash_aset(e, ID2SYM(rb_intern("kw_arg")), kw);
+		    }
+
+		    rb_hash_aset(e, ID2SYM(rb_intern("orig_argc")),
+				INT2FIX(orig_argc));
+		    rb_ary_push(ary, e);
 	        }
+		break;
+	      case TS_CALLCACHE:
+		rb_ary_push(ary, Qfalse);
 		break;
 	      case TS_ID:
 		rb_ary_push(ary, ID2SYM(*seq));
@@ -1263,11 +1985,21 @@ iseq_data_to_ary(rb_iseq_t *iseq)
 
 		    for (i=0; i<RARRAY_LEN(val); i+=2) {
 			VALUE pos = FIX2INT(rb_ary_entry(val, i+1));
-			unsigned long idx = nseq - iseq->iseq + pos;
+			unsigned long idx = nseq - iseq_original + pos;
 
 			rb_ary_store(val, i+1,
 				     register_label(labels_table, idx));
 		    }
+		    rb_ary_push(ary, val);
+		}
+		break;
+	      case TS_FUNCPTR:
+		{
+#if SIZEOF_VALUE <= SIZEOF_LONG
+		    VALUE val = LONG2NUM((SIGNED_VALUE)*seq);
+#else
+		    VALUE val = LL2NUM((SIGNED_VALUE)*seq);
+#endif
 		    rb_ary_push(ary, val);
 		}
 		break;
@@ -1281,14 +2013,12 @@ iseq_data_to_ary(rb_iseq_t *iseq)
     nbody = body;
 
     /* exception */
-    for (i=0; i<iseq->catch_table_size; i++) {
+    if (iseq->body->catch_table) for (i=0; i<iseq->body->catch_table->size; i++) {
 	VALUE ary = rb_ary_new();
-	struct iseq_catch_table_entry *entry = &iseq->catch_table[i];
+	const struct iseq_catch_table_entry *entry = &iseq->body->catch_table->entries[i];
 	rb_ary_push(ary, exception_type2symbol(entry->type));
 	if (entry->iseq) {
-	    rb_iseq_t *eiseq;
-	    GetISeqPtr(entry->iseq, eiseq);
-	    rb_ary_push(ary, iseq_data_to_ary(eiseq));
+	    rb_ary_push(ary, iseq_data_to_ary(rb_iseq_check(entry->iseq)));
 	}
 	else {
 	    rb_ary_push(ary, Qnil);
@@ -1296,231 +2026,448 @@ iseq_data_to_ary(rb_iseq_t *iseq)
 	rb_ary_push(ary, register_label(labels_table, entry->start));
 	rb_ary_push(ary, register_label(labels_table, entry->end));
 	rb_ary_push(ary, register_label(labels_table, entry->cont));
-	rb_ary_push(ary, INT2FIX(entry->sp));
+	rb_ary_push(ary, UINT2NUM(entry->sp));
 	rb_ary_push(exception, ary);
     }
 
     /* make body with labels and insert line number */
     body = rb_ary_new();
+    ti = 0;
 
-    for (i=0, pos=0; i<RARRAY_LEN(nbody); i++) {
-	VALUE ary = RARRAY_PTR(nbody)[i];
-	VALUE label;
+    for (l=0, pos=0; l<RARRAY_LEN(nbody); l++) {
+	VALUE ary = RARRAY_AREF(nbody, l);
+	st_data_t label;
 
 	if (st_lookup(labels_table, pos, &label)) {
-	    rb_ary_push(body, label);
+	    rb_ary_push(body, (VALUE)label);
 	}
 
-	if (iseq->insn_info_table[i].line_no != line) {
-	    line = iseq->insn_info_table[i].line_no;
+	if (ti < iseq->body->line_info_size && iseq->body->line_info_table[ti].position == pos) {
+	    line = iseq->body->line_info_table[ti].line_no;
 	    rb_ary_push(body, INT2FIX(line));
+	    ti++;
 	}
 
 	rb_ary_push(body, ary);
-	pos += RARRAY_LEN(ary);
+	pos += RARRAY_LENINT(ary); /* reject too huge data */
     }
+    RB_GC_GUARD(nbody);
 
     st_free_table(labels_table);
 
-    rb_hash_aset(misc, ID2SYM(rb_intern("arg_size")), INT2FIX(iseq->arg_size));
-    rb_hash_aset(misc, ID2SYM(rb_intern("local_size")), INT2FIX(iseq->local_size));
-    rb_hash_aset(misc, ID2SYM(rb_intern("stack_max")), INT2FIX(iseq->stack_max));
+    rb_hash_aset(misc, ID2SYM(rb_intern("arg_size")), INT2FIX(iseq->body->param.size));
+    rb_hash_aset(misc, ID2SYM(rb_intern("local_size")), INT2FIX(iseq->body->local_size));
+    rb_hash_aset(misc, ID2SYM(rb_intern("stack_max")), INT2FIX(iseq->body->stack_max));
 
+    /* TODO: compatibility issue */
     /*
      * [:magic, :major_version, :minor_version, :format_type, :misc,
-     *  :name, :filename, :filepath, :line_no, :type, :locals, :args,
+     *  :name, :path, :absolute_path, :start_lineno, :type, :locals, :args,
      *  :catch_table, :bytecode]
      */
     rb_ary_push(val, rb_str_new2("YARVInstructionSequence/SimpleDataFormat"));
-    rb_ary_push(val, INT2FIX(1)); /* major */
-    rb_ary_push(val, INT2FIX(2)); /* minor */
+    rb_ary_push(val, INT2FIX(ISEQ_MAJOR_VERSION)); /* major */
+    rb_ary_push(val, INT2FIX(ISEQ_MINOR_VERSION)); /* minor */
     rb_ary_push(val, INT2FIX(1));
     rb_ary_push(val, misc);
-    rb_ary_push(val, iseq->name);
-    rb_ary_push(val, iseq->filename);
-    rb_ary_push(val, iseq->filepath);
-    rb_ary_push(val, iseq->line_no);
+    rb_ary_push(val, iseq->body->location.label);
+    rb_ary_push(val, iseq->body->location.path);
+    rb_ary_push(val, iseq->body->location.absolute_path);
+    rb_ary_push(val, iseq->body->location.first_lineno);
     rb_ary_push(val, type);
     rb_ary_push(val, locals);
-    rb_ary_push(val, args);
+    rb_ary_push(val, params);
     rb_ary_push(val, exception);
     rb_ary_push(val, body);
     return val;
 }
 
 VALUE
-rb_iseq_clone(VALUE iseqval, VALUE newcbase)
-{
-    VALUE newiseq = iseq_alloc(rb_cISeq);
-    rb_iseq_t *iseq0, *iseq1;
-
-    GetISeqPtr(iseqval, iseq0);
-    GetISeqPtr(newiseq, iseq1);
-
-    *iseq1 = *iseq0;
-    iseq1->self = newiseq;
-    if (!iseq1->orig) {
-	iseq1->orig = iseqval;
-    }
-    if (iseq0->local_iseq == iseq0) {
-	iseq1->local_iseq = iseq1;
-    }
-    if (newcbase) {
-	iseq1->cref_stack = NEW_BLOCK(newcbase);
-	if (iseq0->cref_stack->nd_next) {
-	    iseq1->cref_stack->nd_next = iseq0->cref_stack->nd_next;
-	}
-	iseq1->klass = newcbase;
-    }
-
-    return newiseq;
-}
-
-VALUE
 rb_iseq_parameters(const rb_iseq_t *iseq, int is_proc)
 {
-    int i, r, s;
-    VALUE a, args = rb_ary_new2(iseq->arg_size);
-    ID req, opt, rest, block;
+    int i, r;
+    VALUE a, args = rb_ary_new2(iseq->body->param.size);
+    ID req, opt, rest, block, key, keyrest;
 #define PARAM_TYPE(type) rb_ary_push(a = rb_ary_new2(2), ID2SYM(type))
-#define PARAM_ID(i) iseq->local_table[i]
+#define PARAM_ID(i) iseq->body->local_table[(i)]
 #define PARAM(i, type) (		      \
 	PARAM_TYPE(type),		      \
-	rb_id2name(PARAM_ID(i)) ?	      \
+	rb_id2str(PARAM_ID(i)) ?	      \
 	rb_ary_push(a, ID2SYM(PARAM_ID(i))) : \
 	a)
 
     CONST_ID(req, "req");
     CONST_ID(opt, "opt");
     if (is_proc) {
-	for (i = 0; i < iseq->argc; i++) {
+	for (i = 0; i < iseq->body->param.lead_num; i++) {
 	    PARAM_TYPE(opt);
-	    rb_ary_push(a, rb_id2name(PARAM_ID(i)) ? ID2SYM(PARAM_ID(i)) : Qnil);
+	    rb_ary_push(a, rb_id2str(PARAM_ID(i)) ? ID2SYM(PARAM_ID(i)) : Qnil);
 	    rb_ary_push(args, a);
 	}
     }
     else {
-	for (i = 0; i < iseq->argc; i++) {
+	for (i = 0; i < iseq->body->param.lead_num; i++) {
 	    rb_ary_push(args, PARAM(i, req));
 	}
     }
-    r = iseq->arg_rest != -1 ? iseq->arg_rest :
-	iseq->arg_post_len > 0 ? iseq->arg_post_start :
-	iseq->arg_block != -1 ? iseq->arg_block :
-	iseq->arg_size;
-    for (s = i; i < r; i++) {
+    r = iseq->body->param.lead_num + iseq->body->param.opt_num;
+    for (; i < r; i++) {
 	PARAM_TYPE(opt);
-	if (rb_id2name(PARAM_ID(i))) {
+	if (rb_id2str(PARAM_ID(i))) {
 	    rb_ary_push(a, ID2SYM(PARAM_ID(i)));
 	}
 	rb_ary_push(args, a);
     }
-    if (iseq->arg_rest != -1) {
+    if (iseq->body->param.flags.has_rest) {
 	CONST_ID(rest, "rest");
-	rb_ary_push(args, PARAM(iseq->arg_rest, rest));
+	rb_ary_push(args, PARAM(iseq->body->param.rest_start, rest));
     }
-    r = iseq->arg_post_start + iseq->arg_post_len;
+    r = iseq->body->param.post_start + iseq->body->param.post_num;
     if (is_proc) {
-	for (i = iseq->arg_post_start; i < r; i++) {
+	for (i = iseq->body->param.post_start; i < r; i++) {
 	    PARAM_TYPE(opt);
-	    rb_ary_push(a, rb_id2name(PARAM_ID(i)) ? ID2SYM(PARAM_ID(i)) : Qnil);
+	    rb_ary_push(a, rb_id2str(PARAM_ID(i)) ? ID2SYM(PARAM_ID(i)) : Qnil);
 	    rb_ary_push(args, a);
 	}
     }
     else {
-	for (i = iseq->arg_post_start; i < r; i++) {
+	for (i = iseq->body->param.post_start; i < r; i++) {
 	    rb_ary_push(args, PARAM(i, req));
 	}
     }
-    if (iseq->arg_block != -1) {
+    if (iseq->body->param.flags.has_kw) {
+	i = 0;
+	if (iseq->body->param.keyword->required_num > 0) {
+	    ID keyreq;
+	    CONST_ID(keyreq, "keyreq");
+	    for (; i < iseq->body->param.keyword->required_num; i++) {
+		PARAM_TYPE(keyreq);
+		if (rb_id2str(iseq->body->param.keyword->table[i])) {
+		    rb_ary_push(a, ID2SYM(iseq->body->param.keyword->table[i]));
+		}
+		rb_ary_push(args, a);
+	    }
+	}
+	CONST_ID(key, "key");
+	for (; i < iseq->body->param.keyword->num; i++) {
+	    PARAM_TYPE(key);
+	    if (rb_id2str(iseq->body->param.keyword->table[i])) {
+		rb_ary_push(a, ID2SYM(iseq->body->param.keyword->table[i]));
+	    }
+	    rb_ary_push(args, a);
+	}
+    }
+    if (iseq->body->param.flags.has_kwrest) {
+	CONST_ID(keyrest, "keyrest");
+	rb_ary_push(args, PARAM(iseq->body->param.keyword->rest_start, keyrest));
+    }
+    if (iseq->body->param.flags.has_block) {
 	CONST_ID(block, "block");
-	rb_ary_push(args, PARAM(iseq->arg_block, block));
+	rb_ary_push(args, PARAM(iseq->body->param.block_start, block));
     }
     return args;
 }
 
-/* ruby2cext */
-
 VALUE
-rb_iseq_build_for_ruby2cext(
-    const rb_iseq_t *iseq_template,
-    const rb_insn_func_t *func,
-    const struct iseq_insn_info_entry *insn_info_table,
-    const char **local_table,
-    const VALUE *arg_opt_table,
-    const struct iseq_catch_table_entry *catch_table,
-    const char *name,
-    const char *filename,
-    const unsigned short line_no)
+rb_iseq_defined_string(enum defined_type type)
 {
-    unsigned long i;
-    VALUE iseqval = iseq_alloc(rb_cISeq);
-    rb_iseq_t *iseq;
-    GetISeqPtr(iseqval, iseq);
+    static const char expr_names[][18] = {
+	"nil",
+	"instance-variable",
+	"local-variable",
+	"global-variable",
+	"class variable",
+	"constant",
+	"method",
+	"yield",
+	"super",
+	"self",
+	"true",
+	"false",
+	"assignment",
+	"expression",
+    };
+    const char *estr;
+    VALUE *defs, str;
 
-    /* copy iseq */
-    *iseq = *iseq_template;
-    iseq->name = rb_str_new2(name);
-    iseq->filename = rb_str_new2(filename);
-    iseq->line_no = line_no;
-    iseq->mark_ary = rb_ary_tmp_new(3);
-    OBJ_UNTRUST(iseq->mark_ary);
-    iseq->self = iseqval;
+    if ((unsigned)(type - 1) >= (unsigned)numberof(expr_names)) return 0;
+    estr = expr_names[type - 1];
+    if (!estr[0]) return 0;
+    defs = GET_VM()->defined_strings;
+    if (!defs) {
+	defs = ruby_xcalloc(numberof(expr_names), sizeof(VALUE));
+	GET_VM()->defined_strings = defs;
+    }
+    str = defs[type-1];
+    if (!str) {
+	str = rb_str_new_cstr(estr);
+	OBJ_FREEZE(str);
+	defs[type-1] = str;
+	rb_gc_register_mark_object(str);
+    }
+    return str;
+}
 
-    iseq->iseq = ALLOC_N(VALUE, iseq->iseq_size);
+/* Experimental tracing support: trace(line) -> trace(specified_line)
+ * MRI Specific.
+ */
 
-    for (i=0; i<iseq->iseq_size; i+=2) {
-	iseq->iseq[i] = BIN(opt_call_c_function);
-	iseq->iseq[i+1] = (VALUE)func;
+int
+rb_iseqw_line_trace_each(VALUE iseqw, int (*func)(int line, rb_event_flag_t *events_ptr, void *d), void *data)
+{
+    int trace_num = 0;
+    unsigned int pos;
+    size_t insn;
+    const rb_iseq_t *iseq = iseqw_check(iseqw);
+    int cont = 1;
+    VALUE *iseq_original;
+
+    iseq_original = rb_iseq_original_iseq(iseq);
+    for (pos = 0; cont && pos < iseq->body->iseq_size; pos += insn_len(insn)) {
+	insn = iseq_original[pos];
+
+	if (insn == BIN(trace)) {
+	    rb_event_flag_t current_events;
+
+	    current_events = (rb_event_flag_t)iseq_original[pos+1];
+
+	    if (current_events & RUBY_EVENT_LINE) {
+		rb_event_flag_t events = current_events & RUBY_EVENT_SPECIFIED_LINE;
+		trace_num++;
+
+		if (func) {
+		    int line = find_line_no(iseq, pos);
+		    /* printf("line: %d\n", line); */
+		    cont = (*func)(line, &events, data);
+		    if (current_events != events) {
+			VALUE *encoded = (VALUE *)iseq->body->iseq_encoded;
+			iseq_original[pos+1] = encoded[pos+1] =
+			  (VALUE)(current_events | (events & RUBY_EVENT_SPECIFIED_LINE));
+		    }
+		}
+	    }
+	}
+    }
+    return trace_num;
+}
+
+static int
+collect_trace(int line, rb_event_flag_t *events_ptr, void *ptr)
+{
+    VALUE result = (VALUE)ptr;
+    rb_ary_push(result, INT2NUM(line));
+    return 1;
+}
+
+/*
+ * <b>Experimental MRI specific feature, only available as C level api.</b>
+ *
+ * Returns all +specified_line+ events.
+ */
+VALUE
+rb_iseqw_line_trace_all(VALUE iseqw)
+{
+    VALUE result = rb_ary_new();
+    rb_iseqw_line_trace_each(iseqw, collect_trace, (void *)result);
+    return result;
+}
+
+struct set_specifc_data {
+    int pos;
+    int set;
+    int prev; /* 1: set, 2: unset, 0: not found */
+};
+
+static int
+line_trace_specify(int line, rb_event_flag_t *events_ptr, void *ptr)
+{
+    struct set_specifc_data *data = (struct set_specifc_data *)ptr;
+
+    if (data->pos == 0) {
+	data->prev = *events_ptr & RUBY_EVENT_SPECIFIED_LINE ? 1 : 2;
+	if (data->set) {
+	    *events_ptr = *events_ptr | RUBY_EVENT_SPECIFIED_LINE;
+	}
+	else {
+	    *events_ptr = *events_ptr & ~RUBY_EVENT_SPECIFIED_LINE;
+	}
+	return 0; /* found */
+    }
+    else {
+	data->pos--;
+	return 1;
+    }
+}
+
+/*
+ * <b>Experimental MRI specific feature, only available as C level api.</b>
+ *
+ * Set a +specified_line+ event at the given line position, if the +set+
+ * parameter is +true+.
+ *
+ * This method is useful for building a debugger breakpoint at a specific line.
+ *
+ * A TypeError is raised if +set+ is not boolean.
+ *
+ * If +pos+ is a negative integer a TypeError exception is raised.
+ */
+VALUE
+rb_iseqw_line_trace_specify(VALUE iseqval, VALUE pos, VALUE set)
+{
+    struct set_specifc_data data;
+
+    data.prev = 0;
+    data.pos = NUM2INT(pos);
+    if (data.pos < 0) rb_raise(rb_eTypeError, "`pos' is negative");
+
+    switch (set) {
+      case Qtrue:  data.set = 1; break;
+      case Qfalse: data.set = 0; break;
+      default:
+	rb_raise(rb_eTypeError, "`set' should be true/false");
     }
 
-    rb_iseq_translate_threaded_code(iseq);
+    rb_iseqw_line_trace_each(iseqval, line_trace_specify, (void *)&data);
 
-#define ALLOC_AND_COPY(dst, src, type, size) do { \
-  if (size) { \
-      (dst) = ALLOC_N(type, (size)); \
-      MEMCPY((dst), (src), type, (size)); \
-  } \
-} while (0)
-
-    ALLOC_AND_COPY(iseq->insn_info_table, insn_info_table,
-		   struct iseq_insn_info_entry, iseq->insn_info_size);
-
-    ALLOC_AND_COPY(iseq->catch_table, catch_table,
-		   struct iseq_catch_table_entry, iseq->catch_table_size);
-
-    ALLOC_AND_COPY(iseq->arg_opt_table, arg_opt_table,
-		   VALUE, iseq->arg_opts);
-
-    set_relation(iseq, 0);
-
-    return iseqval;
+    if (data.prev == 0) {
+	rb_raise(rb_eTypeError, "`pos' is out of range.");
+    }
+    return data.prev == 1 ? Qtrue : Qfalse;
 }
+
+VALUE
+rb_iseqw_local_variables(VALUE iseqval)
+{
+    return rb_iseq_local_variables(iseqw_check(iseqval));
+}
+
+/*
+ *  call-seq:
+ *     iseq.to_binary(extra_data = nil) -> binary str
+ *
+ *  Returns serialized iseq binary format data as a String object.
+ *  A corresponding iseq object is created by
+ *  RubyVM::InstructionSequence.load_from_binary() method.
+ *
+ *  String extra_data will be saved with binary data.
+ *  You can access this data with
+ *  RubyVM::InstructionSequence.load_from_binary_extra_data(binary).
+ *
+ *  Note that the translated binary data is not portable.
+ *  You can not move this binary data to another machine.
+ *  You can not use the binary data which is created by another
+ *  version/another architecture of Ruby.
+ */
+static VALUE
+iseqw_to_binary(int argc, VALUE *argv, VALUE self)
+{
+    VALUE opt;
+    rb_scan_args(argc, argv, "01", &opt);
+    return iseq_ibf_dump(iseqw_check(self), opt);
+}
+
+/*
+ *  call-seq:
+ *     RubyVM::InstructionSequence.load_from_binary(binary) -> iseq
+ *
+ *  Load an iseq object from binary format String object
+ *  created by RubyVM::InstructionSequence.to_binary.
+ *
+ *  This loader does not have a verifier, so that loading broken/modified
+ *  binary causes critical problem.
+ *
+ *  You should not load binary data provided by others.
+ *  You should use binary data translated by yourself.
+ */
+static VALUE
+iseqw_s_load_from_binary(VALUE self, VALUE str)
+{
+    return iseqw_new(iseq_ibf_load(str));
+}
+
+/*
+ *  call-seq:
+ *     RubyVM::InstructionSequence.load_from_binary_extra_data(binary) -> str
+ *
+ *  Load extra data embed into binary format String object.
+ */
+static VALUE
+iseqw_s_load_from_binary_extra_data(VALUE self, VALUE str)
+{
+    return  iseq_ibf_load_extra_data(str);
+}
+
+/*
+ *  Document-class: RubyVM::InstructionSequence
+ *
+ *  The InstructionSequence class represents a compiled sequence of
+ *  instructions for the Ruby Virtual Machine.
+ *
+ *  With it, you can get a handle to the instructions that make up a method or
+ *  a proc, compile strings of Ruby code down to VM instructions, and
+ *  disassemble instruction sequences to strings for easy inspection. It is
+ *  mostly useful if you want to learn how the Ruby VM works, but it also lets
+ *  you control various settings for the Ruby iseq compiler.
+ *
+ *  You can find the source for the VM instructions in +insns.def+ in the Ruby
+ *  source.
+ *
+ *  The instruction sequence results will almost certainly change as Ruby
+ *  changes, so example output in this documentation may be different from what
+ *  you see.
+ */
 
 void
 Init_ISeq(void)
 {
-    /* declare ::VM::InstructionSequence */
+    /* declare ::RubyVM::InstructionSequence */
     rb_cISeq = rb_define_class_under(rb_cRubyVM, "InstructionSequence", rb_cObject);
-    rb_define_alloc_func(rb_cISeq, iseq_alloc);
-    rb_define_method(rb_cISeq, "inspect", iseq_inspect, 0);
-    rb_define_method(rb_cISeq, "disasm", rb_iseq_disasm, 0);
-    rb_define_method(rb_cISeq, "disassemble", rb_iseq_disasm, 0);
-    rb_define_method(rb_cISeq, "to_a", iseq_to_a, 0);
-    rb_define_method(rb_cISeq, "eval", iseq_eval, 0);
+    rb_define_method(rb_cISeq, "inspect", iseqw_inspect, 0);
+    rb_define_method(rb_cISeq, "disasm", iseqw_disasm, 0);
+    rb_define_method(rb_cISeq, "disassemble", iseqw_disasm, 0);
+    rb_define_method(rb_cISeq, "to_a", iseqw_to_a, 0);
+    rb_define_method(rb_cISeq, "eval", iseqw_eval, 0);
 
+    rb_define_method(rb_cISeq, "to_binary", iseqw_to_binary, -1);
+    rb_define_singleton_method(rb_cISeq, "load_from_binary", iseqw_s_load_from_binary, 1);
+    rb_define_singleton_method(rb_cISeq, "load_from_binary_extra_data", iseqw_s_load_from_binary_extra_data, 1);
+
+
+    /* location APIs */
+    rb_define_method(rb_cISeq, "path", iseqw_path, 0);
+    rb_define_method(rb_cISeq, "absolute_path", iseqw_absolute_path, 0);
+    rb_define_method(rb_cISeq, "label", iseqw_label, 0);
+    rb_define_method(rb_cISeq, "base_label", iseqw_base_label, 0);
+    rb_define_method(rb_cISeq, "first_lineno", iseqw_first_lineno, 0);
+
+#if 0
+    /* Now, it is experimental. No discussions, no tests. */
+    /* They can be used from C level. Please give us feedback. */
+    rb_define_method(rb_cISeq, "line_trace_all", rb_iseqw_line_trace_all, 0);
+    rb_define_method(rb_cISeq, "line_trace_specify", rb_iseqw_line_trace_specify, 2);
+#else
+    (void)rb_iseqw_line_trace_all;
+    (void)rb_iseqw_line_trace_specify;
+#endif
+
+#if 0 /* TBD */
+    rb_define_private_method(rb_cISeq, "marshal_dump", iseqw_marshal_dump, 0);
+    rb_define_private_method(rb_cISeq, "marshal_load", iseqw_marshal_load, 1);
+    /* disable this feature because there is no verifier. */
+    rb_define_singleton_method(rb_cISeq, "load", iseq_s_load, -1);
+#endif
     /* disable this feature because there is no verifier. */
 //RHO
     rb_define_singleton_method(rb_cISeq, "load", iseq_s_load, -1); 
     //(void)iseq_s_load;
 //RHO  
 
-    rb_define_singleton_method(rb_cISeq, "compile", iseq_s_compile, -1);
-    rb_define_singleton_method(rb_cISeq, "new", iseq_s_compile, -1);
-    rb_define_singleton_method(rb_cISeq, "compile_file", iseq_s_compile_file, -1);
-    rb_define_singleton_method(rb_cISeq, "compile_option", iseq_s_compile_option_get, 0);
-    rb_define_singleton_method(rb_cISeq, "compile_option=", iseq_s_compile_option_set, 1);
-    rb_define_singleton_method(rb_cISeq, "disasm", iseq_s_disasm, 1);
-    rb_define_singleton_method(rb_cISeq, "disassemble", iseq_s_disasm, 1);
+    rb_define_singleton_method(rb_cISeq, "compile", iseqw_s_compile, -1);
+    rb_define_singleton_method(rb_cISeq, "new", iseqw_s_compile, -1);
+    rb_define_singleton_method(rb_cISeq, "compile_file", iseqw_s_compile_file, -1);
+    rb_define_singleton_method(rb_cISeq, "compile_option", iseqw_s_compile_option_get, 0);
+    rb_define_singleton_method(rb_cISeq, "compile_option=", iseqw_s_compile_option_set, 1);
+    rb_define_singleton_method(rb_cISeq, "disasm", iseqw_s_disasm, 1);
+    rb_define_singleton_method(rb_cISeq, "disassemble", iseqw_s_disasm, 1);
+    rb_define_singleton_method(rb_cISeq, "of", iseqw_s_of, 1);
 }
-

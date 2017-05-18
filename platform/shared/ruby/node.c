@@ -16,48 +16,54 @@
 #define AR(str) rb_str_concat(buf, (str))
 
 #define A_INDENT add_indent(buf, indent)
-#define A_ID(id) add_id(buf, id)
-#define A_INT(val) rb_str_catf(buf, "%d", (val));
-#define A_LONG(val) rb_str_catf(buf, "%ld", (val));
+#define A_ID(id) add_id(buf, (id))
+#define A_INT(val) rb_str_catf(buf, "%d", (val))
+#define A_LONG(val) rb_str_catf(buf, "%ld", (val))
 #define A_LIT(lit) AR(rb_inspect(lit))
-#define A_NODE_HEADER(node) \
-    rb_str_catf(buf, "@ %s (line: %d)", ruby_node_name(nd_type(node)), nd_line(node))
-#define A_FIELD_HEADER(name) \
-    rb_str_catf(buf, "+- %s:", name)
+#define A_NODE_HEADER(node, term) \
+    rb_str_catf(buf, "@ %s (line: %d)"term, ruby_node_name(nd_type(node)), nd_line(node))
+#define A_FIELD_HEADER(len, name, term) \
+    rb_str_catf(buf, "+- %.*s:"term, (len), (name))
+#define D_FIELD_HEADER(len, name, term) (A_INDENT, A_FIELD_HEADER(len, name, term))
 
-#define D_NULL_NODE A_INDENT; A("(null node)"); A("\n");
-#define D_NODE_HEADER(node) A_INDENT; A_NODE_HEADER(node); A("\n");
+#define D_NULL_NODE (A_INDENT, A("(null node)\n"))
+#define D_NODE_HEADER(node) (A_INDENT, A_NODE_HEADER(node, "\n"))
 
-#define COMPOUND_FIELD(name, name2, block) \
+#define COMPOUND_FIELD(len, name, block) \
     do { \
-	A_INDENT; A_FIELD_HEADER(comment ? name2 : name); A("\n"); \
+	D_FIELD_HEADER((len), (name), "\n");	\
 	rb_str_cat2(indent, next_indent); \
 	block; \
 	rb_str_resize(indent, RSTRING_LEN(indent) - 4); \
     } while (0)
 
-#define SIMPLE_FIELD(name, name2, block) \
-    do { \
-	A_INDENT; A_FIELD_HEADER(comment ? name2 : name); A(" "); block; A("\n"); \
-    } while (0)
+#define FIELD_NAME_DESC(name, ann) name " (" ann ")"
+#define FIELD_NAME_LEN(name, ann) (int)( \
+	comment ? \
+	rb_strlen_lit(FIELD_NAME_DESC(name, ann)) : \
+	rb_strlen_lit(name))
+#define SIMPLE_FIELD(len, name) \
+    for (D_FIELD_HEADER((len), (name), " "), field_flag = 1; \
+	 field_flag; /* should be optimized away */ \
+	 A("\n"), field_flag = 0)
 
-#define F_CUSTOM1(name, ann, block) SIMPLE_FIELD(#name, #name " (" ann ")", block)
-#define F_ID(name, ann)		    SIMPLE_FIELD(#name, #name " (" ann ")", A_ID(node->name))
-#define F_GENTRY(name, ann)	    SIMPLE_FIELD(#name, #name " (" ann ")", A_ID((node->name)->id))
-#define F_INT(name, ann)	    SIMPLE_FIELD(#name, #name " (" ann ")", A_INT(node->name))
-#define F_LONG(name, ann)	    SIMPLE_FIELD(#name, #name " (" ann ")", A_LONG(node->name))
-#define F_LIT(name, ann)	    SIMPLE_FIELD(#name, #name " (" ann ")", A_LIT(node->name))
-#define F_MSG(name, ann, desc)	    SIMPLE_FIELD(#name, #name " (" ann ")", A(desc))
-
-#define F_CUSTOM2(name, ann, block) \
-    COMPOUND_FIELD(#name, #name " (" ann ")", block)
+#define SIMPLE_FIELD1(name, ann)    SIMPLE_FIELD(FIELD_NAME_LEN(name, ann), FIELD_NAME_DESC(name, ann))
+#define F_CUSTOM1(name, ann)	    SIMPLE_FIELD1(#name, ann)
+#define F_ID(name, ann) 	    SIMPLE_FIELD1(#name, ann) A_ID(node->name)
+#define F_GENTRY(name, ann)	    SIMPLE_FIELD1(#name, ann) A_ID((node->name)->id)
+#define F_INT(name, ann)	    SIMPLE_FIELD1(#name, ann) A_INT(node->name)
+#define F_LONG(name, ann)	    SIMPLE_FIELD1(#name, ann) A_LONG(node->name)
+#define F_LIT(name, ann)	    SIMPLE_FIELD1(#name, ann) A_LIT(node->name)
+#define F_MSG(name, ann, desc)	    SIMPLE_FIELD1(#name, ann) A(desc)
 
 #define F_NODE(name, ann) \
-    COMPOUND_FIELD(#name, #name " (" ann ")", dump_node(buf, indent, comment, node->name))
+    COMPOUND_FIELD(FIELD_NAME_LEN(#name, ann), \
+		   FIELD_NAME_DESC(#name, ann), \
+		   dump_node(buf, indent, comment, node->name))
 
 #define ANN(ann) \
     if (comment) { \
-	A_INDENT; A("| # "); A(ann); A("\n"); \
+	A_INDENT; A("| # " ann "\n"); \
     }
 
 #define LAST_NODE (next_indent = "    ")
@@ -77,7 +83,7 @@ add_id(VALUE buf, ID id)
     else {
 	VALUE str = rb_id2str(id);
 	if (str) {
-	    A(":"); AR(rb_id2str(id));
+	    A(":"); AR(str);
 	}
 	else {
 	    A("(internal variable)");
@@ -88,6 +94,7 @@ add_id(VALUE buf, ID id)
 static void
 dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 {
+    int field_flag;
     const char *next_indent = "|   ";
 
     if (!node) {
@@ -151,10 +158,10 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("format: until [nd_cond]; [nd_body]; end");
 	ANN("example: until x == 1; foo; end");
       loop:
-	F_CUSTOM1(nd_state, "begin-end-while?", {
-	   A_INT((int)node->nd_state);
-	   A((node->nd_state == 1) ? " (while-end)" : " (begin-end-while)");
-	});
+	F_CUSTOM1(nd_state, "begin-end-while?") {
+	    A_INT((int)node->nd_state);
+	    A((node->nd_state == 1) ? " (while-end)" : " (begin-end-while)");
+	}
 	F_NODE(nd_cond, "condition");
 	LAST_NODE;
 	F_NODE(nd_body, "body");
@@ -169,7 +176,7 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("for statement");
 	ANN("format: for * in [nd_iter] do [nd_body] end");
 	ANN("example: for i in 1..3 do foo end");
-	iter:
+      iter:
 	F_NODE(nd_iter, "iteration receiver");
 	LAST_NODE;
 	F_NODE(nd_body, "body");
@@ -189,7 +196,7 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("return statement");
 	ANN("format: return [nd_stts]");
 	ANN("example: return 1");
-        jump:
+      jump:
 	LAST_NODE;
 	F_NODE(nd_stts, "value");
 	break;
@@ -252,7 +259,7 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("|| operator");
 	ANN("format: [nd_1st] || [nd_2nd]");
 	ANN("example: foo && bar");
-	andor:
+      andor:
 	F_NODE(nd_1st, "left expr");
 	LAST_NODE;
 	F_NODE(nd_2nd, "right expr");
@@ -297,10 +304,15 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("class variable assignment");
 	ANN("format: [nd_vid](cvar) = [nd_value]");
 	ANN("example: @@x = foo");
-	asgn:
+      asgn:
 	F_ID(nd_vid, "variable");
 	LAST_NODE;
-	F_NODE(nd_value, "rvalue");
+	if (node->nd_value == (NODE *)-1) {
+	    F_MSG(nd_value, "rvalue", "(required keyword argument)");
+	}
+	else {
+	    F_NODE(nd_value, "rvalue");
+	}
 	break;
 
       case NODE_GASGN:
@@ -342,19 +354,20 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
       case NODE_OP_ASGN2:
 	ANN("attr assignment with operator");
 	ANN("format: [nd_value].[attr] [nd_next->nd_mid]= [nd_value]");
-	ANN("          where [attr] reader: [nd_next->nd_vid]");
-	ANN("                [attr] writer: [nd_next->nd_aid]");
+	ANN("          where [attr]: [nd_next->nd_vid]");
 	ANN("example: struct.field += foo");
 	F_NODE(nd_recv, "receiver");
-	F_ID(nd_next->nd_vid, "reader");
-	F_ID(nd_next->nd_aid, "writer");
-	F_CUSTOM1(nd_next->nd_mid, "operator", {
-	   switch (node->nd_next->nd_mid) {
-	   case 0: A("0 (||)"); break;
-	   case 1: A("1 (&&)"); break;
-	   default: A_ID(node->nd_next->nd_mid);
-	   }
-	});
+	F_CUSTOM1(nd_next->nd_vid, "attr") {
+	    if (node->nd_next->nd_aid) A("? ");
+	    A_ID(node->nd_next->nd_vid);
+	}
+	F_CUSTOM1(nd_next->nd_mid, "operator") {
+	    switch (node->nd_next->nd_mid) {
+	      case 0: A("0 (||)"); break;
+	      case 1: A("1 (&&)"); break;
+	      default: A_ID(node->nd_next->nd_mid);
+	    }
+	}
 	LAST_NODE;
 	F_NODE(nd_value, "rvalue");
 	break;
@@ -368,7 +381,7 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("assignment with || operator");
 	ANN("format: [nd_head] ||= [nd_value]");
 	ANN("example: foo ||= bar");
-	asgn_andor:
+      asgn_andor:
 	F_NODE(nd_head, "variable");
 	LAST_NODE;
 	F_NODE(nd_value, "rvalue");
@@ -400,6 +413,16 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	F_ID(nd_mid, "method id");
 	break;
 
+      case NODE_QCALL:
+	ANN("safe method invocation");
+	ANN("format: [nd_recv]&.[nd_mid]([nd_args])");
+	ANN("example: obj&.foo(1)");
+	F_ID(nd_mid, "method id");
+	F_NODE(nd_recv, "receiver");
+	LAST_NODE;
+	F_NODE(nd_args, "arguments");
+	break;
+
       case NODE_SUPER:
 	ANN("super invocation");
 	ANN("format: super [nd_args]");
@@ -423,7 +446,7 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("return arguments");
 	ANN("format: [ [nd_head], [nd_next].. ] (length: [nd_alen])");
 	ANN("example: return 1, 2, 3");
-	ary:
+      ary:
 	F_LONG(nd_alen, "length");
 	F_NODE(nd_head, "element");
 	LAST_NODE;
@@ -476,7 +499,7 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("class variable reference");
 	ANN("format: [nd_vid](cvar)");
 	ANN("example: @@x");
-        var:
+      var:
 	F_ID(nd_vid, "local variable");
 	break;
 
@@ -491,20 +514,20 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("nth special variable reference");
 	ANN("format: $[nd_nth]");
 	ANN("example: $1, $2, ..");
-	F_CUSTOM1(nd_nth, "variable", { A("$"); A_LONG(node->nd_nth); });
+	F_CUSTOM1(nd_nth, "variable") { A("$"); A_LONG(node->nd_nth); }
 	break;
 
       case NODE_BACK_REF:
 	ANN("back special variable reference");
 	ANN("format: $[nd_nth]");
 	ANN("example: $&, $`, $', $+");
-	F_CUSTOM1(nd_nth, "variable", {
-	   char name[3];
-	   name[0] = '$';
-	   name[1] = node->nd_nth;
-	   name[2] = '\0';
-	   A(name);
-	});
+	F_CUSTOM1(nd_nth, "variable") {
+	    char name[3];
+	    name[0] = '$';
+	    name[1] = (char)node->nd_nth;
+	    name[2] = '\0';
+	    A(name);
+	}
 	break;
 
       case NODE_MATCH:
@@ -546,7 +569,7 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("xstring literal");
 	ANN("format: [nd_lit]");
 	ANN("example: `foo`");
-	lit:
+      lit:
 	F_LIT(nd_lit, "literal");
 	break;
 
@@ -574,11 +597,11 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("symbol literal with interpolation");
 	ANN("format: [nd_lit]");
 	ANN("example: :\"foo#{ bar }baz\"");
-	dlit:
-	F_LIT(nd_lit, "literal");
-	F_NODE(nd_next->nd_head, "preceding string");
+      dlit:
+	F_LIT(nd_lit, "preceding string");
+	F_NODE(nd_next->nd_head, "interpolation");
 	LAST_NODE;
-	F_NODE(nd_next->nd_next, "interpolation");
+	F_NODE(nd_next->nd_next, "tailing strings");
 	break;
 
       case NODE_EVSTR:
@@ -731,7 +754,7 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("flip-flop condition (excl.)");
 	ANN("format: [nd_beg]...[nd_end]");
 	ANN("example: if (x==1)...(x==5); foo; end");
-	dot:
+      dot:
 	F_NODE(nd_beg, "begin");
 	LAST_NODE;
 	F_NODE(nd_end, "end");
@@ -802,8 +825,10 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	ANN("format: BEGIN { [nd_head] }; [nd_body]");
 	ANN("example: bar; BEGIN { foo }");
 	F_NODE(nd_head, "prelude");
-	LAST_NODE;
 	F_NODE(nd_body, "body");
+	LAST_NODE;
+#define nd_compile_option u3.value
+	F_LIT(nd_compile_option, "compile_option");
 	break;
 
       case NODE_LAMBDA:
@@ -823,6 +848,15 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	F_NODE(nd_next, "next");
 	break;
 
+      case NODE_KW_ARG:
+	ANN("keyword arguments");
+	ANN("format: def method_name([nd_body=some], [nd_next..])");
+	ANN("example: def foo(a:1, b:2); end");
+	F_NODE(nd_body, "body");
+	LAST_NODE;
+	F_NODE(nd_next, "next");
+	break;
+
       case NODE_POSTARG:
 	ANN("post arguments");
 	ANN("format: *[nd_1st], [nd_2nd..] = ..");
@@ -837,66 +871,35 @@ dump_node(VALUE buf, VALUE indent, int comment, NODE *node)
 	F_NODE(nd_2nd, "post arguments");
 	break;
 
-      case NODE_ARGS_AUX:
-	ANN("method parameters (cont'd)");
-	F_CUSTOM1(nd_rest, "rest argument", {
-	    if (node->nd_rest == 1) A("nil (with last comma)");
-	    else A_ID(node->nd_rest);
-	});
-	F_CUSTOM1(nd_body, "block argument", { A_ID((ID)node->nd_body); });
-	LAST_NODE;
-	F_CUSTOM2(nd_next, "aux info 2", {
-	    node = node->nd_next;
-	    next_indent = "|    ";
-	    if (!node) {
-		D_NULL_NODE;
-	    }
-	    else {
-		D_NODE_HEADER(node);
-		ANN("method parameters (cont'd)");
-		F_ID(nd_pid, "first post argument");
-		F_LONG(nd_plen, "post argument length");
-		LAST_NODE;
-		F_CUSTOM2(nd_next, "aux info 3", {
-		    node = node->nd_next;
-		    next_indent = "|   ";
-		    if (!node) {
-			D_NULL_NODE;
-		    }
-		    else {
-			D_NODE_HEADER(node);
-			ANN("method parameters (cont'd)");
-			F_NODE(nd_1st, "init arguments (m)");
-			LAST_NODE;
-			F_NODE(nd_2nd, "init arguments (p)");
-		    }
-		});
-	    }
-	});
-	break;
-
       case NODE_ARGS:
 	ANN("method parameters");
 	ANN("format: def method_name(.., [nd_opt=some], *[nd_rest], [nd_pid], .., &[nd_body])");
 	ANN("example: def foo(a, b, opt1=1, opt2=2, *rest, y, z, &blk); end");
-	F_LONG(nd_frml, "argc");
-	F_NODE(nd_next, "aux info 1");
+	F_INT(nd_ainfo->pre_args_num, "count of mandatory (pre-)arguments");
+	F_NODE(nd_ainfo->pre_init, "initialization of (pre-)arguments");
+	F_INT(nd_ainfo->post_args_num, "count of mandatory post-arguments");
+	F_NODE(nd_ainfo->post_init, "initialization of post-arguments");
+	F_ID(nd_ainfo->first_post_arg, "first post argument");
+	F_ID(nd_ainfo->rest_arg, "rest argument");
+	F_ID(nd_ainfo->block_arg, "block argument");
+	F_NODE(nd_ainfo->opt_args, "optional arguments");
 	LAST_NODE;
-	F_NODE(nd_opt, "optional arguments");
+	F_NODE(nd_ainfo->kw_args, "keyword arguments");
+	F_NODE(nd_ainfo->kw_rest_arg, "keyword rest argument");
 	break;
 
       case NODE_SCOPE:
 	ANN("new scope");
 	ANN("format: [nd_tbl]: local table, [nd_args]: arguments, [nd_body]: body");
-	F_CUSTOM1(nd_tbl, "local table", {
-	   ID *tbl = node->nd_tbl;
-	   int i;
-	   int size = tbl ? (int)*tbl++ : 0;
-	   if (size == 0) A("(empty)");
-	   for (i = 0; i < size; i++) {
+	F_CUSTOM1(nd_tbl, "local table") {
+	    ID *tbl = node->nd_tbl;
+	    int i;
+	    int size = tbl ? (int)*tbl++ : 0;
+	    if (size == 0) A("(empty)");
+	    for (i = 0; i < size; i++) {
 		A_ID(tbl[i]); if (i < size - 1) A(",");
-	   }
-	});
+	    }
+	}
 	F_NODE(nd_args, "arguments");
 	LAST_NODE;
 	F_NODE(nd_body, "body");
@@ -918,4 +921,180 @@ rb_parser_dump_tree(NODE *node, int comment)
     );
     dump_node(buf, rb_str_new_cstr("# "), comment, node);
     return buf;
+}
+
+void
+rb_gc_free_node(VALUE obj)
+{
+    switch (nd_type(obj)) {
+      case NODE_SCOPE:
+	if (RNODE(obj)->nd_tbl) {
+	    xfree(RNODE(obj)->nd_tbl);
+	}
+	break;
+      case NODE_ARGS:
+	if (RNODE(obj)->nd_ainfo) {
+	    xfree(RNODE(obj)->nd_ainfo);
+	}
+	break;
+      case NODE_ALLOCA:
+	xfree(RNODE(obj)->u1.node);
+	break;
+    }
+}
+
+size_t
+rb_node_memsize(VALUE obj)
+{
+    size_t size = 0;
+    switch (nd_type(obj)) {
+      case NODE_SCOPE:
+	if (RNODE(obj)->nd_tbl) {
+	    size += (RNODE(obj)->nd_tbl[0]+1) * sizeof(*RNODE(obj)->nd_tbl);
+	}
+	break;
+      case NODE_ARGS:
+	if (RNODE(obj)->nd_ainfo) {
+	    size += sizeof(*RNODE(obj)->nd_ainfo);
+	}
+	break;
+      case NODE_ALLOCA:
+	size += RNODE(obj)->nd_cnt * sizeof(VALUE);
+	break;
+    }
+    return size;
+}
+
+VALUE
+rb_gc_mark_node(NODE *obj)
+{
+    switch (nd_type(obj)) {
+      case NODE_IF:		/* 1,2,3 */
+      case NODE_FOR:
+      case NODE_ITER:
+      case NODE_WHEN:
+      case NODE_MASGN:
+      case NODE_RESCUE:
+      case NODE_RESBODY:
+      case NODE_CLASS:
+      case NODE_BLOCK_PASS:
+	rb_gc_mark(RNODE(obj)->u2.value);
+	/* fall through */
+      case NODE_BLOCK:	/* 1,3 */
+      case NODE_ARRAY:
+      case NODE_DSTR:
+      case NODE_DXSTR:
+      case NODE_DREGX:
+      case NODE_DREGX_ONCE:
+      case NODE_ENSURE:
+      case NODE_CALL:
+      case NODE_DEFS:
+      case NODE_OP_ASGN1:
+	rb_gc_mark(RNODE(obj)->u1.value);
+	/* fall through */
+      case NODE_SUPER:	/* 3 */
+      case NODE_FCALL:
+      case NODE_DEFN:
+      case NODE_ARGS_AUX:
+	return RNODE(obj)->u3.value;
+
+      case NODE_WHILE:	/* 1,2 */
+      case NODE_UNTIL:
+      case NODE_AND:
+      case NODE_OR:
+      case NODE_CASE:
+      case NODE_SCLASS:
+      case NODE_DOT2:
+      case NODE_DOT3:
+      case NODE_FLIP2:
+      case NODE_FLIP3:
+      case NODE_MATCH2:
+      case NODE_MATCH3:
+      case NODE_OP_ASGN_OR:
+      case NODE_OP_ASGN_AND:
+      case NODE_MODULE:
+      case NODE_ALIAS:
+      case NODE_VALIAS:
+      case NODE_ARGSCAT:
+	rb_gc_mark(RNODE(obj)->u1.value);
+	/* fall through */
+      case NODE_GASGN:	/* 2 */
+      case NODE_LASGN:
+      case NODE_DASGN:
+      case NODE_DASGN_CURR:
+      case NODE_IASGN:
+      case NODE_IASGN2:
+      case NODE_CVASGN:
+      case NODE_COLON3:
+      case NODE_OPT_N:
+      case NODE_EVSTR:
+      case NODE_UNDEF:
+      case NODE_POSTEXE:
+	return RNODE(obj)->u2.value;
+
+      case NODE_HASH:	/* 1 */
+      case NODE_LIT:
+      case NODE_STR:
+      case NODE_XSTR:
+      case NODE_DEFINED:
+      case NODE_MATCH:
+      case NODE_RETURN:
+      case NODE_BREAK:
+      case NODE_NEXT:
+      case NODE_YIELD:
+      case NODE_COLON2:
+      case NODE_SPLAT:
+      case NODE_TO_ARY:
+	return RNODE(obj)->u1.value;
+
+      case NODE_SCOPE:	/* 2,3 */
+      case NODE_CDECL:
+      case NODE_OPT_ARG:
+	rb_gc_mark(RNODE(obj)->u3.value);
+	return RNODE(obj)->u2.value;
+
+      case NODE_ARGS:	/* custom */
+	{
+	    struct rb_args_info *args = obj->u3.args;
+	    if (args) {
+		if (args->pre_init)    rb_gc_mark((VALUE)args->pre_init);
+		if (args->post_init)   rb_gc_mark((VALUE)args->post_init);
+		if (args->opt_args)    rb_gc_mark((VALUE)args->opt_args);
+		if (args->kw_args)     rb_gc_mark((VALUE)args->kw_args);
+		if (args->kw_rest_arg) rb_gc_mark((VALUE)args->kw_rest_arg);
+	    }
+	}
+	return RNODE(obj)->u2.value;
+
+      case NODE_ZARRAY:	/* - */
+      case NODE_ZSUPER:
+      case NODE_VCALL:
+      case NODE_GVAR:
+      case NODE_LVAR:
+      case NODE_DVAR:
+      case NODE_IVAR:
+      case NODE_CVAR:
+      case NODE_NTH_REF:
+      case NODE_BACK_REF:
+      case NODE_REDO:
+      case NODE_RETRY:
+      case NODE_SELF:
+      case NODE_NIL:
+      case NODE_TRUE:
+      case NODE_FALSE:
+      case NODE_ERRINFO:
+      case NODE_BLOCK_ARG:
+	break;
+      case NODE_ALLOCA:
+	rb_gc_mark_locations((VALUE*)RNODE(obj)->u1.value,
+			     (VALUE*)RNODE(obj)->u1.value + RNODE(obj)->u3.cnt);
+	rb_gc_mark(RNODE(obj)->u2.value);
+	break;
+
+      default:		/* unlisted NODE */
+	rb_gc_mark_maybe(RNODE(obj)->u1.value);
+	rb_gc_mark_maybe(RNODE(obj)->u2.value);
+	rb_gc_mark_maybe(RNODE(obj)->u3.value);
+    }
+    return 0;
 }

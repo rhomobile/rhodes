@@ -1,11 +1,10 @@
 /*
- * $Id: ossl_x509.h 25189 2009-10-02 12:04:37Z akr $
  * 'OpenSSL for Ruby' project
  * Copyright (C) 2001-2002  Michal Rokos <m.rokos@sh.cvut.cz>
  * All rights reserved.
  */
 /*
- * This program is licenced under the same licence as Ruby.
+ * This program is licensed under the same licence as Ruby.
  * (See the file 'LICENCE'.)
  */
 #if !defined(_OSSL_X509_H_)
@@ -25,7 +24,7 @@ extern VALUE cX509Attr;
 extern VALUE eX509AttrError;
 
 VALUE ossl_x509attr_new(X509_ATTRIBUTE *);
-X509_ATTRIBUTE *DupX509AttrPtr(VALUE);
+X509_ATTRIBUTE *GetX509AttrPtr(VALUE);
 void Init_ossl_x509attr(void);
 
 /*

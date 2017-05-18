@@ -1,10 +1,11 @@
 #ifndef ONIGURUMA_REGPARSE_H
 #define ONIGURUMA_REGPARSE_H
 /**********************************************************************
-  regparse.h -  Oniguruma (regular expression library)
+  regparse.h -  Onigmo (Oniguruma-mod) (regular expression library)
 **********************************************************************/
 /*-
  * Copyright (c) 2002-2007  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2011       K.Takata  <kentkt AT csc DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +31,8 @@
  */
 
 #include "regint.h"
+
+RUBY_SYMBOL_EXPORT_BEGIN
 
 /* node type */
 #define NT_STR         0
@@ -64,7 +67,11 @@
                        BIT_NT_CANY | BIT_NT_BREF)) != 0)
 
 #define NTYPE(node)             ((node)->u.base.type)
-#define SET_NTYPE(node, ntype)   (node)->u.base.type = (ntype)
+#define SET_NTYPE(node, ntype) \
+    do { \
+	int value = ntype; \
+	memcpy(&((node)->u.base.type), &value, sizeof(int)); \
+    } while (0)
 
 #define NSTR(node)         (&((node)->u.str))
 #define NCCLASS(node)      (&((node)->u.cclass))
@@ -87,6 +94,7 @@
 #define ENCLOSE_MEMORY           (1<<0)
 #define ENCLOSE_OPTION           (1<<1)
 #define ENCLOSE_STOP_BACKTRACK   (1<<2)
+#define ENCLOSE_CONDITION        (1<<3)
 
 #define NODE_STR_MARGIN         16
 #define NODE_STR_BUF_SIZE       24  /* sizeof(CClassNode) - sizeof(int)*4 */
@@ -96,7 +104,7 @@
 #define NSTR_AMBIG              (1<<1)
 #define NSTR_DONT_GET_OPT_INFO  (1<<2)
 
-#define NSTRING_LEN(node)             ((node)->u.str.end - (node)->u.str.s)
+#define NSTRING_LEN(node) (OnigDistance )((node)->u.str.end - (node)->u.str.s)
 #define NSTRING_SET_RAW(node)          (node)->u.str.flag |= NSTR_RAW
 #define NSTRING_CLEAR_RAW(node)        (node)->u.str.flag &= ~NSTR_RAW
 #define NSTRING_SET_AMBIG(node)        (node)->u.str.flag |= NSTR_AMBIG
@@ -146,6 +154,7 @@
 #define IS_ENCLOSE_STOP_BT_SIMPLE_REPEAT(en) \
     (((en)->state & NST_STOP_BT_SIMPLE_REPEAT) != 0)
 #define IS_ENCLOSE_NAMED_GROUP(en)     (((en)->state & NST_NAMED_GROUP)   != 0)
+#define IS_ENCLOSE_NAME_REF(en)        (((en)->state & NST_NAME_REF)      != 0)
 
 #define SET_CALL_RECURSION(node)       (node)->u.call.state |= NST_RECURSION
 #define IS_CALL_RECURSION(cn)          (((cn)->state & NST_RECURSION)  != 0)
@@ -188,8 +197,8 @@ typedef struct {
   int type;
   int regnum;
   OnigOptionType option;
-  struct _Node*  target;
   AbsAddrType    call_addr;
+  struct _Node*  target;
   /* for multiple call reference */
   OnigDistance min_len; /* min length (byte) */
   OnigDistance max_len; /* max length (byte) */
@@ -236,6 +245,7 @@ typedef struct {
   int type;
   struct _Node* target;
   int char_len;
+  int ascii_range;
 } AnchorNode;
 
 typedef struct {
@@ -248,6 +258,7 @@ typedef struct {
   NodeBase base;
   int ctype;
   int not;
+  int ascii_range;
 } CtypeNode;
 
 typedef struct _Node {
@@ -289,10 +300,10 @@ typedef struct {
   UChar*           error;
   UChar*           error_end;
   regex_t*         reg;       /* for reg->names only */
-  int              num_call;
 #ifdef USE_SUBEXP_CALL
   UnsetAddrList*   unset_addr_list;
 #endif
+  int              num_call;
   int              num_mem;
 #ifdef USE_NAMED_GROUP
   int              num_named;
@@ -350,5 +361,7 @@ extern int    onig_free_shared_cclass_table P_((void));
 extern int onig_print_names(FILE*, regex_t*);
 #endif
 #endif
+
+RUBY_SYMBOL_EXPORT_END
 
 #endif /* ONIGURUMA_REGPARSE_H */

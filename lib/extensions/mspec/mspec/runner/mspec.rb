@@ -1,16 +1,19 @@
 require 'mspec/runner/context'
 require 'mspec/runner/exception'
 require 'mspec/runner/tag'
-require 'fileutils'
 
 module MSpec
+  #RHO
   @count = 0
   @exc_count = 0
+  #RHO
 
   @exit    = nil
+  @abort   = nil
   @start   = nil
   @enter   = nil
   @before  = nil
+  @add     = nil
   @after   = nil
   @leave   = nil
   @finish  = nil
@@ -19,21 +22,20 @@ module MSpec
   @leave   = nil
   @load    = nil
   @unload  = nil
+  @tagged  = nil
   @current = nil
+  @example = nil
   @modes   = []
   @shared  = {}
   @guarded = []
   @features     = {}
   @exception    = nil
   @randomize    = nil
+  @repeat       = nil
   @expectation  = nil
   @expectations = false
-  @backtrace = false  
-  @file_count = 0
-  @is_network_available = false
-  @errorMessages = nil
 
-
+#RHO
   def self.exc_count
     @exc_count
   end
@@ -41,22 +43,7 @@ module MSpec
   def self.count
     @count
   end
-
-  def self.errorMessages
-    @errorMessages   
-  end
-    
-  def self.is_network_available
-    @is_network_available
-  end
-
-  def self.file_count
-    @file_count
-  end
-
-  def self.backtrace=(backtrace)
-    @backtrace = backtrace
-  end
+#RHO
 
   def self.describe(mod, options=nil, &block)
     state = ContextState.new mod, options
@@ -64,7 +51,10 @@ module MSpec
 
     MSpec.register_current state
     state.describe(&block)
+
+    #RHO
     @count+=state.examples.length
+
     state.process unless state.shared? or current
   end
 
@@ -80,37 +70,43 @@ module MSpec
     shuffle files if randomize?
     files.each do |file|
 #RHO
-	  puts "MSpec processing file: #{file}"
-				
-	  if file.is_a?(Array)
-		  settings=file[1]
-		  settings.each do |setting|
-			  run_spec(file[0],setting)
-		  end
-	  else
-		  run_spec(file,nil)
-	  end
+=begin
+      setup_env
+      store :file, file
+      actions :load
+      protect("loading #{file}") { Kernel.load file }
+      actions :unload
+=end
+    puts "MSpec processing file: #{file}"
+        
+    if file.is_a?(Array)
+      settings=file[1]
+      settings.each do |setting|
+        run_spec(file[0],setting)
+      end
+    else
+      run_spec(file,nil)
+    end
 #RHO
-		#      @env = Object.new
-		#      @env.extend MSpec
-
-		#      store :file, file
-		#      actions :load
-		#      protect("loading #{file}") { Kernel.load file }
-		#      actions :unload
     end
   end
 
+#RHO
   def self.run_spec(file,settings)
-	@env = Object.new
-	@env.extend MSpec
+    setup_env
 
-	$spec_settings = settings
+    $spec_settings = settings
 
-	store :file, file
-	actions :load
-	protect("loading #{file}") { Kernel.load file }
-	actions :unload
+    store :file, file
+    actions :load
+    protect("loading #{file}") { Kernel.load file }
+    actions :unload
+  end
+#RHO
+
+  def self.setup_env
+    @env = Object.new
+    @env.extend MSpec
   end
 
   def self.actions(action, *args)
@@ -129,7 +125,6 @@ module MSpec
       puts "FAIL: #{current} - #{exc.message}\n" + (@backtrace ? exc.backtrace.join("\n") : "")
       @exc_count+=1
       #RHO
-      
       register_exit 1
       actions :exception, ExceptionState.new(current && current.state, location, exc)
       return false
@@ -187,7 +182,6 @@ module MSpec
 
   # Stores the list of files to be evaluated.
   def self.register_files(files)
-    @file_count = files.length if files
     store :files, files
   end
 
@@ -290,6 +284,16 @@ module MSpec
     @randomize == true
   end
 
+  def self.repeat=(times)
+    @repeat = times
+  end
+
+  def self.repeat
+    (@repeat || 1).times do
+      yield
+    end
+  end
+
   def self.shuffle(ary)
     return if ary.empty?
 
@@ -339,11 +343,11 @@ module MSpec
     tags = []
     file = tags_file
     if File.exist? file
-      File.open(file, "rb") do |f|
+      File.open(file, "r:utf-8") do |f|
         f.each_line do |line|
           line.chomp!
           next if line.empty?
-          tag = SpecTag.new line.chomp
+          tag = SpecTag.new line
           tags << tag if keys.include? tag.tag
         end
       end
@@ -351,13 +355,23 @@ module MSpec
     tags
   end
 
+  def self.make_tag_dir(path)
+    parent = File.dirname(path)
+    return if File.exist? parent
+    begin
+      Dir.mkdir(parent)
+    rescue SystemCallError
+      make_tag_dir(parent)
+      Dir.mkdir(parent)
+    end
+  end
+
   # Writes each tag in +tags+ to the tag file. Overwrites the
   # tag file if it exists.
   def self.write_tags(tags)
     file = tags_file
-    path = File.dirname file
-    FileUtils.mkdir_p path unless File.exist? path
-    File.open(file, "wb") do |f|
+    make_tag_dir(file)
+    File.open(file, "w:utf-8") do |f|
       tags.each { |t| f.puts t }
     end
   end
@@ -365,16 +379,16 @@ module MSpec
   # Writes +tag+ to the tag file if it does not already exist.
   # Returns +true+ if the tag is written, +false+ otherwise.
   def self.write_tag(tag)
-    string = tag.to_s
-    file = tags_file
-    path = File.dirname file
-    FileUtils.mkdir_p path unless File.exist? path
-    if File.exist? file
-      File.open(file, "rb") do |f|
-        f.each_line { |line| return false if line.chomp == string }
+    tags = read_tags([tag.tag])
+    tags.each do |t|
+      if t.tag == tag.tag and t.description == tag.description
+        return false
       end
     end
-    File.open(file, "ab") { |f| f.puts string }
+
+    file = tags_file
+    make_tag_dir(file)
+    File.open(file, "a:utf-8") { |f| f.puts tag.to_s }
     return true
   end
 
@@ -383,16 +397,17 @@ module MSpec
   # file if it is empty.
   def self.delete_tag(tag)
     deleted = false
-    pattern = /#{tag.tag}.*#{Regexp.escape(tag.escape(tag.description))}/
+    desc = tag.escape(tag.description)
     file = tags_file
     if File.exist? file
       lines = IO.readlines(file)
-      File.open(file, "wb") do |f|
+      File.open(file, "w:utf-8") do |f|
         lines.each do |line|
-          unless pattern =~ line.chomp
-            f.puts line unless line.empty?
-          else
+          line = line.chomp
+          if line.start_with?(tag.tag) and line.end_with?(desc)
             deleted = true
+          else
+            f.puts line unless line.empty?
           end
         end
       end
@@ -404,6 +419,6 @@ module MSpec
   # Removes the tag file associated with a spec file.
   def self.delete_tags
     file = tags_file
-    File.delete file if File.exists? file
+    File.delete file if File.exist? file
   end
 end

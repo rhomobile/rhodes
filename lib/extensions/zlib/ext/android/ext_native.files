@@ -1,16 +1,1 @@
-ext/adler32.c
-ext/compress.c
-ext/crc32.c
-ext/deflate.c
-ext/gzclose.c
-ext/gzlib.c
-ext/gzread.c
-ext/gzwrite.c
-ext/infback.c
-ext/inffast.c
-ext/inflate.c
-ext/inftrees.c
-ext/trees.c
-ext/uncompr.c
 ext/zlib.c
-ext/zutil.c

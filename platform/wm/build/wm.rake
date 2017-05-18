@@ -958,7 +958,7 @@ namespace "build" do
           
               ENV['RHO_PLATFORM'] = $current_platform
               ENV['RHO_ROOT'] = $startdir
-              ENV['SDK'] = $sdk
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
               ENV['RHO_BUILD_CONFIG'] = $buildcfg
               ENV['VCBUILD'] = $vcbuild
               ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
@@ -1022,7 +1022,7 @@ namespace "build" do
               end
 
               ENV['VCBUILD'] = $vcbuild
-              ENV['SDK'] = $sdk
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
               ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
               ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
@@ -1229,14 +1229,14 @@ namespace "build" do
         puts "Deploy libs from msvc #{$vs_version}"
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.CRT")
         vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.OPENMP")
-        if deploymsvc
-          cp File.join(vsredistdir, "msvcp140.dll"), $target_path
-          cp File.join(vsredistdir, "concrt140.dll"), $target_path
-          cp File.join(vsredistdir, "vccorlib140.dll"), $target_path
-          cp File.join(vsredistdir, "vcruntime140.dll"), $target_path
-          cp File.join(vsredistdir2, "vcomp140.dll"), $target_path
-          cp File.join($vscommontools, "../../VC/bin/d3dcompiler_47.dll"), $target_path
-        end
+        #if deploymsvc
+          #cp File.join(vsredistdir, "msvcp140.dll"), $target_path
+          #cp File.join(vsredistdir, "concrt140.dll"), $target_path
+          #cp File.join(vsredistdir, "vccorlib140.dll"), $target_path
+          #cp File.join(vsredistdir, "vcruntime140.dll"), $target_path
+          #cp File.join(vsredistdir2, "vcomp140.dll"), $target_path
+          #cp File.join($vscommontools, "../../VC/bin/d3dcompiler_47.dll"), $target_path
+        #end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
       else
@@ -1393,21 +1393,29 @@ namespace "build" do
                       end
                     end
                when 4 #5.8.0.0
+
+                  possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
+
                    format ="Found QT Version : #{$QVersion}" 
-                   targetFile = File.join($target_path, $appname + ".exe")
-                    if File.exists? targetFile
-                      Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
-                    else
-                      targetFile = File.join($target_path, "Rhodes.exe")
-                      if File.exists? targetFile
-                        Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
-                      else
-                        targetFile = File.join($target_path, "RhoLaunch.exe")
-                        if File.exists? targetFile
-                          Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
-                        end
-                      end
+
+                   begin
+
+                    possible_targets.each do |target|
+                      targetFile = File.join($target_path, target + ".exe")
+                      break if File.file?(targetFile)
                     end
+
+                    $logger.debug "Looking for app executable: #{targetFile}"
+                   
+                    raise "#{targetFile} not found" unless File.file?(targetFile)
+
+                    Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
+
+                  rescue Exception => e
+
+                    $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
+
+                  end
                else
                     format ="Unknown QT Version : #{$QVersion}"
               end
@@ -1453,7 +1461,7 @@ namespace "build" do
               ENV['RHO_PLATFORM'] = 'win32'
               ENV['PWD'] = $startdir
               ENV['RHO_ROOT'] = $startdir
-              ENV['SDK'] = $sdk
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
               if ext.downcase() == "coreapi" && $rhosimulator_build
                   ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
               else    
@@ -1480,7 +1488,7 @@ namespace "build" do
               ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions")
               ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "win32", "bin", "extensions", ext)
               ENV['VCBUILD'] = $vcbuild
-              ENV['SDK'] = $sdk
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
               ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
               ENV['RHO_QMAKE_SPEC'] = $qmake_makespec

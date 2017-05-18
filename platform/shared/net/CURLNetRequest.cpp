@@ -33,10 +33,6 @@
 
 #include <algorithm>
 
-#if defined(OS_UWP) || defined(_UWP_LIB)
-#include <iterator>
-#include <string>
-#endif
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Net"
 

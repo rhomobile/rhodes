@@ -45,25 +45,25 @@ static const char prelude_code0[] =
 #define PRELUDE_COUNT 0
 
 
-VALUE rb_iseq_compile_with_option(VALUE src, VALUE file, VALUE filepath, VALUE line, VALUE opt);
-
 static void
 prelude_eval(VALUE code, VALUE name, VALUE line)
 {
-    rb_iseq_eval(rb_iseq_compile_with_option(code, name, Qnil, line, Qtrue));
+    rb_iseq_eval(rb_iseq_compile_with_option(code, name, Qnil, line, 0, Qtrue));
 }
 
 void
 Init_prelude(void)
 {
 //RHO
-/*    prelude_eval(
+/*
+    prelude_eval(
       rb_usascii_str_new(prelude_code0, sizeof(prelude_code0) - 1),
       rb_usascii_str_new(prelude_name0, sizeof(prelude_name0) - 1),
       INT2FIX(1));
 
 #if 0
     puts(prelude_code0);
-#endif  */
+#endif
+ */
 //RHO
 }

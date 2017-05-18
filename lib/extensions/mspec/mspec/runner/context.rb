@@ -11,6 +11,7 @@
 #++
 class ContextState
   attr_reader :state, :parent, :parents, :children, :examples, :to_s
+  attr_accessor :shared_method
 
   def initialize(mod, options=nil)
     @to_s = mod.to_s
@@ -31,6 +32,7 @@ class ContextState
     @parent   = nil
     @parents  = [self]
     @children = []
+    @shared_method = nil
 
     @mock_verify         = Proc.new { Mock.verify_count }
     @mock_cleanup        = Proc.new { Mock.cleanup }
@@ -127,9 +129,6 @@ class ContextState
   # Creates an ExampleState instance for the block and stores it
   # in a list of examples to evaluate unless the example is filtered.
   def it(desc, &block)
-    #RHO
-    puts "- it \"#{desc}\""
-    #RHO
     example = ExampleState.new(self, desc, block)
     MSpec.actions :add, example
     return if MSpec.guarded?
@@ -150,11 +149,24 @@ class ContextState
 
   # Injects the before/after blocks and examples from the shared
   # describe block into this +ContextState+ instance.
-  def it_should_behave_like(desc)
+  def it_should_behave_like(desc, meth = nil, obj = nil)
     return if MSpec.guarded?
 
     unless state = MSpec.retrieve_shared(desc)
       raise Exception, "Unable to find shared 'describe' for #{desc}"
+    end
+
+    if Symbol === meth and m = find_method(obj, meth)
+      if shared_method = state.shared_method
+        if same_implementation?(m, shared_method)
+          it "behaves the same as #{method_to_s(shared_method)} since it is an alias" do
+            true.should == true
+          end
+          return
+        end
+      else
+        state.shared_method = m
+      end
     end
 
     state.before(:all).each { |b| before :all, &b }
@@ -173,6 +185,62 @@ class ContextState
     end
   end
 
+  def find_method(obj, name)
+    if obj.respond_to?(name)
+      obj.method(name)
+    else
+      if mod = @to_s[/^([A-Z]\w+)\./, 1] and Object.const_defined?(mod)
+        mod = Object.const_get(mod)
+        if Module === mod and mod.respond_to?(name)
+          mod.method(name)
+        end
+      elsif mod = @to_s[/^([A-Z]\w+)#/, 1] and Object.const_defined?(mod)
+        mod = Object.const_get(mod)
+        if Module === mod and mod.method_defined?(name)
+          mod.instance_method(name)
+        end
+      end
+    end
+  end
+
+  def method_to_s(meth)
+    if Method === meth and Module === meth.receiver
+      "#{meth.receiver}.#{meth.name}"
+    else
+      "#{meth.owner}##{meth.name}"
+    end
+  end
+  private :method_to_s
+
+  def same_implementation?(meth1, meth2)
+    return true if meth1 == meth2
+
+    file1, line1 = meth1.source_location
+    file2, line2 = meth2.source_location
+
+    # No source_location available
+    return false if !file1 && !file2
+
+    # Assume the same if they are defined on the same line
+    return true if file1 == file2 and line1 == line2
+
+    calls_other = -> meth, file, line, other {
+      if file and File.readable?(file)
+        lines = File.readlines(file)
+        method_def, call, method_end = lines[line-1..line+1].map(&:strip)
+        if method_def == "def #{meth.name}(*args)" and method_end == "end"
+          if Method === other and Module === other.receiver
+            call == "#{other.receiver}.#{other.name}(*args)"
+          else
+            meth.owner == other.owner and call == "#{other.name}(*args)"
+          end
+        end
+      end
+    }
+
+    calls_other.call(meth1, file1, line1, meth2) or calls_other.call(meth2, file2, line2, meth1)
+  end
+
   # Evaluates each block in +blocks+ using the +MSpec.protect+ method
   # so that exceptions are handled and tallied. Returns true and does
   # NOT evaluate any blocks if +check+ is true and
@@ -185,7 +253,14 @@ class ContextState
   # Removes filtered examples. Returns true if there are examples
   # left to evaluate.
   def filter_examples
-    @examples.reject! { |ex| ex.filtered? }
+    filtered, @examples = @examples.partition do |ex|
+      ex.filtered?
+    end
+
+    filtered.each do |ex|
+      MSpec.actions :tagged, ex
+    end
+
     not @examples.empty?
   end
 
@@ -200,24 +275,26 @@ class ContextState
 
       if protect "before :all", pre(:all)
         @examples.each do |state|
-          @state  = state
-          example = state.example
-          MSpec.actions :before, state
+          MSpec.repeat do
+            @state  = state
+            example = state.example
+            MSpec.actions :before, state
 
-          if protect "before :each", pre(:each)
-            MSpec.clear_expectations
-            if example
-              passed = protect nil, example
-              MSpec.actions :example, state, example
-              #protect nil, @expectation_missing unless MSpec.expectation? or not passed
+            if protect "before :each", pre(:each)
+              MSpec.clear_expectations
+              if example
+                passed = protect nil, example
+                MSpec.actions :example, state, example
+                protect nil, @expectation_missing unless MSpec.expectation? or not passed
+              end
             end
             protect "after :each", post(:each)
             protect "Mock.verify_count", @mock_verify
-          end
 
-          protect "Mock.cleanup", @mock_cleanup
-          MSpec.actions :after, state
-          @state = nil
+            protect "Mock.cleanup", @mock_cleanup
+            MSpec.actions :after, state
+            @state = nil
+          end
         end
         protect "after :all", post(:all)
       else

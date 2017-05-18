@@ -1,11 +1,10 @@
 /*
- * $Id: ossl_pkey.h 25189 2009-10-02 12:04:37Z akr $
  * 'OpenSSL for Ruby' project
  * Copyright (C) 2001 Michal Rokos <m.rokos@sh.cvut.cz>
  * All rights reserved.
  */
 /*
- * This program is licenced under the same licence as Ruby.
+ * This program is licensed under the same licence as Ruby.
  * (See the file 'LICENCE'.)
  */
 #if !defined(_OSSL_PKEY_H_)
@@ -15,30 +14,43 @@ extern VALUE mPKey;
 extern VALUE cPKey;
 extern VALUE ePKeyError;
 extern ID id_private_q;
+extern const rb_data_type_t ossl_evp_pkey_type;
 
 #define OSSL_PKEY_SET_PRIVATE(obj) rb_iv_set((obj), "private", Qtrue)
 #define OSSL_PKEY_SET_PUBLIC(obj)  rb_iv_set((obj), "private", Qfalse)
 #define OSSL_PKEY_IS_PRIVATE(obj)  (rb_iv_get((obj), "private") == Qtrue)
 
-#define WrapPKey(klass, obj, pkey) do { \
-    if (!pkey) { \
+#define NewPKey(klass) \
+    TypedData_Wrap_Struct((klass), &ossl_evp_pkey_type, 0)
+#define SetPKey(obj, pkey) do { \
+    if (!(pkey)) { \
 	rb_raise(rb_eRuntimeError, "PKEY wasn't initialized!"); \
     } \
-    obj = Data_Wrap_Struct(klass, 0, EVP_PKEY_free, pkey); \
+    RTYPEDDATA_DATA(obj) = (pkey); \
     OSSL_PKEY_SET_PUBLIC(obj); \
 } while (0)
 #define GetPKey(obj, pkey) do {\
-    Data_Get_Struct(obj, EVP_PKEY, pkey);\
-    if (!pkey) { \
+    TypedData_Get_Struct((obj), EVP_PKEY, &ossl_evp_pkey_type, (pkey)); \
+    if (!(pkey)) { \
 	rb_raise(rb_eRuntimeError, "PKEY wasn't initialized!");\
     } \
 } while (0)
 #define SafeGetPKey(obj, pkey) do { \
-    OSSL_Check_Kind(obj, cPKey); \
-    GetPKey(obj, pkey); \
+    OSSL_Check_Kind((obj), cPKey); \
+    GetPKey((obj), (pkey)); \
 } while (0)
 
 void ossl_generate_cb(int, int, void *);
+#define HAVE_BN_GENCB defined(HAVE_RSA_GENERATE_KEY_EX) || defined(HAVE_DH_GENERATE_PARAMETERS_EX) || defined(HAVE_DSA_GENERATE_PARAMETERS_EX)
+#if HAVE_BN_GENCB
+struct ossl_generate_cb_arg {
+    int yield;
+    int stop;
+    int state;
+};
+int ossl_generate_cb_2(int p, int n, BN_GENCB *cb);
+void ossl_generate_cb_stop(void *ptr);
+#endif
 
 VALUE ossl_pkey_new(EVP_PKEY *);
 VALUE ossl_pkey_new_from_file(VALUE);
@@ -71,8 +83,6 @@ void Init_ossl_dsa(void);
  */
 extern VALUE cDH;
 extern VALUE eDHError;
-extern DH *OSSL_DEFAULT_DH_512;
-extern DH *OSSL_DEFAULT_DH_1024;
 
 VALUE ossl_dh_new(EVP_PKEY *);
 void Init_ossl_dh(void);
@@ -134,8 +144,8 @@ static VALUE ossl_##keytype##_set_##name(VALUE self, VALUE bignum)	\
 
 #define DEF_OSSL_PKEY_BN(class, keytype, name)				\
 do {									\
-	rb_define_method(class, #name, ossl_##keytype##_get_##name, 0);	\
-	rb_define_method(class, #name "=", ossl_##keytype##_set_##name, 1);\
+	rb_define_method((class), #name, ossl_##keytype##_get_##name, 0);	\
+	rb_define_method((class), #name "=", ossl_##keytype##_set_##name, 1);\
 } while (0)
 
 #endif /* _OSSL_PKEY_H_ */

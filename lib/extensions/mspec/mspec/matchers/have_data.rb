@@ -1,5 +1,6 @@
 require 'mspec/guards/feature'
-require 'mspec/helpers/fmode'
+require 'mspec/helpers/io'
+require 'mspec/utils/deprecate'
 
 class HaveDataMatcher
   def initialize(data, mode="rb:binary")
@@ -16,14 +17,16 @@ class HaveDataMatcher
       size = @data.size
     end
 
-    File.open @name, fmode(@mode) do |f|
-      return f.read(size) == @data
+    @contents = File.open @name, fmode(@mode) do |f|
+      f.read(size)
     end
+    @contents == @data
   end
 
   def failure_message
     ["Expected #{@name}",
-     "to have data #{@data.pretty_inspect}"]
+     "to have data #{@data.pretty_inspect}" +
+     "but starts with #{@contents.pretty_inspect}"]
   end
 
   def negative_failure_message
@@ -44,6 +47,7 @@ class Object
   # file can contain more bytes than +data+. The extra bytes do not
   # affect the result.
   def have_data(data, mode="rb:binary")
+    MSpec.deprecate "have_data", "File.read or File.binread(file).should == data"
     HaveDataMatcher.new(data, mode)
   end
 end

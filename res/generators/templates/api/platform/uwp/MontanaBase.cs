@@ -1,8 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using Windows.UI.Core;
-using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Ink;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Shapes;
 using rhoruntime;
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%
@@ -66,13 +72,11 @@ namespace <%= $cur_module.name %>Impl
     {
         protected string _strID = "1";
         protected long _nativeImpl = 0;
-        protected CoreDispatcher dispatcher = null;
         protected <%= $cur_module.name %>RuntimeComponent _runtime;
 <%= dynamic_constants %>
         public <%= $cur_module.name %>Base()
         {
             _runtime = new <%= $cur_module.name %>RuntimeComponent(this);
-            dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
         }
 
         public long getNativeImpl()
@@ -88,10 +92,10 @@ namespace <%= $cur_module.name %>Impl
 
         public void DispatchInvoke(Action a)
         {
-            if (dispatcher != null) {
-              var ignore = dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-              {try{a();} catch (Exception ex) {System.Diagnostics.Debug.WriteLine("Invoke in UI Thread exception");} });
-            }else{a();}
+            if (Deployment.Current.Dispatcher != null)
+                Deployment.Current.Dispatcher.BeginInvoke(a);
+            else
+                a();
         }
 <% if has_getProperty
 %>

@@ -1,5 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Ink;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Shapes;
 using rhoruntime;
 using rhodes;
 
@@ -53,7 +62,7 @@ namespace NativeToolbarImpl
                     if (oEntry.hasName("icon"))
                         icon = oEntry.getString("icon");
                     CRhoRuntime.getInstance().logEvent("addToolbarButton: Label: '" + (label==null?"":label) + "';Action: '" + (action==null?"":action) + "'");
-                    if ((action != null) && !action.Equals("separator", StringComparison.OrdinalIgnoreCase))
+                    if ((action != null) && !action.Equals("separator", StringComparison.InvariantCultureIgnoreCase))
                     {
                         if ((icon != null) && (icon.Length > 0))
                         {
@@ -62,15 +71,15 @@ namespace NativeToolbarImpl
                         }
                         else
                         {
-                            if (action.Equals("options", StringComparison.OrdinalIgnoreCase))
+                            if (action.Equals("options", StringComparison.InvariantCultureIgnoreCase))
                                 icon = "res/options_btn.png";
-                            else if (action.Equals("home", StringComparison.OrdinalIgnoreCase))
+                            else if (action.Equals("home", StringComparison.InvariantCultureIgnoreCase))
                                 icon = "res/home_btn.png";
-                            else if (action.Equals("refresh", StringComparison.OrdinalIgnoreCase))
+                            else if (action.Equals("refresh", StringComparison.InvariantCultureIgnoreCase))
                                 icon = "res/refresh_btn.png";
-                            else if (action.Equals("back", StringComparison.OrdinalIgnoreCase))
+                            else if (action.Equals("back", StringComparison.InvariantCultureIgnoreCase))
                                 icon = "res/back_btn.png";
-                            else if (action.Equals("forward", StringComparison.OrdinalIgnoreCase))
+                            else if (action.Equals("forward", StringComparison.InvariantCultureIgnoreCase))
                                 icon = "res/forward_btn.png";
                             if (icon != null)
                                 icon = CRhoRuntime.getInstance().getRERuntimePath("lib/" + icon);

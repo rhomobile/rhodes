@@ -1,108 +1,141 @@
+# frozen_string_literal: false
+require 'thread'
+
 # The Singleton module implements the Singleton pattern.
 #
-# Usage:
+# == Usage
+#
+# To use Singleton, include the module in your class.
+#
 #    class Klass
 #       include Singleton
 #       # ...
 #    end
 #
-# *  this ensures that only one instance of Klass lets call it
-#    ``the instance'' can be created.
+# This ensures that only one instance of Klass can be created.
 #
 #      a,b  = Klass.instance, Klass.instance
-#      a == b    # => true
-#      Klass.new #  NoMethodError - new is private ...
 #
-# *  ``The instance'' is created at instantiation time, in other
-#    words the first call of Klass.instance(), thus
+#      a == b
+#      # => true
+#
+#      Klass.new
+#      # => NoMethodError - new is private ...
+#
+# The instance is created at upon the first call of Klass.instance().
 #
 #      class OtherKlass
 #        include Singleton
 #        # ...
 #      end
-#      ObjectSpace.each_object(OtherKlass){} # => 0.
 #
-# *  This behavior is preserved under inheritance and cloning.
+#      ObjectSpace.each_object(OtherKlass){}
+#      # => 0
 #
-#
-#
-# This is achieved by marking
-# *  Klass.new and Klass.allocate - as private
-#
-# Providing (or modifying) the class methods
-# *  Klass.inherited(sub_klass) and Klass.clone()  -
-#    to ensure that the Singleton pattern is properly
-#    inherited and cloned.
-#
-# *  Klass.instance()  -  returning ``the instance''. After a
-#    successful self modifying (normally the first) call the
-#    method body is a simple:
-#
-#       def Klass.instance()
-#         return @singleton__instance__
-#       end
-#
-# *  Klass._load(str)  -  calling Klass.instance()
-#
-# *  Klass._instantiate?()  -  returning ``the instance'' or
-#    nil. This hook method puts a second (or nth) thread calling
-#    Klass.instance() on a waiting loop. The return value
-#    signifies the successful completion or premature termination
-#    of the first, or more generally, current "instantiation thread".
+#      OtherKlass.instance
+#      ObjectSpace.each_object(OtherKlass){}
+#      # => 1
 #
 #
-# The instance method of Singleton are
-# * clone and dup - raising TypeErrors to prevent cloning or duping
+# This behavior is preserved under inheritance and cloning.
 #
-# *  _dump(depth) - returning the empty string.  Marshalling strips
-#    by default all state information, e.g. instance variables and
-#    taint state, from ``the instance''.  Providing custom _load(str)
-#    and _dump(depth) hooks allows the (partially) resurrections of
-#    a previous state of ``the instance''.
-
-#require 'thread'
-
+# == Implementation
+#
+# This above is achieved by:
+#
+# *  Making Klass.new and Klass.allocate private.
+#
+# *  Overriding Klass.inherited(sub_klass) and Klass.clone() to ensure that the
+#    Singleton properties are kept when inherited and cloned.
+#
+# *  Providing the Klass.instance() method that returns the same object each
+#    time it is called.
+#
+# *  Overriding Klass._load(str) to call Klass.instance().
+#
+# *  Overriding Klass#clone and Klass#dup to raise TypeErrors to prevent
+#    cloning or duping.
+#
+# == Singleton and Marshal
+#
+# By default Singleton's #_dump(depth) returns the empty string. Marshalling by
+# default will strip state information, e.g. instance variables and taint
+# state, from the instance. Classes using Singleton can provide custom
+# _load(str) and _dump(depth) methods to retain some of the previous state of
+# the instance.
+#
+#    require 'singleton'
+#
+#    class Example
+#      include Singleton
+#      attr_accessor :keep, :strip
+#      def _dump(depth)
+#        # this strips the @strip information from the instance
+#        Marshal.dump(@keep, depth)
+#      end
+#
+#      def self._load(str)
+#        instance.keep = Marshal.load(str)
+#        instance
+#      end
+#    end
+#
+#    a = Example.instance
+#    a.keep = "keep this"
+#    a.strip = "get rid of this"
+#    a.taint
+#
+#    stored_state = Marshal.dump(a)
+#
+#    a.keep = nil
+#    a.strip = nil
+#    b = Marshal.load(stored_state)
+#    p a == b  #  => true
+#    p a.keep  #  => "keep this"
+#    p a.strip #  => nil
+#
 module Singleton
-  #  disable build-in copying methods
+  # Raises a TypeError to prevent cloning.
   def clone
     raise TypeError, "can't clone instance of singleton #{self.class}"
   end
+
+  # Raises a TypeError to prevent duping.
   def dup
     raise TypeError, "can't dup instance of singleton #{self.class}"
   end
 
-  #  default marshalling strategy
+  # By default, do not retain any state when marshalling.
   def _dump(depth = -1)
     ''
   end
 
-  module SingletonClassMethods
-    # properly clone the Singleton pattern - did you know
-    # that duping doesn't copy class methods?
-    def clone
+  module SingletonClassMethods # :nodoc:
+
+    def clone # :nodoc:
       Singleton.__init__(super)
     end
 
+    # By default calls instance(). Override to retain singleton state.
     def _load(str)
       instance
     end
 
     private
 
-    #  ensure that the Singleton pattern is properly inherited
     def inherited(sub_klass)
       super
       Singleton.__init__(sub_klass)
     end
   end
 
-  class << Singleton
-    def __init__(klass)
+  class << Singleton # :nodoc:
+    def __init__(klass) # :nodoc:
       klass.instance_eval {
         @singleton__instance__ = nil
         @singleton__mutex__ = Mutex.new
       }
-      def klass.instance
+      def klass.instance # :nodoc:
         return @singleton__instance__ if @singleton__instance__
         @singleton__mutex__.synchronize {
           return @singleton__instance__ if @singleton__instance__
@@ -115,7 +148,7 @@ module Singleton
 
     private
 
-    #  extending an object with Singleton is a bad idea
+    # extending an object with Singleton is a bad idea
     undef_method :extend_object
 
     def append_features(mod)
@@ -128,10 +161,13 @@ module Singleton
 
     def included(klass)
       super
-      klass.private_class_method  :new, :allocate
+      klass.private_class_method :new, :allocate
       klass.extend SingletonClassMethods
       Singleton.__init__(klass)
     end
   end
 
+  ##
+  # :singleton-method: _load
+  #  By default calls instance(). Override to retain singleton state.
 end

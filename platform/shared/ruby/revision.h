@@ -1,0 +1,2 @@
+#define RUBY_REVISION 57357
+#define RUBY_BRANCH_NAME "ruby_2_3"

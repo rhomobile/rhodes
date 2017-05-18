@@ -3,10 +3,7 @@ require 'mspec/runner/formatters/dotted'
 
 class YamlFormatter < DottedFormatter
   def initialize(out=nil)
-    @exception = @failure = false
-    @exceptions = []
-    @count = 0
-    @out = $stdout
+    super(nil)
 
     if out.nil?
       @finish = $stdout
@@ -40,5 +37,6 @@ class YamlFormatter < DottedFormatter
     print "expectations: ", @tally.counter.expectations, "\n"
     print "failures: ",     @tally.counter.failures,     "\n"
     print "errors: ",       @tally.counter.errors,       "\n"
+    print "tagged: ",       @tally.counter.tagged,       "\n"
   end
 end

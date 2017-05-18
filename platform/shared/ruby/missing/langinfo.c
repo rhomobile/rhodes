@@ -32,17 +32,15 @@
  *   http://www.cl.cam.ac.uk/~mgk25/ucs/langinfo.c
  */
 
+#include "ruby/missing.h"
 #include <stdlib.h>
 #include <string.h>
 #if defined _WIN32 || defined __CYGWIN__
-//#include <windows.h>
-//#if defined _WIN32
-//#define strncasecmp strnicmp
-//#endif
+#include <windows.h>
+#if defined _WIN32 && !defined strncasecmp
+#define strncasecmp strnicmp
 #endif
-//RHO
-#include "ruby/ruby.h"
-//RHO
+#endif
 #ifdef HAVE_LANGINFO_H
 #include "langinfo.h"
 #endif
@@ -58,7 +56,7 @@
 #endif
 
 #define digit(x) ((x) >= '0' && (x) <= '9')
-#define strstart(s, n) (strncasecmp(s, n, strlen(n)) == 0)
+#define strstart(s, n) (strncasecmp((s), (n), strlen(n)) == 0)
 
 static char buf[16];
 
@@ -67,7 +65,7 @@ nl_langinfo_codeset(void)
 {
   const char *l, *p;
   int n;
-  
+
   if (((l = getenv("LC_ALL"))   && *l) ||
       ((l = getenv("LC_CTYPE")) && *l) ||
       ((l = getenv("LANG"))     && *l)) {

@@ -43,12 +43,12 @@ module Mock
     stubs.delete key
   end
 
-  def self.mock_respond_to?(obj, sym)
+  def self.mock_respond_to?(obj, sym, include_private = false)
     name = replaced_name(obj, :respond_to?)
     if replaced? name
-      obj.__send__ name, sym
+      obj.__send__ name, sym, include_private
     else
-      obj.respond_to? sym
+      obj.respond_to? sym, include_private
     end
   end
 
@@ -58,15 +58,15 @@ module Mock
     key = replaced_key obj, sym
     sym = sym.to_sym
 
-    if (sym == :respond_to? or mock_respond_to?(obj, sym)) and !replaced?(key.first)
+    if (sym == :respond_to? or mock_respond_to?(obj, sym, true)) and !replaced?(key.first)
       meta.__send__ :alias_method, key.first, sym
     end
 
-    meta.class_eval <<-END
-      def #{sym}(*args, &block)
-        Mock.verify_call self, :#{sym}, *args, &block
+    meta.class_eval {
+      define_method(sym) do |*args, &block|
+        Mock.verify_call self, sym, *args, &block
       end
-    END
+    }
 
     proxy = MockProxy.new type
 
@@ -108,7 +108,7 @@ module Mock
         end
         unless pass
           SpecExpectation.fail_with(
-            "Mock '#{name_or_inspect obj}' expected to receive '#{key.last}' " \
+            "Mock '#{name_or_inspect obj}' expected to receive '#{key.last}' " + \
             "#{qualifier.to_s.sub('_', ' ')} #{count} times",
             "but received it #{proxy.calls} times")
         end
@@ -142,14 +142,14 @@ module Mock
                 block.call(*args_to_yield)
               else
                 SpecExpectation.fail_with(
-                  "Mock '#{name_or_inspect obj}' asked to yield " \
+                  "Mock '#{name_or_inspect obj}' asked to yield " + \
                   "|#{proxy.yielding.join(', ')}| on #{sym}\n",
                   "but a block with arity #{block.arity} was passed")
               end
             end
           else
             SpecExpectation.fail_with(
-              "Mock '#{name_or_inspect obj}' asked to yield " \
+              "Mock '#{name_or_inspect obj}' asked to yield " + \
               "|[#{proxy.yielding.join('], [')}]| on #{sym}\n",
               "but no block was passed")
           end
@@ -186,7 +186,7 @@ module Mock
       sym = key.last
       meta = obj.singleton_class
 
-      if mock_respond_to? obj, replaced
+      if mock_respond_to? obj, replaced, true
         meta.__send__ :alias_method, sym, replaced
         meta.__send__ :remove_method, replaced
       else

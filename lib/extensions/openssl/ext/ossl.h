@@ -1,16 +1,16 @@
 /*
- * $Id: ossl.h 26781 2010-02-28 02:56:26Z naruse $
  * 'OpenSSL for Ruby' project
  * Copyright (C) 2001-2002  Michal Rokos <m.rokos@sh.cvut.cz>
  * All rights reserved.
  */
 /*
- * This program is licenced under the same licence as Ruby.
+ * This program is licensed under the same licence as Ruby.
  * (See the file 'LICENCE'.)
  */
 #if !defined(_OSSL_H_)
 #define _OSSL_H_
 
+//RHO
 #if defined(WIN32) || defined (WINCE)
 #include "windows/extconf.h"
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
@@ -26,6 +26,7 @@
 #elif defined(ANDROID)
 #include "android/extconf.h"
 #endif
+//RHO
 
 #if defined(__cplusplus)
 extern "C" {
@@ -44,6 +45,7 @@ extern "C" {
 #endif
 #include <ruby.h>
 #include <ruby/io.h>
+#include <ruby/thread.h>
 
 /*
  * Check the OpenSSL version
@@ -58,8 +60,12 @@ extern "C" {
 #  define assert(condition)
 #endif
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(LIBRESSL_VERSION_NUMBER)
+#  include <openssl/e_os2.h>
 #  define OSSL_NO_CONF_API 1
+#  if !defined(OPENSSL_SYS_WIN32)
+#    define OPENSSL_SYS_WIN32 1
+#  endif
 #  include <winsock2.h>
 #endif
 #include <errno.h>
@@ -73,9 +79,12 @@ extern "C" {
 #include <openssl/rand.h>
 #include <openssl/conf.h>
 #include <openssl/conf_api.h>
+#if !defined(_WIN32)
+#  include <openssl/crypto.h>
+#endif
 #undef X509_NAME
 #undef PKCS7_SIGNER_INFO
-#if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_ST_ENGINE)
+#if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_EVP_CIPHER_CTX_ENGINE)
 #  define OSSL_ENGINE_ENABLED
 #  include <openssl/engine.h>
 #endif
@@ -83,6 +92,11 @@ extern "C" {
 #  define OSSL_OCSP_ENABLED
 #  include <openssl/ocsp.h>
 #endif
+
+/* OpenSSL requires passwords for PEM-encoded files to be at least four
+ * characters long
+ */
+#define OSSL_MIN_PWD_LEN 4
 
 /*
  * Common Module
@@ -98,21 +112,21 @@ extern VALUE eOSSLError;
  * CheckTypes
  */
 #define OSSL_Check_Kind(obj, klass) do {\
-  if (!rb_obj_is_kind_of(obj, klass)) {\
-    ossl_raise(rb_eTypeError, "wrong argument (%s)! (Expected kind of %s)",\
-               rb_obj_classname(obj), rb_class2name(klass));\
+  if (!rb_obj_is_kind_of((obj), (klass))) {\
+    ossl_raise(rb_eTypeError, "wrong argument (%"PRIsVALUE")! (Expected kind of %"PRIsVALUE")",\
+               rb_obj_class(obj), (klass));\
   }\
 } while (0)
 
 #define OSSL_Check_Instance(obj, klass) do {\
-  if (!rb_obj_is_instance_of(obj, klass)) {\
-    ossl_raise(rb_eTypeError, "wrong argument (%s)! (Expected instance of %s)",\
-               rb_obj_classname(obj), rb_class2name(klass));\
+  if (!rb_obj_is_instance_of((obj), (klass))) {\
+    ossl_raise(rb_eTypeError, "wrong argument (%"PRIsVALUE")! (Expected instance of %"PRIsVALUE")",\
+               rb_obj_class(obj), (klass));\
   }\
 } while (0)
 
 #define OSSL_Check_Same_Class(obj1, obj2) do {\
-  if (!rb_obj_is_instance_of(obj1, rb_obj_class(obj2))) {\
+  if (!rb_obj_is_instance_of((obj1), rb_obj_class(obj2))) {\
     ossl_raise(rb_eTypeError, "wrong argument type");\
   }\
 } while (0)
@@ -137,19 +151,27 @@ STACK_OF(X509) *ossl_x509_ary2sk(VALUE);
 STACK_OF(X509) *ossl_protect_x509_ary2sk(VALUE,int*);
 VALUE ossl_x509_sk2ary(STACK_OF(X509) *certs);
 VALUE ossl_x509crl_sk2ary(STACK_OF(X509_CRL) *crl);
+VALUE ossl_x509name_sk2ary(STACK_OF(X509_NAME) *names);
 VALUE ossl_buf2str(char *buf, int len);
 #define ossl_str_adjust(str, p) \
 do{\
-    int len = RSTRING_LEN(str);\
-    int newlen = (p) - (unsigned char*)RSTRING_PTR(str);\
+    long len = RSTRING_LEN(str);\
+    long newlen = (long)((p) - (unsigned char*)RSTRING_PTR(str));\
     assert(newlen <= len);\
-    rb_str_set_len(str, newlen);\
+    rb_str_set_len((str), newlen);\
 }while(0)
 
 /*
  * our default PEM callback
  */
 int ossl_pem_passwd_cb(char *, int, int, void *);
+
+/*
+ * Clear BIO* with this in PEM/DER fallback scenarios to avoid decoding
+ * errors piling up in OpenSSL::Errors
+ */
+#define OSSL_BIO_reset(bio)	(void)BIO_reset((bio)); \
+				ERR_clear_error();
 
 /*
  * ERRor messages
@@ -161,7 +183,8 @@ VALUE ossl_exc_new(VALUE, const char *, ...);
 /*
  * Verify callback
  */
-extern int ossl_verify_cb_idx;
+extern int ossl_store_ctx_ex_verify_cb_idx;
+extern int ossl_store_ex_verify_cb_idx;
 
 struct ossl_verify_cb_args {
     VALUE proc;
@@ -194,13 +217,13 @@ extern VALUE dOSSL;
 } while (0)
 
 #define OSSL_Warning(fmt, ...) do { \
-  OSSL_Debug(fmt, ##__VA_ARGS__); \
-  rb_warning(fmt, ##__VA_ARGS__); \
+  OSSL_Debug((fmt), ##__VA_ARGS__); \
+  rb_warning((fmt), ##__VA_ARGS__); \
 } while (0)
 
 #define OSSL_Warn(fmt, ...) do { \
-  OSSL_Debug(fmt, ##__VA_ARGS__); \
-  rb_warn(fmt, ##__VA_ARGS__); \
+  OSSL_Debug((fmt), ##__VA_ARGS__); \
+  rb_warn((fmt), ##__VA_ARGS__); \
 } while (0)
 #else
 void ossl_debug(const char *, ...);
@@ -240,4 +263,3 @@ void Init_openssl(void);
 #endif
 
 #endif /* _OSSL_H_ */
-

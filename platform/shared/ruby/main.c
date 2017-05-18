@@ -1,18 +1,18 @@
 /**********************************************************************
-
-  main.c -
-
-  $Author: akr $
-  created at: Fri Aug 19 13:19:58 JST 1994
-
-  Copyright (C) 1993-2007 Yukihiro Matsumoto
-
-**********************************************************************/
+ 
+ main.c -
+ 
+ $Author: akr $
+ created at: Fri Aug 19 13:19:58 JST 1994
+ 
+ Copyright (C) 1993-2007 Yukihiro Matsumoto
+ 
+ **********************************************************************/
 
 #undef RUBY_EXPORT
 #define RHO_MEMORY__
 #include "ruby.h"
-#include "debug.h"
+//#include "debug.h"
 
 #include "ruby/ext/rho/rhoruby.h"
 //#include <sqlite3.h>
@@ -24,34 +24,33 @@
 extern void Init_SyncEngine(void);
 extern void Init_strscan(void);
 extern void Init_System(void);
-#define COMPILER 1
 /*
  if (rb_safe_level() == 0) {
  ruby_incpush(getenv("RUBYLIB"));
-    }
-[04.01.2009 11:44:19] evgeny vovchenko says: ˝ÚÓ Ì‡‰Ó Û·‡Ú¸
-[04.01.2009 11:44:35] evgeny vovchenko says: ruby_init_gems(!(opt->disable & DISABLE_BIT(gems)));
-*/
+ }
+ [04.01.2009 11:44:19] evgeny vovchenko says: ˝ÚÓ Ì‡‰Ó Û·‡Ú¸
+ [04.01.2009 11:44:35] evgeny vovchenko says: ruby_init_gems(!(opt->disable & DISABLE_BIT(gems)));
+ */
 //RUBY_GLOBAL_SETUP
 
-#ifndef COMPILER
+#ifndef RHO_RUBY_COMPILER
 int
 main(int argc, char **argv)
 {
-//    MessageBox(0,"","",MB_OK);
+    //    MessageBox(0,"","",MB_OK);
     ruby_sysinit(&argc, &argv);
-
+    
     RhoRubyStart();
     RhoRubyInitApp();
     RhoRubyStop();
 }
 
 /*const char* RhoGetRootPath()
-{
-    return "D:/Projects/rhodes1/rhodes/win32/bin/RhoBundle/";
-}*/
+ {
+ return "D:/Projects/rhodes1/rhodes/win32/bin/RhoBundle/";
+ }*/
 
-#else 
+#else
 #include "vm_core.h"
 static VALUE
 __rho_compile( VALUE obj, VALUE src);
@@ -60,40 +59,52 @@ int
 main(int argc, char **argv)
 {
     int nRes = 0;
-
+    
     //_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_CRT_DF | _CRTDBG_LEAK_CHECK_DF);
-
+    
 #ifdef RUBY_DEBUG_ENV
     ruby_set_debug_option(getenv("RUBY_DEBUG"));
 #endif
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
 #endif
-
+    
 #ifdef WIN32
     SetEnvironmentVariable("RUBYOPT","");
     SetEnvironmentVariable("RUBYLIB","");
 #endif //WIN32
-
-//    MessageBox(0,"","",MB_OK);
+    
+    puts( __DATE__ );
+    puts( __TIME__ );
+    puts (">>>>> RUNNING RUBY COMPILER");
+    puts (">>>>> WORK DIR");
+    char cwd[1024];
+    getcwd(cwd,sizeof(cwd));
+    puts(cwd);
+    puts (">>>>> ARGS:");
+    for( int i = 0; i<argc;++i) {
+        puts (argv[i]);
+    }
     ruby_sysinit(&argc, &argv);
     {
-	RUBY_INIT_STACK;
-	ruby_init();
-    Init_strscan();
-	//Init_sqlite3_api();
-    Init_SyncEngine();
-    Init_System();
-    //Init_prelude();
-
-    //rb_gc_disable();
-
-    rb_define_global_function("__rho_compile", __rho_compile, 1);
-
-	nRes = ruby_run_node(ruby_options(argc, argv));
-
+        RUBY_INIT_STACK;
+        ruby_init();
+        Init_strscan();
+        
+        //Init_sqlite3_api();
+        ////Init_SyncEngine();
+        ////Init_System();
+        
+        //Init_prelude();
+        
+        //rb_gc_disable();
+        
+        rb_define_global_function("__rho_compile", __rho_compile, 1);
+        
+        nRes = ruby_run_node(ruby_options(argc, argv));
+        
     }
-
+    
     return nRes;
 }
 
@@ -102,24 +113,26 @@ int rho_rhodesapp_isrubycompiler()
     return 1;
 }
 
+VALUE iseqw_new(const rb_iseq_t *iseq);
+
 static VALUE
 __rho_compile( VALUE obj, VALUE src)
 {
     VALUE result;
-    rb_thread_t *th = GET_THREAD();
-
+    //rb_thread_t *th = GET_THREAD();
+    
     rb_secure(1);
-
-    th->parse_in_eval++;
-    result = rb_iseq_compile(src, rb_str_new2("(eval)"), INT2FIX(1));
-
+    
+    //th->parse_in_eval++;
+    result = iseqw_new(rb_iseq_compile(src, rb_str_new2("(eval)"), INT2FIX(1)));
+    
     //result = rb_iseq_compile_with_option(src, rb_str_new2("(eval)"), Qnil, INT2FIX(1), Qtrue );
-    th->parse_in_eval--;
-
+    //th->parse_in_eval--;
+    
     return result;
 }
 //#ifdef __APPLE__
-const char* rho_native_rhopath() 
+const char* rho_native_rhopath()
 {
     return "";
 }
@@ -130,24 +143,24 @@ const char* rho_rhodesapp_getblobsdirpath()
 }
 
 VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values) {
-	return 0;
+    return 0;
 }
 
 //#endif //__APPLE__
 
 #endif //!COMPILER
 /*
-void setup_delete_db_callback(sqlite3 * db) {
-}
-
-void lock_sync_mutex() {
-}
-
-void unlock_sync_mutex() {
-}
-
-void dosync() {
-}*/
+ void setup_delete_db_callback(sqlite3 * db) {
+ }
+ 
+ void lock_sync_mutex() {
+ }
+ 
+ void unlock_sync_mutex() {
+ }
+ 
+ void dosync() {
+ }*/
 
 VALUE rho_json_parse(VALUE v,VALUE str)
 {
@@ -263,11 +276,11 @@ void rhoPlainLogArg(const char* file, int line, int severity, const char* szCate
 }
 
 void rhoPlainLogVar(const char* file, int line, int severity, const char* szCategory,
-                 const char* format, ... ){
+                    const char* format, ... ){
 }
 
 int rhoPlainLog(const char* file, int line, int severity, const char* szCategory,
-                  const char* msg ){
+                const char* msg ){
     return 1;
 }
 
@@ -322,7 +335,7 @@ VALUE navbar_started()
 }
 
 int rho_native_view_manager_create_native_view(const char* viewtype, int tab_index, VALUE params) {
-	return -1;
+    return -1;
 }
 
 void rho_native_view_manager_navigate_native_view(int native_view_id, const char* url) {
@@ -382,4 +395,12 @@ int rho_is_remote_debug()
 
 int rho_rcclient_have_rhoconnect_client() {
     return 0;
+}
+
+void *rho_nativethread_start() {
+	return 0;
+}
+
+void rho_nativethread_end(void *p) {
+
 }

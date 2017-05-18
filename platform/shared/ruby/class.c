@@ -2,7 +2,7 @@
 
   class.c -
 
-  $Author: yugui $
+  $Author$
   created at: Tue Aug 10 15:05:44 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -23,14 +23,129 @@
  * \{
  */
 
-#include "ruby/ruby.h"
+#include "internal.h"
 #include "ruby/st.h"
-#include "method.h"
+#include "constant.h"
 #include "vm_core.h"
+#include "id_table.h"
 #include <ctype.h>
 
-extern st_table *rb_class_tbl;
-static ID id_attached;
+#define id_attached id__attached__
+
+void
+rb_class_subclass_add(VALUE super, VALUE klass)
+{
+    rb_subclass_entry_t *entry, *head;
+
+    if (super && super != Qundef) {
+	entry = ALLOC(rb_subclass_entry_t);
+	entry->klass = klass;
+	entry->next = NULL;
+
+	head = RCLASS_EXT(super)->subclasses;
+	if (head) {
+	    entry->next = head;
+	    RCLASS_EXT(head->klass)->parent_subclasses = &entry->next;
+	}
+
+	RCLASS_EXT(super)->subclasses = entry;
+	RCLASS_EXT(klass)->parent_subclasses = &RCLASS_EXT(super)->subclasses;
+    }
+}
+
+static void
+rb_module_add_to_subclasses_list(VALUE module, VALUE iclass)
+{
+    rb_subclass_entry_t *entry, *head;
+
+    entry = ALLOC(rb_subclass_entry_t);
+    entry->klass = iclass;
+    entry->next = NULL;
+
+    head = RCLASS_EXT(module)->subclasses;
+    if (head) {
+	entry->next = head;
+	RCLASS_EXT(head->klass)->module_subclasses = &entry->next;
+    }
+
+    RCLASS_EXT(module)->subclasses = entry;
+    RCLASS_EXT(iclass)->module_subclasses = &RCLASS_EXT(module)->subclasses;
+}
+
+void
+rb_class_remove_from_super_subclasses(VALUE klass)
+{
+    rb_subclass_entry_t *entry;
+
+    if (RCLASS_EXT(klass)->parent_subclasses) {
+	entry = *RCLASS_EXT(klass)->parent_subclasses;
+
+	*RCLASS_EXT(klass)->parent_subclasses = entry->next;
+	if (entry->next) {
+	    RCLASS_EXT(entry->next->klass)->parent_subclasses = RCLASS_EXT(klass)->parent_subclasses;
+	}
+	xfree(entry);
+    }
+
+    RCLASS_EXT(klass)->parent_subclasses = NULL;
+}
+
+void
+rb_class_remove_from_module_subclasses(VALUE klass)
+{
+    rb_subclass_entry_t *entry;
+
+    if (RCLASS_EXT(klass)->module_subclasses) {
+	entry = *RCLASS_EXT(klass)->module_subclasses;
+	*RCLASS_EXT(klass)->module_subclasses = entry->next;
+
+	if (entry->next) {
+	    RCLASS_EXT(entry->next->klass)->module_subclasses = RCLASS_EXT(klass)->module_subclasses;
+	}
+
+	xfree(entry);
+    }
+
+    RCLASS_EXT(klass)->module_subclasses = NULL;
+}
+
+void
+rb_class_foreach_subclass(VALUE klass, void (*f)(VALUE, VALUE), VALUE arg)
+{
+    rb_subclass_entry_t *cur = RCLASS_EXT(klass)->subclasses;
+
+    /* do not be tempted to simplify this loop into a for loop, the order of
+       operations is important here if `f` modifies the linked list */
+    while (cur) {
+	VALUE curklass = cur->klass;
+	cur = cur->next;
+	f(curklass, arg);
+    }
+}
+
+static void
+class_detach_subclasses(VALUE klass, VALUE arg)
+{
+    rb_class_remove_from_super_subclasses(klass);
+}
+
+void
+rb_class_detach_subclasses(VALUE klass)
+{
+    rb_class_foreach_subclass(klass, class_detach_subclasses, Qnil);
+}
+
+static void
+class_detach_module_subclasses(VALUE klass, VALUE arg)
+{
+    rb_class_remove_from_module_subclasses(klass);
+}
+
+void
+rb_class_detach_module_subclasses(VALUE klass)
+{
+    rb_class_foreach_subclass(klass, class_detach_module_subclasses, Qnil);
+}
 
 /**
  * Allocates a struct RClass for a new class.
@@ -47,17 +162,31 @@ static ID id_attached;
 static VALUE
 class_alloc(VALUE flags, VALUE klass)
 {
-    rb_classext_t *ext = ALLOC(rb_classext_t);
-    NEWOBJ(obj, struct RClass);
-    OBJSETUP(obj, klass, flags);
-    obj->ptr = ext;
-    RCLASS_IV_TBL(obj) = 0;
-    RCLASS_M_TBL(obj) = 0;
-    RCLASS_SUPER(obj) = 0;
-    RCLASS_IV_INDEX_TBL(obj) = 0;
+    NEWOBJ_OF(obj, struct RClass, klass, (flags & T_MASK) | FL_PROMOTED1 /* start from age == 2 */ | (RGENGC_WB_PROTECTED_CLASS ? FL_WB_PROTECTED : 0));
+    obj->ptr = ZALLOC(rb_classext_t);
+    /* ZALLOC
+      RCLASS_IV_TBL(obj) = 0;
+      RCLASS_CONST_TBL(obj) = 0;
+      RCLASS_M_TBL(obj) = 0;
+      RCLASS_IV_INDEX_TBL(obj) = 0;
+      RCLASS_SET_SUPER((VALUE)obj, 0);
+      RCLASS_EXT(obj)->subclasses = NULL;
+      RCLASS_EXT(obj)->parent_subclasses = NULL;
+      RCLASS_EXT(obj)->module_subclasses = NULL;
+     */
+    RCLASS_SET_ORIGIN((VALUE)obj, (VALUE)obj);
+    RCLASS_SERIAL(obj) = rb_next_class_serial();
+    RCLASS_REFINED_CLASS(obj) = Qnil;
+    RCLASS_EXT(obj)->allocator = 0;
+
     return (VALUE)obj;
 }
 
+static void
+RCLASS_M_TBL_INIT(VALUE c)
+{
+    RCLASS_M_TBL(c) = rb_id_table_create(0);
+}
 
 /*!
  * A utility function that wraps class_alloc.
@@ -73,8 +202,8 @@ rb_class_boot(VALUE super)
 {
     VALUE klass = class_alloc(T_CLASS, rb_cClass);
 
-    RCLASS_SUPER(klass) = super;
-    RCLASS_M_TBL(klass) = st_init_numtable();
+    RCLASS_SET_SUPER(klass, super);
+    RCLASS_M_TBL_INIT(klass);
 
     OBJ_INFECT(klass, super);
     return (VALUE)klass;
@@ -90,9 +219,9 @@ rb_class_boot(VALUE super)
 void
 rb_check_inheritable(VALUE super)
 {
-    if (TYPE(super) != T_CLASS) {
-	rb_raise(rb_eTypeError, "superclass must be a Class (%s given)",
-		 rb_obj_classname(super));
+    if (!RB_TYPE_P(super, T_CLASS)) {
+	rb_raise(rb_eTypeError, "superclass must be a Class (%"PRIsVALUE" given)",
+		 rb_obj_class(super));
     }
     if (RBASIC(super)->flags & FL_SINGLETON) {
 	rb_raise(rb_eTypeError, "can't make subclass of singleton class");
@@ -117,71 +246,57 @@ rb_class_new(VALUE super)
     return rb_class_boot(super);
 }
 
-struct clone_method_data {
-    st_table *tbl;
-    VALUE klass;
-};
-
-VALUE rb_iseq_clone(VALUE iseqval, VALUE newcbase);
-
-static int
-clone_method(ID mid, const rb_method_entry_t *me, struct clone_method_data *data)
+static void
+clone_method(VALUE old_klass, VALUE new_klass, ID mid, const rb_method_entry_t *me)
 {
-    VALUE newiseqval;
-    if (me->def && me->def->type == VM_METHOD_TYPE_ISEQ) {
-	rb_iseq_t *iseq;
-	newiseqval = rb_iseq_clone(me->def->body.iseq->self, data->klass);
-	GetISeqPtr(newiseqval, iseq);
-	rb_add_method(data->klass, mid, VM_METHOD_TYPE_ISEQ, iseq, me->flag);
-	RB_GC_GUARD(newiseqval);
+    if (me->def->type == VM_METHOD_TYPE_ISEQ) {
+	rb_cref_t *new_cref;
+	rb_vm_rewrite_cref(me->def->body.iseq.cref, old_klass, new_klass, &new_cref);
+	rb_add_method_iseq(new_klass, mid, me->def->body.iseq.iseqptr, new_cref, METHOD_ENTRY_VISI(me));
     }
     else {
-	rb_method_entry_set(data->klass, mid, me, me->flag);
+	rb_method_entry_set(new_klass, mid, me, METHOD_ENTRY_VISI(me));
     }
+}
+
+struct clone_method_arg {
+    VALUE new_klass;
+    VALUE old_klass;
+};
+
+static enum rb_id_table_iterator_result
+clone_method_i(ID key, VALUE value, void *data)
+{
+    const struct clone_method_arg *arg = (struct clone_method_arg *)data;
+    clone_method(arg->old_klass, arg->new_klass, key, (const rb_method_entry_t *)value);
+    return ID_TABLE_CONTINUE;
+}
+
+struct clone_const_arg {
+    VALUE klass;
+    st_table *tbl;
+};
+
+static int
+clone_const(ID key, const rb_const_entry_t *ce, struct clone_const_arg *arg)
+{
+    rb_const_entry_t *nce = ALLOC(rb_const_entry_t);
+    MEMCPY(nce, ce, rb_const_entry_t, 1);
+    RB_OBJ_WRITTEN(arg->klass, Qundef, ce->value);
+    RB_OBJ_WRITTEN(arg->klass, Qundef, ce->file);
+
+    st_insert(arg->tbl, key, (st_data_t)nce);
     return ST_CONTINUE;
 }
 
-/* :nodoc: */
-VALUE
-rb_mod_init_copy(VALUE clone, VALUE orig)
+static int
+clone_const_i(st_data_t key, st_data_t value, st_data_t data)
 {
-    rb_obj_init_copy(clone, orig);
-    if (!FL_TEST(CLASS_OF(clone), FL_SINGLETON)) {
-	RBASIC(clone)->klass = rb_singleton_class_clone(orig);
-	rb_singleton_class_attached(RBASIC(clone)->klass, (VALUE)clone);
-    }
-    RCLASS_SUPER(clone) = RCLASS_SUPER(orig);
-    if (RCLASS_IV_TBL(orig)) {
-	ID id;
-
-	if (RCLASS_IV_TBL(clone)) {
-	    st_free_table(RCLASS_IV_TBL(clone));
-	}
-	RCLASS_IV_TBL(clone) = st_copy(RCLASS_IV_TBL(orig));
-	CONST_ID(id, "__classpath__");
-	st_delete(RCLASS_IV_TBL(clone), (st_data_t*)&id, 0);
-	CONST_ID(id, "__classid__");
-	st_delete(RCLASS_IV_TBL(clone), (st_data_t*)&id, 0);
-    }
-    if (RCLASS_M_TBL(orig)) {
-	struct clone_method_data data;
-
-	if (RCLASS_M_TBL(clone)) {
-	    extern void rb_free_m_table(st_table *tbl);
-	    rb_free_m_table(RCLASS_M_TBL(clone));
-	}
-	data.tbl = RCLASS_M_TBL(clone) = st_init_numtable();
-	data.klass = clone;
-	st_foreach(RCLASS_M_TBL(orig), clone_method,
-		   (st_data_t)&data);
-    }
-
-    return clone;
+    return clone_const((ID)key, (const rb_const_entry_t *)value, (struct clone_const_arg *)data);
 }
 
-/* :nodoc: */
-VALUE
-rb_class_init_copy(VALUE clone, VALUE orig)
+static void
+class_init_copy_check(VALUE clone, VALUE orig)
 {
     if (orig == rb_cBasicObject) {
 	rb_raise(rb_eTypeError, "can't copy the root class");
@@ -192,40 +307,111 @@ rb_class_init_copy(VALUE clone, VALUE orig)
     if (FL_TEST(orig, FL_SINGLETON)) {
 	rb_raise(rb_eTypeError, "can't copy singleton class");
     }
-    return rb_mod_init_copy(clone, orig);
+}
+
+/* :nodoc: */
+VALUE
+rb_mod_init_copy(VALUE clone, VALUE orig)
+{
+    if (RB_TYPE_P(clone, T_CLASS)) {
+	class_init_copy_check(clone, orig);
+    }
+    if (!OBJ_INIT_COPY(clone, orig)) return clone;
+    if (!FL_TEST(CLASS_OF(clone), FL_SINGLETON)) {
+	RBASIC_SET_CLASS(clone, rb_singleton_class_clone(orig));
+	rb_singleton_class_attached(RBASIC(clone)->klass, (VALUE)clone);
+    }
+    RCLASS_SET_SUPER(clone, RCLASS_SUPER(orig));
+    RCLASS_EXT(clone)->allocator = RCLASS_EXT(orig)->allocator;
+    if (RCLASS_IV_TBL(clone)) {
+	st_free_table(RCLASS_IV_TBL(clone));
+	RCLASS_IV_TBL(clone) = 0;
+    }
+    if (RCLASS_CONST_TBL(clone)) {
+	rb_free_const_table(RCLASS_CONST_TBL(clone));
+	RCLASS_CONST_TBL(clone) = 0;
+    }
+    RCLASS_M_TBL(clone) = 0;
+    if (RCLASS_IV_TBL(orig)) {
+	st_data_t id;
+
+	RCLASS_IV_TBL(clone) = rb_st_copy(clone, RCLASS_IV_TBL(orig));
+	CONST_ID(id, "__tmp_classpath__");
+	st_delete(RCLASS_IV_TBL(clone), &id, 0);
+	CONST_ID(id, "__classpath__");
+	st_delete(RCLASS_IV_TBL(clone), &id, 0);
+	CONST_ID(id, "__classid__");
+	st_delete(RCLASS_IV_TBL(clone), &id, 0);
+    }
+    if (RCLASS_CONST_TBL(orig)) {
+	struct clone_const_arg arg;
+
+	RCLASS_CONST_TBL(clone) = st_init_numtable();
+	arg.klass = clone;
+	arg.tbl = RCLASS_CONST_TBL(clone);
+	st_foreach(RCLASS_CONST_TBL(orig), clone_const_i, (st_data_t)&arg);
+    }
+    if (RCLASS_M_TBL(orig)) {
+	struct clone_method_arg arg;
+	arg.old_klass = orig;
+	arg.new_klass = clone;
+	RCLASS_M_TBL_INIT(clone);
+	rb_id_table_foreach(RCLASS_M_TBL(orig), clone_method_i, &arg);
+    }
+
+    return clone;
 }
 
 VALUE
 rb_singleton_class_clone(VALUE obj)
 {
-    VALUE klass = RBASIC(obj)->klass;
+    return rb_singleton_class_clone_and_attach(obj, Qundef);
+}
+
+VALUE
+rb_singleton_class_clone_and_attach(VALUE obj, VALUE attach)
+{
+    const VALUE klass = RBASIC(obj)->klass;
 
     if (!FL_TEST(klass, FL_SINGLETON))
 	return klass;
     else {
-	struct clone_method_data data;
 	/* copy singleton(unnamed) class */
 	VALUE clone = class_alloc(RBASIC(klass)->flags, 0);
 
 	if (BUILTIN_TYPE(obj) == T_CLASS) {
-	    RBASIC(clone)->klass = (VALUE)clone;
+	    RBASIC_SET_CLASS(clone, clone);
 	}
 	else {
-	    RBASIC(clone)->klass = rb_singleton_class_clone(klass);
+	    RBASIC_SET_CLASS(clone, rb_singleton_class_clone(klass));
 	}
 
-	RCLASS_SUPER(clone) = RCLASS_SUPER(klass);
+	RCLASS_SET_SUPER(clone, RCLASS_SUPER(klass));
+	RCLASS_EXT(clone)->allocator = RCLASS_EXT(klass)->allocator;
 	if (RCLASS_IV_TBL(klass)) {
-	    RCLASS_IV_TBL(clone) = st_copy(RCLASS_IV_TBL(klass));
+	    RCLASS_IV_TBL(clone) = rb_st_copy(clone, RCLASS_IV_TBL(klass));
 	}
-	RCLASS_M_TBL(clone) = st_init_numtable();
-	data.tbl = RCLASS_M_TBL(clone);
-	data.klass = (VALUE)clone;
-	st_foreach(RCLASS_M_TBL(klass), clone_method,
-		   (st_data_t)&data);
-	rb_singleton_class_attached(RBASIC(clone)->klass, (VALUE)clone);
+	if (RCLASS_CONST_TBL(klass)) {
+	    struct clone_const_arg arg;
+	    RCLASS_CONST_TBL(clone) = st_init_numtable();
+	    arg.klass = clone;
+	    arg.tbl = RCLASS_CONST_TBL(clone);
+	    st_foreach(RCLASS_CONST_TBL(klass), clone_const_i, (st_data_t)&arg);
+	}
+	if (attach != Qundef) {
+	    rb_singleton_class_attached(clone, attach);
+	}
+	RCLASS_M_TBL_INIT(clone);
+	{
+	    struct clone_method_arg arg;
+	    arg.old_klass = klass;
+	    arg.new_klass = clone;
+	    rb_id_table_foreach(RCLASS_M_TBL(klass), clone_method_i, &arg);
+	}
+	rb_singleton_class_attached(RBASIC(clone)->klass, clone);
 	FL_SET(clone, FL_SINGLETON);
-	return (VALUE)clone;
+
+	return clone;
     }
 }
 
@@ -240,21 +426,43 @@ rb_singleton_class_attached(VALUE klass, VALUE obj)
 	if (!RCLASS_IV_TBL(klass)) {
 	    RCLASS_IV_TBL(klass) = st_init_numtable();
 	}
-	st_insert(RCLASS_IV_TBL(klass), id_attached, obj);
+	rb_class_ivar_set(klass, id_attached, obj);
     }
 }
 
 
 
 #define METACLASS_OF(k) RBASIC(k)->klass
+#define SET_METACLASS_OF(k, cls) RBASIC_SET_CLASS(k, cls)
 
 /*!
  * whether k is a meta^(n)-class of Class class
  * @retval 1 if \a k is a meta^(n)-class of Class class (n >= 0)
  * @retval 0 otherwise
  */
-#define META_CLASS_OF_CLASS_CLASS_P(k)  (METACLASS_OF(k) == k)
+#define META_CLASS_OF_CLASS_CLASS_P(k)  (METACLASS_OF(k) == (k))
 
+static int
+rb_singleton_class_has_metaclass_p(VALUE sklass)
+{
+    return rb_attr_get(METACLASS_OF(sklass), id_attached) == sklass;
+}
+
+int
+rb_singleton_class_internal_p(VALUE sklass)
+{
+    return (RB_TYPE_P(rb_attr_get(sklass, id_attached), T_CLASS) &&
+	    !rb_singleton_class_has_metaclass_p(sklass));
+}
+
+/*!
+ * whether k has a metaclass
+ * @retval 1 if \a k has a metaclass
+ * @retval 0 otherwise
+ */
+#define HAVE_METACLASS_P(k) \
+    (FL_TEST(METACLASS_OF(k), FL_SINGLETON) && \
+     rb_singleton_class_has_metaclass_p(k))
 
 /*!
  * ensures \a klass belongs to its own eigenclass.
@@ -264,7 +472,7 @@ rb_singleton_class_attached(VALUE klass, VALUE obj)
  * @note this macro creates a new eigenclass if necessary.
  */
 #define ENSURE_EIGENCLASS(klass) \
- (rb_ivar_get(METACLASS_OF(klass), id_attached) == klass ? METACLASS_OF(klass) : make_metaclass(klass))
+    (HAVE_METACLASS_P(klass) ? METACLASS_OF(klass) : make_metaclass(klass))
 
 
 /*!
@@ -286,17 +494,18 @@ make_metaclass(VALUE klass)
     rb_singleton_class_attached(metaclass, klass);
 
     if (META_CLASS_OF_CLASS_CLASS_P(klass)) {
-	METACLASS_OF(klass) = METACLASS_OF(metaclass) = metaclass;
+	SET_METACLASS_OF(klass, metaclass);
+	SET_METACLASS_OF(metaclass, metaclass);
     }
     else {
 	VALUE tmp = METACLASS_OF(klass); /* for a meta^(n)-class klass, tmp is meta^(n)-class of Class class */
-	METACLASS_OF(klass) = metaclass;
-	METACLASS_OF(metaclass) = ENSURE_EIGENCLASS(tmp);
+	SET_METACLASS_OF(klass, metaclass);
+	SET_METACLASS_OF(metaclass, ENSURE_EIGENCLASS(tmp));
     }
 
     super = RCLASS_SUPER(klass);
     while (RB_TYPE_P(super, T_ICLASS)) super = RCLASS_SUPER(super);
-    RCLASS_SUPER(metaclass) = super ? ENSURE_EIGENCLASS(super) : rb_cClass;
+    RCLASS_SET_SUPER(metaclass, super ? ENSURE_EIGENCLASS(super) : rb_cClass);
 
     OBJ_INFECT(metaclass, RCLASS_SUPER(metaclass));
 
@@ -316,10 +525,10 @@ make_singleton_class(VALUE obj)
     VALUE klass = rb_class_boot(orig_class);
 
     FL_SET(klass, FL_SINGLETON);
-    RBASIC(obj)->klass = klass;
+    RBASIC_SET_CLASS(obj, klass);
     rb_singleton_class_attached(klass, obj);
 
-    METACLASS_OF(klass) = METACLASS_OF(rb_class_real(orig_class));
+    SET_METACLASS_OF(klass, METACLASS_OF(rb_class_real(orig_class)));
     return klass;
 }
 
@@ -327,12 +536,10 @@ make_singleton_class(VALUE obj)
 static VALUE
 boot_defclass(const char *name, VALUE super)
 {
-    extern st_table *rb_class_tbl;
     VALUE obj = rb_class_boot(super);
     ID id = rb_intern(name);
 
     rb_name_class(obj, id);
-    st_add_direct(rb_class_tbl, id, obj);
     rb_const_set((rb_cObject ? rb_cObject : obj), id, obj);
     return obj;
 }
@@ -340,25 +547,16 @@ boot_defclass(const char *name, VALUE super)
 void
 Init_class_hierarchy(void)
 {
-    id_attached = rb_intern("__attached__");
-
-    //RHO 
-    rb_cBasicObject = 0;
-    rb_cObject = 0;
-    rb_cModule = 0;
-    rb_cClass =  0;
-    //RHO
-
     rb_cBasicObject = boot_defclass("BasicObject", 0);
     rb_cObject = boot_defclass("Object", rb_cBasicObject);
     rb_cModule = boot_defclass("Module", rb_cObject);
     rb_cClass =  boot_defclass("Class",  rb_cModule);
 
-    RBASIC(rb_cClass)->klass
-	= RBASIC(rb_cModule)->klass
-	= RBASIC(rb_cObject)->klass
-	= RBASIC(rb_cBasicObject)->klass
-	= rb_cClass;
+    rb_const_set(rb_cObject, rb_intern_const("BasicObject"), rb_cBasicObject);
+    RBASIC_SET_CLASS(rb_cClass, rb_cClass);
+    RBASIC_SET_CLASS(rb_cModule, rb_cClass);
+    RBASIC_SET_CLASS(rb_cObject, rb_cClass);
+    RBASIC_SET_CLASS(rb_cBasicObject, rb_cClass);
 }
 
 
@@ -450,8 +648,9 @@ rb_define_class(const char *name, VALUE super)
     id = rb_intern(name);
     if (rb_const_defined(rb_cObject, id)) {
 	klass = rb_const_get(rb_cObject, id);
-	if (TYPE(klass) != T_CLASS) {
-	    rb_raise(rb_eTypeError, "%s is not a class", name);
+	if (!RB_TYPE_P(klass, T_CLASS)) {
+	    rb_raise(rb_eTypeError, "%s is not a class (%"PRIsVALUE")",
+		     name, rb_obj_class(klass));
 	}
 	if (rb_class_real(RCLASS_SUPER(klass)) != super) {
 	    rb_raise(rb_eTypeError, "superclass mismatch for class %s", name);
@@ -462,7 +661,7 @@ rb_define_class(const char *name, VALUE super)
 	rb_warn("no super class for `%s', Object assumed", name);
     }
     klass = rb_define_class_id(id, super);
-    st_add_direct(rb_class_tbl, id, klass);
+    rb_vm_add_root_module(id, klass);
     rb_name_class(klass, id);
     rb_const_set(rb_cObject, id, klass);
     rb_class_inherited(super, klass);
@@ -480,7 +679,7 @@ rb_define_class(const char *name, VALUE super)
  * \return the created class
  * \throw TypeError if the constant name \a name is already taken but
  *                  the constant is not a \c Class.
- * \throw NameError if the class is already defined but the class can not
+ * \throw TypeError if the class is already defined but the class can not
  *                  be reopened because its superclass is not \a super.
  * \post top-level constant named \a name refers the returned class.
  *
@@ -503,7 +702,7 @@ rb_define_class_under(VALUE outer, const char *name, VALUE super)
  * \return the created class
  * \throw TypeError if the constant name \a name is already taken but
  *                  the constant is not a \c Class.
- * \throw NameError if the class is already defined but the class can not
+ * \throw TypeError if the class is already defined but the class can not
  *                  be reopened because its superclass is not \a super.
  * \post top-level constant named \a name refers the returned class.
  *
@@ -517,17 +716,22 @@ rb_define_class_id_under(VALUE outer, ID id, VALUE super)
 
     if (rb_const_defined_at(outer, id)) {
 	klass = rb_const_get_at(outer, id);
-	if (TYPE(klass) != T_CLASS) {
-	    rb_raise(rb_eTypeError, "%s is not a class", rb_id2name(id));
+	if (!RB_TYPE_P(klass, T_CLASS)) {
+	    rb_raise(rb_eTypeError, "%"PRIsVALUE"::%"PRIsVALUE" is not a class"
+		     " (%"PRIsVALUE")",
+		     outer, rb_id2str(id), rb_obj_class(klass));
 	}
 	if (rb_class_real(RCLASS_SUPER(klass)) != super) {
-	    rb_name_error(id, "%s is already defined", rb_id2name(id));
+	    rb_raise(rb_eTypeError, "superclass mismatch for class "
+		     "%"PRIsVALUE"::%"PRIsVALUE""
+		     " (%"PRIsVALUE" is given but was %"PRIsVALUE")",
+		     outer, rb_id2str(id), RCLASS_SUPER(klass), super);
 	}
 	return klass;
     }
     if (!super) {
-	rb_warn("no super class for `%s::%s', Object assumed",
-		rb_class2name(outer), rb_id2name(id));
+	rb_warn("no super class for `%"PRIsVALUE"::%"PRIsVALUE"', Object assumed",
+		rb_class_path(outer), rb_id2str(id));
     }
     klass = rb_define_class_id(id, super);
     rb_set_class_path_string(klass, outer, rb_id2str(id));
@@ -542,9 +746,7 @@ VALUE
 rb_module_new(void)
 {
     VALUE mdl = class_alloc(T_MODULE, rb_cModule);
-
-    RCLASS_M_TBL(mdl) = st_init_numtable();
-
+    RCLASS_M_TBL_INIT(mdl);
     return (VALUE)mdl;
 }
 
@@ -568,12 +770,14 @@ rb_define_module(const char *name)
     id = rb_intern(name);
     if (rb_const_defined(rb_cObject, id)) {
 	module = rb_const_get(rb_cObject, id);
-	if (TYPE(module) == T_MODULE)
-	    return module;
-	rb_raise(rb_eTypeError, "%s is not a module", rb_obj_classname(module));
+	if (!RB_TYPE_P(module, T_MODULE)) {
+	    rb_raise(rb_eTypeError, "%s is not a module (%"PRIsVALUE")",
+		     name, rb_obj_class(module));
+	}
+	return module;
     }
     module = rb_define_module_id(id);
-    st_add_direct(rb_class_tbl, id, module);
+    rb_vm_add_root_module(id, module);
     rb_const_set(rb_cObject, id, module);
 
     return module;
@@ -592,10 +796,12 @@ rb_define_module_id_under(VALUE outer, ID id)
 
     if (rb_const_defined_at(outer, id)) {
 	module = rb_const_get_at(outer, id);
-	if (TYPE(module) == T_MODULE)
-	    return module;
-	rb_raise(rb_eTypeError, "%s::%s is not a module",
-		 rb_class2name(outer), rb_obj_classname(module));
+	if (!RB_TYPE_P(module, T_MODULE)) {
+	    rb_raise(rb_eTypeError, "%"PRIsVALUE"::%"PRIsVALUE" is not a module"
+		     " (%"PRIsVALUE")",
+		     outer, rb_id2str(id), rb_obj_class(module));
+	}
+	return module;
     }
     module = rb_define_module_id(id);
     rb_const_set(outer, id, module);
@@ -605,8 +811,8 @@ rb_define_module_id_under(VALUE outer, ID id)
     return module;
 }
 
-static VALUE
-include_class_new(VALUE module, VALUE super)
+VALUE
+rb_include_class_new(VALUE module, VALUE super)
 {
     VALUE klass = class_alloc(T_ICLASS, rb_cClass);
 
@@ -616,14 +822,21 @@ include_class_new(VALUE module, VALUE super)
     if (!RCLASS_IV_TBL(module)) {
 	RCLASS_IV_TBL(module) = st_init_numtable();
     }
+    if (!RCLASS_CONST_TBL(module)) {
+	RCLASS_CONST_TBL(module) = st_init_numtable();
+    }
     RCLASS_IV_TBL(klass) = RCLASS_IV_TBL(module);
-    RCLASS_M_TBL(klass) = RCLASS_M_TBL(module);
-    RCLASS_SUPER(klass) = super;
-    if (TYPE(module) == T_ICLASS) {
-	RBASIC(klass)->klass = RBASIC(module)->klass;
+    RCLASS_CONST_TBL(klass) = RCLASS_CONST_TBL(module);
+
+    RCLASS_M_TBL(OBJ_WB_UNPROTECT(klass)) =
+      RCLASS_M_TBL(OBJ_WB_UNPROTECT(RCLASS_ORIGIN(module))); /* TODO: unprotected? */
+
+    RCLASS_SET_SUPER(klass, super);
+    if (RB_TYPE_P(module, T_ICLASS)) {
+	RBASIC_SET_CLASS(klass, RBASIC(module)->klass);
     }
     else {
-	RBASIC(klass)->klass = module;
+	RBASIC_SET_CLASS(klass, module);
     }
     OBJ_INFECT(klass, module);
     OBJ_INFECT(klass, super);
@@ -631,50 +844,147 @@ include_class_new(VALUE module, VALUE super)
     return (VALUE)klass;
 }
 
+static int include_modules_at(const VALUE klass, VALUE c, VALUE module, int search_super);
+
 void
 rb_include_module(VALUE klass, VALUE module)
 {
-    VALUE p, c;
     int changed = 0;
 
     rb_frozen_class_p(klass);
-    if (!OBJ_UNTRUSTED(klass)) {
-	rb_secure(4);
-    }
 
-    if (TYPE(module) != T_MODULE) {
+    if (!RB_TYPE_P(module, T_MODULE)) {
 	Check_Type(module, T_MODULE);
     }
 
     OBJ_INFECT(klass, module);
-    c = klass;
+
+    changed = include_modules_at(klass, RCLASS_ORIGIN(klass), module, TRUE);
+    if (changed < 0)
+	rb_raise(rb_eArgError, "cyclic include detected");
+}
+
+static enum rb_id_table_iterator_result
+add_refined_method_entry_i(ID key, VALUE value, void *data)
+{
+    rb_add_refined_method_entry((VALUE)data, key);
+    return ID_TABLE_CONTINUE;
+}
+
+static int
+include_modules_at(const VALUE klass, VALUE c, VALUE module, int search_super)
+{
+    VALUE p, iclass;
+    int method_changed = 0, constant_changed = 0;
+    struct rb_id_table *const klass_m_tbl = RCLASS_M_TBL(RCLASS_ORIGIN(klass));
+
     while (module) {
 	int superclass_seen = FALSE;
 
-	if (RCLASS_M_TBL(klass) == RCLASS_M_TBL(module))
-	    rb_raise(rb_eArgError, "cyclic include detected");
+	if (RCLASS_ORIGIN(module) != module)
+	    goto skip;
+	if (klass_m_tbl && klass_m_tbl == RCLASS_M_TBL(module))
+	    return -1;
 	/* ignore if the module included already in superclasses */
 	for (p = RCLASS_SUPER(klass); p; p = RCLASS_SUPER(p)) {
-	    switch (BUILTIN_TYPE(p)) {
-	      case T_ICLASS:
+	    int type = BUILTIN_TYPE(p);
+	    if (type == T_ICLASS) {
 		if (RCLASS_M_TBL(p) == RCLASS_M_TBL(module)) {
 		    if (!superclass_seen) {
 			c = p;  /* move insertion point */
 		    }
 		    goto skip;
 		}
-		break;
-	      case T_CLASS:
+	    }
+	    else if (type == T_CLASS) {
+		if (!search_super) break;
 		superclass_seen = TRUE;
-		break;
 	    }
 	}
-	c = RCLASS_SUPER(c) = include_class_new(module, RCLASS_SUPER(c));
-	changed = 1;
+	iclass = rb_include_class_new(module, RCLASS_SUPER(c));
+	c = RCLASS_SET_SUPER(c, iclass);
+
+	{
+	    VALUE m = module;
+	    if (BUILTIN_TYPE(m) == T_ICLASS) m = RBASIC(m)->klass;
+	    rb_module_add_to_subclasses_list(m, iclass);
+	}
+
+	if (FL_TEST(klass, RMODULE_IS_REFINEMENT)) {
+	    VALUE refined_class =
+		rb_refinement_module_get_refined_class(klass);
+
+	    rb_id_table_foreach(RMODULE_M_TBL(module), add_refined_method_entry_i, (void *)refined_class);
+	    FL_SET(c, RMODULE_INCLUDED_INTO_REFINEMENT);
+	}
+	if (RMODULE_M_TBL(module) && rb_id_table_size(RMODULE_M_TBL(module))) method_changed = 1;
+	if (RMODULE_CONST_TBL(module) && RMODULE_CONST_TBL(module)->num_entries) constant_changed = 1;
       skip:
 	module = RCLASS_SUPER(module);
     }
-    if (changed) rb_clear_cache();
+
+    if (method_changed) rb_clear_method_cache_by_class(klass);
+    if (constant_changed) rb_clear_constant_cache();
+
+    return method_changed;
+}
+
+static enum rb_id_table_iterator_result
+move_refined_method(ID key, VALUE value, void *data)
+{
+    rb_method_entry_t *me = (rb_method_entry_t *) value;
+    VALUE klass = (VALUE)data;
+    struct rb_id_table *tbl = RCLASS_M_TBL(klass);
+
+    if (me->def->type == VM_METHOD_TYPE_REFINED) {
+	if (me->def->body.refined.orig_me) {
+	    const rb_method_entry_t *orig_me = me->def->body.refined.orig_me, *new_me;
+	    RB_OBJ_WRITE(me, &me->def->body.refined.orig_me, NULL);
+	    new_me = rb_method_entry_clone(me);
+	    rb_id_table_insert(tbl, key, (VALUE)new_me);
+	    RB_OBJ_WRITTEN(klass, Qundef, new_me);
+	    rb_method_entry_copy(me, orig_me);
+	    return ID_TABLE_CONTINUE;
+	}
+	else {
+	    rb_id_table_insert(tbl, key, (VALUE)me);
+	    return ID_TABLE_DELETE;
+	}
+    }
+    else {
+	return ID_TABLE_CONTINUE;
+    }
+}
+
+void
+rb_prepend_module(VALUE klass, VALUE module)
+{
+    VALUE origin;
+    int changed = 0;
+
+    rb_frozen_class_p(klass);
+
+    Check_Type(module, T_MODULE);
+
+    OBJ_INFECT(klass, module);
+
+    origin = RCLASS_ORIGIN(klass);
+    if (origin == klass) {
+	origin = class_alloc(T_ICLASS, klass);
+	OBJ_WB_UNPROTECT(origin); /* TODO: conservative shading. Need more survey. */
+	RCLASS_SET_SUPER(origin, RCLASS_SUPER(klass));
+	RCLASS_SET_SUPER(klass, origin);
+	RCLASS_SET_ORIGIN(klass, origin);
+	RCLASS_M_TBL(origin) = RCLASS_M_TBL(klass);
+	RCLASS_M_TBL_INIT(klass);
+	rb_id_table_foreach(RCLASS_M_TBL(origin), move_refined_method, (void *)klass);
+    }
+    changed = include_modules_at(klass, klass, module, FALSE);
+    if (changed < 0)
+	rb_raise(rb_eArgError, "cyclic prepend detected");
+    if (changed) {
+	rb_vm_check_redefinition_by_prepend(klass);
+    }
 }
 
 /*
@@ -699,10 +1009,13 @@ rb_mod_included_modules(VALUE mod)
 {
     VALUE ary = rb_ary_new();
     VALUE p;
+    VALUE origin = RCLASS_ORIGIN(mod);
 
     for (p = RCLASS_SUPER(mod); p; p = RCLASS_SUPER(p)) {
-	if (BUILTIN_TYPE(p) == T_ICLASS) {
-	    rb_ary_push(ary, RBASIC(p)->klass);
+	if (p != origin && BUILTIN_TYPE(p) == T_ICLASS) {
+	    VALUE m = RBASIC(p)->klass;
+	    if (RB_TYPE_P(m, T_MODULE))
+		rb_ary_push(ary, m);
 	}
     }
     return ary;
@@ -745,16 +1058,18 @@ rb_mod_include_p(VALUE mod, VALUE mod2)
  *  call-seq:
  *     mod.ancestors -> array
  *
- *  Returns a list of modules included in <i>mod</i> (including
- *  <i>mod</i> itself).
+ *  Returns a list of modules included/prepended in <i>mod</i>
+ *  (including <i>mod</i> itself).
  *
  *     module Mod
  *       include Math
  *       include Comparable
+ *       prepend Enumerable
  *     end
  *
- *     Mod.ancestors    #=> [Mod, Comparable, Math]
- *     Math.ancestors   #=> [Math]
+ *     Mod.ancestors        #=> [Enumerable, Mod, Comparable, Math]
+ *     Math.ancestors       #=> [Math]
+ *     Enumerable.ancestors #=> [Enumerable]
  */
 
 VALUE
@@ -763,93 +1078,94 @@ rb_mod_ancestors(VALUE mod)
     VALUE p, ary = rb_ary_new();
 
     for (p = mod; p; p = RCLASS_SUPER(p)) {
-	if (FL_TEST(p, FL_SINGLETON))
-	    continue;
 	if (BUILTIN_TYPE(p) == T_ICLASS) {
 	    rb_ary_push(ary, RBASIC(p)->klass);
 	}
-	else {
+	else if (p == RCLASS_ORIGIN(p)) {
 	    rb_ary_push(ary, p);
 	}
     }
     return ary;
 }
 
-#define VISI(x) ((x)&NOEX_MASK)
-#define VISI_CHECK(x,f) (VISI(x) == (f))
-
 static int
-ins_methods_push(ID name, long type, VALUE ary, long visi)
+ins_methods_push(ID name, rb_method_visibility_t visi, VALUE ary, rb_method_visibility_t expected_visi)
 {
-    if (type == -1) return ST_CONTINUE;
+    if (visi == METHOD_VISI_UNDEF) return ST_CONTINUE;
 
-    switch (visi) {
-      case NOEX_PRIVATE:
-      case NOEX_PROTECTED:
-      case NOEX_PUBLIC:
-	visi = (type == visi);
+    switch (expected_visi) {
+      case METHOD_VISI_UNDEF:
+	if (visi != METHOD_VISI_PRIVATE) rb_ary_push(ary, ID2SYM(name));
 	break;
-      default:
-	visi = (type != NOEX_PRIVATE);
+      case METHOD_VISI_PRIVATE:
+      case METHOD_VISI_PROTECTED:
+      case METHOD_VISI_PUBLIC:
+	if (visi == expected_visi) rb_ary_push(ary, ID2SYM(name));
 	break;
-    }
-    if (visi) {
-	rb_ary_push(ary, ID2SYM(name));
     }
     return ST_CONTINUE;
 }
 
 static int
-ins_methods_i(ID name, long type, VALUE ary)
+ins_methods_i(st_data_t name, st_data_t type, st_data_t ary)
 {
-    return ins_methods_push(name, type, ary, -1); /* everything but private */
+    return ins_methods_push((ID)name, (rb_method_visibility_t)type, (VALUE)ary, METHOD_VISI_UNDEF); /* everything but private */
 }
 
 static int
-ins_methods_prot_i(ID name, long type, VALUE ary)
+ins_methods_prot_i(st_data_t name, st_data_t type, st_data_t ary)
 {
-    return ins_methods_push(name, type, ary, NOEX_PROTECTED);
+    return ins_methods_push((ID)name, (rb_method_visibility_t)type, (VALUE)ary, METHOD_VISI_PROTECTED);
 }
 
 static int
-ins_methods_priv_i(ID name, long type, VALUE ary)
+ins_methods_priv_i(st_data_t name, st_data_t type, st_data_t ary)
 {
-    return ins_methods_push(name, type, ary, NOEX_PRIVATE);
+    return ins_methods_push((ID)name, (rb_method_visibility_t)type, (VALUE)ary, METHOD_VISI_PRIVATE);
 }
 
 static int
-ins_methods_pub_i(ID name, long type, VALUE ary)
+ins_methods_pub_i(st_data_t name, st_data_t type, st_data_t ary)
 {
-    return ins_methods_push(name, type, ary, NOEX_PUBLIC);
+    return ins_methods_push((ID)name, (rb_method_visibility_t)type, (VALUE)ary, METHOD_VISI_PUBLIC);
 }
 
-static int
-method_entry(ID key, const rb_method_entry_t *me, st_table *list)
-{
-    long type;
+struct method_entry_arg {
+    st_table *list;
+    int recur;
+};
 
-    if (key == ID_ALLOCATOR) {
-	return ST_CONTINUE;
+static enum rb_id_table_iterator_result
+method_entry_i(ID key, VALUE value, void *data)
+{
+    const rb_method_entry_t *me = (const rb_method_entry_t *)value;
+    struct method_entry_arg *arg = (struct method_entry_arg *)data;
+    rb_method_visibility_t type;
+
+    if (me->def->type == VM_METHOD_TYPE_REFINED) {
+	VALUE owner = me->owner;
+	me = rb_resolve_refined_method(Qnil, me);
+	if (!me) return ID_TABLE_CONTINUE;
+	if (!arg->recur && me->owner != owner) return ID_TABLE_CONTINUE;
     }
-
-    if (!st_lookup(list, key, 0)) {
+    if (!st_lookup(arg->list, key, 0)) {
 	if (UNDEFINED_METHOD_ENTRY_P(me)) {
-	    type = -1; /* none */
+	    type = METHOD_VISI_UNDEF; /* none */
 	}
 	else {
-	    type = VISI(me->flag);
+	    type = METHOD_ENTRY_VISI(me);
 	}
-	st_add_direct(list, key, type);
+	st_add_direct(arg->list, key, (st_data_t)type);
     }
-    return ST_CONTINUE;
+    return ID_TABLE_CONTINUE;
 }
 
 static VALUE
-class_instance_method_list(int argc, VALUE *argv, VALUE mod, int obj, int (*func) (ID, long, VALUE))
+class_instance_method_list(int argc, const VALUE *argv, VALUE mod, int obj, int (*func) (st_data_t, st_data_t, st_data_t))
 {
     VALUE ary;
-    int recur;
-    st_table *list;
+    int recur, prepended = 0;
+    struct method_entry_arg me_arg;
 
     if (argc == 0) {
 	recur = TRUE;
@@ -860,16 +1176,22 @@ class_instance_method_list(int argc, VALUE *argv, VALUE mod, int obj, int (*func
 	recur = RTEST(r);
     }
 
-    list = st_init_numtable();
+    if (!recur && RCLASS_ORIGIN(mod) != mod) {
+	mod = RCLASS_ORIGIN(mod);
+	prepended = 1;
+    }
+
+    me_arg.list = st_init_numtable();
+    me_arg.recur = recur;
     for (; mod; mod = RCLASS_SUPER(mod)) {
-	st_foreach(RCLASS_M_TBL(mod), method_entry, (st_data_t)list);
-	if (BUILTIN_TYPE(mod) == T_ICLASS) continue;
+	if (RCLASS_M_TBL(mod)) rb_id_table_foreach(RCLASS_M_TBL(mod), method_entry_i, &me_arg);
+	if (BUILTIN_TYPE(mod) == T_ICLASS && !prepended) continue;
 	if (obj && FL_TEST(mod, FL_SINGLETON)) continue;
 	if (!recur) break;
     }
     ary = rb_ary_new();
-    st_foreach(list, func, ary);
-    st_free_table(list);
+    st_foreach(me_arg.list, func, ary);
+    st_free_table(me_arg.list);
 
     return ary;
 }
@@ -880,29 +1202,29 @@ class_instance_method_list(int argc, VALUE *argv, VALUE mod, int obj, int (*func
  *
  *  Returns an array containing the names of the public and protected instance
  *  methods in the receiver. For a module, these are the public and protected methods;
- *  for a class, they are the instance (not singleton) methods. With no
- *  argument, or with an argument that is <code>false</code>, the
- *  instance methods in <i>mod</i> are returned, otherwise the methods
- *  in <i>mod</i> and <i>mod</i>'s superclasses are returned.
+ *  for a class, they are the instance (not singleton) methods. If the optional
+ *  parameter is <code>false</code>, the methods of any ancestors are not included.
  *
  *     module A
  *       def method1()  end
  *     end
  *     class B
+ *       include A
  *       def method2()  end
  *     end
  *     class C < B
  *       def method3()  end
  *     end
  *
- *     A.instance_methods                #=> [:method1]
- *     B.instance_methods(false)         #=> [:method2]
- *     C.instance_methods(false)         #=> [:method3]
- *     C.instance_methods(true).length   #=> 43
+ *     A.instance_methods(false)                   #=> [:method1]
+ *     B.instance_methods(false)                   #=> [:method2]
+ *     B.instance_methods(true).include?(:method1) #=> true
+ *     C.instance_methods(false)                   #=> [:method3]
+ *     C.instance_methods.include?(:method2)       #=> true
  */
 
 VALUE
-rb_class_instance_methods(int argc, VALUE *argv, VALUE mod)
+rb_class_instance_methods(int argc, const VALUE *argv, VALUE mod)
 {
     return class_instance_method_list(argc, argv, mod, 0, ins_methods_i);
 }
@@ -912,12 +1234,12 @@ rb_class_instance_methods(int argc, VALUE *argv, VALUE mod)
  *     mod.protected_instance_methods(include_super=true)   -> array
  *
  *  Returns a list of the protected instance methods defined in
- *  <i>mod</i>. If the optional parameter is not <code>false</code>, the
- *  methods of any ancestors are included.
+ *  <i>mod</i>. If the optional parameter is <code>false</code>, the
+ *  methods of any ancestors are not included.
  */
 
 VALUE
-rb_class_protected_instance_methods(int argc, VALUE *argv, VALUE mod)
+rb_class_protected_instance_methods(int argc, const VALUE *argv, VALUE mod)
 {
     return class_instance_method_list(argc, argv, mod, 0, ins_methods_prot_i);
 }
@@ -927,8 +1249,8 @@ rb_class_protected_instance_methods(int argc, VALUE *argv, VALUE mod)
  *     mod.private_instance_methods(include_super=true)    -> array
  *
  *  Returns a list of the private instance methods defined in
- *  <i>mod</i>. If the optional parameter is not <code>false</code>, the
- *  methods of any ancestors are included.
+ *  <i>mod</i>. If the optional parameter is <code>false</code>, the
+ *  methods of any ancestors are not included.
  *
  *     module Mod
  *       def method1()  end
@@ -940,7 +1262,7 @@ rb_class_protected_instance_methods(int argc, VALUE *argv, VALUE mod)
  */
 
 VALUE
-rb_class_private_instance_methods(int argc, VALUE *argv, VALUE mod)
+rb_class_private_instance_methods(int argc, const VALUE *argv, VALUE mod)
 {
     return class_instance_method_list(argc, argv, mod, 0, ins_methods_priv_i);
 }
@@ -950,55 +1272,54 @@ rb_class_private_instance_methods(int argc, VALUE *argv, VALUE mod)
  *     mod.public_instance_methods(include_super=true)   -> array
  *
  *  Returns a list of the public instance methods defined in <i>mod</i>.
- *  If the optional parameter is not <code>false</code>, the methods of
- *  any ancestors are included.
+ *  If the optional parameter is <code>false</code>, the methods of
+ *  any ancestors are not included.
  */
 
 VALUE
-rb_class_public_instance_methods(int argc, VALUE *argv, VALUE mod)
+rb_class_public_instance_methods(int argc, const VALUE *argv, VALUE mod)
 {
     return class_instance_method_list(argc, argv, mod, 0, ins_methods_pub_i);
 }
 
 /*
  *  call-seq:
- *     obj.methods    -> array
+ *     obj.methods(regular=true)    -> array
  *
- *  Returns a list of the names of methods publicly accessible in
+ *  Returns a list of the names of public and protected methods of
  *  <i>obj</i>. This will include all the methods accessible in
  *  <i>obj</i>'s ancestors.
+ *  If the optional parameter is <code>false</code>, it
+ *  returns an array of <i>obj<i>'s public and protected singleton methods,
+ *  the array will not include methods in modules included in <i>obj</i>.
  *
  *     class Klass
- *       def kMethod()
+ *       def klass_method()
  *       end
  *     end
  *     k = Klass.new
- *     k.methods[0..9]    #=> [:kMethod, :freeze, :nil?, :is_a?,
- *                        #    :class, :instance_variable_set,
- *                        #    :methods, :extend, :__send__, :instance_eval]
- *     k.methods.length   #=> 42
+ *     k.methods[0..9]    #=> [:klass_method, :nil?, :===,
+ *                        #    :==~, :!, :eql?
+ *                        #    :hash, :<=>, :class, :singleton_class]
+ *     k.methods.length   #=> 56
+ *
+ *     k.methods(false)   #=> []
+ *     def k.singleton_method; end
+ *     k.methods(false)   #=> [:singleton_method]
+ *
+ *     module M123; def m123; end end
+ *     k.extend M123
+ *     k.methods(false)   #=> [:singleton_method]
  */
 
 VALUE
-rb_obj_methods(int argc, VALUE *argv, VALUE obj)
+rb_obj_methods(int argc, const VALUE *argv, VALUE obj)
 {
-  retry:
-    if (argc == 0) {
-	VALUE args[1];
-
-	args[0] = Qtrue;
-	return class_instance_method_list(argc, argv, CLASS_OF(obj), 1, ins_methods_i);
-    }
-    else {
-	VALUE recur;
-
-	rb_scan_args(argc, argv, "1", &recur);
-	if (RTEST(recur)) {
-	    argc = 0;
-	    goto retry;
-	}
+    rb_check_arity(argc, 0, 1);
+    if (argc > 0 && !RTEST(argv[0])) {
 	return rb_obj_singleton_methods(argc, argv, obj);
     }
+    return class_instance_method_list(argc, argv, CLASS_OF(obj), 1, ins_methods_i);
 }
 
 /*
@@ -1011,7 +1332,7 @@ rb_obj_methods(int argc, VALUE *argv, VALUE obj)
  */
 
 VALUE
-rb_obj_protected_methods(int argc, VALUE *argv, VALUE obj)
+rb_obj_protected_methods(int argc, const VALUE *argv, VALUE obj)
 {
     return class_instance_method_list(argc, argv, CLASS_OF(obj), 1, ins_methods_prot_i);
 }
@@ -1026,7 +1347,7 @@ rb_obj_protected_methods(int argc, VALUE *argv, VALUE obj)
  */
 
 VALUE
-rb_obj_private_methods(int argc, VALUE *argv, VALUE obj)
+rb_obj_private_methods(int argc, const VALUE *argv, VALUE obj)
 {
     return class_instance_method_list(argc, argv, CLASS_OF(obj), 1, ins_methods_priv_i);
 }
@@ -1041,7 +1362,7 @@ rb_obj_private_methods(int argc, VALUE *argv, VALUE obj)
  */
 
 VALUE
-rb_obj_public_methods(int argc, VALUE *argv, VALUE obj)
+rb_obj_public_methods(int argc, const VALUE *argv, VALUE obj)
 {
     return class_instance_method_list(argc, argv, CLASS_OF(obj), 1, ins_methods_pub_i);
 }
@@ -1080,10 +1401,11 @@ rb_obj_public_methods(int argc, VALUE *argv, VALUE obj)
  */
 
 VALUE
-rb_obj_singleton_methods(int argc, VALUE *argv, VALUE obj)
+rb_obj_singleton_methods(int argc, const VALUE *argv, VALUE obj)
 {
-    VALUE recur, ary, klass;
-    st_table *list;
+    VALUE recur, ary, klass, origin;
+    struct method_entry_arg me_arg;
+    struct rb_id_table *mtbl;
 
     if (argc == 0) {
 	recur = Qtrue;
@@ -1092,20 +1414,22 @@ rb_obj_singleton_methods(int argc, VALUE *argv, VALUE obj)
 	rb_scan_args(argc, argv, "01", &recur);
     }
     klass = CLASS_OF(obj);
-    list = st_init_numtable();
+    origin = RCLASS_ORIGIN(klass);
+    me_arg.list = st_init_numtable();
+    me_arg.recur = RTEST(recur);
     if (klass && FL_TEST(klass, FL_SINGLETON)) {
-	st_foreach(RCLASS_M_TBL(klass), method_entry, (st_data_t)list);
+	if ((mtbl = RCLASS_M_TBL(origin)) != 0) rb_id_table_foreach(mtbl, method_entry_i, &me_arg);
 	klass = RCLASS_SUPER(klass);
     }
     if (RTEST(recur)) {
-	while (klass && (FL_TEST(klass, FL_SINGLETON) || TYPE(klass) == T_ICLASS)) {
-	    st_foreach(RCLASS_M_TBL(klass), method_entry, (st_data_t)list);
+	while (klass && (FL_TEST(klass, FL_SINGLETON) || RB_TYPE_P(klass, T_ICLASS))) {
+	    if (klass != origin && (mtbl = RCLASS_M_TBL(klass)) != 0) rb_id_table_foreach(mtbl, method_entry_i, &me_arg);
 	    klass = RCLASS_SUPER(klass);
 	}
     }
     ary = rb_ary_new();
-    st_foreach(list, ins_methods_i, ary);
-    st_free_table(list);
+    st_foreach(me_arg.list, ins_methods_i, ary);
+    st_free_table(me_arg.list);
 
     return ary;
 }
@@ -1170,31 +1494,31 @@ rb_obj_singleton_methods(int argc, VALUE *argv, VALUE obj)
 void
 rb_define_method_id(VALUE klass, ID mid, VALUE (*func)(ANYARGS), int argc)
 {
-    rb_add_method_cfunc(klass, mid, func, argc, NOEX_PUBLIC);
+    rb_add_method_cfunc(klass, mid, func, argc, METHOD_VISI_PUBLIC);
 }
 
 void
 rb_define_method(VALUE klass, const char *name, VALUE (*func)(ANYARGS), int argc)
 {
-    rb_add_method_cfunc(klass, rb_intern(name), func, argc, NOEX_PUBLIC);
+    rb_add_method_cfunc(klass, rb_intern(name), func, argc, METHOD_VISI_PUBLIC);
 }
 
 void
 rb_define_protected_method(VALUE klass, const char *name, VALUE (*func)(ANYARGS), int argc)
 {
-    rb_add_method_cfunc(klass, rb_intern(name), func, argc, NOEX_PROTECTED);
+    rb_add_method_cfunc(klass, rb_intern(name), func, argc, METHOD_VISI_PROTECTED);
 }
 
 void
 rb_define_private_method(VALUE klass, const char *name, VALUE (*func)(ANYARGS), int argc)
 {
-    rb_add_method_cfunc(klass, rb_intern(name), func, argc, NOEX_PRIVATE);
+    rb_add_method_cfunc(klass, rb_intern(name), func, argc, METHOD_VISI_PRIVATE);
 }
 
 void
 rb_undef_method(VALUE klass, const char *name)
 {
-    rb_add_method(klass, rb_intern(name), VM_METHOD_TYPE_UNDEF, 0, NOEX_UNDEF);
+    rb_add_method(klass, rb_intern(name), VM_METHOD_TYPE_UNDEF, 0, METHOD_VISI_UNDEF);
 }
 
 /*!
@@ -1207,10 +1531,24 @@ rb_undef_method(VALUE klass, const char *name)
 
 #define SPECIAL_SINGLETON(x,c) do {\
     if (obj == (x)) {\
-	return c;\
+	return (c);\
     }\
 } while (0)
 
+static inline VALUE
+special_singleton_class_of(VALUE obj)
+{
+    SPECIAL_SINGLETON(Qnil, rb_cNilClass);
+    SPECIAL_SINGLETON(Qfalse, rb_cFalseClass);
+    SPECIAL_SINGLETON(Qtrue, rb_cTrueClass);
+    return Qnil;
+}
+
+VALUE
+rb_special_singleton_class(VALUE obj)
+{
+    return special_singleton_class_of(obj);
+}
 
 /*!
  * \internal
@@ -1226,22 +1564,30 @@ singleton_class_of(VALUE obj)
 {
     VALUE klass;
 
-    if (FIXNUM_P(obj) || SYMBOL_P(obj)) {
+    if (FIXNUM_P(obj) || FLONUM_P(obj) || STATIC_SYM_P(obj)) {
+      no_singleton:
 	rb_raise(rb_eTypeError, "can't define singleton");
     }
-    if (rb_special_const_p(obj)) {
-	SPECIAL_SINGLETON(Qnil, rb_cNilClass);
-	SPECIAL_SINGLETON(Qfalse, rb_cFalseClass);
-	SPECIAL_SINGLETON(Qtrue, rb_cTrueClass);
-	rb_bug("unknown immediate %ld", obj);
-    }
-
-    if (FL_TEST(RBASIC(obj)->klass, FL_SINGLETON) &&
-	rb_ivar_get(RBASIC(obj)->klass, id_attached) == obj) {
-	klass = RBASIC(obj)->klass;
+    if (SPECIAL_CONST_P(obj)) {
+	klass = special_singleton_class_of(obj);
+	if (NIL_P(klass))
+	    rb_bug("unknown immediate %p", (void *)obj);
+	return klass;
     }
     else {
-	klass = rb_make_metaclass(obj, RBASIC(obj)->klass);
+	switch (BUILTIN_TYPE(obj)) {
+	  case T_FLOAT: case T_BIGNUM: case T_SYMBOL:
+	    goto no_singleton;
+	  case T_STRING:
+	    if (FL_TEST_RAW(obj, RSTRING_FSTR)) goto no_singleton;
+	    break;
+	}
+    }
+
+    klass = RBASIC(obj)->klass;
+    if (!(FL_TEST(klass, FL_SINGLETON) &&
+	  rb_ivar_get(klass, id_attached) == obj)) {
+	klass = rb_make_metaclass(obj, klass);
     }
 
     if (OBJ_TAINTED(obj)) {
@@ -1250,17 +1596,44 @@ singleton_class_of(VALUE obj)
     else {
 	FL_UNSET(klass, FL_TAINT);
     }
-    if (OBJ_UNTRUSTED(obj)) {
-	OBJ_UNTRUST(klass);
-    }
-    else {
-	FL_UNSET(klass, FL_UNTRUSTED);
-    }
-    if (OBJ_FROZEN(obj)) OBJ_FREEZE(klass);
+    if (OBJ_FROZEN(obj)) OBJ_FREEZE_RAW(klass);
 
     return klass;
 }
 
+void
+rb_freeze_singleton_class(VALUE x)
+{
+    /* should not propagate to meta-meta-class, and so on */
+    if (!(RBASIC(x)->flags & FL_SINGLETON)) {
+	VALUE klass = RBASIC_CLASS(x);
+	if (klass && (klass = RCLASS_ORIGIN(klass)) != 0 &&
+	    FL_TEST(klass, (FL_SINGLETON|FL_FREEZE)) == FL_SINGLETON) {
+	    OBJ_FREEZE_RAW(klass);
+	}
+    }
+}
+
+/*!
+ * Returns the singleton class of \a obj, or nil if obj is not a
+ * singleton object.
+ *
+ * \param obj an arbitrary object.
+ * \return the singleton class or nil.
+ */
+VALUE
+rb_singleton_class_get(VALUE obj)
+{
+    VALUE klass;
+
+    if (SPECIAL_CONST_P(obj)) {
+	return rb_special_singleton_class(obj);
+    }
+    klass = RBASIC(obj)->klass;
+    if (!FL_TEST(klass, FL_SINGLETON)) return Qnil;
+    if (rb_ivar_get(klass, id_attached) != obj) return Qnil;
+    return klass;
+}
 
 /*!
  * Returns the singleton class of \a obj. Creates it if necessary.
@@ -1285,7 +1658,7 @@ rb_singleton_class(VALUE obj)
     VALUE klass = singleton_class_of(obj);
 
     /* ensures an exposed class belongs to its own eigenclass */
-    if (TYPE(obj) == T_CLASS) ENSURE_EIGENCLASS(klass);
+    if (RB_TYPE_P(obj, T_CLASS)) (void)ENSURE_EIGENCLASS(klass);
 
     return klass;
 }
@@ -1386,9 +1759,10 @@ rb_scan_args(int argc, const VALUE *argv, const char *fmt, ...)
     const char *p = fmt;
     VALUE *var;
     va_list vargs;
-    int f_var = 0, f_block = 0;
+    int f_var = 0, f_hash = 0, f_block = 0;
     int n_lead = 0, n_opt = 0, n_trail = 0, n_mand;
     int argi = 0;
+    VALUE hash = Qnil;
 
     if (ISDIGIT(*p)) {
 	n_lead = *p - '0';
@@ -1412,6 +1786,10 @@ rb_scan_args(int argc, const VALUE *argv, const char *fmt, ...)
 	}
     }
   block_arg:
+    if (*p == ':') {
+	f_hash = 1;
+	p++;
+    }
     if (*p == '&') {
 	f_block = 1;
 	p++;
@@ -1426,6 +1804,26 @@ rb_scan_args(int argc, const VALUE *argv, const char *fmt, ...)
 
     va_start(vargs, fmt);
 
+    /* capture an option hash - phase 1: pop */
+    if (f_hash && n_mand < argc) {
+	VALUE last = argv[argc - 1];
+
+	if (NIL_P(last)) {
+	    /* nil is taken as an empty option hash only if it is not
+	       ambiguous; i.e. '*' is not specified and arguments are
+	       given more than sufficient */
+	    if (!f_var && n_mand + n_opt < argc)
+		argc--;
+	}
+	else {
+	    hash = rb_check_hash_type(last);
+	    if (!NIL_P(hash)) {
+		VALUE opts = rb_extract_keywords(&hash);
+		if (!hash) argc--;
+		hash = opts ? opts : Qnil;
+	    }
+	}
+    }
     /* capture leading mandatory arguments */
     for (i = n_lead; i-- > 0; ) {
 	var = va_arg(vargs, VALUE *);
@@ -1462,6 +1860,11 @@ rb_scan_args(int argc, const VALUE *argv, const char *fmt, ...)
 	if (var) *var = argv[argi];
 	argi++;
     }
+    /* capture an option hash - phase 2: assignment */
+    if (f_hash) {
+	var = va_arg(vargs, VALUE *);
+	if (var) *var = hash;
+    }
     /* capture iterator block */
     if (f_block) {
 	var = va_arg(vargs, VALUE *);
@@ -1474,18 +1877,149 @@ rb_scan_args(int argc, const VALUE *argv, const char *fmt, ...)
     }
     va_end(vargs);
 
-    if (argi < argc)
-	goto argc_error;
+    if (argi < argc) {
+      argc_error:
+	rb_error_arity(argc, n_mand, f_var ? UNLIMITED_ARGUMENTS : n_mand + n_opt);
+    }
 
     return argc;
+}
 
-  argc_error:
-    if (0 < n_opt)
-	rb_raise(rb_eArgError, "wrong number of arguments (%d for %d..%d%s)",
-		 argc, n_mand, n_mand + n_opt, f_var ? "+" : "");
-    else
-	rb_raise(rb_eArgError, "wrong number of arguments (%d for %d%s)",
-		 argc, n_mand, f_var ? "+" : "");
+VALUE
+rb_keyword_error_new(const char *error, VALUE keys)
+{
+    const char *msg = "";
+    VALUE error_message;
+
+    if (RARRAY_LEN(keys) == 1) {
+	keys = RARRAY_AREF(keys, 0);
+    }
+    else {
+	keys = rb_ary_join(keys, rb_usascii_str_new2(", "));
+	msg = "s";
+    }
+
+    error_message = rb_sprintf("%s keyword%s: %"PRIsVALUE, error, msg, keys);
+
+    return rb_exc_new_str(rb_eArgError, error_message);
+}
+
+NORETURN(static void rb_keyword_error(const char *error, VALUE keys));
+static void
+rb_keyword_error(const char *error, VALUE keys)
+{
+    rb_exc_raise(rb_keyword_error_new(error, keys));
+}
+
+NORETURN(static void unknown_keyword_error(VALUE hash, const ID *table, int keywords));
+static void
+unknown_keyword_error(VALUE hash, const ID *table, int keywords)
+{
+    st_table *tbl = rb_hash_tbl_raw(hash);
+    VALUE keys;
+    int i;
+    for (i = 0; i < keywords; i++) {
+	st_data_t key = ID2SYM(table[i]);
+	st_delete(tbl, &key, NULL);
+    }
+    keys = rb_funcallv(hash, rb_intern("keys"), 0, 0);
+    if (!RB_TYPE_P(keys, T_ARRAY)) rb_raise(rb_eArgError, "unknown keyword");
+    rb_keyword_error("unknown", keys);
+}
+
+static int
+separate_symbol(st_data_t key, st_data_t value, st_data_t arg)
+{
+    VALUE *kwdhash = (VALUE *)arg;
+
+    if (!SYMBOL_P(key)) kwdhash++;
+    if (!*kwdhash) *kwdhash = rb_hash_new();
+    rb_hash_aset(*kwdhash, (VALUE)key, (VALUE)value);
+    return ST_CONTINUE;
+}
+
+VALUE
+rb_extract_keywords(VALUE *orighash)
+{
+    VALUE parthash[2] = {0, 0};
+    VALUE hash = *orighash;
+
+    if (RHASH_EMPTY_P(hash)) {
+	*orighash = 0;
+	return hash;
+    }
+    st_foreach(rb_hash_tbl_raw(hash), separate_symbol, (st_data_t)&parthash);
+    *orighash = parthash[1];
+    if (parthash[1] && RBASIC_CLASS(hash) != rb_cHash) {
+	RBASIC_SET_CLASS(parthash[1], RBASIC_CLASS(hash));
+    }
+    return parthash[0];
+}
+
+int
+rb_get_kwargs(VALUE keyword_hash, const ID *table, int required, int optional, VALUE *values)
+{
+    int i = 0, j;
+    int rest = 0;
+    VALUE missing = Qnil;
+    st_data_t key;
+
+#define extract_kwarg(keyword, val) \
+    (key = (st_data_t)(keyword), values ? \
+     st_delete(rb_hash_tbl_raw(keyword_hash), &key, (val)) : \
+     st_lookup(rb_hash_tbl_raw(keyword_hash), key, (val)))
+
+    if (NIL_P(keyword_hash)) keyword_hash = 0;
+
+    if (optional < 0) {
+	rest = 1;
+	optional = -1-optional;
+    }
+    if (values) {
+	for (j = 0; j < required + optional; j++) {
+	    values[j] = Qundef;
+	}
+    }
+    if (required) {
+	for (; i < required; i++) {
+	    VALUE keyword = ID2SYM(table[i]);
+	    if (keyword_hash) {
+		st_data_t val;
+		if (extract_kwarg(keyword, &val)) {
+		    if (values) values[i] = (VALUE)val;
+		    continue;
+		}
+	    }
+	    if (NIL_P(missing)) missing = rb_ary_tmp_new(1);
+	    rb_ary_push(missing, keyword);
+	}
+	if (!NIL_P(missing)) {
+	    rb_keyword_error("missing", missing);
+	}
+    }
+    j = i;
+    if (optional && keyword_hash) {
+	for (i = 0; i < optional; i++) {
+	    st_data_t val;
+	    if (extract_kwarg(ID2SYM(table[required+i]), &val)) {
+		if (values) values[required+i] = (VALUE)val;
+		j++;
+	    }
+	}
+    }
+    if (!rest && keyword_hash) {
+	if (RHASH_SIZE(keyword_hash) > (unsigned int)(values ? 0 : j)) {
+	    unknown_keyword_error(keyword_hash, table, required+optional);
+	}
+    }
+    return j;
+#undef extract_kwarg
+}
+
+int
+rb_class_has_methods(VALUE c)
+{
+    return rb_id_table_size(RCLASS_M_TBL(c)) == 0 ? FALSE : TRUE;
 }
 
 /*!

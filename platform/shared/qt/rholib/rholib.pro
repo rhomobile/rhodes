@@ -46,6 +46,7 @@ win32 {
   Release {
     DEFINES += _NDEBUG NDEBUG
   }
+  INCLUDEPATH += ../../../win32/include
   HEADERS += ../../rubyext/WebView.h
   QMAKE_CXXFLAGS_RELEASE += -MP9
   QMAKE_CXXFLAGS_DEBUG += -MP9

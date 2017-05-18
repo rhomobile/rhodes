@@ -9,7 +9,8 @@
 /* Begin PBXBuildFile section */
 		5C0440920EF7DC550014E5C6 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C0440910EF7DC550014E5C6 /* main.c */; };
 		5C0440C20EF7E3230014E5C6 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0440C10EF7E3230014E5C6 /* libsqlite3.0.dylib */; };
-		FA3C26301DA6E8FD0064EE64 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C0440900EF7DC290014E5C6 /* librhorubylib.a */; };
+		A8A6D2F41E24A93200016427 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8A6D2F31E24A93200016427 /* CoreFoundation.framework */; };
+		A8A6D31C1E24AB2600016427 /* librubymac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A8A6D31A1E24AB1800016427 /* librubymac.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -20,12 +21,19 @@
 			remoteGlobalIDString = D2AAC046055464E500DB518D;
 			remoteInfo = rhorubylib;
 		};
-		FA3C262E1DA6E8EB0064EE64 /* PBXContainerItemProxy */ = {
+		A8A6D3191E24AB1800016427 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5C04408B0EF7DC290014E5C6 /* rhorubylib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A8A6D30E1E24AADD00016427;
+			remoteInfo = rubymac;
+		};
+		A8CAD3D61E67400800ED8E7E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C04408B0EF7DC290014E5C6 /* rhorubylib.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = rhorubylib;
+			remoteGlobalIDString = A8A6D30D1E24AADD00016427;
+			remoteInfo = rubymac;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -34,6 +42,7 @@
 		5C0440910EF7DC550014E5C6 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../shared/ruby/main.c; sourceTree = SOURCE_ROOT; };
 		5C0440C10EF7E3230014E5C6 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		8DD76F6C0486A84900D96B5E /* RubyMac */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RubyMac; sourceTree = BUILT_PRODUCTS_DIR; };
+		A8A6D2F31E24A93200016427 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/CoreFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		C6859E8B029090EE04C91782 /* RubyMac.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = RubyMac.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -42,7 +51,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA3C26301DA6E8FD0064EE64 /* librhorubylib.a in Frameworks */,
+				A8A6D31C1E24AB2600016427 /* librubymac.a in Frameworks */,
+				A8A6D2F41E24A93200016427 /* CoreFoundation.framework in Frameworks */,
 				5C0440C20EF7E3230014E5C6 /* libsqlite3.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -58,6 +68,7 @@
 				C6859E8C029090F304C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 				5C0440C10EF7E3230014E5C6 /* libsqlite3.0.dylib */,
+				A8A6D2F21E24A93200016427 /* Frameworks */,
 			);
 			name = RubyMac;
 			sourceTree = "<group>";
@@ -82,8 +93,17 @@
 			isa = PBXGroup;
 			children = (
 				5C0440900EF7DC290014E5C6 /* librhorubylib.a */,
+				A8A6D31A1E24AB1800016427 /* librubymac.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A8A6D2F21E24A93200016427 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A8A6D2F31E24A93200016427 /* CoreFoundation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		C6859E8C029090F304C91782 /* Documentation */ = {
@@ -103,11 +123,12 @@
 			buildPhases = (
 				8DD76F640486A84900D96B5E /* Sources */,
 				8DD76F660486A84900D96B5E /* Frameworks */,
+				A81610281E8B583C00B4C51D /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				FA3C262F1DA6E8EB0064EE64 /* PBXTargetDependency */,
+				A8CAD3D71E67400800ED8E7E /* PBXTargetDependency */,
 			);
 			name = RubyMac;
 			productInstallPath = "$(HOME)/bin";
@@ -152,7 +173,30 @@
 			remoteRef = 5C04408F0EF7DC290014E5C6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		A8A6D31A1E24AB1800016427 /* librubymac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = librubymac.a;
+			remoteRef = A8A6D3191E24AB1800016427 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A81610281E8B583C00B4C51D /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME} ${PROJECT_DIR}/../../../res/build-tools";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8DD76F640486A84900D96B5E /* Sources */ = {
@@ -166,10 +210,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		FA3C262F1DA6E8EB0064EE64 /* PBXTargetDependency */ = {
+		A8CAD3D71E67400800ED8E7E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = rhorubylib;
-			targetProxy = FA3C262E1DA6E8EB0064EE64 /* PBXContainerItemProxy */;
+			name = rubymac;
+			targetProxy = A8CAD3D61E67400800ED8E7E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -187,6 +231,8 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"_GLIBCXX_DEBUG=1",
 					"_GLIBCXX_DEBUG_PEDANTIC=1",
+					RUBY_DEBUG_ENV,
+					RHO_RUBY_COMPILER,
 				);
 				GCC_STRICT_ALIASING = YES;
 				INSTALL_PATH = /usr/local/bin;
@@ -208,6 +254,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
+				GCC_PREPROCESSOR_DEFINITIONS = RHO_RUBY_COMPILER;
 				GCC_STRICT_ALIASING = YES;
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";

@@ -482,8 +482,10 @@ namespace "config" do
       # TODO: add ruby executable for Linux
     end
 
-    m = AndroidTools::MavenDepsExtractor.instance.set_temp_dir($tmpdir)
-    m = AndroidTools::MavenDepsExtractor.instance.set_java_home($java)
+    AndroidTools::MavenDepsExtractor.instance.set_logger($logger)
+    AndroidTools::MavenDepsExtractor.instance.set_temp_dir($tmpdir)
+    AndroidTools::MavenDepsExtractor.instance.set_java_home($java)
+
 
     build_tools_path = nil
 
@@ -1269,6 +1271,7 @@ namespace "build" do
       mkdir_p libdir unless File.directory? libdir
 
       args = []
+      args << "-DRUBY_EXPORT"
       args << "-Wno-uninitialized"
       args << "-Wno-missing-field-initializers"
       args << '-Wno-shadow'

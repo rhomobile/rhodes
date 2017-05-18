@@ -3,15 +3,9 @@
 reference - Haruhiko Okumura: C-gengo niyoru saishin algorithm jiten
             (New Algorithm handbook in C language) (Gijyutsu hyouron
             sha, Tokyo, 1991) p.227 [in Japanese]                 */
+#include "ruby/missing.h"
 #include <stdio.h>
 #include <math.h>
-
-//RHO
-int rhoRubyFPrintf(FILE *, const char *, ...);
-#ifndef USE_STD_PRINTF
-#define fprintf rhoRubyFPrintf
-#endif
-//RHO
 
 #ifdef _WIN32
 # include <float.h>

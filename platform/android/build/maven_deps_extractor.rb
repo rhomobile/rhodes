@@ -6,8 +6,13 @@ module AndroidTools
 class MavenDepsExtractor
   include Singleton
 
+  @logger = nil
+
+  def set_logger( logger )
+    @logger = logger
+  end
+
   def initialize
-    $logger.debug "MavenDepsExtractor.initialize"
 
     @dependencies = {}
 
@@ -34,7 +39,7 @@ class MavenDepsExtractor
       mod = '.rho'
     end
 
-    $logger.info "Adding maven dependency for #{mod}: #{dep}"
+    @logger.info "Adding maven dependency for #{mod}: #{dep}"
 
     if !@dependencies[mod]
       @dependencies[mod] = [ dep ]
@@ -61,10 +66,10 @@ class MavenDepsExtractor
   end
 
   def extract_all
-    $logger.info 'Extracting maven dependencies'
+    @logger.info 'Extracting maven dependencies'
 
     @dependencies.each do |name,deps|
-      $logger.debug "Extracting dependencies for extension #{name}"
+      @logger.debug "Extracting dependencies for extension #{name}"
 
       path = @temp_dir#File.join( @temp_dir, name )
       #mkdir_p( path )
@@ -73,14 +78,14 @@ class MavenDepsExtractor
   end
 
   def extract( dep, path )
-    $logger.debug "Extracting dependency #{dep} to #{path}"
+    @logger.debug "Extracting dependency #{dep} to #{path}"
 
     extract_dir = File.join( @temp_dir, '.tmp')
     mkdir_p extract_dir
 
     copy_dependency( dep, extract_dir )
 
-    $logger.debug "Processing dependencies"
+    @logger.debug "Processing dependencies"
 
     Dir[File.join(extract_dir,'*')].each do |f|
 
@@ -90,7 +95,7 @@ class MavenDepsExtractor
         target = File.join(path,File.basename(f,'.aar'))
 
         if !File.exist?( target )
-          $logger.debug "Dependency artefact #{f} is AAR so will unzip it to #{target}"
+          @logger.debug "Dependency artefact #{f} is AAR so will unzip it to #{target}"
           mkdir_p target
           Jake.unzip(f,target)
           rm f
@@ -150,11 +155,11 @@ class MavenDepsExtractor
     env = maven_env
     pwd = path
 
-    $logger.info "Running Maven dependency copy plugin"
+    @logger.info "Running Maven dependency copy plugin"
     Jake.run3( cmd, pwd, env )
     rm pom
 
-    $logger.debug "Moving extracted dependencies to #{path}"
+    @logger.debug "Moving extracted dependencies to #{path}"
     Dir[File.join(path,'target','dependency','*')].each { |f| mv(f,path) }
     rm_r File.join(path,'target')
   end
@@ -165,7 +170,7 @@ class MavenDepsExtractor
 
   def generate_pom(dep, path)
 
-    $logger.debug "Generating POM file for #{dep} in #{path}"
+    @logger.debug "Generating POM file for #{dep} in #{path}"
 
     dep_grp_id, dep_art_id, dep_ver = split_dependency( dep )
 

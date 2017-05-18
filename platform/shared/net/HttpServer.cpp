@@ -96,6 +96,9 @@ static bool is_net_trace() {
 }
 
 
+
+
+
 //extern "C" void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
 
 namespace rho
@@ -366,7 +369,6 @@ CHttpServer::CHttpServer(int port, String const &root)
 
 CHttpServer::~CHttpServer()
 {
-
 }
 
 void CHttpServer::close_listener()

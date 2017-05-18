@@ -87,13 +87,13 @@ namespace "build" do
     elsif $platform == 'wm'
       $vcbuild = ENV['VCBUILD']
       raise "VCBUILD is not set" if $vcbuild.nil?
-      $sdk = ENV['SDK']
+      $sdk = ENV['RHO_VSPROJ_SDK_PLATFORM']
       raise "SDK is not set" if $sdk.nil?
 
     elsif $platform == 'win32'
       $vcbuild = ENV['VCBUILD']
       raise "VCBUILD is not set" if $vcbuild.nil?
-      $sdk = ENV['SDK']
+      $sdk = ENV['RHO_VSPROJ_SDK_PLATFORM']
       raise "SDK is not set" if $sdk.nil?
 
     end

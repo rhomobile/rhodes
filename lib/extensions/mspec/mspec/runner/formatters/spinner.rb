@@ -9,10 +9,7 @@ class SpinnerFormatter < DottedFormatter
   MIN = 60
 
   def initialize(out=nil)
-    @exception = @failure = false
-    @exceptions = []
-    @count = 0
-    @out = $stdout
+    super(nil)
 
     @which = 0
     @loaded = 0
@@ -30,7 +27,8 @@ class SpinnerFormatter < DottedFormatter
     super
 
     MSpec.register :start, self
-    MSpec.register :load, self
+    MSpec.register :unload, self
+    MSpec.unregister :before, self
   end
 
   def length=(length)
@@ -39,8 +37,8 @@ class SpinnerFormatter < DottedFormatter
     @position = length / 2 - 2
   end
 
-  def etr
-    return "00:00:00" if @percent == 0
+  def compute_etr
+    return @etr = "00:00:00" if @percent == 0
     elapsed = Time.now - @start
     remain = (100 * elapsed / @percent) - elapsed
 
@@ -49,38 +47,50 @@ class SpinnerFormatter < DottedFormatter
     min = remain >= MIN ? (remain / MIN).to_i : 0
     sec = remain - min * MIN
 
-    "%02d:%02d:%02d" % [hour, min, sec]
+    @etr = "%02d:%02d:%02d" % [hour, min, sec]
   end
 
-  def percentage
+  def compute_percentage
     @percent = @loaded * 100 / @total
     bar = ("=" * (@percent / @ratio)).ljust @length
     label = "%d%%" % @percent
     bar[@position, label.size] = label
-    bar
+    @bar = bar
   end
 
-  def spin
+  def compute_progress
+    compute_percentage
+    compute_etr
+  end
+
+  def progress_line
     @which = (@which + 1) % Spins.size
+    data = [Spins[@which], @bar, @etr, @counter.failures, @counter.errors]
     if @color
-      print "\r[%s | %s | %s] \033[0;#{@fail_color}m%6dF \033[0;#{@error_color}m%6dE\033[0m" %
-          [Spins[@which], percentage, etr, @counter.failures, @counter.errors]
+      "\r[%s | %s | %s] \e[0;#{@fail_color}m%6dF \e[0;#{@error_color}m%6dE\e[0m" % data
     else
-      print "\r[%s | %s | %s] %6dF %6dE" %
-          [Spins[@which], percentage, etr, @counter.failures, @counter.errors]
+      "\r[%s | %s | %s] %6dF %6dE" % data
     end
+  end
+
+  def clear_progress_line
+    print "\r#{' '*progress_line.length}"
   end
 
   # Callback for the MSpec :start event. Stores the total
   # number of files that will be processed.
   def start
     @total = MSpec.retrieve(:files).size
+    compute_progress
+    print progress_line
   end
 
-  # Callback for the MSpec :load event. Increments the number
-  # of files that have been loaded.
-  def load
+  # Callback for the MSpec :unload event. Increments the number
+  # of files that have been run.
+  def unload
     @loaded += 1
+    compute_progress
+    print progress_line
   end
 
   # Callback for the MSpec :exception event. Changes the color
@@ -89,11 +99,19 @@ class SpinnerFormatter < DottedFormatter
     super
     @fail_color =  "31" if exception.failure?
     @error_color = "33" unless exception.failure?
+
+    clear_progress_line
+    print_exception(exception, @count)
   end
 
-  # Callback for the MSpec :after event. Updates the spinner
-  # and progress bar.
+  # Callback for the MSpec :after event. Updates the spinner.
   def after(state)
-    spin
+    print progress_line
+  end
+
+  def finish
+    # We already printed the exceptions
+    @exceptions = []
+    super
   end
 end

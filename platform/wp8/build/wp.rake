@@ -199,7 +199,7 @@ namespace "build" do
 
           ENV['RHO_PLATFORM'] = $current_platform
           ENV['RHO_ROOT'] = $startdir
-          ENV['SDK'] = $sdk
+          ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
           ENV['RHO_BUILD_CONFIG'] = $build_config
           ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", ext) # unused by rake build with 'project_path'
           ENV['VCBUILD'] = $msbuild

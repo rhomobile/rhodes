@@ -24,18 +24,21 @@ INCLUDEPATH += ../../ruby/include\
 macx {
   greaterThan(QT_VERSION, 5.6.0): {
       DEFINES += RHODES_MAC_BUILD
+      DEFINES += CPP_ELEVEN
   }
+  DEFINES += RUBY_EXPORT
   DESTDIR = ../../../osx/bin/rubylib
   OBJECTS_DIR = ../../../osx/bin/rubylib/tmp
-  INCLUDEPATH += ../../ruby/iphone
+  INCLUDEPATH += ../../ruby/osx
   HEADERS += ../../ruby/ext/socket/constants.h\
-../../ruby/iphone/ruby/config.h\
-../../ruby/iphone/crt_externs.h\
+../../ruby/osx/ruby/config.h\
+../../ruby/osx/crt_externs.h\
 ../../ruby/iseq.h\
 ../../ruby/thread_pthread.h
-  SOURCES += ../../ruby/miniprelude.c\
-../../ruby/newline.c\
-../../ruby/thread_pthread.c
+  SOURCES += ../../ruby/newline.c\
+../../ruby/thread_pthread.c\
+../../ruby/missing/setproctitle.c \
+../../ruby/missing/explicit_bzero.c
 }
 
 win32 {
@@ -46,29 +49,49 @@ win32 {
   OBJECTS_DIR = ../../../win32/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/win32
   DEFINES -= _UNICODE UNICODE
-  DEFINES += WIN32 _WINDOWS _LIB BUFSIZ=512 TLS_OUT_OF_INDEXES=0xFFFFFFFF FILENAME_MAX=MAX_PATH STATIC_LINKED RUBY_EXPORT
+  DEFINES += _WIN32 WIN32 _WINDOWS _LIB BUFSIZ=512 STATIC_LINKED RUBY_EXPORT
   Debug {
     DEFINES += _DEBUG DEBUG
   }
   Release {
     DEFINES += _NDEBUG NDEBUG
   }
+
   HEADERS += ../../ruby/win32/ruby/config.h\
 ../../ruby/win32/dir.h
-  SOURCES += ../../ruby/missing/acosh.c\
-../../ruby/missing/cbrt.c\
-../../ruby/missing/crypt.c\
-../../ruby/missing/dup2.c\
-../../ruby/missing/erf.c\
-../../ruby/missing/tgamma.c\
-../../ruby/missing/strlcpy.c\
-../../ruby/missing/strlcat.c\
-../../ruby/win32/miniprelude.c\
-../../ruby/win32/newline.c\
-../../ruby/win32/win32.c\
-../../ruby/wince/io_wce.c\
-../../ruby/wince/process_wce.c\
-../../ruby/wince/time_wce.c
+
+  SOURCES += ../../ruby/missing/acosh.c \
+../../ruby/missing/alloca.c \
+../../ruby/missing/cbrt.c \
+../../ruby/missing/crypt.c \
+../../ruby/missing/dup2.c \
+../../ruby/missing/erf.c \
+../../ruby/missing/explicit_bzero.c \
+../../ruby/missing/ffs.c \
+../../ruby/missing/fileblocks.c \
+../../ruby/missing/finite.c \
+../../ruby/missing/flock.c \
+../../ruby/missing/hypot.c \
+../../ruby/missing/isinf.c \
+../../ruby/missing/isnan.c \
+../../ruby/missing/langinfo.c \
+../../ruby/missing/lgamma_r.c \
+../../ruby/missing/memmove.c \
+../../ruby/missing/nextafter.c \
+../../ruby/missing/setproctitle.c \
+../../ruby/missing/stdlib.c \
+../../ruby/missing/strchr.c \
+../../ruby/missing/strerror.c \
+../../ruby/missing/strlcat.c \
+../../ruby/missing/strlcpy.c \
+../../ruby/missing/strstr.c \
+../../ruby/missing/tgamma.c \
+../../ruby/win32/win32.c \
+#../../ruby/wince/io_wce.c\
+#../../ruby/wince/process_wce.c\
+#../../ruby/wince/time_wce.c
+../../ruby/win32/file_win32.c \
+../../ruby/win32/newline_win32.c
 }
 
 unix:!macx {
@@ -106,9 +129,7 @@ win32 {
 }
 
 HEADERS += ../../ruby/ext/rho/rhoruby.h\
-../../ruby/ext/socket_192/rubysocket.h\
 ../../ruby/ext/calendar/event.h\
-../../ruby/debug.h\
 ../../ruby/dln.h\
 ../../ruby/eval_intern.h\
 ../../ruby/gc.h\
@@ -123,101 +144,120 @@ HEADERS += ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/vm_core.h\
 ../../ruby/vm_opts.h
 
-SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
-../../ruby/ext/rhoconf/rhoconf_wrap.c\
-../../ruby/ext/rho/rhoruby.c\
-../../ruby/ext/rho/rhosupport.c\
-../../ruby/ext/stringio/stringio.c\
-../../ruby/ext/geolocation/geolocation_wrap.c\
-../../ruby/ext/asynchttp/asynchttp_wrap.c\
-../../ruby/ext/socket_192/socket.c\
-../../ruby/ext/socket_192/ancdata.c\
-../../ruby/ext/socket_192/basicsocket.c\
-../../ruby/ext/socket_192/constants.c\
-../../ruby/ext/socket_192/init.c\
-../../ruby/ext/socket_192/ipsocket.c\
-../../ruby/ext/socket_192/option.c\
-../../ruby/ext/socket_192/raddrinfo.c\
-../../ruby/ext/socket_192/sockssocket.c\
-../../ruby/ext/socket_192/tcpserver.c\
-../../ruby/ext/socket_192/tcpsocket.c\
-../../ruby/ext/socket_192/udpsocket.c\
-../../ruby/ext/socket_192/unixserver.c\
-../../ruby/ext/socket_192/unixsocket.c\
-../../ruby/ext/ringtones/ringtones_wrap.c\
-../../ruby/ext/calendar/calendar_wrap.c\
-../../ruby/ext/calendar/event_wrap.c\
-../../ruby/ext/alert/alert_wrap.c\
-../../ruby/ext/phonebook/phonebook_wrap.c\
-../../ruby/ext/camera/camera_wrap.c\
-../../ruby/array.c\
-../../ruby/bignum.c\
-../../ruby/class.c\
-../../ruby/compar.c\
-../../ruby/compile.c\
-../../ruby/complex.c\
-../../ruby/cont.c\
-../../ruby/debug.c\
-../../ruby/dir.c\
-../../ruby/dln.c\
-../../ruby/dln_find.c\
-../../ruby/dmyencoding.c\
-../../ruby/dmyext.c\
-../../ruby/enum.c\
-../../ruby/enumerator.c\
-../../ruby/error.c\
-../../ruby/eval.c\
-../../ruby/file.c\
-../../ruby/gc.c\
-../../ruby/hash.c\
-../../ruby/inits.c\
-../../ruby/io.c\
-../../ruby/iseq.c\
-../../ruby/load.c\
-../../ruby/marshal.c\
-../../ruby/math.c\
-../../ruby/node.c\
-../../ruby/numeric.c\
-../../ruby/object.c\
-../../ruby/pack.c\
-../../ruby/proc.c\
-../../ruby/process.c\
-../../ruby/random.c\
-../../ruby/range.c\
-../../ruby/rational.c\
-../../ruby/re.c\
-../../ruby/regcomp.c\
-../../ruby/regenc.c\
-../../ruby/regerror.c\
-../../ruby/regexec.c\
-../../ruby/regparse.c\
-../../ruby/regsyntax.c\
-../../ruby/ruby.c\
-../../ruby/safe.c\
-../../ruby/signal.c\
-../../ruby/sprintf.c\
-../../ruby/st.c\
-../../ruby/strftime.c\
-../../ruby/string.c\
-../../ruby/struct.c\
-../../ruby/thread.c\
-../../ruby/time.c\
-../../ruby/transcode.c\
-../../ruby/util.c\
-../../ruby/variable.c\
-../../ruby/version.c\
-../../ruby/vm.c\
-../../ruby/vm_dump.c\
-../../ruby/enc/ascii.c\
-../../ruby/enc/iso_8859_9.c\
-../../ruby/enc/unicode.c\
-../../ruby/enc/us_ascii.c\
-../../ruby/enc/utf_8.c\
-../../ruby/ext/strscan/strscan.c\
-../../ruby/generated/parse.c\
-../../ruby/missing/lgamma_r.c\
-../../ruby/ext/mapview/mapview_wrap.c\
-../../ruby/ext/signature/signature_wrap.c\
-../../ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c\
-../../ruby/ext/bluetooth/bluetooth_wrap.c\
-../../ruby/enc/encdb.c
+SOURCES += \
+../../ruby/array.c \
+../../ruby/bignum.c \
+../../ruby/class.c \
+../../ruby/compar.c \
+../../ruby/compile.c \
+../../ruby/complex.c \
+../../ruby/cont.c \
+../../ruby/debug.c \
+../../ruby/dir.c \
+../../ruby/dln.c \
+../../ruby/dln_find.c \
+../../ruby/dmyencoding.c \
+../../ruby/dmyext.c \
+../../ruby/enc/ascii.c \
+../../ruby/enc/unicode.c \
+../../ruby/enc/us_ascii.c \
+../../ruby/enc/utf_8.c \
+../../ruby/enc/encdb.c \
+../../ruby/enc/iso_8859_1.c \
+../../ruby/enc/iso_8859_9.c \
+../../ruby/enc/utf_16be.c \
+../../ruby/enc/utf_16le.c \
+../../ruby/enc/utf_32be.c \
+../../ruby/enc/utf_32le.c \
+../../ruby/enc/euc_jp.c \
+../../ruby/enc/windows_31j.c \
+../../ruby/enum.c \
+../../ruby/enumerator.c \
+../../ruby/error.c \
+../../ruby/eval.c \
+../../ruby/ext/bluetooth/bluetooth_wrap.c \
+../../ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c \
+../../ruby/ext/calendar/calendar_wrap.c \
+../../ruby/ext/camera/camera_wrap.c \
+../../ruby/ext/calendar/event_wrap.c \
+../../ruby/ext/datetimepicker/datetimepicker_wrap.c \
+../../ruby/ext/geolocation/geolocation_wrap.c \
+../../ruby/ext/mapview/mapview_wrap.c \
+../../ruby/ext/nativebar/nativebar_wrap.c \
+../../ruby/ext/navbar/navbar_wrap.c \
+../../ruby/ext/phonebook/phonebook_wrap.c \
+../../ruby/ext/rho/extensions.c \
+../../ruby/ext/rho/rhoruby.c \
+../../ruby/ext/rho/rhosupport.c \
+../../ruby/ext/rhoconf/rhoconf_wrap.c \
+../../ruby/ext/ringtones/ringtones_wrap.c \
+../../ruby/ext/socket/ancdata.c \
+../../ruby/ext/socket/basicsocket.c \
+../../ruby/ext/socket/constants.c \
+../../ruby/ext/socket/constdefs.c \
+#../../ruby/ext/socket/getaddrinfo.c \
+#../../ruby/ext/socket/getnameinfo.c \
+../../ruby/ext/socket/ifaddr.c \
+../../ruby/ext/socket/init.c \
+../../ruby/ext/socket/ipsocket.c \
+../../ruby/ext/socket/option.c \
+../../ruby/ext/socket/raddrinfo.c \
+../../ruby/ext/socket/socket.c \
+../../ruby/ext/socket/sockssocket.c \
+../../ruby/ext/socket/tcpserver.c \
+../../ruby/ext/socket/tcpsocket.c \
+../../ruby/ext/socket/udpsocket.c \
+../../ruby/ext/socket/unixserver.c \
+../../ruby/ext/socket/unixsocket.c \
+../../ruby/file.c \
+../../ruby/gc.c \
+../../ruby/parse.c \
+../../ruby/hash.c \
+../../ruby/inits.c \
+../../ruby/io.c \
+../../ruby/iseq.c \
+../../ruby/load.c \
+../../ruby/loadpath.c \
+../../ruby/localeinit.c \
+../../ruby/marshal.c \
+../../ruby/math.c \
+../../ruby/miniprelude.c \
+#../../ruby/newline.c \
+../../ruby/node.c \
+../../ruby/numeric.c \
+../../ruby/object.c \
+../../ruby/pack.c \
+../../ruby/proc.c \
+../../ruby/process.c \
+../../ruby/random.c \
+../../ruby/range.c \
+../../ruby/rational.c \
+../../ruby/re.c \
+../../ruby/regcomp.c \
+../../ruby/regenc.c \
+../../ruby/regerror.c \
+../../ruby/regexec.c \
+../../ruby/regparse.c \
+../../ruby/regsyntax.c \
+../../ruby/ruby.c \
+../../ruby/safe.c \
+../../ruby/signal.c \
+../../ruby/sprintf.c \
+../../ruby/st.c \
+../../ruby/strftime.c \
+../../ruby/string.c \
+../../ruby/struct.c \
+../../ruby/symbol.c \
+../../ruby/thread.c \
+../../ruby/time.c \
+../../ruby/transcode.c \
+../../ruby/util.c \
+../../ruby/variable.c \
+../../ruby/version.c \
+../../ruby/vm.c \
+../../ruby/vm_backtrace.c \
+../../ruby/vm_dump.c \
+../../ruby/vm_trace.c \
+../../ruby/ext/strscan/strscan.c \
+../../ruby/ext/stringio/stringio.c \
+../../ruby/rhoinit.c

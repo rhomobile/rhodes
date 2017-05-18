@@ -1,0 +1,847 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_RubyCompiler|Win32">
+      <Configuration>Debug_RubyCompiler</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_RubyCompiler|Win32">
+      <Configuration>Release_RubyCompiler</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AA77BEC0-2A60-4589-A784-7D78F60B35B6}</ProjectGuid>
+    <RootNamespace>rubylib</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>RHODES_WIN32;_DEBUG;DEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED;RUBY_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader />
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions> /subsystem:windowsce,5.02 %(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)rubylib.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>RHODES_WIN32;_NDEBUG;NDEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED;RUBY_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader />
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions> /subsystem:windowsce,5.02 %(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)rubylib.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>RHODES_WIN32;_NDEBUG;NDEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;STATIC_LINKED;RUBY_EXPORT;RHO_RUBY_COMPILER;_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level2</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AssemblerListingLocation>$(IntDir)/%(RelativeDir)/</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)/%(RelativeDir)/$(ProjectName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions> /subsystem:windowsce,5.02 %(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)rubylib.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>RHODES_WIN32;_DEBUG;DEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;STATIC_LINKED;RUBY_EXPORT;RHO_RUBY_COMPILER;_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level2</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AssemblerListingLocation>$(IntDir)/%(RelativeDir)/</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)/%(RelativeDir)/$(ProjectName).pdb</ProgramDataBaseFileName>
+      <MinimalRebuild>true</MinimalRebuild>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <AdditionalOptions> /subsystem:windowsce,5.02 %(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)rubylib.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\shared\ruby\addr2line.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\array.c" />
+    <ClCompile Include="..\..\shared\ruby\bignum.c" />
+    <ClCompile Include="..\..\shared\ruby\class.c" />
+    <ClCompile Include="..\..\shared\ruby\compar.c" />
+    <ClCompile Include="..\..\shared\ruby\compile.c" />
+    <ClCompile Include="..\..\shared\ruby\complex.c" />
+    <ClCompile Include="..\..\shared\ruby\cont.c" />
+    <ClCompile Include="..\..\shared\ruby\debug.c" />
+    <ClCompile Include="..\..\shared\ruby\dir.c" />
+    <ClCompile Include="..\..\shared\ruby\dln.c" />
+    <ClCompile Include="..\..\shared\ruby\dln_find.c" />
+    <ClCompile Include="..\..\shared\ruby\dmydln.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\dmyenc.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\dmyencoding.c" />
+    <ClCompile Include="..\..\shared\ruby\dmyext.c" />
+    <ClCompile Include="..\..\shared\ruby\dmyversion.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\encoding.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\enc\ascii.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\encdb.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\euc_jp.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\iso_8859_1.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\iso_8859_9.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\unicode.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\us_ascii.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\utf_16be.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\utf_16le.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\utf_32be.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\utf_32le.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\utf_8.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\windows_31j.c" />
+    <ClCompile Include="..\..\shared\ruby\enum.c" />
+    <ClCompile Include="..\..\shared\ruby\enumerator.c" />
+    <ClCompile Include="..\..\shared\ruby\error.c" />
+    <ClCompile Include="..\..\shared\ruby\eval.c" />
+    <ClCompile Include="..\..\shared\ruby\eval_error.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\eval_jump.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\bluetooth\bluetooth_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\calendar\calendar_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\calendar\event_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\camera\camera_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\datetimepicker\datetimepicker_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\mapview\mapview_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\nativeviewmanager\nativeviewmanager_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\phonebook\phonebook_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\rhoconf\rhoconf_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\rho\rhoruby.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\rho\rhosupport.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\ringtones\ringtones_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\signature\signature_wrap.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\ancdata.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\basicsocket.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\constants.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\getaddrinfo.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\getnameinfo.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\ifaddr.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\init.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\ipsocket.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\option.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\raddrinfo.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\socket.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\sockssocket.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\tcpserver.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\tcpsocket.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\udpsocket.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\unixserver.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\unixsocket.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\stringio\stringio.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\strscan\strscan.c" />
+    <ClCompile Include="..\..\shared\ruby\file.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\gc.c" />
+    <ClCompile Include="..\..\shared\ruby\golf_prelude.c" />
+    <ClCompile Include="..\..\shared\ruby\goruby.c" />
+    <ClCompile Include="..\..\shared\ruby\hash.c" />
+    <ClCompile Include="..\..\shared\ruby\id.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\id_table.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\inits.c" />
+    <ClCompile Include="..\..\shared\ruby\io.c" />
+    <ClCompile Include="..\..\shared\ruby\iseq.c" />
+    <ClCompile Include="..\..\shared\ruby\lex.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\load.c" />
+    <ClCompile Include="..\..\shared\ruby\loadpath.c" />
+    <ClCompile Include="..\..\shared\ruby\localeinit.c" />
+    <ClCompile Include="..\..\shared\ruby\main.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\marshal.c" />
+    <ClCompile Include="..\..\shared\ruby\math.c" />
+    <ClCompile Include="..\..\shared\ruby\miniprelude.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\acosh.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\alloca.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\cbrt.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\close.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\crypt.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\dup2.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\erf.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\explicit_bzero.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\ffs.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\fileblocks.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\finite.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\flock.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\hypot.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\isinf.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\isnan.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\langinfo.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\lgamma_r.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\memcmp.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\memmove.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\nextafter.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\setproctitle.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\signbit.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\stdlib.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\strchr.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\strerror.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\strlcat.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\strlcpy.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\strstr.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\strtol.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\tgamma.c" />
+    <ClCompile Include="..\..\shared\ruby\newline.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\node.c" />
+    <ClCompile Include="..\..\shared\ruby\numeric.c" />
+    <ClCompile Include="..\..\shared\ruby\object.c" />
+    <ClCompile Include="..\..\shared\ruby\pack.c" />
+    <ClCompile Include="..\..\shared\ruby\parse.c" />
+    <ClCompile Include="..\..\shared\ruby\prelude.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\proc.c" />
+    <ClCompile Include="..\..\shared\ruby\process.c" />
+    <ClCompile Include="..\..\shared\ruby\random.c" />
+    <ClCompile Include="..\..\shared\ruby\range.c" />
+    <ClCompile Include="..\..\shared\ruby\rational.c" />
+    <ClCompile Include="..\..\shared\ruby\re.c" />
+    <ClCompile Include="..\..\shared\ruby\regcomp.c" />
+    <ClCompile Include="..\..\shared\ruby\regenc.c" />
+    <ClCompile Include="..\..\shared\ruby\regerror.c" />
+    <ClCompile Include="..\..\shared\ruby\regexec.c" />
+    <ClCompile Include="..\..\shared\ruby\regparse.c" />
+    <ClCompile Include="..\..\shared\ruby\regsyntax.c" />
+    <ClCompile Include="..\..\shared\ruby\rhoinit.c" />
+    <ClCompile Include="..\..\shared\ruby\ruby.c" />
+    <ClCompile Include="..\..\shared\ruby\safe.c" />
+    <ClCompile Include="..\..\shared\ruby\signal.c" />
+    <ClCompile Include="..\..\shared\ruby\siphash.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\sparc.c" />
+    <ClCompile Include="..\..\shared\ruby\sprintf.c" />
+    <ClCompile Include="..\..\shared\ruby\st.c" />
+    <ClCompile Include="..\..\shared\ruby\strftime.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\string.c" />
+    <ClCompile Include="..\..\shared\ruby\struct.c" />
+    <ClCompile Include="..\..\shared\ruby\symbol.c" />
+    <ClCompile Include="..\..\shared\ruby\thread.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\thread_pthread.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\thread_sync.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\thread_win32.c" />
+    <ClCompile Include="..\..\shared\ruby\time.c" />
+    <ClCompile Include="..\..\shared\ruby\transcode.c" />
+    <ClCompile Include="..\..\shared\ruby\util.c" />
+    <ClCompile Include="..\..\shared\ruby\variable.c" />
+    <ClCompile Include="..\..\shared\ruby\version.c" />
+    <ClCompile Include="..\..\shared\ruby\vm.c" />
+    <ClCompile Include="..\..\shared\ruby\vm_args.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\vm_backtrace.c" />
+    <ClCompile Include="..\..\shared\ruby\vm_dump.c" />
+    <ClCompile Include="..\..\shared\ruby\vm_eval.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\vm_exec.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\vm_insnhelper.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\vm_method.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\vm_trace.c" />
+    <ClCompile Include="..\..\shared\ruby\vsnprintf.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\win32\file_win32.c" />
+    <ClCompile Include="..\..\shared\ruby\win32\miniprelude.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\win32\newline_win32.c" />
+    <ClCompile Include="..\..\shared\ruby\win32\stub.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\win32\win32.c" />
+    <ClCompile Include="..\..\shared\ruby\win32\winmain.c" />
+    <ClCompile Include="..\..\shared\ruby\wince\assert.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\direct.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\errno.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\io_wce.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\process_wce.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\signal_wce.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\stdio.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\stdlib.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\string_wce.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\sys\stat.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\sys\timeb.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\sys\utime.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\time_wce.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\wince.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wince\wincemain.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shared\ruby\debug.h" />
+    <ClInclude Include="..\..\shared\ruby\dln.h" />
+    <ClInclude Include="..\..\shared\ruby\eval_intern.h" />
+    <ClInclude Include="..\..\shared\ruby\ext\calendar\event.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\ext\rho\rhoruby.h" />
+    <ClInclude Include="..\..\shared\ruby\ext\socket\addrinfo.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\ext\socket\constants.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\ext\socket\rubysocket.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\ext\socket\sockport.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\gc.h" />
+    <ClInclude Include="..\..\shared\ruby\id.h" />
+    <ClInclude Include="..\..\shared\ruby\regenc.h" />
+    <ClInclude Include="..\..\shared\ruby\regint.h" />
+    <ClInclude Include="..\..\shared\ruby\regparse.h" />
+    <ClInclude Include="..\..\shared\ruby\revision.h" />
+    <ClInclude Include="..\..\shared\ruby\transcode_data.h" />
+    <ClInclude Include="..\..\shared\ruby\version.h" />
+    <ClInclude Include="..\..\shared\ruby\vm_core.h" />
+    <ClInclude Include="..\..\shared\ruby\vm_opts.h" />
+    <ClInclude Include="..\..\shared\ruby\win32\dir.h" />
+    <ClInclude Include="..\..\shared\ruby\win32\ruby\config.h" />
+    <CustomBuild Include="..\..\shared\ruby\wince\assert.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\direct.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\errno.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\fcntl.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\io.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\process.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\signal.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\stddef.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\sys\stat.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\sys\timeb.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\sys\types.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\sys\utime.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\time.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\varargs.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\wince.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shared\ruby\wince\wincon.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\shared\ruby\ext\calendar\calendar.i">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\shared\ruby\ext\calendar\event.i">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\shared\ruby\ext\signature\signature.i">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\shared\ruby\ext\socket\.document">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\shared\ruby\ext\socket\depend">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\shared\ruby\ext\socket\extconf.rb">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\shared\ruby\ext\socket\mkconstants.rb">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\shared\ruby\ext\socket\mkmf.log">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_RubyCompiler|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
+    </Text>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

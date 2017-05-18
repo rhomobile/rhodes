@@ -48,6 +48,7 @@ require 'rexml/document'
 require 'securerandom'
 require 'uri'
 require 'logger'
+require 'rake'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
@@ -80,6 +81,7 @@ $startdir.gsub!('\\', '/')
 
 chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 
+
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
@@ -92,18 +94,52 @@ require File.join(pwd, 'lib/build/RhoHubAccount.rb')
 
 require File.join(pwd, 'lib/build/rhoDevelopment.rb')
 
-load File.join(pwd, 'lib/commonAPI/printing_zebra/ext/platform/wm/PrintingService/PrintingService/installer/Rakefile')
-#load File.join(pwd, 'platform/bb/build/bb.rake')
-load File.join(pwd, 'platform/android/build/android.rake')
-load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
-load File.join(pwd, 'platform/wm/build/wm.rake')
-load File.join(pwd, 'platform/linux/tasks/linux.rake')
-load File.join(pwd, 'platform/wp8/build/wp.rake')
-load File.join(pwd, 'platform/uwp/build/uwp.rake')
-load File.join(pwd, 'platform/osx/build/osx.rake')
 
 
 $timestamp_start_milliseconds = 0
+
+
+module Rake
+  class Application
+    attr_accessor :current_task
+  end
+  class Task
+    alias :old_execute :execute 
+    def execute(args=nil)
+      Rake.application.current_task = @name  
+      old_execute(args)
+    end
+  end #class Task
+end #module Rake
+
+class Logger
+  alias :original_add :add
+
+  def add(severity, message = nil, progname = nil)
+    if (self.level == Logger::DEBUG)
+      begin
+        #try to get rake task name
+        taskName = Rake.application.current_task
+      rescue Exception => e
+      end
+      
+      if message
+        message = "#{taskName}|\t#{message}"
+      else
+        progname = "#{taskName}|\t#{progname}"
+      end
+    end
+    original_add( severity, message, progname )
+  end
+end
+
+def puts( s )
+  if $logger
+    $logger.info(s)
+  else
+    Kernel::puts( s )
+  end
+end  
 
 $logger = Logger.new(STDOUT)
 if Rake.application.options.trace
@@ -119,6 +155,8 @@ $logger.formatter = proc do |severity,datetime,progname,msg|
   "[#{severity}]\t#{msg}\n"
 end
 
+Jake.set_logger( $logger )
+
 
 def print_timestamp(msg = 'just for info')  
   if $timestamp_start_milliseconds == 0
@@ -128,6 +166,20 @@ def print_timestamp(msg = 'just for info')
 
   $logger.debug '-$TIME$- message [ '+msg+' ] time is { '+Time.now.utc.iso8601+' } milliseconds from start ('+curmillis.to_s+')'
 end
+
+
+
+
+load File.join(pwd, 'lib/commonAPI/printing_zebra/ext/platform/wm/PrintingService/PrintingService/installer/Rakefile')
+#load File.join(pwd, 'platform/bb/build/bb.rake')
+load File.join(pwd, 'platform/android/build/android.rake')
+load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
+load File.join(pwd, 'platform/wm/build/wm.rake')
+load File.join(pwd, 'platform/linux/tasks/linux.rake')
+load File.join(pwd, 'platform/wp8/build/wp.rake')
+load File.join(pwd, 'platform/uwp/build/uwp.rake')
+load File.join(pwd, 'platform/osx/build/osx.rake')
+
 
 #------------------------------------------------------------------------
 
@@ -250,7 +302,7 @@ def make_application_build_capabilities_header_file
   f.puts ''
 
   if $js_application || $nodejs_application
-    puts '#define RHO_NO_RUBY'
+    puts '#define RHO_NO_RUBY' if USE_TRACES
     f.puts '#define RHO_NO_RUBY'
     f.puts '#define RHO_NO_RUBY_API'
   else
@@ -1844,6 +1896,8 @@ namespace "config" do
 
     # read shared config
     $rhodes_home = create_rhodes_home()
+
+    #TODO: put rhobuild.yml to the user's homedir/.rhomobile
     conf_file = File.join($rhodes_home,buildyml)
     $shared_conf = {}
     if File.exists?(conf_file)
@@ -2508,8 +2562,11 @@ def init_extensions(dest, mode = "")
 
   do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
 
-  puts "rhoapi_js_folder: #{rhoapi_js_folder}"
-  puts 'init extensions'
+  $logger.debug "rhoapi_js_folder: #{rhoapi_js_folder}"
+
+  $logger.info 'Init extensions'
+
+  $logger.debug "Extensions list: #{$app_config['extensions'].to_s}"
 
   # TODO: checker init
   gen_checker = GeneratorTimeChecker.new
@@ -2720,10 +2777,10 @@ def init_extensions(dest, mode = "")
 
             Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
               if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
-                puts "add #{f} to extjsmodulefiles_opt.."
+                puts "add #{f} to extjsmodulefiles_opt.." if USE_TRACES
                 extjsmodulefiles_opt << f
               else
-                puts "add #{f} to extjsmodulefiles.."
+                puts "add #{f} to extjsmodulefiles.." if USE_TRACES
                 extjsmodulefiles << f
               end
             end
@@ -2800,7 +2857,7 @@ def init_extensions(dest, mode = "")
     #
     if !$skip_build_js_api_files
       if extjsmodulefiles.count > 0
-        puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
+        puts 'extjsmodulefiles=' + extjsmodulefiles.to_s if USE_TRACES
         write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
 
         $ebfiles_shared_rt_js_appliction = ($js_application and ($current_platform == "wm" or $current_platform == "android") and $app_config["capabilities"].index('shared_runtime'))
@@ -2824,7 +2881,7 @@ def init_extensions(dest, mode = "")
       # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
       if !$shared_rt_js_appliction
         if extjsmodulefiles_opt.count > 0
-          puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
+          puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s if USE_TRACES
           #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
           write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
         end
@@ -3338,7 +3395,7 @@ namespace "build" do
         create_manifest
         cp compileERB, $srcdir
         puts "Running default.rb"
-        cmd_str = "#{$rubypath} -I#{rhodeslib} #{$srcdir}/default.rb"
+        cmd_str = "#{$rubypath} -E UTF-8 -I#{rhodeslib} #{$srcdir}/default.rb"
         if defined?(Bundler)
           Bundler.with_clean_env do
             puts `#{cmd_str}`
@@ -3355,7 +3412,7 @@ namespace "build" do
 
         cp   compileRB, $srcdir
         puts "Running compileRB"
-        cmd_str = "#{$rubypath} -I#{rhodeslib} #{$srcdir}/compileRB.rb"
+        cmd_str = "#{$rubypath} -E UTF-8 -I#{rhodeslib} #{$srcdir}/compileRB.rb"
         if defined?(Bundler)
           Bundler.with_clean_env do
             puts `#{cmd_str}`
@@ -3440,7 +3497,7 @@ namespace "build" do
     end
 
     def minify_inplace_batch(files_to_minify)
-      puts "minifying file list: #{files_to_minify}"
+      puts "minifying file list: #{files_to_minify}" if USE_TRACES
 
       cmd = "java -jar #{$minifier} -o \"x$:x\""
 
@@ -3462,17 +3519,17 @@ namespace "build" do
         error = e.inspect
       end
 
-      puts "Minification done: #{status}"
+      puts "Minification done: #{status}" if USE_TRACES
 
       if !status || !status.exitstatus.zero?
-        puts "WARNING: Minification error!"
+        puts "WARNING: Minification error!" if USE_TRACES
         error = output if error.nil?
         BuildOutput.warning(["Minification errors occured. Minificator stderr output: \n" + error], 'Minification error')
       end
     end
 
     def minify_inplace(filename,type)
-      puts "minify file: #{filename}"
+      puts "minify file: #{filename}" if USE_TRACES
 
       f = StringIO.new("", "w+")
       f.write(File.read(filename))
@@ -3509,7 +3566,7 @@ namespace "build" do
       end
 
       if !status || !status.exitstatus.zero?
-        puts "WARNING: Minification error!"
+        puts "WARNING: Minification error!" if USE_TRACES
 
         error = output if error.nil?
 
@@ -3983,7 +4040,7 @@ namespace "run" do
       endJSModules = []
 
       rhoapi_js_folder = File.join( $app_path, "public/api" )
-      puts "rhoapi_js_folder: #{rhoapi_js_folder}"
+      puts "rhoapi_js_folder: #{rhoapi_js_folder}" if USE_TRACES
 
       do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
 
@@ -4093,10 +4150,10 @@ namespace "run" do
             end
             Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
               if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
-                puts "add #{f} to extjsmodulefiles_opt.."
+                puts "add #{f} to extjsmodulefiles_opt.." if USE_TRACES
                 extjsmodulefiles_opt << f
               else
-                puts "add #{f} to extjsmodulefiles.."
+                puts "add #{f} to extjsmodulefiles.." if USE_TRACES
                 extjsmodulefiles << f
               end
             end
@@ -4120,12 +4177,12 @@ namespace "run" do
       end
       #
       if extjsmodulefiles.count > 0
-        puts "extjsmodulefiles: #{extjsmodulefiles}"
+        puts "extjsmodulefiles: #{extjsmodulefiles}" if USE_TRACES
         write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
       end
       #
       if extjsmodulefiles_opt.count > 0
-        puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
+        puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}" if USE_TRACES
         #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
         write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
       end
@@ -4295,8 +4352,10 @@ namespace "build" do
       Rake::Task["build:win32:rhosimulator"].invoke
     elsif RUBY_PLATFORM =~ /darwin/
       Rake::Task["build:osx:rhosimulator"].invoke
+    elsif RUBY_PLATFORM =~ /linux/
+      Rake::Task["build:linux:rhosimulator"].invoke
     else
-      puts "Sorry, at this time RhoSimulator can be built for Windows and Mac OS X only"
+      puts "Sorry, at this time RhoSimulator can be built for Windows, Mac OS X or Linux only"
       exit 1
     end
   end

@@ -45,6 +45,8 @@
 #endif
 #include "statistic/RhoProfiler.h"
 
+#include "eval_intern.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 
@@ -58,7 +60,7 @@ extern /*RHO static*/ VALUE eval_string_with_cref(VALUE self, VALUE src, VALUE s
 static VALUE loadISeqFromFile(VALUE path);
 VALUE require_compiled(VALUE fname, VALUE* result, int bLoad);
 VALUE RhoPreparePath(VALUE path);
-VALUE rb_iseq_eval(VALUE iseqval);
+//VALUE rb_iseq_eval(VALUE iseqval);
 static void Init_RhoJSON();
 
 VALUE __rhoGetCurrentDir(void)
@@ -448,8 +450,11 @@ static VALUE find_file(VALUE fname)
 		}
     }
 
-    //RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
-    res = RhoPreparePath(res);
+    if ( res != 0 ) {
+        RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
+        res = RhoPreparePath(res);
+    }
+
     if ( !nOK )
         nOK = 1;//eaccess(RSTRING_PTR(res), R_OK) == 0 ? 1 : 0;
 
@@ -498,6 +503,8 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
     char* szName1 = 0;
 	char* la = 0;
     VALUE retval = Qtrue;
+    int state = 0;
+    rb_thread_t *th = GET_THREAD();
     
     if (TYPE(fname) != T_STRING)
         rb_raise(rb_eLoadError, "can not load non-string");
@@ -526,7 +533,7 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
     {
         VALUE seq;
 
-        RAWLOG_INFO1("require_compiled: %s", szName1);
+        RAWLOG_INFO2("require_compiled: %s, full path: %s", szName1, RSTRING_PTR(path));
 
         //optimize require
         //rb_ary_push(GET_VM()->loaded_features, path);
@@ -537,7 +544,19 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
             rb_str_cat(path,".rb",3);
 
         GET_VM()->src_encoding_index = rb_utf8_encindex();
-        rb_load(path, 0);
+
+        PUSH_TAG();
+        if ((state = EXEC_TAG()) == 0) {
+            rb_load(path, 0);
+        } else {
+            RAWLOG_ERROR2("Error loading %s: %d", RSTRING_PTR(path), state);
+        }
+        POP_TAG();
+
+        if ( state != 0 ) {
+            rb_raise( th->errinfo, RSTRING_PTR(rb_funcall(th->errinfo,rb_intern("to_s"),0)) );
+        }
+
 
         if( rho_simconf_getBool("reload_app_changes") )
         {
@@ -547,8 +566,8 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
 #else
         //rb_gc_disable();
         seq = loadISeqFromFile(path);
-        //*result = rb_funcall(seq, rb_intern("eval"), 0 );
-        *result = rb_iseq_eval(seq);
+        *result = rb_funcall(seq, rb_intern("eval"), 0 );
+        //*result = rb_iseq_eval(seq);
         
         //rb_gc_enable();
 #endif
@@ -578,16 +597,9 @@ translate_char(char *p, int from, int to)
 }
 
 VALUE RhoPreparePath(VALUE path){
-#ifdef __SYMBIAN32__
-
-	VALUE fname2 = rb_str_dup(path);
-	
-	translate_char(RSTRING_PTR(fname2),'/', '\\');
-	
+    //Looks like the path is frozen now at least on win32, so we dup it.
+	VALUE fname2 = rb_str_dup(path);	
 	return fname2;
-#endif //__SYMBIAN32__
-	
-	return path;
 }
 
 static void Init_RhoLog();

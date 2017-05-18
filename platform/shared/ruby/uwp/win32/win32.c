@@ -61,10 +61,6 @@
 #undef fclose
 #undef close
 #undef setsockopt
-#ifdef OS_UWP
-    #define _filbuf fgetc
-    #define _flsbuf fputc
-#endif
 
 #if defined __BORLANDC__ || defined _WIN32_WCE
 #  define _filbuf _fgetc
@@ -89,11 +85,13 @@
 #define fpfileno _fileno
 #define fpdup _dup
 #define fpsetmode _setmode
+#define fdstrdup _strdup
 #else
 #define fpstrdup strdup
 #define fpfileno fileno
 #define fpdup dup
 #define fpsetmode setmode
+fdstrdup strdup
 #endif
 
 
@@ -1308,7 +1306,9 @@ insert(const char *path, VALUE vinfo, void *enc)
     if (!tmpcurr) return -1;
     MEMZERO(tmpcurr, NtCmdLineElement, 1);
     tmpcurr->len = strlen(path);
-    tmpcurr->str = fpstrdup(path);
+
+    tmpcurr->str = fstrdup(path);
+
     if (!tmpcurr->str) return -1;
     tmpcurr->flags |= NTMALLOC;
     **tail = tmpcurr;
@@ -1428,7 +1428,7 @@ rb_w32_cmdvector(const char *cmd, char ***vec)
 	return 0;
     }
 
-    ptr = cmdline = fpstrdup(cmd);
+    ptr = cmdline = fstrdup(cmd);
 
     //
     // Ok, parse the command line, building a list of CmdLineElements.
@@ -2040,26 +2040,6 @@ rb_w32_closedir(DIR *dirp)
 # define STHREAD_ONLY(x) x
 #endif
 
-
-#ifdef OS_UWP
-typedef char lowio_text_mode;
-typedef char lowio_pipe_lookahead[3];
-
-typedef struct {
-    CRITICAL_SECTION           lock;
-    intptr_t                   osfhnd;          // underlying OS file HANDLE
-    __int64                    startpos;        // File position that matches buffer start
-    unsigned char              osfile;          // Attributes of file (e.g., open in text mode?)
-    lowio_text_mode            textmode;
-    lowio_pipe_lookahead       _pipe_lookahead;
-
-    uint8_t unicode          : 1; // Was the file opened as unicode?
-    uint8_t utf8translations : 1; // Buffer contains translations other than CRLF
-    uint8_t dbcsBufferUsed   : 1; // Is the dbcsBuffer in use?
-    char    dbcsBuffer;           // Buffer for the lead byte of DBCS when converting from DBCS to Unicode
-} ioinfo;
-#else
-
 typedef struct	{
     intptr_t osfhnd;	/* underlying OS file HANDLE */
     char osfile;	/* attributes of file (e.g., open in text mode?) */
@@ -2073,8 +2053,6 @@ typedef struct	{
     char pipech2[2];
 #endif
 }	ioinfo;
-#endif
-
 
 #if !defined _CRTIMP || defined __MINGW32__
 #undef _CRTIMP
@@ -2082,34 +2060,7 @@ typedef struct	{
 #endif
 
 #if !defined(__BORLANDC__) && !defined(_WIN32_WCE) 
-#ifdef OS_UWP
-static ioinfo ** __pioinfo = NULL;
-#define IOINFO_L2E 6
-#else
 EXTERN_C _CRTIMP ioinfo * __pioinfo[];
-#define IOINFO_L2E			5
-#endif
-
-#ifdef CPP_ELEVEN
-typedef struct {
-	union
-	{
-		FILE  _public_file;
-		char* _ptr;
-	};
-
-	char*            _base;
-	int              _cnt;
-	long             _flags;
-	long             _file;
-	int              _charbuf;
-	int              _bufsiz;
-	char*            _tmpfname;
-	CRITICAL_SECTION _lock;
-} vcruntime_file;
-#define FILE_FILENO(stream) ((vcruntime_file*)stream)->_file
-#define GET_STREAM_PTR(stream) ((vcruntime_file*)stream)
-#endif
 
 #define IOINFO_L2E			5
 #define IOINFO_ARRAY_ELTS	(1 << IOINFO_L2E)
@@ -2124,46 +2075,6 @@ static size_t pioinfo_extra = 0;	/* workaround for VC++8 SP1 */
 static void
 set_pioinfo_extra(void)
 {
-#ifdef OS_UWP
-# define FUNCTION_RET 0xc3 /* ret */
-# ifdef _DEBUG
-#  define UCRTBASE "ucrtbased.dll"
-# else
-#  define UCRTBASE "ucrtbase.dll"
-# endif
-    /* get __pioinfo addr with _isatty */
-    char *p = (char*)get_proc_address(UCRTBASE, "_isatty", NULL);
-    char *pend = p;
-    /* _osfile(fh) & FDEV */
-
-#  define FUNCTION_BEFORE_RET_MARK "\x5d"
-#  define FUNCTION_SKIP_BYTES 0
-    /* mov eax,dword ptr [eax*4+100EB430h] */
-#  define PIOINFO_MARK "\x8B\x04\x85"
-
-    if (p) {
-        for (pend += 10; pend < p + 300; pend++) {
-            // find end of function
-            if (memcmp(pend, FUNCTION_BEFORE_RET_MARK, sizeof(FUNCTION_BEFORE_RET_MARK) - 1) == 0 &&
-                *(pend + (sizeof(FUNCTION_BEFORE_RET_MARK) - 1) + FUNCTION_SKIP_BYTES) & FUNCTION_RET == FUNCTION_RET) {
-                // search backwards from end of function
-                for (pend -= (sizeof(PIOINFO_MARK) - 1); pend > p; pend--) {
-                    if (memcmp(pend, PIOINFO_MARK, sizeof(PIOINFO_MARK) - 1) == 0) {
-                        p = pend;
-                        goto found;
-                    }
-                }
-                break;
-            }
-        }
-    }
-    fprintf(stderr, "unexpected " UCRTBASE "\n");
-    _exit(1);
-
-    found:
-    p += sizeof(PIOINFO_MARK) - 1;
-    __pioinfo = *(ioinfo***)(p);
-#else
     int fd;
 
     fd = _open("NUL", O_RDONLY);
@@ -2178,7 +2089,6 @@ set_pioinfo_extra(void)
 	/* not found, maybe something wrong... */
 	pioinfo_extra = 0;
     }
-#endif
 }
 #else
 #define pioinfo_extra 0
@@ -2195,7 +2105,8 @@ set_pioinfo_extra(void)
 #define FDEV			0x40	/* file handle refers to device */
 #define FTEXT			0x80	/* file handle is in text mode */
 
-static int rb_w32_open_osfhandle(intptr_t osfhandle, int flags)
+static int
+rb_w32_open_osfhandle(intptr_t osfhandle, int flags)
 {
     int fh;
     char fileflags;		/* _osfile flags */
@@ -2235,7 +2146,8 @@ static int rb_w32_open_osfhandle(intptr_t osfhandle, int flags)
     return fh;			/* return handle */
 }
 
-static void init_stdhandle(void)
+static void
+init_stdhandle(void)
 {
     int nullfd = -1;
     int keep = 0;
@@ -2245,23 +2157,24 @@ static void init_stdhandle(void)
      ((nullfd == (fd)) ? (keep = 1) : fdup2(nullfd, fd)),	\
      (fd))
 
-
-	if (fpfileno(stdin) < 0) {
-		FILE_FILENO(stdin) = open_null(0);
-	}
-	else {
-		fpsetmode(fpfileno(stdin), O_BINARY);
-	}
-	if (fpfileno(stdout) < 0) {
-		FILE_FILENO(stdout) = open_null(1);
-	}
-	if (fpfileno(stderr) < 0) {
-		FILE_FILENO(stderr) = open_null(2);
-	}
-	else {
-		fpsetmode(fpfileno(stderr), O_BINARY);
-	}
-
+    if (ffileno(stdin) < 0) {
+	stdin->_file = open_null(0);
+    }
+    else {
+	fsetmode(ffileno(stdin), O_BINARY);
+    }
+    if (ffileno(stdout) < 0) {
+	stdout->_file = open_null(1);
+    }
+    else {
+	fsetmode(ffileno(stdout), O_BINARY);
+    }
+    if (ffileno(stderr) < 0) {
+	stderr->_file = open_null(2);
+    }
+    else {
+	fsetmode(ffileno(stderr), O_BINARY);
+    }
     if (nullfd >= 0 && !keep) fclose(nullfd);
     setvbuf(stderr, NULL, _IONBF, 0);
 }
@@ -4715,8 +4628,8 @@ rb_w32_getc(FILE* stream)
 {
     int c;
 #ifndef _WIN32_WCE
-	if (enough_to_get(GET_STREAM_PTR(stream)->FILE_COUNT)) {
-		c = (unsigned char)*GET_STREAM_PTR(stream)->FILE_READPTR++;
+    if (enough_to_get(stream->FILE_COUNT)) {
+	c = (unsigned char)*stream->FILE_READPTR++;
     }
     else 
 #endif
@@ -4737,8 +4650,8 @@ int
 rb_w32_putc(int c, FILE* stream)
 {
 #ifndef _WIN32_WCE
-	if (enough_to_put(GET_STREAM_PTR(stream)->FILE_COUNT)) {
-		c = (unsigned char)(*GET_STREAM_PTR(stream)->FILE_READPTR++ = (char)c);
+    if (enough_to_put(stream->FILE_COUNT)) {
+	c = (unsigned char)(*stream->FILE_READPTR++ = (char)c);
     }
     else 
 #endif
@@ -4773,7 +4686,8 @@ call_asynchronous(PVOID argp)
 }
 
 #if !defined(OS_WP8) && !defined(OS_UWP)
-uintptr_t rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self,
+uintptr_t
+rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self,
 		    int argc, uintptr_t* argv, uintptr_t intrval)
 {
     DWORD val;
@@ -4835,7 +4749,8 @@ uintptr_t rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self,
 }
 #endif
 
-char ** rb_w32_get_environ(void)
+char **
+rb_w32_get_environ(void)
 {
     char *envtop, *env;
     char **myenvtop, **myenv;
@@ -4857,7 +4772,7 @@ char ** rb_w32_get_environ(void)
     myenvtop = (char **)malloc(sizeof(char *) * (num + 1));
     for (env = envtop, myenv = myenvtop; *env; env += strlen(env) + 1) {
 	if (*env != '=') {
-	    if (!(*myenv = fpstrdup(env))) {
+	    if (!(*myenv = fdstrdup(env))) {
 		break;
 	    }
 	    myenv++;
@@ -5737,7 +5652,8 @@ wrmdir(const WCHAR *wpath)
     return ret;
 }
 
-int rb_w32_rmdir(const char *path)
+int
+rb_w32_rmdir(const char *path)
 {
     WCHAR *wpath;
     int ret;
@@ -5749,7 +5665,8 @@ int rb_w32_rmdir(const char *path)
     return ret;
 }
 
-int rb_w32_urmdir(const char *path)
+int
+rb_w32_urmdir(const char *path)
 {
     WCHAR *wpath;
     int ret;
@@ -5761,7 +5678,8 @@ int rb_w32_urmdir(const char *path)
     return ret;
 }
 
-static int wunlink(const WCHAR *path)
+static int
+wunlink(const WCHAR *path)
 {
     int ret = 0;
     RUBY_CRITICAL({
@@ -5780,7 +5698,8 @@ static int wunlink(const WCHAR *path)
     return ret;
 }
 
-int rb_w32_uunlink(const char *path)
+int
+rb_w32_uunlink(const char *path)
 {
     WCHAR *wpath;
     int ret;
@@ -5792,7 +5711,8 @@ int rb_w32_uunlink(const char *path)
     return ret;
 }
 
-int rb_w32_unlink(const char *path)
+int
+rb_w32_unlink(const char *path)
 {
     WCHAR *wpath;
     int ret;
@@ -5804,7 +5724,8 @@ int rb_w32_unlink(const char *path)
     return ret;
 }
 
-int rb_w32_uchmod(const char *path, int mode)
+int
+rb_w32_uchmod(const char *path, int mode)
 {
     WCHAR *wpath;
     int ret;
@@ -5817,7 +5738,8 @@ int rb_w32_uchmod(const char *path, int mode)
 }
 
 #if !defined(__BORLANDC__)&& !defined(_WIN32_WCE) && !defined(OS_WP8) && !defined(OS_UWP)
-int rb_w32_isatty(int fd)
+int
+rb_w32_isatty(int fd)
 {
     // validate fd by using _get_osfhandle() because we cannot access _nhandle
 /*    if (_get_osfhandle(fd) == -1) {
@@ -5836,7 +5758,8 @@ int rb_w32_isatty(int fd)
 //
 
 #ifdef __BORLANDC__
-static int too_many_files(void)
+static int
+too_many_files(void)
 {
     FILE *f;
     for (f = _streams; f < _streams + _nfile; f++) {
@@ -5846,7 +5769,8 @@ static int too_many_files(void)
 }
 
 #undef fopen
-FILE * rb_w32_fopen(const char *path, const char *mode)
+FILE *
+rb_w32_fopen(const char *path, const char *mode)
 {
     FILE *f = (errno = 0, fopen(path, mode));
     if (f == NULL && errno == 0) {
@@ -5856,7 +5780,8 @@ FILE * rb_w32_fopen(const char *path, const char *mode)
     return f;
 }
 
-FILE * rb_w32_fdopen(int handle, const char *type)
+FILE *
+rb_w32_fdopen(int handle, const char *type)
 {
     FILE *f = (errno = 0, _fdopen(handle, (char *)type));
     if (f == NULL && errno == 0) {
@@ -5868,7 +5793,8 @@ FILE * rb_w32_fdopen(int handle, const char *type)
     return f;
 }
 
-FILE * rb_w32_fsopen(const char *path, const char *mode, int shflags)
+FILE *
+rb_w32_fsopen(const char *path, const char *mode, int shflags)
 {
     FILE *f = (errno = 0, _fsopen(path, mode, shflags));
     if (f == NULL && errno == 0) {
@@ -5881,18 +5807,21 @@ FILE * rb_w32_fsopen(const char *path, const char *mode, int shflags)
 
 #if defined(_MSC_VER) && RT_VER <= 60
 extern long _ftol(double);
-long _ftol2(double d)
+long
+_ftol2(double d)
 {
     return _ftol(d);
 }
-long _ftol2_sse(double d)
+long
+_ftol2_sse(double d)
 {
     return _ftol(d);
 }
 #endif
 
 #ifndef signbit
-int signbit(double x)
+int
+signbit(double x)
 {
     int *ip = (int *)(&x + 1) - 1;
     return *ip < 0;

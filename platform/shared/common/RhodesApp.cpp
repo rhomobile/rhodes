@@ -521,30 +521,33 @@ void CRhodesApp::run()
     PROF_CREATE_COUNTER("LOW_FILE");
 	if(m_isJSFSApp)
 		RHODESAPP().notifyLocalServerStarted();
-  
+
 #ifdef OS_MACOSX
   bool shouldRunDirectQueue = true;
   net::CDirectHttpRequestQueue directQueue(*m_httpServer, *this );
-  
+
     if (RHOCONF().isExist("ios_direct_local_requests")) {
         shouldRunDirectQueue = RHOCONF().getBool("ios_direct_local_requests");
     }
+#ifdef RHODES_EMULATOR
+    shouldRunDirectQueue = false;
+#endif
 #endif
 
 
 	while (!m_bExit) {
-
-		if(!m_isJSFSApp){
+		if(!m_isJSFSApp)
+    {
 #ifdef OS_MACOSX
-		  if ( shouldRunDirectQueue )
-		  {
-			directQueue.run();
-		  }
-		  else
+      if ( shouldRunDirectQueue )
+      {
+        directQueue.run();
+      }
+      else
 #endif
-		  {
-			m_httpServer->run();
-		  }
+      {
+        m_httpServer->run();
+      }
       
     }
 		else

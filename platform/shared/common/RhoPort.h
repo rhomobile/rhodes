@@ -108,10 +108,6 @@ typedef unsigned __int64 uint64;
 
 #define strcasecmp _stricmp
 
-#ifndef CPP_ELEVEN
-#define snprintf _snprintf
-#endif
-
 #define FMTI64 "%I64d"
 #define FMTU64 "%I64u"
 

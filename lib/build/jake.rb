@@ -27,6 +27,7 @@
 
 require 'pathname'
 require 'socket'
+require 'logger'
 
 
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
@@ -60,6 +61,20 @@ end
 
 # Class with around building things
 class Jake
+
+  @@logger = nil
+
+  def self.set_logger(logger)
+    @@logger = logger
+  end
+
+  def self.log( severity, message )
+    if @@logger
+      @@logger.log(severity, message)
+    else
+      puts message
+    end
+  end
 
   def self.config(configfile)
     require 'yaml'
@@ -158,7 +173,7 @@ class Jake
     addr = localip                   #:BindAddress => addr,
     server = WEBrick::HTTPServer.new :Port => port
     port = server.config[:Port]
-    puts "LOCAL SERVER STARTED ON #{addr}:#{port}"
+    log Logger::INFO, "LOCAL SERVER STARTED ON #{addr}:#{port}"
     Thread.new { server.start }
     return server, addr, port
   end
@@ -183,16 +198,16 @@ class Jake
     begin
         platform = platform
         exact_url = SYNC_SERVER_BASE_URL.gsub(/exact_platform/, platform)
-        puts "going to reset server: #{exact_url}"
+        log Logger::INFO, "going to reset server: #{exact_url}"
         # login to the server
         unless @srv_token
 		  @srv_token = RestClient.post("#{exact_url}/rc/v1/system/login", { :login => SYNC_SERVER_CONSOLE_LOGIN, :password => SYNC_SERVER_CONSOLE_PASSWORD }.to_json, :content_type => :json)
         end
         # reset server
         RestClient.post("#{exact_url}/api/reset", {:api_token => @srv_token}.to_json, :content_type => :json)
-		puts "reset OK"
+		log Logger::INFO, "reset OK"
     rescue Exception => e
-      puts "reset_spec_server failed: #{e}"
+      log Logger::ERROR, "reset_spec_server failed: #{e}"
     end
   end
 
@@ -203,15 +218,15 @@ class Jake
 	begin
 		platform = platform
 		exact_url = BULK_SYNC_SERVER_URL
-		puts "going to reset server: #{exact_url}"
+		log Logger::INFO, "going to reset server: #{exact_url}"
 		# login to the server
 		unless @bulk_srv_token
 			@bulk_srv_token = RestClient.post("#{exact_url}/rc/v1/system/login", { :login => BULK_SYNC_SERVER_CONSOLE_LOGIN, :password => BULK_SYNC_SERVER_CONSOLE_PASSWORD }.to_json, :content_type => :json)
 		end
 		RestClient.post("#{exact_url}/api/reset", {:api_token => @bulk_srv_token}.to_json, :content_type => :json)
-		puts "reset OK"
+		log Logger::INFO, "reset OK"
     rescue Exception => e
-		puts "reset_bulk_server failed: #{e}"
+		log Logger::ERROR, "reset_bulk_server failed: #{e}"
 	end
   end
 
@@ -237,7 +252,7 @@ class Jake
 
   def self.process_spec_output(line)
       # Print MSpec example description
-      puts line if line =~ /\| - it/ or line =~ /\| describe/ or line =~ /\|   - /
+      log(Logger::INFO,line) if line =~ /\| - it/ or line =~ /\| describe/ or line =~ /\|   - /
       line = $1 if line =~ /^I\/APP\s+\(\s+[0-9]+\)\:\s+(.*)/
       if $getdump
         if line =~ /^I/
@@ -320,21 +335,21 @@ class Jake
     FileUtils.rm_rf $app_path + "/faillog.txt"
 
     if $failed.to_i > 0
-      puts "************************"
-      puts "\n\n"
-      $faillog.each {|x| puts x }
+      log Logger::ERROR, "************************"
+      log Logger::ERROR, "\n\n"
+      $faillog.each {|x| log Logger::ERROR, x }
       File.open($app_path + "/faillog.txt", "w") { |io| $faillog.each {|x| io << x }  }
     end
 
-    puts "\n"
-    puts "************************"
-    puts "Tests completed in #{"%.1f" % (finish - start)} seconds"
-    puts "Total: #{$total}"
-    puts "Passed: #{$passed}"
-    puts "Failed: #{$failed}"
-    puts "Failures stored in faillog.txt" if $failed.to_i > 0
-    puts "************************"
-    puts "\n"
+    log(Logger::INFO, "\n")
+    log(Logger::INFO,"************************")
+    log(Logger::INFO,"Tests completed in #{"%.1f" % (finish - start)} seconds")
+    log(Logger::INFO,"Total: #{$total}")
+    log(Logger::INFO,"Passed: #{$passed}")
+    log(Logger::INFO,"Failed: #{$failed}")
+    log(Logger::INFO,"Failures stored in faillog.txt") if $failed.to_i > 0
+    log(Logger::INFO,"************************")
+    log(Logger::INFO,"\n")
   end
 
   def self.run2(command, args, options = {}, &block)
@@ -359,8 +374,8 @@ class Jake
 
     $stdout.flush
     unless options[:hide_output]
-      puts "PWD: #{Dir.pwd()}"
-      puts "CMD: #{cmdstr}"
+      log Logger::DEBUG,"PWD: #{Dir.pwd()}"
+      log Logger::DEBUG,"CMD: #{cmdstr}"
       $stdout.flush
     end
 
@@ -393,7 +408,7 @@ class Jake
             else
                 retval += line
 		unless options[:hide_output]
-                    puts "RET: #{line}"
+                    log Logger::DEBUG,"RET: #{line}"
                     $stdout.flush
 		end
             end
@@ -440,8 +455,7 @@ class Jake
       to_print = "ENV: #{env}\n#{to_print}"
     end
 
-    puts
-    puts to_print
+    log Logger::DEBUG,to_print
     STDOUT.flush
 
     system(to_run)
@@ -517,7 +531,7 @@ class Jake
     args << src.to_s
 
     Dir.chdir targetdir
-    puts run(cmd,args)
+    log Logger::DEBUG,run(cmd,args)
     Dir.chdir currentdir
   end
 
@@ -561,7 +575,7 @@ class Jake
       args << files
     end
 
-    puts run(cmd,args)
+    log Logger::DEBUG,run(cmd,args)
 
 
   end
@@ -592,7 +606,7 @@ class Jake
 
       if cldc and icon
         f.write "MIDlet-1: " + title + "," + icon + ",\n"
-        puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! service_enabled: #{$service_enabled}"
+        log Logger::DEBUG,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! service_enabled: #{$service_enabled}"
         $stdout.flush
 
           if $service_enabled
@@ -632,7 +646,7 @@ class Jake
 
     cmd.gsub!(/\//,"\\")
     outputstring = run(cmd, args)
-    puts outputstring unless $? == 0
+    log(Logger::DEBUG,outputstring) unless $? == 0
     Dir.chdir currentdir
 
   end
@@ -659,7 +673,7 @@ class Jake
 
     args << target
     #puts args.to_s
-    puts run("ant.bat",args,dir)
+    log Logger::INFO,run("ant.bat",args,dir)
   end
 
   def self.modify_file_if_content_changed(file_name, f)
@@ -668,7 +682,7 @@ class Jake
     old_content = File.exists?(file_name) ? File.read(file_name) : ""
 
     if old_content != content
-        puts "!!!MODIFY #{file_name}"
+        log Logger::DEBUG, "!!!MODIFY #{file_name}"
         File.open(file_name, "w"){|file| file.write(content)}
     end
 
@@ -786,10 +800,10 @@ class Jake
         (Dir['RhoBundle/**/*']).each { |path|
           exclude_items = (Jake.getBuildProp2('rhobundle', 'exclude_items') || []).collect { |each| %r{#{each}} }
           begin
-            puts "Excluded: #{path}".warning
+            log Logger::INFO,"Excluded: #{path}".warning
             next
           end if (exclude_items.any? { |each| path.index(each) })
-          puts "added to zip : #{path}"
+          log Logger::INFO,"added to zip : #{path}"
           zip_file.add(path, path)
         }
       end
@@ -810,7 +824,7 @@ class Jake
 
   def self.modify_rhoconfig_for_debug
     confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
-    puts "confpath_content=" + confpath_content.to_s
+    log(Logger::INFO,"confpath_content=" + confpath_content.to_s)
 
     confpath_content += "\r\n" + "remotedebug=1"  if !confpath_content.include?("remotedebug=")
     confpath_content += "\r\n" + "debughosturl=" + $rhologhostaddr  if !confpath_content.include?("debughosturl=")

@@ -76,13 +76,11 @@
     <IncludePath>$(IncludePath)</IncludePath>
     <OutDir>$(RHO_ROOT)\Platform\uwp\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\</IntDir>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(IncludePath)</IncludePath>
     <OutDir>$(RHO_ROOT)\Platform\uwp\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\</IntDir>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IncludePath>$(IncludePath)</IncludePath>
