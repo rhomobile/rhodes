@@ -114,6 +114,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     setCentralWidget(new QWidget(this));
     verticalLayout = new QVBoxLayout(centralWidget());
 
+    verticalLayout->setMargin(0);
+    verticalLayout->setSpacing(0);
+
     tabBar = new QtNativeTabBar(this);
     verticalLayout->addWidget(tabBar);
     webView = new QtWebEngineView(this);
@@ -152,11 +155,11 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
             SLOT(slotNavigate(QString,int)), Qt::QueuedConnection);
 
     toolBar = new QToolBar(this);
-    toolBar->setFixedSize(4,12);
+    //toolBar->setFixedSize(160,12);
     this->addToolBar(Qt::BottomToolBarArea, toolBar);
 
     toolBarRight = new QToolBar(this);
-    toolBar->setFixedSize(396,12);
+    //toolBarRight->setFixedSize(160,12);
     this->addToolBar(Qt::BottomToolBarArea, toolBarRight);
 
     if (RHOCONF().isExist("http_proxy_host"))
@@ -199,6 +202,8 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
 	int height = RHOCONF().getInt("screen_height");
 #endif
 
+    setMinimumSize(320,480);
+
     if ((width>0) && (height>0)) this->setSize(width, height);
     else if (width>0) this->setSize(width, this->height());
     else if (height>0) this->setSize(this->width(), height);
@@ -208,7 +213,6 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
         QWebEngineViewSelectionSuppressor* suppressor = new QWebEngineViewSelectionSuppressor(webView);
     }
 
-    setMinimumSize(350,550);
 
 }
 
