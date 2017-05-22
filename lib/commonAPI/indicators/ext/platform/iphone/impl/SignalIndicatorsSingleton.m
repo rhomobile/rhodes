@@ -120,7 +120,7 @@
 }
 
 -(void) stopWlanStatus:(id<IMethodResult>)methodResult {
-    [self performSelectorOnMainThread:@selector(setupTimer:methodResult:) withObject:[NSNumber numberWithInt:0] waitUntilDone:YES];
+    [self performSelectorOnMainThread:@selector(setupTimer:methodResult:) withObject:[NSNumber numberWithInt:0] waitUntilDone:NO];
     callbackHolder = nil;
 }
 
