@@ -124,6 +124,12 @@ module MSpec
     rescue Exception => exc
       register_exit 1
       actions :exception, ExceptionState.new(current && current.state, location, exc)
+
+        #RHO    
+        puts "FAIL: #{current} - #{exc.message}\n" + (@backtrace ? exc.backtrace.join("\n") : "")   
+        @exc_count+=1   
+        #RHO
+
       return false
     end
   end
