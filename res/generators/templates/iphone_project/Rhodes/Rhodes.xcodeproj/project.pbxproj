@@ -383,7 +383,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "source ~/.profile\ncd ${SRCROOT}\ncd ..\n./buildRhoBundle";
+			shellScript = "source ~/.profile\ncd ${SRCROOT}\ncd ..\nexport RUBYOPT='-E utf-8'\n./buildRhoBundle";
 		};
 /* End PBXShellScriptBuildPhase section */
 
