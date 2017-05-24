@@ -74,23 +74,43 @@ public class BaseActivity extends Activity implements ServiceConnection {
         
         public void reread(Context context) {
             Logger.T(TAG, "Updating screen properties");
-            
-            WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
 
-            Display d = wm.getDefaultDisplay();
-	    float dpr = RhodesActivity.getContext().getResources().getDisplayMetrics().density;
-            
-            mScreenWidth = d.getWidth();
-            mScreenHeight = d.getHeight();
-            
-            mRealScreenWidth = (int) (d.getWidth() / dpr);
-            mRealScreenHeight = (int) (d.getHeight() / dpr);
-	
-            DisplayMetrics metrics = new DisplayMetrics();
-            d.getMetrics(metrics);
+			Activity actvt = null;
 
-            mScreenPpiX = metrics.xdpi;
-            mScreenPpiY = metrics.ydpi;
+			try {
+				actvt = RhodesActivity.safeGetInstance();
+			}
+			catch (Exception e) {
+				Logger.E(TAG, "can not get RhodesActivity !");
+			}
+
+			DisplayMetrics displayMetrics = new DisplayMetrics();
+			boolean isOK = false;
+
+			try	{
+				if (actvt == null) {
+					displayMetrics = RhodesActivity.getContext().getResources().getDisplayMetrics();
+					isOK = true;
+				}
+				else {
+					actvt.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+					isOK = true;
+				}
+			}
+			catch (Exception e) {
+				Logger.E(TAG, "can not get real DisplayMetrics !");
+			}
+			if (!isOK) {
+				displayMetrics = RhodesActivity.getContext().getResources().getDisplayMetrics();
+			}
+			mRealScreenHeight = displayMetrics.heightPixels;
+			mRealScreenWidth = displayMetrics.widthPixels;
+			mScreenPpiX = displayMetrics.xdpi;
+            mScreenPpiY = displayMetrics.ydpi;
+			float density = displayMetrics.density;
+			mScreenWidth = (int)((float)mRealScreenWidth/density + 0.5);
+			mScreenHeight = (int)((float)mRealScreenHeight/density + 0.5);
+
 
             mScreenOrientation = AndroidFunctionalityManager.getAndroidFunctionality().getScreenOrientation(context);
 
