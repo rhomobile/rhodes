@@ -9,6 +9,13 @@
 
 **********************************************************************/
 
+#if defined(OS_UWP)
+#include "uwp\ruby\config.h"
+#include "include\ruby\defines.h"
+#endif
+
+#include "posixnames.h"
+
 #ifdef RUBY_EXPORT
 #include "ruby/ruby.h"
 #define dln_warning rb_warning
@@ -44,6 +51,8 @@ char *dln_argv0;
 #include <sys/types.h>
 #include <sys/stat.h>
 
+
+
 #ifndef S_ISDIR
 #   define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
 #endif
@@ -59,7 +68,7 @@ char *dln_argv0;
 # include <unistd.h>
 #endif
 
-#if !defined(_WIN32) && !HAVE_DECL_GETENV
+#if !defined(_WIN32) && !HAVE_DECL_GETENV 
 char *getenv();
 #endif
 
@@ -74,7 +83,7 @@ dln_find_exe_r(const char *fname, const char *path, char *buf, size_t size
 
     if (!path) {
 	path = getenv(PATH_ENV);
-	if (path) path = envpath = strdup(path);
+	if (path) path = envpath = fpstrdup(path);
     }
 
     if (!path) {

@@ -3724,6 +3724,9 @@ fetch_token(OnigToken* tok, UChar** src, UChar* end, ScanEnv* env)
 	if (c == '<' || c == '\'') {
 	  int gnum = -1, rel = 0;
 	  UChar* name_end;
+#ifdef OS_UWP
+	  name_end = NULL;
+#endif
 	  OnigCodePoint cnext;
 
 	  cnext = PPEEK;

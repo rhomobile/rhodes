@@ -23,6 +23,8 @@
 #include <unistd.h>
 #endif
 
+#include "posixnames.h"
+
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
 #endif
@@ -466,7 +468,7 @@ rb_bug_errno(const char *mesg, int errno_arg)
  * this is safe to call inside signal handler and timer thread
  * (which isn't a Ruby Thread object)
  */
-#define write_or_abort(fd, str, len) (write((fd), (str), (len)) < 0 ? abort() : (void)0)
+#define write_or_abort(fd, str, len) (fpwrite((fd), (str), (len)) < 0 ? abort() : (void)0)
 #define WRITE_CONST(fd,str) write_or_abort((fd),(str),sizeof(str) - 1)
 
 void

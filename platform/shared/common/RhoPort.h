@@ -241,12 +241,17 @@ GetStdHandle(
     _In_ DWORD nStdHandle
     );
 
+#if defined(_UWP_LIB)
+#define RHOPORT_STRUCT_EXISTS
+#endif
 
+#if !defined(_UWP_LIB)
 LPCH
 WINAPI
 GetEnvironmentStrings(
     VOID
     );
+#endif
 
 #if !defined(_WP8_LIB) && !defined(_UWP_LIB)
 _NullNull_terminated_
@@ -294,13 +299,17 @@ FreeEnvironmentStringsW(
 #define FreeEnvironmentStrings  FreeEnvironmentStringsA
 #endif // !UNICODE
 
+#if !defined(RHOPORT_STRUCT_EXISTS)
 typedef struct _PROCESS_INFORMATION {
     HANDLE hProcess;
     HANDLE hThread;
     DWORD dwProcessId;
     DWORD dwThreadId;
 } PROCESS_INFORMATION, *PPROCESS_INFORMATION, *LPPROCESS_INFORMATION;
-
+#else
+typedef struct _PROCESS_INFORMATION PROCESS_INFORMATION, *PPROCESS_INFORMATION, *LPPROCESS_INFORMATION;
+#endif
+#if !defined(RHOPORT_STRUCT_EXISTS)
 typedef struct _STARTUPINFOA {
     DWORD   cb;
     LPSTR   lpReserved;
@@ -321,6 +330,11 @@ typedef struct _STARTUPINFOA {
     HANDLE  hStdOutput;
     HANDLE  hStdError;
 } STARTUPINFOA, *LPSTARTUPINFOA;
+#else
+typedef struct _STARTUPINFOA STARTUPINFOA, *LPSTARTUPINFOA;
+#endif
+
+#if !defined(RHOPORT_STRUCT_EXISTS)
 typedef struct _STARTUPINFOW {
     DWORD   cb;
     LPWSTR  lpReserved;
@@ -341,6 +355,11 @@ typedef struct _STARTUPINFOW {
     HANDLE  hStdOutput;
     HANDLE  hStdError;
 } STARTUPINFOW, *LPSTARTUPINFOW;
+#else
+typedef struct _STARTUPINFOW STARTUPINFOW, *LPSTARTUPINFOW;
+#endif
+
+
 #ifdef UNICODE
 typedef STARTUPINFOW STARTUPINFO;
 typedef LPSTARTUPINFOW LPSTARTUPINFO;
@@ -556,6 +575,7 @@ CreateNamedPipeA(
 
 #define TLS_OUT_OF_INDEXES ((DWORD)0xFFFFFFFF)
 
+#if !defined(RHOPORT_STRUCT_EXISTS)
 typedef struct _BY_HANDLE_FILE_INFORMATION {
     DWORD dwFileAttributes;
     FILETIME ftCreationTime;
@@ -568,7 +588,9 @@ typedef struct _BY_HANDLE_FILE_INFORMATION {
     DWORD nFileIndexHigh;
     DWORD nFileIndexLow;
 } BY_HANDLE_FILE_INFORMATION, *PBY_HANDLE_FILE_INFORMATION, *LPBY_HANDLE_FILE_INFORMATION;
-
+#else
+typedef struct _BY_HANDLE_FILE_INFORMATION BY_HANDLE_FILE_INFORMATION, *PBY_HANDLE_FILE_INFORMATION, *LPBY_HANDLE_FILE_INFORMATION;
+#endif
 
 BOOL
 WINAPI
@@ -622,6 +644,7 @@ TlsFree(
 
 void WINAPI TlsShutdown();
 
+#ifndef OS_UWP
 DWORD
 WINAPI
 WaitForMultipleObjectsWP8(
@@ -632,7 +655,16 @@ WaitForMultipleObjectsWP8(
     );
 
 #define WaitForMultipleObjects WaitForMultipleObjectsWP8
-
+#else
+DWORD
+WINAPI
+WaitForMultipleObjects(
+	_In_ DWORD nCount,
+	_In_reads_(nCount) CONST HANDLE *lpHandles,
+	_In_ BOOL bWaitAll,
+	_In_ DWORD dwMilliseconds
+);
+#endif
 BOOL
 WINAPI
 GetHandleInformation(

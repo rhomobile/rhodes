@@ -32,13 +32,15 @@
  *   http://www.cl.cam.ac.uk/~mgk25/ucs/langinfo.c
  */
 
+#include "posixnames.h"
+
 #include "ruby/missing.h"
 #include <stdlib.h>
 #include <string.h>
 #if defined _WIN32 || defined __CYGWIN__
 #include <windows.h>
 #if defined _WIN32 && !defined strncasecmp
-#define strncasecmp strnicmp
+#define strncasecmp fpstrnicmp
 #endif
 #endif
 #ifdef HAVE_LANGINFO_H

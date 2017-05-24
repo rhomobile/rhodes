@@ -9,7 +9,7 @@
 #endif
 //RHO
 #ifdef OS_UWP
-#include "wp8.h"
+#include "uwp.h"
 #endif
 
 #if defined(__cplusplus)

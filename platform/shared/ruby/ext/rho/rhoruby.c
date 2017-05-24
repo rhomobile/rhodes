@@ -49,11 +49,7 @@
 #include "sync/RhoconnectClientManager.h"
 
 
-#if defined(POSIXNAME)
-#define fpstrdup _strdup
-#else
-#define fpstrdup strdup
-#endif
+#include "posixnames.h"
 
 int rho_is_remote_debug();
 

@@ -11,9 +11,6 @@
     <Filter Include="enc">
       <UniqueIdentifier>{32dd8757-be1d-40ed-82a0-0ac3af55638c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="generated">
-      <UniqueIdentifier>{3c68aa67-8a17-432a-8622-e14d71ea27cd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="missing">
       <UniqueIdentifier>{c9e54149-eb9e-4b1c-b9c9-0f64aa8fba88}</UniqueIdentifier>
     </Filter>
@@ -32,9 +29,6 @@
     <Filter Include="ext\webview">
       <UniqueIdentifier>{0cb30fff-257e-41af-acd0-57f059c48f3d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ext\geo">
-      <UniqueIdentifier>{47f9b28c-4ac4-4a9f-80da-f1c362458421}</UniqueIdentifier>
-    </Filter>
     <Filter Include="uwp\win32">
       <UniqueIdentifier>{b267f9aa-d6c9-4fa7-8510-9e6d211ae46d}</UniqueIdentifier>
     </Filter>
@@ -50,9 +44,6 @@
     <Filter Include="ext\stringio">
       <UniqueIdentifier>{5101662d-c68f-48cd-8ef9-f0c4f00038b7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ext\sockets">
-      <UniqueIdentifier>{dd2081be-3580-4a5d-8b5d-788462bbb626}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ext\system">
       <UniqueIdentifier>{e669e62d-e1ab-4e59-9121-7346cf2b506d}</UniqueIdentifier>
     </Filter>
@@ -62,9 +53,122 @@
     <Filter Include="ext\alert">
       <UniqueIdentifier>{0ba48dc6-d823-44ea-ae87-ac68303af22a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ext\socket">
+      <UniqueIdentifier>{8a2be6ab-fa60-49a2-90cf-a5d9fd142f41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{d3065898-1565-442d-8ffe-5fe2cbf87efd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\calendar">
+      <UniqueIdentifier>{d3184392-34a5-4b06-886f-b8e714754181}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\camera">
+      <UniqueIdentifier>{70b5bad0-811a-466e-9ae9-a72a7bee5206}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\bluetooth">
+      <UniqueIdentifier>{de66ed03-bc1a-4666-8863-9db3737572c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\datetimepicker">
+      <UniqueIdentifier>{c5e5f9c3-b7f9-4667-ba19-575054933f17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\geolocation">
+      <UniqueIdentifier>{e7afb0e0-1204-4b8a-ab24-8a746548b5bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\mapview">
+      <UniqueIdentifier>{72bbd644-2950-4cf3-acce-96769ea7ff13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\nativebar">
+      <UniqueIdentifier>{6fe54ca8-b8d1-48b6-a26d-c4125e75e5ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\nativeviewmanager">
+      <UniqueIdentifier>{f858c55a-5f54-4800-b03a-13d7045ac58d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\phonebook">
+      <UniqueIdentifier>{2511d61e-97b7-4b87-9089-94c1d5b31d7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\ringtones">
+      <UniqueIdentifier>{4206d16c-7f9f-4e34-9740-7eef118a7cd4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\shared\ruby\debug.h" />
+    <ClInclude Include="..\..\shared\ruby\ext\rho\rhoruby.h">
+      <Filter>ext\rho</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\uwp\ruby\config.h">
+      <Filter>uwp\ruby</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\uwp\win32\dir.h">
+      <Filter>uwp\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\ext\socket\constdefs.h">
+      <Filter>ext\socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\st.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\ruby.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\ext\socket\rubysocket.h">
+      <Filter>ext\socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\ext\socket\addrinfo.h">
+      <Filter>ext\socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\ext\socket\extconf.h">
+      <Filter>ext\socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\ext\socket\sockport.h">
+      <Filter>ext\socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\debug.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\defines.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\encoding.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\io.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\missing.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\oniguruma.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\re.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\regex.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\subst.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\thread.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\thread_native.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\util.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\version.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\vm.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\win32.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\include\ruby\intern.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\shared\ruby\dln.h" />
     <ClInclude Include="..\..\shared\ruby\eval_intern.h" />
     <ClInclude Include="..\..\shared\ruby\gc.h" />
@@ -75,78 +179,18 @@
     <ClInclude Include="..\..\shared\ruby\regint.h" />
     <ClInclude Include="..\..\shared\ruby\regparse.h" />
     <ClInclude Include="..\..\shared\ruby\revision.h" />
-    <ClInclude Include="..\..\shared\ruby\timev.h" />
+    <ClInclude Include="..\..\shared\ruby\thread_pthread.h" />
     <ClInclude Include="..\..\shared\ruby\transcode_data.h" />
-    <ClInclude Include="..\..\shared\ruby\transdb.h" />
     <ClInclude Include="..\..\shared\ruby\version.h" />
     <ClInclude Include="..\..\shared\ruby\vm_core.h" />
     <ClInclude Include="..\..\shared\ruby\vm_opts.h" />
-    <ClInclude Include="..\..\shared\ruby\ext\rho\rhoruby.h">
-      <Filter>ext\rho</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\uwp\ruby\config.h">
-      <Filter>uwp\ruby</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\uwp\wp8.h">
+    <ClInclude Include="..\..\shared\ruby\timev.h" />
+    <ClInclude Include="..\..\shared\ruby\uwp\uwp.h">
       <Filter>uwp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\posixnames.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\ruby\array.c" />
-    <ClCompile Include="..\..\shared\ruby\bignum.c" />
-    <ClCompile Include="..\..\shared\ruby\class.c" />
-    <ClCompile Include="..\..\shared\ruby\compar.c" />
-    <ClCompile Include="..\..\shared\ruby\compile.c" />
-    <ClCompile Include="..\..\shared\ruby\complex.c" />
-    <ClCompile Include="..\..\shared\ruby\cont.c" />
-    <ClCompile Include="..\..\shared\ruby\debug.c" />
-    <ClCompile Include="..\..\shared\ruby\dln.c" />
-    <ClCompile Include="..\..\shared\ruby\dln_find.c" />
-    <ClCompile Include="..\..\shared\ruby\dmyencoding.c" />
-    <ClCompile Include="..\..\shared\ruby\dmyext.c" />
-    <ClCompile Include="..\..\shared\ruby\enum.c" />
-    <ClCompile Include="..\..\shared\ruby\enumerator.c" />
-    <ClCompile Include="..\..\shared\ruby\error.c" />
-    <ClCompile Include="..\..\shared\ruby\eval.c" />
-    <ClCompile Include="..\..\shared\ruby\gc.c" />
-    <ClCompile Include="..\..\shared\ruby\hash.c" />
-    <ClCompile Include="..\..\shared\ruby\inits.c" />
-    <ClCompile Include="..\..\shared\ruby\io.c" />
-    <ClCompile Include="..\..\shared\ruby\iseq.c" />
-    <ClCompile Include="..\..\shared\ruby\load.c" />
-    <ClCompile Include="..\..\shared\ruby\marshal.c" />
-    <ClCompile Include="..\..\shared\ruby\math.c" />
-    <ClCompile Include="..\..\shared\ruby\node.c" />
-    <ClCompile Include="..\..\shared\ruby\numeric.c" />
-    <ClCompile Include="..\..\shared\ruby\object.c" />
-    <ClCompile Include="..\..\shared\ruby\pack.c" />
-    <ClCompile Include="..\..\shared\ruby\proc.c" />
-    <ClCompile Include="..\..\shared\ruby\process.c" />
-    <ClCompile Include="..\..\shared\ruby\range.c" />
-    <ClCompile Include="..\..\shared\ruby\rational.c" />
-    <ClCompile Include="..\..\shared\ruby\re.c" />
-    <ClCompile Include="..\..\shared\ruby\regcomp.c" />
-    <ClCompile Include="..\..\shared\ruby\regenc.c" />
-    <ClCompile Include="..\..\shared\ruby\regerror.c" />
-    <ClCompile Include="..\..\shared\ruby\regexec.c" />
-    <ClCompile Include="..\..\shared\ruby\regparse.c" />
-    <ClCompile Include="..\..\shared\ruby\regsyntax.c" />
-    <ClCompile Include="..\..\shared\ruby\ruby.c" />
-    <ClCompile Include="..\..\shared\ruby\safe.c" />
-    <ClCompile Include="..\..\shared\ruby\signal.c" />
-    <ClCompile Include="..\..\shared\ruby\sprintf.c" />
-    <ClCompile Include="..\..\shared\ruby\st.c" />
-    <ClCompile Include="..\..\shared\ruby\strftime.c" />
-    <ClCompile Include="..\..\shared\ruby\string.c" />
-    <ClCompile Include="..\..\shared\ruby\struct.c" />
-    <ClCompile Include="..\..\shared\ruby\thread.c" />
-    <ClCompile Include="..\..\shared\ruby\time.c" />
-    <ClCompile Include="..\..\shared\ruby\transcode.c" />
-    <ClCompile Include="..\..\shared\ruby\util.c" />
-    <ClCompile Include="..\..\shared\ruby\variable.c" />
-    <ClCompile Include="..\..\shared\ruby\version.c" />
-    <ClCompile Include="..\..\shared\ruby\vm.c" />
-    <ClCompile Include="..\..\shared\ruby\vm_dump.c" />
     <ClCompile Include="..\..\shared\ruby\enc\ascii.c">
       <Filter>enc</Filter>
     </ClCompile>
@@ -167,9 +211,6 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\enc\utf_8.c">
       <Filter>enc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\generated\parse.c">
-      <Filter>generated</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\missing\acosh.c">
       <Filter>missing</Filter>
@@ -207,17 +248,8 @@
     <ClCompile Include="..\..\shared\ruby\ext\rho\rhosupport.c">
       <Filter>ext\rho</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\random.c" />
-    <ClCompile Include="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c">
-      <Filter>ext\geo</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\dir.c" />
     <ClCompile Include="..\..\shared\ruby\missing\langinfo.c">
       <Filter>missing</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\file.c" />
-    <ClCompile Include="..\..\shared\ruby\uwp\wp8.c">
-      <Filter>uwp</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\uwp\win32\win32.c">
       <Filter>uwp\win32</Filter>
@@ -234,50 +266,226 @@
     <ClCompile Include="..\..\shared\ruby\ext\alert\alert_wrap.c">
       <Filter>ext\alert</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\ancdata.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\basicsocket.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\constants.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\init.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\ipsocket.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\option.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\raddrinfo.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\socket.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\sockssocket.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\tcpserver.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\tcpsocket.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\udpsocket.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\unixserver.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\socket_192\unixsocket.c">
-      <Filter>ext\sockets</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\uwp\newline.c">
       <Filter>uwp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\uwp\win32\file_win32.c">
+      <Filter>uwp\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\alloca.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\dup2.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\explicit_bzero.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\ffs.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\finite.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\flock.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\hypot.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\isinf.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\isnan.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\memmove.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\nextafter.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\setproctitle.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\stdlib.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\strchr.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\strerror.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\strstr.c">
+      <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\ancdata.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\basicsocket.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\constants.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\ifaddr.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\init.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\ipsocket.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\option.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\raddrinfo.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\socket.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\sockssocket.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\tcpserver.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\tcpsocket.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\udpsocket.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\unixserver.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\unixsocket.c">
+      <Filter>ext\socket</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\enc\utf_32le.c">
+      <Filter>enc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\enc\utf_16le.c">
+      <Filter>enc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\enc\utf_32be.c">
+      <Filter>enc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\enc\utf_16be.c">
+      <Filter>enc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\array.c" />
+    <ClCompile Include="..\..\shared\ruby\bignum.c" />
+    <ClCompile Include="..\..\shared\ruby\class.c" />
+    <ClCompile Include="..\..\shared\ruby\compar.c" />
+    <ClCompile Include="..\..\shared\ruby\compile.c" />
+    <ClCompile Include="..\..\shared\ruby\complex.c" />
+    <ClCompile Include="..\..\shared\ruby\cont.c" />
+    <ClCompile Include="..\..\shared\ruby\debug.c" />
+    <ClCompile Include="..\..\shared\ruby\dir.c" />
+    <ClCompile Include="..\..\shared\ruby\dln.c" />
+    <ClCompile Include="..\..\shared\ruby\dln_find.c" />
+    <ClCompile Include="..\..\shared\ruby\dmyencoding.c" />
+    <ClCompile Include="..\..\shared\ruby\dmyext.c" />
+    <ClCompile Include="..\..\shared\ruby\enum.c" />
+    <ClCompile Include="..\..\shared\ruby\enumerator.c" />
+    <ClCompile Include="..\..\shared\ruby\error.c" />
+    <ClCompile Include="..\..\shared\ruby\eval.c" />
+    <ClCompile Include="..\..\shared\ruby\file.c" />
+    <ClCompile Include="..\..\shared\ruby\gc.c" />
+    <ClCompile Include="..\..\shared\ruby\hash.c" />
+    <ClCompile Include="..\..\shared\ruby\inits.c" />
+    <ClCompile Include="..\..\shared\ruby\io.c" />
+    <ClCompile Include="..\..\shared\ruby\iseq.c" />
+    <ClCompile Include="..\..\shared\ruby\load.c" />
+    <ClCompile Include="..\..\shared\ruby\loadpath.c" />
+    <ClCompile Include="..\..\shared\ruby\localeinit.c" />
+    <ClCompile Include="..\..\shared\ruby\marshal.c" />
+    <ClCompile Include="..\..\shared\ruby\math.c" />
+    <ClCompile Include="..\..\shared\ruby\miniprelude.c" />
+    <ClCompile Include="..\..\shared\ruby\newline.c" />
+    <ClCompile Include="..\..\shared\ruby\node.c" />
+    <ClCompile Include="..\..\shared\ruby\numeric.c" />
+    <ClCompile Include="..\..\shared\ruby\object.c" />
+    <ClCompile Include="..\..\shared\ruby\pack.c" />
+    <ClCompile Include="..\..\shared\ruby\parse.c" />
+    <ClCompile Include="..\..\shared\ruby\proc.c" />
+    <ClCompile Include="..\..\shared\ruby\process.c" />
+    <ClCompile Include="..\..\shared\ruby\random.c" />
+    <ClCompile Include="..\..\shared\ruby\range.c" />
+    <ClCompile Include="..\..\shared\ruby\rational.c" />
+    <ClCompile Include="..\..\shared\ruby\re.c" />
+    <ClCompile Include="..\..\shared\ruby\regcomp.c" />
+    <ClCompile Include="..\..\shared\ruby\regenc.c" />
+    <ClCompile Include="..\..\shared\ruby\regerror.c" />
+    <ClCompile Include="..\..\shared\ruby\regexec.c" />
+    <ClCompile Include="..\..\shared\ruby\regparse.c" />
+    <ClCompile Include="..\..\shared\ruby\regsyntax.c" />
+    <ClCompile Include="..\..\shared\ruby\rhoinit.c" />
+    <ClCompile Include="..\..\shared\ruby\ruby.c" />
+    <ClCompile Include="..\..\shared\ruby\safe.c" />
+    <ClCompile Include="..\..\shared\ruby\signal.c" />
+    <ClCompile Include="..\..\shared\ruby\sprintf.c" />
+    <ClCompile Include="..\..\shared\ruby\st.c" />
+    <ClCompile Include="..\..\shared\ruby\strftime.c" />
+    <ClCompile Include="..\..\shared\ruby\string.c" />
+    <ClCompile Include="..\..\shared\ruby\struct.c" />
+    <ClCompile Include="..\..\shared\ruby\symbol.c" />
+    <ClCompile Include="..\..\shared\ruby\thread.c" />
+    <ClCompile Include="..\..\shared\ruby\thread_pthread.c" />
+    <ClCompile Include="..\..\shared\ruby\time.c" />
+    <ClCompile Include="..\..\shared\ruby\transcode.c" />
+    <ClCompile Include="..\..\shared\ruby\util.c" />
+    <ClCompile Include="..\..\shared\ruby\variable.c" />
+    <ClCompile Include="..\..\shared\ruby\version.c" />
+    <ClCompile Include="..\..\shared\ruby\vm.c" />
+    <ClCompile Include="..\..\shared\ruby\vm_backtrace.c" />
+    <ClCompile Include="..\..\shared\ruby\vm_dump.c" />
+    <ClCompile Include="..\..\shared\ruby\vm_trace.c" />
+    <ClCompile Include="..\..\shared\ruby\uwp\uwp.c">
+      <Filter>uwp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\enc\euc_jp.c">
+      <Filter>enc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\enc\windows_31j.c">
+      <Filter>enc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\calendar\calendar_wrap.c">
+      <Filter>ext\calendar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\calendar\event_wrap.c">
+      <Filter>ext\calendar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\camera\camera_wrap.c">
+      <Filter>ext\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\bluetooth\bluetooth_wrap.c">
+      <Filter>ext\bluetooth</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\datetimepicker\datetimepicker_wrap.c">
+      <Filter>ext\datetimepicker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c">
+      <Filter>ext\geolocation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\mapview\mapview_wrap.c">
+      <Filter>ext\mapview</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\nativebar\nativebar_wrap.c">
+      <Filter>ext\nativebar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\nativeviewmanager\nativeviewmanager_wrap.c">
+      <Filter>ext\nativeviewmanager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\phonebook\phonebook_wrap.c">
+      <Filter>ext\phonebook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\ringtones\ringtones_wrap.c">
+      <Filter>ext\ringtones</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

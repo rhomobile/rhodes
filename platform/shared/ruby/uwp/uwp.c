@@ -13,8 +13,8 @@
 
 #include "../../common/RhoDefs.h"
 
-#include "ruby\config.h"
-#include "ruby/defines.h"
+//#include "ruby/config.h"
+//#include "ruby/defines.h"
 
 #include <errno.h>
 #include <process.h>
@@ -36,11 +36,12 @@ MoveFileW(
 }
 
 /* --------------- EnvironmentVariable functions. ----------------- */
+/*
 _NullNull_terminated_ LPWCH WINAPI GetEnvironmentStringsW(VOID)
 {
 	return NULL;
 }
-
+*/
 BOOL WINAPI FreeEnvironmentStringsA(LPSTR lpszEnvironmentBlock)
 {
 	return FALSE;
@@ -330,7 +331,7 @@ int wsprintfW( LPWSTR p1,  LPCWSTR p2,  ...)
 	return nRes;
 }
 
-
+/* inwin32
 int rb_w32_open( const char *file, int mode, ... )
 {
     int ret = 0;
@@ -376,7 +377,7 @@ rb_w32_write(int fd, const void *buf, size_t size)
 
     return _write(fd,buf,size);
 }
-
+*/
 wchar_t* wce_mbtowc(const char* a)
 {
 	int length;
@@ -455,6 +456,7 @@ BOOL WINAPI GetExitCodeThreadWP8(
 	return TRUE;
 }
 
+/* inwin32
 void * rho_nativethread_start()
 {
     //TODO: rho_nativethread_start
@@ -465,3 +467,4 @@ void rho_nativethread_end(void* pData)
 {
     //TODO: rho_nativethread_end
 }
+*/

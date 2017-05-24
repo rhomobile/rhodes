@@ -11,16 +11,16 @@
 
 **********************************************************************/
 
-#include "internal.h"
-#include "ruby/io.h"
+#include "internal.h" 
 #include "ruby/thread.h"
-#include "dln.h"
 #include "encindex.h"
 #include "id.h"
+//#include "ruby/ruby.h"
+#include "ruby/io.h"
+#include "dln.h"
 #include <ctype.h>
 #include <errno.h>
 #include "ruby_atomic.h"
-
 //RHO
 #include "logging/RhoLog.h"
 //RHO
@@ -38,6 +38,11 @@
 #elif defined HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 #endif
+
+#ifdef OS_UWP
+#include "encindex.h"
+#endif // OS_UWP
+
 
 #if defined(__BOW__) || defined(__CYGWIN__) || defined(_WIN32)
 # define NO_SAFE_RENAME
@@ -121,6 +126,8 @@
 #  define PIPE_BUF 512 /* is this ok? */
 # endif
 #endif
+
+#include "posixnames.h"
 
 #ifndef EWOULDBLOCK
 # define EWOULDBLOCK EAGAIN
@@ -331,10 +338,10 @@ rb_cloexec_dup2(int oldfd, int newfd)
             }
         }
         else {
-            ret = dup2(oldfd, newfd);
+            ret = fpdup2(oldfd, newfd);
         }
 #else
-        ret = dup2(oldfd, newfd);
+        ret = fpdup2(oldfd, newfd);
 #endif
         if (ret == -1) return -1;
     }
@@ -482,16 +489,16 @@ static rb_io_t *flush_before_seek(rb_io_t *fptr);
  */
 #define NEED_READCONV(fptr) ((fptr)->encs.enc2 != NULL || (fptr)->encs.ecflags & ~ECONV_CRLF_NEWLINE_DECORATOR)
 #define NEED_WRITECONV(fptr) (((fptr)->encs.enc != NULL && (fptr)->encs.enc != rb_ascii8bit_encoding()) || ((fptr)->encs.ecflags & ((ECONV_DECORATOR_MASK & ~ECONV_CRLF_NEWLINE_DECORATOR)|ECONV_STATEFUL_DECORATOR_MASK)))
-#define SET_BINARY_MODE(fptr) setmode((fptr)->fd, O_BINARY)
+#define SET_BINARY_MODE(fptr) fpsetmode((fptr)->fd, O_BINARY)
 
 #define NEED_NEWLINE_DECORATOR_ON_READ_CHECK(fptr) do {\
     if (NEED_NEWLINE_DECORATOR_ON_READ(fptr)) {\
 	if (((fptr)->mode & FMODE_READABLE) &&\
 	    !((fptr)->encs.ecflags & ECONV_NEWLINE_DECORATOR_MASK)) {\
-	    setmode((fptr)->fd, O_BINARY);\
+	    fpsetmode((fptr)->fd, O_BINARY);\
 	}\
 	else {\
-	    setmode((fptr)->fd, O_TEXT);\
+	    fpsetmode((fptr)->fd, O_TEXT);\
 	}\
     }\
 } while(0)
@@ -598,10 +605,10 @@ set_binary_mode_with_seek_cur(rb_io_t *fptr)
     if (!rb_w32_fd_is_text(fptr->fd)) return O_BINARY;
 
     if (fptr->rbuf.len == 0 || fptr->mode & FMODE_DUPLEX) {
-	return setmode(fptr->fd, O_BINARY);
+	return fpsetmode(fptr->fd, O_BINARY);
     }
     flush_before_seek(fptr);
-    return setmode(fptr->fd, O_BINARY);
+    return fpsetmode(fptr->fd, O_BINARY);
 }
 #define SET_BINARY_MODE_WITH_SEEK_CUR(fptr) set_binary_mode_with_seek_cur(fptr)
 
@@ -1436,10 +1443,10 @@ do_writeconv(VALUE str, rb_io_t *fptr, int *converted)
     else if (MODE_BTMODE(DEFAULT_TEXTMODE,0,1)) {
 	if ((fptr->mode & FMODE_READABLE) &&
 	    !(fptr->encs.ecflags & ECONV_NEWLINE_DECORATOR_MASK)) {
-	    setmode(fptr->fd, O_BINARY);
+	    fpsetmode(fptr->fd, O_BINARY);
 	}
 	else {
-	    setmode(fptr->fd, O_TEXT);
+	    fpsetmode(fptr->fd, O_TEXT);
 	}
 	if (!rb_enc_asciicompat(rb_enc_get(str))) {
 	    rb_raise(rb_eArgError, "ASCII incompatible string written for text mode IO without encoding conversion: %s",
@@ -1863,7 +1870,7 @@ rb_io_eof(VALUE io)
     READ_CHECK(fptr);
 #if defined(RUBY_TEST_CRLF_ENVIRONMENT) || defined(_WIN32)
     if (!NEED_READCONV(fptr) && NEED_NEWLINE_DECORATOR_ON_READ(fptr)) {
-	return eof(fptr->fd) ? Qtrue : Qfalse;
+	return fpeof(fptr->fd) ? Qtrue : Qfalse;
     }
 #endif
     if (io_fillbuf(fptr) < 0) {
@@ -2864,7 +2871,7 @@ io_read(int argc, VALUE *argv, VALUE io)
     io_set_read_length(str, n);
 #if defined(RUBY_TEST_CRLF_ENVIRONMENT) || defined(_WIN32)
     if (previous_mode == O_TEXT) {
-	setmode(fptr->fd, O_TEXT);
+	fpsetmode(fptr->fd, O_TEXT);
     }
 #endif
     if (n == 0) return Qnil;
@@ -4191,14 +4198,14 @@ nogvl_close(void *ptr)
 {
     int *fd = ptr;
 
-    return (void*)(intptr_t)close(*fd);
+    return (void*)(intptr_t)fpclose(*fd);
 }
 
 static int
 maygvl_close(int fd, int keepgvl)
 {
     if (keepgvl)
-	return close(fd);
+	return fpclose(fd);
 
     /*
      * close() may block for certain file types (NFS, SO_LINGER sockets,
@@ -4804,7 +4811,7 @@ rb_io_binmode(VALUE io)
 	SET_BINARY_MODE_WITH_SEEK_CUR(fptr);
     }
     else {
-	setmode(fptr->fd, O_BINARY);
+	fpsetmode(fptr->fd, O_BINARY);
     }
 #endif
     return io;
@@ -5494,18 +5501,18 @@ rb_fdopen(int fd, const char *modestr)
 #if defined(__sun)
     errno = 0;
 #endif
-    file = fdopen(fd, modestr);
+    file = fpfdopen(fd, modestr);
     if (!file) {
 #if defined(__sun)
 	if (errno == 0) {
 	    rb_gc();
 	    errno = 0;
-	    file = fdopen(fd, modestr);
+	    file = fpopen(fd, modestr);
 	}
 	else
 #endif
 	if (rb_gc_for_fd(errno)) {
-	    file = fdopen(fd, modestr);
+	    file = fpopen(fd, modestr);
 	}
 	if (!file) {
 	    int e = errno;
@@ -5998,8 +6005,8 @@ pipe_open(VALUE execarg_obj, const char *modestr, int fmode, convconfig_t *convc
             rb_sys_fail_str(prog);
         if (rb_pipe(arg.pair) < 0) {
             e = errno;
-            close(arg.write_pair[0]);
-            close(arg.write_pair[1]);
+            fpclose(arg.write_pair[0]);
+            fpclose(arg.write_pair[1]);
             rb_syserr_fail_str(e, prog);
         }
         if (eargp) {
@@ -6025,10 +6032,10 @@ pipe_open(VALUE execarg_obj, const char *modestr, int fmode, convconfig_t *convc
     if (!NIL_P(execarg_obj)) {
         rb_protect(rb_execarg_fixup_v, execarg_obj, &state);
         if (state) {
-            if (0 <= arg.write_pair[0]) close(arg.write_pair[0]);
-            if (0 <= arg.write_pair[1]) close(arg.write_pair[1]);
-            if (0 <= arg.pair[0]) close(arg.pair[0]);
-            if (0 <= arg.pair[1]) close(arg.pair[1]);
+            if (0 <= arg.write_pair[0]) fpclose(arg.write_pair[0]);
+            if (0 <= arg.write_pair[1]) fpclose(arg.write_pair[1]);
+            if (0 <= arg.pair[0]) fpclose(arg.pair[0]);
+            if (0 <= arg.pair[1]) fpclose(arg.pair[1]);
             rb_execarg_parent_end(execarg_obj);
             rb_jump_tag(state);
         }
@@ -6077,11 +6084,11 @@ pipe_open(VALUE execarg_obj, const char *modestr, int fmode, convconfig_t *convc
 # if defined(HAVE_WORKING_FORK)
 	e = errno;
 # endif
-	close(arg.pair[0]);
-	close(arg.pair[1]);
+	fpclose(arg.pair[0]);
+	fpclose(arg.pair[1]);
         if ((fmode & (FMODE_READABLE|FMODE_WRITABLE)) == (FMODE_READABLE|FMODE_WRITABLE)) {
-            close(arg.write_pair[0]);
-            close(arg.write_pair[1]);
+            fpclose(arg.write_pair[0]);
+            fpclose(arg.write_pair[1]);
         }
 # if defined(HAVE_WORKING_FORK)
         if (errmsg[0])
@@ -6090,17 +6097,17 @@ pipe_open(VALUE execarg_obj, const char *modestr, int fmode, convconfig_t *convc
 	rb_syserr_fail_str(e, prog);
     }
     if ((fmode & FMODE_READABLE) && (fmode & FMODE_WRITABLE)) {
-        close(arg.pair[1]);
+        fpclose(arg.pair[1]);
         fd = arg.pair[0];
-        close(arg.write_pair[0]);
+        fpclose(arg.write_pair[0]);
         write_fd = arg.write_pair[1];
     }
     else if (fmode & FMODE_READABLE) {
-        close(arg.pair[1]);
+        fpclose(arg.pair[1]);
         fd = arg.pair[0];
     }
     else {
-        close(arg.pair[0]);
+        fpclose(arg.pair[0]);
         fd = arg.pair[1];
     }
 #else
@@ -6830,7 +6837,7 @@ rb_io_reopen(int argc, VALUE *argv, VALUE file)
 			   rb_io_oflags_modestr(oflags),
 			   fptr->stdio_file);
 	if (e) rb_syserr_fail_path(e, fptr->pathv);
-        fptr->fd = fileno(fptr->stdio_file);
+        fptr->fd = fpfileno(fptr->stdio_file);
         rb_fd_fix_cloexec(fptr->fd);
 #ifdef USE_SETVBUF
         if (setvbuf(fptr->stdio_file, NULL, _IOFBF, 0) != 0)
@@ -6850,7 +6857,7 @@ rb_io_reopen(int argc, VALUE *argv, VALUE file)
 	int err = 0;
 	if (rb_cloexec_dup2(tmpfd, fptr->fd) < 0)
 	    err = errno;
-	(void)close(tmpfd);
+	(void)fpclose(tmpfd);
 	if (err) {
 	    rb_syserr_fail_path(err, fptr->pathv);
 	}
@@ -7338,8 +7345,8 @@ rb_write_error_str(VALUE mesg)
     if (rb_stderr == orig_stderr || RFILE(orig_stderr)->fptr->fd < 0) {
 	size_t len = (size_t)RSTRING_LEN(mesg);
 #ifdef _WIN32
-	if (isatty(fileno(stderr))) {
-	    if (rb_w32_write_console(mesg, fileno(stderr)) > 0) return;
+	if (isatty(fpfileno(stderr))) {
+	    if (rb_w32_write_console(mesg, fpfileno(stderr)) > 0) return;
 	}
 #endif
 	if (fwrite(RSTRING_PTR(mesg), sizeof(char), len, stderr) < len) {
@@ -7410,7 +7417,7 @@ prep_stdio(FILE *f, int fmode, VALUE klass, const char *path)
 #ifdef WINCE
     int fn = -1;
 #else
-    int fn = fileno(f);
+    int fn = fpfileno(f);
 #endif
     VALUE io = prep_io(fn, fmode|FMODE_PREP|DEFAULT_TEXTMODE, klass, path);
 //RHO
@@ -7691,11 +7698,11 @@ rb_io_initialize(int argc, VALUE *argv, VALUE io)
     fp->encs = convconfig;
     clear_codeconv(fp);
     io_check_tty(fp);
-    if (fileno(stdin) == fd)
+    if (fpfileno(stdin) == fd)
 	fp->stdio_file = stdin;
-    else if (fileno(stdout) == fd)
+    else if (fpfileno(stdout) == fd)
 	fp->stdio_file = stdout;
-    else if (fileno(stderr) == fd)
+    else if (fpfileno(stderr) == fd)
 	fp->stdio_file = stderr;
 
     if (fmode & FMODE_SETENC_BY_BOM) io_set_encoding_by_bom(io);
@@ -8039,7 +8046,7 @@ argf_next_argv(VALUE argf)
 			rb_str_cat2(str, ARGF.inplace);
 			/* TODO: encoding of ARGF.inplace */
 #ifdef NO_SAFE_RENAME
-			(void)close(fr);
+			(void)fpclose(fr);
 			(void)unlink(RSTRING_PTR(str));
 			if (rename(fn, RSTRING_PTR(str)) < 0) {
 			    rb_warn("Can't rename %"PRIsVALUE" to %"PRIsVALUE": %s, skipping file",
@@ -9678,8 +9685,8 @@ rb_io_s_pipe(int argc, VALUE *argv, VALUE klass)
     args[2] = INT2FIX(O_RDONLY);
     r = rb_protect(io_new_instance, (VALUE)args, &state);
     if (state) {
-	close(pipes[0]);
-	close(pipes[1]);
+	fpclose(pipes[0]);
+	fpclose(pipes[1]);
 	rb_jump_tag(state);
     }
     GetOpenFile(r, fptr);
@@ -9690,7 +9697,7 @@ rb_io_s_pipe(int argc, VALUE *argv, VALUE klass)
     ies_args.opt = opt;
     rb_protect(io_encoding_set_v, (VALUE)&ies_args, &state);
     if (state) {
-	close(pipes[1]);
+	fpclose(pipes[1]);
         io_close(r);
 	rb_jump_tag(state);
     }
@@ -9699,7 +9706,7 @@ rb_io_s_pipe(int argc, VALUE *argv, VALUE klass)
     args[2] = INT2FIX(O_WRONLY);
     w = rb_protect(io_new_instance, (VALUE)args, &state);
     if (state) {
-	close(pipes[1]);
+	fpclose(pipes[1]);
 	if (!NIL_P(r)) rb_io_close(r);
 	rb_jump_tag(state);
     }
@@ -9710,7 +9717,7 @@ rb_io_s_pipe(int argc, VALUE *argv, VALUE klass)
 #if DEFAULT_TEXTMODE
     if ((fptr->mode & FMODE_TEXTMODE) && (fmode & FMODE_BINMODE)) {
 	fptr->mode &= ~FMODE_TEXTMODE;
-	setmode(fptr->fd, O_BINARY);
+	fpsetmode(fptr->fd, O_BINARY);
     }
 #if defined(RUBY_TEST_CRLF_ENVIRONMENT) || defined(_WIN32)
     if (fptr->encs.ecflags & ECONV_DEFAULT_NEWLINE_DECORATOR) {
@@ -9722,7 +9729,7 @@ rb_io_s_pipe(int argc, VALUE *argv, VALUE klass)
 #if DEFAULT_TEXTMODE
     if ((fptr2->mode & FMODE_TEXTMODE) && (fmode & FMODE_BINMODE)) {
 	fptr2->mode &= ~FMODE_TEXTMODE;
-	setmode(fptr2->fd, O_BINARY);
+	fpsetmode(fptr2->fd, O_BINARY);
     }
 #endif
     fptr2->mode |= fmode;

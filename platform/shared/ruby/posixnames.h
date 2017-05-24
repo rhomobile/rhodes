@@ -1,0 +1,56 @@
+#pragma once
+#if defined(POSIXNAME)
+#define fpmkdir _mkdir
+#define fpstrnicmp _strnicmp
+#define fpfileno _fileno
+#define fpaccess _access
+#define fpchdir _chdir
+#define fpumask _umask
+#define fpstrdup _strdup
+#define fpfileno _fileno
+#define fpdup _dup
+#define fpsetmode _setmode
+#define fpstrdup _strdup
+#define fpclose _close
+#define fptzet _tzet
+#define fpdup2 _dup2
+#define fpwcsdup _wcsdup
+#define fptzset _tzset
+#define fpgetpid _getpid
+#define fpexecve _execve
+#define fpwrite _write
+#define fpfptzset _fptzset
+#define fpwcsdup _wcsdup
+#define fpexecv _execv
+#define fpchmod _chmod
+#define fpfdopen _fdopen
+#define fpeof _eof
+#define fpopen _open
+#else
+#define fpmkdir mkdir
+#define fpstrnicmp strnicmp
+#define fpfileno fileno
+#define fpaccess access
+#define fpchdir chdir
+#define fpumask umask
+#define fpstrdup strdup
+#define fpfileno fileno
+#define fpdup dup
+#define fpsetmode setmode
+#define fpstrdup strdup
+#define fpclose close
+#define fptzet tzet
+#define fpdup2 dup2
+#define fpwcsdup wcsdup
+#define fptzset tzset
+#define fpgetpid getpid
+#define fpexecve execve
+#define fpwrite write
+#define fpfptzset fptzset
+#define fpwcsdup wcsdup
+#define fpexecv execv
+#define fpchmod chmod
+#define fpfdopen fdopen
+#define fpeof eof
+#define fpopen open
+#endif

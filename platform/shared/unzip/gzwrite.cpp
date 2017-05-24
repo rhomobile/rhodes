@@ -18,13 +18,8 @@
 #else
 #define NO_vsnprintf
 #endif
-#if defined(POSIXNAME)
-#define fpwrite _write
-#define fpclose _close
-#else
-#define fpwrite write
-#define fpclose close
-#endif
+
+#include "../ruby/posixnames.h"
 
 
 namespace zlib

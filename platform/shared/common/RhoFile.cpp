@@ -34,9 +34,12 @@
 extern "C" void recursiveDeleteDirectory(const std::wstring &path);
 #endif
 
-//#if !defined(WINDOWS_PLATFORM)
+#if !defined(OS_UWP)
 #include <dirent.h>
-//#else
+#else
+#include "../win32/include/dirent.h"
+#endif
+
 #  ifndef S_ISDIR
 #    define S_ISDIR(m) ((_S_IFDIR & m) == _S_IFDIR)
 #  endif

@@ -511,16 +511,32 @@ WaitForSingleObjectWP8(
     );
 
 #define WaitForSingleObject WaitForSingleObjectWP8
+
+#ifndef OS_UWP
 extern DWORD
 WINAPI
 WaitForMultipleObjectsWP8(
-    _In_ DWORD nCount,
-    _In_reads_(nCount) CONST HANDLE *lpHandles,
-    _In_ BOOL bWaitAll,
-    _In_ DWORD dwMilliseconds
-    );
+	_In_ DWORD nCount,
+	_In_reads_(nCount) CONST HANDLE *lpHandles,
+	_In_ BOOL bWaitAll,
+	_In_ DWORD dwMilliseconds
+);
 
 #define WaitForMultipleObjects WaitForMultipleObjectsWP8
+#else
+extern DWORD
+WINAPI
+WaitForMultipleObjects(
+	_In_ DWORD nCount,
+	_In_reads_(nCount) CONST HANDLE *lpHandles,
+	_In_ BOOL bWaitAll,
+	_In_ DWORD dwMilliseconds
+);
+#endif // !OS_UWP
+
+
+
+
 extern HANDLE
 WINAPI
 CreateEventWP8(

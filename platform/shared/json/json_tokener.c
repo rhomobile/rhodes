@@ -29,11 +29,7 @@
 #pragma warning ( disable : 4018 )
 #endif
 
-#if defined(POSIXNAME)
-#define fpstrdup _strdup
-#else
-#define fpstrdup strdup
-#endif
+#include "../ruby/posixnames.h"
 
 #include "bits.h"
 #include "json_debug.h"

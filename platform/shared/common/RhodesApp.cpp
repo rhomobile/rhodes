@@ -53,7 +53,7 @@
 
 
 #ifdef OS_WINCE
-#include <winsock.h>
+include <winsock.h>
 #endif 
 
 using rho::net::HttpHeader;

@@ -404,7 +404,7 @@ rb_enumeratorize(VALUE obj, VALUE meth, int argc, const VALUE *argv)
 static VALUE
 lazy_to_enum_i(VALUE self, VALUE meth, int argc, const VALUE *argv, rb_enumerator_size_func *size_fn);
 
-VALUE
+VALUE 
 rb_enumeratorize_with_size(VALUE obj, VALUE meth, int argc, const VALUE *argv, rb_enumerator_size_func *size_fn)
 {
     /* Similar effect as calling obj.to_enum, i.e. dispatching to either

@@ -23,6 +23,12 @@ static void dln_loaderror(const char *format, ...);
 #endif
 #include "dln.h"
 
+#ifdef OS_UWP
+#include "ruby/ruby.h"
+#include <Dbghelp.h>
+#endif
+
+
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
@@ -1115,7 +1121,9 @@ dln_sym(const char *name)
 
 #ifdef _WIN32
 #include <windows.h>
+#ifndef OS_UWP
 #include <imagehlp.h>
+#endif
 #endif
 
 #ifdef _WIN32

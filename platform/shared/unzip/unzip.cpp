@@ -13,6 +13,7 @@
 #define ZIP_STD
 #endif
 
+#include "../ruby/posixnames.h"
 #if defined(POSIXNAME)
 #define fpfileno _fileno
 #define fpmkdir _mkdir
@@ -89,11 +90,8 @@ typedef unsigned short WORD;
 #define _tsprintf sprintf
 #endif
 
-#if defined(POSIXNAME)
-#define ffileno _fileno
-#else
-#define ffileno fileno
-#endif
+#include "../ruby/posixnames.h"
+
 
 // THIS FILE is almost entirely based upon code by Jean-loup Gailly
 // and Mark Adler. It has been modified by Lucian Wischik.
@@ -215,7 +213,7 @@ typedef struct tm_unz_s
 // some windows<->linux portability things
 #ifdef ZIP_STD
 DWORD GetFilePosU(HANDLE hfout)
-{ struct stat st; fstat(ffileno(hfout),&st);
+{ struct stat st; fstat(fpfileno(hfout),&st);
   if ((st.st_mode&S_IFREG)==0) return 0xFFFFFFFF;
   return ftell(hfout);
 }

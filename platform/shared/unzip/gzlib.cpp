@@ -33,11 +33,7 @@ namespace zlib
 local void gz_reset OF((gz_statep));
 local gzFile gz_open OF((const void *, int, const char *));
 
-#if defined(POSIXNAME)
-#define fpopen _open
-#else
-#define fpopen open
-#endif
+#include "../ruby/posixnames.h"
 
 #if defined UNDER_CE
 

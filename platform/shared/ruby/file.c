@@ -84,6 +84,12 @@ int flock(int, int);
 #include <fcntl.h>
 #endif
 
+#include "posixnames.h"
+
+#ifdef OS_UWP
+#include "common/RhoPort.h"
+#endif
+
 #if defined(HAVE_SYS_TIME_H)
 #include <sys/time.h>
 #endif
@@ -2950,11 +2956,11 @@ rb_file_s_umask(int argc, VALUE *argv)
     int omask = 0;
 
     if (argc == 0) {
-	omask = umask(0);
-	umask(omask);
+	omask = fpumask(0);
+	fpumask(omask);
     }
     else if (argc == 1) {
-	omask = umask(NUM2INT(argv[0]));
+	omask = fpumask(NUM2INT(argv[0]));
     }
     else {
 	rb_check_arity(argc, 0, 1);

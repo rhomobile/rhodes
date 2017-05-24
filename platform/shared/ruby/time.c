@@ -14,6 +14,8 @@
 #include <time.h>
 #include <errno.h>
 
+#include "posixnames.h"
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -829,7 +831,7 @@ rb_localtime_r2(const time_t *t, struct tm *result)
 #endif
     return result;
 }
-#define LOCALTIME(tm, result) (tzset(),rb_localtime_r2((tm), &(result)))
+#define LOCALTIME(tm, result) (fptzset(),rb_localtime_r2((tm), &(result)))
 
 #if !defined(HAVE_STRUCT_TM_TM_GMTOFF)
 static struct tm *
@@ -954,7 +956,7 @@ zone_str_update(st_data_t *key, st_data_t *value, st_data_t arg, int existing)
 	*ret = (const char *)*value;
 	return ST_STOP;
     }
-    *ret = s = strdup(s);
+    *ret = s = fpstrdup(s);
     *key = *value = (st_data_t)s;
     return ST_CONTINUE;
 }

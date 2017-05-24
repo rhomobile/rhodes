@@ -854,6 +854,9 @@ search_required(VALUE fname, volatile VALUE *path, int safe_level)
     char *ext, *ftptr;
     int type, ft = 0;
     const char *loading;
+#ifdef OS_UWP
+	loading = NULL;
+#endif
 
     *path = 0;
     ext = strrchr(ftptr = RSTRING_PTR(fname), '.');

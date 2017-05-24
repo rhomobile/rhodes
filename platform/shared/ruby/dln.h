@@ -12,6 +12,12 @@
 #ifndef DLN_H
 #define DLN_H
 
+#ifdef OS_UWP
+//#include "include\ruby\intern.h"
+#include "include\ruby\defines.h"
+#endif
+
+
 #ifdef __cplusplus
 # ifndef  HAVE_PROTOTYPES
 #  define HAVE_PROTOTYPES 1

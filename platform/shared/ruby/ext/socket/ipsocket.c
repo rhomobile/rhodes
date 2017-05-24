@@ -9,6 +9,7 @@
 ************************************************/
 
 #include "rubysocket.h"
+#include "../posixnames.h"
 
 struct inetsock_arg
 {
@@ -33,7 +34,7 @@ inetsock_cleanup(struct inetsock_arg *arg)
 	arg->local.res = 0;
     }
     if (arg->fd >= 0) {
-	close(arg->fd);
+	fpclose(arg->fd);
     }
     return Qnil;
 }
@@ -113,7 +114,7 @@ init_inetsock_internal(struct inetsock_arg *arg)
 
 	if (status < 0) {
 	    error = errno;
-	    close(fd);
+	    fpclose(fd);
 	    arg->fd = fd = -1;
 	    continue;
 	} else
@@ -139,7 +140,7 @@ init_inetsock_internal(struct inetsock_arg *arg)
 	status = listen(fd, SOMAXCONN);
 	if (status < 0) {
 	    error = errno;
-	    close(fd);
+	    fpclose(fd);
 	    rb_syserr_fail(error, "listen(2)");
 	}
     }
