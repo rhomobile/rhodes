@@ -43,6 +43,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Enable WebView zoom. Use 'enable_screen_zoom' parameter in rhoconfig.txt to configure this value.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
+            <PROPERTY name="enableMediaPlaybackWithoutGesture" type="BOOLEAN" default="false" readOnly="true">
+                <DESC>Enable Media playback without gesture. If set to true, the application can play some medias (video, sound) without requiring a user gesture.</DESC>
+                <PLATFORM>Android</PLATFORM>
+            </PROPERTY>
             <PROPERTY name="enablePageLoadingIndication" type="BOOLEAN" default="true" readOnly="true" productException="eb">
                 <DESC>Show page loading indication. On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled. At Android  use 'disable_loading_indication' parameter in rhoconfig.txt to configure this value.</DESC>
                 <PLATFORM>WM, CE, Android</PLATFORM>
