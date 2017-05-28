@@ -191,6 +191,10 @@ void RhoModifyRubyLoadPath( const char* );
 void RhoRubyStart()
 {
     const char* szRoot = rho_native_rhopath();
+//RHO
+#if defined(_WIN32)
+    char* av[] = { "" };
+#endif
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
 #endif
@@ -202,7 +206,6 @@ void RhoRubyStart()
     RUBY_INIT_STACK;
 
 #if defined(_WIN32)
-    char* av[] = { "" };
     rb_w32_sysinit(0,av);
 #endif
 

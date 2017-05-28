@@ -85,7 +85,12 @@ w32_mutex_lock(HANDLE lock)
 static HANDLE
 w32_mutex_create(void)
 {
+//RHO
+#ifndef _WIN32_WCE
     HANDLE lock = CreateMutex(NULL, FALSE, NULL);
+#else
+	HANDLE lock = CreateMutexW(NULL, FALSE, NULL);
+#endif
     if (lock == NULL) {
 	w32_error("native_mutex_initialize");
     }
@@ -262,7 +267,8 @@ w32_resume_thread(HANDLE handle)
     }
 }
 
-#ifdef _MSC_VER
+//RHO
+#if defined( _MSC_VER) && !defined(_WIN32_WCE)
 #define HAVE__BEGINTHREADEX 1
 #else
 #undef HAVE__BEGINTHREADEX

@@ -58,6 +58,8 @@ replace_wchar(wchar_t *s, int find, int replace)
 static wchar_t *
 home_dir(void)
 {
+//RHO
+#ifndef _WIN32_WCE
     wchar_t *buffer = NULL;
     size_t buffer_len = 0, len = 0;
     size_t home_env = 0;
@@ -115,7 +117,7 @@ home_dir(void)
 
 	return buffer;
     }
-
+#endif
     return NULL;
 }
 
@@ -380,11 +382,14 @@ rb_file_expand_path_internal(VALUE fname, VALUE dname, int abs_mode, int long_na
 	}
 	whome_len = wcslen(whome);
 
+//RHO
+#ifndef _WIN32_WCE
 	if (PathIsRelativeW(whome) && !(whome_len >= 2 && IS_DIR_UNC_P(whome))) {
 	    xfree(wpath);
 	    xfree(whome);
 	    rb_raise(rb_eArgError, "non-absolute home");
 	}
+#endif
 
 	if (path_cp == INVALID_CODE_PAGE || rb_enc_str_asciionly_p(path)) {
 	    /* use filesystem encoding if expanding home dir */
@@ -462,12 +467,15 @@ rb_file_expand_path_internal(VALUE fname, VALUE dname, int abs_mode, int long_na
 	    }
 	    whome_len = wcslen(whome);
 
+//RHO
+#ifndef _WIN32_WCE
 	    if (PathIsRelativeW(whome) && !(whome_len >= 2 && IS_DIR_UNC_P(whome))) {
 		free(wpath);
 		free(wdir);
 		xfree(whome);
 		rb_raise(rb_eArgError, "non-absolute home");
 	    }
+#endif
 
 	    /* exclude ~ from the result */
 	    wdir_pos++;
@@ -587,9 +595,12 @@ rb_file_expand_path_internal(VALUE fname, VALUE dname, int abs_mode, int long_na
     /* Ensure buffer is NULL terminated */
     buffer_pos[0] = L'\0';
 
+//RHO
+#ifndef _WIN32_WCE
     /* tainted if path is relative */
     if (!tainted && PathIsRelativeW(buffer) && !(buffer_len >= 2 && IS_DIR_UNC_P(buffer)))
 	tainted = 1;
+
 
     /* FIXME: Make this more robust */
     /* Determine require buffer size */
@@ -602,6 +613,7 @@ rb_file_expand_path_internal(VALUE fname, VALUE dname, int abs_mode, int long_na
     else {
 	wfullpath = wfullpath_buffer;
     }
+#endif
 
     /* Remove any trailing slashes */
     if (IS_DIR_SEPARATOR_P(wfullpath[size - 1]) &&

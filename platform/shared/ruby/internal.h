@@ -95,6 +95,8 @@ extern "C" {
 #define SIGNED_INTEGER_MIN(sint_type) (-SIGNED_INTEGER_MAX(sint_type)-1)
 #define UNSIGNED_INTEGER_MAX(uint_type) (~(uint_type)0)
 
+//RHO
+#ifndef _WIN32_WCE
 #if SIGNEDNESS_OF_TIME_T < 0	/* signed */
 # define TIMET_MAX SIGNED_INTEGER_MAX(time_t)
 # define TIMET_MIN SIGNED_INTEGER_MIN(time_t)
@@ -102,6 +104,11 @@ extern "C" {
 # define TIMET_MAX UNSIGNED_INTEGER_MAX(time_t)
 # define TIMET_MIN ((time_t)0)
 #endif
+#else
+#define TIMET_MAX (~(time_t)0 <= 0 ? (time_t)((~(unsigned_time_t)0) >> 1) : (time_t)(~(unsigned_time_t)0))
+#define TIMET_MIN (~(time_t)0 <= 0 ? (time_t)(((unsigned_time_t)1) << (sizeof(time_t) * CHAR_BIT - 1)) : (time_t)0)
+#endif
+
 #define TIMET_MAX_PLUS_ONE (2*(double)(TIMET_MAX/2+1))
 
 #define MUL_OVERFLOW_SIGNED_INTEGER_P(a, b, min, max) ( \
