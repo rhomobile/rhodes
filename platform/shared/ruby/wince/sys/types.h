@@ -1,8 +1,10 @@
 #ifndef SYS_TYPES_H
 #define SYS_TYPES_H 1
 
+/*
 #define BIG_ENDIAN    1234
 #define LITTLE_ENDIAN 4321
+*/
 
 #ifdef MIPS
 #define BYTE_ORDER LITTLE_ENDIAN

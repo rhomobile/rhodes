@@ -1121,7 +1121,8 @@ dln_sym(const char *name)
 
 #ifdef _WIN32
 #include <windows.h>
-#ifndef OS_UWP
+//RHO
+#if !defined(OS_WINCE) && !defined(OS_UWP)
 #include <imagehlp.h>
 #endif
 #endif
@@ -1205,7 +1206,7 @@ aix_loaderror(const char *pathname)
 }
 #endif
 
-#if defined _WIN32 && defined RUBY_EXPORT
+#if defined _WIN32 && defined RUBY_EXPORT && !defined(OS_WINCE)
 HANDLE rb_libruby_handle(void);
 
 static int
@@ -1283,7 +1284,7 @@ dln_load(const char *file)
 	goto failed;
     }
 
-#if defined _WIN32 && defined RUBY_EXPORT
+#if defined _WIN32 && defined RUBY_EXPORT && !defined(OS_WINCE)
     if (!rb_w32_check_imported(handle, rb_libruby_handle())) {
 	FreeLibrary(handle);
 	error = "incompatible library version";

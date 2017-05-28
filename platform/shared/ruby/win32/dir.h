@@ -13,7 +13,12 @@ struct direct
     char *d_name;
     char *d_altname; /* short name */
     short d_altlen;
+//RHO
+#ifndef _WIN32_WCE
     uint8_t d_type;
+#else
+	unsigned char d_type;
+#endif
 };
 typedef struct {
     WCHAR *start;
@@ -28,7 +33,9 @@ typedef struct {
 
 DIR*           rb_w32_opendir(const char*);
 DIR*           rb_w32_uopendir(const char*);
+
 struct direct* rb_w32_readdir(DIR *, rb_encoding *);
+
 long           rb_w32_telldir(DIR *);
 void           rb_w32_seekdir(DIR *, long);
 void           rb_w32_rewinddir(DIR *);
