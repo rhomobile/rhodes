@@ -4135,6 +4135,8 @@ namespace "run" do
                 startJSModules.unshift(f)
               elsif f.downcase().end_with?("rhoapi.js")
                 startJSModules << f
+              elsif f.downcase().end_with?("rhonodejsapi.js")
+                puts "ignore honodejsapi.js"
               elsif f.downcase().end_with?("rho.application.js")
                 endJSModules << f
               elsif f.downcase().end_with?("rho.database.js")
