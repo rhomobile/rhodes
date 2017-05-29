@@ -6,7 +6,7 @@ module MSpec
   #RHO
   @count = 0
   @exc_count = 0
-  @exc_locations = []
+  @exc_locations = {}
   #RHO
 
   @exit    = nil
@@ -68,7 +68,7 @@ module MSpec
     #RHO
     @count = 0
     @exc_count  = 0
-    @exc_locations = []
+    @exc_locations = {}
     #RHO
 
     STDOUT.puts RUBY_DESCRIPTION
@@ -138,8 +138,19 @@ module MSpec
       actions :exception, ExceptionState.new(current && current.state, location, exc)
 
         #RHO    
-        puts "FAIL: #{current} - #{exc.message}\n" + (@backtrace ? exc.backtrace.join("\n") : "")   
-        @exc_locations << { 'message' => exc.message, 'backtrace' => exc.backtrace }
+        puts "FAIL: #{current} - #{exc.message}\n" + (@backtrace ? exc.backtrace.join("\n") : "")
+
+        info = { 'message' => exc.message, 'backtrace' => exc.backtrace }
+
+        key = current.state.description
+
+        if @exc_locations[key].nil?
+          @exc_locations[key] = []
+        end
+
+        @exc_locations[key] << info
+
+        #@exc_locations << { 'spec' => current, 'message' => exc.message, 'backtrace' => exc.backtrace }
         @exc_count+=1   
         #RHO
 
