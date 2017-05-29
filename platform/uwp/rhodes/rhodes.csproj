@@ -187,9 +187,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="rhodes_TemporaryKey.pfx" />
-    <None Include="Properties\WMAppManifest.xml">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

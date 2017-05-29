@@ -281,16 +281,20 @@ namespace "build" do
       cp_r rho_dir, appx_dir
     end
 
-    task :copy_files_to_rho => ["config:uwp", "build:bundle:noxruby", :rhobundlemap] do
+    def copyFilesToRho()
       target_dir = File.join($uwppath, "rhodes")
 
       addconfigtoxapUWP()
       rho_dir = createBoundleInTemp()
-
+      puts "Files dir " + File.join(target_dir, "rho")
       rm_rf File.join(target_dir, "rho") if Dir.exist?(File.join(target_dir, "rho"))
 
       FileUtils.mkpath target_dir
       cp_r rho_dir, target_dir
+    end
+
+    task :copy_files_to_rho => ["config:uwp", "build:bundle:noxruby", :rhobundlemap] do
+      copyFilesToRho()
     end
 
     task :upgrade_package => [:rhobundle_noext, :extensions] do        
@@ -315,16 +319,22 @@ namespace "build" do
 
       chdir $config["build"]["uwppath"]
 
-      doc = REXML::Document.new(File.open($startdir+"/"+$config["build"]["uwppath"]+"/rhodes/Properties/WMAppManifest.xml"))
-      doc.elements.each("Deployment/App") { |element|
-        element.attributes["ProductID"]   = "{"+$productid+"}"
-        element.attributes["Title"]       = $app_config["name"]
-        element.attributes["Description"] = $app_config["name"]
-        element.attributes["Author"]      = $app_config["vendor"]
-        element.attributes["Publisher"]   = $app_config["vendor"]
+      doc = REXML::Document.new(File.open($startdir+"/"+$config["build"]["uwppath"]+"/rhodes/Package.appxmanifest"))
+      doc.elements.each("Package/Applications/Application/uap:VisualElements") { |element|
+        #element.attributes["ProductID"]   = "{"+$productid+"}"
+        element.attributes["DisplayName"]            = $app_config["name"]
+        element.attributes["Description"]            = $app_config["name"]
+      }
+      doc.elements.each("Package/Properties/DisplayName") { |element|
+        element.text = $app_config["name"]
+      }
+      doc.elements.each("Package/Properties/PublisherDisplayName") { |element|
+        element.text = $app_config["vendor"]
       }
 
-      File.open($startdir + "/"+$config["build"]["uwppath"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
+      File.open($startdir + "/"+$config["build"]["uwppath"] + "/rhodes/Package.appxmanifest", "w") { |f| doc.write f; f.close }
+
+      copyFilesToRho()
 
       args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}", '/p:VisualStudioVersion=14.0', 
         '/t:Build', '/p:UapAppxPackageBuildMode=StoreUpload','/p:AppxPackageDir=' + $rhodes_bin_dir + '/AppxPackageDir'] 
@@ -377,7 +387,6 @@ namespace "build" do
     task :prepare_rhobundle, [:sdk, :configuration] do |t, args|
       throw "You must pass in sdk(x86, ARM)" if args.sdk.nil?
       throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
-
       $sdk = args.sdk == 'x86' ? 'Win32' : args.sdk
       $build_config = args.configuration
 
@@ -481,7 +490,7 @@ namespace "emulator" do
   namespace "uwp" do
 
     desc "Build production for device"
-    task :production => ["config:uwp_Win32_Release", "build:uwp:package"] do
+    task :production => ["switch_app", "config:uwp_Win32_Release", "build:uwp:package"] do
      addRhobundleFilesToCacheFileUWP()
     end
 
@@ -515,6 +524,7 @@ namespace "clean" do
       
       rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
       rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+      rm_rf File.join(File.join($uwppath, "rhodes"), "rho") if Dir.exist?(File.join(File.join($uwppath, "rhodes"), "rho"))
       
     end
     task :all => ["clean:uwp:rhodes", "clean:common"]
@@ -624,7 +634,7 @@ namespace "run" do
   end
 
   desc "Build, install .appx and run on universal windows platform emulator"
-  task :uwp => ["emulator:uwp:production"] do
+  task :uwp => ["switch_app", "emulator:uwp:production"] do
 
     if $productid != nil
 

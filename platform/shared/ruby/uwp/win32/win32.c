@@ -49,7 +49,7 @@
 #include <processthreadsapi.h>
 #include <wtypesbase.h>
 #include "../../../../uwp/rhoruntime/common/RhodesHelperWP8.h"
-#define rb_w32_wopen _wopen
+//#define rb_w32_wopen _wopen
 
 #if _MSC_VER >= 1400
 #include <crtdbg.h>
@@ -2610,22 +2610,24 @@ init_stdhandle(void)
 {
     int nullfd = -1;
     int keep = 0;
+//	nullfd = open("NUL", O_RDWR);
+//	fpdup2(nullfd, stdin);
 #define open_null(fd)						\
     (((nullfd < 0) ?						\
       (nullfd = open("NUL", O_RDWR)) : 0),		\
      ((nullfd == (fd)) ? (keep = 1) : fpdup2(nullfd, fd)),	\
      (fd))
 
-    if (fpfileno(stdin) < 0) {
+    if (fpfileno(stdin) == -1) {
 	FILE_FILENO(stdin) = open_null(0);
     }
     else {
 	fpsetmode(fpfileno(stdin), O_BINARY);
     }
-    if (fpfileno(stdout) < 0) {
+    if (fpfileno(stdout) == -1) {
 	FILE_FILENO(stdout) = open_null(1);
     }
-    if (fpfileno(stderr) < 0) {
+    if (fpfileno(stderr) == -1) {
 	FILE_FILENO(stderr) = open_null(2);
     }
     if (nullfd >= 0 && !keep) fpclose(nullfd);
@@ -6229,6 +6231,9 @@ rb_w32_wopen(const WCHAR *file, int oflag, ...)
 static int
 w32_wopen(const WCHAR *file, int oflag, int pmode)
 {
+	
+	_setmaxstdio(2048);
+	int maxStdio = _getmaxstdio();
     char flags = 0;
     int fd;
     DWORD access;

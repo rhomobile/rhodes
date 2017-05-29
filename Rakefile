@@ -3908,6 +3908,7 @@ task :tasks do
 end
 
 task :switch_app do
+  puts "Preparing rhobuild.yml"
   rhobuildyml = File.dirname(__FILE__) + "/rhobuild.yml"
   if File.exists? rhobuildyml
     config = YAML::load_file(rhobuildyml)

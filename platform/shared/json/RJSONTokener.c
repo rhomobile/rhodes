@@ -27,6 +27,13 @@
 # define strncasecmp _strnicmp
 #endif
 
+#ifdef POSIXNAME
+#define fpstrdup _strdup
+#else
+#define fpstrdup strdup
+#endif // POSIXNAME
+
+
 #ifdef _MSC_VER
 // warning C4018: '<' : signed/unsigned mismatch
 #pragma warning ( disable : 4018 )
@@ -505,7 +512,7 @@ struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
 
     case json_tokener_state_object_field:
       if(c == tok->quote_char) {
-	obj_field_name = strdup(tok->pb->buf);
+	obj_field_name = fpstrdup(tok->pb->buf);
     saved_state = c == ':' ? json_tokener_state_object_value : json_tokener_state_object_field_end;
 	state = json_tokener_state_eatws;
       } else if(c == '\\') {
