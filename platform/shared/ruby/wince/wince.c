@@ -483,6 +483,22 @@ BOOL GetUserName(LPSTR lpBuffer, LPDWORD nSize)
 	return 0;
 }
 
+//RHO
+BOOL
+SetHandleInformation (HANDLE hObject, DWORD dwMask, DWORD dwFlags)
+{
+  /* Not supported on Windows CE, and actually the default.  So just
+     return overwhelming success.  */
+  return 1;
+}
+
+//RHO
+UINT WINAPI GetConsoleCP(void)
+{
+	return 65001;
+}
+
+
 /*------------------- LoadLibrary -----------------------*/
 HINSTANCE LoadLibraryA(LPCSTR libname)
 {

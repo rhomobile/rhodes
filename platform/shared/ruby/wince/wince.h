@@ -284,4 +284,37 @@ extern long _timezone;
 
 #endif
 
+//RHO
+#define HANDLE_FLAG_INHERIT             0x00000001
+
+#define SEM_FAILCRITICALERRORS      0x0001
+#define SEM_NOGPFAULTERRORBOX       0x0002
+#define SEM_NOALIGNMENTFAULTEXCEPT  0x0004
+#define SEM_NOOPENFILEERRORBOX      0x8000
+
+#define _O_NOINHERIT   0x0080  // child process doesn't inherit file
+#define _O_TEMPORARY   0x0040  // temporary file bit (file is deleted when last handle is closed)
+#define _O_SHORT_LIVED 0x1000  // temporary storage file, try not to flush
+#define _O_OBTAIN_DIR  0x2000  // get information about a directory
+#define _O_SEQUENTIAL  0x0020  // file access is primarily sequential
+#define _O_RANDOM      0x0010  // file access is primarily random
+
+#define O_RDONLY     _O_RDONLY
+#define O_WRONLY     _O_WRONLY
+#define O_RDWR       _O_RDWR
+#define O_APPEND     _O_APPEND
+#define O_CREAT      _O_CREAT
+#define O_TRUNC      _O_TRUNC
+#define O_EXCL       _O_EXCL
+#define O_TEXT       _O_TEXT
+#define O_BINARY     _O_BINARY
+#define O_RAW        _O_BINARY
+#define O_TEMPORARY  _O_TEMPORARY
+#define O_NOINHERIT  _O_NOINHERIT
+#define O_SEQUENTIAL _O_SEQUENTIAL
+#define O_RANDOM     _O_RANDOM
+
+#define FILE_FLAG_OPEN_REPARSE_POINT    0x00200000
+//RHO
+
 #endif /* _EXT_CE_ */

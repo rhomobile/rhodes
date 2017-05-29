@@ -46,6 +46,18 @@ int execv(const char *path, char *const argv[])
 	return 0;
 }
 
+//RHO
+int execve(const char *path, char *const argv[])
+{
+	return 0;
+}
+
+//RHO
+int system(const char *cmd)
+{
+	return 0;
+}
+
 #if defined(_WIN32_WCE) && !defined(APP_BUILD_CAPABILITY_WINXPE)
 void abort(void)
 {

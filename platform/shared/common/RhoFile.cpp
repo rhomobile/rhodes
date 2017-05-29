@@ -34,11 +34,14 @@
 extern "C" void recursiveDeleteDirectory(const std::wstring &path);
 #endif
 
-#if !defined(OS_UWP)
+
+//#if !defined(WINDOWS_PLATFORM)
+#if !defined(OS_UWP) && !defined(OS_WINCE)
 #include <dirent.h>
-#else
+#elif !defined(OS_WINCE)
 #include "../win32/include/dirent.h"
 #endif
+//#else
 
 #  ifndef S_ISDIR
 #    define S_ISDIR(m) ((_S_IFDIR & m) == _S_IFDIR)
@@ -46,13 +49,14 @@ extern "C" void recursiveDeleteDirectory(const std::wstring &path);
 #ifndef S_ISREG
 #   define S_ISREG(m) ((m & S_IFMT) == S_IFREG)
 #endif
-//#ifndef RHO_NO_RUBY
-//extern "C"{
-//#include "win32/dir.h"
-//}
-//#endif //RHO_NO_RUBY
-//#define dirent direct
-//#endif
+
+#ifdef _WIN32_WCE
+extern "C"{
+#define rb_encoding void
+#include "win32/dir.h"
+}
+#define dirent direct
+#endif
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoFile"

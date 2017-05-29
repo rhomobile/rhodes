@@ -1390,7 +1390,8 @@ rb_locale_encindex(void)
     if (idx < 0) idx = ENCINDEX_ASCII;
 
     if (rb_enc_registered("locale") < 0) {
-# if defined _WIN32
+//RHO
+# if defined _WIN32 && !defined(OS_WINCE)
 	void Init_w32_codepage(void);
 	Init_w32_codepage();
 # endif

@@ -2397,11 +2397,13 @@ static VALUE
 dir_entries(int argc, VALUE *argv, VALUE io)
 {
     VALUE dir;
+	//RHO
+    VALUE res, temp;
+	//RHO
 
     dir = dir_open_dir(argc, argv);
 
 //RHO
-    VALUE res, temp;
     res = rb_ensure(rb_Array, dir, dir_close, dir);
 #ifdef _WIN32_WCE
     temp = rb_ary_new3(2, rb_str_new2("."), rb_str_new2(".."));

@@ -3167,6 +3167,8 @@ void
 ruby_setenv(const char *name, const char *value)
 {
 #if defined(_WIN32)
+//RHO
+#if !defined( _WIN32_WCE ) 
 # if defined(MINGW_HAS_SECURE_API) || RUBY_MSVCRT_VERSION >= 80
 #   define HAVE__WPUTENV_S 1
 # endif
@@ -3222,6 +3224,7 @@ ruby_setenv(const char *name, const char *value)
       fail:
 	invalid_envname(name);
     }
+#endif
 #elif defined(HAVE_SETENV) && defined(HAVE_UNSETENV)
 #undef setenv
 #undef unsetenv

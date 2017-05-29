@@ -521,7 +521,8 @@ darwin_sigtramp:
 
 #if HAVE_BACKTRACE
 # include <execinfo.h>
-#elif defined(_WIN32)
+//RHO
+#elif defined(_WIN32) && !defined(OS_WINCE)
 #ifndef OS_UWP
 # include <imagehlp.h>
 #endif
@@ -726,7 +727,8 @@ rb_print_backtrace(void)
 	free(syms);
     }
 #endif
-#elif defined(_WIN32)
+//RHO
+#elif defined(_WIN32) && !defined(OS_WINCE)
     DWORD tid = GetCurrentThreadId();
     HANDLE th = (HANDLE)_beginthread(dump_thread, 0, &tid);
     if (th != (HANDLE)-1)

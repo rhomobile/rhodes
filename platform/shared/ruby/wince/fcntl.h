@@ -2,13 +2,25 @@
 #ifndef FCNTL_H
 #define FCNTL_H 1
 
-
+//RHO
+/*
 #define F_SETFL         1
 #define F_SETFD         2
 #define F_GETFL         3
+*/
+
+#define F_DUPFD 0
+#define F_GETFD 1
+#define F_SETFD 2
+#if 0
+#define F_GETFL 3
+#endif
+#define F_SETFL 4
 
 #define _O_RDONLY       0x0000  /* open for reading only */
 #define _O_WRONLY       0x0001  /* open for writing only */
+//RHO
+
 #define _O_RDWR         0x0002  /* open for reading and writing */
 
 #define _O_NONBLOCK     0x0004

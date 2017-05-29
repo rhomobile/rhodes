@@ -485,7 +485,8 @@ fill_random_bytes_urandom(void *seed, size_t size)
 # define fill_random_bytes_urandom(seed, size) -1
 #endif
 
-#if defined(_WIN32)
+//RHO
+#if defined(_WIN32) && !defined(OS_WINCE)
 static void
 release_crypt(void *p)
 {

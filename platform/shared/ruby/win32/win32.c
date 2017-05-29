@@ -37,13 +37,19 @@
 #include <windows.h>
 #include <winbase.h>
 #include <wincon.h>
+//RHO
+#ifndef _WIN32_WCE
 #include <share.h>
-#include <shlobj.h>
 #include <mbstring.h>
+#endif
+#include <shlobj.h>
 #include <shlwapi.h>
 #if _MSC_VER >= 1400
+//RHO
+#ifndef _WIN32_WCE
 #include <crtdbg.h>
 #include <rtcapi.h>
+#endif
 #endif
 #ifdef __MINGW32__
 #include <mswsock.h>
@@ -61,6 +67,10 @@
 # define CharNextExA(cp, p, flags) CharNextExA((WORD)(cp), (p), (flags))
 #endif
 
+#ifdef _WIN32_WCE 
+#define CharNextExA(cp, ptr, flags) CharNextA(ptr)
+#endif
+
 #if _WIN32_WINNT < 0x0600
 DWORD WINAPI GetFinalPathNameByHandleW(HANDLE, LPWSTR, DWORD, DWORD);
 #endif
@@ -75,7 +85,10 @@ static char *w32_getenv(const char *name, UINT cp);
 #define rb_w32_stati64(path, st) w32_stati64(path, st, cp)
 #define getenv(name) w32_getenv(name, cp)
 #undef CharNext
+//RHO
+#ifndef  _WIN32_WCE
 #define CharNext(p) CharNextExA(cp, (p), 0)
+#endif
 #define dln_find_exe_r rb_w32_udln_find_exe_r
 #define dln_find_file_r rb_w32_udln_find_file_r
 #include "dln.h"
@@ -95,12 +108,20 @@ static char *w32_getenv(const char *name, UINT cp);
 #undef dup2
 #undef strdup
 
+//RHO
+#if defined __BORLANDC__ || defined _WIN32_WCE
+#  define _filbuf _fgetc
+#  define _flsbuf _fputc
+#  define enough_to_get(n) (--(n) >= 0)
+#  define enough_to_put(n) (++(n) < 0)
+#else
 #if RUBY_MSVCRT_VERSION >= 140
 # define _filbuf _fgetc_nolock
 # define _flsbuf _fputc_nolock
 #endif
 #define enough_to_get(n) (--(n) >= 0)
 #define enough_to_put(n) (--(n) >= 0)
+#endif
 
 #ifdef WIN32_DEBUG
 #define Debug(something) something
@@ -115,7 +136,12 @@ int rb_w32_reparse_symlink_p(const WCHAR *path);
 static struct ChildRecord *CreateChild(const WCHAR *, const WCHAR *, SECURITY_ATTRIBUTES *, HANDLE, HANDLE, HANDLE, DWORD);
 static int has_redirection(const char *, UINT);
 int rb_w32_wait_events(HANDLE *events, int num, DWORD timeout);
+//RHO
+#if !defined(_WIN32_WCE)
 static int rb_w32_open_osfhandle(intptr_t osfhandle, int flags);
+#else
+#define rb_w32_open_osfhandle(osfhandle, flags) _open_osfhandle(osfhandle, flags)
+#endif//_WIN32_WCE
 static int wstati64(const WCHAR *path, struct stati64 *st);
 static int wlstati64(const WCHAR *path, struct stati64 *st);
 VALUE rb_w32_conv_from_wchar(const WCHAR *wstr, rb_encoding *enc);
@@ -401,7 +427,8 @@ translate_char(char *p, int from, int to, UINT cp)
 {
     while (*p) {
 	if ((unsigned char)*p == from)
-	    *p = to;
+
+//RHO		*p = to;
 	p = CharNextExA(cp, p, 0);
     }
     return p;
@@ -423,6 +450,8 @@ translate_char(char *p, int from, int to, UINT cp)
 #define CSIDL_PROFILE 40
 #endif
 
+//RHO
+#ifndef _WIN32_WCE
 /* License: Ruby's */
 static BOOL
 get_special_folder(int n, WCHAR *env)
@@ -438,6 +467,7 @@ get_special_folder(int n, WCHAR *env)
     }
     return f;
 }
+#endif
 
 /* License: Ruby's */
 static void
@@ -486,6 +516,8 @@ get_system_directory(WCHAR *path, UINT len)
     return GetWindowsDirectoryW(path, len);
 }
 
+//RHO
+#ifndef _WIN32_WCE
 /* License: Ruby's */
 VALUE
 rb_w32_special_folder(int type)
@@ -580,7 +612,7 @@ init_env(void)
 #undef env
 #undef set_env_val
 }
-
+#endif
 
 typedef BOOL (WINAPI *cancel_io_t)(HANDLE);
 static cancel_io_t cancel_io = NULL;
@@ -773,7 +805,10 @@ rb_w32_sysinit(int *argc, char ***argv)
     _RTC_SetErrorFunc(rtc_error_handler);
     set_pioinfo_extra();
 #endif
+//RHO
+#ifndef _WIN32_WCE
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);
+#endif
 
     get_version();
 
@@ -793,7 +828,10 @@ rb_w32_sysinit(int *argc, char ***argv)
 //RHO
 //#if !defined(_LIB)
 
+//RHO
+#ifndef _WIN32_WCE
     init_env();
+#endif
 
     init_func();
 
@@ -1281,6 +1319,7 @@ w32_spawn(int mode, const char *cmd, const char *prog, UINT cp)
 	else {
 	    int len = 0, quote = (*cmd == '"') ? '"' : (*cmd == '\'') ? '\'' : 0;
 	    int slash = 0;
+
 	    for (prog = cmd + !!quote;; prog = CharNextExA(cp, prog, 0)) {
 		if (*prog == '/') slash = 1;
 		if (!*prog) {
@@ -1969,7 +2008,12 @@ opendir_internal(WCHAR *wpath, const char *filename)
     //
     do {
 	len = lstrlenW(fd.cFileName) + 1;
+//RHO
+#ifdef _WIN32_WCE
+	altlen = 0;
+#else
 	altlen = lstrlenW(fd.cAlternateFileName) + 1;
+#endif
 
 	//
 	// bump the string table size by enough for the
@@ -1986,7 +2030,10 @@ opendir_internal(WCHAR *wpath, const char *filename)
 
 	p->start = tmpW;
 	memcpy(&p->start[idx], fd.cFileName, len * sizeof(WCHAR));
+//RHO
+#ifndef _WIN32_WCE
 	memcpy(&p->start[idx + len], fd.cAlternateFileName, altlen * sizeof(WCHAR));
+#endif
 
 	if (p->nfiles % DIRENT_PER_CHAR == 0) {
 	    tmp = realloc(p->bits, p->nfiles / DIRENT_PER_CHAR + 1);
@@ -2366,6 +2413,9 @@ typedef struct	{
 #define _CRTIMP __declspec(dllimport)
 #endif
 
+//RHO
+#if !defined(__BORLANDC__) && !defined(_WIN32_WCE)
+
 #if RUBY_MSVCRT_VERSION >= 140
 static ioinfo ** __pioinfo = NULL;
 #define IOINFO_L2E 6
@@ -2591,6 +2641,16 @@ init_stdhandle(void)
     if (nullfd >= 0 && !keep) close(nullfd);
     setvbuf(stderr, NULL, _IONBF, 0);
 }
+#else
+
+#define _set_osfhnd(fh, osfh) (void)((fh), (osfh))
+#define _set_osflags(fh, flags) (void)((fh), (flags))
+
+static void
+init_stdhandle(void)
+{
+}
+#endif
 
 #undef getsockopt
 
@@ -2895,6 +2955,10 @@ is_pipe(SOCKET sock) /* DONT call this for SOCKET! it claims it is PIPE. */
 static int
 is_readable_pipe(SOCKET sock) /* call this for pipe only */
 {
+//RHO
+#ifdef _WIN32_WCE
+    return 0;
+#else
     int ret;
     DWORD n = 0;
 
@@ -2908,13 +2972,16 @@ is_readable_pipe(SOCKET sock) /* call this for pipe only */
     );
 
     return ret;
+#endif
 }
 
 /* License: Ruby's */
 static int
 is_console(SOCKET sock) /* DONT call this for SOCKET! */
 {
-    int ret;
+//RHO
+#ifndef _WIN32_WCE
+	int ret;
     DWORD n = 0;
     INPUT_RECORD ir;
 
@@ -2923,13 +2990,18 @@ is_console(SOCKET sock) /* DONT call this for SOCKET! */
     );
 
     return ret;
+#else
+	return 0;
+#endif
 }
 
 /* License: Ruby's */
 static int
 is_readable_console(SOCKET sock) /* call this for console only */
 {
-    int ret = 0;
+//RHO
+#ifndef _WIN32_WCE
+	int ret = 0;
     DWORD n = 0;
     INPUT_RECORD ir;
 
@@ -2946,6 +3018,9 @@ is_readable_console(SOCKET sock) /* call this for console only */
     );
 
     return ret;
+#else
+	return 0;
+#endif
 }
 
 /* License: Ruby's */
@@ -3194,6 +3269,10 @@ get_wsa_extension_function(SOCKET s, GUID *guid)
 int WSAAPI
 rb_w32_accept(int s, struct sockaddr *addr, int *addrlen)
 {
+//RHO
+#ifdef _WIN32_WCE
+    return 0;
+#else
     SOCKET r;
     int fd;
 
@@ -3216,6 +3295,7 @@ rb_w32_accept(int s, struct sockaddr *addr, int *addrlen)
 	}
     });
     return fd;
+#endif
 }
 
 #undef bind
@@ -4076,6 +4156,8 @@ static cilnA_t pConvertInterfaceLuidToNameA = NULL;
 int
 getifaddrs(struct ifaddrs **ifap)
 {
+//RHO
+#ifndef _WIN32_WCE
     ULONG size = 0;
     ULONG ret;
     IP_ADAPTER_ADDRESSES *root, *addr;
@@ -4156,6 +4238,7 @@ getifaddrs(struct ifaddrs **ifap)
     }
 
     ruby_xfree(root);
+#endif
     return 0;
 }
 
@@ -4231,6 +4314,8 @@ setfl(SOCKET sock, int arg)
     return ret;
 }
 
+//RHO
+#ifndef _WIN32_WCE
 /* License: Ruby's */
 static int
 dupfd(HANDLE hDup, int flags, int minfd)
@@ -4368,6 +4453,51 @@ rb_w32_set_nonblock(int fd)
 	return -1;
     }
 }
+#else
+int
+fcntl(int fd, int cmd, ...)
+{
+    SOCKET sock = TO_SOCKET(fd);
+    va_list va;
+    int arg;
+    int ret;
+    int flag = 0;
+    st_data_t data;
+    u_long ioctlArg;
+
+    if (!is_socket(sock)) {
+	errno = EBADF;
+	return -1;
+    }
+    if (cmd != F_SETFL) {
+	errno = EINVAL;
+	return -1;
+    }
+
+    va_start(va, cmd);
+    arg = va_arg(va, int);
+    va_end(va);
+    st_lookup(socklist, (st_data_t)sock, &data);
+    flag = (int)data;
+    if (arg & O_NONBLOCK) {
+	flag |= O_NONBLOCK;
+	ioctlArg = 1;
+    }
+    else {
+	flag &= ~O_NONBLOCK;
+	ioctlArg = 0;
+    }
+    RUBY_CRITICAL({
+	ret = ioctlsocket(sock, FIONBIO, &ioctlArg);
+	if (ret == 0)
+	    st_insert(socklist, (st_data_t)sock, (st_data_t)flag);
+	else
+	    errno = map_errno(WSAGetLastError());
+    });
+
+    return ret;
+}
+#endif
 
 #ifndef WNOHANG
 #define WNOHANG -1
@@ -5111,6 +5241,8 @@ wait(int *status)
 static char *
 w32_getenv(const char *name, UINT cp)
 {
+//RHO
+#ifndef _WIN32_WCE
     WCHAR *wenvarea, *wenv;
     int len = strlen(name);
     char *env;
@@ -5130,13 +5262,31 @@ w32_getenv(const char *name, UINT cp)
     for (wenv = wenvarea, wlen = 1; *wenv; wenv += lstrlenW(wenv) + 1)
 	wlen += lstrlenW(wenv) + 1;
     uenvarea = wstr_to_mbstr(cp, wenvarea, wlen, NULL);
+
     FreeEnvironmentStringsW(wenvarea);
+
     if (!uenvarea)
 	return NULL;
 
     for (env = uenvarea; *env; env += strlen(env) + 1)
 	if (strncasecmp(env, name, len) == 0 && *(env + len) == '=')
 	    return env + len + 1;
+#else
+	int len = strlen(name);
+    char *env;
+
+    if (len == 0) return NULL;
+    if (uenvarea) FreeEnvironmentStrings(uenvarea);
+    uenvarea = GetEnvironmentStrings();
+    if (!uenvarea) {
+	map_errno(GetLastError());
+	return NULL;
+    }
+
+    for (env = uenvarea; *env; env += strlen(env) + 1)
+	if (strncasecmp(env, name, len) == 0 && *(env + len) == '=')
+	    return env + len + 1;
+#endif
 
     return NULL;
 }
@@ -5204,6 +5354,9 @@ wrename(const WCHAR *oldpath, const WCHAR *newpath)
     }
     get_attr_vsn(newpath, &newatts, &newvsn);
 
+//RHO
+#ifndef _WIN32_WCE
+
     RUBY_CRITICAL({
 	if (newatts != (DWORD)-1 && newatts & FILE_ATTRIBUTE_READONLY)
 	    SetFileAttributesW(newpath, newatts & ~ FILE_ATTRIBUTE_READONLY);
@@ -5222,6 +5375,37 @@ wrename(const WCHAR *oldpath, const WCHAR *newpath)
 	else
 	    SetFileAttributesW(newpath, oldatts);
     });
+#else
+    RUBY_CRITICAL({
+	if (newatts != -1 && newatts & FILE_ATTRIBUTE_READONLY)
+	    SetFileAttributesW(newpath, newatts & ~ FILE_ATTRIBUTE_READONLY);
+
+	if (!MoveFileW(oldpath, newpath))
+	    res = -1;
+
+	if (res) {
+	    switch (GetLastError()) {
+	      case ERROR_ALREADY_EXISTS:
+	      case ERROR_FILE_EXISTS:
+        {
+		    for (;;) {
+			if (!DeleteFileW(newpath) && GetLastError() != ERROR_FILE_NOT_FOUND)
+			    break;
+			else if (MoveFileW(oldpath, newpath)) {
+			    res = 0;
+			    break;
+			}
+		    }
+		}
+	    }
+	}
+
+	if (res)
+	    errno = map_errno(GetLastError());
+	else
+	    SetFileAttributesW(newpath, oldatts);
+    });
+#endif
 
     return res;
 }
@@ -5359,7 +5543,10 @@ rb_w32_fstat(int fd, struct stat *st)
     int ret = fstat(fd, st);
 
     if (ret) return ret;
+//RHO
+#ifndef _WIN32_WCE
     if (GetEnvironmentVariableW(L"TZ", NULL, 0) == 0 && GetLastError() == ERROR_ENVVAR_NOT_FOUND) return ret;
+#endif
     if (GetFileInformationByHandle((HANDLE)_get_osfhandle(fd), &info)) {
 	st->st_atime = filetime_to_unixtime(&info.ftLastAccessTime);
 	st->st_mtime = filetime_to_unixtime(&info.ftLastWriteTime);
@@ -5374,12 +5561,14 @@ rb_w32_fstati64(int fd, struct stati64 *st)
 {
     struct stat tmp;
     int ret;
-
+//RHO
+#ifndef _WIN32_WCE
     if (GetEnvironmentVariableW(L"TZ", NULL, 0) == 0 && GetLastError() == ERROR_ENVVAR_NOT_FOUND) {
 	ret = _fstati64(fd, st);
 	stati64_set_inode_handle((HANDLE)_get_osfhandle(fd), st);
 	return ret;
     }
+#endif
     ret = fstat(fd, &tmp);
 
     if (ret) return ret;
@@ -5471,7 +5660,9 @@ fileattr_to_unixmode(DWORD attr, const WCHAR *path)
 static int
 check_valid_dir(const WCHAR *path)
 {
-    WIN32_FIND_DATAW fd;
+//RHO
+#ifndef _WIN32_WCE
+	WIN32_FIND_DATAW fd;
     HANDLE fh;
     WCHAR full[MAX_PATH];
     WCHAR *dmy;
@@ -5501,6 +5692,13 @@ check_valid_dir(const WCHAR *path)
     if (fh == INVALID_HANDLE_VALUE)
 	return -1;
     FindClose(fh);
+#else
+	WIN32_FIND_DATAW fd = {0};
+    HANDLE fh = open_dir_handle(path, &fd);
+    if (fh == INVALID_HANDLE_VALUE)
+	return -1;
+    FindClose(fh);
+#endif
     return 0;
 }
 
@@ -6005,6 +6203,8 @@ rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self,
 char **
 rb_w32_get_environ(void)
 {
+//RHO
+#ifndef _WIN32_WCE
     WCHAR *envtop, *env;
     char **myenvtop, **myenv;
     int num;
@@ -6033,8 +6233,38 @@ rb_w32_get_environ(void)
 	}
     }
     *myenv = NULL;
-    FreeEnvironmentStringsW(envtop);
 
+    FreeEnvironmentStringsW(envtop);
+#else
+	char *envtop, *env;
+    char **myenvtop, **myenv;
+    int num;
+
+    /*
+     * We avoid values started with `='. If you want to deal those values,
+     * change this function, and some functions in hash.c which recognize
+     * `=' as delimiter or rb_w32_getenv() and ruby_setenv().
+     * CygWin deals these values by changing first `=' to '!'. But we don't
+     * use such trick and follow cmd.exe's way that just doesn't show these
+     * values.
+     * (U.N. 2001-11-15)
+     */
+    envtop = GetEnvironmentStrings();
+    for (env = envtop, num = 0; *env; env += strlen(env) + 1)
+	if (*env != '=') num++;
+
+    myenvtop = (char **)malloc(sizeof(char *) * (num + 1));
+    for (env = envtop, myenv = myenvtop; *env; env += strlen(env) + 1) {
+	if (*env != '=') {
+	    if (!(*myenv = strdup(env))) {
+		break;
+	    }
+	    myenv++;
+	}
+    }
+    *myenv = NULL;
+    FreeEnvironmentStrings(envtop);
+#endif
     return myenvtop;
 }
 
@@ -6048,6 +6278,8 @@ rb_w32_free_environ(char **env)
     free(env);
 }
 
+//RHO
+#ifndef _WIN32_WCE
 /* License: Ruby's */
 rb_pid_t
 rb_w32_getpid(void)
@@ -6086,6 +6318,7 @@ rb_w32_getppid(void)
 
     return ppid;
 }
+#endif
 
 STATIC_ASSERT(std_handle, (STD_OUTPUT_HANDLE-STD_INPUT_HANDLE)==(STD_ERROR_HANDLE-STD_OUTPUT_HANDLE));
 
@@ -6144,6 +6377,8 @@ check_if_wdir(const WCHAR *wfile)
     return TRUE;
 }
 
+//RHO
+#ifndef _WIN32_WCE
 static int w32_wopen(const WCHAR *file, int oflag, int perm);
 
 /* License: Ruby's */
@@ -6476,11 +6711,13 @@ rb_w32_pipe(int fds[2])
 
     return 0;
 }
+#endif
 
 /* License: Ruby's */
 static int
 console_emulator_p(void)
 {
+//RHO
 #ifdef _WIN32_WCE
     return FALSE;
 #else
@@ -6498,6 +6735,8 @@ console_emulator_p(void)
 #endif
 }
 
+//RHO
+#ifndef _WIN32_WCE
 /* License: Ruby's */
 static struct constat *
 constat_handle(HANDLE h)
@@ -6531,6 +6770,8 @@ constat_handle(HANDLE h)
     }
     return p;
 }
+
+#endif
 
 /* License: Ruby's */
 static void
@@ -6652,6 +6893,8 @@ constat_attr(int count, const int *seq, WORD attr, WORD default_attr, int *rever
 static void
 constat_apply(HANDLE handle, struct constat *s, WCHAR w)
 {
+//RHO
+#ifndef _WIN32_WCE
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     const int *seq = s->vt100.seq;
     int count = s->vt100.state;
@@ -6771,6 +7014,7 @@ constat_apply(HANDLE handle, struct constat *s, WCHAR w)
 	}
 	break;
     }
+#endif
 }
 
 /* License: Ruby's */
@@ -6911,6 +7155,8 @@ finish_overlapped(OVERLAPPED *ol, int fd, DWORD size)
     }
 }
 
+//RHO
+#ifndef _WIN32_WCE
 #undef read
 /* License: Ruby's */
 ssize_t
@@ -7233,6 +7479,8 @@ rb_w32_write_console(uintptr_t strarg, int fd)
     return (long)reslen;
 }
 
+#endif //WINCE
+
 /* License: Ruby's */
 static int
 unixtime_to_filetime(time_t time, FILETIME *ft)
@@ -7546,6 +7794,8 @@ fchmod(int fd, int mode)
     return 0;
 }
 
+//RHO
+#if !defined(__BORLANDC__)&& !defined(_WIN32_WCE)
 /* License: Ruby's */
 int
 rb_w32_isatty(int fd)
@@ -7562,8 +7812,9 @@ rb_w32_isatty(int fd)
     }
     return 1;
 }
+#endif
 
-#if defined(_MSC_VER) && RUBY_MSVCRT_VERSION <= 60
+#if defined(_MSC_VER) && RUBY_MSVCRT_VERSION <= 60 
 extern long _ftol(double);
 /* License: Ruby's */
 long
@@ -7625,7 +7876,12 @@ rb_w32_inet_pton(int af, const char *src, void *dst)
 char
 rb_w32_fd_is_text(int fd)
 {
+//RHO
+#ifndef _WIN32_WCE
     return _osfile(fd) & FTEXT;
+#else
+	return 0;
+#endif
 }
 
 #if RUBY_MSVCRT_VERSION < 80 && !defined(HAVE__GMTIME64_S)
@@ -7731,6 +7987,8 @@ gmtime_r(const time_t *tp, struct tm *rp)
 struct tm *
 localtime_r(const time_t *tp, struct tm *rp)
 {
+//RHO
+#ifndef _WIN32_WCE
     int e = EINVAL;
     if (!tp || !rp) {
       error:
@@ -7748,7 +8006,9 @@ localtime_r(const time_t *tp, struct tm *rp)
 	systemtime_to_tm(&lst, rp);
     }
 #endif
+#endif
     return rp;
+
 }
 
 /* License: Ruby's */
@@ -7812,4 +8072,29 @@ VALUE (*const rb_f_notimplement_)(int, const VALUE *, VALUE) = rb_f_notimplement
 
 #if RUBY_MSVCRT_VERSION < 120
 #include "missing/nextafter.c"
+#endif
+
+//RHO
+#if defined __BORLANDC__ || defined(_WIN32_WCE)
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
+off_t
+_lseeki64(int fd, off_t offset, int whence)
+{
+    long u, l;
+    int e;
+    HANDLE h = (HANDLE)_get_osfhandle(fd);
+
+    if (!h) {
+	errno = EBADF;
+	return -1;
+    }
+    u = (long)(offset >> 32);
+    if ((l = SetFilePointer(h, (long)offset, &u, whence)) == -1L &&
+	(e = GetLastError())) {
+	errno = map_errno(e);
+	return -1;
+    }
+    return ((off_t)u << 32) | l;
+}
+#endif //APP_BUILD_CAPABILITY_WINXPE
 #endif
