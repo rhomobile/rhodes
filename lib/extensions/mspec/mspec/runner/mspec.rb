@@ -59,6 +59,12 @@ module MSpec
   end
 
   def self.process
+
+    #RHO
+    @count = 0
+    @exc_count  = 0
+    #RHO
+
     STDOUT.puts RUBY_DESCRIPTION
 
     actions :start

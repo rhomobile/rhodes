@@ -19,8 +19,10 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
         
         boolean enableZoom = config == null || config.getBool(WebViewConfig.ENABLE_ZOOM);
         boolean enableCache = config == null || config.getBool(WebViewConfig.ENABLE_CACHE);
+        boolean enableMediaPlaybackWithoutGesture = config != null && config.getBool(WebViewConfig.ENABLE_MEDIA_PLAYBACK_WITHOUT_GESTURE);
         String customUA = RhoConf.getString("useragent");
         
+        settings.setMediaPlaybackRequiresUserGesture(!enableMediaPlaybackWithoutGesture);
         settings.setSavePassword(false);
         settings.setSaveFormData(false);
         settings.setJavaScriptEnabled(true);

@@ -27,6 +27,7 @@
 
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
+#import <WebKit/WKWebViewConfiguration.h>
 #import "RhoWebView.h"
 
 @interface RhoWKWebView : NSObject<RhoWebView, WKNavigationDelegate> {

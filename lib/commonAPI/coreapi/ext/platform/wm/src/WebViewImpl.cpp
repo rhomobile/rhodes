@@ -52,6 +52,11 @@ public:
     }
 
     virtual void setEnableZoom( bool value, rho::apiGenerator::CMethodResult& oResult){}
+
+    virtual void getEnableMediaPlaybackWithoutGesture(rho::apiGenerator::CMethodResult& oResult) {
+        oResult.set(false);        
+    }
+
     virtual void getEnablePageLoadingIndication(rho::apiGenerator::CMethodResult& oResult)
     {
         oResult.set(false);

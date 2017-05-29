@@ -46,6 +46,9 @@
     w.scalesPageToFit = YES;
     if ( !rho_conf_getBool("WebView.enableBounce") )
         [[w scrollView] setBounces:NO];
+    if ( rho_conf_getBool("enable_media_playback_without_gesture") == 1 )
+        w.mediaPlaybackRequiresUserAction = NO;
+    
     w.userInteractionEnabled = YES;
     w.multipleTouchEnabled = YES;
     w.clipsToBounds = NO;

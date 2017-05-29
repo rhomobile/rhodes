@@ -61,6 +61,11 @@ namespace WebViewImpl
             oResult.set(true);
         }
 
+        public override void getEnableMediaPlaybackWithoutGesture(IMethodResult oResult)
+        {
+            oResult.set(false);
+        }
+
         public override void getEnablePageLoadingIndication(IMethodResult oResult)
         {
             // implement this method in C# here

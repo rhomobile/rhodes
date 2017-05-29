@@ -60,6 +60,11 @@ public:
         oResult.set(false);
     }
 
+    virtual void getEnableMediaPlaybackWithoutGesture(rho::apiGenerator::CMethodResult& oResult) {
+        oResult.set(false);        
+    }
+
+
     virtual void setEnablePageLoadingIndication( bool value, rho::apiGenerator::CMethodResult& oResult){}
     virtual void getEnableWebPlugins(rho::apiGenerator::CMethodResult& oResult)
     {

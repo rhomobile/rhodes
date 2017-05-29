@@ -375,7 +375,7 @@ def update_plist_procedure
       end
 end
 
-def set_signing_identity(identity,profile,entitlements)
+def set_signing_identity(identity,profile,entitlements,provisioning_style,development_team)
 
   appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
   appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| (w.capitalize) }.join("")
@@ -386,6 +386,13 @@ def set_signing_identity(identity,profile,entitlements)
   File.new(fname,"r").read.each_line do |line|
     if entitlements != nil
        line.gsub!(/CODE_SIGN_ENTITLEMENTS = .*;/,"CODE_SIGN_ENTITLEMENTS = \"#{entitlements}\";")
+    end
+    if provisioning_style != nil
+       line.gsub!(/ProvisioningStyle = .*;/,"ProvisioningStyle = \"#{provisioning_style}\";")
+    end
+    if development_team != nil
+       line.gsub!(/DevelopmentTeam = .*;/,"DevelopmentTeam = \"#{development_team}\";")
+       line.gsub!(/DEVELOPMENT_TEAM = .*;/,"DEVELOPMENT_TEAM = \"#{development_team}\";")
     end
     line.gsub!(/CODE_SIGN_IDENTITY = .*;/,"CODE_SIGN_IDENTITY = \"#{identity}\";")
     line.gsub!(/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = .*;/,"\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"#{identity}\";")
@@ -1081,6 +1088,8 @@ namespace "config" do
     if $app_config["iphone"].nil?
       $signidentity = $config["env"]["iphone"]["codesignidentity"]
       $provisionprofile = $config["env"]["iphone"]["provisionprofile"]
+      $provisioning_style = $config["env"]["iphone"]["provisioning_style"]
+      $development_team = $config["env"]["iphone"]["development_team"]
       $entitlements = $config["env"]["iphone"]["entitlements"]
       $configuration = $config["env"]["iphone"]["configuration"]
       $sdk = $config["env"]["iphone"]["sdk"]
@@ -1088,6 +1097,8 @@ namespace "config" do
     else
       $signidentity = $app_config["iphone"]["codesignidentity"]
       $provisionprofile = $app_config["iphone"]["provisionprofile"]
+      $provisioning_style = $app_config["iphone"]["provisioning_style"]
+      $development_team = $app_config["iphone"]["development_team"]
       $entitlements = $app_config["iphone"]["entitlements"]
       $configuration = $app_config["iphone"]["configuration"]
       $sdk = $app_config["iphone"]["sdk"]
@@ -2229,7 +2240,7 @@ namespace "build" do
 
       update_plist_procedure
 
-      set_signing_identity($signidentity,$provisionprofile,$entitlements) #if $signidentity.to_s != ""
+      set_signing_identity($signidentity,$provisionprofile,$entitlements,$provisioning_style,$development_team) #if $signidentity.to_s != ""
     end
 
 
@@ -2267,7 +2278,7 @@ namespace "build" do
           end
       end
 
-      set_signing_identity($signidentity,$provisionprofile,$entitlements) #if $signidentity.to_s != ""
+      set_signing_identity($signidentity,$provisionprofile,$entitlements,$provisioning_style,$development_team) #if $signidentity.to_s != ""
       copy_entitlements_file_from_app
 
       Rake::Task['build:bundle:prepare_native_generated_files'].invoke
