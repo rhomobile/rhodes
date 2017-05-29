@@ -3185,9 +3185,7 @@ ruby_setenv(const char *name, const char *value)
 	int len2;
 	if (!p) goto fail; /* never happen */
 	n = lstrlen(name) + 2 + strlen(value) + getenvsize(p);
-
 	FreeEnvironmentStringsW(p);
-
 	if (n >= getenvblocksize()) {
 	    goto fail;  /* 2 for '=' & '\0' */
 	}

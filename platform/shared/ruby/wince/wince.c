@@ -483,6 +483,7 @@ BOOL GetUserName(LPSTR lpBuffer, LPDWORD nSize)
 	return 0;
 }
 
+//RHO
 BOOL
 SetHandleInformation (HANDLE hObject, DWORD dwMask, DWORD dwFlags)
 {
@@ -490,6 +491,8 @@ SetHandleInformation (HANDLE hObject, DWORD dwMask, DWORD dwFlags)
      return overwhelming success.  */
   return 1;
 }
+
+//RHO
 UINT WINAPI GetConsoleCP(void)
 {
 	return 65001;

@@ -1,6 +1,7 @@
 #ifndef SYS_TYPES_H
 #define SYS_TYPES_H 1
 
+//RHO
 /*
 #define BIG_ENDIAN    1234
 #define LITTLE_ENDIAN 4321

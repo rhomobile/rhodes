@@ -36,6 +36,7 @@
 #define HAVE_PROTOTYPES 1
 #define TOKEN_PASTE(x,y) x##y
 #define HAVE_STDARG_PROTOTYPES 1
+//RHO
 #define CLOCKID2NUM(v) INT2NUM(v)
 #define NORETURN(x) __declspec(noreturn) x
 #define DEPRECATED(x) __declspec(deprecated) x
@@ -49,6 +50,7 @@
 #define SIGNEDNESS_OF_TIME_T -1
 #define SIZEOF_CLOCK_T 4
 #define HAVE_TYPE_STRUCT_SOCKADDR_STORAGE 1
+
 
 #ifndef _IOFBF
 #define _IOFBF          0x0000

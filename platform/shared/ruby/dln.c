@@ -1206,6 +1206,7 @@ aix_loaderror(const char *pathname)
 }
 #endif
 
+//RHO
 #if defined _WIN32 && defined RUBY_EXPORT && !defined(OS_WINCE)
 HANDLE rb_libruby_handle(void);
 
@@ -1284,6 +1285,7 @@ dln_load(const char *file)
 	goto failed;
     }
 
+//RHO
 #if defined _WIN32 && defined RUBY_EXPORT && !defined(OS_WINCE)
     if (!rb_w32_check_imported(handle, rb_libruby_handle())) {
 	FreeLibrary(handle);

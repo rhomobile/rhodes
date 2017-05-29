@@ -284,6 +284,7 @@ extern long _timezone;
 
 #endif
 
+//RHO
 #define HANDLE_FLAG_INHERIT             0x00000001
 
 #define SEM_FAILCRITICALERRORS      0x0001
@@ -314,5 +315,6 @@ extern long _timezone;
 #define O_RANDOM     _O_RANDOM
 
 #define FILE_FLAG_OPEN_REPARSE_POINT    0x00200000
+//RHO
 
 #endif /* _EXT_CE_ */

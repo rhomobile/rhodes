@@ -450,6 +450,7 @@ translate_char(char *p, int from, int to, UINT cp)
 #define CSIDL_PROFILE 40
 #endif
 
+//RHO
 #ifndef _WIN32_WCE
 /* License: Ruby's */
 static BOOL
@@ -515,6 +516,7 @@ get_system_directory(WCHAR *path, UINT len)
     return GetWindowsDirectoryW(path, len);
 }
 
+//RHO
 #ifndef _WIN32_WCE
 /* License: Ruby's */
 VALUE
@@ -5658,6 +5660,7 @@ fileattr_to_unixmode(DWORD attr, const WCHAR *path)
 static int
 check_valid_dir(const WCHAR *path)
 {
+//RHO
 #ifndef _WIN32_WCE
 	WIN32_FIND_DATAW fd;
     HANDLE fh;
@@ -6275,6 +6278,7 @@ rb_w32_free_environ(char **env)
     free(env);
 }
 
+//RHO
 #ifndef _WIN32_WCE
 /* License: Ruby's */
 rb_pid_t
@@ -6731,6 +6735,7 @@ console_emulator_p(void)
 #endif
 }
 
+//RHO
 #ifndef _WIN32_WCE
 /* License: Ruby's */
 static struct constat *
@@ -7871,6 +7876,7 @@ rb_w32_inet_pton(int af, const char *src, void *dst)
 char
 rb_w32_fd_is_text(int fd)
 {
+//RHO
 #ifndef _WIN32_WCE
     return _osfile(fd) & FTEXT;
 #else

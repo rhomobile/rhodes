@@ -1335,11 +1335,13 @@ sockopt_inspect(VALUE self)
               case IP_MULTICAST_IF: inspected = inspect_ipv4_multicast_if(level, optname, data, ret); break;
 #            endif
 #            if defined(IP_ADD_MEMBERSHIP) /* 4.4BSD, GNU/Linux */
+//RHO
 #ifndef _WIN32_WCE
               case IP_ADD_MEMBERSHIP: inspected = inspect_ipv4_add_drop_membership(level, optname, data, ret); break;
 #endif
 #            endif
 #            if defined(IP_DROP_MEMBERSHIP) /* 4.4BSD, GNU/Linux */
+//RHO
 #ifndef _WIN32_WCE
               case IP_DROP_MEMBERSHIP: inspected = inspect_ipv4_add_drop_membership(level, optname, data, ret); break;
 #endif
@@ -1367,11 +1369,13 @@ sockopt_inspect(VALUE self)
               case IPV6_MULTICAST_LOOP: inspected = inspect_uint(level, optname, data, ret); break;
 #            endif
 #            if defined(IPV6_JOIN_GROUP) /* POSIX */
+//RHO
 #ifndef _WIN32_WCE
               case IPV6_JOIN_GROUP: inspected = inspect_ipv6_mreq(level, optname, data, ret); break;
 #endif
 #            endif
 #            if defined(IPV6_LEAVE_GROUP) /* POSIX */
+//RHO
 #ifndef _WIN32_WCE
               case IPV6_LEAVE_GROUP: inspected = inspect_ipv6_mreq(level, optname, data, ret); break;
 #endif

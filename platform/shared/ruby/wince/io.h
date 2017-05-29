@@ -2,6 +2,7 @@
 #ifndef _IO_WINCE_H_
 #define _IO_WINCE_H_
 
+//RHO
 #define FOPEN			0x01	/* file handle open */
 #define FEOFLAG			0x02	/* end of file has been encountered */
 #define FPIPE			0x08	/* file handle refers to a pipe */
@@ -9,6 +10,7 @@
 #define FAPPEND			0x20	/* file handle opened O_APPEND */
 #define FDEV			0x40	/* file handle refers to device */
 #define FTEXT			0x80	/* file handle is in text mode */
+//RHO
 
 #ifndef _TIME_T_DEFINED
 typedef unsigned long time_t;

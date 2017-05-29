@@ -37,6 +37,7 @@ typedef unsigned int rb_atomic_t; /* Anything OK */
 
 # define RUBY_ATOMIC_GENERIC_MACRO 1
 
+//RHO
 #elif defined _WIN32 && !defined(OS_WINCE)
 #if defined _MSC_VER && _MSC_VER > 1200
 #pragma intrinsic(_InterlockedOr)

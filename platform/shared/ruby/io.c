@@ -443,6 +443,7 @@ rb_cloexec_fcntl_dupfd(int fd, int minfd)
 #define READ_CHAR_PENDING_COUNT(fptr) ((fptr)->cbuf.len)
 #define READ_CHAR_PENDING_PTR(fptr) ((fptr)->cbuf.ptr+(fptr)->cbuf.off)
 
+//RHO
 #if defined(_WIN32) && !defined(OS_WINCE)
 #define WAIT_FD_IN_WIN32(fptr) \
     (rb_w32_io_cancelable_p((fptr)->fd) ? 0 : rb_thread_wait_fd((fptr)->fd))
@@ -675,6 +676,7 @@ rb_io_check_closed(rb_io_t *fptr)
 //If stdout or stderr is not associated with an output stream (for example, in a Windows application without a console window), the file descriptor returned is -2.
 //In previous versions, the file descriptor returned was -1. This change allows applications to distinguish this condition from an error.    
 #ifdef _WIN32
+//RHO
 #if defined(OS_WINCE)
 	if (fptr->fd < -2) {
 #else
@@ -1466,6 +1468,7 @@ static long
 io_fwrite(VALUE str, rb_io_t *fptr, int nosync)
 {
     int converted = 0;
+//RHO
 #if defined(_WIN32) && !defined(OS_WINCE)
     if (fptr->mode & FMODE_TTY) {
 	long len = rb_w32_write_console(str, fptr->fd);
@@ -1872,6 +1875,7 @@ rb_io_eof(VALUE io)
     if (READ_CHAR_PENDING(fptr)) return Qfalse;
     if (READ_DATA_PENDING(fptr)) return Qfalse;
     READ_CHECK(fptr);
+//RHO
 #if !defined(OS_WINCE) && (defined(RUBY_TEST_CRLF_ENVIRONMENT) || defined(_WIN32))
     if (!NEED_READCONV(fptr) && NEED_NEWLINE_DECORATOR_ON_READ(fptr)) {
 	return fpeof(fptr->fd) ? Qtrue : Qfalse;
@@ -2497,6 +2501,7 @@ read_all(rb_io_t *fptr, long siz, VALUE str)
 void
 rb_io_set_nonblock(rb_io_t *fptr)
 {
+//RHO
 #if defined(_WIN32) && !defined(OS_WINCE)
     if (rb_w32_set_nonblock(fptr->fd) != 0) {
 	rb_sys_fail_path(fptr->pathv);
