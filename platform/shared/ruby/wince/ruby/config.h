@@ -5,6 +5,7 @@
 #error MSC version unmatch: _MSC_VER: 1400 or 1500 is expected.
 #endif
 //#define WIN95 0
+#define RUBY_MSVCRT_VERSION 70
 #define RT_VER 70
 #define STDC_HEADERS 1
 #define HAVE_SYS_TYPES_H 1
@@ -35,6 +36,7 @@
 #define HAVE_PROTOTYPES 1
 #define TOKEN_PASTE(x,y) x##y
 #define HAVE_STDARG_PROTOTYPES 1
+#define CLOCKID2NUM(v) INT2NUM(v)
 #define NORETURN(x) __declspec(noreturn) x
 #define DEPRECATED(x) __declspec(deprecated) x
 #define NOINLINE(x) __declspec(noinline) x
@@ -43,6 +45,22 @@
 #define FUNC_FASTCALL(x) __fastcall x
 //RHO
 #define RUBY_EXTERN //extern __declspec(dllimport)
+#define HAVE_STRUCT_TIMEVAL 1
+#define SIGNEDNESS_OF_TIME_T -1
+#define SIZEOF_CLOCK_T 4
+#define HAVE_TYPE_STRUCT_SOCKADDR_STORAGE 1
+
+#ifndef _IOFBF
+#define _IOFBF          0x0000
+#endif
+#ifndef _IOLBF
+#define _IOLBF          0x0040
+#endif
+#ifndef _IONBF
+#define _IONBF          0x0004
+#endif
+
+#define PRI_LL_PREFIX "I64"
 //RHO
 #define HAVE_DECL_SYS_NERR 1
 #define HAVE_LIMITS_H 1

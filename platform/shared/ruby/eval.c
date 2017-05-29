@@ -79,10 +79,11 @@ ruby_setup(void)
 void
 ruby_init(void)
 {
-    //RHO    
+    //RHO   
+	int state;
     const_cache_version++;
     
-    int state = ruby_setup();
+    state = ruby_setup();
     if (state) {
         if (RTEST(ruby_debug))
             error_print();
@@ -615,14 +616,17 @@ static VALUE make_exception(int argc, const VALUE *argv, int isstr);
 void
 rb_exc_raise(VALUE mesg)
 {
-    if (!NIL_P(mesg)) {
+    //RHO
+	VALUE e, trace;
+
+	if (!NIL_P(mesg)) {
 	mesg = make_exception(1, &mesg, FALSE);
     }
 
-    VALUE e = rb_funcall( mesg, rb_intern("to_s"),0 );
+    e = rb_funcall( mesg, rb_intern("to_s"),0 );
     RAWLOGC_ERROR1(">DEBUG<", "Ruby error:\n%s", RSTRING_PTR(e) );
 
-    VALUE trace = rb_get_backtrace(mesg);
+    trace = rb_get_backtrace(mesg);
     trace = rb_funcall( trace, rb_intern("to_s"),0 );
 
     RAWLOGC_ERROR1(">DEBUG<", "Trace:\n%s", RSTRING_PTR(trace));
