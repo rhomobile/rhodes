@@ -6,6 +6,7 @@ module MSpec
   #RHO
   @count = 0
   @exc_count = 0
+  @exc_locations = []
   #RHO
 
   @exit    = nil
@@ -43,6 +44,10 @@ module MSpec
   def self.count
     @count
   end
+
+  def self.exc_locations
+    @exc_locations
+  end
 #RHO
 
   def self.describe(mod, options=nil, &block)
@@ -63,6 +68,7 @@ module MSpec
     #RHO
     @count = 0
     @exc_count  = 0
+    @exc_locations = []
     #RHO
 
     STDOUT.puts RUBY_DESCRIPTION
@@ -133,6 +139,7 @@ module MSpec
 
         #RHO    
         puts "FAIL: #{current} - #{exc.message}\n" + (@backtrace ? exc.backtrace.join("\n") : "")   
+        @exc_locations << { 'message' => exc.message, 'backtrace' => exc.backtrace }
         @exc_count+=1   
         #RHO
 
