@@ -142,7 +142,9 @@ module MSpec
 
         info = { 'message' => exc.message, 'backtrace' => exc.backtrace }
 
-        key = current.state.description
+        key = location.to_s
+        key = current.state.description if current and current.state and current.state.description
+        key = 'unknown' if key.nil?
 
         if @exc_locations[key].nil?
           @exc_locations[key] = []
