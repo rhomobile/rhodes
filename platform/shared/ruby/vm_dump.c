@@ -510,13 +510,24 @@ darwin_sigtramp:
 # define HAVE_BACKTRACE 0
 #endif
 
+#if defined(OS_UWP)
+#include <windows.h>
+#include <DbgHelp.h>
+//#include <ImageHlp.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "common/RhoPort.h"
+#endif
+
 #if HAVE_BACKTRACE
 # include <execinfo.h>
 //RHO
 #elif defined(_WIN32) && !defined(OS_WINCE)
+#ifndef OS_UWP
 # include <imagehlp.h>
+#endif
 # ifndef SYMOPT_DEBUG
-#  define SYMOPT_DEBUG 0x80000000
+# define SYMOPT_DEBUG 0x80000000
 # endif
 # ifndef MAX_SYM_NAME
 # define MAX_SYM_NAME 2000
@@ -640,7 +651,15 @@ dump_thread(void *arg)
 		    frame.AddrBStore.Offset = context.RsBSP;
 		    frame.AddrStack.Mode = AddrModeFlat;
 		    frame.AddrStack.Offset = context.IntSp;
-#else	/* i386 */
+#elif defined(_M_ARM)
+			mac = IMAGE_FILE_MACHINE_ARM;
+			frame.AddrPC.Mode = AddrModeFlat;
+			frame.AddrPC.Offset = context.Pc;
+			frame.AddrFrame.Mode = AddrModeFlat;
+			frame.AddrFrame.Offset = context.Sp;
+			frame.AddrStack.Mode = AddrModeFlat;
+			frame.AddrStack.Offset = context.R11;
+#else/* i386 */
 		    mac = IMAGE_FILE_MACHINE_I386;
 		    frame.AddrPC.Mode = AddrModeFlat;
 		    frame.AddrPC.Offset = context.Eip;
