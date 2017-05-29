@@ -127,6 +127,10 @@ class Object
   end
 
   def ruby_exe(code, opts = {})
+
+    #RHO not supported
+    return ''
+
     if opts[:dir]
       raise "ruby_exe(..., dir: dir) is no longer supported, use Dir.chdir"
     end
