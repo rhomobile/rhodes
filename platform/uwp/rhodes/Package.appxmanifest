@@ -1,38 +1,38 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="caa0300f-1021-40aa-bb98-27c5547616fa" Publisher="CN=TauTechnology" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="caa0300f-1021-40aa-bb98-27c5547616fa" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+<?xml version='1.0' encoding='UTF-8'?>
+<Package IgnorableNamespaces='uap mp' xmlns:mp='http://schemas.microsoft.com/appx/2014/phone/manifest' xmlns:uap='http://schemas.microsoft.com/appx/manifest/uap/windows10' xmlns='http://schemas.microsoft.com/appx/manifest/foundation/windows10'>
+  <Identity Name='caa0300f-1021-40aa-bb98-27c5547616fa' Publisher='CN=TauTechnology' Version='1.0.0.0'/>
+  <mp:PhoneIdentity PhoneProductId='caa0300f-1021-40aa-bb98-27c5547616fa' PhonePublisherId='00000000-0000-0000-0000-000000000000'/>
   <Properties>
-    <DisplayName>rhodes</DisplayName>
-    <PublisherDisplayName>TauTechnology</PublisherDisplayName>
+    <DisplayName>kitchensinkRuby</DisplayName>
+    <PublisherDisplayName>rhomobile</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+    <TargetDeviceFamily MaxVersionTested='10.0.0.0' MinVersion='10.0.0.0' Name='Windows.Universal'/>
   </Dependencies>
   <Resources>
-    <Resource Language="x-generate" />
+    <Resource Language='x-generate'/>
   </Resources>
   <Applications>
-    <Application Id="x1ef3a390ya41ay0134yeff9y60f81db5e3c0x" Executable="$targetnametoken$.exe" EntryPoint="rhodes.App">
-      <uap:VisualElements DisplayName="rhodes" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="rhodes" BackgroundColor="#464646">
-        <uap:DefaultTile Square71x71Logo="Assets\Square71x71Logo.png">
+    <Application EntryPoint='rhodes.App' Executable='$targetnametoken$.exe' Id='x1ef3a390ya41ay0134yeff9y60f81db5e3c0x'>
+      <uap:VisualElements BackgroundColor='#464646' Description='kitchensinkRuby' DisplayName='kitchensinkRuby' Square150x150Logo='Assets\Square150x150Logo.png' Square44x44Logo='Assets\Square44x44Logo.png'>
+        <uap:DefaultTile Square71x71Logo='Assets\Square71x71Logo.png'>
           <uap:ShowNameOnTiles>
-            <uap:ShowOn Tile="square150x150Logo" />
+            <uap:ShowOn Tile='square150x150Logo'/>
           </uap:ShowNameOnTiles>
         </uap:DefaultTile>
-        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="black" />
+        <uap:SplashScreen BackgroundColor='black' Image='Assets\SplashScreen.png'/>
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="AgHost.BackgroundTask">
+        <Extension Category='windows.backgroundTasks' EntryPoint='AgHost.BackgroundTask'>
           <BackgroundTasks>
-            <Task Type="systemEvent" />
+            <Task Type='systemEvent'/>
           </BackgroundTasks>
         </Extension>
       </Extensions>
     </Application>
   </Applications>
   <Capabilities>
-    <Capability Name="internetClient" />
+    <Capability Name='internetClient'/>
   </Capabilities>
 </Package>
