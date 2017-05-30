@@ -15,6 +15,9 @@ class Object
   #     end
   #   end
   def argf(argv)
+    #RHO
+    raise 'RHO: not supported'
+
     if argv.empty? or argv.length > 2
       raise "Only 1 or 2 filenames are allowed for the argf helper so files can be properly closed: #{argv.inspect}"
     end
