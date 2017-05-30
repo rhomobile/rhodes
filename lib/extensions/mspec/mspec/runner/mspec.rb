@@ -6,6 +6,7 @@ module MSpec
   #RHO
   @count = 0
   @exc_count = 0
+  @not_supported_count = 0
   @exc_locations = {}
   #RHO
 
@@ -48,6 +49,10 @@ module MSpec
   def self.exc_locations
     @exc_locations
   end
+
+  def self.not_supported_count
+    @not_supported_count
+  end
 #RHO
 
   def self.describe(mod, options=nil, &block)
@@ -68,6 +73,7 @@ module MSpec
     #RHO
     @count = 0
     @exc_count  = 0
+    @not_supported_count = 0
     @exc_locations = {}
     #RHO
 
@@ -140,7 +146,9 @@ module MSpec
         #RHO    
         puts "FAIL: #{current} - #{exc.message}\n" + (@backtrace ? exc.backtrace.join("\n") : "")
 
-        info = { 'message' => exc.message, 'backtrace' => exc.backtrace }
+        not_supported = (exc.message=='RHO: not supported')
+
+        info = { 'message' => exc.message, 'backtrace' => exc.backtrace, 'not_supported' => not_supported }
 
         key = location.to_s
         key = current.state.description if current and current.state and current.state.description
@@ -153,7 +161,11 @@ module MSpec
         @exc_locations[key] << info
 
         #@exc_locations << { 'spec' => current, 'message' => exc.message, 'backtrace' => exc.backtrace }
-        @exc_count+=1   
+        if not_supported
+          @not_supported_count+=1
+        else
+          @exc_count+=1   
+        end
         #RHO
 
       return false
