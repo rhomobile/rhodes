@@ -4242,8 +4242,10 @@ namespace "run" do
 
         cp_r File.join(oldDir, "."), newDir
 
-        cp File.join(ENV['QTDIR'], "bin/Qt5Core.dll"), newDir
-
+        qtdir = ENV['QTDIR']
+        if !qtdir.nil?
+          cp File.join(qtdir, "bin/Qt5Core.dll"), newDir
+        end
         args << "-remote-debugging-port=9090"
 
         cmd = File.join(newDir, 'rhosimulator.exe')

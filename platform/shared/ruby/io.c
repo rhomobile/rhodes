@@ -7355,8 +7355,8 @@ rb_write_error_str(VALUE mesg)
 	size_t len = (size_t)RSTRING_LEN(mesg);
 //RHO
 #if defined(_WIN32) && !defined(OS_WINCE)
-	if (isatty(fileno(stderr))) {
-	    if (rb_w32_write_console(mesg, fileno(stderr)) > 0) return;
+	if (isatty(fpfileno(stderr))) {
+	    if (rb_w32_write_console(mesg, fpfileno(stderr)) > 0) return;
 	}
 #endif
 	if (fwrite(RSTRING_PTR(mesg), sizeof(char), len, stderr) < len) {
