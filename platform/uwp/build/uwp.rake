@@ -29,6 +29,24 @@ namespace "config" do
     $current_platform = "uwp" unless $current_platform
   end
 
+  task :release do
+    targetsdk = 'ARM'
+    targetsdk = $app_config["uwp"]["target"] if $app_config["uwp"] && $app_config["uwp"]["target"]
+    if targetsdk == 'ARM' || targetsdk == 'arm'
+      $sdk = 'ARM'
+      $build_config = 'Release'
+      puts "Building ARM application"
+    elsif targetsdk == 'X86' || targetsdk == 'x86'
+      $sdk = 'Win32'
+      $build_config = 'Release'
+      puts "Building x86 application"
+    else
+      puts "Wrong target sdk, choose 'x86' or 'ARM'"
+      exit 1 
+    end
+
+  end
+
   task :uwp_ARM_Release do
     $sdk = 'ARM'
     $build_config = 'Release'
@@ -464,7 +482,7 @@ namespace "device" do
   namespace "uwp" do
 
     desc "Build production for device"
-    task :production => ["config:uwp_ARM_Release", "build:uwp:package"] do
+    task :production => ["config:release", "build:uwp:package"] do
       puts "Now you can install application and dependencies by using the Windows PowerShell command [Add-AppxPackage -Path \"Path to Appx file\"]."
     end
 
