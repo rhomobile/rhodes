@@ -60,7 +60,7 @@ namespace RhoAppRunner
             try
             {
                 if (useEmulator)
-                    cDevice = UWPSDK.GetConnectableDevices(false).First(d => (d.Name.StartsWith("Mobile ") && d.Name.Contains("2GB") && d.IsEmulator()));
+                    cDevice = UWPSDK.GetConnectableDevices(false).Last(d => (d.Name.StartsWith("Mobile ") && d.Name.Contains("2GB") && d.IsEmulator()));
                 else
                     cDevice = UWPSDK.GetConnectableDevices(false).First(d => d.Name.StartsWith("Device") || d.Name.StartsWith("Windows Phone 10 Device") || 
                     d.Name.StartsWith("Windows Phone Device") || d.Name.StartsWith("Windows phone"));

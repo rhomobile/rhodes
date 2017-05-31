@@ -131,7 +131,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;oldnames.lib;wininet.lib;ws2_32.lib;Crypt32.lib;gdiplus.lib;gdi32.lib;winspool.lib;comdlg32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -158,7 +158,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;oldnames.lib;wininet.lib;ws2_32.lib;Crypt32.lib;gdiplus.lib;gdi32.lib;winspool.lib;comdlg32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -184,7 +184,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;oldnames.lib;wininet.lib;ws2_32.lib;Crypt32.lib;gdiplus.lib;gdi32.lib;winspool.lib;comdlg32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -210,7 +210,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;oldnames.lib;wininet.lib;ws2_32.lib;Crypt32.lib;gdiplus.lib;gdi32.lib;winspool.lib;comdlg32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -237,7 +237,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;oldnames.lib;wininet.lib;ws2_32.lib;Crypt32.lib;gdiplus.lib;gdi32.lib;winspool.lib;comdlg32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -262,7 +262,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;oldnames.lib;wininet.lib;ws2_32.lib;Crypt32.lib;gdiplus.lib;gdi32.lib;winspool.lib;comdlg32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
