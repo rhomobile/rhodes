@@ -1229,14 +1229,15 @@ namespace "build" do
         puts "Deploy libs from msvc #{$vs_version}"
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.CRT")
         vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.OPENMP")
-        #if deploymsvc
-          #cp File.join(vsredistdir, "msvcp140.dll"), $target_path
-          #cp File.join(vsredistdir, "concrt140.dll"), $target_path
-          #cp File.join(vsredistdir, "vccorlib140.dll"), $target_path
-          #cp File.join(vsredistdir, "vcruntime140.dll"), $target_path
-          #cp File.join(vsredistdir2, "vcomp140.dll"), $target_path
+        if deploymsvc
+          cp File.join(vsredistdir, "msvcp140.dll"), $target_path if !File.exists?(File.join($target_path, "msvcp140.dll"))
+          cp File.join(vsredistdir, "concrt140.dll"), $target_path if !File.exists?(File.join($target_path, "concrt140.dll"))
+          cp File.join(vsredistdir, "vccorlib140.dll"), $target_path if !File.exists?(File.join($target_path, "vccorlib140.dll"))
+          cp File.join(vsredistdir, "vcruntime140.dll"), $target_path if !File.exists?(File.join($target_path, "vcruntime140.dll"))
+          cp File.join(vsredistdir2, "vcomp140.dll"), $target_path if !File.exists?(File.join($target_path, "vcomp140.dll"))
           #cp File.join($vscommontools, "../../VC/bin/d3dcompiler_47.dll"), $target_path
-        #end
+          puts "Joining msvc140 libs"
+        end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
       else
@@ -1410,6 +1411,7 @@ namespace "build" do
                     raise "#{targetFile} not found" unless File.file?(targetFile)
 
                     Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
+                    #cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
 
                   rescue Exception => e
 
@@ -2303,8 +2305,9 @@ namespace "run" do
     Rake::Task["build:win32:deployqt"].invoke unless $prebuild_win32
 
     cp $qt_icon_path, $target_path + "/icon.png"
+    cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
 
-    args = [' ']
+    args = ['--remote-debugging-port=9090']
     #    chdir rundir
     #    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
     Jake.run2 exefile, args, {:directory => rundir, :nowait => true}

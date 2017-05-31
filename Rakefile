@@ -4233,7 +4233,20 @@ namespace "run" do
         else
           path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
         end
-        cmd = path
+
+        oldDir = File.join( $startdir, "platform/win32/RhoSimulator" )
+        newDir = File.join( $startdir, "platform/win32/RhoSimulatorRunnable" )
+
+        rm_rf newDir if Dir.exist?(newDir)
+        FileUtils.mkpath newDir
+
+        cp_r File.join(oldDir, "."), newDir
+
+        cp File.join(ENV['QTDIR'], "bin/Qt5Core.dll"), newDir
+
+        args << "-remote-debugging-port=9090"
+
+        cmd = File.join(newDir, 'rhosimulator.exe')
       elsif RUBY_PLATFORM =~ /darwin/
         if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
           path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.app" )

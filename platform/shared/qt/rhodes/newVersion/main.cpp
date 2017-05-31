@@ -110,8 +110,11 @@ char* parseToken(const char* start)
 
 int main(int argc, char *argv[])
 {
+    //argc = 1;
     QApplication app(argc, argv);
+#ifdef RHODES_MAC_BUILD
     qputenv("QTWEBENGINE_REMOTE_DEBUGGING", QString::number(QtMainWindow::getDebPort()).toLocal8Bit());
+#endif
     QtWebEngine::initialize();
     qRegisterMetaType<QTextCursor>("QTextCursor");
     qRegisterMetaType<QString>("QString");
@@ -121,8 +124,6 @@ int main(int argc, char *argv[])
 #ifdef RHODES_EMULATOR
     bool isJSApp = false;
 #endif
-
-
     CMainWindow* m_appWindow = CMainWindow::getInstance();
 
     m_logPort = String("11000");
@@ -269,6 +270,11 @@ int main(int argc, char *argv[])
 
     if (RHOCONF().getString("test_push_client").length() > 0 )
         rho_clientregister_create(RHOCONF().getString("test_push_client").c_str());//"qt_client");
+
+    RAWLOGC_INFO("QTMain argv", QString::number(argc).toStdString().c_str());
+    for(int i = 0; i < argc; i++){
+        RAWLOGC_INFO("QTMain args", argv[i]);
+    }
 
     // RunMessageLoop:
     m_appWindow->messageLoop();
