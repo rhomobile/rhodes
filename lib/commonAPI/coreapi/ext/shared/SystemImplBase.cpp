@@ -84,7 +84,7 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
     else if ( strPlatform.compare("iphone") == 0 )
         oResult.set( L"APPLE" );
     else
-        oResult.set( L"UNKNOWN" );
+        oResult.set( strPlatform );
 
 #else //!RHODES_EMULATOR
 

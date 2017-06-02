@@ -4206,6 +4206,8 @@ namespace "run" do
         sim_conf += "#{key}=#{value}\r\n"
       end
 
+      sim_conf += "platform=#{RUBY_PLATFORM}\r\n"
+
       fname = File.join(fdir, 'rhosimconfig.txt')
       File.open(fname, "wb") do |fconf|
         fconf.write( sim_conf )
