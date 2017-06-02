@@ -179,10 +179,12 @@ module RbConfig
   
 
   #CONFIG["host_os"] = "darwin16.3.0"
+
+  platform = System.get_property('platform')
   
-if ( System.get_property('platform') == 'WINDOWS' ) || ( System.get_property('platform') == 'WINDOWS_DESKTOP' )
+  if ( (platform=~/WINDOWS/) || (platform=~/(win|w)32$/) )
     CONFIG["host_os"] = "mingw32"
-  elsif ( System.get_property('platform') == 'APPLE' )    
+  elsif ( (platform=~/APPLE/) || (platform=~/darwin/) )    
     CONFIG["host_os"] = "darwin"
   else
     CONFIG["host_os"] = "linux"
