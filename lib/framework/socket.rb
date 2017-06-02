@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require 'socket.so'
+#RHO
+#require 'socket.so'
 require 'io/wait'
 
 class Addrinfo
