@@ -55,7 +55,7 @@ platform/shared/ruby/loadpath.c
 platform/shared/ruby/localeinit.c
 platform/shared/ruby/marshal.c
 platform/shared/ruby/math.c
-platform/shared/ruby/miniprelude.c
+platform/shared/ruby/prelude.c
 platform/shared/ruby/missing/acosh.c
 platform/shared/ruby/missing/cbrt.c
 platform/shared/ruby/missing/crypt.c
@@ -123,3 +123,5 @@ platform/shared/ruby/ext/socket/tcpsocket.c
 platform/shared/ruby/ext/socket/udpsocket.c
 platform/shared/ruby/ext/socket/unixserver.c
 platform/shared/ruby/ext/socket/unixsocket.c
+platform/shared/ruby/ext/io/nonblock/nonblock.c
+platform/shared/ruby/ext/io/wait/wait.c

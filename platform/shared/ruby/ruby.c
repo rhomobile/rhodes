@@ -1265,11 +1265,13 @@ proc_options(long argc, char **argv, struct cmdline_options *opt, int envopt)
     return argc0 - argc;
 }
 
-static void
+/*static*/ //RHO
+void
 ruby_init_prelude(void)
 {
     Init_prelude();
-    rb_const_remove(rb_cObject, rb_intern_const("TMP_RUBY_PREFIX"));
+    //RHO
+    //rb_const_remove(rb_cObject, rb_intern_const("TMP_RUBY_PREFIX"));
 }
 
 static int

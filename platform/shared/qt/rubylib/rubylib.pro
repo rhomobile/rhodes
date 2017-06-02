@@ -99,7 +99,8 @@ unix:!macx {
   OBJECTS_DIR = ../../../linux/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/linux
   HEADERS += ../../ruby/linux/ruby/config.h
-  SOURCES += ../../ruby/miniprelude.c\
+  SOURCES += \
+#../../ruby/miniprelude.c\
 ../../ruby/missing/acosh.c\
 ../../ruby/missing/cbrt.c\
 ../../ruby/missing/crypt.c\
@@ -221,7 +222,7 @@ SOURCES += \
 ../../ruby/localeinit.c \
 ../../ruby/marshal.c \
 ../../ruby/math.c \
-../../ruby/miniprelude.c \
+../../ruby/prelude.c \
 #../../ruby/newline.c \
 ../../ruby/node.c \
 ../../ruby/numeric.c \
@@ -260,4 +261,6 @@ SOURCES += \
 ../../ruby/vm_trace.c \
 ../../ruby/ext/strscan/strscan.c \
 ../../ruby/ext/stringio/stringio.c \
-../../ruby/rhoinit.c
+../../ruby/rhoinit.c \
+../../ruby/ext/io/nonblock/nonblock.c \
+../../ruby/ext/io/wait/wait.c

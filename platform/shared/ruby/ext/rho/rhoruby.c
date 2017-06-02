@@ -80,6 +80,8 @@ extern void Init_RhoEvent(void);
 extern void Init_Calendar(void);
 extern void Init_Extensions(void);
 extern void init_rhoext_Signature();
+extern void Init_encdb(void);
+extern void ruby_init_prelude(void);
 
 
 //RhoSupport extension
@@ -206,6 +208,7 @@ void RhoRubyStart()
 #endif
 
     ruby_init();
+    Init_encdb();
 
 #if defined(DEBUG)
     //enable_gc_profile();
@@ -215,6 +218,9 @@ void RhoRubyStart()
     ruby_init_loadpath(szRoot);
 
     RhoModifyRubyLoadPath( szRoot );
+
+    ruby_init_prelude();
+    
 
 #if !defined(OS_WP8) && !defined(OS_UWP)
 
