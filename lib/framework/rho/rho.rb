@@ -639,7 +639,7 @@ end
                 end
 
                 #strIndName = "rhoIndex" + (is_unique ? "U" : "" ) + "_#{nInd}"
-                strIndex = "CREATE #{strUnique} INDEX \"#{index_name}\" on #{src_name} (#{strCols});\r\n"
+                strIndex = "CREATE #{strUnique} INDEX \"#{index_name}\" ON \"#{src_name}\" (#{strCols});\r\n"
                 strRes += strIndex
                 nInd += 1
             end

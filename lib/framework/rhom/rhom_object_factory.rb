@@ -147,7 +147,7 @@ module Rhom
                   
                   if is_schema_source()
                     #res = db.select_from_table(get_schema_table_name(),'object').length
-                    db_res =  db.execute_sql("SELECT COUNT(*) FROM " + get_schema_table_name())
+                    db_res =  db.execute_sql("SELECT COUNT(*) FROM \"#{get_schema_table_name}\"")
                     #puts "db_res : #{db_res}"
                     if db_res && db_res.length() > 0 
                         res = db_res[0].values[0] 
@@ -1036,9 +1036,9 @@ module Rhom
                                 sql.chomp!
                                 sql.chop!
                                 sql << " FROM object_values ov \n"
-                                sql << "where " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
-                                sql << "group by object\n"
-                                sql << "order by " + make_sql_order(args[1]) if !block_given? && order_attr
+                                sql << "WHERE " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
+                                sql << "GROUP BY object\n"
+                                sql << "ORDER BY " + make_sql_order(args[1]) if !block_given? && order_attr
                                 #sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
                                 sql << ") WHERE " + condition_str if condition_str
                                 sql << strLimit if strLimit
@@ -1052,7 +1052,7 @@ module Rhom
                     else #schema source
                        attribs = attribs.join(',') if attribs.is_a?(Array)
                        
-                       sql << "SELECT #{attribs} FROM #{get_schema_table_name}"
+                       sql << "SELECT #{attribs} FROM \"#{get_schema_table_name}\""
                        vals = []
                        if where_cond and where_cond.length > 0
                            sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(where_cond)
@@ -1067,7 +1067,7 @@ module Rhom
                            sql << " WHERE " + sqlCond if sqlCond.length() > 0
                        end
                            
-                       sql << " order by " + make_sql_order(args[1]) if !block_given? && order_attr
+                       sql << " ORDER BY " + make_sql_order(args[1]) if !block_given? && order_attr
                        sql << strLimit if strLimit
                        
                        #puts "Database query start" #: #{sql}"
@@ -1334,7 +1334,7 @@ module Rhom
                         convertConditionToStatement(conditions, op, sqlCond, vals)
                       
                         if is_sync_source()
-                            sql = "SELECT object FROM #{tableName}"
+                            sql = "SELECT object FROM \"#{tableName}\""
                             #sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
                             #sql << " WHERE " + condition_str if condition_str
                             sql << " WHERE " + sqlCond if sqlCond.length() > 0
@@ -1354,14 +1354,14 @@ module Rhom
                                         "update_type"=>'delete'})
                                 end        
                                 
-                                sql = "DELETE FROM #{tableName} WHERE object=?"
+                                sql = "DELETE FROM \"#{tableName}\" WHERE object=?"
                                 values = [ item['object'] ]
                                 
                                 db.execute_sql(sql,values)
                             end
                             
                         else #just delete objects
-                            sql = "DELETE FROM #{tableName}"
+                            sql = "DELETE FROM \"#{tableName}\""
                             #sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
                             #sql << " WHERE " + condition_str if condition_str
                             sql << " WHERE " + sqlCond if sqlCond.length() > 0
@@ -1372,7 +1372,7 @@ module Rhom
                         
                         if !conditions
                             if is_sync_source()                        
-                                listObjs = db.execute_sql("SELECT DISTINCT(object) FROM #{tableName} WHERE source_id=?", get_source_id() )
+                                listObjs = db.execute_sql("SELECT DISTINCT(object) FROM \"#{tableName}\" WHERE source_id=?", get_source_id() )
                             else
                                 db.delete_from_table(tableName, {"source_id"=>get_source_id()} )
                             end    
@@ -1571,9 +1571,9 @@ module Rhom
                 begin
                     db.lock_db()
                     if isSchemaSrc
-                        existing_attribs = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? LIMIT 1 OFFSET 0",obj)
+                        existing_attribs = db.execute_sql("SELECT object FROM \"#{tableName}\" WHERE object=? LIMIT 1 OFFSET 0",obj)
                     else
-                        existing_attribs = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
+                        existing_attribs = db.execute_sql("SELECT object FROM \"#{tableName}\" WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
                     end
                     
                     unless existing_attribs && existing_attribs.length > 0                     
