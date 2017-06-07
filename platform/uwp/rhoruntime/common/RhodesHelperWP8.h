@@ -100,7 +100,7 @@ extern "C" {
 }
 #endif //__cplusplus
 
-#if (defined(_WP8_LIB) || defined(_UWP_LIB)) && !defined(_WINRT_DLL)
+#if defined(_UWP_LIB) && !defined(_WINRT_DLL)
 #define CreateFileW Rho_CreateFileW
 #define CreateFileA Rho_CreateFileW
 #define CreateFile Rho_CreateFileW

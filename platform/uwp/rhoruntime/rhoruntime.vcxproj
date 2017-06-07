@@ -36,7 +36,7 @@
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
     <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformMinVersion>10.0.10586.0</WindowsTargetPlatformMinVersion>
+    <WindowsTargetPlatformMinVersion>10.0.14393.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
     <WinMDAssembly>true</WinMDAssembly>
   </PropertyGroup>
@@ -137,6 +137,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,6 +146,9 @@
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;libcurl.lib;rholib.lib;rubylib.lib;sqlite3.lib;syncengine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
       <SubSystem>Console</SubSystem>
@@ -171,6 +175,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -179,6 +184,9 @@
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;libcurl.lib;rholib.lib;rubylib.lib;sqlite3.lib;syncengine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
     <Lib>
       <SubSystem>Console</SubSystem>
@@ -205,6 +213,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -213,6 +222,9 @@
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;libcurl.lib;rholib.lib;rubylib.lib;sqlite3.lib;syncengine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
       <SubSystem>Console</SubSystem>
@@ -238,6 +250,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -246,6 +259,9 @@
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;libcurl.lib;rholib.lib;rubylib.lib;sqlite3.lib;syncengine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -269,6 +285,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -277,6 +294,9 @@
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;libcurl.lib;rholib.lib;rubylib.lib;sqlite3.lib;syncengine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
     <Lib>
       <SubSystem>Console</SubSystem>
@@ -297,6 +317,10 @@
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
       <AdditionalIncludeDirectories>../../shared;../../shared/ruby/include;../../shared/curl/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAsManaged>false</CompileAsManaged>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -305,6 +329,9 @@
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;libcurl.lib;rholib.lib;rubylib.lib;sqlite3.lib;syncengine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
@@ -343,6 +370,9 @@
     <ClCompile Include=".\pch_rhoruntime.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="Microsoft.UniversalCRT.Debug, Version=10.0.14393.0" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

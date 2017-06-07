@@ -284,7 +284,7 @@ rb_fix_detect_o_cloexec(int fd)
 int
 rb_cloexec_open(const char *pathname, int flags, mode_t mode)
 {
-    int ret;
+    int ret = 0;
     static int o_cloexec_state = -1; /* <0: unknown, 0: ignored, >0: working */
 
 #ifdef O_CLOEXEC
@@ -5482,7 +5482,7 @@ rb_sysopen_internal(struct sysopen_struct *data)
 static int
 rb_sysopen(VALUE fname, int oflags, mode_t perm)
 {
-    int fd;
+    int fd = 0;
     struct sysopen_struct data;
 
     data.fname = rb_str_encode_ospath(fname);

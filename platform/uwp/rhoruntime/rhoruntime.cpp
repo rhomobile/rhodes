@@ -378,7 +378,7 @@ extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
 
 extern "C" const char* rho_native_rhopath()
 {
-    return "rho/"; //rho/apps?
+    return "rho"; //rho/apps?
 }
 
 

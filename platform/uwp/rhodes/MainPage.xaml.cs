@@ -195,6 +195,7 @@ namespace rhodes
             return getAppBar().IsOpen;
         }
 
+
         public MainPage()
         {
             deb("Running constructor");
@@ -230,6 +231,7 @@ namespace rhodes
             try{
                 // initialize C# extensions factories
                 deb("InitializeExtensions()");
+                
                 CSharpExtensions.InitializeExtensions();
 
                 // create rhodes runtime object
@@ -661,13 +663,18 @@ namespace rhodes
 
         private void updateAppBarModeAndVisibility(bool autoToolbarVisibility = true)
         {
+            if (autoToolbarVisibility) { deb("Tool bar visible"); }
+            else { deb("Tool bar invisible"); }
+
             getAppBar().Visibility = autoToolbarVisibility ? Visibility.Visible : Visibility.Collapsed;
+            //getAppBar().IsSticky = autoToolbarVisibility ? 
             if (autoToolbarVisibility && (getAppBar().PrimaryCommands.Count > 0))
             {
                 getAppBar().ClosedDisplayMode = AppBarClosedDisplayMode.Compact;
                 getAppBar().IsOpen = true;
                 //ApplicationBar.IsMenuEnabled = true;
                 getAppBar().Opacity = 1.0;
+                deb("Tool bar type 1");
             }
             else if (getAppBar().PrimaryCommands.Count > 0)
             {
@@ -675,6 +682,7 @@ namespace rhodes
                 getAppBar().IsOpen = true;
                 //ApplicationBar.IsMenuEnabled = true;
                 getAppBar().Opacity = 0.75;
+                deb("Tool bar type 2");
             }
             else
             {
@@ -682,6 +690,7 @@ namespace rhodes
                 getAppBar().IsOpen = false;
                 //ApplicationBar.IsMenuEnabled = false;
                 getAppBar().Opacity = 1.0;
+                deb("Tool bar type 3");
             }
         }
 
@@ -689,7 +698,7 @@ namespace rhodes
 
         public void toolbarRemoveAllButtons()
         {
-            
+            deb("Removing buttons");
             if (!isUIThread) { InvokeInUIThread(delegate() { toolbarRemoveAllButtons(); }); return; }
 
             foreach(ICommandBarElement value in getAppBar().PrimaryCommands.ToList()){

@@ -4237,18 +4237,19 @@ namespace "run" do
         end
 
         oldDir = File.join( $startdir, "platform/win32/RhoSimulator" )
-        newDir = File.join( $startdir, "platform/win32/RhoSimulatorRunnable" )
+        newDir = oldDir
+        #newDir = File.join( $startdir, "platform/win32/RhoSimulatorRunnable" )
 
-        rm_rf newDir if Dir.exist?(newDir)
-        FileUtils.mkpath newDir
+        #rm_rf newDir if Dir.exist?(newDir)
+        #FileUtils.mkpath newDir
 
-        cp_r File.join(oldDir, "."), newDir
+        #cp_r File.join(oldDir, "."), newDir
 
         qtdir = ENV['QTDIR']
         if !qtdir.nil?
           cp File.join(qtdir, "bin/Qt5Core.dll"), newDir
+          args << "-remote-debugging-port=9090"
         end
-        args << "-remote-debugging-port=9090"
 
         cmd = File.join(newDir, 'rhosimulator.exe')
       elsif RUBY_PLATFORM =~ /darwin/

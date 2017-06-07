@@ -49,14 +49,9 @@
 #include <processthreadsapi.h>
 #include <wtypesbase.h>
 #include "../../../../uwp/rhoruntime/common/RhodesHelperWP8.h"
-//#define rb_w32_wopen _wopen
-
 #if _MSC_VER >= 1400
 #include <crtdbg.h>
 #include <rtcapi.h>
-#endif
-#ifdef __MINGW32__
-#include <mswsock.h>
 #endif
 
 #include "uwp.h"
@@ -72,7 +67,6 @@
 #include <ObjIdl.h>
 #include <ShlObj.h>
 #include <WinBase.h>
-
 
 #define isdirsep(x) ((x) == '/' || (x) == '\\')
 
@@ -135,7 +129,6 @@ int rb_w32_reparse_symlink_p(const WCHAR *path);
 
 #include "../posixnames.h"
 
-
 static struct ChildRecord *CreateChild(const WCHAR *, const WCHAR *, SECURITY_ATTRIBUTES *, HANDLE, HANDLE, HANDLE, DWORD);
 static int has_redirection(const char *, UINT);
 int rb_w32_wait_events(HANDLE *events, int num, DWORD timeout);
@@ -144,6 +137,7 @@ static int wstati64(const WCHAR *path, struct stati64 *st);
 static int wlstati64(const WCHAR *path, struct stati64 *st);
 VALUE rb_w32_conv_from_wchar(const WCHAR *wstr, rb_encoding *enc);
 int ruby_brace_glob_with_enc(const char *str, int flags, ruby_glob_func *func, VALUE arg, rb_encoding *enc);
+static FARPROC get_proc_address(const char *module, const char *func, HANDLE *mh);
 
 #define RUBY_CRITICAL(expr) do { expr; } while (0)
 
@@ -494,15 +488,15 @@ regulate_path(WCHAR *path)
 static FARPROC
 get_proc_address(const char *module, const char *func, HANDLE *mh)
 {
-    HANDLE h;
+    HMODULE h = 0;
     FARPROC ptr;
 
     if (mh)
-	h = LoadLibrary(module);
+		h = LoadLibraryA(module);
     else
-	h = GetModuleHandle(module);
-    if (!h)
-	return NULL;
+		h = GetModuleHandleA(module);
+
+    if (!h) return NULL;
 
     ptr = GetProcAddress(h, func);
     if (mh) {
@@ -805,14 +799,12 @@ static int w32_cmdvector(const WCHAR *, char ***, UINT, rb_encoding *);
 void
 rb_w32_sysinit(int *argc, char ***argv)
 {
-#if RT_VER >= 80// && !defined(OS_WP8) && !defined(OS_UWP)
     static void set_pioinfo_extra(void);
 
     _CrtSetReportMode(_CRT_ASSERT, 0);
     _set_invalid_parameter_handler(invalid_parameter);
-    _RTC_SetErrorFunc(rtc_error_handler);
+    _RTC_SetErrorFuncW(rtc_error_handler);
     set_pioinfo_extra();
-#endif
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);
 
     get_version();
@@ -2084,7 +2076,7 @@ rb_w32_wstr_to_mbstr(UINT cp, const WCHAR *wstr, int clen, long *plen)
 WCHAR *
 rb_w32_mbstr_to_wstr(UINT cp, const char *str, int clen, long *plen)
 {
-    WCHAR *ptr;
+    WCHAR *ptr = 0;
     int len = MultiByteToWideChar(cp, 0, str, clen, NULL, 0);
     if (!(ptr = malloc(sizeof(WCHAR) * len))) return 0;
     MultiByteToWideChar(cp, 0, str, clen, ptr, len);
@@ -2422,7 +2414,7 @@ static inline ioinfo* _pioinfo(int);
 #define rb_acrt_lowio_lock_fh(i)   EnterCriticalSection(&_pioinfo(i)->lock)
 #define rb_acrt_lowio_unlock_fh(i) LeaveCriticalSection(&_pioinfo(i)->lock)
 
-#if RT_VER >= 80 //&& !defined(OS_WP8) && !defined(OS_UWP)
+#if defined(OS_UWP)
 static size_t pioinfo_extra = 0;	/* workaround for VC++8 SP1 */
 
 /* License: Ruby's */
@@ -5781,8 +5773,7 @@ w32_stati64(const char *path, struct stati64 *st, UINT cp)
     WCHAR *wpath;
     int ret;
 
-    if (!(wpath = mbstr_to_wstr(cp, path, -1, NULL)))
-	return -1;
+    if (!(wpath = mbstr_to_wstr(cp, path, -1, NULL))) return -1;
     ret = wstati64(wpath, st);
     free(wpath);
     return ret;
@@ -6169,8 +6160,7 @@ rb_w32_uopen(const char *file, int oflag, ...)
     pmode = va_arg(arg, int);
     va_end(arg);
 
-    if (!(wfile = utf8_to_wstr(file, NULL)))
-	return -1;
+    if (!(wfile = utf8_to_wstr(file, NULL))) return -1;
     ret = rb_w32_wopen(wfile, oflag, pmode);
     free(wfile);        
     return ret;

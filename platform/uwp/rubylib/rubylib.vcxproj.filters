@@ -488,9 +488,4 @@
       <Filter>ext\ringtones</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\shared\ruby\ext\navbar\navbar.i">
-      <Filter>ext\navbar</Filter>
-    </None>
-  </ItemGroup>
 </Project>
