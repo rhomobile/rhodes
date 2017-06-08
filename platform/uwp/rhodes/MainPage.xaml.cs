@@ -199,6 +199,8 @@ namespace rhodes
         public MainPage()
         {
             deb("Running constructor");
+            Windows.Storage.StorageFolder appInstalledFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            deb("Storage foleder is " + appInstalledFolder.Path);
             dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
             try
             {
@@ -253,9 +255,7 @@ namespace rhodes
                 deb("InitializeExtensions exceptions " + e.Message);
             }
             
-            Windows.Storage.StorageFolder appInstalledFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
             deb("User agent: " + _userAgent);
-            deb("Storage foleder is " + appInstalledFolder.Path);
             deb("Constructor ended");
 
         }

@@ -4,10 +4,6 @@
 #include "common/RhoDefs.h"
 
 //RHO
-#ifdef OS_WP8
-#include "wp8.h"
-#endif
-//RHO
 #ifdef OS_UWP
 #include "uwp.h"
 #endif

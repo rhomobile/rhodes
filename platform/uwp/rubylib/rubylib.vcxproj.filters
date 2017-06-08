@@ -89,6 +89,9 @@
     <Filter Include="ext\ringtones">
       <UniqueIdentifier>{4206d16c-7f9f-4e34-9740-7eef118a7cd4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ext\io">
+      <UniqueIdentifier>{daabe372-b131-449d-97a5-41db597078d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ruby\ext\rho\rhoruby.h">
@@ -405,7 +408,6 @@
     <ClCompile Include="..\..\shared\ruby\localeinit.c" />
     <ClCompile Include="..\..\shared\ruby\marshal.c" />
     <ClCompile Include="..\..\shared\ruby\math.c" />
-    <ClCompile Include="..\..\shared\ruby\miniprelude.c" />
     <ClCompile Include="..\..\shared\ruby\newline.c" />
     <ClCompile Include="..\..\shared\ruby\node.c" />
     <ClCompile Include="..\..\shared\ruby\numeric.c" />
@@ -486,6 +488,13 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\ringtones\ringtones_wrap.c">
       <Filter>ext\ringtones</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\prelude.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\io\nonblock\nonblock.c">
+      <Filter>ext\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\io\wait\wait.c">
+      <Filter>ext\io</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

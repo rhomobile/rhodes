@@ -58,7 +58,7 @@ namespace rho.common
             {
                 String[] values = files[i].Split('|');
 
-                String strFile    = "rho" + values[0];
+                String strFile    = "rho/" + values[0];
                 String strDstFile = strFile;
 
                 if (values[1] == "dir")

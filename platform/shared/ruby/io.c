@@ -296,13 +296,13 @@ rb_cloexec_open(const char *pathname, int flags, mode_t mode)
     ret = open(pathname, flags, mode);
     if (ret == -1) return -1;
     if (ret <= 2 || o_cloexec_state == 0) {
-	rb_maygvl_fd_fix_cloexec(ret);
+		rb_maygvl_fd_fix_cloexec(ret);
     }
     else if (o_cloexec_state > 0) {
-	return ret;
+		return ret;
     }
     else {
-	o_cloexec_state = rb_fix_detect_o_cloexec(ret);
+		o_cloexec_state = rb_fix_detect_o_cloexec(ret);
     }
     return ret;
 }
@@ -6653,7 +6653,7 @@ rb_io_open(VALUE filename, VALUE vmode, VALUE vperm, VALUE opt)
     perm = NIL_P(vperm) ? 0666 :  NUM2MODET(vperm);
 
     if (!NIL_P(cmd = check_pipe_command(filename))) {
-	return pipe_open_s(cmd, rb_io_oflags_modestr(oflags), fmode, &convconfig);
+		return pipe_open_s(cmd, rb_io_oflags_modestr(oflags), fmode, &convconfig);
     }
     else {
         return rb_file_open_generic(io_alloc(rb_cFile), filename,

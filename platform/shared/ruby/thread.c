@@ -1303,17 +1303,17 @@ call_without_gvl(void *(*func)(void *), void *data1,
 
     th->waiting_fd = -1;
     if (ubf == RUBY_UBF_IO || ubf == RUBY_UBF_PROCESS) {
-	ubf = ubf_select;
-	data2 = th;
+		ubf = ubf_select;
+		data2 = th;
     }
 
     BLOCKING_REGION({
-	val = func(data1);
-	saved_errno = errno;
+		val = func(data1);
+		saved_errno = errno;
     }, ubf, data2, fail_if_interrupted);
 
     if (!fail_if_interrupted) {
-	RUBY_VM_CHECK_INTS_BLOCKING(th);
+		RUBY_VM_CHECK_INTS_BLOCKING(th);
     }
 
     errno = saved_errno;

@@ -51,7 +51,9 @@
 #include "../../../../uwp/rhoruntime/common/RhodesHelperWP8.h"
 #if _MSC_VER >= 1400
 #include <crtdbg.h>
+//#ifndef _DEBUG
 #include <rtcapi.h>
+//#endif
 #endif
 
 #include "uwp.h"
@@ -333,7 +335,7 @@ rb_w32_osver(void)
     return osver.dwMajorVersion;
 }
 
-
+/*
 HANDLE
 GetCurrentThreadHandle(void)
 {
@@ -348,7 +350,7 @@ GetCurrentThreadHandle(void)
 	return NULL;
     return h;
 }
-
+*/
 /* simulate flock by locking a range on the file */
 
 /* License: Artistic or GPL */
@@ -435,7 +437,8 @@ translate_char(char *p, int from, int to, UINT cp)
 {
     while (*p) {
 	if ((unsigned char)*p == from)
-	    *p = to;
+
+//RHO		*p = to;
 	p = CharNextExA(cp, p, 0);
     }
     return p;
@@ -803,7 +806,10 @@ rb_w32_sysinit(int *argc, char ***argv)
 
     _CrtSetReportMode(_CRT_ASSERT, 0);
     _set_invalid_parameter_handler(invalid_parameter);
+	//TODO: fix this
+#ifdef _DEBUG
     _RTC_SetErrorFuncW(rtc_error_handler);
+#endif
     set_pioinfo_extra();
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);
 
@@ -2602,8 +2608,6 @@ init_stdhandle(void)
 {
     int nullfd = -1;
     int keep = 0;
-//	nullfd = open("NUL", O_RDWR);
-//	fpdup2(nullfd, stdin);
 #define open_null(fd)						\
     (((nullfd < 0) ?						\
       (nullfd = open("NUL", O_RDWR)) : 0),		\
@@ -2740,12 +2744,14 @@ getegid(void)
     return ROOT_GID;
 }
 
+/* License: Artistic or GPL */
 int
 setuid(rb_uid_t uid)
 { 
     return (uid == ROOT_UID ? 0 : -1);
 }
 
+/* License: Artistic or GPL */
 int
 setgid(rb_gid_t gid)
 {
@@ -3056,9 +3062,7 @@ compare(const struct timeval *t1, const struct timeval *t2)
     return 0;
 }
 
-#if !defined(OS_UWP)
 #undef Sleep
-#endif
 
 int rb_w32_check_interrupt(void *);	/* @internal */
 
@@ -6221,11 +6225,8 @@ rb_w32_wopen(const WCHAR *file, int oflag, ...)
 static int
 w32_wopen(const WCHAR *file, int oflag, int pmode)
 {
-	
-	_setmaxstdio(2048);
-	int maxStdio = _getmaxstdio();
     char flags = 0;
-    int fd;
+    int fd = 0;
     DWORD access;
     DWORD create;
     DWORD attr = FILE_ATTRIBUTE_NORMAL;
@@ -6253,11 +6254,11 @@ w32_wopen(const WCHAR *file, int oflag, int pmode)
     sec.nLength = sizeof(sec);
     sec.lpSecurityDescriptor = NULL;
     if (oflag & O_NOINHERIT) {
-	sec.bInheritHandle = FALSE;
-	flags |= FNOINHERIT;
+		sec.bInheritHandle = FALSE;
+		flags |= FNOINHERIT;
     }
     else {
-	sec.bInheritHandle = TRUE;
+		sec.bInheritHandle = TRUE;
     }
     oflag &= ~O_NOINHERIT;
 

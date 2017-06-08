@@ -139,21 +139,19 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;__MSVC_RUNTIME_CHECKS;_CRT_RTC_INIT;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <CompileAsManaged>false</CompileAsManaged>
-      <OpenMPSupport>true</OpenMPSupport>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -171,7 +169,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;__MSVC_RUNTIME_CHECKS;_CRT_RTC_INIT;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -179,12 +177,11 @@
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
       <CompileAsManaged>false</CompileAsManaged>
-      <OpenMPSupport>true</OpenMPSupport>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -192,7 +189,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;vcruntime.lib;MSVCPRT.LIB</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -202,21 +199,19 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;__MSVC_RUNTIME_CHECKS;_CRT_RTC_INIT;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <CompileAsManaged>false</CompileAsManaged>
-      <OpenMPSupport>true</OpenMPSupport>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -234,21 +229,19 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;__MSVC_RUNTIME_CHECKS;_CRT_RTC_INIT;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <CompileAsManaged>false</CompileAsManaged>
-      <OpenMPSupport>true</OpenMPSupport>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -266,7 +259,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;__MSVC_RUNTIME_CHECKS;_CRT_RTC_INIT;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -274,12 +267,11 @@
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
       <CompileAsManaged>false</CompileAsManaged>
-      <OpenMPSupport>true</OpenMPSupport>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -287,7 +279,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;vcruntime.lib;MSVCPRT.LIB</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -297,19 +289,18 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;__MSVC_RUNTIME_CHECKS;_CRT_RTC_INIT;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <Optimization>Disabled</Optimization>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
       <CompileAsManaged>false</CompileAsManaged>
-      <OpenMPSupport>true</OpenMPSupport>
       <SmallerTypeCheck>false</SmallerTypeCheck>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -317,7 +308,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;vcruntime.lib;MSVCPRT.LIB</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -668,6 +659,22 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\io\nonblock\nonblock.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\io\wait\wait.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\mapview\mapview_wrap.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
@@ -972,7 +979,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\miniprelude.c">
+    <ClCompile Include="..\..\shared\ruby\prelude.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -1526,11 +1533,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="Microsoft.UniversalCRT.Debug, Version=10.0.14393.0">
-      <Private>true</Private>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </SDKReference>
     <SDKReference Include="WindowsDesktop, Version=10.0.14393.0" />
     <SDKReference Include="WindowsMobile, Version=10.0.14393.0" />
   </ItemGroup>
