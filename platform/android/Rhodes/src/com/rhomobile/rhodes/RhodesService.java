@@ -1336,7 +1336,7 @@ public class RhodesService extends Service {
                 Logger.D(TAG, "Handling URI: " + url);
 
                 Intent intent = Intent.parseUri(url, 0);
-                ctx.startActivity(Intent.createChooser(intent, "Open in..."));
+                ctx.startActivity( intent );
             }
     }
 
