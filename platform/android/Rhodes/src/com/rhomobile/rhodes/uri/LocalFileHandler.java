@@ -82,9 +82,10 @@ public class LocalFileHandler implements UriHandler
         }
         intentFlags=Intent.FLAG_GRANT_READ_URI_PERMISSION;
         Intent intent = Intent.parseUri(url, intentFlags);
+        intent.setAction(Intent.ACTION_VIEW);
+
         if(newUri==null && url.contains("file://"))
-       {
-    	   intent.setAction(Intent.ACTION_VIEW);
+       {    	   
     	    try{
         	   String extension = MimeTypeMap.getFileExtensionFromUrl(url);
         	   String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
@@ -105,7 +106,8 @@ public class LocalFileHandler implements UriHandler
     	   
     	
    	   }
-        ctx.startActivity(Intent.createChooser(intent, "Open in..."));
+        //ctx.startActivity(Intent.createChooser(intent, "Open in..."));
+       ctx.startActivity(intent);
 
         return true;
     }
