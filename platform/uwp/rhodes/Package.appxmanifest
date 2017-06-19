@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<Package IgnorableNamespaces='uap mp' xmlns:mp='http://schemas.microsoft.com/appx/2014/phone/manifest' xmlns:uap='http://schemas.microsoft.com/appx/manifest/uap/windows10' xmlns='http://schemas.microsoft.com/appx/manifest/foundation/windows10'>
+<Package IgnorableNamespaces='uap mp uap3' xmlns:mp='http://schemas.microsoft.com/appx/2014/phone/manifest' xmlns:uap='http://schemas.microsoft.com/appx/manifest/uap/windows10' xmlns:uap3='http://schemas.microsoft.com/appx/manifest/uap/windows10/3' xmlns='http://schemas.microsoft.com/appx/manifest/foundation/windows10'>
   <Identity Name='caa0300f-1021-40aa-bb98-27c5547616fa' Publisher='CN=TauTechnology' Version='1.0.0.0'/>
   <mp:PhoneIdentity PhoneProductId='caa0300f-1021-40aa-bb98-27c5547616fa' PhonePublisherId='00000000-0000-0000-0000-000000000000'/>
   <Properties>
@@ -34,5 +34,29 @@
   </Applications>
   <Capabilities>
     <Capability Name='internetClient'/>
+    <Capability Name='allJoyn'/>
+    <Capability Name='codeGeneration'/>
+    <Capability Name='internetClientServer'/>
+    <Capability Name='privateNetworkClientServer'/>
+    <uap:Capability Name='appointments'/>
+    <uap:Capability Name='chat'/>
+    <uap:Capability Name='blockedChatMessages'/>
+    <uap:Capability Name='enterpriseAuthentication'/>
+    <uap:Capability Name='contacts'/>
+    <uap:Capability Name='musicLibrary'/>
+    <uap:Capability Name='phoneCall'/>
+    <uap:Capability Name='objects3D'/>
+    <uap:Capability Name='picturesLibrary'/>
+    <uap:Capability Name='videosLibrary'/>
+    <uap:Capability Name='removableStorage'/>
+    <uap:Capability Name='sharedUserCertificates'/>
+    <uap:Capability Name='userAccountInformation'/>
+    <uap3:Capability Name='userNotificationListener'/>
+    <uap:Capability Name='voipCall'/>
+    <DeviceCapability Name='bluetooth'/>
+    <DeviceCapability Name='microphone'/>
+    <DeviceCapability Name='location'/>
+    <DeviceCapability Name='proximity'/>
+    <DeviceCapability Name='webcam'/>
   </Capabilities>
 </Package>

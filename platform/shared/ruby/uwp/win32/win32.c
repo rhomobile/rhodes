@@ -48,7 +48,7 @@
 #include <shlwapi.h>
 #include <processthreadsapi.h>
 #include <wtypesbase.h>
-#include "../../../../uwp/rhoruntime/common/RhodesHelperWP8.h"
+
 #if _MSC_VER >= 1400
 #include <crtdbg.h>
 //#ifndef _DEBUG
@@ -69,10 +69,10 @@
 #include <ObjIdl.h>
 #include <ShlObj.h>
 #include <WinBase.h>
-
 #define isdirsep(x) ((x) == '/' || (x) == '\\')
 
 #include "logging/RhoLog.h"
+#include "../../../../uwp/rhoruntime/common/RhodesHelperWP8.h"
 
 #if defined _MSC_VER && _MSC_VER <= 1200
 # define CharNextExA(cp, p, flags) CharNextExA((WORD)(cp), (p), (flags))
@@ -81,6 +81,13 @@
 #if _WIN32_WINNT < 0x0600
 DWORD WINAPI GetFinalPathNameByHandleW(HANDLE, LPWSTR, DWORD, DWORD);
 #endif
+
+
+#define NULL_FILE  getLocalNullFile()
+HANDLE getNullHandler() {
+	return CreateFile(NULL_FILE, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+}
+
 
 static int w32_stati64(const char *path, struct stati64 *st, UINT cp);
 static int w32_lstati64(const char *path, struct stati64 *st, UINT cp);
@@ -2581,7 +2588,7 @@ rb_w32_open_osfhandle(intptr_t osfhandle, int flags)
 	fileflags |= FNOINHERIT;
 
     /* attempt to allocate a C Runtime file handle */
-    hF = CreateFile("NUL", 0, 0, NULL, OPEN_ALWAYS, 0, NULL);
+	hF = getNullHandler();
     fh = _open_osfhandle((intptr_t)hF, 0);
     CloseHandle(hF);
     if (fh == -1) {
@@ -2610,7 +2617,7 @@ init_stdhandle(void)
     int keep = 0;
 #define open_null(fd)						\
     (((nullfd < 0) ?						\
-      (nullfd = open("NUL", O_RDWR)) : 0),		\
+      (nullfd = open(NULL_FILE, O_RDWR)) : 0),		\
      ((nullfd == (fd)) ? (keep = 1) : fpdup2(nullfd, fd)),	\
      (fd))
 
@@ -6231,7 +6238,7 @@ w32_wopen(const WCHAR *file, int oflag, int pmode)
     DWORD create;
     DWORD attr = FILE_ATTRIBUTE_NORMAL;
     SECURITY_ATTRIBUTES sec;
-    HANDLE h;
+    HANDLE h = 0;
     int share_delete;
 
     share_delete = oflag & O_SHARE_DELETE ? FILE_SHARE_DELETE : 0;
@@ -6341,12 +6348,16 @@ w32_wopen(const WCHAR *file, int oflag, int pmode)
 	return -1;
     }
 
+	SetLastError(0);
+	int err = 0;
     /* allocate a C Runtime file handle */
     RUBY_CRITICAL({
-	h = CreateFile("NUL", 0, 0, NULL, OPEN_ALWAYS, 0, NULL);
+		h = getNullHandler();
+		err = GetLastError();
 	fd = _open_osfhandle((intptr_t)h, 0);
 	CloseHandle(h);
     });
+	err;
     if (fd == -1) {
 	errno = EMFILE;
 	return -1;
@@ -6380,8 +6391,7 @@ w32_wopen(const WCHAR *file, int oflag, int pmode)
 	    fd = -1;
 	    goto quit;
 	}
-	if (!(flags & (FDEV | FPIPE)) && (oflag & O_APPEND))
-	    flags |= FAPPEND;
+	if (!(flags & (FDEV | FPIPE)) && (oflag & O_APPEND)) flags |= FAPPEND;
 
 	_set_osfhnd(fd, (intptr_t)h);
 	_set_osflags(fd, flags | FOPEN);
@@ -6472,7 +6482,7 @@ rb_w32_pipe(int fds[2])
 
     RUBY_CRITICAL(do {
 	ret = 0;
-	h = CreateFile("NUL", 0, 0, NULL, OPEN_ALWAYS, 0, NULL);
+	h = getNullHandler();
 	fdRead = _open_osfhandle((intptr_t)h, 0);
 	CloseHandle(h);
 	if (fdRead == -1) {
@@ -6492,7 +6502,7 @@ rb_w32_pipe(int fds[2])
 	return ret;
 
     RUBY_CRITICAL(do {
-	h = CreateFile("NUL", 0, 0, NULL, OPEN_ALWAYS, 0, NULL);
+		h = getNullHandler();
 	fdWrite = _open_osfhandle((intptr_t)h, 0);
 	CloseHandle(h);
 	if (fdWrite == -1) {

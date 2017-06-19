@@ -150,6 +150,7 @@
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <UACExecutionLevel>HighestAvailable</UACExecutionLevel>
     </Link>
     <Lib>
       <SubSystem>Console</SubSystem>
@@ -190,6 +191,7 @@
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+      <UACExecutionLevel>HighestAvailable</UACExecutionLevel>
     </Link>
     <Lib>
       <SubSystem>Console</SubSystem>
@@ -229,6 +231,7 @@
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <UACExecutionLevel>HighestAvailable</UACExecutionLevel>
     </Link>
     <Lib>
       <SubSystem>Console</SubSystem>
@@ -267,6 +270,7 @@
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <UACExecutionLevel>HighestAvailable</UACExecutionLevel>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -304,6 +308,7 @@
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+      <UACExecutionLevel>HighestAvailable</UACExecutionLevel>
     </Link>
     <Lib>
       <SubSystem>Console</SubSystem>
@@ -342,6 +347,7 @@
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+      <UACExecutionLevel>HighestAvailable</UACExecutionLevel>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>

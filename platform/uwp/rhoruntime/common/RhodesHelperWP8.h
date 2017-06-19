@@ -23,7 +23,6 @@
 * 
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
-
 #pragma once
 
 #include <windows.h>
@@ -32,6 +31,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif //__cplusplus
+
+	void setLocalStorage(LPCWSTR path);
+	void setLocalNullFile(LPCWSTR filename);
+	void setLocalRhoFolder(LPCSTR path);
+	LPCWSTR getLocalNullFile();
+	LPCWSTR getLocalStorage();
+	LPCSTR getLocalRhoFolder();
 
 	HANDLE Rho_CreateFileW(
 		_In_ LPCWSTR lpFileName,
@@ -100,7 +106,7 @@ extern "C" {
 }
 #endif //__cplusplus
 
-#if defined(_UWP_LIB) && !defined(_WINRT_DLL)
+#if defined(OS_UWP) && !defined(_WINRT_DLL)
 #define CreateFileW Rho_CreateFileW
 #define CreateFileA Rho_CreateFileW
 #define CreateFile Rho_CreateFileW

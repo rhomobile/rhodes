@@ -139,9 +139,9 @@ namespace rhoruntime
     public ref class CRhoRuntime sealed
     {
 	private:
-		CRhoRuntime(IMainPage^ mainPage);
+		CRhoRuntime(IMainPage^ mainPage, ::Platform::String^ storagePath);
     public:
-		static CRhoRuntime^ getInstance(IMainPage^ mainPage);
+		static CRhoRuntime^ getInstance(IMainPage^ mainPage, ::Platform::String^ storagePath);
 		static CRhoRuntime^ getInstance();
 		IMainPage^ getMainPage();
 		// rhodes executed in a separate thread
@@ -160,7 +160,7 @@ namespace rhoruntime
 		bool onBackKeyPress(void);
 		::Platform::String^ onJSInvoke(::Platform::String^ inJSON);
 		void executeRhoRunnable(int64 native);
-
+		void setLocalStoragePath(::Platform::String^ storage);
 		// public methods:
 		bool Initialize(::Platform::String^ title);
 		void DestroyUi(void);
@@ -176,5 +176,8 @@ namespace rhoruntime
 		IMainPage^ m_MainPage;
 		ICryptoEngine^ m_CryptoEngine;
 		static CRhoRuntime^ m_instance;
+		rho::StringW localStorage;
+		rho::StringW localNullFile;
+		rho::String localRhoPath;
     };
 }

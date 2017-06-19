@@ -247,7 +247,10 @@ GetStdHandle(
 
 #if defined(_UWP_LIB)
 #define RHOPORT_STRUCT_EXISTS
+#else
+#define REDEFINE_WINAPI_OLD_FUNCTIONS
 #endif
+
 
 #if !defined(_UWP_LIB)
 LPCH
@@ -272,18 +275,21 @@ GetEnvironmentStringsW(
 #define GetEnvironmentStringsA  GetEnvironmentStrings
 #endif // !UNICODE
 
-
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
 BOOL
 WINAPI
 SetEnvironmentStringsW(
     _In_ _Pre_ _NullNull_terminated_ LPWCH NewEnvironment
     );
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
+
+
 
 #ifdef UNICODE
 #define SetEnvironmentStrings  SetEnvironmentStringsW
 #endif
 
-
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
 BOOL
 WINAPI
 FreeEnvironmentStringsA(
@@ -302,6 +308,7 @@ FreeEnvironmentStringsW(
 #else
 #define FreeEnvironmentStrings  FreeEnvironmentStringsA
 #endif // !UNICODE
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 #if !defined(RHOPORT_STRUCT_EXISTS)
 typedef struct _PROCESS_INFORMATION {
@@ -372,8 +379,7 @@ typedef STARTUPINFOA STARTUPINFO;
 typedef LPSTARTUPINFOA LPSTARTUPINFO;
 #endif // UNICODE
 
-
-
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
 HANDLE
 WINAPI
 CreateFileA(
@@ -399,12 +405,17 @@ CreateFileW(
     _In_opt_ HANDLE hTemplateFile
     );
 
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
+
+
+
 #ifdef UNICODE
 #define CreateFile  CreateFileW
 #else
 #define CreateFile  CreateFileA
 #endif // !UNICODE
 
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
 HMODULE
 WINAPI
 LoadLibraryA(
@@ -416,12 +427,14 @@ WINAPI
 LoadLibraryW(
     _In_ LPCWSTR lpLibFileName
     );
+
 #ifdef UNICODE
 #define LoadLibrary  LoadLibraryW
 #else
 #define LoadLibrary  LoadLibraryA
 #endif // !UNICODE
 
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 LPSTR
 WINAPI
@@ -438,6 +451,7 @@ CharNextW(
 #define CharNext  CharNextA
 #endif // !UNICODE
 
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
 
 HMODULE
 WINAPI
@@ -451,6 +465,9 @@ WINAPI
 GetModuleHandleW(
     _In_opt_ LPCWSTR lpModuleName
     );
+
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
+
 
 #ifndef GetModuleHandle
 #ifdef UNICODE
@@ -479,7 +496,7 @@ lstrcpyW(
 #define lstrcpy  lstrcpyA
 #endif // !UNICODE
 
-
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
 LPSTR
 WINAPI
 CharPrevA(
@@ -491,13 +508,16 @@ WINAPI
 CharPrevW(
     _In_ LPCWSTR lpszStart,
     _In_ LPCWSTR lpszCurrent);
+
 #ifdef UNICODE
 #define CharPrev  CharPrevW
 #else
 #define CharPrev  CharPrevA
 #endif // !UNICODE
 
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
 HANDLE
 WINAPI
 OpenProcess(
@@ -522,6 +542,8 @@ GetFileSize(
     _In_ HANDLE hFile,
     _Out_opt_ LPDWORD lpFileSizeHigh
     );
+
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 #define CreateThread CreateThreadWP8
 
@@ -595,6 +617,11 @@ typedef struct _BY_HANDLE_FILE_INFORMATION {
 #else
 typedef struct _BY_HANDLE_FILE_INFORMATION BY_HANDLE_FILE_INFORMATION, *PBY_HANDLE_FILE_INFORMATION, *LPBY_HANDLE_FILE_INFORMATION;
 #endif
+
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
+
+
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 BOOL
 WINAPI
@@ -712,6 +739,7 @@ BOOL WINAPI GetExitCodeThreadWP8(
 
 #define SetThreadPriority SetThreadPriorityWP8
 
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
 DWORD
 WINAPI
 GetModuleFileNameA(
@@ -727,6 +755,9 @@ GetModuleFileNameW(
     _Out_writes_to_(nSize, ((return < nSize) ? (return + 1) : nSize)) LPWSTR lpFilename,
     _In_ DWORD nSize
     );
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
+
+
 
 #ifdef UNICODE
 #define GetModuleFileName  GetModuleFileNameW
@@ -734,6 +765,7 @@ GetModuleFileNameW(
 #define GetModuleFileName  GetModuleFileNameA
 #endif // !UNICODE
 
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
 BOOL
 WINAPI
 GetVersionExA(
@@ -745,6 +777,9 @@ WINAPI
 GetVersionExW(
     _Inout_ LPOSVERSIONINFOW lpVersionInformation
     );
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
+
+
 
 #ifdef UNICODE
 #define GetVersionEx  GetVersionExW
@@ -857,6 +892,7 @@ TerminateProcess(
     _In_ UINT uExitCode
     );
 
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
 DWORD
 WINAPI
 GetFileAttributesA(
@@ -868,6 +904,10 @@ WINAPI
 GetFileAttributesW(
     _In_ LPCWSTR lpFileName
     );
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
+
+
+
 
 #ifdef UNICODE
 #define GetFileAttributes  GetFileAttributesW
@@ -894,6 +934,7 @@ MoveFileW(
 #define MoveFile  MoveFileA
 #endif // !UNICODE
 
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
 BOOL
 WINAPI
 UnlockFile(
@@ -910,6 +951,9 @@ LocalFileTimeToFileTime(
     _In_ CONST FILETIME * lpLocalFileTime,
     _Out_ LPFILETIME lpFileTime
     );
+#endif // REDEFINE_WINAPI_OLD_FUNCTIONS
+
+
 
 BOOL
 WINAPI

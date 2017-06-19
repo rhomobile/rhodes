@@ -42,6 +42,10 @@ _NullNull_terminated_ LPWCH WINAPI GetEnvironmentStringsW(VOID)
 	return NULL;
 }
 */
+
+//#define REDEFINE_WINAPI_OLD_FUNCTIONS_UWP
+
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS_UWP
 BOOL WINAPI FreeEnvironmentStringsA(LPSTR lpszEnvironmentBlock)
 {
 	return FALSE;
@@ -51,7 +55,7 @@ BOOL WINAPI FreeEnvironmentStringsW(LPWSTR lpszEnvironmentBlock)
 {
 	return FALSE;
 }
-
+#endif
 /* DuplicateHandle, LockFile, etc... */
 /* I have no idea...  */
 BOOL WINAPI GenerateConsoleCtrlEvent(
@@ -145,6 +149,8 @@ LoadLibraryA(
 	return NULL;
 }
 */
+
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS_UWP
 HMODULE
 WINAPI
 LoadLibraryW(
@@ -153,7 +159,7 @@ LoadLibraryW(
 {
 	return NULL;
 }
-
+#endif
 /* ---------------- CharNext, CharPrev. ---------------------*/
 
 LPSTR WINAPI CharNextA(LPCSTR szString)
@@ -180,6 +186,7 @@ CharPrevA(
 	return NULL;
 }*/
 
+#ifdef REDEFINE_WINAPI_OLD_FUNCTIONS_UWP
 LPWSTR
 WINAPI
 CharPrevW(
@@ -191,6 +198,7 @@ CharPrevW(
 
 	return (LPWSTR)--lpszCurrent;
 }
+#endif
 
 /*------------------- LoadLibrary -----------------------*/
 

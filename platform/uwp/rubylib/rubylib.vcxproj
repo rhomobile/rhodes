@@ -159,7 +159,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;Windowsapp.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -189,7 +189,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;vcruntime.lib;MSVCPRT.LIB</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;Windowsapp.lib;vcruntime.lib;MSVCPRT.LIB</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -219,7 +219,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;Windowsapp.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -249,7 +249,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;Windowsapp.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -279,7 +279,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;vcruntime.lib;MSVCPRT.LIB</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;Windowsapp.lib;vcruntime.lib;MSVCPRT.LIB</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />
@@ -308,7 +308,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;vcruntime.lib;MSVCPRT.LIB</AdditionalDependencies>
+      <AdditionalDependencies>userenv.lib;wlanapi.lib;Advapi32.lib;Dbghelp.lib;User32.lib;Shell32.lib;Iphlpapi.lib;Shlwapi.lib;Kernel32.lib;Windowsapp.lib;vcruntime.lib;MSVCPRT.LIB</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Lib>
     <ProjectReference />

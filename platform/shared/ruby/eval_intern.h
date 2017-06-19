@@ -4,6 +4,10 @@
 #include "ruby/ruby.h"
 #include "vm_core.h"
 
+#ifdef OS_UWP
+#include "../../../../uwp/rhoruntime/common/RhodesHelperWP8.h"
+#endif
+
 static inline void
 pass_passed_block(rb_thread_t *th)
 {

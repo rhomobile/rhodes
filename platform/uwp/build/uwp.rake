@@ -192,21 +192,9 @@ def signApplication()
 end
 
 def addRhobundleFilesToCacheFileUWP()
-  addconfigtoxapUWP()
-  addbundletoxapUWP()
-  signApplication()
-  #xml_path = File.join($rhodes_bin_dir, "XapCacheFile.xml")
-  #doc = REXML::Document.new(File.open(xml_path))
-  #chdir $srcdir
-
-  #Dir.glob(File.join("**", '*.*')).each do |f|
-  #  doc.root[1, 0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'"
-  #end
-
-  #File.open(xml_path, "w") { |f| doc.write f, 2; f.close }
-  #chdir $startdir
-  #mkdir_p $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}" if not File.exists? $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}"
-  #cp xml_path, $config["build"]["uwppath"] + "/rhodes/obj/#{$build_config}"
+  #addconfigtoxapUWP()
+  #addbundletoxapUWP()
+  #signApplication()
 end
 
 def setCSharpEnvironmentUWP(csharp_impl)
@@ -275,20 +263,12 @@ namespace "build" do
             break
 
           end
-
         end
       end
     end
 
     desc "Build UWP rhobundle"
     task :rhobundle_noext => ["config:uwp", "build:bundle:noxruby", :rhobundlemap] do
-      #move public folder to root
-      #confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
-      #confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
-      #File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) } if confpath_content && confpath_content.length()>0
-
-      #cp_r $srcdir + "/apps/public", $srcdir + "/public"
-      #rm_r $srcdir + "/apps/public"
       addconfigtoxapUWP()
       rho_dir = createBoundleInTemp()
       signApplication()
@@ -323,10 +303,7 @@ namespace "build" do
 
     # create file with map of bundle files 
     task :rhobundlemap do
-
     end
-
-
 
     # build native code
     task :rhodes => ["config:uwp"] do
@@ -397,9 +374,6 @@ namespace "build" do
       $build_config = args.configuration
 
       Rake::Task["build:uwp:rhobundle_noext"].invoke
-
-      #addRhobundleFilesToCacheFileUWP()
-      #addbundletoxapUWP()
     end
 
     task :prepare_rhobundle, [:sdk, :configuration] do |t, args|
@@ -482,7 +456,7 @@ namespace "device" do
   namespace "uwp" do
 
     desc "Build production for device"
-    task :production => ["config:release", "build:uwp:package"] do
+    task :production => ["config:release", "build:uwp:copy_files_to_rho", "build:uwp:package"] do
       puts "Now you can install application and dependencies by using the Windows PowerShell command [Add-AppxPackage -Path \"Path to Appx file\"]."
     end
 
@@ -508,7 +482,7 @@ namespace "emulator" do
   namespace "uwp" do
 
     desc "Build production for device"
-    task :production => ["switch_app", "config:uwp_Win32_Release", "build:uwp:package"] do
+    task :production => ["switch_app", "config:uwp_Win32_Release", "build:uwp:copy_files_to_rho", "build:uwp:package"] do
      addRhobundleFilesToCacheFileUWP()
     end
 

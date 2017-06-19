@@ -34,6 +34,7 @@
 #include "common/RhoFilePath.h"
 #include "rubyext/WebView.h"
 #include "common/RhoConvertWP8.h"
+#include "common/RhodesHelperWP8.h"
 #include "api_generator\js_helpers.h"
 #include <collection.h>
 
@@ -43,15 +44,17 @@ using namespace Windows::Foundation::Collections;
 
 CRhoRuntime^ CRhoRuntime::m_instance = nullptr;
 
-CRhoRuntime::CRhoRuntime(IMainPage^ mainPage):
+CRhoRuntime::CRhoRuntime(IMainPage^ mainPage, ::Platform::String^ storagePath):
 	m_MainPage(mainPage)
 {
+	localRhoPath = "rho";
+	setLocalStoragePath(storagePath);
 }
 
-CRhoRuntime^ CRhoRuntime::getInstance(IMainPage^ mainPage)
+CRhoRuntime^ CRhoRuntime::getInstance(IMainPage^ mainPage, ::Platform::String^ storagePath)
 {
 	if (m_instance == nullptr)
-		m_instance = ref new CRhoRuntime(mainPage);
+		m_instance = ref new CRhoRuntime(mainPage, storagePath);
     return m_instance;
 }
 
@@ -96,6 +99,15 @@ void CRhoRuntime::onActivate(int active)
 	RHODESAPP().callUiCreatedCallback();
 	rho_rhodesapp_callAppActiveCallback(1);
 }
+void CRhoRuntime::setLocalStoragePath(::Platform::String^ storage) {
+	localStorage = rho::common::convertStringWFromWP8(storage);
+	localNullFile = rho::common::convertStringWFromWP8(storage + "\\nullfile");
+	localRhoPath = rho::common::convertStringAFromWP8(storage + "\\rho");
+	setLocalStorage(localStorage.c_str());
+	setLocalNullFile(localNullFile.c_str());
+	setLocalRhoFolder(localRhoPath.c_str());
+}
+
 
 void CRhoRuntime::logEvent(::Platform::String^ message)
 {
@@ -351,7 +363,7 @@ extern "C" void rho_sys_app_exit()
 	CRhoRuntime::getInstance()->getMainPage()->exitCommand();
 }
 
-#ifdef OS_WP8
+#ifdef OS_UWP
 extern "C" void rho_net_impl_network_indicator(int active)
 {
 	//TODO: rho_net_ping_network
@@ -378,7 +390,7 @@ extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
 
 extern "C" const char* rho_native_rhopath()
 {
-    return "rho"; //rho/apps?
+	return getLocalRhoFolder(); //rho/apps?
 }
 
 

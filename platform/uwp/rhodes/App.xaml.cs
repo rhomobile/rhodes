@@ -141,6 +141,7 @@ namespace rhodes
         // Code to execute on Unhandled Exceptions
         private void Application_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            MainPage.deb("Unhandled Exception in " + sender.GetType().FullName + " \nTrace : " + e.Exception.StackTrace + " \nMessage : " + e.Message);
             // just ignore QuitException
             if (e.Exception is QuitException)
                 return;

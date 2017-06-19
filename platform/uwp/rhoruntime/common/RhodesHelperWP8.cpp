@@ -30,6 +30,30 @@
 #include "../../shared/common/RhoStd.h"
 #include "../../shared/common/StringConverter.h"
 
+LPWSTR UWPLocalFolder = L"";
+LPWSTR UWPNullFile = L"nullfile";
+LPSTR UWPLocalRhoFolder = "rho";
+
+LPCWSTR getLocalNullFile() {
+	return UWPNullFile;
+}
+LPCWSTR getLocalStorage() {
+	return UWPLocalFolder;
+}
+LPCSTR getLocalRhoFolder() {
+	return UWPLocalRhoFolder;
+}
+
+void setLocalStorage(LPCWSTR path) {
+	UWPLocalFolder = const_cast<LPWSTR>(path);
+}
+void setLocalNullFile(LPCWSTR filename) {
+	UWPNullFile = const_cast<LPWSTR>(filename);
+}
+void setLocalRhoFolder(LPCSTR path) {
+	UWPLocalRhoFolder = const_cast<LPSTR>(path);
+}
+
 HANDLE Rho_CreateFileW(
 	_In_ LPCWSTR lpFileName,
 	_In_ DWORD dwDesiredAccess,
