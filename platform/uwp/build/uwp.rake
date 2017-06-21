@@ -270,9 +270,9 @@ namespace "build" do
 
     desc "Build UWP rhobundle"
     task :rhobundle_noext => ["config:uwp", "build:bundle:noxruby", :rhobundlemap] do
-      addconfigtoxapUWP()
+      #addconfigtoxapUWP()
       rho_dir = createBoundleInTemp()
-      signApplication()
+      #signApplication()
 
       appx_dir = File.join($rhodes_bin_dir, "AppX")
       #rm_rf appx_dir
@@ -282,8 +282,7 @@ namespace "build" do
 
     def copyFilesToRho()
       target_dir = File.join($uwppath, "rhodes")
-
-      addconfigtoxapUWP()
+      #addconfigtoxapUWP()
       rho_dir = createBoundleInTemp()
       puts "Files dir " + File.join(target_dir, "rho")
       rm_rf File.join(target_dir, "rho") if Dir.exist?(File.join(target_dir, "rho"))
