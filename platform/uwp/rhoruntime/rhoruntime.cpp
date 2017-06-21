@@ -102,7 +102,7 @@ void CRhoRuntime::onActivate(int active)
 void CRhoRuntime::setLocalStoragePath(::Platform::String^ storage) {
 	localStorage = rho::common::convertStringWFromWP8(storage);
 	localNullFile = rho::common::convertStringWFromWP8(storage + "\\nullfile");
-	localRhoPath = rho::common::convertStringAFromWP8(storage + "\\rho");
+	localRhoPath = rho::common::convertStringAFromWP8(storage + "\\rho\\");
 	setLocalStorage(localStorage.c_str());
 	setLocalNullFile(localNullFile.c_str());
 	setLocalRhoFolder(localRhoPath.c_str());
@@ -355,12 +355,13 @@ extern "C" void createMenu()
 
 extern "C" void rho_sys_app_exit()
 {
+	CRhoRuntime::getInstance()->getMainPage()->exitCommand();
 	rho_rhodesapp_callUiDestroyedCallback();
 
 	//TODO: fix issue with stop thread - stopWait does not wakeup sleeping thread
 	//rho::common::CRhodesApp::Destroy();
 
-	CRhoRuntime::getInstance()->getMainPage()->exitCommand();
+	
 }
 
 #ifdef OS_UWP
