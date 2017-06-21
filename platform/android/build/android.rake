@@ -2396,7 +2396,7 @@ namespace "package" do
       args << relpath
     end
 
-    Jake.run($jarbin, args, respath) if File.dir?(respath)
+    Jake.run($jarbin, args, respath) if File.directory?(respath)
 
 
     print_timestamp('package:android FINISH')
