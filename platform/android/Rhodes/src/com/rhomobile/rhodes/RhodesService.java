@@ -1334,9 +1334,9 @@ public class RhodesService extends Service {
             if(!fileHandler.handle(url))
             {
                 Logger.D(TAG, "Handling URI: " + url);
-
-                Intent intent = Intent.parseUri(url, 0);
-                ctx.startActivity(Intent.createChooser(intent, "Open in..."));
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                ctx.startActivity(intent);                
             }
     }
 
