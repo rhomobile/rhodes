@@ -118,7 +118,7 @@ end
 
 
 def createBoundleInTemp()
-  tmp_dir = File.join($srcdir, "tmp")
+  tmp_dir = File.join($bindir, "tmp")
   rho_dir = File.join(tmp_dir, "rho")
 
   rm_rf tmp_dir
@@ -130,6 +130,7 @@ def createBoundleInTemp()
   cp_r File.join($srcdir, "apps"), rho_dir
   cp_r File.join($srcdir, "lib"), rho_dir
   cp_r File.join($srcdir, "db"), rho_dir
+  cp File.join($srcdir, "apps/rhoconfig.txt"), rho_dir
   return rho_dir
 end
 
@@ -166,7 +167,7 @@ def addbundletoxapUWP()
 end
 
 def addconfigtoxapUWP()
-  tmp_dir = File.join($srcdir, "tmp")
+  tmp_dir = File.join($bindir, "tmp")
   rho_dir = File.join(tmp_dir, "rho")
 
   rm_rf tmp_dir
@@ -456,7 +457,7 @@ namespace "device" do
   namespace "uwp" do
 
     desc "Build production for device"
-    task :production => ["config:release", "build:uwp:copy_files_to_rho", "build:uwp:package"] do
+    task :production => ["switch_app", "config:release", "build:uwp:copy_files_to_rho", "build:uwp:package"] do
       puts "Now you can install application and dependencies by using the Windows PowerShell command [Add-AppxPackage -Path \"Path to Appx file\"]."
     end
 
@@ -626,7 +627,7 @@ namespace "run" do
   end
 
   desc "Build, install .appx and run on universal windows platform emulator"
-  task :uwp => ["switch_app", "emulator:uwp:production"] do
+  task :uwp => ["emulator:uwp:production"] do
 
     if $productid != nil
 

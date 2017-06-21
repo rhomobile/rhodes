@@ -33,6 +33,10 @@ using Windows.Storage.Streams;
 using Windows.Web;
 using RhoRuntimeInvoker;
 using System.Reflection;
+using System.Xml.Linq;
+using Windows.ApplicationModel;
+
+
 
 namespace rhodes
 {
@@ -233,6 +237,7 @@ namespace rhodes
             }
         }
 
+
         public MainPage()
         {
             deb("Running constructor");
@@ -241,10 +246,28 @@ namespace rhodes
             deb("Storage folder is " + appInstalledFolder.Path);
             deb("Local folder is " + localFolder.Path);
 
+            String title = Package.Current.DisplayName;
             DirectoryInfo rhoDir = new DirectoryInfo(localFolder.Path + "\\rho");
             if (!rhoDir.Exists)
             {
                 DirectoryCopy(appInstalledFolder.Path + "\\rho", rhoDir.FullName, true);
+                localFolder.CreateFileAsync("\\rho\\" + title, Windows.Storage.CreationCollisionOption.OpenIfExists);
+            }
+            else
+            {
+                FileInfo fInfo = new FileInfo(localFolder.Path + "\\rho\\" + title);
+                if (fInfo.Exists){
+                    deb("Rho exists");
+                }
+                else{
+                    IAsyncOperation<StorageFolder> rhoFolderTask = StorageFolder.GetFolderFromPathAsync(rhoDir.FullName);
+                    rhoFolderTask.AsTask().Wait();
+                    IAsyncAction action = rhoFolderTask.GetResults().DeleteAsync();
+                    action.AsTask().Wait();
+
+                    DirectoryCopy(appInstalledFolder.Path + "\\rho", rhoDir.FullName, true);
+                    localFolder.CreateFileAsync("\\rho\\" + title, Windows.Storage.CreationCollisionOption.OpenIfExists);
+                }
             }
 
             {
@@ -296,7 +319,7 @@ namespace rhodes
                     deb("rhoruntime thread loop closed"); });
 
                 //temporary solutions, to do refactoring
-                //DoWait(200);
+                DoWait(200);
                 _rhoruntime.onActivate(0);
             }
             catch (Exception e)
@@ -718,9 +741,12 @@ namespace rhodes
 
         private void updateAppBarModeAndVisibility(bool autoToolbarVisibility = true)
         {
+            if (!isUIThread) {
+                InvokeInUIThread(delegate () {updateAppBarModeAndVisibility(autoToolbarVisibility); });
+                return;
+            }
             if (autoToolbarVisibility) { deb("Tool bar visible"); }
             else { deb("Tool bar invisible"); }
-
             getAppBar().Visibility = autoToolbarVisibility ? Visibility.Visible : Visibility.Collapsed;
             //getAppBar().IsSticky = autoToolbarVisibility ? 
             if (autoToolbarVisibility && (getAppBar().PrimaryCommands.Count > 0))
@@ -830,6 +856,7 @@ namespace rhodes
 
         public void toolbarAddAction(string icon, string text, string action)
         {
+            if (!isUIThread) { InvokeInUIThread(delegate () { toolbarAddAction(icon, text, action); }); return; }
             deb("Adding action to toolbar");
             getAppBar().Visibility = Visibility.Visible;
             if ((action == null) || (action.Length == 0))
@@ -857,10 +884,12 @@ namespace rhodes
                 BitmapIcon bitmapIcon = new BitmapIcon();
                 try
                 {
-                    Uri iconUri = new Uri((icon != null) && (icon.Length > 0) ? prependWithSlash(icon) : "/rho/apps/public/images/cancel.png", UriKind.Relative);
+                    //Uri iconUri = new Uri((icon != null) && (icon.Length > 0) ? prependWithSlash(icon) : "/rho/apps/public/images/cancel.png", UriKind.Absolute);
+                    Uri iconUri = null;
+                    if ((icon != null) && (icon.Length > 0)){iconUri = new Uri(icon, UriKind.Absolute);}
+                    else{iconUri = new Uri("/rho/apps/public/images/cancel.png", UriKind.Relative);}
                     bitmapIcon.UriSource = iconUri;
-                }catch(Exception e)
-                {
+                }catch(Exception e){
                     deb("Add ToolBar exception: " + e.Message);
                 }
                 toolbarButton.Icon = bitmapIcon;
@@ -923,9 +952,9 @@ namespace rhodes
 
         public void menuAddAction(string label, int item)
         {
-            getAppBar().Visibility = Visibility.Visible;
             if (!isUIThread) { InvokeInUIThread(delegate() { menuAddAction(label, item); }); return; }
             deb("Adding action to menu");
+            getAppBar().Visibility = Visibility.Visible;
             AppBarButton menuItem = new AppBarButton();
             menuItem.Label = label;
             getAppBar().SecondaryCommands.Add(menuItem);
@@ -1149,7 +1178,7 @@ namespace rhodes
         // this method is an example of application exit technique (see Quit method in App.xaml.cs)
         public void exitCommand()
         {
-            if (!isUIThread) { InvokeInUIThread(delegate() { exitCommand(); }); return; }
+            if (!isUIThread) { InvokeInUIThread(delegate() { DoWait(100); exitCommand(); }); return; }
             deb("Exit comand");
             var propertySet = Windows.Storage.ApplicationData.Current.LocalSettings.Values;
             Application.Current.Exit();

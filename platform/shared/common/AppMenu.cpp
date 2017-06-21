@@ -255,10 +255,7 @@ void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bo
             setEnableMenuItem(label, !isDisable, bLeftMenu);
 
         }
-#ifdef OS_WP8
-		createMenu();
-#endif
-#ifdef OS_UWP
+#if defined(OS_WP8) || defined (OS_UWP)
         createMenu();
 #endif
 #ifdef RHODES_QT_PLATFORM
