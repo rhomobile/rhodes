@@ -2315,6 +2315,35 @@ namespace "package" do
     unless $?.success?
       raise "Error packaging native libraries"
     end
+
+    $logger.info( "Packaging java resources" )
+
+    respath = File.join( $tmpdir, '.javares' )
+
+    alljars.each do |jar|
+      Zip::File.open(jar) do |archive|
+        archive.glob("**/*.properties").each do |pfile|
+          next if pfile.name =~ /^META-INF/
+          target = File.join(respath,pfile.name)
+          mkdir_p( File.dirname(target) )
+          rm target if File.file?(target)
+          archive.extract( pfile, File.join(target) )          
+        end
+      end
+    end
+
+    args = [ USE_TRACES ? "uvf" : "uf", resourcepkg]
+
+    Dir.glob(File.join(respath,"**/*")).each do |f|
+      next if not File.file?(f)
+      relpath  = Pathname.new(f).relative_path_from(Pathname.new(respath)).to_s
+      $logger.debug "Will pakage java resource: #{f} into #{relpath}"
+      args << relpath
+    end
+
+    Jake.run($jarbin, args, respath)
+
+
     print_timestamp('package:android FINISH')
   end
 end
