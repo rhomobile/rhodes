@@ -73,7 +73,7 @@ public class MetaReceiver
 				}
 				catch (InterruptedException e)
 				{
-				    com.rhomobile.rhodes.Logger.E(TAG, e);
+				    com.rhomobile.rhodes.Logger.W(TAG, e);
 				}
 			}
 			MetaTag tag = new MetaTag("pageevent", "started:" + url);
