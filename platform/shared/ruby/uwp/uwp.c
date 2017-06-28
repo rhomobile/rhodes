@@ -43,7 +43,7 @@ _NullNull_terminated_ LPWCH WINAPI GetEnvironmentStringsW(VOID)
 }
 */
 
-//#define REDEFINE_WINAPI_OLD_FUNCTIONS_UWP
+#define REDEFINE_WINAPI_OLD_FUNCTIONS_UWP
 
 #ifdef REDEFINE_WINAPI_OLD_FUNCTIONS_UWP
 BOOL WINAPI FreeEnvironmentStringsA(LPSTR lpszEnvironmentBlock)

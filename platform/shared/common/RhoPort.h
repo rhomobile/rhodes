@@ -249,11 +249,11 @@ GetStdHandle(
     _In_ DWORD nStdHandle
     );
 
-#if defined(_UWP_LIB)
-#define RHOPORT_STRUCT_EXISTS
-#else
+//#if defined(_UWP_LIB)
+//#define RHOPORT_STRUCT_EXISTS
+//#else
 #define REDEFINE_WINAPI_OLD_FUNCTIONS
-#endif
+//#endif
 
 
 #if !defined(_UWP_LIB)
