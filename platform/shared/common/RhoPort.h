@@ -42,6 +42,10 @@
 #include <arpa/inet.h>
 #endif
 
+#ifdef OS_UWP
+#define WINAPI_FAMILY 3
+#endif
+
 #if defined( WINDOWS_PLATFORM )
 
 #include <windows.h>
