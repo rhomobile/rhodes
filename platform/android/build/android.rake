@@ -585,7 +585,17 @@ namespace "config" do
         $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
       end
 
-      AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:23.0.0')
+      HAVE_V4_SUPPORT = false
+      $app_config["extensions"].each do |extname|
+        if extname == "fcm-push"
+          HAVE_V4_SUPPORT = true
+        end
+      end
+
+      if !HAVE_V4_SUPPORT
+        AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:25.2.0')
+      end
+      #TODO: needs to check the lastest version of support-v4
 
       #setup_ndk($androidndkpath, $found_api_level, 'arm')
       $abis = $app_config['android']['abis'] if $app_config["android"]
@@ -682,7 +692,7 @@ namespace "config" do
     # just after build config has been read and before processing extensions
     task :app_config do
       if $app_config['capabilities'].index('push')
-        $app_config['extensions'] << 'gcm-push' unless $app_config['extensions'].index('gcm-push')
+        $app_config['extensions'] << 'gcm-push' unless $app_config['extensions'].index('gcm-push') || $app_config['extensions'].index('fcm-push')
       end
 
       if !$app_config['android'].nil? && !$app_config['android']['abis'].nil? && ($app_config['android']['abis'].index('x86') || $app_config['android']['abis'].index('mips'))
@@ -1015,6 +1025,7 @@ namespace "build" do
       ENV["NEON_ROOT"] = $neon_root unless $neon_root.nil?
       ENV["CONFIG_XML"] = $config_xml unless $config_xml.nil?
       ENV["RHO_DEBUG"] = $debug.to_s
+      ENV["CUSTOM_FCM_SENDER_ID"] = $app_config["android"]["fcmSenderID"] unless $app_config["android"].nil?
 
       $ext_android_build_scripts.each do |ext, builddata|
         
@@ -2285,9 +2296,11 @@ namespace "package" do
 
     alljars.each { |jar|
       basename = File.basename(jar);
-      if !unique_jars.member?(basename)
+      #FIXME: UGLYHACK FROM ALEX. Needs to add dependency filter to maven extractor
+      isFromMaven = (basename == 'classes.jar')# && Pathname.new(jar).split.include?('.m2')
+      if (!unique_jars.member?(basename)) || isFromMaven
         if !useProguard
-        args << jar
+          args << jar
         else
           cp jar, proguardPreBuild
         end
