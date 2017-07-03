@@ -28,7 +28,7 @@ locale_charmap(VALUE (*conv)(const char *))
 {
 #if defined NO_LOCALE_CHARMAP
 # error NO_LOCALE_CHARMAP defined
-#elif defined _WIN32 || defined __CYGWIN__
+#elif (defined _WIN32 || defined __CYGWIN__) && !defined(OS_UWP)
     const char *codeset = 0;
     char cp[SIZEOF_CP_NAME];
 # ifdef __CYGWIN__
@@ -100,7 +100,7 @@ Init_enc_set_filesystem_encoding(void)
     int idx;
 #if defined NO_LOCALE_CHARMAP
 # error NO_LOCALE_CHARMAP defined
-#elif defined _WIN32 || defined __CYGWIN__
+#elif (defined _WIN32 || defined __CYGWIN__)  && !defined(OS_UWP)
     char cp[SIZEOF_CP_NAME];
     CP_FORMAT(cp, AreFileApisANSI() ? GetACP() : GetOEMCP());
     idx = rb_enc_find_index(cp);

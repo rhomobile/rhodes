@@ -34,29 +34,5 @@
   </Applications>
   <Capabilities>
     <Capability Name='internetClient'/>
-    <Capability Name='allJoyn'/>
-    <Capability Name='codeGeneration'/>
-    <Capability Name='internetClientServer'/>
-    <Capability Name='privateNetworkClientServer'/>
-    <uap:Capability Name='appointments'/>
-    <uap:Capability Name='chat'/>
-    <uap:Capability Name='blockedChatMessages'/>
-    <uap:Capability Name='enterpriseAuthentication'/>
-    <uap:Capability Name='contacts'/>
-    <uap:Capability Name='musicLibrary'/>
-    <uap:Capability Name='phoneCall'/>
-    <uap:Capability Name='objects3D'/>
-    <uap:Capability Name='picturesLibrary'/>
-    <uap:Capability Name='videosLibrary'/>
-    <uap:Capability Name='removableStorage'/>
-    <uap:Capability Name='sharedUserCertificates'/>
-    <uap:Capability Name='userAccountInformation'/>
-    <uap3:Capability Name='userNotificationListener'/>
-    <uap:Capability Name='voipCall'/>
-    <DeviceCapability Name='bluetooth'/>
-    <DeviceCapability Name='microphone'/>
-    <DeviceCapability Name='location'/>
-    <DeviceCapability Name='proximity'/>
-    <DeviceCapability Name='webcam'/>
   </Capabilities>
 </Package>

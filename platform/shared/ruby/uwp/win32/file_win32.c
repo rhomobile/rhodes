@@ -10,6 +10,11 @@
 #include <shlwapi.h>
 #include "win32/file.h"
 
+#ifdef OS_UWP
+#include "../../../../uwp/rhoruntime/common/RhodesHelperWP8.h"
+#endif
+
+
 #ifndef INVALID_FILE_ATTRIBUTES
 # define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
 #endif
@@ -380,11 +385,13 @@ rb_file_expand_path_internal(VALUE fname, VALUE dname, int abs_mode, int long_na
 	}
 	whome_len = wcslen(whome);
 
+#ifndef OS_UWP
 	if (PathIsRelativeW(whome) && !(whome_len >= 2 && IS_DIR_UNC_P(whome))) {
 	    xfree(wpath);
 	    xfree(whome);
 	    rb_raise(rb_eArgError, "non-absolute home");
 	}
+#endif
 
 	if (path_cp == INVALID_CODE_PAGE || rb_enc_str_asciionly_p(path)) {
 	    /* use filesystem encoding if expanding home dir */
@@ -461,13 +468,14 @@ rb_file_expand_path_internal(VALUE fname, VALUE dname, int abs_mode, int long_na
 		rb_raise(rb_eArgError, "couldn't find HOME environment -- expanding `~'");
 	    }
 	    whome_len = wcslen(whome);
-
+#ifndef OS_UWP
 	    if (PathIsRelativeW(whome) && !(whome_len >= 2 && IS_DIR_UNC_P(whome))) {
 		free(wpath);
 		free(wdir);
 		xfree(whome);
 		rb_raise(rb_eArgError, "non-absolute home");
 	    }
+#endif
 
 	    /* exclude ~ from the result */
 	    wdir_pos++;
@@ -587,9 +595,11 @@ rb_file_expand_path_internal(VALUE fname, VALUE dname, int abs_mode, int long_na
     /* Ensure buffer is NULL terminated */
     buffer_pos[0] = L'\0';
 
+#ifndef OS_UWP
     /* tainted if path is relative */
     if (!tainted && PathIsRelativeW(buffer) && !(buffer_len >= 2 && IS_DIR_UNC_P(buffer)))
 	tainted = 1;
+#endif
 
     /* FIXME: Make this more robust */
     /* Determine require buffer size */

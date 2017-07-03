@@ -1469,7 +1469,7 @@ io_fwrite(VALUE str, rb_io_t *fptr, int nosync)
 {
     int converted = 0;
 //RHO
-#if defined(_WIN32) && !defined(OS_WINCE)
+#if defined(_WIN32) && !defined(OS_WINCE) && !defined(OS_UWP)
     if (fptr->mode & FMODE_TTY) {
 	long len = rb_w32_write_console(str, fptr->fd);
 	if (len > 0) return len;
@@ -2502,7 +2502,7 @@ void
 rb_io_set_nonblock(rb_io_t *fptr)
 {
 //RHO
-#if defined(_WIN32) && !defined(OS_WINCE)
+#if defined(_WIN32) && !defined(OS_WINCE) && !defined(OS_UWP)
     if (rb_w32_set_nonblock(fptr->fd) != 0) {
 	rb_sys_fail_path(fptr->pathv);
     }
@@ -7354,7 +7354,7 @@ rb_write_error_str(VALUE mesg)
     if (rb_stderr == orig_stderr || RFILE(orig_stderr)->fptr->fd < 0) {
 	size_t len = (size_t)RSTRING_LEN(mesg);
 //RHO
-#if defined(_WIN32) && !defined(OS_WINCE)
+#if defined(_WIN32) && !defined(OS_WINCE) && !defined(OS_UWP)
 	if (isatty(fpfileno(stderr))) {
 	    if (rb_w32_write_console(mesg, fpfileno(stderr)) > 0) return;
 	}
