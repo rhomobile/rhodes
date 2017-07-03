@@ -735,7 +735,7 @@ namespace "config" do
     # just after build config has been read and before processing extensions
     task :app_config do
       if $app_config['capabilities'].index('push')
-        $app_config['extensions'] << 'gcm-push' unless $app_config['extensions'].index('gcm-push')
+        $app_config['extensions'] << 'gcm-push' unless $app_config['extensions'].index('gcm-push') || $app_config['extensions'].index('fcm-push')
       end
 
       if !$app_config['android'].nil? && !$app_config['android']['abis'].nil? && ($app_config['android']['abis'].index('x86') || $app_config['android']['abis'].index('mips'))

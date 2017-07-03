@@ -1,0 +1,11 @@
+entry: Init_FCMPushClient
+android:
+  exttype: rakefile
+  manifest_changes: 
+  - ext/android/AndroidManifest.rb
+  - ext/android/ApplicationManifestAdds.erb
+  source_list: ext/android/ext_java.files
+libraries: ['fcm-push']
+xml_api_paths: ext/fcm.xml
+#will work with newer SDKs
+maven_deps: ['com.google.firebase:firebase-messaging:10.0.1']

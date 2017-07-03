@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="extensions/gcm-push/ext/android/src"/>
+	<classpathentry kind="src" path="extensions/fcm-push/ext/android/src"/>
 	<classpathentry kind="src" path="barcode/ext/platform/android/generated/src"/>
 	<classpathentry kind="src" path="barcode/ext/platform/android/src"/>
 	<classpathentry kind="src" path="Implementation/src"/>
