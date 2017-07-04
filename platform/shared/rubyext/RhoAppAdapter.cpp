@@ -57,7 +57,7 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 #endif
 }
 
-/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(NetResponse& resp)
+/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(const NetResponse& resp)
 {
     if ( !resp.isResponseRecieved())
         return ERR_NETWORK;

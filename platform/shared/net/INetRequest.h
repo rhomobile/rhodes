@@ -48,11 +48,11 @@ namespace net {
 struct INetResponse
 {
     virtual ~INetResponse(void){;}
-    virtual const char* getCharData() = 0;
-    virtual unsigned int getDataSize() = 0;
-    virtual int getRespCode() = 0;
-    virtual String getCookies() = 0;
-    virtual String getErrorMessage() = 0;
+    virtual const char* getCharData() const = 0;
+    virtual unsigned int getDataSize() const = 0;
+    virtual int getRespCode() const = 0;
+    virtual String getCookies() const = 0;
+    virtual String getErrorMessage() const = 0;
 
     virtual void setCharData(const char* szData) = 0;
 };
@@ -106,7 +106,7 @@ class CNetRequestBase : public INetRequestImpl
 public:
     CNetRequestBase()
       : m_pCallback(0)
-      //, m_authMethod( AUTH_NONE )
+      , m_authMethod( AUTH_NONE )
     {
 
     }
@@ -119,7 +119,7 @@ public:
 protected:
   INetRequestCallback* m_pCallback;
   
-  int m_authMethod;
+  AuthMethod m_authMethod;
   String m_authUser;
   String m_authPassword;
 };
@@ -132,34 +132,34 @@ class CNetResponseWrapper
 public:
     CNetResponseWrapper( INetResponse* resp = 0) : m_netResp(resp)  {}
 
-    const char* getCharData(){ return m_netResp->getCharData(); }
+    const char* getCharData() const { return m_netResp->getCharData(); }
     void setCharData(const char* szData){ return m_netResp->setCharData(szData); }
-    unsigned int getDataSize(){ return m_netResp->getDataSize(); }
-    int getRespCode(){ return m_netResp->getRespCode(); }
-    String getCookies(){ return m_netResp->getCookies(); }
-    String getErrorMessage() { return m_netResp->getErrorMessage(); }
+    unsigned int getDataSize() const { return m_netResp->getDataSize(); }
+    int getRespCode() const { return m_netResp->getRespCode(); }
+    String getCookies() const { return m_netResp->getCookies(); }
+    String getErrorMessage() const { return m_netResp->getErrorMessage(); }
 
-	boolean isOK()
+	boolean isOK() const
 	{
 		return getRespCode() == 200 || getRespCode() == 206;
 	}
 
-    boolean isUnathorized()
+    boolean isUnathorized() const
     {
         return getRespCode() == 401;
     }
 
-    boolean isRedirect()
+    boolean isRedirect() const
     {
        return getRespCode() == 301 || getRespCode() ==302;
     }
 
-    boolean isSuccess()
+    boolean isSuccess() const
     {
         return getRespCode() > 0 && getRespCode() < 400;
     }
 
-    boolean isResponseRecieved(){ return getRespCode() != -1; }
+    boolean isResponseRecieved() const { return getRespCode() != -1; }
 };
 
 class CNetRequestHolder

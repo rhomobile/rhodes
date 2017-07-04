@@ -54,6 +54,9 @@ public:
     PTRTYPE operator ->(){ return m_ptr; }
     operator PTRTYPE(){ return m_ptr; }
 
+    const PTRTYPE operator ->() const { return m_ptr; }
+    operator const PTRTYPE() const { return m_ptr; }
+
     virtual void FreePtr() = 0;
     void Close()
     {

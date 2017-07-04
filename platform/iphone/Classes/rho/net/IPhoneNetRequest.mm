@@ -323,22 +323,22 @@ namespace net {
     {
     }
     
-    virtual const char* getCharData()
+    virtual const char* getCharData() const
     {
       return m_data.c_str();
     }
     
-    virtual unsigned int getDataSize()
+    virtual unsigned int getDataSize() const
     {
       return (unsigned int)m_data.size();
     }
     
-    virtual int getRespCode()
+    virtual int getRespCode() const
     {
       return m_nRespCode;
     }
     
-    virtual String getCookies()
+    virtual String getCookies() const
     {
       return m_cookies;
     }
@@ -358,27 +358,27 @@ namespace net {
       m_errorMessage = message;
     }
       
-    virtual String getErrorMessage()
+    virtual String getErrorMessage() const
     {
         return m_errorMessage;
     }
       
-    boolean isOK()
+    boolean isOK() const
     {
       return m_nRespCode == 200 || m_nRespCode == 206;
     }
     
-    boolean isUnathorized()
+    boolean isUnathorized() const
     {
       return m_nRespCode == 401;
     }
     
-    boolean isSuccess()
+    boolean isSuccess() const
     {
       return m_nRespCode > 0 && m_nRespCode < 400;
     }
     
-    boolean isResponseRecieved(){ return m_nRespCode!=-1;}
+    boolean isResponseRecieved() const { return m_nRespCode!=-1;}
     
     void setCharData(const String &data)
     {

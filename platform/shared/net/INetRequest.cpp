@@ -98,21 +98,21 @@ boolean CNetRequestHolder::isCancelled()
 void CNetRequestHolder::setAuthMethod( AuthMethod method )
 {
   if ( m_pReq ) {
-    m_pReq->m_authMethod = method;
+    m_pReq->setAuthMethod(method);
   }
 }
 
 void CNetRequestHolder::setAuthUser( const String& user )
 {
   if ( m_pReq ) {
-    m_pReq->setAuthUser = user;
+    m_pReq->setAuthUser(user);
   }
 }
 
 void CNetRequestHolder::setAuthPassword( const String& password )
 {
     if ( m_pReq ) {
-    m_pReq->setAuthPassword = password;
+    m_pReq->setAuthPassword(password);
   }
 }
 

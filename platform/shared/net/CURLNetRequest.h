@@ -51,6 +51,19 @@ class CURLNetRequest : public CNetRequestBase
         String  username;
         String  password;
     };
+
+    struct AuthSettings
+    {
+        AuthSettings( AuthMethod m, const String& u, const String& p )
+        : method(m)
+        , user(u)
+        , password(p)
+        {}
+
+        const AuthMethod method;
+        const String user;
+        const String password;
+    };
     
     class CURLHolder
     {
@@ -61,7 +74,7 @@ class CURLNetRequest : public CNetRequestBase
         CURL *curl() {return m_curl;}
         
         curl_slist *set_options(const char *method, const String& strUrl, const String& strBody,
-                                IRhoSession* pSession, Hashtable<String,String>* pHeaders, const ProxySettings& pProxySettings );
+                                IRhoSession* pSession, Hashtable<String,String>* pHeaders, const ProxySettings& pProxySettings, const AuthSettings& authSettings );
         CURLcode perform();
         
         void cancel() {deactivate();}
