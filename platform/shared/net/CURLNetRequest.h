@@ -38,7 +38,7 @@ namespace rho
 namespace net
 {
 
-class CURLNetRequest : public INetRequestImpl
+class CURLNetRequest : public CNetRequestBase
 {
     DEFINE_LOGCLASS;
     
@@ -101,7 +101,7 @@ class CURLNetRequest : public INetRequestImpl
     };
     
 public:
-    CURLNetRequest() : m_pCallback(0) {}
+    CURLNetRequest() {}
     
     virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
     virtual INetResponse* pullFile(const String& strUrl, common::CRhoFile& oFile, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
@@ -114,7 +114,6 @@ public:
 
     virtual INetResponse* createEmptyNetResponse();
     
-    virtual void setCallback(INetRequestCallback* callback) { m_pCallback = callback; }
 private:
     INetResponse* doPull(const char *method, const String &strUrl, const String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
     int getResponseCode(CURLcode err, String const &body, IRhoSession* oSession);
@@ -131,7 +130,6 @@ private:
 
 
     CURLHolder m_curl;
-    INetRequestCallback* m_pCallback;
 };
 
 } // namespace net

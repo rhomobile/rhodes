@@ -197,7 +197,7 @@ void CNetworkImpl::get( const rho::Hashtable<rho::String, rho::String>& property
     readHeaders( propertyMap, mapHeaders );
 
     NetRequest oNetRequest;
-    
+
     setupSecureConnection( propertyMap, oNetRequest, oResult );
     
     String body = propertyMap.get("body");
@@ -719,6 +719,21 @@ void CNetworkImpl::setupSecureConnection( const rho::Hashtable<rho::String, rho:
     
     RHOCONF().setString("clientSSLCertificate",clientCertificate,false);
     RHOCONF().setString("clientSSLCertificatePassword",clientCertificatePassword,false);
+
+    NetRequest& currentRequest = getCurRequest(oNetRequest, oResult);
+
+    if ( propertyMap.get("authType") == AUTH_BASIC ) {
+        currentRequest.setAuthMethod( rho::net::AUTH_BASIC );
+        currentRequest.setAuthUser( propertyMap.get("authUser") );
+        currentRequest.setAuthPassword( propertyMap.get("authPassword") );
+    } else if ( propertyMap.get("authType") == AUTH_DIGEST ) {
+        currentRequest.setAuthMethod( rho::net::AUTH_DIGEST );
+        currentRequest.setAuthUser( propertyMap.get("authUser") );
+        currentRequest.setAuthPassword( propertyMap.get("authPassword") );
+    } else {
+        currentRequest.setAuthMethod( rho::net::AUTH_NONE );
+    }
+
 }
     
 

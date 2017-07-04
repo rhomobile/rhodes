@@ -39,6 +39,12 @@ class CRhoFile;
 
 namespace net {
 
+  enum AuthMethod {
+    AUTH_NONE,
+    AUTH_BASIC,
+    AUTH_DIGEST
+  };
+
 struct INetResponse
 {
     virtual ~INetResponse(void){;}
@@ -88,6 +94,34 @@ struct INetRequestImpl
     virtual INetResponse* createEmptyNetResponse() = 0;
     
     virtual void setCallback(INetRequestCallback*) = 0;
+
+    virtual void setAuthMethod( AuthMethod method ) = 0;
+    virtual void setAuthUser( const String& user ) = 0;
+    virtual void setAuthPassword( const String& password ) = 0;
+};
+
+class CNetRequestBase : public INetRequestImpl
+{
+  friend class CNetRequestHolder;
+public:
+    CNetRequestBase()
+      : m_pCallback(0)
+      //, m_authMethod( AUTH_NONE )
+    {
+
+    }
+
+    virtual void setCallback(INetRequestCallback* cb ) { m_pCallback = cb; }
+    virtual void setAuthMethod( AuthMethod method ) { m_authMethod = method; }
+    virtual void setAuthUser( const String& user ) { m_authUser = user; }
+    virtual void setAuthPassword( const String& password ) { m_authPassword = password; }
+
+protected:
+  INetRequestCallback* m_pCallback;
+  
+  int m_authMethod;
+  String m_authUser;
+  String m_authPassword;
 };
 
 typedef rho::common::CAutoPtr<rho::net::INetResponse> NetResponsePtr;
@@ -148,6 +182,11 @@ public:
     void setSslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
     
     bool isInsideRequest() const;
+
+    void setAuthMethod( AuthMethod method );
+    void setAuthUser( const String& user );
+    void setAuthPassword( const String& password );
+
 };
 
 class CNetRequestWrapper
@@ -170,6 +209,9 @@ public:
     void cancel();
     
     void setCallback(INetRequestCallback*);
+    void setAuthMethod( AuthMethod method );
+    void setAuthUser( const String& user );
+    void setAuthPassword( const String& password );
 
 };
 

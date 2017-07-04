@@ -761,6 +761,20 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
 		}
 #endif
 
+        switch (m_authMethod) {
+        case AUTH_DIGEST:
+            curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+            curl_easy_setopt(m_curl, CURLOPT_USERNAME, m_authUser);
+            curl_easy_setopt(m_curl, CURLOPT_PASSWORD, m_authPassword);
+            break;
+
+        case AUTH_BASIC:
+            curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_easy_setopt(m_curl, CURLOPT_USERNAME, m_authUser);
+            curl_easy_setopt(m_curl, CURLOPT_PASSWORD, m_authPassword);
+            break;
+        }
+
     return hdrs;
 }
 
