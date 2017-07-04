@@ -70,10 +70,28 @@
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
+-keep public class com.android.**
+-keep public class java.lang.**
 -keep public class com.android.vending.licensing.ILicensingService
 -keep public class com.google.vending.licensing.ILicensingService
 -dontnote com.android.vending.licensing.ILicensingService
 
+-keep public class android.support.v7.preference.Preference {
+  public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class * extends android.support.v7.preference.Preference {
+  public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+-keepclassmembers class * implements android.os.Parcelable {
+    public <fields>;
+}
+-keepclassmembers class * implements android.widget.AbsListView.OnScrollListener{
+    public <fields>;
+}
+-keepclassmembers class * implements android.widget.AbsListView{
+    public <fields>;
+}
 # Preserve all View implementations, their special context constructors, and
 # their setters.
 
@@ -231,6 +249,9 @@ public static final android.os.Parcelable$Creator *;
     *;
 }
 -keep class com.rhomobile.rhodes.api.* {
+    *;
+}
+-keep class com.rhomobile.rhodes.ui.* {
     *;
 }
 
