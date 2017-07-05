@@ -78,6 +78,12 @@
 # define CharNextExA(cp, p, flags) CharNextExA((WORD)(cp), (p), (flags))
 #endif
 
+//RHO
+#ifdef OS_UWP 
+#define CharNextExA(cp, ptr, flags) CharNextA(ptr)
+#define rb_w32_wopen _wopen
+#endif
+
 #if _WIN32_WINNT < 0x0600
 DWORD WINAPI GetFinalPathNameByHandleW(HANDLE, LPWSTR, DWORD, DWORD);
 #endif
@@ -99,7 +105,11 @@ static char *w32_getenv(const char *name, UINT cp);
 #define rb_w32_stati64(path, st) w32_stati64(path, st, cp)
 #define getenv(name) w32_getenv(name, cp)
 #undef CharNext
+//RHO
+#ifndef  OS_UWP
 #define CharNext(p) CharNextExA(cp, (p), 0)
+#endif
+
 #define dln_find_exe_r rb_w32_udln_find_exe_r
 #define dln_find_file_r rb_w32_udln_find_file_r
 #include "dln.h"
@@ -467,11 +477,13 @@ translate_char(char *p, int from, int to, UINT cp)
 #define CSIDL_PROFILE 40
 #endif
 
+//RHO
+#ifndef OS_UWP
 /* License: Ruby's */
 static BOOL
 get_special_folder(int n, WCHAR *env)
 {
-    LPITEMIDLIST pidl;
+	LPITEMIDLIST pidl;
     LPMALLOC alloc;
     BOOL f = FALSE;
     if (SHGetSpecialFolderLocation(NULL, n, &pidl) == 0) {
@@ -480,8 +492,9 @@ get_special_folder(int n, WCHAR *env)
 	alloc->lpVtbl->Free(alloc, pidl);
 	alloc->lpVtbl->Release(alloc);
     }
-    return f;
+    return fæ
 }
+#endif
 
 /* License: Ruby's */
 static void
@@ -530,6 +543,7 @@ get_system_directory(WCHAR *path, UINT len)
     return GetWindowsDirectoryW(path, len);
 }
 
+#ifndef OS_UWP
 /* License: Ruby's */
 VALUE
 rb_w32_special_folder(int type)
@@ -624,7 +638,7 @@ init_env(void)
 #undef env
 #undef set_env_val
 }
-
+#endif
 
 typedef BOOL (WINAPI *cancel_io_t)(HANDLE);
 static cancel_io_t cancel_io = NULL;
@@ -809,16 +823,22 @@ static int w32_cmdvector(const WCHAR *, char ***, UINT, rb_encoding *);
 void
 rb_w32_sysinit(int *argc, char ***argv)
 {
+#ifndef OS_UWP
     static void set_pioinfo_extra(void);
 
     _CrtSetReportMode(_CRT_ASSERT, 0);
     _set_invalid_parameter_handler(invalid_parameter);
+#endif
 	//TODO: fix this
 #ifdef _DEBUG
     _RTC_SetErrorFuncW(rtc_error_handler);
 #endif
+
+#ifndef OS_UWP
     set_pioinfo_extra();
+
     SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);
+#endif
 
     get_version();
 
@@ -837,8 +857,9 @@ rb_w32_sysinit(int *argc, char ***argv)
     fptzset();
 //RHO
 //#if !defined(_LIB)
-
+#ifndef OS_UWP
     init_env();
+#endif
 
     init_func();
 
@@ -1988,7 +2009,7 @@ opendir_internal(WCHAR *wpath, const char *filename)
     pathlen = lstrlenW(wpath);
     if (!(sbuf.st_mode & S_IFDIR) &&
 	(!ISALPHA(filename[0]) || filename[1] != ':' || filename[2] != '\0' ||
-	 ((1 << ((filename[0] & 0x5f) - 'A')) & GetLogicalDrives()) == 0)) {
+		((1 << ((filename[0] & 0x5f) - 'A')) /* OS_UWP & GetLogicalDrives()*/) == 0)) {
 	errno = ENOTDIR;
 	return NULL;
     }
@@ -2427,7 +2448,7 @@ static inline ioinfo* _pioinfo(int);
 #define rb_acrt_lowio_lock_fh(i)   EnterCriticalSection(&_pioinfo(i)->lock)
 #define rb_acrt_lowio_unlock_fh(i) LeaveCriticalSection(&_pioinfo(i)->lock)
 
-#if defined(OS_UWP)
+#ifndef OS_UWP
 static size_t pioinfo_extra = 0;	/* workaround for VC++8 SP1 */
 
 /* License: Ruby's */
@@ -2940,6 +2961,9 @@ is_pipe(SOCKET sock) /* DONT call this for SOCKET! it claims it is PIPE. */
 static int
 is_readable_pipe(SOCKET sock) /* call this for pipe only */
 {
+#if defined( _WIN32_WCE ) || defined( OS_UWP)
+	return 0;
+#else
     int ret;
     DWORD n = 0;
 
@@ -2953,12 +2977,15 @@ is_readable_pipe(SOCKET sock) /* call this for pipe only */
     );
 
     return ret;
+#endif
 }
 
 /* License: Ruby's */
 static int
 is_console(SOCKET sock) /* DONT call this for SOCKET! */
 {
+//RHO
+#ifndef OS_UWP
     int ret;
     DWORD n = 0;
     INPUT_RECORD ir;
@@ -2968,12 +2995,17 @@ is_console(SOCKET sock) /* DONT call this for SOCKET! */
     );
 
     return ret;
+#else
+	return 0;
+#endif
 }
 
 /* License: Ruby's */
 static int
 is_readable_console(SOCKET sock) /* call this for console only */
 {
+//RHO
+#ifndef OS_UWP
     int ret = 0;
     DWORD n = 0;
     INPUT_RECORD ir;
@@ -2991,6 +3023,9 @@ is_readable_console(SOCKET sock) /* call this for console only */
     );
 
     return ret;
+#else
+	return 0;
+#endif
 }
 
 /* License: Ruby's */
@@ -3239,11 +3274,11 @@ get_wsa_extension_function(SOCKET s, GUID *guid)
 int WSAAPI
 rb_w32_accept(int s, struct sockaddr *addr, int *addrlen)
 {
-/*
+
 #if defined( _WIN32_WCE ) || defined( OS_WP8) || defined(OS_UWP)
     return 0;
 #else
-*/
+
     SOCKET r;
     int fd;
 
@@ -3266,6 +3301,7 @@ rb_w32_accept(int s, struct sockaddr *addr, int *addrlen)
 	    }
     });
     return fd;
+#endif
 }
 
 #undef bind
@@ -3797,8 +3833,10 @@ open_ifs_socket(int af, int type, int protocol)
 		}
 		if (out == INVALID_SOCKET)
 		    out = WSASocket(af, type, protocol, NULL, 0, 0);
+#ifndef OS_UWP
 		if (out != INVALID_SOCKET)
 		    SetHandleInformation((HANDLE)out, HANDLE_FLAG_INHERIT, 0);
+#endif
 	    }
 
 	    free(proto_buffers);
@@ -4032,7 +4070,10 @@ socketpair_internal(int af, int type, int protocol, SOCKET *sv)
 	    r = accept(svr, addr, &len);
 	    if (r == INVALID_SOCKET)
 		break;
-	    SetHandleInformation((HANDLE)r, HANDLE_FLAG_INHERIT, 0);
+
+//RHO OS_UWP
+	   // SetHandleInformation((HANDLE)r, HANDLE_FLAG_INHERIT, 0);
+
 
 	    ret = 0;
 	} while (0);
@@ -4126,6 +4167,8 @@ static cilnA_t pConvertInterfaceLuidToNameA = NULL;
 int
 getifaddrs(struct ifaddrs **ifap)
 {
+//RHO
+#ifndef OS_UWP
     ULONG size = 0;
     ULONG ret;
     IP_ADAPTER_ADDRESSES *root, *addr;
@@ -4206,6 +4249,7 @@ getifaddrs(struct ifaddrs **ifap)
     }
 
     ruby_xfree(root);
+#endif
     return 0;
 }
 
@@ -4281,6 +4325,8 @@ setfl(SOCKET sock, int arg)
     return ret;
 }
 
+//RHO
+#ifndef OS_UWP
 /* License: Ruby's */
 static int
 dupfd(HANDLE hDup, int flags, int minfd)
@@ -4417,6 +4463,51 @@ rb_w32_set_nonblock(int fd)
 	return -1;
     }
 }
+#else
+int
+fcntl(int fd, int cmd, ...)
+{
+	SOCKET sock = TO_SOCKET(fd);
+	va_list va;
+	int arg;
+	int ret;
+	int flag = 0;
+	st_data_t data;
+	u_long ioctlArg;
+
+	if (!is_socket(sock)) {
+		errno = EBADF;
+		return -1;
+	}
+	if (cmd != F_SETFL) {
+		errno = EINVAL;
+		return -1;
+	}
+
+	va_start(va, cmd);
+	arg = va_arg(va, int);
+	va_end(va);
+	st_lookup(socklist, (st_data_t)sock, &data);
+	flag = (int)data;
+	if (arg & O_NONBLOCK) {
+		flag |= O_NONBLOCK;
+		ioctlArg = 1;
+	}
+	else {
+		flag &= ~O_NONBLOCK;
+		ioctlArg = 0;
+	}
+	RUBY_CRITICAL({
+		ret = ioctlsocket(sock, FIONBIO, &ioctlArg);
+	if (ret == 0)
+		st_insert(socklist, (st_data_t)sock, (st_data_t)flag);
+	else
+		errno = map_errno(WSAGetLastError());
+	});
+
+	return ret;
+}
+#endif
 
 #ifndef WNOHANG
 #define WNOHANG -1
@@ -4676,6 +4767,7 @@ clock_getres(clockid_t clock_id, struct timespec *sp)
     }
 }
 
+#ifndef OS_UWP
 /* License: Ruby's */
 char *
 rb_w32_getcwd(char *buffer, int size)
@@ -4718,7 +4810,7 @@ rb_w32_getcwd(char *buffer, int size)
 
     return p;
 }
-
+#endif
 /* License: Artistic or GPL */
 int
 chown(const char *path, int owner, int group)
@@ -5216,6 +5308,7 @@ get_attr_vsn(const WCHAR *path, DWORD *atts, DWORD *vsn)
 	ASSUME(e = GetLastError());
 	return e;
     }
+#ifndef OS_UWP
     if (!GetFileInformationByHandle(h, &st)) {
 	ASSUME(e = GetLastError());
     }
@@ -5223,6 +5316,7 @@ get_attr_vsn(const WCHAR *path, DWORD *atts, DWORD *vsn)
 	*atts = st.dwFileAttributes;
 	*vsn = st.dwVolumeSerialNumber;
     }
+#endif
     CloseHandle(h);
     return e;
 }
@@ -5391,10 +5485,11 @@ stati64_set_inode_handle(HANDLE h, struct stati64 *st)
 {
     BY_HANDLE_FILE_INFORMATION info;
     DWORD attr = (DWORD)-1;
-
+#ifndef OS_UWP
     if (GetFileInformationByHandle(h, &info)) {
 	stati64_set_inode(&info, st);
     }
+#endif
     return attr;
 }
 
@@ -5409,11 +5504,13 @@ rb_w32_fstat(int fd, struct stat *st)
 
     if (ret) return ret;
     if (GetEnvironmentVariableW(L"TZ", NULL, 0) == 0 && GetLastError() == ERROR_ENVVAR_NOT_FOUND) return ret;
+#ifndef OS_UWP
     if (GetFileInformationByHandle((HANDLE)_get_osfhandle(fd), &info)) {
 	st->st_atime = filetime_to_unixtime(&info.ftLastAccessTime);
 	st->st_mtime = filetime_to_unixtime(&info.ftLastWriteTime);
 	st->st_ctime = filetime_to_unixtime(&info.ftCreationTime);
     }
+#endif
     return ret;
 }
 
@@ -5443,7 +5540,7 @@ stati64_handle(HANDLE h, struct stati64 *st)
 {
     BY_HANDLE_FILE_INFORMATION info;
     DWORD attr = (DWORD)-1;
-
+#ifndef OS_UWP
     if (GetFileInformationByHandle(h, &info)) {
 	st->st_size = ((__int64)info.nFileSizeHigh << 32) | info.nFileSizeLow;
 	st->st_atime = filetime_to_unixtime(&info.ftLastAccessTime);
@@ -5453,6 +5550,7 @@ stati64_handle(HANDLE h, struct stati64 *st)
 	attr = info.dwFileAttributes;
 	stati64_set_inode(&info, st);
     }
+#endif
     return attr;
 }
 
@@ -5520,6 +5618,7 @@ fileattr_to_unixmode(DWORD attr, const WCHAR *path)
 static int
 check_valid_dir(const WCHAR *path)
 {
+#ifndef OS_UWP
     WIN32_FIND_DATAW fd;
     HANDLE fh;
     WCHAR full[MAX_PATH];
@@ -5550,6 +5649,15 @@ check_valid_dir(const WCHAR *path)
     if (fh == INVALID_HANDLE_VALUE)
 	return -1;
     FindClose(fh);
+
+#else
+WIN32_FIND_DATAW fd = { 0 };
+HANDLE fh = open_dir_handle(path, &fd);
+if (fh == INVALID_HANDLE_VALUE)
+return -1;
+FindClose(fh);
+#endif
+
     return 0;
 }
 
@@ -5604,7 +5712,15 @@ winnt_stat(const WCHAR *path, struct stati64 *st)
     memset(st, 0, sizeof(*st));
     f = open_special(path, 0, 0);
     if (f != INVALID_HANDLE_VALUE) {
-	const DWORD attr = stati64_handle(f, st);
+#ifndef OS_UWP
+		const DWORD attr = stati64_handle(f, st);
+#else
+		DWORD attr = GetFileAttributesW(path);
+		if (attr == (DWORD)-1L) {
+			errno = map_errno(GetLastError());
+			return -1;
+		}
+#endif
 	const DWORD len = get_final_path(f, finalname, numberof(finalname), 0);
 	CloseHandle(f);
 	if (attr & FILE_ATTRIBUTE_DIRECTORY) {
@@ -6137,6 +6253,7 @@ rb_w32_getppid(void)
 
 STATIC_ASSERT(std_handle, (STD_OUTPUT_HANDLE-STD_INPUT_HANDLE)==(STD_ERROR_HANDLE-STD_OUTPUT_HANDLE));
 
+#ifndef OS_UWP
 /* License: Ruby's */
 #define set_new_std_handle(newfd, handle) do { \
 	if ((unsigned)(newfd) > 2) break; \
@@ -6157,7 +6274,7 @@ rb_w32_dup2(int oldfd, int newfd)
     set_new_std_fd(newfd);
     return newfd;
 }
-
+#endif
 /* License: Ruby's */
 int
 rb_w32_uopen(const char *file, int oflag, ...)
@@ -6193,6 +6310,7 @@ check_if_wdir(const WCHAR *wfile)
 
 static int w32_wopen(const WCHAR *file, int oflag, int perm);
 
+#ifndef OS_UWP
 /* License: Ruby's */
 int
 rb_w32_open(const char *file, int oflag, ...)
@@ -6526,12 +6644,13 @@ rb_w32_pipe(int fds[2])
 
     return 0;
 }
+#endif
 
 /* License: Ruby's */
 static int
 console_emulator_p(void)
 {
-#ifdef _WIN32_WCE
+#if defined(_WIN32_WCE) || defined(OS_UWP)
     return FALSE;
 #else
     const void *const func = WriteConsoleW;
@@ -6548,6 +6667,8 @@ console_emulator_p(void)
 #endif
 }
 
+//RHO
+#ifndef OS_UWP
 /* License: Ruby's */
 static struct constat *
 constat_handle(HANDLE h)
@@ -6581,6 +6702,7 @@ constat_handle(HANDLE h)
     }
     return p;
 }
+#endif
 
 /* License: Ruby's */
 static void
@@ -6702,6 +6824,8 @@ constat_attr(int count, const int *seq, WORD attr, WORD default_attr, int *rever
 static void
 constat_apply(HANDLE handle, struct constat *s, WCHAR w)
 {
+//RHO
+#ifndef OS_UWP
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     const int *seq = s->vt100.seq;
     int count = s->vt100.state;
@@ -6821,6 +6945,7 @@ constat_apply(HANDLE handle, struct constat *s, WCHAR w)
 	}
 	break;
     }
+#endif
 }
 
 /* License: Ruby's */
@@ -6961,6 +7086,8 @@ finish_overlapped(OVERLAPPED *ol, int fd, DWORD size)
     }
 }
 
+//RHO
+#ifndef OS_UWP
 #undef read
 /* License: Ruby's */
 ssize_t
@@ -7282,6 +7409,7 @@ rb_w32_write_console(uintptr_t strarg, int fd)
     if (wbuffer) free(wbuffer);
     return (long)reslen;
 }
+#endif
 
 /* License: Ruby's */
 static int
@@ -7596,6 +7724,8 @@ fchmod(int fd, int mode)
     return 0;
 }
 
+//RHO
+#if !defined(OS_UWP)
 /* License: Ruby's */
 int
 rb_w32_isatty(int fd)
@@ -7612,6 +7742,7 @@ rb_w32_isatty(int fd)
     }
     return 1;
 }
+#endif
 
 #if defined(_MSC_VER) && RUBY_MSVCRT_VERSION <= 60
 extern long _ftol(double);

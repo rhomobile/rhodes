@@ -43,7 +43,7 @@
 #endif
 
 #ifdef OS_UWP
-#define WINAPI_FAMILY 3
+#define HANDLE_FLAG_INHERIT 1
 #endif
 
 #if defined( WINDOWS_PLATFORM )
@@ -285,6 +285,17 @@ WINAPI
 SetEnvironmentStringsW(
     _In_ _Pre_ _NullNull_terminated_ LPWCH NewEnvironment
     );
+_NullNull_terminated_
+LPWCH
+WINAPI
+GetEnvironmentStringsW(
+	VOID
+);
+DWORD WINAPI GetEnvironmentVariableW(
+	_In_opt_  LPCTSTR lpName,
+	_Out_opt_ LPTSTR  lpBuffer,
+	_In_      DWORD   nSize
+);
 #endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 
@@ -294,6 +305,14 @@ SetEnvironmentStringsW(
 #endif
 
 #ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
+
+typedef enum {
+	AddrMode1616,
+	AddrMode1632,
+	AddrModeReal,
+	AddrModeFlat
+} ADDRESS_MODE;
+
 BOOL
 WINAPI
 FreeEnvironmentStringsA(
@@ -384,7 +403,7 @@ typedef LPSTARTUPINFOA LPSTARTUPINFO;
 #endif // UNICODE
 
 #ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
-HANDLE
+/*HANDLE
 WINAPI
 CreateFileA(
     _In_ LPCSTR lpFileName,
@@ -408,7 +427,7 @@ CreateFileW(
     _In_ DWORD dwFlagsAndAttributes,
     _In_opt_ HANDLE hTemplateFile
     );
-
+*/
 #endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 
@@ -456,7 +475,7 @@ CharNextW(
 #endif // !UNICODE
 
 #ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
-
+/*
 HMODULE
 WINAPI
 GetModuleHandleA(
@@ -469,7 +488,7 @@ WINAPI
 GetModuleHandleW(
     _In_opt_ LPCWSTR lpModuleName
     );
-
+*/
 #endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 
@@ -522,6 +541,7 @@ CharPrevW(
 #endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 #ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
+/*
 HANDLE
 WINAPI
 OpenProcess(
@@ -546,7 +566,7 @@ GetFileSize(
     _In_ HANDLE hFile,
     _Out_opt_ LPDWORD lpFileSizeHigh
     );
-
+	*/
 #endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 #define CreateThread CreateThreadWP8
@@ -744,6 +764,7 @@ BOOL WINAPI GetExitCodeThreadWP8(
 #define SetThreadPriority SetThreadPriorityWP8
 
 #ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
+/*
 DWORD
 WINAPI
 GetModuleFileNameA(
@@ -759,6 +780,7 @@ GetModuleFileNameW(
     _Out_writes_to_(nSize, ((return < nSize) ? (return + 1) : nSize)) LPWSTR lpFilename,
     _In_ DWORD nSize
     );
+	*/
 #endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 
@@ -770,6 +792,7 @@ GetModuleFileNameW(
 #endif // !UNICODE
 
 #ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
+/*
 BOOL
 WINAPI
 GetVersionExA(
@@ -781,6 +804,7 @@ WINAPI
 GetVersionExW(
     _Inout_ LPOSVERSIONINFOW lpVersionInformation
     );
+*/
 #endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 
@@ -897,7 +921,7 @@ TerminateProcess(
     );
 
 #ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
-DWORD
+/*DWORD
 WINAPI
 GetFileAttributesA(
     _In_ LPCSTR lpFileName
@@ -907,7 +931,7 @@ DWORD
 WINAPI
 GetFileAttributesW(
     _In_ LPCWSTR lpFileName
-    );
+    );*/
 #endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 
@@ -939,6 +963,7 @@ MoveFileW(
 #endif // !UNICODE
 
 #ifdef REDEFINE_WINAPI_OLD_FUNCTIONS
+/*
 BOOL
 WINAPI
 UnlockFile(
@@ -955,6 +980,7 @@ LocalFileTimeToFileTime(
     _In_ CONST FILETIME * lpLocalFileTime,
     _Out_ LPFILETIME lpFileTime
     );
+	*/
 #endif // REDEFINE_WINAPI_OLD_FUNCTIONS
 
 

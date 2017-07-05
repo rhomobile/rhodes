@@ -12,6 +12,7 @@
 #include <tchar.h>
 
 #include "../../common/RhoDefs.h"
+#include "common/RhoPort.h"
 
 //#include "ruby/config.h"
 //#include "ruby/defines.h"
@@ -23,6 +24,12 @@
 char *_commandLine;
 
 extern char _currentdir[];
+
+#define WSAAPI                  FAR PASCAL
+extern int    WSAAPI rb_w32_recv(int, char *, int, int);
+extern int    WSAAPI rb_w32_send(int, const char *, int, int);
+extern int  rb_w32_wopen(const WCHAR *, int, ...);
+
 
 /* ---------------  files functions. ------------------- */
 BOOL
@@ -36,12 +43,20 @@ MoveFileW(
 }
 
 /* --------------- EnvironmentVariable functions. ----------------- */
-/*
+
 _NullNull_terminated_ LPWCH WINAPI GetEnvironmentStringsW(VOID)
 {
 	return NULL;
 }
-*/
+
+DWORD WINAPI GetEnvironmentVariableW(
+	_In_opt_  LPCTSTR lpName,
+	_Out_opt_ LPTSTR  lpBuffer,
+	_In_      DWORD   nSize
+)
+{
+	return 0;
+}
 
 #define REDEFINE_WINAPI_OLD_FUNCTIONS_UWP
 
@@ -139,7 +154,7 @@ BOOL WINAPI TerminateProcess(
 	return FALSE;
 }
 
-/*
+
 HMODULE
 WINAPI
 LoadLibraryA(
@@ -148,7 +163,7 @@ LoadLibraryA(
 {
 	return NULL;
 }
-*/
+
 
 #ifdef REDEFINE_WINAPI_OLD_FUNCTIONS_UWP
 HMODULE
@@ -339,7 +354,6 @@ int wsprintfW( LPWSTR p1,  LPCWSTR p2,  ...)
 	return nRes;
 }
 
-/* inwin32
 int rb_w32_open( const char *file, int mode, ... )
 {
     int ret = 0;
@@ -385,7 +399,7 @@ rb_w32_write(int fd, const void *buf, size_t size)
 
     return _write(fd,buf,size);
 }
-*/
+
 wchar_t* wce_mbtowc(const char* a)
 {
 	int length;

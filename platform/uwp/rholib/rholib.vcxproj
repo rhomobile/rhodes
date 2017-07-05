@@ -36,7 +36,7 @@
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
     <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformMinVersion>10.0.14393.0</WindowsTargetPlatformMinVersion>
+    <WindowsTargetPlatformMinVersion>10.0.10586.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -124,6 +124,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAsManaged>false</CompileAsManaged>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,6 +143,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -159,6 +161,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAsManaged>false</CompileAsManaged>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -176,6 +179,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAsManaged>false</CompileAsManaged>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -192,6 +196,7 @@
       <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsManaged>false</CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -208,6 +213,7 @@
       <AdditionalIncludeDirectories>../../shared/ruby;../../shared;../../shared/curl/include;../../../lib/commonAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsManaged>false</CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

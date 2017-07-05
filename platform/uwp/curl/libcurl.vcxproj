@@ -125,6 +125,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
@@ -150,6 +151,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
@@ -176,6 +178,7 @@
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
@@ -203,6 +206,7 @@
       <CompileAsManaged>false</CompileAsManaged>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
@@ -237,6 +241,7 @@
       <CompileAsManaged>false</CompileAsManaged>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
@@ -272,6 +277,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>

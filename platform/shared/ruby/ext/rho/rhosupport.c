@@ -325,6 +325,7 @@ static VALUE find_file_in_load_paths(VALUE fname)
 		for(; i < RARRAY_LEN(load_path); i++ )
 		{
 			VALUE dir = RARRAY_PTR(load_path)[i];
+			char* tmp = RSTRING_PTR(dir);
 
 #ifdef RHODES_EMULATOR
             res = check_app_file_exist(dir, fname1, rho_simconf_getString("platform"));

@@ -123,6 +123,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,6 +159,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -174,6 +176,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

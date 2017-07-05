@@ -710,8 +710,10 @@ extern char *rb_w32_strerror(int);
 #undef times
 #define times(t)		rb_w32_times(t)
 
+#ifndef OS_UWP
 #undef dup2
 #define dup2(o, n)		rb_w32_dup2(o, n)
+#endif
 #endif
 
 struct tms {
