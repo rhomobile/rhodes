@@ -96,8 +96,13 @@ struct INetRequestImpl
     virtual void setCallback(INetRequestCallback*) = 0;
 
     virtual void setAuthMethod( AuthMethod method ) = 0;
+    virtual AuthMethod getAuthMethod() const = 0;
+    
     virtual void setAuthUser( const String& user ) = 0;
+    virtual const String& getAuthUser() const = 0;
+    
     virtual void setAuthPassword( const String& password ) = 0;
+    virtual const String& getAuthPassword() const = 0;
 };
 
 class CNetRequestBase : public INetRequestImpl
@@ -113,8 +118,11 @@ public:
 
     virtual void setCallback(INetRequestCallback* cb ) { m_pCallback = cb; }
     virtual void setAuthMethod( AuthMethod method ) { m_authMethod = method; }
+    virtual AuthMethod getAuthMethod() const { return m_authMethod; }
     virtual void setAuthUser( const String& user ) { m_authUser = user; }
+    virtual const String& getAuthUser() const { return m_authUser; }
     virtual void setAuthPassword( const String& password ) { m_authPassword = password; }
+    virtual const String& getAuthPassword() const { return m_authPassword; }
 
 protected:
   INetRequestCallback* m_pCallback;
