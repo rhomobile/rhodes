@@ -81,7 +81,7 @@ public:
     bool isValid()const{ return m_bValid; }
     void setValid(bool b){ m_bValid = b; }
 
-    String& getRawData() const { return m_data; }
+    String& getRawData() { return m_data; }
 
     void setCookies(String s)
     {
@@ -126,7 +126,7 @@ public:
 };
 
 class CNetRequest;
-class CNetRequestImpl : public INetRequestImpl
+class CNetRequestImpl : public CNetRequestBase
 {
     DEFINE_LOGCLASS;
 
