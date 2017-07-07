@@ -201,6 +201,8 @@ platform/android/bin
 platform/android/target
 platform/shared/*/bin
 platform/android/**/default.properties
+*/proguard/*.txt
+*/proguard/proguard-generated-rules.pro
 
 #*.jar
 *.cod
