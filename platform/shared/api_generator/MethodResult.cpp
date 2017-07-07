@@ -157,7 +157,7 @@ VALUE CMethodResult::toRuby(bool bForCallback/* = false*/)
     return valRes;
 }
 
-bool CMethodResult::hasCallback()
+bool CMethodResult::hasCallback() const
 {
     return m_strRubyCallback.length() != 0 ||
 #ifndef RHORC_NO_RUBY

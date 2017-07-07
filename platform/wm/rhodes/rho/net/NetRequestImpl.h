@@ -54,7 +54,7 @@ class CNetResponseImpl : public INetResponse
 public:
     CNetResponseImpl() : m_bValid(false),m_nRespCode(-1){}
 
-    virtual const char* getCharData()
+    virtual const char* getCharData() const
     {
         return m_bValid ? m_data.c_str() : "";
     }
@@ -65,23 +65,23 @@ public:
         m_data = szData;
     }
 
-    virtual unsigned int getDataSize()
+    virtual unsigned int getDataSize() const
     {
         return m_bValid ? m_data.size() : 0;
     }
 
-    virtual String getCookies()
+    virtual String getCookies() const
     {
         return m_cookies;
     }
-    virtual int getRespCode(){ return m_nRespCode;}
+    virtual int getRespCode() const { return m_nRespCode;}
 
-    virtual String getErrorMessage() { return m_errorMessage; }
+    virtual String getErrorMessage() const { return m_errorMessage; }
 
     bool isValid()const{ return m_bValid; }
     void setValid(bool b){ m_bValid = b; }
 
-    String& getRawData(){ return m_data; }
+    String& getRawData() { return m_data; }
 
     void setCookies(String s)
     {
@@ -90,12 +90,12 @@ public:
     
     void setResponseCode(int nRespCode){ m_nRespCode = nRespCode;}
 
-    boolean isSuccess()
+    boolean isSuccess() const
     {
         return m_nRespCode > 0 && m_nRespCode < 400;
     }
 
-	boolean isOK()
+	boolean isOK() const
 	{
 		return m_nRespCode == 200 || m_nRespCode == 206;
 	}
@@ -126,7 +126,7 @@ public:
 };
 
 class CNetRequest;
-class CNetRequestImpl : public INetRequestImpl
+class CNetRequestImpl : public CNetRequestBase
 {
     DEFINE_LOGCLASS;
 

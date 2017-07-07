@@ -15,7 +15,7 @@ namespace net {
 
 class CIphoneNetRequestHolder;
 
-class CIPhoneNetRequest : public INetRequestImpl {
+class CIPhoneNetRequest : public CNetRequestBase {
 
 public:
   CIPhoneNetRequest();
@@ -34,13 +34,9 @@ public:
   virtual void setFollowRedirects(boolean follow);
 
   virtual INetResponse* createEmptyNetResponse();
-    
-  virtual void setCallback(INetRequestCallback*);
-  
 
 private:
   common::CAutoPtr<CIphoneNetRequestHolder> m_pHolder;
-  INetRequestCallback* m_pCallback;
 };
 
 
