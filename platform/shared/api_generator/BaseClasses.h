@@ -43,7 +43,7 @@ public:
     }
 
     void setCommandQueue( rho::common::CThreadQueue* pQueue){ m_pCommandQueue = pQueue; }
-    rho::common::CThreadQueue* getCommandQueue(){ return m_pCommandQueue; }
+    rho::common::CThreadQueue* getCommandQueue() const { return m_pCommandQueue; }
     virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<CMethodResult>* pFunctor)
     {
         if ( !m_pCommandQueue )
