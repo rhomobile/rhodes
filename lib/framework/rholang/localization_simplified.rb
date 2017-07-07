@@ -18,32 +18,32 @@ module LocalizationSimplified
     date.gsub!('%B', LocalizationSimplified::DateHelper::Monthnames[time.mon])
     #date.gsub!(@@ignore, '%%')
   end
-  
+
   def self.get_cur_locale
-    @@cur_locale  
+    @@cur_locale
   end
 
   def self.get_cur_country
-    @@cur_country  
+    @@cur_country
   end
-  
+
   def self.set_cur_locale(loc, country)
     @@cur_locale = loc
-    @@cur_country = country  
-    
+    @@cur_country = country
+
     puts "Current locale: #{@@cur_locale}; Country code: #{@@cur_country}"
   end
-  
+
     def self.init_current_locale
         return if @@cur_locale
-        
+
         @@cur_locale = System::get_locale()
         @@cur_locale = @@cur_locale.downcase if @@cur_locale
         @@cur_locale = 'en' unless @@cur_locale
         @@cur_country = System::get_property("country")
         @@cur_country = @@cur_country.downcase if @@cur_country
     end
-    
+
     def self.requre_loc(file,check_exist)
         init_current_locale()
 
@@ -52,24 +52,26 @@ if Rho::System.isRhoSimulator
             file = File.join( __rhoGetRhodesDir(), 'lib/framework', file)
 else
             file = File.join( __rhoGetRuntimeDir(), 'lib', file)
-end            
+end
         end
 
       puts "Locilized file: #{file}"
-      
-        if @@cur_country && @@cur_country.length() > 0 && Rho::file_exist?(file + @@cur_locale + '_' + @@cur_country + RHO_RB_EXT) 
+
+        if @@cur_country && @@cur_country.length() > 0 && ( Rho::file_exist?(file + @@cur_locale + '_' + @@cur_country + RHO_RB_EXT) || Rho::file_exist?(file + @@cur_locale + '_' + @@cur_country + RHO_RB_EXT + RHO_ENCRYPTED_EXT))
+            puts "   - load ["+file + @@cur_locale + '_' + @@cur_country+"]"
             load file + @@cur_locale + '_' + @@cur_country
-        elsif Rho::file_exist?(file + @@cur_locale + RHO_RB_EXT)
+        elsif (Rho::file_exist?(file + @@cur_locale + RHO_RB_EXT) || Rho::file_exist?(file + @@cur_locale + RHO_RB_EXT + RHO_ENCRYPTED_EXT))
+            puts "   - load ["+file + @@cur_locale+"]"
             load file + @@cur_locale
-        else    
+        else
             puts 'Could not find resources for locale: ' + @@cur_locale.to_s + ";file: #{file}" if @@cur_locale != 'en'
-            if @@cur_locale != 'en' && Rho::file_exist?(file + 'en' + RHO_RB_EXT)
+            if @@cur_locale != 'en' && (Rho::file_exist?(file + 'en' + RHO_RB_EXT) || Rho::file_exist?(file + 'en' + RHO_RB_EXT + RHO_ENCRYPTED_EXT))
                 puts 'Load english resources.'
                 load file + 'en'
-            end    
+            end
         end
     end
-  
+
 end
 
 #LocalizationSimplified.requre_loc('rholang/lang_',false)

@@ -1010,9 +1010,15 @@ end
       err_page = nil
       if exception && exception.is_a?(::Rhom::RecordNotFound)
         err_page = RhoApplication::get_app_path(APPNAME) + 'E400' + RHO_ERB_EXT
+        if !Rho::file_exist?(err_page)
+           err_page = err_page + RHO_ENCRYPTED_EXT
+        end
         err_page = nil unless ::Rho::file_exist?(err_page)
       elsif exception
         err_page = RhoApplication::get_app_path(APPNAME) + 'E500' + RHO_ERB_EXT
+        if !Rho::file_exist?(err_page)
+           err_page = err_page + RHO_ENCRYPTED_EXT
+        end
         err_page = nil unless ::Rho::file_exist?(err_page)
       end
 
