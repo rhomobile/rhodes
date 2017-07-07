@@ -38,6 +38,7 @@
 
 #include "common/RhodesApp.h"
 #include "common/RhoMutexLock.h"
+#include "common/app_build_configs.h"
 #include "logging/RhoLog.h"
 
 #ifdef RHODES_EMULATOR
@@ -45,6 +46,7 @@
 #endif
 #include "statistic/RhoProfiler.h"
 
+#include "rhoruby.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 
@@ -117,6 +119,40 @@ static VALUE loadISeqFromFile(VALUE path)
 #endif    
 
         VALUE fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
+    
+    
+        // fiseq is string
+    //char* getStringFromValue(VALUE val);
+    //int getStringLenFromValue(VALUE val);
+    // VALUE rho_ruby_create_string_withlen2(const char* szVal, int len)
+
+    char* decrypted_buf = NULL;
+    
+    const char* filepath = getStringFromValue(path);
+    char* founded = strstr(filepath, ".encrypted");
+
+    
+    RAWLOG_INFO1("loadISeqFromFile: %s", filepath);
+    
+    
+    
+    if (founded) {
+        if (strcmp(founded, ".encrypted") == 0) {
+            const char* filedata = getStringFromValue(fiseq);
+            int filelen = getStringLenFromValue(fiseq);
+            
+            decrypted_buf = malloc (filelen*2);
+            
+            int res = rho_decrypt_file(filedata, filelen, decrypted_buf, filelen*2);
+            
+            fiseq = rho_ruby_create_string_withlen2((const char*)decrypted_buf, res);
+            
+        }
+    }
+    
+    
+    
+    
         //VALUE fiseq = rb_funcall(rb_cFile, rb_intern("open"), 2, path, rb_str_new2("rb"));
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&start, NULL); 
@@ -125,6 +161,12 @@ static VALUE loadISeqFromFile(VALUE path)
 
 //        arr = Marshal.load(fiseq)
         VALUE arr = rb_funcall(rb_const_get(rb_cObject,rb_intern("Marshal")), rb_intern("load"), 1, fiseq);
+    
+    
+    if (decrypted_buf != NULL) {
+        free(decrypted_buf);
+    }
+    
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);
     
@@ -305,8 +347,14 @@ static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatfor
     }
 
     rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
-    //RAWLOG_INFO1("find_file: check file: %s", RSTRING_PTR(res));
+    RAWLOG_INFO1("find_file: check file: %s", RSTRING_PTR(res));
 
+    VALUE result = 0;
+    if (eaccess(RSTRING_PTR(res), R_OK) == 0) {
+        return res;
+    }
+    rb_str_cat(res,RHO_ENCRYPTED_EXT,strlen(RHO_ENCRYPTED_EXT));
+    
     return eaccess(RSTRING_PTR(res), R_OK) == 0 ? res : 0;
 }
 
@@ -323,6 +371,7 @@ static VALUE find_file_in_load_paths(VALUE fname)
 		for(; i < RARRAY_LEN(load_path); i++ )
 		{
 			VALUE dir = RARRAY_PTR(load_path)[i];
+
 
 #ifdef RHODES_EMULATOR
             res = check_app_file_exist(dir, fname1, rho_simconf_getString("platform"));
@@ -447,9 +496,24 @@ static VALUE find_file(VALUE fname)
 			nOK = 1;
 		}
     }
+    
+    if (res != 0) {
+        // check access
+        
+        if (eaccess(RSTRING_PTR(res), R_OK) != 0) {
+            rb_str_cat(res,RHO_ENCRYPTED_EXT,strlen(RHO_ENCRYPTED_EXT));
+            if (eaccess(RSTRING_PTR(res), R_OK) != 0) {
+                res = 0;
+            }
+        }
+        
+    }
 
-    //RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
-    res = RhoPreparePath(res);
+    if ( res != 0 ) {
+        RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
+        res = RhoPreparePath(res);
+    }
+
     if ( !nOK )
         nOK = 1;//eaccess(RSTRING_PTR(res), R_OK) == 0 ? 1 : 0;
 

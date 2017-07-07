@@ -157,7 +157,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine"]
+$application_build_configs_keys = ['encrypt_files_key', 'security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine"]
 
 $winxpe_build = false
 
@@ -1992,6 +1992,11 @@ namespace "config" do
     # gather main extensions
     extensions = []
     extensions << "coreapi" #unless $app_config['re_buildstub']
+    if ($current_platform == "iphone") || ($current_platform == "android")
+        extensions << "decryptstub"
+    else
+        puts "do not checking for encrypt/decrypt because not iOS/Android 1"
+    end
     extensions << "zlib" if $current_platform == "win32" # required by coreapi on win32 for gzip support in Network
     extensions += get_extensions
     extensions << "rhoconnect-client" if $rhosimulator_build
@@ -2202,6 +2207,23 @@ namespace "config" do
     $shared_rt_js_appliction = ($js_application and $current_platform == "wm" and $app_config["capabilities"].index('shared_runtime'))
     puts "%%%_%%% $shared_rt_js_application = #{$shared_rt_js_appliction}"
     $app_config['extensions'] = $app_config['extensions'] | ['rubyvm_stub'] if $shared_rt_js_appliction
+
+    # check for encrypting
+    if ($current_platform == "iphone") || ($current_platform == "android")
+        $encrypt_aes_key = nil
+        encrypt_file_extensions = $app_config["encrypt_file_extensions"]
+        encrypt_files_key = $app_config["encrypt_files_key"]
+        if (encrypt_file_extensions != nil) && (encrypt_files_key != nil)
+            if encrypt_file_extensions.is_a?(Array) && encrypt_files_key.is_a?(String)
+                $encrypt_aes_key = encrypt_files_key
+                $app_config['extensions'] = $app_config['extensions'] | ['openssl.so']
+                $app_config['extensions'] = $app_config['extensions'] | ['decrypt']
+                $app_config["extensions"].delete("decryptstub")
+            end
+        end
+    else
+        puts "do not checking for encrypt/decrypt because not iOS/Android"
+    end
 
     if $current_platform == "bb"
       make_application_build_config_java_file()
@@ -3065,6 +3087,13 @@ namespace "build" do
 
   namespace "bundle" do
 
+
+    desc "Generate AES key for bundle encryption"
+    task :generate_AES_key do
+        generated_key = Jake.generate_AES_key
+        puts 'Generated AES key is : "'+generated_key+'"'
+    end
+
     task :prepare_native_generated_files do
 
       currentdir = Dir.pwd()
@@ -3313,6 +3342,12 @@ namespace "build" do
           minify_js_and_css($srcdir,$minify_types)
         end
       end
+
+      #encrypt files
+      if $encrypt_aes_key != nil
+          Jake.encrypt_files_by_AES($srcdir, $encrypt_aes_key, $app_config["encrypt_file_extensions"])
+      end
+
 
       chdir startdir
       cp_r "platform/shared/db/res/db", File.join($srcdir, "db")

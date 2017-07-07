@@ -1193,6 +1193,7 @@ namespace "build" do
 
       Rake::Task["build:bundle:noxruby"].execute
 
+      copy_generated_sources_and_binaries
       if !$skip_build_extensions
         Rake::Task["build:iphone:extensions"].execute
       end

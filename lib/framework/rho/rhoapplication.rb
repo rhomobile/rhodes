@@ -171,22 +171,22 @@ module Rho
         if disp_menu.is_a?(Array)
             disp_menu << {:label => 'Back', :action => back_action }
         else
-           disp_menu['Back'] = back_action 
+           disp_menu['Back'] = back_action
         end
-            
-      end   
+
+      end
       #puts "RhoApplication: Using menu - #{disp_menu.inspect}"
   	  WebView.set_menu_items(disp_menu)
     end
 
     @@current_controller = nil
     def self.current_controller()
-        @@current_controller        
+        @@current_controller
     end
     def self.set_current_controller(ctrl)
         @@current_controller = ctrl
     end
-    
+
     def serve(req,res)
       req[:modelpath] = self.class.get_model_path req['application'], req['model']
       controller_class = req['model']+'Controller'
@@ -194,11 +194,11 @@ module Rho
 	  undercase.slice!(0) if undercase.start_with?('_')
 	  #TODO: WP7 - for some reason it added _ at the start
 
-      is_found = false  	  	
-      
-      if Rho::file_exist?(  req[:modelpath]+ undercase +RHO_RB_EXT )
+      is_found = false
+
+      if (Rho::file_exist?(  req[:modelpath]+ undercase +RHO_RB_EXT ) || Rho::file_exist?(  req[:modelpath]+ undercase +RHO_RB_EXT + RHO_ENCRYPTED_EXT))
         require req['model'] + '/' + undercase #req[:modelpath]+ undercase
-        
+
         is_found = true
       elsif Rho::System.isRhoSimulator
         begin
@@ -206,14 +206,14 @@ module Rho
             is_found = true
         rescue Exception => exc
         end
-        
+
       end
-      
+
       unless is_found
         require req['model'] + '/controller' #req[:modelpath]+'controller'
       end
-      
-      @@current_controller = (Object.const_get(req['model']+'Controller').new) 
+
+      @@current_controller = (Object.const_get(req['model']+'Controller').new)
       res['request-body'] = @@current_controller.send :serve, self, @rhom, req, res
     end
 
@@ -223,4 +223,3 @@ end # Rho
 module Rho
     RhoApplication = Rho::Application
 end
-

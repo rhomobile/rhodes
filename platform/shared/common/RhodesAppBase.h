@@ -168,6 +168,7 @@ void rho_net_request_with_data(const char *url, const char *str_body);
     
 const char* rho_app_canonicalize_rho_url(const char* url);
 
+int rho_decrypt_file(const char* filebuf, int filebuf_len, char* decrypted_buf, int maxlen);
 	
 #ifdef __cplusplus
 };
