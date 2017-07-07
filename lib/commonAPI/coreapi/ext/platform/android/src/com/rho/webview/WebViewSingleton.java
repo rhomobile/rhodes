@@ -71,6 +71,16 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     }
 
     @Override
+    public void getKeyboardDisplayRequiresUserAction(IMethodResult result) {
+        result.set(true);
+    }
+
+    @Override
+    public void setKeyboardDisplayRequiresUserAction(boolean value, IMethodResult result) {
+    }
+
+
+    @Override
     public void getEnableZoom(IMethodResult result) {
         result.set(mConfig.getBool(WebViewConfig.ENABLE_ZOOM));
     }

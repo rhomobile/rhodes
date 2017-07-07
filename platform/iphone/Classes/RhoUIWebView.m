@@ -48,6 +48,11 @@
         [[w scrollView] setBounces:NO];
     if ( rho_conf_getBool("enable_media_playback_without_gesture") == 1 )
         w.mediaPlaybackRequiresUserAction = NO;
+
+    if (rho_conf_is_property_exists("WebView.keyboardDisplayRequiresUserAction")) {
+        int v = rho_conf_getBool("WebView.keyboardDisplayRequiresUserAction");
+        w.keyboardDisplayRequiresUserAction = (v != 0);
+    }
     
     w.userInteractionEnabled = YES;
     w.multipleTouchEnabled = YES;
