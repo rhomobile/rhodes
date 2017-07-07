@@ -761,11 +761,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
 		}
 #endif
 
-        RAWTRACE3( "Setting auth data for request: Method: %d, user: %s, password: %s", 
-            authSettings.method, 
-            authSettings.user.c_str(), 
-            authSettings.password.c_str() );
-
+        RAWTRACE1( "Setting auth data for request: Method: %d, user: <SECRET>, password: <SECRET>", authSettings.method );
         switch (authSettings.method) {
         case AUTH_DIGEST:
             curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
