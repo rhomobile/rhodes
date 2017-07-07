@@ -140,7 +140,7 @@ public:
     unsigned long toRuby(bool bForCallback = false);
     rho::String toJSON();
 
-    bool hasCallback();
+    bool hasCallback() const;
     void callCallback();
     bool isEqualCallback(CMethodResult& oResult);
     
