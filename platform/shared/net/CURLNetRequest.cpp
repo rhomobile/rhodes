@@ -282,7 +282,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         
         ProxySettings proxySettings;
         proxySettings.initFromConfig();
-		curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h, proxySettings );
+		curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h, proxySettings , AuthSettings(m_authMethod,m_authUser,m_authPassword) );
 
         CURL *curl = m_curl.curl();
         if (pHeaders) {
