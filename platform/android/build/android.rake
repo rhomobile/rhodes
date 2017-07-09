@@ -626,7 +626,7 @@ namespace "config" do
       apilevel = nil
       target_name = nil
 
-      `"#{$androidbin}" list targets`.split(/\n/).each do |line|
+      `"#{$androidbin}" list target`.split(/\n/).each do |line|
         line.chomp!
 
         if line =~ /^id:\s+([0-9]+)\s+or\s+\"(.*)\"/
