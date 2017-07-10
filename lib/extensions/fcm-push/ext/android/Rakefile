@@ -1,4 +1,6 @@
+require 'rubygems'
 require 'fileutils'
+require 'json'
 
 $curdir = pwd
 TARGETDIR = ENV['TARGET_TEMP_DIR']
@@ -15,9 +17,10 @@ $androidsdk = ENV['ANDROID_SDK']
 raise 'ANDROID_SDK is not set' unless $androidsdk    
 TARGETLIB = ENV['TARGETLIB']
 raise 'TARGETLIB is not set' if ENV['TARGETLIB'].nil?
+$app_dir = ENV["RHO_APP_DIR"]
+raise "RHO_APP_DIR is not set" if $app_dir.nil?
 
 require File.join($rootdir, 'platform/android/build/androidcommon.rb')
-
 ARGS = [
   "#{$curdir}/ext/android/jni/src",
   "#{$rootdir}/platform/android/Rhodes/jni/include",
@@ -111,9 +114,37 @@ file TARGETLIB_MIPS => TARGETDIR_MIPS do |t|
 end
 multitask TARGETLIB_MIPS => OBJ_MIPS
 
-#file FCMJAR => TARGETDIR do |t|
-#  cp File.join($androidsdk,'extras','google','fcm','fcm-client','dist','fcm.jar'), t.name
-#end
+$jsonfile = File.read(File.join($app_dir, 'google-services.json'))
+  
+$xmlFileWithDataFromJson = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>"
+def add_data_to_string(name, dataFromJson)
+  $xmlFileWithDataFromJson << "\n\t<string name=\"" << name << "\" translatable=\"false\">" << 
+  $jsonfile.scan(/#{dataFromJson}.*\".*\"/).last.scan(/:.*\".*\"/).last.scan(/\".*\"/).last.gsub("\"","") << "</string>"
+end
+
+def createXmlFromJson()
+  puts "Creating values.xml from google-sevices.json"
+  add_data_to_string("default_web_client_id", "client_id")
+  add_data_to_string("firebase_database_url", "firebase_url")
+  add_data_to_string("gcm_defaultSenderId", "project_number")
+  add_data_to_string("google_api_key", "current_key")
+  add_data_to_string("google_app_id", "mobilesdk_app_id")
+  add_data_to_string("google_crash_reporting_api_key", "current_key")
+  add_data_to_string("google_storage_bucket", "storage_bucket")
+  add_data_to_string("project_id", "project_id")
+
+  $xmlFileWithDataFromJson << "\n</resources>"
+  resGoogleDir = File.join($curdir, 'res', 'res', 'values')
+  #resDebug = File.join(resGoogleDir, 'debug')
+  #resRelease = File.join(resGoogleDir, 'release')
+  #FileUtils.mkdir_p(resDebug) unless File.exists?(resDebug)
+  FileUtils.mkdir_p(resGoogleDir) unless File.exists?(resGoogleDir)
+  #File.open(File.join(resDebug, 'values.xml'), 'w') {|f| f.write($xmlFileWithDataFromJson) }
+  File.open(File.join(resGoogleDir, 'fireBaseValues.xml'), 'w') {|f| f.write($xmlFileWithDataFromJson) }
+  puts "values.xml created"
+end
+
+createXmlFromJson()
 
 namespace 'arch' do
   task :arm => [TARGETLIB_ARM]

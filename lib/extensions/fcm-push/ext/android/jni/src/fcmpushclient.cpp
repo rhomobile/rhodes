@@ -47,6 +47,10 @@ extern "C" void Init_FCMPushClient()
 
     rho::push::CPushManager::getInstance()->addClient(pClient);
 
+    RAWTRACEC("Init_FCMPushClient", "request FCM registration >>>>>>>>>>>>>>>>");
+
+    pClient->doRegister();
+
 }
 //----------------------------------------------------------------------------------------------------------------------
 

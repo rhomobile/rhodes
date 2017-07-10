@@ -35,32 +35,44 @@ import android.support.v4.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.rhomobile.rhodes.util.ContextFactory;
+import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.PushContract;
+import com.rhomobile.rhodes.R;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import android.util.Log;
 
 public class FCMIntentService extends FirebaseMessagingService {
 
+    private static final String TAG = FCMIntentService.class.getSimpleName();
+
     protected void onRegistered(Context context, String pin) {
-        Logger.T(TAG, "FCM push registation: " + pin);
+        Logger.W(TAG, "FCM: push registation: " + pin);
         PushContract.handleRegistration(context, pin, FCMFacade.FCM_PUSH_CLIENT);
     }
 
     protected void onUnregistered(Context context, String pin) {
-        Logger.T(TAG, "FCM push unregistation: " + pin);
+        Logger.W(TAG, "FCM: push unregistation: " + pin);
     }
 
-    FCMIntentService(){
-        super();
-        onRegistered(ContextFactory.getContext(), "FireBase");
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Logger.W(TAG, "FCM: Creating FireBaseClient intent sevice");
+        Log.d(TAG, "onCreate() FCMIntentService");
+        onRegistered(ContextFactory.getContext(), "FireBaseClient");
     }
 
     @Override
     protected void finalize ( ) {
-        onUnregistered(ContextFactory.getContext(), "FireBase");
+        onUnregistered(ContextFactory.getContext(), "FireBaseClient");
     }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        remoteMessage.getNotification().getBody();
-        Logger.T(TAG, "FCM push message: " + remoteMessage.getNotification().getBody());
+        //remoteMessage.getNotification().getBody();
+        Log.d(TAG, "FCMIntentService reseived message: " + remoteMessage.getNotification().getBody());
+        Logger.W(TAG, "FCM: push message: " + remoteMessage.getNotification().getBody());
         PushContract.handleMessage(ContextFactory.getContext(), remoteMessage.getNotification().getBody(), FCMFacade.FCM_PUSH_CLIENT);
     }
 }

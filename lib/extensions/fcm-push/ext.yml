@@ -5,7 +5,19 @@ android:
   - ext/android/AndroidManifest.rb
   - ext/android/ApplicationManifestAdds.erb
   source_list: ext/android/ext_java.files
+  maven_deps: ['com.android.support:appcompat-v7:25.2.0']
+  maven_deps: ['com.google.android.gms:play-services:11.0.2']
+  maven_deps: ['com.google.android.gms:play-services-base:11.0.2']
+  maven_deps: ['com.google.android.gms:play-services-plus:11.0.2']
+  maven_deps: ['com.google.android.gms:play-services-appindexing:11.0.2']
+  maven_deps: ['com.google.android.gms:play-services-identity:11.0.2']
+  maven_deps: ['com.google.firebase:firebase-core:11.0.2']
+  maven_deps: ['com.google.firebase:firebase-auth-common:11.0.2']
+  maven_deps: ['com.google.firebase:firebase-auth:11.0.2']
+  maven_deps: ['com.google.firebase:firebase-crash:11.0.2']
+  maven_deps: ['com.google.firebase:firebase-config:11.0.2']
+  maven_deps: ['com.google.firebase:firebase-messaging:11.0.2']
+  adds: ext/android/res
 libraries: ['fcm-push']
 xml_api_paths: ext/fcm.xml
 #will work with newer SDKs
-maven_deps: ['com.google.firebase:firebase-messaging:10.0.1']

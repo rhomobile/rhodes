@@ -249,7 +249,8 @@ namespace 'project' do
       generator.buildToolsVersion = $build_tools_ver
       generator.applicationId = $app_package_name
       generator.minSdkVersion = $min_sdk_level
-      generator.targetSdkVersion = 12
+      generator.targetSdkVersion = $min_sdk_level > 14 ? $min_sdk_level : 14
+
       generator.compileSdkVersion = $found_api_level
       generator.versionName = $app_config["version"]
 
@@ -638,7 +639,17 @@ namespace "config" do
         $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
       end
 
-      AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:23.0.0')
+      HAVE_V4_SUPPORT = false
+      $app_config["extensions"].each do |extname|
+        if extname == "fcm-push"
+          HAVE_V4_SUPPORT = true
+        end
+      end
+
+      if !HAVE_V4_SUPPORT
+        AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:25.2.0')
+      end
+      #TODO: needs to check the lastest version of support-v4
 
       #setup_ndk($androidndkpath, $found_api_level, 'arm')
       $abis = $app_config['android']['abis'] if $app_config["android"]
@@ -2306,7 +2317,9 @@ namespace "package" do
 
     alljars.each { |jar|
       basename = File.basename(jar);
-      if !unique_jars.member?(basename)
+      #FIXME: UGLYHACK FROM ALEX. Needs to add dependency filter to maven extractor
+      isFromMaven = (basename == 'classes.jar')# && Pathname.new(jar).split.include?('.m2')
+      if (!unique_jars.member?(basename)) || isFromMaven
         args << jar
         unique_jars.add(basename)
       end

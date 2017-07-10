@@ -212,6 +212,7 @@ platform/android/bin
 platform/android/target
 platform/shared/*/bin
 platform/android/**/default.properties
+**/android/**/fireBaseValues.xml
 
 #*.jar
 *.cod
