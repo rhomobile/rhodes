@@ -1,6 +1,6 @@
 module Rhodes
   unless defined? Rhodes::VERSION
-    VERSION = '5.5.0'
+    VERSION = '6.0.0'
   end
   unless defined? Rhodes::DBVERSION
     DBVERSION = '2.2.0'
