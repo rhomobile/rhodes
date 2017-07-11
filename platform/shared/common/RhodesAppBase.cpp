@@ -625,7 +625,7 @@ extern "C" int rho_decrypt_file(const char* filebuf, int filebuf_len, char* decr
     const char* key = get_app_build_config_item("encrypt_files_key");
     return tau_decrypt_file(filebuf, filebuf_len, decrypted_buf, maxlen, key);
 #else
-    bcopy(filebuf, decrypted_buf, filebuf_len);
+    //memcpy(decrypted_buf, filebuf, filebuf_len);
     return filebuf_len;
 #endif
 }
