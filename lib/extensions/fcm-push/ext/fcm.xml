@@ -1,8 +1,8 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Gcm" parent="Rho">
-        <HELP_OVERVIEW>Fake GCM API</HELP_OVERVIEW>
+    <MODULE name="Fcm" parent="Rho">
+        <HELP_OVERVIEW>Fake FCM API</HELP_OVERVIEW>
         <PLATFORM>Android</PLATFORM>
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
     </MODULE>

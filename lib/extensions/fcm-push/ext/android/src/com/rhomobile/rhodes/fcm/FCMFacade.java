@@ -37,7 +37,10 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.android.gms.common.ConnectionResult;
+//import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.rhomobile.rhodes.R;
+import android.util.Log;
 
 public final class FCMFacade {
     private static final String TAG = FCMFacade.class.getSimpleName();
@@ -51,7 +54,8 @@ public final class FCMFacade {
     public static void Register(String senderId) {
         //ContextFactory.getContext().startService(new Intent(ContextFactory.getContext(), FCMIntentService.class));
 
-        Logger.W(TAG, "FCM: Send FCM push register req");
+        //Logger.W(TAG, "FCM: Send FCM push register req");
+        Log.d(TAG, "FCM: Send FCM push register req");
       
         try{
             FirebaseApp.getInstance();

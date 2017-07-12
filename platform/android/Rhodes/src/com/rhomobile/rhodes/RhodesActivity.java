@@ -71,6 +71,7 @@ import android.widget.FrameLayout;
 
 import android.support.v4.content.PermissionChecker;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener, ActivityCompat.OnRequestPermissionsResultCallback {
 	
@@ -290,8 +291,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        Logger.T(TAG, "onCreate");
-
+        Log.d(TAG, "onCreate");
+        
         Thread ct = Thread.currentThread();
         //ct.setPriority(Thread.MAX_PRIORITY);
         uiThreadId = ct.getId();
