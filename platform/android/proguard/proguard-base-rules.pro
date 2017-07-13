@@ -115,7 +115,7 @@ java.lang.Object readResolve();
 
 # Preserve all native method names and the names of their classes.
 -keepclasseswithmembernames class * {
-	native <methods>;
+    native <methods>;
 }
 -keepclassmembers public class * extends android.view.View {
    void set*(***);
@@ -125,11 +125,11 @@ java.lang.Object readResolve();
 # Preserve all classes that have special context constructors, and the
 # constructors themselves.
 -keepclasseswithmembernames class * {
-	public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet);
 }
 
 -keepclasseswithmembernames class * {
-	public <init>(android.content.Context, android.util.AttributeSet, int);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
 }
  
 -keepclasseswithmembers class * {
@@ -353,6 +353,215 @@ public static final android.os.Parcelable$Creator *;
     <methods>;
 }
 
+-keep class com.rhomobile.rhodes.socket.RhoSockAddr {
+    <fields>;
+}
+
+-keep class com.rhomobile.rhoelements.ans.ANSFacade {
+    <fields>;
+    <methods>;
+}
+
+-keep class com.rhoelementsext.RhoElementsExt {
+    <fields>;
+    <methods>;
+}
+
+-keep class com.rho.network.Network {
+    <fields>;
+    <methods>;
+}
+
+-keep class com.audiocapture.Audiocapture {
+    <fields>;
+    <methods>;
+}
+-keep class com.rhomobile.rhodes.RhodesService {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.development.Development {
+    <fields>;
+    <methods>;
+}
+
+-keep class com.rhomobile.rhodes.gcm.GCMFacade {
+    <fields>;
+    <methods>;
+}
+-keep class com.rhomobile.nfc.NfcActivity {
+    <fields>;
+    <methods>;
+}
+-keep class com.rhomobile.rhodes.gmaps.GMapActivity {
+    <fields>;
+    <methods>;
+}
+-keep class com.rawsensors.Rawsensors {
+    <fields>;
+    <methods>;
+}
+-keep class com.videocapture.Videocapture {
+    <fields>;
+    <methods>;
+}
+-keep class com.rhomobile.rhodes.mapview.Callout {
+    <fields>;
+    <methods>;
+}
+-keep class com.rhomobile.rhodes.mapview.MapView {
+    <fields>;
+    <methods>;
+}
+-keep class com.rhomobile.rhodes.api.MethodExecutor {
+    <fields>;
+    <methods>;
+}
+-keep class com.rhomobile.rhodes.nativeview.RhoNativeViewManager {
+    <fields>;
+    <methods>;
+}
+-keep class com.barcode.Barcode {
+    <fields>;
+    <methods>;
+}
+-keep class com.rhomobile.rhodes.nativeview.RhoNativeViewManager {
+    <fields>;
+    <methods>;
+}
+-keep class com.rhomobile.rhodes.nativeview.RhoNativeViewManager {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.audiocapture.AudioCaptureFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.barcode.BarcodeFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.clipboard.ClipboardFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.connectionchecking.ConnectionCheckingFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.notification.led.LedFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.nativetabbar.NativeTabbarFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.nativetoolbar.NativeToolbarFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.devicesecurity.DeviceSecurityFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.eventsource.EventsourceFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.keycapture.KeyCaptureFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.battery.BatteryFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.signalindicators.SignalIndicatorsFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.javascriptvm.JavascriptVMFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.videocapture.VideocaptureFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.mediaplayer.MediaplayerFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.printer.PrinterFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.printingepson.PrintingEpsonFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.printerzebra.PrinterZebraFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.screenorientation.ScreenOrientationFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.sensor.SensorFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.signature.SignatureFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.smartcradle.SmartCradleFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.device.DeviceFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.devicememory.DeviceMemoryFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.websocket.WebSocketFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.development.DevelopmentFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.rhoelements.barcode1.Barcode1Factory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.megamodule.MegamoduleFactory {
+    <fields>;
+    <methods>;
+}
+-keep class com.rho.examples.simpleonlystaticmodule.SimpleonlystaticmoduleFactory {
+    <fields>;
+    <methods>;
+}
+
+
 -keepclasseswithmembernames class * {
     native <methods>;
 }
+
+-keep class com.firebase.** { *; }
+-keep class org.apache.** { *; }
+-keepnames class com.fasterxml.jackson.** { *; }
+-keepnames class javax.servlet.** { *; }
+-keepnames class org.ietf.jgss.** { *; }
+-dontwarn org.w3c.dom.**
+-dontwarn org.joda.time.**
+-dontwarn org.shaded.apache.**
+-dontwarn org.ietf.jgss.**
+-keep class com.shaded.fasterxml.jackson.** { *; }
