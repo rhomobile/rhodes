@@ -2198,9 +2198,6 @@ namespace "build" do
         Rake::Task['build:android:rhobundle'].invoke
 
 
-
-
-
       add_list_full_name = File.join($app_path, 'upgrade_package_add_files.txt')
       remove_list_full_name = File.join($app_path, 'upgrade_package_remove_files.txt')
 
@@ -2304,16 +2301,60 @@ namespace "package" do
     require 'set'
     unique_jars = Set.new
 
+    useProguard = false;
+    useProguard = $app_config["android"]["useproguard"] == "true" ? true : false if $app_config["android"]
+    proguardUserRules = $app_config["android"]["proguardrules"] if $app_config["android"]
+
+    proguardDir = File.join($startdir, "platform", "android", "proguard")
+    proguardTempJarDir = File.join(proguardDir, "TempJars")
+    proguardPreBuild = File.join(proguardTempJarDir, "preguard")
+    proguardPostBuild = File.join(proguardTempJarDir, "postguard")
+    proguardRules = File.join(proguardDir, 'proguard-base-rules.pro')
+    if useProguard
+      rm_rf proguardTempJarDir if File.exists? proguardTempJarDir
+      mkdir_p proguardTempJarDir
+      mkdir_p proguardPreBuild
+      mkdir_p proguardPostBuild
+
+      if !proguardUserRules.nil?
+        rules = [File.join(proguardDir, 'proguard-base-rules.pro')]
+        rules << File.join($app_path, proguardUserRules)
+        f = File.open(File.join(proguardDir, 'proguard-generated-rules.pro'), "w")
+        rules.each do |f_name|
+          f_in = File.open(f_name, "r")
+          f_in.each {|f_str| f.puts(f_str)}
+          f.puts("\n\r")
+          f_in.close
+        end
+        f.close
+        proguardRules = File.join(proguardDir, 'proguard-generated-rules.pro')
+      end
+
+    end
+
     alljars.each { |jar|
       basename = File.basename(jar);
       if !unique_jars.member?(basename)
+        if !useProguard
         args << jar
+        else
+          cp jar, proguardPreBuild
+        end
         unique_jars.add(basename)
       end
     }
 
+    if useProguard
+      progArgs = [];
+      progArgs << '-jar'
+      progArgs << File.join(proguardDir, 'proguard.jar')
+      progArgs << '@' + proguardRules
+      Jake.run(File.join($java, 'java'+$exe_ext), progArgs)
+      args << File.join(proguardPostBuild, "classes-processed.jar")
+    end
 
     Jake.run(File.join($java, 'java'+$exe_ext), args)
+
     unless $?.success?
       raise "Error running DX utility"
     end
@@ -2398,7 +2439,8 @@ namespace "package" do
 
     Jake.run($jarbin, args, respath) if File.directory?(respath)
 
-
+    rm_rf proguardTempJarDir if File.exists? proguardTempJarDir
+    puts "Finish packaging"
     print_timestamp('package:android FINISH')
   end
 end
