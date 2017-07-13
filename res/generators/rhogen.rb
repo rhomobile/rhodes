@@ -804,6 +804,9 @@ module Rhogen
 	  if xcode_version[0].to_i >= 7
         template.source = 'Bremen7.xcodeproj/project.pbxproj'
       end
+      if xcode_version[0].to_i >= 8
+        template.source = 'Bremen8.xcodeproj/project.pbxproj'
+      end
       template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
       if File.exists?(template.destination)
         #puts '$$$$$$$$$$$$$$$$ EXIST'+template.destination

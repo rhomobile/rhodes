@@ -15,7 +15,8 @@ extern void rho_webview_navigate_back();
 extern void rho_webview_navigate_back_with_tab(int tabIndex);
 extern void rho_webview_save(const char* format, const char* path, int tab_index);
 extern NSString* rho_webview_get_current_url(int tab_index);
-
+extern BOOL rho_webview_get_KeyboardDisplayRequiresUserAction();
+extern void rho_webview_set_KeyboardDisplayRequiresUserAction(BOOL value);
 
 
 @implementation WebViewSingleton
@@ -68,6 +69,15 @@ extern NSString* rho_webview_get_current_url(int tab_index);
 -(void) setEnableWebPlugins:(BOOL)value methodResult:(id<IMethodResult>)methodResult{
     //unsupported on iOS
 }
+
+-(void) getKeyboardDisplayRequiresUserAction:(id<IMethodResult>)methodResult {
+    [methodResult setResult:[NSNumber numberWithBool:rho_webview_get_KeyboardDisplayRequiresUserAction()]];
+}
+
+-(void) setKeyboardDisplayRequiresUserAction:(BOOL)keyboardDisplayRequiresUserAction methodResult:(id<IMethodResult>)methodResult {
+    rho_webview_set_KeyboardDisplayRequiresUserAction(keyboardDisplayRequiresUserAction);
+}
+
 
 -(void) getNavigationTimeout:(id<IMethodResult>)methodResult {
     //unsupported on iOS

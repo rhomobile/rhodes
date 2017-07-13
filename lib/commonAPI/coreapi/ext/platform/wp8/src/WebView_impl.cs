@@ -55,6 +55,17 @@ namespace WebViewImpl
                 mp.fullscreenCommand(fullScreen ? 1 : 0);
         }
 
+        public override void getKeyboardDisplayRequiresUserAction(IMethodResult oResult)
+        {
+            oResult.set(true);
+        }
+
+        public override void setKeyboardDisplayRequiresUserAction(bool keyboardDisplayRequiresUserAction, IMethodResult oResult)
+        {
+        }
+
+
+
         public override void getEnableZoom(IMethodResult oResult)
         {
             // implement this method in C# here

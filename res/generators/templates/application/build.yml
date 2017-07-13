@@ -38,8 +38,25 @@ applog: rholog.txt
 iphone:
   configuration: Release
   sdk: iphonesimulator10.2
-  #provisionprofile:
-  #codesignidentity:
+  ## Note: Provisioning
+  ## There are two provisioning type for modern XCode: Automatic and Manual
+  ## development_team must be configured for any type provisioning
+  ## you see team code by run this command:
+  ## $ security find-identity -p codesigning -v
+  ## you will see list of certificates and you should copy code from "iPhone Distribution" line like this (code is PNQRMU3LPM):
+  ## 5) D6D5EE35B3F8D9C04E85C7015539F04B38403DA3 "iPhone Distribution: Vasya Pupkin (PNQRMU3LPM)"
+  ##
+  ## Note: This is Automatic provisioning configuration:
+  #provisioning_style: Automatic
+  #development_team: "PNQRMU3LPM"
+  ##
+  ## Note: This is Manual provisioning configuration:
+  ## provisionprofile can be defined as name or UUID - if you defined provisionprofile then codesignidentity defined automatically if you not defined it in this build.yml
+  #provisionprofile: "Current WildCart 05"
+  #provisioning_style: Manual
+  #development_team: "PNQRMU3LPM"
+  #codesignidentity: "iPhone Developer"
+  ##
   #entitlements:
   BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
   BundleURLScheme: <%=@app_name_cleared%>
