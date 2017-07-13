@@ -210,6 +210,29 @@ BOOL rho_webview_get_full_screen_mode() {
     return [Rhodes getStatusBarHidden];
 }
 
+BOOL rho_webview_get_KeyboardDisplayRequiresUserAction() {
+    if (!rho_rhodesapp_check_mode())
+        return YES;
+    UIView *webv_v = [[[[Rhodes sharedInstance] mainView] getRhoWebView:-1] view];
+    UIWebView* webv = (UIWebView*)webv_v;
+    
+    if (webv != nil) {
+        return webv.keyboardDisplayRequiresUserAction;
+    }
+    
+    return YES;
+}
+
+void rho_webview_set_KeyboardDisplayRequiresUserAction(BOOL value) {
+    if (!rho_rhodesapp_check_mode())
+        return;
+    UIView *webv_v = [[[[Rhodes sharedInstance] mainView] getRhoWebView:-1] view];
+    UIWebView* webv = (UIWebView*)webv_v;
+    
+    if (webv != nil) {
+        webv.keyboardDisplayRequiresUserAction = value;
+    }
+}
 
 
 void rho_webview_set_cookie(const char *u, const char *c)

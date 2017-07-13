@@ -18,6 +18,8 @@
 -(void) setEnablePageLoadingIndication:(BOOL)value methodResult:(id<IMethodResult>)methodResult;
 -(void) getEnableWebPlugins:(id<IMethodResult>)methodResult;
 -(void) setEnableWebPlugins:(BOOL)value methodResult:(id<IMethodResult>)methodResult;
+-(void) getKeyboardDisplayRequiresUserAction:(id<IMethodResult>)methodResult;
+-(void) setKeyboardDisplayRequiresUserAction:(BOOL)keyboardDisplayRequiresUserAction methodResult:(id<IMethodResult>)methodResult;
 -(void) getNavigationTimeout:(id<IMethodResult>)methodResult;
 -(void) setNavigationTimeout:(int)value methodResult:(id<IMethodResult>)methodResult;
 -(void) getScrollTechnique:(id<IMethodResult>)methodResult;
