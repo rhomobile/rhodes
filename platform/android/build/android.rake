@@ -2254,6 +2254,9 @@ namespace "package" do
     proguardUserRules = $app_config["android"]["proguardrules"] if $app_config["android"]
 
     proguardDir = File.join($startdir, "platform", "android", "proguard")
+    rm_rf File.join($tmpdir, "proguard") if File.exists? File.join($tmpdir, "proguard")
+    cp_r proguardDir, $tmpdir
+    proguardDir = File.join($tmpdir, "proguard")
     proguardTempJarDir = File.join(proguardDir, "TempJars")
     proguardPreBuild = File.join(proguardTempJarDir, "preguard")
     proguardPostBuild = File.join(proguardTempJarDir, "postguard")
