@@ -29,6 +29,10 @@
 #include "dln.h"
 #include "encindex.h"
 
+#ifdef OS_UWP
+#include "../../../../uwp/rhoruntime/common/RhodesHelperWP8.h"
+#endif
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -1054,10 +1058,12 @@ w32_io_info(VALUE *file, BY_HANDLE_FILE_INFORMATION *st)
 	if (f == INVALID_HANDLE_VALUE) return f;
 	ret = f;
     }
+#ifndef OS_UWP
     if (GetFileType(f) == FILE_TYPE_DISK) {
 	ZeroMemory(st, sizeof(*st));
 	if (GetFileInformationByHandle(f, st)) return ret;
-    }
+    }  
+#endif
     if (ret) CloseHandle(ret);
     return INVALID_HANDLE_VALUE;
 }

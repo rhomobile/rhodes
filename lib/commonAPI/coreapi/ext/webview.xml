@@ -56,6 +56,10 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Enable / disable web plug-ins. Use 'enable_web_plugins' parameter in rhoconfig.txt to configure this value. This option only has effect on Android versions before 4.0 (ICS). It mainly affects if Flash content is displayed.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
+            <PROPERTY name="keyboardDisplayRequiresUserAction" type="BOOLEAN" default="true">
+                <DESC>Attention: not worked with WKWebView!  Can be defined in rhoconfig.txt as "WebView.keyboardDisplayRequiresUserAction" to 1 or 0. When this property is set to true, the user must explicitly tap the elements in the web view to display the keyboard (or other relevant input view) for that element. When set to false, a focus event on an element causes the input view to be displayed and associated with that element automatically.</DESC>
+                <PLATFORM>iOS</PLATFORM>
+            </PROPERTY>
             <PROPERTY name="navigationTimeout" type="INTEGER" default="45000">
                 <DESC>Can be defined in config.xml: Navigation\\NavTimeout. Number of milliseconds(maximum is 45000) before the browser times out and navigates to the page specified in the badlink setting. If it is determined that the destination is unreachable regardless of wait time, the badlink may be loaded before NAVTIMEOUT. This is the time taken to establish communication with the server, not the time taken to fully load the page.Note that the navigation timeout will not be invoked when navigating to the start page, best practice is to store your first page locally to avoid connectivity issues at start up, you can then redirect to an online page if desired.</DESC>
                 <PLATFORM>WM</PLATFORM>

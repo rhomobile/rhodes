@@ -90,7 +90,9 @@ The original copyright notice follows.
 #  undef __WINCRYPT_H__
 # endif
 #include <windows.h>
+#ifndef OS_UWP
 #include <wincrypt.h>
+#endif
 #endif
 #include "ruby_atomic.h"
 
@@ -486,7 +488,7 @@ fill_random_bytes_urandom(void *seed, size_t size)
 #endif
 
 //RHO
-#if defined(_WIN32) && !defined(OS_WINCE)
+#if defined(_WIN32) && !defined(OS_WINCE) && !defined(OS_UWP)
 static void
 release_crypt(void *p)
 {
@@ -499,6 +501,7 @@ release_crypt(void *p)
 static int
 fill_random_bytes_syscall(void *seed, size_t size, int unused)
 {
+#ifndef OS_UWP
     static HCRYPTPROV perm_prov;
     HCRYPTPROV prov = perm_prov, old_prov;
     if (!prov) {
@@ -521,6 +524,9 @@ fill_random_bytes_syscall(void *seed, size_t size, int unused)
     if (prov == (HCRYPTPROV)INVALID_HANDLE_VALUE) return -1;
     CryptGenRandom(prov, size, seed);
     return 0;
+#else
+	return -1;
+#endif
 }
 #elif defined __linux__ && defined SYS_getrandom
 #include <linux/random.h>

@@ -1723,11 +1723,11 @@
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
 					"$(RHO_ROOT)/platform/iphone/Classes/**",
-					/Users/MOHUS/rhodes/platform/shared/common,
-					/Users/MOHUS/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/common,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -1756,12 +1756,12 @@
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
 					"$(RHO_ROOT)/platform/iphone/Classes/**",
-					/Users/MOHUS/rhodes/platform/shared/common,
-					/Users/MOHUS/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/rhodes/platform/shared,
-					/Users/MOHUS/rhodes/platform/iphone/Classes,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/common,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;

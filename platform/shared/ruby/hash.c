@@ -3217,8 +3217,11 @@ ruby_setenv(const char *name, const char *value)
      * variable from the system area. */
     if (!value || !*value) {
 	/* putenv() doesn't handle empty value */
+//RHO
+#ifndef OS_UWP
 	if (!SetEnvironmentVariable(name, value) &&
 	    GetLastError() != ERROR_ENVVAR_NOT_FOUND) goto fail;
+#endif
     }
     if (failed) {
       fail:

@@ -95,6 +95,28 @@ boolean CNetRequestHolder::isCancelled()
     }
 }
 
+void CNetRequestHolder::setAuthMethod( AuthMethod method )
+{
+  if ( m_pReq ) {
+    m_pReq->setAuthMethod(method);
+  }
+}
+
+void CNetRequestHolder::setAuthUser( const String& user )
+{
+  if ( m_pReq ) {
+    m_pReq->setAuthUser(user);
+  }
+}
+
+void CNetRequestHolder::setAuthPassword( const String& password )
+{
+    if ( m_pReq ) {
+    m_pReq->setAuthPassword(password);
+  }
+}
+
+
 /*static*/ String CNetRequestHolder::resolveUrl(const String& strUrl)
 {
     return RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
@@ -252,6 +274,22 @@ void CNetRequestWrapper::cancel()
     m_pHolder->cancel();
   }
 }
+
+void CNetRequestWrapper::setAuthMethod( AuthMethod method )
+{
+  m_pReqImpl->setAuthMethod(method);
+}
+
+void CNetRequestWrapper::setAuthUser( const String& user )
+{
+  m_pReqImpl->setAuthUser(user);
+}
+
+void CNetRequestWrapper::setAuthPassword( const String& password )
+{
+  m_pReqImpl->setAuthPassword(password);
+}
+
 
 void CNetRequestWrapper::setCallback(rho::net::INetRequestCallback* callback )
 {

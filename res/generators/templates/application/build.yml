@@ -91,6 +91,10 @@ iphone:
 wp8:
   productid: '<%=@productid%>'
 
+uwp:
+  productid: '<%=@productid%>'
+  target: 'ARM'
+
 android:
   #manifest_template: 'AndroidManifest.erb'
   version: 4.1.0

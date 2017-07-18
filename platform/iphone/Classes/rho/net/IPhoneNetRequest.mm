@@ -112,6 +112,7 @@ public:
   virtual bool shouldSaveData() = 0;
   virtual void start() = 0;
   virtual NSURLRequest* getRequest() = 0;
+  virtual const rho::net::INetRequestImpl& getOriginalRequest() const = 0;
 };
 
 @interface ConnDelegate : NSObject<NSURLConnectionDelegate,NSURLConnectionDataDelegate>
@@ -214,14 +215,48 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
 
   - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
   {
+      NSString* authMethod = challenge.protectionSpace.authenticationMethod;
+      
       if (is_net_trace()) {
-          RAWTRACE1("$NetRequestProcess$ DELEGATE IPhoneNetRequest::delegate::willSendRequestForAuthenticationChallenge uri = %s ", [[[[connection currentRequest] URL] absoluteString] UTF8String]);
+          
+          
+          RAWTRACE2("$NetRequestProcess$ DELEGATE IPhoneNetRequest::delegate::willSendRequestForAuthenticationChallenge uri = %s, auth method = %s", [[[[connection currentRequest] URL] absoluteString] UTF8String], [authMethod UTF8String]);
       }
-    if ( (!m_pCppDelegate->verifySSLPeers()) && [challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust] )
+      
+    //will skip peer check if disabled for SSL
+    if ( (!m_pCppDelegate->verifySSLPeers()) && [authMethod isEqualToString:NSURLAuthenticationMethodServerTrust] )
     {
       SecTrustRef trust = challenge.protectionSpace.serverTrust;
       NSURLCredential *cred = [NSURLCredential credentialForTrust:trust];
       [challenge.sender useCredential:cred forAuthenticationChallenge:challenge];
+    }
+    else if ( [authMethod isEqualToString:NSURLAuthenticationMethodHTTPDigest] )
+    {
+        if ( m_pCppDelegate->getOriginalRequest().getAuthMethod() != rho::net::AUTH_DIGEST )
+        {
+            [challenge.sender performDefaultHandlingForAuthenticationChallenge:challenge];
+        }
+        else
+        {
+            const rho::net::INetRequestImpl& originalReq = m_pCppDelegate->getOriginalRequest();
+            
+            if ([challenge previousFailureCount] == 0)
+            {
+                NSString* user = [NSString stringWithUTF8String:originalReq.getAuthUser().c_str()];
+                NSString* password = [NSString stringWithUTF8String:originalReq.getAuthPassword().c_str()];
+                
+                [[challenge sender] useCredential:
+                    [NSURLCredential
+                     credentialWithUser:user
+                     password:password
+                     persistence:NSURLCredentialPersistenceNone]
+                    forAuthenticationChallenge:challenge];
+            }
+            else
+            {
+                [[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
+            }
+        }
     }
     else
     {
@@ -323,22 +358,22 @@ namespace net {
     {
     }
     
-    virtual const char* getCharData()
+    virtual const char* getCharData() const
     {
       return m_data.c_str();
     }
     
-    virtual unsigned int getDataSize()
+    virtual unsigned int getDataSize() const
     {
       return (unsigned int)m_data.size();
     }
     
-    virtual int getRespCode()
+    virtual int getRespCode() const
     {
       return m_nRespCode;
     }
     
-    virtual String getCookies()
+    virtual String getCookies() const
     {
       return m_cookies;
     }
@@ -358,27 +393,27 @@ namespace net {
       m_errorMessage = message;
     }
       
-    virtual String getErrorMessage()
+    virtual String getErrorMessage() const
     {
         return m_errorMessage;
     }
       
-    boolean isOK()
+    boolean isOK() const
     {
       return m_nRespCode == 200 || m_nRespCode == 206;
     }
     
-    boolean isUnathorized()
+    boolean isUnathorized() const
     {
       return m_nRespCode == 401;
     }
     
-    boolean isSuccess()
+    boolean isSuccess() const
     {
       return m_nRespCode > 0 && m_nRespCode < 400;
     }
     
-    boolean isResponseRecieved(){ return m_nRespCode!=-1;}
+    boolean isResponseRecieved() const { return m_nRespCode!=-1;}
     
     void setCharData(const String &data)
     {
@@ -394,7 +429,7 @@ namespace net {
 class CIphoneNetRequestHolder : public IURLRequestDelegate
 {
 public:
-  CIphoneNetRequestHolder() :
+    CIphoneNetRequestHolder( INetRequestImpl& originalRequest ) :
      m_pReq( [NSMutableURLRequest alloc] )
     ,m_pConn( [NSURLConnection alloc] )
     ,m_pPerformCond( [NSCondition alloc] )
@@ -404,6 +439,7 @@ public:
     ,m_allowRedirects(true)
     ,m_pFile(0)
     ,m_multipartTempPath(nil)
+    ,m_originalRequest(originalRequest)
   {
     [m_pPerformCond init];
     [m_pConnDelegate init:this];
@@ -936,6 +972,11 @@ public:
   {
     return m_pReq;
   }
+    
+  virtual const INetRequestImpl& getOriginalRequest() const
+  {
+      return m_originalRequest;
+  }
 
 private:
 
@@ -951,10 +992,12 @@ private:
   
     String m_multipartBoundary;
     String m_multipartPostfix;
+    
+    const INetRequestImpl& m_originalRequest;
 };
 
 CIPhoneNetRequest::CIPhoneNetRequest() :
-   m_pCallback(0), m_pHolder( new CIphoneNetRequestHolder() )
+   m_pHolder( new CIphoneNetRequestHolder( *this ) )
 {
 }
 
@@ -1022,11 +1065,6 @@ void CIPhoneNetRequest::setFollowRedirects(boolean follow)
 INetResponse* CIPhoneNetRequest::createEmptyNetResponse()
 {
   return new CIPhoneNetResponseImpl("",0,-1);
-}
-    
-void CIPhoneNetRequest::setCallback(INetRequestCallback* cb)
-{
-  m_pHolder->setCallback(cb);
 }
 
 

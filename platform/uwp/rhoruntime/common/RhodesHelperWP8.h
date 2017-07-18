@@ -102,14 +102,18 @@ extern "C" {
 		_In_opt_ LPCWSTR lpModuleName
 	);
 
+	HMODULE Rho_GetModuleHandleA(
+		_In_opt_ LPCSTR lpModuleName
+	);
+
 #ifdef __cplusplus
 }
 #endif //__cplusplus
 
-#if defined(OS_UWP) && !defined(_WINRT_DLL)
+#if defined(OS_UWP)// && !defined(_WINRT_DLL)
 #define CreateFileW Rho_CreateFileW
 #define CreateFileA Rho_CreateFileW
-#define CreateFile Rho_CreateFileW
+//#define CreateFile Rho_CreateFileW
 #define GetVersionEx Rho_GetVersionExW
 #define GetVersionExW Rho_GetVersionExW
 #define GetFileSize Rho_GetFileSize
@@ -122,4 +126,5 @@ extern "C" {
 #define LocalFileTimeToFileTime Rho_LocalFileTimeToFileTime
 #define OpenProcess Rho_OpenProcess
 #define GetModuleHandleW Rho_GetModuleHandleW
+#define GetModuleHandleA Rho_GetModuleHandleA
 #endif

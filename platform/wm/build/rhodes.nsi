@@ -148,6 +148,10 @@ Section %SECTION_NAME% appSection
   File /r "rho"
   File %APP_EXECUTABLE%
   File *.dll
+  File /r *.pak
+  File /r *.qm
+  File /r *.dat
+  File /r *QtWebEngineProcess.exe
 %QT_VSPEC_FILES%  File "icon.ico"
   File "icon.png"
 

@@ -14,6 +14,11 @@
 #include "vm_core.h"
 #include "iseq.h"
 
+//RHO
+#ifdef OS_UWP
+#include "../../../../uwp/rhoruntime/common/RhodesHelperWP8.h"
+#endif
+
 /* see vm_insnhelper.h for the values */
 #ifndef VMDEBUG
 #define VMDEBUG 0
@@ -619,7 +624,10 @@ dump_thread(void *arg)
     pOpenThread = (HANDLE (WINAPI *)(DWORD, BOOL, DWORD))GetProcAddress(GetModuleHandle("kernel32.dll"), "OpenThread");
     if (pSymInitialize && pSymCleanup && pStackWalk64 && pSymGetModuleBase64 &&
 	pSymFromAddr && pSymGetLineFromAddr64 && pOpenThread) {
+//RHO
+#ifndef OS_UWP
 	SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS | SYMOPT_DEBUG | SYMOPT_LOAD_LINES);
+#endif
 	ph = GetCurrentProcess();
 	pSymInitialize(ph, NULL, TRUE);
 	th = pOpenThread(THREAD_SUSPEND_RESUME|THREAD_GET_CONTEXT, FALSE, tid);

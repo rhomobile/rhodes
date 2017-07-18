@@ -177,3 +177,10 @@ HMODULE Rho_GetModuleHandleW(
 {
 	return 0;
 }
+
+HMODULE Rho_GetModuleHandleA(
+	_In_opt_ LPCSTR lpModuleName
+)
+{
+	return 0;
+}

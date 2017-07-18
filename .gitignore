@@ -213,6 +213,8 @@ platform/android/target
 platform/shared/*/bin
 platform/android/**/default.properties
 **/android/**/fireBaseValues.xml
+platform/android/proguard/*.txt
+platform/android/proguard/proguard-generated-rules.pro
 
 #*.jar
 *.cod

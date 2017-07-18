@@ -356,7 +356,7 @@ void RhoModifyRubyLoadPath( const char* szRoot ) {
         strcpy(app_path, szRoot);
 #if defined(RHODES_EMULATOR)
         strcat(app_path, "app");
-#elif defined(OS_WP8) || defined(OS_UWP)
+#elif defined(OS_WP8) //|| defined(OS_UWP)
         strcat(app_path, "/apps/app");
 #else
         strcat(app_path, "apps/app");
@@ -367,9 +367,12 @@ void RhoModifyRubyLoadPath( const char* szRoot ) {
 #if defined(APP_BUILD_CAPABILITY_SYMBOL)
         strcpy(app_path, rho_native_reruntimepath());
         strcat(app_path, "lib");
-#elif defined(OS_WP8) || defined(OS_UWP)
+#elif defined(OS_WP8)
         strcpy(app_path, szRoot);
         strcat(app_path, "/lib");
+#elif defined(OS_UWP)
+		strcpy(app_path, szRoot);
+		strcat(app_path, "lib");
 #else
         strcpy(app_path, rho_simconf_getRhodesPath());
         strcat(app_path, "/lib/framework");

@@ -335,6 +335,9 @@ def run_emulator(options = {})
       raise "Emulator image is not found for selected target: #{$androidtargets[get_api_level($emuversion)][:abis].inspect}" unless abi
     end
 
+    #replace whitespaces in AVD name with underscores
+    $avdname.tr!(' ', '_');
+
     unless File.directory?( avd_path($avdname) )
       puts "Emulator API level: #{get_api_level($emuversion)}"
       puts "Emulator params: #{$androidtargets[get_api_level($emuversion)].inspect}"
