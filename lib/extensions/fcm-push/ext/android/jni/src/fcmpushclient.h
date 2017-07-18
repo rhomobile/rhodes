@@ -44,8 +44,11 @@ class FcmPushClient: public push::CPushClient
 private:
     static const char* const s_FCM_FACADE_CLASS;
     static const String s_Type;
+    static String token;
     CMethodResult m_oResult;
     CMethodResult m_deviceIdResult;
+    void setPropertyFromMethod(const char* methodName, CMethodResult &result);
+    void refreshToken();
 
 public:
     DEFINE_LOGCLASS;
@@ -60,8 +63,6 @@ public:
     virtual void stopNotifications(CMethodResult& result);
     virtual bool callBack(const String& json);
 
-    void doRegister();
-    void doUnregister();
 };
 
 

@@ -38,7 +38,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.android.gms.common.ConnectionResult;
-//import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.rhomobile.rhodes.R;
 import android.util.Log;
 
@@ -46,20 +46,36 @@ public final class FCMFacade {
     private static final String TAG = FCMFacade.class.getSimpleName();
     
     static final String FCM_PUSH_CLIENT = "FireBaseClient";
+    static String clientToken = "";
 
     private static String gStr(int key){
-        return ContextFactory.getContext().getResources().getString(key);
+        String value = "";
+        try{
+            value = ContextFactory.getContext().getResources().getString(key);
+        }catch(Exception e){
+            Logger.W(TAG, "FCM: key " + key + " does not exist");
+        }
+        return value;
     }
 
-    public static void Register(String senderId) {
-        //ContextFactory.getContext().startService(new Intent(ContextFactory.getContext(), FCMIntentService.class));
+    public static String google_app_id(){
+        return gStr(R.string.google_app_id);
+    }
 
-        //Logger.W(TAG, "FCM: Send FCM push register req");
+    public static String google_api_key(){
+        return gStr(R.string.google_api_key);
+    }
+
+    public static String gcm_defaultSenderId(){
+        return gStr(R.string.gcm_defaultSenderId);
+    }
+
+    public static void initFireBase() {
         Log.d(TAG, "FCM: Send FCM push register req");
       
         try{
             FirebaseApp.getInstance();
-            Logger.W(TAG, "FCM: Firebase inited");
+            Logger.T(TAG, "FCM: Firebase inited");
         }catch(Exception exc){
             FirebaseOptions options = new FirebaseOptions.Builder()
             .setApplicationId(gStr(R.string.google_app_id))
@@ -67,40 +83,43 @@ public final class FCMFacade {
             .setDatabaseUrl(gStr(R.string.firebase_database_url))
             .setStorageBucket(gStr(R.string.google_storage_bucket))
             .setGcmSenderId(gStr(R.string.gcm_defaultSenderId))
+            //.setGcmSenderId("18629805048")
             .build();
 
             try{
                 FirebaseApp.initializeApp(ContextFactory.getContext(), options);
-                Logger.W(TAG, "FCM: initialization of application");
+                Logger.T(TAG, "FCM: initialization of application");
             }catch(Exception e){
                 Logger.W(TAG, "FCM: poblems on initialization app: " + e);
             }
             try{
                 FirebaseApp.getInstance();
-                Logger.W(TAG, "FCM: Firebase Inited");
+                Logger.T(TAG, "FCM: Firebase Inited");
             }catch(Exception e){
                 Logger.W(TAG, "FCM: poblems on getting instance: " + e);
             }
-        }     
+        }   
+  
+        refreshToken();       
+    }
+    public static void refreshToken(){
+        try{
+            Log.d(TAG, "FCM: registation of application");
+            clientToken = "";
+            clientToken = FirebaseInstanceId.getInstance().getToken();
+            if ((clientToken != "")&&(clientToken != null)){
 
+                PushContract.handleRegistration(ContextFactory.getContext(), clientToken, FCMFacade.FCM_PUSH_CLIENT);
 
-        if (senderId == null || senderId.length() == 0) {
-            Logger.W(TAG, "Trying to read FCM push sender app id from standart settings");
-            senderId = Push.SENDER;
+                Log.d(TAG, "FCM: registation successfully");
+            }else{
+                clientToken = "";
+                Log.d(TAG, "FCM: can't get token, try to refresh later");
+            }
+        }catch(Exception exc){
+            Log.d(TAG, "FCM: can't handle registation");
         }
-
-        
-        Logger.W(TAG, "FCM: Already has FCM push registeration");
-        PushContract.handleRegistration(ContextFactory.getContext(),
-                                        FCM_PUSH_CLIENT,
-                                        FCMFacade.FCM_PUSH_CLIENT);       
-
+        Log.d(TAG, "FCM: token = " + clientToken);
     }
-
-    public static void Unregister() {
-        Logger.T(TAG, "FCM: push unregister req");
-    }
-
-
 
 }

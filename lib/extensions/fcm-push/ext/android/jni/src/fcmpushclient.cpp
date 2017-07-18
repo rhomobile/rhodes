@@ -29,7 +29,7 @@
 #include "Push.h"
 #include "sync/RhoconnectClientManager.h"
 #include "sync/ILoginListener.h"
-
+#include "ruby/ext/rho/rhoruby.h"
 
 #include "logging/RhoLog.h"
 
@@ -46,11 +46,6 @@ extern "C" void Init_FCMPushClient()
     RAWTRACEC("Init_FCMPushClient", "adding FCM client >>>>>>>>>>>>>>>>");
 
     rho::push::CPushManager::getInstance()->addClient(pClient);
-
-    RAWTRACEC("Init_FCMPushClient", "request FCM registration >>>>>>>>>>>>>>>>");
-
-    pClient->doRegister();
-
 }
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -63,9 +58,13 @@ IMPLEMENT_LOGCLASS(FcmPushClient, "FcmPushClient");
 const char* const FcmPushClient::s_FCM_FACADE_CLASS = "com.rhomobile.rhodes.fcm.FCMFacade";
 
 //----------------------------------------------------------------------------------------------------------------------
-void FcmPushClient::doRegister()
+
+const String FcmPushClient::s_Type = "fcm";
+String FcmPushClient::token = "";
+
+FcmPushClient::FcmPushClient()
 {
-    LOG(TRACE) + "FcmPushRegister()";
+    LOG(TRACE) + "FcmPushInit()";
 
     JNIEnv *env = jnienv();
 
@@ -75,50 +74,61 @@ void FcmPushClient::doRegister()
         return;
     }
 
-    static jmethodID mid = env->GetStaticMethodID(cls, "Register", "(Ljava/lang/String;)V");
+    static jmethodID mid = env->GetStaticMethodID(cls, "initFireBase", "()V");
     if (!mid) {
-        LOG(ERROR) + "Cannot get " + s_FCM_FACADE_CLASS + ".Register() method";
-        return;
-    }
-
-    jhstring jhSenderId = rho_cast<jstring>(m_hashProps["senderId"]);
-
-    env->CallStaticVoidMethod(cls, mid, jhSenderId.get());
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void FcmPushClient::doUnregister()
-{
-    LOG(TRACE) + "FcmPushUnregister()";
-
-    JNIEnv *env = jnienv();
-
-    static jclass cls = rho_find_class(env, s_FCM_FACADE_CLASS);
-    if (!cls) {
-        LOG(ERROR) + "Cannot find class: " + s_FCM_FACADE_CLASS;
-        return;
-    }
-
-    static jmethodID mid = env->GetStaticMethodID(cls, "Unregister", "()V");
-    if (!mid) {
-        LOG(ERROR) + "Cannot get " + s_FCM_FACADE_CLASS + ".Unregister() method";
+        LOG(ERROR) + "Cannot get " + s_FCM_FACADE_CLASS + ".initFireBase() method";
         return;
     }
 
     env->CallStaticVoidMethod(cls, mid);
-}
-//----------------------------------------------------------------------------------------------------------------------
-const String FcmPushClient::s_Type = "fcm";
 
-FcmPushClient::FcmPushClient()
-{
     CMethodResult result;
     setProperty("id", s_Type, result);
     setProperty("type", IPush::PUSH_TYPE_NATIVE, result);
     setProperty("senderId", RHOCONF().getString("Push.fcm.senderId"), result);
+    setPropertyFromMethod("google_app_id", result);
+    setPropertyFromMethod("google_api_key", result);
+    setPropertyFromMethod("gcm_defaultSenderId", result);
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+void FcmPushClient::setPropertyFromMethod(const char* methodName, CMethodResult &result) {
+
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, s_FCM_FACADE_CLASS);
+    if (!cls) return;
+
+    jmethodID mid = env->GetStaticMethodID( cls, methodName, "()Ljava/lang/String;");
+    if (!mid) return;
+
+    jstring jstr = (jstring)env->CallStaticObjectMethod(cls, mid);
+    const char* buf = env->GetStringUTFChars(jstr,0);
+
+    setProperty(methodName, buf, result);
+    env->ReleaseStringUTFChars(jstr, buf);
+}
+
+void FcmPushClient::refreshToken(){
+    LOG(TRACE) + "refreshToken()";
+    JNIEnv *env = jnienv();
+
+    static jclass cls = rho_find_class(env, s_FCM_FACADE_CLASS);
+    if (!cls) {
+        LOG(ERROR) + "Cannot find class: " + s_FCM_FACADE_CLASS;
+        return;
+    }
+
+    static jmethodID mid = env->GetStaticMethodID(cls, "refreshToken", "()V");
+    if (!mid) {
+        LOG(ERROR) + "Cannot get " + s_FCM_FACADE_CLASS + ".refreshToken() method";
+        return;
+    }
+
+    env->CallStaticVoidMethod(cls, mid);
+
+}
 
 void FcmPushClient::getDeviceId(CMethodResult& result)
 {

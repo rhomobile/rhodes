@@ -10,6 +10,7 @@ import com.google.firebase.FirebaseOptions;
 import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.rhomobile.rhodes.fcm.FCMFacade;
 
 
 public class FCMTokenRefresherService extends FirebaseInstanceIdService {
@@ -19,14 +20,9 @@ public class FCMTokenRefresherService extends FirebaseInstanceIdService {
     @Override
     public void onTokenRefresh()
     {
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        sendRegistrationToServer(refreshedToken);
-        Logger.W(TAG, "FCM: Refreshed token: " + refreshedToken);
+        Logger.W(TAG, "FCM: onTokenRefresh()");
+        FCMFacade.refreshToken();
         
     }
-    void sendRegistrationToServer(String token)
-    {
     
-
-    }
 }

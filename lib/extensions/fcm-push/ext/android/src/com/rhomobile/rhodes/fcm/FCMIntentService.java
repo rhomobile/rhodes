@@ -51,27 +51,8 @@ public class FCMIntentService extends FirebaseMessagingService {
         PushContract.handleRegistration(context, pin, FCMFacade.FCM_PUSH_CLIENT);
     }
 
-    protected void onUnregistered(Context context, String pin) {
-        Logger.W(TAG, "FCM: push unregistation: " + pin);
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Logger.W(TAG, "FCM: Creating FireBaseClient intent sevice");
-        Log.d(TAG, "onCreate() FCMIntentService");
-        onRegistered(ContextFactory.getContext(), "FireBaseClient");
-    }
-
-    @Override
-    protected void finalize ( ) {
-        onUnregistered(ContextFactory.getContext(), "FireBaseClient");
-    }
-
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        //remoteMessage.getNotification().getBody();
-        Log.d(TAG, "FCMIntentService reseived message: " + remoteMessage.getNotification().getBody());
         Logger.W(TAG, "FCM: push message: " + remoteMessage.getNotification().getBody());
         PushContract.handleMessage(ContextFactory.getContext(), remoteMessage.getNotification().getBody(), FCMFacade.FCM_PUSH_CLIENT);
     }
