@@ -301,6 +301,14 @@ public static final android.os.Parcelable$Creator *;
     static ** CREATOR;
 }
 
+-keepclassmembers class * implements javax.net.ssl.X509TrustManager {
+    public *;
+}
+
+-keep class com.rhomobile.rhodes.socket.SSLImpl$* {
+    public *;
+}
+
 -keepclassmembers class **.R$* {
     public static <fields>;
 }
@@ -356,6 +364,11 @@ public static final android.os.Parcelable$Creator *;
 -keep class com.rhomobile.rhodes.socket.RhoSockAddr {
     <fields>;
 }
+
+-keep class com.rhomobile.rhodes.socket.RhoSocketImpl {
+    <fields>;
+}
+
 
 -keep class com.rhomobile.rhoelements.ans.ANSFacade {
     <fields>;
