@@ -291,7 +291,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         Logger.T(TAG, "onCreate");
-
+        
         Thread ct = Thread.currentThread();
         //ct.setPriority(Thread.MAX_PRIORITY);
         uiThreadId = ct.getId();
