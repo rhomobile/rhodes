@@ -79,11 +79,10 @@ public final class FCMFacade {
         }catch(Exception exc){
             FirebaseOptions options = new FirebaseOptions.Builder()
             .setApplicationId(gStr(R.string.google_app_id))
-            .setApiKey(gStr(R.string.google_api_key))
-            .setDatabaseUrl(gStr(R.string.firebase_database_url))
-            .setStorageBucket(gStr(R.string.google_storage_bucket))
+            //.setApiKey(gStr(R.string.google_api_key))
+            //.setDatabaseUrl(gStr(R.string.firebase_database_url))
+            //.setStorageBucket(gStr(R.string.google_storage_bucket))
             .setGcmSenderId(gStr(R.string.gcm_defaultSenderId))
-            //.setGcmSenderId("18629805048")
             .build();
 
             try{
