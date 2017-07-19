@@ -1079,6 +1079,7 @@ namespace "build" do
       ENV["NEON_ROOT"] = $neon_root unless $neon_root.nil?
       ENV["CONFIG_XML"] = $config_xml unless $config_xml.nil?
       ENV["RHO_DEBUG"] = $debug.to_s
+      ENV["CUSTOM_FCM_SENDER_ID"] = $app_config["android"]["fcmSenderID"] unless $app_config["android"].nil?
 
       $ext_android_build_scripts.each do |ext, builddata|
         

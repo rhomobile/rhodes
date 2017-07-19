@@ -126,7 +126,13 @@ def createXmlFromJson()
   puts "Creating values.xml from google-sevices.json"
   add_data_to_string("default_web_client_id", "client_id")
   add_data_to_string("firebase_database_url", "firebase_url")
-  add_data_to_string("gcm_defaultSenderId", "project_number")
+  
+  if ENV["CUSTOM_FCM_SENDER_ID"].nil?
+    add_data_to_string("gcm_defaultSenderId", "project_number")
+  else  
+    $xmlFileWithDataFromJson << "\n\t<string name=\"gcm_defaultSenderId\" translatable=\"false\">" <<  
+    ENV["CUSTOM_FCM_SENDER_ID"] << "</string>"
+  end
   add_data_to_string("google_api_key", "current_key")
   add_data_to_string("google_app_id", "mobilesdk_app_id")
   add_data_to_string("google_crash_reporting_api_key", "current_key")
@@ -141,7 +147,7 @@ def createXmlFromJson()
   FileUtils.mkdir_p(resGoogleDir) unless File.exists?(resGoogleDir)
   #File.open(File.join(resDebug, 'values.xml'), 'w') {|f| f.write($xmlFileWithDataFromJson) }
   File.open(File.join(resGoogleDir, 'fireBaseValues.xml'), 'w') {|f| f.write($xmlFileWithDataFromJson) }
-  puts "values.xml created"
+  puts "fireBaseValues.xml created"
 end
 
 createXmlFromJson()
