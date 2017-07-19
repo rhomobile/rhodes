@@ -136,6 +136,7 @@ CPushClient* CPushSingleton::getClient(const rho::String& id)
         const String& curId = (*it)->getId();
 
         LOG(TRACE) + "Push client: " + curId;
+        LOG(TRACE) + "FCM: Push client: " + curId;
 
         if(curId == id)
         {

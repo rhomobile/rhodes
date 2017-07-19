@@ -22,7 +22,6 @@ public class FCMTokenRefresherService extends FirebaseInstanceIdService {
     {
         Logger.W(TAG, "FCM: onTokenRefresh()");
         FCMFacade.refreshToken();
-        
     }
     
 }

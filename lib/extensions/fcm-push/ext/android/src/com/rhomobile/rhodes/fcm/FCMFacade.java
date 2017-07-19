@@ -45,7 +45,7 @@ import android.util.Log;
 public final class FCMFacade {
     private static final String TAG = FCMFacade.class.getSimpleName();
     
-    static final String FCM_PUSH_CLIENT = "FireBaseClient";
+    static final String FCM_PUSH_CLIENT = "fcm";
     static String clientToken = "";
 
     private static String gStr(int key){
@@ -108,9 +108,7 @@ public final class FCMFacade {
             clientToken = "";
             clientToken = FirebaseInstanceId.getInstance().getToken();
             if ((clientToken != "")&&(clientToken != null)){
-
                 PushContract.handleRegistration(ContextFactory.getContext(), clientToken, FCMFacade.FCM_PUSH_CLIENT);
-
                 Log.d(TAG, "FCM: registation successfully");
             }else{
                 clientToken = "";
