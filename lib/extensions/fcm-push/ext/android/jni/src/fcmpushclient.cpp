@@ -87,7 +87,7 @@ FcmPushClient::FcmPushClient()
     setProperty("type", IPush::PUSH_TYPE_NATIVE, result);
     setProperty("senderId", RHOCONF().getString("Push.fcm.senderId"), result);
     setPropertyFromMethod("google_app_id", result);
-    setPropertyFromMethod("google_api_key", result);
+    //setPropertyFromMethod("google_api_key", result);
     setPropertyFromMethod("gcm_defaultSenderId", result);
 
 }
@@ -98,10 +98,16 @@ void FcmPushClient::setPropertyFromMethod(const char* methodName, CMethodResult 
 
     JNIEnv *env = jnienv();
     jclass cls = rho_find_class(env, s_FCM_FACADE_CLASS);
-    if (!cls) return;
+    if (!cls) {
+        LOG(ERROR) + "Cannot get " + s_FCM_FACADE_CLASS;
+        return;
+    }
 
     jmethodID mid = env->GetStaticMethodID( cls, methodName, "()Ljava/lang/String;");
-    if (!mid) return;
+    if (!mid){
+        LOG(ERROR) + "Cannot get " + s_FCM_FACADE_CLASS + "." + methodName + " method";
+        return;
+    } 
 
     jstring jstr = (jstring)env->CallStaticObjectMethod(cls, mid);
     const char* buf = env->GetStringUTFChars(jstr,0);

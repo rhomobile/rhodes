@@ -39,6 +39,7 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.rhomobile.rhodes.R;
+import java.lang.Throwable;
 
 public final class FCMFacade {
     private static final String TAG = FCMFacade.class.getSimpleName();
@@ -60,9 +61,15 @@ public final class FCMFacade {
         return gStr(R.string.google_app_id);
     }
 
+    public static String gcm_defaultSenderId() {
+        return gStr(R.string.gcm_defaultSenderId);
+    }
+
+/*
     public static String google_api_key(){
         return gStr(R.string.google_api_key);
     }
+*/
 
     public static void initFireBase() {
         Logger.W(TAG, "FCM: Send FCM push register req");
@@ -71,25 +78,33 @@ public final class FCMFacade {
             FirebaseApp.getInstance();
             Logger.T(TAG, "FCM: Firebase inited");
         }catch(Exception exc){
-            FirebaseOptions options = new FirebaseOptions.Builder()
-            .setApplicationId(gStr(R.string.google_app_id))
-            //.setApiKey(gStr(R.string.google_api_key))
-            //.setDatabaseUrl(gStr(R.string.firebase_database_url))
-            //.setStorageBucket(gStr(R.string.google_storage_bucket))
-            .setGcmSenderId(gStr(R.string.gcm_defaultSenderId))
-            .build();
+            FirebaseOptions options = null;
+            try {
+                options = new FirebaseOptions.Builder()
+                .setApplicationId(gStr(R.string.google_app_id))
+                //.setApiKey(gStr(R.string.google_api_key))
+                //.setDatabaseUrl(gStr(R.string.firebase_database_url))
+                //.setStorageBucket(gStr(R.string.google_storage_bucket))
+                .setGcmSenderId(gStr(R.string.gcm_defaultSenderId))
+                .build();
+            } catch( Throwable e ) {
+                Logger.E(TAG, "FCM: poblems on building options: " + e);
+                e.printStackTrace();
+            }
 
             try{
                 FirebaseApp.initializeApp(ContextFactory.getContext(), options);
                 Logger.T(TAG, "FCM: initialization of application");
             }catch(Exception e){
-                Logger.W(TAG, "FCM: poblems on initialization app: " + e);
+                Logger.E(TAG, "FCM: poblems on initialization app: " + e);
+                e.printStackTrace();
             }
             try{
                 FirebaseApp.getInstance();
-                Logger.T(TAG, "FCM: Firebase Inited");
+                Logger.T(TAG, "FCM: Firebase Inited");                
             }catch(Exception e){
-                Logger.W(TAG, "FCM: poblems on getting instance: " + e);
+                Logger.E(TAG, "FCM: poblems on getting instance: " + e);
+                e.printStackTrace();
             }
         }   
   
