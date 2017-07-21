@@ -87,10 +87,6 @@ iphone:
   #  NSAppTransportSecurity:
   #    NSAllowsArbitraryLoads: true
 
-
-wp8:
-  productid: '<%=@productid%>'
-
 uwp:
   productid: '<%=@productid%>'
   target: 'ARM'
