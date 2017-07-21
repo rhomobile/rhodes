@@ -730,7 +730,6 @@ namespace "run" do
           
           uninstallApplication(deviceGuid, $targetAppxFileName)
           deployApplication(deviceGuid, $targetAppxFileName, dependencyDir)
-          launchApplication(deviceGuid, $targetAppxFileName)
 
         else
           puts "Error: no available devices connected"
