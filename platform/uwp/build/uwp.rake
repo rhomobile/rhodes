@@ -651,14 +651,37 @@ namespace "run" do
   end
 
   namespace "uwp" do
+    def uninstallApplication(deviceGuid, targetAppxFN)
+          args = []
+          args << "uninstall"
+          args << "-file"
+          args << "\""+targetAppxFN+"\""
+          args << "-g"
+          args << "\"" + deviceGuid + "\""
+          puts Jake.run($winAppDeploy, args)
+    end
 
-    def deployApplication(deviceGuid, targetAppxFN)
+    def updateApplication(deviceGuid, targetAppxFN)
+          args = []
+          args << "update"
+          args << "-file"
+          args << "\""+targetAppxFN+"\""
+          args << "-g"
+          args << "\"" + deviceGuid + "\""
+          puts Jake.run($winAppDeploy, args)
+    end
+
+    def deployApplication(deviceGuid, targetAppxFN, dependencyDir)
           args = []
           args << "install"
           args << "-file"
           args << "\""+targetAppxFN+"\""
           args << "-g"
           args << "\"" + deviceGuid + "\""
+          if (dependencyDir.nil?)
+            args << "-dependency"
+            args << dependencyDir
+          end
           puts Jake.run($winAppDeploy, args)
     end
 
@@ -702,8 +725,12 @@ namespace "run" do
         deviceGuid = devicesResult[/\w+-\w+-\w+-\w+-\w+/]
         if ((deviceGuid != nil) && (deviceGuid != ""))
 
-          Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies/ARM/*.appx'].each { |f|  deployApplication(deviceGuid, f) if File.file?(f) }  
-          deployApplication(deviceGuid, $targetAppxFileName)
+          dependencyDir = nil
+          Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies/ARM/'].each { |f|  dependencyDir = f if Dir.exist?(f) }
+          
+          uninstallApplication(deviceGuid, $targetAppxFileName)
+          deployApplication(deviceGuid, $targetAppxFileName, dependencyDir)
+          launchApplication(deviceGuid, $targetAppxFileName)
 
         else
           puts "Error: no available devices connected"
