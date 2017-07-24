@@ -134,6 +134,7 @@ static VALUE loadISeqFromFile(VALUE path)
     
     const char* filepath = getStringFromValue(path);
     char* founded = strstr(filepath, ".encrypted");
+	VALUE arr;
 
     
     RAWLOG_INFO1("loadISeqFromFile: %s", filepath);
@@ -144,10 +145,11 @@ static VALUE loadISeqFromFile(VALUE path)
         if (strcmp(founded, ".encrypted") == 0) {
             const char* filedata = getStringFromValue(fiseq);
             int filelen = getStringLenFromValue(fiseq);
+			int res;
             
             decrypted_buf = malloc (filelen*2);
             
-            int res = rho_decrypt_file(filedata, filelen, decrypted_buf, filelen*2);
+            res = rho_decrypt_file(filedata, filelen, decrypted_buf, filelen*2);
             
             fiseq = rho_ruby_create_string_withlen2((const char*)decrypted_buf, res);
             
@@ -164,7 +166,7 @@ static VALUE loadISeqFromFile(VALUE path)
 
 
 //        arr = Marshal.load(fiseq)
-        VALUE arr = rb_funcall(rb_const_get(rb_cObject,rb_intern("Marshal")), rb_intern("load"), 1, fiseq);
+        arr = rb_funcall(rb_const_get(rb_cObject,rb_intern("Marshal")), rb_intern("load"), 1, fiseq);
     
     
     if (decrypted_buf != NULL) {
@@ -335,6 +337,7 @@ static VALUE check_extension(VALUE res, VALUE fname, int nAddExtName)
 static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatform)
 {
     VALUE res = rb_str_dup(dir);
+	VALUE result = 0;
     RAWLOG_INFO1("find_file: check dir %s", RSTRING_PTR(dir));
 
     #ifdef __SYMBIAN32__
@@ -353,7 +356,6 @@ static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatfor
     rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
     RAWLOG_INFO1("find_file: check file: %s", RSTRING_PTR(res));
 
-    VALUE result = 0;
     if (eaccess(RSTRING_PTR(res), R_OK) == 0) {
         return res;
     }
