@@ -161,7 +161,9 @@ BigDecimal_memsize(const void *ptr)
 
 static const rb_data_type_t BigDecimal_data_type = {
     "BigDecimal",
-    {0, BigDecimal_delete, BigDecimal_memsize,},
+    0, BigDecimal_delete, BigDecimal_memsize,
+//RHO    
+    0,0,0,0
 };
 
 static inline int
