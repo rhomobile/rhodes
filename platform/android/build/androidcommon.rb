@@ -27,6 +27,7 @@
 require 'tempfile'
 require 'open3'
 require 'stringio'
+require 'pathname'
 
 #common functions for compiling android
 #
@@ -544,8 +545,25 @@ def java_build(jarpath, buildpath, classpath, srclists)
     puts "Compiling java sources: #{srclists.inspect}"
 
     java_compile(buildpath, classpath, fullsrclist)
+
+    args = []
+
+    if USE_TRACES
+      args << "cfv"
+    else
+      args << "cf"
+    end
+
+    args << jarpath
+
+    root = Pathname.new(buildpath)
+
+    Dir.glob( File.join(buildpath,'**/*.class') ).each do |cls|
+      args << (Pathname.new(cls).relative_path_from root).to_s
+    end
+
+    $logger.debug "java_build args: #{args}"
     
-    args = ["cf", jarpath, '.']
     Jake.run($jarbin, args, buildpath)
     unless $?.success?
         raise "Error creating #{jarpath}"
