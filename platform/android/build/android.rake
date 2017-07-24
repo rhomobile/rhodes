@@ -2319,11 +2319,14 @@ namespace "package" do
     $logger.info( "Packaging java resources" )
 
     respath = File.join( $tmpdir, '.javares' )
+    rm_r respath if File.directory? respath
 
     alljars.each do |jar|
       Zip::File.open(jar) do |archive|
-        archive.glob("**/*.properties").each do |pfile|
+        archive.glob("**/*.*").each do |pfile|
           next if pfile.name =~ /^META-INF/
+	  #extract everything except .class files
+          next if pfile.name =~ /.*\.class$/
           target = File.join(respath,pfile.name)
           mkdir_p( File.dirname(target) )
           rm target if File.file?(target)
