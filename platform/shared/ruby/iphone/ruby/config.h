@@ -357,3 +357,7 @@
 #define LOAD_RELATIVE 1
 //RHO
 
+//RHO - for bigdecimal support
+#define HAVE_LABS 1
+#define HAVE_LLABS 1
+//RHO

@@ -200,5 +200,12 @@ config.h: nul
 #define HAVE_GETADDRINFO 1
 #define HAVE_GETHOSTNAME 1
 //RHO
+
+//RHO - for bigdecimal support
+#define HAVE_LABS 1
+#define HAVE_LLABS 1
+//RHO
+
+
 #endif
 #endif
