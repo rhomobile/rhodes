@@ -559,7 +559,10 @@ def java_build(jarpath, buildpath, classpath, srclists)
     root = Pathname.new(buildpath)
 
     Dir.glob( File.join(buildpath,'**/*.class') ).each do |cls|
-      args << (Pathname.new(cls).relative_path_from root).to_s
+      clspath = Pathname.new(cls).relative_path_from(root).to_s
+      #need to escape dollar signs in filenames on OS X
+      clspath.gsub!(/\$/,'\$') if (RUBY_PLATFORM =~ /darwin/)
+      args << clspath
     end
 
     $logger.debug "java_build args: #{args}"
