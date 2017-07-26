@@ -43,6 +43,9 @@
               android:launchMode='singleTask'
               android:configChanges='orientation|screenSize|fontScale|smallestScreenSize|keyboard|keyboardHidden'
               android:screenOrientation='<%= @screenOrientation %>'
+              <% if @windowSoftInputMode %>
+                android:windowSoftInputMode='<%= @windowSoftInputMode  %>'
+              <% end %>
               <% if @hardwareAcceleration %>
               android:hardwareAccelerated='true'
               <% end %> >
