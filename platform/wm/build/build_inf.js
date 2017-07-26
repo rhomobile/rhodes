@@ -39,7 +39,8 @@ function expand_source(es,name,path,section,destination,flag) {
     else {
       s.destination = destination+"\\"+name;	
     }
-    
+
+    //WScript.Echo(path);
     s.folder = fso.GetFolder(path);
     es.push(s);
 
@@ -341,7 +342,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     else
     {
         p("CopyFiles=CopyToInstallDir"+
-           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI" : "") +
+           (!usereruntime && (webkit_mode != 'none') ? ",CopyWebKitBin,CopyNPAPI,CopyBrowserFonts" : "") +
            (!usereruntime && (webkit_mode == 'none') && include_motocaps ? ",CopyConfig" : "") +
            (!usereruntime && include_motocaps ? ",CopySystemFiles" : "") +
            (show_shortcut && usereruntime ? ",Shortcuts" : "")+
@@ -358,17 +359,19 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     else 
     {
         p("2=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
-        p("3=,\"\",," + rhogempath + "\"\\\"");
+        p("3=,\"\",," + rhogempath + "\"\\libs\\webkit\\ext\\wm\\lib\\\"");
         
         if (webkit_mode != 'none')
         {            
-            p("4=,\"\",," + rhogempath + "\"\\npapi\\\"");
+            p("4=,\"\",," + rhogempath + "\"\\libs\\webkit\\ext\\wm\\lib\\npapi\\\"");
             /*p("5=,\"\",," + rhogempath + "\"\\Config\\\"");*/
-            p("5=,\"\",," + rhogempath);
+            //p("5=,\"\",," + rhogempath);
+            p("5=,\"\",," + rhogempath + "\"\\libs\\webkit\\ext\\wm\\lib\\fonts\\\"");
         }
         else
         {
-            /*if(include_motocaps)
+            p("4=,\"\",," + rhogempath + "\"\\libs\\ie\\\"");
+	    /*if(include_motocaps)
             {
                 p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
             }*/
@@ -414,9 +417,13 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
 
             p("\"rhowebkit.dll\"=3");
             p("\"rhobridge.dll\"=4");
+            each_file(rhogempath + "\\libs\\webkit\\ext\\wm\\lib\\fonts\\", function(f) {
+                 p("\"" + f +"\"=5");
+             });
         }
         else
         {
+            p("\"rhobrowser.dll\"=4");
             /*if(include_motocaps)
             {
                 if (!is_custom_config) 
@@ -459,6 +466,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
     } else {
         p("CopyBrowserPlugins=0,\"%InstallDir%\\Plugin\"");
     }*/
+
+    p("CopyBrowserFonts=0,\"%InstallDir%\\fonts\"");
 
     if ((!usereruntime) && (webkit_mode != 'none')) 
     {
@@ -527,6 +536,12 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         p("");*/
 
         if (webkit_mode != 'none') {
+
+            p("[CopyBrowserFonts]");
+            each_file(rhogempath + "\\libs\\webkit\\ext\\wm\\lib\\fonts", function(f) {
+                p("\"" + f + "\",\"" + f + "\",,0");
+            }); 
+        
             p("");
             if (!is_persistent)
             {
@@ -575,6 +590,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit_m
         }
         else
         {
+
+            p("\"rhobrowser.dll\",\"rhobrowser.dll\",,0");   
             if(include_motocaps)
             {
                 p("");

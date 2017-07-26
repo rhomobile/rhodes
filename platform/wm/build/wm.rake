@@ -554,17 +554,18 @@ def build_cab
     end
   end
 
-  if $comdll_files && $comdll_files.size > 0
+  if $comdll_files #&& $comdll_files.size > 0
     puts 'add com dlls names to file'
     reg_string = ""
      
     File.open(com_dlls_filename, 'w') do |f|
-      $comdll_files.each { |key| 
-        reg_string = reg_string + key[0..-1] + "," 
-      }
+    #  $comdll_files.each { |key| 
+    #    reg_string = reg_string + key[0..-1] + "," 
+    #  }
 
-      reg_string = reg_string[0..-2]
-      f.write(reg_string)
+    #  reg_string = reg_string[0..-2]
+    #  f.write(reg_string)
+    f.write("rhobrowser.dll")
     end
   end
   
@@ -588,7 +589,7 @@ def build_cab
     webkit = 'in_process'
   end
   
-  $wk_data_dir = File.join($startdir, "../rho-tau-extensions-"+ENV['rhodes_version']+"/libs/webkit/ext/wm/lib")
+  $wk_data_dir = File.join($startdir, "../rho-tau-extensions-"+ENV['rhodes_version'])
 
   dir = File.join($startdir, $builddir)
   
@@ -609,11 +610,11 @@ def build_cab
     ($build_persistent_cab ? "1" : "0")       #12
   ]
 
-  if $build_persistent_cab
-    args.concat(additional_dlls_persistent_paths)
-  elsif !$use_shared_runtime
-    args.concat(additional_dlls_paths)
-  end
+  #if $build_persistent_cab
+  #  args.concat(additional_dlls_persistent_paths)
+  #elsif !$use_shared_runtime
+  #  args.concat(additional_dlls_paths)
+  #end
   
   Jake.run3("cscript #{args.join(' ')}", dir)
 

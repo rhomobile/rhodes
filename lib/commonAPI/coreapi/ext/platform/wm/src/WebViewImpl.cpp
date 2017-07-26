@@ -208,6 +208,9 @@ public:
     //Android only
     virtual void save( const rho::String& format,  const rho::String& path,  int tabIndex, rho::apiGenerator::CMethodResult& oResult){}
     //
+
+	void getKeyboardDisplayRequiresUserAction(rho::apiGenerator::CMethodResult& oResult){}
+    void setKeyboardDisplayRequiresUserAction( bool keyboardDisplayRequiresUserAction, rho::apiGenerator::CMethodResult& oResult){}
 };
 
 ////////////////////////////////////////////////////////////////////////
