@@ -4,7 +4,7 @@
 if [ "$RHO_PLATFORM" = "android" ]; then
 
 cd platform/android
-rake --trace
+rake -m --trace
 
 elif [ "$RHO_PLATFORM" = "iphone" ]; then
 
