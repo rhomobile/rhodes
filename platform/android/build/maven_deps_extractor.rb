@@ -63,7 +63,7 @@ class MavenDepsExtractor
   def extract_all
     $logger.info 'Extracting maven dependencies'
 
-    @logger.info 'Removing maven cache for android packages - just in case'
+    $logger.info 'Removing maven cache for android packages - just in case'
     com_cache_dir = File.join(@m2home,'m2','com')
     rm_r com_cache_dir if File.directory?(com_cache_dir)
 
