@@ -560,8 +560,8 @@ def java_build(jarpath, buildpath, classpath, srclists)
 
     Dir.glob( File.join(buildpath,'**/*.class') ).each do |cls|
       clspath = Pathname.new(cls).relative_path_from(root).to_s
-      #need to escape dollar signs in filenames on OS X
-      clspath.gsub!(/\$/,'\$') if (RUBY_PLATFORM =~ /darwin/)
+      #need to escape dollar signs in filenames on OS X and Linux
+      clspath.gsub!(/\$/,'\$') if (RUBY_PLATFORM =~ /darwin|linux/)
       args << clspath
     end
 
