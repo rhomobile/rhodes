@@ -14,6 +14,7 @@ macx {
   DESTDIR = ../../../../platform/osx/bin/extensions
   OBJECTS_DIR = ../../../../platform/osx/bin/extensions/digest-sha2
   INCLUDEPATH += ../../../../platform/shared/ruby/iphone
+  INCLUDEPATH += /Users/MOHUS/tauplatform/openssl-1.0.2/include
 }
 win32 {
   DESTDIR = ../../../../platform/win32/bin/extensions
