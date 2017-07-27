@@ -17,6 +17,7 @@ class ManifestGenerator
   attr_accessor :rhodesActivityIntentFilters
   attr_accessor :hardwareAcceleration
   attr_accessor :apikey
+  attr_accessor :windowSoftInputMode
   
   attr_accessor :manifestManifestAdds
   attr_accessor :applicationManifestAdds
@@ -43,6 +44,7 @@ class ManifestGenerator
     @manifestManifestAdds = []
     @applicationManifestAdds = []
     @apikey = ''
+    @windowSoftInputMode = nil
   end
   
   def addGoogleMaps

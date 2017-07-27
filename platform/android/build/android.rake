@@ -1673,6 +1673,7 @@ namespace "build" do
       generator.screenOrientation = $android_orientation unless $android_orientation.nil?
       generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
       generator.apikey = $gapikey if $gapikey
+      generator.windowSoftInputMode = $app_config['android']['windowSoftInputMode'] if $app_config['android']['windowSoftInputMode']
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
 
@@ -2315,6 +2316,38 @@ namespace "package" do
     unless $?.success?
       raise "Error packaging native libraries"
     end
+
+    $logger.info( "Packaging java resources" )
+
+    respath = File.join( $tmpdir, '.javares' )
+    rm_r respath if File.directory? respath
+
+    alljars.each do |jar|
+      Zip::File.open(jar) do |archive|
+        archive.glob("**/*.*").each do |pfile|
+          next if pfile.name =~ /^META-INF/
+	  #extract everything except .class files
+          next if pfile.name =~ /.*\.class$/
+          target = File.join(respath,pfile.name)
+          mkdir_p( File.dirname(target) )
+          rm target if File.file?(target)
+          archive.extract( pfile, File.join(target) )          
+        end
+      end
+    end
+
+    args = [ USE_TRACES ? "uvf" : "uf", resourcepkg]
+
+    Dir.glob(File.join(respath,"**/*")).each do |f|
+      next if not File.file?(f)
+      relpath  = Pathname.new(f).relative_path_from(Pathname.new(respath)).to_s
+      $logger.debug "Will pakage java resource: #{f} into #{relpath}"
+      args << relpath
+    end
+
+    Jake.run($jarbin, args, respath) if File.directory? respath
+
+
     print_timestamp('package:android FINISH')
   end
 end

@@ -304,6 +304,11 @@
 #define HAVE_SYS_SYSCALL_H 1
 #define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
 
+//RHO - for bigdecimal support
+#define HAVE_LABS 1
+#define HAVE_LLABS 1
+//RHO
+
 #  include <sys/select.h>
 //#  include <asm/page.h>
 

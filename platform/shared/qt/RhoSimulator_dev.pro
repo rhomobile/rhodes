@@ -10,7 +10,8 @@ SUBDIRS = rubylib rholib sqlite3 syncengine \
 ../../../lib/extensions/fcntl/ext/fcntl.pro \
 ../../../lib/extensions/openssl/ext/openssl.pro \
 ../../../lib/extensions/serialport/ext/serialport.pro \
-../../../lib/extensions/zlib/ext/zlib.pro
+../../../lib/extensions/zlib/ext/zlib.pro \
+../../../lib/extensions/bigdecimal/ext/bigdecimal.pro
 
 unix:!macx {
  # SUBDIRS += curl
