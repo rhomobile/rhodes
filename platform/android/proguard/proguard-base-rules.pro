@@ -61,6 +61,7 @@
 -dontwarn javax.**
 -dontwarn org.**
 -dontwarn com.rhomobile.**
+-dontwarn com.rho.**
 
 # Preserve all fundamental application classes.
 -keep public class * extends android.app.Activity
