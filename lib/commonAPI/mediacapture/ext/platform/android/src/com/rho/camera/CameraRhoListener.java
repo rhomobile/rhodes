@@ -266,8 +266,7 @@ IRhoListener {
 					}
 					Logger.T(TAG, "Photo is captured: " + curUri);
 					//mBitmap.recycle();
-				}else if (captureUri != null )
-				{
+				}else if (captureUri != null ){
 					// not used system activity ?!
 					// unreacheable ?
 
@@ -298,10 +297,29 @@ IRhoListener {
 
 
 						if (fromGallery) {
+							Logger.T(TAG, "Is from Gallery");
 						}
 						else {
-							File f= new File(imgPath);
+							Logger.T(TAG, "Not from Gallery");
+							Logger.T(TAG, "Path before copy: " + imgPath);
+							//File f = new File(imgPath);
+							File fileToDelete = new File(imgPath);
 							imgPath = copyImg(imgPath);
+							
+							if (!Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) {
+								try{
+						    		if(fileToDelete.delete()){
+						    			Logger.T(TAG, fileToDelete.getName() + " is deleted.");
+						    		}else{
+						    			Logger.T(TAG, "Delete operation is failed.");
+						    		}
+						    	}catch(Exception e){
+						    		e.printStackTrace();
+						    	}
+						    }
+							
+							File f = new File(imgPath);
+							Logger.T(TAG, "Path after copy: " + imgPath);
 							getActualPropertyMap().put("default_camera_key_path", "default_camera_key_path_value");
 							BitmapFactory.Options options = new BitmapFactory.Options();
 							options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -350,14 +368,14 @@ IRhoListener {
 					String dataDir=RhodesActivity.safeGetInstance().getApplicationInfo().dataDir;
 					dataDir=dataDir+curPath.substring(curPath.lastIndexOf("/") );
 
-					if(getActualPropertyMap().get("fileName")==null)
+					if (getActualPropertyMap().get("fileName")==null)
 					{
 						getActualPropertyMap().put("fileName",dataDir);
 					}
-					if(getActualPropertyMap().get("fileName").contains(".jpg"))
-					targetPath = getActualPropertyMap().get("fileName");
+					if (getActualPropertyMap().get("fileName").contains(".jpg"))
+						targetPath = getActualPropertyMap().get("fileName");
 					else
-					targetPath = getActualPropertyMap().get("fileName")+".jpg";
+						targetPath = getActualPropertyMap().get("fileName")+".jpg";
 					File curFile = new File(curPath);
 
 					if (!curPath.equals(targetPath))
