@@ -169,7 +169,7 @@ void CSystemImpl::setFullScreen(bool value, CMethodResult& oResult)
 
 void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult)
 {
-    oResult.set(true);
+    oResult.set(false);
 }
 
 void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult)
