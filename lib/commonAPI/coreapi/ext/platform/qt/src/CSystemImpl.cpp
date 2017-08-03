@@ -13,8 +13,11 @@
 #include <QLocale>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QString>
+#include <QSet>
 #include <QSettings>
-
+#include <QStringList>
+#include <QDebug>
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
 
@@ -166,7 +169,7 @@ void CSystemImpl::setFullScreen(bool value, CMethodResult& oResult)
 
 void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult)
 {
-    oResult.set(false);
+
 }
 
 void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult)
@@ -180,7 +183,7 @@ void CSystemImpl::applicationInstall( const rho::String& applicationUrl, CMethod
 
 void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult)
 {
-#ifdef WIN32
+#ifdef OS_WINDOWS_DESKTOP
     QString appName = QString::fromStdString(applicationName);
 
     QSet<QString> setOfNames;
