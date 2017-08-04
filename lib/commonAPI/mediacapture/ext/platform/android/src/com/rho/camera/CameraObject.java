@@ -54,7 +54,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     String mCurrentPhotoPath = null;
     public static String userFilePath = null;
     private ContentValues values = null;
-    //private File storageDir = null;
+    private File storageDir = null;
 
     public static boolean CURRENT_SCREEN_AUTO_ROTATE_MODE;
     public static boolean CURRENT_FULL_SCREEN_MODE;
@@ -463,10 +463,19 @@ public class CameraObject extends CameraBase implements ICameraObject {
         getPropertiesMap().put("desiredWidth", "0");
         getPropertiesMap().put("desiredHeight", "0");
 
-        /*storageDir = new File(Environment.getExternalStorageDirectory(),
-                               "TestDir"
-                               );
-        storageDir.mkdirs();*/
+        storageDir = new File(Environment.getExternalStorageDirectory(), "RhoImages");
+        createRhoCacheFolder();
+        
+    }
+
+    public void createRhoCacheFolder(){
+        storageDir.mkdirs();
+        try{
+            //File nomediaFile = new File(storageDir, ".nomedia");
+            //if (!nomediaFile.exists()) {nomediaFile.createNewFile();}
+        }catch (Exception e){
+
+        }
     }
 
     @Override
@@ -646,13 +655,14 @@ public class CameraObject extends CameraBase implements ICameraObject {
             String filePath = null;
 
             String fdir = "/sdcard/DCIM/Camera/";
+            fdir = storageDir.getAbsolutePath();
             String fname = actualPropertyMap.get("fileName");
 
-            if(!actualPropertyMap.containsKey("fileName")){
+            //if(!actualPropertyMap.containsKey("fileName")){
                 fname = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
-            }
+            //}
 
-            filePath = fdir + fname + ".jpg";
+            filePath = fdir + "/" + fname + ".jpg";
 
             /*
             //TODO: in all cases it is image, so think, why we need this parameter
@@ -678,18 +688,19 @@ public class CameraObject extends CameraBase implements ICameraObject {
             Intent intent = null;
             if (Boolean.parseBoolean(actualPropertyMap.get("useSystemViewfinder"))) {
                 intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
                 if (outputFormat.equalsIgnoreCase("image")) {
-                    
                     ContentValues values = new ContentValues();
-                    //values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                    if (!Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) {
+                        values.put( MediaStore.Images.ImageColumns.DATA, filePath);
+                        Logger.T(TAG, "Output filePath: " + filePath);
+                    }
+
                     fileUri = RhodesActivity.getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values); 
-                    //fileUri = Uri.fromFile(image);
 
                     actualPropertyMap.put("captureUri", fileUri.toString());
                     propertyMap.put("dataURI", "");
                     Logger.T(TAG, "Output fileUri: " + fileUri.toString());
-                    Logger.T(TAG, "Output filePath: " + filePath);
+                    
                     // intent is null with MediaStore.EXTRA_OUTPUT so adding fileuri to map and get it with same key
                     // if instead of MediaStore.EXTRA_OUTPUT any other key is used then the bitmap is null though the file is getting created
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);

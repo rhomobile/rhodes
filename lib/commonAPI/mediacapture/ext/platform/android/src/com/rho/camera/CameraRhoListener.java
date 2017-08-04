@@ -31,6 +31,10 @@ import android.os.Environment;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore.Images.Thumbnails;
+import android.content.ContentResolver;
+
 import com.rhomobile.rhodes.Base64;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -284,15 +288,7 @@ IRhoListener {
 							imgPath = copyImg(imgPath);
 							
 							if (!Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) {
-								try{
-						    		if(fileToDelete.delete()){
-						    			Logger.T(TAG, fileToDelete.getName() + " is deleted.");
-						    		}else{
-						    			Logger.T(TAG, "Delete operation is failed.");
-						    		}
-						    	}catch(Exception e){
-						    		e.printStackTrace();
-						    	}
+								deleteFile(fileToDelete);
 						    }
 							
 							File f = new File(imgPath);
@@ -843,8 +839,8 @@ public String copyImg(String imgPath){
 	makeDirsForFile(mediafile.getAbsolutePath());
 
 	//File mediafile  =  new File(RhoFileApi.getDbFilesPath(), rename);
-	FileInputStream finput= null;
-	FileOutputStream fout = null;
+	FileInputStream finput = null;
+	FileOutputStream fout  = null;
 	try {
 		finput = new FileInputStream(oldFile);
 		fout = new FileOutputStream(mediafile);
@@ -1011,6 +1007,70 @@ public void deleteImage(){
 	if(file.exists()){
 		file.delete();
 	}
+}
+
+private static void removeThumbnails(ContentResolver contentResolver, String photoId) {
+	Cursor thumbnails = contentResolver.query(Thumbnails.EXTERNAL_CONTENT_URI, null, Thumbnails.IMAGE_ID + "=?", null, null);
+	for (thumbnails.moveToFirst(); !thumbnails.isAfterLast(); thumbnails.moveToNext()) {
+	    long thumbnailId = thumbnails.getLong(thumbnails.getColumnIndex(Thumbnails._ID));
+	    String path = thumbnails.getString(thumbnails.getColumnIndex(Thumbnails.DATA));
+	    File file = new File(path);
+	    if (file.delete()) {
+	        contentResolver.delete(Thumbnails.EXTERNAL_CONTENT_URI, Thumbnails._ID + "=?", new String[]{String.valueOf(thumbnailId)});
+	    }
+
+	}
+}
+
+private void deleteRecursive(File fileOrDirectory) {
+    if (fileOrDirectory.isDirectory())
+        for (File child : fileOrDirectory.listFiles())
+            deleteRecursive(child);
+    fileOrDirectory.delete();
+}
+
+private void deleteFile(File fileToDelete){
+	//removeThumbnails(RhodesActivity.getContext().getContentResolver(), null);
+
+	try{
+		if(fileToDelete.exists()){
+			fileToDelete.delete();
+			if(fileToDelete.exists()){
+				Logger.T(TAG, "fileToDelete.delete() failed.");
+			    fileToDelete.getCanonicalFile().delete();
+			    if(fileToDelete.exists()){
+			      	Logger.T(TAG, "fileToDelete.getCanonicalFile().delete(); failed.");
+			        RhodesActivity.getContext().deleteFile(fileToDelete.getName());
+	      		}
+			}
+		}
+		RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fileToDelete)));
+		if(!fileToDelete.exists()){
+			Logger.T(TAG, fileToDelete.getName() + " is deleted.");
+			
+			if (Build.VERSION.SDK_INT >= 14) {
+	            MediaScannerConnection.scanFile(RhodesActivity.getContext(), new String[]{
+	            	fileToDelete.toString()}, 
+	            	null, new MediaScannerConnection.OnScanCompletedListener() {
+	                public void onScanCompleted(String path, Uri uri) {
+	                    Logger.T(TAG, "ExternalStorage Scanned " + path + ":");
+	                    Logger.T(TAG, "ExternalStorage -> uri=" + uri);
+	                }
+	            });
+	        } else {
+	            RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, 
+				Uri.parse("file://" + new File(Environment.getExternalStorageDirectory(),"RhoImages"))));
+	        }
+
+		}else{
+			Logger.T(TAG, "All delete operations is failed.");
+		}
+		Logger.T(TAG, "deleteFile() function end");
+	}catch(Exception e){
+		e.printStackTrace();
+	}
+
+
 }
 
 }
