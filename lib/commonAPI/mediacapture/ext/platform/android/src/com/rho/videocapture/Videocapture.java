@@ -38,7 +38,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	private String mFileName 		= "";
 	private int mDuration 			= 5000;
 	private boolean mGallery 		= false;
-	public IMethodResult mSaveUrl 	= null;
+	private IMethodResult mSavedUrl = null;
 	private Activity mActivity		= null;    	
 	public int RESULT_VIDEO_CODE	= 1;		// Result code from video capture activity
 	private String path 			= null;
@@ -48,6 +48,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
     	super(id);
         mId = id; 
         mActivity = RhodesActivity.getInstance();
+        Logger.T(TAG, "Videocapture() -- END of constructor. Id: " + mId);
     }
 
     @Override
@@ -191,12 +192,15 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 		Logger.D(TAG,  "Start API");
 		
 		//Save the callback function
-		mSaveUrl = result;
-		
-		if (mSaveUrl != null)
+		mSavedUrl = result;
+				
+		if (mSavedUrl != null)
 		{
-			Logger.T(TAG,  "Callback API: " + mSaveUrl);
+			Logger.T(TAG, "start() -- Callback API: " + mSavedUrl);
+		}else{
+			Logger.T(TAG, "start() -- mSavedUrl == null"); 
 		}
+
 			
 		int durationInSeconds = mDuration / 1000;
 		
@@ -229,6 +233,12 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	
 	public void stopCapture(Uri intentData)
 	{
+		Logger.T(TAG, "stopCapture() calling");
+		if (mSavedUrl == null){
+    		Logger.T(TAG, "stopCapture() -- mSavedUrl == null"); 
+    	}else{
+    		Logger.T(TAG, "stopCapture() -- Callback API: " + mSavedUrl);
+    	}
 		String tempName = null;
 		if (mFileName == "")
 		{
@@ -307,9 +317,9 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	    	props.put("fileName", path);
 	    	props.put("fileSize", size);
 	    	
-	    	if (mSaveUrl != null)
+	    	if (mSavedUrl != null)
 	    	{
-	    		mSaveUrl.set(props);    		
+	    		mSavedUrl.set(props);    		
 	    	}
 		    
 		} 
@@ -321,9 +331,9 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	    	props.put("fileName", "");
 	    	props.put("fileSize", "");
 	    	
-	    	if (mSaveUrl != null)
+	    	if (mSavedUrl != null)
 	    	{
-	    		mSaveUrl.set(props);    		
+	    		mSavedUrl.set(props);    		
 	    	}
 		}
 	}
@@ -385,25 +395,42 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 
     public void resetProperties()
     {
+    	Logger.T(TAG, "resetProperties()"); 
     	mFileName = "";
  	    mDuration = 5000;
- 	    mSaveUrl = null; 
+ 	    mSavedUrl = null; 
  	    mGallery = false;
  	    mResolution = resolution.HIGH;
     }
     
     public void onActivityResultVideoCapture(RhodesActivity activity, int reqCode, int resCode, Intent intent)
     {
+    	if (mSavedUrl == null){
+    		Logger.T(TAG, "onActivityResult -- mSavedUrl == null"); 
+    	}
 		Logger.T(TAG, "onActivityResult -- START " + resCode + " " + reqCode);    	
     	if (resCode == android.app.Activity.RESULT_OK && reqCode == RESULT_VIDEO_CODE)
 		{
     		//Save the file and invoke callback API
 			stopCapture(intent.getData());
+			Logger.T(TAG, "onActivityResult -- stopCapture");   
+			/*if (mSavedUrl != null)
+        	{
+        		Map<String, Object> props = new HashMap<String, Object>();
+        	
+	        	props.put("transferResult", "OK");
+	        	//props.put("fileName", "");
+	        	//props.put("fileSize", "");
+        		Logger.T(TAG, "onActivityResult -- result ok -- setting result props"); 
+        		mSavedUrl.set(props);
+        	}*/
 		}
     	else if (resCode == Activity.RESULT_CANCELED) 
     	{
-    		if (mSaveUrl != null)
-    			mSaveUrl.setError("Video capture cancelle dby the user");    	
+    		Logger.T(TAG, "onActivityResult -- videocapture canceled"); 
+    		if (mSavedUrl != null)
+    			Logger.T(TAG, "onActivityResult -- setting error");  
+    			mSavedUrl.setError("Video capture cancelle dby the user");    	
     	}
     	else
     	{  
@@ -414,9 +441,10 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
         	props.put("fileName", "");
         	props.put("fileSize", "");
         	
-        	if (mSaveUrl != null)
+        	if (mSavedUrl != null)
         	{
-        		mSaveUrl.set(props);
+        		Logger.T(TAG, "onActivityResult -- result error - setting result props"); 
+        		mSavedUrl.set(props);
         	}
     	}
     	Logger.T(TAG, "onActivityResult -- END");
