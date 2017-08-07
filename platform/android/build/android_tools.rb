@@ -741,7 +741,13 @@ module_function :read_manifest_package
 
   def signApkDebug( inputApk, outputApk )
     @@logger.info "Align Debug APK file"
-    signApk( inputApk, outputApk, File.join(Dir.home,'/.android/debug.keystore'), 'android', 'android', 'androiddebugkey' )
+
+    keystore = File.join(Dir.home,'/.android/debug.keystore')
+    #Try to find debug keystore in another location
+    keystore = File.join(ENV['USERPROFILE'],'/.android/debug.keystore') unless File.file?(keystore)
+    raise "Can't find debug keystore in user's home folder" unless File.file?(keystore)
+
+    signApk( inputApk, outputApk, keystore, 'android', 'android', 'androiddebugkey' )
   end
   module_function :signApkDebug
 
