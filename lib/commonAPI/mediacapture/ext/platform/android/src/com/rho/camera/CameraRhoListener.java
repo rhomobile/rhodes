@@ -11,6 +11,8 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimerTask;
+import java.util.Timer;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -34,6 +36,7 @@ import android.provider.MediaStore.MediaColumns;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore.Images.Thumbnails;
 import android.content.ContentResolver;
+import android.os.Handler;
 
 import com.rhomobile.rhodes.Base64;
 import com.rhomobile.rhodes.Logger;
@@ -1032,6 +1035,19 @@ private void deleteRecursive(File fileOrDirectory) {
 private void deleteFile(File fileToDelete){
 	//removeThumbnails(RhodesActivity.getContext().getContentResolver(), null);
 
+	final String strFileToDelete = fileToDelete.toString();
+	new Timer().schedule(new TimerTask() {          
+    @Override
+	    public void run() {
+			MediaScannerConnection.scanFile(RhodesActivity.getContext(), new String[]{strFileToDelete}, 
+            	null, new MediaScannerConnection.OnScanCompletedListener() {
+                public void onScanCompleted(String path, Uri uri) {
+                    Logger.T(TAG, "TimerTask: 5000 - ExternalStorage Scanned " + path + ":");
+                }
+            });
+	    }
+	}, 5000);
+
 	try{
 		if(fileToDelete.exists()){
 			fileToDelete.delete();
@@ -1050,7 +1066,7 @@ private void deleteFile(File fileToDelete){
 			
 			if (Build.VERSION.SDK_INT >= 14) {
 	            MediaScannerConnection.scanFile(RhodesActivity.getContext(), new String[]{
-	            	fileToDelete.toString()}, 
+	            	strFileToDelete}, 
 	            	null, new MediaScannerConnection.OnScanCompletedListener() {
 	                public void onScanCompleted(String path, Uri uri) {
 	                    Logger.T(TAG, "ExternalStorage Scanned " + path + ":");
