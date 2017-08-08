@@ -1897,7 +1897,6 @@ namespace "config" do
     # read shared config
     $rhodes_home = create_rhodes_home()
 
-    #TODO: put rhobuild.yml to the user's homedir/.rhomobile
     conf_file = File.join($rhodes_home,buildyml)
     $shared_conf = {}
     if File.exists?(conf_file)
@@ -1908,6 +1907,13 @@ namespace "config" do
 
     # read gem folder build config
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
+
+    homedirbuildyml = File.join( Dir.home, '.rms', 'rhobuild.yml' )
+    usehomeconfig = (((File.file?(homedirbuildyml))) and (not File.file?(buildyml)))
+    buildyml = homedirbuildyml if usehomeconfig
+
+    $logger.info( "Using Rhodes configuration from path: #{buildyml}" )
+
     $config = Jake.config(File.open(buildyml))
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
