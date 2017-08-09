@@ -1119,6 +1119,7 @@ namespace "build" do
             args = []
             if builddata[1] == 'rake'
               args << "arch:#{abi}"
+              args << "-m"
               if !File.file?(File.join(builddata[0],'Rakefile'))
                 args << "-f"
                 args << "\"#{File.join($startdir,'platform','android','build','Rakefile')}\""
@@ -1224,6 +1225,7 @@ namespace "build" do
     
       $abis.each do |abi|
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
+        args << '-m'
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: sqlite"
       end
@@ -1267,6 +1269,7 @@ namespace "build" do
     
       $abis.each do |abi|
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
+        args << '-m'
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: curl"
       end
@@ -1308,6 +1311,7 @@ namespace "build" do
     
       $abis.each do |abi|
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
+        args << '-m'
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: ruby"
       end
@@ -1341,6 +1345,7 @@ namespace "build" do
     
       $abis.each do |abi|
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
+        args << '-m'
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: json"
       end
@@ -1373,6 +1378,7 @@ namespace "build" do
     
       $abis.each do |abi|
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
+        args << '-m'
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rholog"
       end
@@ -1406,6 +1412,7 @@ namespace "build" do
     
       $abis.each do |abi|
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
+        args << '-m'
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhomain"
       end
@@ -1440,6 +1447,7 @@ namespace "build" do
     
       $abis.each do |abi|
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
+        args << '-m'
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhocommon"
       end
@@ -1474,6 +1482,7 @@ namespace "build" do
     
       $abis.each do |abi|
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
+        args << '-m'
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhodb"
       end
@@ -1508,6 +1517,7 @@ namespace "build" do
     
       $abis.each do |abi|
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
+        args << '-m'
         args << '--trace' if USE_TRACES
         cc_run('rake', args, nil, false) or raise "Build failed: rhosync"
       end
