@@ -44,8 +44,8 @@ public final class CameraManager {
 
   private static final int MIN_FRAME_WIDTH = 240;
   private static final int MIN_FRAME_HEIGHT = 240;
-  private static final int MAX_FRAME_WIDTH = 480;
-  private static final int MAX_FRAME_HEIGHT = 360;
+  private static final int MAX_FRAME_WIDTH = 480 * 4;
+  private static final int MAX_FRAME_HEIGHT = 360 * 4;
 
   private static CameraManager cameraManager;
 
@@ -64,8 +64,8 @@ public final class CameraManager {
   private final Context context;
   private final CameraConfigurationManager configManager;
   private Camera camera;
-  private Rect framingRect;
-  private Rect framingRectInPreview;
+  private Rect framingRect = null;
+  private Rect framingRectInPreview = null;
   private boolean initialized;
   private boolean previewing;
   private final boolean useOneShotPreviewCallback;
@@ -226,6 +226,7 @@ public final class CameraManager {
    */
   public Rect getFramingRect() {
     Point screenResolution = configManager.getScreenResolution();
+    
     if (framingRect == null) {
       if (camera == null) {
         return null;
