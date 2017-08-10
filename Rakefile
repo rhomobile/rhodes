@@ -49,6 +49,7 @@ require 'securerandom'
 require 'uri'
 require 'logger'
 require 'rake'
+require 'deep_merge'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
@@ -1900,21 +1901,21 @@ namespace "config" do
     conf_file = File.join($rhodes_home,buildyml)
     $shared_conf = {}
     if File.exists?(conf_file)
+      $logger.info "Shared config is available at #{File.join($rhodes_home,buildyml)}"
       $shared_conf = Jake.config(File.open(File.join($rhodes_home,buildyml)))
     end
 
     $current_platform_bridge = $current_platform unless $current_platform_bridge
 
-    # read gem folder build config
-    buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
-
-    homedirbuildyml = File.join( Dir.home, '.rms', 'rhobuild.yml' )
-    usehomeconfig = (((File.file?(homedirbuildyml))) and (not File.file?(buildyml)))
-    buildyml = homedirbuildyml if usehomeconfig
-
     $logger.info( "Using Rhodes configuration from path: #{buildyml}" )
 
-    $config = Jake.config(File.open(buildyml))
+    # read gem folder build config
+    buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
+    $config = {}
+    $config = Jake.config(File.open(buildyml)) if File.file?(buildyml)
+
+    $config = $config.deep_merge($shared_conf) if $shared_conf
+
     $config["platform"] = $current_platform if $current_platform
     $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
 
