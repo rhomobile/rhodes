@@ -544,6 +544,10 @@ def java_build(jarpath, buildpath, classpath, srclists)
 
     puts "Compiling java sources: #{srclists.inspect}"
 
+    #append buildpath with .java so no unwanted artefacts included into final jar
+    buildpath = File.join(buildpath,'.java')
+    mkdir_p buildpath unless File.directory? buildpath
+
     java_compile(buildpath, classpath, fullsrclist)
 
     args = []
@@ -555,15 +559,7 @@ def java_build(jarpath, buildpath, classpath, srclists)
     end
 
     args << jarpath
-
-    root = Pathname.new(buildpath)
-
-    Dir.glob( File.join(buildpath,'**/*.class') ).each do |cls|
-      clspath = Pathname.new(cls).relative_path_from(root).to_s
-      #need to escape dollar signs in filenames on OS X
-      clspath.gsub!(/\$/,'\$') if (RUBY_PLATFORM =~ /darwin/)
-      args << clspath
-    end
+    args << '.'
 
     $logger.debug "java_build args: #{args}"
     
