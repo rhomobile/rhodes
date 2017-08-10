@@ -114,6 +114,8 @@ begin
     #require 'rhofsconnector'
 
     require 'json'	
+    require '_socket'
+
     #require 'rhom/rhom_object_factory'
     
     #require 'rhom/rhom'
