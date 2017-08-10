@@ -143,7 +143,10 @@ public:
             RAWLOGC_ERROR("MethodResultJNI", "JNI initialization failed");
             return rho::String();
         }
-        return rho_cast<rho::String>(env, getObjectClassPath(env));
+
+    	jhstring tempstr=getObjectClassPath(env);
+    	rho::String res=rho_cast<rho::String>(env, tempstr.get());
+    	return res;
     }
     rho::String getResultParamName() const
     {
@@ -180,7 +183,9 @@ public:
             RAWLOGC_ERROR("MethodResultJNI", "JNI initialization failed");
             return;
         }
-        setObjectClassPath(env, rho_cast<jstring>(env, klassPath));
+
+
+        setObjectClassPath(env, jhstring(rho_cast<jstring>(env, klassPath)).get());
     }
 
     void setResultParamName(const rho::String& name)
@@ -190,7 +195,8 @@ public:
             RAWLOGC_ERROR("MethodResultJNI", "JNI initialization failed");
             return;
         }
-        setResultParamName(env, rho_cast<jstring>(env, name));
+
+        setResultParamName(env, jhstring(rho_cast<jstring>(env, name)).get());
     }
 
     bool hasCallback() const { return m_hasCallback; }
@@ -509,21 +515,26 @@ public:
     }
     rho::String getString()
     {
-        return getObjectOrString(rho_cast<rho::String>(m_oResult.getStringResult()));
+        jhstring jstr = m_oResult.getStringResult();
+        return getObjectOrString(rho_cast<rho::String>( jstr.get() ));
     }
     rho::String getArray()
     {
-        return rho_cast<rho::String>(m_oResult.getJSONResult());
+        jhstring jstr = m_oResult.getJSONResult();
+        return rho_cast<rho::String>( jstr.get() );
     }
 
     rho::String getHash()
     {
-        return rho_cast<rho::String>(m_oResult.getJSONResult());
+        jhstring jstr = m_oResult.getJSONResult();
+        return rho_cast<rho::String>( jstr.get() );
     }
 
     rho::String getJSON()
     {
-        rho::String strRes = rho_cast<rho::String>(m_oResult.getJSONResult());
+        jhstring jstr = m_oResult.getJSONResult();
+        rho::String strRes = rho_cast<rho::String>( jstr.get() );
+
         if(jnienv()->ExceptionCheck())
         {
             m_oResult.setError(clearException(jnienv()).c_str());
