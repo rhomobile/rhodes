@@ -49,7 +49,6 @@ require 'securerandom'
 require 'uri'
 require 'logger'
 require 'rake'
-require 'deep_merge'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
@@ -1890,6 +1889,8 @@ namespace "config" do
   end
 
   task :load do
+
+    require 'deep_merge'
 
     print_timestamp('First timestamp')
 
