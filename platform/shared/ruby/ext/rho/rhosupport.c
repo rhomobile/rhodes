@@ -502,22 +502,38 @@ static VALUE find_file(VALUE fname)
 			nOK = 1;
 		}
     }
-    
+
     if (res != 0) {
-        // check access
-        
+        // check acess for possible encrypted
         if (eaccess(RSTRING_PTR(res), R_OK) != 0) {
-            rb_str_cat(res,RHO_ENCRYPTED_EXT,strlen(RHO_ENCRYPTED_EXT));
-            if (eaccess(RSTRING_PTR(res), R_OK) != 0) {
-                res = 0;
+            //check for .encrypted
+            VALUE tmp_res = rb_str_dup(res);
+            rb_str_cat(tmp_res,RHO_ENCRYPTED_EXT,strlen(RHO_ENCRYPTED_EXT));
+            if (eaccess(RSTRING_PTR(tmp_res), R_OK) == 0) {
+                res = rb_str_dup(tmp_res);
+            }
+            else {
+                //check for .rb
+                tmp_res = rb_str_dup(res);
+                rb_str_cat(tmp_res,RHO_RB_EXT,strlen(RHO_RB_EXT));
+                if (eaccess(RSTRING_PTR(tmp_res), R_OK) == 0) {
+                    res = rb_str_dup(tmp_res);
+                }
+                else {
+                    // check for .rb.encrypted
+                    rb_str_cat(tmp_res,RHO_ENCRYPTED_EXT,strlen(RHO_ENCRYPTED_EXT));
+                    if (eaccess(RSTRING_PTR(tmp_res), R_OK) == 0) {
+                        res = rb_str_dup(tmp_res);
+                    }
+                }
             }
         }
-        
+
     }
 
     if ( res != 0 ) {
-        RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
         res = RhoPreparePath(res);
+        RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
     }
 
     if ( !nOK )
