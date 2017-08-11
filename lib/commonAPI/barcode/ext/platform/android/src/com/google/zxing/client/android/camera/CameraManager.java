@@ -22,12 +22,14 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import com.google.zxing.client.android.PlanarYUVLuminanceSource;
+import com.rhomobile.rhodes.Logger;
 
 import java.io.IOException;
 
@@ -113,6 +115,8 @@ public final class CameraManager {
     autoFocusCallback = new AutoFocusCallback();
   }
 
+
+
   /**
    * Opens the camera driver and initializes the hardware parameters.
    *
@@ -123,27 +127,34 @@ public final class CameraManager {
     if (camera == null) {
       if (cameraIndex >= 0) {	
     	  camera = Camera.open(cameraIndex);
+        Logger.I(TAG, "Camera.open(cameraIndex)");
       }
       else
       {
     	  camera = Camera.open();
+        Logger.I(TAG, "Camera.open()");
       }
 
       if (camera == null) {
         throw new IOException();
       }
       
+      //Parameters p = camera.getParameters();
+      //FlashlightManager.setFlashModeInStart(p.getFlashMode() != Parameters.FLASH_MODE_OFF);
+
+
       camera.setPreviewDisplay(holder);
+      Logger.I(TAG, "camera.setPreviewDisplay(holder)");
 
       if (!initialized) {
         initialized = true;
         configManager.initFromCameraParameters(camera, cameraIndex);
       }
       configManager.setDesiredCameraParameters(camera);
-
+      Logger.I(TAG, "setDesiredCameraParameters(camera)");
       SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
       //if (prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false)) {
-      //  FlashlightManager.enableFlashlight();
+      //FlashlightManager.enableFlashlight();
       // }
     }
   }
@@ -153,11 +164,15 @@ public final class CameraManager {
    */
   public void closeDriver() {
     if (camera != null) {
-      FlashlightManager.disableFlashlight();
+      //FlashlightManager.disableFlashlight();
       camera.release();
       camera = null;
+      
     }
+    FlashlightManager.toggleFlashLight(context);
   }
+
+
 
   /**
    * Asks the camera hardware to begin drawing preview frames to the screen.

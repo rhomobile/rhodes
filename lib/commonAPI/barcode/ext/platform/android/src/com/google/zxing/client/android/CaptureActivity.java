@@ -68,6 +68,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -225,10 +227,12 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
 		}});
     mRetakeButton.setOnClickListener( new OnClickListener() {
 		public void onClick(View v) {
+      Logger.I(LOGTAG, "onRetake()");
 			onRetake();
 		}});
     mOKButton.setOnClickListener( new OnClickListener() {
 		public void onClick(View v) {
+      Logger.I(LOGTAG, "onOK()");
 			onOK();
 		}});
     
@@ -258,8 +262,6 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
       }
    	  BarcodeFactory.callOKCallback(lastResult, rhoBarcodeId);
   }
-  
-  
 
   @Override
   protected void onResume() {
@@ -296,6 +298,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
     //vibrate = prefs.getBoolean(PreferencesActivity.KEY_VIBRATE, false);
     //copyToClipboard = prefs.getBoolean(PreferencesActivity.KEY_COPY_TO_CLIPBOARD, true);
     initBeepSound();
+    Logger.I(LOGTAG, "onResume()");
   }
 
   @Override
@@ -310,7 +313,15 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
 
   @Override
   protected void onDestroy() {
+    Logger.I(LOGTAG, "onDestroy()");
     inactivityTimer.shutdown();
+
+    /*Camera camera = Camera.open();    
+    Parameters p = camera.getParameters();
+    p.setFlashMode(Parameters.FLASH_MODE_TORCH);
+    camera.setParameters(p);    
+    camera.startPreview();*/
+
     super.onDestroy();
   }
 
@@ -525,6 +536,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   }
 
   public void drawViewfinder() {
+    Logger.I(LOGTAG, "drawViewfinder()");
     viewfinderView.drawViewfinder();
   }
 }
