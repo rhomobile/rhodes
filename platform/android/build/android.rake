@@ -639,17 +639,7 @@ namespace "config" do
         $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
       end
 
-      HAVE_V4_SUPPORT = false
-      $app_config["extensions"].each do |extname|
-        if extname == "fcm-push"
-          HAVE_V4_SUPPORT = true
-        end
-      end
-
-      if !HAVE_V4_SUPPORT
-        AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:25.2.0')
-      end
-      #TODO: needs to check the lastest version of support-v4
+      AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:25.2.0')
 
       #setup_ndk($androidndkpath, $found_api_level, 'arm')
       $abis = $app_config['android']['abis'] if $app_config["android"]

@@ -16,8 +16,8 @@ class MavenDepsExtractor
 
     @dependencies = {}
 
-    rhoroot = File.join( File.dirname(__FILE__),'..','..','..')
-    @m2home = File.join( rhoroot, 'res', 'build-tools', 'maven' )
+    @rhoroot = File.join( File.dirname(__FILE__),'..','..','..')
+    @m2home = File.join( @rhoroot, 'res', 'build-tools', 'maven' )
     @mvnbin = File.join( @m2home, 'bin', 'mvn' )
 
     if RUBY_PLATFORM =~ /(win|w)32$/
@@ -34,12 +34,55 @@ class MavenDepsExtractor
 
   end
 
+=begin
+  # leaving this just in case, since maven will resolve dep versions itself
+
+  def compare_versions( v1, v2 )
+    version1 = v1.split('.').map { |s| s.to_i }
+    version2 = v2.split('.').map { |s| s.to_i }
+
+    version1.each_with_index do |v,i|
+      diff = v - version2[i]
+      return diff if (diff != 0)
+    end
+
+    return 0
+  end
+
+  #return true if have deps with version higher or equal than required
+  def remove_dependencies_with_lesser_versions( dep )
+    depGroup,depPackage,depVersion = split_dependency(dep)
+
+    @logger.info "Will filter out dependecies #{depGroup}:#{depPackage} if version is less than #{depVersion}"
+
+    haveExistingDependencyWithNonLessVersion = false
+    @dependencies.each do |extension,dependencies|
+      dependencies.delete_if do |dependency|
+        group,package,version = split_dependency(dependency)
+        if (group==depGroup) and (package==depPackage)
+          @logger.info "Found already existing dependency #{dependency} for module #{extension}, will check version"
+          if ( compare_versions(depVersion,version) > 0 )
+            @logger.info "New dependency has higher version than existing one: #{depVersion} > #{version}. Will replace it."
+            #remove existing dependency
+            true
+          else
+            @logger.info "Existing dependency version is higher or equal than new one: #{depVersion} <= #{version}"
+            haveExistingDependencyWithNonLessVersion = true
+          end          
+        end        
+      end
+    end
+    return haveExistingDependencyWithNonLessVersion
+  end
+=end
+
   def add_dependency( mod=nil, dep )
     if !mod
       mod = '.rho'
     end
 
     @logger.info "Adding maven dependency for #{mod}: #{dep}"
+    #return if remove_dependencies_with_lesser_versions(dep)
 
     if !@dependencies[mod]
       @dependencies[mod] = [ dep ]
@@ -72,31 +115,25 @@ class MavenDepsExtractor
     com_cache_dir = File.join(@m2home,'m2','com')
     rm_r com_cache_dir if File.directory?(com_cache_dir)
 
-    @dependencies.each do |name,deps|
-      @logger.debug "Extracting dependencies for extension #{name}"
+    copy_dir = File.join( @temp_dir, '.tmp')
+    mkdir_p copy_dir    
+    copy_dependencies copy_dir
 
-      path = @temp_dir#File.join( @temp_dir, name )
-      #mkdir_p( path )
-      deps.each { |dep| extract( dep, path ) }
-    end
+    @logger.info "Extracting dependencies"
+    extract copy_dir, @temp_dir
+
+    rm_r copy_dir   
   end
 
-  def extract( dep, path )
-    @logger.debug "Extracting dependency #{dep} to #{path}"
+  def extract( src, dst )
+    @logger.info "Extracting dependencies to #{dst}"
 
-    extract_dir = File.join( @temp_dir, '.tmp')
-    mkdir_p extract_dir
-
-    copy_dependency( dep, extract_dir )
-
-    @logger.debug "Processing dependencies"
-
-    Dir[File.join(extract_dir,'*')].each do |f|
+    Dir[File.join(src,'*')].each do |f|
 
       @have_v4_support_lib = true if ( File.basename(f) =~ /support-v4/ )
 
       if File.extname(f) == '.aar'        
-        target = File.join(path,File.basename(f,'.aar'))
+        target = File.join(dst,File.basename(f,'.aar'))
 
         if !File.exist?( target )
           @logger.debug "Dependency artefact #{f} is AAR so will unzip it to #{target}"
@@ -111,20 +148,16 @@ class MavenDepsExtractor
           jni = File.join(target,'jni')
           classes = File.join(target,'classes.jar')
 
-          raise "ERROR: res directory does not exist for AAR package" if !File.directory?( res )
-          raise "ERROR: classes.jar does not exist for AAR package" if !File.exist?( classes )
-          raise "ERROR: AndroidManifest.xml does not exist for AAR package" if !File.exist?( manifest )
-
           @asset_dirs << assets if (File.directory?(assets) and !Dir[File.join(assets,'*')].empty? )
-          @manifests << manifest
-          @res_dirs << res if !Dir[File.join(res,'*')].empty?
+          @manifests << manifest if File.file?(manifest)
+          @res_dirs << res if (File.directory?(res) and !Dir[File.join(res,'*')].empty?)
           @jars += Dir[File.join(libs,'*.jar')]
-          @jars << classes
+          @jars << classes if File.file?(classes)
           @jni_libs += Dir[(File.join(jni,'**','*.so'))]
 
         end
       elsif File.extname(f) == '.jar'
-        target = File.join(path,File.basename(f))
+        target = File.join(dst,File.basename(f))
         if !File.exist?(target)
           mv(f,target) 
           @jars << target
@@ -132,7 +165,6 @@ class MavenDepsExtractor
       end        
     end
 
-    rm_r extract_dir
   end
 
   def maven_env
@@ -151,9 +183,9 @@ class MavenDepsExtractor
     argv.join(' ')
   end
 
-  def copy_dependency( dep, path )
+  def copy_dependencies( path )    
     pom = File.join( path, 'pom.xml')
-    generate_pom( dep, pom )
+    generate_pom(pom)
 
     cmd = dep_copy_cmd
     env = maven_env
@@ -172,71 +204,22 @@ class MavenDepsExtractor
     dep.split(':')
   end
 
-  def generate_pom(dep, path)
+  def generate_pom(path)
+    require 'erb'
 
-    @logger.debug "Generating POM file for #{dep} in #{path}"
+    @logger.info "Generating pom.xml for dependencies at #{path}"
 
-    dep_grp_id, dep_art_id, dep_ver = split_dependency( dep )
+    dependencies = @dependencies.values.flatten.map { |d| Hash[ ["grp_id","art_id","ver"].zip(split_dependency(d)) ] }
 
-    r1 = File.join($androidsdkpath,'extras','google','m2repository')
-    r2 = File.join($androidsdkpath,'extras','android','m2repository')
+    repos = [
+      File.join($androidsdkpath,'extras','google','m2repository'),
+      File.join($androidsdkpath,'extras','android','m2repository')
+    ]
 
-    pom =
-      "<project xmlns='http://maven.apache.org/POM/4.0.0'\n"\
-      "  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\n"\
-      "  xsi:schemaLocation='http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd'>\n"\
-      "  <modelVersion>4.0.0</modelVersion>\n"\
-      "  <groupId>com.rhomobile.rhodes</groupId>\n"\
-      "  <artifactId>deps-extractor</artifactId>\n"\
-      "  <version>1.0-SNAPSHOT</version>\n"\
-      "  <name>Maven Quick Start Archetype</name>\n"\
-      "  <url>http://maven.apache.org</url>\n"\
-      "  <dependencies>\n"\
-      "    <dependency>\n"\
-      "      <groupId>#{dep_grp_id}</groupId>\n"\
-      "      <artifactId>#{dep_art_id}</artifactId>\n"\
-      "      <version>#{dep_ver}</version>\n"\
-      "      <type>aar</type>\n"\
-      "    </dependency>\n"\
-      "  </dependencies>\n"\
-      "  <repositories>\n"\
-      "    <repository>\n"\
-      "      <id>repo1</id>\n"\
-      "      <name>android-maven-repo-1</name>\n"\
-      "      <url>file://#{r1}</url>\n"\
-      "    </repository>\n"\
-      "    <repository>\n"\
-      "      <id>repo2</id>\n"\
-      "      <name>android-maven-repo-2</name>\n"\
-      "      <url>file://#{r2}</url>\n"\
-      "    </repository>\n"\
-      "  </repositories>\n"\
-      "  <build>\n"\
-      "    <plugins>\n"\
-      "      <plugin>\n"\
-      "        <groupId>org.apache.maven.plugins</groupId>\n"\
-      "        <artifactId>maven-dependency-plugin</artifactId>\n"\
-      "        <version>2.10</version>\n"\
-      "        <executions>\n"\
-      "          <execution>\n"\
-      "            <id>unpack-dependencies</id>\n"\
-      "            <phase>package</phase>\n"\
-      "            <goals>\n"\
-      "              <goal>unpack-dependencies</goal>\n"\
-      "            </goals>\n"\
-      "            <configuration>\n"\
-      "              <!-- configure the plugin here -->\n"\
-      "              <outputDirectory>.</outputDirectory>\n"\
-      "            </configuration>\n"\
-      "          </execution>\n"\
-      "        </executions>\n"\
-      "      </plugin>\n"\
-      "    </plugins>\n"\
-      "  </build>\n"\
-      "</project>"
-
+    tpl = File.read(File.join(@rhoroot,'platform','android','build','pom.erb'))
+    erb = ERB.new tpl
     f = File.open( path,'w')
-    f.write( pom )
+    f.write(erb.result binding)
     f.close
   end
 
