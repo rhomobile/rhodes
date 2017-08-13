@@ -322,7 +322,8 @@
 #define HAVE_LCHOWN 1
 #define HAVE_LINK 1
 #define HAVE_LLABS 1
-#define HAVE_LOG2 1
+//RHO
+//#define HAVE_LOG2 1
 #define HAVE_LSTAT 1
 #define HAVE_MALLOC_USABLE_SIZE 1
 #define HAVE_MEMALIGN 1
