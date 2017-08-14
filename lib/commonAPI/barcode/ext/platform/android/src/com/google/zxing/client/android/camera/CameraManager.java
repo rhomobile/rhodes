@@ -339,4 +339,23 @@ public final class CameraManager {
         previewFormat + '/' + previewFormatString);
   }
 
+
+  public void setFlash(boolean useFlash){
+    if(useFlash){
+      Logger.I(TAG, "useFlash = true");
+    }else{
+      Logger.I(TAG, "useFlash = false");
+    }
+    if (camera != null){
+      Logger.I(TAG, "toggleFlashLight");
+      Parameters p = camera.getParameters();
+      if (useFlash){
+        p.setFlashMode(Parameters.FLASH_MODE_TORCH);
+      }else{
+        p.setFlashMode(Parameters.FLASH_MODE_OFF);
+      }
+      camera.setParameters(p); 
+    }
+  }
+
 }

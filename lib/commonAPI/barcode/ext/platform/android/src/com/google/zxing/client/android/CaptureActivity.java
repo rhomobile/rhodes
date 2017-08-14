@@ -121,7 +121,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   private static final String RETURN_URL_PARAM = "ret";
 
   private static final Set<ResultMetadataType> DISPLAYABLE_METADATA_TYPES;
-
+  private static boolean useFlash = false;
 
   static {
     DISPLAYABLE_METADATA_TYPES = new HashSet<ResultMetadataType>(5);
@@ -164,6 +164,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   private Button mCancelButton2 = null;
   private Button mRetakeButton = null;
   private Button mOKButton = null;
+  private Button mFlashButton = null;
   
   /**
    * When the beep has finished playing, rewind to queue up another one.
@@ -173,8 +174,6 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
       mediaPlayer.seekTo(0);
     }
   };
-
-
 
   ViewfinderView getViewfinderView() {
     return viewfinderView;
@@ -216,6 +215,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
     mCancelButton = (Button)findViewById(RhoExtManager.getResourceId("id", "cancel_button"));
     mRetakeButton = (Button)findViewById(RhoExtManager.getResourceId("id", "retake_button"));
     mOKButton = (Button)findViewById(RhoExtManager.getResourceId("id", "ok_button"));
+    mFlashButton = (Button)findViewById(RhoExtManager.getResourceId("id", "flash_button"));
     
     mCancelButton2.setOnClickListener( new OnClickListener() {
 		public void onClick(View v) {
@@ -235,8 +235,16 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
       Logger.I(LOGTAG, "onOK()");
 			onOK();
 		}});
+
+    mFlashButton.setOnClickListener( new OnClickListener() {
+    public void onClick(View v) {
+      Logger.I(LOGTAG, "CameraManager.get().setFlash()");
+      useFlash = !useFlash;
+      CameraManager.get().setFlash(useFlash);
+    }});
     
     mCancelButton2.setVisibility(View.VISIBLE);
+    mFlashButton.setVisibility(View.VISIBLE);
     
     showHelpOnFirstLaunch();
   }
@@ -249,6 +257,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   
   public void onRetake() {
       resetStatusView();
+      mFlashButton.setVisibility(View.VISIBLE);
 	  if (handler != null) {
         handler.sendEmptyMessage(RhoExtManager.getResourceId("id", "restart_preview"));
       }
@@ -449,9 +458,11 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
     contentsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
     
     mCancelButton2.setVisibility(View.GONE);
+    mFlashButton.setVisibility(View.GONE);
     mCancelButton.setVisibility(View.VISIBLE);
     mRetakeButton.setVisibility(View.VISIBLE);
     mOKButton.setVisibility(View.VISIBLE);
+
     
   }
 
@@ -504,9 +515,12 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
     }
   }
 
+
+
   private void initCamera(SurfaceHolder surfaceHolder) {
     try {
       CameraManager.get().openDriver(surfaceHolder, camera_index);
+      CameraManager.get().setFlash(useFlash);
     } catch (IOException ioe) {
       Log.w(TAG, ioe);
       return;
