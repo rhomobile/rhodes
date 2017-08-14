@@ -50,6 +50,7 @@
 #include "api_generator/MethodResult.h"
 #include "../QtLogView.h"
 #include <QMenuBar>
+#include <QApplication>
 #include <QWebEngineSettings>
 #include "QtWebEnginePage.h"
 #include "QtWebEngineView.h"
@@ -95,10 +96,6 @@ public:
     void toolbarAddAction(const QIcon & icon, const QString & text, const char* action, bool rightAlign = false);
     void toolbarAddSeparator(int width);
     void setToolbarStyle(bool border, QString background, int viewHeight);
-    // menu
-    void menuClear(void);
-    void menuAddAction(const QString & text, int item, bool enabled);
-    void menuAddSeparator(void);
     // tabbar
     void tabbarInitialize(void);
     void tabbarRemoveAllTabs(bool restore);
@@ -119,6 +116,7 @@ private:
     void setUpWebPage(QWebEnginePage *page);
     void doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button);
     void internalSetProxy();
+    QMenuBar* createMenu();
 
 
 private:
@@ -143,6 +141,7 @@ private:
     QVBoxLayout * verticalLayout;
     QMenu * menuMain;
     QWebEngineCookieStore * cookieStore;
+    void* currentThreadId;
 
 private slots:
     void on_webView_urlChanged(QUrl );
@@ -186,6 +185,13 @@ public slots:
     void lockSize(int locked);
     void setTitle(const char* title);
     void slotNavigate(QString url, int index);
+
+    // menu
+    void menuClear(void);
+    void menuAddAction(const QString & text, int item, bool enabled);
+    void menuAddSeparator(void);
+
+
 signals:
     void navigate(QString url, int index);
 protected:

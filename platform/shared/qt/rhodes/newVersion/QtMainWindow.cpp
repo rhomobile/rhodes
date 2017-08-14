@@ -69,10 +69,54 @@ extern "C" {
 using namespace rho;
 using namespace rho::common;
 
+
+QMenuBar* QtMainWindow::createMenu() {
+
+    QMenuBar * menuBar = new QMenuBar(this);
+
+
+    QMenu *mMain = new QMenu("Main", this);
+    //mMain->addAction("Exit", this, SLOT(on_actionExit_triggered()));
+    mMain->addAction("Exlt", this, SLOT(on_actionExit_triggered()));
+    menuBar->addMenu(mMain);
+    //if (menuMain == NULL) {
+        menuMain = mMain;
+    //}
+
+    #ifndef OS_WINDOWS_DESKTOP
+    QMenu * menuSimulate = new QMenu("Simulate", this);
+    menuSimulate->addAction("Back", this, SLOT(on_actionBack_triggered()));
+    menuSimulate->addSeparator();
+    menuSimulate->addAction("Rotate 90° Clockwise", this, SLOT(on_actionRotateRight_triggered()));
+    menuSimulate->addAction("Rotate 90° Countr-clockwise", this, SLOT(on_actionRotateLeft_triggered()));
+    menuSimulate->addAction("Rotate 180°", this, SLOT(on_actionRotate180_triggered()));
+    menuBar->addMenu(menuSimulate);
+
+    #else
+    QMenu * menuSimulate = new QMenu("Navigate", this);
+    menuSimulate->addAction("Back", this, SLOT(on_actionBack_triggered()));
+    menuBar->addMenu(menuSimulate);
+    #endif
+
+
+    QMenu * menuHelp = new QMenu("Help", this);
+    //menuHelp->addAction("About", this, SLOT(on_actionAbout_triggered()));
+    menuHelp->addAction("Info", this, SLOT(on_actionAbout_triggered()));
+    menuBar->addMenu(menuHelp);
+
+    return menuBar;
+}
+
+
 QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCallback(NULL),
     cur_tbrp(0), m_alertDialog(0), m_LogicalDpiX(0), m_LogicalDpiY(0), firstShow(true), m_bFirstLoad(true),
     toolBarSeparatorWidth(0), m_proxy(QNetworkProxy(QNetworkProxy::DefaultProxy)), m_logView(0)
 {
+    menuMain = NULL;
+    createMenu();
+
+currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId();
+
 #if !defined(RHODES_EMULATOR)
     QPixmap icon(QCoreApplication::applicationDirPath().append(QDir::separator()).append("icon.png"));
     QApplication::setWindowIcon(icon);
@@ -126,30 +170,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     QObject::connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(on_webView_urlChanged(QUrl)));
     verticalLayout->addWidget(webView);
 
-    QMenuBar * menuBar = new QMenuBar(this);
-    setMenuBar(menuBar);
 
-    menuMain = new QMenu("Main", this);
-    menuMain->addAction("Exit", this, SLOT(on_actionExit_triggered()));
-    menuBar->addMenu(menuMain);
-
-    #ifndef OS_WINDOWS_DESKTOP
-    QMenu * menuSimulate = new QMenu("Simulate", this);
-    menuSimulate->addAction("Back", this, SLOT(on_actionBack_triggered()));
-    menuSimulate->addSeparator();
-    menuSimulate->addAction("Rotate 90° Clockwise", this, SLOT(on_actionRotateRight_triggered()));
-    menuSimulate->addAction("Rotate 90° Countr-clockwise", this, SLOT(on_actionRotateLeft_triggered()));
-    menuSimulate->addAction("Rotate 180°", this, SLOT(on_actionRotate180_triggered()));
-    menuBar->addMenu(menuSimulate);
-    #else
-    QMenu * menuSimulate = new QMenu("Navigate", this);
-    menuSimulate->addAction("Back", this, SLOT(on_actionBack_triggered()));
-    menuBar->addMenu(menuSimulate);
-    #endif
-
-    QMenu * menuHelp = new QMenu("Help");
-    menuHelp->addAction("About", this, SLOT(on_actionAbout_triggered()));
-    menuBar->addMenu(menuHelp);
 
     connect(this, SIGNAL(navigate(QString,int)), this,
             SLOT(slotNavigate(QString,int)), Qt::QueuedConnection);
@@ -213,7 +234,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
         QWebEngineViewSelectionSuppressor* suppressor = new QWebEngineViewSelectionSuppressor(webView);
     }
 
-
+    setMenuBar(createMenu());
 }
 
 QtMainWindow::~QtMainWindow()
@@ -832,22 +853,54 @@ void QtMainWindow::setToolbarStyle(bool border, QString background, int viewHeig
 
 void QtMainWindow::menuAddAction(const QString & text, int item, bool enabled)
 {
+    /*
+    if (QThread::currentThreadId() != currentThreadId){
+        QMetaObject::invokeMethod(this, "menuAddAction",  Qt::QueuedConnection, QGenericArgument(nullptr),
+                                  Q_ARG(QString, text),
+                                  Q_ARG(int, item),
+                                  Q_ARG(bool, enabled)
+                                  );
+        return;
+    }
+    */
     QAction* qAction = new QAction(text, toolBar);
     qAction->setData(QVariant(item));
     qAction->setEnabled(enabled);
     QObject::connect(qAction, SIGNAL(triggered(bool)), this, SLOT(menuActionEvent(bool)) );
     menuMain->addAction(qAction);
+    menuMain->repaint();
+    menuBar()->repaint();
+    //QApplication::processEvents();
 }
+
 
 void QtMainWindow::menuClear(void)
 {
+    /*
+    if (QThread::currentThreadId() != currentThreadId){
+        QMetaObject::invokeMethod(this, "menuClear",  Qt::QueuedConnection, QGenericArgument(nullptr));
+        return;
+    }
+    */
     menuMain->clear();
+    //menuMain->repaint();
+    //menuBar()->repaint();
 }
 
 void QtMainWindow::menuAddSeparator()
 {
+    /*
+    if (QThread::currentThreadId() != currentThreadId){
+        QMetaObject::invokeMethod(this, "menuAddSeparator",  Qt::QueuedConnection, QGenericArgument(nullptr));
+        return;
+    }
+    */
+    //QApplication::processEvents();
     menuMain->addSeparator();
+    //menuMain->repaint();
+    //menuBar()->repaint();
 }
+
 
 void QtMainWindow::menuActionEvent(bool checked)
 {

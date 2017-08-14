@@ -30,13 +30,22 @@
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QTextEdit>
+#include <QTimer>
+#include <QString>
+#include <QQueue>
+#include <QApplication>
+#include <QMutex>
+#include <QMutexLocker>
 #include "logging/RhoLogConf.h"
 
 class QtLogView : public QWidget, public rho::ILogSink
 {
     Q_OBJECT
     QTextEdit* logText;
-
+private:
+    QQueue<QString> messagesKeeper;
+    QTimer timer;
+    QMutex mutex;
 public:
     explicit QtLogView(QWidget *parent = 0, Qt::WindowFlags f = 0): QWidget(parent, f)
     {
@@ -46,15 +55,19 @@ public:
         QHBoxLayout *layout = new QHBoxLayout;
         layout->addWidget(logText);
         this->setLayout(layout);
+        connect(&timer, SIGNAL(timeout()), this, SLOT(processLog()));
+        timer.start(100);
     }
 
     //~QtLogView();
 
     virtual void writeLogMessage( rho::String& strMsg )
     {
+        QMutexLocker locker(&mutex);
         const char* ws = " \t\n\r\f\v";
         strMsg.erase(strMsg.find_last_not_of(ws) + 1);
-        logText->append(QString::fromStdString(strMsg));
+        //logText->append(QString::fromStdString(strMsg));
+        messagesKeeper.enqueue(QString::fromStdString(strMsg));
     }
 
     virtual int getCurPos()
@@ -148,6 +161,15 @@ public:
             #endif	
                 return rv;
       } 
+public slots:
+    void processLog(){
+        while(!messagesKeeper.isEmpty()){
+            QMutexLocker locker(&mutex);
+            logText->append(messagesKeeper.dequeue());
+        }
+        //QApplication::processEvents();
+
+    }
 };
 
 #endif // QTLOGVIEW_H

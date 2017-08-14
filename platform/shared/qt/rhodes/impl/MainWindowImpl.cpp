@@ -117,7 +117,13 @@ void CMainWindow::createCustomMenu(void)
     for ( unsigned int i = 0; i < m_arAppMenuItems.size(); i++)  {
         CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
         if (oItem.m_eType == CAppMenuItem::emtSeparator) { menuAddSeparator();}
-        else {menuAddAction((oItem.m_strLink == "close" ? "Exit" : oItem.m_strLabel.c_str()), i, oItem.m_isEnable);}
+        else {
+#if defined(OS_MACOSX)
+            menuAddAction((oItem.m_strLink == "close" ? "Close" : oItem.m_strLabel.c_str()), i, oItem.m_isEnable);
+#else
+            menuAddAction((oItem.m_strLink == "close" ? "Exit" : oItem.m_strLabel.c_str()), i, oItem.m_isEnable);
+#endif
+        }
     }
 }
 
