@@ -13,7 +13,11 @@
 #include <QLocale>
 #include <QDesktopServices>
 #include <QUrl>
-
+#include <QString>
+#include <QSet>
+#include <QSettings>
+#include <QStringList>
+#include <QDebug>
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
 
@@ -179,7 +183,31 @@ void CSystemImpl::applicationInstall( const rho::String& applicationUrl, CMethod
 
 void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult)
 {
-	oResult.set(false);
+#ifdef OS_WINDOWS_DESKTOP
+    QString appName = QString::fromStdString(applicationName);
+
+    QSet<QString> setOfNames;
+    QStringList roots;
+    roots.append("HKEY_LOCAL_MACHINE");
+    roots.append("HKEY_CURRENT_USER");
+    foreach (QString root, roots) {
+        QSettings settings(root + "\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall", QSettings::NativeFormat);
+        foreach (QString key, settings.allKeys()) {
+            if (key.endsWith("DisplayName") || key.endsWith("ApplicationName") || key.endsWith("StartMenuGroup")){
+                setOfNames << settings.value(key, "").toString();
+            }
+        }
+    }
+    foreach (QString val, setOfNames) {
+        if (val == appName){
+            oResult.set(true);
+            qDebug() << "Application " + appName + " installed";
+            return;
+        }
+    }
+    qDebug() << "Application " + appName + " not installed";
+#endif
+    oResult.set(false);
 }
 
 void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMethodResult& oResult)

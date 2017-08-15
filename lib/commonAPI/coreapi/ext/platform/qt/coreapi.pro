@@ -1,5 +1,3 @@
-QT -= core
-
 TARGET = coreapi
 TEMPLATE = lib
 
@@ -14,12 +12,14 @@ INCLUDEPATH += ../../shared\
 ../../../../../../platform/shared
 
 macx {
+  QT -= core
   DESTDIR = ../../../../../../platform/osx/bin/extensions
   OBJECTS_DIR = ../../../../../../platform/osx/bin/extensions/coreapi
   INCLUDEPATH += ../../../../../../platform/shared/ruby/iphone
   SOURCES += src/CNetworkDetect.cpp
 }
 win32 {
+  QT += core
   DESTDIR = ../../../../../../platform/win32/bin/extensions
   OBJECTS_DIR = ../../../../../../platform/win32/bin/extensions/coreapi
   DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE

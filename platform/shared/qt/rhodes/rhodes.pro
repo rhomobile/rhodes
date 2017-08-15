@@ -50,7 +50,7 @@ win32 {
   HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
 ../../../wm/rhodes/stdafx.h
   SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp\
-../../../wm/rhodes/rho/rubyext/SystemImpl.cpp\
+../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp\
 ../../../wm/rhodes/rho/common/ExtManager.cpp
   RESOURCES += resources/simulator.qrc
   INCLUDEPATH += ../../../wm/rhodes\

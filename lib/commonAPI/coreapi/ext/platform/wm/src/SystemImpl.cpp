@@ -44,7 +44,6 @@ GetDeviceUniqueID(LPBYTE pbApplicationData,
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
 
-
 extern "C"
 {
 void rho_sys_bring_to_front();
@@ -619,6 +618,7 @@ void CSystemImpl::applicationInstall( const rho::String& applicationUrl, CMethod
             oResult.setError("System.applicationInstall failed for: " + applicationUrl);
 		}
 	}
+
 #else
     rho_wmsys_run_appW( convertToStringW(applicationUrl).c_str(), 0 );
 
@@ -666,10 +666,10 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
             DWORD dw = 0;
             res = oKey.QueryDWORDValue(L"Instl", dw);
             bRet = res == ERROR_SUCCESS && dw > 0;
-	    }
+        }
     #endif
 	}
-#if defined(OS_WINCE)
+    #if defined(OS_WINCE)
 	else
 	{
         CFilePath oPath( applicationName );
@@ -709,7 +709,7 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
         if ( wszOutput )
             free( wszOutput );
 	}
-#endif
+    #endif
     oResult.set(bRet);
 }
 
