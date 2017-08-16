@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.SurfaceHolder;
+import android.database.Cursor;
 
 import com.rhomobile.rhodes.Base64;
 import com.rhomobile.rhodes.Logger;
@@ -53,6 +54,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
     String mCurrentPhotoPath = null;
     public static String userFilePath = null;
     private ContentValues values = null;
+    private File storageDir = null;
 
     public static boolean CURRENT_SCREEN_AUTO_ROTATE_MODE;
     public static boolean CURRENT_FULL_SCREEN_MODE;
@@ -136,6 +138,8 @@ public class CameraObject extends CameraBase implements ICameraObject {
         }
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+            Logger.T(TAG, "onPictureTaken: entering the function"); 
+
             Intent intent = new Intent();
             OutputStream stream = null;
             try {
@@ -458,6 +462,20 @@ public class CameraObject extends CameraBase implements ICameraObject {
         //getPropertiesMap().put("desiredHeight", "480");
         getPropertiesMap().put("desiredWidth", "0");
         getPropertiesMap().put("desiredHeight", "0");
+
+        storageDir = new File(Environment.getExternalStorageDirectory(), "RhoImages");
+        createRhoCacheFolder();
+        
+    }
+
+    public void createRhoCacheFolder(){
+        storageDir.mkdirs();
+        try{
+            //File nomediaFile = new File(storageDir, ".nomedia");
+            //if (!nomediaFile.exists()) {nomediaFile.createNewFile();}
+        }catch (Exception e){
+
+        }
     }
 
     @Override
@@ -635,43 +653,63 @@ public class CameraObject extends CameraBase implements ICameraObject {
 
             String outputFormat = actualPropertyMap.get("outputFormat");
             String filePath = null;
-            if(!actualPropertyMap.containsKey("fileName")){
-                filePath = "/sdcard/DCIM/Camera/IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())) + ".jpg";
-            }
-            else{
-                filePath = actualPropertyMap.get("fileName");
-            }
+
+            String fdir = "/sdcard/DCIM/Camera/";
+            fdir = storageDir.getAbsolutePath();
+            String fname = actualPropertyMap.get("fileName");
+
+            //if(!actualPropertyMap.containsKey("fileName")){
+                fname = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
+            //}
+
+            filePath = fdir + "/" + fname + ".jpg";
+
+            /*
+            //TODO: in all cases it is image, so think, why we need this parameter
             if (outputFormat.equalsIgnoreCase("image")) {
                 filePath = actualPropertyMap.get("fileName") + ".jpg";
                 Logger.T(TAG, "outputFormat: " + outputFormat + ", path: " + filePath);
-            } else
-            if (outputFormat.equalsIgnoreCase("dataUri")) {
+            } else if (outputFormat.equalsIgnoreCase("dataUri")) {
                 Logger.T(TAG, "outputFormat: " + outputFormat);
             } else {
                 throw new RuntimeException("Unknown 'outputFormat' value: " + outputFormat);
             }
+            */
+ 
+            /*Logger.T(TAG, "Output file real path from URI: " + getRealPathFromURI(RhodesActivity.getContext(), 
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI));*/
+            /*File image = null;
+            try{
+                image = File.createTempFile(fname, ".jpg", new File(storageDir));
+            }catch(IOException e){
+
+            }*/
 
             Intent intent = null;
             if (Boolean.parseBoolean(actualPropertyMap.get("useSystemViewfinder"))) {
                 intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
                 if (outputFormat.equalsIgnoreCase("image")) {
-                    values = new ContentValues();
-                    fileUri = RhodesActivity.getContext().getContentResolver().insert(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);                    
+                    ContentValues values = new ContentValues();
+                    if (!Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) {
+                        values.put( MediaStore.Images.ImageColumns.DATA, filePath);
+                        Logger.T(TAG, "Output filePath: " + filePath);
+                    }
+
+                    fileUri = RhodesActivity.getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values); 
+
                     actualPropertyMap.put("captureUri", fileUri.toString());
                     propertyMap.put("dataURI", "");
+                    Logger.T(TAG, "Output fileUri: " + fileUri.toString());
+                    
                     // intent is null with MediaStore.EXTRA_OUTPUT so adding fileuri to map and get it with same key
                     // if instead of MediaStore.EXTRA_OUTPUT any other key is used then the bitmap is null though the file is getting created
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-                } else
-                if (outputFormat.equalsIgnoreCase("dataUri")) {
-
-                }
+                } else if (outputFormat.equalsIgnoreCase("dataUri")) {}
             } else {
                 intent = new Intent(ContextFactory.getUiContext(), CameraActivity.class);
                 intent.putExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID", getId());
             }
+
             ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
             ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setActualPropertyMap(actualPropertyMap);
 
@@ -681,6 +719,23 @@ public class CameraObject extends CameraBase implements ICameraObject {
             result.setError(e.getMessage());
         }
     }
+
+
+
+    /*public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try { 
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }*/
 
     protected String getTemporaryPath(String targetPath) {
         if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
