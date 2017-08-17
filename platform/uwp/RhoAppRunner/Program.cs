@@ -117,12 +117,20 @@ namespace RhoAppRunner
             }            
 
             Console.WriteLine("Installing sample APPX to Windows Phone Emulator/Device...");
-            app = UWPDevice.InstallApplication(appID, appID, args[1], args[2], args[3]);
-            Console.WriteLine("Sample APPX installed to Windows Phone Emulator...");
+            try
+            {
+                app = UWPDevice.InstallApplication(appID, appID, args[1], args[2], args[3]);
+                Console.WriteLine("Sample APPX installed to Windows Phone Emulator...");
 
-            Console.WriteLine("Launching sample app on Windows Phone Emulator...");
-            app.Launch();
-            Console.WriteLine("Launched sample app on Windows Phone Emulator...");
+                Console.WriteLine("Launching sample app on Windows Phone Emulator...");
+                app.Launch();
+                Console.WriteLine("Launched sample app on Windows Phone Emulator...");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Launching error: " + e.Message);
+            }
+
             return 0;
         }
     }

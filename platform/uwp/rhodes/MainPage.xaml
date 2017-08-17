@@ -13,13 +13,10 @@
     SupportedOrientations="PortraitOrLandscape" Orientation="Portrait" 
     shell:SystemTray.IsVisible="True" BackKeyPress="PhoneApplicationPage_BackKeyPress" OrientationChanged="PhoneApplicationPage_OrientationChanged" SizeChanged="PhoneApplicationPage_SizeChanged" Loaded="PhoneApplicationPage_Loaded"  -->
 
-    <Page.TopAppBar>
-        <CommandBar x:Name="TopCommandBar">
-            <CommandBar.PrimaryCommands>
-                
-            </CommandBar.PrimaryCommands>
+    <!--   <Page.TopAppBar>
+        <CommandBar x:Name="TopCommandBar" Height="Auto">
         </CommandBar>
-    </Page.TopAppBar>
+    </Page.TopAppBar> -->
 
 
     <Grid x:Name="LayoutRoot" Background="Transparent">
@@ -43,4 +40,11 @@
             <WebView x:Name="RhodesWebBrowser" Source="about:blank" Height="Auto" Width="Auto" SizeChanged="RhodesWebBrowser_SizeChanged" NavigationCompleted="RhodesWebBrowser_Navigated" NavigationFailed="RhodesWebBrowser_NavigationFailed" NavigationStarting="webViewNavigationStarting" LoadCompleted="RhodesWebBrowser_LoadCompleted" Loaded="RhodesWebBrowser_Loaded" Unloaded="RhodesWebBrowser_Unloaded"/>
         </Grid>
     </Grid>
+
+    <Page.BottomAppBar>
+        <CommandBar x:Name="BottomCommandBar" Height="Auto">
+        </CommandBar>
+    </Page.BottomAppBar>
+
+
 </Page>

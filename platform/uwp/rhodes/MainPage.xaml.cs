@@ -190,13 +190,21 @@ namespace rhodes
         {
             return DEVICE_INFO.SystemProductName.Contains("Emulator") == true ? true : false;
         }
-        public void ApplicationBarEnable(bool Visible)
+
+        /*private CommandBar getTopAppBar()
         {
-            getAppBar().IsOpen = Visible;
+            return TopCommandBar;
+        }*/
+
+        private CommandBar getBottomAppBar()
+        {
+            return BottomCommandBar;
+            //return BottomAppBar.Content as CommandBar;
         }
-        public bool ApplicationBarStatus()
+
+        CommandBar getAppBar()
         {
-            return getAppBar().IsOpen;
+            return getBottomAppBar();
         }
 
         private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
@@ -292,9 +300,11 @@ namespace rhodes
             RhodesWebBrowser.Settings.IsIndexedDBEnabled = true;
 
 
-            if ((TopAppBar == null) || (TopAppBar.Content == null)) {
+            /*if ((TopAppBar == null) || (TopAppBar.Content == null)) {
+                deb("Creating commandBar");
                 CommandBar commandBar = new CommandBar();
                 if (this.TopAppBar == null) {
+                    deb("Creating TopAppBar"); 
                     this.TopAppBar = new AppBar();
                     this.TopAppBar.IsOpen = false;
                     this.TopAppBar.IsSticky = false;
@@ -302,9 +312,25 @@ namespace rhodes
                 TopAppBar.Content = commandBar;
             }
             TopAppBar.Visibility = Visibility.Collapsed;
-            
-            
-            try{
+
+            if ((BottomAppBar == null) || (BottomAppBar.Content == null))
+            {
+                deb("Creating commandBar");
+                CommandBar commandBar = new CommandBar();
+                if (this.BottomAppBar == null)
+                {
+                    deb("Creating BottomAppBar");
+                    this.BottomAppBar = new AppBar();
+                    this.BottomAppBar.IsOpen = true;
+                    this.BottomAppBar.IsSticky = true;
+                }
+                BottomAppBar.Content = commandBar;
+            }
+            //BottomAppBar.Visibility = Visibility.Collapsed;*/
+            getAppBar().Visibility = Visibility.Collapsed;
+
+            try
+            {
                 // initialize C# extensions factories
                 deb("InitializeExtensions()");
                 
@@ -734,10 +760,7 @@ namespace rhodes
             // TODO: webview size changed event handler ?
         }
 
-        private CommandBar getAppBar()
-        {
-            return TopAppBar.Content as CommandBar;
-        }
+
 
         private void updateAppBarModeAndVisibility(bool autoToolbarVisibility = true)
         {
@@ -747,7 +770,8 @@ namespace rhodes
             }
             if (autoToolbarVisibility) { deb("Tool bar visible"); }
             else { deb("Tool bar invisible"); }
-            getAppBar().Visibility = autoToolbarVisibility ? Visibility.Visible : Visibility.Collapsed;
+            //getAppBar().Visibility = autoToolbarVisibility ? Visibility.Visible : Visibility.Collapsed;
+            getAppBar().Visibility = Visibility.Visible;
             //getAppBar().IsSticky = autoToolbarVisibility ? 
             if (autoToolbarVisibility && (getAppBar().PrimaryCommands.Count > 0))
             {
@@ -857,7 +881,7 @@ namespace rhodes
         public void toolbarAddAction(string icon, string text, string action)
         {
             if (!isUIThread) { InvokeInUIThread(delegate () { toolbarAddAction(icon, text, action); }); return; }
-            deb("Adding action to toolbar");
+            deb("Adding action to toolbar: " + action + " ; icon: " + icon);
             getAppBar().Visibility = Visibility.Visible;
             if ((action == null) || (action.Length == 0))
                 return;
@@ -880,6 +904,7 @@ namespace rhodes
             }
             if (buttonsCount < 4)
             {
+                
                 AppBarButton toolbarButton = new AppBarButton();
                 BitmapIcon bitmapIcon = new BitmapIcon();
                 try
@@ -893,6 +918,7 @@ namespace rhodes
                     deb("Add ToolBar exception: " + e.Message);
                 }
                 toolbarButton.Icon = bitmapIcon;
+                deb("Real icon Uri: " + bitmapIcon.UriSource.AbsolutePath);
                 toolbarButton.Label = text;
                 getAppBar().PrimaryCommands.Add(toolbarButton);
                 toolbarButton.Click += new RoutedEventHandler(toolbarButton_Click);
@@ -953,7 +979,7 @@ namespace rhodes
         public void menuAddAction(string label, int item)
         {
             if (!isUIThread) { InvokeInUIThread(delegate() { menuAddAction(label, item); }); return; }
-            deb("Adding action to menu");
+            deb("Adding action to menu " + label);
             getAppBar().Visibility = Visibility.Visible;
             AppBarButton menuItem = new AppBarButton();
             menuItem.Label = label;
