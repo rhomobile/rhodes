@@ -21,7 +21,7 @@
 #define fpfileno fileno
 #define fpmkdir mkdir
 #endif
-
+#include "logging/RhoLog.h"
 
 #ifdef ZIP_STD
 #include <stdio.h>
@@ -3930,9 +3930,9 @@ class TUnzip
   ZRESULT Close();
 };
 
-
 ZRESULT TUnzip::Open(void *z,unsigned int len,DWORD flags)
-{ if (uf!=0 || currentfile!=-1) return ZR_NOTINITED;
+{
+  if (uf!=0 || currentfile!=-1) return ZR_NOTINITED;
   //
 #ifdef ZIP_STD
 //  getcwd(rootdir,UNZIP_MAX_PATH-1);
@@ -4311,14 +4311,11 @@ typedef struct
 } TUnzipHandleData;
 
 HZIP OpenZipInternal(void *z,unsigned int len,DWORD flags, const char *password)
-{ TUnzip *unz = new TUnzip(password);
+{ 
+  TUnzip *unz = new TUnzip(password);
   lasterrorU = unz->Open(z,len,flags);
   if (lasterrorU!=ZR_OK) {delete unz; return 0;}
-#ifndef _UWP_LIB
-  TUnzipHandleData *han;// = new TUnzipHandleData;
-#else
   TUnzipHandleData *han = new TUnzipHandleData;
-#endif
   han->flag=1; han->unz=unz; return (HZIP)han;
 }
 HZIP OpenZipHandle(HANDLE h, const char *password) {return OpenZipInternal((void*)h,0,ZIP_HANDLE,password);}
