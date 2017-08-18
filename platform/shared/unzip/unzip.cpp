@@ -21,7 +21,6 @@
 #define fpfileno fileno
 #define fpmkdir mkdir
 #endif
-#include "logging/RhoLog.h"
 
 #ifdef ZIP_STD
 #include <stdio.h>
