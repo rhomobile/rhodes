@@ -336,7 +336,8 @@
 #define HAVE_ATAN2L 1
 #define HAVE_ATAN2F 1
 #define HAVE_CHROOT 1
-#define HAVE_CLOCK_GETTIME 1
+//RHO - support iOS 9 and older
+//#define HAVE_CLOCK_GETTIME 1
 #define HAVE_COSH 1
 #define HAVE_DIRFD 1
 #define HAVE_DLOPEN 1
