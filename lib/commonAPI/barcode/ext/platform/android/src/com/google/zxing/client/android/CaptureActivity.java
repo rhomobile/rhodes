@@ -78,6 +78,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.List;
 
 /**
  * The barcode reader activity itself. This is loosely based on the CameraPreview
@@ -375,6 +376,26 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   }
 
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    Logger.I(LOGTAG, "surfaceChanged() " + String.valueOf(width) + " " + String.valueOf(height));
+    /*Camera camera = CameraManager.get().getCamera();
+    if (camera == null) return;
+    Logger.I(LOGTAG, "surfaceChanged() camera != null");
+
+    Camera.Parameters parameters = camera.getParameters();
+
+    List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
+    Camera.Size bestDimens = null;
+    Logger.I(LOGTAG, "surfaceChanged() trying to find best of dimens");
+    for(Camera.Size dimens : sizes){
+      Log.i(LOGTAG, "surfaceChanged(): Supported Size: " + dimens.width + "height : " + dimens.height);
+        if(dimens.width  <= 1024 && dimens.height <= 768){
+            if (bestDimens == null || (dimens.width > bestDimens.width && dimens.height > bestDimens.height)) {
+                bestDimens = dimens;
+            }
+        }
+    }
+    parameters.setPictureSize(bestDimens.width, bestDimens.height);
+    camera.setParameters(parameters);*/  
 
   }
 
@@ -387,6 +408,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   public void handleDecode(Result rawResult, Bitmap barcode) {
     inactivityTimer.onActivity();
     lastResult = rawResult;
+    Logger.I(LOGTAG, "handleDecode()");
     //historyManager.addHistoryItem(rawResult);
     if (barcode == null) {
       // This is from history -- no saved barcode

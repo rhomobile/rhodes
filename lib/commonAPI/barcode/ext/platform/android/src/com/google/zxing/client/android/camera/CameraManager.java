@@ -19,6 +19,7 @@ package com.google.zxing.client.android.camera;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
@@ -28,6 +29,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.SurfaceHolder;
+
 import com.google.zxing.client.android.PlanarYUVLuminanceSource;
 import com.rhomobile.rhodes.Logger;
 
@@ -46,8 +48,8 @@ public final class CameraManager {
 
   private static final int MIN_FRAME_WIDTH = 240;
   private static final int MIN_FRAME_HEIGHT = 240;
-  private static final int MAX_FRAME_WIDTH = 480 * 4;
-  private static final int MAX_FRAME_HEIGHT = 360 * 4;
+  private static final int MAX_FRAME_WIDTH = 1920 / 8 * 5;
+  private static final int MAX_FRAME_HEIGHT = 1080 / 8 * 5;
 
   private static CameraManager cameraManager;
 
@@ -88,6 +90,10 @@ public final class CameraManager {
     if (cameraManager == null) {
       cameraManager = new CameraManager(context);
     }
+  }
+
+  public Camera getCamera(){
+      return camera;
   }
 
   /**
@@ -138,7 +144,13 @@ public final class CameraManager {
       if (camera == null) {
         throw new IOException();
       }
-      
+      try{
+        Parameters p = camera.getParameters();
+        p.setPreviewFormat(ImageFormat.NV21);
+        camera.setParameters(p);
+      }catch(Exception e){
+
+      }
       //Parameters p = camera.getParameters();
       //FlashlightManager.setFlashModeInStart(p.getFlashMode() != Parameters.FLASH_MODE_OFF);
 
