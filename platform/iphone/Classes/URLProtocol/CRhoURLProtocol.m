@@ -148,50 +148,31 @@ int on_http_cb(http_parser* parser) { return 0; }
         RAWTRACE2("$NetRequestProcess$ CRhoURLProtocol %s :: startLoadingInThread BEGIN: { %s }", [self selfIDstring], [CRhoURLProtocol requestInfo:[self request]]);
     }
     NSURL* theUrl = [[self request] URL];
-    
-    
-    if ([[theUrl path] isEqualToString:@"/!__rhoNativeApi"]) {
-        if (is_net_trace()) {
-            RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading URL has !__rhoNativeApi", [self selfIDstring]);
-        }
-        NSString* jsonRequestTest = [[self request] valueForHTTPHeaderField:@"__rhoNativeApiCall"];
-        if (jsonRequestTest != nil) {
-            NSString* responseStr = [CJSEntryPoint js_entry_point:jsonRequestTest];
-            if (responseStr != nil) {
-                //NSLog(@"$$$ send responce for[%@:%@] = [%@]", [theUrl absoluteString], jsonRequestTest, responseStr);
-                [self sendResponseWithResponseCode:200 data:[responseStr dataUsingEncoding:NSUTF8StringEncoding]];
-                if (is_net_trace()) {
-                    RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
-                }
-                return;
-            }
-        }
-        
-    }
+
 #if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
     if ([theUrl.scheme isEqualToString:@"file"]) {
         NSString* rho_path = [NSString stringWithUTF8String:rho_native_rhopath()];
         NSString* str_url = [theUrl path];
         NSString* final_path = [rho_path stringByAppendingString:@"apps/"];
-        
+
         if ([str_url hasPrefix:final_path]) {
             final_path = str_url;
         }
         else {
             final_path = [final_path stringByAppendingString:str_url];
         }
-        
+
         if ([[NSFileManager defaultManager] isReadableFileAtPath:final_path]) {
-        
+
             NSData* data = [NSData dataWithContentsOfFile:final_path];
-            
+
             CRhoURLResponse* response =
             [[CRhoURLResponse alloc] initWithURL:[[self request] URL]
                                         MIMEType:@"text/plain"
                            expectedContentLength:[data length]
                                 textEncodingName:@"UTF-8"];
             response.statusCode = 200;
-            
+
             if (!self.isStopped) {
                 [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
                 if (data != nil) {
@@ -199,7 +180,7 @@ int on_http_cb(http_parser* parser) { return 0; }
                 }
                 [[self client] URLProtocolDidFinishLoading:self];
             }
-            
+
             return;
         }
     }
@@ -340,7 +321,28 @@ int on_http_cb(http_parser* parser) { return 0; }
     if (is_net_trace()) {
         RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading()", [self selfIDstring]);
     }
-    
+
+    NSURL* theUrl = [[self request] URL];
+
+
+    if ([[theUrl path] isEqualToString:@"/!__rhoNativeApi"]) {
+        if (is_net_trace()) {
+            RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading URL has !__rhoNativeApi", [self selfIDstring]);
+        }
+        NSString* jsonRequestTest = [[self request] valueForHTTPHeaderField:@"__rhoNativeApiCall"];
+        if (jsonRequestTest != nil) {
+            NSString* responseStr = [CJSEntryPoint js_entry_point:jsonRequestTest];
+            if (responseStr != nil) {
+                [self sendResponseWithResponseCode:200 data:[responseStr dataUsingEncoding:NSUTF8StringEncoding]];
+                if (is_net_trace()) {
+                    RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
+                }
+                return;
+            }
+        }
+
+    }
+
     dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 ), ^{
         [self startLoadingInThread];
     });
