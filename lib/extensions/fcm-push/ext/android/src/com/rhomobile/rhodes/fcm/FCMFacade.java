@@ -49,6 +49,7 @@ import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 
 public final class FCMFacade {
     private static final String TAG = FCMFacade.class.getSimpleName();
+    public static final FCMListener listener = FCMListener.getInstance();
     
     static final String FCM_PUSH_CLIENT = "fcm";
     static String clientToken = "";
@@ -117,21 +118,7 @@ public final class FCMFacade {
   
         refreshToken();  
 
-        RhoExtManager.getImplementationInstance().addRhoListener(
-        new AbstractRhoListener(){
-                @Override
-                public void onResume(RhodesActivity activity) { 
-                     Logger.W("fcm", "FCM: onResume");
-                     FCMIntentService.tryToHandleIntent();
-                }
-
-                @Override
-                public void onCreateApplication(IRhoExtManager extManager) {
-                    Logger.W("fcm", "FCM: onCreateApplication");
-                }
-            }
-        );
-        FCMIntentService.tryToHandleIntent();
+        
 
     }
     public static void refreshToken(){

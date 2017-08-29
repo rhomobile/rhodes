@@ -50,10 +50,12 @@ import org.json.JSONObject;
 public class FCMIntentService extends FirebaseMessagingService {
 
     private static final String TAG = FCMIntentService.class.getSimpleName();
+    public static final FCMListener listener = FCMListener.getInstance();
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        savedIntent = null;
+        savedIntents.remove(remoteMessage.getMessageId());
+
         Logger.W(TAG, "FCM: onMessageReceived()");
         Map<String, String> params = new HashMap<String, String>(); 
         params.put("id", remoteMessage.getMessageId());
@@ -86,28 +88,30 @@ public class FCMIntentService extends FirebaseMessagingService {
         savedService = this;
         if (intent.getExtras() != null) {
             for (String key : intent.getExtras().keySet()) {
-                //Object value = intent.getExtras().get(key);
+                Object value = intent.getExtras().get(key);
                 //Logger.W(TAG, "Key: " + key + " Value: " + value);
                 if (key.equals("google.message_id")){
-                    savedIntent = intent;
+                    savedIntents.put((String)value, intent);
                 }
             }
         }
-
-        if (savedIntent != null) super.handleIntent(savedIntent);        
+        super.handleIntent(intent);        
     }
 
-    public static void tryToHandleIntent(){
+    public static void tryToHandleIntent(String value){
         try{
-            if ((savedIntent != null)&&(savedService != null)){
+            if (savedService != null){
                 Logger.W(TAG, "FCM: tryToHandleIntent() - trying to handle intent");
-                savedService.handleIntent(savedIntent);
+                if (savedIntents.containsKey(value)){
+                    savedService.handleIntent(savedIntents.get(value));
+                    Logger.W(TAG, "FCM: tryToHandleIntent() - intent handled");
+                }
             }
         }catch(Exception e){
             Logger.W(TAG, "FCM: tryToHandleIntent() - can't handle intent");
         }
     }
     private static FirebaseMessagingService savedService = null;
-    private static Intent savedIntent = null;
+    private static Map<String, Intent> savedIntents = new HashMap<String, Intent>();
 
 }
