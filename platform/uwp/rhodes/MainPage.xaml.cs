@@ -918,7 +918,7 @@ namespace rhodes
                     deb("Add ToolBar exception: " + e.Message);
                 }
                 toolbarButton.Icon = bitmapIcon;
-                deb("Real icon Uri: " + bitmapIcon.UriSource.AbsolutePath);
+                //deb("Real icon Uri: " + bitmapIcon.UriSource.AbsolutePath);
                 toolbarButton.Label = text;
                 getAppBar().PrimaryCommands.Add(toolbarButton);
                 toolbarButton.Click += new RoutedEventHandler(toolbarButton_Click);

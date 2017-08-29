@@ -166,6 +166,8 @@
     <Compile Include="common\IInputStream.cs" />
     <Compile Include="common\RhoCrypt.cs" />
     <Compile Include="common\RhoResourceMap.cs" />
+    <Compile Include="common\SensorBase.cs" />
+    <Compile Include="common\Sensor_impl.cs" />
     <Compile Include="CryptoEngineWrapper.cs" />
     <Compile Include="CSharpExtensions.cs" />
     <Compile Include="LocalizedStrings.cs" />
