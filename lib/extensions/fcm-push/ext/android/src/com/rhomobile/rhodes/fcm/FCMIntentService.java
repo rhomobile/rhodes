@@ -25,6 +25,7 @@
 *------------------------------------------------------------------------*/
 
 package com.rhomobile.rhodes.fcm;
+
 import android.content.Context;
 import android.content.Intent;
 import android.app.NotificationManager;
@@ -52,6 +53,8 @@ public class FCMIntentService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        savedIntent = null;
+        Logger.W(TAG, "FCM: onMessageReceived()");
         Map<String, String> params = new HashMap<String, String>(); 
         params.put("id", remoteMessage.getMessageId());
         params.put("from", remoteMessage.getFrom());
@@ -70,4 +73,41 @@ public class FCMIntentService extends FirebaseMessagingService {
         Logger.W(TAG, "FCM: push message in JSON: " + jsonObject.toString());
         PushContract.handleMessage(ContextFactory.getContext(), jsonObject.toString(), FCMFacade.FCM_PUSH_CLIENT);
     }
+
+    @Override
+    public void onDeletedMessages() {
+        Logger.W(TAG, "FCM: onDeletedMessages()");
+        
+    }
+
+    @Override
+    synchronized public void handleIntent(Intent intent) {
+        Logger.W(TAG, "FCM: onHandleIntent()");
+        savedService = this;
+        if (intent.getExtras() != null) {
+            for (String key : intent.getExtras().keySet()) {
+                //Object value = intent.getExtras().get(key);
+                //Logger.W(TAG, "Key: " + key + " Value: " + value);
+                if (key.equals("google.message_id")){
+                    savedIntent = intent;
+                }
+            }
+        }
+
+        if (savedIntent != null) super.handleIntent(savedIntent);        
+    }
+
+    public static void tryToHandleIntent(){
+        try{
+            if ((savedIntent != null)&&(savedService != null)){
+                Logger.W(TAG, "FCM: tryToHandleIntent() - trying to handle intent");
+                savedService.handleIntent(savedIntent);
+            }
+        }catch(Exception e){
+            Logger.W(TAG, "FCM: tryToHandleIntent() - can't handle intent");
+        }
+    }
+    private static FirebaseMessagingService savedService = null;
+    private static Intent savedIntent = null;
+
 }

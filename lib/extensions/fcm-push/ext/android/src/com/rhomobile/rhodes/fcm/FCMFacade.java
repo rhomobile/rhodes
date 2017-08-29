@@ -40,6 +40,12 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.rhomobile.rhodes.R;
 import java.lang.Throwable;
+import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
+import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import com.rhomobile.rhodes.extmanager.RhoExtManagerImpl;
+import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 
 public final class FCMFacade {
     private static final String TAG = FCMFacade.class.getSimpleName();
@@ -72,6 +78,7 @@ public final class FCMFacade {
 */
 
     public static void initFireBase() {
+
         Logger.W(TAG, "FCM: Send FCM push register req");
       
         try{
@@ -108,7 +115,24 @@ public final class FCMFacade {
             }
         }   
   
-        refreshToken();       
+        refreshToken();  
+
+        RhoExtManager.getImplementationInstance().addRhoListener(
+        new AbstractRhoListener(){
+                @Override
+                public void onResume(RhodesActivity activity) { 
+                     Logger.W("fcm", "FCM: onResume");
+                     FCMIntentService.tryToHandleIntent();
+                }
+
+                @Override
+                public void onCreateApplication(IRhoExtManager extManager) {
+                    Logger.W("fcm", "FCM: onCreateApplication");
+                }
+            }
+        );
+        FCMIntentService.tryToHandleIntent();
+
     }
     public static void refreshToken(){
         try{
