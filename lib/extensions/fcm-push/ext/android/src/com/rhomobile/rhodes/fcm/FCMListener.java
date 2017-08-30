@@ -49,7 +49,7 @@ import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 
 
 public class FCMListener extends AbstractRhoListener{
-	private static final String TAG = FCMListner.class.getSimpleName();
+	private static final String TAG = FCMListener.class.getSimpleName();
 
 	private static FCMListener listener = null;
 	public static FCMListener getInstance(){
