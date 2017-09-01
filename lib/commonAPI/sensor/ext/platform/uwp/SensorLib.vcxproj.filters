@@ -40,7 +40,7 @@
     <ClCompile Include="..\..\shared\generated\cpp\Sensor_ruby_wrap.cpp">
       <Filter>shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="impl\Sensor_impl.cpp">
+    <ClCompile Include="generated\lib\Sensor_impl.cpp">
       <Filter>uwp\lib</Filter>
     </ClCompile>
     <ClCompile Include="generated\lib\SensorRuntime.cpp">

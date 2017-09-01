@@ -166,8 +166,6 @@
     <Compile Include="common\IInputStream.cs" />
     <Compile Include="common\RhoCrypt.cs" />
     <Compile Include="common\RhoResourceMap.cs" />
-    <Compile Include="common\SensorBase.cs" />
-    <Compile Include="common\Sensor_impl.cs" />
     <Compile Include="CryptoEngineWrapper.cs" />
     <Compile Include="CSharpExtensions.cs" />
     <Compile Include="LocalizedStrings.cs" />
@@ -229,6 +227,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

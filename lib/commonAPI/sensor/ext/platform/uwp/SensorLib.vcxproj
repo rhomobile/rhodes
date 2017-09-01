@@ -57,16 +57,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="SensorsLib.props" />
+    <Import Project="SensorLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <Import Project="SensorsLib.props" />
+    <Import Project="SensorLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="SensorsLib.props" />
+    <Import Project="SensorLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <Import Project="SensorsLib.props" />
+    <Import Project="SensorLib.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -181,7 +181,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="impl\Sensor_impl.cpp" />
+    <ClCompile Include="generated\lib\Sensor_impl.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\SensorBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Sensor_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Sensor_ruby_wrap.cpp" />
