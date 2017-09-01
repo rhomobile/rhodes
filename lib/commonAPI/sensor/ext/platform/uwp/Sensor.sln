@@ -3,11 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SensorCS", "SensorCS.csproj", "{907A9CDD-E5B0-4241-A0BE-20165EEC2952}"
-	ProjectSection(ProjectDependencies) = postProject
-		{9EAF9496-191E-4B03-B1C5-85D0F9F8CC25} = {9EAF9496-191E-4B03-B1C5-85D0F9F8CC25}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SensorLib", "SensorLib.vcxproj", "{9EAF9496-191E-4B03-B1C5-85D0F9F8CC25}"
 EndProject
 Global
