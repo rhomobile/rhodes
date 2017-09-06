@@ -13,6 +13,11 @@ namespace rho
         {
             protected string type = SensorBase.SENSOR_TYPE_ORIENTATION;
 
+            public OrientationSensor(string id) : base(id)
+            {
+
+            }
+
             public override void getMinimumGap(IMethodResult oResult)
             {
                 // implement this method in C# here

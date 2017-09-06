@@ -11,9 +11,10 @@ namespace rho {
     {
         public class Sensor : SensorBase
         {
-            public Sensor()
+
+            public Sensor(string id) : base(id)
             {
-                // initialize class instance in C# here
+
             }
 
             public override void getMinimumGap(IMethodResult oResult)
@@ -55,12 +56,13 @@ namespace rho {
         public class SensorSingleton : SensorSingletonBase
         {
 
-            SortedDictionary<string, Sensor> keeper = new SortedDictionary<string, Sensor>();
+            SortedDictionary<string, ISensorImpl> keeper = new SortedDictionary<string, ISensorImpl>();
 
             public SensorSingleton()
             {
                
             }
+
 
             public override void makeSensorByType(string type, IMethodResult oResult)
             {
@@ -68,7 +70,7 @@ namespace rho {
                 {
                     switch (type){
                         case SensorBase.SENSOR_TYPE_ORIENTATION:
-                            keeper.Add(type, new OrientationSensor());
+                            keeper.Add(type, new OrientationSensor(type));
                             break;
                         default:
                             oResult.set("nil");
@@ -84,25 +86,18 @@ namespace rho {
                 
             }
 
-            public Sensor getModuleByID(string id)
+            /*public Sensor getModuleByID(string id)
             {
-                if (keeper.ContainsKey(id))
-                {
-                    return keeper[id];
-                }
-                else
-                {
-                    return new Sensor();
-                }
-            }
+                
+            }*/
 
 
             public override void enumerate(IMethodResult oResult)
             {
-                LinkedList<string> list = new LinkedList<string>();
+                List<string> list = new List<string>();
                 
-                list.AddLast(SensorBase.SENSOR_TYPE_ORIENTATION);
-                oResult.set((IReadOnlyList<string>)list);
+                list.Add(SensorBase.SENSOR_TYPE_ORIENTATION);
+                oResult.set(list.AsReadOnly());
             }
         }
 

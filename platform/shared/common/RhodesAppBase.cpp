@@ -369,11 +369,11 @@ static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
     HZIP hz = OpenZipFile(strZipPathW.c_str(), psw);
     if ( !hz )
         return -1;
-
 	// Set base for unziping
     SetUnzipBaseDir(hz, rho::common::convertToStringW(strBaseDir).c_str());
 #else
     HZIP hz = OpenZipFile((TCHAR*)szZipPath, psw);
+    
     if ( !hz )
         return -1;
 

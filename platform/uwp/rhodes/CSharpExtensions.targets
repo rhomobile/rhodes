@@ -5,8 +5,10 @@
     <WEBVIEW_ROOT>D:/TAU/branches/rhodes/lib/commonAPI/coreapi/ext</WEBVIEW_ROOT>
     <NATIVETOOLBAR_ROOT>D:/TAU/branches/rhodes/lib/commonAPI/coreapi/ext</NATIVETOOLBAR_ROOT>
     <NATIVETABBAR_ROOT>D:/TAU/branches/rhodes/lib/commonAPI/coreapi/ext</NATIVETABBAR_ROOT>
+    <SENSOR_ROOT>D:/TAU/branches/rhodes/lib/commonAPI/sensor/ext</SENSOR_ROOT>
   </PropertyGroup>
   <Import Project="$(WEBVIEW_ROOT)\platform\uwp\WebViewImpl.targets" />
   <Import Project="$(NATIVETOOLBAR_ROOT)\platform\uwp\NativeToolbarImpl.targets" />
   <Import Project="$(NATIVETABBAR_ROOT)\platform\uwp\NativeTabbarImpl.targets" />
+  <Import Project="$(SENSOR_ROOT)\platform\uwp\SensorImpl.targets" />
 </Project>
