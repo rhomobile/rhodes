@@ -1991,17 +1991,25 @@ namespace "build" do
       args << '-v' if USE_TRACES
 
       Jake.run($aapt, args)
-
+	  
       raise 'Error in AAPT: R.java' unless $?.success?
+	  
+	  @packs = AndroidTools::MavenDepsExtractor.instance.extract_packages
+	  @packs.each do |p|
+	     path_to_p = File.join $tmpdir, 'gen', p.split('.')
+	  	 mkdir_p path_to_p
+	  	 buf = File.new(File.join($app_rjava_dir, "R.java"), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage " + p + ";\n")
+	  	 File.open(File.join(path_to_p, "R.java"), "w") { |f| f.write(buf) }
+	  end
 
       #buf = File.new($rho_android_r, "r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/, "\nimport #{$app_package_name}.R;\n")
       #File.open($app_android_r, "w") { |f| f.write(buf) }
-
+	  
       mkdir_p File.join($app_rjava_dir, "R") if not File.exists? File.join($app_rjava_dir, "R")
       buf = File.new(File.join($app_rjava_dir, "R.java"), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage com.rhomobile.rhodes;\n")
       #buf.gsub!(/public\s*static\s*final\s*int/, "public static int")
       File.open(File.join($app_rjava_dir, "R", "R.java"), "w") { |f| f.write(buf) }
-
+	  
       $ext_android_library_deps.each do |package, path|
 
         if !File.directory?(path)
