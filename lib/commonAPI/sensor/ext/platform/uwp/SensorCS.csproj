@@ -131,7 +131,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="generated\SensorBase.cs" />
-    <Compile Include="src\OrientationSensor.cs" />
+    <Compile Include="src\AccelerometerSensor.cs" />
+    <Compile Include="src\OrientationSensor.cs" />    
+	<Compile Include="src\CompassSensor.cs" />
     <Compile Include="src\Sensor_impl.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />

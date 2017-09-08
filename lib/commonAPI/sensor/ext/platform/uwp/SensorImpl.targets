@@ -4,5 +4,7 @@
     <Compile Include="$(SENSOR_ROOT)\platform\uwp\generated\SensorBase.cs" />
     <Compile Include="$(SENSOR_ROOT)\platform\uwp\src\Sensor_impl.cs" />
     <Compile Include="$(SENSOR_ROOT)\platform\uwp\src\OrientationSensor.cs" />
+	<Compile Include="$(SENSOR_ROOT)\platform\uwp\src\AccelerometerSensor.cs" />
+	<Compile Include="$(SENSOR_ROOT)\platform\uwp\src\CompassSensor.cs" />
   </ItemGroup>
 </Project>

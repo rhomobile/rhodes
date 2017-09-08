@@ -11,10 +11,11 @@ namespace rho {
     {
         public class Sensor : SensorBase
         {
+            protected string type = "null";
 
             public Sensor(string id) : base(id)
             {
-
+                type = id;
             }
 
             public override void getMinimumGap(IMethodResult oResult)
@@ -29,7 +30,7 @@ namespace rho {
 
             public override void getType(IMethodResult oResult)
             {
-                // implement this method in C# here
+                oResult.set(type);
             }
 
             public override void getStatus(IMethodResult oResult)
@@ -39,12 +40,18 @@ namespace rho {
 
             public override void start(IMethodResult oResult)
             {
+                readData(oResult);
                 // implement this method in C# here
             }
 
             public override void readData(IMethodResult oResult)
             {
-                // implement this method in C# here
+                Dictionary<string, string> result = new Dictionary<string, string>();
+                result.Add("status", SENSOR_STATUS_ERROR);
+                result.Add("type", type);
+                result.Add("message", "No available sensor of this type");
+
+                oResult.set(result);
             }
 
             public override void stop(IMethodResult oResult)
@@ -72,8 +79,20 @@ namespace rho {
                         case SensorBase.SENSOR_TYPE_ORIENTATION:
                             keeper.Add(type, new OrientationSensor(type));
                             break;
+                        case SensorBase.SENSOR_TYPE_DEVICE_ORIENTATION:
+                            keeper.Add(type, new OrientationSensor(type));
+                            break;
+                        case SensorBase.SENSOR_TYPE_ACCELEROMETER:
+                            keeper.Add(type, new AccelerometerSensor(type));
+                            break;
+                        case SensorBase.SENSOR_TYPE_LINEAR_ACCELERATION:
+                            keeper.Add(type, new AccelerometerSensor(type));
+                            break;
+                        case SensorBase.SENSOR_TYPE_ECOMPASS:
+                            keeper.Add(type, new CompassSensor(type));
+                            break;
                         default:
-                            oResult.set("nil");
+                            keeper.Add(type, new Sensor(type));
                             break;
                     }
                     
@@ -95,8 +114,11 @@ namespace rho {
             public override void enumerate(IMethodResult oResult)
             {
                 List<string> list = new List<string>();
-                
                 list.Add(SensorBase.SENSOR_TYPE_ORIENTATION);
+                list.Add(SensorBase.SENSOR_TYPE_DEVICE_ORIENTATION);
+                list.Add(SensorBase.SENSOR_TYPE_ACCELEROMETER);
+                list.Add(SensorBase.SENSOR_TYPE_LINEAR_ACCELERATION);
+                list.Add(SensorBase.SENSOR_TYPE_ECOMPASS);
                 oResult.set(list.AsReadOnly());
             }
         }
