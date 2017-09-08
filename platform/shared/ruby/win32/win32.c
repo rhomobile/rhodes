@@ -5332,6 +5332,9 @@ get_attr_vsn(const WCHAR *path, DWORD *atts, DWORD *vsn)
 static int
 wrename(const WCHAR *oldpath, const WCHAR *newpath)
 {
+
+//RHO
+#ifndef _WIN32_WCE
     int res = 0;
     DWORD oldatts, newatts = (DWORD)-1;
     DWORD oldvsn = 0, newvsn = 0, e;
@@ -5354,8 +5357,6 @@ wrename(const WCHAR *oldpath, const WCHAR *newpath)
     }
     get_attr_vsn(newpath, &newatts, &newvsn);
 
-//RHO
-#ifndef _WIN32_WCE
 
     RUBY_CRITICAL({
 	if (newatts != (DWORD)-1 && newatts & FILE_ATTRIBUTE_READONLY)
@@ -5376,6 +5377,18 @@ wrename(const WCHAR *oldpath, const WCHAR *newpath)
 	    SetFileAttributesW(newpath, oldatts);
     });
 #else
+    int res = 0;
+    int oldatts;
+    int newatts;
+
+    oldatts = GetFileAttributesW(oldpath);
+    newatts = GetFileAttributesW(newpath);
+
+    if (oldatts == -1) {
+	errno = map_errno(GetLastError());
+	return -1;
+    }
+
     RUBY_CRITICAL({
 	if (newatts != -1 && newatts & FILE_ATTRIBUTE_READONLY)
 	    SetFileAttributesW(newpath, newatts & ~ FILE_ATTRIBUTE_READONLY);
