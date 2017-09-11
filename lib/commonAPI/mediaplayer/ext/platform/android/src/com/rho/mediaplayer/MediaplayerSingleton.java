@@ -28,6 +28,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.MediaController;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -104,6 +106,12 @@ public class MediaplayerSingleton extends MediaplayerSingletonBase implements IM
 			}
 			mPlayer.prepare(); // This call will block. As it only returns, when there is enough data to play back.
 		}
+		catch (PackageManager.NameNotFoundException e)
+        {
+            e.printStackTrace();
+			Logger.E(TAG, "start(): package name not found: " + e.getMessage());
+			result.setError("Could not play due to IO error");
+        }
 		catch(FileNotFoundException e)
 		{
 			Logger.W(TAG, "start(): File not found: " + filename);
@@ -121,12 +129,17 @@ public class MediaplayerSingleton extends MediaplayerSingletonBase implements IM
 			Logger.E(TAG, "start(): failed due to IO error: " + e.getMessage());
 			result.setError("Could not play due to IO error");
 		}
+		
 		Logger.D(TAG, "start-");
 	}
 	
-	private boolean isPackageFile(String filename)
-	{
-		return filename.matches("^(file:)?[/]{0,3}data/data.*$");
+	private boolean isPackageFile(String filename) throws PackageManager.NameNotFoundException
+	{    
+		 PackageManager manager = context.getPackageManager();
+         PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+         String dir = info.applicationInfo.dataDir;
+         return filename.toLowerCase().contains(dir.toLowerCase());
+		//return filename.matches("^(file:)?[/]{0,3}data/data.*$");
 	}
 
 	/**
@@ -285,65 +298,74 @@ public class MediaplayerSingleton extends MediaplayerSingletonBase implements IM
 		
 		// Play URL
 		// If this is Rho Package file, force Rhodes to copy it to /data/data, then copy this to a local file and play.
-		if(isPackageFile(filename))
+		try
 		{
-			FileDescriptor rhoFileDesc = RhoFileApi.openFd(filename);
-			if(rhoFileDesc != null && rhoFileDesc.valid())
+			if(isPackageFile(filename))
 			{
-				FileInputStream srcStream = null;
-				FileOutputStream dstStream = null;
-				try
+				FileDescriptor rhoFileDesc = RhoFileApi.openFd(filename);
+				if(rhoFileDesc != null && rhoFileDesc.valid())
 				{
-	                File internalVideoFile = new File(filename);
-	                File temporaryVideoFile = File.createTempFile("video", "tmp");
-	
-	                if (internalVideoFile.exists())
-	                {
-	                	srcStream = new FileInputStream(internalVideoFile);
-	                	dstStream = new FileOutputStream(temporaryVideoFile);
-	                    FileChannel src = srcStream.getChannel();
-	                    FileChannel dst = dstStream.getChannel();
-	                    dst.transferFrom(src, 0, src.size());
-	                    src.close();
-	                    dst.close();
-	                    
-	                    dialog.show();
-	                    mVideoView.setVideoURI(Uri.parse(temporaryVideoFile.getAbsolutePath()));
-	            		mVideoView.setVisibility(View.VISIBLE);
-	            		mVideoView.requestFocus();
-	                }
-	                else
-	                {
-	                	result.setError("Video not found");
-	                }
+					FileInputStream srcStream = null;
+					FileOutputStream dstStream = null;
+					try
+					{
+						File internalVideoFile = new File(filename);
+						File temporaryVideoFile = File.createTempFile("video", "tmp");
+		
+						if (internalVideoFile.exists())
+						{
+							srcStream = new FileInputStream(internalVideoFile);
+							dstStream = new FileOutputStream(temporaryVideoFile);
+							FileChannel src = srcStream.getChannel();
+							FileChannel dst = dstStream.getChannel();
+							dst.transferFrom(src, 0, src.size());
+							src.close();
+							dst.close();
+							
+							dialog.show();
+							mVideoView.setVideoURI(Uri.parse(temporaryVideoFile.getAbsolutePath()));
+							mVideoView.setVisibility(View.VISIBLE);
+							mVideoView.requestFocus();
+						}
+						else
+						{
+							result.setError("Video not found");
+						}
+					}
+					catch (FileNotFoundException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					catch (IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					finally
+					{
+						if(srcStream != null) try{srcStream.close();}catch(IOException e){e.printStackTrace();}
+						if(dstStream != null) try{dstStream.close();}catch(IOException e){e.printStackTrace();}
+					}
 				}
-				catch (FileNotFoundException e)
+				else
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				finally
-				{
-                    if(srcStream != null) try{srcStream.close();}catch(IOException e){e.printStackTrace();}
-                    if(dstStream != null) try{dstStream.close();}catch(IOException e){e.printStackTrace();}
+					result.setError("Video not found");
 				}
 			}
 			else
 			{
-				result.setError("Video not found");
+				dialog.show();
+				mVideoView.setVideoURI(Uri.parse(filename));
+				mVideoView.setVisibility(View.VISIBLE);
+				mVideoView.requestFocus();
 			}
 		}
-		else
+		catch(PackageManager.NameNotFoundException e)
 		{
-			dialog.show();
-			mVideoView.setVideoURI(Uri.parse(filename));
-			mVideoView.setVisibility(View.VISIBLE);
-			mVideoView.requestFocus();
+		    e.printStackTrace();
+			Logger.E(TAG, "start(): package name not found: " + e.getMessage());
+			result.setError("Could not play due to IO error");
 		}
 	}
 
