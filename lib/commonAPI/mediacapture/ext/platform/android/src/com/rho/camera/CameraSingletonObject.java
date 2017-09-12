@@ -136,10 +136,12 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 
             intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             intent.setType("image/*");
+
         }else{
             intent = new Intent(ra, FileList.class);
         }
 
+        propertyMap.put("fromGallery", "true");
         String fileName = null;
         if(!propertyMap.containsKey("fileName")){
             fileName = "/sdcard/DCIM/Camera/";
@@ -153,7 +155,7 @@ public class CameraSingletonObject implements ICameraSingletonObject {
                 if (tmpPath == null) {
                     throw new RuntimeException("Failed to access shared temporary folder");
                 }
-                
+
                 Uri captureUri = Uri.fromFile(new File(tmpPath));
                 propertyMap.put("captureUri", captureUri.toString());
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, captureUri);
