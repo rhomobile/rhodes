@@ -80,6 +80,9 @@ module AES
         aes.encrypt
         aes.key = key
         aes.iv = iv
+		
+		sha1 = OpenSSL::Digest::SHA1.new
+		digest = sha1.digest(plain_text)
 
         cipher = aes.update(plain_text)
         cipher << aes.final
@@ -89,6 +92,7 @@ module AES
         #res = iv_64 + "$" + cipher_64
         res = []
         res << iv
+		res << digest
         res << cipher
         return res
     end
@@ -790,7 +794,7 @@ class Jake
         puts "    encrypt file: "+f.to_s+" ..."
 
         #load file
-        content = File.read(f)
+        content = File.binread(f)
         #File.rename(f, f+".original")
         File.delete(f)
 
@@ -814,6 +818,7 @@ class Jake
         File.open(f+".encrypted","wb") do |f|
             f.write(encrypted_content[0])
             f.write(encrypted_content[1])
+			f.write(encrypted_content[2])
         end
 
 
