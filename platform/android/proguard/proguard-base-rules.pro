@@ -12,6 +12,7 @@
 -dontoptimize
 -dontpreverify
 -useuniqueclassmembernames
+-dontobfuscate
 
 -verbose
 -dump class_files.txt
@@ -62,6 +63,8 @@
 -dontwarn org.**
 -dontwarn com.rhomobile.**
 -dontwarn com.rho.**
+-dontwarn com.google.**
+
 
 # Preserve all fundamental application classes.
 -keep public class * extends android.app.Activity
@@ -563,6 +566,7 @@ public static final android.os.Parcelable$Creator *;
     <fields>;
     <methods>;
 }
+
 
 
 -keepclasseswithmembernames class * {

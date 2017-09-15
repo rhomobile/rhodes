@@ -1890,13 +1890,17 @@ namespace "build" do
       f = StringIO.new("", "w+")
       #File.open($app_native_libs_java, "w") do |f|
       f.puts "package #{JAVA_PACKAGE_NAME};"
+      f.puts "import android.util.Log;"
       f.puts "public class NativeLibraries {"
+      f.puts "  private static final String TAG = NativeLibraries.class.getSimpleName();"
       f.puts "  public static void load() {"
       f.puts "    // Load native .so libraries"
       Dir.glob($app_builddir + "/**/lib*.so").reverse.each do |lib|
         next if lib =~ /noautoload/
         libname = File.basename(lib).gsub(/^lib/, '').gsub(/\.so$/, '')
+        f.puts "    Log.d(TAG, \"Loading lib #{libname}\");"
         f.puts "    System.loadLibrary(\"#{libname}\");"
+        f.puts "    Log.d(TAG, \"Lib #{libname} loaded\");"
       end
       #f.puts "    // Load native implementation of rhodes"
       #f.puts "    System.loadLibrary(\"rhodes\");"
@@ -2295,6 +2299,7 @@ namespace "package" do
 
     end
 
+    jarNamesCounter = 0
     alljars.each { |jar|
       basename = File.basename(jar);
       #FIXME: UGLYHACK FROM ALEX. Needs to add dependency filter to maven extractor
@@ -2303,7 +2308,8 @@ namespace "package" do
         if !useProguard
           args << jar
         else
-          cp jar, proguardPreBuild
+          jarNamesCounter += 1
+          cp jar, File.join(proguardPreBuild, jarNamesCounter.to_s + '.jar')
         end
         unique_jars.add(basename)
       end
