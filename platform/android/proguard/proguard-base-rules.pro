@@ -12,7 +12,6 @@
 -dontoptimize
 -dontpreverify
 -useuniqueclassmembernames
--dontobfuscate
 
 -verbose
 -dump class_files.txt
@@ -21,7 +20,6 @@
 -printmapping mapping.txt
 # Switch off some optimizations that trip older versions of the Dalvik VM.
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
-
 
 -allowaccessmodification
 
