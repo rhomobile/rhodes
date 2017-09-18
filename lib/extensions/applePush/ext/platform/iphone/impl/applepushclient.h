@@ -43,6 +43,9 @@ class ApplePushClient: public push::CPushClient
 private:
     CMethodResult m_oResult;
     CMethodResult m_deviceIdResult;
+    bool m_CallbackIsValid;
+    bool m_HasSavedMessage;
+    String m_SavedMessage;
     static const String s_Type;
 
 public:

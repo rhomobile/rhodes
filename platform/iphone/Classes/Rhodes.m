@@ -863,7 +863,20 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 - (void) registerForPushNotifications:(id<IPushNotificationsReceiver>)receiver;
 {
 #ifdef APP_BUILD_CAPABILITY_PUSH
-    [self performSelectorOnMainThread:@selector(registerForPushNotificationsInternal:) withObject:receiver waitUntilDone:NO];
+    //[self performSelectorOnMainThread:@selector(registerForPushNotificationsInternal:) withObject:receiver waitUntilDone:NO];
+     pushReceiver = receiver;
+    if (mPushStoredData_DeviceToken != nil) {
+        [pushReceiver onPushRegistrationSucceed:mPushStoredData_DeviceToken];
+        mPushStoredData_DeviceToken = nil;
+    }
+    if (mPushStoredData_RegisterError != nil) {
+        [pushReceiver onPushRegistrationFailed:mPushStoredData_RegisterError];
+        mPushStoredData_RegisterError = nil;
+    }
+    if (mPushStoredData_UserInfo != nil) {
+        [pushReceiver onPushMessageReceived:mPushStoredData_UserInfo];
+        mPushStoredData_UserInfo = nil;
+    }
 #endif
 }
 
@@ -1075,8 +1088,11 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     
     
     self.mBlockExit = NO;
-    
-    
+
+    mPushStoredData_UserInfo = nil;
+    mPushStoredData_RegisterError = nil;
+    mPushStoredData_DeviceToken = nil;
+
     instance = self;
     eventStore = nil; 
     self->application = [UIApplication sharedApplication];
@@ -1094,11 +1110,12 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 	NSURL* url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
     // log not ready
     [AppManager startupLogging:[NSString stringWithFormat:@"didFinishLaunchingWithOptions: %@", [url absoluteString]]];
-	
-    
-    //[self registerForRemoteNotification];
-    
-    
+
+
+#ifdef APP_BUILD_CAPABILITY_PUSH
+    [self registerForRemoteNotification];
+#endif
+
 	// store start parameter
 	NSString* start_parameter = [NSString stringWithUTF8String:""];
 	if (url != nil) {
@@ -1182,28 +1199,57 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH My token is: %@", deviceToken] UTF8String]);
+    NSLog(@"PUSH My token is: %@", deviceToken);
+    //RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH My token is: %@", deviceToken] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushRegistrationSucceed:deviceToken];
+    }
+    else {
+        mPushStoredData_DeviceToken = [deviceToken copy];
     }
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH Failed to get token, error: %@", error] UTF8String]);
+    NSLog(@"PUSH Failed to get token, error: %@", error);
+    //RAWLOG_ERROR1([[NSString stringWithFormat:@"PUSH Failed to get token, error: %@", error] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushRegistrationFailed:error];
     }
+    else {
+        mPushStoredData_RegisterError = [error copy];
+    }
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
-    RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH Received notification: %@", userInfo] UTF8String]);
+-(void) processPushMessage:(NSDictionary*)userInfo {
+    NSLog(@"PUSH Received notification: %@", userInfo);
+    //RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH Received notification: %@", userInfo] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushMessageReceived:userInfo];
     }
-    
-//	[self processPushMessage:userInfo];
+    else {
+        mPushStoredData_UserInfo = [userInfo copy];
+    }
+}
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    [self processPushMessage:userInfo];
+}
+
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+    if(application.applicationState == UIApplicationStateInactive) {
+        NSLog(@"didReceiveRemoteNotification: Inactive");
+        [self processPushMessage:userInfo];
+        completionHandler(UIBackgroundFetchResultNoData);
+    } else if (application.applicationState == UIApplicationStateBackground) {
+        NSLog(@"didReceiveRemoteNotification: Background");
+        completionHandler(UIBackgroundFetchResultNoData);
+    } else {
+        //RAWLOG_INFO("didReceiveRemoteNotification: Active");
+        [self processPushMessage:userInfo];
+        completionHandler(UIBackgroundFetchResultNoData);
+    }
 }
 
 #endif //APP_BUILD_CAPABILITY_PUSH
