@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.add_dependency('ffi', '1.9.14')
   s.add_dependency('rdoc', '4.2.2')
   s.add_dependency('deep_merge','1.1.1')
-  s.add_dependency('nokogiri', '2.5.2')
+  s.add_dependency('nokogiri', '1.8.0')
   s.post_install_message = "Thanks for installing Rhodes ! Please visit our website: http://tau-technologies.com" if s.respond_to? :post_install_message=
   s.executables << 'rhogen'
   s.executables << 'rhodes'
