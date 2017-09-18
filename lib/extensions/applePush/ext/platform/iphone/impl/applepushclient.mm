@@ -79,6 +79,9 @@ const String ApplePushClient::s_Type = "apple";
 
 ApplePushClient::ApplePushClient()
 {
+    m_CallbackIsValid = false;
+    m_HasSavedMessage = false;
+    m_SavedMessage = "";
     CMethodResult result;
     setProperty("id", s_Type, result);
     setProperty("type", IPush::PUSH_TYPE_NATIVE, result);
@@ -107,6 +110,14 @@ void ApplePushClient::startNotifications(CMethodResult& result)
 {
     LOG(TRACE) + "Start APNS push notifications";
     m_oResult = result;
+    m_CallbackIsValid = true;
+    if (m_HasSavedMessage) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            m_oResult.setJSON(m_SavedMessage);
+            m_SavedMessage = "";
+        });
+    }
+    m_HasSavedMessage = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -114,6 +125,9 @@ void ApplePushClient::stopNotifications(CMethodResult& result)
 {
     LOG(TRACE) + "Stop APNS push notifications";
     m_oResult = CMethodResult();
+    m_CallbackIsValid = false;
+    m_HasSavedMessage = false;
+    m_SavedMessage = "";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -135,8 +149,13 @@ bool ApplePushClient::callBack(const String& json)
 {
     LOG(TRACE) + "APNS push notification: " + json;
 
-    m_oResult.setJSON(json);
-
+    if (m_CallbackIsValid) {
+        m_oResult.setJSON(json);
+    }
+    else {
+        m_SavedMessage = json;
+        m_HasSavedMessage = true;
+    }
     return true;
 }
 
