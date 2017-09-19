@@ -163,7 +163,7 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
             break;
         }
 
-        if (oSession!=null)
+        if (oSession!=NULL)
         {
 			String strSession = oSession->getSession();
 			LOG(INFO) + "Cookie : " + strSession;
@@ -365,7 +365,7 @@ boolean CNetRequestImpl::readHeaders(Hashtable<String,String>& oHeaders)
     CAtlStringW strHeaders;
     DWORD dwLen = 0;
     DWORD nIndex = 0;
-    if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_RAW_HEADERS_CRLF, null, &dwLen, &nIndex) )
+    if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_RAW_HEADERS_CRLF, NULL, &dwLen, &nIndex) )
     {   
         DWORD dwErr = ::GetLastError();
         if ( dwErr != ERROR_INSUFFICIENT_BUFFER )
@@ -418,7 +418,7 @@ String CNetRequestImpl::makeClientCookie()
     {
         CAtlStringW strCookie;
         DWORD dwLen = 0;
-        if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_SET_COOKIE, null, &dwLen, &nIndex) )
+        if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_SET_COOKIE, NULL, &dwLen, &nIndex) )
         {   
             DWORD dwErr = ::GetLastError();
             if ( dwErr == ERROR_HTTP_HEADER_NOT_FOUND  )

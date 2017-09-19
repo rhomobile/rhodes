@@ -7,6 +7,7 @@ extern "C" void alert_hide_popup();
 extern "C" void alert_show_status_ex(const char* szTitle, const char* szMessage, const char* szHide, rho::apiGenerator::CMethodResult& oResult);
 extern "C" void alert_vibrate(int duration_ms);
 extern "C" void alert_play_file(char* file_name, char* media_type);
+extern "C" void notification_beep(const rho::Hashtable<rho::String, rho::String>& propertyMap);
 
 namespace rho {
 
@@ -40,7 +41,7 @@ public:
 
     virtual void beep(const Hashtable<String, String>& propertyMap, CMethodResult& oResult)
 	{
-		// TODO: implement
+        notification_beep(propertyMap);
 	}
 
     virtual void vibrate(int duration, CMethodResult& oResult)
