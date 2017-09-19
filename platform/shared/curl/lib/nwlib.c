@@ -5,11 +5,11 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2016, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
- * are also available at http://curl.haxx.se/docs/copyright.html.
+ * are also available at https://curl.haxx.se/docs/copyright.html.
  *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
@@ -18,23 +18,23 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: nwlib.c,v 1.13 2009-10-27 16:38:42 yangtse Exp $
  ***************************************************************************/
+
+#include "curl_setup.h"
 
 #ifdef NETWARE /* Novell NetWare */
 
-#include <stdlib.h>
-
 #ifdef __NOVELL_LIBC__
 /* For native LibC-based NLM we need to register as a real lib. */
-#include <errno.h>
-#include <string.h>
 #include <library.h>
 #include <netware.h>
 #include <screen.h>
 #include <nks/thread.h>
 #include <nks/synch.h>
 
+#include "curl_memory.h"
+/* The last #include file should be: */
+#include "memdebug.h"
 
 typedef struct
 {
@@ -58,26 +58,26 @@ rtag_t      gAllocTag   = (rtag_t) NULL;
 NXMutex_t   *gLibLock   = (NXMutex_t *) NULL;
 
 /* internal library function prototypes... */
-int     DisposeLibraryData ( void * );
-void    DisposeThreadData ( void * );
-int     GetOrSetUpData ( int id, libdata_t **data, libthreaddata_t **threaddata );
+int  DisposeLibraryData(void *);
+void DisposeThreadData(void *);
+int  GetOrSetUpData(int id, libdata_t **data, libthreaddata_t **threaddata);
 
 
-int _NonAppStart( void        *NLMHandle,
-                  void        *errorScreen,
-                  const char  *cmdLine,
-                  const char  *loadDirPath,
-                  size_t      uninitializedDataLength,
-                  void        *NLMFileHandle,
-                  int         (*readRoutineP)( int conn,
-                                               void *fileHandle, size_t offset,
-                                               size_t nbytes,
-                                               size_t *bytesRead,
-                                               void *buffer ),
+int _NonAppStart(void        *NLMHandle,
+                 void        *errorScreen,
+                 const char  *cmdLine,
+                 const char  *loadDirPath,
+                 size_t      uninitializedDataLength,
+                 void        *NLMFileHandle,
+                 int         (*readRoutineP)(int conn,
+                                             void *fileHandle, size_t offset,
+                                             size_t nbytes,
+                                             size_t *bytesRead,
+                                             void *buffer),
                   size_t      customDataOffset,
                   size_t      customDataSize,
                   int         messageCount,
-                  const char  **messages )
+                  const char  **messages)
 {
   NX_LOCK_INFO_ALLOC(liblock, "Per-Application Data Lock", 0);
 
@@ -93,12 +93,12 @@ int _NonAppStart( void        *NLMHandle,
 #pragma unused(messages)
 #endif
 
-/*
-** Here we process our command line, post errors (to the error screen),
-** perform initializations and anything else we need to do before being able
-** to accept calls into us. If we succeed, we return non-zero and the NetWare
-** Loader will leave us up, otherwise we fail to load and get dumped.
-*/
+  /*
+   * Here we process our command line, post errors (to the error screen),
+   * perform initializations and anything else we need to do before being able
+   * to accept calls into us. If we succeed, we return non-zero and the NetWare
+   * Loader will leave us up, otherwise we fail to load and get dumped.
+   */
   gAllocTag = AllocateResourceTag(NLMHandle,
                                   "<library-name> memory allocations",
                                   AllocSignature);
@@ -129,33 +129,33 @@ int _NonAppStart( void        *NLMHandle,
 }
 
 /*
-** Here we clean up any resources we allocated. Resource tags is a big part
-** of what we created, but NetWare doesn't ask us to free those.
-*/
-void _NonAppStop( void )
+ * Here we clean up any resources we allocated. Resource tags is a big part
+ * of what we created, but NetWare doesn't ask us to free those.
+ */
+void _NonAppStop(void)
 {
   (void) unregister_library(gLibId);
   NXMutexFree(gLibLock);
 }
 
 /*
-** This function cannot be the first in the file for if the file is linked
-** first, then the check-unload function's offset will be nlmname.nlm+0
-** which is how to tell that there isn't one. When the check function is
-** first in the linked objects, it is ambiguous. For this reason, we will
-** put it inside this file after the stop function.
-**
-** Here we check to see if it's alright to ourselves to be unloaded. If not,
-** we return a non-zero value. Right now, there isn't any reason not to allow
-** it.
-*/
-int _NonAppCheckUnload( void )
+ * This function cannot be the first in the file for if the file is linked
+ * first, then the check-unload function's offset will be nlmname.nlm+0
+ * which is how to tell that there isn't one. When the check function is
+ * first in the linked objects, it is ambiguous. For this reason, we will
+ * put it inside this file after the stop function.
+ *
+ * Here we check to see if it's alright to ourselves to be unloaded. If not,
+ * we return a non-zero value. Right now, there isn't any reason not to allow
+ * it.
+ */
+int _NonAppCheckUnload(void)
 {
     return 0;
 }
 
 int GetOrSetUpData(int id, libdata_t **appData,
-                   libthreaddata_t **threadData )
+                   libthreaddata_t **threadData)
 {
   int                 err;
   libdata_t           *app_data;
@@ -166,25 +166,26 @@ int GetOrSetUpData(int id, libdata_t **appData,
   err         = 0;
   thread_data = (libthreaddata_t *) NULL;
 
-/*
-** Attempt to get our data for the application calling us. This is where we
-** store whatever application-specific information we need to carry in support
-** of calling applications.
-*/
+  /*
+   * Attempt to get our data for the application calling us. This is where we
+   * store whatever application-specific information we need to carry in
+   * support of calling applications.
+   */
   app_data = (libdata_t *) get_app_data(id);
 
   if(!app_data) {
-/*
-** This application hasn't called us before; set up application AND per-thread
-** data. Of course, just in case a thread from this same application is calling
-** us simultaneously, we better lock our application data-creation mutex. We
-** also need to recheck for data after we acquire the lock because WE might be
-** that other thread that was too late to create the data and the first thread
-** in will have created it.
-*/
+    /*
+     * This application hasn't called us before; set up application AND
+     * per-thread data. Of course, just in case a thread from this same
+     * application is calling us simultaneously, we better lock our application
+     * data-creation mutex. We also need to recheck for data after we acquire
+     * the lock because WE might be that other thread that was too late to
+     * create the data and the first thread in will have created it.
+     */
     NXLock(gLibLock);
 
-    if(!(app_data = (libdata_t *) get_app_data(id))) {
+    app_data = (libdata_t *) get_app_data(id);
+    if(!app_data) {
       app_data = malloc(sizeof(libdata_t));
 
       if(app_data) {
@@ -203,13 +204,14 @@ int GetOrSetUpData(int id, libdata_t **appData,
         }
 
         if(app_data) {
-/*
-** Here we burn in the application data that we were trying to get by calling
-** get_app_data(). Next time we call the first function, we'll get this data
-** we're just now setting. We also go on here to establish the per-thread data
-** for the calling thread, something we'll have to do on each application
-** thread the first time it calls us.
-*/
+          /*
+           * Here we burn in the application data that we were trying to get
+           * by calling get_app_data(). Next time we call the first function,
+           * we'll get this data we're just now setting. We also go on here to
+           * establish the per-thread data for the calling thread, something
+           * we'll have to do on each application thread the first time
+           * it calls us.
+           */
           err = set_app_data(gLibId, app_data);
 
           if(err) {
@@ -239,13 +241,13 @@ int GetOrSetUpData(int id, libdata_t **appData,
     if(key != -1 /* couldn't create a key? no thread data */
         && !(err = NXKeyGetValue(key, (void **) &thread_data))
         && !thread_data) {
-/*
-** Allocate the per-thread data for the calling thread. Regardless of whether
-** there was already application data or not, this may be the first call by a
-** a new thread. The fact that we allocation 20 bytes on a pointer is not very
-** important, this just helps to demonstrate that we can have arbitrarily
-** complex per-thread data.
-*/
+      /*
+       * Allocate the per-thread data for the calling thread. Regardless of
+       * whether there was already application data or not, this may be the
+       * first call by a new thread. The fact that we allocation 20 bytes on
+       * a pointer is not very important, this just helps to demonstrate that
+       * we can have arbitrarily complex per-thread data.
+       */
       thread_data = malloc(sizeof(libthreaddata_t));
 
       if(thread_data) {
@@ -258,7 +260,8 @@ int GetOrSetUpData(int id, libdata_t **appData,
           err         = ENOMEM;
         }
 
-        if((err = NXKeySetValue(key, thread_data))) {
+        err = NXKeySetValue(key, thread_data);
+        if(err) {
           free(thread_data->twentybytes);
           free(thread_data);
           thread_data = (libthreaddata_t *) NULL;
@@ -276,28 +279,24 @@ int GetOrSetUpData(int id, libdata_t **appData,
   return err;
 }
 
-int DisposeLibraryData( void *data )
+int DisposeLibraryData(void *data)
 {
   if(data) {
     void *tenbytes = ((libdata_t *) data)->tenbytes;
 
-    if(tenbytes)
-      free(tenbytes);
-
+    free(tenbytes);
     free(data);
   }
 
   return 0;
 }
 
-void DisposeThreadData( void *data )
+void DisposeThreadData(void *data)
 {
   if(data) {
     void *twentybytes = ((libthreaddata_t *) data)->twentybytes;
 
-    if(twentybytes)
-      free(twentybytes);
-
+    free(twentybytes);
     free(data);
   }
 }
@@ -306,15 +305,15 @@ void DisposeThreadData( void *data )
 /* For native CLib-based NLM seems we can do a bit more simple. */
 #include <nwthread.h>
 
-int main ( void )
+int main(void)
 {
-    /* initialize any globals here... */
+  /* initialize any globals here... */
 
-    /* do this if any global initializing was done
-    SynchronizeStart();
-    */
-    ExitThread (TSR_THREAD, 0);
-    return 0;
+  /* do this if any global initializing was done
+  SynchronizeStart();
+  */
+  ExitThread(TSR_THREAD, 0);
+  return 0;
 }
 
 #endif /* __NOVELL_LIBC__ */

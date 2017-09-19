@@ -5,11 +5,11 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2016, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
- * are also available at http://curl.haxx.se/docs/copyright.html.
+ * are also available at https://curl.haxx.se/docs/copyright.html.
  *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
@@ -18,13 +18,15 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: amigaos.c,v 1.9 2009-10-27 16:38:42 yangtse Exp $
  ***************************************************************************/
 
-#ifdef __AMIGA__ /* Any AmigaOS flavour */
+#include "curl_setup.h"
+
+#if defined(__AMIGA__) && !defined(__ixemul__)
+
+#include <amitcp/socketbasetags.h>
 
 #include "amigaos.h"
-#include <amitcp/socketbasetags.h>
 
 struct Library *SocketBase = NULL;
 extern int errno, h_errno;
@@ -33,10 +35,10 @@ extern int errno, h_errno;
 #include <stabs.h>
 void __request(const char *msg);
 #else
-# define __request( msg )       Printf( msg "\n\a")
+# define __request(msg)       Printf(msg "\n\a")
 #endif
 
-void amiga_cleanup()
+void Curl_amiga_cleanup()
 {
   if(SocketBase) {
     CloseLibrary(SocketBase);
@@ -44,7 +46,7 @@ void amiga_cleanup()
   }
 }
 
-BOOL amiga_init()
+bool Curl_amiga_init()
 {
   if(!SocketBase)
     SocketBase = OpenLibrary("bsdsocket.library", 4);
@@ -55,27 +57,21 @@ BOOL amiga_init()
   }
 
   if(SocketBaseTags(SBTM_SETVAL(SBTC_ERRNOPTR(sizeof(errno))), (ULONG) &errno,
-                    SBTM_SETVAL(SBTC_LOGTAGPTR), (ULONG) "cURL",
+                    SBTM_SETVAL(SBTC_LOGTAGPTR), (ULONG) "curl",
                     TAG_DONE)) {
     __request("SocketBaseTags ERROR");
     return FALSE;
   }
 
 #ifndef __libnix__
-  atexit(amiga_cleanup);
+  atexit(Curl_amiga_cleanup);
 #endif
 
   return TRUE;
 }
 
 #ifdef __libnix__
-ADD2EXIT(amiga_cleanup,-50);
+ADD2EXIT(Curl_amiga_cleanup, -50);
 #endif
 
-#else /* __AMIGA__ */
-
-#ifdef __POCC__
-#  pragma warn(disable:2024)  /* Disable warning #2024: Empty input file */
-#endif
-
-#endif /* __AMIGA__ */
+#endif /* __AMIGA__ && ! __ixemul__ */

@@ -1,5 +1,5 @@
-#ifndef _CURL_STRTOOFFT_H
-#define _CURL_STRTOOFFT_H
+#ifndef HEADER_CURL_STRTOOFFT_H
+#define HEADER_CURL_STRTOOFFT_H
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -7,11 +7,11 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2008, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2014, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
- * are also available at http://curl.haxx.se/docs/copyright.html.
+ * are also available at https://curl.haxx.se/docs/copyright.html.
  *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
@@ -20,25 +20,24 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: strtoofft.h,v 1.22 2008-08-21 06:58:13 yangtse Exp $
  ***************************************************************************/
 
-#include "setup.h"
+#include "curl_setup.h"
 
 /*
  * Determine which string to integral data type conversion function we use
  * to implement string conversion to our curl_off_t integral data type.
  *
  * Notice that curl_off_t might be 64 or 32 bit wide, and that it might use
- * an undelying data type which might be 'long', 'int64_t', 'long long' or 
+ * an underlying data type which might be 'long', 'int64_t', 'long long' or
  * '__int64' and more remotely other data types.
  *
  * On systems where the size of curl_off_t is greater than the size of 'long'
- * the conversion funtion to use is strtoll() if it is available, otherwise,
+ * the conversion function to use is strtoll() if it is available, otherwise,
  * we emulate its functionality with our own clone.
  *
  * On systems where the size of curl_off_t is smaller or equal than the size
- * of 'long' the conversion funtion to use is strtol().
+ * of 'long' the conversion function to use is strtol().
  */
 
 #if (CURL_SIZEOF_CURL_OFF_T > CURL_SIZEOF_LONG)
@@ -46,7 +45,14 @@
 #    define curlx_strtoofft strtoll
 #  else
 #    if defined(_MSC_VER) && (_MSC_VER >= 1300) && (_INTEGRAL_MAX_BITS >= 64)
-       _CRTIMP __int64 __cdecl _strtoi64(const char *, char **, int);
+#      if defined(_SAL_VERSION)
+         _Check_return_ _CRTIMP __int64 __cdecl _strtoi64(
+             _In_z_ const char *_String,
+             _Out_opt_ _Deref_post_z_ char **_EndPtr, _In_ int _Radix);
+#      else
+         _CRTIMP __int64 __cdecl _strtoi64(const char *_String,
+                                           char **_EndPtr, int _Radix);
+#      endif
 #      define curlx_strtoofft _strtoi64
 #    else
        curl_off_t curlx_strtoll(const char *nptr, char **endptr, int base);
@@ -58,8 +64,12 @@
 #  define curlx_strtoofft strtol
 #endif
 
-#define CURL_LLONG_MAX CURL_OFF_T_C(0x7FFFFFFFFFFFFFFF)
-#define CURL_LLONG_MIN (-CURL_LLONG_MAX - CURL_OFF_T_C(1))
-
+#if (CURL_SIZEOF_CURL_OFF_T == 4)
+#  define CURL_OFF_T_MAX CURL_OFF_T_C(0x7FFFFFFF)
+#else
+   /* assume CURL_SIZEOF_CURL_OFF_T == 8 */
+#  define CURL_OFF_T_MAX CURL_OFF_T_C(0x7FFFFFFFFFFFFFFF)
 #endif
+#define CURL_OFF_T_MIN (-CURL_OFF_T_MAX - CURL_OFF_T_C(1))
 
+#endif /* HEADER_CURL_STRTOOFFT_H */
