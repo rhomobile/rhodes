@@ -36,7 +36,7 @@
     <BaseIntermediateOutputPath>..\bin\anycpu\$(RootNamespace)</BaseIntermediateOutputPath>
     <IntermediateOutputPath>..\bin\anycpu\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <OutputPath>Bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;OS_UWP;UWP_LIB</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -49,7 +49,7 @@
     <BaseIntermediateOutputPath>..\bin\anycpu\$(RootNamespace)</BaseIntermediateOutputPath>
     <IntermediateOutputPath>..\bin\anycpu\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <OutputPath>..\bin\anycpu\rhodes\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;OS_UWP;UWP_LIB</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>

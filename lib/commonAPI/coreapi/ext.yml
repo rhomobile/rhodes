@@ -14,23 +14,8 @@ android:
   rhodes_listener: com.rho.coreapi.RhodesListener
   exttype: rakefile
 
-wp8:
-  libraries: ["WebView", "NativeToolbar", "NativeTabbar"]
-  webview:
-    csharp_impl: yes
-    root_namespace: rho
-    project_path: ext/platform/wp8/WebViewLib.vcxproj
-  nativetoolbar:
-    csharp_impl: yes
-    root_namespace: rho
-    project_path: ext/platform/wp8/NativeToolbarLib.vcxproj
-  nativetabbar:
-    csharp_impl: yes
-    root_namespace: rho
-    project_path: ext/platform/wp8/NativeTabbarLib.vcxproj
-
 uwp:
-  libraries: ["WebView", "NativeToolbar", "NativeTabbar"]
+  libraries: ["WebView", "NativeToolbar", "NativeTabbar", "Timer"]
   webview:
     csharp_impl: yes
     root_namespace: rho
@@ -43,9 +28,13 @@ uwp:
     csharp_impl: yes
     root_namespace: rho
     project_path: ext/platform/uwp/NativeTabbarLib.vcxproj
+  timer:
+    csharp_impl: yes
+    root_namespace: rho
+    project_path: ext/platform/uwp/TimerLib.vcxproj
+  
 
 project_paths:
-  wp8: ext/platform/wp8/Coreapi.vcxproj
   uwp: ext/platform/uwp/Coreapi.vcxproj
   wm: ext/platform/wm/CoreAPI.vcproj
 

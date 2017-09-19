@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9EAF9496-191E-4B03-B1C5-85D0F9F8CC25}</ProjectGuid>
+    <ProjectGuid>{E4B266D6-306C-4C42-B825-984D7179E584}</ProjectGuid>
     <RootNamespace>rhoruntime</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
@@ -49,7 +49,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -57,16 +57,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="SensorLib.props" />
+    <Import Project="TimerLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <Import Project="SensorLib.props" />
+    <Import Project="TimerLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="SensorLib.props" />
+    <Import Project="TimerLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <Import Project="SensorLib.props" />
+    <Import Project="TimerLib.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -113,9 +113,6 @@
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
     </Link>
-    <Lib>
-      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -136,9 +133,6 @@
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
     </Link>
-    <Lib>
-      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
@@ -157,9 +151,6 @@
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
     </Link>
-    <Lib>
-      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
@@ -180,28 +171,25 @@
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
     </Link>
-    <Lib>
-      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\generated\sensor_api_init.cpp" />
-    <ClCompile Include="..\..\shared\generated\sensor_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\sensor_ruby_api.c">
+    <ClCompile Include="..\..\shared\generated\timer_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\timer_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\timer_ruby_api.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="generated\lib\Sensor_impl.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\SensorBase.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\Sensor_js_wrap.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\Sensor_ruby_wrap.cpp" />
-    <ClCompile Include="generated\lib\SensorRuntime.cpp" />
+    <ClCompile Include="generated\lib\Timer_impl.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\TimerBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Timer_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Timer_ruby_wrap.cpp" />
+    <ClCompile Include="generated\lib\TimerRuntime.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\shared\generated\cpp\ISensor.h" />
-    <ClInclude Include="generated\lib\SensorRuntime.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\ITimer.h" />
+    <ClInclude Include="generated\lib\TimerRuntime.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
