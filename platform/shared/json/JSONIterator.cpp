@@ -206,17 +206,17 @@ String CJSONStructIterator::getCurString() const
 /////////////////////////////////////////////////////////////////////
 //CJSONEntry
 
-CJSONEntry::CJSONEntry(struct json_object * obj) : m_rootObject(null)
+CJSONEntry::CJSONEntry(struct json_object * obj) : m_rootObject(NULL)
 {
     m_object = obj;
 }
 
-CJSONEntry::CJSONEntry(const CJSONEntry& oCopy) : m_rootObject(null)
+CJSONEntry::CJSONEntry(const CJSONEntry& oCopy) : m_rootObject(NULL)
 {
     m_object = oCopy.m_object;
 }
 
-CJSONEntry::CJSONEntry(const char* szData) : m_rootObject(null)
+CJSONEntry::CJSONEntry(const char* szData) : m_rootObject(NULL)
 {
     m_rootObject = json_tokener_parse(const_cast<char*>(szData));
     
@@ -295,7 +295,7 @@ boolean CJSONEntry::isBoolean() const
 
 boolean CJSONEntry::hasName(const String& name) const
 {
-    return json_object_object_get(m_object,const_cast<char*>(name.c_str())) != null;
+    return json_object_object_get(m_object,const_cast<char*>(name.c_str())) != NULL;
 }
     
 String CJSONEntry::getStringObject( const char* name, const char* szDefValue )

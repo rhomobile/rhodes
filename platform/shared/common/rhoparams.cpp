@@ -41,7 +41,7 @@ const rho_param * CRhoParams::findHashParam(const char* name) const
                 return m_pParams->v.hash->value[i];
         }
     }
-    return null;
+    return NULL;
 }
 
 boolean CRhoParams::has(const char* name) const
@@ -96,21 +96,21 @@ boolean CRhoParams::getBool(const char* name) const
 
 void CRhoParams::free_params()
 {
-    if ( m_pParams != null )
+    if ( m_pParams != NULL )
         rho_param_free(m_pParams);
 }
 
 CRhoParamArray::CRhoParamArray(CRhoParams& oParams, const char* name) : CRhoParams(oParams)
 {
-    m_array = null;
+    m_array = NULL;
     const rho_param * ar = findHashParam(name);
-    if (ar != null && ar->type == RHO_PARAM_ARRAY)
+    if (ar != NULL && ar->type == RHO_PARAM_ARRAY)
         m_array = ar->v.array;
 }
 
 int CRhoParamArray::size() const
 {
-    if ( m_array == null )
+    if ( m_array == NULL )
         return 0;
 
     return m_array->size;

@@ -167,7 +167,7 @@ public:
     DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2 )
     {
         DBResultPtr res = prepareStatement(szSt);
-        if ( res->getStatement() == null )
+        if ( res->getStatement() == NULL )
             return res;
 
         bind(res->getStatement(), 1, p1);
@@ -180,7 +180,7 @@ public:
     DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3 )
     {
         DBResultPtr res = prepareStatement(szSt);
-        if ( res->getStatement() == null )
+        if ( res->getStatement() == NULL )
             return res;
 
         bind(res->getStatement(), 1, p1);
@@ -194,7 +194,7 @@ public:
     DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4 )
     {
         DBResultPtr res = prepareStatement(szSt);
-        if ( res->getStatement() == null )
+        if ( res->getStatement() == NULL )
             return res;
 
         bind(res->getStatement(), 1, p1);
@@ -209,7 +209,7 @@ public:
     DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5 )
     {
         DBResultPtr res = prepareStatement(szSt);
-        if ( res->getStatement() == null )
+        if ( res->getStatement() == NULL )
             return res;
 
         bind(res->getStatement(), 1, p1);
@@ -225,7 +225,7 @@ public:
     DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6 )
     {
         DBResultPtr res = prepareStatement(szSt);
-        if ( res->getStatement() == null )
+        if ( res->getStatement() == NULL )
             return res;
 
         bind(res->getStatement(), 1, p1);
@@ -244,7 +244,7 @@ public:
     DBResultPtr executeSQLReportNonUnique( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4 )
     {
         DBResultPtr res = prepareStatement(szSt);
-        if ( res->getStatement() == null )
+        if ( res->getStatement() == NULL )
             return res;
 
         bind(res->getStatement(), 1, p1);
@@ -260,7 +260,7 @@ public:
     DBResultPtr executeSQLReportNonUnique( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7 )
     {
         DBResultPtr res = prepareStatement(szSt);
-        if ( res->getStatement() == null )
+        if ( res->getStatement() == NULL )
             return res;
 
         bind(res->getStatement(), 1, p1);
@@ -279,7 +279,7 @@ public:
     DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7 )
     {
         DBResultPtr res = prepareStatement(szSt);
-        if ( res->getStatement() == null )
+        if ( res->getStatement() == NULL )
             return res;
 
         bind(res->getStatement(), 1, p1);
@@ -297,7 +297,7 @@ public:
     DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7, T8 p8 )
     {
         DBResultPtr res = prepareStatement(szSt);
-        if ( res->getStatement() == null )
+        if ( res->getStatement() == NULL )
             return res;
 
         bind(res->getStatement(), 1, p1);
@@ -316,7 +316,7 @@ public:
     DBResultPtr executeSQL( const char* szSt, T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7, T8 p8, T9 p9 )
     {
         DBResultPtr res = prepareStatement(szSt);
-        if ( res->getStatement() == null )
+        if ( res->getStatement() == NULL )
             return res;
 
         bind(res->getStatement(), 1, p1);
@@ -336,7 +336,7 @@ public:
     DBResultPtr executeSQL( const char* szSt, T1 p1)
     {
         DBResultPtr res = prepareStatement(szSt);
-        if ( res->getStatement() == null )
+        if ( res->getStatement() == NULL )
             return res;
 
         bind(res->getStatement(), 1, p1);

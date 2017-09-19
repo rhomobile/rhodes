@@ -75,12 +75,12 @@ public:
 //    int     getErrorCode(){ return m_dbError.getCode(); }
 //    void    setErrorCode(int nError){ m_nErrorCode=nError; }
 
-    virtual bool isEnd(){ return m_dbStatement == null; }
-    virtual bool isOneEnd(){ return m_dbStatement == null; }
+    virtual bool isEnd(){ return m_dbStatement == NULL; }
+    virtual bool isOneEnd(){ return m_dbStatement == NULL; }
     void next()
     {
         if ( sqlite3_step(m_dbStatement) != SQLITE_ROW )
-            setStatement(null);
+            setStatement(NULL);
     }
 
     virtual String getStringByIdx(int nCol)
