@@ -619,7 +619,7 @@ int netware_init(void);
 #if defined(USE_GNUTLS) || defined(USE_OPENSSL) || defined(USE_NSS) || \
     defined(USE_POLARSSL) || defined(USE_AXTLS) || defined(USE_MBEDTLS) || \
     defined(USE_CYASSL) || defined(USE_SCHANNEL) || \
-    defined(USE_DARWINSSL) || defined(USE_GSKIT)
+    defined(USE_DARWINSSL) || defined(USE_GSKIT) || defined(USE_RHOSSL)
 #define USE_SSL    /* SSL support has been enabled */
 #endif
 
@@ -765,5 +765,77 @@ endings either CRLF or LF so 't' is appropriate.
 #    define CURL_WINDOWS_APP
 #  endif
 # endif
+
+#if defined(OS_WP8) || defined(OS_UWP)
+extern VOID WINAPI SleepWP8(_In_ DWORD dwMilliseconds);
+#define Sleep SleepWP8
+extern DWORD
+WINAPI
+WaitForSingleObjectWP8(
+    _In_ HANDLE hHandle,
+    _In_ DWORD dwMilliseconds
+    );
+
+#define WaitForSingleObject WaitForSingleObjectWP8
+
+#ifndef OS_UWP
+extern DWORD
+WINAPI
+WaitForMultipleObjectsWP8(
+	_In_ DWORD nCount,
+	_In_reads_(nCount) CONST HANDLE *lpHandles,
+	_In_ BOOL bWaitAll,
+	_In_ DWORD dwMilliseconds
+);
+
+#define WaitForMultipleObjects WaitForMultipleObjectsWP8
+#else
+extern DWORD
+WINAPI
+WaitForMultipleObjects(
+	_In_ DWORD nCount,
+	_In_reads_(nCount) CONST HANDLE *lpHandles,
+	_In_ BOOL bWaitAll,
+	_In_ DWORD dwMilliseconds
+);
+#endif // !OS_UWP
+
+
+
+
+extern HANDLE
+WINAPI
+CreateEventWP8(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+    _In_ BOOL bManualReset,
+    _In_ BOOL bInitialState,
+    _In_opt_ LPCWSTR lpName);
+
+#define CreateEventW CreateEventWP8
+#define CreateEvent CreateEventW
+
+extern HANDLE WINAPI CreateMutexWP8(
+    _In_opt_  LPSECURITY_ATTRIBUTES lpMutexAttributes,
+	_In_      BOOL bInitialOwner,
+	_In_opt_  LPCWSTR lpName);
+
+#define CreateMutex CreateMutexWP8
+
+extern BOOL
+WINAPI
+TerminateThreadWP8(
+    _In_ HANDLE hThread,
+    _In_ DWORD dwExitCode
+    );
+
+#define TerminateThread TerminateThreadWP8
+
+extern BOOL WINAPI GetExitCodeThreadWP8(
+  _In_   HANDLE hThread,
+  _Out_  LPDWORD lpExitCode
+);
+
+#define GetExitCodeThread GetExitCodeThreadWP8
+#endif
 
 #endif /* HEADER_CURL_SETUP_H */
