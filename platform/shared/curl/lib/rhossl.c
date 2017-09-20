@@ -47,7 +47,7 @@
 #include "connect.h"
 //#include "strequal.h"
 #include "select.h"
-//#include "vtls/vtls.c.h"
+#include "vtls/vtls.h"
 //#include "rawstr.h"
 
 #define _MPRINTF_REPLACE /* use the internal *printf() functions */
@@ -97,7 +97,7 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
 
 	sprintf(host,"%s:%d\0", conn->host.name, conn->port); 
 
-	retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->verifypeer, connssl->storage, host);
+	retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->primary.verifypeer, connssl->storage, host);
     if (retcode)
         return retcode;
     
@@ -132,7 +132,7 @@ void Curl_rhossl_session_free(void *ptr)
     free(ptr);
 }
 
-int Curl_rhossl_close_all(struct SessionHandle *data)
+int Curl_rhossl_close_all(struct Curl_easy *data)
 {
     (void)data;
     return 0;

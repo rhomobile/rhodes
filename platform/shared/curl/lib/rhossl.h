@@ -21,7 +21,8 @@
  * KIND, either express or implied.
  *
  ***************************************************************************/
-
+#include "curl_setup.h"
+ 
 #ifdef USE_RHOSSL
 /*
  * This header should only be needed to get included by sslgen.c and rhossl.c
@@ -38,7 +39,7 @@ void Curl_rhossl_close(struct connectdata *conn, int sockindex);
 
 /* tell SSL engine to close down all open information regarding connections (and
    thus session ID caching etc) */
-int Curl_rhossl_close_all(struct SessionHandle *data);
+int Curl_rhossl_close_all(struct Curl_easy *data);
 
 /* function provided for the generic SSL-layer, called when a session id
    should be freed */
@@ -60,6 +61,8 @@ ssize_t Curl_rhossl_recv(struct connectdata *conn,
 size_t Curl_rhossl_version(char *buffer, size_t size);
 
 int Curl_rhossl_shutdown(struct connectdata *conn, int sockindex);
+
+#define CURL_SSL_BACKEND CURLSSLBACKEND_RHOSSL
 
 /* API setup for OpenSSL */
 #define curlssl_init Curl_rhossl_init
