@@ -349,6 +349,8 @@ struct ssl_connect_data {
   bool ssl_direction; /* true if writing, false if reading */
   size_t ssl_write_buffered_length;
 #elif defined(USE_SSL)
+#elif defined(USE_RHOSSL)
+  void *storage;
 #error "SSL backend specific information missing from ssl_connect_data"
 #endif
 };

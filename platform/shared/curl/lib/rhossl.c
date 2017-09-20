@@ -43,12 +43,12 @@
 #include "formdata.h" /* for the boundary function */
 #include "url.h" /* for the ssl config check function */
 #include "inet_pton.h"
-#include "ssluse.h"
+//#include "ssluse.h"
 #include "connect.h"
-#include "strequal.h"
+//#include "strequal.h"
 #include "select.h"
-#include "sslgen.h"
-#include "rawstr.h"
+//#include "vtls/vtls.c.h"
+//#include "rawstr.h"
 
 #define _MPRINTF_REPLACE /* use the internal *printf() functions */
 #include <curl/mprintf.h>
