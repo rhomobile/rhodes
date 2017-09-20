@@ -39,6 +39,7 @@
 
 /* to disable LDAPS */
 #define CURL_DISABLE_LDAPS 1
+#define BUILDING_LIBCURL
 
 /* to disable --libcurl C code generation option */
 /* #undef CURL_DISABLE_LIBCURL_OPTION */

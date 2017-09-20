@@ -26,7 +26,7 @@
  * but sslgen.c should ever call or use these functions.
  */
 
-#include "setup.h"
+#include "curl_setup.h"
 
 #include <string.h>
 #include <stdlib.h>
