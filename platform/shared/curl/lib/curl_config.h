@@ -73,6 +73,7 @@
 /* Definition to make a library symbol externally visible. */
 #define CURL_EXTERN_SYMBOL __attribute__ ((__visibility__ ("default")))
 
+#define CURL_STATICLIB 1
 /* your Entropy Gathering Daemon socket pathname */
 /* #undef EGD_SOCKET */
 
@@ -128,7 +129,9 @@
 /* #undef HAVE_BORINGSSL */
 
 /* Define to 1 if you have the clock_gettime function and monotonic timer. */
+#ifdef OS_ANDROID
 #define HAVE_CLOCK_GETTIME_MONOTONIC 1
+#endif
 
 /* Define to 1 if you have the closesocket function. */
 /* #undef HAVE_CLOSESOCKET */
@@ -230,7 +233,9 @@
 #define HAVE_GETHOSTBYNAME 1
 
 /* Define to 1 if you have the gethostbyname_r function. */
+#if defined(OS_ANDROID)
 #define HAVE_GETHOSTBYNAME_R 1
+#endif
 
 /* gethostbyname_r() takes 3 args */
 /* #undef HAVE_GETHOSTBYNAME_R_3 */
@@ -430,10 +435,14 @@
 #define HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the memrchr function or macro. */
+#if defined(OS_ANDROID)
 #define HAVE_MEMRCHR 1
+#endif
 
 /* Define to 1 if you have the MSG_NOSIGNAL flag. */
+#if defined(OS_ANDROID)
 #define HAVE_MSG_NOSIGNAL 1
+#endif
 
 /* Define to 1 if you have the <netdb.h> header file. */
 #define HAVE_NETDB_H 1
@@ -506,13 +515,30 @@
 #define HAVE_PTHREAD_H 1
 
 /* Define to 1 if you have the <pwd.h> header file. */
+#if defined(__APPLE__) && !defined(RHODES_QT_PLATFORM)
+#import <Availability.h>
+#ifndef __IPHONE_6_0
 #define HAVE_PWD_H 1
+#endif
+#else
+#define HAVE_PWD_H 1
+#endif
+
 
 /* Define to 1 if you have the `RAND_egd' function. */
 /* #undef HAVE_RAND_EGD */
 
+/* Define to 1 if you have the `RAND_screen' function. */
+/* #undef HAVE_RAND_SCREEN */
+
+/* Define to 1 if you have the `RAND_status' function. */
+/* #undef HAVE_RAND_STATUS */
+
 /* Define to 1 if you have the recv function. */
 #define HAVE_RECV 1
+
+/* Define to 1 if you have the recvfrom function. */
+#define HAVE_RECVFROM 1
 
 /* Define to 1 if you have the <rsa.h> header file. */
 /* #undef HAVE_RSA_H */
@@ -618,6 +644,18 @@
 
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
+
+#if defined(__APPLE__) && !defined(RHODES_EMULATOR)
+#import <Availability.h>
+#ifndef __IPHONE_7_0
+/* Define to 1 if you have the strlcat function. */
+#define HAVE_STRLCAT 1
+#endif
+#else
+#define HAVE_STRLCAT 1
+#endif
+/* Define to 1 if you have the `strlcpy' function. */
+/* #undef HAVE_STRLCPY */
 
 /* Define to 1 if you have the strncasecmp function. */
 #define HAVE_STRNCASECMP 1
@@ -765,6 +803,9 @@
 
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
+
+/* Define to 1 if you are building a native Windows target. */
+/* #undef NATIVE_WINDOWS */
 
 /* Define to 1 if you need the lber.h header file even with ldap.h */
 /* #undef NEED_LBER_H */
@@ -1020,3 +1061,10 @@
 
 /* the signed version of size_t */
 /* #undef ssize_t */
+
+/* RHO BEGIN */
+//#if defined(OS_IPHONE) || defined(OS_ANDROID) || defined(OS_WP8)
+#if defined(OS_IPHONE) || defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WP8) || defined(OS_UWP)
+#define USE_RHOSSL 1
+#endif
+/* RHO END */
