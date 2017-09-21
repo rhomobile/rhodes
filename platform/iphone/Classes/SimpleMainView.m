@@ -423,6 +423,13 @@ static BOOL makeHiddenUntilLoadContent = YES;
             fs = fsc;
         }
         
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+            if (screenSize.height == 812.0f)
+                //NSLog(@"iPhone X");
+                fs = "1";
+        }
+        
         if ((fs[0] == '0')) {
             wFrame.origin.y += 20;
             wFrame.size.height -= 20;
