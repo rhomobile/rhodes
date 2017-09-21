@@ -52,6 +52,7 @@
 
 #define _MPRINTF_REPLACE /* use the internal *printf() functions */
 #include <curl/mprintf.h>
+#include <assert.h>
 
 #ifdef USE_RHOSSL
 
@@ -172,6 +173,13 @@ ssize_t Curl_rhossl_recv(struct connectdata *conn, int sockindex, char *buf, siz
 size_t Curl_rhossl_version(char *buffer, size_t size)
 {
     return snprintf(buffer, size, "RhoSSL/1.0");
+}
+
+CURLcode Curl_rhossl_random(struct Curl_easy *data, unsigned char *entropy,
+                          size_t length)
+{
+	assert(false);
+	return CURLE_OK;
 }
 
 #endif /* USE_RHOSSL */
