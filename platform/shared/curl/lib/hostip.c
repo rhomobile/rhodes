@@ -67,6 +67,11 @@
 #define USE_ALARM_TIMEOUT
 #endif
 
+#include <logging/RhoLog.h>
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Curl"
+
+
 /*
  * hostip.c explained
  * ==================
