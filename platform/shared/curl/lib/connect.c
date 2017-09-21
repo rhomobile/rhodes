@@ -498,7 +498,11 @@ static bool verifyconnect(curl_socket_t sockfd, int *error)
 #ifdef _WIN32_WCE
   Sleep(0);
 #else
+#if !defined(OS_WP8) && !defined(OS_UWP)
   SleepEx(0, FALSE);
+#else
+  Sleep(0);
+#endif
 #endif
 
 #endif
