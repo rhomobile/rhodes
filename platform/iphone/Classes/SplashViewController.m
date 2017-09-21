@@ -221,9 +221,10 @@
 	NSString *pngDefaultiPhone5 = [NSString stringWithFormat:@"%@/Default-568h@2x.png", resourcePath];
     NSString *pngDefaultiPhone6 = [NSString stringWithFormat:@"%@/Default-667h@2x.png", resourcePath];
     NSString *pngDefaultiPhone6plus = [NSString stringWithFormat:@"%@/Default-736h@3x.png", resourcePath];
+	NSString *pngDefaultiPhoneX = [NSString stringWithFormat:@"%@/Default-812h@3x.png", resourcePath];
 
 	CGRect win_frame = [[[UIApplication sharedApplication] keyWindow] bounds];
-	
+
 	CGRect frame = myframe;
 	float scales = 1;//[[UIScreen mainScreen] scale];
 #ifdef __IPHONE_4_0
@@ -231,17 +232,17 @@
 		scales = [[UIScreen mainScreen] scale];
 	}
 #endif
-	
+
 	BOOL is_HiResolution = ((frame.size.width*scales) > 500);
 	BOOL is_iPad = NO;
-	
+
 	NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
 	if ([model hasPrefix:@"iPad"]) {
 		is_iPad = YES;
 	}
-	
+
 	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-	
+
 	if (is_iPad) {
 		if ([fileManager fileExistsAtPath:pngDefaultPath]) {
 			result = pngDefaultPath;
@@ -303,6 +304,11 @@
                     result = pngDefaultiPhone6plus;
                 }
             }
+			if (frame.size.height*scales >= (2436-1)) {
+                if ([fileManager fileExistsAtPath:pngDefaultiPhoneX]) {
+                    result = pngDefaultiPhoneX;
+                }
+            }
 		}
 	}
 	if (result == nil) {
@@ -320,6 +326,9 @@
         }
         else if ([fileManager fileExistsAtPath:pngDefaultiPhone6plus]) {
             result = pngDefaultiPhone6plus;
+        }
+		else if ([fileManager fileExistsAtPath:pngDefaultiPhoneX]) {
+            result = pngDefaultiPhoneX;
         }
 		else if ([fileManager fileExistsAtPath:pngDefaultPortraitPath]) {
 			result = pngDefaultPortraitPath;
@@ -356,7 +365,8 @@
 	NSString *pngDefaultiPhone5 = [NSString stringWithFormat:@"%@/Default-568h@2x.png", resourcePath];
     NSString *pngDefaultiPhone6 = [NSString stringWithFormat:@"%@/Default-667@2x.png", resourcePath];
     NSString *pngDefaultiPhone6plus = [NSString stringWithFormat:@"%@/Default-736h@3x.png", resourcePath];
-	
+	NSString *pngDefaultiPhoneX = [NSString stringWithFormat:@"%@/Default-812h@3x.png", resourcePath];
+
 	return (
 			//([fileManager fileExistsAtPath:pngLoadingPath]) ||
 			([fileManager fileExistsAtPath:pngDefaultPath]) ||
@@ -368,6 +378,7 @@
 			([fileManager fileExistsAtPath:pngDefaultiPhone5]) ||
             ([fileManager fileExistsAtPath:pngDefaultiPhone6]) ||
             ([fileManager fileExistsAtPath:pngDefaultiPhone6plus]) ||
+			([fileManager fileExistsAtPath:pngDefaultiPhoneX]) ||
 			([fileManager fileExistsAtPath:pngDefaultLandscapePath])
 	);
 
@@ -377,7 +388,7 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	BOOL is_iPad = NO;
-	
+
 	NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
 	if ([model hasPrefix:@"iPad"]) {
 		is_iPad = YES;
