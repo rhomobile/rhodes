@@ -54,8 +54,15 @@ private:
     void initContext(const char* szPartition);
 
 	void generateNewKey();
+    
+    void readKeyFromStorageOld();
+    void writeKeyToStorageOld();
+
+    void readKeyFromStorageNew();
+    void writeKeyToStorageNew();
+
     void readKeyFromStorage();
-    void writeKeyToStorage();
+    
 };
 
 }
