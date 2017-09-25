@@ -54,6 +54,14 @@ static void updateViewRect(CGRect* pRect)
         if (fs == NULL) {
             fs = fsc;
         }
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+            if (screenSize.height == 812.0f)
+                //NSLog(@"iPhone X");
+                fs = "1";
+        }
+
         if ((fs[0] == '0')) {
             pRect->origin.y += 20;
             pRect->size.height -= 20;
