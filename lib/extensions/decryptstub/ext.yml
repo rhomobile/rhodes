@@ -1,0 +1,7 @@
+#entry: Init_Decryptstub_extension
+javaentry: com.decryptstub.Decryptstub
+libraries: ["Decryptstub"]
+android:
+  exttype: rakefile
+
+platforms: ["iphone", "android"]

@@ -1,0 +1,18 @@
+entry: Init_FCMPushClient
+android:
+  exttype: rakefile
+  manifest_changes: 
+  - ext/android/AndroidManifest.rb
+  - ext/android/ApplicationManifestAdds.erb
+  library_deps: [extras/google/google_play_services/libproject/google-play-services_lib]
+  source_list: ext/android/ext_java.files
+  maven_deps: ['com.android.support:appcompat-v7:25.2.0']
+  maven_deps: ['com.google.android.gms:play-services:11.0.2']
+  maven_deps: ['com.google.android.gms:play-services-identity:11.0.2']
+  maven_deps: ['com.google.firebase:firebase-core:11.0.2']
+  maven_deps: ['com.google.firebase:firebase-config:11.0.2']
+  maven_deps: ['com.google.firebase:firebase-messaging:11.0.2']
+  adds: ext/android/res
+libraries: ['fcm-push']
+xml_api_paths: ext/fcm.xml
+#will work with newer SDKs

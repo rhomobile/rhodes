@@ -62,22 +62,22 @@ public:
         m_data.assign(data, size);
     }
 
-    virtual const char* getCharData()
+    virtual const char* getCharData() const
     {
         return m_data.c_str();
     }
 
-    virtual unsigned int getDataSize()
+    virtual unsigned int getDataSize() const
     {
         return m_data.size();
     }
 
-    virtual int getRespCode() 
+    virtual int getRespCode() const
     {
         return m_nRespCode;
     }
 
-    virtual String getCookies()
+    virtual String getCookies() const
     {
         return m_cookies;
     }
@@ -92,17 +92,17 @@ public:
         m_nRespCode = nRespCode;
     }
 
-    boolean isOK()
+    boolean isOK() const
     {
         return m_nRespCode == 200 || m_nRespCode == 206;
     }
     
-    boolean isUnathorized()
+    boolean isUnathorized() const
     {
         return m_nRespCode == 401;
     }
 
-    boolean isSuccess()
+    boolean isSuccess() const
     {
         return m_nRespCode > 0 && m_nRespCode < 400;
     }
@@ -282,7 +282,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         
         ProxySettings proxySettings;
         proxySettings.initFromConfig();
-		curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h, proxySettings );
+		curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h, proxySettings , AuthSettings(m_authMethod,m_authUser,m_authPassword) );
 
         CURL *curl = m_curl.curl();
         if (pHeaders) {
@@ -386,7 +386,7 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
     
     ProxySettings proxySettings;
     proxySettings.initFromConfig();
-    curl_slist *hdrs = m_curl.set_options("POST", strUrl, String(), oSession, pHeaders, proxySettings );
+    curl_slist *hdrs = m_curl.set_options("POST", strUrl, String(), oSession, pHeaders, proxySettings, AuthSettings(m_authMethod,m_authUser,m_authPassword) );
     CURL *curl = m_curl.curl();
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
@@ -624,7 +624,7 @@ void CURLNetRequest::ProxySettings::initFromConfig() {
 
 
 curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const String& strUrl, const String& strBody,
-                             IRhoSession* pSession, Hashtable<String,String>* pHeaders, const ProxySettings& proxySettings)
+                             IRhoSession* pSession, Hashtable<String,String>* pHeaders, const ProxySettings& proxySettings, const AuthSettings& authSettings)
 {
     if (method != NULL) {
         mStrMethod = method;
@@ -752,6 +752,22 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
             curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, mStrBody.c_str());
 		}
 #endif
+
+        RAWTRACE1( "Setting auth data for request: Method: %d, user: <SECRET>, password: <SECRET>", authSettings.method );
+
+        switch (authSettings.method) {
+        case AUTH_DIGEST:
+            curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+            curl_easy_setopt(m_curl, CURLOPT_USERNAME, authSettings.user.c_str());
+            curl_easy_setopt(m_curl, CURLOPT_PASSWORD, authSettings.password.c_str());
+            break;
+
+        case AUTH_BASIC:
+            curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_easy_setopt(m_curl, CURLOPT_USERNAME, authSettings.user.c_str());
+            curl_easy_setopt(m_curl, CURLOPT_PASSWORD, authSettings.password.c_str());
+            break;
+        }
 
     return hdrs;
 }

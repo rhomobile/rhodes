@@ -39,13 +39,19 @@ class CRhoFile;
 
 namespace net {
 
+  enum AuthMethod {
+    AUTH_NONE,
+    AUTH_BASIC,
+    AUTH_DIGEST
+  };
+
 struct INetResponse
 {
     virtual ~INetResponse(void){;}
-    virtual const char* getCharData() = 0;
-    virtual unsigned int getDataSize() = 0;
-    virtual int getRespCode() = 0;
-    virtual String getCookies() = 0;
+    virtual const char* getCharData() const = 0;
+    virtual unsigned int getDataSize() const = 0;
+    virtual int getRespCode() const = 0;
+    virtual String getCookies() const = 0;
 
     virtual void setCharData(const char* szData) = 0;
 };
@@ -87,6 +93,42 @@ struct INetRequestImpl
     virtual INetResponse* createEmptyNetResponse() = 0;
     
     virtual void setCallback(INetRequestCallback*) = 0;
+
+    virtual void setAuthMethod( AuthMethod method ) = 0;
+    virtual AuthMethod getAuthMethod() const = 0;
+    
+    virtual void setAuthUser( const String& user ) = 0;
+    virtual const String& getAuthUser() const = 0;
+    
+    virtual void setAuthPassword( const String& password ) = 0;
+    virtual const String& getAuthPassword() const = 0;
+};
+
+class CNetRequestBase : public INetRequestImpl
+{
+  friend class CNetRequestHolder;
+public:
+    CNetRequestBase()
+      : m_pCallback(0)
+      , m_authMethod( AUTH_NONE )
+    {
+
+    }
+
+    virtual void setCallback(INetRequestCallback* cb ) { m_pCallback = cb; }
+    virtual void setAuthMethod( AuthMethod method ) { m_authMethod = method; }
+    virtual AuthMethod getAuthMethod() const { return m_authMethod; }
+    virtual void setAuthUser( const String& user ) { m_authUser = user; }
+    virtual const String& getAuthUser() const { return m_authUser; }
+    virtual void setAuthPassword( const String& password ) { m_authPassword = password; }
+    virtual const String& getAuthPassword() const { return m_authPassword; }
+
+protected:
+  INetRequestCallback* m_pCallback;
+  
+  AuthMethod m_authMethod;
+  String m_authUser;
+  String m_authPassword;
 };
 
 typedef rho::common::CAutoPtr<rho::net::INetResponse> NetResponsePtr;
@@ -97,33 +139,33 @@ class CNetResponseWrapper
 public:
     CNetResponseWrapper( INetResponse* resp = 0) : m_netResp(resp)  {}
 
-    const char* getCharData(){ return m_netResp->getCharData(); }
+    const char* getCharData() const { return m_netResp->getCharData(); }
     void setCharData(const char* szData){ return m_netResp->setCharData(szData); }
-    unsigned int getDataSize(){ return m_netResp->getDataSize(); }
-    int getRespCode(){ return m_netResp->getRespCode(); }
-    String getCookies(){ return m_netResp->getCookies(); }
+    unsigned int getDataSize() const { return m_netResp->getDataSize(); }
+    int getRespCode() const { return m_netResp->getRespCode(); }
+    String getCookies() const { return m_netResp->getCookies(); }
 
-	boolean isOK()
+	boolean isOK() const
 	{
 		return getRespCode() == 200 || getRespCode() == 206;
 	}
 
-    boolean isUnathorized()
+    boolean isUnathorized() const
     {
         return getRespCode() == 401;
     }
 
-    boolean isRedirect()
+    boolean isRedirect() const
     {
        return getRespCode() == 301 || getRespCode() ==302;
     }
 
-    boolean isSuccess()
+    boolean isSuccess() const
     {
         return getRespCode() > 0 && getRespCode() < 400;
     }
 
-    boolean isResponseRecieved(){ return getRespCode() != -1; }
+    boolean isResponseRecieved() const { return getRespCode() != -1; }
 };
 
 class CNetRequestHolder
@@ -146,6 +188,11 @@ public:
     void setSslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
     
     bool isInsideRequest() const;
+
+    void setAuthMethod( AuthMethod method );
+    void setAuthUser( const String& user );
+    void setAuthPassword( const String& password );
+
 };
 
 class CNetRequestWrapper
@@ -168,6 +215,9 @@ public:
     void cancel();
     
     void setCallback(INetRequestCallback*);
+    void setAuthMethod( AuthMethod method );
+    void setAuthUser( const String& user );
+    void setAuthPassword( const String& password );
 
 };
 

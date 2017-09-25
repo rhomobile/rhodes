@@ -27,6 +27,7 @@
 if Rho::System.isRhoSimulator
     RHO_RB_EXT = '.rb'
     RHO_ERB_EXT = '.erb'
+    RHO_ENCRYPTED_EXT = ''
     RHO_APPS_DIR = ''
     RHO_EMULATOR_DIR = 'rhosimulator'    
     module Kernel   
@@ -58,6 +59,7 @@ if Rho::System.isRhoSimulator
 else
     RHO_RB_EXT = '.iseq'
     RHO_ERB_EXT = '_erb' + RHO_RB_EXT
+    RHO_ENCRYPTED_EXT = '.encrypted'
     RHO_APPS_DIR = 'apps/'
 end
 

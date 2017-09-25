@@ -1,0 +1,168 @@
+require 'rubygems'
+require 'fileutils'
+require 'json'
+
+$curdir = pwd
+TARGETDIR = ENV['TARGET_TEMP_DIR']
+raise "TARGET_TEMP_DIR is not set" if TARGETDIR.nil?
+OBJDIR = ENV['TEMP_FILES_DIR']
+raise "TEMP_FILES_DIR is not set" if OBJDIR.nil?
+$rootdir = ENV['RHO_ROOT']
+raise "RHO_ROOT is not set" if $rootdir.nil?
+$appincdir = ENV["RHO_INC"]
+raise "RHO_INC is not set" if $appincdir.nil?
+$androidndkpath = ENV['ANDROID_NDK']
+raise 'ANDROID_NDK is not set' if $androidndkpath.nil?
+$androidsdk = ENV['ANDROID_SDK']
+raise 'ANDROID_SDK is not set' unless $androidsdk    
+TARGETLIB = ENV['TARGETLIB']
+raise 'TARGETLIB is not set' if ENV['TARGETLIB'].nil?
+$app_dir = ENV["RHO_APP_DIR"]
+raise "RHO_APP_DIR is not set" if $app_dir.nil?
+
+require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+ARGS = [
+  "#{$curdir}/ext/android/jni/src",
+  "#{$rootdir}/platform/android/Rhodes/jni/include",
+  "#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details",
+  "#{$rootdir}/platform/shared/ruby/include",
+  "#{$rootdir}/platform/shared",
+  "#{$rootdir}/platform/shared/common",
+  "#{$rootdir}/platform/shared/api_generator",
+  "#{$appincdir}",
+  "#{$rootdir}/platform/shared/ruby",
+  "#{$rootdir}/platform/shared/ruby/android",
+  "#{$rootdir}/platform/shared/ruby/generated",
+  "#{$rootdir}/lib/commonAPI/coreapi/ext/shared"
+].map{|i| "-I\"#{i}\""}
+
+OBJDIR_ARM = File.join(OBJDIR,'arm')
+OBJDIR_x86 = File.join(OBJDIR,'x86')
+OBJDIR_MIPS = File.join(OBJDIR,'mips')
+
+SRC = get_sources File.join($curdir, 'ext_native.files')
+
+OBJ_ARM = FileList.new(get_objects(SRC, OBJDIR_ARM))
+OBJ_x86 = FileList.new(get_objects(SRC, OBJDIR_x86))
+OBJ_MIPS = FileList.new(get_objects(SRC, OBJDIR_MIPS))
+
+TARGETDIR_ARM = File.join(TARGETDIR,'armeabi')
+TARGETDIR_x86 = File.join(TARGETDIR,'x86')
+TARGETDIR_MIPS = File.join(TARGETDIR,'mips')
+
+TARGETLIB_ARM = File.join(TARGETDIR_ARM,TARGETLIB)
+TARGETLIB_x86 = File.join(TARGETDIR_x86,TARGETLIB)
+TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,TARGETLIB)
+#FCMJAR = File.join(TARGETDIR,'fcm.jar')
+
+cd '../..'
+
+namespace 'config' do
+  task :arm do
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'arm')
+  end
+  
+  task :x86 do
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'x86')
+  end
+  
+  task :mips do
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'mips')
+  end
+end
+
+directory TARGETDIR
+directory TARGETDIR_ARM => TARGETDIR
+directory TARGETDIR_x86 => TARGETDIR
+directory TARGETDIR_MIPS => TARGETDIR
+directory OBJDIR_ARM
+directory OBJDIR_x86
+directory OBJDIR_MIPS
+
+rule '.o' => lambda {|obj| find_source(obj) } do |t|
+  abi = File.basename(File.dirname(t.name))
+  Rake::Task["config:#{abi}"].invoke
+  cc_compile find_source(t.name), File.dirname(t.name), ARGS or raise "\e[31mCompilation failed: #{find_source(t.name)}\e[0m"
+end
+
+task OBJ_ARM => OBJDIR_ARM
+task OBJ_x86 => OBJDIR_x86
+task OBJ_MIPS => OBJDIR_MIPS
+
+def find_source(objfile)
+  base = File.basename(objfile, '.o')
+  src = SRC.find { |s| File.basename(s) == base }
+  raise "\e[31mSource does not exist: #{src}\e[0m" unless File.exists?(src)
+  src
+end
+
+file TARGETLIB_ARM => TARGETDIR_ARM do |t|
+    Rake::Task["config:arm"].invoke
+    cc_ar t.name, OBJ_ARM or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_ARM => OBJ_ARM
+
+file TARGETLIB_x86 => TARGETDIR_x86 do |t|
+    Rake::Task["config:x86"].invoke
+    cc_ar t.name, OBJ_x86 or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_x86 => OBJ_x86
+
+file TARGETLIB_MIPS => TARGETDIR_MIPS do |t|
+    Rake::Task["config:mips"].invoke
+    cc_ar t.name, OBJ_MIPS or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_MIPS => OBJ_MIPS
+
+
+$jsonfile = File.read(File.join($app_dir, 'google-services.json')) if File.exists?(File.join($app_dir, 'google-services.json'))
+  
+$xmlFileWithDataFromJson = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>"
+def add_data_to_string(name, dataFromJson)
+  $xmlFileWithDataFromJson << "\n\t<string name=\"" << name << "\" translatable=\"false\">" << 
+  $jsonfile.scan(/#{dataFromJson}.*\".*\"/).last.scan(/:.*\".*\"/).last.scan(/\".*\"/).last.gsub("\"","") << "</string>"
+end
+
+def createXmlFromJson()
+  puts "Creating values.xml from google-sevices.json" if $jsonfile
+  add_data_to_string("default_web_client_id", "client_id") if $jsonfile
+  add_data_to_string("firebase_database_url", "firebase_url") if $jsonfile
+  
+  if ENV["CUSTOM_FCM_SENDER_ID"].nil?
+    add_data_to_string("gcm_defaultSenderId", "project_number") if $jsonfile
+  else  
+    $xmlFileWithDataFromJson << "\n\t<string name=\"gcm_defaultSenderId\" translatable=\"false\">" <<  
+    ENV["CUSTOM_FCM_SENDER_ID"] << "</string>"
+  end
+  add_data_to_string("google_api_key", "current_key") if $jsonfile
+  
+  if ENV["CUSTOM_FCM_APPLICATION_ID"].nil?
+    add_data_to_string("google_app_id", "mobilesdk_app_id") if $jsonfile
+  else
+    $xmlFileWithDataFromJson << "\n\t<string name=\"google_app_id\" translatable=\"false\">" <<  
+    ENV["CUSTOM_FCM_APPLICATION_ID"] << "</string>"
+  end
+  add_data_to_string("google_crash_reporting_api_key", "current_key") if $jsonfile
+  add_data_to_string("google_storage_bucket", "storage_bucket") if $jsonfile
+  add_data_to_string("project_id", "project_id") if $jsonfile
+
+  $xmlFileWithDataFromJson << "\n</resources>"
+  resGoogleDir = File.join($curdir, 'res', 'res', 'values')
+  #resDebug = File.join(resGoogleDir, 'debug')
+  #resRelease = File.join(resGoogleDir, 'release')
+  #FileUtils.mkdir_p(resDebug) unless File.exists?(resDebug)
+  FileUtils.mkdir_p(resGoogleDir) unless File.exists?(resGoogleDir)
+  #File.open(File.join(resDebug, 'values.xml'), 'w') {|f| f.write($xmlFileWithDataFromJson) }
+  File.open(File.join(resGoogleDir, 'fireBaseValues.xml'), 'w') {|f| f.write($xmlFileWithDataFromJson) }
+  puts "fireBaseValues.xml created"
+end
+
+createXmlFromJson()
+
+namespace 'arch' do
+  task :arm => [TARGETLIB_ARM]
+  task :x86 => [TARGETLIB_x86]
+  task :mips => [TARGETLIB_MIPS]
+end
+
+task :default => ["arch:arm", "arch:x86"]
