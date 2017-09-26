@@ -63,6 +63,8 @@
 -dontwarn com.rho.**
 -dontwarn com.google.**
 
+-dontnote **
+
 
 # Preserve all fundamental application classes.
 -keep public class * extends android.app.Activity
