@@ -6,49 +6,84 @@ using System.Threading.Tasks;
 using rhoruntime;
 using rhodes;
 
+
 namespace rho {
 
-namespace TimerImpl
-{
-    public class Timer : TimerBase
+    namespace TimerImpl
     {
-        public Timer(string id) : base(id)
+        public class Timer : TimerBase
         {
-            // initialize class instance in C# here
+            public Timer(string id) : base(id)
+            {
+                System.Diagnostics.Debug.WriteLine("Timer " + _strID + " created");
+
+            }
+            private Windows.System.Threading.ThreadPoolTimer timer;
+
+            private IMethodResult result = null;
+            private bool alive = false;
+
+            public override void start(int interval, IMethodResult oResult)
+            {
+                alive = true;
+                result = oResult;
+
+                timer = Windows.System.Threading.ThreadPoolTimer.CreateTimer((source) => {
+                    DispatchInvoke(() => {
+                        if (result != null)
+                        {
+                            //result.set(_strID); TODO: fix it
+                        }
+                        alive = false;
+                        result = null;
+                        System.Diagnostics.Debug.WriteLine("Timer " + _strID + " callback");
+                    });
+                }, TimeSpan.FromMilliseconds(interval));
+                System.Diagnostics.Debug.WriteLine("Timer " + _strID + " started: " + (interval).ToString() + "ms");
+            }
+
+            public override void stop(IMethodResult oResult)
+            {
+                timer.Cancel();
+                alive = false;
+                result = null;
+                System.Diagnostics.Debug.WriteLine("Timer " + _strID + " stopped");
+            }
+
+            public override void isAlive(IMethodResult oResult)
+            {
+                System.Diagnostics.Debug.WriteLine("Timer " + _strID + " is alive = " + (alive?"true":"false"));
+                oResult.set(alive);
+            }
         }
 
-        public override void start(int interval, IMethodResult oResult)
+        public class TimerSingleton : TimerSingletonBase
         {
-            // implement this method in C# here
+            public TimerSingleton()
+            {
+                // initialize singleton instance in C# here
+            }
+
+            private int currentId = 0;
+            public override void create(IMethodResult oResult)
+            {
+                System.Diagnostics.Debug.WriteLine("Creating timer from singleton");
+                // implement this method in C# here
+                currentId++;
+                String newId = (currentId).ToString();
+                getTimerByID(newId);
+                oResult.set(newId);
+
+            }
         }
 
-        public override void stop(IMethodResult oResult)
+        public class TimerFactory : TimerFactoryBase
         {
-            // implement this method in C# here
-        }
-
-        public override void isAlive(IMethodResult oResult)
-        {
-            // implement this method in C# here
+            /*public virtual ITimerImpl getImpl(string id) {
+                getSingletonImpl();
+                return new Timer("");
+            }*/
         }
     }
-
-    public class TimerSingleton : TimerSingletonBase
-    {
-        public TimerSingleton()
-        {
-            // initialize singleton instance in C# here
-        }
-
-        public override void create(IMethodResult oResult)
-        {
-            // implement this method in C# here
-        }
-    }
-
-    public class TimerFactory : TimerFactoryBase
-    {
-    }
-}
 
 }
