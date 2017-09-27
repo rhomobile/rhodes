@@ -34,7 +34,7 @@
 @implementation RunnableWrapper
 + (void)run:(NSValue*)task {
     rho::common::IRhoRunnable* tsk = static_cast<rho::common::IRhoRunnable*>([task pointerValue]);
-    if (tsk != NULL && tsk != [NSNull null]) {
+    if ((tsk != NULL) /*&& (tsk != [NSNull null])*/) {
         tsk->runObject();
     }
 }

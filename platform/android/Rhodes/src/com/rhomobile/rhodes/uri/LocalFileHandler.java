@@ -88,22 +88,25 @@ public class LocalFileHandler implements UriHandler
        {    	   
     	    try{
         	   String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-        	   String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        	   String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
         	    if(mimeType!=null && mimeType.contains("image"))
         	    	intent.setDataAndType(path, "image/*");
         	    else if(mimeType!=null && mimeType.contains("audio"))
         	    	intent.setDataAndType(path, "audio/*");
 				else if(mimeType!=null && mimeType.contains("video"))
         	    	intent.setDataAndType(path, "video/*");	
-        	    else
+        	    else if(mimeType!=null) {
+                    intent.setDataAndType(path, mimeType); 
+                } else {
         	    	intent.setDataAndType(path, "*/*");
+                }
         	   }
         	   catch(Exception ex)
         	   {
         		   Logger.E(TAG, ex.getMessage());
         		   intent.setDataAndType(path, "*/*");
         	   }
-    	   
+               
     	
    	   }
         //ctx.startActivity(Intent.createChooser(intent, "Open in..."));

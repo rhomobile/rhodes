@@ -76,6 +76,11 @@
     BOOL mBlockExit;
     BOOL mIsFullScreen;
     BOOL mScreenStateChanged;
+    
+    // push specific
+    NSDictionary* mPushStoredData_UserInfo;
+    NSError* mPushStoredData_RegisterError;
+    NSData* mPushStoredData_DeviceToken;
 }
 
 @property (nonatomic, retain) UIWindow *window;

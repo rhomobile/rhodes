@@ -1,5 +1,6 @@
 require 'zip'
 require 'singleton'
+require 'nokogiri'
 
 module AndroidTools
 
@@ -143,13 +144,14 @@ class MavenDepsExtractor
 
           assets = File.join(target,'assets')
           manifest = File.join(target,'AndroidManifest.xml')
+		  r_txt = File.join(target,'R.txt')
           res = File.join(target,'res')
           libs = File.join(target,'libs')
           jni = File.join(target,'jni')
           classes = File.join(target,'classes.jar')
 
           @asset_dirs << assets if (File.directory?(assets) and !Dir[File.join(assets,'*')].empty? )
-          @manifests << manifest if File.file?(manifest)
+          @manifests << manifest if File.file?(manifest) and File.size?(r_txt)
           @res_dirs << res if (File.directory?(res) and !Dir[File.join(res,'*')].empty?)
           @jars += Dir[File.join(libs,'*.jar')]
           @jars << classes if File.file?(classes)
@@ -244,6 +246,16 @@ class MavenDepsExtractor
 
   def jars
     @jars
+  end
+  
+  def extract_packages
+     packages = []
+     @manifests.each do |m|
+       doc = File.open(m) { |f| Nokogiri::XML(f) }
+	   attr = doc.xpath("//manifest").attr("package")
+	   packages << attr.to_s
+     end
+	 return packages 
   end
 
   def classpath(separator)

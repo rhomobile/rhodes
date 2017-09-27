@@ -980,7 +980,7 @@ RHO_GLOBAL int  mapengine_request_data(int request_id, const char* url, void** d
 
 	jbyte* buf_p = env->GetByteArrayElements(jbytear.get(), 0);
 
-	if (buf_p == null) {
+	if (buf_p == NULL) {
 		env->DeleteLocalRef(cls);
 		RAWLOG_ERROR("mapengine_request : buffer from byte array is NULL");
 		return 0;

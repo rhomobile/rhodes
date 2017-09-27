@@ -138,5 +138,28 @@
     // not implemented on iOS
 }
 
+-(void) getAverageCurrentConsumption:(id<IMethodResult>)methodResult {
+    // not implemented on iOS
+}
+
+-(void) setAverageCurrentConsumption:(int)averageCurrentConsumption methodResult:(id<IMethodResult>)methodResult {
+    // not implemented on iOS
+}
+
+-(void) getTripDuration:(id<IMethodResult>)methodResult {
+    // not implemented on iOS    
+}
+
+-(void) setTripDuration:(int)tripDuration methodResult:(id<IMethodResult>)methodResult {
+    // not implemented on iOS
+}
+
+-(void) batteryDiagnostics:(id<IMethodResult>)methodResult {
+    // not implemented on iOS
+}
+
+
+
+
 
 @end

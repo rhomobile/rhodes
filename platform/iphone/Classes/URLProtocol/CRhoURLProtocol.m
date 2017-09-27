@@ -148,24 +148,6 @@ int on_http_cb(http_parser* parser) { return 0; }
     }
     NSURL* theUrl = [[self request] URL];
     
-    
-    if ([[theUrl path] isEqualToString:@"/!__rhoNativeApi"]) {
-        if (is_net_trace()) {
-            RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading URL has !__rhoNativeApi", [self selfIDstring]);
-        }
-        NSString* jsonRequestTest = [[self request] valueForHTTPHeaderField:@"__rhoNativeApiCall"];
-        if (jsonRequestTest != nil) {
-            NSString* responseStr = [CJSEntryPoint js_entry_point:jsonRequestTest];
-            if (responseStr != nil) {
-                [self sendResponseWithResponseCode:200 data:[responseStr dataUsingEncoding:NSUTF8StringEncoding]];
-                if (is_net_trace()) {
-                    RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
-                }
-                return;
-            }
-        }
-        
-    }
 #if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
     if ([theUrl.scheme isEqualToString:@"file"]) {
         NSString* rho_path = [NSString stringWithUTF8String:rho_native_rhopath()];
@@ -336,6 +318,26 @@ int on_http_cb(http_parser* parser) { return 0; }
     self.isStopped = NO;
     if (is_net_trace()) {
         RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading()", [self selfIDstring]);
+    }
+    
+    NSURL* theUrl = [[self request] URL];
+    
+    if ([[theUrl path] isEqualToString:@"/!__rhoNativeApi"]) {
+        if (is_net_trace()) {
+            RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading URL has !__rhoNativeApi", [self selfIDstring]);
+        }
+        NSString* jsonRequestTest = [[self request] valueForHTTPHeaderField:@"__rhoNativeApiCall"];
+        if (jsonRequestTest != nil) {
+            NSString* responseStr = [CJSEntryPoint js_entry_point:jsonRequestTest];
+            if (responseStr != nil) {
+                [self sendResponseWithResponseCode:200 data:[responseStr dataUsingEncoding:NSUTF8StringEncoding]];
+                if (is_net_trace()) {
+                    RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
+                }
+                return;
+            }
+        }
+        
     }
     
     dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 ), ^{

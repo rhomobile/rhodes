@@ -336,7 +336,8 @@
 #define HAVE_ATAN2L 1
 #define HAVE_ATAN2F 1
 #define HAVE_CHROOT 1
-#define HAVE_CLOCK_GETTIME 1
+//RHO - support iOS 9 and older
+//#define HAVE_CLOCK_GETTIME 1
 #define HAVE_COSH 1
 #define HAVE_DIRFD 1
 #define HAVE_DLOPEN 1
@@ -547,6 +548,17 @@
 #define NO_RUBY_SITE_LIB
 #define NO_RUBY_VENDOR_LIB
 //RHO
+
+//RHO iOS 11
+#if defined(__APPLE__) && !defined(RHODES_QT_PLATFORM)
+#import <Availability.h>
+#ifdef __IPHONE_11_0
+#define HAVE_SPAWNV
+#define HAVE_FORK 1
+#define vfork fork
+#define HAVE_WORKING_FORK 1
+#endif
+#endif
 
 
 #endif /* INCLUDE_RUBY_CONFIG_H */

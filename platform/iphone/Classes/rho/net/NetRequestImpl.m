@@ -53,7 +53,17 @@ typedef enum {
 
 void rho_net_impl_network_indicator(int active)
 {
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = active ? YES : NO;
+    if (active) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        });
+    }
+    else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+        });
+    }
+	//[UIApplication sharedApplication].networkActivityIndicatorVisible = active ? YES : NO;
 }
 
 

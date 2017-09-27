@@ -16,6 +16,7 @@ using namespace rho::common;
 #include "openssl/evp.h"
 #include "openssl/aes.h"
 #include "openssl/err.h"
+#include "openssl/sha.h"
 
 
 #include <stdio.h>
@@ -61,6 +62,17 @@ int Base64Decode(char* b64message, unsigned char** buffer, size_t* length) {
     BIO_free_all(bio);
 
     return (0); //success
+}
+
+int checkHashSHA1(const unsigned char* data, const unsigned char* in_hash, size_t len)
+{
+    SHA_CTX sha1h;
+    unsigned char out_hash[SHA_DIGEST_LENGTH] = { 0 };
+    SHA1_Init(&sha1h);
+    SHA1_Update(&sha1h, data, len);
+    SHA1_Final(out_hash, &sha1h);
+	
+    return !memcmp(in_hash, out_hash, SHA_DIGEST_LENGTH);
 }
 
 
@@ -150,7 +162,8 @@ extern "C" int tau_decrypt_file(const char* filebuf, int filebuf_len, char* decr
     String str_filebuf = filebuf;
 
     unsigned char* iv = (unsigned char*)filebuf;
-    unsigned char* data = (unsigned char*)filebuf + 16;
+	const unsigned char* hash = (unsigned char*)filebuf + 16;
+    unsigned char* data = (unsigned char*)filebuf + 16 + SHA_DIGEST_LENGTH;
 
     unsigned char* unpacked_key = NULL;
     size_t unpacked_key_len = 0;
@@ -158,7 +171,12 @@ extern "C" int tau_decrypt_file(const char* filebuf, int filebuf_len, char* decr
 
     size_t decrypted_data_len = 0;
 
-    int res = tau_decrypt_AES(data, filebuf_len - 16, unpacked_key, iv, (unsigned char*)decrypted_buf, &decrypted_data_len);
+    //int res = tau_decrypt_AES(data, filebuf_len - 16 - SHA_DIGEST_LENGTH, unpacked_key, iv, (unsigned char*)decrypted_buf, &decrypted_data_len);
+	int res = tau_decrypt_AES(data, filebuf_len - 16 - SHA_DIGEST_LENGTH, unpacked_key, iv, (unsigned char*)decrypted_buf, &decrypted_data_len);
+	
+	if(!checkHashSHA1((const unsigned char*)decrypted_buf, hash, decrypted_data_len))	
+		RAWTRACE("Integrity check failed!\n");
+		
 
     if (unpacked_key != NULL) {
         free(unpacked_key);

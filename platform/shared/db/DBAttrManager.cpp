@@ -41,7 +41,7 @@ void CDBAttrManager::add( int nSrcID, const char* szAttr )
     synchronized(m_mxSrcAttrs)
     {
         Hashtable<String,int>* pmapAttr = m_mapSrcAttrs.get(nSrcID);
-        if ( pmapAttr != null )
+        if ( pmapAttr != NULL )
         {
             Hashtable<String,int>& mapAttr = *pmapAttr;
             int nCount = 0;
@@ -63,7 +63,7 @@ void CDBAttrManager::remove( int nSrcID, const char* szAttr )
     synchronized(m_mxSrcAttrs)
     {
         Hashtable<String,int>* pmapAttr = m_mapSrcAttrs.get(nSrcID);
-        if ( pmapAttr != null )
+        if ( pmapAttr != NULL )
         {
             Hashtable<String,int>& mapAttr = *pmapAttr;
             if ( mapAttr.containsKey(szAttr) )
@@ -126,7 +126,7 @@ unsigned long CDBAttrManager::getAttrsBySrc(int nSrcID)
         CHoldRubyValue arRes(rho_ruby_create_array());
 
         Hashtable<String,int>* pmapAttr = m_mapSrcAttrs.get(nSrcID);
-        if ( pmapAttr != null )
+        if ( pmapAttr != NULL )
         {
             Hashtable<String,int>& mapAttr = *pmapAttr;
 
@@ -146,7 +146,7 @@ unsigned long CDBAttrManager::getAttrsBySrc(int nSrcID)
 boolean CDBAttrManager::isBlobAttr(int nSrcID, const char* szAttr)
 {
     Hashtable<String,int>* pmapAttr = m_mapBlobAttrs.get(nSrcID);
-    if ( pmapAttr != null )
+    if ( pmapAttr != NULL )
     {
         Hashtable<String,int>& mapAttr = *pmapAttr;
         return mapAttr.containsKey(szAttr);
@@ -159,7 +159,7 @@ Vector<String> CDBAttrManager::getBlobAttrs(int nSrcID) {
 	Vector<String> blobAttrs;
 	
 	Hashtable<String,int>* pmapAttr = m_mapBlobAttrs.get(nSrcID);
-    if ( pmapAttr != null )
+    if ( pmapAttr != NULL )
     {
         Hashtable<String,int>& mapAttr = *pmapAttr;
         for ( Hashtable<String,int>::const_iterator it = mapAttr.begin(); it != mapAttr.end(); ++it ) {
@@ -174,7 +174,7 @@ Vector<String> CDBAttrManager::getBlobAttrs(int nSrcID) {
 boolean CDBAttrManager::isOverwriteBlobFromServer(int nSrcID, const String& strAttr)
 {
     Hashtable<String,int>* pmapAttr = m_mapBlobAttrs.get(nSrcID);
-    if ( pmapAttr != null )
+    if ( pmapAttr != NULL )
     {
         Hashtable<String,int>& mapAttr = *pmapAttr;
         return mapAttr.get(strAttr) != 0;

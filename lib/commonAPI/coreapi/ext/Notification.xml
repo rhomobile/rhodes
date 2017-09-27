@@ -138,7 +138,7 @@ Example:
 
             <METHOD name="beep" access="STATIC" hasCallback="none">
                 <DESC>If the device is equipped with a beeper then a beep will be emitted. Not supported on iOS devices.</DESC>
-                <PLATFORM>Android, WM</PLATFORM>
+                <PLATFORM>Android, WM, Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH">
                         <DESC>The properties associated with the beep.</DESC>
