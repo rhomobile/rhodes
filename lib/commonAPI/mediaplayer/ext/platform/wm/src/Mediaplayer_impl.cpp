@@ -110,7 +110,7 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 						net::CNetRequestHolder *requestHolder = new net::CNetRequestHolder();
 						requestHolder->setSslVerifyPeer(false);
 
-						NetResponse resp = getNetRequest(requestHolder).pullFile( szVideoFileName, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+						NetResponse resp = getNetRequest(requestHolder).pullFile( szVideoFileName, newfilename, NULL, &mapHeaders,overwriteFile,createFolders,&fileExists);
 
 						delete requestHolder;
 
@@ -301,7 +301,7 @@ class CMediaplayerSingleton: public CMediaplayerSingletonBase
 				// Call the download function with the url and new filename the temp filename to be used.
 				net::CNetRequestHolder *requestHolder = new net::CNetRequestHolder();
 				requestHolder->setSslVerifyPeer(false);
-				NetResponse resp = getNetRequest(requestHolder).pullFile( filename, newfilename, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+				NetResponse resp = getNetRequest(requestHolder).pullFile( filename, newfilename, NULL, &mapHeaders,overwriteFile,createFolders,&fileExists);
 
 				delete requestHolder;
 
