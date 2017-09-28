@@ -6,6 +6,8 @@ namespace rhodes {
             WebViewFactoryComponent.setImpl(new rho.WebViewImpl.WebViewFactory());
             NativeToolbarFactoryComponent.setImpl(new rho.NativeToolbarImpl.NativeToolbarFactory());
             NativeTabbarFactoryComponent.setImpl(new rho.NativeTabbarImpl.NativeTabbarFactory());
+            TimerFactoryComponent.setImpl(new rho.TimerImpl.TimerFactory());
+            SensorFactoryComponent.setImpl(new rho.SensorImpl.SensorFactory());
         }
     }
 }

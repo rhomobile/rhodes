@@ -46,7 +46,7 @@ namespace rhoruntime
     public interface class I<%= $cur_module.name %>FactoryImpl
     {
     public:
-        I<%= $cur_module.name %>Impl^ getImpl();
+        I<%= $cur_module.name %>Impl^ getImpl(Platform::String^ id);
         I<%= $cur_module.name %>SingletonImpl^ getSingletonImpl();
     };
 

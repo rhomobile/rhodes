@@ -49,7 +49,7 @@ public:
 
     net::ISSL* createSSLEngine()
     {
-        return null;
+        return NULL;
     }
 
     virtual IRhoCrypt* createRhoCrypt();

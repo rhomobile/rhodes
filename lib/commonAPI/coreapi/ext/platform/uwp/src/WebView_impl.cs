@@ -11,7 +11,7 @@ namespace WebViewImpl
 {
     public class WebView : WebViewBase
     {
-        public WebView()
+        public WebView(string id) : base(id)
         {
         }
     }

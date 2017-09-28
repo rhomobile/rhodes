@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{<%= @uwpLibGUID %>}</ProjectGuid>
+    <ProjectGuid>{E4B266D6-306C-4C42-B825-984D7179E584}</ProjectGuid>
     <RootNamespace>rhoruntime</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
@@ -57,16 +57,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="<%= namecamelcase %>Lib.props" />
+    <Import Project="TimerLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <Import Project="<%= namecamelcase %>Lib.props" />
+    <Import Project="TimerLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="<%= namecamelcase %>Lib.props" />
+    <Import Project="TimerLib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <Import Project="<%= namecamelcase %>Lib.props" />
+    <Import Project="TimerLib.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -160,9 +160,8 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\uwp;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <Optimization>Disabled</Optimization>
       <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -173,23 +172,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_api_init.cpp" />
-    <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_ruby_api.c">
+    <ClCompile Include="..\..\shared\generated\timer_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\timer_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\timer_ruby_api.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="generated\lib\<%= namecamelcase %>_impl.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\<%= namecamelcase %>Base.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_js_wrap.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_ruby_wrap.cpp" />
-    <ClCompile Include="generated\lib\<%= namecamelcase %>Runtime.cpp" />
+    <ClCompile Include="generated\lib\Timer_impl.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\TimerBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Timer_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Timer_ruby_wrap.cpp" />
+    <ClCompile Include="generated\lib\TimerRuntime.cpp"/>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\shared\generated\cpp\I<%= namecamelcase %>.h" />
-    <ClInclude Include="generated\lib\<%= namecamelcase %>Runtime.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\ITimer.h" />
+    <ClInclude Include="generated\lib\TimerRuntime.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
