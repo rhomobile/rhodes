@@ -107,6 +107,7 @@ platform/uwp/RhoRuntimeInvoker/bin/*
 platform/uwp/rhodes/Bin/*
 platform/uwp/rhodes/rho/*
 platform/uwp/rhodes/AppPackages/*
+*.VC.opendb
 rhodes/*/pkg/
 rhodes/rhodes-framework/spec/bin/
 rhoconnect-client/build/*

@@ -329,7 +329,7 @@ void PushClient::messageHandler(P2PMessageQueue* mq, int status)
 		body += data.c_str();
 		body += "&rho_callback=1";
 
-		NetResponse resp = getNetRequest().pushData( m_callbackUri, body, null );
+		NetResponse resp = getNetRequest().pushData( m_callbackUri, body, NULL );
 		delete msg;
 
 		if (!resp.isOK() || strcmp(resp.getCharData(),"rho_push") == 0)
@@ -347,7 +347,7 @@ void PushClient::messageHandler(P2PMessageQueue* mq, int status)
 
 			if (sound != "") {
 				//TO DO - uncomment and test when play file support will be implemented on CE/WM
-				//alert_play_file(strcat("/public/alerts/", sound.c_str()), null);
+				//alert_play_file(strcat("/public/alerts/", sound.c_str()), NULL);
 			} 
 
 			if (duration > 0) {

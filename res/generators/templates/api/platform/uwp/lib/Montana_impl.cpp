@@ -65,7 +65,7 @@ I<%= $cur_module.name %>FactoryImpl^ C<%= $cur_module.name %>Factory::_impl;
 
 I<%= $cur_module.name %>* C<%= $cur_module.name %>Factory::createModuleByID(const rho::String& strID)
 {
-    return new C<%= $cur_module.name %>Impl(strID, _impl->getImpl());
+    return new C<%= $cur_module.name %>Impl(strID, _impl->getImpl(rho::common::convertStringToWP8(strID)));
 }
 
 I<%= $cur_module.name %>Singleton* C<%= $cur_module.name %>Factory::createModuleSingleton()

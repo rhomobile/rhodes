@@ -9,7 +9,7 @@ namespace NativeTabbarImpl
 {
     public class NativeTabbar : NativeTabbarBase
     {
-        public NativeTabbar()
+        public NativeTabbar(string id) : base(id)
         {
         }
     }

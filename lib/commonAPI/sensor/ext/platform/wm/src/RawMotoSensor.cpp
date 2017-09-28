@@ -249,7 +249,7 @@ DWORD CRawMotoSensor::CloseSensor()
 
     this->Stop();
 
-    if (m_sensorApiDll != null)
+    if (m_sensorApiDll != NULL)
     {
 
         // Register for sensor data callback. Notify threshold should be 1 if default buffer size is used

@@ -2708,33 +2708,20 @@ def init_extensions(dest, mode = "")
               libs = libs + extconf[$config["platform"]]["libraries"]
             end
 
-            if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8" || $config["platform"] == "uwp"
+            if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "uwp"
               libs.each do |lib|
-                extconf_wp8_lib = !extconf_wp8[lib.downcase].nil? ? extconf_wp8[lib.downcase] : Hash.new
                 extconf_uwp_lib = !extconf_uwp[lib.downcase].nil? ? extconf_uwp[lib.downcase] : Hash.new
-                csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?) || (!extconf_uwp_lib['csharp_impl'].nil?)
-                if extconf_wp8_lib['libname'].nil?
-                  extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
-                end
+                csharp_impl = csharp_impl_all || (!extconf_uwp_lib['csharp_impl'].nil?)
                 if extconf_uwp_lib['libname'].nil?
                   extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
                 end
 
                 if csharp_impl
-                  if ($config["platform"] == "wp8" )
-                    wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
-                    extcsharplibs << (extconf_wp8_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_wp8_lib['libname'] + ".lib"))
-                    extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
-                    extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />'
-                    extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{wp8_root_namespace}.#{lib}Impl.#{lib}Factory())"
-                  else
-                    uwp_root_namespace = !extconf_uwp_lib['root_namespace'].nil? ? extconf_uwp_lib['root_namespace'] : (!extconf_uwp['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
+                    uwp_root_namespace = !extconf_uwp_lib['root_namespace'].nil? ? extconf_uwp_lib['root_namespace'] : 'rho'
                     extcsharplibs << (extconf_uwp_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_uwp_lib['libname'] + ".lib"))
                     extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
                     extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\uwp\\' + lib + 'Impl.targets" />'
                     extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{uwp_root_namespace}.#{lib}Impl.#{lib}Factory())"
-                  end
-                  
                 end
               end
             else
@@ -2857,11 +2844,7 @@ def init_extensions(dest, mode = "")
 
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
 
-  if $config["platform"] == "wp8"
-    extscsharp = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.cs")
-    extscsharptargets = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.targets")
-    extscsharpcpp = File.join($startdir, "platform", "wp8", "rhoruntime", "CSharpExtensions.cpp")
-  elsif $config["platform"] == "uwp"
+  if $config["platform"] == "uwp"
     extscsharp = File.join($startdir, "platform", "uwp", "rhodes", "CSharpExtensions.cs")
     extscsharptargets = File.join($startdir, "platform", "uwp", "rhodes", "CSharpExtensions.targets")
     extscsharpcpp = File.join($startdir, "platform", "uwp", "rhoruntime", "CSharpExtensions.cpp")

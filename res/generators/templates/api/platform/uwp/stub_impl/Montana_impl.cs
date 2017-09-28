@@ -38,7 +38,7 @@ namespace <%= $cur_module.name %>Impl
 {
     public class <%= $cur_module.name %> : <%= $cur_module.name %>Base
     {
-        public <%= $cur_module.name %>()
+        public <%= $cur_module.name %>(string id) : base(id)
         {
             // initialize class instance in C# here
         }

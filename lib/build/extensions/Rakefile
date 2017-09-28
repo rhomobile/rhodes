@@ -16,7 +16,7 @@ def build_extension()
   
   elsif ENV['RHO_PLATFORM'] == 'uwp'
   
-    args = [$project_path, "/property:Configuration="+$build_config+" /property:Platform="+$sdk + " /property:VisualStudioVersion=14.0", '/t:Build']  
+    args = [$project_path, "/property:Configuration="+$build_config+" /property:Platform="+ (($sdk == 'Win32')?('x86'):$sdk) + " /property:VisualStudioVersion=14.0", '/t:Build']  
   else
     fail "This rakefile support only Windows platforms(WM, CE, Desktop, Universal Win Platform and WP8)"
   end

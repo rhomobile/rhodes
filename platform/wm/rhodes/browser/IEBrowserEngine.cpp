@@ -668,7 +668,7 @@ DWORD WINAPI CIEBrowserEngine::NavigationTimeoutThread( LPVOID lpParameter )
 					LOG(INFO) + szBuf;
 					}
 					
-					authwindowhandle = FindWindow(null,L"Enter Network Password");
+					authwindowhandle = FindWindow(NULL,L"Enter Network Password");
 	
 					if(authwindowhandle)
 					{
