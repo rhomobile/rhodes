@@ -34,6 +34,9 @@
 
 int rho_rhodesapp_check_mode();
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
+
 static int getIndex(NSValue *value)
 {
     int index;
@@ -215,11 +218,11 @@ BOOL rho_webview_get_KeyboardDisplayRequiresUserAction() {
         return YES;
     UIView *webv_v = [[[[Rhodes sharedInstance] mainView] getRhoWebView:-1] view];
     UIWebView* webv = (UIWebView*)webv_v;
-    
+
     if (webv != nil) {
         return webv.keyboardDisplayRequiresUserAction;
     }
-    
+
     return YES;
 }
 
@@ -228,11 +231,49 @@ void rho_webview_set_KeyboardDisplayRequiresUserAction(BOOL value) {
         return;
     UIView *webv_v = [[[[Rhodes sharedInstance] mainView] getRhoWebView:-1] view];
     UIWebView* webv = (UIWebView*)webv_v;
-    
+
     if (webv != nil) {
         webv.keyboardDisplayRequiresUserAction = value;
     }
 }
+
+BOOL rho_webview_get_EnableDragAndDrop() {
+    if (!rho_rhodesapp_check_mode())
+        return YES;
+    UIView *webv_v = [[[[Rhodes sharedInstance] mainView] getRhoWebView:-1] view];
+    UIWebView* webv = (UIWebView*)webv_v;
+
+    if (webv != nil) {
+        // TODO: detect current state
+        return YES;
+    }
+
+    return YES;
+}
+
+void rho_webview_set_EnableDragAndDrop(BOOL value) {
+    if (!rho_rhodesapp_check_mode())
+        return;
+    UIView *webv_v = [[[[Rhodes sharedInstance] mainView] getRhoWebView:-1] view];
+    UIWebView* webv = (UIWebView*)webv_v;
+
+    if (webv != nil) {
+        if (value) {
+            // TODO: restore interactions
+        }
+        else {
+#ifdef __IPHONE_11_0
+            if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"11.0")) {
+                dispatch_async( dispatch_get_main_queue(), ^{
+                    webv.scrollView.subviews[0].interactions = @[];
+                });
+            }
+#endif
+        }
+    }
+}
+
+
 
 
 void rho_webview_set_cookie(const char *u, const char *c)
