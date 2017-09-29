@@ -233,21 +233,25 @@ def cc_def_args
     args << "-DOS_ANDROID"
     args << "-DRHO_DEBUG"
     args << "-DHAVE_RLIM_T" if $have_rlim_t
+    args << "-O0"
     args << "-g"
-    unless $debug
-      args << "-O2"
-      args << "-DNDEBUG"
-    else
-      args << "-Og"
-      args << "-ggdb"
+    #args << "-ggdb"
+    args << "-D_DEBUG"
+    #unless $debug
+    #  args << "-O2"
+    #  args << "-DNDEBUG"
+    #else
+      #args << "-Og"
+      #args << "-ggdb"
       args << "-fstack-protector-all"
-      args << "-D_DEBUG"
+      #args << "-D_DEBUG"
+      #args << "-O0"
       args << "-Winit-self"
       args << "-Wshadow"
       args << "-Wcast-align"
       args << "-Wvla"
       args << "-Wstack-protector"
-    end
+    #end
     args
 end
 

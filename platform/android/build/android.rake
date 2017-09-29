@@ -2438,6 +2438,7 @@ namespace "package" do
     Dir.glob(File.join($applibs,'**','lib*.so')).each do |lib|
       arch = File.basename(File.dirname(lib))
       args << "lib/#{arch}/#{File.basename(lib)}"
+	  args << "lib/#{arch}/gdbserver"
     end
     Jake.run($jarbin, args, $tmpdir)
     unless $?.success?
