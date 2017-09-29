@@ -139,3 +139,9 @@ use_bb_full_browser=6
 
 # finger scroll activation on windows XP/7/8/8.1/10
 use_kinetic_scroll_on_windows = 1
+
+# disable drag and drop operation in WebView for iOS >= 11.0
+#WebView.enableDragAndDrop = 0
+
+# disable bounce for iOS WebView
+#WebView.enableBounce = 0

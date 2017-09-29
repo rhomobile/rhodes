@@ -36,6 +36,8 @@
 -(void) setCacheSize:(int)value methodResult:(id<IMethodResult>)methodResult;
 -(void) getEnableCache:(id<IMethodResult>)methodResult;
 -(void) setEnableCache:(BOOL)value methodResult:(id<IMethodResult>)methodResult;
+-(void) getEnableDragAndDrop:(id<IMethodResult>)methodResult;
+-(void) setEnableDragAndDrop:(BOOL)enableDragAndDrop methodResult:(id<IMethodResult>)methodResult;
 -(void) getAcceptLanguage:(id<IMethodResult>)methodResult;
 -(void) setAcceptLanguage:(NSString*)value methodResult:(id<IMethodResult>)methodResult;
 -(void) getZoomPage:(id<IMethodResult>)methodResult;
