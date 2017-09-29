@@ -23,6 +23,7 @@ import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
 import com.google.zxing.client.android.camera.CameraManager;
 import com.google.zxing.common.HybridBinarizer;
+import com.rhomobile.rhodes.Logger;
 
 //import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
@@ -68,6 +69,16 @@ final class DecodeHandler extends Handler {
   private void decode(byte[] data, int width, int height) {
     long start = System.currentTimeMillis();
     Result rawResult = null;
+    //double dimensionKoeff = ((double)height)/((double)width);
+    Logger.I(TAG, "Byte massive length " + data.length + " " + width + " " + height);
+    //Logger.I(TAG, Log.getStackTraceString(new Exception()));
+    //Logger.I(TAG, "decode() " + width + " " + height);
+    /*if (width > 640){
+      width = 640;
+      height = (int)(dimensionKoeff *(double)width);
+      Log.d(TAG, "decode() : changing height");
+    }*/
+
     PlanarYUVLuminanceSource source = CameraManager.get().buildLuminanceSource(data, width, height);
     BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
     try {
@@ -80,7 +91,7 @@ final class DecodeHandler extends Handler {
 
     if (rawResult != null) {
       long end = System.currentTimeMillis();
-      Log.d(TAG, "Found barcode (" + (end - start) + " ms):\n" + rawResult.toString());
+      Logger.I(TAG, "Found barcode (" + (end - start) + " ms):\n" + rawResult.toString());
       Message message = Message.obtain(activity.getHandler(), RhoExtManager.getResourceId("id", "decode_succeeded"), rawResult);
       Bundle bundle = new Bundle();
       bundle.putParcelable(DecodeThread.BARCODE_BITMAP, source.renderCroppedGreyscaleBitmap());

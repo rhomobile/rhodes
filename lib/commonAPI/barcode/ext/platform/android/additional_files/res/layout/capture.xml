@@ -92,7 +92,7 @@
               android:drawableLeft="@drawable/cancel_icon"
               android:drawablePadding="6dip"
               android:visibility="gone"/>
-
+             
       <Button android:id="@+id/retake_button"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
@@ -110,6 +110,13 @@
     </LinearLayout>
 
   </LinearLayout>
+
+      <Button android:id="@+id/flash_button"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:drawableLeft="@drawable/flash_button"
+              android:drawablePadding="6dip"
+              android:visibility="gone"/>
 
       <Button android:id="@+id/cancel_button_a"
               android:layout_width="wrap_content"
