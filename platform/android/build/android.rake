@@ -2438,7 +2438,18 @@ namespace "package" do
     Dir.glob(File.join($applibs,'**','lib*.so')).each do |lib|
       arch = File.basename(File.dirname(lib))
       args << "lib/#{arch}/#{File.basename(lib)}"
-	  args << "lib/#{arch}/gdbserver"
+
+    unless not $debug
+      gdbserver_path = File.join($androidndkpath, "prebuilt", "android-arm", "gdbserver", "gdbserver") #TODO: packing gdbserver for all platforms
+      if File.exist?(gdbserver_path)
+        path_to_lib = File.join $tmpdir, 'lib'
+        cp_r gdbserver_path, File.join(path_to_lib, arch)
+        args << "lib/#{arch}/gdbserver"
+      else
+        puts "gdbserver not found!"
+      end
+    end
+
     end
     Jake.run($jarbin, args, $tmpdir)
     unless $?.success?
