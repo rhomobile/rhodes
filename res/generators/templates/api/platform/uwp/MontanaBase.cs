@@ -4,6 +4,7 @@ using System.Net;
 using Windows.UI.Core;
 using System.Threading.Tasks;
 using rhoruntime;
+using rhodes;
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%
 end %>
@@ -73,7 +74,17 @@ namespace <%= $cur_module.name %>Impl
         {
             _strID = id;
             _runtime = new <%= $cur_module.name %>RuntimeComponent(this);
-            dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            try{
+              dispatcher = MainPage.getDispatcher();
+            }catch(Exception e){
+              deb("Can't get access to dispatcher");
+            }
+        }
+
+        public static void deb(String s, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "")
+        {
+            if (memberName.Length != 0) {memberName = memberName + " : ";}
+            System.Diagnostics.Debug.WriteLine(memberName + s);
         }
 
         public long getNativeImpl()
@@ -87,7 +98,7 @@ namespace <%= $cur_module.name %>Impl
             _nativeImpl = native;
         }
 
-        public void DispatchInvoke(Action a)
+        public void dispatchInvoke(Action a)
         {
             if (dispatcher != null) {
               var ignore = dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>

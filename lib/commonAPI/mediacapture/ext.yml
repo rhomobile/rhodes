@@ -17,7 +17,7 @@ wp8:
     root_namespace: rho
     project_path: ext/platform/wp8/CameraLib.vcxproj
 
-wp8:
+uwp:
   libraries: ["Camera"]
   camera:
     csharp_impl: yes
@@ -25,7 +25,7 @@ wp8:
     project_path: ext/platform/uwp/CameraLib.vcxproj
   
 project_paths:
-  wp8: ext/platform/uwp/Mediacapture.vcxproj
+  uwp: ext/platform/uwp/Mediacapture.vcxproj
   wm: ext/platform/wm/Mediacapture.vcproj
   
 xml_api_paths: ext/camera.xml, ext/videocapture.xml

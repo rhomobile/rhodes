@@ -94,7 +94,12 @@ namespace rhodes
     public partial class MainPage : Page
     {
 
-        static CoreDispatcher dispatcher;
+        static CoreDispatcher dispatcher = null;
+        public static CoreDispatcher getDispatcher()
+        {
+            if (dispatcher == null) { dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher; }
+            return dispatcher;
+        }
         
         // saved singletone instance of MainPage
         static private MainPage _instance = null;
@@ -244,8 +249,23 @@ namespace rhodes
                 }
             }
         }
-
-
+        private static DirectoryInfo rhoDir = null;
+        public static DirectoryInfo getDBDir()
+        {
+            DirectoryInfo dbDir = new DirectoryInfo(rhoDir.FullName + "\\db\\db-files");
+            try
+            {
+                if (!dbDir.Exists)
+                {
+                    dbDir.Create();
+                }
+                return dbDir;
+            }catch(Exception e)
+            {
+                return null;
+            }
+            
+        }
         public MainPage()
         {
             deb("Running constructor");
@@ -255,7 +275,7 @@ namespace rhodes
             deb("Local folder is " + localFolder.Path);
 
             String title = Package.Current.DisplayName;
-            DirectoryInfo rhoDir = new DirectoryInfo(localFolder.Path + "\\rho");
+            rhoDir = new DirectoryInfo(localFolder.Path + "\\rho");
             if (!rhoDir.Exists)
             {
                 DirectoryCopy(appInstalledFolder.Path + "\\rho", rhoDir.FullName, true);
@@ -283,7 +303,7 @@ namespace rhodes
                 task.AsTask().Wait();
             }
 
-            dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            getDispatcher();
             try
             {
                 _screenOrientation = SimpleOrientationSensor.GetDefault().GetCurrentOrientation();
