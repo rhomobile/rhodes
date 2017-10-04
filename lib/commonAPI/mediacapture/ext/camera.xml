@@ -29,7 +29,12 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 		<CONSTANTS>
 
 		  <!-- Camera Types -->
-
+            <CONSTANT name="STATUS_OK" value="ok" type="STRING">
+                <DESC>Status constant.</DESC>
+            </CONSTANT>
+            <CONSTANT name="STATUS_ERROR" value="error" type="STRING">
+                <DESC>Status constant.</DESC>
+            </CONSTANT>
 			<CONSTANT name="CAMERA_TYPE_BACK" value="back" type="STRING">
 				<DESC>Back camera. This is not supported in WM/CE devices.</DESC>
 			</CONSTANT>

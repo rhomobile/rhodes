@@ -197,7 +197,7 @@
     <ClCompile Include="..\..\shared\generated\cpp\camera_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\camera_ruby_wrap.cpp" />
     <ClCompile Include="generated\lib\CameraRuntime.cpp" />
-    <ClCompile Include="generated\lib\Camera_impl.cpp" />
+    <ClCompile Include="src\Camera_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ICamera.h" />
