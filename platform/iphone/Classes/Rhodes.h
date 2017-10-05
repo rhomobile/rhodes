@@ -57,6 +57,7 @@
     NSMutableDictionary *cookies;
     // Controllers
     SplashViewController *splashViewController;
+    SplashViewController *splashViewControllerSnapShot;
     LogOptionsController* logOptionsController;
     LogViewController* logViewController;
     DateTimePickerDelegate* dateTimePickerDelegate;
