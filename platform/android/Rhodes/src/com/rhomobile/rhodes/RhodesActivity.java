@@ -68,6 +68,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.FrameLayout;
+import android.util.Log;
 
 import android.support.v4.content.PermissionChecker;
 import android.support.v4.app.ActivityCompat;
@@ -411,9 +412,21 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Logger.T(TAG, "onActivityResult");
 
         RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
-       // com.rhomobile.rhodes.camera.Camera.onActivityResult(requestCode, resultCode, data);
-        
-        RhoExtManager.getImplementationInstance().onActivityResult(this, requestCode, resultCode, data);
+        //com.rhomobile.rhodes.camera.Camera.onActivityResult(requestCode, resultCode, data);
+        try{
+            RhoExtManager.getImplementationInstance().onActivityResult(this, requestCode, resultCode, data);
+        }catch(Exception e){
+            String stackTrace = Log.getStackTraceString(e);
+            Logger.W(TAG, e);
+
+            StringBuilder sb = new StringBuilder();
+            for (StackTraceElement element : e.getStackTrace()) {
+                sb.append(element.toString());
+                sb.append("\n");
+            }
+
+            Logger.W(TAG, sb.toString());
+        };
     }
 
     @Override
