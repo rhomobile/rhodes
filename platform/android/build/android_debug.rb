@@ -10,15 +10,16 @@ class AndroidDebug
         end
     end
 
-    def initialize(android_package, p)
+    def initialize(android_package, p, p2)
         @package = android_package
         @port = p
+        @jdwp_port = p2
     end
   
     def execute_blocked(cmd)
         Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
             if wait_thr.value != 0 
-                raise "Shell return error: #{wait_thr.value.to_s}\n STDERR: #{stdout.read}" 
+                raise "Shell return error: #{wait_thr.value.to_s}\n STDOUT: #{stdout.read}" 
             end
             output = stdout.read
             return output
@@ -75,7 +76,18 @@ class AndroidDebug
         execute_blocked("adb forward tcp:#{@port} tcp:#{@port}")
     end
 
-    def StartGdb(path_to_gdb, path_to_lib)
+    def StartAppOnDebug
+        @pid = get_pid_process(@package)
+        if @pid != -1
+            execute_blocked("adb shell \"run-as #{@package} kill #{@pid}\"")
+        end
+
+        execute_blocked("adb shell \"am start -D #{@package}/com.rhomobile.rhodes.RhodesActivity\"")
+        @pid = get_pid_process(@package)
+        puts "App wait debuger (#{@pid})"
+    end
+
+    def StartGdb(path_to_gdb)
         if isWindows?()
             path_to_gdb = path_to_gdb + '.exe'
         end
@@ -85,7 +97,16 @@ class AndroidDebug
         if !File.executable?(path_to_gdb) 
             raise "It's not GDB!!!"
         end
-        system(path_to_gdb + " \"target remote :5039 \"")
+        system(path_to_gdb)
+    end
+
+    def StartJdb
+        @pid = get_pid_process(@package)
+        if @pid == -1
+            raise "Application not running!"
+        end
+        execute_blocked("adb forward tcp:#{@jdwp_port} jdwp:#{@pid}")
+        system("jdb -connect com.sun.jdi.SocketAttach:hostname=localhost,port=#{@jdwp_port}")
     end
 
 end

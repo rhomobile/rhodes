@@ -163,14 +163,24 @@ end
 namespace 'debug' do
   namespace 'android' do
     task :gdbserver => ['config:android'] do
-      debugger = AndroidDebug.new($app_package_name, 5039)
+      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
       debugger.StartGdbServer
     end
 
     task :gdb => ['config:android'] do
-      debugger = AndroidDebug.new($app_package_name, 5039)
+      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
       gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
-      debugger.StartGdb(gdb_path, "")
+      debugger.StartGdb(gdb_path)
+    end
+
+    task :jdb => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger.StartJdb
+    end
+
+    task :appdebug => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger.StartAppOnDebug
     end
 
   end
