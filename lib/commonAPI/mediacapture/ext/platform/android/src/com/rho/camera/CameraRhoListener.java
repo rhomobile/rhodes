@@ -140,7 +140,6 @@ IRhoListener {
 		Logger.T(TAG, "CameraRhoListener.onActivityResult() START");
 		Logger.T(TAG, "ActualProperties: ["+getActualPropertyMap()+"]");
 		Logger.T(TAG, "Properties: ["+propertyMap+"]");
-		Logger.T(TAG, "intent.getData(): ["+intent.getData()+"]");
 		try {
 			if (resultCode == Activity.RESULT_OK)
 			{
@@ -276,7 +275,8 @@ IRhoListener {
 						}
 
 						if (imgPath == null) {
-							imgPath = intent.getData().getPath();
+							try{imgPath = intent.getData().getPath();}
+							catch(Exception e){}
 						}
 
 						if (fromGallery) {
