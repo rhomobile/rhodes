@@ -30,6 +30,7 @@ require File.dirname(__FILE__) + '/maven_deps_extractor.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
 require File.dirname(__FILE__) + '/android_studio_project_generator.rb'
+require File.dirname(__FILE__) + '/android_debug.rb'
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
@@ -158,6 +159,23 @@ end
 def get_boolean(arg)
   arg == 'true' or arg == 'yes' or arg == 'enabled' or arg == 'enable' or arg == '1'
 end
+
+namespace 'debug' do
+  namespace 'android' do
+    task :gdbserver => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, 5039)
+      debugger.StartGdbServer
+    end
+
+    task :gdb => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, 5039)
+      gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
+      debugger.StartGdb(gdb_path, "")
+    end
+
+  end
+end
+
 
 namespace 'project' do
   namespace 'android' do
