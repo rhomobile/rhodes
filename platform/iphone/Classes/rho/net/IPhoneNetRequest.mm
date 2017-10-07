@@ -475,8 +475,12 @@ public:
       NSURLComponents* components = [NSURLComponents componentsWithString:encodedUrl];
       
       // decode query to initial state - all other parts still encoded
-      components.percentEncodedQuery = components.query;
-      
+      @try {
+          components.percentEncodedQuery = components.query;
+      } @catch( NSException* e ) {
+          RAWLOG_ERROR1( "Error decoding URL query: %s", [e.reason UTF8String] );
+      }
+
       // make URL
       NSURL* nsurl = components.URL;
       
