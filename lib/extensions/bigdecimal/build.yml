@@ -1,0 +1,27 @@
+--- 
+name: framework_spec
+bbver: 4.6
+sdk: ../../
+applog: rholog.txt
+version: 1.0.0
+vendor: rhomobile
+sdkversion: 1.4
+#wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
+iphone: 
+  sdk: iphonesimulator8.2
+  entitlements: ""
+  codesignidentity: ""
+  configuration: Release
+  #extensions: ["digest-sha1"]   
+
+android:
+  version: 2.3.3
+
+win32:
+  extensions: ["serialport"]
+
+extensions: ["mspec", "fileutils", "zlib", "hmac", "digest", "digest-md5", "digest-sha1", "digest-sha2", "test-libs", "set", "thread", "timeout", "uri", "net-http", "fcntl", "rexml", "zlib", "openssl.so", "openssl", "ezcrypto", "logCapture", "bigdecimal" ]
+
+paths:
+  extensions:
+  - ../../../rhoconnect-client/ext/
