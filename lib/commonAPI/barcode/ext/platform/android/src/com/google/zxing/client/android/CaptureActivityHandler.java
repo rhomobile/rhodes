@@ -23,7 +23,7 @@ import com.google.zxing.client.android.camera.CameraManager;
 //import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
-
+import com.rhomobile.rhodes.Logger;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -69,6 +69,7 @@ public final class CaptureActivityHandler extends Handler {
 
   @Override
   public void handleMessage(Message message) {
+    //Logger.I(TAG, "handleMessage()");
     if (message.what == RhoExtManager.getResourceId("id", "auto_focus")) {
         //Log.d(TAG, "Got auto-focus message");
         // When one auto focus pass finishes, start another. This is the closest thing to

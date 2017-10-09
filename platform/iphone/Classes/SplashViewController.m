@@ -28,6 +28,9 @@
 
 #import "rho/common/SplashScreenImpl.h"
 
+#include "common/RhoConf.h"
+
+
 
 @implementation RhoSplashImageView
 
@@ -154,9 +157,20 @@
 @end
 
 
-
-
 @implementation SplashViewController
+
+
++(BOOL)isReplaceContentWhenSnapshot {
+    BOOL save_for_splash = NO;
+    if (rho_conf_is_property_exists("WebView.replaceContentBySplashWhenSnapshotBySystem")) {
+        int v = rho_conf_getBool("WebView.replaceContentBySplashWhenSnapshotBySystem");
+        if (v) {
+            save_for_splash = YES;
+        }
+    }
+    return save_for_splash;
+}
+
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (id)initWithParentView:(UIView*)v {
@@ -171,6 +185,26 @@
     
     //[parentView addSubview:splashView];
     ((UIWindow*)parentView).rootViewController = self;
+    
+    return self;
+}
+
+// Implement loadView to create a view hierarchy programmatically, without using a nib.
+- (id)initWithFrame:(CGRect)frame {
+    self = [super init];
+    //parentView = v;
+    //CGRect frame = [[UIScreen mainScreen] bounds];
+    
+    if ([SplashViewController hasLoadingImage]) {
+        splashView = [[RhoSplashImageView alloc] initWithFrame:frame];
+        splashView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+        splashView.autoresizesSubviews = YES;
+        self.view = splashView;
+    }
+    else {
+        self.view = [[UIView alloc] initWithFrame:frame];
+        self.view.backgroundColor = [UIColor blackColor];
+    }
     
     return self;
 }
