@@ -1092,6 +1092,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     mPushStoredData_UserInfo = nil;
     mPushStoredData_RegisterError = nil;
     mPushStoredData_DeviceToken = nil;
+    
+    splashViewControllerSnapShot = nil;
 
     instance = self;
     eventStore = nil; 
@@ -1291,6 +1293,14 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 #ifdef __IPHONE_4_0
 - (void)applicationDidEnterBackground:(UIApplication *)app {
+    
+    if ([SplashViewController isReplaceContentWhenSnapshot]) {
+        if (splashViewControllerSnapShot == nil) {
+            splashViewControllerSnapShot = [[SplashViewController alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        }
+        [self.window.rootViewController presentViewController:[splashViewControllerSnapShot retain] animated:NO completion:NULL];
+    }
+    
 
     RAWLOG_INFO("Application go to background");
     rho_rhodesapp_callUiDestroyedCallback();
@@ -1337,6 +1347,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+    if ([SplashViewController isReplaceContentWhenSnapshot]) {
+        [self.window.rootViewController dismissViewControllerAnimated:NO completion:NO];
+    }
     [self registerForNotifications];
 }
 #endif

@@ -19,11 +19,13 @@ package com.google.zxing.client.android.camera;
 import android.content.Context;
 import android.graphics.Point;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.CameraInfo;
 import android.os.Build;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+
 
 import java.util.regex.Pattern;
 
@@ -54,6 +56,7 @@ final class CameraConfigurationManager {
    */
   void initFromCameraParameters(Camera camera, int cameraIndex) {
     Camera.Parameters parameters = camera.getParameters();
+
     previewFormat = parameters.getPreviewFormat();
     previewFormatString = parameters.get("preview-format");
     Log.d(TAG, "Default preview format: " + previewFormat + '/' + previewFormatString);
@@ -199,6 +202,7 @@ final class CameraConfigurationManager {
   }
 
   private void setFlash(Camera.Parameters parameters) {
+    if (true) return;
     // FIXME: This is a hack to turn the flash off on the Samsung Galaxy.
     // And this is a hack-hack to work around a different value on the Behold II
     // Restrict Behold II check to Cupcake, per Samsung's advice

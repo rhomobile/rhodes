@@ -47,7 +47,7 @@ namespace rho
 			if(ptr)
 			{
 				delete ptr;
-				ptr = null;
+				ptr = NULL;
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace rho
 			CURLcode retCode = CURLE_SSL_CONNECT_ERROR;
 
 			ssl_data_t* Storage = (ssl_data_t*)storage;
-			if(Storage == null)
+			if(Storage == NULL)
 				return CURLE_SSL_CONNECT_ERROR;
 
 			res = getpeername(sockfd, (struct sockaddr *)&adr_inet, &len_inet);
@@ -107,7 +107,7 @@ namespace rho
 			
 			ssl_data_t* Storage = (ssl_data_t*)storage;
 
-			if(Storage == null)
+			if(Storage == NULL)
 				return -1;
 
 			IOutputStream^ os = Storage->m_sslSocket->OutputStream;
@@ -159,7 +159,7 @@ namespace rho
 			
 			ssl_data_t* Storage = (ssl_data_t*)storage;
 
-			if(Storage == null)
+			if(Storage == NULL)
 				return -1;
 
 			IInputStream^ is = Storage->m_sslSocket->InputStream;

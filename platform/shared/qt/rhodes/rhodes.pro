@@ -157,7 +157,8 @@ RhoSimulator.h\
 QtLogView.h \
 QtCustomStyle.h\
 mainwindowinterface.h \
-guithreadfunchelper.h
+guithreadfunchelper.h \
+    impl/notificationsound.h
 
 
 SOURCES += impl/AlertImpl.cpp\
@@ -180,7 +181,8 @@ impl/QtSystemImpl.cpp\
 impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
-../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp
+../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp \
+    impl/notificationsound.cpp
 
 
 contains(DEFINES, RHODES_VERSION_1)  {
@@ -248,3 +250,4 @@ newVersion/main.cpp\
 newVersion/WebUrlRequestInterceptor.cpp
 
 }
+RESOURCES += resources/common.qrc

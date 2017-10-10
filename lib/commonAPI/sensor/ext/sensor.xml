@@ -89,6 +89,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <CONSTANT name="SENSOR_STATUS_ERROR" value="error">
                 <DESC>Sensor in error state.</DESC>
             </CONSTANT>
+            <CONSTANT name="SENSOR_STATUS_OK" value="ok">
+                <DESC>Sensor in ok state.</DESC>
+            </CONSTANT>
         </CONSTANTS>
 
         <PROPERTIES generateAccessors="true">

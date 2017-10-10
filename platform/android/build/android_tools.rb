@@ -208,7 +208,8 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
     unless found_classpath
       msg = "No Android SDK add-on found: #{addon_pattern}"
       msg += "; API level: #{apilevel}" if apilevel
-      raise msg
+
+      @@logger.warn msg
     end
 
     if USE_TRACES

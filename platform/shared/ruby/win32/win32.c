@@ -426,10 +426,8 @@ static inline char *
 translate_char(char *p, int from, int to, UINT cp)
 {
     while (*p) {
-	if ((unsigned char)*p == from)
-
-//RHO		*p = to;
-	p = CharNextExA(cp, p, 0);
+		if ((unsigned char)*p == from) { *p = to; }
+		p = CharNextExA(cp, p, 0);
     }
     return p;
 }

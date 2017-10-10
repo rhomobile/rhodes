@@ -194,7 +194,7 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
 
     String strUrl = RHODESAPP().getBaseUrl();
     strUrl += strCallback;
-    NetResponse resp = getNetRequest().pullData( strUrl, null );
+    NetResponse resp = getNetRequest().pullData( strUrl, NULL );
     if ( !resp.isOK() )
     {
         boolean bTryAgain = false;
@@ -217,7 +217,7 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
             LOG(INFO) + "Change base url and try again.";
             strUrl = RHODESAPP().getBaseUrl();
             strUrl += strCallback;
-            resp = getNetRequest().pullData( strUrl, null );
+            resp = getNetRequest().pullData( strUrl, NULL );
         }
 
         if ( !resp.isOK() )
@@ -402,7 +402,7 @@ void CAppCallbacksQueue::processUiCreated()
 
 /*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
 {
-    if ( m_pInstance != null) return (CRhodesApp*)m_pInstance;
+    if ( m_pInstance != NULL) return (CRhodesApp*)m_pInstance;
 
     m_pInstance = new CRhodesApp(strRootPath, strUserPath, strRuntimePath);
 
@@ -664,7 +664,7 @@ public:
         if ( !rho_ruby_is_started() )
             return;
 
-        getNetRequest().pushData( m_strCallback, m_strBody, null );
+        getNetRequest().pushData( m_strCallback, m_strBody, NULL );
     }
 };
 
@@ -751,7 +751,7 @@ void CRhodesApp::callUiDestroyedCallback()
     if ( rho_ruby_is_started() )
     {
         String strUrl = m_strHomeUrl + "/system/uidestroyed";
-        NetResponse resp = getNetRequest().pullData( strUrl, null );
+        NetResponse resp = getNetRequest().pullData( strUrl, NULL );
         if ( !resp.isOK() )
         {
             LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
@@ -798,7 +798,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
             if ( rho_ruby_is_started() )
             {
                 String strUrl = m_strHomeUrl + "/system/deactivateapp";
-                NetResponse resp = getNetRequest().pullData( strUrl, null );
+                NetResponse resp = getNetRequest().pullData( strUrl, NULL );
                 if ( !resp.isOK() )
                 {
                     LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
@@ -850,7 +850,7 @@ String g_strBody;
 	{
 		 if ( !rho_ruby_is_started() )
 	            return 0;
-		 getNetRequest().pushData( g_strCallbackUrl, g_strBody, null );
+		 getNetRequest().pushData( g_strCallbackUrl, g_strBody, NULL );
 		 return 0;
 	}
 
@@ -877,7 +877,7 @@ void CRhodesApp::callCallbackWithData(String strCallbackUrl, String strBody, con
 #endif
 
     if (bWaitForResponse)
-        getNetRequest().pushData( strCallbackUrl, strBody, null );
+        getNetRequest().pushData( strCallbackUrl, strBody, NULL );
     else
 	{
 #if ( !defined(OS_MACOSX) && (defined(OS_WINDOWS_DESKTOP) ||  defined(RHODES_EMULATOR)) )
@@ -906,7 +906,7 @@ void CRhodesApp::callCallbackProcWithData(unsigned long oRubyCallbackProc, Strin
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
 
     if (bWaitForResponse)
-        getNetRequest().pushData( strCallbackUrl, strBody, null );
+        getNetRequest().pushData( strCallbackUrl, strBody, NULL );
     else
         runCallbackInThread(strCallbackUrl, strBody);
 }
@@ -966,7 +966,7 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
 
 
     strBody += "&rho_callback=1";
-    getNetRequest().pushData( strCallbackUrl, strBody, null );
+    getNetRequest().pushData( strCallbackUrl, strBody, NULL );
 }
 
 void CRhodesApp::callSignatureCallback(String strCallbackUrl, const String& strSignaturePath, 
@@ -984,7 +984,7 @@ void CRhodesApp::callSignatureCallback(String strCallbackUrl, const String& strS
 			strBody = "status=ok&signature_uri=db%2Fdb-files%2F" + strSignaturePath;
 		
 		strBody += "&rho_callback=1";
-		//getNetRequest().pushData( strCallbackUrl, strBody, null );
+		//getNetRequest().pushData( strCallbackUrl, strBody, NULL );
         runCallbackInThread(strCallbackUrl, strBody);
 	}
 	
@@ -1004,14 +1004,14 @@ void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, con
     }
 
     strBody += "&rho_callback=1";
-    getNetRequest().pushData( strCallbackUrl, strBody, null );
+    getNetRequest().pushData( strCallbackUrl, strBody, NULL );
 }
 
 void CRhodesApp::callBluetoothCallback(String strCallbackUrl, const char* body) {
 	strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
 	String strBody = body;
 	strBody += "&rho_callback=1";
-	getNetRequest().pushData( strCallbackUrl, strBody, null );
+	getNetRequest().pushData( strCallbackUrl, strBody, NULL );
 }
 
 void CRhodesApp::callPopupCallback(String strCallbackUrl, const String &id, const String &title)
@@ -1022,7 +1022,7 @@ void CRhodesApp::callPopupCallback(String strCallbackUrl, const String &id, cons
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
     String strBody = "button_id=" + id + "&button_title=" + title;
     strBody += "&rho_callback=1";
-    getNetRequest().pushData( strCallbackUrl, strBody, null );
+    getNetRequest().pushData( strCallbackUrl, strBody, NULL );
 }
 
 static void callback_syncdb(void *arg, String const &/*query*/ )
@@ -1160,7 +1160,7 @@ const String& CRhodesApp::getRhoMessage(int nError, const char* szName)
 
     if ( rho_ruby_is_started() )
     {
-        NetResponse resp = getNetRequest().pullData( strUrl, null );
+        NetResponse resp = getNetRequest().pullData( strUrl, NULL );
         if ( !resp.isOK() )
         {
             LOG(ERROR) + "getRhoMessage failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
@@ -2125,7 +2125,7 @@ boolean CRhodesApp::callPushCallbackWithJsonBody(const String& strUrl, const Str
             strBody += strParams;
         }
 
-        NetResponse resp = getNetRequest().pushData( strCanonicalUrl, strBody, null );
+        NetResponse resp = getNetRequest().pushData( strCanonicalUrl, strBody, NULL );
         if (!resp.isOK())
             LOG(ERROR) + "Push notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
         else
@@ -2182,7 +2182,7 @@ void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
 		RAWLOG_ERROR(i.c_str());
 
 			
-		NetResponse resp = getNetRequest().pushData( m_strScreenRotationCallback, strBody, null);
+		NetResponse resp = getNetRequest().pushData( m_strScreenRotationCallback, strBody, NULL);
         if (!resp.isOK()) {
             LOG(ERROR) + "Screen rotation notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
         }
@@ -2270,7 +2270,7 @@ void CRhodesApp::loadUrl(String url, int nTabIndex/* = -1*/)
     {
         url = canonicalizeRhoUrl(url);
         if ( rho_ruby_is_started() )
-            getNetRequest().pushData( url,  "rho_callback=1", null );
+            getNetRequest().pushData( url,  "rho_callback=1", NULL );
     }
     else if (js_callback)
         rho_webview_execute_js(url.c_str(), nTabIndex);
@@ -2947,7 +2947,7 @@ int rho_rhodesapp_isrubycompiler()
 void rho_net_request(const char *url)
 {
     String strCallbackUrl = RHODESAPP().canonicalizeRhoUrl(url);
-    getNetRequest().pullData(strCallbackUrl.c_str(), null);
+    getNetRequest().pullData(strCallbackUrl.c_str(), NULL);
 }
     
 void rho_net_request_with_data_in_separated_thread(const char *url, const char *str_body) {

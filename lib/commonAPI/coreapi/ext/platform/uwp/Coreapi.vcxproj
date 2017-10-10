@@ -252,9 +252,6 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\cpp\TimerBase.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\Timer_js_wrap.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\Timer_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\log_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\log_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\log_ruby_api.c">
@@ -328,12 +325,6 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\timer_api_init.cpp" />
-    <ClCompile Include="..\..\shared\generated\timer_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\timer_ruby_api.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-    </ClCompile>
     <ClCompile Include="..\..\shared\InitExtension.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -364,7 +355,6 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\..\shared\TimerImpl.cpp" />
     <ClCompile Include="..\wm\src\NetworkDetect.cpp" />
     <ClCompile Include="src\SystemImpl.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</CompileAsWinRT>
@@ -390,7 +380,6 @@
     <ClInclude Include="..\..\shared\generated\cpp\IRhoFile.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ISQLite3.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h" />
-    <ClInclude Include="..\..\shared\generated\cpp\ITimer.h" />
     <ClInclude Include="..\..\shared\generated\cpp\LogBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\NetworkBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\NewORMBase.h" />
@@ -398,7 +387,6 @@
     <ClInclude Include="..\..\shared\generated\cpp\RhoFileBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SQLite3Base.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h" />
-    <ClInclude Include="..\..\shared\generated\cpp\TimerBase.h" />
     <ClInclude Include="..\..\shared\NewORMModelImpl.h" />
     <ClInclude Include="..\wm\src\NetworkDetect.h" />
   </ItemGroup>

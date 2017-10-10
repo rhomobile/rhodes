@@ -218,7 +218,7 @@ void CNetworkImpl::cancel( rho::apiGenerator::CMethodResult& oResult)
     synchronized(getCommandQueue()->getCommandLock());
     CHttpCommand* pCmd = (CHttpCommand*)getCommandQueue()->getCurCommand();
 
-    if ( pCmd != null && ( !oResult.hasCallback() || pCmd->isEqualCallback(oResult) ) )
+    if ( pCmd != NULL && ( !oResult.hasCallback() || pCmd->isEqualCallback(oResult) ) )
         pCmd->cancel();
 
     if ( !oResult.hasCallback() )
@@ -229,7 +229,7 @@ void CNetworkImpl::cancel( rho::apiGenerator::CMethodResult& oResult)
         {
             CHttpCommand* pCmd1 = (CHttpCommand*)getCommandQueue()->getCommands().get(i);
 
-            if ( pCmd1 != null && pCmd1->isEqualCallback(oResult) )
+            if ( pCmd1 != NULL && pCmd1->isEqualCallback(oResult) )
                 getCommandQueue()->getCommands().remove(i);
         }
 
@@ -248,7 +248,7 @@ void CNetworkImpl::get( const rho::Hashtable<rho::String, rho::String>& property
     }
     
     NetResponse resp = reqWrapper.doRequest( getStringProp(propertyMap, "httpVerb", "GET").c_str(),
-            propertyMap.get("url"), body, null, &mapHeaders);
+            propertyMap.get("url"), body, NULL, &mapHeaders);
 
     prepareResult( resp, oNetRequest, mapHeaders, oResult );
 }
@@ -263,7 +263,7 @@ void CNetworkImpl::downloadFile( const rho::Hashtable<rho::String, rho::String>&
     bool createFolders = propertyMap.containsKey("createFolders") && (propertyMap.get("createFolders")=="true");
     bool fileExists = false;
 
-    NetResponse resp = reqWrapper.pullFile( propertyMap.get("url"), propertyMap.get("filename"), null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+    NetResponse resp = reqWrapper.pullFile( propertyMap.get("url"), propertyMap.get("filename"), NULL, &mapHeaders,overwriteFile,createFolders,&fileExists);
 
     if ( !getCurRequest(oNetRequest, oResult).isCancelled()) {
         if (fileExists) {
@@ -290,7 +290,7 @@ void CNetworkImpl::post( const rho::Hashtable<rho::String, rho::String>& propert
     }
 
     NetResponse resp = reqWrapper.doRequest( getStringProp(propertyMap, "httpVerb", "POST").c_str(),
-        propertyMap.get("url"), body, null, &mapHeaders);
+        propertyMap.get("url"), body, NULL, &mapHeaders);
 
     prepareResult( resp, oNetRequest, mapHeaders, oResult );    
 }
@@ -345,7 +345,7 @@ void CNetworkImpl::uploadFile( const rho::Hashtable<rho::String, rho::String>& p
         }
     }
 
-    NetResponse resp = reqWrapper.pushMultipartData( propertyMap.get("url"), arMultipartItems, null, &mapHeaders );
+    NetResponse resp = reqWrapper.pushMultipartData( propertyMap.get("url"), arMultipartItems, NULL, &mapHeaders );
 
     prepareResult( resp, oNetRequest, mapHeaders, oResult );    
 }
@@ -681,7 +681,7 @@ void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oRe
         {
             m_networkPoller->StopNetworkChecking();
         }
-        //Check again existence of m_networkPoller before calling CleanupAndDeleteSelf,as in some conditions it becomes null by other threads
+        //Check again existence of m_networkPoller before calling CleanupAndDeleteSelf,as in some conditions it becomes NULL by other threads
         if(m_networkPoller!=0)
 	{
 	LOG(INFO)+"CleanupAndDeleteSelf";	

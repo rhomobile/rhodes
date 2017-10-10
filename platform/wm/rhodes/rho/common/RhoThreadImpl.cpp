@@ -86,7 +86,7 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKillMs)
             ::TerminateThread(m_hThread,0);
         }
         ::CloseHandle(m_hThread);
-        m_hThread = null;
+        m_hThread = NULL;
     }
 }
 

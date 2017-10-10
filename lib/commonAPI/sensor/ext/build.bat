@@ -20,3 +20,9 @@ rake --trace
 
 )
 
+if "%RHO_PLATFORM%" == "uwp" (
+
+cd platform\uwp
+rake --trace
+
+)

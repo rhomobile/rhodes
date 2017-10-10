@@ -9,7 +9,7 @@ This API is part of the `coreapi` extension that is included automatically.
     :::ruby
     extensions: ["coreapi"]
         </MORE_HELP>
-        <PLATFORM>WM, CE, Android, WP8, iOS, Win32</PLATFORM>
+        <PLATFORM>WM, CE, Android, UWP, iOS, Win32</PLATFORM>
         
         <METHODS>
             <METHOD name="create" access="STATIC">

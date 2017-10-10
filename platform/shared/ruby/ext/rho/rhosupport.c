@@ -139,8 +139,8 @@ static VALUE loadISeqFromFile(VALUE path)
     
     RAWLOG_INFO1("loadISeqFromFile: %s", filepath);
     
-    
-    
+#ifndef RHO_RUBY_COMPILER
+   
     if (founded) {
         if (strcmp(founded, ".encrypted") == 0) {
             const char* filedata = getStringFromValue(fiseq);
@@ -156,7 +156,7 @@ static VALUE loadISeqFromFile(VALUE path)
         }
     }
     
-    
+#endif   
     
     
         //VALUE fiseq = rb_funcall(rb_cFile, rb_intern("open"), 2, path, rb_str_new2("rb"));

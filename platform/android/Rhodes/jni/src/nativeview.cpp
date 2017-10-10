@@ -135,9 +135,9 @@ void RhoNativeViewManager::unregisterViewType(const char* viewType) {
 void* RhoNativeViewManager::getWebViewObject(int tab_index) {
     JNIEnv *env = jnienv();
     jclass cls = rho_find_class(env, "com/rhomobile/rhodes/nativeview/RhoNativeViewManager");
-    if (!cls) return null;
+    if (!cls) return NULL;
     jmethodID mid = env->GetStaticMethodID( cls, "getWebViewObject", "(I)Ljava/lang/Object;");
-    if (!mid) return null;
+    if (!mid) return NULL;
     return env->CallStaticObjectMethod(cls, mid, tab_index);
 }
 

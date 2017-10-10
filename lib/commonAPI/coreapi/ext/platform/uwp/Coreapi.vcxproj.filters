@@ -333,13 +333,6 @@
     <ClCompile Include="..\..\shared\ConfigImpl.cpp">
       <Filter>Config\shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\cpp\TimerBase.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\Timer_js_wrap.cpp" />
-    <ClCompile Include="..\..\shared\generated\cpp\Timer_ruby_wrap.cpp" />
-    <ClCompile Include="..\..\shared\generated\timer_api_init.cpp" />
-    <ClCompile Include="..\..\shared\generated\timer_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\timer_ruby_api.c" />
-    <ClCompile Include="..\..\shared\TimerImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h">
@@ -396,8 +389,6 @@
     <ClInclude Include="..\..\shared\generated\cpp\IConfig.h">
       <Filter>Config\shared\generated\cpp</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\generated\cpp\ITimer.h" />
-    <ClInclude Include="..\..\shared\generated\cpp\TimerBase.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\Network.xml">

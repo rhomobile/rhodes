@@ -69,8 +69,9 @@ namespace <%= $cur_module.name %>Impl
         protected CoreDispatcher dispatcher = null;
         protected <%= $cur_module.name %>RuntimeComponent _runtime;
 <%= dynamic_constants %>
-        public <%= $cur_module.name %>Base()
+        public <%= $cur_module.name %>Base(string id)
         {
+            _strID = id;
             _runtime = new <%= $cur_module.name %>RuntimeComponent(this);
             dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
         }
@@ -133,6 +134,23 @@ if has_setProperties
 
     abstract public class <%= $cur_module.name %>SingletonBase : I<%= $cur_module.name %>SingletonImpl
     {
+
+        protected SortedDictionary<string, <%= $cur_module.name %>Base> keeper = new SortedDictionary<string, <%= $cur_module.name %>Base>();
+
+        public I<%= $cur_module.name %>Impl get<%= $cur_module.name %>ByID(string id)
+        {
+            if (keeper.ContainsKey(id))
+            {
+                return keeper[id];
+            }
+            else
+            {
+                <%= $cur_module.name %>Base impl = new <%= $cur_module.name %>(id);
+                keeper.Add(id, impl);
+                return impl;
+            }
+        }
+
         protected <%= $cur_module.name %>SingletonComponent _runtime;
 <%= static_constants %>
         public <%= $cur_module.name %>SingletonBase()
@@ -144,11 +162,15 @@ if has_setProperties
 
     public class <%= $cur_module.name %>FactoryBase : I<%= $cur_module.name %>FactoryImpl
     {
-        public virtual I<%= $cur_module.name %>Impl getImpl() {
-            return new <%= $cur_module.name %>();
+        protected static <%= $cur_module.name %>Singleton instance = null;
+        public virtual I<%= $cur_module.name %>Impl getImpl(string id) {
+            getSingletonImpl();
+            return instance.get<%= $cur_module.name %>ByID(id);
         }
         public I<%= $cur_module.name %>SingletonImpl getSingletonImpl() {
-            return new <%= $cur_module.name %>Singleton();
+            if (instance == null){instance = new <%= $cur_module.name %>Singleton();}
+            return instance;
+          
         }
     }
 }
