@@ -63,6 +63,8 @@
 -dontwarn com.rho.**
 -dontwarn com.google.**
 
+-dontnote **
+
 
 # Preserve all fundamental application classes.
 -keep public class * extends android.app.Activity
@@ -73,6 +75,7 @@
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
 -keep public class com.android.**
+-keep public class com.json.**
 -keep public class java.lang.**
 -keep public class com.android.vending.licensing.ILicensingService
 -keep public class com.google.vending.licensing.ILicensingService
@@ -303,6 +306,14 @@ public static final android.os.Parcelable$Creator *;
     static ** CREATOR;
 }
 
+-keepclassmembers class * {
+    ** getKey();
+}
+
+-keepclassmembers class * {
+    ** getValue();
+}
+
 -keepclassmembers class * implements javax.net.ssl.X509TrustManager {
     public *;
 }
@@ -357,6 +368,9 @@ public static final android.os.Parcelable$Creator *;
     <fields>;
     <methods>;
 }
+
+
+
 
 -keep class oshi.** {
     <fields>;
