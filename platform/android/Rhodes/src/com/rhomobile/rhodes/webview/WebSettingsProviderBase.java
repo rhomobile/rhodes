@@ -18,7 +18,7 @@ public class WebSettingsProviderBase implements IWebSettingsProvider {
     public void fillSettings(WebSettings settings, IRhoConfig config) {
         
         boolean enableZoom = config == null || config.getBool(WebViewConfig.ENABLE_ZOOM);
-        boolean enableCache = config == null || config.getBool(WebViewConfig.ENABLE_CACHE);
+        boolean enableCache = ((config != null) && config.getBool(WebViewConfig.ENABLE_CACHE));
         String customUA = RhoConf.getString("useragent");
         
         settings.setSavePassword(false);
