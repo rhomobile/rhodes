@@ -66,7 +66,7 @@ public class WebViewConfig implements IRhoConfig {
     public static final boolean ENABLE_PAGE_LOADING_INDICATION_DEF = true;
     public static final boolean ENABLE_ZOOM_DEF = true;
     public static final boolean ENABLE_WEB_PLUGINS_DEF = true;
-    public static final boolean ENABLE_CACHE_DEF = false;
+    public static final boolean ENABLE_CACHE_DEF = true;
     public static final double  PAGE_ZOOM_DEF = 1.0;
     public static final String SETTING_SPLASHSCREEN_PATH_DEF = "apps/app/loading.png";
     public static final long SETTING_SPLASHSCREEN_DURATION_DEF = 0;
