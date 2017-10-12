@@ -408,8 +408,8 @@ def set_signing_identity(identity,profile,entitlements,provisioning_style,develo
   File.open(fname,"w") { |f| f.write(buf) }
 end
 
-BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon57.png', 'icon60.png', 'icon72.png', 'icon76.png', 'icon114.png', 'icon120.png', 'icon144.png', 'icon152.png', 'icon180.png', 'Info.plist', 'Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png', 'Default-667h@2x.png', 'Default-736h@3x.png']
-CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png', 'Default-667h@2x.png', 'Default-736h@3x.png']
+BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon57.png', 'icon60.png', 'icon72.png', 'icon76.png', 'icon114.png', 'icon120.png', 'icon144.png', 'icon152.png', 'icon180.png', 'Info.plist', 'Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png', 'Default-667h@2x.png', 'Default-736h@3x.png', 'Default-812h@3x.png']
+CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png', 'Default-667h@2x.png', 'Default-736h@3x.png', 'Default-812h@3x.png']
 
 def make_project_bakup
      BAKUP_FILES.each do |f|
@@ -604,13 +604,14 @@ def set_app_icon(make_bak)
   end
 end
 
-LOADINGIMAGES = ['loading', 'loading@2x', 'loading-Portrait', 'loading-Portrait@2x', 'loading-PortraitUpsideDown', 'loading-PortraitUpsideDown@2x', 'loading-Landscape', 'loading-Landscape@2x', 'loading-LandscapeLeft', 'loading-LandscapeLeft@2x', 'loading-LandscapeRight', 'loading-LandscapeRight@2x', 'loading-568h@2x', 'loading-667h@2x', 'loading-736h@3x']
+LOADINGIMAGES = ['loading', 'loading@2x', 'loading-Portrait', 'loading-Portrait@2x', 'loading-PortraitUpsideDown', 'loading-PortraitUpsideDown@2x', 'loading-Landscape', 'loading-Landscape@2x', 'loading-LandscapeLeft', 'loading-LandscapeLeft@2x', 'loading-LandscapeRight', 'loading-LandscapeRight@2x', 'loading-568h@2x', 'loading-667h@2x', 'loading-736h@3x', 'loading-812h@3x']
 
 LOADINGIMAGES_PLIST = {
     'Default.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default', 'UILaunchImageSize' => '{320,480}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '7.0'}},
     'Default-568h@2x.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default-568h', 'UILaunchImageSize' => '{320, 568}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '8.0'}},
     'Default-667h@2x.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default-667h', 'UILaunchImageSize' => '{375, 667}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '8.0'}},
     'Default-736h@3x.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default-736h', 'UILaunchImageSize' => '{414, 736}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '8.0'}},
+    'Default-812h@3x.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default-812h', 'UILaunchImageSize' => '{375, 812}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '11.0'}},
     'Default-Portrait.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-Portrait', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '7.0'}},
     'Default-Landscape.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-Landscape', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'Landscape', 'UILaunchImageMinimumOSVersion' => '7.0'}},
     'Default-PortraitUpsideDown.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-PortraitUpsideDown', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'PortraitUpsideDown', 'UILaunchImageMinimumOSVersion' => '7.0'}},

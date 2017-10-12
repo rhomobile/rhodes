@@ -560,5 +560,11 @@
 #endif
 #endif
 
+//RHO - for bigdecimal support
+#define HAVE_LABS 1
+#define HAVE_LLABS 1
+#define HAVE_RB_RATIONAL_NUM 1
+#define HAVE_RB_RATIONAL_DEN 1
+//RHO
 
 #endif /* INCLUDE_RUBY_CONFIG_H */

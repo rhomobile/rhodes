@@ -54,6 +54,17 @@
         w.keyboardDisplayRequiresUserAction = (v != 0);
     }
     
+    if (rho_conf_is_property_exists("WebView.enableDragAndDrop")) {
+        int v = rho_conf_getBool("WebView.enableDragAndDrop");
+        if (!v) {
+#ifdef __IPHONE_11_0
+            if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"11.0")) {
+                w.scrollView.subviews[0].interactions = @[];
+            }
+#endif
+        }
+    }
+    
     w.userInteractionEnabled = YES;
     w.multipleTouchEnabled = YES;
     w.clipsToBounds = NO;

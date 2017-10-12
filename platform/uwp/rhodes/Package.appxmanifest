@@ -3,7 +3,7 @@
   <Identity Name='caa0300f-1021-40aa-bb98-27c5547616fa' Publisher='CN=TauTechnology' Version='1.0.0.0'/>
   <mp:PhoneIdentity PhoneProductId='caa0300f-1021-40aa-bb98-27c5547616fa' PhonePublisherId='00000000-0000-0000-0000-000000000000'/>
   <Properties>
-    <DisplayName>kitchensinkRuby</DisplayName>
+    <DisplayName>auto_common_spec</DisplayName>
     <PublisherDisplayName>rhomobile</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application EntryPoint='rhodes.App' Executable='$targetnametoken$.exe' Id='x1ef3a390ya41ay0134yeff9y60f81db5e3c0x'>
-      <uap:VisualElements BackgroundColor='#464646' Description='kitchensinkRuby' DisplayName='kitchensinkRuby' Square150x150Logo='Assets\Square150x150Logo.png' Square44x44Logo='Assets\Square44x44Logo.png'>
+      <uap:VisualElements BackgroundColor='#464646' Description='auto_common_spec' DisplayName='auto_common_spec' Square150x150Logo='Assets\Square150x150Logo.png' Square44x44Logo='Assets\Square44x44Logo.png'>
         <uap:DefaultTile Square71x71Logo='Assets\Square71x71Logo.png'>
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile='square150x150Logo'/>

@@ -142,17 +142,17 @@ CNetRequestWrapper::~CNetRequestWrapper()
 
 rho::net::CNetResponseWrapper CNetRequestWrapper::pullData(const String& strUrl, IRhoSession* oSession )
 {
-    return doRequest("GET",strUrl,String(),oSession,null);
+    return doRequest("GET",strUrl,String(),oSession,NULL);
 }
 
 rho::net::CNetResponseWrapper CNetRequestWrapper::pushData(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-    return doRequest("POST",strUrl,strBody,oSession,null);
+    return doRequest("POST",strUrl,strBody,oSession,NULL);
 }
 
 rho::net::CNetResponseWrapper CNetRequestWrapper::pullCookies(const String& strUrl, const String& strBody, IRhoSession* oSession)
 {
-    rho::net::CNetResponseWrapper oResp = doRequest("POST", strUrl, strBody, oSession, null );
+    rho::net::CNetResponseWrapper oResp = doRequest("POST", strUrl, strBody, oSession, NULL );
     if ( oResp.getRespCode() == 200 )
         oResp.setCharData(oResp.getCookies().c_str());
 		

@@ -2,3 +2,5 @@
 #pragma comment(lib, "WebViewLib.lib")
 #pragma comment(lib, "NativeToolbarLib.lib")
 #pragma comment(lib, "NativeTabbarLib.lib")
+#pragma comment(lib, "TimerLib.lib")
+#pragma comment(lib, "SensorLib.lib")

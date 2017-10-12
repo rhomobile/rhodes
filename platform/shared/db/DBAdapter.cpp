@@ -513,7 +513,7 @@ sqlite3_stmt* CDBAdapter::createInsertStatement(IDBResult& res, const String& ta
 
 		switch(nColType){
 			case SQLITE_NULL:
-                rc = sqlite3_bind_text(stInsert, nBindCol, null, -1, SQLITE_TRANSIENT);
+                rc = sqlite3_bind_text(stInsert, nBindCol, NULL, -1, SQLITE_TRANSIENT);
                 break;
             case SQLITE_INTEGER:
             {
@@ -1046,7 +1046,7 @@ int CDBAdapter::prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt *
 {
     int rc = SQLITE_OK;
     sqlite3_stmt* st = m_mapStatements.get(szSql);
-    if ( st != null )
+    if ( st != NULL )
         *ppStmt	 = st;
     else
     {
@@ -1060,12 +1060,12 @@ int CDBAdapter::prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt *
 
 DBResultPtr CDBAdapter::prepareStatement( const char* szSt )
 {
-    if ( m_dbHandle == null )
+    if ( m_dbHandle == NULL )
         return new CDBResult();
 
 	DBResultPtr res = new CDBResult(0,this);
     sqlite3_stmt* st = m_mapStatements.get(szSt);
-    if ( st != null )
+    if ( st != NULL )
 	{
 		res->setStatement(st);
         return res;
@@ -1087,7 +1087,7 @@ DBResultPtr CDBAdapter::prepareStatement( const char* szSt )
 DBResultPtr CDBAdapter::executeSQLReportNonUniqueEx( const char* szSt, Vector<String>& arValues )
 {
     DBResultPtr res = prepareStatement(szSt);
-    if ( res->getStatement() == null )
+    if ( res->getStatement() == NULL )
         return res;
 
     for (int i = 0; i < (int)arValues.size(); i++ )
@@ -1100,7 +1100,7 @@ DBResultPtr CDBAdapter::executeSQLReportNonUniqueEx( const char* szSt, Vector<St
 DBResultPtr CDBAdapter::executeSQLEx( const char* szSt, Vector<String>& arValues)
 {
     DBResultPtr res = prepareStatement(szSt);
-    if ( res->getStatement() == null )
+    if ( res->getStatement() == NULL )
         return res;
 
     for (int i = 0; i < (int)arValues.size(); i++ )
@@ -1112,7 +1112,7 @@ DBResultPtr CDBAdapter::executeSQLEx( const char* szSt, Vector<String>& arValues
 DBResultPtr CDBAdapter::executeSQL( const char* szSt)
 {
     DBResultPtr res = prepareStatement(szSt);
-    if ( res->getStatement() == null )
+    if ( res->getStatement() == NULL )
         return res;
 
     return executeStatement(res, szSt);
@@ -1125,7 +1125,7 @@ DBResultPtr CDBAdapter::executeStatement(DBResultPtr& res, const char* szSt)
     int rc = sqlite3_step(res->getStatement());
     if ( rc != SQLITE_ROW )
     {
-        res->setStatement(null);
+        res->setStatement(NULL);
         if ( rc != SQLITE_OK && rc != SQLITE_ROW && rc != SQLITE_DONE )
         {
             checkDbErrorEx(rc, *res);
@@ -1500,7 +1500,7 @@ namespace rho{
 namespace common{
 
 #ifndef RHO_NO_RUBY
-CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(null)
+CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(NULL)
 {
     m_bIgnore = bIgnore || RHOCONF().getBool("no_ruby_threads");
 }
@@ -1510,7 +1510,7 @@ void CRubyMutex::create()
     if ( !m_bIgnore && !m_valMutex)
     {
         unsigned long curThread = rho_ruby_current_thread();
-        if ( curThread != null )
+        if ( curThread != NULL )
             m_valMutex = rho_ruby_create_mutex();
     }
 }
@@ -1536,11 +1536,11 @@ boolean CRubyMutex::isMainRubyThread()
 
 void CRubyMutex::Lock()
 {
-    if ( m_valMutex == null )
+    if ( m_valMutex == NULL )
         return;
 
     unsigned long curThread = rho_ruby_current_thread();
-    if ( curThread == null )
+    if ( curThread == NULL )
         return;
 
     if ( m_valThread != curThread )
@@ -1554,18 +1554,18 @@ void CRubyMutex::Lock()
 
 void CRubyMutex::Unlock()
 {
-    if ( m_valMutex == null || m_nLockCount == 0)
+    if ( m_valMutex == NULL || m_nLockCount == 0)
         return;
 
     m_nLockCount--;
     if ( m_nLockCount == 0 )
     {
-        m_valThread = null;
+        m_valThread = NULL;
         rho_ruby_unlock_mutex(m_valMutex);
     }
 }
 #else //RHO_NO_RUBY
-CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(null)
+CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(NULL)
 {
 }
 

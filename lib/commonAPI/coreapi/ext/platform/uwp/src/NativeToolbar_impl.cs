@@ -9,7 +9,7 @@ namespace NativeToolbarImpl
 {
     public class NativeToolbar : NativeToolbarBase
     {
-        public NativeToolbar()
+        public NativeToolbar(string id) : base(id)
         {
         }
     }

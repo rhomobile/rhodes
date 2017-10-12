@@ -44,7 +44,7 @@ public:
     CJSONEntry(struct json_object * obj);
     CJSONEntry(const char* szData);
     CJSONEntry(const CJSONEntry& oCopy);
-    CJSONEntry() : m_rootObject(null){}
+    CJSONEntry() : m_rootObject(NULL){}
     ~CJSONEntry();
 
     boolean isEmpty() const;

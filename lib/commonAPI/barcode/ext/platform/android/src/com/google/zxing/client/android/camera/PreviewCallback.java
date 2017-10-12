@@ -21,6 +21,11 @@ import android.hardware.Camera;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import com.rhomobile.rhodes.Logger;
+import android.graphics.YuvImage;
+import android.graphics.BitmapFactory;
+import java.io.ByteArrayOutputStream;
+
 
 final class PreviewCallback implements Camera.PreviewCallback {
 
@@ -42,13 +47,17 @@ final class PreviewCallback implements Camera.PreviewCallback {
   }
 
   public void onPreviewFrame(byte[] data, Camera camera) {
+    Logger.I(TAG, "Byte massive length " + data.length);
     Point cameraResolution = configManager.getCameraResolution();
     if (!useOneShotPreviewCallback) {
       camera.setPreviewCallback(null);
     }
     if (previewHandler != null) {
-      Message message = previewHandler.obtainMessage(previewMessage, cameraResolution.x,
-          cameraResolution.y, data);
+      int x = cameraResolution.x;
+      int y = cameraResolution.y;
+
+
+      Message message = previewHandler.obtainMessage(previewMessage, x, y, data);
       message.sendToTarget();
       previewHandler = null;
     } else {

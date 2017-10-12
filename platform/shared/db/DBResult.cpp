@@ -39,7 +39,7 @@ CDBResult::CDBResult(sqlite3_stmt* st,CDBAdapter* pDB) : m_pDB(pDB), m_dbStateme
         m_pDB->Lock();
 }
 
-CDBResult::CDBResult() : m_pDB(null), m_dbStatement(null)
+CDBResult::CDBResult() : m_pDB(NULL), m_dbStatement(NULL)
 {
     m_bReportNonUnique=false;
     //m_nErrorCode=0;
@@ -47,7 +47,7 @@ CDBResult::CDBResult() : m_pDB(null), m_dbStatement(null)
 
 CDBResult::~CDBResult(void)
 {
-    setStatement(null);
+    setStatement(NULL);
 
     if ( m_pDB )
         m_pDB->Unlock();
@@ -55,7 +55,7 @@ CDBResult::~CDBResult(void)
 
 void CDBResult::setStatement(sqlite3_stmt* st)
 {
-    if ( m_dbStatement != null )
+    if ( m_dbStatement != NULL )
         sqlite3_reset(m_dbStatement);
 
     m_dbStatement = st;

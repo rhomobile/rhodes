@@ -48,7 +48,7 @@ CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
 
 /*static*/ CRhodesAppBase* CRhodesAppBase::Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
 {
-    if ( m_pInstance != null) 
+    if ( m_pInstance != NULL) 
         return m_pInstance;
 
     m_pInstance = new CRhodesAppBase(strRootPath, strUserPath, strRuntimePath);
@@ -238,7 +238,7 @@ void rho_do_send_log(rho::apiGenerator::CMethodResult& oResult)
     NetRequest oNetRequest;
     oNetRequest.setSslVerifyPeer(false);
     
-	NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, pSession, null );
+	NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, pSession, NULL );
 
     LOGCONF().setLogToFile(bOldSaveToFile);
     
@@ -303,7 +303,7 @@ boolean CRhodesAppBase::sendLogInSameThread()
 			if ( m_strPushCallbackParams.length() > 0 )
 				strBody += "&" + m_strPushCallbackParams;
 			
-			NetResponse resp = getNetRequest().pushData( m_strPushCallback, strBody, null );
+			NetResponse resp = getNetRequest().pushData( m_strPushCallback, strBody, NULL );
 			if (!resp.isOK())
 				LOG(ERROR) + "Push notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
 			else
@@ -369,11 +369,11 @@ static int rho_internal_unzip_zip(const char* szZipPath, const char* psw)
     HZIP hz = OpenZipFile(strZipPathW.c_str(), psw);
     if ( !hz )
         return -1;
-
 	// Set base for unziping
     SetUnzipBaseDir(hz, rho::common::convertToStringW(strBaseDir).c_str());
 #else
     HZIP hz = OpenZipFile((TCHAR*)szZipPath, psw);
+    
     if ( !hz )
         return -1;
 
@@ -576,7 +576,7 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 	void rho_net_request_with_data(const char *url, const char *str_body)
 	{
 		rho::String strCallbackUrl = RHODESAPPBASE().canonicalizeRhoUrl(url);
-		getNetRequest().pushData(strCallbackUrl.c_str(), str_body, null);
+		getNetRequest().pushData(strCallbackUrl.c_str(), str_body, NULL);
 	}
     
     

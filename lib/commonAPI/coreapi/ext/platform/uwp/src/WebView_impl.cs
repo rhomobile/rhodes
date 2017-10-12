@@ -11,7 +11,7 @@ namespace WebViewImpl
 {
     public class WebView : WebViewBase
     {
-        public WebView()
+        public WebView(string id) : base(id)
         {
         }
     }
@@ -55,6 +55,15 @@ namespace WebViewImpl
         public override void setKeyboardDisplayRequiresUserAction(bool keyboardDisplayRequiresUserAction, IMethodResult oResult)
         {
         }
+
+        public override void getEnableDragAndDrop(IMethodResult oResult)
+        {
+            oResult.set(true);        }
+
+        public override void setEnableDragAndDrop(bool enableDragAndDrop, IMethodResult oResult)
+        {
+        }
+
 
         public override void getEnableZoom(IMethodResult oResult)
         {
