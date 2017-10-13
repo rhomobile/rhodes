@@ -188,8 +188,7 @@ IRhoListener {
 		ByteArrayOutputStream stream = null;
 		Logger.T(TAG, "CameraRhoListener.onActivityResult() START");
 		Logger.T(TAG, "ActualProperties: ["+getActualPropertyMap()+"]");
-		Logger.T(TAG, "Properties: ["+propertyMap+"]");
-
+		boolean fromGallery = false;//(getActualPropertyMap().get("fromGallery") != null);
 		try {
 			if (resultCode == Activity.RESULT_OK)
 			{
@@ -303,7 +302,7 @@ IRhoListener {
 
 					if (getActualPropertyMap().get("dataURI") == null) {
 						Logger.T(TAG, "getActualPropertyMap().get(dataURI) == null");
-						boolean fromGallery = false;
+						
 						try {
 							imgPath = getFilePath(curUri);
 						}
@@ -325,8 +324,13 @@ IRhoListener {
 
 						if (fromGallery) {
 							Logger.T(TAG, "Is from Gallery");
-						}
-						else {
+							try{
+								if (imgPath == null){
+									imgPath = intent.getData().toString();
+									fixTheGalleryIssue(imgPath);
+								}
+							}catch(Exception e){}
+						} else {
 							Logger.T(TAG, "Not from Gallery");
 							Logger.T(TAG, "Path before copy: " + imgPath);
 							//File f = new File(imgPath);
@@ -414,9 +418,7 @@ IRhoListener {
 					Logger.T(TAG, "targetPath["+targetPath+"]");
 				}
 
-                                if (!outputToDataUri()) {
-					applyPostCaptureTransforms(options_only_size);
-				}
+                if (!outputToDataUri()) {applyPostCaptureTransforms(options_only_size);}
 
 				try{
 					DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent, resultCode);

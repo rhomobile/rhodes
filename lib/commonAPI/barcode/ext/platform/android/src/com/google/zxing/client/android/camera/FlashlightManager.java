@@ -16,32 +16,24 @@
 
 package com.google.zxing.client.android.camera;
 
-import android.os.IBinder;
-import android.util.Log;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import android.content.Context;
+//import android.hardware.camera2.CameraManager;
+import android.hardware.Camera;
+import android.os.IBinder;
+import android.util.Log;
+import com.rhomobile.rhodes.Logger;
 
-/**
- * This class is used to activate the weak light on some camera phones (not flash)
- * in order to illuminate surfaces for scanning. There is no official way to do this,
- * but, classes which allow access to this function still exist on some devices.
- * This therefore proceeds through a great deal of reflection.
- *
- * See <a href="http://almondmendoza.com/2009/01/05/changing-the-screen-brightness-programatically/">
- * http://almondmendoza.com/2009/01/05/changing-the-screen-brightness-programatically/</a> and
- * <a href="http://code.google.com/p/droidled/source/browse/trunk/src/com/droidled/demo/DroidLED.java">
- * http://code.google.com/p/droidled/source/browse/trunk/src/com/droidled/demo/DroidLED.java</a>.
- * Thanks to Ryan Alford for pointing out the availability of this class.
- */
 final class FlashlightManager {
-
+  public final static boolean isFlashLightEnabled(){
+    return false;
+  }
   private static final String TAG = FlashlightManager.class.getSimpleName();
 
-  private static final Object iHardwareService = null;
-  private static final Method setFlashEnabledMethod = null;
-  /*
-   static {
+  private static final Object iHardwareService;
+  private static final Method setFlashEnabledMethod;
+  static {
     iHardwareService = getHardwareService();
     setFlashEnabledMethod = getSetFlashEnabledMethod(iHardwareService);
     if (iHardwareService == null) {
@@ -50,9 +42,36 @@ final class FlashlightManager {
       Log.v(TAG, "This device does not support control of a flashlight");
     }
   }
-  */
+
+  static boolean isFlashlightOn = false;
+  public static void setFlashModeInStart(boolean b){
+    isFlashlightOn = b;
+
+    if (isFlashlightOn){
+      Logger.I(TAG, "Flashlight is On");
+    }else{
+      Logger.I(TAG, "Flashlight is Off");
+    }
+  }
 
   private FlashlightManager() {
+    isFlashlightOn = false;
+    Logger.I(TAG, "Calling constructor");
+  }
+
+  public static void toggleFlashLight(Context context) {
+    if (isFlashlightOn) toggleFlashLight(context, true);
+  }
+
+  public static void toggleFlashLight(Context context, boolean flashlightOn) {
+    /*try{
+      CameraManager camManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+      String cameraId = camManager.getCameraIdList()[0]; // Usually front camera is at 0 position.
+      camManager.setTorchMode(cameraId, flashlightOn);
+    }
+    catch(Exception e){
+      Logger.I(TAG, "This device does supports control of a flashlight");
+    }*/
   }
 
   private static Object getHardwareService() {
@@ -132,17 +151,17 @@ final class FlashlightManager {
   }
 
   static void enableFlashlight() {
-    //setFlashlight(true);
+    setFlashlight(true);
   }
 
   static void disableFlashlight() {
-    //setFlashlight(false);
+    setFlashlight(false);
   }
 
   private static void setFlashlight(boolean active) {
-    //if (iHardwareService != null) {
-    //  invoke(setFlashEnabledMethod, iHardwareService, active);
-    //}
+    if (iHardwareService != null) {
+      invoke(setFlashEnabledMethod, iHardwareService, active);
+    }
   }
 
 }

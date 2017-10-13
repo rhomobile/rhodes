@@ -138,6 +138,10 @@ From RhoElements 2.1 onwards the default value was changed to work out of the bo
             <PROPERTY name="activeTab" type="INTEGER" readOnly="true">
                 <DESC>Return an active tab index. For change active tab use Use Rho.NativeTabbar.currentTab property.</DESC>
             </PROPERTY>
+            <PROPERTY name="enableDragAndDrop" type="BOOLEAN" default="true">
+                <PLATFORM>iOS</PLATFORM>
+                <DESC>enable drag and drop operations for iOS >= 11.0</DESC>
+            </PROPERTY>
         </PROPERTIES>
 
         <METHODS access="STATIC">

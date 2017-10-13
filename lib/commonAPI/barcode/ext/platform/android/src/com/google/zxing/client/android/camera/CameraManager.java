@@ -19,15 +19,19 @@ package com.google.zxing.client.android.camera;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.SurfaceHolder;
+
 import com.google.zxing.client.android.PlanarYUVLuminanceSource;
+import com.rhomobile.rhodes.Logger;
 
 import java.io.IOException;
 
@@ -44,10 +48,14 @@ public final class CameraManager {
 
   private static final int MIN_FRAME_WIDTH = 240;
   private static final int MIN_FRAME_HEIGHT = 240;
-  private static final int MAX_FRAME_WIDTH = 480;
-  private static final int MAX_FRAME_HEIGHT = 360;
+  private static final int MAX_FRAME_WIDTH = 480;//1920 / 8 * 5;
+  private static final int MAX_FRAME_HEIGHT = 360;//1080 / 8 * 5;
 
   private static CameraManager cameraManager;
+
+  public static boolean isFlashLightEnabled(){
+    return FlashlightManager.isFlashLightEnabled();
+  }
 
   static final int SDK_INT; // Later we can use Build.VERSION.SDK_INT
   static {
@@ -64,8 +72,8 @@ public final class CameraManager {
   private final Context context;
   private final CameraConfigurationManager configManager;
   private Camera camera;
-  private Rect framingRect;
-  private Rect framingRectInPreview;
+  private Rect framingRect = null;
+  private Rect framingRectInPreview = null;
   private boolean initialized;
   private boolean previewing;
   private final boolean useOneShotPreviewCallback;
@@ -86,6 +94,10 @@ public final class CameraManager {
     if (cameraManager == null) {
       cameraManager = new CameraManager(context);
     }
+  }
+
+  public Camera getCamera(){
+      return camera;
   }
 
   /**
@@ -123,24 +135,37 @@ public final class CameraManager {
     if (camera == null) {
       if (cameraIndex >= 0) {	
     	  camera = Camera.open(cameraIndex);
+        Logger.I(TAG, "Camera.open(cameraIndex)");
       }
       else
       {
     	  camera = Camera.open();
+        Logger.I(TAG, "Camera.open()");
       }
 
       if (camera == null) {
         throw new IOException();
       }
+      try{
+        Parameters p = camera.getParameters();
+        p.setPreviewFormat(ImageFormat.NV21);
+        camera.setParameters(p);
+      }catch(Exception e){
+
+      }
+      //Parameters p = camera.getParameters();
+      //FlashlightManager.setFlashModeInStart(p.getFlashMode() != Parameters.FLASH_MODE_OFF);
+
       
       camera.setPreviewDisplay(holder);
+      Logger.I(TAG, "camera.setPreviewDisplay(holder)");
 
       if (!initialized) {
         initialized = true;
         configManager.initFromCameraParameters(camera, cameraIndex);
       }
       configManager.setDesiredCameraParameters(camera);
-
+      Logger.I(TAG, "setDesiredCameraParameters(camera)");
       SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
       //if (prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false)) {
       //  FlashlightManager.enableFlashlight();
@@ -153,10 +178,11 @@ public final class CameraManager {
    */
   public void closeDriver() {
     if (camera != null) {
-      FlashlightManager.disableFlashlight();
+      //FlashlightManager.disableFlashlight();
       camera.release();
       camera = null;
     }
+    FlashlightManager.toggleFlashLight(context);
   }
 
   /**
@@ -321,6 +347,25 @@ public final class CameraManager {
     }
     throw new IllegalArgumentException("Unsupported picture format: " +
         previewFormat + '/' + previewFormatString);
+  }
+
+
+  public void setFlash(boolean useFlash){
+    if(useFlash){
+      Logger.I(TAG, "useFlash = true");
+    }else{
+      Logger.I(TAG, "useFlash = false");
+    }
+    if (camera != null){
+      Logger.I(TAG, "toggleFlashLight");
+      Parameters p = camera.getParameters();
+      if (useFlash){
+        p.setFlashMode(Parameters.FLASH_MODE_TORCH);
+      }else{
+        p.setFlashMode(Parameters.FLASH_MODE_OFF);
+      }
+      camera.setParameters(p); 
+    }
   }
 
 }

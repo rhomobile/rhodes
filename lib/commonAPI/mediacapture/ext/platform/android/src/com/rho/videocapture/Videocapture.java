@@ -428,9 +428,10 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
     	else if (resCode == Activity.RESULT_CANCELED) 
     	{
     		Logger.T(TAG, "onActivityResult -- videocapture canceled"); 
-    		if (mSavedUrl != null)
-    			Logger.T(TAG, "onActivityResult -- setting error");  
-    			mSavedUrl.setError("Video capture cancelle dby the user");    	
+    		if (mSavedUrl != null){
+	    			Logger.T(TAG, "onActivityResult -- setting error");  
+	    			mSavedUrl.setError("Video capture cancelled by the user");    
+    			}	
     	}
     	else
     	{  

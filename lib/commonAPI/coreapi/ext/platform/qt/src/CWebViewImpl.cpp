@@ -206,6 +206,10 @@ public:
 
     void getKeyboardDisplayRequiresUserAction(rho::apiGenerator::CMethodResult& oResult){}
     void setKeyboardDisplayRequiresUserAction( bool keyboardDisplayRequiresUserAction, rho::apiGenerator::CMethodResult& oResult){}
+
+    void getEnableDragAndDrop(rho::apiGenerator::CMethodResult& oResult){}
+    void setEnableDragAndDrop( bool enableDragAndDrop, rho::apiGenerator::CMethodResult& oResult){}
+
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -216,8 +220,8 @@ public:
     ~CWebViewFactory(){}
 
     IWebViewSingleton* createModuleSingleton()
-    { 
-        return new CWebViewImpl(); 
+    {
+        return new CWebViewImpl();
     }
 };
 

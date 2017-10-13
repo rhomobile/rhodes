@@ -139,3 +139,13 @@ use_bb_full_browser=6
 
 # finger scroll activation on windows XP/7/8/8.1/10
 use_kinetic_scroll_on_windows = 1
+
+# disable drag and drop operation in WebView for iOS >= 11.0
+#WebView.enableDragAndDrop = 0
+
+# disable bounce for iOS WebView
+#WebView.enableBounce = 0
+
+# Related to iOS applications's multitasking switcher. If you can have any private info on screen you can prevent system to use snapshot in task list UI.
+# by enable this option screenshot will be replaced by splash loading screen.
+#WebView.replaceContentBySplashWhenSnapshotBySystem = 1

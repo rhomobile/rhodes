@@ -21,7 +21,6 @@
 # Switch off some optimizations that trip older versions of the Dalvik VM.
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 
-
 -allowaccessmodification
 
 # RemoteViews might need annotations.
@@ -62,6 +61,10 @@
 -dontwarn org.**
 -dontwarn com.rhomobile.**
 -dontwarn com.rho.**
+-dontwarn com.google.**
+
+-dontnote **
+
 
 # Preserve all fundamental application classes.
 -keep public class * extends android.app.Activity
@@ -563,6 +566,7 @@ public static final android.os.Parcelable$Creator *;
     <fields>;
     <methods>;
 }
+
 
 
 -keepclasseswithmembernames class * {

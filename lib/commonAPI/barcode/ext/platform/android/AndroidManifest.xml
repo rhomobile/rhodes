@@ -16,14 +16,22 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>
     </activity>
-	<uses-library android:name="com.symbol.emdk" android:required="false"/>
-    </application >
+	  <uses-library android:name="com.symbol.emdk" android:required="false"/>
+  </application >
 
+  <uses-permission android:name="android.permission.FLASHLIGHT"/>
   <uses-permission android:name="android.permission.CAMERA"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.VIBRATE"/>
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
   <uses-permission android:name="com.symbol.emdk.permission.EMDK"/>
+  <uses-feature android:name="android.hardware.camera.flash" />
+  <uses-feature android:name="android.hardware.camera" />
+  <uses-feature android:name="android.hardware.camera.autofocus" />
+  <uses-feature android:name="android.hardware.camera2" />
+  <uses-feature android:name="android.hardware.camera2.full" />
+  <uses-feature android:name="android.hardware.camera2.autofocus" />
+  <uses-feature android:name="android.hardware.camera2.flash" />
 </manifest> 
 

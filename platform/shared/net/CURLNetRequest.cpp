@@ -241,7 +241,7 @@ INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl
                                         const String& strBody, IRhoSession *oSession,
                                         Hashtable<String,String>* pHeaders)
 {
-    INetResponse* pResp = doPull(method, strUrl, strBody, null, oSession, pHeaders);
+    INetResponse* pResp = doPull(method, strUrl, strBody, NULL, oSession, pHeaders);
     return pResp;
 }
 

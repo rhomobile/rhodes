@@ -117,7 +117,7 @@ void BundleUpdateThreadQueue::processCommand(IQueueCommand *pCmd)
     
     NetRequest oNetRequest;
     
-    NetResponse resp = getNetRequest(&oNetRequest).pullFile( fileURL, fileZipLocalPath, null, &mapHeaders,overwriteFile,createFolders,&fileExists);
+    NetResponse resp = getNetRequest(&oNetRequest).pullFile( fileURL, fileZipLocalPath, NULL, &mapHeaders,overwriteFile,createFolders,&fileExists);
     
     
     if (resp.isSuccess()) {

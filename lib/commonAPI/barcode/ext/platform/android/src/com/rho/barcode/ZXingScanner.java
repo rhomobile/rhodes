@@ -62,7 +62,7 @@ public class ZXingScanner extends Barcode implements IBarcode
 				return;
 			}
 		}
-		Logger.D(LOGTAG, "ZXingScanner getProperties");
+		Logger.I(LOGTAG, "ZXingScanner getProperties");
 		result.set(new HashMap<String, Object>());
 	}
 
@@ -79,14 +79,14 @@ public class ZXingScanner extends Barcode implements IBarcode
 	@Override
 	public void enable(Map<String, String> propertyMap, IMethodResult result)
 	{
-		Logger.D(LOGTAG, "ZXingScanner enable");
+		Logger.I(LOGTAG, "ZXingScanner enable");
 		result.setError("enable is not supported on Zebra Crossing Scanner Engines. Use 'take' instead.");
 	}
 	
 	@Override
 	public void start(IMethodResult result)
 	{
-		Logger.D(LOGTAG, "ZXingScanner start");
+		Logger.I(LOGTAG, "ZXingScanner start");
 		if(result != null) result.setError("start is not supported on Zebra Crossing Scanner Engines. Use 'take' instead.");
 		//TODO, we can change this.
 	}
@@ -94,7 +94,7 @@ public class ZXingScanner extends Barcode implements IBarcode
 	@Override
 	public void stop(IMethodResult result)
 	{
-		Logger.D(LOGTAG, "ZXingScanner stop");
+		Logger.I(LOGTAG, "ZXingScanner stop");
 		if(result != null) result.setError("stop is not supported on Zebra Crossing Scanner Engines. Use 'take' instead.");
 		//TODO, we can change this.
 	}
@@ -102,7 +102,7 @@ public class ZXingScanner extends Barcode implements IBarcode
 	@Override
 	public void disable(IMethodResult result)
 	{
-		Logger.D(LOGTAG, "ZXingScanner disable");
+		Logger.I(LOGTAG, "ZXingScanner disable");
 		
 		// Do nothing
 	}
@@ -110,7 +110,7 @@ public class ZXingScanner extends Barcode implements IBarcode
 	@Override
 	public void getSupportedProperties(IMethodResult result)
 	{
-		Logger.D(LOGTAG, "ZXingScanner getSupportedProperties");
+		Logger.I(LOGTAG, "ZXingScanner getSupportedProperties");
 		ArrayList<Object> resultList = new ArrayList<Object>();
 		resultList.add("scannerType");
 		result.set(resultList);
@@ -119,7 +119,7 @@ public class ZXingScanner extends Barcode implements IBarcode
 	@Override
 	public void take(Map<String, String> propertyMap, IMethodResult result)
 	{
-		Logger.D(LOGTAG, "ZXingScanner take");
+		Logger.I(LOGTAG, "ZXingScanner take");
 		BarcodeFactory.setEnabledState(scannerId);
 		takeBarcodeURL = null;
 		//TODO See if it has been started previously
@@ -140,7 +140,7 @@ public class ZXingScanner extends Barcode implements IBarcode
 	@Override
 	public void take_barcode(String rubyCallbackURL, Map<String, String> propertyMap, IMethodResult result)
 	{
-		Logger.D(LOGTAG, "ZXingScanner take_barcode");
+		Logger.I(LOGTAG, "ZXingScanner take_barcode");
 		BarcodeFactory.setEnabledState(scannerId);
 		takeBarcodeURL = rubyCallbackURL;
 		//TODO See if it has been started previously
@@ -220,10 +220,13 @@ public class ZXingScanner extends Barcode implements IBarcode
 	 */
 	public void decodeEvent(Result barcodeData)
 	{
+		Logger.I(LOGTAG, "decodeEvent, URL: " + takeBarcodeURL);
 		if(takeResult != null)
 		{
+			Logger.I(LOGTAG, "decodeEvent, takeResult != null");
 			if(takeBarcodeURL == null)
 			{
+				Logger.I(LOGTAG, "decodeEvent, takeBarcodeURL == null");
 				HashMap<String, Object> resultsMap = new HashMap<String, Object>();
 				//	This is where to add extra meta data if required
 				resultsMap.put("barcode", barcodeData.getText());
@@ -234,6 +237,23 @@ public class ZXingScanner extends Barcode implements IBarcode
 			}
 			else
 			{
+				callBackToUrl(barcodeData);
+			}
+		}
+		else if(takeBarcodeURL != null){
+			Logger.I(LOGTAG, "decodeEvent, takeResult == null");
+			callBackToUrl(barcodeData);
+		}else{
+			Logger.I(LOGTAG, "decodeEvent failed to fire callback: result missing");
+		}
+			
+		isScanning = false;
+		BarcodeFactory.setDisabledState(scannerId);
+		Logger.I(LOGTAG, "decodeEvent, function end");
+	}
+
+	void callBackToUrl(Result barcodeData){
+		Logger.I(LOGTAG, "decodeEvent, takeBarcodeURL != null");
 		        StringBuffer body = new StringBuffer();
 		        body.append("&rho_callback=1");
 		        body.append("&status=ok");
@@ -247,22 +267,15 @@ public class ZXingScanner extends Barcode implements IBarcode
 		            }
 		            catch (UnsupportedEncodingException e)
 		            {
-		                Logger.W(LOGTAG, "Could not encode take_barcode return data in URL");
+                Logger.I(LOGTAG, "Could not encode take_barcode return data in URL");
 		            }
 		        }
+		Logger.I(LOGTAG, "decodeEvent, URL: " + takeBarcodeURL + body);
+
 				RhodesActivity.safeGetInstance().getMainView().navigate(takeBarcodeURL + body, -1);
 				takeBarcodeURL = null;
 				//TODO needs testing
 			}
-		}
-		else
-		{
-			Logger.D(LOGTAG, "decodeEvent failed to fire callback: result missing");
-		}
-		isScanning = false;
-		BarcodeFactory.setDisabledState(scannerId);
-	}
-
 
 //	@Override
 //	public void getFriendlyName(IMethodResult result)
