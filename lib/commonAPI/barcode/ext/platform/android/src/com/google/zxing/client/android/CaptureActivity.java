@@ -245,8 +245,11 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
     }});
     
     mCancelButton2.setVisibility(View.VISIBLE);
-    mFlashButton.setVisibility(View.VISIBLE);
-    
+    if (CameraManager.isFlashLightEnabled()){
+      mFlashButton.setVisibility(View.VISIBLE);
+    }else{
+      mFlashButton.setVisibility(View.GONE);
+    }
     showHelpOnFirstLaunch();
   }
   
@@ -258,7 +261,11 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   
   public void onRetake() {
       resetStatusView();
+    if (CameraManager.isFlashLightEnabled()){
       mFlashButton.setVisibility(View.VISIBLE);
+    }else{
+      mFlashButton.setVisibility(View.GONE);
+    }
 	  if (handler != null) {
         handler.sendEmptyMessage(RhoExtManager.getResourceId("id", "restart_preview"));
       }

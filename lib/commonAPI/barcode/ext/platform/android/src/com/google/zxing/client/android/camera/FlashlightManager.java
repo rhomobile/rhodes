@@ -19,13 +19,16 @@ package com.google.zxing.client.android.camera;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import android.content.Context;
-import android.hardware.camera2.CameraManager;
+//import android.hardware.camera2.CameraManager;
+import android.hardware.Camera;
 import android.os.IBinder;
 import android.util.Log;
 import com.rhomobile.rhodes.Logger;
 
 final class FlashlightManager {
-
+  public final static boolean isFlashLightEnabled(){
+    return false;
+  }
   private static final String TAG = FlashlightManager.class.getSimpleName();
 
   private static final Object iHardwareService;
@@ -61,14 +64,14 @@ final class FlashlightManager {
   }
 
   public static void toggleFlashLight(Context context, boolean flashlightOn) {
-    try{
+    /*try{
       CameraManager camManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
       String cameraId = camManager.getCameraIdList()[0]; // Usually front camera is at 0 position.
       camManager.setTorchMode(cameraId, flashlightOn);
     }
     catch(Exception e){
       Logger.I(TAG, "This device does supports control of a flashlight");
-    }
+    }*/
   }
 
   private static Object getHardwareService() {
