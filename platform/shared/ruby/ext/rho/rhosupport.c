@@ -111,46 +111,41 @@ rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
 
 static VALUE loadISeqFromFile(VALUE path)
 {
-    VALUE seq;
+    VALUE seq, fiseq, arr;
+    int filelen, res;
+    const char* filedata;
+    const char* filepath;
+    char* founded, decrypted_buf = NULL;
 //        fiseq = File.open(fName)
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
     struct timeval  end;
 #endif    
 
-        VALUE fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
+    fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
     
-    
-        // fiseq is string
+    // fiseq is string
     //char* getStringFromValue(VALUE val);
     //int getStringLenFromValue(VALUE val);
     // VALUE rho_ruby_create_string_withlen2(const char* szVal, int len)
-
-    char* decrypted_buf = NULL;
-    
-    const char* filepath = getStringFromValue(path);
-    char* founded = strstr(filepath, ".encrypted");
-
+    filepath = getStringFromValue(path);
+    founded = strstr(filepath, ".encrypted");
     
     RAWLOG_INFO1("loadISeqFromFile: %s", filepath);
     
-    
-    
     if (founded) {
         if (strcmp(founded, ".encrypted") == 0) {
-            const char* filedata = getStringFromValue(fiseq);
-            int filelen = getStringLenFromValue(fiseq);
+            filedata = getStringFromValue(fiseq);
+            filelen = getStringLenFromValue(fiseq);
             
             decrypted_buf = malloc (filelen*2);
             
-            int res = rho_decrypt_file(filedata, filelen, decrypted_buf, filelen*2);
+            res = rho_decrypt_file(filedata, filelen, decrypted_buf, filelen*2);
             
             fiseq = rho_ruby_create_string_withlen2((const char*)decrypted_buf, res);
             
         }
     }
-    
-    
     
     
         //VALUE fiseq = rb_funcall(rb_cFile, rb_intern("open"), 2, path, rb_str_new2("rb"));
@@ -160,7 +155,7 @@ static VALUE loadISeqFromFile(VALUE path)
 
 
 //        arr = Marshal.load(fiseq)
-        VALUE arr = rb_funcall(rb_const_get(rb_cObject,rb_intern("Marshal")), rb_intern("load"), 1, fiseq);
+    arr = rb_funcall(rb_const_get(rb_cObject,rb_intern("Marshal")), rb_intern("load"), 1, fiseq);
     
     
     if (decrypted_buf != NULL) {
@@ -330,6 +325,7 @@ static VALUE check_extension(VALUE res, VALUE fname, int nAddExtName)
 
 static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatform)
 {
+    VALUE result = 0;
     VALUE res = rb_str_dup(dir);
     //RAWLOG_INFO1("find_file: check dir %s", RSTRING_PTR(dir));
 
@@ -349,7 +345,7 @@ static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatfor
     rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
     RAWLOG_INFO1("find_file: check file: %s", RSTRING_PTR(res));
 
-    VALUE result = 0;
+    
     if (eaccess(RSTRING_PTR(res), R_OK) == 0) {
         return res;
     }
