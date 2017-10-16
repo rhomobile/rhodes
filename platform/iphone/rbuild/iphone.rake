@@ -1289,6 +1289,7 @@ end
 namespace "build" do
   namespace "iphone" do
 #    desc "Build iphone rhobundle"
+    # [build:iphone:rhobundle]
     task :rhobundle => ["config:iphone"] do
       print_timestamp('build:iphone:rhobundle START')
 
@@ -1312,6 +1313,7 @@ namespace "build" do
       Rake::Task["build:bundle:noxruby"].execute
 
       copy_generated_sources_and_binaries
+
       if !$skip_build_extensions
         Rake::Task["build:iphone:extensions"].execute
       end
@@ -1571,7 +1573,8 @@ namespace "build" do
       arch = ENV['ARCHS']
       gccbin = bindir + '/gcc-4.2'
       arbin = bindir + '/ar'
-      xcode_version = ENV['XCODE_VERSION_ACTUAL']
+      #xcode_version = ENV['XCODE_VERSION_ACTUAL']
+      xcode_version = get_xcode_version
 
       iphone_path = '.'
 
@@ -1581,7 +1584,13 @@ namespace "build" do
          configuration = 'Release'
       end
 
-      result_lib = iphone_path + '/build/' + configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/lib'+xcodetarget+'.a'
+      build_config_folder = configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos")
+      result_lib_folder = File.join(iphone_path, 'build', build_config_folder)
+
+      FileUtils.mkdir(File.join(iphone_path, "build") ) unless File.exist? File.join(iphone_path, "build")
+      FileUtils.mkdir(File.join(iphone_path, "build", build_config_folder) ) unless File.exist? File.join(iphone_path, "build", build_config_folder)
+
+      result_lib = result_lib_folder + '/lib'+xcodetarget+'.a'
       target_lib = targetdir + '/lib'+xcodetarget+'.a'
 
       puts "BEGIN build xcode extension : ["+extpath+"]"
@@ -1591,26 +1600,37 @@ namespace "build" do
       puts "      configuration : ["+configuration+"]"
       puts "      sdk : ["+sdk+"]"
 
-
-
       rm_rf target_lib
 
       check_f_r = check_for_rebuild(result_lib, depfile)
       puts "      check_for_rebuild = "+check_f_r.to_s
-      is_opt_c = is_options_was_changed({"configuration" => configuration,"sdk" => sdk, "xcode_version" => xcode_version}, "lastbuildoptions.yml")
+
+      check_configuration = {
+          "configuration" => configuration,
+          "sdk" => sdk,
+          "xcode_version" => xcode_version,
+          "is_jsapp" => $js_application.to_s,
+          "is_nodejsapp" => $nodejs_application.to_s
+      }
+
+      is_opt_c = is_options_was_changed( check_configuration, File.join(result_lib_folder, "lastbuildoptions.yml"))
       puts "      is_options_was_changed = "+is_opt_c.to_s
 
-      if check_f_r || is_opt_c
-          puts "      we should rebuild because previous builded library is not actual or not exist !"
-      else
-          puts "      ssskip rebuild because previous builded library is still actual !"
-      end
+      result_lib_exist = File.exist?(result_lib)
+      puts "      result_lib_exist('"+result_lib+"') = "+result_lib_exist.to_s
 
-      if !File.exist?(result_lib)
+
+      if check_f_r || is_opt_c || (!result_lib_exist)
+
+          rm_rf result_lib
+
+          puts "      we should rebuild because previous builded library is not actual or not exist !"
+
           # library bot found ! We should build it !
           puts "      build xcode extension !"
 
-          rm_rf 'build'
+          #rm_rf 'build'
+          rm_rf result_lib_folder
 
           args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
@@ -1625,6 +1645,11 @@ namespace "build" do
 
           ret = IPhoneBuild.run_and_trace(xcodebuild,args,{:rootdir => rootdir, :string_for_add_to_command_line => additional_string})
 
+          # save configuration
+          is_options_was_changed( check_configuration, File.join(result_lib_folder, "lastbuildoptions.yml"))
+
+      else
+          puts "      ssskip rebuild because previous builded library is still actual !"
       end
 
       cp result_lib,target_lib
@@ -1811,7 +1836,7 @@ namespace "build" do
 
     end
 
-
+    #[build:iphone:extension_libs]
     task :extension_libs => ["config:iphone", "build:bundle:noxruby"] do
       #chdir 'platform/iphone'
       chdir File.join($app_path, 'project/iphone')
@@ -1927,7 +1952,7 @@ namespace "build" do
 
     end
 
-
+    #[build:iphone:extensions]
     task :extensions => "config:iphone" do
       print_timestamp('build:iphone:extensions START')
 
@@ -2018,7 +2043,7 @@ namespace "build" do
 
 
 
-
+    #[build:iphone:make_prebuild_core]
     task :make_prebuild_core do
 
       currentdir = Dir.pwd()
@@ -2147,53 +2172,59 @@ namespace "build" do
       extensions_src = File.join($startdir, 'platform','shared','ruby','ext','rho','extensions.c')
       extensions_dst = File.join($app_path, 'project','iphone','Rhodes','extensions.c')
 
-      rm_rf extensions_dst
-      cp extensions_src, extensions_dst
+      #rm_rf extensions_dst
+      #cp extensions_src, extensions_dst
+      Jake.copyIfNeeded extensions_src, extensions_dst
 
       properties_src = File.join($startdir, 'platform','shared','common','app_build_configs.c')
       properties_dst = File.join($app_path, 'project','iphone','Rhodes','app_build_configs.c')
 
-      rm_rf properties_dst
-      cp properties_src, properties_dst
+      #rm_rf properties_dst
+      #cp properties_src, properties_dst
+      Jake.copyIfNeeded properties_src, properties_dst
+
+
+      # old code for use prebuild libraries:
 
       #copy libCoreAPI.a and Rhodes.a
-      prebuild_root = File.join($startdir, "platform","iphone","prebuild")
+      #prebuild_root = File.join($startdir, "platform","iphone","prebuild")
 
-      prebuild_ruby = File.join(prebuild_root, "ruby")
-      prebuild_noruby = File.join(prebuild_root, "noruby")
+      #prebuild_ruby = File.join(prebuild_root, "ruby")
+      #prebuild_noruby = File.join(prebuild_root, "noruby")
 
-      coreapi_ruby = File.join(prebuild_ruby, "libCoreAPI.a")
-      coreapi_noruby = File.join(prebuild_noruby, "libCoreAPI.a")
+      #coreapi_ruby = File.join(prebuild_ruby, "libCoreAPI.a")
+      #coreapi_noruby = File.join(prebuild_noruby, "libCoreAPI.a")
 
-      rhodes_ruby = File.join(prebuild_ruby, "libRhodes.a")
-      rhodes_noruby = File.join(prebuild_noruby, "libRhodes.a")
+      #rhodes_ruby = File.join(prebuild_ruby, "libRhodes.a")
+      #rhodes_noruby = File.join(prebuild_noruby, "libRhodes.a")
 
-      coreapi_lib = coreapi_ruby
-      rhodes_lib = rhodes_ruby
+      #coreapi_lib = coreapi_ruby
+      #rhodes_lib = rhodes_ruby
 
-      if $js_application
-        coreapi_lib = coreapi_noruby
-        rhodes_lib = rhodes_noruby
-      end
+      #if $js_application
+    #    coreapi_lib = coreapi_noruby
+    #    rhodes_lib = rhodes_noruby
+     # end
       #if File.exist?(coreapi_lib)
       #   coreapi_lib_dst = File.join($app_path, 'project/iphone/Rhodes/libCoreAPI.a')
       #   rm_rf coreapi_lib_dst
       #   cp coreapi_lib, coreapi_lib_dst
       #end
-      if File.exist?(rhodes_lib)
-         rhodes_lib_dst = File.join($app_path, 'project/iphone/Rhodes/libRhodes.a')
-         rm_rf rhodes_lib_dst
-         cp rhodes_lib, rhodes_lib_dst
-      end
+      #if File.exist?(rhodes_lib)
+    #     rhodes_lib_dst = File.join($app_path, 'project/iphone/Rhodes/libRhodes.a')
+    #     rm_rf rhodes_lib_dst
+    #     cp rhodes_lib, rhodes_lib_dst
+     # end
 
     end
 
 
-
+    #[build:iphone:restore_xcode_project]
     task :restore_xcode_project => ["config:iphone"] do
        restore_project_from_bak
     end
 
+    #[build:iphone:setup_xcode_project]
     desc "make/change generated XCode project for build application"
     task :setup_xcode_project => ["config:iphone"] do
       print_timestamp('build:iphone:setup_xcode_project START')
@@ -2201,6 +2232,9 @@ namespace "build" do
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
       iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
+
+      xcode_project_checker = GeneralTimeChecker.new
+      xcode_project_checker.init($startdir, $app_path, "xcode_project")
 
       if !File.exist?(iphone_project)
 
@@ -2211,29 +2245,42 @@ namespace "build" do
 
         chdir $app_path
 
-        puts '$ prepare iphone XCode project for application'
-        rhogenpath = File.join($startdir, 'bin', 'rhogen')
-        Jake.run3("\"#{rhogenpath}\" iphone_project #{appname_fixed} \"#{$startdir}\"")
+        build_yml_filepath = File.join($app_path, "build.yml")
+        build_yml_updated = xcode_project_checker.check(build_yml_filepath)
 
-        Rake::Task['build:iphone:update_plist'].invoke
+        if build_yml_updated
 
-        if !$skip_build_xmls
-          Rake::Task['build:bundle:prepare_native_generated_files'].invoke
-          rm_rf File.join('project','iphone','toremoved')
-          rm_rf File.join('project','iphone','toremovef')
+            puts '$ prepare iphone XCode project for application'
+            rhogenpath = File.join($startdir, 'bin', 'rhogen')
+            Jake.run3("\"#{rhogenpath}\" iphone_project #{appname_fixed} \"#{$startdir}\"")
+
+            Rake::Task['build:iphone:update_plist'].invoke
+
+            if !$skip_build_xmls
+              Rake::Task['build:bundle:prepare_native_generated_files'].invoke
+              rm_rf File.join('project','iphone','toremoved')
+              rm_rf File.join('project','iphone','toremovef')
+            end
+
+            update_xcode_project_files_by_capabilities
+
+        else
+            puts "$ build.yml not changed after last XCode project generation !"
         end
 
-        update_xcode_project_files_by_capabilities
 
       end
 
       copy_generated_sources_and_binaries
+
+      xcode_project_checker.update
+
       print_timestamp('build:iphone:setup_xcode_project FINISH')
 
     end
 
 
-
+    #[build:iphone:update_plist]
     task :update_plist => ["config:iphone"] do
 
       chdir $app_path
@@ -2245,7 +2292,7 @@ namespace "build" do
       set_signing_identity($signidentity,$provisionprofile,$entitlements,$provisioning_style,$development_team) #if $signidentity.to_s != ""
     end
 
-
+    #[build:iphone:make_xcode_project]
     task :make_xcode_project => ["config:iphone"] do
 
       print_timestamp('build:iphone:make_xcode_project START')
@@ -2347,7 +2394,7 @@ namespace "build" do
 
     end
 
-
+    #[build:iphone:rhodes]
     task :rhodes => "config:iphone" do
 
        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
@@ -2359,6 +2406,7 @@ namespace "build" do
 
     end
 
+    #[build:iphone:rhodes_old]
 #    desc "Build rhodes"
     task :rhodes_old => ["config:iphone", "build:iphone:rhobundle"] do
       print_timestamp('build:iphone:rhodes START')
@@ -3253,6 +3301,7 @@ end
 
 namespace "device" do
   namespace "iphone" do
+    # device:iphone:production
     desc "Builds and signs iphone for production"
     task :production => ["config:iphone", "build:iphone:rhodes"] do
       print_timestamp('device:iphone:production START')
