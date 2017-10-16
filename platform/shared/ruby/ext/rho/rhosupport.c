@@ -111,31 +111,33 @@ rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
 
 static VALUE loadISeqFromFile(VALUE path)
 {
-    VALUE seq, fiseq, arr;
+    VALUE seq;
+    VALUE arr;
     int filelen, res;
-    const char* filedata;
-    const char* filepath;
-    char* founded, decrypted_buf = NULL;
+
+    char * founded;
+    char * decrypted_buf = NULL;
 //        fiseq = File.open(fName)
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
     struct timeval  end;
 #endif    
 
-    fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
+    VALUE fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
+    
     
     // fiseq is string
     //char* getStringFromValue(VALUE val);
     //int getStringLenFromValue(VALUE val);
     // VALUE rho_ruby_create_string_withlen2(const char* szVal, int len)
-    filepath = getStringFromValue(path);
+    const char* filepath = getStringFromValue(path);
     founded = strstr(filepath, ".encrypted");
     
     RAWLOG_INFO1("loadISeqFromFile: %s", filepath);
     
     if (founded) {
         if (strcmp(founded, ".encrypted") == 0) {
-            filedata = getStringFromValue(fiseq);
+            const char* filedata = getStringFromValue(fiseq);
             filelen = getStringLenFromValue(fiseq);
             
             decrypted_buf = malloc (filelen*2);
