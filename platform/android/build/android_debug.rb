@@ -10,10 +10,11 @@ class AndroidDebug
         end
     end
 
-    def initialize(android_package, p, p2)
+    def initialize(android_package, a_p, p, p2)
         @package = android_package
         @port = p
         @jdwp_port = p2
+        @app_path = a_p
     end
   
     def execute_blocked(cmd)
@@ -57,6 +58,7 @@ class AndroidDebug
 
     def StartGdbServer
 
+        Dir.chdir(@app_path)
         @pid = get_pid_process("gdbserver")
         if get_pid_process("gdbserver") > 0
             execute_blocked("adb shell \"run-as #{@package} kill #{@pid}\"")
@@ -87,6 +89,21 @@ class AndroidDebug
         puts "App wait debuger (#{@pid})"
     end
 
+    def InitBreakPointList
+        bps = []
+        breakpoints = File.join @app_path, "breakpoints.bps"
+        if File.size?(breakpoints)
+            text = File.open(breakpoints).read
+            text.each_line do |line|
+                bps << line
+            end
+            return bps
+        else
+            return bps
+        end
+    end
+
+
     def StartGdb(path_to_gdb)
         if isWindows?()
             path_to_gdb = path_to_gdb + '.exe'
@@ -97,6 +114,20 @@ class AndroidDebug
         if !File.executable?(path_to_gdb) 
             raise "It's not GDB!!!"
         end
+
+        bps = InitBreakPointList()
+
+        Dir.chdir(@app_path)
+        File.open("start_debug", "w+") do |f| 
+            f.write("set interactive-mode on\n")
+            f.write("set breakpoint pending on\n")
+            f.write("target remote :#{@port}\n")
+            bps.each do |item| 
+                f.write("b #{item}\n")
+            end
+            f.write("c\n")
+        end    
+        
         system(path_to_gdb)
     end
 
