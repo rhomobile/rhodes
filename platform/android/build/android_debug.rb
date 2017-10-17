@@ -10,11 +10,29 @@ class AndroidDebug
         end
     end
 
-    def initialize(android_package, a_p, p, p2)
+    def initialize(android_package, a_p, p, p2, t)
         @package = android_package
-        @port = p
+
+        if(p == nil || p.empty?) 
+            @port = 5039
+        else
+            @port = p.to_i
+        end
+
         @jdwp_port = p2
         @app_path = a_p
+
+        if(t == nil || t.empty?) 
+            @type = "-d"
+        else
+            if t == "device"
+                @type = "-d"
+            elsif t == "emul"
+                @type = "-e"
+            else
+                @type = "-d"
+            end
+        end
     end
   
     def execute_blocked(cmd)
@@ -45,7 +63,7 @@ class AndroidDebug
     end
 
     def get_pid_process(process_name)
-        adb_command_ps = "adb shell \"ps | grep #{process_name}\""
+        adb_command_ps = "adb #{@type} shell \"ps | grep #{process_name}\""
         output_ps = execute_blocked(adb_command_ps)
 
         if output_ps.empty?
@@ -61,30 +79,30 @@ class AndroidDebug
         Dir.chdir(@app_path)
         @pid = get_pid_process("gdbserver")
         if get_pid_process("gdbserver") > 0
-            execute_blocked("adb shell \"run-as #{@package} kill #{@pid}\"")
+            execute_blocked("adb #{@type} shell \"run-as #{@package} kill #{@pid}\"")
         end
 
-        output_ps = execute_blocked("adb shell \"ps | grep #{@package}\"")
+        output_ps = execute_blocked("adb #{@type} shell \"ps | grep #{@package}\"")
         if output_ps.empty?
             raise "Debug process not found!"
         else
             @pid = output_ps.split(' ')[1]
         end
 
-        adb_command_start = "adb shell \"run-as #{@package} ./lib/gdbserver :#{@port} --attach #{@pid}\" > gdbserver.log"
+        adb_command_start = "adb #{@type} shell \"run-as #{@package} ./lib/gdbserver :#{@port} --attach #{@pid}\" > gdbserver.log"
         execute_non_blocked(adb_command_start)
         print_gdbserver_out()
 
-        execute_blocked("adb forward tcp:#{@port} tcp:#{@port}")
+        execute_blocked("adb #{@type} forward tcp:#{@port} tcp:#{@port}")
     end
 
     def StartAppOnDebug
         @pid = get_pid_process(@package)
         if @pid != -1
-            execute_blocked("adb shell \"run-as #{@package} kill #{@pid}\"")
+            execute_blocked("adb #{@type} shell \"run-as #{@package} kill #{@pid}\"")
         end
 
-        execute_blocked("adb shell \"am start -D #{@package}/com.rhomobile.rhodes.RhodesActivity\"")
+        execute_blocked("adb #{@type} shell \"am start -D #{@package}/com.rhomobile.rhodes.RhodesActivity\"")
         @pid = get_pid_process(@package)
         puts "App wait debuger (#{@pid})"
     end
