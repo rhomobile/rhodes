@@ -2294,9 +2294,10 @@ namespace "run" do
   desc "Run win32"
   task :win32 => ["build:win32"] do
     unless $prebuild_win32
-      rundir = $config["build"]["wmpath"]
-      $target_path = File.join( rundir, "bin/win32/rhodes", $buildcfg )
-      exefile = "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe"
+      rundir = File.join($config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
+      $target_path = rundir
+      rundir = File.join(rundir, "rho");
+      exefile = "../rhodes.exe"
     else
       rundir = $target_path
       exefile = $target_path + '/' + $appname + '.exe'

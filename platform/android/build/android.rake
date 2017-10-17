@@ -162,25 +162,37 @@ end
 
 namespace 'debug' do
   namespace 'android' do
+
+    debug_port = $app_config["android"]["debug_port"]
+    device_type = $app_config["android"]["target_debug"]
+
     task :gdbserver => ['config:android'] do
-      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
       debugger.StartGdbServer
     end
 
     task :gdb => ['config:android'] do
-      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
       gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
       debugger.StartGdb(gdb_path)
     end
 
     task :jdb => ['config:android'] do
-      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
       debugger.StartJdb
     end
 
     task :appdebug => ['config:android'] do
-      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
       debugger.StartAppOnDebug
+    end
+
+    task :run_and_debug => ['config:android'] do
+      gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
+      debugger.StartAppOnDebug
+      debugger.StartGdbServer
+      debugger.StartGdb(gdb_path)
     end
 
   end
