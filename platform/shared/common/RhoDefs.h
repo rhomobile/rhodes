@@ -139,6 +139,7 @@ typedef int LogSeverity;
 #define RHO_RB_EXT ".rb"
 #define RHO_ERB_EXT ".erb"
 #define RHO_EMULATOR_DIR "rhosimulator"
+#define RHO_ENCRYPTED_EXT ".rb"
 #else
 #define RHO_RB_EXT ".iseq"
 #define RHO_ENCRYPTED_EXT ".encrypted"
