@@ -195,6 +195,13 @@ namespace 'debug' do
       debugger.StartGdb(gdb_path)
     end
 
+    task :attach => ['config:android'] do
+      gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
+      debugger.StartGdbServer
+      debugger.StartGdb(gdb_path)
+    end
+
   end
 end
 
