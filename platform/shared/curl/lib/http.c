@@ -1371,9 +1371,9 @@ CURLcode Curl_http_connect(struct connectdata *conn, bool *done)
   if(CONNECT_FIRSTSOCKET_PROXY_SSL())
     return CURLE_OK; /* wait for HTTPS proxy SSL initialization to complete */
 
-  if(!Curl_connect_complete(conn))
+  //if(!Curl_connect_complete(conn))
     /* nothing else to do except wait right now - we're not done here. */
-    return CURLE_OK;
+  //  return CURLE_OK;
 
   if(conn->given->protocol & CURLPROTO_HTTPS) {
     /* perform SSL initialization */
