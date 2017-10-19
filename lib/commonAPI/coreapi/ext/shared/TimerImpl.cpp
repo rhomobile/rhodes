@@ -113,9 +113,9 @@ namespace rho
         }
 
 		virtual bool onTimer()
-		{
-			if (!m_answerThread) {
-				m_answerThread = new TimerResultThread(m_oResult);
+        {
+            if (!m_answerThread) {
+                m_answerThread = new TimerResultThread(m_oResult);
 			}
 
 			m_answerThread->start(IRhoRunnable::epNormal);
