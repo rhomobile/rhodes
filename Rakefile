@@ -3417,6 +3417,7 @@ namespace "build" do
         cp compileERB, $srcdir
         puts "Running default.rb"
         cmd_str = "#{$rubypath} -E UTF-8 -I#{rhodeslib} #{$srcdir}/default.rb"
+        puts cmd_str
         if defined?(Bundler)
           Bundler.with_clean_env do
             puts `#{cmd_str}`
