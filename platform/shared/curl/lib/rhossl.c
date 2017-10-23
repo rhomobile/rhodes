@@ -104,6 +104,8 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
     
     *done = (bool)idone;
     connssl->state = ssl_connection_complete;
+    conn->recv[sockindex] = Curl_rhossl_recv;
+    conn->send[sockindex] = Curl_rhossl_send;
     
     return retcode;
 }
@@ -178,8 +180,9 @@ size_t Curl_rhossl_version(char *buffer, size_t size)
 CURLcode Curl_rhossl_random(struct Curl_easy *data, unsigned char *entropy,
                           size_t length)
 {
-	assert(false);
-	return CURLE_OK;
+    assert(entropy);
+    bool result = rho_ssl_rand(entropy, length);
+	return result ? CURLE_OK : CURLE_FAILED_INIT;
 }
 
 #endif /* USE_RHOSSL */
