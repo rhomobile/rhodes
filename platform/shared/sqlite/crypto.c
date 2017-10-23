@@ -76,6 +76,14 @@ int sqlite3_key(sqlite3 *db, const void *pKey, int nKey)
     return SQLITE_ERROR;
 }
 
+int sqlite3_key_v2(sqlite3 *db, const char *zDb, const void *pKey, int nKey) {
+  
+  if(db && pKey && nKey) {
+    return sqlite3CodecAttach(db, 0, pKey, nKey); 
+  }
+  return SQLITE_ERROR;
+}
+
 void* sqlite3Codec(void *iCtx, void *data, Pgno pgno, int mode) 
 {
     CRhoSqliteCodecCtx *pRhoCtx = (CRhoSqliteCodecCtx *) iCtx;
@@ -142,7 +150,7 @@ int sqlite3CodecAttach(sqlite3* db, int nDb, const void *pKey, int nKey)
         sqliteBtreeSetPageSize will block the change 
         */
 #if !defined(OS_WP8) && !defined(OS_UWP)
-        pDb->pBt->pBt->pageSizeFixed = 0; 
+        //pDb->pBt->pBt->pageSizeFixed = 0; //error: 'BtShared' has no member named 'pageSizeFixed'
 #endif
         sqlite3BtreeSetPageSize( pDb->pBt, SQLITE_DEFAULT_PAGE_SIZE, EVP_MAX_IV_LENGTH, 0 );
 
@@ -188,6 +196,11 @@ void sqlite3_activate_see(const char* in)
 int sqlite3_rekey(sqlite3 *db, const void *pKey, int nKey) 
 {
 	return SQLITE_OK;
+}
+
+int sqlite3_rekey_v2(sqlite3 *db, const char *zDb, const void *pKey, int nKey)
+{
+  return SQLITE_OK;
 }
 
 #if 0
