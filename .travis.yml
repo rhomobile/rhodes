@@ -1,5 +1,4 @@
 
-os: osx
 language: android
 script:
 - rake gem
