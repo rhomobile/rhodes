@@ -1,0 +1,13 @@
+
+os: osx
+language: android
+script:
+- rake gem
+- gem install ./rhodes-$(cat ./version).gem
+#- git clone
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - tools
