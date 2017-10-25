@@ -39,41 +39,47 @@ namespace rho
             Size maxResolution;
             bool isFormatJPG = true;
             List<Size> imageResolutions = new List<Size>();
+            StorageFolder pictureFolder = KnownFolders.CameraRoll;
 
             static Dictionary<string, DeviceInformation> availableCameras = new Dictionary<string, DeviceInformation>();
+
+            public static async Task<DeviceInformationCollection> getDevices()
+            {
+                DeviceInformationCollection result = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
+                return result;
+            }
 
             static public Dictionary<string, DeviceInformation> initCameraIDs()
             {
                 deb("Finds all video capture devices");
                 if (availableCameras.Count == 0){
                     try{
-                        IAsyncOperation<DeviceInformationCollection> task = DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
-                        try{
-                            task.AsTask().Start();
-                        }
+                        var task = getDevices();
+                        
+                        try{task.Start();}
                         catch(Exception e){deb("Task not started: " + e.Message);}
                         
                         try{
-                            task.AsTask().Wait();
-                        }
-                        catch (Exception e){deb("Task not waited: " + e.Message);}    
+                            if (task.Status == TaskStatus.Running){task.Wait();}
+                        } catch (Exception e){deb("Task not waited: " + e.Message);}    
 
-                        DeviceInformationCollection devices = task.GetResults();
+                        DeviceInformationCollection devices = task.Result;
                         
                         deb("Trying to find camera from device list, size = " + devices.Count);
                         foreach (var device in devices){
                             deb("Checking device");
                             try{
-                                if (MediaCapture.IsVideoProfileSupported(device.Id)){
+                                //if (MediaCapture.IsVideoProfileSupported(device.Id)){
                                     if (device.EnclosureLocation.Panel.Equals(Windows.Devices.Enumeration.Panel.Front)){
                                         availableCameras.Add(CAMERA_TYPE_FRONT, device);
                                         deb("Camera found: " + CAMERA_TYPE_FRONT);
-                                    }
-                                    if (device.EnclosureLocation.Panel.Equals(Windows.Devices.Enumeration.Panel.Back)){
+                                    }else if (device.EnclosureLocation.Panel.Equals(Windows.Devices.Enumeration.Panel.Back)){
                                         availableCameras.Add(CAMERA_TYPE_BACK, device);
                                         deb("Camera found: " + CAMERA_TYPE_BACK);
+                                    }else{
+                                        deb("Found camera in strange place");
                                     }
-                                }
+                                //}
                             }
                             catch (Exception e){deb(e.Message);}
                         }
@@ -95,10 +101,6 @@ namespace rho
                         cameraInformation = initCameraIDs()["back"];
                     }catch(Exception exception){cameraInformation = null;}
                 }
-
-                
-
-
 
                 CRhoRuntime.getInstance().logEvent("Camera class -->Constructor");
             }
@@ -614,7 +616,7 @@ namespace rho
 
             
 
-            private async Task takePicturAsync(IMethodResult oResult)
+            private async Task takePicturAsync(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
             {
                 Dictionary<string, string> takePictureOutput = new Dictionary<string, string>();
                 try
@@ -622,21 +624,101 @@ namespace rho
                     CameraCaptureUI captureUI = new CameraCaptureUI();
 
                     captureUI.PhotoSettings.Format = isFormatJPG ? CameraCaptureUIPhotoFormat.Jpeg : CameraCaptureUIPhotoFormat.Png;
-
-                    captureUI.PhotoSettings.CroppedSizeInPixels = resolution;
+                    captureUI.PhotoSettings.MaxResolution = Windows.Media.Capture.CameraCaptureUIMaxPhotoResolution.HighestAvailable;
+                    captureUI.PhotoSettings.CroppedAspectRatio = resolution;
 
                     StorageFile file = await captureUI.CaptureFileAsync(CameraCaptureUIMode.Photo);
+                    StorageFolder dbFolder = await StorageFolder.GetFolderFromPathAsync(MainPage.getDBDir().FullName);
+                    string fileName = null;
+                    try
+                    {
+                        var n = DateTime.Now;
+                        fileName = "IMG_" + n.Year.ToString() + n.Month.ToString() + n.Day.ToString() + "_" 
+                                        + n.Hour.ToString() + n.Minute.ToString() + n.Second.ToString() + ".jpg";
+                        deb("FileName is: " + fileName);
+
+                        file = await file.CopyAsync(dbFolder, fileName);
+                        deb("Image has been taken to file path: " + file.Path);
+                    }catch(Exception e)
+                    {
+                        throw new Exception("Can't create file in db-files");
+                    }
+  
+                    Uri imageUri = new Uri(file.Path);
+                    deb("Uri has been extracted: " + imageUri);
+
+                    if (propertyMap.ContainsKey("outputFormat"))
+                    {
+                        if (propertyMap["outputFormat"] == "image")
+                        {
+                            deb("outputFormat is image");
+                            takePictureOutput["image_uri"] = imageUri.AbsoluteUri;
+                            takePictureOutput["imageUri"] = imageUri.AbsoluteUri;
+                        }
+
+                        if (propertyMap["outputFormat"] == "imagePath")
+                        {
+                            deb("outputFormat is imagePath");
+                            takePictureOutput["image_uri"] = file.Path;
+                            takePictureOutput["imageUri"] = file.Path;
+                        }
+
+                        if (propertyMap["outputFormat"] == "dataUri")
+                        {
+                            deb("outputFormat is dataUri");
+                            MemoryStream ms1 = new MemoryStream();
+                            (await file.GetThumbnailAsync(Windows.Storage.FileProperties.ThumbnailMode.PicturesView)).AsStreamForRead().CopyTo(ms1);
+                            string strbase64 = System.Convert.ToBase64String(ms1.ToArray());
+                            takePictureOutput["image_uri"] = "data:image/jpeg;base64," + strbase64;
+                            takePictureOutput["imageUri"] = "data:image/jpeg;base64," + strbase64;
+                        }
+                        deb("propertyMap[\"outputFormat\"] complited");
+                    }else
+                    {
+                        takePictureOutput["image_uri"] = file.Path;
+                        takePictureOutput["imageUri"] = file.Path;
+                    }
+
+
+                    deb("Creating image");
+
+                    var imageFile = await dbFolder.GetFileAsync(fileName);
+                    using (IRandomAccessStream stream = await imageFile.OpenAsync(FileAccessMode.Read))
+                    {
+                        // Create the decoder from the stream
+                        BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+
+                        // Get the SoftwareBitmap representation of the file
+                        SoftwareBitmap image = await decoder.GetSoftwareBitmapAsync();
+                        deb("Image created");
+                        
+                        takePictureOutput["status"] = STATUS_OK;
+                        takePictureOutput["imageHeight"] = image.PixelHeight.ToString();
+                        takePictureOutput["imageWidth"] = image.PixelWidth.ToString();
+
+                        takePictureOutput["image_height"] = image.PixelHeight.ToString();
+                        takePictureOutput["image_width"] = image.PixelWidth.ToString();
+                        deb("All properties wrote successfully");
+                    }
+
                 }
                 catch (Exception ex)
                 {
+                    deb("Exception: " + ex.Message);
                     CRhoRuntime.getInstance().logEvent("Camera class--> takePicture exception" + ex.ToString());
                     
                     takePictureOutput["status"] = STATUS_ERROR;
                     takePictureOutput["message"] = ex.Message;
                     takePictureOutput["image_format"] = string.Empty;
-                    takePictureOutput["imageFormat"] = string.Empty;    
+                    takePictureOutput["imageFormat"] = string.Empty;
                 }
-                oResult.set(takePictureOutput);
+                finally
+                {
+                    deb("Setting result");
+                    Task.Run(()=>oResult.set(takePictureOutput));
+                    
+                }
+               
             }
 
 
@@ -650,7 +732,7 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class--> takePicture");
 
                 dispatchInvoke(delegate () {
-                    Task task = takePicturAsync(oResult);
+                    Task task = takePicturAsync(propertyMap, oResult);
                 });
 
                 CRhoRuntime.getInstance().logEvent("Camera class--> End takePicture");
@@ -801,8 +883,15 @@ namespace rho
             {
                 Camera.deb("Singleton enumeration");
                 CRhoRuntime.getInstance().logEvent("Camera class-->enumerate");
-                List<string> AvailabeCameras = Camera.initCameraIDs().Keys.ToList();
-                oResult.set(AvailabeCameras);
+                List<string> availabeCameras = null;
+                try
+                {
+                    availabeCameras = Camera.initCameraIDs().Keys.ToList();
+                }catch(Exception e)
+                {
+                    availabeCameras = new List<string>();
+                }
+                oResult.set(availabeCameras);
                 Camera.deb("Singleton enumeration end");
             }
 
