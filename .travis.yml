@@ -10,7 +10,7 @@ script:
 - rake gem
 - rvm gemset create rhodes
 - rvm gemset use rhodes
-- gem install ./rhodes-$(cat ./version).gem
+- travis-wait 30 gem install ./rhodes-$(cat ./version).gem --verbose
 - printf "$JAVA_HOME\n$ANDROID_HOME\n$ANDROID_HOME/ndk-bundle\n\n\n\n\n" | rhodes-setup
 - git clone https://github.com/rhomobile/RMS-Testing.git $HOME/RMS-Testing
 - cd $HOME/RMS-Testing/auto/feature_def/auto_common_spec && rake run:android
