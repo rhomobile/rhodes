@@ -7,7 +7,25 @@
  * This program is licensed under the same licence as Ruby.
  * (See the file 'LICENCE'.)
  */
-#include RUBY_EXTCONF_H
+//#include RUBY_EXTCONF_H
+
+//RHO
+#if defined(WIN32) || defined (WINCE)
+#include "windows/extconf.h"
+#elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
+#include <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+
+#include "iphone/extconf.h"
+
+#else
+#include "macosx/extconf.h"
+#endif
+#elif defined(ANDROID)
+#include "android/extconf.h"
+#endif
+//RHO
 
 #if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_EVP_CIPHER_CTX_ENGINE)
 # include <openssl/engine.h>
