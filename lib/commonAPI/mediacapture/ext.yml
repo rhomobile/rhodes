@@ -1,6 +1,11 @@
 entry: Init_Mediacapture_extension	
 libraries: ["mediacapture"]
 
+iphone:
+  xcodeproject: ext/platform/iphone/Mediacapture.xcodeproj
+  xcodetarget: Mediacapture
+  rebuild_deplist: ext/platform/iphone/deplist.txt
+
 android:
   source_list: ext/platform/android/ext_java.files
   rhodes_listener: com.rho.mediacapture.RhoListener

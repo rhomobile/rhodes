@@ -12,7 +12,6 @@ BarCodeController::BarCodeController() : QObject(QApplication::instance())
 void BarCodeController::enumerate(rho::apiGenerator::CMethodResult& oResult) {
     refresh();
     rho::Vector<rho::String> arIDs = oResult.getStringArray();
-
     if(!camerasKeeper.isEmpty()){
         foreach (QString value, camerasKeeper.keys()) {
             arIDs.addElement(value.toStdString());
@@ -37,4 +36,27 @@ void BarCodeController::refresh(){
         refreshed = true;
         getInstance()->getCameraInfo();
     }
+}
+
+QList<QString> BarCodeController::getIDs()
+{
+    refresh();
+    return camerasKeeper.keys();
+}
+
+void BarCodeController::getCameraInfo(){
+    QMetaObject::invokeMethod(GuiThreadFuncHelper::getInstance(), "availableCameras",
+                              Qt::QueuedConnection, Q_ARG(QObject *, this));
+    QTimer::singleShot(500, &(this->loop), SLOT(quit()));
+    loop.exec();
+}
+
+void BarCodeController::availableCameras(QList<QCameraInfo> info){
+    if(camerasKeeper.isEmpty()){
+        int deviceCounter = 0;
+        foreach (QCameraInfo cameraInfo, info) {
+            camerasKeeper.insert(QString::number(++deviceCounter), cameraInfo);
+        }
+    }
+    loop.quit();
 }

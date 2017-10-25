@@ -30,6 +30,7 @@ require File.dirname(__FILE__) + '/maven_deps_extractor.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
 require File.dirname(__FILE__) + '/android_studio_project_generator.rb'
+require File.dirname(__FILE__) + '/android_debug.rb'
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
@@ -158,6 +159,33 @@ end
 def get_boolean(arg)
   arg == 'true' or arg == 'yes' or arg == 'enabled' or arg == 'enable' or arg == '1'
 end
+
+namespace 'debug' do
+  namespace 'android' do
+    task :gdbserver => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger.StartGdbServer
+    end
+
+    task :gdb => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
+      debugger.StartGdb(gdb_path)
+    end
+
+    task :jdb => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger.StartJdb
+    end
+
+    task :appdebug => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger.StartAppOnDebug
+    end
+
+  end
+end
+
 
 namespace 'project' do
   namespace 'android' do
@@ -2438,6 +2466,18 @@ namespace "package" do
     Dir.glob(File.join($applibs,'**','lib*.so')).each do |lib|
       arch = File.basename(File.dirname(lib))
       args << "lib/#{arch}/#{File.basename(lib)}"
+
+    unless not $debug
+      gdbserver_path = File.join($androidndkpath, "prebuilt", "android-arm", "gdbserver", "gdbserver") #TODO: packing gdbserver for all platforms
+      if File.exist?(gdbserver_path)
+        path_to_lib = File.join $tmpdir, 'lib'
+        cp_r gdbserver_path, File.join(path_to_lib, arch)
+        args << "lib/#{arch}/gdbserver"
+      else
+        puts "gdbserver not found!"
+      end
+    end
+
     end
     Jake.run($jarbin, args, $tmpdir)
     unless $?.success?

@@ -1,0 +1,8 @@
+deplist.txt
+InitExtensions.m
+Mediacapture_Prefix.pch
+Mediacapture.xcodeproj/project.pbxproj
+impl/*.*
+../../shared/*.*
+../../*.xml
+../../../ext.yml

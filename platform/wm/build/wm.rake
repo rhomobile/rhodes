@@ -80,11 +80,18 @@ def QTInfo(qtcurrentversion)
           value =3 # 5.5.0.0
       end
 
-      eqstatus = is_equal("5.8.0.0",qtcurrentversion)
-      puts "Checking for 5.8.0.0 - #{eqstatus}"
-       if(eqstatus)
-          value = 4 # 5.8.0.0
+      eqstatus = is_equal("5.8",qtcurrentversion)
+      puts "Checking for 5.8 - #{eqstatus}"
+      if(eqstatus)
+          value = 4 # 5.8
       end
+
+      eqstatus = is_equal("5.9",qtcurrentversion)
+      puts "Checking for 5.9 - #{eqstatus}"
+      if(eqstatus)
+          value = 4 # 5.9
+      end
+
       return value
 end
 
@@ -793,19 +800,12 @@ namespace "config" do
           $qtversionindex = QTInfo($QVersion)
           puts "QT Version Found and Index for further checking is #{$qtversionindex}"
           
-          case $qtversionindex
-               when 1
-                    format= "Found QT Version : #{$QVersion}"
-               when 2     
-                    format ="Found QT Version : #{$QVersion}"
-               when 3
-                    format ="Found QT Version : #{$QVersion}"
-               when 4
-                    format ="Found QT Version : #{$QVersion}"
-               else
-                    format ="Unknown QT Version : #{$QVersion}"
+          if ($qtversionindex != 0)
+            puts "Found QT Version : #{$QVersion}"
+          else
+            puts "Unknown QT Version : #{$QVersion}"
           end
-          puts format
+
           puts "Visual Studio Found/Default for build.yml is #{$vs_version} , Code will be Compiled against Visual Studio #{$vs_version}"
           
          if $vs_version == 2008 &&  $qtversionindex == 3
@@ -2294,9 +2294,10 @@ namespace "run" do
   desc "Run win32"
   task :win32 => ["build:win32"] do
     unless $prebuild_win32
-      rundir = $config["build"]["wmpath"]
-      $target_path = File.join( rundir, "bin/win32/rhodes", $buildcfg )
-      exefile = "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe"
+      rundir = File.join($config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
+      $target_path = rundir
+      rundir = File.join(rundir, "rho");
+      exefile = "../rhodes.exe"
     else
       rundir = $target_path
       exefile = $target_path + '/' + $appname + '.exe'

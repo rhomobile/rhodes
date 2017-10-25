@@ -894,6 +894,10 @@ VALUE rb_obj_reveal(VALUE obj, VALUE klass); /* do not use this API to change kl
 #endif
 
 #define RBASIC_CLASS(obj) (RBASIC(obj)->klass)
+#define RBIGNUM_DIGITS(b) \
+((RBASIC(b)->flags & RBIGNUM_EMBED_FLAG) ? \
+ RBIGNUM(b)->as.ary : \
+ RBIGNUM(b)->as.heap.digits)
 
 #define ROBJECT_EMBED_LEN_MAX ROBJECT_EMBED_LEN_MAX
 #define ROBJECT_EMBED ROBJECT_EMBED

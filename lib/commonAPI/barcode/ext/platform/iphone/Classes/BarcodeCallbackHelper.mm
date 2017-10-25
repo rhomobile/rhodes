@@ -157,7 +157,7 @@ void Barcode_executeRhoCallBackWithParams(NSString* callbackURL,
 		
 		strBody = [strBody stringByAppendingString:strParam];
 	}
-	if ((str1Name != nil) && (str1Value != null)) {
+	if ((str1Name != nil) && (str1Value != NULL)) {
 		strBody = [strBody stringByAppendingString:@"&"];
 		
 		//NSString* strParam = @"";						 
@@ -168,7 +168,7 @@ void Barcode_executeRhoCallBackWithParams(NSString* callbackURL,
 
 		strBody = [strBody stringByAppendingString:strParam];
 	}
-	if ((str2Name != nil) && (str2Value != null)) {
+	if ((str2Name != nil) && (str2Value != NULL)) {
 		strBody = [strBody stringByAppendingString:@"&"];
 
 		//NSString* strParam = @"";						 
@@ -179,7 +179,7 @@ void Barcode_executeRhoCallBackWithParams(NSString* callbackURL,
 
 		strBody = [strBody stringByAppendingString:strParam];
 	}
-	if ((str3Name != nil) && (str3Value != null)) {
+	if ((str3Name != nil) && (str3Value != NULL)) {
 		strBody = [strBody stringByAppendingString:@"&"];
 		
 		//NSString* strParam = @"";						 
