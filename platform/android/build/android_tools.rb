@@ -295,7 +295,7 @@ def create_avd( avdname, apilevel, abi, use_google_apis )
   s_apis = use_google_apis ? "google_apis" : "default"
   avdmanager = File.join($androidsdkpath,'tools','bin','avdmanager')
 
-  createavd = "echo no | \"#{avdmanager}\" --verbose create avd --name #{avdname} --package system-images;android-#{apilevel};#{s_apis};#{abi} --sdcard 512M"
+  createavd = "echo no | \"#{avdmanager} --verbose create avd --name #{avdname} --package 'system-images;android-#{apilevel};#{s_apis};#{abi}' --sdcard 512M\""
   puts "Creating AVD image: #{createavd}"
   IO.popen(createavd, 'r+') do |io|
     io.puts "\n"
