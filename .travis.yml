@@ -15,6 +15,9 @@ before_install:
 - unzip -q $HOME/emdk.zip -d $ANDROID_HOME/add-ons
 #genearate keystore
 - cd $HOME/.android && printf "123456\n123456\nTRAVIS-CI\nCI-SYSTEM\nTAU\nUNIVERSE\nUNIVERSE\nUN\nyes\n\n" | keytool -genkey -v -keystore debug.keystore -alias ci-key-alias -keyalg RSA -keysize 2048 -validity 10000
+#download required images
+- echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;default;x86"
+- echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;google_apis;x86"
 
 install:
 - gem install rest-client listen zip
@@ -29,14 +32,15 @@ script:
 - travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
 - printf "$JAVA_HOME\n$ANDROID_HOME\n$ANDROID_NDK_HOME\n\n\n\n\n\n\n" | rhodes-setup
 - git clone https://github.com/rhomobile/RMS-Testing.git $HOME/RMS-Testing
-- cd $HOME/RMS-Testing/auto/feature_def/auto_common_spec && rake run:android > $HOME/build.log
+- cd $HOME/RMS-Testing/auto/feature_def/auto_common_spec && rake run:android --trace > $HOME/build.log
 
 android:
   components:
-    - tools
-    - platform-tools
-    - extra-google-google_play_services
-    - extra-google-m2repository
-    - extra-android-m2repository
-    - sys-img-x86-android-19
-    - addon-google_apis_x86-google-19
+  - tools
+  - platform-tools
+  - extra-google-google_play_services
+  - extra-google-m2repository
+  - extra-android-m2repository    
+  - sys-img-x86-android-19
+  - sys-img-x86-google_apis-19
+  - addon-google_apis_x86-google-19
