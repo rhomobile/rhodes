@@ -750,7 +750,7 @@ module_function :read_manifest_package
 
     keystore = File.join(Dir.home,'/.android/debug.keystore')
     #Try to find debug keystore in another location
-    if File.join(ENV['USERPROFILE'])
+    if ENV['USERPROFILE']
       keystore = File.join(ENV['USERPROFILE'],'/.android/debug.keystore') unless File.file?(keystore)
     end
 
