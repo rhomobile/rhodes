@@ -14,7 +14,7 @@ before_install:
 - wget https://s3.amazonaws.com/files.tau-technologies.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -O $HOME/emdk.zip
 - unzip -q $HOME/emdk.zip -d $ANDROID_HOME/add-ons
 #genearate keystore
-- cd $HOME/.android && printf "123456\n123456\nTRAVIS-CI\nCI-SYSTEM\nTAU\nUNIVERSE\nUNIVERSE\nUN\nyes\n\n" | keytool -genkey -v -keystore ci-key.keystore -alias ci-key-alias -keyalg RSA -keysize 2048 -validity 10000
+- cd $HOME/.android && printf "123456\n123456\nTRAVIS-CI\nCI-SYSTEM\nTAU\nUNIVERSE\nUNIVERSE\nUN\nyes\n\n" | keytool -genkey -v -keystore debug.keystore -alias ci-key-alias -keyalg RSA -keysize 2048 -validity 10000
 
 install:
 - gem install rest-client listen zip
