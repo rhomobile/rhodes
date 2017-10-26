@@ -1,5 +1,7 @@
 language: android
 
+jdk: oraclejdk8
+
 rvm:
 - 2.3.4
 
@@ -11,6 +13,9 @@ before_install:
 - rm $HOME/ndk.zip
 - wget https://s3.amazonaws.com/files.tau-technologies.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -O $HOME/emdk.zip
 - unzip -q $HOME/emdk.zip -d $ANDROID_HOME/add-ons
+#genearate keystore
+- mkdir $HOME/.android
+- cd $HOME/.android && printf "123456\n123456\nTRAVIS-CI\nCI-SYSTEM\nTAU\nUNIVERSE\nUNIVERSE\nUN\nyes\n\n" | keytool -genkey -v -keystore ci-key.keystore -alias ci-key-alias -keyalg RSA -keysize 2048 -validity 10000
 
 install:
 - gem install rest-client listen zip
@@ -33,5 +38,5 @@ android:
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
-    - addon-google_apis-google-19
     - sys-img-x86-android-19
+    - addon-google_apis_x86-google-19
