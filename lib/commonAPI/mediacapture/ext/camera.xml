@@ -35,6 +35,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <CONSTANT name="STATUS_ERROR" value="error" type="STRING">
                 <DESC>Status constant.</DESC>
             </CONSTANT>
+            <CONSTANT name="STATUS_CANCELLED" value="cancel" type="STRING">
+                <DESC>Status constant.</DESC>
+            </CONSTANT>
 			<CONSTANT name="CAMERA_TYPE_BACK" value="back" type="STRING">
 				<DESC>Back camera. This is not supported in WM/CE devices.</DESC>
 			</CONSTANT>
@@ -62,7 +65,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
 				<DESC>This is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database. On some consumer devices, captured image will be rotated 90 degrees while displaying.</DESC>
 			</CONSTANT>
 			<CONSTANT name="OUTPUT_FORMAT_IMAGE_PATH" value="imagePath" type="STRING">
-				<DESC>If this value used for setting the outputFormat property, the takePicture or capture API will return imageUri as the path to the saved image in the device. User can use this image path to transfer the file to an http server if required. An example is given to demonstrate, transferring a file to http server.This property is not applicable for Android and windows phone 8.</DESC>
+				<DESC>If this value used for setting the outputFormat property, the takePicture or capture API will return imageUri as the path to the saved image in the device. User can use this image path to transfer the file to an http server if required. An example is given to demonstrate, transferring a file to http server.This property is not applicable for Android and windows phone 10.</DESC>
 			</CONSTANT>
 			<!-- Camera Color Model -->
 			<CONSTANT name="COLOR_MODEL_RGB" value="rgb" type="STRING">

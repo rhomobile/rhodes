@@ -39,7 +39,6 @@ namespace rho
             Size maxResolution;
             bool isFormatJPG = true;
             List<Size> imageResolutions = new List<Size>();
-            StorageFolder pictureFolder = KnownFolders.CameraRoll;
 
             static Dictionary<string, DeviceInformation> availableCameras = new Dictionary<string, DeviceInformation>();
 
@@ -126,16 +125,11 @@ namespace rho
                     var mediaInitSettings = new MediaCaptureInitializationSettings { VideoDeviceId = cameraInformation.Id };
                     IReadOnlyList<MediaCaptureVideoProfile> profiles = MediaCapture.FindAllVideoProfiles(cameraInformation.Id);
 
-                    foreach (MediaCaptureVideoProfile element in profiles)
-                    {
-                        foreach (MediaCaptureVideoProfileMediaDescription description in element.SupportedRecordMediaDescription)
-                        {
-                            try
-                            {
+                    foreach (MediaCaptureVideoProfile element in profiles){
+                        foreach (MediaCaptureVideoProfileMediaDescription description in element.SupportedRecordMediaDescription){
+                            try{
                                 imageResolutions.Add(new Size(description.Width, description.Height));
-                            }
-                            catch (Exception ex)
-                            {
+                            } catch (Exception ex){
                                 CRhoRuntime.getInstance().logEvent("Camera class->" + ex.Message);
                             }
                         }
@@ -152,12 +146,9 @@ namespace rho
             public override void getCameraType(IMethodResult oResult)
             {
                 CRhoRuntime.getInstance().logEvent("Camera class-> getCameraType");
-                try
-                {
+                try{
                     oResult.set(cameraType);
-                }
-                catch (Exception ex)
-                {
+                }catch (Exception ex){
                     CRhoRuntime.getInstance().logEvent("Camera class-> getMaxWidth" + ex.Message);
                 }
             }
@@ -613,25 +604,29 @@ namespace rho
                 // implement this method in C# here
             }
 
-
-            
+                       
 
             private async Task takePicturAsync(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
             {
                 Dictionary<string, string> takePictureOutput = new Dictionary<string, string>();
-                try
-                {
+                try {
                     CameraCaptureUI captureUI = new CameraCaptureUI();
 
                     captureUI.PhotoSettings.Format = isFormatJPG ? CameraCaptureUIPhotoFormat.Jpeg : CameraCaptureUIPhotoFormat.Png;
-                    captureUI.PhotoSettings.MaxResolution = Windows.Media.Capture.CameraCaptureUIMaxPhotoResolution.HighestAvailable;
+                    captureUI.PhotoSettings.MaxResolution = CameraCaptureUIMaxPhotoResolution.HighestAvailable;
                     captureUI.PhotoSettings.CroppedAspectRatio = resolution;
 
                     StorageFile file = await captureUI.CaptureFileAsync(CameraCaptureUIMode.Photo);
+                  
+                    if (file == null) {
+                        takePictureOutput["status"] = STATUS_CANCELLED;
+                        Task.Run(() => oResult.set(takePictureOutput));
+                        return;
+                    }
+
                     StorageFolder dbFolder = await StorageFolder.GetFolderFromPathAsync(MainPage.getDBDir().FullName);
                     string fileName = null;
-                    try
-                    {
+                    try{
                         var n = DateTime.Now;
                         fileName = "IMG_" + n.Year.ToString() + n.Month.ToString() + n.Day.ToString() + "_" 
                                         + n.Hour.ToString() + n.Minute.ToString() + n.Second.ToString() + ".jpg";
@@ -639,8 +634,7 @@ namespace rho
 
                         file = await file.CopyAsync(dbFolder, fileName);
                         deb("Image has been taken to file path: " + file.Path);
-                    }catch(Exception e)
-                    {
+                    }catch(Exception e){
                         throw new Exception("Can't create file in db-files");
                     }
   
@@ -649,22 +643,19 @@ namespace rho
 
                     if (propertyMap.ContainsKey("outputFormat"))
                     {
-                        if (propertyMap["outputFormat"] == "image")
-                        {
+                        if (propertyMap["outputFormat"] == "image"){
                             deb("outputFormat is image");
                             takePictureOutput["image_uri"] = imageUri.AbsoluteUri;
                             takePictureOutput["imageUri"] = imageUri.AbsoluteUri;
                         }
 
-                        if (propertyMap["outputFormat"] == "imagePath")
-                        {
+                        if (propertyMap["outputFormat"] == "imagePath"){
                             deb("outputFormat is imagePath");
                             takePictureOutput["image_uri"] = file.Path;
                             takePictureOutput["imageUri"] = file.Path;
                         }
 
-                        if (propertyMap["outputFormat"] == "dataUri")
-                        {
+                        if (propertyMap["outputFormat"] == "dataUri"){
                             deb("outputFormat is dataUri");
                             MemoryStream ms1 = new MemoryStream();
                             (await file.GetThumbnailAsync(Windows.Storage.FileProperties.ThumbnailMode.PicturesView)).AsStreamForRead().CopyTo(ms1);
@@ -685,10 +676,7 @@ namespace rho
                     var imageFile = await dbFolder.GetFileAsync(fileName);
                     using (IRandomAccessStream stream = await imageFile.OpenAsync(FileAccessMode.Read))
                     {
-                        // Create the decoder from the stream
                         BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
-
-                        // Get the SoftwareBitmap representation of the file
                         SoftwareBitmap image = await decoder.GetSoftwareBitmapAsync();
                         deb("Image created");
                         
@@ -905,6 +893,73 @@ namespace rho
                 CRhoRuntime.getInstance().logEvent("Camera class-->getCameraByType");
                 oResult.set(Camera.initCameraIDs().ContainsKey(cameraType));
             }
+
+
+
+
+
+            private static async Task choosePictureAsync(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
+            {
+                CRhoRuntime.getInstance().logEvent("Camera class-->choosePicture");
+                Dictionary<string, string> m_choosePicture_output = new Dictionary<string, string>();
+                try
+                {
+                    var picker = new FileOpenPicker();
+                    picker.ViewMode = PickerViewMode.Thumbnail;
+                    picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+                    
+                    picker.FileTypeFilter.Add(".jpg");
+                    picker.FileTypeFilter.Add(".jpeg");
+                    picker.FileTypeFilter.Add(".png");
+
+                    StorageFile file = await picker.PickSingleFileAsync();
+                    if (file != null)
+                    {
+                        using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.Read))
+                        {
+                            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+                            SoftwareBitmap image = await decoder.GetSoftwareBitmapAsync();
+                            string format = file.FileType;
+                            m_choosePicture_output["status"] = CameraBase.STATUS_OK;
+
+                            m_choosePicture_output["imageHeight"] = image.PixelHeight.ToString();
+                            m_choosePicture_output["imageWidth"] = image.PixelWidth.ToString();
+                            m_choosePicture_output["imageFormat"] = format;
+                            m_choosePicture_output["imagePath"] = file.Path;
+
+                            m_choosePicture_output["image_height"] = image.PixelHeight.ToString();
+                            m_choosePicture_output["image_width"] = image.PixelWidth.ToString();
+                            m_choosePicture_output["image_format"] = format;
+                            m_choosePicture_output["image_path"] = file.Path;
+
+                            Uri imageUri = new Uri(file.Path);
+                            m_choosePicture_output["image_uri"] = imageUri.AbsoluteUri;
+                            m_choosePicture_output["imageUri"] = imageUri.AbsoluteUri;
+                        }
+
+                    }
+                    else
+                    {
+                        m_choosePicture_output.Add("status", CameraBase.STATUS_CANCELLED);
+                    }  
+
+                }
+                catch (Exception ex)
+                {
+                    m_choosePicture_output = new Dictionary<string, string>();
+                    CRhoRuntime.getInstance().logEvent("Camera class-->choosePicture-->Exception" + ex.ToString());
+                    m_choosePicture_output["status"] = "error";
+                    m_choosePicture_output["message"] = ex.Message;
+                    oResult.set(m_choosePicture_output);
+                }
+                finally
+                {
+                    Task.Run(() => oResult.set(m_choosePicture_output));
+                }
+            }
+
+
+
             /// <summary>
             /// Choose the Pictures from the shown list.
             /// </summary>
@@ -912,43 +967,54 @@ namespace rho
             /// <param name="oResult"></param>
             public override void choosePicture(IReadOnlyDictionary<string, string> propertyMap, IMethodResult oResult)
             {
-                CRhoRuntime.getInstance().logEvent("Camera class-->choosePicture");
-                try
-                {
- 
+                CRhoRuntime.getInstance().logEvent("Camera class--> choosePicture");
+
+                dispatchInvoke(delegate () {
+                    Task task = choosePictureAsync(propertyMap, oResult);
+                });
+
+                CRhoRuntime.getInstance().logEvent("Camera class--> End choosePicture");
+            }
+
+            public async Task<string> copyImageToDeviceGalleryAsync(string pathToImage, IMethodResult oResult)
+            {
+                StorageFile file = await StorageFile.GetFileFromPathAsync(pathToImage);
+                var copied = await file.CopyAsync(ApplicationData.Current.LocalFolder);
+                deb("Image has been taken to file path: " + copied.Path);
+                return copied.Path;
+            }
+
+            public override void copyImageToDeviceGallery(string pathToImage, IMethodResult oResult)
+            {
+                Dictionary<string, string> copyPictureOutput = new Dictionary<string, string>();
+                try {
+                    Task<string> task = copyImageToDeviceGalleryAsync(pathToImage, oResult);
+                    try { task.Start(); } catch (Exception ex) { }
+                    try { if (task.Status == TaskStatus.Running) {task.Wait(); }} catch (Exception ex) {}
+                    string result = task.Result;
+
+                    if (result != null)
+                    {
+                        copyPictureOutput["status"] = CameraBase.STATUS_OK;
+                        copyPictureOutput["pathToImage"] = result;
+                    }else{
+                        throw new Exception("Can't copy picture for some reasons");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    CRhoRuntime.getInstance().logEvent("Camera class-->choosePicture-->Exception" + ex.ToString());
-                    Dictionary<string, string> m_choosePicture_output = new Dictionary<string, string>();
-                    m_choosePicture_output["status"] = "error";
-                    m_choosePicture_output["message"] = ex.Message;
-                    m_choosePicture_output["image_format"] = string.Empty;
-                    oResult.set(m_choosePicture_output);
+                    CRhoRuntime.getInstance().logEvent("Camera class-->copyImageToDeviceGallery-->Exception" + ex.ToString());
+                    copyPictureOutput = new Dictionary<string, string>();
+                    copyPictureOutput["status"] = "error";
+                    copyPictureOutput["message"] = ex.Message;
+                    oResult.set(copyPictureOutput);
                 }
-            }
+                finally
+                {
+                    Task.Run(() => oResult.set(copyPictureOutput));
+                }
 
-            /// <summary>
-            /// Initialize the callback with the default values.
-            /// </summary>
-            private void Initialize_choosePicture()
-            {
-                CRhoRuntime.getInstance().logEvent("Camera class-->Initialize_choosePicture");
-                /*m_choosePicture_output.Clear();
-                m_choosePicture_output.Add("status", "cancel");
-                m_choosePicture_output.Add("imageUri", string.Empty);
-                m_choosePicture_output.Add("imageHeight", string.Empty);
-                m_choosePicture_output.Add("imageWidth", string.Empty);
-                m_choosePicture_output.Add("imageFormat", "jpg");
-                m_choosePicture_output.Add("message", string.Empty);
-                m_choosePicture_output.Add("image_uri", string.Empty);
-                m_choosePicture_output.Add("image_height", string.Empty);
-                m_choosePicture_output.Add("image_width", string.Empty);
-                m_choosePicture_output.Add("image_format", "jpg");*/
-            }
-            public override void copyImageToDeviceGallery(string pathToImage, IMethodResult oResult)
-            {
-                // implement this method in C# here
+
             }
             
         }
