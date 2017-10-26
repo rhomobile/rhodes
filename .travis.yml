@@ -20,6 +20,7 @@ install:
 - gem install rest-client listen zip
 
 script:
+- cd $TRAVIS_BUILD_DIR
 - rake gem
 - rvm install 2.3.4
 - rvm use 2.3.4
