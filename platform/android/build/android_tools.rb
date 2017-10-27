@@ -297,7 +297,7 @@ def create_avd( avdname, apilevel, abi, use_google_apis )
 
   #createavd = "echo no | \"#{avdmanager}\" --verbose create avd --name #{avdname} --package 'system-images;android-#{apilevel};#{s_apis};#{abi}' --sdcard 512M"
   targetid = $androidtargets[apilevel][:id]
-  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --sdcard 512M"    
+  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{abi} --sdcard 512M"    
   puts "Creating AVD image: #{createavd}"
   IO.popen(createavd, 'r+') do |io|
     io.puts "\n"
@@ -334,7 +334,7 @@ def run_emulator(options = {})
 
     puts "Using Android SDK target: #{$androidtargets[apilevel].inspect}" if USE_TRACES
 
-    abi = 'x86' #default
+    abi = nil#'x86' #default
     sdk_abis = $androidtargets[apilevel][:abis]
 
     if sdk_abis            
