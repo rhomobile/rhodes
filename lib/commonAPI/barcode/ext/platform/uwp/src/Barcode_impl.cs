@@ -506,7 +506,7 @@ namespace BarcodeImpl
             StreamResourceInfo info = Application.GetResourceStream(new Uri(imageFilePath, UriKind.Relative));
             BitmapSource bmSrc = null;
 
-            DispatchInvoke(() =>
+            dispatchInvoke(() =>
             {
                 bmSrc = new BitmapImage();
                 bmSrc.SetSource(info.Stream);
@@ -541,7 +541,7 @@ namespace BarcodeImpl
         {
             _methodResult = oResult;
 
-            DispatchInvoke(() =>
+            dispatchInvoke(() =>
             {
                 _barcodeScanTask.Show();
             });
