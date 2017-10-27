@@ -18,8 +18,6 @@ Gem::Specification.new do |s|
   s.homepage = 'http://tau-technologies.com/'
   s.rdoc_options = ["--inline-source", "--charset=UTF-8", '--exclude=bin', '--exclude=doc', '--exclude=ext', '--exclude=installer', '--exclude=lib/build', '--exclude=lib/commonAPI', '--exclude=lib/extensions', '--exclude=lib/rhodes', '--exclude=lib/test', '--exclude=lib/rhodes.rb', '--exclude=platform', '--exclude=res', '--exclude=spec']
   s.require_paths = ["lib"]
-  s.rubyforge_project = %q{rhodes}
-  s.rubygems_version = %q{1.3.5}
   s.required_ruby_version = '>= 1.9.1'
   s.add_dependency('templater', '1.0.0')
   s.add_dependency('rake', '12.0.0')
@@ -52,7 +50,7 @@ Gem::Specification.new do |s|
     s.specification_version = 2
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<diff-lcs>, [">= 1.1.2"])
+      s.add_runtime_dependency(%q<diff-lcs>, ["~> 1.1", ">= 1.1.2"])
     else
       s.add_dependency(%q<diff-lcs>, [">= 1.1.2"])
     end

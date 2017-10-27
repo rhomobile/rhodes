@@ -1145,7 +1145,7 @@ namespace "build" do
               args << '--trace' if USE_TRACES
             end
             
-            cc_run(builddata[1], args, builddata[0], false) or raise "Extension build failed: #{builddata[0]}"
+            cc_run(builddata[1], args, builddata[0], false, nil, USE_TRACES) or raise "Extension build failed: #{builddata[0]}"
           else
             currentdir = Dir.pwd()
             Dir.chdir builddata[0]
@@ -1245,7 +1245,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: sqlite"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: sqlite"
       end
       print_timestamp('build:android:libsqlite FINISH')
     end
@@ -1289,7 +1289,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: curl"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: curl"
       end
       print_timestamp('build:android:libcurl FINISH')
     end
@@ -1331,7 +1331,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: ruby"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: ruby"
       end
       print_timestamp('build:android:libruby FINISH')
     end
@@ -1365,7 +1365,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: json"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: json"
       end
       print_timestamp('build:android:libjson FINISH')
     end
@@ -1398,7 +1398,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rholog"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rholog"
       end
       print_timestamp('build:android:librholog FINISH')
     end
@@ -1432,7 +1432,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rhomain"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhomain"
       end
       print_timestamp('build:android:librhomain FINISH')
     end
@@ -1467,7 +1467,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rhocommon"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhocommon"
       end
       print_timestamp('build:android:librhocommon FINISH')
     end
@@ -1502,7 +1502,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rhodb"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhodb"
       end
       print_timestamp('build:android:librhodb FINISH')
     end
@@ -1537,7 +1537,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rhosync"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhosync"
       end
       print_timestamp('build:android:librhosync FINISH')
     end
@@ -1705,7 +1705,7 @@ namespace "build" do
 
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "link:#{abi}"]
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rhodes"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhodes"
         #Jake.run3("rake #{args.join(' ')}")
       end
       print_timestamp('build:android:librhodes FINISH')
