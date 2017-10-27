@@ -125,6 +125,7 @@ namespace 'device' do
       generator.versionCode = version
       generator.installLocation = 'auto'
       generator.minSdkVer = $min_sdk_level
+      generator.targetSdkVer = $target_sdk_level
       generator.maxSdkVer = $max_sdk_level
       generator.screenOrientation = $android_orientation unless $android_orientation.nil?
       generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
