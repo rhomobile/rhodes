@@ -313,7 +313,7 @@ def cc_deps(filename, objdir, additional)
   out.split(/\s+/)
 end
 
-def cc_run(command, args, chdir = nil, coloring = true, env = nil)
+def cc_run(command, args, chdir = nil, coloring = true, env = nil, verbose = true)
   save_cwd = FileUtils.pwd
   FileUtils.cd chdir unless chdir.nil?
   argv = [command]
@@ -363,7 +363,7 @@ def cc_run(command, args, chdir = nil, coloring = true, env = nil)
       puts '-' * 80
       puts "PWD: " + FileUtils.pwd
       puts cmdstr
-      puts out.string
+      puts out.string if verbose
     }
     out.close
   end
