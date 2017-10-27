@@ -5,34 +5,35 @@ jdk: oraclejdk8
 rvm:
 - 2.3.4
 
-before_install:
+#before_install:
   #get Android NDK
-- wget https://dl.google.com/android/repository/android-ndk-r12b-linux-x86_64.zip -O $HOME/ndk.zip
-- unzip -q $HOME/ndk.zip -d $HOME
-- export ANDROID_NDK_HOME=$HOME/android-ndk-r12b
-- rm $HOME/ndk.zip
-- wget https://s3.amazonaws.com/files.tau-technologies.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -O $HOME/emdk.zip
-- unzip -q $HOME/emdk.zip -d $ANDROID_HOME/add-ons
-#genearate keystore
-- cd $HOME/.android && printf "android\nandroid\nTRAVIS-CI\nCI-SYSTEM\nTAU\nUNIVERSE\nUNIVERSE\nUN\nyes\n\n" | keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000
-#download required images
-- echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;default;x86"
-- echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;google_apis;x86"
+# - wget https://dl.google.com/android/repository/android-ndk-r12b-linux-x86_64.zip -O $HOME/ndk.zip
+# - unzip -q $HOME/ndk.zip -d $HOME
+# - export ANDROID_NDK_HOME=$HOME/android-ndk-r12b
+# - rm $HOME/ndk.zip
+# - wget https://s3.amazonaws.com/files.tau-technologies.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -O $HOME/emdk.zip
+# - unzip -q $HOME/emdk.zip -d $ANDROID_HOME/add-ons
+# #genearate keystore
+# - cd $HOME/.android && printf "android\nandroid\nTRAVIS-CI\nCI-SYSTEM\nTAU\nUNIVERSE\nUNIVERSE\nUN\nyes\n\n" | keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000
+# #download required images
+# - echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;default;x86"
+# - echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;google_apis;x86"
 
-install:
-- gem install rest-client listen zip
+#install:
+#- gem install rest-client listen zip
 
 script:
-- cd $TRAVIS_BUILD_DIR
-- rake gem
-- rvm install 2.3.4
-- rvm use 2.3.4
-- rvm gemset create rhodes
-- rvm gemset use rhodes
-- travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
-- printf "$JAVA_HOME\n$ANDROID_HOME\n$ANDROID_NDK_HOME\n\n\n\n\n\n\n" | rhodes-setup
-- git clone https://github.com/rhomobile/RMS-Testing.git $HOME/RMS-Testing
-- cd $HOME/RMS-Testing/auto/feature_def/auto_common_spec && rake run:android
+- avdmanager
+# - cd $TRAVIS_BUILD_DIR
+# - rake gem
+# - rvm install 2.3.4
+# - rvm use 2.3.4
+# - rvm gemset create rhodes
+# - rvm gemset use rhodes
+# - travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
+# - printf "$JAVA_HOME\n$ANDROID_HOME\n$ANDROID_NDK_HOME\n\n\n\n\n\n\n" | rhodes-setup
+# - git clone https://github.com/rhomobile/RMS-Testing.git $HOME/RMS-Testing
+# - cd $HOME/RMS-Testing/auto/feature_def/auto_common_spec && rake run:android
 
 android:
   components:
@@ -46,4 +47,5 @@ android:
   - sys-img-x86-google_apis-19
   - addon-google_apis_x86-google-19
   - android-19
+  - sdkmanager tools
   
