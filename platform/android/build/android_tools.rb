@@ -676,7 +676,8 @@ def logcat_process(filter = nil, device_flag = '-e', log_path = $applog_path)
     if log_pids.empty?
       puts 'Starting new logcat process'
       data = process_filter(filter).join(' ')
-      Thread.new { system("\"#{$adb}\" #{device_opts.join(' ')} logcat #{data} > \"#{log_path}\" ") }
+      pid = spawn("\"#{$adb}\" #{device_opts.join(' ')} logcat #{data} > \"#{log_path}\" ")
+      Process.detach(pid)
     end
   end
 end
