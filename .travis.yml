@@ -29,6 +29,7 @@ script:
 android:
   components:
     - tools
+    - build-tools;26.0.1
     - platform-tools
     - extra-google-google_play_services
     - extra-google-m2repository
