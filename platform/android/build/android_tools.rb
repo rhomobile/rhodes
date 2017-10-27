@@ -297,7 +297,7 @@ def create_avd( avdname, apilevel, abi, use_google_apis )
 
   #createavd = "echo no | \"#{avdmanager}\" --verbose create avd --name #{avdname} --package 'system-images;android-#{apilevel};#{s_apis};#{abi}' --sdcard 512M"
   targetid = $androidtargets[apilevel][:id]
-  createavd = "echo no | \"#{$androidbin}\" create avd --name #{$avdname} --target #{targetid} --sdcard 512M"    
+  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --sdcard 512M"    
   puts "Creating AVD image: #{createavd}"
   IO.popen(createavd, 'r+') do |io|
     io.puts "\n"
