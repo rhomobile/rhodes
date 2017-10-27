@@ -403,6 +403,12 @@ namespace "config" do
     $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
     $min_sdk_level = ANDROID_SDK_LEVEL if $min_sdk_level.nil?
 
+
+    $target_sdk_level = $app_config["android"]["targetSDK"] unless $app_config["android"].nil?
+    $target_sdk_level = $config["android"]["targetSDK"] if $target_sdk_level.nil? and not $config["android"].nil?
+    $target_sdk_level = $target_sdk_level.to_i unless $target_sdk_level.nil?
+    $target_sdk_level = (($min_sdk_level > 14) ? $min_sdk_level : 14) if $target_sdk_level.nil?
+
     $max_sdk_level = $app_config["android"]["maxSDK"] unless $app_config["android"].nil?
 
     if !$skip_checking_Android_SDK
@@ -1764,6 +1770,7 @@ namespace "build" do
       generator.versionCode = version
       generator.installLocation = 'auto'
       generator.minSdkVer = $min_sdk_level
+      generator.targetSdkVer = $target_sdk_level
       generator.maxSdkVer = $max_sdk_level
       generator.screenOrientation = $android_orientation unless $android_orientation.nil?
       generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
