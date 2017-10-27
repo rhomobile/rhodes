@@ -16,8 +16,8 @@ before_install:
 #genearate keystore
 - cd $HOME/.android && printf "android\nandroid\nTRAVIS-CI\nCI-SYSTEM\nTAU\nUNIVERSE\nUNIVERSE\nUN\nyes\n\n" | keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000
 #download required images
-- echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;default;x86"
-- echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;google_apis;x86"
+- echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;default;armeabi-v7a"
+- echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
 
 install:
 - gem install rest-client listen zip
@@ -37,13 +37,13 @@ script:
 android:
   components:
   - tools
-  - build-tools-26.0.1
+  #- build-tools-26.0.1
   - platform-tools
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository    
-  - sys-img-armeabi-v7a-android-19
-  - sys-img-armeabi-v7a-google_apis-19
+  #- sys-img-armeabi-v7a-android-19
+  #- sys-img-armeabi-v7a-google_apis-19
   - addon-google_apis-google-19
   - android-19
   - sdkmanager tools
