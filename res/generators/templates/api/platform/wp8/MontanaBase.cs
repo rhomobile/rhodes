@@ -90,7 +90,7 @@ namespace <%= $cur_module.name %>Impl
             _nativeImpl = native;
         }
 
-        public void DispatchInvoke(Action a)
+        public void dispatchInvoke(Action a)
         {
             if (Deployment.Current.Dispatcher != null)
                 Deployment.Current.Dispatcher.BeginInvoke(a);
