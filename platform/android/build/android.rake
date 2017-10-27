@@ -2716,7 +2716,7 @@ namespace "run" do
       throw "You must pass package name" if package_file.nil?
       throw "No file to run" if !File.exists?(package_file)
 
-      AndroidTools.run_emulator
+      AndroidTools.run_emulator(:hidden => ENV['TRAVIS'])
 
       AndroidTools.load_app_and_run('-e', File.expand_path(package_file), package_name)
     end
@@ -2749,7 +2749,7 @@ namespace "run" do
       task :debug => ['run:android:emulator:run']
       task :run => ['config:android:emulator'] do
         AndroidTools.kill_adb_logcat('-e')
-        AndroidTools.run_emulator
+        AndroidTools.run_emulator(:hidden => ENV['TRAVIS'])
 
         apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
         AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
