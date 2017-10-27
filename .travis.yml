@@ -42,9 +42,9 @@ android:
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository    
-  - sys-img-x86-android-19
-  - sys-img-x86-google_apis-19
-  - addon-google_apis_x86-google-19
+  - sys-img-armeabi-v7a-android-19
+  - sys-img-armeabi-v7a-google_apis-19
+  - addon-google_apis-google-19
   - android-19
   - sdkmanager tools
   
