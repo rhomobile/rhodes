@@ -1716,7 +1716,7 @@ String CHttpServer::directRequest( const String& method, const String& uri, cons
     pthread_cond_wait(&signal, m.getNativeMutex());
     pthread_mutex_unlock(m.getNativeMutex());
     
-    ret = m_pQueue->getResponse();
+    ret = req.getResponse();
   }
     if (is_net_trace()) {
         RAWTRACE1("$NetRequestProcess$ FINISH CHttpServer::directRequest uri = %s", uri.c_str());
@@ -1747,10 +1747,11 @@ bool CDirectHttpRequestQueue::run( )
           rho_ruby_stop_threadidle();
       }
       
-    m_response = "";
     
     if ( m_request != 0 )
     {
+      m_request->m_response = "";
+        
       CHttpServer::ResponseWriter respWriter;
       m_server.m_localResponseWriter = &respWriter;
       
@@ -1792,7 +1793,7 @@ bool CDirectHttpRequestQueue::run( )
       
       m_server.m_localResponseWriter = 0;
       
-      m_response = respWriter.getResponse();
+      m_request->m_response = respWriter.getResponse();
       
       pthread_cond_t* signal = m_request->signal;
       pthread_mutex_t* mutex = m_request->mutex;

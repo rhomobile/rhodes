@@ -206,7 +206,9 @@ public:
     {
       method = ""; uri = ""; query = ""; headers.clear(); body = ""; signal = 0; mutex = 0;
     }
-    
+
+    const String& getResponse() const { return m_response; }
+
     String method;
     String uri;
     String query;
@@ -214,17 +216,16 @@ public:
     String body;
     pthread_cond_t* signal;
     pthread_mutex_t* mutex;
+    String m_response;
   };
   
   bool run();
   void doRequest( CDirectHttpRequest& req );
-  const String& getResponse() const { return m_response; }
 
 private:
   CHttpServer& m_server;
   common::CRhoThread& m_thread;
   CDirectHttpRequest* m_request;
-  String m_response;
 };
 #endif //OS_MACOSX
 void rho_http_ruby_proc_callback(void *arg, rho::String const &query );
