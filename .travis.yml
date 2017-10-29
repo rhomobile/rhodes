@@ -48,49 +48,80 @@ script:
 #  - RHO_TARGET="linux"    RHO_APP="push_spec"
 #  - RHO_TARGET="linux"    RHO_APP="rhoconnect-client_spec"  
 
+android:
+  components:
+  - tools
+  - platform-tools
+  - extra-google-google_play_services
+  - extra-google-m2repository
+  - extra-android-m2repository    
+  - addon-google_apis-google-19
+  - android-19
+  - sdkmanager tools
+
+osx_image: xcode9.1
+
 matrix:
   include:
   - language: android
     os: linux
-    jdk: oraclejdk8
-    android:
-      components:
-      - tools
-      - platform-tools
-      - extra-google-google_play_services
-      - extra-google-m2repository
-      - extra-android-m2repository    
-      - addon-google_apis-google-19
-      - android-19
-      - sdkmanager tools
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"
 
-    env:
-    - RHO_TARGET="android"    RHO_APP="auto_common_spec"
-    - RHO_TARGET="android"    RHO_APP="framework_spec"
-    - RHO_TARGET="android"    RHO_APP="sas"
-    - RHO_TARGET="android"    RHO_APP="kitchenSinkJS"
-    - RHO_TARGET="android"    RHO_APP="kitchenSinkRuby"
-    #  - RHO_TARGET="android"    RHO_APP="push_spec"
-    #  - RHO_TARGET="android"    RHO_APP="rhoconnect-client_spec"  
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="framework_spec"
 
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="sas"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="kitchenSinkJS"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="kitchenSinkRuby"
 
   - language: objective-c
     os: osx
-    osx_image: xcode9.1
+    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
 
-    env:
-    - RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
-    - RHO_TARGET="iphone"    RHO_APP="framework_spec"
-    - RHO_TARGET="iphone"    RHO_APP="sas"
-    - RHO_TARGET="iphone"    RHO_APP="kitchenSinkJS"
-    - RHO_TARGET="iphone"    RHO_APP="kitchenSinkRuby"
-  #  - RHO_TARGET="iphone"    RHO_APP="push_spec"
-  #  - RHO_TARGET="iphone"    RHO_APP="rhoconnect-client_spec"  
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"
 
-    - RHO_TARGET="rhosimulator"    RHO_APP="auto_common_spec"
-    - RHO_TARGET="rhosimulator"    RHO_APP="framework_spec"
-    - RHO_TARGET="rhosimulator"    RHO_APP="sas"
-    - RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkJS"
-    - RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkRuby"
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="iphone"    RHO_APP="sas"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkJS"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkRuby"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="rhosimulator"    RHO_APP="auto_common_spec"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="rhosimulator"    RHO_APP="framework_spec"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="rhosimulator"    RHO_APP="sas"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkJS"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkRuby"
+
   #  - RHO_TARGET="rhosimulator"    RHO_APP="push_spec"
   #  - RHO_TARGET="rhosimulator"    RHO_APP="rhoconnect-client_spec"  
