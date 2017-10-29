@@ -1,10 +1,11 @@
-language: android
+#language: android
 
-os:
-  - linux
-  - osx
+#os:
+#  - linux
+#  - osx
 
-osx_image: xcode9.1
+#osx_image: xcode9.1
+rvm: 2.3.4
 
 before_install:
 - .ci/safe_run.sh .ci/hosts/$TRAVIS_OS_NAME/before_install.sh
@@ -13,8 +14,8 @@ before_install:
 install:
 - .ci/safe_run.sh .ci/hosts/$TRAVIS_OS_NAME/install.sh
 - .ci/safe_run.sh .ci/targets/$RHO_TARGET/install.sh
-- rvm install 2.3.4
-- rvm use 2.3.4
+#- rvm install 2.3.4
+#- rvm use 2.3.4
 - gem install rest-client listen zip
 
 script:
@@ -29,17 +30,6 @@ script:
 - git clone $(.ci/app_repo.rb) $HOME/$RHO_APP
 - cd $HOME/$RHO_APP/$(.ci/app_build_root.rb)
 - rake run:$RHO_TARGET
-
-android:
-  components:
-  - tools
-  - platform-tools
-  - extra-google-google_play_services
-  - extra-google-m2repository
-  - extra-android-m2repository    
-  - addon-google_apis-google-19
-  - android-19
-  - sdkmanager tools
   
 env:
   - RHO_TARGET="android"    RHO_APP="auto_common_spec"
@@ -83,6 +73,26 @@ env:
 #  - RHO_TARGET="linux"    RHO_APP="rhoconnect-client_spec"  
 
 matrix:
+  include:
+  - language: android
+    os: linux
+    jdk: oraclejdk8
+    android:
+      components:
+      - tools
+      - platform-tools
+      - extra-google-google_play_services
+      - extra-google-m2repository
+      - extra-android-m2repository    
+      - addon-google_apis-google-19
+      - android-19
+      - sdkmanager tools
+
+  - language: objective-c
+    os: osx
+    osx_image: xcode9.1
+
+
   exclude:
   - env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
     os: linux
@@ -113,3 +123,18 @@ matrix:
 
   - env: RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkRuby"
     os: linux
+
+  - env: RHO_TARGET="android"    RHO_APP="auto_common_spec"
+    os: osx
+
+  - env: RHO_TARGET="android"    RHO_APP="framework_spec"
+    os: osx
+
+  - env: RHO_TARGET="android"    RHO_APP="sas"
+    os: osx
+
+  - env: RHO_TARGET="android"    RHO_APP="kitchenSinkJS"
+    os: osx
+
+  - env: RHO_TARGET="android"    RHO_APP="kitchenSinkRuby"
+    os: osx
