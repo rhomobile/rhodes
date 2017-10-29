@@ -13,15 +13,15 @@ before_install:
 install:
 - .ci/safe_run.sh .ci/hosts/$TRAVIS_OS_NAME/install.sh
 - .ci/safe_run.sh .ci/targets/$RHO_TARGET/install.sh
-- gem install rest-client listen zip
 - rvm install 2.3.4
+- rvm use 2.3.4
+- gem install rest-client listen zip
 
 script:
 - cd $TRAVIS_BUILD_DIR
 #- ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
 - .ci/safe_run.sh .ci/targets/$RHO_TARGET/pre_gem.sh
 - rake gem
-- rvm use 2.3.4
 - rvm gemset create rhodes
 - rvm gemset use rhodes
 - travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
@@ -42,19 +42,45 @@ android:
   - sdkmanager tools
   
 env:
-  - RHO_TARGET=android
-  - RHO_TARGET=iphone
-  - RHO_TARGET=rhosimulator
-  - RHO_TARGET=win32
-  - RHO-TARGET=osx
-  - RHO-TARGET=linux
-  - RHO_APP=auto_common_spec
-  - RHO_APP=framework_spec
-  - RHO_APP=sas
-  - RHO_APP=kitchenSinkJS
-  - RHO_APP=kitchenSinkRuby
-  - RHO_APP=push_spec
-  - RHO_APP=rhoconnect-client_spec
+  - RHO_TARGET="android"    RHO_APP="auto_common_spec"
+  - RHO_TARGET="android"    RHO_APP="framework_spec"
+  - RHO_TARGET="android"    RHO_APP="sas"
+  - RHO_TARGET="android"    RHO_APP="kitchenSinkJS"
+  - RHO_TARGET="android"    RHO_APP="kitchenSinkRuby"
+  - RHO_TARGET="android"    RHO_APP="push_spec"
+  - RHO_TARGET="android"    RHO_APP="rhoconnect-client_spec"  
+
+  - RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
+  - RHO_TARGET="iphone"    RHO_APP="framework_spec"
+  - RHO_TARGET="iphone"    RHO_APP="sas"
+  - RHO_TARGET="iphone"    RHO_APP="kitchenSinkJS"
+  - RHO_TARGET="iphone"    RHO_APP="kitchenSinkRuby"
+  - RHO_TARGET="iphone"    RHO_APP="push_spec"
+  - RHO_TARGET="iphone"    RHO_APP="rhoconnect-client_spec"  
+
+  - RHO_TARGET="rhosimulator"    RHO_APP="auto_common_spec"
+  - RHO_TARGET="rhosimulator"    RHO_APP="framework_spec"
+  - RHO_TARGET="rhosimulator"    RHO_APP="sas"
+  - RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkJS"
+  - RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkRuby"
+  - RHO_TARGET="rhosimulator"    RHO_APP="push_spec"
+  - RHO_TARGET="rhosimulator"    RHO_APP="rhoconnect-client_spec"  
+
+  - RHO_TARGET="osx"    RHO_APP="auto_common_spec"
+  - RHO_TARGET="osx"    RHO_APP="framework_spec"
+  - RHO_TARGET="osx"    RHO_APP="sas"
+  - RHO_TARGET="osx"    RHO_APP="kitchenSinkJS"
+  - RHO_TARGET="osx"    RHO_APP="kitchenSinkRuby"
+  - RHO_TARGET="osx"    RHO_APP="push_spec"
+  - RHO_TARGET="osx"    RHO_APP="rhoconnect-client_spec"  
+
+  - RHO_TARGET="linux"    RHO_APP="auto_common_spec"
+  - RHO_TARGET="linux"    RHO_APP="framework_spec"
+  - RHO_TARGET="linux"    RHO_APP="sas"
+  - RHO_TARGET="linux"    RHO_APP="kitchenSinkJS"
+  - RHO_TARGET="linux"    RHO_APP="kitchenSinkRuby"
+  - RHO_TARGET="linux"    RHO_APP="push_spec"
+  - RHO_TARGET="linux"    RHO_APP="rhoconnect-client_spec"  
 
 matrix:
   exclude:
@@ -63,4 +89,9 @@ matrix:
   - env: RHO_TARGET=linux               #TODO - desktop app build
   - env: RHO_APP=push_spec              #TODO - support push specs
   - env: RHO_APP=rhoconnect-client_spec #TODO - support rhoconnect client specs
-  
+  - env: RHO_TARGET="iphone"
+    os: linux
+  - env: RHO_TARGET="osx"
+    os: linux
+  - env: RHO_TARGET="linux"
+  - os: osx
