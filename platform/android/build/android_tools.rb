@@ -325,14 +325,14 @@ def run_emulator(options = {})
       avdname += "google" if $use_google_addon_api
     end
 
-    pp $androidtargets if USE_TRACES
+    pp $androidtargets #if USE_TRACES
 
     raise "Target platform for Android #{$emuversion} is not installed. Please, install corresponding packages in Android SDK Manager or correct build.yml values." if $androidtargets[get_api_level($emuversion)].nil?
 
     apilevel = get_api_level($emuversion)
     targetid = $androidtargets[apilevel][:id]
 
-    puts "Using Android SDK target: #{$androidtargets[apilevel].inspect}" if USE_TRACES
+    puts "Using Android SDK target: #{$androidtargets[apilevel].inspect}" #if USE_TRACES
 
     abi = nil#'x86' #default
     sdk_abis = $androidtargets[apilevel][:abis]

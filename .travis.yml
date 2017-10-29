@@ -1,58 +1,66 @@
 language: android
 
-jdk: oraclejdk8
-
 os:
   - linux
   - osx
 
 osx_image: xcode9.1
 
-rvm:
-- 2.3.4
-
 before_install:
-#get Android NDK
-- wget https://dl.google.com/android/repository/android-ndk-r12b-linux-x86_64.zip -O $HOME/ndk.zip
-- unzip -q $HOME/ndk.zip -d $HOME
-- export ANDROID_NDK_HOME=$HOME/android-ndk-r12b
-- rm $HOME/ndk.zip
-- wget https://s3.amazonaws.com/files.tau-technologies.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -O $HOME/emdk.zip
-- unzip -q $HOME/emdk.zip -d $ANDROID_HOME/add-ons
-#genearate keystore
-- cd $HOME/.android && printf "android\nandroid\nTRAVIS-CI\nCI-SYSTEM\nTAU\nUNIVERSE\nUNIVERSE\nUN\nyes\n\n" | keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000
-#download required images
-- echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;default;armeabi-v7a"
-- echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+- .ci/safe_run.sh .ci/hosts/$TRAVIS_OS_NAME/before_install.sh
+- .ci/safe_run.sh .ci/targets/$RHO_TARGET/before_install.sh
 
 install:
+- .ci/safe_run.sh .ci/hosts/$TRAVIS_OS_NAME/install.sh
+- .ci/safe_run.sh .ci/targets/$RHO_TARGET/install.sh
 - gem install rest-client listen zip
+- rvm install 2.3.4
 
 script:
 - cd $TRAVIS_BUILD_DIR
+#- ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
+- .ci/safe_run.sh .ci/targets/$RHO_TARGET/pre_gem.sh
 - rake gem
-- rvm install 2.3.4
 - rvm use 2.3.4
 - rvm gemset create rhodes
 - rvm gemset use rhodes
 - travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
-- printf "$JAVA_HOME\n$ANDROID_HOME\n$ANDROID_NDK_HOME\n\n\n\n\n\n\n" | rhodes-setup
-- git clone https://github.com/rhomobile/RMS-Testing.git $HOME/RMS-Testing
-- cd $HOME/RMS-Testing/auto/feature_def/auto_common_spec
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rake run:iphone      ; fi
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then rake run:android   ; fi 
+- .ci/safe_run.sh ./ci/targets/$RHO_TARGET/rho_setup.sh
+- git clone $(.ci/app_repo.rb) $HOME/$RHO_APP
+- cd $HOME/$RHO_APP/$(.ci/app_build_root.rb)
+- rake run:$RHO_TARGET
 
 android:
   components:
   - tools
-  #- build-tools-26.0.1
   - platform-tools
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository    
-  #- sys-img-armeabi-v7a-android-19
-  #- sys-img-armeabi-v7a-google_apis-19
   - addon-google_apis-google-19
   - android-19
   - sdkmanager tools
+  
+env:
+  - RHO_TARGET=android
+  - RHO_TARGET=iphone
+  - RHO_TARGET=rhosimulator
+  - RHO_TARGET=win32
+  - RHO-TARGET=osx
+  - RHO-TARGET=linux
+  - RHO_APP=auto_common_spec
+  - RHO_APP=framework_spec
+  - RHO_APP=sas
+  - RHO_APP=kitchenSinkJS
+  - RHO_APP=kitchenSinkRuby
+  - RHO_APP=push_spec
+  - RHO_APP=rhoconnect-client_spec
+
+matrix:
+  exclude:
+  - env: RHO_TARGET=win32               #not supported on TRAVIS
+  - env: RHO_TARGET=osx                 #TODO - desktop app build
+  - env: RHO_TARGET=linux               #TODO - desktop app build
+  - env: RHO_APP=push_spec              #TODO - support push specs
+  - env: RHO_APP=rhoconnect-client_spec #TODO - support rhoconnect client specs
   
