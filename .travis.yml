@@ -47,53 +47,69 @@ env:
   - RHO_TARGET="android"    RHO_APP="sas"
   - RHO_TARGET="android"    RHO_APP="kitchenSinkJS"
   - RHO_TARGET="android"    RHO_APP="kitchenSinkRuby"
-  - RHO_TARGET="android"    RHO_APP="push_spec"
-  - RHO_TARGET="android"    RHO_APP="rhoconnect-client_spec"  
+#  - RHO_TARGET="android"    RHO_APP="push_spec"
+#  - RHO_TARGET="android"    RHO_APP="rhoconnect-client_spec"  
 
   - RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
   - RHO_TARGET="iphone"    RHO_APP="framework_spec"
   - RHO_TARGET="iphone"    RHO_APP="sas"
   - RHO_TARGET="iphone"    RHO_APP="kitchenSinkJS"
   - RHO_TARGET="iphone"    RHO_APP="kitchenSinkRuby"
-  - RHO_TARGET="iphone"    RHO_APP="push_spec"
-  - RHO_TARGET="iphone"    RHO_APP="rhoconnect-client_spec"  
+#  - RHO_TARGET="iphone"    RHO_APP="push_spec"
+#  - RHO_TARGET="iphone"    RHO_APP="rhoconnect-client_spec"  
 
   - RHO_TARGET="rhosimulator"    RHO_APP="auto_common_spec"
   - RHO_TARGET="rhosimulator"    RHO_APP="framework_spec"
   - RHO_TARGET="rhosimulator"    RHO_APP="sas"
   - RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkJS"
   - RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkRuby"
-  - RHO_TARGET="rhosimulator"    RHO_APP="push_spec"
-  - RHO_TARGET="rhosimulator"    RHO_APP="rhoconnect-client_spec"  
+#  - RHO_TARGET="rhosimulator"    RHO_APP="push_spec"
+#  - RHO_TARGET="rhosimulator"    RHO_APP="rhoconnect-client_spec"  
 
-  - RHO_TARGET="osx"    RHO_APP="auto_common_spec"
-  - RHO_TARGET="osx"    RHO_APP="framework_spec"
-  - RHO_TARGET="osx"    RHO_APP="sas"
-  - RHO_TARGET="osx"    RHO_APP="kitchenSinkJS"
-  - RHO_TARGET="osx"    RHO_APP="kitchenSinkRuby"
-  - RHO_TARGET="osx"    RHO_APP="push_spec"
-  - RHO_TARGET="osx"    RHO_APP="rhoconnect-client_spec"  
+#  - RHO_TARGET="osx"    RHO_APP="auto_common_spec"
+#  - RHO_TARGET="osx"    RHO_APP="framework_spec"
+#  - RHO_TARGET="osx"    RHO_APP="sas"
+#  - RHO_TARGET="osx"    RHO_APP="kitchenSinkJS"
+#  - RHO_TARGET="osx"    RHO_APP="kitchenSinkRuby"
+#  - RHO_TARGET="osx"    RHO_APP="push_spec"
+#  - RHO_TARGET="osx"    RHO_APP="rhoconnect-client_spec"  
 
-  - RHO_TARGET="linux"    RHO_APP="auto_common_spec"
-  - RHO_TARGET="linux"    RHO_APP="framework_spec"
-  - RHO_TARGET="linux"    RHO_APP="sas"
-  - RHO_TARGET="linux"    RHO_APP="kitchenSinkJS"
-  - RHO_TARGET="linux"    RHO_APP="kitchenSinkRuby"
-  - RHO_TARGET="linux"    RHO_APP="push_spec"
-  - RHO_TARGET="linux"    RHO_APP="rhoconnect-client_spec"  
+#  - RHO_TARGET="linux"    RHO_APP="auto_common_spec"
+#  - RHO_TARGET="linux"    RHO_APP="framework_spec"
+#  - RHO_TARGET="linux"    RHO_APP="sas"
+#  - RHO_TARGET="linux"    RHO_APP="kitchenSinkJS"
+#  - RHO_TARGET="linux"    RHO_APP="kitchenSinkRuby"
+#  - RHO_TARGET="linux"    RHO_APP="push_spec"
+#  - RHO_TARGET="linux"    RHO_APP="rhoconnect-client_spec"  
 
 matrix:
   exclude:
-  - env: RHO_TARGET="win32"               #not supported on TRAVIS
-  - env: RHO_TARGET="osx"                 #TODO - desktop app build
-  - env: RHO_TARGET="linux"               #TODO - desktop app build
-  - env: RHO_APP="push_spec"              #TODO - support push specs
-  - env: RHO_APP="rhoconnect-client_spec" #TODO - support rhoconnect client specs
-  - env: RHO_TARGET="iphone"              #can't build for iphone on linux
+  - env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
     os: linux
-  - env: RHO_TARGET="osx"                 #can't build for osx on linux
+
+  - env: RHO_TARGET="iphone"    RHO_APP="framework_spec"
     os: linux
-  - env: RHO_TARGET="linux"               #can't build for linus on osx
-    os: osx
-  - env: RHO_TARGET="rhosimulator"        #TODO - rhosim for linux
+
+  - env: RHO_TARGET="iphone"    RHO_APP="sas"
+    os: linux
+
+  - env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkJS"
+    os: linux
+
+  - env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkRuby"
+    os: linux
+
+  - env: RHO_TARGET="rhosimulator"    RHO_APP="auto_common_spec"
+    os: linux
+
+  - env: RHO_TARGET="rhosimulator"    RHO_APP="framework_spec"
+    os: linux
+
+  - env: RHO_TARGET="rhosimulator"    RHO_APP="sas"
+    os: linux
+
+  - env: RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkJS"
+    os: linux
+
+  - env: RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkRuby"
     os: linux
