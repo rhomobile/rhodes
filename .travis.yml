@@ -1,12 +1,3 @@
-#language: android
-
-#os:
-#  - linux
-#  - osx
-
-#osx_image: xcode9.1
-rvm: 2.3.4
-
 before_install:
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/before_install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
@@ -14,8 +5,8 @@ before_install:
 install:
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
-#- rvm install 2.3.4
-#- rvm use 2.3.4
+- rvm install 2.3.4
+- rvm use 2.3.4
 - gem install rest-client listen zip
 
 script:
@@ -31,23 +22,6 @@ script:
 - cd $HOME/$RHO_APP/$(.ci/app_build_root.rb)
 - rake run:$RHO_TARGET
   
-
-#  - RHO_TARGET="osx"    RHO_APP="auto_common_spec"
-#  - RHO_TARGET="osx"    RHO_APP="framework_spec"
-#  - RHO_TARGET="osx"    RHO_APP="sas"
-#  - RHO_TARGET="osx"    RHO_APP="kitchenSinkJS"
-#  - RHO_TARGET="osx"    RHO_APP="kitchenSinkRuby"
-#  - RHO_TARGET="osx"    RHO_APP="push_spec"
-#  - RHO_TARGET="osx"    RHO_APP="rhoconnect-client_spec"  
-
-#  - RHO_TARGET="linux"    RHO_APP="auto_common_spec"
-#  - RHO_TARGET="linux"    RHO_APP="framework_spec"
-#  - RHO_TARGET="linux"    RHO_APP="sas"
-#  - RHO_TARGET="linux"    RHO_APP="kitchenSinkJS"
-#  - RHO_TARGET="linux"    RHO_APP="kitchenSinkRuby"
-#  - RHO_TARGET="linux"    RHO_APP="push_spec"
-#  - RHO_TARGET="linux"    RHO_APP="rhoconnect-client_spec"  
-
 android:
   components:
   - tools
