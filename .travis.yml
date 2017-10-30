@@ -18,7 +18,7 @@ script:
 - rvm gemset create rhodes
 - rvm gemset use rhodes
 - travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
-- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/./ci/targets/$RHO_TARGET/rho_setup.sh
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
 - git clone $(.ci/app_repo.rb) $HOME/$RHO_APP
 - cd $HOME/$RHO_APP/$(.ci/app_build_root.rb)
 - rake run:$RHO_TARGET
@@ -33,6 +33,10 @@ android:
   - addon-google_apis-google-19
   - android-19
   - sdkmanager tools
+
+env:
+  global:
+  - ANDROID_NDK_HOME=$HOME/android-ndk-r12b
 
 osx_image: xcode9.1
 
