@@ -8,12 +8,12 @@
 rvm: 2.3.4
 
 before_install:
-- .ci/safe_run.sh .ci/hosts/$TRAVIS_OS_NAME/before_install.sh
-- .ci/safe_run.sh .ci/targets/$RHO_TARGET/before_install.sh
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/before_install.sh
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
 
 install:
-- .ci/safe_run.sh .ci/hosts/$TRAVIS_OS_NAME/install.sh
-- .ci/safe_run.sh .ci/targets/$RHO_TARGET/install.sh
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
 #- rvm install 2.3.4
 #- rvm use 2.3.4
 - gem install rest-client listen zip
@@ -21,12 +21,12 @@ install:
 script:
 - cd $TRAVIS_BUILD_DIR
 #- ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
-- .ci/safe_run.sh .ci/targets/$RHO_TARGET/pre_gem.sh
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/pre_gem.sh
 - rake gem
 - rvm gemset create rhodes
 - rvm gemset use rhodes
 - travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
-- .ci/safe_run.sh ./ci/targets/$RHO_TARGET/rho_setup.sh
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/./ci/targets/$RHO_TARGET/rho_setup.sh
 - git clone $(.ci/app_repo.rb) $HOME/$RHO_APP
 - cd $HOME/$RHO_APP/$(.ci/app_build_root.rb)
 - rake run:$RHO_TARGET
