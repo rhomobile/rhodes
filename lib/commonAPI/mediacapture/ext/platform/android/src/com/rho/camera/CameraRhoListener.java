@@ -128,7 +128,6 @@ IRhoListener {
 	@SuppressLint("NewApi")
 	@Override
 	public void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent) {
-
 		RhoExtManager.getInstance().dropActivityResultRequestCode(requestCode);
 		Map<String, String> propertyMap = getActualPropertyMap();
 		if (mMethodResult == null) {
@@ -158,6 +157,7 @@ IRhoListener {
 				String strCaptureUri = getActualPropertyMap().get("captureUri");
 				if (strCaptureUri != null)
 				{
+					Logger.T(TAG, "strCaptureUri != null");
 					captureUri = Uri.parse(getActualPropertyMap().get("captureUri"));
 					getActualPropertyMap().put("default_camera_key_path", "");
 				}
@@ -177,12 +177,14 @@ IRhoListener {
 					try {
 						System.gc();
 						if (getActualPropertyMap().get("DeviceGallery_Key") == null){
+							Logger.T(TAG, "getActualPropertyMap().get(\"DeviceGallery_Key\") == null");
 							BitmapFactory.decodeFile(curUri.getPath(), options_only_size);
 							if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){
 								mBitmap = BitmapFactory.decodeFile(curUri.getPath());
 							}
 
 						}else{
+							Logger.T(TAG, "getActualPropertyMap().get(\"DeviceGallery_Key\") != null");
 							imgPath = getFilePath(curUri);
 							BitmapFactory.decodeFile(imgPath, options_only_size);
 							if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){
@@ -205,6 +207,7 @@ IRhoListener {
 					}
 					File file = null;
 					if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){
+						Logger.T(TAG, "!getActualPropertyMap().containsKey(\"fileName\") && getActualPropertyMap().get(\"ChoosePicture_Key\") == null");
 						file= new File(curUri.getPath());
 						file.renameTo(new File(file.getParentFile(), rename));
 						String pathAfterRename = file.getParentFile().getAbsolutePath() +"/"+rename;
@@ -219,6 +222,7 @@ IRhoListener {
 
 
 					if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){
+						Logger.T(TAG, "getting outputFormat");
 						stream = new ByteArrayOutputStream();
 						mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 						byte[] byteArray = stream.toByteArray();
@@ -282,6 +286,7 @@ IRhoListener {
 						if (fromGallery) {
 						}
 						else {
+							Logger.T(TAG, "Not from gallery: " + imgPath);
 							File f = new File(imgPath);
 							imgPath = copyImg(imgPath);
 							getActualPropertyMap().put("default_camera_key_path", "default_camera_key_path_value");
@@ -562,7 +567,6 @@ IRhoListener {
 						file.renameTo(new File(bitmapPath));
 						fixTheGalleryIssue(bitmapPath);
 
-
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
@@ -570,9 +574,6 @@ IRhoListener {
 
 					Logger.T(TAG, "$$$ EXIF rotation finished $$$");
 				}
-
-
-
 
 				try{
 					DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent, resultCode);
@@ -612,6 +613,7 @@ IRhoListener {
 	{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
 		{
+			if (true) return; //TODO : Check it
 			MediaScannerConnection.scanFile(RhodesActivity.getContext(), new String[] {absoluteRenamedPath }, null, new MediaScannerConnection.OnScanCompletedListener() {
 
 				public void onScanCompleted(String path, Uri uri)
