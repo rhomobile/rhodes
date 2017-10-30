@@ -5,9 +5,9 @@ set -e
 
 if [ $TRAVIS_BRANCH == "travis" ]
 then
-	BRANCH = "master"
+	BRANCH="master"
 else
-	BRANCH = $TRAVIS_BRANCH
+	BRANCH=$TRAVIS_BRANCH
 fi
 
 git clone -b $BRANCH https://github.com/rhomobile/rhoconnect-client.git $HOME/rhoconnect-client
