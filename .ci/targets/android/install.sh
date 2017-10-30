@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #get Android NDK
-wget https://dl.google.com/android/repository/android-ndk-r12b-$ANDROID_NDK_HOST-x86_64.zip -O $HOME/ndk.zip
+wget https://dl.google.com/android/repository/android-ndk-r12b-linux-x86_64.zip -O $HOME/ndk.zip
 unzip -q $HOME/ndk.zip -d $HOME
 export ANDROID_NDK_HOME=$HOME/android-ndk-r12b
 rm $HOME/ndk.zip
