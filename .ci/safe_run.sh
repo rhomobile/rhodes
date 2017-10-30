@@ -1,3 +1,10 @@
 #!/usr/bin/env bash
 
-[ -x $1 ] && $1
+echo "Run if exists: $1"
+
+if [ -x $1 ]
+then
+	$1
+else
+	echo "Script is not found. Do nothing."
+fi
