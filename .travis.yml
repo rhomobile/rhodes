@@ -11,7 +11,8 @@ install:
 
 script:
 - cd $TRAVIS_BUILD_DIR
-#- ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
+#- .ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
+- .ci/install_rhoconnect-client.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/pre_gem.sh
 - rake gem
 - rvm gemset create rhodes
