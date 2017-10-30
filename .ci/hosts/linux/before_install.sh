@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-export jdk_switcher use oraclejdk8
+jdk_switcher use oraclejdk8
 

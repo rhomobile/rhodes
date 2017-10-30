@@ -3,7 +3,6 @@
 #get Android NDK
 wget https://dl.google.com/android/repository/android-ndk-r12b-linux-x86_64.zip -O $HOME/ndk.zip
 unzip -q $HOME/ndk.zip -d $HOME
-export ANDROID_NDK_HOME=$HOME/android-ndk-r12b
 rm $HOME/ndk.zip
 wget https://s3.amazonaws.com/files.tau-technologies.com/buildenv/addon-symbol-emdk_v4.2-API-22.zip -O $HOME/emdk.zip
 unzip -q $HOME/emdk.zip -d $ANDROID_HOME/add-ons
