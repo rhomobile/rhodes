@@ -27,12 +27,12 @@ android:
   components:
   - tools
   - platform-tools
+  - sdkmanager tools
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository    
-  - addon-google_apis-google-19
   - android-19
-  - sdkmanager tools
+  - addon-google_apis-google-19
 
 env:
   global:
