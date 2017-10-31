@@ -1024,6 +1024,8 @@ namespace "config" do
       end
 
       $emuversion = AndroidTools.get_market_version($min_sdk_level) if $emuversion.nil?
+      $emuversion = AndroidTools.get_market_version(AndroidTools.get_installed_api_levels[0]) if $emuversion.nil? #last chance
+
       if $emuversion.nil?
         raise "Wrong Android emulator version: #{$emuversion}. Android SDK target API is not installed"
       end
