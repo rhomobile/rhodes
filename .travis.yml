@@ -34,8 +34,8 @@ android:
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository    
-  - android-19
-  - addon-google_apis-google-19
+  - android-${RHO_ANDROID_LEVEL:-19}
+  - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
 
 env:
   global:
@@ -48,6 +48,10 @@ matrix:
   - language: android
     os: linux
     env: RHO_TARGET="android"    RHO_APP="auto_common_spec"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_SYS_IMG_LEVEL="25"
 
   - language: android
     os: linux
