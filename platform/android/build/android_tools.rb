@@ -857,7 +857,7 @@ def start_emulator(cmd)
 
     # wait while emulator appears in adb device list
     30.times do
-      sleep 1
+      sleep 5
       out = Jake.run4("#{$adb} devices")
       lines = out.chomp.split("\n");
       return if lines.length > 1
