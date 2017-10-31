@@ -51,7 +51,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_SYS_IMG_LEVEL="25"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="25"
 
   - language: android
     os: linux
