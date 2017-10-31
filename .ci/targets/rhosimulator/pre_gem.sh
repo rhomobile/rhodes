@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -x
 echo "Building rhosim is not supported yet"
 exit 0
 

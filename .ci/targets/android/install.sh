@@ -1,5 +1,5 @@
-		#!/usr/bin/env bash
-
+#!/usr/bin/env bash
+set -x
 #get Android NDK
 wget https://dl.google.com/android/repository/android-ndk-r12b-linux-x86_64.zip -O $HOME/ndk.zip
 unzip -q $HOME/ndk.zip -d $HOME
