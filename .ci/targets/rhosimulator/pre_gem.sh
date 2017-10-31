@@ -9,7 +9,7 @@ echo "Installing Rhoconnect client"
 
 set -e
 
-if [ $TRAVIS_BRANCH == "travis" ]
+if [ $TRAVIS_BRANCH == "CI" ]
 then
 	BRANCH="master"
 else
