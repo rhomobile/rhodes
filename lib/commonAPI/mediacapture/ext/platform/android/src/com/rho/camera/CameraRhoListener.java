@@ -23,6 +23,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Matrix;
 import android.media.MediaScannerConnection;
+import android.media.MediaScannerConnection.MediaScannerConnectionClient;
+import android.net.Uri;
+import android.os.IBinder;
+import android.content.ComponentName;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -609,17 +613,51 @@ IRhoListener {
 
 
 
-	private void fixTheGalleryIssue(String absoluteRenamedPath )
+	private void fixTheGalleryIssue(final String absoluteRenamedPath )
 	{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
 		{
-			if (true) return; //TODO : Check it
-			MediaScannerConnection.scanFile(RhodesActivity.getContext(), new String[] {absoluteRenamedPath }, null, new MediaScannerConnection.OnScanCompletedListener() {
+			//if (true) return; //TODO : Check it
+			/*try{
+				MediaScannerConnection.scanFile(RhodesActivity.getContext(), 
+												new String[] {absoluteRenamedPath }, 
+												null, 
+												new MediaScannerConnection.OnScanCompletedListener() {
+													public void onScanCompleted(String path, Uri uri){}
+												}
+				);
+			}catch(Exception e){
+				Logger.T(TAG, "fixTheGalleryIssue exception: " + e.getMessage());
+				e.printStackTrace();
+			}*/
+			try{
+				final String szFile = absoluteRenamedPath;
 
-				public void onScanCompleted(String path, Uri uri)
-				{
-				}
-			});
+		        final MediaScannerConnection m_pScanner = new MediaScannerConnection(RhodesActivity.getContext(), null){
+		        	final String TAG = CameraRhoListener.class.getSimpleName() + " : MediaScannerConnection";
+
+			        @Override
+			        public void onServiceConnected(ComponentName className, IBinder service){
+			            super.onServiceConnected(className,service);
+			            try{
+			            	scanFile(absoluteRenamedPath, null);
+			            }catch(Exception e){
+							Logger.T(TAG, "onServiceConnected exception: " + e.getMessage());
+						}finally{
+							try{
+								disconnect();
+							}catch(Exception e){
+								Logger.T(TAG, "onServiceConnected disconnect exception: " + e.getMessage());
+							}
+						}
+			        }
+                };
+
+	            m_pScanner.connect();
+            }catch(Exception e){
+				Logger.T(TAG, "fixTheGalleryIssue exception: " + e.getMessage());
+				e.printStackTrace();
+			}
 
 		}
 		else
