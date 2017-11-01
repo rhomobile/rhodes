@@ -37,6 +37,8 @@ deploy:
   local_dir: "$BUILD_ARTEFACTS_DIR"
   upload_dir: "$S3_DEPLOY_DIR/$S3_JOB_DIR"
   acl: public_read
+  on:
+    all_branches: true
   
 android:
   components:
@@ -84,9 +86,9 @@ matrix:
   #   os: linux
   #   env: RHO_TARGET="android"    RHO_APP="kitchenSinkRuby"
 
-  - language: objective-c
-    os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
+  #- language: objective-c
+  #  os: osx
+  #  env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
 
   # - language: objective-c
   #   os: osx
