@@ -312,62 +312,80 @@ def create_avd( avdname, apilevel, abi, use_google_apis )
 end
 module_function :create_avd
 
+def get_avd_image_real_abi( apilevel, abi, use_google_apis)
+  target = $androidtargets[apilevel]
+  if target
+    s_apis = use_google_apis ? "google_apis" : "default"
+    target[:abis].each { |targetabi| 
+      return targetabi if targetabi =~ /#{s_apis}\/#{abi}/
+    }
+  end
+  nil
+end
+module_function :get_avd_image_real_abi
+
+def get_avd_image( apilevel, abis, use_google_apis )
+  i = abis.index('x86')
+  (abis[0],abis[i] = abis[i],abis[0]) if i #will look for x86 first
+  target = $androidtargets[apilevel]
+  if target
+    abis.each do |abi|
+      realabi = get_avd_image_real_abi(apilevel,abi,true) #first always try Google APIs image;
+      realabi = get_avd_image_real_abi(apilevel,abi,use_google_apis) unless ( realabi and (!use_google_apis) )
+      return realabi if realabi
+    end  
+  end
+  nil
+end
+module_function :get_avd_image
+
+def find_suitable_avd_image( apilevel, abis, use_google_apis )
+  pp $androidtargets if USE_TRACES
+
+  realabi = get_avd_image( apilevel, abis, use_google_apis )
+  return apilevel, realabi if realabi
+
+  puts "Can't find exact AVD image for requested API: #{apilevel}, ABIs: #{abis}, Google APIs: #{use_google_apis}. Will try something else."
+
+  $androidtargets.keys().reverse_each do |apilevel|
+    realabi = get_avd_image(apilevel,abis,use_google_apis)
+    return apilevel, realabi if realabi
+  end
+
+  return nil,nil
+end
+module_function :find_suitable_avd_image
+
+#return path to effective AVD - existion or newly created
+def prepare_avd(avdname, emuversion, abis, use_google_apis)
+
+  unless avdname
+    avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
+    avdname += "google" if $use_google_addon_api    
+  end
+
+  #replace whitespaces in AVD name with underscores
+  avdname.tr!(' ', '_');
+
+  unless File.directory?( avd_path(avdname) )
+    apilevel, abi = find_suitable_avd_image( apilevel, abis, use_google_apis)
+
+    raise "Can't find suitable emulator image for requested parameters: API Level: #{apilevel}; Allowed ABIs: #{abis.inspect}; Google APIs: #{use_google_apis}" unless ( apilevel and abi )
+
+    create_avd(avdname,apilevel,abi,use_google_apis)
+  end      
+
+  avdname
+end
+module_function :prepare_avd
+
 def run_emulator(options = {})
   system("\"#{$adb}\" start-server")
 
   unless is_emulator_running
     puts "Need to start emulator" if USE_TRACES
 
-    if $appavdname
-      avdname = $appavdname
-    else
-      avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
-      avdname += "google" if $use_google_addon_api
-    end
-
-    pp $androidtargets if USE_TRACES
-
-    raise "Target platform for Android #{$emuversion} is not installed. Please, install corresponding packages in Android SDK Manager or correct build.yml values." if $androidtargets[get_api_level($emuversion)].nil?
-
-    apilevel = get_api_level($emuversion)
-    targetid = $androidtargets[apilevel][:id]
-
-    puts "Using Android SDK target: #{$androidtargets[apilevel].inspect}" if USE_TRACES
-
-    abi = nil#'x86' #default
-    sdk_abis = $androidtargets[apilevel][:abis]
-
-    if sdk_abis            
-      if $abis.include?("x86")
-        #first look for x86 abis
-        sdk_abis.each do |cur_abi|
-          if cur_abi =~ /x86/
-            abi = cur_abi 
-            break
-          end
-        end
-      end
-
-      unless abi
-        sdk_abis.each do |cur_abi|
-          if cur_abi =~ /armeabi/
-            abi = cur_abi
-            break
-          end
-        end
-      end      
-
-      raise "Emulator image is not found for selected target: #{$androidtargets[apilevel][:abis].inspect}" unless abi
-    end
-
-    #replace whitespaces in AVD name with underscores
-    avdname.tr!(' ', '_');
-
-    unless File.directory?( avd_path(avdname) )
-      create_avd(avdname,apilevel,abi,$use_google_addon_api)
-    else
-      raise "Unable to run Android emulator. No appropriate target API for SDK version: #{$emuversion}" unless targetid
-    end
+    avdname = prepare_avd( $appavdname, $emuversion, $abis, $use_google_addon_api )
 
     # Start the emulator, check on it every 5 seconds until it's running
     cmd = "\"#{$emulator}\""
