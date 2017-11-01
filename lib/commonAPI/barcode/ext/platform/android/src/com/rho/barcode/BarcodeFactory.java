@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
@@ -25,6 +27,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.RhoApiFactory;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.symbol.emdk.barcode.BarcodeManager;
+import com.rhomobile.rhodes.RhoConf;
 
 /**
  * Barcode Factory class
@@ -33,7 +36,7 @@ import com.symbol.emdk.barcode.BarcodeManager;
 public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> implements IBarcodeFactory
 {
 	private static String TAG = "BarcodeFactory";
-	private static boolean isZxingOnMotoAllowed = false;
+	private static boolean isZxingOnMotoAllowed = false;	
 	
 	private static BarcodeFactory factoryInstance;
 	public static float batPercent;
@@ -57,6 +60,9 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	private boolean isEMDKScannerSetupCalled = false;
 	private ArrayList<EMDK3Scanner> emdk3ScannerSetupQueue;
 	private boolean isEmdk3ScannerSettingUp = false;
+
+	private boolean releaseEMDKOnPause = false;
+	private static final String CFG_RELEASE_EMDK = "Barcode.ReleaseEMDKOnPause";
 	
 	private List<com.symbol.emdk.barcode.ScannerInfo> scannerInfos = null;
 	public BarcodeFactory(boolean useDW)
@@ -72,7 +78,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 		
 		setupZxingScannerIds();
 		
-		
+		releaseEMDKOnPause = RhoConf.isExist(CFG_RELEASE_EMDK) && RhoConf.getBool(CFG_RELEASE_EMDK);
 			
 		if(devicesEmdkVersion == 3)//TODO change to a constant.
 		{
@@ -119,7 +125,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	 */
 	public void setupEmdkScannerIds()
 	{
-		Logger.D(TAG, "setupEmdkScannerIds");
+		Logger.D(TAG, "setupEmdkScannerIds+");
 		switch(devicesEmdkVersion)
 		{
 			case 3:
@@ -138,6 +144,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 				emdkIds = null;
 				break;
 		}
+		Logger.D(TAG, "setupEmdkScannerIds-");
 	}
 	
 //	/**
@@ -204,7 +211,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	@Override
 	protected Barcode createApiObject(String id)
 	{
-		Logger.D(TAG, "createApiObject");
+		Logger.D(TAG, "createApiObject+ " + id);
 		
 		Barcode requestedBarcode = barcodeObjects.get(id);
 		if(requestedBarcode == null)
@@ -234,6 +241,9 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 
 			barcodeObjects.put(id, requestedBarcode);
 		}
+
+		Logger.D(TAG, "createApiObject-");
+
 		return requestedBarcode;
 	}
 	
@@ -564,38 +574,92 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	
 	public void onResume()
 	{
+		Logger.D(TAG, "onResume+");
+
 		setPaused(false);
 		RhodesActivity.getContext().registerReceiver(this.batteryInfoReceiver,	new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+
+		if (releaseEMDKOnPause) {		
+			Logger.D( TAG, "Will restore EMDK resources" );
+			emdk3Listener.resume();			
+		}
+
 		if(enabledScanner != null)
 		{
 			getScanner(enabledScanner).onResume();
 		}
+
+		Logger.D(TAG, "onResume-");
+	}
+
+	private void removeAllEMDKScannerIDs() 
+	{
+		for(Iterator<Map.Entry<String, Barcode>> it = barcodeObjects.entrySet().iterator(); it.hasNext(); )
+		{
+      		Map.Entry<String, Barcode> entry = it.next();
+      		final String scannerID = entry.getKey();
+
+      		if(scannerID.startsWith("EMDK"))
+      		{
+			    try
+			    {
+      				EMDK3Scanner scanner = (EMDK3Scanner) entry.getValue();
+      				it.remove();
+      				removeApiObject(scannerID);
+      			}
+      			catch ( ClassCastException e )
+      			{
+      				Logger.E(TAG, "While cleaning up scanner ID " + scannerID + ": not an actual EMDK scanner!");
+      			}        		
+      		}
+    	}
 	}
 
 	public void onPause()
 	{
+		Logger.D(TAG, "onPause+");
+
 		setPaused(true);
 		if(enabledScanner != null)
 		{
-			getScanner(enabledScanner).onPause();
+			getScanner(enabledScanner).onPause();			
 		}
+
+		if (releaseEMDKOnPause) {		
+			Logger.D( TAG, "Will release EMDK resources" );
+			enabledScanner = null;
+			removeAllEMDKScannerIDs();
+			emdk3Listener.pause();
+			setIsEMDKScannerSetupCalled(false);
+		}
+
+		Logger.D(TAG, "onPause-");
 	}
 
 	public void onStop()
 	{
+		Logger.D(TAG, "onStop+");
+
 		if(enabledScanner != null)
 		{
 			getScanner(enabledScanner).onStop();
 		}
+
+		Logger.D(TAG, "onStop-");
 	}
 
 	public void onDestroy()
 	{
+		Logger.D(TAG, "onDestroy+");
+
 		if(enabledScanner != null)
 		{
 			getScanner(enabledScanner).onDestroy();
-			RhodesActivity.getContext().unregisterReceiver(batteryInfoReceiver);
 		}
+
+		RhodesActivity.getContext().unregisterReceiver(batteryInfoReceiver);
+
+		Logger.D(TAG, "onDestroy-");
 	}
 
 	public boolean isEMDKScannerSetupCalled()
@@ -605,7 +669,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 
 	public void setIsEMDKScannerSetupCalled(boolean b)
 	{
-		isEMDKScannerSetupCalled = true;
+		isEMDKScannerSetupCalled = b;
 	}
 	public void disableScannerOnNavigate()
 	{
