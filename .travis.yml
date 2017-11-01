@@ -35,7 +35,7 @@ deploy:
   secret_access_key: "$AWS_SECRET_KEY"
   skip_cleanup: true
   local_dir: "$BUILD_ARTEFACTS_DIR"
-  upload-dir: "$S3_DEPLOY_DIR/$S3_JOB_DIR"
+  upload-dir: "$S3_DEPLOY_DIR"/"$S3_JOB_DIR"
   acl: public_read
   region: eu-central-1
   on:
@@ -56,8 +56,8 @@ env:
   global:
   - ANDROID_NDK_HOME=$HOME/android-ndk-r12b
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
-  - S3_JOB_DIR=$TRAVIS_BUILD_NUMBER_$TRAVIS_COMMIT/$TRAVIS_JOB_NUMBER_$TRAVIS_OS_NAME_$RHO_TARGET_$RHO_APP
-  - S3_DEPLOY_DIR=$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH
+  - S3_JOB_DIR="$TRAVIS_BUILD_NUMBER"_"$TRAVIS_COMMIT"/"$TRAVIS_JOB_NUMBER"_"$TRAVIS_OS_NAME"_"$RHO_TARGET"_"$RHO_APP"
+  - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
 
 osx_image: xcode9.1
 
