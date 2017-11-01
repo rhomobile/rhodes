@@ -51,23 +51,23 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="25"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24"
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec"
+  # - language: android
+  #   os: linux
+  #   env: RHO_TARGET="android"    RHO_APP="framework_spec"
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="sas"
+  # - language: android
+  #   os: linux
+  #   env: RHO_TARGET="android"    RHO_APP="sas"
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="kitchenSinkJS"
+  # - language: android
+  #   os: linux
+  #   env: RHO_TARGET="android"    RHO_APP="kitchenSinkJS"
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="kitchenSinkRuby"
+  # - language: android
+  #   os: linux
+  #   env: RHO_TARGET="android"    RHO_APP="kitchenSinkRuby"
 
   - language: objective-c
     os: osx
