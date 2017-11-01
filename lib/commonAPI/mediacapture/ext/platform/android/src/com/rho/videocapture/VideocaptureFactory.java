@@ -13,11 +13,15 @@ import com.rhomobile.rhodes.api.RhoApiFactory;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoListener;
 
+import java.util.Map;
+import java.util.HashMap;
+
 public class VideocaptureFactory
         extends RhoApiFactory<Videocapture, VideocaptureSingleton>
         implements IVideocaptureFactory, IRhoListener {
 
-    private String defaultId;
+    private String defaultId = "_DEFAULT_CAMERA";
+    private final static Map<String, Videocapture> videocaptureKeeper = new HashMap<String, Videocapture>();
 
     @Override
     protected VideocaptureSingleton createSingleton() {
@@ -27,7 +31,8 @@ public class VideocaptureFactory
     @Override
     protected Videocapture createApiObject(String id) {
         defaultId = id;
-        return new Videocapture(id);
+        if (!videocaptureKeeper.containsKey(id)) { videocaptureKeeper.put(id, new Videocapture(id)); }
+        return videocaptureKeeper.get(id);
     }
 
     @Override
