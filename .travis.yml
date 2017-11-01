@@ -25,6 +25,21 @@ script:
 - git clone $(.ci/app_repo.rb) $HOME/$RHO_APP
 - cd $HOME/$RHO_APP/$(.ci/app_build_root.rb)
 - rake run:$RHO_TARGET
+before_deploy:
+- mkdir $BUILD_ARTEFACTS_DIR
+- "$TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_deploy.sh"
+deploy:
+  provider: s3
+  bucket: tau-autobuilds
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key: "$AWS_SECRET_KEY"
+  skip_cleanup: true
+  local_dir: "$BUILD_ARTEFACTS_DIR"
+  upload-dir: '$S3_DEPLOY_DIR/$S3_JOB_DIR-$RHO_TARGET-$RHO_APP'
+  acl: public_read
+  region: eu-central-1
+  on:
+    all_branches: true
   
 android:
   components:
@@ -40,6 +55,9 @@ android:
 env:
   global:
   - ANDROID_NDK_HOME=$HOME/android-ndk-r12b
+  - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
+  - S3_JOB_DIR="$TRAVIS_BUILD_NUMBER"_"$TRAVIS_COMMIT"/"$TRAVIS_JOB_NUMBER"_"$TRAVIS_OS_NAME"
+  - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
 
 osx_image: xcode9.1
 
