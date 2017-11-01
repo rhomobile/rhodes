@@ -1,0 +1,74 @@
+before_install:
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/before_install.sh
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
+
+install:
+- rvm install 2.3.4
+- rvm use 2.3.4
+
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
+- gem install rest-client --no-document
+- gem install listen --no-document
+- gem install zip --no-document
+
+script:
+- cd $TRAVIS_BUILD_DIR
+#- .ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/pre_gem.sh
+- rake gem
+- rvm gemset create rhodes
+- rvm gemset use rhodes
+- travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
+- .ci/install_rhoconnect-client.sh
+- git clone $(.ci/app_repo.rb) $HOME/$RHO_APP
+- cd $HOME/$RHO_APP/$(.ci/app_build_root.rb)
+- rake device:$RHO_TARGET:debug
+before_deploy:
+- mkdir $BUILD_ARTEFACTS_DIR
+- "$TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_deploy.sh"
+deploy:
+  provider: s3
+  bucket: tau-autobuilds
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key: "$AWS_SECRET_KEY"
+  skip_cleanup: true
+  local_dir: "$BUILD_ARTEFACTS_DIR"
+  upload-dir: '$S3_DEPLOY_DIR/$S3_JOB_DIR-$RHO_TARGET-$RHO_APP'
+  acl: public_read
+  region: eu-central-1
+  on:
+    all_branches: true
+  
+android:
+  components:
+  - tools
+  - platform-tools
+  - sdkmanager tools
+  - extra-google-google_play_services
+  - extra-google-m2repository
+  - extra-android-m2repository    
+  - android-${RHO_ANDROID_LEVEL:-19}
+  - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
+
+env:
+  global:
+  - ANDROID_NDK_HOME=$HOME/android-ndk-r12b
+  - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
+  - S3_JOB_DIR="$TRAVIS_BUILD_NUMBER"_"$TRAVIS_COMMIT"/"$TRAVIS_JOB_NUMBER"_"$TRAVIS_OS_NAME"
+  - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
+
+matrix:
+  include:
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="kitchenSinkJS"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="kitchenSinkRuby"
