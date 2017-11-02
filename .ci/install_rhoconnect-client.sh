@@ -3,12 +3,7 @@ echo "Installing Rhoconnect client"
 
 set -e
 
-if [ $TRAVIS_BRANCH == "CI" ]
-then
-	BRANCH="master"
-else
-	BRANCH=$TRAVIS_BRANCH
-fi
+BRANCH="5-5-stable"
 
 git clone -b $BRANCH https://github.com/rhomobile/rhoconnect-client.git $HOME/rhoconnect-client
 cd $HOME/rhoconnect-client
