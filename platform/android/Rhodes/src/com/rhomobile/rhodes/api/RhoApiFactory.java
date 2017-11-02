@@ -27,6 +27,14 @@ public abstract class RhoApiFactory <IApi extends IRhoApiObject, IApiSingleton> 
         return obj;
     }
 
+    protected void removeApiObject( String id ) {
+        mApiObjects.remove( id );
+    }
+
+    protected void clearApiObjects() {
+        mApiObjects.clear();
+    }
+
     protected abstract IApiSingleton createSingleton();
     protected abstract IApi createApiObject(String id);
 }

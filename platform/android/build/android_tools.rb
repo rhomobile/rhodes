@@ -288,84 +288,109 @@ def patch_avd_config( avdname )
 end
 module_function :patch_avd_config
 
+def create_avd( avdname, apilevel, abi, use_google_apis )
+  puts "Creating new AVD. Name: #{avdname}; API level: #{apilevel}; ABI: #{abi}"
+  puts "Emulator params: #{$androidtargets[apilevel].inspect}"
+
+  s_apis = use_google_apis ? "google_apis" : "default"
+  avdmanager = File.join($androidsdkpath,'tools','bin','avdmanager')
+
+  #createavd = "echo no | \"#{avdmanager}\" --verbose create avd --name #{avdname} --package 'system-images;android-#{apilevel};#{s_apis};#{abi}' --sdcard 512M"
+  targetid = $androidtargets[apilevel][:id]
+  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{abi} --sdcard 512M"    
+  puts "Creating AVD image: #{createavd}"
+  IO.popen(createavd, 'r+') do |io|
+    io.puts "\n"
+    while line = io.gets
+      puts line
+    end
+    io.close
+    raise "Can't create AVD" unless $?.success?
+  end  
+
+  patch_avd_config( avdname )
+end
+module_function :create_avd
+
+def get_avd_image_real_abi( apilevel, abi, use_google_apis)
+  target = $androidtargets[apilevel]
+  if target
+    s_apis = use_google_apis ? "google_apis" : "default"
+    target[:abis].each { |targetabi| 
+      return targetabi if targetabi =~ /#{s_apis}\/#{abi}/
+    }
+  end
+  nil
+end
+module_function :get_avd_image_real_abi
+
+def get_avd_image( apilevel, abis, use_google_apis )
+  i = abis.index('x86')
+  (abis[0],abis[i] = abis[i],abis[0]) if i #will look for x86 first
+  target = $androidtargets[apilevel]
+  if target
+    abis.each do |abi|
+      realabi = get_avd_image_real_abi(apilevel,abi,true) #first always try Google APIs image;
+      realabi = get_avd_image_real_abi(apilevel,abi,use_google_apis) unless ( realabi and (!use_google_apis) )
+      return realabi if realabi
+    end  
+  end
+  nil
+end
+module_function :get_avd_image
+
+def find_suitable_avd_image( apilevel, abis, use_google_apis )
+  pp $androidtargets if USE_TRACES
+
+  realabi = get_avd_image( apilevel, abis, use_google_apis )
+  return apilevel, realabi if realabi
+
+  puts "Can't find exact AVD image for requested API: #{apilevel}, ABIs: #{abis}, Google APIs: #{use_google_apis}. Will try something else."
+
+  $androidtargets.keys().reverse_each do |apilevel|
+    realabi = get_avd_image(apilevel,abis,use_google_apis)
+    return apilevel, realabi if realabi
+  end
+
+  return nil,nil
+end
+module_function :find_suitable_avd_image
+
+#return path to effective AVD - existion or newly created
+def prepare_avd(avdname, emuversion, abis, use_google_apis)
+
+  unless avdname
+    avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
+    avdname += "google" if $use_google_addon_api    
+  end
+
+  #replace whitespaces in AVD name with underscores
+  avdname.tr!(' ', '_');
+
+  unless File.directory?( avd_path(avdname) )
+    apilevel, abi = find_suitable_avd_image( apilevel, abis, use_google_apis)
+
+    raise "Can't find suitable emulator image for requested parameters: API Level: #{apilevel}; Allowed ABIs: #{abis.inspect}; Google APIs: #{use_google_apis}" unless ( apilevel and abi )
+
+    create_avd(avdname,apilevel,abi,use_google_apis)
+  end      
+
+  avdname
+end
+module_function :prepare_avd
+
 def run_emulator(options = {})
   system("\"#{$adb}\" start-server")
 
   unless is_emulator_running
     puts "Need to start emulator" if USE_TRACES
 
-    if $appavdname
-      $avdname = $appavdname
-    else
-      $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
-      $avdname += "google" if $use_google_addon_api
-      #$avdname += "motosol" if $use_motosol_api
-    end
-
-    pp $androidtargets if USE_TRACES
-
-    raise "Target platform for Android #{$emuversion} is not installed. Please, install corresponding packages in Android SDK Manager or correct build.yml values." if $androidtargets[get_api_level($emuversion)].nil?
-
-    targetid = $androidtargets[get_api_level($emuversion)][:id]
-
-    puts "Using Android SDK target: #{$androidtargets[get_api_level($emuversion)].inspect}" if USE_TRACES
-
-    abi = nil
-    sdk_abis = $androidtargets[get_api_level($emuversion)][:abis]
-
-    if sdk_abis            
-      if $abis.include?("x86")
-        #first look for x86 abis
-        sdk_abis.each do |cur_abi|
-          if cur_abi =~ /x86/
-            abi = cur_abi 
-            break
-          end
-        end
-      end
-
-      unless abi
-        sdk_abis.each do |cur_abi|
-          if cur_abi =~ /armeabi/
-            abi = cur_abi
-            break
-          end
-        end
-      end
-
-      raise "Emulator image is not found for selected target: #{$androidtargets[get_api_level($emuversion)][:abis].inspect}" unless abi
-    end
-
-    #replace whitespaces in AVD name with underscores
-    $avdname.tr!(' ', '_');
-
-    unless File.directory?( avd_path($avdname) )
-      puts "Emulator API level: #{get_api_level($emuversion)}"
-      puts "Emulator params: #{$androidtargets[get_api_level($emuversion)].inspect}"
-      if USE_TRACES
-        puts "AVD name: #{$avdname}, emulator version: #{$emuversion}, target id: #{targetid}"
-      end
-      raise "Unable to create AVD image. No appropriate target API for SDK version: #{$emuversion}" unless targetid
-      createavd = "echo no | \"#{$androidbin}\" create avd --name #{$avdname} --target #{targetid} --sdcard 512M"
-      createavd = createavd + " --abi #{abi}" if abi
-      puts "Creating AVD image: #{createavd}"
-      IO.popen(createavd, 'r+') do |io|
-        io.puts "\n"
-        while line = io.gets
-          puts line
-        end
-      end
-
-      patch_avd_config( $avdname )
-
-    else
-      raise "Unable to run Android emulator. No appropriate target API for SDK version: #{$emuversion}" unless targetid
-    end
+    avdname = prepare_avd( $appavdname, $emuversion, $abis, $use_google_addon_api )
 
     # Start the emulator, check on it every 5 seconds until it's running
     cmd = "\"#{$emulator}\""
     cmd << " -no-window" if options[:hidden]
-    cmd << " -avd #{$avdname}"
+    cmd << " -avd #{avdname}"
     cmd << " -wipe-data" if options[:wipe]
     # cmd << " -verbose"
 
@@ -671,7 +696,8 @@ def logcat_process(filter = nil, device_flag = '-e', log_path = $applog_path)
     if log_pids.empty?
       puts 'Starting new logcat process'
       data = process_filter(filter).join(' ')
-      Thread.new { system("\"#{$adb}\" #{device_opts.join(' ')} logcat #{data} > \"#{log_path}\" ") }
+      pid = spawn("\"#{$adb}\" #{device_opts.join(' ')} logcat #{data} > \"#{log_path}\" ")
+      Process.detach(pid)
     end
   end
 end
@@ -745,7 +771,10 @@ module_function :read_manifest_package
 
     keystore = File.join(Dir.home,'/.android/debug.keystore')
     #Try to find debug keystore in another location
-    keystore = File.join(ENV['USERPROFILE'],'/.android/debug.keystore') unless File.file?(keystore)
+    if ENV['USERPROFILE']
+      keystore = File.join(ENV['USERPROFILE'],'/.android/debug.keystore') unless File.file?(keystore)
+    end
+
     raise "Can't find debug keystore in user's home folder" unless File.file?(keystore)
 
     signApk( inputApk, outputApk, keystore, 'android', 'android', 'androiddebugkey' )
@@ -846,7 +875,7 @@ def start_emulator(cmd)
 
     # wait while emulator appears in adb device list
     30.times do
-      sleep 1
+      sleep 5
       out = Jake.run4("#{$adb} devices")
       lines = out.chomp.split("\n");
       return if lines.length > 1

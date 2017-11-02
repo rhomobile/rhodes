@@ -1,0 +1,5 @@
+deplist.txt
+Decryptstub_Prefix.pch
+Decryptstub.xcodeproj/project.pbxproj
+../../shared/*.*
+../../../ext.yml

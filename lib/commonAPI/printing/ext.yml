@@ -16,7 +16,7 @@ project_paths:
   wm: ext/platform/wm/Printing.vcproj
   win32: ext/platform/wm/Printing.vcproj
   
-xml_api_paths: ext/Printing.xml
+xml_api_paths: ext/printing.xml
 
 platforms: ["wm", "iphone", "android", "uwp"]
 

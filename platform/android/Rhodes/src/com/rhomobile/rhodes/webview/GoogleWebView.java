@@ -42,6 +42,9 @@ public class GoogleWebView implements IRhoWebView {
 
     public GoogleWebView(Activity activity) {
         mWebView = new android.webkit.WebView(activity);
+        mWebView.getSettings().setLoadWithOverviewMode(true);
+        mWebView.getSettings().setUseWideViewPort(true);
+
         synchronized(mInitialized) {
             if (!mInitialized) {
                 mWebView.clearCache(true);

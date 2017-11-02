@@ -5,7 +5,7 @@ libraries: ["CoreAPI"]
 iphone:
   xcodeproject: ext/platform/iphone/Coreapi.xcodeproj
   xcodetarget: CoreAPI
-  #rebuild_deplist: ext/platform/iphone/deplist.txt
+  rebuild_deplist: ext/platform/iphone/deplist.txt
 
 android:
   source_list: ext/platform/android/ext_java.files

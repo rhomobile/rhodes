@@ -34,24 +34,11 @@ public:
     static void openDialog(rho::apiGenerator::CMethodResult &oResult, QString cameraId);
     static void refresh();
     static QHash<QString, QCameraInfo> camerasKeeper;
+    static QList<QString> getIDs();
 
 public slots:
-    void getCameraInfo(){
-        QMetaObject::invokeMethod(GuiThreadFuncHelper::getInstance(), "availableCameras",
-                                  Qt::QueuedConnection, Q_ARG(QObject *, this));
-        QTimer::singleShot(100, &(this->loop), SLOT(quit()));
-        loop.exec();
-    }
-
-    void availableCameras(QList<QCameraInfo> info){
-        if(camerasKeeper.isEmpty()){
-            int deviceCounter = 0;
-            foreach (QCameraInfo cameraInfo, info) {
-                camerasKeeper.insert(QString::number(++deviceCounter), cameraInfo);
-            }
-        }
-        loop.quit();
-    }
+    void getCameraInfo();
+    void availableCameras(QList<QCameraInfo> info);
 };
 
 #endif // BARCODECONTROLLER_H

@@ -84,6 +84,7 @@ chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
+require File.join(pwd, 'lib/build/GeneralTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
 require File.join(pwd, 'lib/build/SiteChecker.rb')
 require File.join(pwd, 'lib/build/ExtendedString.rb')
@@ -3416,6 +3417,7 @@ namespace "build" do
         cp compileERB, $srcdir
         puts "Running default.rb"
         cmd_str = "#{$rubypath} -E UTF-8 -I#{rhodeslib} #{$srcdir}/default.rb"
+        puts cmd_str
         if defined?(Bundler)
           Bundler.with_clean_env do
             puts `#{cmd_str}`
