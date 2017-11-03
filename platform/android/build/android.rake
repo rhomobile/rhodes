@@ -163,9 +163,14 @@ end
 namespace 'debug' do
   namespace 'android' do
 
-    debug_port = $app_config["android"]["debug_port"]
-    device_type = $app_config["android"]["target_debug"]
+    debug_port = ""
+    device_type = ""
 
+    if !$app_config["android"].nil?
+      debug_port = $app_config["android"]["debug_port"]
+      device_type = $app_config["android"]["target_debug"]  
+    end
+    
     task :gdbserver => ['config:android'] do
       debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
       debugger.StartGdbServer
