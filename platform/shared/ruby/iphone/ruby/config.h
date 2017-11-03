@@ -331,7 +331,10 @@
 //#define HAVE_WORKING_FORK 1
 //RHO
 
-#define HAVE___SYSCALL 1
+//RHO by Apple's require for AppStore submit
+//#define HAVE___SYSCALL 1
+//RHO
+
 #define HAVE__LONGJMP 1
 #define HAVE_ATAN2L 1
 #define HAVE_ATAN2F 1
@@ -504,8 +507,13 @@
 
 #define UCONTEXT_IN_SIGNAL_H 1
 #define DEFINE_MCONTEXT_PTR(mc, uc) mcontext_t mc = (uc)->uc_mcontext
-#define HAVE_GETCONTEXT 1
-#define HAVE_SETCONTEXT 1
+
+//RHO by Apple's require for AppStore submit
+//#define HAVE_GETCONTEXT 1
+//#define HAVE_SETCONTEXT 1
+//RHO
+
+
 #define HAVE_BACKTRACE 1
 #define DLEXT_MAXLEN 3
 #define DLEXT ".so"

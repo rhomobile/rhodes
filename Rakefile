@@ -2036,8 +2036,12 @@ namespace "config" do
     if $app_config["paths"] and $app_config["paths"]["extensions"]
       add_ext_paths.call($app_config["paths"]["extensions"])
     end
-    if $config["env"]["paths"]["extensions"]
-      add_ext_paths.call($config["env"]["paths"]["extensions"])
+    if $config["env"]
+        if  $config["env"]["paths"]
+            if $config["env"]["paths"]["extensions"]
+                add_ext_paths.call($config["env"]["paths"]["extensions"])
+            end
+        end
     end
     extpaths << File.join($app_path, "extensions")
     extpaths << File.join($startdir, "lib","commonAPI")
