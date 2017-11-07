@@ -53,6 +53,10 @@ public final class CameraManager {
 
   private static CameraManager cameraManager;
 
+  public static boolean isFlashLightEnabled(){
+    return FlashlightManager.isFlashLightEnabled();
+  }
+
   static final int SDK_INT; // Later we can use Build.VERSION.SDK_INT
   static {
     int sdkInt;

@@ -1,6 +1,5 @@
 require 'zip'
 require 'singleton'
-require 'nokogiri'
 
 module AndroidTools
 
@@ -249,6 +248,7 @@ class MavenDepsExtractor
   end
   
   def extract_packages
+     require 'nokogiri'
      packages = []
      @manifests.each do |m|
        doc = File.open(m) { |f| Nokogiri::XML(f) }

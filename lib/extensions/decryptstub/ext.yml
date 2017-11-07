@@ -4,4 +4,10 @@ libraries: ["Decryptstub"]
 android:
   exttype: rakefile
 
+iphone:
+  xcodeproject: ext/platform/iphone/Decryptstub.xcodeproj
+  xcodetarget: Decryptstub
+  rebuild_deplist: ext/platform/iphone/deplist.txt
+
+
 platforms: ["iphone", "android"]

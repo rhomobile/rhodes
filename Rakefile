@@ -84,6 +84,7 @@ chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
+require File.join(pwd, 'lib/build/GeneralTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
 require File.join(pwd, 'lib/build/SiteChecker.rb')
 require File.join(pwd, 'lib/build/ExtendedString.rb')

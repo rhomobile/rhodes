@@ -1,6 +1,6 @@
 #include "BarcodeController.h"
 #include "../../../shared/generated/cpp/BarcodeBase.h"
-
+#include <QDebug>
 namespace rho {
 
 using namespace apiGenerator;
@@ -38,10 +38,24 @@ public:
     }
 
     void getSupportedProperties(rho::apiGenerator::CMethodResult& oResult){
+        qDebug() << "GETTINGPROPSFROM " + cameraID;
+
         rho::Hashtable<rho::String, rho::String> propsHash = oResult.getStringHash();
         propsHash.put(barcode::PROPERTY_SCANNER_TYPE, "Camera");
-        propsHash.put(barcode::PROPERTY_FRIENDLY_NAME, QString("Camera"+cameraID).toStdString());
+        propsHash.put(barcode::PROPERTY_FRIENDLY_NAME, getFriendlyName());
         oResult.set(propsHash);
+    }
+
+    rho::String getFriendlyName(){
+        if (!cameraID.isEmpty()){
+            return QString("Camera "+ cameraID).toStdString();
+        }else{
+            return "";
+        }
+    }
+
+    virtual void getFriendlyName(rho::apiGenerator::CMethodResult& oResult){
+        oResult.set(getFriendlyName());
     }
 
     void take( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){
@@ -100,10 +114,11 @@ void CBarcodeSingleton::enumerate(CMethodResult& oResult)
 
 rho::String CBarcodeSingleton::getInitialDefaultID()
 {
-    CMethodResult oRes;
-    enumerate(oRes);
-    rho::Vector<rho::String>& arIDs = oRes.getStringArray();
-    return arIDs[0];
+    if (!BarCodeController::getIDs().isEmpty()){
+        return BarCodeController::getIDs().first().toStdString();
+    }else{
+        return "";
+    }
 }
 
 }
