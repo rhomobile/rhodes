@@ -38,7 +38,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	private String mFileName 		= "";
 	private int mDuration 			= 5000;
 	private boolean mGallery 		= false;
-	public IMethodResult mSaveUrl 	= null;
+	private IMethodResult mSavedUrl = null;
 	private Activity mActivity		= null;    	
 	public int RESULT_VIDEO_CODE	= 1;		// Result code from video capture activity
 	private String path 			= null;
@@ -48,6 +48,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
     	super(id);
         mId = id; 
         mActivity = RhodesActivity.getInstance();
+        Logger.T(TAG, "Videocapture() -- END of constructor. Id: " + mId);
     }
 
     @Override
@@ -115,12 +116,9 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 		    if (name.equalsIgnoreCase("fileName"))
 		    {
 		    	mFileName = val;
-		    	if (mFileName.contains(".") == false)
-		    	{		    		
+		    	if (mFileName.contains(".") == false){		    		
 		    		mFileName = mFileName + ".mp4";
-		    	}
-		    	else
-		    	{
+		    	}else{
 		    		//The app developer hasn't read the help file, so boom!
 		    	}
 		    }
@@ -191,11 +189,13 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 		Logger.D(TAG,  "Start API");
 		
 		//Save the callback function
-		mSaveUrl = result;
+		mSavedUrl = result;
 		
-		if (mSaveUrl != null)
+		if (mSavedUrl != null)
 		{
-			Logger.T(TAG,  "Callback API: " + mSaveUrl);
+			Logger.T(TAG, "start() -- Callback API: " + mSavedUrl);
+		}else{
+			Logger.T(TAG, "start() -- mSavedUrl == null"); 
 		}
 			
 		int durationInSeconds = mDuration / 1000;
@@ -229,6 +229,12 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	
 	public void stopCapture(Uri intentData)
 	{
+		Logger.T(TAG, "stopCapture() calling");
+		if (mSavedUrl == null){
+    		Logger.T(TAG, "stopCapture() -- mSavedUrl == null"); 
+    	}else{
+    		Logger.T(TAG, "stopCapture() -- Callback API: " + mSavedUrl);
+    	}
 		String tempName = null;
 		if (mFileName == "")
 		{
@@ -238,36 +244,34 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 			String state = Environment.getExternalStorageState();
 		    if (Environment.MEDIA_MOUNTED.equals(state)) 
 		    {
-		    	path = Environment.getExternalStorageDirectory() + tempName;
+		    	path = new File(Environment.getExternalStorageDirectory(), tempName).toString();
 		    } 
 		    else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
 		        Logger.E(TAG, "No Write permissions for external storage, please provide adcard permissions in build.yml file");
 		        Logger.I(TAG, "defaulting to the blob directory");
-		        path = RhodesAppOptions.getBlobPath() + tempName;
+		        path = new File(RhodesAppOptions.getBlobPath(), tempName).toString();
 		    } 
 		    else {
 		    	Logger.E(TAG, "Unable to access external storage, please check that the external storage is mounted and accessible");
 		    	Logger.I(TAG, "defaulting to the blob directory");
-		    	path = RhodesAppOptions.getBlobPath() + tempName;
+		    	path = new File(RhodesAppOptions.getBlobPath(), tempName).toString();
 		    }
-		}
-		else
-		{
+		}else{
 			tempName = mFileName; //Its the developer's responsibility
 			String state = Environment.getExternalStorageState();
 		    if (Environment.MEDIA_MOUNTED.equals(state)) 
 		    {
-		    	path = Environment.getExternalStorageDirectory() + tempName;
+		    	path = new File(Environment.getExternalStorageDirectory(), tempName).toString();
 		    } 
 		    else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
 		        Logger.E(TAG, "No Write permissions for external storage, please provide permissions in build.yml file");
 		        Logger.I(TAG, "defaulting to the blob directory");
-		        path = RhodesAppOptions.getBlobPath() + tempName;
+		        path = new File(RhodesAppOptions.getBlobPath(), tempName).toString();
 		    } 
 		    else {
 		    	Logger.E(TAG, "Unable to access external storage, please check that the external storage is mounted and accessible");
 		    	Logger.I(TAG, "defaulting to the blob directory");
-		    	path = RhodesAppOptions.getBlobPath() + tempName;
+		    	path = new File(RhodesAppOptions.getBlobPath(), tempName).toString();
 		    }
 		}		
 		
@@ -283,6 +287,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 		    AssetFileDescriptor videoAsset = mActivity.getApplicationContext().getContentResolver().openAssetFileDescriptor(intentData, "r");
 		    FileInputStream fis = videoAsset.createInputStream();
 		    FileOutputStream fos = new FileOutputStream(tmpFile);
+		    Logger.D(TAG, "Trying to resave to local file");
 
 		    byte[] buf = new byte[1024];
 		    int len;
@@ -297,7 +302,8 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 		    	//	Delete the file from the Gallery
 		    	mActivity.getApplicationContext().getContentResolver().delete(intentData, null, null);
 		    }
-	    	
+
+	    	Logger.D(TAG, "Successfully resaved to local file");
 	    	//Invoke the callback function	    	
 	    	int fileSize = (int) (tmpFile.length() / 1024);
 			String size = Integer.toString(fileSize);
@@ -307,23 +313,26 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	    	props.put("fileName", path);
 	    	props.put("fileSize", size);
 	    	
-	    	if (mSaveUrl != null)
-	    	{
-	    		mSaveUrl.set(props);    		
+	    	if (mSavedUrl != null){
+	    		Logger.D(TAG, "Calling callback");
+	    		mSavedUrl.set(props);    	
+	    		Logger.D(TAG, "Callback called");	
+	    	}else{
+	    		Logger.D(TAG, "Callback is null");
 	    	}
 		    
 		} 
 		catch (IOException io_e) {
 		    io_e.printStackTrace();
-		    Logger.E(TAG,  "Exception in writing the file " + io_e.getMessage());
+		    Logger.E(TAG, "Exception in writing the file " + io_e.getMessage());
 		    
 	    	props.put("transferResult", "FAILURE");
 	    	props.put("fileName", "");
 	    	props.put("fileSize", "");
 	    	
-	    	if (mSaveUrl != null)
+	    	if (mSavedUrl != null)
 	    	{
-	    		mSaveUrl.set(props);    		
+	    		mSavedUrl.set(props);    		
 	    	}
 		}
 	}
@@ -385,25 +394,33 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 
     public void resetProperties()
     {
+    	Logger.T(TAG, "resetProperties()"); 
     	mFileName = "";
  	    mDuration = 5000;
- 	    mSaveUrl = null; 
+ 	    mSavedUrl = null; 
  	    mGallery = false;
  	    mResolution = resolution.HIGH;
     }
     
     public void onActivityResultVideoCapture(RhodesActivity activity, int reqCode, int resCode, Intent intent)
     {
+    	if (mSavedUrl == null){
+    		Logger.T(TAG, "onActivityResult -- mSavedUrl == null"); 
+    	}
 		Logger.T(TAG, "onActivityResult -- START " + resCode + " " + reqCode);    	
     	if (resCode == android.app.Activity.RESULT_OK && reqCode == RESULT_VIDEO_CODE)
 		{
     		//Save the file and invoke callback API
 			stopCapture(intent.getData());
+            Logger.T(TAG, "onActivityResult -- stopCapture");
 		}
     	else if (resCode == Activity.RESULT_CANCELED) 
     	{
-    		if (mSaveUrl != null)
-    			mSaveUrl.setError("Video capture cancelle dby the user");    	
+    		Logger.T(TAG, "onActivityResult -- videocapture canceled"); 
+    		if (mSavedUrl != null){
+	    			Logger.T(TAG, "onActivityResult -- setting error");  
+	    			mSavedUrl.setError("Video capture cancelled by the user");    
+    			}	
     	}
     	else
     	{  
@@ -414,9 +431,9 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
         	props.put("fileName", "");
         	props.put("fileSize", "");
         	
-        	if (mSaveUrl != null)
-        	{
-        		mSaveUrl.set(props);
+        	if (mSavedUrl != null){
+        		Logger.T(TAG, "onActivityResult -- result error - setting result props"); 
+        		mSavedUrl.set(props);
         	}
     	}
     	Logger.T(TAG, "onActivityResult -- END");
