@@ -29,7 +29,7 @@ namespace rho {
                 result = oResult;
 
                 timer = Windows.System.Threading.ThreadPoolTimer.CreateTimer((source) => {
-                    DispatchInvoke(() => {
+                    dispatchInvoke(() => {
                         if (result != null)
                         {
                             //result.set(_strID); TODO: fix it
