@@ -25,7 +25,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
             <DEFAULT_INSTANCE/>
             <PROPERTY_BAG/>
             <SINGLETON_INSTANCES/>
-            <INCLUDE path="../../printing/ext/printing.xml"/>
+            <INCLUDE path="../../printing/ext/Printing.xml"/>
         </TEMPLATES>
 
         <CONSTANTS>
