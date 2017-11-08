@@ -116,12 +116,9 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 		    if (name.equalsIgnoreCase("fileName"))
 		    {
 		    	mFileName = val;
-		    	if (mFileName.contains(".") == false)
-		    	{		    		
+		    	if (mFileName.contains(".") == false){		    		
 		    		mFileName = mFileName + ".mp4";
-		    	}
-		    	else
-		    	{
+		    	}else{
 		    		//The app developer hasn't read the help file, so boom!
 		    	}
 		    }
@@ -248,36 +245,34 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 			String state = Environment.getExternalStorageState();
 		    if (Environment.MEDIA_MOUNTED.equals(state)) 
 		    {
-		    	path = Environment.getExternalStorageDirectory() + tempName;
+		    	path = new File(Environment.getExternalStorageDirectory(), tempName).toString();
 		    } 
 		    else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
 		        Logger.E(TAG, "No Write permissions for external storage, please provide adcard permissions in build.yml file");
 		        Logger.I(TAG, "defaulting to the blob directory");
-		        path = RhodesAppOptions.getBlobPath() + tempName;
+		        path = new File(RhodesAppOptions.getBlobPath(), tempName).toString();
 		    } 
 		    else {
 		    	Logger.E(TAG, "Unable to access external storage, please check that the external storage is mounted and accessible");
 		    	Logger.I(TAG, "defaulting to the blob directory");
-		    	path = RhodesAppOptions.getBlobPath() + tempName;
-		    }
+		    	path = new File(RhodesAppOptions.getBlobPath(), tempName).toString();
 		}
-		else
-		{
+		}else{
 			tempName = mFileName; //Its the developer's responsibility
 			String state = Environment.getExternalStorageState();
 		    if (Environment.MEDIA_MOUNTED.equals(state)) 
 		    {
-		    	path = Environment.getExternalStorageDirectory() + tempName;
+		    	path = new File(Environment.getExternalStorageDirectory(), tempName).toString();
 		    } 
 		    else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
 		        Logger.E(TAG, "No Write permissions for external storage, please provide permissions in build.yml file");
 		        Logger.I(TAG, "defaulting to the blob directory");
-		        path = RhodesAppOptions.getBlobPath() + tempName;
+		        path = new File(RhodesAppOptions.getBlobPath(), tempName).toString();
 		    } 
 		    else {
 		    	Logger.E(TAG, "Unable to access external storage, please check that the external storage is mounted and accessible");
 		    	Logger.I(TAG, "defaulting to the blob directory");
-		    	path = RhodesAppOptions.getBlobPath() + tempName;
+		    	path = new File(RhodesAppOptions.getBlobPath(), tempName).toString();
 		    }
 		}		
 		
@@ -293,6 +288,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 		    AssetFileDescriptor videoAsset = mActivity.getApplicationContext().getContentResolver().openAssetFileDescriptor(intentData, "r");
 		    FileInputStream fis = videoAsset.createInputStream();
 		    FileOutputStream fos = new FileOutputStream(tmpFile);
+		    Logger.D(TAG, "Trying to resave to local file");
 
 		    byte[] buf = new byte[1024];
 		    int len;
@@ -308,6 +304,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 		    	mActivity.getApplicationContext().getContentResolver().delete(intentData, null, null);
 		    }
 	    	
+	    	Logger.D(TAG, "Successfully resaved to local file");
 	    	//Invoke the callback function	    	
 	    	int fileSize = (int) (tmpFile.length() / 1024);
 			String size = Integer.toString(fileSize);
@@ -317,9 +314,12 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	    	props.put("fileName", path);
 	    	props.put("fileSize", size);
 	    	
-	    	if (mSavedUrl != null)
-	    	{
+	    	if (mSavedUrl != null){
+	    		Logger.D(TAG, "Calling callback");
 	    		mSavedUrl.set(props);    		
+	    		Logger.D(TAG, "Callback called");	
+	    	}else{
+	    		Logger.D(TAG, "Callback is null");
 	    	}
 		    
 		} 
@@ -442,8 +442,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
         	props.put("fileName", "");
         	props.put("fileSize", "");
         	
-        	if (mSavedUrl != null)
-        	{
+        	if (mSavedUrl != null){
         		Logger.T(TAG, "onActivityResult -- result error - setting result props"); 
         		mSavedUrl.set(props);
         	}

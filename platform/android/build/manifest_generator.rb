@@ -7,6 +7,7 @@ class ManifestGenerator
   attr_accessor :versionCode
   attr_accessor :installLocation
   attr_accessor :minSdkVer
+  attr_accessor :targetSdkVer
   attr_accessor :maxSdkVer
   attr_accessor :permissions
   attr_accessor :usesPermissions

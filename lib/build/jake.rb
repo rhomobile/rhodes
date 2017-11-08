@@ -1053,7 +1053,7 @@ class Jake
     version_path = File.join($startdir, 'version')
     version = ""
     File.open( version_path, 'rb' ){ |f| version = f.read() }
-    app_version += "\r\nrhodes_gem_version='#{version}'"
+    app_version += "\r\nrhodes_gem_version='#{version.strip}'"
 
     if $is_webkit_engine == true
 		  File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write("\r\nwebengine=webkit") }

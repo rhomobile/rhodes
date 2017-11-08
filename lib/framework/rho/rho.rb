@@ -537,7 +537,7 @@ if defined?(RHOCONNECT_CLIENT_PRESENT)
         hash_props = !src['schema'].nil? ? src['schema']["property"] : src["property"]
         if (!hash_props.nil?)
           str_props = hash_props.keys.join(',')
-          Rho::RhoConnectClient.set_source_property(src['source_id'], 'freezed', str_props )
+          Rho::RhoConnectClient.set_source_property(src['source_id'].to_s, 'freezed', str_props )
         end
             end
         end

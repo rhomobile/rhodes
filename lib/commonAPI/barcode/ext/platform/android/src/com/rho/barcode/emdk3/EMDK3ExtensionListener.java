@@ -40,15 +40,7 @@ public class EMDK3ExtensionListener implements IEmdkManagerListener
 	public void onOpened(EMDKManager emdkManager)
 	{
 		Logger.D(TAG, "onOpened");
-		this.emdkManager = emdkManager;
-		this.barcodeManager = (BarcodeManager) emdkManager.getInstance(FEATURE_TYPE.BARCODE);
-		
-		if(!barcodeFactory.isEMDKScannerSetupCalled())
-		{
-			Logger.D(TAG, "EMDK3Extension onOpened EMDKScannerSetup has not yet been called");
-			barcodeFactory.setIsEMDKScannerSetupCalled(true);
-			barcodeFactory.setupEmdkScannerIds();
-		}
+		open( emdkManager );		
 	}
 	
 	//TODO is onClosed called when you try to open but it fails?
@@ -85,4 +77,34 @@ public class EMDK3ExtensionListener implements IEmdkManagerListener
 		}
 		onClosed();
 	}	
+
+	public void pause()
+	{
+		if ( emdkManager != null )
+		{
+			emdkManager.release(FEATURE_TYPE.BARCODE);
+		}
+		barcodeManager = null;
+	}
+
+	public void resume()
+	{
+		if ( emdkManager != null )
+		{
+			open( emdkManager );			
+		}
+	}
+
+	private void open( EMDKManager manager )
+	{
+		this.emdkManager = manager;
+		this.barcodeManager = (BarcodeManager) emdkManager.getInstance(FEATURE_TYPE.BARCODE);
+		
+		if(!barcodeFactory.isEMDKScannerSetupCalled())
+		{
+			Logger.D(TAG, "EMDK3Extension.open EMDKScannerSetup has not yet been called");
+			barcodeFactory.setIsEMDKScannerSetupCalled(true);
+			barcodeFactory.setupEmdkScannerIds();
+		}		
+	}
 }
