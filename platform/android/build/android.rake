@@ -288,9 +288,9 @@ namespace 'project' do
       settings_gradle = File.join( project_template_path, 'settings.gradle' )
       app_gradle_template = File.join( project_template_path, 'app', 'build.gradle.erb' )
       project_path = File.join $app_path,'project','android_studio'
-      #project_app_path = File.join $app_path,'project','android_studio', 'app'
-      #cmake_stub_path = File.join( project_template_path, 'app', 'CMakeLists.txt' )
-      #cpp_stub_path = File.join( project_template_path, 'app', 'stub.cpp' )
+      project_app_path = File.join $app_path,'project','android_studio', 'app'
+      cmake_template_path = File.join( project_template_path, 'app', 'CMakeLists.txt.erb' )
+      cpp_stub_path = File.join( project_template_path, 'app', 'stub.cpp' )
 
       rhodes_path = File.absolute_path '.'
 
@@ -308,15 +308,15 @@ namespace 'project' do
       mkdir_p File.join(project_path,'app')
 
       app_gradle_path = File.join( project_path, 'app', 'build.gradle')
+      cmake_path = File.join( project_path, 'app', 'CMakeLists.txt')
       File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
+      File.open( cmake_path, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_path ) }
 
       cp main_gradle_script,  project_path
       cp gradle_properties,   project_path
       cp gradlew,             project_path
       cp gradlew_bat,         project_path
       cp settings_gradle,     project_path
-      #cp cmake_stub_path,     project_app_path
-      #cp cpp_stub_path,       project_app_path
     end
   end
 end
