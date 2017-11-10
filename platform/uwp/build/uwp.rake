@@ -356,7 +356,7 @@ namespace "build" do
 
       mkdir_p $bindir if not File.exists? $bindir
       mkdir_p $targetdir if not File.exists? $targetdir
-      cp $targetAppxFileName, $targetdir
+      cp $targetAppxFileName, File.join($targetdir, $appname + ".appz")
 
       dependenciesDir = ""
       Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies'].each { |f|  dependenciesDir = f if Dir.exist?(f) }
@@ -465,7 +465,7 @@ namespace "device" do
   		args << $productid
   		args << $app_config["name"]
   		args << $app_path + "/icon/icon.png"
-  		args << $targetdir + "/" + $appname + ".xap"
+  		args << $targetdir + "/" + $appname + ".appx"
   		args << "dev"
   		$path = $app_path+"/rholog.txt"
   		$path.gsub!('/', '\\')
