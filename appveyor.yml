@@ -1,0 +1,49 @@
+version: '{branch}.{build}'
+image: Visual Studio 2015
+platform: x86
+clone_folder: C:\TAU\rhodes
+environment:
+  QTDIR: C:\Qt\5.8\msvc2015
+
+build: off
+
+install:
+  - set PATH=C:\Ruby23\bin;%PATH%
+  - set RAKEOPT=-rdevkit
+  - gem install rest-client --no-document
+  - gem install listen --no-document
+  - gem install zip --no-document
+  - gem install bundler --quiet --no-ri --no-rdoc
+  - bundler --version
+  
+before_test:
+  - ruby -v
+  - gem -v
+  - bundle -v
+  - cp rhobuild.yml.example rhobuild.yml
+  - rake gem
+  - set /P BUILD_VERSION=<version
+  - gem install rhodes-%BUILD_VERSION%.gem --no-document -f
+
+  - git clone -b master https://github.com/rhomobile/rhoconnect-client.git C:\TAU\rhoconnect-client
+  - cd C:\TAU\rhoconnect-client
+  - rake gem:make_gem
+  - set /P BUILD_VERSION_RHOCONNECT=<version
+  - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
+
+  - git clone -b master https://github.com/rhomobile/RMS-Testing.git C:\TAU\RMS-Testing
+  - appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+  - nuget restore C:\TAU\rhodes\platform\uwp\rhodes_dev.sln
+
+  - cd C:\TAU\
+  - rmdir /Q /S rhodes
+  - rmdir /Q /S rhoconnect-client
+
+test_script:
+  - cd C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\
+  - rake clean:win32
+  - rake build:rhosimulator
+  - rake clean:win32
+  - rake device:win32:production
+  - rake clean:uwp
+  - rake device:uwp:production
