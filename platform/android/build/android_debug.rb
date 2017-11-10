@@ -137,13 +137,14 @@ class AndroidDebug
 
         Dir.chdir(@app_path)
         File.open("start_debug", "w+") do |f| 
-            f.write("set interactive-mode on\n")
+            #f.write("set interactive-mode on\n")
             f.write("set breakpoint pending on\n")
             f.write("handle SIG33 nostop\n")
             f.write("target remote :#{@port}\n")
             bps.each do |item| 
                 f.write("b #{item}\n")
             end
+            f.write("handle SIG33 nostop\n")
             f.write("c\n")
         end    
         

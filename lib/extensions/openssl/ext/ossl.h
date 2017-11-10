@@ -10,6 +10,8 @@
 #if !defined(_OSSL_H_)
 #define _OSSL_H_
 
+//#include RUBY_EXTCONF_H
+
 //RHO
 #if defined(WIN32) || defined (WINCE)
 #include "windows/extconf.h"
@@ -27,6 +29,7 @@
 #include "android/extconf.h"
 #endif
 //RHO
+
 
 #if defined(__cplusplus)
 extern "C" {

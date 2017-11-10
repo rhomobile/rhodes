@@ -69,4 +69,10 @@ ssize_t rho_ssl_recv(char *buf, size_t size, int *wouldblock, void *storage)
     return GETSSL->recv(buf, size, wouldblock, storage);
 }
 
+bool rho_ssl_rand(unsigned char *entropy, size_t length)
+{
+    RAWTRACEC("rho_ssl", "rho_ssl_rand");
+    return GETSSL->rand(entropy, length);
+}
+
 }
