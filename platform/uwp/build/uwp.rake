@@ -356,7 +356,7 @@ namespace "build" do
 
       mkdir_p $bindir if not File.exists? $bindir
       mkdir_p $targetdir if not File.exists? $targetdir
-      cp $targetAppxFileName, File.join($targetdir, $appname + ".appz")
+      cp $targetAppxFileName, File.join($targetdir, $appname + ".appx")
 
       dependenciesDir = ""
       Dir[$rhodes_bin_dir + '/AppxPackageDir/*/**/Dependencies'].each { |f|  dependenciesDir = f if Dir.exist?(f) }

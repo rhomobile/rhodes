@@ -119,8 +119,11 @@ unsigned long rb_c_impl_SQLite3_execute(int argc, VALUE *argv, void* pDB)
 		    for(;nCol<nCount;nCol++){
 			    int nColType = sqlite3_column_type(statement,nCol);
 			    const char* szColName = sqlite3_column_name(statement,nCol);
-			    VALUE colName = rb_str_new2(szColName);
-			    VALUE colValue = Qnil;
+                
+			    //VALUE colName = rb_str_new2(szColName);
+                VALUE colName = rb_utf8_str_new_cstr(szColName);
+
+                VALUE colValue = Qnil;
     			
 			    switch(nColType){
 				    case SQLITE_NULL:
@@ -142,7 +145,9 @@ unsigned long rb_c_impl_SQLite3_execute(int argc, VALUE *argv, void* pDB)
                         int nLen = sqlite3_value_bytes(sqlValue);
                         const char*  szValue = (const char *)sqlite3_value_text(sqlValue);
 					    //char *text = (char *)sqlite3_column_text(statement, nCol);
-					    colValue = rb_str_new(szValue, nLen);
+					    
+                        //colValue = rb_str_new(szValue, nLen);
+                        colValue = rb_utf8_str_new(szValue, nLen);
 					    break;
 				    }
 			    }
