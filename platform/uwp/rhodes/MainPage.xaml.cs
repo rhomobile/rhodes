@@ -275,6 +275,14 @@ namespace rhodes
             deb("Local folder is " + localFolder.Path);
 
             String title = Package.Current.DisplayName;
+
+            string deviceFamilyVersion = AnalyticsInfo.VersionInfo.DeviceFamilyVersion;
+            ulong version = ulong.Parse(deviceFamilyVersion);
+            int major = (int)((version & 0xFFFF000000000000L) >> 48);
+            int minor = (int)((version & 0x0000FFFF00000000L) >> 32);
+            int build = (int)((version & 0x00000000FFFF0000L) >> 16);
+            //int revision = (int)((version & 0x000000000000FFFFL));            
+
             rhoDir = new DirectoryInfo(localFolder.Path + "\\rho");
             if (!rhoDir.Exists)
             {
@@ -359,6 +367,7 @@ namespace rhodes
                 // create rhodes runtime object
                 var _rhoruntime = CRhoRuntime.getInstance(new MainPageWrapper(this), localFolder.Path);
                 _rhoruntime.setCryptoEngine(new CryptoEngineWrapper(new RhoCrypt()));
+                _rhoruntime.setOsVersion(major, minor, build);
                 // create and start rhodes main thread               
                 _rhoruntimeThread = Task.Run(() => {
                     _rhoruntime.Execute();

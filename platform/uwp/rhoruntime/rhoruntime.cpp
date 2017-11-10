@@ -108,6 +108,10 @@ void CRhoRuntime::setLocalStoragePath(::Platform::String^ storage) {
 	setLocalRhoFolder(localRhoPath.c_str());
 }
 
+void CRhoRuntime::setOsVersion(int major, int minor, int build) {
+	cSetOSVersion(major, minor, build);
+}
+
 
 void CRhoRuntime::logEvent(::Platform::String^ message)
 {
