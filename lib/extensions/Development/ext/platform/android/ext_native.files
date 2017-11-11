@@ -2,7 +2,6 @@ ext/platform/android/generated/jni/Development.cpp
 ext/platform/android/generated/jni/development_ruby_wrap.cpp
 ext/platform/android/generated/jni/development_js_wrap.cpp
 ext/platform/android/jni/Development_impl.cpp
-ext/platform/android/jni/ifaddrs.c
 ext/shared/BundleUpdate/BundleUpdate.cpp
 ext/shared/HTTPServer/HTTPServer.cpp
 ext/shared/Log/LogAccess.cpp
