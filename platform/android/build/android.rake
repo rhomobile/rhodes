@@ -162,25 +162,49 @@ end
 
 namespace 'debug' do
   namespace 'android' do
+
+    debug_port = ""
+    device_type = ""
+
+    if !$app_config.nil? && !$app_config["android"].nil?
+      debug_port = $app_config["android"]["debug_port"]
+      device_type = $app_config["android"]["target_debug"]  
+    end
+    
     task :gdbserver => ['config:android'] do
-      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
       debugger.StartGdbServer
     end
 
     task :gdb => ['config:android'] do
-      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
       gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
       debugger.StartGdb(gdb_path)
     end
 
     task :jdb => ['config:android'] do
-      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
       debugger.StartJdb
     end
 
     task :appdebug => ['config:android'] do
-      debugger = AndroidDebug.new($app_package_name, 5039, 7777)
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
       debugger.StartAppOnDebug
+    end
+
+    task :run_and_debug => ['config:android'] do
+      gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
+      debugger.StartAppOnDebug
+      debugger.StartGdbServer
+      debugger.StartGdb(gdb_path)
+    end
+
+    task :attach => ['config:android'] do
+      gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
+      debugger.StartGdbServer
+      debugger.StartGdb(gdb_path)
     end
 
   end
@@ -269,6 +293,9 @@ namespace 'project' do
       settings_gradle = File.join( project_template_path, 'settings.gradle' )
       app_gradle_template = File.join( project_template_path, 'app', 'build.gradle.erb' )
       project_path = File.join $app_path,'project','android_studio'
+      project_app_path = File.join $app_path,'project','android_studio', 'app'
+      cmake_template_path = File.join( project_template_path, 'app', 'CMakeLists.txt.erb' )
+      cpp_stub_path = File.join( project_template_path, 'app', 'stub.cpp' )
 
       rhodes_path = File.absolute_path '.'
 
@@ -286,7 +313,9 @@ namespace 'project' do
       mkdir_p File.join(project_path,'app')
 
       app_gradle_path = File.join( project_path, 'app', 'build.gradle')
+      cmake_path = File.join( project_path, 'app', 'CMakeLists.txt')
       File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
+      File.open( cmake_path, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_path ) }
 
       cp main_gradle_script,  project_path
       cp gradle_properties,   project_path

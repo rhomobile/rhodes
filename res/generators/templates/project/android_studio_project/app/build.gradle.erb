@@ -41,6 +41,12 @@ android {
             }
         }
     }
+	
+	externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
 }
 
 import org.apache.tools.ant.taskdefs.condition.Os
