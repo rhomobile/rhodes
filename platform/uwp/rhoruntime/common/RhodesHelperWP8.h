@@ -39,6 +39,8 @@ extern "C" {
 	LPCWSTR getLocalStorage();
 	LPCSTR getLocalRhoFolder();
 
+	void cSetOSVersion(int major, int minor, int build);
+
 	HANDLE Rho_CreateFileW(
 		_In_ LPCWSTR lpFileName,
 		_In_ DWORD dwDesiredAccess,
