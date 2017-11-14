@@ -27,6 +27,7 @@ script:
 - rhodes app vanilla_rhodes_app
 - rhodes jsapp vanilla_rhodes_jsapp
 - rhodes nodejsapp vanilla_rhodes_nodejsapp
+- cd $TRAVIS_BUILD_DIR
 
 - git clone $(.ci/app_repo.rb) $HOME/$RHO_APP
 - cd $HOME/$RHO_APP/$(.ci/app_build_root.rb)
