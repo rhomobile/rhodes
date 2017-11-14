@@ -22,6 +22,12 @@ script:
 - travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
 - .ci/install_rhoconnect-client.sh
+
+- cd $HOME
+- rhodes app vanilla_rhodes_app
+- rhodes jsapp vanilla_rhodes_jsapp
+- rhodes nodejsapp vanilla_rhodes_nodejsapp
+
 - git clone $(.ci/app_repo.rb) $HOME/$RHO_APP
 - cd $HOME/$RHO_APP/$(.ci/app_build_root.rb)
 - rake run:$RHO_TARGET
