@@ -24,10 +24,22 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+require 'logger'
+
+
 class IPhoneBuild
   class << self
+
+      def log(level, msg)
+          if $logger
+              $logger.add(level, msg)
+          else
+              puts msg
+          end
+      end
+
       def process_output(input,options = {})
-        lines = input.encode('UTF-8', :invalid => :replace).split(/\r?\n/) 
+        lines = input.encode('UTF-8', :invalid => :replace).split(/\r?\n/)
         result = []
         lines.each do |data|
           # highligh "error:", "warning:", and "note" messages by adding colored messages
@@ -64,10 +76,10 @@ class IPhoneBuild
 
         if $rootdir.nil?
           $rootdir = File.expand_path(File.join(File.dirname(__FILE__), '..','..','..'))
-          $logger.debug "== iphonecommon.rb: setting $rootdir to #{$rootdir} =="
+          log  Logger::DEBUG, "== iphonecommon.rb: setting $rootdir to #{$rootdir} =="
         end
 
-        $logger.info "run CMD: ["+cmd+"] ARGS: ["+args.to_s+"]"
+        log Logger::INFO,  "run CMD: ["+cmd+"] ARGS: ["+args.to_s+"]"
 
         require File.join($rootdir, 'lib','build','jake')
 
@@ -102,7 +114,7 @@ class IPhoneBuild
 
         output_traces.each do |line|
             if printer.nil?
-                $logger.add(level, process_output(line))
+                log(level, process_output(line))
             else
                 if level == Logger::DEBUG
                     printer.pretty_print(line)

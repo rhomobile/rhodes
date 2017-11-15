@@ -1731,6 +1731,7 @@ namespace "build" do
             currentdir = Dir.pwd()
             Dir.chdir extpath
             sh %{$SHELL ./build}
+            #Jake.run32("$SHELL "+build_script)
             Dir.chdir currentdir
             #puts '$$$$$$$$$$$$$$$$$$     FINISH'
             #if File.executable? build_script
@@ -3226,6 +3227,7 @@ namespace "clean" do
             currentdir = Dir.pwd()
             Dir.chdir extpath
             sh %{$SHELL ./clean}
+            #Jake.run32("$SHELL "+build_script)
             Dir.chdir currentdir
             #puts '$$$$$$$$$$$$$$$$$$     FINISH'
             #if File.executable? build_script

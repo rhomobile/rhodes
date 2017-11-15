@@ -56,7 +56,7 @@ namespace "build" do
     rm_rf 'build'
     rm_rf target_lib
 
-    args = ['build', '-target', 'Sensor', '-configuration', $configuration, '-sdk', $sdk]
+    args = ['build', '-target', 'Sensor', '-configuration', $configuration, '-sdk', $sdk, '-quiet']
 
     require File.join(ENV['RHO_ROOT'], 'platform','iphone','rbuild','iphonecommon')
 
