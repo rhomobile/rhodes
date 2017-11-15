@@ -150,11 +150,9 @@ artifacts:
 deploy:
   - provider: S3
     access_key_id:  
-      secure: fFmP8gYR1DMOW5FXm6cQRJhVD5FaVloapxjY/gVEjI0=
-      #secure: j0N6vl5f9UckCbJkHmZiXNuFphMI3cud+NDTCQm/I2c=
+      secure: j0N6vl5f9UckCbJkHmZiXNuFphMI3cud+NDTCQm/I2c=
     secret_access_key:
-      secure: K5ApOYLqvRXJ/uhS9wFOCko03DrzJriLYnKOTCYfBw0eTiox+0uvFVQBE6cof3TA
-      #secure: WzHfCbltmZTLnQxLo5/3BzBLHLnuiMIK6aDkoB10by58eOngCcTKvHJUGbtkfcsp
+      secure: WzHfCbltmZTLnQxLo5/3BzBLHLnuiMIK6aDkoB10by58eOngCcTKvHJUGbtkfcsp
     bucket: tau-autobuilds
     region: eu-central-1
     folder: '$(APPVEYOR_REPO_NAME)/$(APPVEYOR_REPO_BRANCH)/$(APPVEYOR_REPO_COMMIT)/appveyor-${APPVEYOR_BUILD_NUMBER}.$(APPVEYOR_JOB_NUMBER)_win32-$(target_os)-$(app_name)'
