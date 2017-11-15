@@ -98,9 +98,9 @@ matrix:
     os: osx
     env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
 
-   - language: objective-c
-     os: osx
-     env: RHO_TARGET="iphone"    RHO_APP="framework_spec"
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"
 
   # - language: objective-c
   #   os: osx
