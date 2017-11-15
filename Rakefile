@@ -79,7 +79,7 @@ $is_webkit_engine = false
 $startdir = File.dirname(__FILE__)
 $startdir.gsub!('\\', '/')
 
-chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
+chdir File.dirname(__FILE__), :verbose => (Rake.application.options.trace == true)
 
 
 require File.join(pwd, 'lib/build/jake.rb')
@@ -136,11 +136,11 @@ end
 
 def puts( s )
   if $logger
-    $logger.info(s)
+    $logger.info( s )
   else
     Kernel::puts( s )
   end
-end  
+end
 
 $logger = Logger.new(STDOUT)
 if Rake.application.options.trace
@@ -149,7 +149,8 @@ else
   $logger.level = Logger::INFO
 end
 
-Rake::FileUtilsExt.verbose(Rake.application.options.trace)
+
+Rake::FileUtilsExt.verbose(Rake.application.options.trace == true)
 
 
 $logger.formatter = proc do |severity,datetime,progname,msg|
@@ -2746,7 +2747,7 @@ def init_extensions(dest, mode = "")
                 #api generator
                 if File.exist? xml_path
                   if gen_checker.check(xml_path)
-                    puts 'start running rhogen with api key'
+                    puts 'start running rhogen with api key for + ['+xml_path.to_s+']'
                     if !$skip_build_extensions
                       Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
                     end

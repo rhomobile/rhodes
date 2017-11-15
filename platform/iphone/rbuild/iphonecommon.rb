@@ -64,8 +64,10 @@ class IPhoneBuild
 
         if $rootdir.nil?
           $rootdir = File.expand_path(File.join(File.dirname(__FILE__), '..','..','..'))
-          puts "== iphonecommon.rb: setting $rootdir to #{$rootdir} =="
-        end 
+          $logger.debug "== iphonecommon.rb: setting $rootdir to #{$rootdir} =="
+        end
+
+        $logger.info "run CMD: ["+cmd+"] ARGS: ["+args.to_s+"]"
 
         require File.join($rootdir, 'lib','build','jake')
 
@@ -86,18 +88,28 @@ class IPhoneBuild
           BuildOutput.note('Please install xcpretty gem in order to have better formatted xcode output','Build hint')
         end
 
-        if printer.nil?
-          Jake.run2(cmd,args,options) do |line|
-            puts process_output(line)
-            $stdout.flush
-          end
-        else
-          Jake.run2(cmd,args,options) do |line|
-            printer.pretty_print(line)
-            $stdout.flush
-          end
+        output_traces = []
 
+        Jake.run2(cmd,args,options) do |line|
+          output_traces << line
         end
+
+        level = Logger::DEBUG
+
+        if ($?.exitstatus != 0)
+            level = Logger::INFO
+        end
+
+        output_traces.each do |line|
+            if printer.nil?
+                $logger.add(level, process_output(line))
+            else
+                if level == Logger::DEBUG
+                    printer.pretty_print(line)
+                end
+            end
+        end
+        $stdout.flush
 
         if $?.exitstatus != 0
           fail "Command '#{cmd}' with args '#{args.join(' ')}' failed with code #{$?.exitstatus}"

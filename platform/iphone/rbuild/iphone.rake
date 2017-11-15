@@ -2014,7 +2014,7 @@ namespace "build" do
            rm_rf 'build'
            rm_rf target_lib
 
-           args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
+           args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject, '-quiet']
 
            additional_string = ''
            if simulator
@@ -2470,7 +2470,7 @@ namespace "build" do
       #chdir $config["build"]["iphonepath"]
       chdir File.join($app_path, "project","iphone")
 
-      args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project]
+      args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project, '-quiet']
 
       additional_string = ''
       if $sdk =~ /iphonesimulator/
@@ -2532,6 +2532,7 @@ namespace "run" do
     task :build => 'run:buildsim'
     task :debug => :run
 
+    #[run:iphone]
     task :run => 'config:iphone' do
 
       print_timestamp('run:iphone:run START')
@@ -2590,6 +2591,7 @@ namespace "run" do
       exit
     end
 
+    #[run:iphone:spec]
     task :spec => ["clean:iphone"] do
       Jake.decorate_spec do
           Rake::Task['run:buildsim'].invoke
@@ -2769,7 +2771,7 @@ namespace "run" do
       puts "log_file=" + log_name
     end
 
-    #run:iphone:simulator
+    #[run:iphone:simulator:package]
     namespace "simulator" do
       desc "run IPA package on simulator"
       task :package, [:package_path] => ["config:iphone"] do |t, args|
@@ -3051,7 +3053,7 @@ namespace "clean" do
 
         chdir iphone_project_folder
 
-        args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project]
+        args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project, '-quiet']
         if RUBY_PLATFORM =~ /(win|w)32$/
         else
           ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})

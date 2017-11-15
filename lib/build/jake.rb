@@ -539,7 +539,11 @@ class Jake
     log Logger::DEBUG,to_print
     STDOUT.flush
 
-    system(to_run)
+    #system(to_run)
+    self.run2(to_run, []) do |line|
+        log Logger::DEBUG,line
+    end
+    return $?.exitstatus == 0
   end
 
   def self.run3(command, cd = nil, env = {})
