@@ -140,7 +140,7 @@ test_script:
   - copy %target_artefact_path%%target_artefact_file_name% C:\TAU\rhodes\target\
   - cd C:\TAU\rhodes\target\
   - dir
-  - echo %APPVEYOR_REPO_NAME%/%APPVEYOR_REPO_BRANCH%/%APPVEYOR_REPO_COMMIT%/appveyor-%APPVEYOR_JOB_NUMBER%-win32-%target_os%-%app_name%
+  - echo %APPVEYOR_REPO_NAME%/%APPVEYOR_REPO_BRANCH%/%APPVEYOR_REPO_COMMIT%/appveyor-%APPVEYOR_BUILD_NUMBER%.%APPVEYOR_JOB_NUMBER%_win32-%target_os%-%app_name%
   - cd C:\TAU\rhodes\
 
 artifacts: 
@@ -157,7 +157,7 @@ deploy:
       #secure: WzHfCbltmZTLnQxLo5/3BzBLHLnuiMIK6aDkoB10by58eOngCcTKvHJUGbtkfcsp
     bucket: tau-autobuilds
     region: eu-central-1
-    folder: '$(APPVEYOR_REPO_NAME)/$(APPVEYOR_REPO_BRANCH)/$(APPVEYOR_REPO_COMMIT)/appveyor-${APPVEYOR_BUILD_NUMBER}.$(APPVEYOR_JOB_NUMBER)-win32-$(target_os)-$(app_name)'
+    folder: '$(APPVEYOR_REPO_NAME)/$(APPVEYOR_REPO_BRANCH)/$(APPVEYOR_REPO_COMMIT)/appveyor-${APPVEYOR_BUILD_NUMBER}.$(APPVEYOR_JOB_NUMBER)_win32-$(target_os)-$(app_name)'
     artifact: /.*/
     set_public: true
     max_error_retry: 5
