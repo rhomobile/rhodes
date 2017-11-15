@@ -2749,7 +2749,7 @@ def init_extensions(dest, mode = "")
                   if gen_checker.check(xml_path)
                     puts 'start running rhogen with api key for + ['+xml_path.to_s+']'
                     if !$skip_build_extensions
-                      Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+                      Jake.run32("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
                     end
                   end
                 end

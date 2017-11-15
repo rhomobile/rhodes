@@ -2254,7 +2254,7 @@ namespace "build" do
 
             puts '$ prepare iphone XCode project for application'
             rhogenpath = File.join($startdir, 'bin', 'rhogen')
-            Jake.run3("\"#{rhogenpath}\" iphone_project #{appname_fixed} \"#{$startdir}\"")
+            Jake.run32("\"#{rhogenpath}\" iphone_project #{appname_fixed} \"#{$startdir}\"")
 
             Rake::Task['build:iphone:update_plist'].invoke
 
@@ -2308,9 +2308,9 @@ namespace "build" do
       puts 'prepare iphone XCode project for application'
       rhogenpath = File.join($startdir, 'bin', 'rhogen')
       if $use_prebuild_data
-        Jake.run3("\"#{rhogenpath}\" iphone_project_prebuild #{appname_fixed} \"#{$startdir}\"")
+        Jake.run32("\"#{rhogenpath}\" iphone_project_prebuild #{appname_fixed} \"#{$startdir}\"")
       else
-        Jake.run3("\"#{rhogenpath}\" iphone_project #{appname_fixed} \"#{$startdir}\"")
+        Jake.run32("\"#{rhogenpath}\" iphone_project #{appname_fixed} \"#{$startdir}\"")
       end
       #make_project_bakup
 
