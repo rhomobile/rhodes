@@ -23,6 +23,8 @@ import com.rhomobile.rhodes.util.ContextFactory;
 import android.net.Proxy;
 import android.net.Uri;
 
+import java.util.Map;
+
 public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
 
     private static final String TAG = WebViewSingleton.class.getSimpleName();
@@ -285,6 +287,17 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     @Override
     public void setCookie(String url, String cookie, IMethodResult result) {
         WebView.setCookie(url, cookie);
+    }
+
+    @Override
+    public void getCookies(String url, IMethodResult result) {
+        Map<String,Object> map = WebView.getCookies(url);
+        result.set(map);
+    }
+
+    @Override
+    public void removeCookie(String url, String cookie, IMethodResult result) {
+        WebView.removeCookie(url, cookie);
     }
 
     @Override
