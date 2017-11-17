@@ -142,12 +142,8 @@ public class WebView {
 		}
 		
         public void run() {
-            String cookiesArray[] = cookie.split(";");
             CookieManager mgr = CookieManager.getInstance();
-            for(String val: cookiesArray) {
-                Logger.T(TAG, "Cookie: " + val);
-                mgr.setCookie(url, val);
-            }
+            mgr.setCookie(url, cookie);
             Logger.T(TAG, "Cookie is set: " + url + ", " + cookie);
         }
 	};
