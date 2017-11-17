@@ -270,6 +270,32 @@ For most mobile platforms, WebView.execute_js has been implemented via redirecti
                 </PARAMS>
             </METHOD>
 
+            <METHOD name="getCookies">
+                <DESC>Returns cookies map for specified URL. Can only be called from UI thread. Crosswalk is not supported.</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>An URL to retrieve cookies for.</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="HASH">
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="removeCookie">
+                <DESC>Removes cookie by its name for specified URL. Can only be called from UI thread. Crosswalk is not supported.</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>An URL to remove cookie from.</DESC>
+                    </PARAM>
+                    <PARAM name="name" type="STRING">
+                        <DESC>A cookie name to be removed.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
             <METHOD name="save">
                 <DESC>Save current page to file system.</DESC>
                 <PLATFORM>iOS, Android</PLATFORM>
