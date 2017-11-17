@@ -265,7 +265,7 @@ For most mobile platforms, WebView.execute_js has been implemented via redirecti
                         <DESC>Set a cookie to be used by WebView for this url.</DESC>
                     </PARAM>
                     <PARAM name="cookie" type="STRING">
-                        <DESC>One or more name-value pairs of the format "NAME=VALUE". Separate multiple name-value pairs with a semicolon, such as "NAME1=VALUE1; NAME2=VALUE2".</DESC>
+                        <DESC>Cookie value in RFC format, for instance 'session=123;expires=Fri, 31 Dec 2010 23:59:59 GMT; path=/;</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
