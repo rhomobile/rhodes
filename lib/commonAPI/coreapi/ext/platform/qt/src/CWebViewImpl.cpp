@@ -200,6 +200,16 @@ public:
         rho_webview_set_cookie( strdup(url.c_str()), strdup(cookie.c_str()) );
     }
 
+    virtual void getCookies( const rho::String& url, rho::apiGenerator::CMethodResult& oResult)
+    {
+
+    }
+
+    virtual void removeCookie( const rho::String& url,  const rho::String& name, rho::apiGenerator::CMethodResult& oResult)
+    {
+
+    }
+
     //Android only
     virtual void save( const rho::String& format,  const rho::String& path,  int tabIndex, rho::apiGenerator::CMethodResult& oResult){}
     //
