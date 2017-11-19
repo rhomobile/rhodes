@@ -19,10 +19,12 @@ import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.webview.WebViewConfig;
 
 import com.rhomobile.rhodes.util.ContextFactory;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.net.Proxy;
 import android.net.Uri;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
@@ -290,14 +292,41 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
     }
 
     @Override
-    public void getCookies(String url, IMethodResult result) {
-        Map<String,Object> map = WebView.getCookies(url);
-        result.set(map);
+    public void getCookies(final String url, final IMethodResult result) {
+      try {
+          PerformOnUiThread.exec(new Runnable() {
+              @Override
+              public void run() {
+                  result.set( WebView.getCookies(url) );
+              }
+          });
+      }
+      catch (Exception e) {
+          Logger.E(TAG, e);
+          result.setError( e.toString() );
+      }
     }
 
     @Override
-    public void removeCookie(String url, String cookie, IMethodResult result) {
-        WebView.removeCookie(url, cookie);
+    public void removeCookie(final String url, final String cookie, final IMethodResult result) {
+
+      try {
+          PerformOnUiThread.exec(new Runnable() {
+              @Override
+              public void run() {
+                  boolean removed = WebView.removeCookie(url, cookie);
+                  Map<String,Object> res = new HashMap();
+                  if ( removed ) {
+                      res.put( "removed_cookie", cookie );
+                  }
+                  result.set(res);
+              }
+          });
+      }
+      catch (Exception e) {
+          Logger.E(TAG, e);
+          result.setError(e.toString());
+      }
     }
 
     @Override

@@ -318,13 +318,14 @@ public class WebView {
     /*
         remove cookie by setting its expiry date in the past
      */
-    public static void removeCookie( String url, String name ) {
+    public static boolean removeCookie( String url, String name ) {
         final String expiry = "Thu, 01 Jan 1970 07:00:00 GMT";
         CookieManager mgr = CookieManager.getInstance();
         Uri uri = Uri.parse(url);
         url = uri.getScheme() + "://" + uri.getHost() + uri.getPath();
         String cookie = "" + name + "=; Expires="+expiry;
         mgr.setCookie( url, cookie );
+        return true;
     }
 
     public static void stopNavigate() {
