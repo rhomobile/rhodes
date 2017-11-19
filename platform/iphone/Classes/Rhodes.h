@@ -124,6 +124,9 @@
 - (void)setCookie:(NSString*)cookie forUrl:(NSString*)url;
 - (NSString*)cookie:(NSString*)url;
 
+- (NSDictionary*)getCookies:(NSString*)url;
+- (BOOL)removeCookie:(NSString*)url name:(NSString*)cookieName;
+
 - (id<RhoMainView,NSObject>)mainView;
 - (void)setMainView:(id<RhoMainView,NSObject>)view;
 
