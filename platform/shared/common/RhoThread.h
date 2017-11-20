@@ -42,7 +42,7 @@ class CRhoThread : public IRhoRunnable
     static const int TS_STOPPING = 2;
     static const int TS_RUNNING = 4;
 
-    int m_nState;
+    volatile int m_nState;
     unsigned int m_nThreadID;
 public:
 

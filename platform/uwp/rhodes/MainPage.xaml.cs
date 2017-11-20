@@ -613,12 +613,30 @@ namespace rhodes
 
         public string executeScript(string script, int index)
         {
+            deb("executeScript: " + script);
             return StringValueByStringIntReturnAgent(executeScriptFunc, script, index);
         }
 
         public string executeScriptAsync(string script, int index)
         {
-            return StringValueByStringIntReturnAgentAsync(executeScriptFunc, script, index);
+            deb("executeScriptAsync: " + script);
+            InvokeInUIThread(() =>
+            {
+                string[] codeString = { script };
+                if (TabbarPivot.Items.Count == 0 || _isCallbackFired)
+                {
+                    _isCallbackFired = false;
+                    var task = RhodesWebBrowser.InvokeScriptAsync("eval", codeString).Completed = (arg1, arg2) => { deb("Async task executeon complited"); };
+                    deb("Creating AsyncTask ends");
+                }
+                else
+                {
+                    var task = ((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScriptAsync("eval", codeString);
+                }
+            });
+
+            return "";
+            //return StringValueByStringIntReturnAgentAsync(executeScriptFunc, script, index);
         }
 
         public void GoBack()
@@ -1389,8 +1407,7 @@ namespace rhodes
 
         private string StringValueByStringIntReturnAgent(Func<string, int, string> func, string str, int index)
         {
-            if (isUIThread)
-                return func(str, index);
+            if (isUIThread) return func(str, index);
 
             Exception exception = null;
             var waitEvent = new System.Threading.ManualResetEvent(false);
@@ -1410,16 +1427,13 @@ namespace rhodes
             });
 
              //waitEvent.WaitOne();
-            if (exception != null)
-                throw exception;
-
+            if (exception != null) throw exception;
             return return_value;
         }
 
         private string StringValueByStringIntReturnAgentAsync(Func<string, int, string> func, string str, int index)
         {
-            if (isUIThread)
-                return func(str, index);
+            if (isUIThread) return func(str, index);
 
             Exception exception = null;
             string return_value = "";
