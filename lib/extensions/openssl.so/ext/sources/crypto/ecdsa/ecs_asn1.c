@@ -7,7 +7,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -58,12 +58,10 @@
 #include <openssl/asn1t.h>
 
 ASN1_SEQUENCE(ECDSA_SIG) = {
-	ASN1_SIMPLE(ECDSA_SIG, r, CBIGNUM),
-	ASN1_SIMPLE(ECDSA_SIG, s, CBIGNUM)
+        ASN1_SIMPLE(ECDSA_SIG, r, CBIGNUM),
+        ASN1_SIMPLE(ECDSA_SIG, s, CBIGNUM)
 } ASN1_SEQUENCE_END(ECDSA_SIG)
 
-#ifndef UNDER_CE
 DECLARE_ASN1_FUNCTIONS_const(ECDSA_SIG)
 DECLARE_ASN1_ENCODE_FUNCTIONS_const(ECDSA_SIG, ECDSA_SIG)
-#endif
 IMPLEMENT_ASN1_FUNCTIONS_const(ECDSA_SIG)
