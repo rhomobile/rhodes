@@ -5,11 +5,11 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2016, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
- * are also available at http://curl.haxx.se/docs/copyright.html.
+ * are also available at https://curl.haxx.se/docs/copyright.html.
  *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
@@ -18,7 +18,6 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: parsedate.c,v 1.39 2009-10-18 21:56:19 bagder Exp $
  ***************************************************************************/
 /*
   A brief summary of the date string formats this parser groks:
@@ -73,17 +72,16 @@
   20040911 +0200
 
 */
-#include "setup.h"
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h> /* for strtol() */
+#include "curl_setup.h"
+
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
 #endif
 
 #include <curl/curl.h>
-#include "rawstr.h"
+#include "strcase.h"
+#include "warnless.h"
 #include "parsedate.h"
 
 const char * const Curl_wkday[] =
@@ -99,6 +97,24 @@ struct tzinfo {
   char name[5];
   int offset; /* +/- in minutes */
 };
+
+/*
+ * parsedate()
+ *
+ * Returns:
+ *
+ * PARSEDATE_OK     - a fine conversion
+ * PARSEDATE_FAIL   - failed to convert
+ * PARSEDATE_LATER  - time overflow at the far end of time_t
+ * PARSEDATE_SOONER - time underflow at the low end of time_t
+ */
+
+static int parsedate(const char *date, time_t *output);
+
+#define PARSEDATE_OK     0
+#define PARSEDATE_FAIL   -1
+#define PARSEDATE_LATER  1
+#define PARSEDATE_SOONER 2
 
 /* Here's a bunch of frequently used time zone names. These were supported
    by the old getdate parser. */
@@ -160,7 +176,8 @@ static const struct tzinfo tz[]= {
   {"G",  +7 * 60},         /* Golf */
   {"H",  +8 * 60},         /* Hotel */
   {"I",  +9 * 60},         /* India */
-  /* "J", Juliet is not used as a timezone, to indicate the observer's local time */
+  /* "J", Juliet is not used as a timezone, to indicate the observer's local
+     time */
   {"K", +10 * 60},         /* Kilo */
   {"L", +11 * 60},         /* Lima */
   {"M", +12 * 60},         /* Mike */
@@ -194,7 +211,7 @@ static int checkday(const char *check, size_t len)
   else
     what = &Curl_wkday[0];
   for(i=0; i<7; i++) {
-    if(Curl_raw_equal(check, what[0])) {
+    if(strcasecompare(check, what[0])) {
       found=TRUE;
       break;
     }
@@ -211,7 +228,7 @@ static int checkmonth(const char *check)
 
   what = &Curl_month[0];
   for(i=0; i<12; i++) {
-    if(Curl_raw_equal(check, what[0])) {
+    if(strcasecompare(check, what[0])) {
       found=TRUE;
       break;
     }
@@ -231,7 +248,7 @@ static int checktz(const char *check)
 
   what = tz;
   for(i=0; i< sizeof(tz)/sizeof(tz[0]); i++) {
-    if(Curl_raw_equal(check, what->name)) {
+    if(strcasecompare(check, what->name)) {
       found=TRUE;
       break;
     }
@@ -282,11 +299,11 @@ static time_t my_timegm(struct my_tm *tm)
 
   year = tm->tm_year + 1900;
   month = tm->tm_mon;
-  if (month < 0) {
+  if(month < 0) {
     year += (11 - month) / 12;
     month = 11 - (11 - month) % 12;
   }
-  else if (month >= 12) {
+  else if(month >= 12) {
     year -= month / 12;
     month = month % 12;
   }
@@ -301,7 +318,7 @@ static time_t my_timegm(struct my_tm *tm)
 }
 
 /*
- * Curl_parsedate()
+ * parsedate()
  *
  * Returns:
  *
@@ -311,7 +328,7 @@ static time_t my_timegm(struct my_tm *tm)
  * PARSEDATE_SOONER - time underflow at the low end of time_t
  */
 
-int Curl_parsedate(const char *date, time_t *output)
+static int parsedate(const char *date, time_t *output)
 {
   time_t t = 0;
   int wdaynum=-1;  /* day of the week number, 0-6 (mon-sun) */
@@ -336,9 +353,11 @@ int Curl_parsedate(const char *date, time_t *output)
       /* a name coming up */
       char buf[32]="";
       size_t len;
-      sscanf(date, "%31[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]",
-             buf);
-      len = strlen(buf);
+      if(sscanf(date, "%31[ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                          "abcdefghijklmnopqrstuvwxyz]", buf))
+        len = strlen(buf);
+      else
+        len = 0;
 
       if(wdaynum == -1) {
         wdaynum = checkday(buf, len);
@@ -367,14 +386,40 @@ int Curl_parsedate(const char *date, time_t *output)
       /* a digit */
       int val;
       char *end;
+      int len=0;
       if((secnum == -1) &&
-         (3 == sscanf(date, "%02d:%02d:%02d", &hournum, &minnum, &secnum))) {
+         (3 == sscanf(date, "%02d:%02d:%02d%n",
+                      &hournum, &minnum, &secnum, &len))) {
         /* time stamp! */
-        date += 8;
-        found = TRUE;
+        date += len;
+      }
+      else if((secnum == -1) &&
+              (2 == sscanf(date, "%02d:%02d%n", &hournum, &minnum, &len))) {
+        /* time stamp without seconds */
+        date += len;
+        secnum = 0;
       }
       else {
-        val = (int)strtol(date, &end, 10);
+        long lval;
+        int error;
+        int old_errno;
+
+        old_errno = errno;
+        errno = 0;
+        lval = strtol(date, &end, 10);
+        error = errno;
+        if(errno != old_errno)
+          errno = old_errno;
+
+        if(error)
+          return PARSEDATE_FAIL;
+
+#if LONG_MAX != INT_MAX
+        if((lval > (long)INT_MAX) || (lval < (long)INT_MIN))
+          return PARSEDATE_FAIL;
+#endif
+
+        val = curlx_sltosi(lval);
 
         if((tzoff == -1) &&
            ((end - date) == 4) &&
@@ -382,7 +427,7 @@ int Curl_parsedate(const char *date, time_t *output)
            (indate< date) &&
            ((date[-1] == '+' || date[-1] == '-'))) {
           /* four digits and a value less than or equal to 1400 (to take into
-             account all sorts of funny time zone diffs) and it is preceeded
+             account all sorts of funny time zone diffs) and it is preceded
              with a plus or minus. This is a time zone indication.  1400 is
              picked since +1300 is frequently used and +1400 is mentioned as
              an edge number in the document "ISO C 200X Proposal: Timezone
@@ -461,6 +506,10 @@ int Curl_parsedate(const char *date, time_t *output)
     return PARSEDATE_SOONER;
   }
 
+  if((mdaynum > 31) || (monnum > 11) ||
+     (hournum > 23) || (minnum > 59) || (secnum > 60))
+    return PARSEDATE_FAIL; /* clearly an illegal date */
+
   tm.tm_sec = secnum;
   tm.tm_min = minnum;
   tm.tm_hour = hournum;
@@ -483,8 +532,10 @@ int Curl_parsedate(const char *date, time_t *output)
     /* Add the time zone diff between local time zone and GMT. */
     long delta = (long)(tzoff!=-1?tzoff:0);
 
-    if((delta>0) && (t + delta < t))
-      return -1; /* time_t overflow */
+    if((delta>0) && (t > LONG_MAX - delta)) {
+      *output = 0x7fffffff;
+      return PARSEDATE_LATER; /* time_t overflow */
+    }
 
     t += delta;
   }
@@ -496,8 +547,8 @@ int Curl_parsedate(const char *date, time_t *output)
 
 time_t curl_getdate(const char *p, const time_t *now)
 {
-  time_t parsed;
-  int rc = Curl_parsedate(p, &parsed);
+  time_t parsed = -1;
+  int rc = parsedate(p, &parsed);
   (void)now; /* legacy argument from the past that we ignore */
 
   switch(rc) {
@@ -508,4 +559,27 @@ time_t curl_getdate(const char *p, const time_t *now)
   }
   /* everything else is fail */
   return -1;
+}
+
+/*
+ * Curl_gmtime() is a gmtime() replacement for portability. Do not use the
+ * gmtime_r() or gmtime() functions anywhere else but here.
+ *
+ */
+
+CURLcode Curl_gmtime(time_t intime, struct tm *store)
+{
+  const struct tm *tm;
+#ifdef HAVE_GMTIME_R
+  /* thread-safe version */
+  tm = (struct tm *)gmtime_r(&intime, store);
+#else
+  tm = gmtime(&intime);
+  if(tm)
+    *store = *tm; /* copy the pointed struct to the local copy */
+#endif
+
+  if(!tm)
+    return CURLE_BAD_FUNCTION_ARGUMENT;
+  return CURLE_OK;
 }

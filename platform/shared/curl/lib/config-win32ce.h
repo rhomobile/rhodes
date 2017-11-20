@@ -1,5 +1,26 @@
-#ifndef __LIB_CONFIG_WIN32CE_H
-#define __LIB_CONFIG_WIN32CE_H
+#ifndef HEADER_CURL_CONFIG_WIN32CE_H
+#define HEADER_CURL_CONFIG_WIN32CE_H
+/***************************************************************************
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
+ *                             \___|\___/|_| \_\_____|
+ *
+ * Copyright (C) 1998 - 2017, Daniel Stenberg, <daniel@haxx.se>, et al.
+ *
+ * This software is licensed as described in the file COPYING, which
+ * you should have received as part of this distribution. The terms
+ * are also available at https://curl.haxx.se/docs/copyright.html.
+ *
+ * You may opt to use, copy, modify, merge, publish, distribute and/or sell
+ * copies of the Software, and permit persons to whom the Software is
+ * furnished to do so, under the terms of the COPYING file.
+ *
+ * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
+ * KIND, either express or implied.
+ *
+ ***************************************************************************/
 
 /* ================================================================ */
 /*  lib/config-win32ce.h - Hand crafted config file for windows ce  */
@@ -17,6 +38,9 @@
 
 /* Define if you have the <crypto.h> header file.  */
 /* #define HAVE_CRYPTO_H 1 */
+
+/* Define if you have the <errno.h> header file.  */
+/* #define HAVE_ERRNO_H 1 */
 
 /* Define if you have the <err.h> header file.  */
 /* #define HAVE_ERR_H 1 */
@@ -55,7 +79,7 @@
 #define HAVE_STDLIB_H 1
 
 /* Define if you have the <process.h> header file.  */
-#define HAVE_PROCESS_H 1
+/* #define HAVE_PROCESS_H 1 */
 
 /* Define if you have the <sys/param.h> header file.  */
 /* #define HAVE_SYS_PARAM_H 1 */
@@ -310,11 +334,24 @@
 /*                            TYPE SIZES                            */
 /* ---------------------------------------------------------------- */
 
-/* The number of bytes in a long double.  */
+/* The size of `int', as computed by sizeof. */
+#define SIZEOF_INT 4
+
+/* The size of `long double', as computed by sizeof. */
 #define SIZEOF_LONG_DOUBLE 16
 
-/* The number of bytes in a long long.  */
+/* The size of `long long', as computed by sizeof. */
 /* #define SIZEOF_LONG_LONG 8 */
+
+/* The size of `short', as computed by sizeof. */
+#define SIZEOF_SHORT 2
+
+/* The size of `size_t', as computed by sizeof. */
+#if defined(_WIN64)
+#  define SIZEOF_SIZE_T 8
+#else
+#  define SIZEOF_SIZE_T 4
+#endif
 
 /* ---------------------------------------------------------------- */
 /*                          STRUCT RELATED                          */
@@ -342,7 +379,7 @@
 #define _CRT_NONSTDC_NO_DEPRECATE 1
 #endif
 
-/* VS2005 and later dafault size for time_t is 64-bit, unless */
+/* VS2005 and later default size for time_t is 64-bit, unless */
 /* _USE_32BIT_TIME_T has been defined to get a 32-bit time_t. */
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
 #  ifndef _USE_32BIT_TIME_T
@@ -372,8 +409,7 @@
 /*                           LDAP SUPPORT                           */
 /* ---------------------------------------------------------------- */
 
-#define CURL_LDAP_WIN 1
-#undef CURL_LDAP_HYBRID
+#define USE_WIN32_LDAP 1
 #undef HAVE_LDAP_URL_PARSE
 
 /* ---------------------------------------------------------------- */
@@ -391,6 +427,14 @@
 /*                       WinCE                                      */
 /* ---------------------------------------------------------------- */
 
+#ifndef UNICODE
+#  define UNICODE
+#endif
+
+#ifndef _UNICODE
+#  define _UNICODE
+#endif
+
 #define CURL_DISABLE_FILE 1
 #define CURL_DISABLE_TELNET 1
 #define CURL_DISABLE_LDAP 1
@@ -399,6 +443,6 @@
 #define ENOMEM 2
 #define EAGAIN 3
 
-extern int stat(const char *path,struct stat *buffer );
+extern int stat(const char *path, struct stat *buffer);
 
-#endif /* __LIB_CONFIG_WIN32CE_H */
+#endif /* HEADER_CURL_CONFIG_WIN32CE_H */

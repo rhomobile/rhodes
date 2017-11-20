@@ -110,6 +110,10 @@ SSLImpl::SSLImpl()
     if (!midSend) return;
     midRecv = getJNIClassMethod(env, cls, "recv", "([B)I");
     if (!midRecv) return;
+    midRand = getJNIClassStaticMethod(env, cls, "rand", "([B)Z"); 
+    if(!midRand) return;
+    
+    
 }
 
 void* SSLImpl::createStorage()
@@ -172,6 +176,22 @@ ssize_t SSLImpl::send(const void *mem, size_t len, void *storage)
     jboolean result = env->CallBooleanMethod(obj, midSend, array.get());
     if (!result) return -1;
     return len;
+}
+
+bool SSLImpl::rand(unsigned char *entropy, size_t length)
+{
+    JNIEnv *env = jnienv();
+    jholder<jbyteArray> array = env->NewByteArray(length);
+    if(!array) return false;
+    
+    jboolean result = env->CallStaticBooleanMethod(cls, midRand, array.get());
+    if(result)
+    {
+        jbyte *arr = env->GetByteArrayElements(array.get(), NULL);
+        std::memmove(entropy, arr, length);
+    }
+
+    return result;    
 }
 
 ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)

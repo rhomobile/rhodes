@@ -7,6 +7,7 @@
  * This program is licensed under the same licence as Ruby.
  * (See the file 'LICENCE'.)
  */
+//#include RUBY_EXTCONF_H
 
 //RHO
 #if defined(WIN32) || defined (WINCE)

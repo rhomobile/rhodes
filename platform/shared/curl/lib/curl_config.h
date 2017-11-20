@@ -1,11 +1,11 @@
 /* lib/curl_config.h.  Generated from curl_config.h.in by configure.  */
 /* lib/curl_config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* when building libcurl itself */
-/* #undef BUILDING_LIBCURL */
-
 /* Location of default ca bundle */
 /* #undef CURL_CA_BUNDLE */
+
+/* define "1" to use built in CA store of SSL library */
+/* #undef CURL_CA_FALLBACK */
 
 /* Location of default ca path */
 /* #undef CURL_CA_PATH */
@@ -24,56 +24,65 @@
 
 /* to disable FTP */
 /* #undef CURL_DISABLE_FTP */
-#define CURL_DISABLE_FTP 1
+
+/* to disable Gopher */
+/* #undef CURL_DISABLE_GOPHER */
 
 /* to disable HTTP */
 /* #undef CURL_DISABLE_HTTP */
 
-#define CURL_DISABLE_NTLM 1
+/* to disable IMAP */
+/* #undef CURL_DISABLE_IMAP */
 
 /* to disable LDAP */
 #define CURL_DISABLE_LDAP 1
 
 /* to disable LDAPS */
 #define CURL_DISABLE_LDAPS 1
+#define BUILDING_LIBCURL
+
+/* to disable --libcurl C code generation option */
+/* #undef CURL_DISABLE_LIBCURL_OPTION */
+
+/* to disable POP3 */
+/* #undef CURL_DISABLE_POP3 */
 
 /* to disable proxies */
 /* #undef CURL_DISABLE_PROXY */
 
+/* to disable RTSP */
+/* #undef CURL_DISABLE_RTSP */
+
+/* to disable SMB/CIFS */
+/* #undef CURL_DISABLE_SMB */
+
+/* to disable SMTP */
+/* #undef CURL_DISABLE_SMTP */
+
 /* to disable TELNET */
 /* #undef CURL_DISABLE_TELNET */
-#define CURL_DISABLE_TELNET 1
 
 /* to disable TFTP */
 /* #undef CURL_DISABLE_TFTP */
-#define CURL_DISABLE_TFTP 1
+
+/* to disable TLS-SRP authentication */
+/* #undef CURL_DISABLE_TLS_SRP */
 
 /* to disable verbose strings */
 /* #undef CURL_DISABLE_VERBOSE_STRINGS */
 
-/* to make a symbol visible */
-/* #undef CURL_EXTERN_SYMBOL */
+/* Definition to make a library symbol externally visible. */
+#define CURL_EXTERN_SYMBOL __attribute__ ((__visibility__ ("default")))
 
-/* to enable hidden symbols */
-/* #undef CURL_HIDDEN_SYMBOLS */
-
-/* W$ LDAP with non-W$ compiler */
-/* #undef CURL_LDAP_HYBRID */
-
-/* Use W$ LDAP implementation */
-/* #undef CURL_LDAP_WIN */
-
-/* when not building a shared library */
 #define CURL_STATICLIB 1
-
-/* Set to explicitly specify we don't want to use thread-safe functions */
-/* #undef DISABLED_THREADSAFE */
-
 /* your Entropy Gathering Daemon socket pathname */
 /* #undef EGD_SOCKET */
 
 /* Define if you want to enable IPv6 support */
-/* #undef ENABLE_IPV6 */
+#define ENABLE_IPV6 1
+
+/* Define to the type of arg 2 for gethostname. */
+#define GETHOSTNAME_TYPE_ARG2 unsigned int
 
 /* Define to the type qualifier of arg 1 for getnameinfo. */
 #define GETNAMEINFO_QUAL_ARG1 const
@@ -117,6 +126,9 @@
 /* Define to 1 if bool is an available type. */
 #define HAVE_BOOL_T 1
 
+/* Define to 1 if using BoringSSL. */
+/* #undef HAVE_BORINGSSL */
+
 /* Define to 1 if you have the clock_gettime function and monotonic timer. */
 #ifdef OS_ANDROID
 #define HAVE_CLOCK_GETTIME_MONOTONIC 1
@@ -131,17 +143,26 @@
 /* Define to 1 if you have the connect function. */
 #define HAVE_CONNECT 1
 
-/* Define to 1 if you have the `CRYPTO_cleanup_all_ex_data' function. */
-/* #undef HAVE_CRYPTO_CLEANUP_ALL_EX_DATA */
-
 /* Define to 1 if you have the <crypto.h> header file. */
 /* #undef HAVE_CRYPTO_H */
 
-/* Define to 1 if you have the <des.h> header file. */
-/* #undef HAVE_DES_H */
+/* Define to 1 if you have the `CyaSSL_CTX_UseSupportedCurve' function. */
+/* #undef HAVE_CYASSL_CTX_USESUPPORTEDCURVE */
+
+/* Define to 1 if you have the <cyassl/error-ssl.h> header file. */
+/* #undef HAVE_CYASSL_ERROR_SSL_H */
+
+/* Define to 1 if you have the `CyaSSL_get_peer_certificate' function. */
+/* #undef HAVE_CYASSL_GET_PEER_CERTIFICATE */
+
+/* Define to 1 if you have the <cyassl/options.h> header file. */
+/* #undef HAVE_CYASSL_OPTIONS_H */
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
+
+/* Define to 1 if you have the `ENGINE_cleanup' function. */
+/* #undef HAVE_ENGINE_CLEANUP */
 
 /* Define to 1 if you have the `ENGINE_load_builtin_engines' function. */
 /* #undef HAVE_ENGINE_LOAD_BUILTIN_ENGINES */
@@ -164,20 +185,32 @@
 /* Define to 1 if you have the fdopen function. */
 #define HAVE_FDOPEN 1
 
-/* Define to 1 if you have the `fork' function. */
-#define HAVE_FORK 1
-
 /* Define to 1 if you have the freeaddrinfo function. */
 #define HAVE_FREEADDRINFO 1
 
 /* Define to 1 if you have the freeifaddrs function. */
 /* #undef HAVE_FREEIFADDRS */
 
+/* Define to 1 if you have the fsetxattr function. */
+/* #undef HAVE_FSETXATTR */
+
+/* fsetxattr() takes 5 args */
+/* #undef HAVE_FSETXATTR_5 */
+
+/* fsetxattr() takes 6 args */
+/* #undef HAVE_FSETXATTR_6 */
+
 /* Define to 1 if you have the ftruncate function. */
 #define HAVE_FTRUNCATE 1
 
+/* Define to 1 if you have the gai_strerror function. */
+#define HAVE_GAI_STRERROR 1
+
 /* Define to 1 if you have a working getaddrinfo function. */
 #define HAVE_GETADDRINFO 1
+
+/* Define to 1 if the getaddrinfo function is threadsafe. */
+#define HAVE_GETADDRINFO_THREADSAFE 1
 
 /* Define to 1 if you have the `geteuid' function. */
 #define HAVE_GETEUID 1
@@ -229,11 +262,11 @@
 /* Define to 1 if you have the `getppid' function. */
 #define HAVE_GETPPID 1
 
-/* Define to 1 if you have the `getprotobyname' function. */
-#define HAVE_GETPROTOBYNAME 1
-
 /* Define to 1 if you have the `getpwuid' function. */
 #define HAVE_GETPWUID 1
+
+/* Define to 1 if you have the `getpwuid_r' function. */
+/* #undef HAVE_GETPWUID_R */
 
 /* Define to 1 if you have the `getrlimit' function. */
 #define HAVE_GETRLIMIT 1
@@ -250,7 +283,20 @@
 /* Define to 1 if you have a working gmtime_r function. */
 #define HAVE_GMTIME_R 1
 
-/* if you have the gssapi libraries */
+/* Define to 1 if you have the `gnutls_alpn_set_protocols' function. */
+/* #undef HAVE_GNUTLS_ALPN_SET_PROTOCOLS */
+
+/* Define to 1 if you have the `gnutls_certificate_set_x509_key_file2'
+   function. */
+/* #undef HAVE_GNUTLS_CERTIFICATE_SET_X509_KEY_FILE2 */
+
+/* Define to 1 if you have the `gnutls_ocsp_req_init' function. */
+/* #undef HAVE_GNUTLS_OCSP_REQ_INIT */
+
+/* if you have the function gnutls_srp_verifier */
+/* #undef HAVE_GNUTLS_SRP */
+
+/* if you have GSS-API libraries */
 /* #undef HAVE_GSSAPI */
 
 /* Define to 1 if you have the <gssapi/gssapi_generic.h> header file. */
@@ -262,29 +308,23 @@
 /* Define to 1 if you have the <gssapi/gssapi_krb5.h> header file. */
 /* #undef HAVE_GSSAPI_GSSAPI_KRB5_H */
 
-/* if you have the GNU gssapi libraries */
+/* if you have GNU GSS */
 /* #undef HAVE_GSSGNU */
 
-/* if you have the Heimdal gssapi libraries */
+/* if you have Heimdal */
 /* #undef HAVE_GSSHEIMDAL */
 
-/* if you have the MIT gssapi libraries */
+/* if you have MIT Kerberos */
 /* #undef HAVE_GSSMIT */
 
-/* Define to 1 if you have the `idna_strerror' function. */
-/* #undef HAVE_IDNA_STRERROR */
-
-/* Define to 1 if you have the `idn_free' function. */
-/* #undef HAVE_IDN_FREE */
-
-/* Define to 1 if you have the <idn-free.h> header file. */
-/* #undef HAVE_IDN_FREE_H */
+/* Define to 1 if you have the <idn2.h> header file. */
+/* #undef HAVE_IDN2_H */
 
 /* Define to 1 if you have the <ifaddrs.h> header file. */
 /* #undef HAVE_IFADDRS_H */
 
-/* Define to 1 if you have the `inet_addr' function. */
-#define HAVE_INET_ADDR 1
+/* Define to 1 if you have the `if_nametoindex' function. */
+#define HAVE_IF_NAMETOINDEX 1
 
 /* Define to 1 if you have the inet_ntoa_r function. */
 /* #undef HAVE_INET_NTOA_R */
@@ -329,15 +369,6 @@
 /* Define to 1 if you have the <io.h> header file. */
 /* #undef HAVE_IO_H */
 
-/* if you have the Kerberos4 libraries (including -ldes) */
-/* #undef HAVE_KRB4 */
-
-/* Define to 1 if you have the `krb_get_our_ip_for_realm' function. */
-/* #undef HAVE_KRB_GET_OUR_IP_FOR_REALM */
-
-/* Define to 1 if you have the <krb.h> header file. */
-/* #undef HAVE_KRB_H */
-
 /* Define to 1 if you have the lber.h header file. */
 /* #undef HAVE_LBER_H */
 
@@ -346,6 +377,9 @@
 
 /* Define to 1 if you have the ldap.h header file. */
 /* #undef HAVE_LDAP_H */
+
+/* Define to 1 if you have the `ldap_init_fd' function. */
+/* #undef HAVE_LDAP_INIT_FD */
 
 /* Use LDAPS implementation */
 /* #undef HAVE_LDAP_SSL */
@@ -359,23 +393,20 @@
 /* Define to 1 if you have the <libgen.h> header file. */
 #define HAVE_LIBGEN_H 1
 
-/* Define to 1 if you have the `idn' library (-lidn). */
-/* #undef HAVE_LIBIDN */
+/* Define to 1 if you have the `idn2' library (-lidn2). */
+/* #undef HAVE_LIBIDN2 */
 
-/* Define to 1 if you have the `resolv' library (-lresolv). */
-/* #undef HAVE_LIBRESOLV */
+/* Define to 1 if using libressl. */
+/* #undef HAVE_LIBRESSL */
 
-/* Define to 1 if you have the `resolve' library (-lresolve). */
-/* #undef HAVE_LIBRESOLVE */
+/* Define to 1 if you have the <librtmp/rtmp.h> header file. */
+/* #undef HAVE_LIBRTMP_RTMP_H */
 
 /* Define to 1 if you have the `ssh2' library (-lssh2). */
 /* #undef HAVE_LIBSSH2 */
 
 /* Define to 1 if you have the <libssh2.h> header file. */
 /* #undef HAVE_LIBSSH2_H */
-
-/* Define to 1 if you have the `libssh2_version' function. */
-/* #undef HAVE_LIBSSH2_VERSION */
 
 /* Define to 1 if you have the `ssl' library (-lssl). */
 /* #undef HAVE_LIBSSL */
@@ -426,10 +457,13 @@
 /* Define to 1 if you have the <net/if.h> header file. */
 #define HAVE_NET_IF_H 1
 
+/* Define to 1 if you have the <nghttp2/nghttp2.h> header file. */
+/* #undef HAVE_NGHTTP2_NGHTTP2_H */
+
 /* Define to 1 if NI_WITHSCOPEID exists and works. */
 /* #undef HAVE_NI_WITHSCOPEID */
 
-/* if you have an old MIT gssapi library, lacking GSS_C_NT_HOSTBASED_SERVICE
+/* if you have an old MIT Kerberos version, lacking GSS_C_NT_HOSTBASED_SERVICE
    */
 /* #undef HAVE_OLD_GSSMIT */
 
@@ -451,6 +485,9 @@
 /* Define to 1 if you have the <openssl/rsa.h> header file. */
 /* #undef HAVE_OPENSSL_RSA_H */
 
+/* if you have the function SRP_Calc_client_key */
+/* #undef HAVE_OPENSSL_SRP */
+
 /* Define to 1 if you have the <openssl/ssl.h> header file. */
 /* #undef HAVE_OPENSSL_SSL_H */
 
@@ -460,14 +497,8 @@
 /* Define to 1 if you have the <pem.h> header file. */
 /* #undef HAVE_PEM_H */
 
-/* Define to 1 if you have the `perror' function. */
-#define HAVE_PERROR 1
-
 /* Define to 1 if you have the `pipe' function. */
 #define HAVE_PIPE 1
-
-/* if you have the function PK11_CreateGenericObject */
-/* #undef HAVE_PK11_CREATEGENERICOBJECT */
 
 /* Define to 1 if you have a working poll function. */
 #define HAVE_POLL 1
@@ -480,6 +511,9 @@
 
 /* Define to 1 if you have a working POSIX-style strerror_r function. */
 #define HAVE_POSIX_STRERROR_R 1
+
+/* if you have <pthread.h> */
+#define HAVE_PTHREAD_H 1
 
 /* Define to 1 if you have the <pwd.h> header file. */
 #if defined(__APPLE__) && !defined(RHODES_QT_PLATFORM)
@@ -559,16 +593,19 @@
 /* #undef HAVE_SIG_ATOMIC_T_VOLATILE */
 
 /* Define to 1 if struct sockaddr_in6 has the sin6_scope_id member */
-/* #undef HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID */
+#define HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID 1
 
 /* Define to 1 if you have the socket function. */
 #define HAVE_SOCKET 1
 
+/* Define to 1 if you have the socketpair function. */
+#define HAVE_SOCKETPAIR 1
+
 /* Define to 1 if you have the <socket.h> header file. */
 /* #undef HAVE_SOCKET_H */
 
-/* Define this if you have the SPNEGO library fbopenssl */
-/* #undef HAVE_SPNEGO */
+/* Define to 1 if you have the `SSLv2_client_method' function. */
+/* #undef HAVE_SSLV2_CLIENT_METHOD */
 
 /* Define to 1 if you have the `SSL_get_shutdown' function. */
 /* #undef HAVE_SSL_GET_SHUTDOWN */
@@ -590,9 +627,6 @@
 
 /* Define to 1 if you have the strcasecmp function. */
 #define HAVE_STRCASECMP 1
-
-/* Define to 1 if you have the strcasestr function. */
-#define HAVE_STRCASESTR 1
 
 /* Define to 1 if you have the strcmpi function. */
 /* #undef HAVE_STRCMPI */
@@ -693,29 +727,29 @@
 /* Define to 1 if you have the <sys/utime.h> header file. */
 #define HAVE_SYS_UTIME_H 1
 
+/* Define to 1 if you have the <sys/wait.h> header file. */
+#define HAVE_SYS_WAIT_H 1
+
+/* Define to 1 if you have the <sys/xattr.h> header file. */
+/* #undef HAVE_SYS_XATTR_H */
+
 /* Define to 1 if you have the <termios.h> header file. */
 #define HAVE_TERMIOS_H 1
 
 /* Define to 1 if you have the <termio.h> header file. */
-/* #undef HAVE_TERMIO_H */
+#define HAVE_TERMIO_H 1
 
 /* Define to 1 if you have the <time.h> header file. */
 #define HAVE_TIME_H 1
-
-/* Define to 1 if you have the <tld.h> header file. */
-/* #undef HAVE_TLD_H */
-
-/* Define to 1 if you have the `tld_strerror' function. */
-/* #undef HAVE_TLD_STRERROR */
-
-/* Define to 1 if you have the `uname' function. */
-#define HAVE_UNAME 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
 /* Define to 1 if you have the `utime' function. */
 #define HAVE_UTIME 1
+
+/* Define to 1 if you have the `utimes' function. */
+#define HAVE_UTIMES 1
 
 /* Define to 1 if you have the <utime.h> header file. */
 #define HAVE_UTIME_H 1
@@ -741,6 +775,18 @@
 /* Define to 1 if you have the winsock.h header file. */
 /* #undef HAVE_WINSOCK_H */
 
+/* Define to 1 if you have the `wolfSSLv3_client_method' function. */
+/* #undef HAVE_WOLFSSLV3_CLIENT_METHOD */
+
+/* Define to 1 if you have the `wolfSSL_CTX_UseSupportedCurve' function. */
+/* #undef HAVE_WOLFSSL_CTX_USESUPPORTEDCURVE */
+
+/* Define to 1 if you have the `wolfSSL_get_peer_certificate' function. */
+/* #undef HAVE_WOLFSSL_GET_PEER_CERTIFICATE */
+
+/* Define to 1 if you have the `wolfSSL_UseALPN' function. */
+/* #undef HAVE_WOLFSSL_USEALPN */
+
 /* Define this symbol if your OS supports changing the contents of argv */
 /* #undef HAVE_WRITABLE_ARGV */
 
@@ -756,8 +802,7 @@
 /* if you have the zlib.h header file */
 #define HAVE_ZLIB_H 1
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
 /* Define to 1 if you are building a native Windows target. */
@@ -775,6 +820,15 @@
 /* Define to 1 if _REENTRANT preprocessor symbol must be defined. */
 /* #undef NEED_REENTRANT */
 
+/* Define to 1 if _THREAD_SAFE preprocessor symbol must be defined. */
+/* #undef NEED_THREAD_SAFE */
+
+/* Define to enable NTLM delegation to winbind's ntlm_auth helper. */
+/* #undef NTLM_WB_ENABLED */
+
+/* Define absolute filename for winbind's ntlm_auth helper. */
+/* #undef NTLM_WB_FILE */
+
 /* cpu-machine-OS */
 #define OS "arm-unknown-eabi"
 
@@ -782,7 +836,7 @@
 #define PACKAGE "curl"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "a suitable curl mailing list => http://curl.haxx.se/mail/"
+#define PACKAGE_BUGREPORT "a suitable curl mailing list: https://curl.haxx.se/mail/"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "curl"
@@ -802,36 +856,6 @@
 /* a suitable file to read random data from */
 /* #undef RANDOM_FILE */
 
-/* Define to the type of arg 1 for recvfrom. */
-/* #undef RECVFROM_TYPE_ARG1 */
-
-/* Define to the type pointed by arg 2 for recvfrom. */
-/* #undef RECVFROM_TYPE_ARG2 */
-
-/* Define to 1 if the type pointed by arg 2 for recvfrom is void. */
-/* #undef RECVFROM_TYPE_ARG2_IS_VOID */
-
-/* Define to the type of arg 3 for recvfrom. */
-/* #undef RECVFROM_TYPE_ARG3 */
-
-/* Define to the type of arg 4 for recvfrom. */
-/* #undef RECVFROM_TYPE_ARG4 */
-
-/* Define to the type pointed by arg 5 for recvfrom. */
-/* #undef RECVFROM_TYPE_ARG5 */
-
-/* Define to 1 if the type pointed by arg 5 for recvfrom is void. */
-/* #undef RECVFROM_TYPE_ARG5_IS_VOID */
-
-/* Define to the type pointed by arg 6 for recvfrom. */
-/* #undef RECVFROM_TYPE_ARG6 */
-
-/* Define to 1 if the type pointed by arg 6 for recvfrom is void. */
-/* #undef RECVFROM_TYPE_ARG6_IS_VOID */
-
-/* Define to the function return type for recvfrom. */
-/* #undef RECVFROM_TYPE_RETV */
-
 /* Define to the type of arg 1 for recv. */
 #define RECV_TYPE_ARG1 int
 
@@ -845,7 +869,7 @@
 #define RECV_TYPE_ARG4 unsigned int
 
 /* Define to the function return type for recv. */
-#define RECV_TYPE_RETV ssize_t
+#define RECV_TYPE_RETV int
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #define RETSIGTYPE void
@@ -881,7 +905,7 @@
 #define SEND_TYPE_ARG4 unsigned int
 
 /* Define to the function return type for send. */
-#define SEND_TYPE_RETV ssize_t
+#define SEND_TYPE_RETV int
 
 /* The size of `int', as computed by sizeof. */
 #define SIZEOF_INT 4
@@ -889,8 +913,14 @@
 /* The size of `long', as computed by sizeof. */
 #define SIZEOF_LONG 4
 
+/* The size of `long long', as computed by sizeof. */
+/* #undef SIZEOF_LONG_LONG */
+
 /* The size of `off_t', as computed by sizeof. */
 #define SIZEOF_OFF_T 4
+
+/* The size of `short', as computed by sizeof. */
+#define SIZEOF_SHORT 2
 
 /* The size of `size_t', as computed by sizeof. */
 #define SIZEOF_SIZE_T 4
@@ -910,14 +940,29 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
 
-/* Define if you want to enable c-ares support */
+/* Define to enable c-ares support */
 /* #undef USE_ARES */
 
-/* Define to disable non-blocking sockets. */
-/* #undef USE_BLOCKING_SOCKETS */
+/* if axTLS is enabled */
+/* #undef USE_AXTLS */
+
+/* if CyaSSL/WolfSSL is enabled */
+/* #undef USE_CYASSL */
+
+/* to enable Apple OS native SSL/TLS support */
+/* #undef USE_DARWINSSL */
 
 /* if GnuTLS is enabled */
 /* #undef USE_GNUTLS */
+
+/* if GnuTLS uses nettle as crypto backend */
+/* #undef USE_GNUTLS_NETTLE */
+
+/* PSL support enabled */
+/* #undef USE_LIBPSL */
+
+/* if librtmp is in use */
+/* #undef USE_LIBRTMP */
 
 /* if libSSH2 is in use */
 /* #undef USE_LIBSSH2 */
@@ -925,34 +970,73 @@
 /* If you want to build curl with the built-in manual */
 #define USE_MANUAL 1
 
+/* if mbedTLS is enabled */
+/* #undef USE_MBEDTLS */
+
+/* Define to enable metalink support */
+/* #undef USE_METALINK */
+
+/* if nghttp2 is in use */
+/* #undef USE_NGHTTP2 */
+
 /* if NSS is enabled */
 /* #undef USE_NSS */
+
+/* Use OpenLDAP-specific code */
+/* #undef USE_OPENLDAP */
 
 /* if OpenSSL is in use */
 /* #undef USE_OPENSSL */
 
-/* if SSL is enabled */
-/* #undef USE_SSLEAY */
+/* if PolarSSL is enabled */
+/* #undef USE_POLARSSL */
+
+/* to enable Windows native SSL/TLS support */
+/* #undef USE_SCHANNEL */
+
+/* if you want POSIX threaded DNS lookup */
+#define USE_THREADS_POSIX 1
+
+/* if you want Win32 threaded DNS lookup */
+/* #undef USE_THREADS_WIN32 */
+
+/* Use TLS-SRP authentication */
+/* #undef USE_TLS_SRP */
+
+/* Use Unix domain sockets */
+#define USE_UNIX_SOCKETS 1
+
+/* Define to 1 if you have the `normaliz' (WinIDN) library (-lnormaliz). */
+/* #undef USE_WIN32_IDN */
+
+/* Define to 1 if you are building a Windows target with large file support.
+   */
+/* #undef USE_WIN32_LARGE_FILES */
+
+/* Use Windows LDAP implementation */
+/* #undef USE_WIN32_LDAP */
 
 /* Define to 1 if you are building a Windows target without large file
    support. */
-/* #undef USE_WIN32_LARGE_FILES */
+/* #undef USE_WIN32_SMALL_FILES */
 
 /* to enable SSPI support */
 /* #undef USE_WINDOWS_SSPI */
 
-/* Define to 1 if using yaSSL in OpenSSL compatibility mode. */
-/* #undef USE_YASSLEMUL */
-
 /* Version number of package */
-#define VERSION "7.19.7"
+#define VERSION "-"
 
-/* Define to avoid automatic inclusion of winsock.h */
-/* #undef WIN32_LEAN_AND_MEAN */
+/* Define to 1 to provide own prototypes. */
+/* #undef WANT_IDN_PROTOTYPES */
 
 /* Define to 1 if OS is AIX. */
 #ifndef _ALL_SOURCE
 /* #  undef _ALL_SOURCE */
+#endif
+
+/* Enable large inode numbers on Mac OS X 10.5.  */
+#ifndef _DARWIN_USE_64_BIT_INODE
+# define _DARWIN_USE_64_BIT_INODE 1
 #endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */
@@ -960,9 +1044,6 @@
 
 /* Define for large files, on AIX-style hosts. */
 /* #undef _LARGE_FILES */
-
-/* define this if you need it to compile thread-safe code */
-/* #undef _THREAD_SAFE */
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */
@@ -985,6 +1066,6 @@
 /* RHO BEGIN */
 //#if defined(OS_IPHONE) || defined(OS_ANDROID) || defined(OS_WP8)
 #if defined(OS_IPHONE) || defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WP8) || defined(OS_UWP)
-#define USE_RHOSSL 1
+#define USE_RHOSSL
 #endif
 /* RHO END */

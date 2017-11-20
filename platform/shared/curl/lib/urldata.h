@@ -1,5 +1,5 @@
-#ifndef __URLDATA_H
-#define __URLDATA_H
+#ifndef HEADER_CURL_URLDATA_H
+#define HEADER_CURL_URLDATA_H
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -7,11 +7,11 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2017, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
- * are also available at http://curl.haxx.se/docs/copyright.html.
+ * are also available at https://curl.haxx.se/docs/copyright.html.
  *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
@@ -20,12 +20,11 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: urldata.h,v 1.420 2009-10-29 03:48:00 yangtse Exp $
  ***************************************************************************/
 
 /* This file is for lib internal stuff */
 
-#include "setup.h"
+#include "curl_setup.h"
 
 #define PORT_FTP 21
 #define PORT_FTPS 990
@@ -37,6 +36,19 @@
 #define PORT_LDAPS 636
 #define PORT_TFTP 69
 #define PORT_SSH 22
+#define PORT_IMAP 143
+#define PORT_IMAPS 993
+#define PORT_POP3 110
+#define PORT_POP3S 995
+#define PORT_SMB 445
+#define PORT_SMBS 445
+#define PORT_SMTP 25
+#define PORT_SMTPS 465 /* sometimes called SSMTP */
+#define PORT_RTSP 554
+#define PORT_RTMP 1935
+#define PORT_RTMPT PORT_HTTP
+#define PORT_RTMPS PORT_HTTPS
+#define PORT_GOPHER 70
 
 #define DICT_MATCH "/MATCH:"
 #define DICT_MATCH2 "/M:"
@@ -48,47 +60,63 @@
 #define CURL_DEFAULT_USER "anonymous"
 #define CURL_DEFAULT_PASSWORD "ftp@example.com"
 
+/* Convenience defines for checking protocols or their SSL based version. Each
+   protocol handler should only ever have a single CURLPROTO_ in its protocol
+   field. */
+#define PROTO_FAMILY_HTTP (CURLPROTO_HTTP|CURLPROTO_HTTPS)
+#define PROTO_FAMILY_FTP  (CURLPROTO_FTP|CURLPROTO_FTPS)
+#define PROTO_FAMILY_POP3 (CURLPROTO_POP3|CURLPROTO_POP3S)
+#define PROTO_FAMILY_SMB  (CURLPROTO_SMB|CURLPROTO_SMBS)
+#define PROTO_FAMILY_SMTP (CURLPROTO_SMTP|CURLPROTO_SMTPS)
+
+#define DEFAULT_CONNCACHE_SIZE 5
+
 /* length of longest IPv6 address string including the trailing null */
 #define MAX_IPADR_LEN sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")
+
+/* Default FTP/IMAP etc response timeout in milliseconds.
+   Symbian OS panics when given a timeout much greater than 1/2 hour.
+*/
+#define RESP_TIMEOUT (1800*1000)
 
 #include "cookie.h"
 #include "formdata.h"
 
-#ifdef USE_SSLEAY
 #ifdef USE_OPENSSL
-#include "openssl/rsa.h"
-#include "openssl/crypto.h"
-#include "openssl/x509.h"
-#include "openssl/pem.h"
-#include "openssl/ssl.h"
-#include "openssl/err.h"
+#include <openssl/ssl.h>
 #ifdef HAVE_OPENSSL_ENGINE_H
 #include <openssl/engine.h>
 #endif
-#ifdef HAVE_OPENSSL_PKCS12_H
-#include <openssl/pkcs12.h>
-#endif
-#else /* SSLeay-style includes */
-#include "rsa.h"
-#include "crypto.h"
-#include "x509.h"
-#include "pem.h"
-#include "ssl.h"
-#include "err.h"
-#ifdef HAVE_OPENSSL_ENGINE_H
-#include <engine.h>
-#endif
-#ifdef HAVE_OPENSSL_PKCS12_H
-#include <pkcs12.h>
-#endif
 #endif /* USE_OPENSSL */
-#ifdef USE_GNUTLS
-#error Configuration error; cannot use GnuTLS *and* OpenSSL.
-#endif
-#endif /* USE_SSLEAY */
 
 #ifdef USE_GNUTLS
 #include <gnutls/gnutls.h>
+#endif
+
+#ifdef USE_MBEDTLS
+
+#include <mbedtls/ssl.h>
+#include <mbedtls/version.h>
+#include <mbedtls/entropy.h>
+#include <mbedtls/ctr_drbg.h>
+
+#elif defined USE_POLARSSL
+
+#include <polarssl/ssl.h>
+#include <polarssl/version.h>
+#if POLARSSL_VERSION_NUMBER<0x01010000
+#include <polarssl/havege.h>
+#else
+#include <polarssl/entropy.h>
+#include <polarssl/ctr_drbg.h>
+#endif /* POLARSSL_VERSION_NUMBER<0x01010000 */
+
+#endif /* USE_POLARSSL */
+
+#ifdef USE_CYASSL
+#undef OCSP_REQUEST  /* avoid cyassl/openssl/ssl.h clash with wincrypt.h */
+#undef OCSP_RESPONSE /* avoid cyassl/openssl/ssl.h clash with wincrypt.h */
+#include <cyassl/openssl/ssl.h>
 #endif
 
 #ifdef USE_NSS
@@ -96,8 +124,31 @@
 #include <pk11pub.h>
 #endif
 
-#ifdef USE_QSOSSL
-#include <qsossl.h>
+#ifdef USE_GSKIT
+#include <gskssl.h>
+#endif
+
+#ifdef USE_AXTLS
+#include <axTLS/config.h>
+#include <axTLS/ssl.h>
+#undef malloc
+#undef calloc
+#undef realloc
+#endif /* USE_AXTLS */
+
+#if defined(USE_SCHANNEL) || defined(USE_WINDOWS_SSPI)
+#include "curl_sspi.h"
+#endif
+#ifdef USE_SCHANNEL
+#include <schnlsp.h>
+#include <schannel.h>
+#endif
+
+#ifdef USE_DARWINSSL
+#include <Security/Security.h>
+/* For some reason, when building for iOS, the omnibus header above does
+ * not include SecureTransport.h as of iOS SDK 5.1. */
+#include <Security/SecureTransport.h>
 #endif
 
 #ifdef HAVE_NETINET_IN_H
@@ -114,20 +165,24 @@
 #endif
 #endif
 
-#ifdef USE_ARES
-#  if defined(CURL_STATICLIB) && !defined(CARES_STATICLIB) && \
-     (defined(WIN32) || defined(_WIN32) || defined(__SYMBIAN32__))
-#    define CARES_STATICLIB
-#  endif
-#  include <ares.h>
-#endif
-
 #include <curl/curl.h>
 
 #include "http_chunks.h" /* for the structs and enum stuff */
 #include "hostip.h"
 #include "hash.h"
 #include "splay.h"
+
+#include "imap.h"
+#include "pop3.h"
+#include "smtp.h"
+#include "ftp.h"
+#include "file.h"
+#include "ssh.h"
+#include "http.h"
+#include "rtsp.h"
+#include "smb.h"
+#include "wildcard.h"
+#include "multihandle.h"
 
 #ifdef HAVE_GSSAPI
 # ifdef HAVE_GSSGNU
@@ -145,36 +200,57 @@
 #include <libssh2_sftp.h>
 #endif /* HAVE_LIBSSH2_H */
 
-/* Download buffer size, keep it fairly big for speed reasons */
-#undef BUFSIZE
-#define BUFSIZE CURL_MAX_WRITE_SIZE
+/* The upload buffer size, should not be smaller than CURL_MAX_WRITE_SIZE, as
+   it needs to hold a full buffer as could be sent in a write callback */
+#define UPLOAD_BUFSIZE CURL_MAX_WRITE_SIZE
+
+/* The "master buffer" is for HTTP pipelining */
+#define MASTERBUF_SIZE 16384
 
 /* Initial size of the buffer to store headers in, it'll be enlarged in case
    of need. */
 #define HEADERSIZE 256
 
 #define CURLEASY_MAGIC_NUMBER 0xc0dedbadU
+#define GOOD_EASY_HANDLE(x) \
+  ((x) && ((x)->magic == CURLEASY_MAGIC_NUMBER))
 
 /* Some convenience macros to get the larger/smaller value out of two given.
    We prefix with CURL to prevent name collisions. */
 #define CURLMAX(x,y) ((x)>(y)?(x):(y))
 #define CURLMIN(x,y) ((x)<(y)?(x):(y))
 
-
-#if defined(HAVE_KRB4) || defined(HAVE_GSSAPI)
-/* Types needed for krb4/5-ftp connections */
-struct krb4buffer {
+#ifdef HAVE_GSSAPI
+/* Types needed for krb5-ftp connections */
+struct krb5buffer {
   void *data;
   size_t size;
   size_t index;
   int eof_flag;
 };
+
 enum protection_level {
-  prot_clear,
-  prot_safe,
-  prot_confidential,
-  prot_private,
-  prot_cmd
+  PROT_NONE, /* first in list */
+  PROT_CLEAR,
+  PROT_SAFE,
+  PROT_CONFIDENTIAL,
+  PROT_PRIVATE,
+  PROT_CMD,
+  PROT_LAST /* last in list */
+};
+#endif
+
+#ifdef USE_SCHANNEL
+/* Structs to store Schannel handles */
+struct curl_schannel_cred {
+  CredHandle cred_handle;
+  TimeStamp time_stamp;
+  int refcount;
+};
+
+struct curl_schannel_ctxt {
+  CtxtHandle ctxt_handle;
+  TimeStamp time_stamp;
 };
 #endif
 
@@ -201,67 +277,153 @@ struct ssl_connect_data {
      current state of the connection. */
   bool use;
   ssl_connection_state state;
-#ifdef USE_SSLEAY
+  ssl_connect_state connecting_state;
+#if defined(USE_OPENSSL)
   /* these ones requires specific SSL-types */
   SSL_CTX* ctx;
   SSL*     handle;
   X509*    server_cert;
-  ssl_connect_state connecting_state;
-#endif /* USE_SSLEAY */
-#ifdef USE_GNUTLS
-  gnutls_session session;
-  gnutls_certificate_credentials cred;
-#endif /* USE_GNUTLS */
-#ifdef USE_NSS
+#elif defined(USE_GNUTLS)
+  gnutls_session_t session;
+  gnutls_certificate_credentials_t cred;
+#ifdef USE_TLS_SRP
+  gnutls_srp_client_credentials_t srp_client_cred;
+#endif
+#elif defined(USE_MBEDTLS)
+  mbedtls_ctr_drbg_context ctr_drbg;
+  mbedtls_entropy_context entropy;
+  mbedtls_ssl_context ssl;
+  int server_fd;
+  mbedtls_x509_crt cacert;
+  mbedtls_x509_crt clicert;
+  mbedtls_x509_crl crl;
+  mbedtls_pk_context pk;
+  mbedtls_ssl_config config;
+  const char *protocols[3];
+#elif defined(USE_POLARSSL)
+  ctr_drbg_context ctr_drbg;
+  entropy_context entropy;
+  ssl_context ssl;
+  int server_fd;
+  x509_crt cacert;
+  x509_crt clicert;
+  x509_crl crl;
+  rsa_context rsa;
+#elif defined(USE_CYASSL)
+  SSL_CTX* ctx;
+  SSL*     handle;
+#elif defined(USE_NSS)
   PRFileDesc *handle;
   char *client_nickname;
-  struct SessionHandle *data;
-#ifdef HAVE_PK11_CREATEGENERICOBJECT
-  PK11GenericObject *key;
-  PK11GenericObject *cacert[2];
-#endif
-#endif /* USE_NSS */
-#ifdef USE_QSOSSL
-  SSLHandle *handle;
-#endif /* USE_QSOSSL */
-#ifdef USE_RHOSSL
+  struct Curl_easy *data;
+  struct curl_llist obj_list;
+  PK11GenericObject *obj_clicert;
+#elif defined(USE_GSKIT)
+  gsk_handle handle;
+  int iocport;
+  int localfd;
+  int remotefd;
+#elif defined(USE_AXTLS)
+  SSL_CTX* ssl_ctx;
+  SSL*     ssl;
+#elif defined(USE_SCHANNEL)
+  struct curl_schannel_cred *cred;
+  struct curl_schannel_ctxt *ctxt;
+  SecPkgContext_StreamSizes stream_sizes;
+  size_t encdata_length, decdata_length;
+  size_t encdata_offset, decdata_offset;
+  unsigned char *encdata_buffer, *decdata_buffer;
+  /* encdata_is_incomplete: if encdata contains only a partial record that
+     can't be decrypted without another Curl_read_plain (that is, status is
+     SEC_E_INCOMPLETE_MESSAGE) then set this true. after Curl_read_plain writes
+     more bytes into encdata then set this back to false. */
+  bool encdata_is_incomplete;
+  unsigned long req_flags, ret_flags;
+  CURLcode recv_unrecoverable_err; /* schannel_recv had an unrecoverable err */
+  bool recv_sspi_close_notify; /* true if connection closed by close_notify */
+  bool recv_connection_closed; /* true if connection closed, regardless how */
+  bool use_alpn; /* true if ALPN is used for this connection */
+#elif defined(USE_DARWINSSL)
+  SSLContextRef ssl_ctx;
+  curl_socket_t ssl_sockfd;
+  bool ssl_direction; /* true if writing, false if reading */
+  size_t ssl_write_buffered_length;
+#elif defined(USE_RHOSSL)
   void *storage;
+#elif defined(USE_SSL)
+#error "SSL backend specific information missing from ssl_connect_data"
 #endif
 };
 
-struct ssl_config_data {
+struct ssl_primary_config {
   long version;          /* what version the client wants to use */
-  long certverifyresult; /* result from the certificate verification */
-  long verifypeer;       /* set TRUE if this is desired */
-  long verifyhost;       /* 0: no verify
-                            1: check that CN exists
-                            2: CN must match hostname */
+  long version_max;      /* max supported version the client wants to use*/
+  bool verifypeer;       /* set TRUE if this is desired */
+  bool verifyhost;       /* set TRUE if CN/SAN must match hostname */
+  bool verifystatus;     /* set TRUE if certificate status must be checked */
   char *CApath;          /* certificate dir (doesn't work on windows) */
   char *CAfile;          /* certificate to verify peer against */
-  const char *CRLfile;   /* CRL to check certificate revocation */
-  const char *issuercert;/* optional issuer certificate filename */
+  char *clientcert;
   char *random_file;     /* path to file containing "random" data */
   char *egdsocket;       /* path to file containing the EGD daemon socket */
   char *cipher_list;     /* list of ciphers to use */
-  long numsessions;      /* SSL session id cache size */
+  bool sessionid;        /* cache session IDs or not */
+};
+
+struct ssl_config_data {
+  struct ssl_primary_config primary;
+  bool enable_beast; /* especially allow this flaw for interoperability's
+                        sake*/
+  bool no_revoke;    /* disable SSL certificate revocation checks */
+  long certverifyresult; /* result from the certificate verification */
+  char *CRLfile;   /* CRL to check certificate revocation */
+  char *issuercert;/* optional issuer certificate filename */
   curl_ssl_ctx_callback fsslctx; /* function to initialize ssl ctx */
   void *fsslctxp;        /* parameter for call back */
-  bool sessionid;        /* cache session IDs or not */
   bool certinfo;         /* gather lots of certificate info */
+  bool falsestart;
+
+  char *cert; /* client certificate file name */
+  char *cert_type; /* format for certificate (default: PEM)*/
+  char *key; /* private key file name */
+  char *key_type; /* format for private key (default: PEM) */
+  char *key_passwd; /* plain text private key password */
+
+#ifdef USE_TLS_SRP
+  char *username; /* TLS username (for, e.g., SRP) */
+  char *password; /* TLS password (for, e.g., SRP) */
+  enum CURL_TLSAUTH authtype; /* TLS authentication type (default SRP) */
+#endif
+};
+
+struct ssl_general_config {
+  size_t max_ssl_sessions; /* SSL session id cache size */
 };
 
 /* information stored about one single SSL session */
 struct curl_ssl_session {
   char *name;       /* host name for which this ID was used */
+  char *conn_to_host; /* host name for the connection (may be NULL) */
+  const char *scheme; /* protocol scheme used */
   void *sessionid;  /* as returned from the SSL layer */
   size_t idsize;    /* if known, otherwise 0 */
   long age;         /* just a number, the higher the more recent */
-  unsigned short remote_port; /* remote port to connect to */
-  struct ssl_config_data ssl_config; /* setup for this session */
+  int remote_port;  /* remote port */
+  int conn_to_port; /* remote port for the connection (may be -1) */
+  struct ssl_primary_config ssl_config; /* setup for this session */
 };
 
 /* Struct used for Digest challenge-response authentication */
 struct digestdata {
+#if defined(USE_WINDOWS_SSPI)
+  BYTE *input_token;
+  size_t input_token_len;
+  CtxtHandle *http_context;
+  /* copy of user/passwd used to make the identity for http_context.
+     either may be NULL. */
+  char *user;
+  char *passwd;
+#else
   char *nonce;
   char *cnonce;
   char *realm;
@@ -271,6 +433,7 @@ struct digestdata {
   char *qop;
   char *algorithm;
   int nc; /* nounce count */
+#endif
 };
 
 typedef enum {
@@ -289,321 +452,87 @@ typedef enum {
 #include <iconv.h>
 #endif
 
+/* Struct used for GSSAPI (Kerberos V5) authentication */
+#if defined(USE_KERBEROS5)
+struct kerberos5data {
+#if defined(USE_WINDOWS_SSPI)
+  CredHandle *credentials;
+  CtxtHandle *context;
+  TCHAR *spn;
+  SEC_WINNT_AUTH_IDENTITY identity;
+  SEC_WINNT_AUTH_IDENTITY *p_identity;
+  size_t token_max;
+  BYTE *output_token;
+#else
+  gss_ctx_id_t context;
+  gss_name_t spn;
+#endif
+};
+#endif
+
 /* Struct used for NTLM challenge-response authentication */
+#if defined(USE_NTLM)
 struct ntlmdata {
   curlntlm state;
 #ifdef USE_WINDOWS_SSPI
-  CredHandle handle;
-  CtxtHandle c_handle;
+  CredHandle *credentials;
+  CtxtHandle *context;
   SEC_WINNT_AUTH_IDENTITY identity;
   SEC_WINNT_AUTH_IDENTITY *p_identity;
-  int has_handles;
-  void *type_2;
-  int n_type_2;
+  size_t token_max;
+  BYTE *output_token;
+  BYTE *input_token;
+  size_t input_token_len;
 #else
   unsigned int flags;
   unsigned char nonce[8];
+  void *target_info; /* TargetInfo received in the ntlm type-2 message */
+  unsigned int target_info_len;
 #endif
 };
+#endif
 
-#ifdef HAVE_GSSAPI
+#ifdef USE_SPNEGO
 struct negotiatedata {
-  /* when doing Negotiate we first need to receive an auth token and then we
-     need to send our header */
+  /* When doing Negotiate (SPNEGO) auth, we first need to send a token
+     and then validate the received one. */
   enum { GSS_AUTHNONE, GSS_AUTHRECV, GSS_AUTHSENT } state;
-  bool gss; /* Whether we're processing GSS-Negotiate or Negotiate */
-  const char* protocol; /* "GSS-Negotiate" or "Negotiate" */
+#ifdef HAVE_GSSAPI
   OM_uint32 status;
   gss_ctx_id_t context;
-  gss_name_t server_name;
+  gss_name_t spn;
   gss_buffer_desc output_token;
+#else
+#ifdef USE_WINDOWS_SSPI
+  DWORD status;
+  CredHandle *credentials;
+  CtxtHandle *context;
+  SEC_WINNT_AUTH_IDENTITY identity;
+  SEC_WINNT_AUTH_IDENTITY *p_identity;
+  TCHAR *spn;
+  size_t token_max;
+  BYTE *output_token;
+  size_t output_token_length;
+#endif
+#endif
 };
 #endif
 
-/****************************************************************************
- * HTTP unique setup
- ***************************************************************************/
-struct HTTP {
-  struct FormData *sendit;
-  curl_off_t postsize; /* off_t to handle large file sizes */
-  const char *postdata;
-
-  const char *p_pragma;      /* Pragma: string */
-  const char *p_accept;      /* Accept: string */
-  curl_off_t readbytecount;
-  curl_off_t writebytecount;
-
-  /* For FORM posting */
-  struct Form form;
-
-  struct back {
-    curl_read_callback fread_func; /* backup storage for fread pointer */
-    void *fread_in;           /* backup storage for fread_in pointer */
-    const char *postdata;
-    curl_off_t postsize;
-  } backup;
-
-  enum {
-    HTTPSEND_NADA,    /* init */
-    HTTPSEND_REQUEST, /* sending a request */
-    HTTPSEND_BODY,    /* sending body */
-    HTTPSEND_LAST     /* never use this */
-  } sending;
-
-  void *send_buffer; /* used if the request couldn't be sent in one chunk,
-                        points to an allocated send_buffer struct */
-};
-
-/****************************************************************************
- * FTP unique setup
- ***************************************************************************/
-typedef enum {
-  FTP_STOP,    /* do nothing state, stops the state machine */
-  FTP_WAIT220, /* waiting for the initial 220 response immediately after
-                  a connect */
-  FTP_AUTH,
-  FTP_USER,
-  FTP_PASS,
-  FTP_ACCT,
-  FTP_PBSZ,
-  FTP_PROT,
-  FTP_CCC,
-  FTP_PWD,
-  FTP_SYST,
-  FTP_NAMEFMT,
-  FTP_QUOTE, /* waiting for a response to a command sent in a quote list */
-  FTP_RETR_PREQUOTE,
-  FTP_STOR_PREQUOTE,
-  FTP_POSTQUOTE,
-  FTP_CWD,  /* change dir */
-  FTP_MKD,  /* if the dir didn't exist */
-  FTP_MDTM, /* to figure out the datestamp */
-  FTP_TYPE, /* to set type when doing a head-like request */
-  FTP_LIST_TYPE, /* set type when about to do a dir list */
-  FTP_RETR_TYPE, /* set type when about to RETR a file */
-  FTP_STOR_TYPE, /* set type when about to STOR a file */
-  FTP_SIZE, /* get the remote file's size for head-like request */
-  FTP_RETR_SIZE, /* get the remote file's size for RETR */
-  FTP_STOR_SIZE, /* get the size for (resumed) STOR */
-  FTP_REST, /* when used to check if the server supports it in head-like */
-  FTP_RETR_REST, /* when asking for "resume" in for RETR */
-  FTP_PORT, /* generic state for PORT, LPRT and EPRT, check count1 */
-  FTP_PASV, /* generic state for PASV and EPSV, check count1 */
-  FTP_LIST, /* generic state for LIST, NLST or a custom list command */
-  FTP_RETR,
-  FTP_STOR, /* generic state for STOR and APPE */
-  FTP_QUIT,
-  FTP_LAST  /* never used */
-} ftpstate;
-
-typedef enum {
-  FTPFILE_MULTICWD  = 1, /* as defined by RFC1738 */
-  FTPFILE_NOCWD     = 2, /* use SIZE / RETR / STOR on the full path */
-  FTPFILE_SINGLECWD = 3  /* make one CWD, then SIZE / RETR / STOR on the file */
-} curl_ftpfile;
-
-typedef enum {
-  FTPTRANSFER_BODY, /* yes do transfer a body */
-  FTPTRANSFER_INFO, /* do still go through to get info/headers */
-  FTPTRANSFER_NONE, /* don't get anything and don't get info */
-  FTPTRANSFER_LAST  /* end of list marker, never used */
-} curl_ftptransfer;
-
-/* This FTP struct is used in the SessionHandle. All FTP data that is
-   connection-oriented must be in FTP_conn to properly deal with the fact that
-   perhaps the SessionHandle is changed between the times the connection is
-   used. */
-struct FTP {
-  curl_off_t *bytecountp;
-  char *user;    /* user name string */
-  char *passwd;  /* password string */
-
-  /* transfer a file/body or not, done as a typedefed enum just to make
-     debuggers display the full symbol and not just the numerical value */
-  curl_ftptransfer transfer;
-  curl_off_t downloadsize;
-};
-
-/* ftp_conn is used for struct connection-oriented data in the connectdata
-   struct */
-struct ftp_conn {
-  char *entrypath; /* the PWD reply when we logged on */
-  char **dirs;   /* realloc()ed array for path components */
-  int dirdepth;  /* number of entries used in the 'dirs' array */
-  int diralloc;  /* number of entries allocated for the 'dirs' array */
-  char *file;    /* decoded file */
-  char *cache;       /* data cache between getresponse()-calls */
-  curl_off_t cache_size; /* size of cache in bytes */
-  bool dont_check;  /* Set to TRUE to prevent the final (post-transfer)
-                       file size and 226/250 status check. It should still
-                       read the line, just ignore the result. */
-  long response_time; /* When no timeout is given, this is the amount of
-                         seconds we await for an FTP response. Initialized
-                         in Curl_ftp_connect() */
-  bool ctl_valid;   /* Tells Curl_ftp_quit() whether or not to do anything. If
-                       the connection has timed out or been closed, this
-                       should be FALSE when it gets to Curl_ftp_quit() */
-  bool cwddone;     /* if it has been determined that the proper CWD combo
-                       already has been done */
-  bool cwdfail;     /* set TRUE if a CWD command fails, as then we must prevent
-                       caching the current directory */
-  char *prevpath;   /* conn->path from the previous transfer */
-  char transfertype; /* set by ftp_transfertype for use by Curl_client_write()a
-                        and others (A/I or zero) */
-  size_t nread_resp; /* number of bytes currently read of a server response */
-  char *linestart_resp; /* line start pointer for the FTP server response
-                           reader function */
-  bool pending_resp;  /* set TRUE when a server response is pending or in
-                         progress, and is cleared once the last response is
-                         read */
-
-  int count1; /* general purpose counter for the state machine */
-  int count2; /* general purpose counter for the state machine */
-  int count3; /* general purpose counter for the state machine */
-  char *sendthis; /* allocated pointer to a buffer that is to be sent to the
-                     ftp server */
-  size_t sendleft; /* number of bytes left to send from the sendthis buffer */
-  size_t sendsize; /* total size of the sendthis buffer */
-  struct timeval response; /* set to Curl_tvnow() when a command has been sent
-                              off, used to time-out response reading */
-  ftpstate state; /* always use ftp.c:state() to change state! */
-  char * server_os;     /* The target server operating system. */
-};
-
-/****************************************************************************
- * SSH unique setup
- ***************************************************************************/
-typedef enum {
-  SSH_NO_STATE = -1,  /* Used for "nextState" so say there is none */
-  SSH_STOP = 0,       /* do nothing state, stops the state machine */
-
-  SSH_S_STARTUP,      /* Session startup, First state in SSH-CONNECT */
-  SSH_HOSTKEY,        /* verify hostkey */
-  SSH_AUTHLIST,
-  SSH_AUTH_PKEY_INIT,
-  SSH_AUTH_PKEY,
-  SSH_AUTH_PASS_INIT,
-  SSH_AUTH_PASS,
-  SSH_AUTH_HOST_INIT,
-  SSH_AUTH_HOST,
-  SSH_AUTH_KEY_INIT,
-  SSH_AUTH_KEY,
-  SSH_AUTH_DONE,
-  SSH_SFTP_INIT,
-  SSH_SFTP_REALPATH,   /* Last state in SSH-CONNECT */
-
-  SSH_SFTP_QUOTE_INIT, /* First state in SFTP-DO */
-  SSH_SFTP_POSTQUOTE_INIT, /* (Possibly) First state in SFTP-DONE */
-  SSH_SFTP_QUOTE,
-  SSH_SFTP_NEXT_QUOTE,
-  SSH_SFTP_QUOTE_STAT,
-  SSH_SFTP_QUOTE_SETSTAT,
-  SSH_SFTP_QUOTE_SYMLINK,
-  SSH_SFTP_QUOTE_MKDIR,
-  SSH_SFTP_QUOTE_RENAME,
-  SSH_SFTP_QUOTE_RMDIR,
-  SSH_SFTP_QUOTE_UNLINK,
-  SSH_SFTP_TRANS_INIT,
-  SSH_SFTP_UPLOAD_INIT,
-  SSH_SFTP_CREATE_DIRS_INIT,
-  SSH_SFTP_CREATE_DIRS,
-  SSH_SFTP_CREATE_DIRS_MKDIR,
-  SSH_SFTP_READDIR_INIT,
-  SSH_SFTP_READDIR,
-  SSH_SFTP_READDIR_LINK,
-  SSH_SFTP_READDIR_BOTTOM,
-  SSH_SFTP_READDIR_DONE,
-  SSH_SFTP_DOWNLOAD_INIT,
-  SSH_SFTP_DOWNLOAD_STAT, /* Last state in SFTP-DO */
-  SSH_SFTP_CLOSE,    /* Last state in SFTP-DONE */
-  SSH_SFTP_SHUTDOWN, /* First state in SFTP-DISCONNECT */
-  SSH_SCP_TRANS_INIT, /* First state in SCP-DO */
-  SSH_SCP_UPLOAD_INIT,
-  SSH_SCP_DOWNLOAD_INIT,
-  SSH_SCP_DONE,
-  SSH_SCP_SEND_EOF,
-  SSH_SCP_WAIT_EOF,
-  SSH_SCP_WAIT_CLOSE,
-  SSH_SCP_CHANNEL_FREE,   /* Last state in SCP-DONE */
-  SSH_SESSION_DISCONNECT, /* First state in SCP-DISCONNECT */
-  SSH_SESSION_FREE,       /* Last state in SCP/SFTP-DISCONNECT */
-  SSH_QUIT,
-  SSH_LAST  /* never used */
-} sshstate;
-
-/* this struct is used in the HandleData struct which is part of the
-   SessionHandle, which means this is used on a per-easy handle basis.
-   Everything that is strictly related to a connection is banned from this
-   struct. */
-struct SSHPROTO {
-  char *path;                  /* the path we operate on */
-};
-
-/* ssh_conn is used for struct connection-oriented data in the connectdata
-   struct */
-struct ssh_conn {
-  const char *authlist;       /* List of auth. methods, managed by libssh2 */
-#ifdef USE_LIBSSH2
-  const char *passphrase;     /* pass-phrase to use */
-  char *rsa_pub;              /* path name */
-  char *rsa;                  /* path name */
-  bool authed;                /* the connection has been authenticated fine */
-  sshstate state;             /* always use ssh.c:state() to change state! */
-  sshstate nextstate;         /* the state to goto after stopping */
-  CURLcode actualcode;        /* the actual error code */
-  struct curl_slist *quote_item; /* for the quote option */
-  char *quote_path1;          /* two generic pointers for the QUOTE stuff */
-  char *quote_path2;
-  LIBSSH2_SFTP_ATTRIBUTES quote_attrs; /* used by the SFTP_QUOTE state */
-  char *homedir;              /* when doing SFTP we figure out home dir in the
-                                 connect phase */
-
-  /* Here's a set of struct members used by the SFTP_READDIR state */
-  LIBSSH2_SFTP_ATTRIBUTES readdir_attrs;
-  char *readdir_filename;
-  char *readdir_longentry;
-  int readdir_len, readdir_totalLen, readdir_currLen;
-  char *readdir_line;
-  char *readdir_linkPath;
-  /* end of READDIR stuff */
-
-  int secondCreateDirs;         /* counter use by the code to see if the
-                                   second attempt has been made to change
-                                   to/create a directory */
-  char *slash_pos;              /* used by the SFTP_CREATE_DIRS state */
-  LIBSSH2_SESSION *ssh_session; /* Secure Shell session */
-  LIBSSH2_CHANNEL *ssh_channel; /* Secure Shell channel handle */
-  LIBSSH2_SFTP *sftp_session;   /* SFTP handle */
-  LIBSSH2_SFTP_HANDLE *sftp_handle;
-  int orig_waitfor;             /* default READ/WRITE bits wait for */
-
-  /* note that HAVE_LIBSSH2_KNOWNHOST_API is a define set in the libssh2.h
-     header */
-#ifdef HAVE_LIBSSH2_KNOWNHOST_API
-  LIBSSH2_KNOWNHOSTS *kh;
-#endif
-#endif /* USE_LIBSSH2 */
-};
-
-
-/****************************************************************************
- * FILE unique setup
- ***************************************************************************/
-struct FILEPROTO {
-  char *path; /* the path we operate on */
-  char *freepath; /* pointer to the allocated block we must free, this might
-                     differ from the 'path' pointer */
-  int fd;     /* open file descriptor to read from! */
-};
 
 /*
  * Boolean values that concerns this connection.
  */
 struct ConnectBits {
+  /* always modify bits.close with the connclose() and connkeep() macros! */
   bool close; /* if set, we close the connection after this request */
   bool reuse; /* if set, this is a re-used connection */
+  bool conn_to_host; /* if set, this connection has a "connect to host"
+                        that overrides the host in the URL */
+  bool conn_to_port; /* if set, this connection has a "connect to port"
+                        that overrides the port in the URL (remote port) */
   bool proxy; /* if set, this transfer is done through a proxy - any type */
   bool httpproxy;    /* if set, this transfer is done through a http proxy */
+  bool socksproxy;   /* if set, this transfer is done through a socks proxy */
   bool user_passwd;    /* do we use user+password for this connection? */
   bool proxy_user_passwd; /* user+password for the proxy? */
   bool ipv6_ip; /* we communicate with a remote site specified with pure IPv6
@@ -612,8 +541,7 @@ struct ConnectBits {
 
   bool do_more; /* this is set TRUE if the ->curl_do_more() function is
                    supposed to be called, after ->curl_do() */
-
-  bool tcpconnect;    /* the TCP layer (or similar) is connected, this is set
+  bool tcpconnect[2]; /* the TCP layer (or similar) is connected, this is set
                          the first time on the first connect function call */
   bool protoconnstart;/* the protocol layer has STARTED its operation after
                          the TCP layer connect */
@@ -624,8 +552,6 @@ struct ConnectBits {
                          This is implicit when SSL-protocols are used through
                          proxies, but can also be enabled explicitly by
                          apps */
-  bool tunnel_connecting; /* TRUE while we're still waiting for a proxy CONNECT
-                           */
   bool authneg;       /* TRUE when the auth phase has started, which means
                          that we are creating a request with an auth header,
                          but it is not the final request in the auth
@@ -641,13 +567,9 @@ struct ConnectBits {
   bool ftp_use_eprt;  /* As set with CURLOPT_FTP_USE_EPRT, but if we find out
                          EPRT doesn't work we disable it for the forthcoming
                          requests */
+  bool ftp_use_data_ssl; /* Enabled SSL for the data connection */
   bool netrc;         /* name+password provided by netrc */
   bool userpwd_in_url; /* name+password found in url */
-
-  bool done;          /* set to FALSE when Curl_do() is called and set to TRUE
-                         when Curl_done() is called, to prevent Curl_done() to
-                         get invoked twice when the multi interface is
-                         used. */
   bool stream_was_rewound; /* Indicates that the stream was rewound after a
                               request read past the end of its response byte
                               boundary */
@@ -656,6 +578,15 @@ struct ConnectBits {
                                 that libcurl should reconnect and continue. */
   bool bound; /* set true if bind() has already been done on this socket/
                  connection */
+  bool type_set;  /* type= was used in the URL */
+  bool multiplex; /* connection is multiplexed */
+
+  bool tcp_fastopen; /* use TCP Fast Open */
+  bool tls_enable_npn;  /* TLS NPN extension? */
+  bool tls_enable_alpn; /* TLS ALPN extension? */
+  bool proxy_ssl_connected[2]; /* TRUE when SSL initialization for HTTPS proxy
+                                  is complete */
+  bool socksproxy_connecting; /* connecting through a socks proxy */
 };
 
 struct hostname {
@@ -693,8 +624,7 @@ typedef enum {
 } zlibInitState;
 #endif
 
-#if defined(USE_ARES) || defined(USE_THREADING_GETHOSTBYNAME) || \
-    defined(USE_THREADING_GETADDRINFO)
+#ifdef CURLRES_ASYNCH
 struct Curl_async {
   char *hostname;
   int port;
@@ -711,9 +641,8 @@ struct Curl_async {
 /* These function pointer types are here only to allow easier typecasting
    within the source when we need to cast between data pointers (such as NULL)
    and function pointers. */
-typedef CURLcode (*Curl_do_more_func)(struct connectdata *);
+typedef CURLcode (*Curl_do_more_func)(struct connectdata *, int *);
 typedef CURLcode (*Curl_done_func)(struct connectdata *, CURLcode, bool);
-
 
 enum expect100 {
   EXP100_SEND_DATA,           /* enough waiting, just send the body now */
@@ -723,10 +652,17 @@ enum expect100 {
   EXP100_FAILED               /* used on 417 Expectation Failed */
 };
 
+enum upgrade101 {
+  UPGR101_INIT,               /* default state */
+  UPGR101_REQUESTED,          /* upgrade requested */
+  UPGR101_RECEIVED,           /* response received */
+  UPGR101_WORKING             /* talking upgraded protocol */
+};
+
 /*
- * Request specific data in the easy handle (SessionHandle).  Previously,
+ * Request specific data in the easy handle (Curl_easy).  Previously,
  * these members were on the connectdata struct but since a conn struct may
- * now be shared between different SessionHandles, we store connection-specific
+ * now be shared between different Curl_easys, we store connection-specific
  * data here. This struct only keeps stuff that's interesting for *this*
  * request, as it will be cleared between multiple ones
  */
@@ -743,13 +679,13 @@ struct SingleRequest {
 
   long headerbytecount;         /* only count received headers */
   long deductheadercount; /* this amount of bytes doesn't count when we check
-                             if anything has been transfered at the end of a
+                             if anything has been transferred at the end of a
                              connection. We use this counter to make only a
                              100 reply (without a following second response
                              code) result in a CURLE_GOT_NOTHING error code */
 
-  struct timeval start;         /* transfer started at this time */
-  struct timeval now;           /* current time */
+  struct curltime start;         /* transfer started at this time */
+  struct curltime now;           /* current time */
   bool header;                  /* incoming data has HTTP header */
   enum {
     HEADER_NORMAL,              /* no bad header at all */
@@ -769,16 +705,17 @@ struct SingleRequest {
   bool content_range;           /* set TRUE if Content-Range: was found */
   curl_off_t offset;            /* possible resume offset read from the
                                    Content-Range: header */
-  int httpcode;                 /* error code from the 'HTTP/1.? XXX' line */
-  struct timeval start100;      /* time stamp to wait for the 100 code from */
+  int httpcode;                 /* error code from the 'HTTP/1.? XXX' or
+                                   'RTSP/1.? XXX' line */
+  struct curltime start100;      /* time stamp to wait for the 100 code from */
   enum expect100 exp100;        /* expect 100 continue state */
+  enum upgrade101 upgr101;      /* 101 upgrade state */
 
-  int content_encoding;         /* What content encoding. sec 3.5, RFC2616. */
+  int auto_decoding;            /* What content encoding. sec 3.5, RFC2616. */
 
 #define IDENTITY 0              /* No encoding */
 #define DEFLATE 1               /* zlib deflate [RFC 1950 & 1951] */
 #define GZIP 2                  /* gzip algorithm [RFC 1952] */
-#define COMPRESS 3              /* Not handled, added for completeness */
 
 #ifdef HAVE_LIBZ
   zlibInitState zlib_init;      /* possible zlib init state;
@@ -790,7 +727,6 @@ struct SingleRequest {
   long bodywrites;
 
   char *buf;
-  char *uploadbuf;
   curl_socket_t maxfd;
 
   int keepon;
@@ -825,9 +761,9 @@ struct SingleRequest {
   bool forbidchunk;   /* used only to explicitly forbid chunk-upload for
                          specific upload buffers. See readmoredata() in
                          http.c for details. */
-  bool trailerhdrpresent; /* Set when Trailer: header found in HTTP response.
-                             Required to determine whether to look for trailers
-                             in case of Transfer-Encoding: chunking */
+
+  void *protop;       /* Allocated protocol-specific data. Each protocol
+                         handler makes sure this points to data it needs. */
 };
 
 /*
@@ -835,7 +771,7 @@ struct SingleRequest {
  */
 
 struct Curl_handler {
-  const char * scheme;        /* URL scheme name. */
+  const char *scheme;        /* URL scheme name. */
 
   /* Complement to setup_connection_internals(). */
   CURLcode (*setup_connection)(struct connectdata *);
@@ -874,6 +810,12 @@ struct Curl_handler {
                        curl_socket_t *socks,
                        int numsocks);
 
+  /* Called from the multi interface during the DO_MORE phase, and it should
+     then return a proper fd set */
+  int (*domore_getsock)(struct connectdata *conn,
+                        curl_socket_t *socks,
+                        int numsocks);
+
   /* Called from the multi interface during the DO_DONE, PERFORM and
      WAITPERFORM phases, and it should then return a proper fd set. Not setting
      this will make libcurl use the generic default one. */
@@ -882,12 +824,111 @@ struct Curl_handler {
                          int numsocks);
 
   /* This function *MAY* be set to a protocol-dependent function that is run
-   * by the curl_disconnect(), as a step in the disconnection.
+   * by the curl_disconnect(), as a step in the disconnection.  If the handler
+   * is called because the connection has been considered dead, dead_connection
+   * is set to TRUE.
    */
-  CURLcode (*disconnect)(struct connectdata *);
+  CURLcode (*disconnect)(struct connectdata *, bool dead_connection);
 
-  long defport;       /* Default port. */
-  long protocol;      /* PROT_* flags concerning the protocol set */
+  /* If used, this function gets called from transfer.c:readwrite_data() to
+     allow the protocol to do extra reads/writes */
+  CURLcode (*readwrite)(struct Curl_easy *data, struct connectdata *conn,
+                        ssize_t *nread, bool *readmore);
+
+  /* This function can perform various checks on the connection. See
+     CONNCHECK_* for more information about the checks that can be performed,
+     and CONNRESULT_* for the results that can be returned. */
+  unsigned int (*connection_check)(struct connectdata *conn,
+                                   unsigned int checks_to_perform);
+
+  long defport;           /* Default port. */
+  unsigned int protocol;  /* See CURLPROTO_* - this needs to be the single
+                             specific protocol bit */
+  unsigned int flags;     /* Extra particular characteristics, see PROTOPT_* */
+};
+
+#define PROTOPT_NONE 0             /* nothing extra */
+#define PROTOPT_SSL (1<<0)         /* uses SSL */
+#define PROTOPT_DUAL (1<<1)        /* this protocol uses two connections */
+#define PROTOPT_CLOSEACTION (1<<2) /* need action before socket close */
+/* some protocols will have to call the underlying functions without regard to
+   what exact state the socket signals. IE even if the socket says "readable",
+   the send function might need to be called while uploading, or vice versa.
+*/
+#define PROTOPT_DIRLOCK (1<<3)
+#define PROTOPT_NONETWORK (1<<4)   /* protocol doesn't use the network! */
+#define PROTOPT_NEEDSPWD (1<<5)    /* needs a password, and if none is set it
+                                      gets a default */
+#define PROTOPT_NOURLQUERY (1<<6)   /* protocol can't handle
+                                        url query strings (?foo=bar) ! */
+#define PROTOPT_CREDSPERREQUEST (1<<7) /* requires login credentials per
+                                          request instead of per connection */
+#define PROTOPT_ALPN_NPN (1<<8) /* set ALPN and/or NPN for this */
+#define PROTOPT_STREAM (1<<9) /* a protocol with individual logical streams */
+#define PROTOPT_URLOPTIONS (1<<10) /* allow options part in the userinfo field
+                                      of the URL */
+#define PROTOPT_PROXY_AS_HTTP (1<<11) /* allow this non-HTTP scheme over a
+                                         HTTP proxy as HTTP proxies may know
+                                         this protocol and act as a gateway */
+
+#define CONNCHECK_NONE 0                 /* No checks */
+#define CONNCHECK_ISDEAD (1<<0)          /* Check if the connection is dead. */
+
+#define CONNRESULT_NONE 0                /* No extra information. */
+#define CONNRESULT_DEAD (1<<0)           /* The connection is dead. */
+
+/* return the count of bytes sent, or -1 on error */
+typedef ssize_t (Curl_send)(struct connectdata *conn, /* connection data */
+                            int sockindex,            /* socketindex */
+                            const void *buf,          /* data to write */
+                            size_t len,               /* max amount to write */
+                            CURLcode *err);           /* error to return */
+
+/* return the count of bytes read, or -1 on error */
+typedef ssize_t (Curl_recv)(struct connectdata *conn, /* connection data */
+                            int sockindex,            /* socketindex */
+                            char *buf,                /* store data here */
+                            size_t len,               /* max amount to read */
+                            CURLcode *err);           /* error to return */
+
+#ifdef USE_RECV_BEFORE_SEND_WORKAROUND
+struct postponed_data {
+  char *buffer;          /* Temporal store for received data during
+                            sending, must be freed */
+  size_t allocated_size; /* Size of temporal store */
+  size_t recv_size;      /* Size of received data during sending */
+  size_t recv_processed; /* Size of processed part of postponed data */
+#ifdef DEBUGBUILD
+  curl_socket_t bindsock;/* Structure must be bound to specific socket,
+                            used only for DEBUGASSERT */
+#endif /* DEBUGBUILD */
+};
+#endif /* USE_RECV_BEFORE_SEND_WORKAROUND */
+
+struct proxy_info {
+  struct hostname host;
+  long port;
+  curl_proxytype proxytype; /* what kind of proxy that is in use */
+  char *user;    /* proxy user name string, allocated */
+  char *passwd;  /* proxy password string, allocated */
+};
+
+#define CONNECT_BUFFER_SIZE 16384
+
+/* struct for HTTP CONNECT state data */
+struct http_connect_state {
+  char connect_buffer[CONNECT_BUFFER_SIZE];
+  int perline; /* count bytes per line */
+  int keepon;
+  char *line_start;
+  char *ptr; /* where to store more data */
+  curl_off_t cl; /* size of content to read and ignore */
+  bool chunked_encoding;
+  enum {
+    TUNNEL_INIT,    /* init/default/no tunnel state */
+    TUNNEL_CONNECT, /* CONNECT has been sent off */
+    TUNNEL_COMPLETE /* CONNECT response received completely */
+  } tunnel_state;
 };
 
 /*
@@ -895,15 +936,20 @@ struct Curl_handler {
  * unique for an entire connection.
  */
 struct connectdata {
-  /* 'data' is the CURRENT SessionHandle using this connection -- take great
+  /* 'data' is the CURRENT Curl_easy using this connection -- take great
      caution that this might very well vary between different times this
      connection is used! */
-  struct SessionHandle *data;
+  struct Curl_easy *data;
+
+  struct curl_llist_element bundle_node; /* conncache */
 
   /* chunk is for HTTP chunked encoding, but is in the general connectdata
      struct only because we can do just about any protocol through a HTTP proxy
      and a HTTP proxy may in fact respond using chunked encoding */
   struct Curl_chunker chunk;
+
+  curl_closesocket_callback fclosesocket; /* function closing the socket(s) */
+  void *closesocket_client;
 
   bool inuse; /* This is a marker for the connection cache logic. If this is
                  TRUE this handle is being used by an easy handle and cannot
@@ -911,33 +957,8 @@ struct connectdata {
                  consideration (== only for pipelining). */
 
   /**** Fields set when inited and not modified again */
-  long connectindex; /* what index in the connection cache connects index this
-                        particular struct has */
-  long protocol; /* PROT_* flags concerning the protocol set */
-#define PROT_HTTP    CURLPROTO_HTTP
-#define PROT_HTTPS   CURLPROTO_HTTPS
-#define PROT_FTP     CURLPROTO_FTP
-#define PROT_TELNET  CURLPROTO_TELNET
-#define PROT_DICT    CURLPROTO_DICT
-#define PROT_LDAP    CURLPROTO_LDAP
-#define PROT_FILE    CURLPROTO_FILE
-#define PROT_FTPS    CURLPROTO_FTPS
-#define PROT_TFTP    CURLPROTO_TFTP
-#define PROT_SCP     CURLPROTO_SCP
-#define PROT_SFTP    CURLPROTO_SFTP
-
-/* CURLPROTO_TFTP (1<<11) is currently the highest used bit in the public
-   bitmask. We make sure we use "private bits" above the first 16 to make
-   things easier. */
-
-#define PROT_EXTMASK 0xffff
-
-#define PROT_SSL     (1<<22) /* protocol requires SSL */
-#define PROT_MISSING (1<<23)
-
-#define PROT_CLOSEACTION PROT_FTP /* these ones need action before socket
-                                     close */
-#define PROT_DUALCHANNEL PROT_FTP /* these protocols use two connections */
+  long connection_id; /* Contains a unique number to make it easier to
+                         track the connections in the log output */
 
   /* 'dns_entry' is the particular host we use. This points to an entry in the
      DNS cache and it will not get pruned while locked. It gets unlocked in
@@ -949,44 +970,92 @@ struct connectdata {
      within the DNS cache, so this pointer is only valid as long as the DNS
      cache entry remains locked. It gets unlocked in Curl_done() */
   Curl_addrinfo *ip_addr;
+  Curl_addrinfo *tempaddr[2]; /* for happy eyeballs */
 
   /* 'ip_addr_str' is the ip_addr data as a human readable string.
      It remains available as long as the connection does, which is longer than
      the ip_addr itself. */
   char ip_addr_str[MAX_IPADR_LEN];
 
-  unsigned int scope;    /* address scope for IPv6 */
+  unsigned int scope_id;  /* Scope id for IPv6 */
 
-  char protostr[16];  /* store the protocol string in this buffer */
   int socktype;  /* SOCK_STREAM or SOCK_DGRAM */
 
   struct hostname host;
-  struct hostname proxy;
+  char *secondaryhostname; /* secondary socket host name (ftp) */
+  struct hostname conn_to_host; /* the host to connect to. valid only if
+                                   bits.conn_to_host is set */
+
+  struct proxy_info socks_proxy;
+  struct proxy_info http_proxy;
 
   long port;       /* which port to use locally */
-  unsigned short remote_port; /* what remote port to connect to,
-                                 not the proxy port! */
+  int remote_port; /* the remote port, not the proxy port! */
+  int conn_to_port; /* the remote port to connect to. valid only if
+                       bits.conn_to_port is set */
+  unsigned short secondary_port; /* secondary socket remote port to connect to
+                                    (ftp) */
+
+  /* 'primary_ip' and 'primary_port' get filled with peer's numerical
+     ip address and port number whenever an outgoing connection is
+     *attempted* from the primary socket to a remote address. When more
+     than one address is tried for a connection these will hold data
+     for the last attempt. When the connection is actually established
+     these are updated with data which comes directly from the socket. */
+
+  char primary_ip[MAX_IPADR_LEN];
+  long primary_port;
+
+  /* 'local_ip' and 'local_port' get filled with local's numerical
+     ip address and port number whenever an outgoing connection is
+     **established** from the primary socket to a remote address. */
+
+  char local_ip[MAX_IPADR_LEN];
+  long local_port;
 
   char *user;    /* user name string, allocated */
   char *passwd;  /* password string, allocated */
+  char *options; /* options string, allocated */
 
-  char *proxyuser;    /* proxy user name string, allocated */
-  char *proxypasswd;  /* proxy password string, allocated */
-  curl_proxytype proxytype; /* what kind of proxy that is in use */
+  char *oauth_bearer; /* bearer token for OAuth 2.0, allocated */
 
-  int httpversion;              /* the HTTP version*10 reported by the server */
+  int httpversion;        /* the HTTP version*10 reported by the server */
+  int rtspversion;        /* the RTSP version*10 reported by the server */
 
-  struct timeval now;     /* "current" time */
-  struct timeval created; /* creation time */
+  struct curltime now;     /* "current" time */
+  struct curltime created; /* creation time */
   curl_socket_t sock[2]; /* two sockets, the second is used for the data
                             transfer when doing FTP */
+  curl_socket_t tempsock[2]; /* temporary sockets for happy eyeballs */
+  bool sock_accepted[2]; /* TRUE if the socket on this index was created with
+                            accept() */
+  Curl_recv *recv[2];
+  Curl_send *send[2];
 
+#ifdef USE_RECV_BEFORE_SEND_WORKAROUND
+  struct postponed_data postponed[2]; /* two buffers for two sockets */
+#endif /* USE_RECV_BEFORE_SEND_WORKAROUND */
   struct ssl_connect_data ssl[2]; /* this is for ssl-stuff */
-  struct ssl_config_data ssl_config;
+  struct ssl_connect_data proxy_ssl[2]; /* this is for proxy ssl-stuff */
+  struct ssl_primary_config ssl_config;
+  struct ssl_primary_config proxy_ssl_config;
+  bool tls_upgraded;
 
   struct ConnectBits bits;    /* various state-flags for this connection */
 
-  const struct Curl_handler * handler;  /* Connection's protocol handler. */
+ /* connecttime: when connect() is called on the current IP address. Used to
+    be able to track when to move on to try next IP - but only when the multi
+    interface is used. */
+  struct curltime connecttime;
+  /* The two fields below get set in Curl_connecthost */
+  int num_addr; /* number of addresses to try to connect to */
+  time_t timeoutms_per_addr; /* how long time in milliseconds to spend on
+                                trying to connect to each IP address */
+
+  const struct Curl_handler *handler; /* Connection's protocol handler */
+  const struct Curl_handler *given;   /* The protocol first given */
+
+  long ip_version; /* copied from the Curl_easy at creation time */
 
   /**** curl_get() phase fields */
 
@@ -995,30 +1064,36 @@ struct connectdata {
                                 well be the same we read from.
                                 CURL_SOCKET_BAD disables */
 
-  /** Dynamicly allocated strings, may need to be freed before this **/
-  /** struct is killed.                                             **/
+  /** Dynamicly allocated strings, MUST be freed before this **/
+  /** struct is killed.                                      **/
   struct dynamically_allocated_data {
-    char *proxyuserpwd; /* free later if not NULL! */
-    char *uagent; /* free later if not NULL! */
-    char *accept_encoding; /* free later if not NULL! */
-    char *userpwd; /* free later if not NULL! */
-    char *rangeline; /* free later if not NULL! */
-    char *ref; /* free later if not NULL! */
-    char *host; /* free later if not NULL */
-    char *cookiehost; /* free later if not NULL */
+    char *proxyuserpwd;
+    char *uagent;
+    char *accept_encoding;
+    char *userpwd;
+    char *rangeline;
+    char *ref;
+    char *host;
+    char *cookiehost;
+    char *rtsp_transport;
+    char *te; /* TE: request header */
   } allocptr;
 
-  int sec_complete; /* if kerberos is enabled for this connection */
-#if defined(HAVE_KRB4) || defined(HAVE_GSSAPI)
+#ifdef HAVE_GSSAPI
+  int sec_complete; /* if Kerberos is enabled for this connection */
   enum protection_level command_prot;
   enum protection_level data_prot;
   enum protection_level request_data_prot;
   size_t buffer_size;
-  struct krb4buffer in_buffer, out_buffer;
+  struct krb5buffer in_buffer;
   void *app_data;
   const struct Curl_sec_client_mech *mech;
   struct sockaddr_in local_addr;
 #endif
+
+#if defined(USE_KERBEROS5)    /* Consider moving some of the above GSS-API */
+  struct kerberos5data krb5;  /* variables into the structure definition, */
+#endif                        /* however, some of them are ftp specific. */
 
   /* the two following *_inuse fields are only flags, not counters in any way.
      If TRUE it means the channel is in use, and if FALSE it means the channel
@@ -1028,20 +1103,11 @@ struct connectdata {
                               handle */
   bool writechannel_inuse; /* whether the write channel is in use by an easy
                               handle */
-  bool server_supports_pipelining; /* TRUE if server supports pipelining,
-                                      set after first response */
-
-  struct curl_llist *send_pipe; /* List of handles waiting to
-                                   send on this pipeline */
-  struct curl_llist *recv_pipe; /* List of handles waiting to read
-                                   their responses on this pipeline */
-  struct curl_llist *pend_pipe; /* List of pending handles on
-                                   this pipeline */
-  struct curl_llist *done_pipe; /* Handles that are finished, but
-				   still reference this connectdata */
-#define MAX_PIPELINE_LENGTH 5
-
-  char* master_buffer; /* The master buffer allocated on-demand;
+  struct curl_llist send_pipe; /* List of handles waiting to send on this
+                                  pipeline */
+  struct curl_llist recv_pipe; /* List of handles waiting to read their
+                                  responses on this pipeline */
+  char *master_buffer; /* The master buffer allocated on-demand;
                           used for pipelining. */
   size_t read_pos; /* Current read position in the master buffer */
   size_t buf_len; /* Length of the buffer?? */
@@ -1052,19 +1118,24 @@ struct connectdata {
 
   /*************** Request - specific items ************/
 
-  /* previously this was in the urldata struct */
-  curl_read_callback fread_func; /* function that reads the input */
-  void *fread_in;           /* pointer to pass to the fread() above */
-
+#if defined(USE_NTLM)
   struct ntlmdata ntlm;     /* NTLM differs from other authentication schemes
                                because it authenticates connections, not
                                single requests! */
   struct ntlmdata proxyntlm; /* NTLM data for proxy */
 
+#if defined(NTLM_WB_ENABLED)
+  /* used for communication with Samba's winbind daemon helper ntlm_auth */
+  curl_socket_t ntlm_auth_hlpr_socket;
+  pid_t ntlm_auth_hlpr_pid;
+  char *challenge_header;
+  char *response_header;
+#endif
+#endif
+
   char syserr_buf [256]; /* buffer for Curl_strerror() */
 
-#if defined(USE_ARES) || defined(USE_THREADING_GETHOSTBYNAME) || \
-    defined(USE_THREADING_GETADDRINFO)
+#ifdef CURLRES_ASYNCH
   /* data used for the asynch name resolve callback */
   struct Curl_async async;
 #endif
@@ -1076,8 +1147,15 @@ struct connectdata {
 
   union {
     struct ftp_conn ftpc;
+    struct http_conn httpc;
     struct ssh_conn sshc;
     struct tftp_state_data *tftpc;
+    struct imap_conn imapc;
+    struct pop3_conn pop3c;
+    struct smtp_conn smtpc;
+    struct rtsp_conn rtspc;
+    struct smb_conn smbc;
+    void *generic; /* RTMP and LDAP use this */
   } proto;
 
   int cselect_bits; /* bitmask of socket events */
@@ -1086,15 +1164,33 @@ struct connectdata {
 #if defined(HAVE_GSSAPI) || defined(USE_WINDOWS_SSPI)
   int socks5_gssapi_enctype;
 #endif
+
+  /* When this connection is created, store the conditions for the local end
+     bind. This is stored before the actual bind and before any connection is
+     made and will serve the purpose of being used for comparison reasons so
+     that subsequent bound-requested connections aren't accidentally re-using
+     wrong connections. */
+  char *localdev;
+  unsigned short localport;
+  int localportrange;
+  struct http_connect_state *connect_state; /* for HTTP CONNECT */
+  struct connectbundle *bundle; /* The bundle we are member of */
+  int negnpn; /* APLN or NPN TLS negotiated protocol, CURL_HTTP_VERSION* */
+
+#ifdef USE_UNIX_SOCKETS
+  char *unix_domain_socket;
+  bool abstract_unix_socket;
+#endif
 };
 
 /* The end of connectdata. */
 
 /*
  * Struct to keep statistical and informational data.
+ * All variables in this struct must be initialized/reset in Curl_initinfo().
  */
 struct PureInfo {
-  int httpcode;  /* Recent HTTP or FTP response code */
+  int httpcode;  /* Recent HTTP, FTP, RTSP or SMTP response code */
   int httpproxycode; /* response code from proxy when received separate */
   int httpversion; /* the http version number X.Y = X*10+Y */
   long filetime; /* If requested, this is might get set. Set to -1 if the time
@@ -1105,14 +1201,29 @@ struct PureInfo {
                      thus made the document NOT get fetched */
   long header_size;  /* size of read header(s) in bytes */
   long request_size; /* the amount of bytes sent in the request(s) */
-  long proxyauthavail; /* what proxy auth types were announced */
-  long httpauthavail;  /* what host auth types were announced */
+  unsigned long proxyauthavail; /* what proxy auth types were announced */
+  unsigned long httpauthavail;  /* what host auth types were announced */
   long numconnects; /* how many new connection did libcurl created */
   char *contenttype; /* the content type of the object */
   char *wouldredirect; /* URL this would've been redirected to if asked to */
-  char ip[MAX_IPADR_LEN]; /* this buffer gets the numerical ip version stored
-                             at the connect *attempt* so it will get the last
-                             tried connect IP even on failures */
+
+  /* PureInfo members 'conn_primary_ip', 'conn_primary_port', 'conn_local_ip'
+     and, 'conn_local_port' are copied over from the connectdata struct in
+     order to allow curl_easy_getinfo() to return this information even when
+     the session handle is no longer associated with a connection, and also
+     allow curl_easy_reset() to clear this information from the session handle
+     without disturbing information which is still alive, and that might be
+     reused, in the connection cache. */
+
+  char conn_primary_ip[MAX_IPADR_LEN];
+  long conn_primary_port;
+
+  char conn_local_ip[MAX_IPADR_LEN];
+  long conn_local_port;
+
+  const char *conn_scheme;
+  unsigned int conn_protocol;
+
   struct curl_certinfo certs; /* info about the certs, only populated in
                                  OpenSSL builds. Asked for with
                                  CURLOPT_CERTINFO / CURLINFO_CERTINFO */
@@ -1120,12 +1231,12 @@ struct PureInfo {
 
 
 struct Progress {
-  long lastshow; /* time() of the last displayed progress meter or NULL to
-                    force redraw at next call */
+  time_t lastshow; /* time() of the last displayed progress meter or NULL to
+                      force redraw at next call */
   curl_off_t size_dl; /* total expected size */
   curl_off_t size_ul; /* total expected size */
-  curl_off_t downloaded; /* transfered so far */
-  curl_off_t uploaded; /* transfered so far */
+  curl_off_t downloaded; /* transferred so far */
+  curl_off_t uploaded; /* transferred so far */
 
   curl_off_t current_speed; /* uses the currently fastest transfer */
 
@@ -1133,24 +1244,34 @@ struct Progress {
   int width; /* screen width at download start */
   int flags; /* see progress.h */
 
-  double timespent;
+  time_t timespent;
 
   curl_off_t dlspeed;
   curl_off_t ulspeed;
 
-  double t_nslookup;
-  double t_connect;
-  double t_appconnect;
-  double t_pretransfer;
-  double t_starttransfer;
-  double t_redirect;
+  time_t t_nslookup;
+  time_t t_connect;
+  time_t t_appconnect;
+  time_t t_pretransfer;
+  time_t t_starttransfer;
+  time_t t_redirect;
 
-  struct timeval start;
-  struct timeval t_startsingle;
+  struct curltime start;
+  struct curltime t_startsingle;
+  struct curltime t_startop;
+  struct curltime t_acceptdata;
+
+  /* upload speed limit */
+  struct curltime ul_limit_start;
+  curl_off_t ul_limit_size;
+  /* download speed limit */
+  struct curltime dl_limit_start;
+  curl_off_t dl_limit_size;
+
 #define CURR_TIME (5+1) /* 6 entries for 5 seconds */
 
   curl_off_t speeder[ CURR_TIME ];
-  struct timeval speeder_time[ CURR_TIME ];
+  struct curltime speeder_time[ CURR_TIME ];
   int speeder_c;
 };
 
@@ -1161,86 +1282,130 @@ typedef enum {
   HTTPREQ_POST_FORM, /* we make a difference internally */
   HTTPREQ_PUT,
   HTTPREQ_HEAD,
+  HTTPREQ_OPTIONS,
   HTTPREQ_CUSTOM,
   HTTPREQ_LAST /* last in list */
 } Curl_HttpReq;
 
+typedef enum {
+    RTSPREQ_NONE, /* first in list */
+    RTSPREQ_OPTIONS,
+    RTSPREQ_DESCRIBE,
+    RTSPREQ_ANNOUNCE,
+    RTSPREQ_SETUP,
+    RTSPREQ_PLAY,
+    RTSPREQ_PAUSE,
+    RTSPREQ_TEARDOWN,
+    RTSPREQ_GET_PARAMETER,
+    RTSPREQ_SET_PARAMETER,
+    RTSPREQ_RECORD,
+    RTSPREQ_RECEIVE,
+    RTSPREQ_LAST /* last in list */
+} Curl_RtspReq;
+
 /*
  * Values that are generated, temporary or calculated internally for a
  * "session handle" must be defined within the 'struct UrlState'.  This struct
- * will be used within the SessionHandle struct. When the 'SessionHandle'
+ * will be used within the Curl_easy struct. When the 'Curl_easy'
  * struct is cloned, this data MUST NOT be copied.
  *
  * Remember that any "state" information goes globally for the curl handle.
  * Session-data MUST be put in the connectdata struct and here.  */
 #define MAX_CURL_USER_LENGTH 256
 #define MAX_CURL_PASSWORD_LENGTH 256
-#define MAX_CURL_USER_LENGTH_TXT "255"
-#define MAX_CURL_PASSWORD_LENGTH_TXT "255"
 
 struct auth {
-  long want;  /* Bitmask set to the authentication methods wanted by the app
-                 (with CURLOPT_HTTPAUTH or CURLOPT_PROXYAUTH). */
-  long picked;
-  long avail; /* bitmask for what the server reports to support for this
-                 resource */
+  unsigned long want;  /* Bitmask set to the authentication methods wanted by
+                          app (with CURLOPT_HTTPAUTH or CURLOPT_PROXYAUTH). */
+  unsigned long picked;
+  unsigned long avail; /* Bitmask for what the server reports to support for
+                          this resource */
   bool done;  /* TRUE when the auth phase is done and ready to do the *actual*
                  request */
-  bool multi; /* TRUE if this is not yet authenticated but within the auth
-                 multipass negotiation */
+  bool multipass; /* TRUE if this is not yet authenticated but within the
+                     auth multipass negotiation */
   bool iestyle; /* TRUE if digest should be done IE-style or FALSE if it should
                    be RFC compliant */
 };
 
-struct conncache {
-  /* 'connects' will be an allocated array with pointers. If the pointer is
-     set, it holds an allocated connection. */
-  struct connectdata **connects;
-  long num;           /* number of entries of the 'connects' array */
-  enum {
-    CONNCACHE_PRIVATE, /* used for an easy handle alone */
-    CONNCACHE_MULTI    /* shared within a multi handle */
-  } type;
+struct Curl_http2_dep {
+  struct Curl_http2_dep *next;
+  struct Curl_easy *data;
 };
 
+/*
+ * This struct is for holding data that was attemped to get sent to the user's
+ * callback but is held due to pausing. One instance per type (BOTH, HEADER,
+ * BODY).
+ */
+struct tempbuf {
+  char *buf;  /* allocated buffer to keep data in when a write callback
+                 returns to make the connection paused */
+  size_t len; /* size of the 'tempwrite' allocated buffer */
+  int type;   /* type of the 'tempwrite' buffer as a bitmask that is used with
+                 Curl_client_write() */
+};
+
+/* Timers */
+typedef enum {
+  EXPIRE_100_TIMEOUT,
+  EXPIRE_ASYNC_NAME,
+  EXPIRE_CONNECTTIMEOUT,
+  EXPIRE_DNS_PER_NAME,
+  EXPIRE_HAPPY_EYEBALLS,
+  EXPIRE_MULTI_PENDING,
+  EXPIRE_RUN_NOW,
+  EXPIRE_SPEEDCHECK,
+  EXPIRE_TIMEOUT,
+  EXPIRE_TOOFAST,
+  EXPIRE_LAST /* not an actual timer, used as a marker only */
+} expire_id;
+
+/*
+ * One instance for each timeout an easy handle can set.
+ */
+struct time_node {
+  struct curl_llist_element list;
+  struct curltime time;
+  expire_id eid;
+};
 
 struct UrlState {
-  enum {
-    Curl_if_none,
-    Curl_if_easy,
-    Curl_if_multi
-  } used_interface;
 
-  struct conncache *connc; /* points to the connection cache this handle
-                              uses */
+  /* Points to the connection cache */
+  struct conncache *conn_cache;
+
+  /* when curl_easy_perform() is called, the multi handle is "owned" by
+     the easy handle so curl_easy_cleanup() on such an easy handle will
+     also close the multi handle! */
+  bool multi_owned_by_easy;
 
   /* buffers to store authentication data in, as parsed from input options */
-  struct timeval keeps_speed; /* for the progress meter really */
+  struct curltime keeps_speed; /* for the progress meter really */
 
-  long lastconnect;  /* index of most recent connect or -1 if undefined */
+  struct connectdata *lastconnect; /* The last connection, NULL if undefined */
 
   char *headerbuff; /* allocated buffer to store headers in */
   size_t headersize;   /* size of the allocation */
 
-  char buffer[BUFSIZE+1]; /* download buffer */
-  char uploadbuffer[BUFSIZE+1]; /* upload buffer */
-  curl_off_t current_speed;  /* the ProgressShow() funcion sets this,
+  char *buffer; /* download buffer */
+  char uploadbuffer[UPLOAD_BUFSIZE+1]; /* upload buffer */
+  curl_off_t current_speed;  /* the ProgressShow() function sets this,
                                 bytes / second */
   bool this_is_a_follow; /* this is a followed Location: request */
 
-  char *first_host; /* if set, this should be the host name that we will
+  char *first_host; /* host name of the first (not followed) request.
+                       if set, this should be the host name that we will
                        sent authorization to, no else. Used to make Location:
                        following not keep sending user+password... This is
                        strdup() data.
                     */
-  struct curl_ssl_session *session; /* array of 'numsessions' size */
+  int first_remote_port; /* remote port of the first (not followed) request */
+  struct curl_ssl_session *session; /* array of 'max_ssl_sessions' size */
   long sessionage;                  /* number of the most recent session */
-  char *tempwrite;      /* allocated buffer to keep data in when a write
-                           callback returns to make the connection paused */
-  size_t tempwritesize; /* size of the 'tempwrite' allocated buffer */
-  int tempwritetype;    /* type of the 'tempwrite' buffer as a bitmask that is
-                           used with Curl_client_write() */
-  char *scratch; /* huge buffer[BUFSIZE*2] when doing upload CRLF replacing */
+  unsigned int tempcount; /* number of entries in use in tempwrite, 0 - 3 */
+  struct tempbuf tempwrite[3]; /* BOTH, HEADER, BODY */
+  char *scratch; /* huge buffer[set.buffer_size*2] for upload CRLF replacing */
   bool errorbuf; /* Set to TRUE if the error buffer is already filled in.
                     This must be set to FALSE every time _easy_perform() is
                     called. */
@@ -1254,7 +1419,7 @@ struct UrlState {
   struct digestdata digest;      /* state data for host Digest auth */
   struct digestdata proxydigest; /* state data for proxy Digest auth */
 
-#ifdef HAVE_GSSAPI
+#ifdef USE_SPNEGO
   struct negotiatedata negotiate; /* state data for host Negotiate auth */
   struct negotiatedata proxyneg; /* state data for proxy Negotiate auth */
 #endif
@@ -1264,15 +1429,16 @@ struct UrlState {
 
   bool authproblem; /* TRUE if there's some problem authenticating */
 
-#ifdef USE_ARES
-  ares_channel areschannel; /* for name resolves */
-#endif
+  void *resolver; /* resolver state, if it is used in the URL state -
+                     ares_channel f.e. */
 
-#if defined(USE_SSLEAY) && defined(HAVE_OPENSSL_ENGINE_H)
+#if defined(USE_OPENSSL) && defined(HAVE_OPENSSL_ENGINE_H)
   ENGINE *engine;
-#endif /* USE_SSLEAY */
-  struct timeval expiretime; /* set this with Curl_expire() only */
+#endif /* USE_OPENSSL */
+  struct curltime expiretime; /* set this with Curl_expire() only */
   struct Curl_tree timenode; /* for the splay stuff */
+  struct curl_llist timeoutlist; /* list of pending timeouts */
+  struct time_node expires[EXPIRE_LAST]; /* nodes for each expire type */
 
   /* a place to store the most recently set FTP entrypath */
   char *most_recent_ftp_entrypath;
@@ -1296,18 +1462,11 @@ struct UrlState {
   /* for FTP downloads: how many CRLFs did we converted to LFs? */
   curl_off_t crlf_conversions;
 #endif
-  /* If set to non-NULL, there's a connection in a shared connection cache
-     that uses this handle so we can't kill this SessionHandle just yet but
-     must keep it around and add it to the list of handles to kill once all
-     its connections are gone */
-  void *shared_conn;
-  bool closed; /* set to TRUE when curl_easy_cleanup() has been called on this
-                  handle, but it is kept around as mentioned for
-                  shared_conn */
   char *pathbuffer;/* allocated buffer to store the URL's path part in */
   char *path;      /* path to use, points to somewhere within the pathbuffer
                       area */
-
+  bool slash_removed; /* set TRUE if the 'path' points to a path where the
+                         initial URL slash separator has been taken off */
   bool use_range;
   bool rangestringalloc; /* the range string is malloc()'ed */
 
@@ -1315,25 +1474,27 @@ struct UrlState {
                   this syntax. */
   curl_off_t resume_from; /* continue [ftp] transfer from here */
 
-  /* Protocol specific data.
-   *
-   *************************************************************************
-   * Note that this data will be REMOVED after each request, so anything that
-   * should be kept/stored on a per-connection basis and thus live for the
-   * next request on the same connection MUST be put in the connectdata struct!
-   *************************************************************************/
-  union {
-    struct HTTP *http;
-    struct HTTP *https;  /* alias, just for the sake of being more readable */
-    struct FTP *ftp;
-    /* void *tftp;    not used */
-    struct FILEPROTO *file;
-    void *telnet;        /* private for telnet.c-eyes only */
-    void *generic;
-    struct SSHPROTO *ssh;
-  } proto;
-  /* current user of this SessionHandle instance, or NULL */
-  struct connectdata *current_conn;
+  /* This RTSP state information survives requests and connections */
+  long rtsp_next_client_CSeq; /* the session's next client CSeq */
+  long rtsp_next_server_CSeq; /* the session's next server CSeq */
+  long rtsp_CSeq_recv; /* most recent CSeq received */
+
+  curl_off_t infilesize; /* size of file to upload, -1 means unknown.
+                            Copied from set.filesize at start of operation */
+
+  size_t drain; /* Increased when this stream has data to read, even if its
+                   socket is not necessarily is readable. Decreased when
+                   checked. */
+  bool done; /* set to FALSE when Curl_init_do() is called and set to TRUE
+                when multi_done() is called, to prevent multi_done() to get
+                invoked twice when the multi interface is used. */
+
+  curl_read_callback fread_func; /* read callback/function */
+  void *in;                      /* CURLOPT_READDATA */
+
+  struct Curl_easy *stream_depends_on;
+  bool stream_depends_e; /* set or don't set the Exclusive bit */
+  int stream_weight;
 };
 
 
@@ -1351,6 +1512,8 @@ struct DynamicStatic {
   bool referer_alloc; /* referer sting is malloc()ed */
   struct curl_slist *cookielist; /* list of cookie files set by
                                     curl_easy_setopt(COOKIEFILE) calls */
+  struct curl_slist *resolve; /* set to point to the set.resolve list when
+                                 this should be dealt with in pretransfer */
 };
 
 /*
@@ -1361,45 +1524,62 @@ struct DynamicStatic {
  * the 'DynamicStatic' struct.
  * Character pointer fields point to dynamic storage, unless otherwise stated.
  */
-struct Curl_one_easy; /* declared and used only in multi.c */
+
 struct Curl_multi;    /* declared and used only in multi.c */
 
 enum dupstring {
-  STRING_CERT,            /* client certificate file name */
-  STRING_CERT_TYPE,       /* format for certificate (default: PEM)*/
+  STRING_CERT_ORIG,       /* client certificate file name */
+  STRING_CERT_PROXY,      /* client certificate file name */
+  STRING_CERT_TYPE_ORIG,  /* format for certificate (default: PEM)*/
+  STRING_CERT_TYPE_PROXY, /* format for certificate (default: PEM)*/
   STRING_COOKIE,          /* HTTP cookie string to send */
   STRING_COOKIEJAR,       /* dump all cookies to this file */
-  STRING_CUSTOMREQUEST,   /* HTTP/FTP request/method to use */
+  STRING_CUSTOMREQUEST,   /* HTTP/FTP/RTSP request/method to use */
+  STRING_DEFAULT_PROTOCOL, /* Protocol to use when the URL doesn't specify */
   STRING_DEVICE,          /* local network interface/address to use */
   STRING_ENCODING,        /* Accept-Encoding string */
   STRING_FTP_ACCOUNT,     /* ftp account data */
   STRING_FTP_ALTERNATIVE_TO_USER, /* command to send if USER/PASS fails */
   STRING_FTPPORT,         /* port to send with the FTP PORT command */
-  STRING_KEY,             /* private key file name */
-  STRING_KEY_PASSWD,      /* plain text private key password */
-  STRING_KEY_TYPE,        /* format for private key (default: PEM) */
+  STRING_KEY_ORIG,        /* private key file name */
+  STRING_KEY_PROXY,       /* private key file name */
+  STRING_KEY_PASSWD_ORIG, /* plain text private key password */
+  STRING_KEY_PASSWD_PROXY, /* plain text private key password */
+  STRING_KEY_TYPE_ORIG,   /* format for private key (default: PEM) */
+  STRING_KEY_TYPE_PROXY,  /* format for private key (default: PEM) */
   STRING_KRB_LEVEL,       /* krb security level */
   STRING_NETRC_FILE,      /* if not NULL, use this instead of trying to find
                              $HOME/.netrc */
-  STRING_COPYPOSTFIELDS,  /* if POST, set the fields' values here */
   STRING_PROXY,           /* proxy to use */
+  STRING_PRE_PROXY,       /* pre socks proxy to use */
   STRING_SET_RANGE,       /* range, if used */
   STRING_SET_REFERER,     /* custom string for the HTTP referer field */
   STRING_SET_URL,         /* what original URL to work on */
-  STRING_SSL_CAPATH,      /* CA directory name (doesn't work on windows) */
-  STRING_SSL_CAFILE,      /* certificate file to verify peer against */
-  STRING_SSL_CIPHER_LIST, /* list of ciphers to use */
+  STRING_SSL_CAPATH_ORIG, /* CA directory name (doesn't work on windows) */
+  STRING_SSL_CAPATH_PROXY, /* CA directory name (doesn't work on windows) */
+  STRING_SSL_CAFILE_ORIG, /* certificate file to verify peer against */
+  STRING_SSL_CAFILE_PROXY, /* certificate file to verify peer against */
+  STRING_SSL_PINNEDPUBLICKEY_ORIG, /* public key file to verify peer against */
+  STRING_SSL_PINNEDPUBLICKEY_PROXY, /* public key file to verify proxy */
+  STRING_SSL_CIPHER_LIST_ORIG, /* list of ciphers to use */
+  STRING_SSL_CIPHER_LIST_PROXY, /* list of ciphers to use */
   STRING_SSL_EGDSOCKET,   /* path to file containing the EGD daemon socket */
   STRING_SSL_RANDOM_FILE, /* path to file containing "random" data */
   STRING_USERAGENT,       /* User-Agent string */
-  STRING_SSL_CRLFILE,     /* crl file to check certificate */
-  STRING_SSL_ISSUERCERT,  /* issuer cert file to check certificate */
+  STRING_SSL_CRLFILE_ORIG, /* crl file to check certificate */
+  STRING_SSL_CRLFILE_PROXY, /* crl file to check certificate */
+  STRING_SSL_ISSUERCERT_ORIG, /* issuer cert file to check certificate */
+  STRING_SSL_ISSUERCERT_PROXY, /* issuer cert file to check certificate */
   STRING_USERNAME,        /* <username>, if used */
   STRING_PASSWORD,        /* <password>, if used */
+  STRING_OPTIONS,         /* <options>, if used */
   STRING_PROXYUSERNAME,   /* Proxy <username>, if used */
   STRING_PROXYPASSWORD,   /* Proxy <password>, if used */
   STRING_NOPROXY,         /* List of hosts which should not use the proxy, if
                              used */
+  STRING_RTSP_SESSION_ID, /* Session ID to use */
+  STRING_RTSP_STREAM_URI, /* Stream URI for this request */
+  STRING_RTSP_TRANSPORT,  /* Transport for this session */
 #ifdef USE_LIBSSH2
   STRING_SSH_PRIVATE_KEY, /* path to the private key file for auth */
   STRING_SSH_PUBLIC_KEY,  /* path to the public key file for auth */
@@ -1407,10 +1587,35 @@ enum dupstring {
   STRING_SSH_KNOWNHOSTS,  /* file name of knownhosts file */
 #endif
 #if defined(HAVE_GSSAPI) || defined(USE_WINDOWS_SSPI)
-  STRING_SOCKS5_GSSAPI_SERVICE,  /* GSSAPI service name */
+  STRING_PROXY_SERVICE_NAME, /* Proxy service name */
 #endif
+#if !defined(CURL_DISABLE_CRYPTO_AUTH) || defined(USE_KERBEROS5) || \
+    defined(USE_SPNEGO)
+  STRING_SERVICE_NAME,    /* Service name */
+#endif
+  STRING_MAIL_FROM,
+  STRING_MAIL_AUTH,
 
-  /* -- end of strings -- */
+#ifdef USE_TLS_SRP
+  STRING_TLSAUTH_USERNAME_ORIG,  /* TLS auth <username> */
+  STRING_TLSAUTH_USERNAME_PROXY, /* TLS auth <username> */
+  STRING_TLSAUTH_PASSWORD_ORIG,  /* TLS auth <password> */
+  STRING_TLSAUTH_PASSWORD_PROXY, /* TLS auth <password> */
+#endif
+  STRING_BEARER,                /* <bearer>, if used */
+#ifdef USE_UNIX_SOCKETS
+  STRING_UNIX_SOCKET_PATH,      /* path to Unix socket, if used */
+#endif
+  STRING_TARGET,                /* CURLOPT_REQUEST_TARGET */
+  /* -- end of zero-terminated strings -- */
+
+  STRING_LASTZEROTERMINATED,
+
+  /* -- below this are pointers to binary data that cannot be strdup'ed.
+     Each such pointer must be added manually to Curl_dupset() --- */
+
+  STRING_COPYPOSTFIELDS,  /* if POST, set the fields' values here */
+
   STRING_LAST /* not used, just an end-of-list marker */
 };
 
@@ -1421,18 +1626,20 @@ struct UserDefined {
   long proxyport; /* If non-zero, use this port number by default. If the
                      proxy string features a ":[port]" that one will override
                      this. */
-  void *out;         /* the fetched file goes here */
-  void *in;          /* the uploaded file is read from here */
+  void *out;         /* CURLOPT_WRITEDATA */
+  void *in_set;      /* CURLOPT_READDATA */
   void *writeheader; /* write the header to this if non-NULL */
+  void *rtp_out;     /* write RTP to this if non-NULL */
   long use_port;     /* which port to use (when not using default) */
-  long httpauth;     /* what kind of HTTP authentication to use (bitmask) */
-  long proxyauth;    /* what kind of proxy authentication to use (bitmask) */
+  unsigned long httpauth;  /* kind of HTTP authentication to use (bitmask) */
+  unsigned long proxyauth; /* kind of proxy authentication to use (bitmask) */
+  unsigned long socks5auth;/* kind of SOCKS5 authentication to use (bitmask) */
   long followlocation; /* as in HTTP Location: */
   long maxredirs;    /* maximum no. of http(s) redirects to follow, set to -1
                         for infinity */
-  bool post301;      /* Obey RFC 2616/10.3.2 and keep POSTs as POSTs after a
-                        301 */
-  bool post302;      /* keep POSTs as POSTs after a 302 */
+
+  int keep_post;     /* keep POSTs as POSTs after a 30x request; each
+                        bit represents a request, from 301 to 303 */
   bool free_referer; /* set TRUE if 'referer' points to a string we
                         allocated */
   void *postfields;  /* if POST, set the fields' values here */
@@ -1445,15 +1652,23 @@ struct UserDefined {
                          'localport' one can't be bind()ed */
   curl_write_callback fwrite_func;   /* function that stores the output */
   curl_write_callback fwrite_header; /* function that stores headers */
-  curl_read_callback fread_func;     /* function that reads the input */
-  curl_progress_callback fprogress;  /* function for progress information */
+  curl_write_callback fwrite_rtp;    /* function that stores interleaved RTP */
+  curl_read_callback fread_func_set; /* function that reads the input */
+  int is_fread_set; /* boolean, has read callback been set to non-NULL? */
+  int is_fwrite_set; /* boolean, has write callback been set to non-NULL? */
+  curl_progress_callback fprogress; /* OLD and deprecated progress callback  */
+  curl_xferinfo_callback fxferinfo; /* progress callback */
   curl_debug_callback fdebug;      /* function that write informational data */
   curl_ioctl_callback ioctl_func;  /* function for I/O control */
   curl_sockopt_callback fsockopt;  /* function for setting socket options */
   void *sockopt_client; /* pointer to pass to the socket options callback */
   curl_opensocket_callback fopensocket; /* function for checking/translating
-                                           the address and opening the socket */
-  void* opensocket_client;
+                                           the address and opening the
+                                           socket */
+  void *opensocket_client;
+  curl_closesocket_callback fclosesocket; /* function for closing the
+                                             socket */
+  void *closesocket_client;
 
   void *seek_client;    /* pointer to pass to the seek callback */
   /* the 3 curl_conv_callback functions below are used on non-ASCII hosts */
@@ -1468,16 +1683,21 @@ struct UserDefined {
   void *ioctl_client;   /* pointer to pass to the ioctl callback */
   long timeout;         /* in milliseconds, 0 means no timeout */
   long connecttimeout;  /* in milliseconds, 0 means no timeout */
-  long ftp_response_timeout; /* in milliseconds, 0 means no timeout */
-  long tftp_blksize ; /* in bytes, 0 means use default */
-  curl_off_t infilesize;      /* size of file to upload, -1 means unknown */
+  long accepttimeout;   /* in milliseconds, 0 means no timeout */
+  long server_response_timeout; /* in milliseconds, 0 means no timeout */
+  long tftp_blksize;    /* in bytes, 0 means use default */
+  bool tftp_no_options; /* do not send TFTP options requests */
+  curl_off_t filesize;  /* size of file to upload, -1 means unknown */
   long low_speed_limit; /* bytes/second */
   long low_speed_time;  /* number of seconds */
   curl_off_t max_send_speed; /* high speed limit in bytes/second for upload */
-  curl_off_t max_recv_speed; /* high speed limit in bytes/second for download */
+  curl_off_t max_recv_speed; /* high speed limit in bytes/second for
+                                download */
   curl_off_t set_resume_from;  /* continue [ftp] transfer from here */
   struct curl_slist *headers; /* linked list of extra headers */
+  struct curl_slist *proxyheaders; /* linked list of extra CONNECT headers */
   struct curl_httppost *httppost;  /* linked list of POST data */
+  bool sep_headers;     /* handle host and proxy headers separately */
   bool cookiesession;   /* new cookie session? */
   bool crlf;            /* convert crlf on ftp upload(?) */
   struct curl_slist *quote;     /* after connection is established */
@@ -1489,27 +1709,28 @@ struct UserDefined {
   struct curl_slist *source_postquote; /* in 3rd party transfer mode - after
                                           the transfer on source host */
   struct curl_slist *telnet_options; /* linked list of telnet options */
+  struct curl_slist *resolve;     /* list of names to add/remove from
+                                     DNS cache */
+  struct curl_slist *connect_to; /* list of host:port mappings to override
+                                    the hostname and port to connect to */
   curl_TimeCond timecondition; /* kind of time/date comparison */
   time_t timevalue;       /* what time to compare with */
   Curl_HttpReq httpreq;   /* what kind of HTTP request (if any) is this */
   long httpversion; /* when non-zero, a specific HTTP version requested to
                        be used in the library's request(s) */
+  bool strip_path_slash; /* strip off initial slash from path */
   struct ssl_config_data ssl;  /* user defined SSL stuff */
+  struct ssl_config_data proxy_ssl;  /* user defined SSL stuff for proxy */
+  struct ssl_general_config general_ssl; /* general user defined SSL stuff */
   curl_proxytype proxytype; /* what kind of proxy that is in use */
   long dns_cache_timeout; /* DNS cache timeout */
   long buffer_size;      /* size of receive buffer to use */
   void *private_data; /* application-private data */
 
-  struct Curl_one_easy *one_easy; /* When adding an easy handle to a multi
-                                     handle, an internal 'Curl_one_easy'
-                                     struct is created and this is a pointer
-                                     to the particular struct associated with
-                                     this SessionHandle */
-
   struct curl_slist *http200aliases; /* linked list of aliases for http200 */
 
-  long ip_version; /* the CURL_IPRESOLVE_* defines in the public header file
-                      0 - whatever, 1 - v2, 2 - v6 */
+  long ipver; /* the CURL_IPRESOLVE_* defines in the public header file
+                 0 - whatever, 1 - v2, 2 - v6 */
 
   curl_off_t max_filesize; /* Maximum file size to download */
 
@@ -1534,25 +1755,28 @@ struct UserDefined {
   bool ftp_list_only;    /* switch FTP command for listing directories */
   bool ftp_use_port;     /* use the FTP PORT command */
   bool hide_progress;    /* don't use the progress meter */
-  bool http_fail_on_error;  /* fail on HTTP error codes >= 300 */
+  bool http_fail_on_error;  /* fail on HTTP error codes >= 400 */
+  bool http_keep_sending_on_error; /* for HTTP status codes >= 300 */
   bool http_follow_location; /* follow HTTP redirects */
+  bool http_transfer_encoding; /* request compressed HTTP transfer-encoding */
   bool http_disable_hostname_check_before_authentication;
   bool include_header;   /* include received protocol headers in data output */
   bool http_set_referer; /* is a custom referer used */
   bool http_auto_referer; /* set "correct" referer when following location: */
-  bool opt_no_body;      /* as set with CURLOPT_NO_BODY */
-  bool set_port;         /* custom port number used */
+  bool opt_no_body;      /* as set with CURLOPT_NOBODY */
   bool upload;           /* upload request */
   enum CURL_NETRC_OPTION
        use_netrc;        /* defined in include/curl.h */
   bool verbose;          /* output verbosity */
-  bool krb;              /* kerberos connection requested */
+  bool krb;              /* Kerberos connection requested */
   bool reuse_forbid;     /* forbidden to be reused, close after use */
   bool reuse_fresh;      /* do not re-use an existing connection  */
   bool ftp_use_epsv;     /* if EPSV is to be attempted or not */
   bool ftp_use_eprt;     /* if EPRT is to be attempted or not */
+  bool ftp_use_pret;     /* if PRET is to be used before PASV or not */
 
-  curl_usessl ftp_ssl;   /* if AUTH TLS is to be attempted etc */
+  curl_usessl use_ssl;   /* if AUTH TLS is to be attempted etc, for FTP or
+                            IMAP or POP3 or others! */
   curl_ftpauth ftpsslauth; /* what AUTH XXX to be attempted */
   curl_ftpccc ftp_ccc;   /* FTP CCC options */
   bool no_signal;        /* do not use any signal/alarm handler */
@@ -1572,19 +1796,58 @@ struct UserDefined {
   bool proxy_transfer_mode; /* set transfer mode (;type=<a|i>) when doing FTP
                                via an HTTP proxy */
   char *str[STRING_LAST]; /* array of strings, pointing to allocated memory */
-  unsigned int scope;    /* address scope for IPv6 */
+  unsigned int scope_id;  /* Scope id for IPv6 */
   long allowed_protocols;
   long redir_protocols;
 #if defined(HAVE_GSSAPI) || defined(USE_WINDOWS_SSPI)
-  long socks5_gssapi_nec; /* flag to support nec socks5 server */
+  bool socks5_gssapi_nec; /* Flag to support NEC SOCKS5 server */
 #endif
+  struct curl_slist *mail_rcpt; /* linked list of mail recipients */
+  bool sasl_ir;         /* Enable/disable SASL initial response */
+  /* Common RTSP header options */
+  Curl_RtspReq rtspreq; /* RTSP request type */
+  long rtspversion; /* like httpversion, for RTSP */
+  bool wildcardmatch; /* enable wildcard matching */
+  curl_chunk_bgn_callback chunk_bgn; /* called before part of transfer
+                                        starts */
+  curl_chunk_end_callback chunk_end; /* called after part transferring
+                                        stopped */
+  curl_fnmatch_callback fnmatch; /* callback to decide which file corresponds
+                                    to pattern (e.g. if WILDCARDMATCH is on) */
+  void *fnmatch_data;
+
+  long gssapi_delegation; /* GSS-API credential delegation, see the
+                             documentation of CURLOPT_GSSAPI_DELEGATION */
+
+  bool tcp_keepalive;    /* use TCP keepalives */
+  long tcp_keepidle;     /* seconds in idle before sending keepalive probe */
+  long tcp_keepintvl;    /* seconds between TCP keepalive probes */
+  bool tcp_fastopen;     /* use TCP Fast Open */
+
+  size_t maxconnects;  /* Max idle connections in the connection cache */
+
+  bool ssl_enable_npn;      /* TLS NPN extension? */
+  bool ssl_enable_alpn;     /* TLS ALPN extension? */
+  bool path_as_is;      /* allow dotdots? */
+  bool pipewait;        /* wait for pipe/multiplex status before starting a
+                           new connection */
+  long expect_100_timeout; /* in milliseconds */
+  bool suppress_connect_headers;  /* suppress proxy CONNECT response headers
+                                     from user callbacks */
+
+  struct Curl_easy *stream_depends_on;
+  bool stream_depends_e; /* set or don't set the Exclusive bit */
+  int stream_weight;
+
+  struct Curl_http2_dep *stream_dependents;
+
+  bool abstract_unix_socket;
 };
 
 struct Names {
   struct curl_hash *hostcache;
   enum {
     HCACHE_NONE,    /* not pointing to anything */
-    HCACHE_PRIVATE, /* points to our own */
     HCACHE_GLOBAL,  /* points to the (shrug) global one */
     HCACHE_MULTI,   /* points to a shared one in the multi handle */
     HCACHE_SHARED   /* points to a shared one in a shared object */
@@ -1601,13 +1864,34 @@ struct Names {
  * 'struct UrlState' instead.
  */
 
-struct SessionHandle {
+struct Curl_easy {
+  /* first, two fields for the linked list of these */
+  struct Curl_easy *next;
+  struct Curl_easy *prev;
+
+  struct connectdata *easy_conn;     /* the "unit's" connection */
+  struct curl_llist_element connect_queue;
+  struct curl_llist_element pipeline_queue;
+
+  CURLMstate mstate;  /* the handle's state */
+  CURLcode result;   /* previous result */
+
+  struct Curl_message msg; /* A single posted message. */
+
+  /* Array with the plain socket numbers this handle takes care of, in no
+     particular order. Note that all sockets are added to the sockhash, where
+     the state etc are also kept. This array is mostly used to detect when a
+     socket is to be removed from the hash. See singlesocket(). */
+  curl_socket_t sockets[MAX_SOCKSPEREASYHANDLE];
+  int numsocks;
+
   struct Names dns;
   struct Curl_multi *multi;    /* if non-NULL, points to the multi handle
-                                  struct to which this "belongs" */
-  struct Curl_one_easy *multi_pos; /* if non-NULL, points to its position
-                                      in multi controlling structure to assist
-                                      in removal. */
+                                  struct to which this "belongs" when used by
+                                  the multi interface */
+  struct Curl_multi *multi_easy; /* if non-NULL, points to the multi handle
+                                    struct to which this "belongs" when used
+                                    by the easy interface */
   struct Curl_share *share;    /* Share, handles global variable mutexing */
   struct SingleRequest req;    /* Request-specific data */
   struct UserDefined set;      /* values set by the libcurl user */
@@ -1619,7 +1903,10 @@ struct SessionHandle {
   struct Progress progress;    /* for all the progress meter data */
   struct UrlState state;       /* struct for fields used for state info and
                                   other dynamic purposes */
+  struct WildcardData wildcard; /* wildcard download state info */
   struct PureInfo info;        /* stats, reports and info data */
+  struct curl_tlssessioninfo tsi; /* Information about the TLS session, only
+                                     valid after a client has asked for it */
 #if defined(CURL_DOES_CONVERSIONS) && defined(HAVE_ICONV)
   iconv_t outbound_cd;         /* for translating to the network encoding */
   iconv_t inbound_cd;          /* for translating from the network encoding */
@@ -1630,4 +1917,4 @@ struct SessionHandle {
 
 #define LIBCURL_NAME "libcurl"
 
-#endif
+#endif /* HEADER_CURL_URLDATA_H */
