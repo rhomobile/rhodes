@@ -7,8 +7,9 @@
  * This program is licensed under the same licence as Ruby.
  * (See the file 'LICENCE'.)
  */
-//#include RUBY_EXTCONF_H
+
 //RHO
+//#include RUBY_EXTCONF_H
 #if defined(WIN32) || defined (WINCE)
 #include "windows/extconf.h"
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)

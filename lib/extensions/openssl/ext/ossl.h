@@ -10,9 +10,8 @@
 #if !defined(_OSSL_H_)
 #define _OSSL_H_
 
-//#include RUBY_EXTCONF_H
-
 //RHO
+//#include RUBY_EXTCONF_H
 #if defined(WIN32) || defined (WINCE)
 #include "windows/extconf.h"
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
@@ -29,22 +28,17 @@
 #include "android/extconf.h"
 #endif
 //RHO
-#define OPENSSL_API_COMPAT 0x10002000L
 
 #include <assert.h>
 #include <errno.h>
 #include <ruby.h>
 #include <ruby/io.h>
 #include <ruby/thread.h>
-#include <openssl/opensslconf.h>
 #include <openssl/opensslv.h>
 #include <openssl/err.h>
 #include <openssl/asn1.h>
 #include <openssl/x509v3.h>
-#include <openssl/x509_vfy.h>
-#include <openssl/x509.h>
 #include <openssl/ssl.h>
-#include <openssl/safestack.h>
 #include <openssl/pkcs12.h>
 #include <openssl/pkcs7.h>
 #include <openssl/hmac.h>
