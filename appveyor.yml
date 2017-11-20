@@ -104,7 +104,7 @@ install:
   - gem install rest-client --no-document -f
   - gem install listen --no-document -f
   - gem install zip --no-document -f
-  - gem install bundler --no-document -f
+  - gem install bundler --quiet --no-ri --no-rdoc -f
   - bundler --version
   
 before_test:
