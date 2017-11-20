@@ -2636,7 +2636,7 @@ namespace "run" do
             sleep(1)
           end
 
-          timeout_in_seconds = 15
+          timeout_in_seconds = 60*60
 
           log_lines = []
 
