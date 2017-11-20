@@ -101,11 +101,11 @@ build: off
 install:
   - set PATH=C:\Ruby23\bin;%PATH%
   - set RAKEOPT=-rdevkit
-  - gem install rest-client --no-document
-  - gem install listen --no-document
-  - gem install zip --no-document
-  - gem install bundler --quiet --no-ri --no-rdoc
-  - bundler --version
+  - gem install rest-client --no-document -f
+  - gem install listen --no-document -f
+  - gem install zip --no-document -f
+#  - gem install bundler --quiet --no-ri --no-rdoc -f
+#  - bundler --version
   
 before_test:
   - ruby -v
