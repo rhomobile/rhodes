@@ -13,6 +13,7 @@ extern BOOL rho_webview_get_full_screen_mode();
 extern void rho_webview_set_cookie(const char* url, const char* cookie);
 extern void rho_webview_get_cookies( NSString* url, NSDictionary** retVal );
 extern BOOL rho_webview_remove_cookie( NSString* url, NSString* name );
+extern BOOL rho_webview_remove_all_cookies();
 extern void rho_webview_navigate_back();
 extern void rho_webview_navigate_back_with_tab(int tabIndex);
 extern void rho_webview_save(const char* format, const char* path, int tab_index);
@@ -215,6 +216,14 @@ extern void rho_webview_set_KeyboardDisplayRequiresUserAction(BOOL value);
         rho_webview_get_cookies(url, &cookies);
         [methodResult setResult:cookies];
     });
+}
+
+-(void) removeAllCookies:(id<IMethodResult>)methodResult {
+  dispatch_async(dispatch_get_main_queue(), ^(void){
+    BOOL b = rho_webview_remove_all_cookies();
+    NSNumber* bObj = [NSNumber numberWithBool:b];
+    [methodResult setResult:bObj];
+  });
 }
 
 -(void) removeCookie:(NSString*)url name:(NSString*)name methodResult:(id<IMethodResult>)methodResult {

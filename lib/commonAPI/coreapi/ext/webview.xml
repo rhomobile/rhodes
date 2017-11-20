@@ -298,6 +298,14 @@ For most mobile platforms, WebView.execute_js has been implemented via redirecti
                 </CALLBACK>
             </METHOD>
 
+            <METHOD name="removeAllCookies" hasCallback="mandatory">
+                <DESC>Removes all cookies for application's webview. Crosswalk is not supported.</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+
+                <CALLBACK type="HASH">
+                </CALLBACK>
+            </METHOD>
+
             <METHOD name="save">
                 <DESC>Save current page to file system.</DESC>
                 <PLATFORM>iOS, Android</PLATFORM>

@@ -261,6 +261,13 @@ BOOL rho_webview_remove_cookie( NSString* url, NSString* name )
   return [[Rhodes sharedInstance] removeCookie:url name:name];
 }
 
+BOOL rho_webview_remove_all_cookies() {
+    if (!rho_rhodesapp_check_mode())
+        return false;
+    
+    return [[Rhodes sharedInstance] removeAllCookies];
+}
+
 
 void rho_webview_save(const char* format, const char* path, int tab_index)
 {

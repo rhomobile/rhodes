@@ -380,6 +380,14 @@ static Rhodes *instance = NULL;
     return removed;
 }
 
+- (BOOL)removeAllCookies {
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (NSHTTPCookie* cookie in storage.cookies) {
+        [storage deleteCookie:cookie];
+    }
+    
+    return true;
+}
 
 //unused now
 - (NSString*)cookie:(NSString*)url {

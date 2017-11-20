@@ -23,6 +23,7 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.net.Proxy;
 import android.net.Uri;
+import android.webkit.ValueCallback;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -312,6 +313,27 @@ public class WebViewSingleton implements IWebViewSingleton, IRhoExtension {
           Logger.E(TAG, e);
           result.setError(e.toString());
       }
+    }
+
+    @Override
+    public void removeAllCookies( final IMethodResult result ) {
+        try {
+            PerformOnUiThread.exec(new Runnable() {
+                @Override
+                public void run() {
+                    WebView.removeAllCookies( new ValueCallback<Boolean>() {
+                        @Override
+                        public void onReceiveValue( Boolean v ) {
+                            result.set( v.booleanValue() );
+                        }
+
+                    });
+                }
+            });
+        } catch (Exception e) {
+            Logger.E(TAG,e);
+            result.setError(e.toString());
+        }
     }
 
     @Override
