@@ -32,7 +32,9 @@ import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.net.Uri;
+import android.os.Build;
 import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -312,7 +314,17 @@ public class WebView {
         }
 
         return map;
+    }
 
+    public static void removeAllCookies( ValueCallback<Boolean> callback ) {
+        CookieManager mgr = CookieManager.getInstance();
+
+        //if ( Build.VERSION.SDK_INT < 21 ) {
+            mgr.removeAllCookie();
+            callback.onReceiveValue( true );
+        //} else {
+        //    mgr.removeAllCookies( callback );
+        //}
     }
 
     /*

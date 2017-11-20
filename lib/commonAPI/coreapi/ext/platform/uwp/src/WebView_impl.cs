@@ -248,6 +248,11 @@ namespace WebViewImpl
 
         public override void removeCookie(string url, string name, IMethodResult oResult)
         {
+
+        }
+
+        public override void removeAllCookies(IMethodResult oResult)
+        {
           
         }
 
