@@ -52,6 +52,9 @@
 -(void) active_tab:(id<IMethodResult>)methodResult;
 -(void) full_screen_mode:(BOOL)enable methodResult:(id<IMethodResult>)methodResult;
 -(void) setCookie:(NSString*)url cookie:(NSString*)cookie methodResult:(id<IMethodResult>)methodResult;
+-(void) getCookies:(NSString*)url methodResult:(id<IMethodResult>)methodResult;
+-(void) removeCookie:(NSString*)url name:(NSString*)name methodResult:(id<IMethodResult>)methodResult;
+-(void) removeAllCookies:(id<IMethodResult>)methodResult;
 -(void) save:(NSString*)format path:(NSString*)path tabIndex:(int)tabIndex methodResult:(id<IMethodResult>)methodResult;
 -(void) set_menu_items:(NSDictionary*)menuItems methodResult:(id<IMethodResult>)methodResult;
 

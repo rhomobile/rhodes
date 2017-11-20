@@ -343,6 +343,52 @@ static Rhodes *instance = NULL;
     //[cookies setObject:cookie forKey:basicUrl];
 }
 
+- (NSDictionary*)getCookies:(NSString*)url {
+    NSHTTPCookieStorage* storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    NSURL *urlObj = [NSURL URLWithString:url];
+    
+    NSArray<NSHTTPCookie*>* cookies = [storage cookiesForURL:urlObj];
+    NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:[cookies count]];
+    
+    for ( NSHTTPCookie* cookie in cookies ) {
+        NSString* name = [cookie name];
+        NSString* val = [cookie value];
+        
+        NSString* sRFCCookie = [NSString stringWithFormat:@"%@=%@",name,val];
+        
+        [dict setObject:sRFCCookie forKey:name];
+    }
+    
+    return dict;
+}
+
+- (BOOL)removeCookie:(NSString*)url name:(NSString*)cookieName {
+    NSHTTPCookieStorage* storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    NSURL *urlObj = [NSURL URLWithString:url];
+    
+    BOOL removed = false;
+
+    NSArray<NSHTTPCookie*>* cookies = [storage cookiesForURL:urlObj];
+    for ( NSHTTPCookie* cookie in cookies ) {
+        if ( [[cookie name] isEqualToString:cookieName] ) {
+            [storage deleteCookie:cookie];
+            removed = true;
+            break;
+        }
+    }
+    
+    return removed;
+}
+
+- (BOOL)removeAllCookies {
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (NSHTTPCookie* cookie in storage.cookies) {
+        [storage deleteCookie:cookie];
+    }
+    
+    return true;
+}
+
 //unused now
 - (NSString*)cookie:(NSString*)url {
     NSURL *parsed = [NSURL URLWithString:url];

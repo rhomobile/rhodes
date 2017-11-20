@@ -264,6 +264,48 @@ For most mobile platforms, WebView.execute_js has been implemented via redirecti
                 </PARAMS>
             </METHOD>
 
+            <METHOD name="getCookies" hasCallback="mandatory">
+                <DESC>Returns cookies map for specified URL. Crosswalk is not supported.</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>An URL to retrieve cookies for.</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <CALLBACK type="HASH">
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="removeCookie" hasCallback="mandatory">
+                <DESC>Removes cookie by its name for specified URL. Crosswalk is not supported.</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>An URL to remove cookie from.</DESC>
+                    </PARAM>
+                    <PARAM name="name" type="STRING">
+                        <DESC>A cookie name to be removed.</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <CALLBACK type="HASH">
+                  <PARAMS>
+                    <PARAM name="removed_cookie" type="STRING">
+                      <DESC>A name of removed cookie if it was removed successfully</DESC>
+                    </PARAM>
+                  </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="removeAllCookies" hasCallback="mandatory">
+                <DESC>Removes all cookies for application's webview. Crosswalk is not supported.</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+
+                <CALLBACK type="HASH">
+                </CALLBACK>
+            </METHOD>
+
             <METHOD name="save">
                 <DESC>Save current page to file system.</DESC>
                 <PLATFORM>iOS, Android</PLATFORM>
