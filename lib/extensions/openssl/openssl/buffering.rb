@@ -132,7 +132,6 @@ module OpenSSL::Buffering
       buf.replace(ret)
       ret = buf
     end
-    raise EOFError if ret.empty?
     ret
   end
 
@@ -164,6 +163,11 @@ module OpenSSL::Buffering
   # Note that one reason that read_nonblock writes to the underlying IO is
   # when the peer requests a new TLS/SSL handshake.  See openssl the FAQ for
   # more details.  http://www.openssl.org/support/faq.html
+  #
+  # By specifying a keyword argument _exception_ to +false+, you can indicate
+  # that read_nonblock should not raise an IO::Wait*able exception, but
+  # return the symbol +:wait_writable+ or +:wait_readable+ instead. At EOF,
+  # it will return +nil+ instead of raising EOFError.
 
   def read_nonblock(maxlen, buf=nil, exception: true)
     if maxlen == 0
@@ -182,12 +186,11 @@ module OpenSSL::Buffering
       buf.replace(ret)
       ret = buf
     end
-    raise EOFError if ret.empty?
     ret
   end
 
   ##
-  # Reads the next "line+ from the stream.  Lines are separated by +eol+.  If
+  # Reads the next "line" from the stream.  Lines are separated by +eol+.  If
   # +limit+ is provided the result will not be longer than the given number of
   # bytes.
   #
@@ -342,7 +345,7 @@ module OpenSSL::Buffering
   end
 
   ##
-  # Writes +str+ in the non-blocking manner.
+  # Writes +s+ in the non-blocking manner.
   #
   # If there is buffered data, it is flushed first.  This may block.
   #
@@ -373,6 +376,10 @@ module OpenSSL::Buffering
   # Note that one reason that write_nonblock reads from the underlying IO
   # is when the peer requests a new TLS/SSL handshake.  See the openssl FAQ
   # for more details.  http://www.openssl.org/support/faq.html
+  #
+  # By specifying a keyword argument _exception_ to +false+, you can indicate
+  # that write_nonblock should not raise an IO::Wait*able exception, but
+  # return the symbol +:wait_writable+ or +:wait_readable+ instead.
 
   def write_nonblock(s, exception: true)
     flush
@@ -383,7 +390,7 @@ module OpenSSL::Buffering
   # Writes +s+ to the stream.  +s+ will be converted to a String using
   # String#to_s.
 
-  def << (s)
+  def <<(s)
     do_write(s)
     self
   end
