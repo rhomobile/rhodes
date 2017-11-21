@@ -732,9 +732,17 @@ namespace "config" do
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2012"
           exit 1
-        end
+        end    
+      elsif $msvc_version > "2012"   
+        $vs_version = 2013
+        $vscommontools = ENV['VS120COMNTOOLS']
+        $qmake_makespec = 'win32-msvc2013'
+        unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
+          puts "\nPlease, set VS120COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2013"
+          exit 1
+        end    
       else
-        puts "\nPlease, specify Visual Studio version as either 2008 or 2012 in win32:msvc section of build.yml"
+        puts "\nPlease, specify Visual Studio version as either 2008, 2012 or 2013 in win32:msvc section of build.yml"
         exit 1
       end
 
@@ -1180,7 +1188,7 @@ namespace "build" do
         end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/msvc2008/bin/ssleay32.dll"), $target_path
-      else
+      elsif $vs_version == 2012
         # Visual Studio 2012
         vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.CRT")
         vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC110.OPENMP")
@@ -1190,6 +1198,19 @@ namespace "build" do
           cp File.join(vsredistdir, "vccorlib110.dll"), $target_path
           cp File.join(vsredistdir2, "vcomp110.dll"), $target_path
           cp File.join($vscommontools, "../../VC/bin/D3Dcompiler_46.dll"), $target_path
+        end
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
+      elsif $vs_version == 2013
+        # Visual Studio 2012
+        vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC120.CRT")
+        vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC120.OPENMP")
+        if deploymsvc
+          cp File.join(vsredistdir, "msvcp120.dll"), $target_path
+          cp File.join(vsredistdir, "msvcr120.dll"), $target_path
+          cp File.join(vsredistdir, "vccorlib120.dll"), $target_path
+          cp File.join(vsredistdir2, "vcomp120.dll"), $target_path
+          cp File.join($vscommontools, "../../VC/bin/D3Dcompiler_47.dll"), $target_path
         end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
