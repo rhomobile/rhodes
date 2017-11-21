@@ -78,7 +78,6 @@ test_script:
   - cd %test_app_folder%
   - cd %test_app_subfolder%
   - rake clean:win32
-  - rake clean:uwp
   - rake %build_command%
   - md C:\TAU\rhodes\target\
   - copy %target_artefact_path%%target_artefact_file_name% C:\TAU\rhodes\target\
