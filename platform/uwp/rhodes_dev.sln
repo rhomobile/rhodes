@@ -21,6 +21,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhoruntime", "rhoruntime\rh
 		{E4B266D6-306C-4C42-B825-984D7179E584} = {E4B266D6-306C-4C42-B825-984D7179E584}
 		{861C01D8-54E0-476C-B0C1-02647F844482} = {861C01D8-54E0-476C-B0C1-02647F844482}
 		{0A785FEF-1B00-4CD9-B261-A83C6FFE7199} = {0A785FEF-1B00-4CD9-B261-A83C6FFE7199}
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC} = {B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "sqlite3\sqlite3.vcxproj", "{A0746642-F215-4587-8B81-9D432FD4E468}"
@@ -82,6 +83,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mediacapture", "..\..\lib\commonAPI\mediacapture\ext\platform\uwp\Mediacapture.vcxproj", "{0A785FEF-1B00-4CD9-B261-A83C6FFE7199}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraImpl", "..\..\lib\commonAPI\mediacapture\ext\platform\uwp\CameraImpl.csproj", "{55F32F01-8B33-0132-380A-00FFE07A4F0C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opensslso", "..\..\lib\extensions\openssl.so\ext\uwp\opensslso.vcxproj", "{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -607,6 +610,26 @@ Global
 		{55F32F01-8B33-0132-380A-00FFE07A4F0C}.Release|x64.Build.0 = Release|Any CPU
 		{55F32F01-8B33-0132-380A-00FFE07A4F0C}.Release|x86.ActiveCfg = Release|x86
 		{55F32F01-8B33-0132-380A-00FFE07A4F0C}.Release|x86.Build.0 = Release|x86
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Debug|ARM.ActiveCfg = Debug|ARM
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Debug|ARM.Build.0 = Debug|ARM
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Debug|Win32.Build.0 = Debug|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Debug|x64.ActiveCfg = Debug|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Debug|x86.ActiveCfg = Debug|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Debug|x86.Build.0 = Debug|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Release|Any CPU.ActiveCfg = Release|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Release|ARM.ActiveCfg = Release|ARM
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Release|ARM.Build.0 = Release|ARM
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Release|Win32.ActiveCfg = Release|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Release|Win32.Build.0 = Release|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Release|x64.ActiveCfg = Release|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Release|x86.ActiveCfg = Release|Win32
+		{B7083CF9-EA2D-4A40-83FA-F4CB76D652AC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
