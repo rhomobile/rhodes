@@ -11,6 +11,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include <ruby/posixnames.h>
 
 BIO *
 ossl_obj2bio(VALUE obj)
@@ -28,7 +29,7 @@ ossl_obj2bio(VALUE obj)
 	    rb_sys_fail(0);
 	}
         rb_update_max_fd(fd);
-	if (!(fp = fdopen(fd, "r"))){
+	if (!(fp = fpfdopen(fd, "r"))){
 	    int e = errno;
 	    close(fd);
 	    rb_syserr_fail(e, 0);

@@ -2,3 +2,5 @@ entry: Init_openssl
 libraries: [ "openssl" ]
 android:
   exttype: rakefile
+project_paths:
+  uwp: ext/openssl.vcxproj
