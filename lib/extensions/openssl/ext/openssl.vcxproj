@@ -234,6 +234,7 @@
     <ClInclude Include="ossl_version.h" />
     <ClInclude Include="ossl_x509.h" />
     <ClInclude Include="ruby_missing.h" />
+    <ClInclude Include="uwp\extconf.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{906F2945-7A88-4343-BBB5-9637CFBC4545}</ProjectGuid>
