@@ -728,7 +728,7 @@ namespace "config" do
           puts "\nPlease, set VS90COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2008"
           exit 1
         end
-      elsif $msvc_version => "2012"
+      elsif $msvc_version >= "2012"
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2012"
           exit 1
