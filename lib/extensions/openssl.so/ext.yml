@@ -6,9 +6,11 @@ iphone:
   libraries: [ "openssl.so" ]
 android:
   exttype: prebuilt
+  
+uwp:
+  csharp_impl: no
 
-libraries: ["openssl.so"]
-project_paths:
+project_paths: 
   uwp: ext/uwp/opensslso.vcxproj
 
-platforms: ["wm", "iphone", "android", "uwp", "win32"]
+#platforms: ["wm", "iphone", "android", "uwp", "win32"]
