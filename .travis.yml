@@ -75,6 +75,7 @@ osx_image: xcode9.1
 
 matrix:
   include:
+      
   - language: objective-c
     os: osx
     env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
