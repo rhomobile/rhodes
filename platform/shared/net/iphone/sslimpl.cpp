@@ -164,5 +164,21 @@ ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)
     
 }
 
+bool SSLImpl::rand(unsigned char *entropy, size_t length)
+{
+    //JNIEnv *env = jnienv();
+    //jholder<jbyteArray> array = env->NewByteArray(length);
+    //if(!array) return false;
+    
+    //jboolean result = env->CallStaticBooleanMethod(cls, midRand, array.get());
+    //if(result)
+    //{
+    //    jbyte *arr = env->GetByteArrayElements(array.get(), NULL);
+    //    std::memmove(entropy, arr, length);
+    //}
+
+    return true;    
+}
+
 } // namespace net
 } // namespace rho

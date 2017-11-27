@@ -15,6 +15,7 @@
 
 /* to disable cryptographic authentication */
 /* #undef CURL_DISABLE_CRYPTO_AUTH */
+#define CURL_DISABLE_CRYPTO_AUTH 1
 
 /* to disable DICT */
 /* #undef CURL_DISABLE_DICT */
@@ -263,7 +264,7 @@
 #define HAVE_GETPPID 1
 
 /* Define to 1 if you have the `getpwuid' function. */
-#define HAVE_GETPWUID 1
+//#define HAVE_GETPWUID 1
 
 /* Define to 1 if you have the `getpwuid_r' function. */
 /* #undef HAVE_GETPWUID_R */

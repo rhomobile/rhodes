@@ -64,6 +64,7 @@ extern CURLcode rho_ssl_connect(int sockfd, int nonblocking, int *done, int ssl_
 extern void rho_ssl_shutdown(void *storage);
 extern ssize_t rho_ssl_send(const void *mem, size_t len, void *storage);
 extern ssize_t rho_ssl_recv(char *buf, size_t size, int *wouldblock, void *storage);
+extern bool rho_ssl_rand(unsigned char *entropy, size_t length);
 
 /**
  * Global SSL init

@@ -27,7 +27,7 @@
 #include <curl/curl.h>
 #include "urldata.h"
 
-#include "vauth/vauth.h"
+#include "vauth.h"
 #include "curl_base64.h"
 #include "warnless.h"
 #include "curl_printf.h"
