@@ -45,15 +45,15 @@ environment:
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
       target_artefact_file_name: framework_spec-setup.exe
 
-    #- uwp_framework_spec:
-    #  testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-    #  test_app_folder: C:\TAU\RMS-Testing
-    #  test_app_subfolder: \auto\feature_def\framework_spec\
-    #  build_command: "device:uwp:production"
-    #  app_name: framework_spec
-    #  target_os: uwp
-    #  target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\uwp\
-    #  target_artefact_file_name: framework_spec.appx
+    - uwp_framework_spec:
+      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+      test_app_folder: C:\TAU\RMS-Testing
+      test_app_subfolder: \auto\feature_def\framework_spec\
+      build_command: "device:uwp:production"
+      app_name: framework_spec
+      target_os: uwp
+      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\uwp\
+      target_artefact_file_name: framework_spec.appx
 
 
     - win32_kitchensinkJS:

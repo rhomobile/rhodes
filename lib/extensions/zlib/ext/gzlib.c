@@ -4,6 +4,7 @@
  */
 
 #include "gzguts.h"
+#include <ruby\posixnames.h>
 
 #if defined (__LP64__)
 #include <unistd.h>
@@ -240,7 +241,7 @@ local gzFile gz_open(path, fd, mode)
 #ifdef _WIN32
         fd == -2 ? _wopen(path, oflag, 0666) :
 #endif
-        open(path, oflag, 0666));
+        fpopen(path, oflag, 0666));
     if (state->fd == -1) {
         free(state->path);
         free(state);
