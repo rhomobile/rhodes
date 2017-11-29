@@ -2594,6 +2594,8 @@ namespace "run" do
 
     #[run:iphone:spec]
     task :spec => ["clean:iphone"] do
+    #task :spec do
+      is_timeout = false
       Jake.decorate_spec do
           Rake::Task['run:buildsim'].invoke
 
@@ -2605,6 +2607,8 @@ namespace "run" do
           #  require "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server"
           #  NetHTTPSpecs.start_server
           #end
+
+          $dont_exit_on_failure = false
 
           Jake.before_run_spec
           kill_iphone_simulator
@@ -2623,7 +2627,7 @@ namespace "run" do
             puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad) '
             puts 'execute command : ' + commandis
             system(commandis)
-            $iphone_end_spec = true
+            #$iphone_end_spec = true
           }
 
           start = Time.now
@@ -2632,11 +2636,19 @@ namespace "run" do
             sleep(1)
           end
 
+          timeout_in_seconds = 60*60
+
+          log_lines = []
+
+          start_logging = Time.now
+
           puts "Start reading log ..."
           File.open(log_name, 'r:UTF-8') do |io|
             while !$iphone_end_spec do
               io.each do |line|
-                puts line
+                line = line.force_encoding('ASCII-8BIT')
+                $logger.debug line
+                log_lines << line
                 if line.class.method_defined? "valid_encoding?"
                   $iphone_end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
                 else
@@ -2646,6 +2658,13 @@ namespace "run" do
                 # seg. fault: (SEGV received in SEGV handler)
                 # Looking at log end marker from mspec runner
                 $iphone_end_spec = true if line =~ /MSpec runner stopped/
+
+                #check for timeout
+                if (Time.now.to_i - start_logging.to_i) > timeout_in_seconds
+                    $iphone_end_spec = true
+                    is_timeout = true
+                end
+
                 break if $iphone_end_spec
               end
               sleep(3) unless $iphone_end_spec
@@ -2654,6 +2673,18 @@ namespace "run" do
 
           puts "Processing spec results ..."
           Jake.process_spec_results(start)
+          if is_timeout
+              puts "Tests stoped by timeout ( "+timeout_in_seconds.to_s+" sec ) !"
+              puts "This is last 64 lines from log :"
+              idx = log_lines.size-64
+              if idx < 0
+                  idx = 0
+              end
+              while idx < log_lines.size
+                  puts "line ["+idx.to_s+"]: "+log_lines[idx]
+                  idx = idx + 1
+              end
+          end
 
           #File.delete(log_name) if File.exist?(log_name)
           # kill_iphone_simulator
@@ -2661,6 +2692,7 @@ namespace "run" do
       end
 
       unless $dont_exit_on_failure
+        exit 1 if is_timeout
         exit 1 if $total.to_i==0
         exit $failed.to_i
       end

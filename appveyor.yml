@@ -34,6 +34,7 @@ environment:
       target_os: uwp
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\uwp\
       target_artefact_file_name: auto_common_spec.appx
+      
 
     - win32_framework_spec:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
@@ -44,7 +45,7 @@ environment:
       target_os: win32
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
       target_artefact_file_name: framework_spec-setup.exe
-
+      
     #- uwp_framework_spec:
     #  testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
     #  test_app_folder: C:\TAU\RMS-Testing
@@ -95,6 +96,7 @@ environment:
       target_os: uwp
       target_artefact_path: C:\TAU\kitchensinkRuby\bin\target\uwp\
       target_artefact_file_name: kitchensinkRuby.appx
+    
 
 build: off
 
@@ -104,8 +106,8 @@ install:
   - gem install rest-client --no-document -f
   - gem install listen --no-document -f
   - gem install zip --no-document -f
-  - gem install bundler --quiet --no-ri --no-rdoc -f
-  - bundler --version
+#  - gem install bundler --quiet --no-ri --no-rdoc -f
+#  - bundler --version
   
 before_test:
   - ruby -v

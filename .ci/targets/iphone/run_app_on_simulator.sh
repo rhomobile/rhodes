@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -x
 
-rake run:iphone
+rake run:iphone:spec

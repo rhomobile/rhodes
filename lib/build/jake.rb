@@ -81,7 +81,7 @@ module AES
         aes.encrypt
         aes.key = key
         aes.iv = iv
-		
+
 		sha1 = OpenSSL::Digest::SHA1.new
 		digest = sha1.digest(plain_text)
 
@@ -324,6 +324,7 @@ class Jake
     $total ||= 0
     $passed ||= 0
     $failed ||= 0
+    $notsupported ||= 0
     $faillog = []
     @default_file_name = "junit.xml"
     $junitname = ''
@@ -371,6 +372,8 @@ class Jake
         $passed += $1.to_i
       elsif line =~ /\| \*\*\*Failed:\s+(.*)/    # | ***Failed:
         $failed += $1.to_i
+      elsif line =~ /\| \*\*\*Not supported by Rhodes:\s+(.*)/    # | ***Failed:
+        $notsupported += $1.to_i
       elsif line =~ /\| \*\*\*Terminated\s+(.*)/ # | ***Terminated
         return false
       end
@@ -402,7 +405,7 @@ class Jake
     test_patterns = ['Test*.xml', '*_spec_results.xml']
     base_path = File.join($app_path,'**')
     Dir.glob( test_patterns.map{ |pat| File.join(base_path, pat) } ).each { |file_name| File.delete(file_name) }
-      
+
     FileUtils.rm_rf jpath
 
     FileUtils.mkdir_p jpath
@@ -428,6 +431,7 @@ class Jake
     log(Logger::INFO,"Total: #{$total}")
     log(Logger::INFO,"Passed: #{$passed}")
     log(Logger::INFO,"Failed: #{$failed}")
+    log(Logger::INFO,"Not supported by Rhodes: #{$notsupported}")
     log(Logger::INFO,"Failures stored in faillog.txt") if $failed.to_i > 0
     log(Logger::INFO,"************************")
     log(Logger::INFO,"\n")
@@ -884,8 +888,8 @@ class Jake
 
       if File.basename(f) == file_name
         next
-      end 
-      
+      end
+
       md5 = (type == 'file' ? (Digest::MD5.file(f)).to_s : '')
       size    = File.stat(f).size
       tm      = File.stat(f).mtime.to_i

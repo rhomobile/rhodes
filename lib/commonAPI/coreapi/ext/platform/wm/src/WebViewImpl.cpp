@@ -217,9 +217,13 @@ public:
 
     virtual void removeCookie( const rho::String& url,  const rho::String& name, rho::apiGenerator::CMethodResult& oResult)
     {
-      
+
     }
 
+    virtual void removeAllCookies(rho::apiGenerator::CMethodResult& oResult)
+    {
+      
+    }
 
     //Android only
     virtual void save( const rho::String& format,  const rho::String& path,  int tabIndex, rho::apiGenerator::CMethodResult& oResult){}
