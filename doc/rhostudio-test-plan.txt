@@ -363,7 +363,7 @@ RET: 0
        I 10/31/2011 20:37:13:295 00000b3c   MainWindow| addToolbarButton: Label: '';Action: 'refresh'
        I 10/31/2011 20:37:13:295 00000b3c   MainWindow| addToolbarButton: Label: '';Action: 'options'
        I 10/31/2011 20:37:13:341 00000b3c   MainWindow| WebView: URL changed
-       I 10/31/2011 20:37:13:607 00000734   HttpServer| Process URI: '/public/jquery/jquery-1.6.4.min.js'
+       I 10/31/2011 20:37:13:607 00000734   HttpServer| Process URI: '/public/jquery/jquery-3.2.1.min.js'
        I 10/31/2011 20:37:13:607 00000734   HttpServer| Process URI: '/public/jqmobile/jquery.mobile-1.0rc1.min.css'
        I 10/31/2011 20:37:13:607 00000734   HttpServer| Process URI: '/public/css/jqmobile-patch.css'
        I 10/31/2011 20:37:13:623 00000734   HttpServer| Process URI: '/public/jqmobile/jquery.mobile-1.0rc1.min.js'

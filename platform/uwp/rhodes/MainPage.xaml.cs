@@ -273,6 +273,7 @@ namespace rhodes
             StorageFolder localFolder = ApplicationData.Current.LocalFolder;
             deb("Storage folder is " + appInstalledFolder.Path);
             deb("Local folder is " + localFolder.Path);
+            
 
             String title = Package.Current.DisplayName;
 
@@ -284,6 +285,7 @@ namespace rhodes
             //int revision = (int)((version & 0x000000000000FFFFL));            
 
             rhoDir = new DirectoryInfo(localFolder.Path + "\\rho");
+            System.IO.Directory.SetCurrentDirectory(rhoDir.FullName);
             if (!rhoDir.Exists)
             {
                 DirectoryCopy(appInstalledFolder.Path + "\\rho", rhoDir.FullName, true);

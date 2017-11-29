@@ -338,22 +338,42 @@ static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatfor
 {
     VALUE res = rb_str_dup(dir);
 	VALUE result = 0;
+	int iter = 0;
+	char * resStr = 0;
+	char * fileName = RSTRING_PTR(dir);
+	int maxLenOfFileNamePart = 0;
     RAWLOG_INFO1("find_file: check dir %s", RSTRING_PTR(dir));
 
     #ifdef __SYMBIAN32__
         if(*RSTRING_PTR(res) == '/')
             res = rb_str_substr(res,1,RSTRING_LEN(res) - 1);
     #endif
-
+	resStr = RSTRING_PTR(res);
     rb_str_cat(res,"/",1);
-    rb_str_cat(res,RSTRING_PTR(fname1),RSTRING_LEN(fname1));
+	resStr = RSTRING_PTR(res);
+#ifdef OS_UWP
+	fileName = RSTRING_PTR(fname1);
+	maxLenOfFileNamePart = RSTRING_LEN(fname1);
+	maxLenOfFileNamePart = RSTRING_LEN(res) < maxLenOfFileNamePart ? RSTRING_LEN(res) : maxLenOfFileNamePart;
+	while (((resStr[iter] == fileName[iter]) ||
+		(resStr[iter] == '\\' &&  fileName[iter] == '/')||
+		(resStr[iter] == '/'  &&  fileName[iter] == '\\')) && 
+		(iter < maxLenOfFileNamePart)) {
+		iter++;
+	}
+#endif // OS_UWP
+
+
+    rb_str_cat(res,(RSTRING_PTR(fname1)) + iter, (RSTRING_LEN(fname1)) - iter);
+	resStr = RSTRING_PTR(res);
     if (szPlatform)
     {
         rb_str_cat(res,".",1);
         rb_str_cat(res,szPlatform,strlen(szPlatform));
     }
-
+	resStr = RSTRING_PTR(res);
     rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
+	resStr = RSTRING_PTR(res);
     RAWLOG_INFO1("find_file: check file: %s", RSTRING_PTR(res));
 
     if (eaccess(RSTRING_PTR(res), R_OK) == 0) {
@@ -470,7 +490,7 @@ static VALUE find_file(VALUE fname)
 {
     VALUE res = 0;
     int nOK = 0;
-
+	char * filename = RSTRING_PTR(fname);
     RAWLOG_INFO1("find_file: fname: %s", RSTRING_PTR(fname));
 
 #ifdef RHODES_EMULATOR
