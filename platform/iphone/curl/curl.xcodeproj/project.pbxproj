@@ -185,6 +185,9 @@
 		AC17932C1FC735270065041B /* curl_sasl.c in Sources */ = {isa = PBXBuildFile; fileRef = AC17932A1FC735260065041B /* curl_sasl.c */; };
 		AC17932E1FC73DEC0065041B /* oauth2.c in Sources */ = {isa = PBXBuildFile; fileRef = AC17932D1FC73DEC0065041B /* oauth2.c */; };
 		AC1793301FC743000065041B /* cleartext.c in Sources */ = {isa = PBXBuildFile; fileRef = AC17932F1FC742FF0065041B /* cleartext.c */; };
+		ACCED04F1FCF199800AF8786 /* curl_hmac.h in Headers */ = {isa = PBXBuildFile; fileRef = ACCED04E1FCF199800AF8786 /* curl_hmac.h */; };
+		ACCED0591FCF1B0B00AF8786 /* non-ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = ACCED0571FCF1B0B00AF8786 /* non-ascii.c */; };
+		ACCED05A1FCF1B0B00AF8786 /* non-ascii.h in Headers */ = {isa = PBXBuildFile; fileRef = ACCED0581FCF1B0B00AF8786 /* non-ascii.h */; };
 		BD2C944F10AE01D7008D4692 /* curl.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944510AE01D7008D4692 /* curl.h */; };
 		BD2C945210AE01D7008D4692 /* curlver.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944810AE01D7008D4692 /* curlver.h */; };
 		BD2C945310AE01D7008D4692 /* easy.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944910AE01D7008D4692 /* easy.h */; };
@@ -374,6 +377,9 @@
 		AC17932A1FC735260065041B /* curl_sasl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = curl_sasl.c; sourceTree = "<group>"; };
 		AC17932D1FC73DEC0065041B /* oauth2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = oauth2.c; path = vauth/oauth2.c; sourceTree = "<group>"; };
 		AC17932F1FC742FF0065041B /* cleartext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cleartext.c; path = vauth/cleartext.c; sourceTree = "<group>"; };
+		ACCED04E1FCF199800AF8786 /* curl_hmac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl_hmac.h; sourceTree = "<group>"; };
+		ACCED0571FCF1B0B00AF8786 /* non-ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "non-ascii.c"; sourceTree = "<group>"; };
+		ACCED0581FCF1B0B00AF8786 /* non-ascii.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "non-ascii.h"; sourceTree = "<group>"; };
 		BD2C944510AE01D7008D4692 /* curl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl.h; sourceTree = "<group>"; };
 		BD2C944810AE01D7008D4692 /* curlver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curlver.h; sourceTree = "<group>"; };
 		BD2C944910AE01D7008D4692 /* easy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = easy.h; sourceTree = "<group>"; };
@@ -442,6 +448,9 @@
 		BD2C932D10AE01B7008D4692 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				ACCED0571FCF1B0B00AF8786 /* non-ascii.c */,
+				ACCED0581FCF1B0B00AF8786 /* non-ascii.h */,
+				ACCED04E1FCF199800AF8786 /* curl_hmac.h */,
 				AC1791A11FC71C4A0065041B /* amigaos.c */,
 				AC1791A21FC71C4A0065041B /* amigaos.h */,
 				AC1792B11FC722670065041B /* asyn-thread.c */,
@@ -688,6 +697,7 @@
 				AC1792601FC71FFC0065041B /* url.h in Headers */,
 				AC17929F1FC7211D0065041B /* gopher.h in Headers */,
 				BD2C945210AE01D7008D4692 /* curlver.h in Headers */,
+				ACCED04F1FCF199800AF8786 /* curl_hmac.h in Headers */,
 				AC1792D41FC722680065041B /* urldata.h in Headers */,
 				AC17926C1FC71FFC0065041B /* share.h in Headers */,
 				AC1792631FC71FFC0065041B /* strtoofft.h in Headers */,
@@ -710,6 +720,7 @@
 				AC17927A1FC71FFC0065041B /* ssh.h in Headers */,
 				AC1792131FC71F090065041B /* inet_ntop.h in Headers */,
 				AC1793041FC727710065041B /* ftplistparser.h in Headers */,
+				ACCED05A1FCF1B0B00AF8786 /* non-ascii.h in Headers */,
 				AC1791D11FC71DB00065041B /* ftp.h in Headers */,
 				AC17926F1FC71FFC0065041B /* strdup.h in Headers */,
 				AC1792D01FC722680065041B /* asyn.h in Headers */,
@@ -844,6 +855,7 @@
 				AC1792101FC71F090065041B /* http_negotiate.c in Sources */,
 				AC1792321FC71F090065041B /* rhossl.c in Sources */,
 				AC1792A21FC7211D0065041B /* warnless.c in Sources */,
+				ACCED0591FCF1B0B00AF8786 /* non-ascii.c in Sources */,
 				AC1791CF1FC71DB00065041B /* file.c in Sources */,
 				AC17932E1FC73DEC0065041B /* oauth2.c in Sources */,
 				AC1792791FC71FFC0065041B /* telnet.c in Sources */,

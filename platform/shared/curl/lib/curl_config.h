@@ -15,7 +15,7 @@
 
 /* to disable cryptographic authentication */
 /* #undef CURL_DISABLE_CRYPTO_AUTH */
-#define CURL_DISABLE_CRYPTO_AUTH 1
+//#define CURL_DISABLE_CRYPTO_AUTH 1
 
 /* to disable DICT */
 /* #undef CURL_DISABLE_DICT */

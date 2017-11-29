@@ -28,13 +28,13 @@
 
 #include <curl/curl.h>
 
-#include "vauth/vauth.h"
-#include "vauth/digest.h"
+#include "vauth.h"
+#include "digest.h"
 #include "urldata.h"
 #include "curl_base64.h"
 #include "curl_hmac.h"
 #include "curl_md5.h"
-#include "vtls/vtls.h"
+#include "vtls.h"
 #include "warnless.h"
 #include "strtok.h"
 #include "strcase.h"
