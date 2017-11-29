@@ -509,7 +509,7 @@ class Jake
     self.run2(command, args, {:directory => wd, :system => system, :hiderrors => hideerrors})
   end
 
-  def self.run3_dont_fail(command, cd = nil, env = {})
+  def self.run3_dont_fail(command, cd = nil, env = {}, use_run2 = false)
     set_list = []
     env.each_pair do |k, v|
       if RUBY_PLATFORM =~ /(win|w)32$/
@@ -539,8 +539,21 @@ class Jake
     log Logger::DEBUG,to_print
     STDOUT.flush
 
-    system(to_run)
+    if use_run2
+        self.run2(to_run, []) do |line|
+            log Logger::DEBUG,line
+        end
+        return $?.exitstatus == 0
+    else
+        res = system(to_run)
+        return res
+    end
   end
+
+  def self.run32(command, cd = nil, env = {})
+    fail "[#{command}]" unless self.run3_dont_fail(command, cd, env, true)
+  end
+
 
   def self.run3(command, cd = nil, env = {})
     fail "[#{command}]" unless self.run3_dont_fail(command, cd, env)

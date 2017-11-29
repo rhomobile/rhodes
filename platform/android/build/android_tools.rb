@@ -503,7 +503,7 @@ def load_app_and_run(device_flag, apkfile, pkgname)
     poutres = ""
     perrres = ""
     begin
-      status = Timeout::timeout(300) do
+      status = Timeout::timeout(600) do
         @@logger.debug "CMD: #{cmd}"
 
         Open3.popen3(cmd) do |pin,pout,perr,wait_thr|
@@ -524,7 +524,7 @@ def load_app_and_run(device_flag, apkfile, pkgname)
       @@logger.error "Timeout error, killing #{child}"
 
       Process.kill 9, child if child
-      if theoutput == ""
+      if (poutres == "") and (perrres == "")
         @@logger.error "Timeout reached while empty output: killing adb server and retrying..."
         `#{$adb} kill-server`
         count += 1

@@ -51,7 +51,7 @@ namespace "build" do
     end
 
     chdir iphone_path
-    args = ['build', '-target', 'Barcode', '-configuration', $configuration, '-sdk', $sdk]
+    args = ['build', '-target', 'Barcode', '-configuration', $configuration, '-sdk', $sdk, '-quiet']
 
     puts Jake.run($xcodebuild,args)
     ret = $?

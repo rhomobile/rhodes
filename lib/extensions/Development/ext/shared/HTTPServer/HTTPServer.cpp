@@ -23,11 +23,11 @@
 #include <sys/types.h>
 
 #if !defined(OS_WINCE)
-#ifdef OS_ANDROID
-#include "../../platform/android/jni/ifaddrs.h"
-#else
+
+#ifndef OS_ANDROID
 #include <ifaddrs.h>
 #endif
+
 #include <netinet/in.h>
 #else
 //#include <ws2tcpip.h>

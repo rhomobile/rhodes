@@ -34,6 +34,9 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 import android.net.Uri;
 import android.webkit.CookieManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class WebView {
 	
 	private static final String TAG = "WebView";
@@ -142,12 +145,8 @@ public class WebView {
 		}
 		
         public void run() {
-            String cookiesArray[] = cookie.split(";");
             CookieManager mgr = CookieManager.getInstance();
-            for(String val: cookiesArray) {
-                Logger.T(TAG, "Cookie: " + val);
-                mgr.setCookie(url, val);
-            }
+            mgr.setCookie(url, cookie);
             Logger.T(TAG, "Cookie is set: " + url + ", " + cookie);
         }
 	};
@@ -292,6 +291,42 @@ public class WebView {
             Logger.E(TAG, e);
 		}
 	}
+    
+    public static Map<String,Object> getCookies( String url ) {
+        CookieManager mgr = CookieManager.getInstance();
+        Uri uri = Uri.parse(url);
+        url = uri.getScheme() + "://" + uri.getHost() + uri.getPath();
+        String rawCookies = mgr.getCookie(url);
+        Logger.T(TAG, "RAW Cookies: " + rawCookies + " URL: " + url );
+
+        HashMap<String, Object> map = new HashMap();
+
+        if ( rawCookies != null ) {
+            String[] rawParts = rawCookies.split(";");
+
+            for ( String c : rawParts ) {
+                c = c.trim();                
+                String[] parts = c.split("=");
+                map.put( parts[0], c );
+            }
+        }
+
+        return map;
+
+    }
+
+    /*
+        remove cookie by setting its expiry date in the past
+     */
+    public static boolean removeCookie( String url, String name ) {
+        final String expiry = "Thu, 01 Jan 1970 07:00:00 GMT";
+        CookieManager mgr = CookieManager.getInstance();
+        Uri uri = Uri.parse(url);
+        url = uri.getScheme() + "://" + uri.getHost() + uri.getPath();
+        String cookie = "" + name + "=; Expires="+expiry;
+        mgr.setCookie( url, cookie );
+        return true;
+    }
 
     public static void stopNavigate() {
         try {

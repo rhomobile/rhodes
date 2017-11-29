@@ -241,6 +241,16 @@ namespace WebViewImpl
                 mp.setCookie(CRhoRuntime.getInstance().canonicalizeRhoUrl(url), cookie);
         }
 
+        public override void getCookies(string url, IMethodResult oResult)
+        {
+
+        }
+
+        public override void removeCookie(string url, string name, IMethodResult oResult)
+        {
+          
+        }
+
         public override void save(string format, string path, int tabIndex, IMethodResult oResult)
         {
             // implement this method in C# here

@@ -11,6 +11,8 @@ extern int rho_webview_active_tab();
 extern void rho_webview_full_screen_mode(int enable);
 extern BOOL rho_webview_get_full_screen_mode();
 extern void rho_webview_set_cookie(const char* url, const char* cookie);
+extern void rho_webview_get_cookies( NSString* url, NSDictionary** retVal );
+extern BOOL rho_webview_remove_cookie( NSString* url, NSString* name );
 extern void rho_webview_navigate_back();
 extern void rho_webview_navigate_back_with_tab(int tabIndex);
 extern void rho_webview_save(const char* format, const char* path, int tab_index);
@@ -207,6 +209,25 @@ extern void rho_webview_set_EnableDragAndDrop(BOOL value);
 
 -(void) setCookie:(NSString*)url cookie:(NSString*)cookie methodResult:(id<IMethodResult>)methodResult{
     rho_webview_set_cookie([url UTF8String], [cookie UTF8String]);
+}
+
+-(void) getCookies:(NSString*)url methodResult:(id<IMethodResult>)methodResult {
+    dispatch_async(dispatch_get_main_queue(), ^(void){
+        NSDictionary* cookies = nil;
+        rho_webview_get_cookies(url, &cookies);
+        [methodResult setResult:cookies];
+    });
+}
+
+-(void) removeCookie:(NSString*)url name:(NSString*)name methodResult:(id<IMethodResult>)methodResult {
+    dispatch_async(dispatch_get_main_queue(), ^(void){
+        BOOL removed = rho_webview_remove_cookie(url,name);
+        NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:1];
+        if ( removed ) {
+            [dict setObject:name forKey:@"removed_cookie"];
+        }
+        [methodResult setResult:dict];
+    });
 }
 
 -(void) save:(NSString*)format path:(NSString*)path tabIndex:(int)tabIndex methodResult:(id<IMethodResult>)methodResult{

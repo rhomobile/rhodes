@@ -79,7 +79,7 @@ $is_webkit_engine = false
 $startdir = File.dirname(__FILE__)
 $startdir.gsub!('\\', '/')
 
-chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
+chdir File.dirname(__FILE__), :verbose => (Rake.application.options.trace == true)
 
 
 require File.join(pwd, 'lib/build/jake.rb')
@@ -136,11 +136,11 @@ end
 
 def puts( s )
   if $logger
-    $logger.info(s)
+    $logger.info( s )
   else
     Kernel::puts( s )
   end
-end  
+end
 
 $logger = Logger.new(STDOUT)
 if Rake.application.options.trace
@@ -149,7 +149,8 @@ else
   $logger.level = Logger::INFO
 end
 
-Rake::FileUtilsExt.verbose(Rake.application.options.trace)
+
+Rake::FileUtilsExt.verbose(Rake.application.options.trace == true)
 
 
 $logger.formatter = proc do |severity,datetime,progname,msg|
@@ -2352,7 +2353,7 @@ def copy_assets(asset, file_map)
 
   dest = File.join($srcdir,'apps/public')
 
-  cp_r asset + "/.", dest, :preserve => true, :remove_destination => true
+  cp_r asset + "/.", dest, :preserve => true, :remove_destination => true, :verbose => USE_TRACES
 end
 
 def clear_linker_settings
@@ -2746,9 +2747,9 @@ def init_extensions(dest, mode = "")
                 #api generator
                 if File.exist? xml_path
                   if gen_checker.check(xml_path)
-                    puts 'start running rhogen with api key'
+                    puts 'start running rhogen with api key for + ['+xml_path.to_s+']'
                     if !$skip_build_extensions
-                      Jake.run3("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
+                      Jake.run32("\"#{$startdir}/bin/rhogen\" api \"#{xml_path}\"")
                     end
                   end
                 end
@@ -3010,7 +3011,7 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
 
   return if src_dir == dst_dir
 
-  mkdir_p dst_dir if not File.exists? dst_dir
+  mkdir_p dst_dir, :verbose => USE_TRACES if not File.exists? dst_dir
 
   Dir.foreach(src_dir) do |filename|
     next if filename.eql?('.') || filename.eql?('..')
@@ -3041,7 +3042,7 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
         puts "old_time=" + old_time.to_s if Rake.application.options.trace
       end
 
-      cp filepath, dst_path, :preserve => true
+      cp filepath, dst_path, :preserve => true, :verbose => USE_TRACES
     end
   end
 end
@@ -3172,6 +3173,7 @@ def create_manifest
 end
 
 def process_exclude_folders(excluded_dirs=[])
+
   excl = excluded_dirs
 
   exclude_platform = $config['platform']

@@ -286,6 +286,23 @@ void rho_webview_set_cookie(const char *u, const char *c)
     [Rhodes performOnUiThread:runnable arg:url arg:cookie wait:NO];
 }
 
+void rho_webview_get_cookies( NSString* url, NSDictionary** retVal )
+{
+  if (!rho_rhodesapp_check_mode())
+      return;
+
+    *retVal = [[Rhodes sharedInstance] getCookies:url];
+}
+
+BOOL rho_webview_remove_cookie( NSString* url, NSString* name )
+{
+  if (!rho_rhodesapp_check_mode())
+      return false;
+    
+  return [[Rhodes sharedInstance] removeCookie:url name:name];
+}
+
+
 void rho_webview_save(const char* format, const char* path, int tab_index)
 {
     UIView *webvw = [[[[Rhodes sharedInstance] mainView] getRhoWebView:tab_index] view];

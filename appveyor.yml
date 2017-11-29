@@ -1,0 +1,161 @@
+version: '{branch}.{build}'
+image: Visual Studio 2015
+platform: x86
+clone_folder: C:\TAU\rhodes
+environment:
+  QTDIR: C:\Qt\5.8\msvc2015
+  matrix:
+    - win32_rhosimulator:
+      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+      test_app_folder: C:\TAU\RMS-Testing\
+      test_app_subfolder: auto\feature_def\auto_common_spec\
+      build_command: "build:rhosimulator"
+      app_name: Rhosimulator
+      target_os: win32
+      target_artefact_path: C:\Ruby23\lib\ruby\gems\2.3.0\gems\rhodes-6.0.0\platform\win32\RhoSimulator\
+      target_artefact_file_name: RhoSimulator.exe
+
+    - win32_auto_common_spec:
+      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+      test_app_folder: C:\TAU\RMS-Testing\
+      test_app_subfolder: auto\feature_def\auto_common_spec\
+      build_command: "device:win32:production"
+      app_name: auto_common_spec
+      target_os: win32
+      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\win32\
+      target_artefact_file_name: auto_common_spec-setup.exe
+
+    - uwp_auto_common_spec:
+      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+      test_app_folder: C:\TAU\RMS-Testing\
+      test_app_subfolder: auto\feature_def\auto_common_spec\
+      build_command: "device:uwp:production"
+      app_name: auto_common_spec
+      target_os: uwp
+      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\uwp\
+      target_artefact_file_name: auto_common_spec.appx
+
+    - win32_framework_spec:
+      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+      test_app_folder: C:\TAU\RMS-Testing\
+      test_app_subfolder: auto\feature_def\framework_spec\
+      build_command: "device:win32:production"
+      app_name: framework_spec
+      target_os: win32
+      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
+      target_artefact_file_name: framework_spec-setup.exe
+
+    #- uwp_framework_spec:
+    #  testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #  test_app_folder: C:\TAU\RMS-Testing
+    #  test_app_subfolder: \auto\feature_def\framework_spec\
+    #  build_command: "device:uwp:production"
+    #  app_name: framework_spec
+    #  target_os: uwp
+    #  target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\uwp\
+    #  target_artefact_file_name: framework_spec.appx
+
+
+    - win32_kitchensinkJS:
+      testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
+      test_app_folder: C:\TAU\kitchensinkJS\
+      test_app_subfolder:
+      build_command: "device:win32:production"
+      app_name: KitchensinkJS
+      target_os: win32
+      target_artefact_path: C:\TAU\kitchensinkJS\bin\target\win32\
+      target_artefact_file_name: kitchensinkJS-setup.exe
+
+    - uwp_kitchensinkJS:
+      testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
+      test_app_folder: C:\TAU\kitchensinkJS\
+      test_app_subfolder:
+      build_command: "device:uwp:production"
+      app_name: KitchensinkJS
+      target_os: uwp
+      target_artefact_path: C:\TAU\kitchensinkJS\bin\target\uwp\
+      target_artefact_file_name: kitchensinkJS.appx
+
+    - win32_kitchensinkRuby:
+      testable_application_repository: https://github.com/tauplatform/kitchensinkRuby.git
+      test_app_folder: C:\TAU\kitchensinkRuby\
+      test_app_subfolder:
+      build_command: "device:win32:production"
+      app_name: KitchensinkRuby
+      target_os: win32
+      target_artefact_path: C:\TAU\kitchensinkRuby\bin\target\win32\
+      target_artefact_file_name: kitchensinkRuby-setup.exe
+
+    - uwp_kitchensinkRuby:
+      testable_application_repository: https://github.com/tauplatform/kitchensinkRuby.git
+      test_app_folder: C:\TAU\kitchensinkRuby\
+      test_app_subfolder:
+      build_command: "device:uwp:production"
+      app_name: KitchensinkRuby
+      target_os: uwp
+      target_artefact_path: C:\TAU\kitchensinkRuby\bin\target\uwp\
+      target_artefact_file_name: kitchensinkRuby.appx
+
+build: off
+
+install:
+  - set PATH=C:\Ruby23\bin;%PATH%
+  - set RAKEOPT=-rdevkit
+  - gem install rest-client --no-document -f
+  - gem install listen --no-document -f
+  - gem install zip --no-document -f
+  - gem install bundler --quiet --no-ri --no-rdoc -f
+  - bundler --version
+  
+before_test:
+  - ruby -v
+  - gem -v
+  - bundle -v
+  - cp rhobuild.yml.example rhobuild.yml
+  - rake gem
+  - set /P BUILD_VERSION=<version
+  - gem install rhodes-%BUILD_VERSION%.gem --no-document -f
+
+  - git clone -b master https://github.com/rhomobile/rhoconnect-client.git C:\TAU\rhoconnect-client
+  - cd C:\TAU\rhoconnect-client
+  - rake gem:make_gem
+  - set /P BUILD_VERSION_RHOCONNECT=<version
+  - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
+ 
+  - appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+  - nuget restore C:\TAU\rhodes\platform\uwp\rhodes_dev.sln
+
+  - cd C:\TAU\
+  - rmdir /Q /S rhodes
+  - rmdir /Q /S rhoconnect-client
+
+test_script:
+  - git clone -b master %testable_application_repository% %test_app_folder%
+  - cd %test_app_folder%
+  - cd %test_app_subfolder%
+  - rake clean:win32
+  - rake clean:uwp
+  - rake %build_command%
+  - md C:\TAU\rhodes\target\
+  - copy %target_artefact_path%%target_artefact_file_name% C:\TAU\rhodes\target\
+  - cd C:\TAU\rhodes\target\
+  - dir
+  - echo %APPVEYOR_REPO_NAME%/%APPVEYOR_REPO_BRANCH%/%APPVEYOR_REPO_COMMIT%/appveyor-%APPVEYOR_BUILD_NUMBER%.%APPVEYOR_JOB_NUMBER%_win32-%target_os%-%app_name%
+  - cd C:\TAU\rhodes\
+
+artifacts: 
+  - path: .\target\
+    name: '${target_artefact_file_name}'
+
+deploy:
+  - provider: S3
+    access_key_id:  
+      secure: j0N6vl5f9UckCbJkHmZiXNuFphMI3cud+NDTCQm/I2c=
+    secret_access_key:
+      secure: WzHfCbltmZTLnQxLo5/3BzBLHLnuiMIK6aDkoB10by58eOngCcTKvHJUGbtkfcsp
+    bucket: tau-autobuilds
+    region: eu-central-1
+    folder: '$(APPVEYOR_REPO_NAME)/$(APPVEYOR_REPO_BRANCH)/$(APPVEYOR_REPO_COMMIT)/appveyor-${APPVEYOR_BUILD_NUMBER}.$(APPVEYOR_JOB_NUMBER)_win32-$(target_os)-$(app_name)'
+    artifact: /.*/
+    set_public: true
+    max_error_retry: 5
