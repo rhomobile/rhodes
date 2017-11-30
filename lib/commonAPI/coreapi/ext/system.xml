@@ -100,7 +100,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Push notifications device ID which may be used to receive push messages.To get this ID , Push service should be configured on the device. Please refer to Push documentation.</DESC>
             </PROPERTY>
             <PROPERTY name="phoneId" type="STRING" readOnly="true">
-                <DESC>Hardware based ID. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.</DESC>
+                <DESC>Hardware based ID. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.(except iOS ! - on iOS unisntall/reinstall will update this property - used UIDebice.identifierForVendor)</DESC>
                 <PLATFORM>WM, CE, iOS, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceName" type="STRING" readOnly="true">
