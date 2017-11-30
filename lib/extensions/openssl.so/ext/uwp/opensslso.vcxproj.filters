@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\openssl\aes.h" />
+    <ClInclude Include="src\openssl\asn1.h" />
+    <ClInclude Include="src\openssl\asn1t.h" />
+    <ClInclude Include="src\openssl\asn1_mac.h" />
+    <ClInclude Include="src\openssl\bio.h" />
+    <ClInclude Include="src\openssl\blowfish.h" />
+    <ClInclude Include="src\openssl\bn.h" />
+    <ClInclude Include="src\openssl\buffer.h" />
+    <ClInclude Include="src\openssl\camellia.h" />
+    <ClInclude Include="src\openssl\cast.h" />
+    <ClInclude Include="src\openssl\cmac.h" />
+    <ClInclude Include="src\openssl\cms.h" />
+    <ClInclude Include="src\openssl\comp.h" />
+    <ClInclude Include="src\openssl\conf.h" />
+    <ClInclude Include="src\openssl\conf_api.h" />
+    <ClInclude Include="src\openssl\crypto.h" />
+    <ClInclude Include="src\openssl\des.h" />
+    <ClInclude Include="src\openssl\des_old.h" />
+    <ClInclude Include="src\openssl\dh.h" />
+    <ClInclude Include="src\openssl\dsa.h" />
+    <ClInclude Include="src\openssl\dso.h" />
+    <ClInclude Include="src\openssl\dtls1.h" />
+    <ClInclude Include="src\openssl\ebcdic.h" />
+    <ClInclude Include="src\openssl\ec.h" />
+    <ClInclude Include="src\openssl\ecdh.h" />
+    <ClInclude Include="src\openssl\ecdsa.h" />
+    <ClInclude Include="src\openssl\engine.h" />
+    <ClInclude Include="src\openssl\err.h" />
+    <ClInclude Include="src\openssl\evp.h" />
+    <ClInclude Include="src\openssl\e_os2.h" />
+    <ClInclude Include="src\openssl\hmac.h" />
+    <ClInclude Include="src\openssl\idea.h" />
+    <ClInclude Include="src\openssl\krb5_asn.h" />
+    <ClInclude Include="src\openssl\kssl.h" />
+    <ClInclude Include="src\openssl\lhash.h" />
+    <ClInclude Include="src\openssl\md4.h" />
+    <ClInclude Include="src\openssl\md5.h" />
+    <ClInclude Include="src\openssl\mdc2.h" />
+    <ClInclude Include="src\openssl\modes.h" />
+    <ClInclude Include="src\openssl\objects.h" />
+    <ClInclude Include="src\openssl\obj_mac.h" />
+    <ClInclude Include="src\openssl\ocsp.h" />
+    <ClInclude Include="src\openssl\opensslconf.h" />
+    <ClInclude Include="src\openssl\opensslv.h" />
+    <ClInclude Include="src\openssl\ossl_typ.h" />
+    <ClInclude Include="src\openssl\pem.h" />
+    <ClInclude Include="src\openssl\pem2.h" />
+    <ClInclude Include="src\openssl\pkcs12.h" />
+    <ClInclude Include="src\openssl\pkcs7.h" />
+    <ClInclude Include="src\openssl\pqueue.h" />
+    <ClInclude Include="src\openssl\rand.h" />
+    <ClInclude Include="src\openssl\rc2.h" />
+    <ClInclude Include="src\openssl\rc4.h" />
+    <ClInclude Include="src\openssl\ripemd.h" />
+    <ClInclude Include="src\openssl\rsa.h" />
+    <ClInclude Include="src\openssl\safestack.h" />
+    <ClInclude Include="src\openssl\seed.h" />
+    <ClInclude Include="src\openssl\sha.h" />
+    <ClInclude Include="src\openssl\srp.h" />
+    <ClInclude Include="src\openssl\srtp.h" />
+    <ClInclude Include="src\openssl\ssl.h" />
+    <ClInclude Include="src\openssl\ssl2.h" />
+    <ClInclude Include="src\openssl\ssl23.h" />
+    <ClInclude Include="src\openssl\ssl3.h" />
+    <ClInclude Include="src\openssl\stack.h" />
+    <ClInclude Include="src\openssl\symhacks.h" />
+    <ClInclude Include="src\openssl\tls1.h" />
+    <ClInclude Include="src\openssl\ts.h" />
+    <ClInclude Include="src\openssl\txt_db.h" />
+    <ClInclude Include="src\openssl\ui.h" />
+    <ClInclude Include="src\openssl\ui_compat.h" />
+    <ClInclude Include="src\openssl\whrlpool.h" />
+    <ClInclude Include="src\openssl\x509.h" />
+    <ClInclude Include="src\openssl\x509v3.h" />
+    <ClInclude Include="src\openssl\x509_vfy.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\openssl\applink.c" />
+  </ItemGroup>
+</Project>

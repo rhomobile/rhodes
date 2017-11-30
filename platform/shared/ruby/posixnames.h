@@ -26,6 +26,7 @@
 #define fpfdopen _fdopen
 #define fpeof _eof
 #define fpopen _open
+#define fpread _read
 #else
 #define fpmkdir mkdir
 #define fpstrnicmp strnicmp
@@ -53,4 +54,5 @@
 #define fpfdopen fdopen
 #define fpeof eof
 #define fpopen open
+#define fpread read
 #endif

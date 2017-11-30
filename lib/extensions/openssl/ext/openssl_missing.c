@@ -9,8 +9,10 @@
  */
 
 //RHO
-#if defined(WIN32) || defined (WINCE)
+#if (defined(WIN32) || defined (WINCE)) && !defined(OS_UWP)
 #include "windows/extconf.h"
+#elif defined(OS_UWP)
+#include "uwp\extconf.h"
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
 #include <TargetConditionals.h>
 
@@ -27,7 +29,7 @@
 //RHO
 
 #if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_EVP_CIPHER_CTX_ENGINE)
-# include <openssl/engine.h>
+#include <openssl/engine.h>
 #endif
 #include <openssl/x509_vfy.h>
 

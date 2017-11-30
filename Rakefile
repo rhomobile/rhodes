@@ -2716,6 +2716,9 @@ def init_extensions(dest, mode = "")
 
             if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "uwp"
               libs.each do |lib|
+                if $config["platform"] == "uwp"
+                  lib = lib.delete('.')
+                end
                 extconf_uwp_lib = !extconf_uwp[lib.downcase].nil? ? extconf_uwp[lib.downcase] : Hash.new
                 csharp_impl = csharp_impl_all || (!extconf_uwp_lib['csharp_impl'].nil?)
                 if extconf_uwp_lib['libname'].nil?

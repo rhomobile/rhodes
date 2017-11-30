@@ -2,3 +2,6 @@ entry: Init_fcntl
 libraries: [ "fcntl" ]
 android:
   exttype: rakefile
+
+project_paths: 
+  uwp: ext/uwp/fcntl.vcxproj

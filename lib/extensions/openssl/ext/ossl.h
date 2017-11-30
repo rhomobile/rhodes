@@ -11,8 +11,10 @@
 #define _OSSL_H_
 
 //RHO
-#if defined(WIN32) || defined (WINCE)
+#if (defined(WIN32) || defined (WINCE)) && !defined(OS_UWP)
 #include "windows/extconf.h"
+#elif defined(OS_UWP)
+#include "uwp\extconf.h"
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
 #include <TargetConditionals.h>
 

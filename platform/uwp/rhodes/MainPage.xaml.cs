@@ -273,6 +273,7 @@ namespace rhodes
             StorageFolder localFolder = ApplicationData.Current.LocalFolder;
             deb("Storage folder is " + appInstalledFolder.Path);
             deb("Local folder is " + localFolder.Path);
+            
 
             String title = Package.Current.DisplayName;
 
@@ -284,13 +285,32 @@ namespace rhodes
             //int revision = (int)((version & 0x000000000000FFFFL));            
 
             rhoDir = new DirectoryInfo(localFolder.Path + "\\rho");
+            
             if (!rhoDir.Exists)
             {
                 DirectoryCopy(appInstalledFolder.Path + "\\rho", rhoDir.FullName, true);
-                localFolder.CreateFileAsync("\\rho\\" + title, Windows.Storage.CreationCollisionOption.OpenIfExists);
+                localFolder.CreateFileAsync("\\rho\\" + title, Windows.Storage.CreationCollisionOption.OpenIfExists).Completed = (arg1, arg2) => {
+                    try
+                    {
+                        System.IO.Directory.SetCurrentDirectory(rhoDir.FullName);
+                    }
+                    catch (Exception e)
+                    {
+                        deb("Exception on setting current directiory: " + e.Message);
+                    }
+
+                }; ;
             }
             else
             {
+                try
+                {
+                    System.IO.Directory.SetCurrentDirectory(rhoDir.FullName);
+                }
+                catch (Exception e)
+                {
+                    deb("Exception on setting current directiory: " + e.Message);
+                }
                 FileInfo fInfo = new FileInfo(localFolder.Path + "\\rho\\" + title);
                 if (fInfo.Exists){
                     deb("Rho exists");
@@ -305,6 +325,7 @@ namespace rhodes
                     localFolder.CreateFileAsync("\\rho\\" + title, Windows.Storage.CreationCollisionOption.OpenIfExists);
                 }
             }
+            
 
             {
                 IAsyncOperation<StorageFile> task = localFolder.CreateFileAsync("nullfile", Windows.Storage.CreationCollisionOption.OpenIfExists);
@@ -613,12 +634,30 @@ namespace rhodes
 
         public string executeScript(string script, int index)
         {
+            deb("executeScript: " + script);
             return StringValueByStringIntReturnAgent(executeScriptFunc, script, index);
         }
 
         public string executeScriptAsync(string script, int index)
         {
-            return StringValueByStringIntReturnAgentAsync(executeScriptFunc, script, index);
+            deb("executeScriptAsync: " + script);
+            InvokeInUIThread(() =>
+            {
+                string[] codeString = { script };
+                if (TabbarPivot.Items.Count == 0 || _isCallbackFired)
+                {
+                    _isCallbackFired = false;
+                    var task = RhodesWebBrowser.InvokeScriptAsync("eval", codeString).Completed = (arg1, arg2) => { deb("Async task executeon complited"); };
+                    deb("Creating AsyncTask ends");
+                }
+                else
+                {
+                    var task = ((WebView)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScriptAsync("eval", codeString);
+                }
+            });
+
+            return "";
+            //return StringValueByStringIntReturnAgentAsync(executeScriptFunc, script, index);
         }
 
         public void GoBack()
@@ -1389,8 +1428,7 @@ namespace rhodes
 
         private string StringValueByStringIntReturnAgent(Func<string, int, string> func, string str, int index)
         {
-            if (isUIThread)
-                return func(str, index);
+            if (isUIThread) return func(str, index);
 
             Exception exception = null;
             var waitEvent = new System.Threading.ManualResetEvent(false);
@@ -1410,16 +1448,13 @@ namespace rhodes
             });
 
              //waitEvent.WaitOne();
-            if (exception != null)
-                throw exception;
-
+            if (exception != null) throw exception;
             return return_value;
         }
 
         private string StringValueByStringIntReturnAgentAsync(Func<string, int, string> func, string str, int index)
         {
-            if (isUIThread)
-                return func(str, index);
+            if (isUIThread) return func(str, index);
 
             Exception exception = null;
             string return_value = "";

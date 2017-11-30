@@ -101,6 +101,7 @@ platform/wp8/bin/*
 platform/wp8/ipch/*
 platform/uwp/*/obj/*
 platform/uwp/platform
+lib/commonApi/*/ext/platform/uwp/bin/*
 platform/uwp/bin/*
 platform/uwp/ipch/*
 platform/uwp/RhoRuntimeInvoker/bin/*
