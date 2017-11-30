@@ -28,13 +28,24 @@
 
 #include <curl/curl.h>
 
+#ifdef __APPLE__
 #include "vauth.h"
 #include "digest.h"
+#else
+#include "vauth/vauth.h"
+#include "vauth/digest.h"
+#endif
+
 #include "urldata.h"
 #include "curl_base64.h"
 #include "curl_hmac.h"
 #include "curl_md5.h"
+#ifdef __APPLE__
 #include "vtls.h"
+#else
+#include "vtls/vtls.h"
+#endif
+
 #include "warnless.h"
 #include "strtok.h"
 #include "strcase.h"

@@ -160,8 +160,6 @@
 		AC1792D31FC722680065041B /* curl_config.h in Headers */ = {isa = PBXBuildFile; fileRef = AC1792BE1FC722680065041B /* curl_config.h */; };
 		AC1792D41FC722680065041B /* urldata.h in Headers */ = {isa = PBXBuildFile; fileRef = AC1792BF1FC722680065041B /* urldata.h */; };
 		AC1792D51FC722680065041B /* hostcheck.c in Sources */ = {isa = PBXBuildFile; fileRef = AC1792C01FC722680065041B /* hostcheck.c */; };
-		AC1792DA1FC722CB0065041B /* nss.c in Sources */ = {isa = PBXBuildFile; fileRef = AC1792D71FC722CA0065041B /* nss.c */; };
-		AC1792E61FC7231C0065041B /* cram.c in Sources */ = {isa = PBXBuildFile; fileRef = AC1792DF1FC7231B0065041B /* cram.c */; };
 		AC1792ED1FC723E00065041B /* curl_multibyte.c in Sources */ = {isa = PBXBuildFile; fileRef = AC1792EB1FC723DF0065041B /* curl_multibyte.c */; };
 		AC1792EE1FC723E00065041B /* curl_multibyte.h in Headers */ = {isa = PBXBuildFile; fileRef = AC1792EC1FC723DF0065041B /* curl_multibyte.h */; };
 		AC1792F01FC724650065041B /* curl_printf.h in Headers */ = {isa = PBXBuildFile; fileRef = AC1792EF1FC724640065041B /* curl_printf.h */; };
@@ -175,19 +173,21 @@
 		AC1793001FC727240065041B /* http_proxy.c in Sources */ = {isa = PBXBuildFile; fileRef = AC1792FE1FC727230065041B /* http_proxy.c */; };
 		AC1793031FC727710065041B /* ftplistparser.c in Sources */ = {isa = PBXBuildFile; fileRef = AC1793011FC727700065041B /* ftplistparser.c */; };
 		AC1793041FC727710065041B /* ftplistparser.h in Headers */ = {isa = PBXBuildFile; fileRef = AC1793021FC727710065041B /* ftplistparser.h */; };
-		AC1793071FC728380065041B /* vtls.c in Sources */ = {isa = PBXBuildFile; fileRef = AC1793051FC728380065041B /* vtls.c */; };
-		AC1793081FC728380065041B /* vtls.h in Headers */ = {isa = PBXBuildFile; fileRef = AC1793061FC728380065041B /* vtls.h */; };
-		AC17931F1FC72B900065041B /* digest.h in Headers */ = {isa = PBXBuildFile; fileRef = AC1793191FC72B900065041B /* digest.h */; };
-		AC1793201FC72B900065041B /* vauth.h in Headers */ = {isa = PBXBuildFile; fileRef = AC17931A1FC72B900065041B /* vauth.h */; };
-		AC1793211FC72B900065041B /* digest.c in Sources */ = {isa = PBXBuildFile; fileRef = AC17931B1FC72B900065041B /* digest.c */; };
-		AC1793231FC72B900065041B /* vauth.c in Sources */ = {isa = PBXBuildFile; fileRef = AC17931D1FC72B900065041B /* vauth.c */; };
 		AC17932B1FC735270065041B /* curl_sasl.h in Headers */ = {isa = PBXBuildFile; fileRef = AC1793291FC735260065041B /* curl_sasl.h */; };
 		AC17932C1FC735270065041B /* curl_sasl.c in Sources */ = {isa = PBXBuildFile; fileRef = AC17932A1FC735260065041B /* curl_sasl.c */; };
-		AC17932E1FC73DEC0065041B /* oauth2.c in Sources */ = {isa = PBXBuildFile; fileRef = AC17932D1FC73DEC0065041B /* oauth2.c */; };
-		AC1793301FC743000065041B /* cleartext.c in Sources */ = {isa = PBXBuildFile; fileRef = AC17932F1FC742FF0065041B /* cleartext.c */; };
 		ACCED04F1FCF199800AF8786 /* curl_hmac.h in Headers */ = {isa = PBXBuildFile; fileRef = ACCED04E1FCF199800AF8786 /* curl_hmac.h */; };
 		ACCED0591FCF1B0B00AF8786 /* non-ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = ACCED0571FCF1B0B00AF8786 /* non-ascii.c */; };
 		ACCED05A1FCF1B0B00AF8786 /* non-ascii.h in Headers */ = {isa = PBXBuildFile; fileRef = ACCED0581FCF1B0B00AF8786 /* non-ascii.h */; };
+		ACCED0931FCF234F00AF8786 /* digest.h in Headers */ = {isa = PBXBuildFile; fileRef = ACCED08D1FCF234F00AF8786 /* digest.h */; };
+		ACCED0941FCF234F00AF8786 /* cram.c in Sources */ = {isa = PBXBuildFile; fileRef = ACCED08E1FCF234F00AF8786 /* cram.c */; };
+		ACCED0951FCF234F00AF8786 /* digest.c in Sources */ = {isa = PBXBuildFile; fileRef = ACCED08F1FCF234F00AF8786 /* digest.c */; };
+		ACCED0961FCF234F00AF8786 /* cleartext.c in Sources */ = {isa = PBXBuildFile; fileRef = ACCED0901FCF234F00AF8786 /* cleartext.c */; };
+		ACCED0971FCF234F00AF8786 /* vauth.c in Sources */ = {isa = PBXBuildFile; fileRef = ACCED0911FCF234F00AF8786 /* vauth.c */; };
+		ACCED0981FCF234F00AF8786 /* vauth.h in Headers */ = {isa = PBXBuildFile; fileRef = ACCED0921FCF234F00AF8786 /* vauth.h */; };
+		ACCED09A1FCF237A00AF8786 /* oauth2.c in Sources */ = {isa = PBXBuildFile; fileRef = ACCED0991FCF237A00AF8786 /* oauth2.c */; };
+		ACCED0A31FCF285300AF8786 /* nss.c in Sources */ = {isa = PBXBuildFile; fileRef = ACCED0A01FCF285300AF8786 /* nss.c */; };
+		ACCED0A41FCF285300AF8786 /* vtls.c in Sources */ = {isa = PBXBuildFile; fileRef = ACCED0A11FCF285300AF8786 /* vtls.c */; };
+		ACCED0A51FCF285300AF8786 /* vtls.h in Headers */ = {isa = PBXBuildFile; fileRef = ACCED0A21FCF285300AF8786 /* vtls.h */; };
 		BD2C944F10AE01D7008D4692 /* curl.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944510AE01D7008D4692 /* curl.h */; };
 		BD2C945210AE01D7008D4692 /* curlver.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944810AE01D7008D4692 /* curlver.h */; };
 		BD2C945310AE01D7008D4692 /* easy.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C944910AE01D7008D4692 /* easy.h */; };
@@ -352,8 +352,6 @@
 		AC1792BE1FC722680065041B /* curl_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl_config.h; sourceTree = "<group>"; };
 		AC1792BF1FC722680065041B /* urldata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = urldata.h; sourceTree = "<group>"; };
 		AC1792C01FC722680065041B /* hostcheck.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hostcheck.c; sourceTree = "<group>"; };
-		AC1792D71FC722CA0065041B /* nss.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nss.c; path = vtls/nss.c; sourceTree = "<group>"; };
-		AC1792DF1FC7231B0065041B /* cram.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cram.c; path = vauth/cram.c; sourceTree = "<group>"; };
 		AC1792EB1FC723DF0065041B /* curl_multibyte.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = curl_multibyte.c; sourceTree = "<group>"; };
 		AC1792EC1FC723DF0065041B /* curl_multibyte.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl_multibyte.h; sourceTree = "<group>"; };
 		AC1792EF1FC724640065041B /* curl_printf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl_printf.h; sourceTree = "<group>"; };
@@ -367,19 +365,21 @@
 		AC1792FE1FC727230065041B /* http_proxy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = http_proxy.c; sourceTree = "<group>"; };
 		AC1793011FC727700065041B /* ftplistparser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ftplistparser.c; sourceTree = "<group>"; };
 		AC1793021FC727710065041B /* ftplistparser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ftplistparser.h; sourceTree = "<group>"; };
-		AC1793051FC728380065041B /* vtls.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vtls.c; path = vtls/vtls.c; sourceTree = "<group>"; };
-		AC1793061FC728380065041B /* vtls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vtls.h; path = vtls/vtls.h; sourceTree = "<group>"; };
-		AC1793191FC72B900065041B /* digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = digest.h; path = vauth/digest.h; sourceTree = "<group>"; };
-		AC17931A1FC72B900065041B /* vauth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vauth.h; path = vauth/vauth.h; sourceTree = "<group>"; };
-		AC17931B1FC72B900065041B /* digest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = digest.c; path = vauth/digest.c; sourceTree = "<group>"; };
-		AC17931D1FC72B900065041B /* vauth.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vauth.c; path = vauth/vauth.c; sourceTree = "<group>"; };
 		AC1793291FC735260065041B /* curl_sasl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl_sasl.h; sourceTree = "<group>"; };
 		AC17932A1FC735260065041B /* curl_sasl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = curl_sasl.c; sourceTree = "<group>"; };
-		AC17932D1FC73DEC0065041B /* oauth2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = oauth2.c; path = vauth/oauth2.c; sourceTree = "<group>"; };
-		AC17932F1FC742FF0065041B /* cleartext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cleartext.c; path = vauth/cleartext.c; sourceTree = "<group>"; };
 		ACCED04E1FCF199800AF8786 /* curl_hmac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl_hmac.h; sourceTree = "<group>"; };
 		ACCED0571FCF1B0B00AF8786 /* non-ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "non-ascii.c"; sourceTree = "<group>"; };
 		ACCED0581FCF1B0B00AF8786 /* non-ascii.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "non-ascii.h"; sourceTree = "<group>"; };
+		ACCED08D1FCF234F00AF8786 /* digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = digest.h; path = vauth/digest.h; sourceTree = "<group>"; };
+		ACCED08E1FCF234F00AF8786 /* cram.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cram.c; path = vauth/cram.c; sourceTree = "<group>"; };
+		ACCED08F1FCF234F00AF8786 /* digest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = digest.c; path = vauth/digest.c; sourceTree = "<group>"; };
+		ACCED0901FCF234F00AF8786 /* cleartext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cleartext.c; path = vauth/cleartext.c; sourceTree = "<group>"; };
+		ACCED0911FCF234F00AF8786 /* vauth.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vauth.c; path = vauth/vauth.c; sourceTree = "<group>"; };
+		ACCED0921FCF234F00AF8786 /* vauth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vauth.h; path = vauth/vauth.h; sourceTree = "<group>"; };
+		ACCED0991FCF237A00AF8786 /* oauth2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = oauth2.c; path = vauth/oauth2.c; sourceTree = "<group>"; };
+		ACCED0A01FCF285300AF8786 /* nss.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nss.c; path = vtls/nss.c; sourceTree = "<group>"; };
+		ACCED0A11FCF285300AF8786 /* vtls.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vtls.c; path = vtls/vtls.c; sourceTree = "<group>"; };
+		ACCED0A21FCF285300AF8786 /* vtls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vtls.h; path = vtls/vtls.h; sourceTree = "<group>"; };
 		BD2C944510AE01D7008D4692 /* curl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curl.h; sourceTree = "<group>"; };
 		BD2C944810AE01D7008D4692 /* curlver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = curlver.h; sourceTree = "<group>"; };
 		BD2C944910AE01D7008D4692 /* easy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = easy.h; sourceTree = "<group>"; };
@@ -432,25 +432,35 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		AC1793181FC72B580065041B /* vauth */ = {
+		ACCED08C1FCF232C00AF8786 /* vauth */ = {
 			isa = PBXGroup;
 			children = (
-				AC17932F1FC742FF0065041B /* cleartext.c */,
-				AC17932D1FC73DEC0065041B /* oauth2.c */,
-				AC17931B1FC72B900065041B /* digest.c */,
-				AC1793191FC72B900065041B /* digest.h */,
-				AC17931D1FC72B900065041B /* vauth.c */,
-				AC17931A1FC72B900065041B /* vauth.h */,
+				ACCED0991FCF237A00AF8786 /* oauth2.c */,
+				ACCED0901FCF234F00AF8786 /* cleartext.c */,
+				ACCED08E1FCF234F00AF8786 /* cram.c */,
+				ACCED08F1FCF234F00AF8786 /* digest.c */,
+				ACCED08D1FCF234F00AF8786 /* digest.h */,
+				ACCED0911FCF234F00AF8786 /* vauth.c */,
+				ACCED0921FCF234F00AF8786 /* vauth.h */,
 			);
 			name = vauth;
+			sourceTree = "<group>";
+		};
+		ACCED09F1FCF281700AF8786 /* vtls */ = {
+			isa = PBXGroup;
+			children = (
+				ACCED0A01FCF285300AF8786 /* nss.c */,
+				ACCED0A11FCF285300AF8786 /* vtls.c */,
+				ACCED0A21FCF285300AF8786 /* vtls.h */,
+			);
+			name = vtls;
 			sourceTree = "<group>";
 		};
 		BD2C932D10AE01B7008D4692 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				ACCED0571FCF1B0B00AF8786 /* non-ascii.c */,
-				ACCED0581FCF1B0B00AF8786 /* non-ascii.h */,
-				ACCED04E1FCF199800AF8786 /* curl_hmac.h */,
+				ACCED09F1FCF281700AF8786 /* vtls */,
+				ACCED08C1FCF232C00AF8786 /* vauth */,
 				AC1791A11FC71C4A0065041B /* amigaos.c */,
 				AC1791A21FC71C4A0065041B /* amigaos.h */,
 				AC1792B11FC722670065041B /* asyn-thread.c */,
@@ -464,7 +474,6 @@
 				AC1791B91FC71DAE0065041B /* content_encoding.h */,
 				AC1791AC1FC71DAD0065041B /* cookie.c */,
 				AC1791B51FC71DAE0065041B /* cookie.h */,
-				AC1792DF1FC7231B0065041B /* cram.c */,
 				AC1791BD1FC71DAF0065041B /* curl_addrinfo.c */,
 				AC1791B81FC71DAE0065041B /* curl_addrinfo.h */,
 				AC1792F71FC725B10065041B /* curl_base64.h */,
@@ -473,6 +482,7 @@
 				AC1792B01FC722660065041B /* curl_fnmatch.h */,
 				AC1792BC1FC722680065041B /* curl_gethostname.c */,
 				AC1792B21FC722670065041B /* curl_gethostname.h */,
+				ACCED04E1FCF199800AF8786 /* curl_hmac.h */,
 				AC1792F51FC7252F0065041B /* curl_md5.h */,
 				AC1792F11FC724A40065041B /* curl_memory.h */,
 				AC1791B21FC71DAE0065041B /* curl_memrchr.c */,
@@ -553,9 +563,10 @@
 				AC1792F31FC7250A0065041B /* multiif.h */,
 				AC1792061FC71F080065041B /* netrc.c */,
 				AC1792071FC71F080065041B /* netrc.h */,
+				ACCED0571FCF1B0B00AF8786 /* non-ascii.c */,
+				ACCED0581FCF1B0B00AF8786 /* non-ascii.h */,
 				AC1792091FC71F080065041B /* nonblock.c */,
 				AC1791F81FC71F070065041B /* nonblock.h */,
-				AC1792D71FC722CA0065041B /* nss.c */,
 				AC1792041FC71F080065041B /* nwlib.c */,
 				AC1791F31FC71F060065041B /* nwos.c */,
 				AC1791FE1FC71F070065041B /* parsedate.c */,
@@ -616,10 +627,7 @@
 				AC1792411FC71FF80065041B /* url.c */,
 				AC17923A1FC71FF70065041B /* url.h */,
 				AC1792BF1FC722680065041B /* urldata.h */,
-				AC1793181FC72B580065041B /* vauth */,
 				AC17924A1FC71FFA0065041B /* version.c */,
-				AC1793051FC728380065041B /* vtls.c */,
-				AC1793061FC728380065041B /* vtls.h */,
 				AC17928B1FC7211C0065041B /* warnless.c */,
 				AC17928F1FC7211D0065041B /* warnless.h */,
 				AC1792921FC7211D0065041B /* wildcard.c */,
@@ -669,9 +677,7 @@
 				AC1791DB1FC71DB00065041B /* hash.h in Headers */,
 				AC1791DC1FC71DB00065041B /* dict.h in Headers */,
 				AC1791D01FC71DB00065041B /* curl_memrchr.h in Headers */,
-				AC17931F1FC72B900065041B /* digest.h in Headers */,
 				AC17926E1FC71FFC0065041B /* transfer.h in Headers */,
-				AC1793201FC72B900065041B /* vauth.h in Headers */,
 				AC1791E81FC71DB00065041B /* http_chunks.h in Headers */,
 				AC17927C1FC71FFC0065041B /* slist.h in Headers */,
 				AC1791D81FC71DB00065041B /* curl_addrinfo.h in Headers */,
@@ -686,6 +692,7 @@
 				AC17922C1FC71F090065041B /* netrc.h in Headers */,
 				AC1792C51FC722680065041B /* curl_fnmatch.h in Headers */,
 				AC1792C31FC722680065041B /* conncache.h in Headers */,
+				ACCED0A51FCF285300AF8786 /* vtls.h in Headers */,
 				BD2C944F10AE01D7008D4692 /* curl.h in Headers */,
 				AC1791DA1FC71DB00065041B /* escape.h in Headers */,
 				AC17927B1FC71FFC0065041B /* sendf.h in Headers */,
@@ -698,11 +705,13 @@
 				AC17929F1FC7211D0065041B /* gopher.h in Headers */,
 				BD2C945210AE01D7008D4692 /* curlver.h in Headers */,
 				ACCED04F1FCF199800AF8786 /* curl_hmac.h in Headers */,
+				ACCED0931FCF234F00AF8786 /* digest.h in Headers */,
 				AC1792D41FC722680065041B /* urldata.h in Headers */,
 				AC17926C1FC71FFC0065041B /* share.h in Headers */,
 				AC1792631FC71FFC0065041B /* strtoofft.h in Headers */,
 				AC1792981FC7211D0065041B /* pop3.h in Headers */,
 				AC1792251FC71F090065041B /* curl_setup.h in Headers */,
+				ACCED0981FCF234F00AF8786 /* vauth.h in Headers */,
 				AC17925D1FC71FFC0065041B /* strerror.h in Headers */,
 				AC1792111FC71F090065041B /* http_negotiate.h in Headers */,
 				AC1792151FC71F090065041B /* inet_pton.h in Headers */,
@@ -724,7 +733,6 @@
 				AC1791D11FC71DB00065041B /* ftp.h in Headers */,
 				AC17926F1FC71FFC0065041B /* strdup.h in Headers */,
 				AC1792D01FC722680065041B /* asyn.h in Headers */,
-				AC1793081FC728380065041B /* vtls.h in Headers */,
 				AC17921D1FC71F090065041B /* nonblock.h in Headers */,
 				AC17929B1FC7211D0065041B /* rtsp.h in Headers */,
 				AC1792A71FC7211D0065041B /* strcase.h in Headers */,
@@ -815,11 +823,11 @@
 				AC17926D1FC71FFC0065041B /* strerror.c in Sources */,
 				AC1791CE1FC71DB00065041B /* content_encoding.c in Sources */,
 				AC1792651FC71FFC0065041B /* socks.c in Sources */,
+				ACCED0941FCF234F00AF8786 /* cram.c in Sources */,
 				AC1792A11FC7211D0065041B /* rtsp.c in Sources */,
 				AC17922D1FC71F090065041B /* memdebug.c in Sources */,
 				AC1791E11FC71DB00065041B /* hostsyn.c in Sources */,
 				AC1791CD1FC71DB00065041B /* curl_sspi.c in Sources */,
-				AC1793231FC72B900065041B /* vauth.c in Sources */,
 				AC17921E1FC71F090065041B /* multi.c in Sources */,
 				AC1792191FC71F090065041B /* http_digest.c in Sources */,
 				AC1792A51FC7211D0065041B /* pingpong.c in Sources */,
@@ -827,24 +835,23 @@
 				AC17929C1FC7211D0065041B /* pipeline.c in Sources */,
 				AC17922F1FC71F090065041B /* hostip6.c in Sources */,
 				AC1792701FC71FFC0065041B /* version.c in Sources */,
-				AC1793071FC728380065041B /* vtls.c in Sources */,
 				AC1791CA1FC71DB00065041B /* rand.c in Sources */,
 				AC1792241FC71F090065041B /* progress.c in Sources */,
 				AC1792181FC71F090065041B /* nwos.c in Sources */,
-				AC1793211FC72B900065041B /* digest.c in Sources */,
 				AC1792761FC71FFC0065041B /* strtoofft.c in Sources */,
-				AC1792DA1FC722CB0065041B /* nss.c in Sources */,
 				AC1792301FC71F090065041B /* inet_pton.c in Sources */,
 				AC1792CC1FC722680065041B /* curl_fnmatch.c in Sources */,
 				AC1791A81FC71C690065041B /* connect.c in Sources */,
 				AC1792CF1FC722680065041B /* hmac.c in Sources */,
 				AC17926B1FC71FFC0065041B /* tftp.c in Sources */,
 				AC1791E71FC71DB00065041B /* http_chunks.c in Sources */,
+				ACCED0951FCF234F00AF8786 /* digest.c in Sources */,
 				AC1792AB1FC7211D0065041B /* pop3.c in Sources */,
-				AC1793301FC743000065041B /* cleartext.c in Sources */,
+				ACCED0961FCF234F00AF8786 /* cleartext.c in Sources */,
 				AC1792671FC71FFC0065041B /* url.c in Sources */,
 				AC1792721FC71FFC0065041B /* share.c in Sources */,
 				AC1792C21FC722680065041B /* dotdot.c in Sources */,
+				ACCED0A31FCF285300AF8786 /* nss.c in Sources */,
 				AC1791E51FC71DB00065041B /* dict.c in Sources */,
 				AC1791CC1FC71DB00065041B /* cookie.c in Sources */,
 				AC1792781FC71FFC0065041B /* security.c in Sources */,
@@ -857,7 +864,6 @@
 				AC1792A21FC7211D0065041B /* warnless.c in Sources */,
 				ACCED0591FCF1B0B00AF8786 /* non-ascii.c in Sources */,
 				AC1791CF1FC71DB00065041B /* file.c in Sources */,
-				AC17932E1FC73DEC0065041B /* oauth2.c in Sources */,
 				AC1792791FC71FFC0065041B /* telnet.c in Sources */,
 				AC17922B1FC71F090065041B /* netrc.c in Sources */,
 				AC17925F1FC71FFC0065041B /* socks_sspi.c in Sources */,
@@ -871,6 +877,7 @@
 				AC1792121FC71F090065041B /* mprintf.c in Sources */,
 				AC1792281FC71F090065041B /* md5.c in Sources */,
 				AC1791DF1FC71DB00065041B /* escape.c in Sources */,
+				ACCED09A1FCF237A00AF8786 /* oauth2.c in Sources */,
 				AC1792A91FC7211D0065041B /* wildcard.c in Sources */,
 				AC1792621FC71FFC0065041B /* splay.c in Sources */,
 				AC1792D51FC722680065041B /* hostcheck.c in Sources */,
@@ -878,13 +885,13 @@
 				AC1791DD1FC71DB00065041B /* curl_addrinfo.c in Sources */,
 				AC1792221FC71F090065041B /* hostip.c in Sources */,
 				AC1792AA1FC7211D0065041B /* imap.c in Sources */,
+				ACCED0A41FCF285300AF8786 /* vtls.c in Sources */,
 				AC1792661FC71FFC0065041B /* transfer.c in Sources */,
 				AC1792271FC71F090065041B /* hostasyn.c in Sources */,
 				AC1792C61FC722680065041B /* asyn-thread.c in Sources */,
 				AC1792261FC71F090065041B /* llist.c in Sources */,
 				AC17927D1FC71FFC0065041B /* socks_gssapi.c in Sources */,
 				AC17921F1FC71F090065041B /* inet_ntop.c in Sources */,
-				AC1792E61FC7231C0065041B /* cram.c in Sources */,
 				AC1792A31FC7211D0065041B /* curl_threads.c in Sources */,
 				AC1791A61FC71C4A0065041B /* base64.c in Sources */,
 				AC1792711FC71FFC0065041B /* slist.c in Sources */,
@@ -893,6 +900,7 @@
 				AC17925C1FC71FFC0065041B /* strtok.c in Sources */,
 				AC1792641FC71FFC0065041B /* timeval.c in Sources */,
 				AC1791D21FC71DB00065041B /* curl_memrchr.c in Sources */,
+				ACCED0971FCF234F00AF8786 /* vauth.c in Sources */,
 				AC1793001FC727240065041B /* http_proxy.c in Sources */,
 				AC1792591FC71FFC0065041B /* strdup.c in Sources */,
 				AC1791CB1FC71DB00065041B /* http.c in Sources */,

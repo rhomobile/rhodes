@@ -27,7 +27,11 @@
 #include <curl/curl.h>
 #include "urldata.h"
 
+#ifdef __APPLE__
 #include "vauth.h"
+#else
+#include "vauth/vauth.h"
+#endif
 #include "curl_base64.h"
 #include "warnless.h"
 #include "curl_printf.h"
