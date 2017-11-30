@@ -31,6 +31,7 @@
 #endif
 #include "rhoruby.h"
 #include "vm_core.h"
+#include "transcode_data.h"
 
 #ifdef ENABLE_RUBY_VM_STAT
 #include "../stat/stat.h"
@@ -82,6 +83,7 @@ extern void Init_Extensions(void);
 extern void init_rhoext_Signature();
 extern void Init_encdb(void);
 extern void ruby_init_prelude(void);
+extern void Init_transcode(void);
 
 
 //RhoSupport extension
@@ -186,6 +188,11 @@ char *tzname[2];
 
 void RhoModifyRubyLoadPath( const char* );
 
+void Init_transcoders() {
+    TRANS_INIT(utf_16_32);
+    TRANS_INIT(single_byte);
+}
+
 void RhoRubyStart()
 {
     const char* szRoot = rho_native_rhopath();
@@ -209,6 +216,8 @@ void RhoRubyStart()
 
     ruby_init();
     Init_encdb();
+    Init_transcode();
+    Init_transcoders();
 
 #if defined(DEBUG)
     //enable_gc_profile();
