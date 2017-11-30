@@ -603,8 +603,9 @@ io_unread(rb_io_t *fptr)
 static inline int
 set_binary_mode_with_seek_cur(rb_io_t *fptr)
 {
+#ifndef OS_UWP
     if (!rb_w32_fd_is_text(fptr->fd)) return O_BINARY;
-
+#endif
     if (fptr->rbuf.len == 0 || fptr->mode & FMODE_DUPLEX) {
 	return fpsetmode(fptr->fd, O_BINARY);
     }

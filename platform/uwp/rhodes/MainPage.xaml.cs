@@ -285,14 +285,32 @@ namespace rhodes
             //int revision = (int)((version & 0x000000000000FFFFL));            
 
             rhoDir = new DirectoryInfo(localFolder.Path + "\\rho");
-            System.IO.Directory.SetCurrentDirectory(rhoDir.FullName);
+            
             if (!rhoDir.Exists)
             {
                 DirectoryCopy(appInstalledFolder.Path + "\\rho", rhoDir.FullName, true);
-                localFolder.CreateFileAsync("\\rho\\" + title, Windows.Storage.CreationCollisionOption.OpenIfExists);
+                localFolder.CreateFileAsync("\\rho\\" + title, Windows.Storage.CreationCollisionOption.OpenIfExists).Completed = (arg1, arg2) => {
+                    try
+                    {
+                        System.IO.Directory.SetCurrentDirectory(rhoDir.FullName);
+                    }
+                    catch (Exception e)
+                    {
+                        deb("Exception on setting current directiory: " + e.Message);
+                    }
+
+                }; ;
             }
             else
             {
+                try
+                {
+                    System.IO.Directory.SetCurrentDirectory(rhoDir.FullName);
+                }
+                catch (Exception e)
+                {
+                    deb("Exception on setting current directiory: " + e.Message);
+                }
                 FileInfo fInfo = new FileInfo(localFolder.Path + "\\rho\\" + title);
                 if (fInfo.Exists){
                     deb("Rho exists");
@@ -307,6 +325,7 @@ namespace rhodes
                     localFolder.CreateFileAsync("\\rho\\" + title, Windows.Storage.CreationCollisionOption.OpenIfExists);
                 }
             }
+            
 
             {
                 IAsyncOperation<StorageFile> task = localFolder.CreateFileAsync("nullfile", Windows.Storage.CreationCollisionOption.OpenIfExists);
