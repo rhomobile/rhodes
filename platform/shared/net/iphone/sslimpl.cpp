@@ -26,6 +26,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CFNetwork/CFNetwork.h>
+#include <Security/Security.h>
 
 #include "sslimpl.h"
 
@@ -162,6 +163,15 @@ ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)
     
     return rc;
     
+}
+
+bool SSLImpl::rand(unsigned char *entropy, size_t length)
+{
+    //unsigned char* rand_array = new unsigned char[length];
+    int res = SecRandomCopyBytes(kSecRandomDefault, length, entropy);
+    if (res) return false;
+
+    return true;    
 }
 
 } // namespace net

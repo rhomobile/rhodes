@@ -7,11 +7,11 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2016, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
- * are also available at http://curl.haxx.se/docs/copyright.html.
+ * are also available at https://curl.haxx.se/docs/copyright.html.
  *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
@@ -20,14 +20,10 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: curl_addrinfo.h,v 1.4 2009-05-02 02:37:34 yangtse Exp $
  ***************************************************************************/
 
-#include "setup.h"
+#include "curl_setup.h"
 
-#ifdef HAVE_SYS_SOCKET_H
-#  include <sys/socket.h>
-#endif
 #ifdef HAVE_NETINET_IN_H
 #  include <netinet/in.h>
 #endif
@@ -38,14 +34,14 @@
 #  include <arpa/inet.h>
 #endif
 
-#ifdef  VMS
+#ifdef __VMS
 #  include <in.h>
 #  include <inet.h>
 #  include <stdlib.h>
 #endif
 
 
-/* 
+/*
  * Curl_addrinfo is our internal struct definition that we use to allow
  * consistent internal handling of this data. We use this even when the
  * system provides an addrinfo structure definition. And we use this for
@@ -81,7 +77,14 @@ Curl_he2ai(const struct hostent *he, int port);
 Curl_addrinfo *
 Curl_ip2addr(int af, const void *inaddr, const char *hostname, int port);
 
-#if defined(CURLDEBUG) && defined(HAVE_FREEADDRINFO)
+Curl_addrinfo *Curl_str2addr(char *dotted, int port);
+
+#ifdef USE_UNIX_SOCKETS
+Curl_addrinfo *Curl_unix2addr(const char *path, bool *longpath, bool abstract);
+#endif
+
+#if defined(CURLDEBUG) && defined(HAVE_GETADDRINFO) && \
+    defined(HAVE_FREEADDRINFO)
 void
 curl_dofreeaddrinfo(struct addrinfo *freethis,
                     int line, const char *source);
@@ -94,6 +97,14 @@ curl_dogetaddrinfo(const char *hostname,
                    const struct addrinfo *hints,
                    struct addrinfo **result,
                    int line, const char *source);
+#endif
+
+#ifdef HAVE_GETADDRINFO
+#ifdef USE_RESOLVE_ON_IPS
+void Curl_addrinfo_set_port(Curl_addrinfo *addrinfo, int port);
+#else
+#define Curl_addrinfo_set_port(x,y)
+#endif
 #endif
 
 #endif /* HEADER_CURL_ADDRINFO_H */

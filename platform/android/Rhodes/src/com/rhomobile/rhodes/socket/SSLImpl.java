@@ -62,6 +62,7 @@ import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.file.RhoFileApi;
 
 import java.util.StringTokenizer;
+import java.security.SecureRandom;
 
 
 public class SSLImpl {
@@ -363,6 +364,20 @@ public class SSLImpl {
 		}
 		return factory;
 	}
+
+	public static boolean rand(byte[] entropy)
+    {
+        try {
+            SecureRandom random = new SecureRandom();
+            random.nextBytes(entropy);
+            return true;
+        }
+        catch (Exception e) {
+            reportFail("connect", e);
+            e.printStackTrace();
+            return false;
+        }
+    }
 	
 	public boolean connect(int fd, boolean sslVerifyPeer, String hostname ) {
 		try {
@@ -454,5 +469,7 @@ public class SSLImpl {
 		}
         return -1;
     }
+
+
 
 }

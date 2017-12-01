@@ -5,11 +5,11 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2009, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2017, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
- * are also available at http://curl.haxx.se/docs/copyright.html.
+ * are also available at https://curl.haxx.se/docs/copyright.html.
  *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
@@ -18,13 +18,11 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: llist.c,v 1.24 2009-04-21 11:46:17 yangtse Exp $
  ***************************************************************************/
 
-#include "setup.h"
+#include "curl_setup.h"
 
-#include <string.h>
-#include <stdlib.h>
+#include <curl/curl.h>
 
 #include "llist.h"
 #include "curl_memory.h"
@@ -32,6 +30,9 @@
 /* this must be the last include file */
 #include "memdebug.h"
 
+/*
+ * @unittest: 1300
+ */
 void
 Curl_llist_init(struct curl_llist *l, curl_llist_dtor dtor)
 {
@@ -41,31 +42,22 @@ Curl_llist_init(struct curl_llist *l, curl_llist_dtor dtor)
   l->tail = NULL;
 }
 
-struct curl_llist *
-Curl_llist_alloc(curl_llist_dtor dtor)
-{
-  struct curl_llist *list;
-
-  list = malloc(sizeof(struct curl_llist));
-  if(NULL == list)
-    return NULL;
-
-  Curl_llist_init(list, dtor);
-
-  return list;
-}
-
 /*
- * Curl_llist_insert_next() returns 1 on success and 0 on failure.
+ * Curl_llist_insert_next()
+ *
+ * Inserts a new list element after the given one 'e'. If the given existing
+ * entry is NULL and the list already has elements, the new one will be
+ * inserted first in the list.
+ *
+ * The 'ne' argument should be a pointer into the object to store.
+ *
+ * @unittest: 1300
  */
-int
+void
 Curl_llist_insert_next(struct curl_llist *list, struct curl_llist_element *e,
-                       const void *p)
+                       const void *p,
+                       struct curl_llist_element *ne)
 {
-  struct curl_llist_element *ne = malloc(sizeof(struct curl_llist_element));
-  if(!ne)
-    return 0;
-
   ne->ptr = (void *) p;
   if(list->size == 0) {
     list->head = ne;
@@ -74,28 +66,36 @@ Curl_llist_insert_next(struct curl_llist *list, struct curl_llist_element *e,
     list->tail = ne;
   }
   else {
-    ne->next = e->next;
+    /* if 'e' is NULL here, we insert the new element first in the list */
+    ne->next = e?e->next:list->head;
     ne->prev = e;
-    if(e->next) {
+    if(!e) {
+      list->head->prev = ne;
+      list->head = ne;
+    }
+    else if(e->next) {
       e->next->prev = ne;
     }
     else {
       list->tail = ne;
     }
-    e->next = ne;
+    if(e)
+      e->next = ne;
   }
 
   ++list->size;
-
-  return 1;
 }
 
-int
+/*
+ * @unittest: 1300
+ */
+void
 Curl_llist_remove(struct curl_llist *list, struct curl_llist_element *e,
                   void *user)
 {
+  void *ptr;
   if(e == NULL || list->size == 0)
-    return 1;
+    return;
 
   if(e == list->head) {
     list->head = e->next;
@@ -104,7 +104,8 @@ Curl_llist_remove(struct curl_llist *list, struct curl_llist_element *e,
       list->tail = NULL;
     else
       e->next->prev = NULL;
-  } else {
+  }
+  else {
     e->prev->next = e->next;
     if(!e->next)
       list->tail = e->prev;
@@ -112,12 +113,17 @@ Curl_llist_remove(struct curl_llist *list, struct curl_llist_element *e,
       e->next->prev = e->prev;
   }
 
-  list->dtor(user, e->ptr);
+  ptr = e->ptr;
 
-  free(e);
+  e->ptr  = NULL;
+  e->prev = NULL;
+  e->next = NULL;
+
   --list->size;
 
-  return 1;
+  /* call the dtor() last for when it actually frees the 'e' memory itself */
+  if(list->dtor)
+    list->dtor(user, ptr);
 }
 
 void
@@ -126,8 +132,6 @@ Curl_llist_destroy(struct curl_llist *list, void *user)
   if(list) {
     while(list->size > 0)
       Curl_llist_remove(list, list->tail, user);
-
-    free(list);
   }
 }
 
@@ -137,12 +141,16 @@ Curl_llist_count(struct curl_llist *list)
   return list->size;
 }
 
-int Curl_llist_move(struct curl_llist *list, struct curl_llist_element *e,
-                    struct curl_llist *to_list, struct curl_llist_element *to_e)
+/*
+ * @unittest: 1300
+ */
+void Curl_llist_move(struct curl_llist *list, struct curl_llist_element *e,
+                     struct curl_llist *to_list,
+                     struct curl_llist_element *to_e)
 {
   /* Remove element from list */
   if(e == NULL || list->size == 0)
-    return 0;
+    return;
 
   if(e == list->head) {
     list->head = e->next;
@@ -182,6 +190,4 @@ int Curl_llist_move(struct curl_llist *list, struct curl_llist_element *e,
   }
 
   ++to_list->size;
-
-  return 1;
 }

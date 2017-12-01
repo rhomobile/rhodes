@@ -26,7 +26,7 @@
  * but sslgen.c should ever call or use these functions.
  */
 
-#include "setup.h"
+#include "curl_setup.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -43,15 +43,16 @@
 #include "formdata.h" /* for the boundary function */
 #include "url.h" /* for the ssl config check function */
 #include "inet_pton.h"
-#include "ssluse.h"
+//#include "ssluse.h"
 #include "connect.h"
-#include "strequal.h"
+//#include "strequal.h"
 #include "select.h"
-#include "sslgen.h"
-#include "rawstr.h"
+#include "vtls/vtls.h"
+//#include "rawstr.h"
 
 #define _MPRINTF_REPLACE /* use the internal *printf() functions */
 #include <curl/mprintf.h>
+#include <assert.h>
 
 #ifdef USE_RHOSSL
 
@@ -63,6 +64,7 @@ extern CURLcode rho_ssl_connect(int sockfd, int nonblocking, int *done, int ssl_
 extern void rho_ssl_shutdown(void *storage);
 extern ssize_t rho_ssl_send(const void *mem, size_t len, void *storage);
 extern ssize_t rho_ssl_recv(char *buf, size_t size, int *wouldblock, void *storage);
+extern bool rho_ssl_rand(unsigned char *entropy, size_t length);
 
 /**
  * Global SSL init
@@ -97,12 +99,14 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
 
 	sprintf(host,"%s:%d\0", conn->host.name, conn->port); 
 
-	retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->verifypeer, connssl->storage, host);
+	retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->primary.verifypeer, connssl->storage, host);
     if (retcode)
         return retcode;
     
     *done = (bool)idone;
     connssl->state = ssl_connection_complete;
+    conn->recv[sockindex] = Curl_rhossl_recv;
+    conn->send[sockindex] = Curl_rhossl_send;
     
     return retcode;
 }
@@ -132,7 +136,7 @@ void Curl_rhossl_session_free(void *ptr)
     free(ptr);
 }
 
-int Curl_rhossl_close_all(struct SessionHandle *data)
+int Curl_rhossl_close_all(struct Curl_easy *data)
 {
     (void)data;
     return 0;
@@ -172,6 +176,14 @@ ssize_t Curl_rhossl_recv(struct connectdata *conn, int sockindex, char *buf, siz
 size_t Curl_rhossl_version(char *buffer, size_t size)
 {
     return snprintf(buffer, size, "RhoSSL/1.0");
+}
+
+CURLcode Curl_rhossl_random(struct Curl_easy *data, unsigned char *entropy,
+                          size_t length)
+{
+    assert(entropy);
+    bool result = rho_ssl_rand(entropy, length);
+	return result ? CURLE_OK : CURLE_FAILED_INIT;
 }
 
 #endif /* USE_RHOSSL */

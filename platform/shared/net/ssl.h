@@ -48,6 +48,7 @@ struct ISSL
     virtual void shutdown(void *storage) = 0;
     virtual ssize_t send(const void *mem, size_t len, void *storage) = 0;
     virtual ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage) = 0;
+    virtual bool rand(unsigned char *entropy, size_t length) = 0;
 };
 
 }
@@ -60,4 +61,5 @@ CURLcode rho_ssl_connect(int sockfd, int nonblocking, int *done, int ssl_verify_
 void rho_ssl_shutdown(void *storage);
 ssize_t rho_ssl_send(const void *mem, size_t len, void *storage);
 ssize_t rho_ssl_recv(char *buf, size_t size, int *wouldblock, void *storage);
+bool rho_ssl_rand(unsigned char *entropy, size_t length);
 }
