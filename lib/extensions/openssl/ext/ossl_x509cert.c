@@ -8,7 +8,7 @@
  * (See the file 'LICENCE'.)
  */
 #include "ossl.h"
-#include <ruby\posixnames.h>
+#include <ruby/posixnames.h>
 
 #define NewX509(klass) \
     TypedData_Wrap_Struct((klass), &ossl_x509_type, 0)
