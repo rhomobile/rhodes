@@ -33,7 +33,7 @@ struct curltime curlx_tvnow(void)
   */
   struct curltime now;
 #if !defined(_WIN32_WINNT) || !defined(_WIN32_WINNT_VISTA) || \
-    (_WIN32_WINNT < _WIN32_WINNT_VISTA) ||
+    (_WIN32_WINNT < _WIN32_WINNT_VISTA) || \
     (!defined (OS_WP8) && !defined(OS_UWP))
   DWORD milliseconds = GetTickCount();
   now.tv_sec = milliseconds / 1000;
