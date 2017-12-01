@@ -123,7 +123,13 @@ rb_rational_den(VALUE rat)
 #ifdef HAVE_TYPE_STRUCT_RRATIONAL
     return RRATIONAL(rat)->den;
 #else
-    return rb_funcall(rat, rb_intern("denominator"));
+#ifndef OS_UWP
+	return rb_funcall(rat, rb_intern("denominator"));
+#else
+	return rb_funcall(rat, rb_intern("denominator"), 0);
+#endif // !OS_UWP
+
+    
 #endif
 }
 #endif

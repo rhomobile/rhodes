@@ -2,3 +2,6 @@ entry: Init_zlib
 libraries: [ "zlib" ]
 android:
   exttype: rakefile
+
+project_paths: 
+  uwp: ext/uwp/zlib.vcxproj

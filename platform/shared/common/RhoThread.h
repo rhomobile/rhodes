@@ -42,7 +42,7 @@ class CRhoThread : public IRhoRunnable
     static const int TS_STOPPING = 2;
     static const int TS_RUNNING = 4;
 
-    int m_nState;
+    volatile int m_nState;
     unsigned int m_nThreadID;
 public:
 
@@ -50,8 +50,17 @@ public:
     virtual ~CRhoThread(void){};
 
     virtual void start(EPriority ePriority);
-    virtual void stop(unsigned int nTimeoutToKillMs){ m_nState |= TS_STOPPING; if (m_nState&TS_RUNNING) m_pImpl->stop(nTimeoutToKillMs); m_nState &= ~TS_STOPPING; }
-    virtual int wait(unsigned int nTimeoutMs){ m_nState |= TS_WAIT; int nRet = 0; if ((m_nState&TS_RUNNING) && !(m_nState&TS_STOPPING) ) nRet = m_pImpl->wait(nTimeoutMs); m_nState &= ~TS_WAIT; return nRet; }
+    virtual void stop(unsigned int nTimeoutToKillMs){
+		m_nState |= TS_STOPPING; 
+		if (m_nState&TS_RUNNING) m_pImpl->stop(nTimeoutToKillMs); 
+		m_nState &= ~TS_STOPPING; 
+	}
+    virtual int wait(unsigned int nTimeoutMs){ 
+		m_nState |= TS_WAIT; 
+		int nRet = 0; 
+		if ((m_nState&TS_RUNNING) && !(m_nState&TS_STOPPING) ) nRet = m_pImpl->wait(nTimeoutMs);
+		m_nState &= ~TS_WAIT; 
+		return nRet; }
     virtual void stopWait(){ /*if (isWaiting())*/ m_pImpl->stopWait(); }
     virtual void sleep(unsigned int nTimeoutMs){ m_pImpl->sleep(nTimeoutMs); }
     virtual void run() = 0;

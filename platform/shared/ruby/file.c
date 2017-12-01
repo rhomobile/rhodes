@@ -3097,8 +3097,20 @@ rb_enc_path_skip_prefix(const char *path, const char *end, rb_encoding *enc)
 {
 #if defined(DOSISH_UNC) || defined(DOSISH_DRIVE_LETTER)
 #ifdef DOSISH_UNC
-    if (path + 2 <= end && isdirsep(path[0]) && isdirsep(path[1])) {
-	path += 2;
+	
+	int basicIncrement = 2;
+#ifdef OS_UWP
+	int iter = 2;
+	while (getLocalRhoFolder()[iter] != '\0')
+	{
+		if (iter > 255) break;
+		iter++;
+	}
+	basicIncrement = iter;
+#endif // OS_UWP
+
+    if (path + basicIncrement <= end && isdirsep(path[0]) && isdirsep(path[1])) {
+	path += basicIncrement;
 	while (path < end && isdirsep(*path)) path++;
 	if ((path = rb_enc_path_next(path, end, enc)) < end && path[0] && path[1] && !isdirsep(path[1]))
 	    path = rb_enc_path_next(path + 1, end, enc);
@@ -3106,8 +3118,7 @@ rb_enc_path_skip_prefix(const char *path, const char *end, rb_encoding *enc)
     }
 #endif
 #ifdef DOSISH_DRIVE_LETTER
-    if (has_drive_letter(path))
-	return (char *)(path + 2);
+	if (has_drive_letter(path))	return (char *)(path + 2);
 #endif
 #endif
     return (char *)path;
@@ -3118,7 +3129,7 @@ skipprefixroot(const char *path, const char *end, rb_encoding *enc)
 {
 #if defined(DOSISH_UNC) || defined(DOSISH_DRIVE_LETTER)
     char *p = skipprefix(path, end, enc);
-    while (isdirsep(*p)) p++;
+	while (isdirsep(*p)) p++;
     return p;
 #else
     return skiproot(path, end, enc);
@@ -3796,6 +3807,12 @@ realpath_rec(long *prefixlenp, VALUE *resolvedp, const char *unresolved, VALUE l
 	const char *testname = unresolved;
 	const char *unresolved_firstsep = rb_enc_path_next(unresolved, pend, enc);
 	long testnamelen = unresolved_firstsep - unresolved;
+	#ifdef OS_UWP
+	testnamelen = 0;
+	while (testname[testnamelen] != '\0') {testnamelen++;}
+	unresolved_firstsep = unresolved + testnamelen;
+	#endif // OS_UWP
+
 	const char *unresolved_nextname = unresolved_firstsep;
         while (unresolved_nextname < pend && isdirsep(*unresolved_nextname))
 	    unresolved_nextname++;
@@ -3937,7 +3954,7 @@ rb_realpath_internal(VALUE basedir, VALUE path, int strict)
 
     curdir = rb_dir_getwd();
     RSTRING_GETMEM(curdir, ptr, len);
-    curdir_names = skipprefixroot(ptr, ptr + len, rb_enc_get(curdir));
+	curdir_names = skipprefixroot(ptr, ptr + len, rb_enc_get(curdir));
     resolved = rb_str_subseq(curdir, 0, curdir_names - ptr);
 
   root_found:

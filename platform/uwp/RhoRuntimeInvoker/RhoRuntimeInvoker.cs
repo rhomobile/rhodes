@@ -12,6 +12,7 @@ namespace RhoRuntimeInvoker
     {
         public String invoke(String cmd)
         {
+            System.Diagnostics.Debug.WriteLine("Invoking JS code: " + cmd);
             String str = CRhoRuntime.getInstance().onJSInvoke(cmd);
             System.Diagnostics.Debug.WriteLine(cmd + " : " + str);
             return str;

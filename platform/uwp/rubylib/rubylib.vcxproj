@@ -121,7 +121,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;OS_UWP;POSIXNAME;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_WIN32;OS_UWP;POSIXNAME;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -152,7 +152,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_WIN32;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -184,7 +184,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;OS_UWP;POSIXNAME;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_WIN32;OS_UWP;POSIXNAME;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -215,7 +215,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;OS_UWP;POSIXNAME;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_WIN32;OS_UWP;POSIXNAME;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -246,7 +246,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_WIN32;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -278,7 +278,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>_LIB;_UWP_LIB;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;_UWP_LIB;_WIN32;POSIXNAME;OS_UWP;CPP_ELEVEN;_WIN32;WIN32;_WINDOWS;_UNICODE;UNICODE;STATIC_LINKED;RHODES_VERSION_2;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_ruby.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
