@@ -26,6 +26,7 @@
 
 #include <curl/curl.h>
 #include "system_win32.h"
+#include <WinBase.h>
 
 /* The last #include files should be: */
 #include "curl_memory.h"
