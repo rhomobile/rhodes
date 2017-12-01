@@ -7,8 +7,6 @@ namespace rhodes {
             NativeToolbarFactoryComponent.setImpl(new rho.NativeToolbarImpl.NativeToolbarFactory());
             NativeTabbarFactoryComponent.setImpl(new rho.NativeTabbarImpl.NativeTabbarFactory());
             TimerFactoryComponent.setImpl(new rho.TimerImpl.TimerFactory());
-            CameraFactoryComponent.setImpl(new rho.CameraImpl.CameraFactory());
-            SensorFactoryComponent.setImpl(new rho.SensorImpl.SensorFactory());
         }
     }
 }
