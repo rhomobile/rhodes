@@ -189,5 +189,12 @@ namespace rho
 			return retCode;
 		}
 
+		bool SSLImpl::rand(unsigned char *entropy, size_t length)
+		{
+			for (int i = 0; i < length; i++){entropy[i] = std::rand() % 256;}
+			//TODO: make it more security random
+			return true;
+		}
+
 	} // namespace net
 } // namespace rho
