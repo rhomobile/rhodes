@@ -188,10 +188,19 @@ char *tzname[2];
 
 void RhoModifyRubyLoadPath( const char* );
 
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
+
+void Init_trans_utf_16_32();
+void Init_trans_single_byte();
+
 void Init_transcoders() {
-    TRANS_INIT(utf_16_32);
-    TRANS_INIT(single_byte);
+    //TRANS_INIT(utf_16_32);
+    //TRANS_INIT(single_byte);
+    Init_trans_utf_16_32();
+    Init_trans_single_byte();
 }
+#endif
+
 
 void RhoRubyStart()
 {
@@ -216,8 +225,10 @@ void RhoRubyStart()
 
     ruby_init();
     Init_encdb();
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
     Init_transcode();
     Init_transcoders();
+#endif
 
 #if defined(DEBUG)
     //enable_gc_profile();

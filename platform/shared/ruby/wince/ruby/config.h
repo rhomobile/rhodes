@@ -195,4 +195,8 @@ config.h: nul
 #define HAVE_GETHOSTNAME 1
 //RHO
 
+//RHO for encoding & convertors
+#define EXTSTATIC 1
+
+
 #endif //CONFIG_RUBY_H
