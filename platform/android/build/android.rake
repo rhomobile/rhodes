@@ -743,25 +743,35 @@ namespace "config" do
       apilevel = nil
       target_name = nil
 
+      $logger.debug "Parsing 'list target' output"
+
       `"#{$androidbin}" list target`.split(/\n/).each do |line|
         line.chomp!
+
+        $logger.debug "parsing line: #{line}"
 
         if line =~ /^id:\s+([0-9]+)\s+or\s+\"(.*)\"/
           id = $1
           target_name = $2
 
+          $logger.debug "found target. ID: #{id}; name: #{target_name}"
+
           if $use_google_addon_api
+            $logger.debug "checking if target is applcable for Google API"
             if line =~ /Google Inc\.:Google APIs:([0-9]+)/
               apilevel = $1.to_i
               $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
+              $logger.debug "adding target #{id} for Google API"
             end
           end
         end
 
         unless $use_google_addon_api
+          $logger.debug "checking if target is applcable for non-Google API"
           if line =~ /^\s+API\s+level:\s+([0-9]+)$/
             apilevel = $1.to_i
             $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
+            $logger.debug "adding target #{id} for non-Google API"
           end
         end
 
@@ -771,15 +781,12 @@ namespace "config" do
             $2.split(/,\s*/).each do |abi|
               $androidtargets[apilevel][:abis] << abi
             end
-            puts $androidtargets[apilevel][:abis].inspect if USE_TRACES
+            $logger.debug "added target abis: #{pp $androidtargets[apilevel][:abis].inspect}"
           end
         end
       end
 
-      if USE_TRACES
-        puts "Android targets:"
-        puts $androidtargets.inspect
-      end
+      $logger.debug "Android targets:\n#{pp $androidtargets.inspect}"
 
     end
 

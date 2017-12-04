@@ -301,7 +301,11 @@ def create_avd( avdname, apilevel, abi, use_google_apis )
   @@logger.info "Creating AVD image old style: #{createavd}"
 
   out, err, wait_thr = Jake.run_with_output(createavd)
-  unless ( err.empty? and wait_thr.value.success? )
+
+  @@logger.info "AVD create output:\n#{out}"
+  @@logger.warn "AVD create errors:\n#{err}" unless err.strip.empty?
+
+  unless ( err.strip.empty? and wait_thr.value.success? )
     createavd = "echo no | \"#{avdmanager}\" --verbose create avd --name #{avdname} --package \"system-images;android-#{apilevel};#{s_apis};#{abi}\" --sdcard 512M"
     @@logger.warn "Creating AVD failed. Will try new style: #{createavd}"
     %x[#{createavd}]
@@ -341,7 +345,7 @@ def get_avd_image( apilevel, abis, use_google_apis )
   abis.each do |abi|
     realabi = get_avd_image_real_abi(apilevel,abi,true) #first always try Google APIs image;
     return realabi, true if realabi
-    realabi = get_avd_image_real_abi(apilevel,abi,false)
+    realabi = get_avd_image_real_abi(apilevel,abi,false) unless use_google_apis
     return realabi, false if realabi
   end  
   nil
@@ -349,7 +353,7 @@ end
 module_function :get_avd_image
 
 def find_suitable_avd_image( apilevel, abis, use_google_apis )
-  pp $androidtargets if USE_TRACES
+  @@logger.debug "Android targets:\n#{pp $androidtargets}"
 
   realabi = get_avd_image( apilevel, abis, use_google_apis )
   return apilevel, realabi if realabi
