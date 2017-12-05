@@ -345,8 +345,8 @@ def get_avd_image( apilevel, abis, use_google_apis )
   abis.each do |abi|
     realabi = get_avd_image_real_abi(apilevel,abi,use_google_apis)
     return realabi, use_google_apis if realabi
-    realabi = get_avd_image_real_abi(apilevel,abi,false) unless use_google_apis
-    return realabi, false if realabi
+    realabi = get_avd_image_real_abi(apilevel,abi,true) unless use_google_apis
+    return realabi, true if realabi
   end  
   nil
 end
@@ -355,8 +355,10 @@ module_function :get_avd_image
 def find_suitable_avd_image( apilevel, abis, use_google_apis )
   @@logger.debug "Android targets:\n#{pp $androidtargets}"
 
-  realabi = get_avd_image( apilevel, abis, use_google_apis )
-  return apilevel, realabi if realabi
+  if apilevel
+    realabi = get_avd_image( apilevel, abis, use_google_apis )
+    return apilevel, realabi if realabi
+  end
 
   @@logger.info "Can't find exact AVD image for requested API: #{apilevel}, ABIs: #{abis}, Google APIs: #{use_google_apis}. Will try something else."
 
