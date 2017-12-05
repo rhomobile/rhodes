@@ -297,11 +297,15 @@ def create_avd( avdname, apilevel, abi, use_google_apis )
 
   target = $androidtargets[apilevel]
   targetid = target[:id] if target
-  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{abi} --sdcard 512M"    
+  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{s_apis}/#{abi} --sdcard 512M"    
   @@logger.info "Creating AVD image old style: #{createavd}"
 
   out, err, wait_thr = Jake.run_with_output(createavd)
-  unless ( err.empty? and wait_thr.value.success? )
+
+  @@logger.info "AVD create output:\n#{out}"
+  @@logger.warn "AVD create errors:\n#{err}" unless err.strip.empty?
+
+  unless ( err.strip.empty? and wait_thr.value.success? )
     createavd = "echo no | \"#{avdmanager}\" --verbose create avd --name #{avdname} --package \"system-images;android-#{apilevel};#{s_apis};#{abi}\" --sdcard 512M"
     @@logger.warn "Creating AVD failed. Will try new style: #{createavd}"
     %x[#{createavd}]
@@ -339,20 +343,22 @@ def get_avd_image( apilevel, abis, use_google_apis )
   i = abis.index('x86')
   (abis[0],abis[i] = abis[i],abis[0]) if i #will look for x86 first
   abis.each do |abi|
-    realabi = get_avd_image_real_abi(apilevel,abi,true) #first always try Google APIs image;
+    realabi = get_avd_image_real_abi(apilevel,abi,use_google_apis)
+    return realabi, use_google_apis if realabi
+    realabi = get_avd_image_real_abi(apilevel,abi,true) unless use_google_apis
     return realabi, true if realabi
-    realabi = get_avd_image_real_abi(apilevel,abi,false)
-    return realabi, false if realabi
   end  
   nil
 end
 module_function :get_avd_image
 
 def find_suitable_avd_image( apilevel, abis, use_google_apis )
-  pp $androidtargets if USE_TRACES
+  @@logger.debug "Android targets:\n#{pp $androidtargets}"
 
-  realabi = get_avd_image( apilevel, abis, use_google_apis )
-  return apilevel, realabi if realabi
+  if apilevel
+    realabi = get_avd_image( apilevel, abis, use_google_apis )
+    return apilevel, realabi if realabi
+  end
 
   @@logger.info "Can't find exact AVD image for requested API: #{apilevel}, ABIs: #{abis}, Google APIs: #{use_google_apis}. Will try something else."
 
