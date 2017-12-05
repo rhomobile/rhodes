@@ -141,6 +141,14 @@
 		F5E363050EB79F8400226287 /* lgamma_r.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E363040EB79F8400226287 /* lgamma_r.c */; };
 		F5E363080EB7A0DB00226287 /* newline.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E363070EB7A0DB00226287 /* newline.c */; };
 		F5FD0A3D10619E7900B7B8ED /* mapview_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0A3C10619E7900B7B8ED /* mapview_wrap.c */; };
+		FA4D38351FD62F360044D9D9 /* utf_16be.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4D38301FD62F350044D9D9 /* utf_16be.c */; };
+		FA4D38361FD62F360044D9D9 /* utf_16le.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4D38311FD62F350044D9D9 /* utf_16le.c */; };
+		FA4D38371FD62F360044D9D9 /* utf_32be.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4D38321FD62F350044D9D9 /* utf_32be.c */; };
+		FA4D38381FD62F360044D9D9 /* utf_32le.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4D38331FD62F350044D9D9 /* utf_32le.c */; };
+		FA4D38391FD62F360044D9D9 /* euc_jp.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4D38341FD62F360044D9D9 /* euc_jp.c */; };
+		FA4D383C1FD62F8C0044D9D9 /* utf_16_32.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4D383A1FD62F8C0044D9D9 /* utf_16_32.c */; };
+		FA4D383D1FD62F8C0044D9D9 /* single_byte.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4D383B1FD62F8C0044D9D9 /* single_byte.c */; };
+		FA4D385B1FD640920044D9D9 /* encdb.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4D385A1FD640910044D9D9 /* encdb.h */; };
 		FA522E5112DEA22800AB55CC /* nativeviewmanager_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FA522E5012DEA22800AB55CC /* nativeviewmanager_wrap.c */; };
 		FA5AC04E14681D5900B147A2 /* encdb.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04B14681D5900B147A2 /* encdb.c */; };
 		FA5AC04F14681D5900B147A2 /* iso_8859_9.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04C14681D5900B147A2 /* iso_8859_9.c */; };
@@ -292,6 +300,15 @@
 		F5E363070EB7A0DB00226287 /* newline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = newline.c; path = ../../shared/ruby/newline.c; sourceTree = SOURCE_ROOT; };
 		F5FD0A3C10619E7900B7B8ED /* mapview_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mapview_wrap.c; path = ../../shared/ruby/ext/mapview/mapview_wrap.c; sourceTree = SOURCE_ROOT; };
 		FA291E8811FF2BF90096AC39 /* signature_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = signature_wrap.c; path = ext/signature/signature_wrap.c; sourceTree = "<group>"; };
+		FA4D38301FD62F350044D9D9 /* utf_16be.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf_16be.c; path = enc/utf_16be.c; sourceTree = "<group>"; };
+		FA4D38311FD62F350044D9D9 /* utf_16le.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf_16le.c; path = enc/utf_16le.c; sourceTree = "<group>"; };
+		FA4D38321FD62F350044D9D9 /* utf_32be.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf_32be.c; path = enc/utf_32be.c; sourceTree = "<group>"; };
+		FA4D38331FD62F350044D9D9 /* utf_32le.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf_32le.c; path = enc/utf_32le.c; sourceTree = "<group>"; };
+		FA4D38341FD62F360044D9D9 /* euc_jp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = euc_jp.c; path = enc/euc_jp.c; sourceTree = "<group>"; };
+		FA4D383A1FD62F8C0044D9D9 /* utf_16_32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf_16_32.c; path = enc/trans/utf_16_32.c; sourceTree = "<group>"; };
+		FA4D383B1FD62F8C0044D9D9 /* single_byte.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = single_byte.c; path = enc/trans/single_byte.c; sourceTree = "<group>"; };
+		FA4D385A1FD640910044D9D9 /* encdb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = encdb.h; sourceTree = "<group>"; };
+		FA4D38601FD64A5B0044D9D9 /* encoding.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = encoding.c; sourceTree = "<group>"; };
 		FA522E5012DEA22800AB55CC /* nativeviewmanager_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nativeviewmanager_wrap.c; path = ext/nativeviewmanager/nativeviewmanager_wrap.c; sourceTree = "<group>"; };
 		FA5AC04B14681D5900B147A2 /* encdb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = encdb.c; path = enc/encdb.c; sourceTree = "<group>"; };
 		FA5AC04C14681D5900B147A2 /* iso_8859_9.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = iso_8859_9.c; path = enc/iso_8859_9.c; sourceTree = "<group>"; };
@@ -643,6 +660,15 @@
 		F5E360B10EB6A67000226287 /* enc */ = {
 			isa = PBXGroup;
 			children = (
+				FA4D38601FD64A5B0044D9D9 /* encoding.c */,
+				FA4D385A1FD640910044D9D9 /* encdb.h */,
+				FA4D383B1FD62F8C0044D9D9 /* single_byte.c */,
+				FA4D383A1FD62F8C0044D9D9 /* utf_16_32.c */,
+				FA4D38341FD62F360044D9D9 /* euc_jp.c */,
+				FA4D38301FD62F350044D9D9 /* utf_16be.c */,
+				FA4D38311FD62F350044D9D9 /* utf_16le.c */,
+				FA4D38321FD62F350044D9D9 /* utf_32be.c */,
+				FA4D38331FD62F350044D9D9 /* utf_32le.c */,
 				FA5AC04B14681D5900B147A2 /* encdb.c */,
 				FA5AC04C14681D5900B147A2 /* iso_8859_9.c */,
 				FA5AC04D14681D5900B147A2 /* iso_8859_1.c */,
@@ -766,6 +792,7 @@
 				C057621E19BF0D3500FA8CF8 /* util.h in Headers */,
 				F5E3607C0EB6A62A00226287 /* eval_intern.h in Headers */,
 				C057621819BF0D3500FA8CF8 /* missing.h in Headers */,
+				FA4D385B1FD640920044D9D9 /* encdb.h in Headers */,
 				C057621019BF0D3500FA8CF8 /* rubyio.h in Headers */,
 				F5E3607F0EB6A62A00226287 /* gc.h in Headers */,
 				C057621419BF0D3500FA8CF8 /* defines.h in Headers */,
@@ -860,6 +887,7 @@
 				F5E360700EB6A62A00226287 /* cont.c in Sources */,
 				F5E360710EB6A62A00226287 /* debug.c in Sources */,
 				F5E360730EB6A62A00226287 /* dir.c in Sources */,
+				FA4D38361FD62F360044D9D9 /* utf_16le.c in Sources */,
 				F5E360740EB6A62A00226287 /* dln.c in Sources */,
 				F5E360760EB6A62A00226287 /* dmyencoding.c in Sources */,
 				F5E360770EB6A62A00226287 /* dmyext.c in Sources */,
@@ -867,6 +895,7 @@
 				F5E360780EB6A62A00226287 /* enum.c in Sources */,
 				F5E360790EB6A62A00226287 /* enumerator.c in Sources */,
 				F5E3607A0EB6A62A00226287 /* error.c in Sources */,
+				FA4D38391FD62F360044D9D9 /* euc_jp.c in Sources */,
 				F5E3607B0EB6A62A00226287 /* eval.c in Sources */,
 				F5E3607D0EB6A62A00226287 /* file.c in Sources */,
 				F5E3607E0EB6A62A00226287 /* gc.c in Sources */,
@@ -892,17 +921,20 @@
 				F5E360910EB6A62A00226287 /* re.c in Sources */,
 				F5E360920EB6A62A00226287 /* regcomp.c in Sources */,
 				F5E360930EB6A62A00226287 /* regenc.c in Sources */,
+				FA4D383D1FD62F8C0044D9D9 /* single_byte.c in Sources */,
 				F5E360950EB6A62A00226287 /* regerror.c in Sources */,
 				F5E360960EB6A62A00226287 /* regexec.c in Sources */,
 				F5E360980EB6A62A00226287 /* regparse.c in Sources */,
 				C51D2AB7197E6097001965A7 /* unixsocket.c in Sources */,
 				C51D2AB3197E6097001965A7 /* tcpserver.c in Sources */,
+				FA4D38381FD62F360044D9D9 /* utf_32le.c in Sources */,
 				F5E3609A0EB6A62A00226287 /* regsyntax.c in Sources */,
 				F5E3609C0EB6A62A00226287 /* ruby.c in Sources */,
 				F5E3609D0EB6A62A00226287 /* safe.c in Sources */,
 				F5E3609E0EB6A62A00226287 /* signal.c in Sources */,
 				F5E3609F0EB6A62A00226287 /* sprintf.c in Sources */,
 				C51D2AAC197E6097001965A7 /* constants.c in Sources */,
+				FA4D38351FD62F360044D9D9 /* utf_16be.c in Sources */,
 				C51D2AB1197E6097001965A7 /* socket.c in Sources */,
 				C51D2AB0197E6097001965A7 /* raddrinfo.c in Sources */,
 				F5E360A00EB6A62A00226287 /* st.c in Sources */,
@@ -944,11 +976,13 @@
 				BD807BB01259E25A00A4E4B2 /* calendar_wrap.c in Sources */,
 				C51D2AB4197E6097001965A7 /* tcpsocket.c in Sources */,
 				BD807BC31259E37900A4E4B2 /* event_wrap.c in Sources */,
+				FA4D383C1FD62F8C0044D9D9 /* utf_16_32.c in Sources */,
 				FA522E5112DEA22800AB55CC /* nativeviewmanager_wrap.c in Sources */,
 				5CE99AE71413BECA000DD51D /* dln_find.c in Sources */,
 				5CE99AEA1413BEE7000DD51D /* node.c in Sources */,
 				C51D2AAB197E6097001965A7 /* basicsocket.c in Sources */,
 				FA5AC04E14681D5900B147A2 /* encdb.c in Sources */,
+				FA4D38371FD62F360044D9D9 /* utf_32be.c in Sources */,
 				FA5AC04F14681D5900B147A2 /* iso_8859_9.c in Sources */,
 				FA5AC05014681D5900B147A2 /* iso_8859_1.c in Sources */,
 			);

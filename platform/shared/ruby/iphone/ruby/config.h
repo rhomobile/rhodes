@@ -357,3 +357,5 @@
 #define LOAD_RELATIVE 1
 //RHO
 
+//RHO for encoding & convertors
+#define EXTSTATIC 1

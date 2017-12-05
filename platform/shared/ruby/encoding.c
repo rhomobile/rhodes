@@ -478,11 +478,30 @@ enum {
     ENCINDEX_ASCII,
     ENCINDEX_UTF_8,
     ENCINDEX_US_ASCII,
+//RHO
+    ENCINDEX_UTF_16BE,
+    ENCINDEX_UTF_16LE,
+    ENCINDEX_UTF_32BE,
+    ENCINDEX_UTF_32LE,
+    ENCINDEX_EUC_JP,
+    ENCINDEX_ISO_8859_1,
+    ENCINDEX_ISO_8859_9,
+//RHO
     ENCINDEX_BUILTIN_MAX
 };
 
 extern rb_encoding OnigEncodingUTF_8;
 extern rb_encoding OnigEncodingUS_ASCII;
+
+//RHO
+extern rb_encoding OnigEncodingUTF_16BE;
+extern rb_encoding OnigEncodingUTF_16LE;
+extern rb_encoding OnigEncodingUTF_32BE;
+extern rb_encoding OnigEncodingUTF_32LE;
+extern rb_encoding OnigEncodingEUC_JP;
+extern rb_encoding OnigEncodingISO_8859_1;
+extern rb_encoding OnigEncodingISO_8859_9;
+//RHO
 
 void
 rb_enc_init(void)
@@ -495,6 +514,17 @@ rb_enc_init(void)
     ENC_REGISTER(ASCII);
     ENC_REGISTER(UTF_8);
     ENC_REGISTER(US_ASCII);
+
+//RHO
+    ENC_REGISTER(UTF_16BE);
+    ENC_REGISTER(UTF_16LE);
+    ENC_REGISTER(UTF_32BE);
+    ENC_REGISTER(UTF_32LE);
+    ENC_REGISTER(EUC_JP);
+    ENC_REGISTER(ISO_8859_1);
+    ENC_REGISTER(ISO_8859_9);
+//RHO
+
 #undef ENC_REGISTER
     enc_table.count = ENCINDEX_BUILTIN_MAX;
 }
