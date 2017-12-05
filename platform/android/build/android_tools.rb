@@ -343,7 +343,7 @@ def get_avd_image( apilevel, abis, use_google_apis )
   i = abis.index('x86')
   (abis[0],abis[i] = abis[i],abis[0]) if i #will look for x86 first
   abis.each do |abi|
-    realabi = get_avd_image_real_abi(apilevel,abi,true) #first always try Google APIs image;
+    realabi = get_avd_image_real_abi(apilevel,abi,use_google_apis)
     return realabi, true if realabi
     realabi = get_avd_image_real_abi(apilevel,abi,false) unless use_google_apis
     return realabi, false if realabi
