@@ -2,8 +2,60 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="DeviceSecurity" parent="Rho">
-        <HELP_OVERVIEW>Device Security API</HELP_OVERVIEW>
-        <MORE_HELP>API for check device securty (JailBrake for iOS, root for Android etc.)</MORE_HELP>
+        <HELP_OVERVIEW>API for check device securty (JailBrake for iOS, root for Android etc.)</HELP_OVERVIEW>
+        <MORE_HELP>
+## Enabling the API
+This API is part of the `devicesecurity` extension.
+
+    :::ruby
+    extensions: ["devicesecurity"]
+
+
+## Setting allowed certificate signatures for the app
+It is only applicable to Android platform.
+This will embed certain certificate signatures to the app that can be checked with calling:
+
+    :::ruby
+    Rho::DeviceSecurity.getAppCertificateSignatures
+
+    Rho::DeviceSecurity.getAllowedCertificateSignatures
+
+
+To determine required signature you may use this demo app:
+[DeviceSecurityDemo](https://github.com/tauplatform/demos/tree/master/DeviceSecurityDemo)
+
+Sign it with your production certificate and observe signature value after running the app.
+Then paste the value into build.yml. Signature value will look like Base64 encoded string, for instance '4o7xYWLVqbE+lK020bKX0+wnM48='.
+Multiple values can be used.
+
+    :::ruby
+    android:
+      security:
+        allowed_cert_signatures:
+        - "4o7xYWLVqbE+lK020bKX0+wnM48="
+        - "signature1"
+        - "signature2"
+        - "signature3"
+
+## Setting allowed installer packages for the app
+This will embed certain package names to the app which can be compared against actuall app intaller package. It is only applicable to Android platform.
+
+    :::ruby
+    Rho::DeviceSecurity.getInstallerPackageName
+
+    Rho::DeviceSecurity.getAllowedInstallerPackages
+
+
+For instance if you only want your app to be installed from Google Play Store, allow 'com.android.vending' installer package. Multiple values can be used.
+
+    :::ruby
+    android:
+      security:
+        allowed_installers:
+        - 'com.android.vending'
+
+
+        </MORE_HELP>
 
         <TEMPLATES>
         </TEMPLATES>
@@ -14,7 +66,7 @@
         <METHODS>
 
             <METHOD name="isDeviceSecured" access="STATIC" >
-                <DESC>return true is device secured. On iOS checked - device is not JailBraked, on Android checked - device is not rooted + is not simulator + not in debug mode</DESC>
+                <DESC>return true is device secured. On iOS checked - device is not JailBraked, on Android checked - device is not rooted + is not simulator + not in debug mode + no signature issues + no installer issues</DESC>
                 <PLATFORM>iOS, Android</PLATFORM>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
@@ -56,7 +108,7 @@
             </METHOD>
 
             <METHOD name="haveAnySignatureIssues" access="STATIC" >
-                <DESC>Checks if there are mismatches between allowed and runtime certificates.</DESC>
+                <DESC>Checks if there are mismatches between allowed and runtime certificates. Will return false if no allowed signatures were set.</DESC>
                 <PLATFORM>Android</PLATFORM>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
@@ -68,7 +120,7 @@
             </METHOD>
 
             <METHOD name="haveAnyInstallerIssues" access="STATIC" >
-                <DESC>Checks if there are mismatches between allowed and runtime installer packages.</DESC>
+                <DESC>Checks if there are mismatches between allowed and runtime installer packages. Will return false if no allowed installers were set.</DESC>
                 <PLATFORM>Android</PLATFORM>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
@@ -84,7 +136,8 @@
         <USER_OVERVIEW>
         </USER_OVERVIEW>
 
-        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+       
+        <VER_INTRODUCED>6.0.0</VER_INTRODUCED>
         <PLATFORM>
          </PLATFORM>
     </MODULE>

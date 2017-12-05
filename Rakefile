@@ -84,6 +84,7 @@ chdir File.dirname(__FILE__), :verbose => Rake.application.options.trace
 
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
+require File.join(pwd, 'lib/build/GeneralTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
 require File.join(pwd, 'lib/build/SiteChecker.rb')
 require File.join(pwd, 'lib/build/ExtendedString.rb')
@@ -2035,8 +2036,12 @@ namespace "config" do
     if $app_config["paths"] and $app_config["paths"]["extensions"]
       add_ext_paths.call($app_config["paths"]["extensions"])
     end
-    if $config["env"]["paths"]["extensions"]
-      add_ext_paths.call($config["env"]["paths"]["extensions"])
+    if $config["env"]
+        if  $config["env"]["paths"]
+            if $config["env"]["paths"]["extensions"]
+                add_ext_paths.call($config["env"]["paths"]["extensions"])
+            end
+        end
     end
     extpaths << File.join($app_path, "extensions")
     extpaths << File.join($startdir, "lib","commonAPI")
@@ -2347,7 +2352,7 @@ def copy_assets(asset, file_map)
 
   dest = File.join($srcdir,'apps/public')
 
-  cp_r asset + "/.", dest, :preserve => true, :remove_destination => true
+  cp_r asset + "/.", dest, :preserve => true, :remove_destination => true, :verbose => USE_TRACES
 end
 
 def clear_linker_settings
@@ -2708,33 +2713,20 @@ def init_extensions(dest, mode = "")
               libs = libs + extconf[$config["platform"]]["libraries"]
             end
 
-            if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8" || $config["platform"] == "uwp"
+            if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "uwp"
               libs.each do |lib|
-                extconf_wp8_lib = !extconf_wp8[lib.downcase].nil? ? extconf_wp8[lib.downcase] : Hash.new
                 extconf_uwp_lib = !extconf_uwp[lib.downcase].nil? ? extconf_uwp[lib.downcase] : Hash.new
-                csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?) || (!extconf_uwp_lib['csharp_impl'].nil?)
-                if extconf_wp8_lib['libname'].nil?
-                  extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
-                end
+                csharp_impl = csharp_impl_all || (!extconf_uwp_lib['csharp_impl'].nil?)
                 if extconf_uwp_lib['libname'].nil?
                   extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
                 end
 
                 if csharp_impl
-                  if ($config["platform"] == "wp8" )
-                    wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
-                    extcsharplibs << (extconf_wp8_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_wp8_lib['libname'] + ".lib"))
-                    extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
-                    extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />'
-                    extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{wp8_root_namespace}.#{lib}Impl.#{lib}Factory())"
-                  else
-                    uwp_root_namespace = !extconf_uwp_lib['root_namespace'].nil? ? extconf_uwp_lib['root_namespace'] : (!extconf_uwp['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
+                    uwp_root_namespace = !extconf_uwp_lib['root_namespace'].nil? ? extconf_uwp_lib['root_namespace'] : 'rho'
                     extcsharplibs << (extconf_uwp_lib['libname'].nil? ? (lib + "Lib.lib") : (extconf_uwp_lib['libname'] + ".lib"))
                     extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
                     extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\uwp\\' + lib + 'Impl.targets" />'
                     extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{uwp_root_namespace}.#{lib}Impl.#{lib}Factory())"
-                  end
-                  
                 end
               end
             else
@@ -2857,11 +2849,7 @@ def init_extensions(dest, mode = "")
 
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
 
-  if $config["platform"] == "wp8"
-    extscsharp = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.cs")
-    extscsharptargets = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.targets")
-    extscsharpcpp = File.join($startdir, "platform", "wp8", "rhoruntime", "CSharpExtensions.cpp")
-  elsif $config["platform"] == "uwp"
+  if $config["platform"] == "uwp"
     extscsharp = File.join($startdir, "platform", "uwp", "rhodes", "CSharpExtensions.cs")
     extscsharptargets = File.join($startdir, "platform", "uwp", "rhodes", "CSharpExtensions.targets")
     extscsharpcpp = File.join($startdir, "platform", "uwp", "rhoruntime", "CSharpExtensions.cpp")
@@ -3022,7 +3010,7 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
 
   return if src_dir == dst_dir
 
-  mkdir_p dst_dir if not File.exists? dst_dir
+  mkdir_p dst_dir, :verbose => USE_TRACES if not File.exists? dst_dir
 
   Dir.foreach(src_dir) do |filename|
     next if filename.eql?('.') || filename.eql?('..')
@@ -3053,7 +3041,7 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
         puts "old_time=" + old_time.to_s if Rake.application.options.trace
       end
 
-      cp filepath, dst_path, :preserve => true
+      cp filepath, dst_path, :preserve => true, :verbose => USE_TRACES
     end
   end
 end
@@ -3184,6 +3172,7 @@ def create_manifest
 end
 
 def process_exclude_folders(excluded_dirs=[])
+
   excl = excluded_dirs
 
   exclude_platform = $config['platform']
@@ -3433,6 +3422,7 @@ namespace "build" do
         cp compileERB, $srcdir
         puts "Running default.rb"
         cmd_str = "#{$rubypath} -E UTF-8 -I#{rhodeslib} #{$srcdir}/default.rb"
+        puts cmd_str
         if defined?(Bundler)
           Bundler.with_clean_env do
             puts `#{cmd_str}`

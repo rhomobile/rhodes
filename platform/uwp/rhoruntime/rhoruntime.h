@@ -161,6 +161,7 @@ namespace rhoruntime
 		::Platform::String^ onJSInvoke(::Platform::String^ inJSON);
 		void executeRhoRunnable(int64 native);
 		void setLocalStoragePath(::Platform::String^ storage);
+		void setOsVersion(int major, int minor, int build);
 		// public methods:
 		bool Initialize(::Platform::String^ title);
 		void DestroyUi(void);

@@ -94,7 +94,12 @@ namespace rhodes
     public partial class MainPage : Page
     {
 
-        static CoreDispatcher dispatcher;
+        static CoreDispatcher dispatcher = null;
+        public static CoreDispatcher getDispatcher()
+        {
+            if (dispatcher == null) { dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher; }
+            return dispatcher;
+        }
         
         // saved singletone instance of MainPage
         static private MainPage _instance = null;
@@ -244,8 +249,23 @@ namespace rhodes
                 }
             }
         }
-
-
+        private static DirectoryInfo rhoDir = null;
+        public static DirectoryInfo getDBDir()
+        {
+            DirectoryInfo dbDir = new DirectoryInfo(rhoDir.FullName + "\\db\\db-files");
+            try
+            {
+                if (!dbDir.Exists)
+                {
+                    dbDir.Create();
+                }
+                return dbDir;
+            }catch(Exception e)
+            {
+                return null;
+            }
+            
+        }
         public MainPage()
         {
             deb("Running constructor");
@@ -255,7 +275,15 @@ namespace rhodes
             deb("Local folder is " + localFolder.Path);
 
             String title = Package.Current.DisplayName;
-            DirectoryInfo rhoDir = new DirectoryInfo(localFolder.Path + "\\rho");
+
+            string deviceFamilyVersion = AnalyticsInfo.VersionInfo.DeviceFamilyVersion;
+            ulong version = ulong.Parse(deviceFamilyVersion);
+            int major = (int)((version & 0xFFFF000000000000L) >> 48);
+            int minor = (int)((version & 0x0000FFFF00000000L) >> 32);
+            int build = (int)((version & 0x00000000FFFF0000L) >> 16);
+            //int revision = (int)((version & 0x000000000000FFFFL));            
+
+            rhoDir = new DirectoryInfo(localFolder.Path + "\\rho");
             if (!rhoDir.Exists)
             {
                 DirectoryCopy(appInstalledFolder.Path + "\\rho", rhoDir.FullName, true);
@@ -283,7 +311,7 @@ namespace rhodes
                 task.AsTask().Wait();
             }
 
-            dispatcher = Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher;
+            getDispatcher();
             try
             {
                 _screenOrientation = SimpleOrientationSensor.GetDefault().GetCurrentOrientation();
@@ -339,6 +367,7 @@ namespace rhodes
                 // create rhodes runtime object
                 var _rhoruntime = CRhoRuntime.getInstance(new MainPageWrapper(this), localFolder.Path);
                 _rhoruntime.setCryptoEngine(new CryptoEngineWrapper(new RhoCrypt()));
+                _rhoruntime.setOsVersion(major, minor, build);
                 // create and start rhodes main thread               
                 _rhoruntimeThread = Task.Run(() => {
                     _rhoruntime.Execute();
@@ -918,7 +947,7 @@ namespace rhodes
                     deb("Add ToolBar exception: " + e.Message);
                 }
                 toolbarButton.Icon = bitmapIcon;
-                deb("Real icon Uri: " + bitmapIcon.UriSource.AbsolutePath);
+                //deb("Real icon Uri: " + bitmapIcon.UriSource.AbsolutePath);
                 toolbarButton.Label = text;
                 getAppBar().PrimaryCommands.Add(toolbarButton);
                 toolbarButton.Click += new RoutedEventHandler(toolbarButton_Click);

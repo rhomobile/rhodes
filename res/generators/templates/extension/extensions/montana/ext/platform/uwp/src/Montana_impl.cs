@@ -17,7 +17,7 @@ namespace <%= namecamelcase %>Impl
 {
     public class <%= namecamelcase %> : <%= namecamelcase %>Base
     {
-        public <%= namecamelcase %>()
+        public <%= namecamelcase %>(string id) : base(id)
         {
             // initialize class instance in C# here
         }

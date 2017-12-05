@@ -233,15 +233,14 @@ def cc_def_args
     args << "-DOS_ANDROID"
     args << "-DRHO_DEBUG"
     args << "-DHAVE_RLIM_T" if $have_rlim_t
-    args << "-g"
     unless $debug
       args << "-O2"
       args << "-DNDEBUG"
     else
-      args << "-Og"
-      args << "-ggdb"
-      args << "-fstack-protector-all"
+      args << "-O0"
+      args << "-g"
       args << "-D_DEBUG"
+      args << "-fstack-protector-all"
       args << "-Winit-self"
       args << "-Wshadow"
       args << "-Wcast-align"
@@ -314,7 +313,7 @@ def cc_deps(filename, objdir, additional)
   out.split(/\s+/)
 end
 
-def cc_run(command, args, chdir = nil, coloring = true, env = nil)
+def cc_run(command, args, chdir = nil, coloring = true, env = nil, verbose = true)
   save_cwd = FileUtils.pwd
   FileUtils.cd chdir unless chdir.nil?
   argv = [command]
@@ -364,7 +363,7 @@ def cc_run(command, args, chdir = nil, coloring = true, env = nil)
       puts '-' * 80
       puts "PWD: " + FileUtils.pwd
       puts cmdstr
-      puts out.string
+      puts out.string if verbose
     }
     out.close
   end

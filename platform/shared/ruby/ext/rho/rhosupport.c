@@ -934,8 +934,10 @@ static void Init_RhoJSON()
     rb_RhoModule = rb_define_module("Rho");
     rb_RhoJSON = rb_define_class_under(rb_RhoModule, "JSON", rb_cObject);
 
+#if !defined(RHO_NO_RUBY)
     rb_define_singleton_method(rb_RhoJSON, "parse", rho_json_parse, 1);
     rb_define_singleton_method(rb_RhoJSON, "quote_value", rho_json_quote_value, 1);
+#endif
 }
 
 static VALUE rb_RhoMessages;

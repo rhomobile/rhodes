@@ -5,3 +5,5 @@ impl/*.*
 cpp_based_impl/*.*
 ../../shared/*.*
 ../../shared/qt/*.*
+../../*.xml
+../../../ext.yml

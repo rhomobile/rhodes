@@ -760,17 +760,20 @@ VALUE rho_ruby_create_array()
 
 VALUE rho_ruby_create_string(const char* szVal)
 {
-    return rb_str_new2(szVal);
+    return rb_utf8_str_new_cstr(szVal);
+    //return rb_str_new2(szVal);
 }
 
 VALUE rho_ruby_create_string_withlen(int len)
 {
-    return rb_str_new("", len);
+    return rb_utf8_str_new("", len);
+    //return rb_str_new("", len);
 }
 
 VALUE rho_ruby_create_string_withlen2(const char* szVal, int len)
 {
-    return rb_str_new(szVal, len);
+    return rb_utf8_str_new(szVal, len);
+    //return rb_str_new(szVal, len);
 }
 
 VALUE rho_ruby_create_time(long t)

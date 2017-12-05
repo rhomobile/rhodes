@@ -34,6 +34,16 @@ LPWSTR UWPLocalFolder = L"";
 LPWSTR UWPNullFile = L"nullfile";
 LPSTR UWPLocalRhoFolder = "rho";
 
+int versionMajor;
+int versionMinor;
+int versionBuild;
+
+void cSetOSVersion(int major, int minor, int build) {
+	versionMajor = major;
+	versionMinor = minor;
+	versionBuild = build;
+}
+
 LPCWSTR getLocalNullFile() {
 	return UWPNullFile;
 }
@@ -74,14 +84,15 @@ HANDLE Rho_CreateFileW(
 	return CreateFile2(lpFileName, dwDesiredAccess, dwShareMode, dwCreationDisposition, &extendedParameters);
 }
 
+
 BOOL Rho_GetVersionExW(
 	_Inout_ LPOSVERSIONINFOW lpVersionInformation
 	)
 {
 	// TODO: use System.Environment.OSVersion.Version from C#
-	lpVersionInformation->dwMajorVersion = 8;
-	lpVersionInformation->dwMinorVersion = 0;
-	lpVersionInformation->dwBuildNumber = 0;
+	lpVersionInformation->dwMajorVersion = versionMajor;
+	lpVersionInformation->dwMinorVersion = versionMinor;
+	lpVersionInformation->dwBuildNumber = versionBuild;
 	return TRUE;
 }
 

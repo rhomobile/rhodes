@@ -30,6 +30,7 @@ require File.dirname(__FILE__) + '/maven_deps_extractor.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
 require File.dirname(__FILE__) + '/android_studio_project_generator.rb'
+require File.dirname(__FILE__) + '/android_debug.rb'
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 load File.dirname(__FILE__) + '/android-repack.rake'
 require 'pathname'
@@ -159,6 +160,57 @@ def get_boolean(arg)
   arg == 'true' or arg == 'yes' or arg == 'enabled' or arg == 'enable' or arg == '1'
 end
 
+namespace 'debug' do
+  namespace 'android' do
+
+    debug_port = ""
+    device_type = ""
+
+    if !$app_config.nil? && !$app_config["android"].nil?
+      debug_port = $app_config["android"]["debug_port"]
+      device_type = $app_config["android"]["target_debug"]  
+    end
+    
+    task :gdbserver => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
+      debugger.StartGdbServer
+    end
+
+    task :gdb => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
+      gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
+      debugger.StartGdb(gdb_path)
+    end
+
+    task :jdb => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
+      debugger.StartJdb
+    end
+
+    task :appdebug => ['config:android'] do
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
+      debugger.StartAppOnDebug
+    end
+
+    task :run_and_debug => ['config:android'] do
+      gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
+      debugger.StartAppOnDebug
+      debugger.StartGdbServer
+      debugger.StartGdb(gdb_path)
+    end
+
+    task :attach => ['config:android'] do
+      gdb_path = File.join($androidndkpath, "prebuilt", "windows-x86_64", "bin", "gdb")
+      debugger = AndroidDebug.new($app_package_name, $app_path, debug_port, 7777, device_type)
+      debugger.StartGdbServer
+      debugger.StartGdb(gdb_path)
+    end
+
+  end
+end
+
+
 namespace 'project' do
   namespace 'android' do
     task :eclipse => ['config:android', 'config:android:extensions','build:android:manifest'] do
@@ -241,6 +293,9 @@ namespace 'project' do
       settings_gradle = File.join( project_template_path, 'settings.gradle' )
       app_gradle_template = File.join( project_template_path, 'app', 'build.gradle.erb' )
       project_path = File.join $app_path,'project','android_studio'
+      project_app_path = File.join $app_path,'project','android_studio', 'app'
+      cmake_template_path = File.join( project_template_path, 'app', 'CMakeLists.txt.erb' )
+      cpp_stub_path = File.join( project_template_path, 'app', 'stub.cpp' )
 
       rhodes_path = File.absolute_path '.'
 
@@ -258,7 +313,9 @@ namespace 'project' do
       mkdir_p File.join(project_path,'app')
 
       app_gradle_path = File.join( project_path, 'app', 'build.gradle')
+      cmake_path = File.join( project_path, 'app', 'CMakeLists.txt')
       File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
+      File.open( cmake_path, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_path ) }
 
       cp main_gradle_script,  project_path
       cp gradle_properties,   project_path
@@ -374,6 +431,12 @@ namespace "config" do
     $min_sdk_level = $config["android"]["minSDK"] if $min_sdk_level.nil? and not $config["android"].nil?
     $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
     $min_sdk_level = ANDROID_SDK_LEVEL if $min_sdk_level.nil?
+
+
+    $target_sdk_level = $app_config["android"]["targetSDK"] unless $app_config["android"].nil?
+    $target_sdk_level = $config["android"]["targetSDK"] if $target_sdk_level.nil? and not $config["android"].nil?
+    $target_sdk_level = $target_sdk_level.to_i unless $target_sdk_level.nil?
+    $target_sdk_level = (($min_sdk_level > 14) ? $min_sdk_level : 14) if $target_sdk_level.nil?
 
     $max_sdk_level = $app_config["android"]["maxSDK"] unless $app_config["android"].nil?
 
@@ -990,13 +1053,13 @@ namespace "config" do
       end
 
       $emuversion = AndroidTools.get_market_version($min_sdk_level) if $emuversion.nil?
+      $emuversion = AndroidTools.get_market_version(AndroidTools.get_installed_api_levels[-1]) if $emuversion.nil? #last chance
+
       if $emuversion.nil?
         raise "Wrong Android emulator version: #{$emuversion}. Android SDK target API is not installed"
       end
 
-      if USE_TRACES
-        puts "Android emulator version: #{$emuversion}"
-      end
+      $logger.info "Configuring emulator for version: #{$emuversion}"
 
       $emuversion = $emuversion.to_s
 
@@ -1117,7 +1180,7 @@ namespace "build" do
               args << '--trace' if USE_TRACES
             end
             
-            cc_run(builddata[1], args, builddata[0], false) or raise "Extension build failed: #{builddata[0]}"
+            cc_run(builddata[1], args, builddata[0], false, nil, USE_TRACES) or raise "Extension build failed: #{builddata[0]}"
           else
             currentdir = Dir.pwd()
             Dir.chdir builddata[0]
@@ -1217,7 +1280,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: sqlite"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: sqlite"
       end
       print_timestamp('build:android:libsqlite FINISH')
     end
@@ -1261,7 +1324,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: curl"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: curl"
       end
       print_timestamp('build:android:libcurl FINISH')
     end
@@ -1303,7 +1366,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: ruby"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: ruby"
       end
       print_timestamp('build:android:libruby FINISH')
     end
@@ -1337,7 +1400,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: json"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: json"
       end
       print_timestamp('build:android:libjson FINISH')
     end
@@ -1370,7 +1433,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rholog"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rholog"
       end
       print_timestamp('build:android:librholog FINISH')
     end
@@ -1404,7 +1467,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rhomain"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhomain"
       end
       print_timestamp('build:android:librhomain FINISH')
     end
@@ -1439,7 +1502,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rhocommon"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhocommon"
       end
       print_timestamp('build:android:librhocommon FINISH')
     end
@@ -1474,7 +1537,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rhodb"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhodb"
       end
       print_timestamp('build:android:librhodb FINISH')
     end
@@ -1509,7 +1572,7 @@ namespace "build" do
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "arch:#{abi}"]
         args << '-m'
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rhosync"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhosync"
       end
       print_timestamp('build:android:librhosync FINISH')
     end
@@ -1677,7 +1740,7 @@ namespace "build" do
 
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "link:#{abi}"]
         args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false) or raise "Build failed: rhodes"
+        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhodes"
         #Jake.run3("rake #{args.join(' ')}")
       end
       print_timestamp('build:android:librhodes FINISH')
@@ -1736,6 +1799,7 @@ namespace "build" do
       generator.versionCode = version
       generator.installLocation = 'auto'
       generator.minSdkVer = $min_sdk_level
+      generator.targetSdkVer = $target_sdk_level
       generator.maxSdkVer = $max_sdk_level
       generator.screenOrientation = $android_orientation unless $android_orientation.nil?
       generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
@@ -2438,6 +2502,18 @@ namespace "package" do
     Dir.glob(File.join($applibs,'**','lib*.so')).each do |lib|
       arch = File.basename(File.dirname(lib))
       args << "lib/#{arch}/#{File.basename(lib)}"
+
+    unless not $debug
+      gdbserver_path = File.join($androidndkpath, "prebuilt", "android-arm", "gdbserver", "gdbserver") #TODO: packing gdbserver for all platforms
+      if File.exist?(gdbserver_path)
+        path_to_lib = File.join $tmpdir, 'lib'
+        cp_r gdbserver_path, File.join(path_to_lib, arch)
+        args << "lib/#{arch}/gdbserver"
+      else
+        puts "gdbserver not found!"
+      end
+    end
+
     end
     Jake.run($jarbin, args, $tmpdir)
     unless $?.success?
@@ -2669,7 +2745,7 @@ namespace "run" do
       throw "You must pass package name" if package_file.nil?
       throw "No file to run" if !File.exists?(package_file)
 
-      AndroidTools.run_emulator
+      AndroidTools.run_emulator(:hidden => ENV['TRAVIS'])
 
       AndroidTools.load_app_and_run('-e', File.expand_path(package_file), package_name)
     end
@@ -2702,7 +2778,7 @@ namespace "run" do
       task :debug => ['run:android:emulator:run']
       task :run => ['config:android:emulator'] do
         AndroidTools.kill_adb_logcat('-e')
-        AndroidTools.run_emulator
+        AndroidTools.run_emulator(:hidden => ENV['TRAVIS'])
 
         apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
         AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)

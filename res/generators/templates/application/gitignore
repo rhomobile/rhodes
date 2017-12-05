@@ -5,5 +5,7 @@ sim-*
 
 # build output
 bin/
+project/
+rhosimulator/
 public/api/generated/
 .cbc
