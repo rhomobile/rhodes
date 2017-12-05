@@ -297,7 +297,7 @@ def create_avd( avdname, apilevel, abi, use_google_apis )
 
   target = $androidtargets[apilevel]
   targetid = target[:id] if target
-  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{abi} --sdcard 512M"    
+  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{s_apis}/#{abi} --sdcard 512M"    
   @@logger.info "Creating AVD image old style: #{createavd}"
 
   out, err, wait_thr = Jake.run_with_output(createavd)
