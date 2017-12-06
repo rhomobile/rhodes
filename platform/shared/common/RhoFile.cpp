@@ -362,10 +362,15 @@ int CRhoFile::getPos() const {
     if ( !isOpened() )
         return -1;
 
+    #ifdef OS_LINUX
+    off_t pos;
+    if((pos = ftello(m_file))!= -1)
+    #else
     fpos_t pos;
     if(fgetpos(m_file, &pos) == 0)
+    #endif
     {
-        return pos;
+        return (int)pos;
     } else
     {
         return -1;

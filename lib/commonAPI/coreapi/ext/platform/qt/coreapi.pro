@@ -26,6 +26,14 @@ macx {
   INCLUDEPATH += ../../../../../../platform/shared/ruby/iphone
   SOURCES += src/CNetworkDetect.cpp
 }
+
+unix:!macx {
+  DESTDIR = ../../../../../../platform/linux/bin/extensions
+  OBJECTS_DIR = ../../../../../../platform/linux/bin/extensions/coreapi
+  INCLUDEPATH += ../../../../../../platform/shared/ruby/linux
+  SOURCES += src/CNetworkDetect.cpp
+}
+
 win32 {
   greaterThan(QT_VERSION, 5.6.0): {
       DEFINES += CPP_ELEVEN

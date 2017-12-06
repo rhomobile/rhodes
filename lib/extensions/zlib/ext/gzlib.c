@@ -4,7 +4,7 @@
  */
 
 #include "gzguts.h"
-#include <ruby\posixnames.h>
+#include <ruby/posixnames.h>
 
 #if defined (__LP64__)
 #include <unistd.h>

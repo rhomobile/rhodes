@@ -2,15 +2,15 @@ QT += core gui network
 
 message(Qt version: $$[QT_VERSION])
 greaterThan(QT_MAJOR_VERSION, 4):{
-    QT += multimedia multimediawidgets
+    QT += multimedia
 
-    lessThan(QT_VERSION, 5.6.0): {
-        QT += webkit widgets webkitwidgets
+    lessThan(QT_VERSION, 5.7.0): {
+        QT += webkit widgets
         message(Deprecated webkit enabled)
         DEFINES += RHODES_VERSION_1
         INCLUDEPATH += oldVersion
     }
-    greaterThan(QT_VERSION, 5.6.0): {
+    greaterThan(QT_VERSION, 5.7.0): {
         QT += webengine webenginecore webenginewidgets
         message(Webengine enabled)
         CONFIG += c++14
@@ -40,8 +40,8 @@ macx {
   UI_DIR = ../../../osx/bin/RhoSimulator/generated_files
   OBJECTS_DIR = ../../../osx/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../osx/bin/RhoSimulator/resources
-  HEADERS += impl/SSLImpl.h
-  SOURCES += impl/SSLImpl.cpp\
+  HEADERS +=
+  SOURCES +=\
 ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
   LIBS += -lz -lldap
   LIBS += -L../../../osx/bin/curl -lcurl
@@ -112,18 +112,21 @@ unix:!macx {
   UI_DIR = ../../../linux/bin/RhoSimulator/generated_files
   OBJECTS_DIR = ../../../linux/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../linux/bin/RhoSimulator/resources
-  # INCLUDEPATH += ../../curl/include
+  HEADERS += ../../net/linux/SSLImpl.h
+  SOURCES += ../../net/linux/SSLImpl.cpp
+  INCLUDEPATH += ../../curl/include
   LIBS += -lcurl
-  # LIBS += -L../../../osx/bin/curl -lcurl
+  LIBS += -L../../../linux/bin/curl -lcurl
   LIBS += -L../../../linux/bin/rubylib -lrubylib
   LIBS += -L../../../linux/bin/rholib -lrholib
   LIBS += -L../../../linux/bin/sqlite3 -lsqlite3
   LIBS += -L../../../linux/bin/syncengine -lsyncengine
   PRE_TARGETDEPS += ../../../linux/bin/curl/libcurl.a\
-../../../linux/bin/rubylib/librubylib.a\
-../../../linux/bin/rholib/librholib.a\
-../../../linux/bin/sqlite3/libsqlite3.a\
-../../../linux/bin/syncengine/libsyncengine.a
+  ../../../linux/bin/rubylib/librubylib.a\
+  ../../../linux/bin/rholib/librholib.a\
+  ../../../linux/bin/sqlite3/libsqlite3.a\
+  ../../../linux/bin/syncengine/libsyncengine.a
+  DEFINES += QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB
 }
 
 DEFINES += RHODES_QT_PLATFORM
@@ -153,7 +156,6 @@ impl/AlertImpl.h\
 impl/RhoThreadImpl.h\
 iexecutable.h\
 MainWindowCallback.h\
-RhoSimulator.h\
 QtLogView.h \
 QtCustomStyle.h\
 mainwindowinterface.h \

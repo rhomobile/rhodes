@@ -365,7 +365,9 @@
 #define HAVE_IOCTL_FIONBIO 1
 
 /* Define to 1 if you have a working ioctl SIOCGIFADDR function. */
+#ifndef OS_LINUX
 #define HAVE_IOCTL_SIOCGIFADDR 1
+#endif
 
 /* Define to 1 if you have the <io.h> header file. */
 /* #undef HAVE_IO_H */
@@ -633,8 +635,9 @@
 /* #undef HAVE_STRCMPI */
 
 /* Define to 1 if you have the strdup function. */
+#ifndef OS_LINUX
 #define HAVE_STRDUP 1
-
+#endif
 /* Define to 1 if you have the strerror_r function. */
 #define HAVE_STRERROR_R 1
 

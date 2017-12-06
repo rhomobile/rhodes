@@ -42,6 +42,7 @@
 #endif
 #ifdef RHODES_VERSION_1
 #include <QWebPage>
+#include <QtWebKit/QWebElement>
 #if QT_VERSION >= 0x050000
 #include <QtWebKit/qtwebkitversion.h>
 #else

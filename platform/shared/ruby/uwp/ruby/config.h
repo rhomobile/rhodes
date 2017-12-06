@@ -233,6 +233,9 @@ config.h: nul
 #define NO_RUBY_VENDOR_LIB
 //RHO
 
+//RHO for encoding & convertors
+#define EXTSTATIC 1
+
 
 #endif /* INCLUDE_RUBY_CONFIG_H */
 #endif

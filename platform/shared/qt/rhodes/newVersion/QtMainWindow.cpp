@@ -42,6 +42,7 @@
 #undef null
 #include "RhoNativeApiCall.h"
 #include "statistic/RhoProfiler.h"
+#include <
 #include <QStylePainter>
 #include <QResizeEvent>
 #include <QLabel>

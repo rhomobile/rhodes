@@ -112,6 +112,7 @@ unix:!macx {
 ../../ruby/missing/strlcpy.c\
 ../../ruby/missing/tgamma.c\
 ../../ruby/newline.c
+DEFINES += OS_LINUX OS_SAIL
 }
 
 DEFINES += RHODES_QT_PLATFORM

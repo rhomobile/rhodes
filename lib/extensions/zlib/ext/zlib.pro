@@ -24,6 +24,13 @@ macx {
   OBJECTS_DIR = ../../../../platform/osx/bin/extensions/zlib
   INCLUDEPATH += ../../../../platform/shared/ruby/iphone
 }
+
+unix:!macx {
+  DESTDIR = ../../../../platform/linux/bin/extensions
+  OBJECTS_DIR = ../../../../platform/linux/bin/extensions/zlib
+  INCLUDEPATH += ../../../../platform/shared/ruby/linux
+}
+
 win32 {
   DESTDIR = ../../../../platform/win32/bin/extensions
   OBJECTS_DIR = ../../../../platform/win32/bin/extensions/zlib

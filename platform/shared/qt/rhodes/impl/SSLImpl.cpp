@@ -65,5 +65,10 @@ ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)
     return -1;
 }
 
+bool SSLImpl::rand(unsigned char *entropy, size_t length)
+{
+    return false;
+}
+
 } // namespace net
 } // namespace rho

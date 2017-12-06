@@ -43,6 +43,7 @@ public:
     void shutdown(void *storage);
     ssize_t send(const void *mem, size_t len, void *storage);
     ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage);
+    bool rand(unsigned char *entropy, size_t length);
 };
 
 } // namespace net

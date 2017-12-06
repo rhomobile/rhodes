@@ -569,6 +569,27 @@ class Jake
       out
   end
 
+  #will exec command and return stdout and stderr. options are to be extended for updated functionality
+  def self.run_with_output( command, options = {} )
+    require 'open3'
+    poutres = ''
+    perrres = ''
+    wtr = nil
+    Open3.popen3(command) do |pin,pout,perr,wait_thr|
+      while line = pout.gets
+        poutres << line
+      end
+
+      while line = perr.gets
+        perrres << line
+      end
+
+      wtr = wait_thr
+    end
+
+    return poutres, perrres, wtr
+  end
+
   def self.edit_yml(file, out_file = nil)
     out_file = file if out_file.nil?
 

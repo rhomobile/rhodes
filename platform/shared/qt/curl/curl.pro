@@ -13,7 +13,8 @@ TEMPLATE = lib
 CONFIG += staticlib warn_on
 
 INCLUDEPATH += ../..\
-../../curl/include
+../../curl/include\
+../../curl/lib
 
 macx {
   greaterThan(QT_VERSION, 5.6.0): {
@@ -51,7 +52,8 @@ win32 {
 unix:!macx {
   DESTDIR = ../../../linux/bin/curl
   OBJECTS_DIR = ../../../linux/bin/curl/tmp
-  DEFINES += HAVE_CONFIG_H USE_RHOSSL
+  DEFINES += HAVE_CONFIG_H USE_RHOSSL OS_LINUX OS_SAIL
+
 }
 
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
@@ -72,6 +74,7 @@ win32 {
 }
 
 HEADERS += ../../curl/lib/arpa_telnet.h\
+../../curl/lib/curl_setup.h \
 ../../curl/lib/connect.h\
 ../../curl/lib/content_encoding.h\
 ../../curl/lib/cookie.h\
@@ -82,7 +85,6 @@ HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/curl_md5.h\
 ../../curl/lib/curl_memory.h\
 ../../curl/lib/curl_memrchr.h\
-../../curl/lib/curl_rand.h\
 ../../curl/lib/dict.h\
 ../../curl/lib/easyif.h\
 ../../curl/lib/escape.h\
@@ -90,7 +92,7 @@ HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/formdata.h\
 ../../curl/lib/ftp.h\
 ../../curl/lib/getinfo.h\
-../../curl/lib/gtls.h\
+../../curl/lib/vtls/gtls.h\
 ../../curl/lib/hash.h\
 ../../curl/lib/hostip.h\
 ../../curl/lib/http.h\
@@ -106,15 +108,11 @@ HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/multiif.h\
 ../../curl/lib/netrc.h\
 ../../curl/lib/nonblock.h\
-../../curl/lib/nssg.h\
+../../curl/lib/vtls/nssg.h\
 ../../curl/lib/parsedate.h\
 ../../curl/lib/progress.h\
-../../curl/lib/qssl.h\
-../../curl/lib/rawstr.h\
 ../../curl/lib/select.h\
 ../../curl/lib/sendf.h\
-../../curl/lib/setup.h\
-../../curl/lib/setup_once.h\
 ../../curl/lib/share.h\
 ../../curl/lib/slist.h\
 ../../curl/lib/sockaddr.h\
@@ -122,10 +120,7 @@ HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/speedcheck.h\
 ../../curl/lib/splay.h\
 ../../curl/lib/ssh.h\
-../../curl/lib/sslgen.h\
-../../curl/lib/ssluse.h\
 ../../curl/lib/strdup.h\
-../../curl/lib/strequal.h\
 ../../curl/lib/strerror.h\
 ../../curl/lib/strtok.h\
 ../../curl/lib/strtoofft.h\
@@ -136,16 +131,16 @@ HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/url.h\
 ../../curl/lib/urldata.h\
 ../../curl/include/curl/curl.h\
-../../curl/include/curl/curlbuild.h\
-../../curl/include/curl/curlrules.h\
 ../../curl/include/curl/curlver.h\
 ../../curl/include/curl/easy.h\
 ../../curl/include/curl/mprintf.h\
 ../../curl/include/curl/multi.h\
 ../../curl/include/curl/stdcheaders.h\
 ../../curl/include/curl/typecheck-gcc.h\
-../../curl/include/curl/types.h\
-../../curl/lib/rhossl.h
+../../curl/lib/rhossl.h \
+../../curl/lib/vtls/gtls.h \
+../../curl/lib/vtls/vtls.h \
+    ../../curl/include/curl/system.h
 
 SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/base64.c\
@@ -154,7 +149,7 @@ SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/cookie.c\
 ../../curl/lib/curl_addrinfo.c\
 ../../curl/lib/curl_memrchr.c\
-../../curl/lib/curl_rand.c\
+../../curl/lib/rand.c\
 ../../curl/lib/curl_sspi.c\
 ../../curl/lib/dict.c\
 ../../curl/lib/easy.c\
@@ -164,15 +159,13 @@ SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/ftp.c\
 ../../curl/lib/getenv.c\
 ../../curl/lib/getinfo.c\
-../../curl/lib/gtls.c\
+../../curl/lib/vtls/gtls.c\
 ../../curl/lib/hash.c\
-../../curl/lib/hostares.c\
 ../../curl/lib/hostasyn.c\
 ../../curl/lib/hostip.c\
 ../../curl/lib/hostip4.c\
 ../../curl/lib/hostip6.c\
 ../../curl/lib/hostsyn.c\
-../../curl/lib/hostthre.c\
 ../../curl/lib/http.c\
 ../../curl/lib/http_chunks.c\
 ../../curl/lib/http_digest.c\
@@ -180,7 +173,6 @@ SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/if2ip.c\
 ../../curl/lib/inet_ntop.c\
 ../../curl/lib/inet_pton.c\
-../../curl/lib/krb4.c\
 ../../curl/lib/krb5.c\
 ../../curl/lib/ldap.c\
 ../../curl/lib/llist.c\
@@ -190,12 +182,11 @@ SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/multi.c\
 ../../curl/lib/netrc.c\
 ../../curl/lib/nonblock.c\
-../../curl/lib/nss.c\
+../../curl/lib/vtls/nss.c\
 ../../curl/lib/nwlib.c\
 ../../curl/lib/nwos.c\
 ../../curl/lib/parsedate.c\
 ../../curl/lib/progress.c\
-../../curl/lib/rawstr.c\
 ../../curl/lib/security.c\
 ../../curl/lib/select.c\
 ../../curl/lib/sendf.c\
@@ -207,9 +198,7 @@ SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/speedcheck.c\
 ../../curl/lib/splay.c\
 ../../curl/lib/ssh.c\
-../../curl/lib/sslgen.c\
 ../../curl/lib/strdup.c\
-../../curl/lib/strequal.c\
 ../../curl/lib/strerror.c\
 ../../curl/lib/strtok.c\
 ../../curl/lib/strtoofft.c\
@@ -219,4 +208,5 @@ SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/transfer.c\
 ../../curl/lib/url.c\
 ../../curl/lib/version.c\
-../../curl/lib/rhossl.c
+../../curl/lib/rhossl.c\
+../../curl/lib/vtls/vtls.c

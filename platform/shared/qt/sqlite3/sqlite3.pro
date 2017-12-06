@@ -36,6 +36,7 @@ win32 {
 unix:!macx {
   DESTDIR = ../../../linux/bin/sqlite3
   OBJECTS_DIR = ../../../linux/bin/sqlite3/tmp
+  SOURCES += ../../sqlite/crypto.c
 }
 
 DEFINES += RHODES_QT_PLATFORM
