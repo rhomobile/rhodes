@@ -18,7 +18,7 @@ INCLUDEPATH += ../..
 macx {
   DESTDIR = ../../../osx/bin/sqlite3
   OBJECTS_DIR = ../../../osx/bin/sqlite3/tmp
-  SOURCES += ../../sqlite/crypto.c
+  SOURCES += ../../sqlite/sqlite3.c
 }
 
 win32 {
@@ -36,7 +36,7 @@ win32 {
 unix:!macx {
   DESTDIR = ../../../linux/bin/sqlite3
   OBJECTS_DIR = ../../../linux/bin/sqlite3/tmp
-  SOURCES += ../../sqlite/crypto.c
+  SOURCES += ../../sqlite/sqlite3.c
 }
 
 DEFINES += RHODES_QT_PLATFORM
@@ -58,4 +58,5 @@ win32 {
 HEADERS += ../../sqlite/sqlite3.h\
 ../../sqlite/sqlite3ext.h
 
-SOURCES += ../../sqlite/sqlite3.c
+SOURCES += ../../sqlite/sqlite3.c \
+    ../../sqlite/crypto.c
