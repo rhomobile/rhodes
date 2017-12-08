@@ -31,14 +31,14 @@ macx {
   OBJECTS_DIR = ../../../osx/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/osx
   HEADERS += ../../ruby/ext/socket/constants.h\
-../../ruby/osx/ruby/config.h\
-../../ruby/osx/crt_externs.h\
-../../ruby/iseq.h\
-../../ruby/thread_pthread.h
+  ../../ruby/osx/ruby/config.h\
+  ../../ruby/osx/crt_externs.h\
+  ../../ruby/iseq.h\
+  ../../ruby/thread_pthread.h
   SOURCES += ../../ruby/newline.c\
-../../ruby/thread_pthread.c\
-../../ruby/missing/setproctitle.c \
-../../ruby/missing/explicit_bzero.c
+  ../../ruby/thread_pthread.c\
+  ../../ruby/missing/setproctitle.c \
+  ../../ruby/missing/explicit_bzero.c
 }
 
 win32 {
@@ -95,10 +95,10 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/rubylib
-  OBJECTS_DIR = ../../../linux/bin/rubylib/tmp
-  INCLUDEPATH += ../../ruby/linux
-  HEADERS += ../../ruby/linux/ruby/config.h
+  DESTDIR = $$PWD/../../../linux/bin/rubylib
+  OBJECTS_DIR = $$PWD/../../../linux/bin/rubylib/tmp
+  INCLUDEPATH += $$PWD/../../ruby/linux
+  HEADERS += $$PWD/../../ruby/linux/ruby/config.h
   SOURCES += \
 #../../ruby/miniprelude.c\
 ../../ruby/missing/acosh.c\
@@ -111,7 +111,9 @@ unix:!macx {
 ../../ruby/missing/strlcat.c\
 ../../ruby/missing/strlcpy.c\
 ../../ruby/missing/tgamma.c\
-../../ruby/newline.c
+../../ruby/newline.c\
+../../ruby/missing/explicit_bzero.c\
+../../ruby/missing/setproctitle.c
 DEFINES += OS_LINUX OS_SAIL
 }
 

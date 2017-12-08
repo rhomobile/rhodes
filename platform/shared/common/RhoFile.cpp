@@ -798,7 +798,7 @@ extern "C" void rho_file_set_fs_mode(int mode) {
 }
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_LINUX)
     void rho_file_impl_move_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
         
     }

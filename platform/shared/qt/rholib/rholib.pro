@@ -53,16 +53,17 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/rholib
-  OBJECTS_DIR = ../../../linux/bin/rholib/tmp
-  INCLUDEPATH += ../../curl/include
+  DESTDIR = $$PWD/../../../linux/bin/rholib
+  OBJECTS_DIR = $$PWD/../../../linux/bin/rholib/tmp
+  INCLUDEPATH += $$PWD/../../curl/include
   DEFINES += _GNU_SOURCE
-  HEADERS += ../../common/PosixThreadImpl.h\
-../../net/CURLNetRequest.h\
-../../net/ssl.h
-  SOURCES += ../../common/PosixThreadImpl.cpp\
-../../net/CURLNetRequest.cpp\
-../../net/ssl.cpp
+  HEADERS += $$PWD/../../common/PosixThreadImpl.h\
+  $$PWD/../../net/CURLNetRequest.h\
+  $$PWD/../../net/ssl.h
+  SOURCES += $$PWD/../../common/PosixThreadImpl.cpp\
+  $$PWD/../../net/CURLNetRequest.cpp\
+  $$PWD/../../net/ssl.cpp
+  DEFINES += OS_SAIL OS_LINUX
 }
 
 DEFINES += RHODES_QT_PLATFORM

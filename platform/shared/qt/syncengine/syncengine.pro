@@ -34,9 +34,9 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/syncengine
-  OBJECTS_DIR = ../../../linux/bin/syncengine/tmp
-  DEFINES += _GNU_SOURCE
+  DESTDIR = $$PWD/../../../linux/bin/syncengine
+  OBJECTS_DIR = $$PWD/../../../linux/bin/syncengine/tmp
+  DEFINES += _GNU_SOURCE OS_LINUX OS_SAIL
 }
 
 DEFINES += RHODES_QT_PLATFORM

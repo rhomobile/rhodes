@@ -28,9 +28,9 @@ macx {
 }
 
 unix:!macx {
-  DESTDIR = ../../../../../../platform/linux/bin/extensions
-  OBJECTS_DIR = ../../../../../../platform/linux/bin/extensions/coreapi
-  INCLUDEPATH += ../../../../../../platform/shared/ruby/linux
+  DESTDIR = $$PWD/../../../../../../platform/linux/bin/extensions
+  OBJECTS_DIR = $$PWD/../../../../../../platform/linux/bin/extensions/coreapi
+  INCLUDEPATH += $$PWD/../../../../../../platform/shared/ruby/linux
   SOURCES += src/CNetworkDetect.cpp
 }
 
@@ -121,8 +121,8 @@ HEADERS += \
 ../../shared/generated/cpp/SQLite3Base.h\
 ../../shared/generated/cpp/SystemBase.h\
 ../../shared/generated/cpp/WebViewBase.h\
-..\..\shared\generated\cpp\ITimer.h\
-..\..\shared\generated\cpp\TimerBase.h
+../../shared/generated/cpp/ITimer.h\
+../../shared/generated/cpp/TimerBase.h
 
 SOURCES += \
 ../../shared/SQLite3ImplRuby.c\
@@ -191,9 +191,9 @@ SOURCES += \
 ../../shared/generated/webview_api_init.cpp\
 ../../shared/generated/webview_js_api.cpp\
 ../../shared/generated/webview_ruby_api.c\
-..\..\shared\generated\timer_api_init.cpp\
-..\..\shared\generated\timer_js_api.cpp\
-..\..\shared\generated\timer_ruby_api.c\
+../../shared/generated/timer_api_init.cpp\
+../../shared/generated/timer_js_api.cpp\
+../../shared/generated/timer_ruby_api.c\
 ../../shared/generated/cpp/ApplicationBase.cpp\
 ../../shared/generated/cpp/Application_js_wrap.cpp\
 ../../shared/generated/cpp/Application_ruby_wrap.cpp\
@@ -245,9 +245,9 @@ SOURCES += \
 ../../shared/generated/cpp/WebViewBase.cpp\
 ../../shared/generated/cpp/WebView_js_wrap.cpp\
 ../../shared/generated/cpp/WebView_ruby_wrap.cpp\
-..\..\shared\generated\cpp\Timer_js_wrap.cpp\
-..\..\shared\generated\cpp\Timer_ruby_wrap.cpp\
-..\..\shared\generated\cpp\TimerBase.cpp\
+../../shared/generated/cpp/Timer_js_wrap.cpp\
+../../shared/generated/cpp/Timer_ruby_wrap.cpp\
+../../shared/generated/cpp/TimerBase.cpp\
 ../../shared/qt/NavbarImpl.cpp\
 src/CNativeTabbarImpl.cpp\
 src/CNativeToolbarImpl.cpp\
