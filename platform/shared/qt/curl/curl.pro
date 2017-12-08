@@ -50,8 +50,8 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/curl
-  OBJECTS_DIR = ../../../linux/bin/curl/tmp
+  DESTDIR = $$PWD/../../../linux/bin/curl
+  OBJECTS_DIR = $$PWD/../../../linux/bin/curl/tmp
   DEFINES += HAVE_CONFIG_H USE_RHOSSL OS_LINUX OS_SAIL
 
 }
@@ -140,7 +140,30 @@ HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/rhossl.h \
 ../../curl/lib/vtls/gtls.h \
 ../../curl/lib/vtls/vtls.h \
-    ../../curl/include/curl/system.h
+../../curl/include/curl/system.h \
+../../curl/lib/strcase.h \
+    ../../curl/lib/asyn.h \
+    ../../curl/lib/warnless.h \
+    ../../curl/lib/vauth/digest.h \
+    ../../curl/lib/vauth/vauth.h \
+    ../../curl/lib/pingpong.h \
+    ../../curl/lib/pipeline.h \
+    ../../curl/lib/http_proxy.h \
+    ../../curl/lib/conncache.h \
+    ../../curl/lib/dotdot.h \
+    ../../curl/lib/fileinfo.h \
+    ../../curl/lib/ftplistparser.h \
+    ../../curl/lib/gopher.h \
+    ../../curl/lib/hostcheck.h \
+    ../../curl/lib/imap.h \
+    ../../curl/lib/pop3.h \
+    ../../curl/lib/smb.h \
+    ../../curl/lib/wildcard.h \
+    ../../curl/lib/curl_sasl.h \
+    ../../curl/lib/rtsp.h \
+    ../../curl/lib/curl_threads.h \
+    ../../curl/lib/curl_gethostname.h \
+    ../../curl/lib/curl_fnmatch.h
 
 SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/base64.c\
@@ -209,4 +232,31 @@ SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/url.c\
 ../../curl/lib/version.c\
 ../../curl/lib/rhossl.c\
-../../curl/lib/vtls/vtls.c
+../../curl/lib/vtls/vtls.c \
+../../curl/lib/strcase.c \
+    ../../curl/lib/asyn-thread.c \
+    ../../curl/lib/warnless.c \
+    ../../curl/lib/vauth/cleartext.c \
+    ../../curl/lib/vauth/cram.c \
+    ../../curl/lib/vauth/digest.c \
+    ../../curl/lib/vauth/oauth2.c \
+    ../../curl/lib/vauth/vauth.c \
+    ../../curl/lib/pingpong.c \
+    ../../curl/lib/pipeline.c \
+    ../../curl/lib/http_proxy.c \
+    ../../curl/lib/conncache.c \
+    ../../curl/lib/dotdot.c \
+    ../../curl/lib/fileinfo.c \
+    ../../curl/lib/ftplistparser.c \
+    ../../curl/lib/hmac.c \
+    ../../curl/lib/hostcheck.c \
+    ../../curl/lib/imap.c \
+    ../../curl/lib/pop3.c \
+    ../../curl/lib/smtp.c \
+    ../../curl/lib/wildcard.c \
+    ../../curl/lib/curl_sasl.c \
+    ../../curl/lib/rtsp.c \
+    ../../curl/lib/gopher.c \
+    ../../curl/lib/curl_threads.c \
+    ../../curl/lib/curl_gethostname.c \
+    ../../curl/lib/curl_fnmatch.c

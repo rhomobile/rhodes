@@ -113,21 +113,26 @@ unix:!macx {
   OBJECTS_DIR = ../../../linux/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../linux/bin/RhoSimulator/resources
   HEADERS += ../../net/linux/SSLImpl.h
-  SOURCES += ../../net/linux/SSLImpl.cpp
-  INCLUDEPATH += ../../curl/include
+  SOURCES += ../../net/linux/SSLImpl.cpp\
+  ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
+  INCLUDEPATH += ../../curl/include\
+  #../../ruby/linux\
   LIBS += -lpthread
-  LIBS += ldl
+  LIBS += -ldl -lz
+  #LIBS += -L../../../linux/bin/extensions -lcoreapi
   LIBS += -L../../../linux/bin/sqlite3 -lsqlite3
-  LIBS += -L../../../linux/bin/curl -lcurl
-  LIBS += -L../../../linux/bin/rubylib -lrubylib
-  LIBS += -L../../../linux/bin/rholib -lrholib
-  LIBS += -L../../../linux/bin/syncengine -lsyncengine
-  PRE_TARGETDEPS += ../../../linux/bin/curl/libcurl.a\
-  ../../../linux/bin/rubylib/librubylib.a\
-  ../../../linux/bin/rholib/librholib.a\
-  ../../../linux/bin/sqlite3/libsqlite3.a\
-  ../../../linux/bin/syncengine/libsyncengine.a
-  DEFINES += QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB
+  #LIBS += -L../../../linux/bin/curl -lcurl
+  #LIBS += -L../../../linux/bin/rubylib -lrubylib
+  #LIBS += -L../../../linux/bin/rholib -lrholib
+  #LIBS += -L../../../linux/bin/syncengine -lsyncengine
+  #PRE_TARGETDEPS += \
+  #../../../linux/bin/rubylib/librubylib.a\
+  #../../../linux/bin/curl/libcurl.a\
+  #../../../linux/bin/rholib/librholib.a\
+  #../../../linux/bin/sqlite3/libsqlite3.a\
+  #../../../linux/bin/extensions/libcoreapi.a\
+  #../../../linux/bin/syncengine/libsyncengine.a
+  DEFINES += QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB OS_LINUX
 }
 
 DEFINES += RHODES_QT_PLATFORM
@@ -161,7 +166,10 @@ QtLogView.h \
 QtCustomStyle.h\
 mainwindowinterface.h \
 guithreadfunchelper.h \
-    impl/notificationsound.h
+    impl/notificationsound.h \
+    ../../net/ssl.h \
+    ../../unzip/zip.h
+#TODO: make this like normal developer do
 
 
 SOURCES += impl/AlertImpl.cpp\
@@ -185,8 +193,11 @@ impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
 ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp \
-    impl/notificationsound.cpp
-
+    impl/notificationsound.cpp \
+    ../../net/ssl.cpp \
+    ../../unzip/zip.cpp \
+    ../../../../lib/commonAPI/coreapi/ext/shared/SystemImplBase.cpp
+#TODO: make this like normal developer do
 
 contains(DEFINES, RHODES_VERSION_1)  {
 #HEADERS += oldVersion/ExternalWebView.h\
@@ -252,3 +263,27 @@ newVersion/WebUrlRequestInterceptor.cpp
 
 }
 RESOURCES += resources/common.qrc
+
+unix:!macx:
+LIBS += -L$$PWD/../../../linux/bin/sqlite3/ -lsqlite3
+INCLUDEPATH += $$PWD/../../sqlite
+DEPENDPATH += $$PWD/../../sqlite
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/curl/ -lcurl
+INCLUDEPATH += $$PWD/../../curl/include
+DEPENDPATH += $$PWD/../../curl/include
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/curl/libcurl.a\
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/rubylib/ -lrubylib
+INCLUDEPATH += $$PWD/../../ruby/include
+DEPENDPATH += $$PWD/../../ruby/include
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/rubylib/librubylib.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/rholib/ -lrholib -lcurl
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/rholib/librholib.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/syncengine/ -lsyncengine -lsqlite3
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/syncengine/libsyncengine.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lcoreapi
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libcoreapi.a
