@@ -1,10 +1,10 @@
 QT -= core
-    greaterThan(QT_VERSION, 5.6.0): {
+    greaterThan(QT_VERSION, 5.7.0): {
         CONFIG += c++14
         DEFINES += RHODES_VERSION_2
     }
 
-    lessThan(QT_VERSION, 5.6.0): {
+    lessThan(QT_VERSION, 5.7.0): {
         DEFINES += RHODES_VERSION_1
     }
 TARGET = coreapi

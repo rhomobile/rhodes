@@ -1,14 +1,21 @@
 QT += core gui network
 
 message(Qt version: $$[QT_VERSION])
+equals(QT_VERSION, 5.6.2) {
+    DEFINES += OS_SAILFISH
+}
 greaterThan(QT_MAJOR_VERSION, 4):{
     QT += multimedia
 
     lessThan(QT_VERSION, 5.7.0): {
         QT += webkit widgets
         message(Deprecated webkit enabled)
-        DEFINES += RHODES_VERSION_1
-        INCLUDEPATH += oldVersion
+
+        !contains(DEFINES, OS_SAILFISH)  {
+            QT += webkitwidgets
+            DEFINES += RHODES_VERSION_1
+            INCLUDEPATH += oldVersion
+        }
     }
     greaterThan(QT_VERSION, 5.7.0): {
         QT += webengine webenginecore webenginewidgets
@@ -22,6 +29,11 @@ greaterThan(QT_MAJOR_VERSION, 4):{
 #DEFINES += RHODES_EMULATOR
 TARGET = RhoSimulator
 TEMPLATE = app
+
+contains(DEFINES, SAILFISH)  {
+    TARGET = rhodes
+    TEMPLATE = lib
+}
 
 CONFIG += warn_on sailfishapp
 
@@ -188,45 +200,46 @@ impl/NativeTabbarImpl.cpp\
     impl/notificationsound.cpp
 
 
+
 contains(DEFINES, RHODES_VERSION_1)  {
-#HEADERS += oldVersion/ExternalWebView.h\
-#oldVersion/qwebviewkineticscroller.h\
-#oldVersion/QtMainWindow.h\
-#oldVersion/qkineticscroller.h\
-#oldVersion/qkineticscroller_p.h\
-#oldVersion/qwebviewselectionsuppressor.h\
-#oldVersion/qtscroller.h\
-#oldVersion/qtscroller_p.h\
-#oldVersion/qtscrollerproperties.h\
-#oldVersion/qtscrollerproperties_p.h\
-#oldVersion/qtflickgesture_p.h\
-#oldVersion/qtscrollerfilter_p.h\
-#oldVersion/qtscrollevent.h\
-#oldVersion/qtscrollevent_p.h\
-#oldVersion/QtNativeTabBar.h\
-#oldVersion/QtWebPage.h\
-#oldVersion/DateTimeDialog.h\
-#oldVersion/RhoNativeApiCall.h
+HEADERS += oldVersion/ExternalWebView.h\
+oldVersion/qwebviewkineticscroller.h\
+oldVersion/QtMainWindow.h\
+oldVersion/qkineticscroller.h\
+oldVersion/qkineticscroller_p.h\
+oldVersion/qwebviewselectionsuppressor.h\
+oldVersion/qtscroller.h\
+oldVersion/qtscroller_p.h\
+oldVersion/qtscrollerproperties.h\
+oldVersion/qtscrollerproperties_p.h\
+oldVersion/qtflickgesture_p.h\
+oldVersion/qtscrollerfilter_p.h\
+oldVersion/qtscrollevent.h\
+oldVersion/qtscrollevent_p.h\
+oldVersion/QtNativeTabBar.h\
+oldVersion/QtWebPage.h\
+oldVersion/DateTimeDialog.h\
+oldVersion/RhoNativeApiCall.h
 
-SOURCES += oldVersion/main.cpp
-#oldVersion/ExternalWebView.cpp\
-#oldVersion/QtMainWindow.cpp\
-#oldVersion/QtNativeTabBar.cpp\
-#oldVersion/QtWebPage.cpp\
-#oldVersion/qkineticscroller.cpp\
-#oldVersion/qwebviewkineticscroller.cpp\
-#oldVersion/qtflickgesture.cpp\
-#oldVersion/qtscroller.cpp\
-#oldVersion/qtscrollerproperties.cpp\
-#oldVersion/qtscrollerfilter.cpp\
-#oldVersion/qtscrollevent.cpp\
-#oldVersion/DateTimeDialog.cpp\
-#oldVersion/RhoNativeApiCall.cpp
+SOURCES += oldVersion/main.cpp\
+oldVersion/ExternalWebView.cpp\
+oldVersion/QtMainWindow.cpp\
+oldVersion/QtNativeTabBar.cpp\
+oldVersion/QtWebPage.cpp\
+oldVersion/qkineticscroller.cpp\
+oldVersion/qwebviewkineticscroller.cpp\
+oldVersion/qtflickgesture.cpp\
+oldVersion/qtscroller.cpp\
+oldVersion/qtscrollerproperties.cpp\
+oldVersion/qtscrollerfilter.cpp\
+oldVersion/qtscrollevent.cpp\
+oldVersion/DateTimeDialog.cpp\
+oldVersion/RhoNativeApiCall.cpp
 
-#FORMS += oldVersion/ExternalWebView.ui\
-#oldVersion/QtMainWindow.ui\
-#oldVersion/QtWebInspector.ui\
-#oldVersion/DateTimeDialog.ui
+FORMS += oldVersion/ExternalWebView.ui\
+oldVersion/QtMainWindow.ui\
+oldVersion/QtWebInspector.ui\
+oldVersion/DateTimeDialog.ui
 }
 
 contains(DEFINES, RHODES_VERSION_2) {

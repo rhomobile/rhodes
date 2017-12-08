@@ -1,0 +1,46 @@
+Name: SailfishRhodes
+Summary: My Sailfish OS Application
+Version: 0.1
+Release: 1
+# The contents of the Group field should be one of the groups listed here:
+# http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
+Group: Qt/Qt
+URL: http://example.org/
+License: LICENSE
+# This must be generated before uploading a package to a remote build service.
+# Usually this line does not need to be modified.
+Sources:
+- '%{name}-%{version}.tar.bz2'
+Description: |
+  Short description of my Sailfish OS Application
+Configure: none
+# The qtc5 builder inserts macros to allow QtCreator to have fine
+# control over qmake/make execution
+Builder: qtc5
+
+# This section specifies build dependencies that are resolved using pkgconfig.
+# This is the preferred way of specifying build dependencies for your package.
+PkgConfigBR:
+  - sailfishapp >= 1.0.2
+  - Qt5Core
+  - Qt5Qml
+  - Qt5WebKit
+
+# Build dependencies without a pkgconfig setup can be listed here
+# PkgBR:
+#   - package-needed-to-build
+
+# Runtime dependencies which are not automatically detected
+Requires:
+  - sailfishsilica-qt5 >= 0.10.9 
+
+# All installed files
+Files:
+  - '%{_bindir}'
+  - '%{_datadir}/%{name}'
+  - '%{_datadir}/applications/%{name}.desktop'
+  - '%{_datadir}/icons/hicolor/*/apps/%{name}.png'
+  - '%{_datadir}/%{name}/data'
+
+# For more information about yaml and what's supported in Sailfish OS
+# build system, please see https://wiki.merproject.org/wiki/Spectacle

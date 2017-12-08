@@ -47,7 +47,6 @@
 #include "impl/MainWindowImpl.h"
 #include "QtLogView.h"
 #include "../../platform/shared/qt/rhodes/RhoSimulator.h"
-#include <sailfishapp/sailfishapp.h>
 
 using namespace rho;
 using namespace rho::common;
