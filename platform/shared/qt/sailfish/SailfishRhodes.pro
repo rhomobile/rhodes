@@ -1,6 +1,6 @@
 TARGET = SailfishRhodes
 QT += webkit widgets core
-CONFIG += sailfishapp c++11
+CONFIG += sailfishapp c++11 qt
 
 OTHER_FILES += ./data/*
 
