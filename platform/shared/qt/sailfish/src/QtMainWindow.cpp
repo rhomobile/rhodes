@@ -38,7 +38,6 @@
 #include "common/RhoSimConf.h"
 #include "rubyext/WebView.h"
 #include "rubyext/NativeToolbarExt.h"
-#undef null
 #include "RhoNativeApiCall.h"
 #include "statistic/RhoProfiler.h"
 #include <QStylePainter>

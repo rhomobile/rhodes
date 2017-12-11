@@ -25,7 +25,6 @@
 *------------------------------------------------------------------------*/
 
 #include "ExternalWebView.h"
-#include "ui_ExternalWebView.h"
 
 ExternalWebView::ExternalWebView(QWidget *parent) :
     QWidget(parent),
