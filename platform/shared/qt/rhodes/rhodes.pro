@@ -213,6 +213,7 @@ impl/NativeTabbarImpl.cpp\
 
 
 contains(DEFINES, RHODES_VERSION_1)  {
+!contains(DEFINES, OS_SAILFISH)  {
 HEADERS += oldVersion/ExternalWebView.h\
 oldVersion/qwebviewkineticscroller.h\
 oldVersion/QtMainWindow.h\
@@ -251,6 +252,7 @@ FORMS += oldVersion/ExternalWebView.ui\
 oldVersion/QtMainWindow.ui\
 oldVersion/QtWebInspector.ui\
 oldVersion/DateTimeDialog.ui
+}
 }
 
 contains(DEFINES, RHODES_VERSION_2) {
