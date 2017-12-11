@@ -150,12 +150,16 @@ void CMainWindow::onCustomMenuItemCommand(int nItemPos)
 
 void CMainWindow::minimizeWindow(void)
 {
+#ifndef OS_SAILFISH //TODO: FIX
     ((QtMainWindow*)qtMainWindow)->showMinimized();
+#endif
 }
 
 void CMainWindow::restoreWindow(void)
 {
+#ifndef OS_SAILFISH //TODO: FIX
     ((QtMainWindow*)qtMainWindow)->showNormal();
+#endif
 }
 
 void CMainWindow::unsetProxy()
@@ -199,9 +203,13 @@ void CMainWindow::setCallback(IMainWindowCallback* callback)
 bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
 {
     qtMainWindow = (void*)new QtMainWindow();
+#ifndef OS_SAILFISH //TODO: FIX
     ((QtMainWindow*)qtMainWindow)->setWindowTitle(QString::fromWCharArray(title));
+#endif
     ((QtMainWindow*)qtMainWindow)->setCallback(callback);
+#ifndef OS_SAILFISH //TODO: FIX
     ((QtMainWindow*)qtMainWindow)->show();
+#endif
 
     QObject::connect(this, SIGNAL(doExitCommand(void)),
         ((QtMainWindow*)qtMainWindow), SLOT(exitCommand(void)) );

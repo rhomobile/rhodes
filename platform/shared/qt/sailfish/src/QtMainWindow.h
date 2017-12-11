@@ -98,25 +98,20 @@ public:
     void tabbarSetSwitchCallback(rho::apiGenerator::CMethodResult& oResult);
 private:
     void tabbarWebViewRestore(bool reload);
-    void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);
-    void tabbarDisconnectWebView(QWebView* webView, QWebInspector* webInspector);
+    //void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);
+    //void tabbarDisconnectWebView(QWebView* webView, QWebInspector* webInspector);
     bool internalUrlProcessing(const QUrl& url);
-    void setUpWebPage(QWebPage* page);
+    //void setUpWebPage(QWebPage* page);
     void doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button);
     void internalSetProxy();
 
 private:
     Ui::QtMainWindow *ui;
-    QWebInspector *main_webInspector;
-    QtWebInspector* webInspectorWindow;
     IMainWindowCallback* mainWindowCallback;
-    std::vector<QWebView*> tabViews;
-    std::vector<QWebInspector*> tabInspect;
-    QWebView* main_webView;
-    QWebInspector* cur_webInspector;
+    //std::vector<QWebView*> tabViews;
+    //std::vector<QWebInspector*> tabInspect;
+    //QWebView* main_webView;
     QTabBarRuntimeParams* cur_tbrp;
-    QMessageBox *m_alertDialog;
-    //TODO: CSyncStatusDlg *m_SyncStatusDlg;
     int m_LogicalDpiX;
     int m_LogicalDpiY;
 	bool firstShow, m_bFirstLoad;
