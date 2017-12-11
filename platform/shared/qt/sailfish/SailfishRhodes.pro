@@ -50,11 +50,10 @@ INCLUDEPATH += $$PWD/../rhodes
 DEFINES += CPP_ELEVEN
 DEFINES += OS_SAILFISH
 
-SUBDIRS += $$PWD/../curl
-SUBDIRS += $$PWD/../rhodes
+
 
 TEMPLATE = subdirs
-SUBDIRS = $$PWD/../rubylib $$PWD/../rholib $$PWD/../sqlite3 $$PWD/../syncengine \
+SUBDIRS += $$PWD/../rubylib $$PWD/../rholib $$PWD/../sqlite3 $$PWD/../syncengine \
 $$PWD/../../../../lib/commonAPI/coreapi/ext/platform/qt/coreapi.pro \
 #$$PWD/../../../../lib/commonAPI/logCapture/ext/platform/qt/logCapture.pro \
 #$$PWD/../../../../../rhoconnect-client/ext/rhoconnect-client/ext/platform/qt/rhoconnect-client.pro \
@@ -69,6 +68,8 @@ $$PWD/../../../../lib/extensions/zlib/ext/zlib.pro# \
 #$$PWD/../../../../lib/commonAPI/mediacapture/ext/platform/qt/MediaCapture.pro \
 #$$PWD/../../../../lib/commonAPI/barcode/ext/platform/qt/Barcode.pro
 
+SUBDIRS += $$PWD/../curl
+SUBDIRS += $$PWD/../rhodes
 
 QMAKE_CXXFLAGS_RELEASE += -MP9
 QMAKE_CXXFLAGS_DEBUG += -MP9
