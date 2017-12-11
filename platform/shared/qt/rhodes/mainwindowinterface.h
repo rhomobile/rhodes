@@ -12,5 +12,5 @@
 #endif
 
 #ifdef OS_SAILFISH
-#include "QtMainWindow.h"
+#include "../sailfish/src/QtMainWindow.h"
 #endif

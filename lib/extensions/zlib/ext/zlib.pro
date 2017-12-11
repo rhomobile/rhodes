@@ -6,7 +6,7 @@ QT -= core
     }
 
     equals(QT_VERSION, 5.6.2) {
-        DEFINES += OS_SAILFISH
+        DEFINES += OS_SAILFISH OS_LINUX
     }
 
     lessThan(QT_VERSION, 5.6.0): {

@@ -10,10 +10,6 @@ data.path = $${DEPLOYMENT_PATH}
 
 INSTALLS += data
 
-
-DEFINES += OS_SAILFISH CPP_ELEVEN
-
-
 SOURCES += \
     $$PWD/src/main.cpp \
     $$PWD/src/QtMainWindow.cpp \
@@ -54,6 +50,7 @@ INCLUDEPATH += $$PWD/../rhodes
 DEFINES += CPP_ELEVEN
 DEFINES += OS_SAILFISH
 DEFINES += OS_LINUX
+DEFINES += CPP_ELEVEN
 
 TEMPLATE = subdirs
 SUBDIRS += $$PWD/../rubylib $$PWD/../rholib $$PWD/../sqlite3 $$PWD/../syncengine \

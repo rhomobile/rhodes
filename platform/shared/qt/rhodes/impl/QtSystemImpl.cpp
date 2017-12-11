@@ -43,16 +43,18 @@
 #ifdef RHODES_VERSION_1
 #include <QWebPage>
 #include <QtWebKit/QWebElement>
-#endif
-#ifdef OS_SAILFISH
-#include <QtWebKit/QWebElement>
-#endif
 #if QT_VERSION >= 0x050000
 #include <QtWebKit/qtwebkitversion.h>
 #else
 #include <QtWebKit/qwebkitversion.h>
 #endif
 #endif
+
+#ifdef OS_SAILFISH
+#include <QtWebKit/QWebElement>
+#include <QtWebKit/qtwebkitversion.h>
+#endif
+
 #include "../RhoSimulator.h"
 
 using namespace rho;

@@ -7,7 +7,7 @@ QT += core gui widgets multimedia multimediawidgets network
 
     equals(QT_VERSION, 5.6.2) {
         QT += webkit widgets
-        DEFINES += OS_SAILFISH
+        DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += c++14
         message(Deprecated sailfish webkit enabled)
     }

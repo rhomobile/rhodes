@@ -6,7 +6,7 @@ QT -= core
     }
 
     equals(QT_VERSION, 5.6.2) {
-        DEFINES += OS_SAILFISH CPP_ELEVEN
+        DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
         CONFIG += c++14
     }
 
