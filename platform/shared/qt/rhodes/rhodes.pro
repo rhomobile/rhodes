@@ -11,9 +11,9 @@ greaterThan(QT_MAJOR_VERSION, 4):{
         QT += webkit widgets
         message(Deprecated webkit enabled)
 
+        DEFINES += RHODES_VERSION_1
         !contains(DEFINES, OS_SAILFISH)  {
             QT += webkitwidgets
-            DEFINES += RHODES_VERSION_1
             INCLUDEPATH += oldVersion
         }
     }

@@ -23,7 +23,7 @@ HEADERS += $$PWD/src/custommenuitem.h \
     $$PWD/src/QtNativeTabBar.h \
     $$PWD/src/QtWebPage.h \
     $$PWD/src/RhoNativeApiCall.h\
-    $$PWD/src/ExternalWebView.h\
+    $$PWD/src/ExternalWebView.h
 
 DISTFILES += qml/SailfishRhodes.qml \
     qml/cover/CoverPage.qml \

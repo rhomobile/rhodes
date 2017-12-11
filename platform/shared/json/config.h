@@ -60,7 +60,7 @@
 #define HAVE_STRNCASECMP 1
 
 /* Define to 1 if you have the `strndup' function. */
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_SAILFISH)
 #define HAVE_STRNDUP 1
 #endif
 
