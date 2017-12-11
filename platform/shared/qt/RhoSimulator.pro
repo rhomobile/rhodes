@@ -1,7 +1,13 @@
-    greaterThan(QT_VERSION, 5.6.0): {
+    greaterThan(QT_VERSION, 5.7.0): {
         CONFIG += c++14
         DEFINES += CPP_ELEVEN
         DEFINES += RHODES_VERSION_2
+    }
+
+    equals(QT_VERSION, 5.6.2) {
+        QT += webkit widgets
+        DEFINES += OS_SAILFISH CPP_ELEVEN
+        CONFIG += c++14
     }
 
     lessThan(QT_VERSION, 5.6.0): {

@@ -5,7 +5,11 @@ QT -= core
         DEFINES += AJAXSERVER
     }
 
-    lessThan(QT_VERSION, 5.7.0): {
+    equals(QT_VERSION, 5.6.2) {
+        DEFINES += OS_SAILFISH
+    }
+
+    lessThan(QT_VERSION, 5.6.0): {
         DEFINES += RHODES_VERSION_1
     }
 

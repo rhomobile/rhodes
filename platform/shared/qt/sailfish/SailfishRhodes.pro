@@ -1,5 +1,5 @@
 TARGET = SailfishRhodes
-QT += webkit widgets core gui network
+QT += webkit core widgets network
 CONFIG += sailfishapp c++14 sailfishapp_i18n ordered
 
 OTHER_FILES += ./data/*
@@ -9,6 +9,10 @@ data.files = data
 data.path = $${DEPLOYMENT_PATH}
 
 INSTALLS += data
+
+
+DEFINES += OS_SAILFISH CPP_ELEVEN
+
 
 SOURCES += \
     $$PWD/src/main.cpp \

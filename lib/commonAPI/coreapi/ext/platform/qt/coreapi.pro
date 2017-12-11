@@ -4,7 +4,14 @@ QT -= core
         DEFINES += RHODES_VERSION_2
     }
 
-    lessThan(QT_VERSION, 5.7.0): {
+    equals(QT_VERSION, 5.6.2) {
+        QT += webkit widgets
+        DEFINES += OS_SAILFISH
+        CONFIG += c++14
+        message(Deprecated sailfish webkit enabled)
+    }
+
+    lessThan(QT_VERSION, 5.6.0): {
         DEFINES += RHODES_VERSION_1
     }
 TARGET = coreapi

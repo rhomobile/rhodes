@@ -8,7 +8,13 @@ QT -= core
         LIBS += -lucrt.lib
     }
 
-    lessThan(QT_VERSION, 5.7.0): {
+    equals(QT_VERSION, 5.6.2) {
+        QT += webkit widgets
+        DEFINES += OS_SAILFISH CPP_ELEVEN
+        CONFIG += c++14
+    }
+
+    lessThan(QT_VERSION, 5.6.0): {
         DEFINES += RHODES_VERSION_1
     }
 TARGET = rubylib

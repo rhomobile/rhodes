@@ -1,22 +1,24 @@
 QT += core gui network
 
 message(Qt version: $$[QT_VERSION])
-equals(QT_VERSION, 5.6.2) {
-    DEFINES += OS_SAILFISH
-}
+
 greaterThan(QT_MAJOR_VERSION, 4):{
     QT += multimedia
 
-    lessThan(QT_VERSION, 5.7.0): {
-        QT += webkit widgets
+    lessThan(QT_VERSION, 5.6.0): {
+        QT += webkit widgets webkitwidgets
         message(Deprecated webkit enabled)
-
+        INCLUDEPATH += oldVersion
         DEFINES += RHODES_VERSION_1
-        !contains(DEFINES, OS_SAILFISH)  {
-            QT += webkitwidgets
-            INCLUDEPATH += oldVersion
-        }
     }
+
+    equals(QT_VERSION, 5.6.2) {
+        QT += webkit widgets
+        DEFINES += OS_SAILFISH
+        CONFIG += c++14
+        message(Deprecated sailfish webkit enabled)
+    }
+
     greaterThan(QT_VERSION, 5.7.0): {
         QT += webengine webenginecore webenginewidgets
         message(Webengine enabled)
@@ -27,9 +29,11 @@ greaterThan(QT_MAJOR_VERSION, 4):{
 }
 
 #DEFINES += RHODES_EMULATOR
-TARGET = RhoSimulator
-TEMPLATE = app
 
+!contains(DEFINES, OS_SAILFISH)  {
+    TARGET = RhoSimulator
+    TEMPLATE = app
+}
 contains(DEFINES, OS_SAILFISH)  {
     TARGET = rhodes
     TEMPLATE = lib

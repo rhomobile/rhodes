@@ -5,7 +5,12 @@ QT -= core
         DEFINES += RHODES_VERSION_2
     }
 
-    lessThan(QT_VERSION, 5.7.0): {
+    equals(QT_VERSION, 5.6.2) {
+        DEFINES += OS_SAILFISH CPP_ELEVEN
+        CONFIG += c++14
+    }
+
+    lessThan(QT_VERSION, 5.6.0): {
         DEFINES += RHODES_VERSION_1
     }
 TARGET = sqlite3

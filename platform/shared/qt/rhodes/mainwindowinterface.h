@@ -10,3 +10,7 @@
 #ifdef RHODES_VERSION_2
 #include "newVersion/QtMainWindow.h"
 #endif
+
+#ifdef OS_SAILFISH
+#include "QtMainWindow.h"
+#endif

@@ -43,6 +43,10 @@
 #ifdef RHODES_VERSION_1
 #include <QWebPage>
 #include <QtWebKit/QWebElement>
+#endif
+#ifdef OS_SAILFISH
+#include <QtWebKit/QWebElement>
+#endif
 #if QT_VERSION >= 0x050000
 #include <QtWebKit/qtwebkitversion.h>
 #else
@@ -62,7 +66,7 @@ const char* rho_sys_qt_getWebviewFramework()
 {
     if (qt_webview_framework[0] == '\0') {
 
-        #ifdef RHODES_VERSION_1
+        #if defined (RHODES_VERSION_1) || defined (OS_SAILFISH)
         const QByteArray ver = QString("WEBKIT/").append(qWebKitVersion()).toLatin1();
         #endif
 

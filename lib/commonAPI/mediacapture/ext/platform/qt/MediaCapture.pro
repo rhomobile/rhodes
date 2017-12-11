@@ -4,7 +4,14 @@ QT += core gui widgets multimedia multimediawidgets network
         QT += webkit widgets webkitwidgets
         DEFINES += RHODES_VERSION_1
     }
-    greaterThan(QT_VERSION, 5.6.0): {
+
+    equals(QT_VERSION, 5.6.2) {
+        QT += webkit widgets
+        DEFINES += OS_SAILFISH
+        CONFIG += c++14
+        message(Deprecated sailfish webkit enabled)
+    }
+    greaterThan(QT_VERSION, 5.7.0): {
         QT += webengine webenginecore webenginewidgets
         CONFIG += c++14
         DEFINES += CPP_ELEVEN RHODES_VERSION_2
