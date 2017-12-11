@@ -123,13 +123,13 @@ oldnames.lib wininet.lib Iphlpapi.lib Dbghelp.lib ws2_32.lib Crypt32.lib gdiplus
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/RhoSimulator
-  MOC_DIR = ../../../linux/bin/RhoSimulator/generated_files
-  UI_DIR = ../../../linux/bin/RhoSimulator/generated_files
-  OBJECTS_DIR = ../../../linux/bin/RhoSimulator/tmp
-  RCC_DIR =  ../../../linux/bin/RhoSimulator/resources
-  HEADERS += ../../net/linux/SSLImpl.h
-  SOURCES += ../../net/linux/SSLImpl.cpp\
+  DESTDIR = $$PWD/../
+  MOC_DIR = $$PWD/../../../linux/bin/RhoSimulator/generated_files
+  UI_DIR = $$PWD/../../../linux/bin/RhoSimulator/generated_files
+  OBJECTS_DIR = $$PWD/../../../linux/bin/RhoSimulator/tmp
+  RCC_DIR =  $$PWD/../../../linux/bin/RhoSimulator/resources
+  HEADERS += $$PWD/../../net/linux/SSLImpl.h
+  SOURCES += $$PWD/../../net/linux/SSLImpl.cpp\
   ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
   INCLUDEPATH += ../../curl/include\
   #../../ruby/linux\
