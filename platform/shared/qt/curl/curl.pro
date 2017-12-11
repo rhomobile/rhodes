@@ -52,7 +52,7 @@ win32 {
 unix:!macx {
   DESTDIR = $$PWD/../../../linux/bin/curl
   OBJECTS_DIR = $$PWD/../../../linux/bin/curl/tmp
-  DEFINES += HAVE_CONFIG_H USE_RHOSSL OS_LINUX OS_SAIL
+  DEFINES += HAVE_CONFIG_H USE_RHOSSL OS_LINUX OS_SAILFISH
 
 }
 

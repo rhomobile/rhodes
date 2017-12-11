@@ -114,7 +114,7 @@ unix:!macx {
 ../../ruby/newline.c\
 ../../ruby/missing/explicit_bzero.c\
 ../../ruby/missing/setproctitle.c
-DEFINES += OS_LINUX OS_SAIL
+DEFINES += OS_LINUX OS_SAILFISH
 }
 
 DEFINES += RHODES_QT_PLATFORM

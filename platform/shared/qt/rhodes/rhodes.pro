@@ -30,12 +30,12 @@ greaterThan(QT_MAJOR_VERSION, 4):{
 TARGET = RhoSimulator
 TEMPLATE = app
 
-contains(DEFINES, SAILFISH)  {
+contains(DEFINES, OS_SAILFISH)  {
     TARGET = rhodes
     TEMPLATE = lib
 }
 
-CONFIG += warn_on sailfishapp
+CONFIG += warn_on
 
 INCLUDEPATH += ../..\
 ../../ruby\

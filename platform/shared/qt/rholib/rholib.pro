@@ -63,7 +63,7 @@ unix:!macx {
   SOURCES += $$PWD/../../common/PosixThreadImpl.cpp\
   $$PWD/../../net/CURLNetRequest.cpp\
   $$PWD/../../net/ssl.cpp
-  DEFINES += OS_SAIL OS_LINUX
+  DEFINES += OS_SAILFISH OS_LINUX
 }
 
 DEFINES += RHODES_QT_PLATFORM
