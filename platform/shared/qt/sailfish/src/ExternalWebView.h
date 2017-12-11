@@ -30,10 +30,6 @@
 #include <QWidget>
 #include <QUrl>
 
-namespace Ui {
-    class ExternalWebView;
-}
-
 class ExternalWebView : public QWidget
 {
     Q_OBJECT

@@ -174,11 +174,6 @@ int main(int argc, char *argv[])
     if (RHOCONF().getString("test_push_client").length() > 0 )
         rho_clientregister_create(RHOCONF().getString("test_push_client").c_str());//"qt_client");
 
-
-
-
-
-
     QQuickView * view =  SailfishApp::createView();
     QObject::connect(view, &QQuickView::activeChanged, [=](){qDebug() << (view->isActive()?"Active":"Not active");});
 

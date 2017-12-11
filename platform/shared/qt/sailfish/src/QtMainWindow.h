@@ -38,12 +38,9 @@
 #include "impl/DateTimePickerImpl.h"
 #include "api_generator/MethodResult.h"
 #include "QtLogView.h"
+#include <QMainWindow>
 
-namespace Ui {
-    class QtMainWindow;
-}
-
-class QtMainWindow : public QObject
+class QtMainWindow : public QMainWindow
 {
     Q_OBJECT
     DEFINE_LOGCLASS
@@ -106,10 +103,8 @@ private:
     void internalSetProxy();
 
 private:
-    Ui::QtMainWindow *ui;
     IMainWindowCallback* mainWindowCallback;
     //std::vector<QWebView*> tabViews;
-    //std::vector<QWebInspector*> tabInspect;
     //QWebView* main_webView;
     QTabBarRuntimeParams* cur_tbrp;
     int m_LogicalDpiX;

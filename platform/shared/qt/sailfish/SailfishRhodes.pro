@@ -2,7 +2,7 @@ TARGET = SailfishRhodes
 QT += webkit core widgets network quick
 CONFIG += sailfishapp c++14 sailfishapp_i18n ordered
 
-OTHER_FILES += ./data/*
+OTHER_FILES += $$PWD/data/*
 
 DEPLOYMENT_PATH = /usr/share/$${TARGET}
 data.files = data
@@ -10,31 +10,13 @@ data.path = $${DEPLOYMENT_PATH}
 
 INSTALLS += data
 
-SOURCES += \
-    $$PWD/src/main.cpp \
-    $$PWD/src/QtMainWindow.cpp \
-    $$PWD/src/QtNativeTabBar.cpp \
-    $$PWD/src/QtWebPage.cpp \
-    $$PWD/src/RhoNativeApiCall.cpp \
-    $$PWD/src/ExternalWebView.cpp
-
-HEADERS += $$PWD/src/custommenuitem.h \
-    $$PWD/src/QtMainWindow.h \
-    $$PWD/src/QtNativeTabBar.h \
-    $$PWD/src/QtWebPage.h \
-    $$PWD/src/RhoNativeApiCall.h\
-    $$PWD/src/ExternalWebView.h
-
-DISTFILES += qml/SailfishRhodes.qml \
-    qml/cover/CoverPage.qml \
-    qml/pages/FirstPage.qml \
-    rpm/SailfishRhodes.changes.in \
+DISTFILES += rpm/SailfishRhodes.changes.in \
     rpm/SailfishRhodes.changes.run.in \
     rpm/SailfishRhodes.spec \
     rpm/SailfishRhodes.yaml \
     SailfishRhodes.desktop \
-    translations/*.ts \
-    qml/pages/MenuPage.qml
+    translations/*.ts
+
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128
 

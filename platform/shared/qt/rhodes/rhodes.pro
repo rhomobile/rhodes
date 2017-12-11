@@ -15,7 +15,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
     equals(QT_VERSION, 5.6.2) {
         QT += webkit widgets
         DEFINES += OS_SAILFISH OS_LINUX
-        CONFIG += c++14
+        CONFIG += sailfishapp c++14 sailfishapp_i18n
         message(Deprecated sailfish webkit enabled)
     }
 
@@ -35,8 +35,8 @@ greaterThan(QT_MAJOR_VERSION, 4):{
     TEMPLATE = app
 }
 contains(DEFINES, OS_SAILFISH)  {
-    TARGET = rhodes
-    TEMPLATE = lib
+    TARGET = SailfishRhodes
+    TEMPLATE = app
 }
 
 CONFIG += warn_on
@@ -123,7 +123,12 @@ oldnames.lib wininet.lib Iphlpapi.lib Dbghelp.lib ws2_32.lib Crypt32.lib gdiplus
 }
 
 unix:!macx {
-  DESTDIR = $$PWD/../
+!contains(DEFINES, OS_SAILFISH) {
+  DESTDIR = $$PWD/../../../linux/bin/RhoSimulator
+}
+contains(DEFINES, OS_SAILFISH) {
+  #DESTDIR = $$PWD/../Build_Sailfish_Application
+}
   MOC_DIR = $$PWD/../../../linux/bin/RhoSimulator/generated_files
   UI_DIR = $$PWD/../../../linux/bin/RhoSimulator/generated_files
   OBJECTS_DIR = $$PWD/../../../linux/bin/RhoSimulator/tmp
@@ -215,7 +220,29 @@ impl/NativeTabbarImpl.cpp\
     ../../../../lib/commonAPI/coreapi/ext/shared/SystemImplBase.cpp
 #TODO: make this like normal developer do
 
+contains(DEFINES, OS_SAILFISH)  {
+SOURCES += \
+    $$PWD/../sailfish/src/main.cpp \
+    $$PWD/../sailfish/src/QtMainWindow.cpp \
+    $$PWD/../sailfish/src/QtNativeTabBar.cpp \
+    $$PWD/../sailfish/src/QtWebPage.cpp \
+    $$PWD/../sailfish/src/RhoNativeApiCall.cpp \
+    $$PWD/../sailfish/src/ExternalWebView.cpp
 
+HEADERS += $$PWD/src/custommenuitem.h \
+    $$PWD/../sailfish/src/QtMainWindow.h \
+    $$PWD/../sailfish/src/QtNativeTabBar.h \
+    $$PWD/../sailfish/src/QtWebPage.h \
+    $$PWD/../sailfish/src/RhoNativeApiCall.h\
+    $$PWD/../sailfish/src/ExternalWebView.h
+
+DISTFILES += $$PWD/../sailfish/qml/SailfishRhodes.qml \
+    $$PWD/../sailfish/qml/cover/CoverPage.qml \
+    $$PWD/../sailfish/qml/pages/FirstPage.qml \
+    $$PWD/../sailfish/qml/pages/MenuPage.qml
+
+
+}
 contains(DEFINES, RHODES_VERSION_1)  {
 HEADERS += oldVersion/ExternalWebView.h\
 oldVersion/qwebviewkineticscroller.h\

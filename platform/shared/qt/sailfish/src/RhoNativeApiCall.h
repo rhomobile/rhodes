@@ -28,14 +28,14 @@
 #define RHONATIVEAPICALL_H
 
 #include <QObject>
-#include <QWebFrame>
+//#include <QWebFrame>
 
 class RhoNativeApiCall: public QObject
 {
     Q_OBJECT
 
 public:
-    RhoNativeApiCall(QWebFrame* frame, QObject* parent = 0): m_frame(frame) {}
+    //RhoNativeApiCall(QWebFrame* frame, QObject* parent = 0): m_frame(frame) {}
     Q_INVOKABLE const QString apiCall(const QString& msg);
     Q_INVOKABLE const QString toLowerCase(const QString& msg);
 
@@ -43,7 +43,7 @@ public slots:
     void populateJavaScriptWindowObject();
 
 private:
-    QWebFrame* m_frame;
+    //QWebFrame* m_frame;
 };
 
 Q_DECLARE_METATYPE(RhoNativeApiCall*)
