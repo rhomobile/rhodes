@@ -233,7 +233,7 @@ platform/android/proguard/proguard-generated-rules.pro
 *.log
 *.obj
 *.suo
-#*.user
+*.user
 *.pdb
 *.idb
 *.sdf
