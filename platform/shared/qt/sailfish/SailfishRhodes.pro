@@ -50,7 +50,6 @@ INCLUDEPATH += $$PWD/../rhodes
 DEFINES += CPP_ELEVEN
 DEFINES += OS_SAILFISH
 DEFINES += OS_LINUX
-DEFINES += CPP_ELEVEN
 
 TEMPLATE = subdirs
 SUBDIRS += $$PWD/../rubylib $$PWD/../rholib $$PWD/../sqlite3 $$PWD/../syncengine \
