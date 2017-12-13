@@ -14,7 +14,7 @@
  */
 
 #include "config.h"
-
+#include "../ruby/posixnames.h"
 #include <math.h>
 #include "math_compat.h"
 #include <stdio.h>
@@ -42,6 +42,10 @@
 #endif
 
 #define jt_hexdigit(x) (((x) <= '9') ? (x) - '0' : ((x) & 7) + 9)
+
+#if defined(_WIN32_WCE) || defined(WIN32) || defined(_WINRT_DLL) || defined(OS_UWP) || defined(_UWP_LIB)
+# define strncasecmp _strnicmp
+#endif
 
 #if !HAVE_STRNCASECMP && defined(_MSC_VER)
   /* MSC has the version as _strnicmp */
@@ -888,7 +892,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 	while(1) {
 	  if(c == tok->quote_char) {
 	    printbuf_memappend_fast(tok->pb, case_start, str-case_start);
-	    obj_field_name = strdup(tok->pb->buf);
+	    obj_field_name = fpstrdup(tok->pb->buf);
 	    saved_state = json_tokener_state_object_field_end;
 	    state = json_tokener_state_eatws;
 	    break;

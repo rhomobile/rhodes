@@ -13,7 +13,7 @@
 #include "config.h"
 
 #include "strerror_override.h"
-
+#include "../ruby/posixnames.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -484,7 +484,7 @@ int json_object_object_add_ex(struct json_object* jso,
 	if (!existing_entry)
 	{
 		const void *const k = (opts & JSON_C_OBJECT_KEY_IS_CONSTANT) ?
-					(const void *)key : strdup(key);
+					(const void *)key : fpstrdup(key);
 		if (k == NULL)
 			return -1;
 		return lh_table_insert_w_hash(jso->o.c_object, k, val, hash, opts);
@@ -745,7 +745,7 @@ int json_c_set_serialization_double_format(const char *double_format, int global
 #endif
 		if (global_serialization_float_format)
 			free(global_serialization_float_format);
-		global_serialization_float_format = double_format ? strdup(double_format) : NULL;
+		global_serialization_float_format = double_format ? fpstrdup(double_format) : NULL;
 	}
 	else if (global_or_thread == JSON_C_OPTION_THREAD)
 	{
@@ -879,7 +879,7 @@ struct json_object* json_object_new_double_s(double d, const char *ds)
 	if (!jso)
 		return NULL;
 
-	new_ds = strdup(ds);
+	new_ds = fpstrdup(ds);
 	if (!new_ds)
 	{
 		json_object_generic_delete(jso);
@@ -991,7 +991,7 @@ struct json_object* json_object_new_string(const char *s)
 	if(jso->o.c_string.len < LEN_DIRECT_STRING_DATA) {
 		memcpy(jso->o.c_string.str.data, s, jso->o.c_string.len);
 	} else {
-		jso->o.c_string.str.ptr = strdup(s);
+		jso->o.c_string.str.ptr = fpstrdup(s);
 		if (!jso->o.c_string.str.ptr)
 		{
 			json_object_generic_delete(jso);
@@ -1307,7 +1307,7 @@ static int json_object_copy_serializer_data(struct json_object *src, struct json
 
 	if (dst->_to_json_string == json_object_userdata_to_json_string)
 	{
-		dst->_userdata = strdup(src->_userdata);
+		dst->_userdata = fpstrdup(src->_userdata);
 	}
 	// else if ... other supported serializers ...
 	else

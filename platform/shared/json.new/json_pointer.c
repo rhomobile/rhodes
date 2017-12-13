@@ -7,7 +7,7 @@
  */
 
 #include "config.h"
-
+#include "../ruby/posixnames.h"
 #include "strerror_override.h"
 
 #include <stdarg.h>
@@ -186,7 +186,7 @@ int json_pointer_get(struct json_object *obj, const char *path, struct json_obje
 	}
 
 	/* pass a working copy to the recursive call */
-	if (!(path_copy = strdup(path))) {
+	if (!(path_copy = fpstrdup(path))) {
 		errno = ENOMEM;
 		return -1;
 	}
@@ -257,7 +257,7 @@ int json_pointer_set(struct json_object **obj, const char *path, struct json_obj
 	}
 
 	/* pass a working copy to the recursive call */
-	if (!(path_copy = strdup(path))) {
+	if (!(path_copy = fpstrdup(path))) {
 		errno = ENOMEM;
 		return -1;
 	}
