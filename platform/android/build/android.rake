@@ -2718,6 +2718,12 @@ def run_as_spec(device_flag, uninstall_app)
   start_logging = Time.now
   is_timeout = false
 
+  last_spec_line = ""
+  last_spec_iseq_line = ""
+
+  is_correct_stop = false
+  is_exit_by_app_not_run = false
+
   puts "Start reading log ..."
   File.open(log_name, 'r:UTF-8') do |io|
     $logger.debug "%%% io="+io.to_s
@@ -2733,11 +2739,20 @@ def run_as_spec(device_flag, uninstall_app)
         else
           end_spec = !Jake.process_spec_output(line)
         end
-        end_spec = true if line =~ /MSpec runner stopped/
+
+        is_mspec_stop = line =~ /MSpec runner stopped/
+        is_terminated = line =~ /\| \*\*\*Terminated\s+(.*)/
+
+        is_correct_stop = true if is_mspec_stop || is_terminated
+
+        end_spec = true if is_mspec_stop
 
         if end_spec
             puts "%%% stop spec by this line : ["+line.to_s+"]"
         end
+
+        last_spec_line = true if line =~ /_spec/
+        last_spec_iseq_line = true if line =~ /_spec.iseq/
 
         #check for timeout
         if (Time.now.to_i - start_logging.to_i) > timeout_in_seconds
@@ -2757,6 +2772,8 @@ def run_as_spec(device_flag, uninstall_app)
       end
       app_is_running = AndroidTools.application_running(device_flag, $app_package_name)
       puts "%%% application is not runned on simulator !!!" if !app_is_running
+      is_exit_by_app_not_run = !app_is_running
+
       break unless app_is_running
       sleep(5) unless end_spec
     end
@@ -2765,10 +2782,12 @@ def run_as_spec(device_flag, uninstall_app)
   puts "Processing spec results ..."
   Jake.process_spec_results(start)
 
-  if is_timeout
-      puts "Tests stoped by timeout ( "+timeout_in_seconds.to_s+" sec ) !"
-      puts "This is last 64 lines from log :"
-      idx = log_lines.size-64
+  if is_timeout || is_exit_by_app_not_run || !is_correct_stop
+      puts "Tests has issues : is_timeout["+is_timeout.to_s+"], timeout["+timeout_in_seconds.to_s+" sec], app_exit_unexpected["+is_exit_by_app_not_run.to_s+"], not_correct_terminated_line["+!is_correct_stop.to_s+"] !"
+      puts "last_spec_line = ["+last_spec_line.to_s+"]"
+      puts "last_spec_iseq_line = ["+last_spec_iseq_line.to_s+"]"
+      puts "This is last 256 lines from log :"
+      idx = log_lines.size-256
       if idx < 0
           idx = 0
       end
@@ -2791,6 +2810,7 @@ def run_as_spec(device_flag, uninstall_app)
 
   exit 1 if is_timeout
   exit 1 if $total.to_i==0
+  exit 1 if !is_correct_stop
   exit $failed.to_i
 
 end
