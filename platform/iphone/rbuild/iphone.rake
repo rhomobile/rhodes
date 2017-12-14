@@ -2689,7 +2689,7 @@ namespace "run" do
           puts "Processing spec results ..."
           Jake.process_spec_results(start)
           if is_timeout || !is_correct_stop
-              puts "Tests has issues : is_timeout["+is_timeout.to_s+"], timeout["+timeout_in_seconds.to_s+" sec], not_correct_terminated_line["+!is_correct_stop.to_s+"] !"
+              puts "Tests has issues : is_timeout["+is_timeout.to_s+"], timeout["+timeout_in_seconds.to_s+" sec], not_correct_terminated_line["+(!is_correct_stop).to_s+"] !"
               puts "Tests stoped by timeout ( "+timeout_in_seconds.to_s+" sec ) !"
               puts "last_spec_line = ["+last_spec_line.to_s+"]"
               puts "last_spec_iseq_line = ["+last_spec_iseq_line.to_s+"]"

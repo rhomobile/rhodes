@@ -2783,7 +2783,7 @@ def run_as_spec(device_flag, uninstall_app)
   Jake.process_spec_results(start)
 
   if is_timeout || is_exit_by_app_not_run || !is_correct_stop
-      puts "Tests has issues : is_timeout["+is_timeout.to_s+"], timeout["+timeout_in_seconds.to_s+" sec], app_exit_unexpected["+is_exit_by_app_not_run.to_s+"], not_correct_terminated_line["+!is_correct_stop.to_s+"] !"
+      puts "Tests has issues : is_timeout["+is_timeout.to_s+"], timeout["+timeout_in_seconds.to_s+" sec], app_exit_unexpected["+is_exit_by_app_not_run.to_s+"], not_correct_terminated_line["+(!is_correct_stop).to_s+"] !"
       puts "last_spec_line = ["+last_spec_line.to_s+"]"
       puts "last_spec_iseq_line = ["+last_spec_iseq_line.to_s+"]"
       puts "This is last 256 lines from log :"
