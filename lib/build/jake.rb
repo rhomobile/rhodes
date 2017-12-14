@@ -347,13 +347,13 @@ class Jake
       end
 
       if line =~ /JUNIT\| (.*)/          # JUNIT| XML
-        $junitlogs[@default_file_name] << $1
+        $junitlogs[@default_file_name] << $1 if $junitlogs[@default_file_name] != nil
       elsif line =~ /JUNITNAME\|\s+(.*)/          # JUNITNAME| name
         $junitname = File.basename($1.strip,'.xml')
-        $junitlogs[$junitname] = []
+        $junitlogs[$junitname] = [] if $junitlogs[$junitname] != nil
       elsif line =~ /JUNITBLOB\| (.*)/
         if $junitname && $1
-          $junitlogs[$junitname] << $1
+          $junitlogs[$junitname] << $1 if $junitlogs[$junitname] != nil
         end
       end
 
