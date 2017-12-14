@@ -2708,7 +2708,10 @@ def run_as_spec(device_flag, uninstall_app)
   end
 
 
-  timeout_in_seconds = 60*60
+  timeout_in_seconds = 30*60
+
+  timeout_output_in_seconds = 60
+  last_output_time = Time.now
 
   log_lines = []
 
@@ -2741,7 +2744,16 @@ def run_as_spec(device_flag, uninstall_app)
             end_spec = true
             is_timeout = true
         end
+        if (Time.now.to_i - last_output_time.to_i) > timeout_output_in_seconds
+            last_output_time = Time.now
+            puts "%%% please wait - application still running ..."
+        end
+
         break if end_spec
+      end
+      if (Time.now.to_i - last_output_time.to_i) > timeout_output_in_seconds
+          last_output_time = Time.now
+          puts "%%% please wait - application still running ..."
       end
       app_is_running = AndroidTools.application_running(device_flag, $app_package_name)
       puts "%%% application is not runned on simulator !!!" if !app_is_running
@@ -2776,6 +2788,11 @@ def run_as_spec(device_flag, uninstall_app)
   end
 
   $stdout.flush
+
+  exit 1 if is_timeout
+  exit 1 if $total.to_i==0
+  exit $failed.to_i
+
 end
 
 namespace "run" do
