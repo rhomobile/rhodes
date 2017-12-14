@@ -2680,13 +2680,17 @@ def run_as_spec(device_flag, uninstall_app)
 
   puts "Waiting for application ..."
 
-  for i in 0..60
+  for i in 0..600
+    app_is_running = AndroidTools.application_running(device_flag, $app_package_name)
+    $logger.debug "%%% app_is_running="+app_is_running.to_s
     if AndroidTools.application_running(device_flag, $app_package_name)
       break
     else
       sleep(1)
     end
   end
+  app_is_runningz = AndroidTools.application_running(device_flag, $app_package_name)
+  puts "%%% app_is_runningz FINAL ="+app_is_runningz.to_s
 
   puts "Waiting for log file: #{log_name}"
 
@@ -2703,27 +2707,64 @@ def run_as_spec(device_flag, uninstall_app)
     exit(1)
   end
 
+
+  timeout_in_seconds = 60*60
+
+  log_lines = []
+
+  start_logging = Time.now
+  is_timeout = false
+
   puts "Start reading log ..."
   File.open(log_name, 'r:UTF-8') do |io|
+    $logger.debug "%%% io="+io.to_s
     end_spec = false
     while !end_spec do
+      $logger.debug "%%% while start"
       io.each do |line|
-        puts line
+        #puts "%%% line="+line.to_s
+        $logger.debug line
+        log_lines << line
         if line.class.method_defined? "valid_encoding?"
           end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
         else
           end_spec = !Jake.process_spec_output(line)
         end
         end_spec = true if line =~ /MSpec runner stopped/
+
+        if end_spec
+            puts "%%% stop spec by this line : ["+line.to_s+"]"
+        end
+
+        #check for timeout
+        if (Time.now.to_i - start_logging.to_i) > timeout_in_seconds
+            end_spec = true
+            is_timeout = true
+        end
         break if end_spec
       end
-      break unless AndroidTools.application_running(device_flag, $app_package_name)
+      app_is_running = AndroidTools.application_running(device_flag, $app_package_name)
+      puts "%%% application is not runned on simulator !!!" if !app_is_running
+      break unless app_is_running
       sleep(5) unless end_spec
     end
   end
 
   puts "Processing spec results ..."
   Jake.process_spec_results(start)
+
+  if is_timeout
+      puts "Tests stoped by timeout ( "+timeout_in_seconds.to_s+" sec ) !"
+      puts "This is last 64 lines from log :"
+      idx = log_lines.size-64
+      if idx < 0
+          idx = 0
+      end
+      while idx < log_lines.size
+          puts "line ["+idx.to_s+"]: "+log_lines[idx]
+          idx = idx + 1
+      end
+  end
 
   # stop app
   uninstall_app = true if uninstall_app.nil? # by default uninstall spec app
@@ -2752,7 +2793,7 @@ namespace "run" do
       throw "You must pass package name" if package_file.nil?
       throw "No file to run" if !File.exists?(package_file)
 
-      AndroidTools.run_emulator(:hidden => ENV['TRAVIS'])
+      AndroidTools.run_emulator(:hidden => ((ENV['TRAVIS'] != nil) && (ENV['TRAVIS'] != "")))
 
       AndroidTools.load_app_and_run('-e', File.expand_path(package_file), package_name)
     end
@@ -2785,7 +2826,7 @@ namespace "run" do
       task :debug => ['run:android:emulator:run']
       task :run => ['config:android:emulator'] do
         AndroidTools.kill_adb_logcat('-e')
-        AndroidTools.run_emulator(:hidden => ENV['TRAVIS'])
+        AndroidTools.run_emulator(:hidden => ((ENV['TRAVIS'] != nil) && (ENV['TRAVIS'] != "")))
 
         apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
         AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
