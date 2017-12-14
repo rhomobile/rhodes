@@ -2664,8 +2664,9 @@ namespace "run" do
                     $iphone_end_spec = true
                     is_timeout = true
                 end
-
-                break if $iphone_end_spec
+                if $iphone_end_spec
+                    puts "%%% stop spec by this line : ["+line.to_s+"]"
+                end                break if $iphone_end_spec
               end
               sleep(3) unless $iphone_end_spec
             end
