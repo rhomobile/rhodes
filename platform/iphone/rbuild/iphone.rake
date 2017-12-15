@@ -2669,8 +2669,8 @@ namespace "run" do
                 $iphone_end_spec = true if is_mspec_stop
 
 
-                last_spec_line = true if line =~ /_spec/
-                last_spec_iseq_line = true if line =~ /_spec.iseq/
+                last_spec_line = line if line =~ /_spec/
+                last_spec_iseq_line = line if line =~ /_spec.iseq/
 
                 #check for timeout
                 if (Time.now.to_i - start_logging.to_i) > timeout_in_seconds
@@ -2693,8 +2693,8 @@ namespace "run" do
               puts "Tests stoped by timeout ( "+timeout_in_seconds.to_s+" sec ) !"
               puts "last_spec_line = ["+last_spec_line.to_s+"]"
               puts "last_spec_iseq_line = ["+last_spec_iseq_line.to_s+"]"
-              puts "This is last 256 lines from log :"
-              idx = log_lines.size-256
+              puts "This is last 1024 lines from log :"
+              idx = log_lines.size-1024
               if idx < 0
                   idx = 0
               end
