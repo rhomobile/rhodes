@@ -2708,7 +2708,7 @@ def run_as_spec(device_flag, uninstall_app)
   end
 
 
-  timeout_in_seconds = 20*60
+  timeout_in_seconds = 5*60
 
   timeout_output_in_seconds = 60
   last_output_time = Time.now
@@ -2786,8 +2786,8 @@ def run_as_spec(device_flag, uninstall_app)
       puts "Tests has issues : is_timeout["+is_timeout.to_s+"], timeout["+timeout_in_seconds.to_s+" sec], app_exit_unexpected["+is_exit_by_app_not_run.to_s+"], not_correct_terminated_line["+(!is_correct_stop).to_s+"] !"
       puts "last_spec_line = ["+last_spec_line.to_s+"]"
       puts "last_spec_iseq_line = ["+last_spec_iseq_line.to_s+"]"
-      puts "This is last 1024 lines from log :"
-      idx = log_lines.size-1024
+      puts "This is last 5000 lines from log :"
+      idx = log_lines.size-5000
       if idx < 0
           idx = 0
       end
