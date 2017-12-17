@@ -2708,7 +2708,7 @@ def run_as_spec(device_flag, uninstall_app)
   end
 
 
-  timeout_in_seconds = 5*60
+  timeout_in_seconds = 45*60
 
   timeout_output_in_seconds = 60
   last_output_time = Time.now
