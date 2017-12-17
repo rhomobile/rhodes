@@ -436,6 +436,7 @@ def run_emulator(options = {})
     cmd << " -wipe-data" if options[:wipe]
     # cmd << " -verbose"
 
+    puts cmd
     start_emulator(cmd)
 
     cmd_start_emu = "#{$adb} -e wait-for-device shell getprop sys.boot_completed"

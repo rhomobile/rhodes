@@ -88,17 +88,17 @@ matrix:
     os: linux
     env: RHO_TARGET="android"    RHO_APP="auto_common_spec"
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24"
+  #- language: android
+  #  os: linux
+  #  env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24"
 
   - language: android
     os: linux
     env: RHO_TARGET="android"    RHO_APP="framework_spec"
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="24"
+  #- language: android
+  #  os: linux
+  #  env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="24"
 
   #- language: android
   #  os: linux

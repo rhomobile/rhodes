@@ -2725,7 +2725,7 @@ def run_as_spec(device_flag, uninstall_app)
   is_exit_by_app_not_run = false
 
   app_exit_start_time = nil
-  app_exit_timeout_in_seconds = 20
+  app_exit_timeout_in_seconds = 60
   app_is_running = true
 
   puts "Start reading log ..."
