@@ -2708,7 +2708,7 @@ def run_as_spec(device_flag, uninstall_app)
   end
 
 
-  timeout_in_seconds = 45*60
+  timeout_in_seconds = 30*60
 
   timeout_output_in_seconds = 60
   last_output_time = Time.now
@@ -2723,6 +2723,10 @@ def run_as_spec(device_flag, uninstall_app)
 
   is_correct_stop = false
   is_exit_by_app_not_run = false
+
+  app_exit_start_time = nil
+  app_exit_timeout_in_seconds = 20
+  app_is_running = true
 
   puts "Start reading log ..."
   File.open(log_name, 'r:UTF-8') do |io|
@@ -2770,11 +2774,22 @@ def run_as_spec(device_flag, uninstall_app)
           last_output_time = Time.now
           puts "%%% please wait - application still running ..."
       end
-      app_is_running = AndroidTools.application_running(device_flag, $app_package_name)
-      puts "%%% application is not runned on simulator !!!" if !app_is_running
-      is_exit_by_app_not_run = !app_is_running
+      if app_is_running
+          app_is_running = AndroidTools.application_running(device_flag, $app_package_name)
+          puts "%%% application is not runned on simulator !!!" if !app_is_running
+          is_exit_by_app_not_run = !app_is_running
+          if !app_is_running
+              app_exit_start_time = Time.now
+          end
+      end
 
-      break unless app_is_running
+      if !app_is_running
+          if (Time.now.to_i - app_exit_start_time.to_i) > app_exit_timeout_in_seconds
+              end_spec = true
+              puts "%%% application is not runned - stop waiting dealy for log processing !"
+          end
+      end
+      #break unless app_is_running
       sleep(5) unless end_spec
     end
   end
