@@ -34,7 +34,9 @@
 
 #include <QLocale>
 #include <QDesktopServices>
+#ifndef OS_SAILFISH
 #include <QMessageBox>
+#endif
 #include "MainWindowImpl.h"
 #include <QUrl>
 #ifdef RHODES_VERSION_2
@@ -284,7 +286,9 @@ void rho_sys_set_application_icon_badge(int badge_number)
 
 void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 {
+#ifndef OS_SAILFISH
     QMessageBox::critical(0, QString(szTitle), QString(szMsg));
+#endif
 }
 
 RHO_GLOBAL void rho_platform_restart_application()

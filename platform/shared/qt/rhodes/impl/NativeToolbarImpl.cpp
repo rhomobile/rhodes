@@ -37,7 +37,6 @@
 #include "rubyext/NativeToolbarExt.h"
 #undef null
 #include <QString>
-#include <QApplication>
 #if QT_VERSION >= 0x050000
 #include <QtWidgets/QAction>
 #else

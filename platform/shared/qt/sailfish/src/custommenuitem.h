@@ -9,12 +9,23 @@
 class CustomMenuItem : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString text READ getText)
+    Q_PROPERTY(QString text READ getText CONSTANT)
 public:
-    explicit CustomMenuItem(QString name, QObject *parent = 0): QObject(parent){text = name;}
+
+    explicit CustomMenuItem(QString name, int item, QObject *parent): QObject(parent){text = name; this->item = item;}
+    CustomMenuItem(QString name, QObject *parent): QObject(parent){text = name;}
+    CustomMenuItem(QString name, QString action, QObject *parent): QObject(parent){text = name; this->action = action;}
     QString getText(){return text;}
+    int getItem() const{
+        return item;
+    }
+    QString getAction() const{
+        return action;
+    }
 private:
     QString text;
+    int item;
+    QString action;
 signals:
     void isClicked();
 public slots:
@@ -26,3 +37,5 @@ public slots:
 };
 
 #endif // CUSTOMMENU_H
+
+

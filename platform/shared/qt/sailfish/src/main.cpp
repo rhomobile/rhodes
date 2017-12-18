@@ -33,13 +33,9 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QDirIterator>
-#include <QListWidget>
-#include <QAction>
-#include <QMenu>
 #include <QAbstractListModel>
 #include "custommenuitem.h"
 #include <QtQuick>
-#include <string>
 #include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "logging/RhoLog.h"
@@ -50,9 +46,9 @@
 #include "sync/RhoconnectClientManager.h"
 #include "common/RhoFilePath.h"
 #include <qglobal.h>
-#include <QMessageBox>
 #include <QDir>
 #include "impl/MainWindowImpl.h"
+#include "QtMainWindow.h"
 #include "QtLogView.h"
 #include "../../platform/shared/qt/rhodes/RhoSimulator.h"
 
@@ -124,9 +120,8 @@ char* parseToken(const char* start)
 int main(int argc, char *argv[])
 {
     QGuiApplication * application = SailfishApp::application(argc, argv);
-
     qRegisterMetaType<QString>("QString");
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QString OSDetailsString= QString("Running on : %1 Application Compiled with QT Version :  %2 Running with QT Version %3")
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
 
@@ -136,13 +131,16 @@ int main(int argc, char *argv[])
     m_strRootPath = std::string(dir.constData(), dir.length());
     m_strRootPath += "/rho/";
 
+    QString workingLocation("/usr/share/" + application->applicationName() + "/data/");
 
     // PreMessageLoop:
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
-        QMessageBox::critical(0,QString("This is hidden app and can be started only with security key."), QString("Security Token Verification Failed"));
+        //QMessageBox::critical(0,QString("This is hidden app and can be started only with security key."), QString("Security Token Verification Failed"));
+        //TODO: create message boxex
+
         RAWLOGC_INFO("QTMain", "This is hidden app and can be started only with security key.");
         if (RHOCONF().getString("invalid_security_token_start_path").length() <= 0)
             return 1;
@@ -163,41 +161,51 @@ int main(int argc, char *argv[])
     RHODESAPP().setJSApplication(m_isJSApplication);
 
     // Create the main application window
+    QQuickView * view  =  SailfishApp::createView();
+    ((QtMainWindow *) m_appWindow->getQtMainWindow())->setView(view);
+
 
     m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
 
     RHODESAPP().startApp();
-
-    // Navigate to the "loading..." page
     m_appWindow->navigate(L"about:blank", -1);
 
     if (RHOCONF().getString("test_push_client").length() > 0 )
         rho_clientregister_create(RHOCONF().getString("test_push_client").c_str());//"qt_client");
 
-    QQuickView * view =  SailfishApp::createView();
+
     QObject::connect(view, &QQuickView::activeChanged, [=](){qDebug() << (view->isActive()?"Active":"Not active");});
-
-    //QFileInfo fileInfo(QString::fromStdString(argv[0]));
-    //QDirIterator dirIterator(fileInfo.absoluteDir());
-
-    QString workingLocation("/usr/share/" + application->applicationName() + "/data/");
     QObject::connect(view->engine(), &QQmlEngine::quit, application, &QGuiApplication::quit);
-
-    QList<QObject *> dataList;
-    for (int i = 0; i < 7; i++){
-        dataList.append(new CustomMenuItem("Item " + QString::number(i), application));
-    }
 
     view->setSource(SailfishApp::pathToMainQml());
     view->showFullScreen();
 
-    QQmlContext *ctxt = view->rootContext();
-    ctxt->setContextProperty("mainMenuListModel", QVariant::fromValue(dataList));
 
 
 
 
-    m_appWindow->messageLoop();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     application->exec();
 
     // stopping Rhodes application

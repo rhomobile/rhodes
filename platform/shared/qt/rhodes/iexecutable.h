@@ -4,8 +4,12 @@
 #include <QObject>
 #include <QThread>
 #include <QDebug>
+#ifndef OS_SAILFISH
 #include <QMainWindow>
 #include <QApplication>
+#else
+#include "mainwindowinterface.h"
+#endif
 
 class IExecutable : public QObject
 {
@@ -22,12 +26,19 @@ public:
         qDebug() << "Creating Executable in thred ID 0x" + QString::number((quint32)QThread::currentThreadId(), 16);
 #endif
     }
+
+#ifndef OS_SAILFISH
     static QMainWindow * getMainWindow(){
         foreach (QWidget * widget, qApp->topLevelWidgets()) {
             if (widget->inherits("QMainWindow")) return qobject_cast<QMainWindow *>(widget);
         }
         return nullptr;
     }
+#else
+    static QtMainWindow * getMainWindow(){
+        return QtMainWindow::getLastInstance();
+    }
+#endif
 
     virtual ~IExecutable(){}
 

@@ -183,7 +183,6 @@ impl/AlertImpl.h\
 impl/RhoThreadImpl.h\
 iexecutable.h\
 MainWindowCallback.h\
-QtLogView.h \
 QtCustomStyle.h\
 mainwindowinterface.h \
 guithreadfunchelper.h \
@@ -226,15 +225,16 @@ SOURCES += \
     $$PWD/../sailfish/src/QtMainWindow.cpp \
     $$PWD/../sailfish/src/QtNativeTabBar.cpp \
     $$PWD/../sailfish/src/QtWebPage.cpp \
-    $$PWD/../sailfish/src/RhoNativeApiCall.cpp \
-    $$PWD/../sailfish/src/ExternalWebView.cpp
+    $$PWD/../sailfish/src/RhoNativeApiCall.cpp
 
-HEADERS += $$PWD/src/custommenuitem.h \
+HEADERS += $$PWD/../sailfish/src/custommenuitem.h \
+    $$PWD/../sailfish/src/customtoolbaritem.h \
+    $$PWD/../sailfish/src/customwebviewtab.h \
+    $$PWD/../sailfish/src/QtLogView.h \
     $$PWD/../sailfish/src/QtMainWindow.h \
     $$PWD/../sailfish/src/QtNativeTabBar.h \
     $$PWD/../sailfish/src/QtWebPage.h \
-    $$PWD/../sailfish/src/RhoNativeApiCall.h\
-    $$PWD/../sailfish/src/ExternalWebView.h
+    $$PWD/../sailfish/src/RhoNativeApiCall.h
 
 DISTFILES += $$PWD/../sailfish/qml/SailfishRhodes.qml \
     $$PWD/../sailfish/qml/cover/CoverPage.qml \
@@ -245,6 +245,7 @@ DISTFILES += $$PWD/../sailfish/qml/SailfishRhodes.qml \
 }
 contains(DEFINES, RHODES_VERSION_1)  {
 HEADERS += oldVersion/ExternalWebView.h\
+QtLogView.h \
 oldVersion/qwebviewkineticscroller.h\
 oldVersion/QtMainWindow.h\
 oldVersion/qkineticscroller.h\
@@ -261,6 +262,7 @@ oldVersion/qtscrollevent_p.h\
 oldVersion/QtNativeTabBar.h\
 oldVersion/QtWebPage.h\
 oldVersion/DateTimeDialog.h\
+
 oldVersion/RhoNativeApiCall.h
 
 SOURCES += oldVersion/main.cpp\
@@ -287,6 +289,7 @@ oldVersion/DateTimeDialog.ui
 
 contains(DEFINES, RHODES_VERSION_2) {
 HEADERS += newVersion/QtMainWindow.h\
+QtLogView.h \
 newVersion/RhoNativeApiCall.h\
 newVersion/QtNativeTabBar.h\
 newVersion/QtWebEngineView.h\
@@ -295,6 +298,7 @@ newVersion/ExternalWebView.h\
 newVersion/QWebEngineViewSelectionSuppressor.h\
 newVersion/DateTimeDialog.h \
 newVersion/WebUrlRequestInterceptor.h
+
 
 SOURCES += newVersion/QtMainWindow.cpp\
 newVersion/RhoNativeApiCall.cpp\
