@@ -29,6 +29,7 @@ unix:!macx {
   SOURCES += <%= @rhoRoot %>/platform/shared/net/linux/SSLImpl.cpp\
   <%= @rhoRoot %>/lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
   INCLUDEPATH += <%= @rhoRoot %>/platform/shared/curl/include\
+  <%= @rhoRoot %>/platform/shared/qt/rhodes
   LIBS += -lpthread
   LIBS += -ldl -lz
   LIBS += -L../sqlite3/bin -lsqlite3
@@ -96,15 +97,16 @@ SOURCES += \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtMainWindow.cpp \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtNativeTabBar.cpp \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtWebPage.cpp \
-    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/RhoNativeApiCall.cpp \
-    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/ExternalWebView.cpp
+    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/RhoNativeApiCall.cpp
+	
 
 HEADERS += <%= @rhoRoot %>/platform/shared/qt/sailfish/src/custommenuitem.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtMainWindow.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtNativeTabBar.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtWebPage.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/RhoNativeApiCall.h\
-    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/ExternalWebView.h
+    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/customtoolbaritem.h \
+    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/customwebviewtab.h
 
 DISTFILES += $$PWD/../sailfish/qml/harbour-SailfishRhodes.qml \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/cover/harbour-CoverPage.qml \

@@ -12,12 +12,12 @@
 <context>
     <name>FirstPage</name>
     <message>
-        <location filename="../qml/pages/FirstPage.qml" line="46"/>
+        <location filename="../qml/pages/FirstPage.qml" line="13"/>
         <source>Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/FirstPage.qml" line="50"/>
+        <location filename="../qml/pages/FirstPage.qml" line="17"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -26,6 +26,35 @@
     <name>MenuPage</name>
     <message>
         <location filename="../qml/pages/MenuPage.qml" line="16"/>
+        <source>Menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>harbour-CoverPage</name>
+    <message>
+        <location filename="../qml/cover/harbour-CoverPage.qml" line="38"/>
+        <source>SailfishRhodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>harbour-FirstPage</name>
+    <message>
+        <location filename="../qml/pages/harbour-FirstPage.qml" line="46"/>
+        <source>Menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/harbour-FirstPage.qml" line="50"/>
+        <source>Exit</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>harbour-MenuPage</name>
+    <message>
+        <location filename="../qml/pages/harbour-MenuPage.qml" line="16"/>
         <source>Menu</source>
         <translation type="unfinished"></translation>
     </message>
