@@ -329,11 +329,21 @@ class Jake
     $passed_lines ||= 0
     $mspec_lines ||= 0
     $jasmine_lines ||= 0
+    $total_lines_printed ||= 0
+    $latest_test_line = ""
     $faillog = []
     @default_file_name = "junit.xml"
     $junitname = ''
     $junitlogs = {@default_file_name => []}
     $getdump = false
+  end
+
+  def self.print_statistic_in_progress
+      new_total = ($mspec_lines + $jasmine_lines) / 10
+      if new_total*10 > $total_lines_printed
+          $total_lines_printed = new_total*10
+          puts " "+$total_lines_printed.to_s+" tests / "+($passed_lines+$failed_lines).to_s+" checks prоcessed. Latest test is ["+$latest_test_line.to_s+"]"
+      end
   end
 
   def self.process_spec_output(line)
@@ -389,13 +399,15 @@ class Jake
 
       #Jasmine test lines
       #Jasmine specRunner| <ORM Db Reset specs> : VT302-0054 | should delete all records only from selected models propertyBag databaseFullResetEx started
-      if line =~ /I.* Jasmine specRunner\| .*started/
+      if line =~ /I.* Jasmine specRunner\| (.*) started/
         $jasmine_lines = $jasmine_lines +1
+        $latest_test_line = $1.chomp
       end
 
       # tests for MSpec
-      if line =~ /\| MSPEC run spec:/
+      if line =~ /\| MSPEC run spec: \[(.*)\]/
         $mspec_lines = $mspec_lines +1
+        $latest_test_line = $1.chomp
       end
       # Passed for MSpec
       if line =~ /\| PASSED:/
@@ -419,6 +431,9 @@ class Jake
         $failed_lines = $failed_lines +1
         $getdump = true
       end
+
+      print_statistic_in_progress
+
       return true
   end
 
