@@ -1,6 +1,6 @@
 QT += core gui network
 QT += multimedia
-QT += webkit widgets
+QT += webkit
 
 message(Qt version: $$[QT_VERSION])
 
@@ -95,14 +95,12 @@ contains(DEFINES, OS_SAILFISH)  {
 SOURCES += \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/main.cpp \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtMainWindow.cpp \
-    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtNativeTabBar.cpp \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtWebPage.cpp \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/RhoNativeApiCall.cpp
 	
 
 HEADERS += <%= @rhoRoot %>/platform/shared/qt/sailfish/src/custommenuitem.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtMainWindow.h \
-    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtNativeTabBar.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtWebPage.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/RhoNativeApiCall.h\
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/customtoolbaritem.h \

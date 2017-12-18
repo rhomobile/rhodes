@@ -1,5 +1,5 @@
-TARGET = SailfishRhodes
-QT += webkit core widgets network quick
+TARGET = harbour-sailfishrhodes
+QT += webkit core network quick
 CONFIG += sailfishapp c++14 sailfishapp_i18n ordered
 
 OTHER_FILES += $$PWD/data/*
@@ -10,11 +10,11 @@ data.path = $${DEPLOYMENT_PATH}
 
 INSTALLS += data
 
-DISTFILES += rpm/SailfishRhodes.changes.in \
-    rpm/SailfishRhodes.changes.run.in \
-    rpm/SailfishRhodes.spec \
-    rpm/SailfishRhodes.yaml \
-    SailfishRhodes.desktop \
+DISTFILES += rpm/harbour-sailfishrhodes.changes.in \
+    rpm/harbour-sailfishrhodes.changes.run.in \
+    rpm/harbour-sailfishrhodes.spec \
+    rpm/harbour-sailfishrhodes.yaml \
+    harbour-sailfishrhodes.desktop \
     translations/*.ts
 
 
