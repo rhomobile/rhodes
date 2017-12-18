@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
 
     CMainWindow* m_appWindow = CMainWindow::getInstance();
-
+    qDebug() << "Writable location is: " + QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     const QByteArray dir = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::DataLocation)).absolutePath().toLatin1();
     m_strRootPath = std::string(dir.constData(), dir.length());
     m_strRootPath += "/rho/";
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 
     // PreMessageLoop:
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
-
+    LOGCONF().setLogToOutput(true);
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
         //QMessageBox::critical(0,QString("This is hidden app and can be started only with security key."), QString("Security Token Verification Failed"));
@@ -158,28 +158,26 @@ int main(int argc, char *argv[])
 
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, workingLocation.toStdString());
 
+
     RHODESAPP().setJSApplication(m_isJSApplication);
 
     // Create the main application window
     QQuickView * view  =  SailfishApp::createView();
     QtMainWindow::setView(view);
 
-
     m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
-
     RHODESAPP().startApp();
+    application->thread()->msleep(2000);
+    qDebug() << "App started";
     m_appWindow->navigate(L"about:blank", -1);
 
     if (RHOCONF().getString("test_push_client").length() > 0 )
         rho_clientregister_create(RHOCONF().getString("test_push_client").c_str());//"qt_client");
 
-
     QObject::connect(view, &QQuickView::activeChanged, [=](){qDebug() << (view->isActive()?"Active":"Not active");});
     QObject::connect(view->engine(), &QQmlEngine::quit, application, &QGuiApplication::quit);
-
     view->setSource(SailfishApp::pathToMainQml());
     view->showFullScreen();
-
 
     application->exec();
 

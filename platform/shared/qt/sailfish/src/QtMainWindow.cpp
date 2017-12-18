@@ -118,14 +118,9 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
 
     lastInstance = this;
 
-    for (int i = 0; i < 7; i++){menuItemsList.append(new CustomMenuItem("Item " + QString::number(i), this));}
+    //for (int i = 0; i < 7; i++){menuItemsList.append(new CustomMenuItem("Item " + QString::number(i), this));}
 
-    //webViewsList.append(new CustomWebViewTab("blank", "about:blank", this));
-    webViewsList.append(new CustomWebViewTab("mainWiew", "/usr/share/TestApplication/data/index.html", this));
-    //webViewsList.append(new CustomWebViewTab("mainWiew2", "/usr/share/TestApplication/data/index2.html", this));
-
-    //toolBarButtonsList.append(new CustomToolBarItem("back", "", this));
-    //toolBarButtonsList.append(new CustomToolBarItem("forward", "", this));
+    webViewsList.append(new CustomWebViewTab("MainWiew", "about:blanc", this));
 
     commitMenuItemsList();
     commitToolBarButtonsList();

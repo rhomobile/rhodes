@@ -26,6 +26,7 @@
 
 #include "RhoLog.h"
 
+
 using namespace rho;
 
 extern "C"{
@@ -75,6 +76,8 @@ void rhoPlainLogArgW(const char* file, int line, int severity, const char* szCat
         wchar_t* buf = (wchar_t*)g_plainBuffer;
 
         int len = vswnprintf(buf, buflen, format, ap);
+
+
 
         if (len < 0 || len >= buflen){
 #ifdef OS_SYMBIAN

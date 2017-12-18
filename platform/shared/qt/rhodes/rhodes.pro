@@ -223,7 +223,6 @@ contains(DEFINES, OS_SAILFISH)  {
 SOURCES += \
     $$PWD/../sailfish/src/main.cpp \
     $$PWD/../sailfish/src/QtMainWindow.cpp \
-    $$PWD/../sailfish/src/QtNativeTabBar.cpp \
     $$PWD/../sailfish/src/QtWebPage.cpp \
     $$PWD/../sailfish/src/RhoNativeApiCall.cpp
 
@@ -232,7 +231,6 @@ HEADERS += $$PWD/../sailfish/src/custommenuitem.h \
     $$PWD/../sailfish/src/customwebviewtab.h \
     $$PWD/../sailfish/src/QtLogView.h \
     $$PWD/../sailfish/src/QtMainWindow.h \
-    $$PWD/../sailfish/src/QtNativeTabBar.h \
     $$PWD/../sailfish/src/QtWebPage.h \
     $$PWD/../sailfish/src/RhoNativeApiCall.h
 

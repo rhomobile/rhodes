@@ -32,6 +32,10 @@
 #include "net/RawSocket.h"
 #include "net/URI.h"
 
+#ifdef OS_SAILFISH
+#include <QDebug>
+#include <QString>
+#endif
 #if defined( OS_SYMBIAN )
 #include <e32debug.h>
 #endif
@@ -175,6 +179,8 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
         return;
 #elif defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
         rho_ios_log_console_output(szMsg);
+#elif defined(OS_SAILFISH)
+        qDebug() << QString::fromStdString(strMsg);
 #endif
 
 #if !defined( OS_PLATFORM_MOTCE ) && !(defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
