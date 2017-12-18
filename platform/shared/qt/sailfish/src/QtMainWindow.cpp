@@ -88,21 +88,17 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     logicalDpiY = 0;
     m_logView = nullptr;
     QPixmap icon(QCoreApplication::applicationDirPath().append(QDir::separator()).append("icon.png"));
-
     QGuiApplication::setApplicationDisplayName(QString::fromStdString(RHOCONF().getString("title_text")));
     QGuiApplication::setApplicationName(QString::fromStdString(RHOCONF().getString("app_name")));
     QGuiApplication::setApplicationVersion(QString::fromStdString(RHOCONF().getString("app_version")));
     QGuiApplication::setOrganizationName(QString::fromStdString(RHOCONF().getString("org_name")));
 
-    QWebSettings* qs = QWebSettings::globalSettings();
-    qs->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-    qs->setOfflineStorageDefaultQuota(1024*1024*1024);
+    //QWebSettings* qs = QWebSettings::globalSettings();
+    //qs->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    //qs->setOfflineStorageDefaultQuota(1024*1024*1024);
+    //rho::String rs_dir = RHODESAPP().getRhoRootPath()+RHO_EMULATOR_DIR;
+    //qs->enablePersistentStorage(rs_dir.c_str());
 
-    rho::String rs_dir = RHODESAPP().getRhoRootPath()+RHO_EMULATOR_DIR;
-    qs->enablePersistentStorage(rs_dir.c_str());
-
-
-    //this->ui->webView->setAttribute(Qt::WA_AcceptTouchEvents, false);
 
     GuiThreadFuncHelper::getInstance(this);
     connect(QGuiApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(closeEvent()));
@@ -122,24 +118,23 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
 
     lastInstance = this;
 
-
     for (int i = 0; i < 7; i++){menuItemsList.append(new CustomMenuItem("Item " + QString::number(i), this));}
 
     //webViewsList.append(new CustomWebViewTab("blank", "about:blank", this));
     webViewsList.append(new CustomWebViewTab("mainWiew", "/usr/share/TestApplication/data/index.html", this));
     //webViewsList.append(new CustomWebViewTab("mainWiew2", "/usr/share/TestApplication/data/index2.html", this));
 
-
-
     //toolBarButtonsList.append(new CustomToolBarItem("back", "", this));
     //toolBarButtonsList.append(new CustomToolBarItem("forward", "", this));
-    QQmlContext *context = view->rootContext();
 
     commitMenuItemsList();
     commitToolBarButtonsList();
     commitWebViewsList();
 
+    QQmlContext *context = view->rootContext();
     context->setContextObject(this);
+
+    qDebug() << "End of main window cunstruction";
 }
 
 QtMainWindow::~QtMainWindow()
