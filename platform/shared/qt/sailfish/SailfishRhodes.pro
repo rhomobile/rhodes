@@ -1,5 +1,5 @@
 TARGET = SailfishRhodes
-QT += webkit core widgets network quick
+QT += webkit core network quick
 CONFIG += sailfishapp c++14 sailfishapp_i18n ordered
 
 OTHER_FILES += $$PWD/data/*

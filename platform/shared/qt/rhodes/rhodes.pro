@@ -13,7 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
     }
 
     equals(QT_VERSION, 5.6.2) {
-        QT += webkit widgets
+        QT += webkit
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += sailfishapp c++14 sailfishapp_i18n
         message(Deprecated sailfish webkit enabled)
