@@ -12,12 +12,12 @@
 <context>
     <name>FirstPage</name>
     <message>
-        <location filename="../qml/pages/FirstPage.qml" line="46"/>
+        <location filename="../qml/pages/FirstPage.qml" line="13"/>
         <source>Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/FirstPage.qml" line="50"/>
+        <location filename="../qml/pages/FirstPage.qml" line="17"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
