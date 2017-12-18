@@ -2637,7 +2637,7 @@ namespace "run" do
             sleep(1)
           end
 
-          timeout_in_seconds = 20*60
+          timeout_in_seconds = 30*60
 
           log_lines = []
           last_spec_line = ""

@@ -325,6 +325,10 @@ class Jake
     $passed ||= 0
     $failed ||= 0
     $notsupported ||= 0
+    $failed_lines ||= 0
+    $passed_lines ||= 0
+    $mspec_lines ||= 0
+    $jasmine_lines ||= 0
     $faillog = []
     @default_file_name = "junit.xml"
     $junitname = ''
@@ -377,12 +381,33 @@ class Jake
       elsif line =~ /\| \*\*\*Terminated\s+(.*)/ # | ***Terminated
         return false
       end
+      #passed Jasmine
+      #Jasmine specRunner| <ORM Db Reset specs> : VT302-0054 | should delete all records only from selected models propertyBag databaseFullResetEx : Passed.
+      if line =~ /I.* Jasmine specRunner\| .*Passed\./
+        $passed_lines = $passed_lines +1
+      end
+
+      #Jasmine test lines
+      #Jasmine specRunner| <ORM Db Reset specs> : VT302-0054 | should delete all records only from selected models propertyBag databaseFullResetEx started
+      if line =~ /I.* Jasmine specRunner\| .*started/
+        $jasmine_lines = $jasmine_lines +1
+      end
+
+      # tests for MSpec
+      if line =~ /\| MSPEC run spec:/
+        $mspec_lines = $mspec_lines +1
+      end
+      # Passed for MSpec
+      if line =~ /\| PASSED:/
+        $passed_lines = $passed_lines +1
+      end
       # Faillog for MSpec
       if line =~ /\| FAIL:/
         line = line.gsub(/I.*APP\|/,"\n\n***")
         if !$faillog.include?(line)
           $faillog << line
         end
+        $failed_lines = $failed_lines +1
         $getdump = true
       end
       # Faillog for Jusmine
@@ -391,6 +416,7 @@ class Jake
         if !$faillog.include?(line)
           $faillog << line
         end
+        $failed_lines = $failed_lines +1
         $getdump = true
       end
       return true
@@ -433,6 +459,10 @@ class Jake
     log(Logger::INFO,"Failed: #{$failed}")
     log(Logger::INFO,"Not supported by Rhodes: #{$notsupported}")
     log(Logger::INFO,"Failures stored in faillog.txt") if $failed.to_i > 0
+    log(Logger::INFO,"MSpec tests: #{$mspec_lines}")
+    log(Logger::INFO,"Jasmine tests: #{$jasmine_lines}")
+    log(Logger::INFO,"Passed checks: #{$passed_lines}")
+    log(Logger::INFO,"Failed checks: #{$failed_lines}")
     log(Logger::INFO,"************************")
     log(Logger::INFO,"\n")
   end
