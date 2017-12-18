@@ -35,7 +35,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
     TEMPLATE = app
 }
 contains(DEFINES, OS_SAILFISH)  {
-    TARGET = SailfishRhodes
+    TARGET = harbour-sailfishrhodes
     TEMPLATE = app
 }
 
