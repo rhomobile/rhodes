@@ -62,9 +62,9 @@ extern "C" {
 }
 using namespace rho;
 using namespace rho::common;
+
 QtMainWindow * QtMainWindow::lastInstance = nullptr;
-
-
+QQuickView * QtMainWindow::view = nullptr;
 
 
 QString QtMainWindow::getMainWindowTitle() const

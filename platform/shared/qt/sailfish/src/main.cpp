@@ -156,13 +156,13 @@ int main(int argc, char *argv[])
 
     RAWLOGC_INFO("QTMain", "Rhodes started");
 
-    rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRootPath);
+    rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, workingLocation.toStdString());
 
     RHODESAPP().setJSApplication(m_isJSApplication);
 
     // Create the main application window
     QQuickView * view  =  SailfishApp::createView();
-    ((QtMainWindow *) m_appWindow->getQtMainWindow())->setView(view);
+    QtMainWindow::setView(view);
 
 
     m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
@@ -179,31 +179,6 @@ int main(int argc, char *argv[])
 
     view->setSource(SailfishApp::pathToMainQml());
     view->showFullScreen();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     application->exec();

@@ -107,7 +107,7 @@ public:
     int tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbri);
     //void tabbarSetBadge(int index, const char* badge);
     void tabbarSetSwitchCallback(rho::apiGenerator::CMethodResult& oResult);
-    void setView(QQuickView *value);
+    static void setView(QQuickView *value);
     static QtMainWindow * getLastInstance(){
         return lastInstance;
     }
@@ -148,7 +148,7 @@ private:
     //void setUpWebPage(QWebPage* page);
     void doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button);
     void internalSetProxy();
-    QQuickView * view;
+    static QQuickView * view;
     static QtMainWindow * lastInstance;
 private:
     IMainWindowCallback* mainWindowCallback;
