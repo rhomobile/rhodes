@@ -35,7 +35,7 @@ class QtWebPage : public QObject
     Q_OBJECT
     DEFINE_LOGCLASS
 public:
-    explicit QtWebPage(QWidget *parent = 0): QObject(parent) {}
+    explicit QtWebPage(QObject *parent = 0): QObject(parent) {}
 
 protected:
     virtual void javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID);

@@ -31,7 +31,7 @@
 
 void RhoNativeApiCall::populateJavaScriptWindowObject()
 {
-    m_frame->addToJavaScriptWindowObject("__rhoNativeApi", this);
+    //m_frame->addToJavaScriptWindowObject("__rhoNativeApi", this);
 }
 
 const QString RhoNativeApiCall::apiCall(const QString& msg)

@@ -9,7 +9,7 @@ QT -= core
     }
 
     equals(QT_VERSION, 5.6.2) {
-        QT += webkit widgets
+        QT += webkit
         DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
         CONFIG += c++14
     }

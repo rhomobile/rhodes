@@ -34,7 +34,6 @@
 #include "MainWindowImpl.h"
 //#undef null
 #include <QString>
-#include <QApplication>
 #if QT_VERSION >= 0x050000
 #include <QtWidgets/QAction>
 #else
@@ -575,7 +574,7 @@ void CMainWindow::tabbarSwitch(int index)
 
 void CMainWindow::tabbarBadge(int index, const char* badge)
 {
-    ((QtMainWindow*)qtMainWindow)->tabbarSetBadge(index, badge);
+    //((QtMainWindow*)qtMainWindow)->tabbarSetBadge(index, badge); TODO: fix it
 }
 
 int CMainWindow::tabbarGetCurrent()

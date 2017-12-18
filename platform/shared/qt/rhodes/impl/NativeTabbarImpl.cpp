@@ -33,7 +33,9 @@
 #include "NativeTabbarImpl.h"
 #undef null
 #include <QString>
+#ifndef OS_SAILFISH
 #include <QApplication>
+#endif
 #if QT_VERSION >= 0x050000
 #include <QtWidgets/QAction>
 #else
