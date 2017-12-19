@@ -379,6 +379,15 @@ namespace rho {
     }
     
     
+    void SystemImplIphone::getSystemInfo(rho::apiGenerator::CMethodResult& oResult)
+    {
+       rho::Hashtable<rho::String, rho::String> retVal;
+
+//       retVal.put(key,value);
+
+       oResult.set( retVal );    
+    }
+
     
     
     
