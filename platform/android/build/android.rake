@@ -2665,9 +2665,11 @@ def run_as_spec(device_flag, uninstall_app)
   Thread.new {
     sleep 2000
     if device_flag == '-e'
-      AndroidTools.kill_adb_and_emulator
+      #AndroidTools.kill_adb_and_emulator
+      puts "%%% was AndroidTools.kill_adb_and_emulator !!!"
     else
-      AndroidTools.kill_adb_logcat device_flag, log_name
+      #AndroidTools.kill_adb_logcat device_flag, log_name
+      puts "%%% was AndroidTools.kill_adb_logcat device_flag, log_name !!!"
     end
   }
 
@@ -2710,7 +2712,7 @@ def run_as_spec(device_flag, uninstall_app)
 
   timeout_in_seconds = 25*60
 
-  timeout_output_in_seconds = 60
+  timeout_output_in_seconds = 120
   last_output_time = Time.now
 
   log_lines = []
@@ -2752,6 +2754,7 @@ def run_as_spec(device_flag, uninstall_app)
         end_spec = true if is_mspec_stop
 
         if end_spec
+            puts "%%% stop spec !"
             puts "%%% stop spec by this line : ["+line.to_s+"]"
         end
 
@@ -2762,6 +2765,7 @@ def run_as_spec(device_flag, uninstall_app)
         if (Time.now.to_i - start_logging.to_i) > timeout_in_seconds
             end_spec = true
             is_timeout = true
+            puts "%%% TIMEOUT !!!"
         end
         if (Time.now.to_i - last_output_time.to_i) > timeout_output_in_seconds
             last_output_time = Time.now
@@ -2797,10 +2801,11 @@ def run_as_spec(device_flag, uninstall_app)
   puts "Processing spec results ..."
   Jake.process_spec_results(start)
 
-  if is_timeout || is_exit_by_app_not_run || !is_correct_stop
+  if is_timeout || (is_exit_by_app_not_run && !is_correct_stop)  || !is_correct_stop
       puts "Tests has issues : is_timeout["+is_timeout.to_s+"], timeout["+timeout_in_seconds.to_s+" sec], app_exit_unexpected["+is_exit_by_app_not_run.to_s+"], not_correct_terminated_line["+(!is_correct_stop).to_s+"] !"
       puts "last_spec_line = ["+last_spec_line.to_s+"]"
       puts "last_spec_iseq_line = ["+last_spec_iseq_line.to_s+"]"
+      puts "last spec executed = ["+$latest_test_line.to_s+"]"
       puts "This is last 5000 lines from log :"
       idx = log_lines.size-5000
       if idx < 0
@@ -2813,13 +2818,13 @@ def run_as_spec(device_flag, uninstall_app)
   end
 
   # stop app
-  uninstall_app = true if uninstall_app.nil? # by default uninstall spec app
-  do_uninstall(device_flag) if uninstall_app and ((device_flag != '-e') or AndroidTools.is_emulator_running)
-  if device_flag == '-e'
-    AndroidTools.kill_adb_and_emulator
-  else
-    AndroidTools.kill_adb_logcat(device_flag, log_name)
-  end
+  #uninstall_app = true if uninstall_app.nil? # by default uninstall spec app
+  #do_uninstall(device_flag) if uninstall_app and ((device_flag != '-e') or AndroidTools.is_emulator_running)
+  #if device_flag == '-e'
+    #AndroidTools.kill_adb_and_emulator
+  #else
+    #AndroidTools.kill_adb_logcat(device_flag, log_name)
+  #end
 
   $stdout.flush
 

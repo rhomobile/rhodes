@@ -2693,6 +2693,7 @@ namespace "run" do
               puts "Tests stoped by timeout ( "+timeout_in_seconds.to_s+" sec ) !"
               puts "last_spec_line = ["+last_spec_line.to_s+"]"
               puts "last_spec_iseq_line = ["+last_spec_iseq_line.to_s+"]"
+              puts "last spec executed = ["+$latest_test_line.to_s+"]"
               puts "This is last 1024 lines from log :"
               idx = log_lines.size-1024
               if idx < 0
