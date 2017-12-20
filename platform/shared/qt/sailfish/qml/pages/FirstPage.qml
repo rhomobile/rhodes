@@ -66,9 +66,7 @@ Page {
             model: webViewsModel
             itemWidth: width
             itemHeight: height
-            onCurrentIndexChanged: {
-
-            }
+            //onCurrentIndexChanged: {}
 
             anchors {
                 top: tabHeader.bottom
@@ -86,7 +84,6 @@ Page {
                     id: webView
                     url: modelData.url
                     anchors.fill: parent
-
 
                     Connections {
                         target: modelData
@@ -133,10 +130,6 @@ Page {
                         }
                     }
                     onLinkHovered: modelData.linkClicked(hoveredUrl)
-
-
-
-
 
                 }
             }

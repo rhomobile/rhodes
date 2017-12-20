@@ -116,7 +116,6 @@ char* parseToken(const char* start)
 }
 
 
-
 int main(int argc, char *argv[])
 {
     QGuiApplication * application = SailfishApp::application(argc, argv);
@@ -124,18 +123,33 @@ int main(int argc, char *argv[])
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QString OSDetailsString= QString("Running on : %1 Application Compiled with QT Version :  %2 Running with QT Version %3")
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
+    rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
+    LOGCONF().setLogToOutput(true);
+
+
+    qDebug() << "Executable file: " + QString::fromLocal8Bit(argv[0]);
+    QQuickView * view  =  SailfishApp::createView();
+    QtMainWindow::setView(view);
 
     CMainWindow* m_appWindow = CMainWindow::getInstance();
+    view->rootContext()->setContextObject(QtMainWindow::getLastInstance());
+
+    // Create the main application window
+    QObject::connect(view, &QQuickView::activeChanged, [=](){qDebug() << (view->isActive()?"Active":"Not active");});
+    QObject::connect(view->engine(), &QQmlEngine::quit, application, &QGuiApplication::quit);
+    qDebug() << "Main path to QML: " + SailfishApp::pathToMainQml().toString();
+
+
     qDebug() << "Writable location is: " + QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     const QByteArray dir = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::DataLocation)).absolutePath().toLatin1();
     m_strRootPath = std::string(dir.constData(), dir.length());
     m_strRootPath += "/rho/";
+    qDebug() << "Main directory is: " + QString::fromStdString(m_strRootPath);
+    QString dataDirectory("/usr/share/" + application->applicationName() + "/data/rho/");
+    QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
+    //QDir::setCurrent(QString::fromStdString(m_strRootPath));
 
-    QString workingLocation("/usr/share/" + application->applicationName() + "/data/");
 
-    // PreMessageLoop:
-    rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
-    LOGCONF().setLogToOutput(true);
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
         //QMessageBox::critical(0,QString("This is hidden app and can be started only with security key."), QString("Security Token Verification Failed"));
@@ -156,28 +170,21 @@ int main(int argc, char *argv[])
 
     RAWLOGC_INFO("QTMain", "Rhodes started");
 
-    rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, workingLocation.toStdString());
-
+    rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRootPath);
 
     RHODESAPP().setJSApplication(m_isJSApplication);
 
-    // Create the main application window
-    QQuickView * view  =  SailfishApp::createView();
-    QtMainWindow::setView(view);
-
     m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
+
+    view->setSource(SailfishApp::pathToMainQml());
+    view->showFullScreen();
     RHODESAPP().startApp();
-    application->thread()->msleep(2000);
-    qDebug() << "App started";
-    m_appWindow->navigate(L"about:blank", -1);
+    qDebug() << "Rho app started";
+    //QTimer::singleShot(1000, ()[&]{rho_rhodesapp_callUiCreatedCallback();});
+    rho_rhodesapp_callUiCreatedCallback();
 
     if (RHOCONF().getString("test_push_client").length() > 0 )
         rho_clientregister_create(RHOCONF().getString("test_push_client").c_str());//"qt_client");
-
-    QObject::connect(view, &QQuickView::activeChanged, [=](){qDebug() << (view->isActive()?"Active":"Not active");});
-    QObject::connect(view->engine(), &QQmlEngine::quit, application, &QGuiApplication::quit);
-    view->setSource(SailfishApp::pathToMainQml());
-    view->showFullScreen();
 
     application->exec();
 

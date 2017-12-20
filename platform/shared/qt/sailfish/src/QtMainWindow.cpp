@@ -126,9 +126,6 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     commitToolBarButtonsList();
     commitWebViewsList();
 
-    QQmlContext *context = view->rootContext();
-    context->setContextObject(this);
-
     qDebug() << "End of main window cunstruction";
 }
 
@@ -799,6 +796,33 @@ void QtMainWindow::selectPicture(char* callbackUrl)
     free(callbackUrl);
     */
 }
+
+
+bool QtMainWindow::copyDirRecursive(QString fromDir, QString toDir)
+{
+    QDir dir(fromDir);
+    if (!fromDir.endsWith(QDir::separator())) fromDir.append(QDir::separator());
+    if (!toDir.endsWith(QDir::separator())) toDir.append(QDir::separator());
+    //qDebug() << "Recursive copy from dir " + fromDir + " to " + toDir;
+    foreach (QString copyFile, dir.entryList(QDir::Files)){
+        QString from = fromDir + copyFile;
+        QString to = toDir + copyFile;
+        //qDebug() << "From: " + from + " to: " + to;
+        if (QFile::exists(to)){
+            if (!QFile::remove(to)){return false;}
+        }
+        if (QFile::copy(from, to) == false){return false;}
+    }
+
+    foreach (QString copyDir, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)){
+        QString from = fromDir + copyDir;
+        QString to = toDir + copyDir;
+        if (dir.mkpath(to) == false){return false;}
+        if (copyDirRecursive(from, to) == false){return false;}
+    }
+    return true;
+}
+
 
 void QtMainWindow::doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button)
 {

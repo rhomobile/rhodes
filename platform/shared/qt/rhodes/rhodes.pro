@@ -234,7 +234,7 @@ HEADERS += $$PWD/../sailfish/src/custommenuitem.h \
     $$PWD/../sailfish/src/QtWebPage.h \
     $$PWD/../sailfish/src/RhoNativeApiCall.h
 
-DISTFILES += $$PWD/../sailfish/qml/SailfishRhodes.qml \
+DISTFILES += $$PWD/../sailfish/qml/harbour-sailfishrhodes.qml \
     $$PWD/../sailfish/qml/cover/CoverPage.qml \
     $$PWD/../sailfish/qml/pages/FirstPage.qml \
     $$PWD/../sailfish/qml/pages/MenuPage.qml

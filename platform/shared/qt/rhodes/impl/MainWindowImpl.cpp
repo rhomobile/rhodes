@@ -98,7 +98,9 @@ void CMainWindow::onWebViewUrlChanged(const ::std::string& url)
 bool CMainWindow::Initialize(const wchar_t* title)
 {
     bool ok = init(this, title);
+#ifndef OS_SAILFISH
     rho_rhodesapp_callUiCreatedCallback();
+#endif
     return ok;
 }
 
@@ -205,6 +207,7 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
 #ifndef OS_SAILFISH //TODO: FIX
     ((QtMainWindow*)qtMainWindow)->setWindowTitle(QString::fromWCharArray(title));
 #endif
+
     ((QtMainWindow*)qtMainWindow)->setCallback(callback);
 #ifndef OS_SAILFISH //TODO: FIX
     ((QtMainWindow*)qtMainWindow)->show();

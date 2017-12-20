@@ -35,7 +35,7 @@ CoverBackground {
     Label {
         id: label
         anchors.centerIn: parent
-        text: qsTr("SailfishRhodes")
+        text: qsTr("HarbourSailfishRhodes")
     }
 
 }

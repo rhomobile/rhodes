@@ -124,10 +124,13 @@ public:
     }
 
     QList<CustomWebViewTab *> webViewsList;
+
     void commitWebViewsList(){
         QQmlContext *context = view->rootContext();
         QList<QObject *> objectList;
-        foreach (CustomWebViewTab * obj, webViewsList) {objectList.append(obj);}
+        foreach (CustomWebViewTab * obj, webViewsList) {
+            objectList.append(obj);
+        }
         context->setContextProperty("webViewsModel", QVariant::fromValue(objectList));
     }
 
@@ -140,6 +143,7 @@ public:
     }
 
 
+    static bool copyDirRecursive(QString fromDir, QString toDir);
 private:
     //void tabbarWebViewRestore(bool reload);
     void tabbarConnectWebView(CustomWebViewTab *webView);
