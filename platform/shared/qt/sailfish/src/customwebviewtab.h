@@ -7,7 +7,7 @@
 class CustomWebViewTab : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString text READ getText NOTIFY textChanged)
+    Q_PROPERTY(QString text READ getText WRITE setText NOTIFY textChanged)
     Q_PROPERTY(QString url READ getUrl WRITE setUrl NOTIFY urlChanged)
     Q_PROPERTY(bool activeTab READ isTabActive WRITE setActiveTab NOTIFY activeTabChanged)
     Q_PROPERTY(int tabBarIndex READ getTabBarIndex WRITE setTabBarIndex NOTIFY tabBarIndexChanged)
@@ -20,10 +20,22 @@ class CustomWebViewTab : public QObject
             text = name;
             url = address;
         }
+
+
 public slots:
 
-        QString getText(){return text;}
-        QString getUrl(){return url;}
+        void setText(const QString &value){
+            text = value;
+            emit textChanged();
+        }
+
+        QString getText(){
+            return text;
+        }
+        QString getUrl(){
+            return url;
+        }
+
         void setUrl(const QString& url){
             this->url = url;
             emit urlHasBeenChanged(url);
@@ -33,10 +45,12 @@ public slots:
 
         void loadUrl(QString url){
             this->url = url;
-            urlChanged();
+            emit urlChanged();
         }
 
-        bool isTabActive(){return activeTab;}
+        bool isTabActive(){
+            return activeTab;
+        }
 
         void setActiveTab(bool value){
             activeTab = value;
@@ -44,8 +58,15 @@ public slots:
         }
 
 
-        int getTabBarIndex() {return tabBarIndex;}
-        void setTabBarIndex(int value){tabBarIndex = value;}
+        int getTabBarIndex() {
+            return tabBarIndex;
+        }
+
+
+        void setTabBarIndex(int value){
+            tabBarIndex = value;
+            emit tabBarIndexChanged();
+        }
 
 private:
         QString text;
@@ -81,6 +102,8 @@ signals:
 };
 
 #endif // CUSTOMWEBVIEWTAB_H
+
+
 
 
 

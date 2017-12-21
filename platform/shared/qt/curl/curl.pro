@@ -1,6 +1,6 @@
-QT -= core
     greaterThan(QT_VERSION, 5.7.0): {
         CONFIG += c++14
+        QT -= core
         DEFINES += RHODES_VERSION_2
     }
 
@@ -9,6 +9,7 @@ QT -= core
     }
 
     lessThan(QT_VERSION, 5.6.0): {
+        QT -= core
         DEFINES += RHODES_VERSION_1
     }
 TARGET = curl

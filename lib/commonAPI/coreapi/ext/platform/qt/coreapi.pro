@@ -1,7 +1,8 @@
-QT -= core
+
     greaterThan(QT_VERSION, 5.7.0): {
         CONFIG += c++14
         DEFINES += RHODES_VERSION_2
+        QT -= core
     }
 
     equals(QT_VERSION, 5.6.2) {
@@ -13,6 +14,7 @@ QT -= core
 
     lessThan(QT_VERSION, 5.6.0): {
         DEFINES += RHODES_VERSION_1
+        QT -= core
     }
 TARGET = coreapi
 TEMPLATE = lib

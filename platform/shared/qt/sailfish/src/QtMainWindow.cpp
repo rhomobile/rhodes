@@ -120,7 +120,7 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
 
     //for (int i = 0; i < 7; i++){menuItemsList.append(new CustomMenuItem("Item " + QString::number(i), this));}
 
-    webViewsList.append(new CustomWebViewTab("MainWiew", "about:blanc", this));
+    webViewsList.append(new CustomWebViewTab("MainWebView", "about:blanc", this));
 
     commitMenuItemsList();
     commitToolBarButtonsList();

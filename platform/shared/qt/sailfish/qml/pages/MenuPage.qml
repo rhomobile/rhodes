@@ -13,7 +13,7 @@ Page {
 
         anchors.fill: parent
         header: PageHeader {
-            title: qsTr("Menu")
+            title: "Menu"
         }
 
 

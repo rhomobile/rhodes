@@ -2,6 +2,7 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import QtWebKit 3.0
 
+
 Page {
     id: mainPage
     SilicaFlickable {
@@ -9,11 +10,11 @@ Page {
 
         PullDownMenu {
             MenuItem {
-                text: qsTr("Menu")
+                text: "Menu"
                 onClicked: pageStack.push(Qt.resolvedUrl("MenuPage.qml"))
             }
             MenuItem {
-                text: qsTr("Exit")
+                text: "Exit"
                 onClicked: pageStack.push(Qt.quit())
             }
         }
@@ -22,8 +23,8 @@ Page {
             id: tabHeader
             anchors.top: parent.top
             width: parent.width
-            height: (mainView.count > 1) ? 100 : 1
-            visible: (mainView.count > 1) ? true : false
+            height: 100//(mainView.count > 1) ? 100 : 1
+            visible: true//(mainView.count > 1) ? true : false
             opacity: 0.98
             Repeater {
                 model: webViewsModel
@@ -33,7 +34,7 @@ Page {
                     color: "white"
 
                     height: parent.height
-                    width: mainView.width / mainView.count
+                    width: parent.width / ((mainView.count > 1) ? mainView.count : 1)
 
                     Label {
                         anchors.centerIn: parent
@@ -60,6 +61,7 @@ Page {
                 }
             }
         }
+
         SlideshowView {
             id: mainView
             clip:true
@@ -83,6 +85,7 @@ Page {
                 WebView {
                     id: webView
                     url: modelData.url
+
                     anchors.fill: parent
 
                     Connections {
@@ -130,7 +133,9 @@ Page {
                         }
                     }
                     onLinkHovered: modelData.linkClicked(hoveredUrl)
-
+                    Component.onCompleted: {
+                       console.log("Component complited")
+                    }
                 }
             }
         }

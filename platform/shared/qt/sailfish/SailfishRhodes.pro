@@ -1,6 +1,6 @@
 TARGET = harbour-sailfishrhodes
-QT += webkit core network quick
-CONFIG += sailfishapp c++14 sailfishapp_i18n ordered
+QT += webkit core network quick #widgets
+CONFIG += c++14 sailfishapp sailfishapp_i18n ordered
 
 OTHER_FILES += $$PWD/data/*
 
@@ -15,8 +15,10 @@ DISTFILES += rpm/harbour-sailfishrhodes.changes.in \
     rpm/harbour-sailfishrhodes.spec \
     rpm/harbour-sailfishrhodes.yaml \
     harbour-sailfishrhodes.desktop \
-    translations/*.ts
-
+    translations/*.ts \
+    qml/harbour-sailfishrhodes.qml \
+    qml/pages/MenuPage.qml \
+    qml/pages/FirstPage.qml
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128
 

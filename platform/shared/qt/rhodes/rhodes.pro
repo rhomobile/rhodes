@@ -13,7 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
     }
 
     equals(QT_VERSION, 5.6.2) {
-        QT += webkit
+        QT += webkit quick #widgets
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += sailfishapp c++14 sailfishapp_i18n
         message(Deprecated sailfish webkit enabled)
@@ -234,10 +234,9 @@ HEADERS += $$PWD/../sailfish/src/custommenuitem.h \
     $$PWD/../sailfish/src/QtWebPage.h \
     $$PWD/../sailfish/src/RhoNativeApiCall.h
 
-DISTFILES += $$PWD/../sailfish/qml/harbour-sailfishrhodes.qml \
-    $$PWD/../sailfish/qml/cover/CoverPage.qml \
-    $$PWD/../sailfish/qml/pages/FirstPage.qml \
-    $$PWD/../sailfish/qml/pages/MenuPage.qml
+#DISTFILES += $$PWD/../sailfish/qml/harbour-sailfishrhodes.qml \
+#    $$PWD/../sailfish/qml/pages/FirstPage.qml \
+#    $$PWD/../sailfish/qml/pages/MenuPage.qml
 
 
 }
