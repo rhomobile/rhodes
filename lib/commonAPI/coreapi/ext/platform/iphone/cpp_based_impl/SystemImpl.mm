@@ -7,7 +7,6 @@
 #import "api_generator/iphone/CMethodResult.h"
 #import "Rhodes.h"
 #import "sys/utsname.h"
-#import "mach/mach.h"
 
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
@@ -388,23 +387,25 @@ namespace rho {
 
 //       retVal.put(key,value);
 
+        NSString *value = [[UIDevice currentDevice] localizedModel];       
+        retVal.put("Device Localized Model", std::string([value UTF8String]));
+
         struct utsname systemInfo;
         uname(&systemInfo);
-        retVal["Device Model"] = systemInfo.machine;
+        retVal.put("Device", systemInfo.machine);
 
-        struct mach_task_basic_info info;
-        mach_msg_type_number_t size = MACH_TASK_BASIC_INFO_COUNT;
-        kern_return_t kerr = task_info(mach_task_self(),
-                                   MACH_TASK_BASIC_INFO,
-                                   (task_info_t)&info,
-                                   &size);
-        if( kerr == KERN_SUCCESS ) {
-            retVal["Memory in use (in bytes):"] = info.resident_size;
-        } else {
-            retVal["Memory in use (in bytes):"] = mach_error_string(kerr);
-        }
+        value = [[UIDevice currentDevice] model];       
+        retVal.put("Device Model", std::string([value UTF8String]));
 
-        oResult.set( retVal );
+        value = [[UIDevice currentDevice] name];
+        retVal.put("Device Name", std::string([value UTF8String]));
+
+        NSString *osName = [[UIDevice currentDevice] systemName];       
+        NSString *osVersion = [[UIDevice currentDevice] systemVersion];
+        value = [@[osName, @", v.", osVersion] componentsJoinedByString:@""];
+        retVal.put("Device OS", std::string([value UTF8String]));
+
+        oResult.set(retVal);
     }
 
     
