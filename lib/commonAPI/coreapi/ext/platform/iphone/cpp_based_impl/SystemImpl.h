@@ -79,6 +79,7 @@ private:
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getSystemInfo(rho::apiGenerator::CMethodResult& oResult);
     
     //virtual void getFullScreen(rho::apiGenerator::CMethodResult& result);
     //virtual void setFullScreen(bool, rho::apiGenerator::CMethodResult& result);
