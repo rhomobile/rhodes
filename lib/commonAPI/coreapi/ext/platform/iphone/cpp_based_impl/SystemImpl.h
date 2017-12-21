@@ -38,6 +38,8 @@ private:
     virtual void getDeviceOwnerName(CMethodResult& oResult);
     virtual void getApplicationIconBadge(CMethodResult& oResult);
     virtual void setApplicationIconBadge( int value, CMethodResult& oResult);
+
+    virtual void getSystemInfo(CMethodResult& oResult);
     
     virtual void setDoNotBackupAttribute( const rho::String& pathToFile,  bool doNotBackup, rho::apiGenerator::CMethodResult& oResult);
     //virtual void setPushNotification( const rho::String& url,  const rho::String& url_params,  const rho::String& push_client, rho::apiGenerator::CMethodResult& oResult);
