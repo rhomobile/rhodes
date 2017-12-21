@@ -103,8 +103,6 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.net.ConnectivityManager;
-import android.net.LinkProperties;
-import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
@@ -1659,10 +1657,8 @@ public class RhodesService extends Service {
     		ret.put( "build.fingerprint", 			Build.FINGERPRINT );
     		ret.put( "build.version.release",		Build.VERSION.RELEASE );
     		ret.put( "build.version.incremental", 	Build.VERSION.INCREMENTAL );    		
-    		ret.put( "build.version.base_os",		Build.VERSION.BASE_OS );
     		ret.put( "build.version.codename",		Build.VERSION.CODENAME );
     		ret.put( "build.version.sdk",			String.valueOf(Build.VERSION.SDK_INT) );
-    		ret.put( "build.version.patch",			Build.VERSION.SECURITY_PATCH );
     		ret.put( "build.bootloader",			Build.BOOTLOADER );    		
     		ret.put( "build.device",				Build.DEVICE );
     		ret.put( "build.display",				Build.DISPLAY );
@@ -1695,7 +1691,7 @@ public class RhodesService extends Service {
 
 			if ( pakInfo.reqFeatures != null ) {
 				for (FeatureInfo fi : pakInfo.reqFeatures ) {
-					pis.add( fi.name + ":v" + fi.version + ":gl" + fi.getGlEsVersion() );
+					pis.add( fi.name + ":flags" + fi.flags + ":gl" + fi.getGlEsVersion() );
 				}
 				ret.put( "package.features", TextUtils.join(",",pis) );
 				pis.clear();
