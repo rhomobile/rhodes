@@ -6,6 +6,8 @@
 #import "api_generator/iphone/CRubyConverter.h"
 #import "api_generator/iphone/CMethodResult.h"
 #import "Rhodes.h"
+#import "sys/utsname.h"
+#import "mach/mach.h"
 
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
@@ -15,6 +17,7 @@
 #include "common/RhoFile.h"
 #include "unzip/zip.h"
 #include "db/DBAdapter.h"
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
@@ -377,8 +380,32 @@ namespace rho {
         }
     }
     
-    
-    
+
+
+    void SystemImplIphone::getSystemInfo(rho::apiGenerator::CMethodResult& oResult)
+    {
+        rho::Hashtable<rho::String, rho::String> retVal;
+
+//       retVal.put(key,value);
+
+        struct utsname systemInfo;
+        uname(&systemInfo);
+        retVal["Device Model"] = systemInfo.machine;
+
+        struct mach_task_basic_info info;
+        mach_msg_type_number_t size = MACH_TASK_BASIC_INFO_COUNT;
+        kern_return_t kerr = task_info(mach_task_self(),
+                                   MACH_TASK_BASIC_INFO,
+                                   (task_info_t)&info,
+                                   &size);
+        if( kerr == KERN_SUCCESS ) {
+            retVal["Memory in use (in bytes):"] = info.resident_size;
+        } else {
+            retVal["Memory in use (in bytes):"] = mach_error_string(kerr);
+        }
+
+        oResult.set( retVal );
+    }
     
     
     
