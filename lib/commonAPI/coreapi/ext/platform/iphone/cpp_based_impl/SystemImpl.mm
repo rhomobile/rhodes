@@ -388,22 +388,22 @@ namespace rho {
 //       retVal.put(key,value);
 
         NSString *value = [[UIDevice currentDevice] localizedModel];       
-        retVal.put("Device Localized Model", std::string([value UTF8String]));
+        retVal.put("build.localized.model", std::string([value UTF8String]));
 
         struct utsname systemInfo;
         uname(&systemInfo);
-        retVal.put("Device", systemInfo.machine);
+        retVal.put("build.device", systemInfo.machine);
 
         value = [[UIDevice currentDevice] model];       
-        retVal.put("Device Model", std::string([value UTF8String]));
+        retVal.put("build.model", std::string([value UTF8String]));
 
         value = [[UIDevice currentDevice] name];
-        retVal.put("Device Name", std::string([value UTF8String]));
+        retVal.put("build.device.name", std::string([value UTF8String]));
 
         NSString *osName = [[UIDevice currentDevice] systemName];       
         NSString *osVersion = [[UIDevice currentDevice] systemVersion];
         value = [@[osName, @", v.", osVersion] componentsJoinedByString:@""];
-        retVal.put("Device OS", std::string([value UTF8String]));
+        retVal.put("build.version.os", std::string([value UTF8String]));
 
         oResult.set(retVal);
     }
