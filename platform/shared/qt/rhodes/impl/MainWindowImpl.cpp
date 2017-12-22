@@ -34,10 +34,12 @@
 #include "MainWindowImpl.h"
 //#undef null
 #include <QString>
+#ifndef OS_SAILFISH
 #if QT_VERSION >= 0x050000
 #include <QtWidgets/QAction>
 #else
 #include <QtGui/QAction>
+#endif
 #endif
 #include <QHash>
 #include "../mainwindowinterface.h"

@@ -24,13 +24,13 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
+
 #ifdef _MSC_VER
 #pragma warning(disable:4018)
 #pragma warning(disable:4996)
 #endif
 #include "QtMainWindow.h"
 #include <sstream>
-#include "QtWebPage.h"
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"

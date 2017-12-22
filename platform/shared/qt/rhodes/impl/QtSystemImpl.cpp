@@ -51,12 +51,12 @@
 #include <QtWebKit/qwebkitversion.h>
 #endif
 #endif
-
+/*
 #ifdef OS_SAILFISH
 #include <QtWebKit/QWebElement>
 #include <QtWebKit/qtwebkitversion.h>
 #endif
-
+*/
 #include "../RhoSimulator.h"
 
 using namespace rho;
@@ -68,6 +68,7 @@ extern "C" {
 
 const char* rho_sys_qt_getWebviewFramework()
 {
+#ifndef OS_SAILFISH
     if (qt_webview_framework[0] == '\0') {
 
         #if defined (RHODES_VERSION_1) || defined (OS_SAILFISH)
@@ -82,6 +83,7 @@ const char* rho_sys_qt_getWebviewFramework()
             qt_webview_framework[ver.length()] = '\0';
         }
     }
+#endif
     return qt_webview_framework;
 }
 

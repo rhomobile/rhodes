@@ -32,7 +32,9 @@
 #include "MainWindowImpl.h"
 #undef null
 #if QT_VERSION >= 0x050000
+#ifndef OS_SAILFISH
 #include <QtMultimedia/QMediaPlayer>
+#endif
 #else
 #include <QSound>
 #endif
@@ -190,6 +192,7 @@ void alert_vibrate(int duration_ms) {
 
 void alert_play_file(char* file_name, char *media_type)
 {
+#ifndef OS_SAILFISH
     RAWLOGC_INFO("AlertImpl", "OnAlertPlayFile: trying to play file");
     String path = file_name;
 #if QT_VERSION >= 0x050000
@@ -209,6 +212,7 @@ void alert_play_file(char* file_name, char *media_type)
     } else{
          RAWLOGC_INFO("AlertImpl", "OnAlertPlayFile: failed to play file");
     }
+#endif
 #endif
 }
 
