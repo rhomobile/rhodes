@@ -38,7 +38,7 @@ private:
     virtual void getDeviceOwnerName(CMethodResult& oResult);
     virtual void getApplicationIconBadge(CMethodResult& oResult);
     virtual void setApplicationIconBadge( int value, CMethodResult& oResult);
-    
+
     virtual void setDoNotBackupAttribute( const rho::String& pathToFile,  bool doNotBackup, rho::apiGenerator::CMethodResult& oResult);
     //virtual void setPushNotification( const rho::String& url,  const rho::String& url_params,  const rho::String& push_client, rho::apiGenerator::CMethodResult& oResult);
     
@@ -79,6 +79,7 @@ private:
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getSystemInfo(rho::apiGenerator::CMethodResult& oResult);
     
     //virtual void getFullScreen(rho::apiGenerator::CMethodResult& result);
     //virtual void setFullScreen(bool, rho::apiGenerator::CMethodResult& result);

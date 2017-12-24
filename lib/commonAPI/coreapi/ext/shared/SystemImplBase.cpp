@@ -461,6 +461,13 @@ void CSystemImplBase::hideSplashScreen(rho::apiGenerator::CMethodResult& result)
     //Android only
 }
 
+void CSystemImplBase::getSystemInfo(rho::apiGenerator::CMethodResult& oResult)
+{
+    //Override for specific platform in corresponding subclasses
+       rho::Hashtable<rho::String, rho::String> retVal;
+       oResult.set( retVal );
+}
+
 }
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
