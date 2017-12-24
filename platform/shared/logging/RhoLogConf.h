@@ -34,10 +34,10 @@
 #include "common/RhoMutexLock.h"
 #include "common/RhoTime.h"
 #include "common/RhoThread.h"
+#include "common/RhoConf.h"
 
 namespace rho {
 
-namespace common{ class RhoSettings; }
 class LogCategory;
 
 struct ILogSink{
@@ -54,7 +54,7 @@ public:
     virtual String collect() = 0;
 };
 
-class LogSettings{
+class LogSettings : public common::IRhoSettingsListener {
     
     class MemoryInfoCollectorThread : public common::CRhoThread
     {
@@ -183,6 +183,8 @@ public:
 
 private:
 	void internalSinkLogMessage( String& strMsg );
+    virtual void onSettingUpdated( const String& name, const String& newVal );
+
 };
 
 extern LogSettings g_LogSettings;
