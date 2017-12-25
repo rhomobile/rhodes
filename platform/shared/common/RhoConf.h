@@ -37,7 +37,15 @@ namespace common{
 #define RHOVERSION "Version"
 #define RHODBVERSION "DBVersion"
 
+class IRhoSettingsListener {
+public:
+    virtual void onSettingUpdated( const String& name, const String& newVal ) = 0;
+};
+
 class RhoSettings{
+
+    Vector<IRhoSettingsListener*> m_listeners;
+
     String      m_strConfFilePath, m_strAppConfFilePath, m_strAppConfUserPath;
     Hashtable<String,String> m_mapValues;
     Hashtable<String,String> m_mapChangedValues;
@@ -70,6 +78,10 @@ public:
 
     HashtablePtr<String,Vector<String>* >& getConflicts(){ return m_mapConflictedValues;}
     void conflictsResolved();
+
+    void addListener( IRhoSettingsListener* l ) { m_listeners.push_back(l); }
+    void removeListener( IRhoSettingsListener* l ) { m_listeners.removeElement(l); }
+
 protected:
     void saveChangesToString(String& strData);
     void loadFromString(const char* szSettings, Hashtable<String,String>& mapValues);
@@ -80,6 +92,9 @@ protected:
     void saveToFile(const char* szName, boolean bRemove = false );
     void readChanges();
     void checkConflicts();
+
+private:    
+    void notifyListeners( const String& name, const String& newVal );
 };
 
 extern RhoSettings g_RhoSettings;
