@@ -1,6 +1,7 @@
+#ifndef OS_SAILFISH
 #ifndef QTCUSTOMSTYLE_H
 #define QTCUSTOMSTYLE_H
-#ifndef OS_SAILFISH
+
 #include <QProxyStyle>
 #include <QStyleOption>
 
@@ -15,5 +16,6 @@ class QtCustomStyle : public QProxyStyle
         QProxyStyle::drawControl(element, option, painter, widget);
     }
 };
-#endif
+
 #endif //QTCUSTOMSTYLE_H
+#endif

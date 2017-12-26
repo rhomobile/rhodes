@@ -23,8 +23,8 @@ Page {
             id: tabHeader
             anchors.top: parent.top
             width: parent.width
-            height: 100//(mainView.count > 1) ? 100 : 1
-            visible: true//(mainView.count > 1) ? true : false
+            height: (mainView.count > 1) ? 100 : 1
+            visible: (mainView.count > 1) ? true : false
             opacity: 0.98
             Repeater {
                 model: webViewsModel
@@ -82,7 +82,7 @@ Page {
                 height: parent.height
                 border.width: 1
 
-                WebView {
+                SilicaWebView {
                     id: webView
                     url: modelData.url
 
@@ -92,7 +92,7 @@ Page {
                         target: modelData
                         onSetHtml: {
                             console.log("Setting HTML");
-                            webView.loadHtml(parameter);
+                            webView.loadHtml(pHtml);
                         }
                         onGoBack:{
                             console.log("Going back");
@@ -118,18 +118,24 @@ Page {
                         }
                     }
 
+
+                    onNavigationRequested: {
+                        console.log(request.url)
+                        console.log(request.action)
+                    }
+
                     onLoadingChanged: {
                         if (loadRequest.status == WebView.LoadStartedStatus){
                             modelData.loadStarted();
-                            console.log("Loading started...");
+                            console.log("Loading " + url + " started...");
                         }
                         if (loadRequest.status == WebView.LoadSucceededStatus){
                             modelData.loadFinished(true);
-                            console.log("Page loaded!");
+                            console.log("Page " + url + " loaded!");
                         }
                         if (loadRequest.status == WebView.LoadFailedStatus){
                             modelData.loadFinished(false);
-                            console.log("Page loaded with fail!");
+                            console.log("Page " + url + " loaded with fail!");
                         }
                     }
                     onLinkHovered: modelData.linkClicked(hoveredUrl)

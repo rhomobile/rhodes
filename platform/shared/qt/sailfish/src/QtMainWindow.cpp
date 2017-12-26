@@ -122,6 +122,12 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
 
     webViewsList.append(new CustomWebViewTab("MainWebView", "about:blanc", this));
 
+    QObject::connect(webViewsList.first(), SIGNAL(linkClicked(const QString&)), this, SLOT(on_webView_linkClicked(const QString&)));
+    QObject::connect(webViewsList.first(), SIGNAL(loadStarted()), this, SLOT(on_webView_loadStarted()));
+    QObject::connect(webViewsList.first(), SIGNAL(loadFinished(bool)), this, SLOT(on_webView_loadFinished(bool)));
+    QObject::connect(webViewsList.first(), SIGNAL(urlHasBeenChanged(QString)), this, SLOT(on_webView_urlChanged(QString)));
+
+
     commitMenuItemsList();
     commitToolBarButtonsList();
     commitWebViewsList();
@@ -264,6 +270,7 @@ bool QtMainWindow::internalUrlProcessing(const QUrl& url)
 
 void QtMainWindow::on_webView_linkClicked(const QString& url)
 {
+    qDebug() << "linkClicked: " + url;
     QString sUrl = url;
     if (sUrl.contains("rho_open_target=_blank")) {
         LOG(INFO) + "WebView: open external browser";
@@ -350,7 +357,7 @@ void QtMainWindow::on_menuMain_aboutToShow()
 
 void QtMainWindow::navigate(QString url, int index)
 {
-    if (webViewsList.size() < (index + 1)){
+    if (webViewsList.size() <= ((index + 1) + 1)){
         CustomWebViewTab * tab = webViewsList.at(index+1);
 
         if (url.startsWith("javascript:", Qt::CaseInsensitive)) {

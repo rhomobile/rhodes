@@ -94,8 +94,7 @@ int main(int argc, char *argv[])
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QString OSDetailsString= QString("Running on : %1 Application Compiled with QT Version :  %2 Running with QT Version %3")
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
-    rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
-    LOGCONF().setLogToOutput(true);
+
 
 
     qDebug() << "Executable file: " + QString::fromLocal8Bit(argv[0]);
@@ -119,7 +118,9 @@ int main(int argc, char *argv[])
     QString dataDirectory("/usr/share/" + application->applicationName() + "/data/rho/");
     QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
     //QDir::setCurrent(QString::fromStdString(m_strRootPath));
-
+    rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
+    LOGCONF().setLogToOutput(true);
+    LOGCONF().setLogToFile(true);
 
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {

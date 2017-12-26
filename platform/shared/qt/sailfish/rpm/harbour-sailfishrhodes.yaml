@@ -26,9 +26,29 @@ PkgConfigBR:
   - Qt5Qml
   - Qt5WebKit
 
+
 # Build dependencies without a pkgconfig setup can be listed here
-# PkgBR:
-#   - package-needed-to-build
+#PkgBR:
+#  - libqtwebkit5-devel
+#  - qt5-qtqml-import-webkitplugin-experimental
+#  - qt5-qtdeclarative-tool-qml-debuginfo
+#  - qt5-qtcore-debuginfo
+#  - qt5-qtxml-debuginfo
+#  - qt5-qtwebkit-debugsource
+#  - libqtwebkit5-widgets-devel
+#  - qt5-qtcore-devel
+#  - qt5-qtdeclarative-devel
+#  - qt5-qtdeclarative-qtquick-devel
+#  - qt5-qtdeclarative-qtquickparticles-devel
+#  - qt5-qtfeedback-devel
+#  - qt5-qtgui-devel
+#  - qt5-qtlocation-devel
+#  - qt5-qtmultimedia-devel
+#  - qt5-qtnetwork-devel
+#  - qt5-qtopengl-devel
+#  - qt5-qtwebsockets-devel
+
+
 
 # Runtime dependencies which are not automatically detected
 Requires:

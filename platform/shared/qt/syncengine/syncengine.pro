@@ -43,6 +43,8 @@ unix:!macx {
   DESTDIR = $$PWD/../../../linux/bin/syncengine
   OBJECTS_DIR = $$PWD/../../../linux/bin/syncengine/tmp
   DEFINES += _GNU_SOURCE OS_LINUX OS_SAILFISH
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM

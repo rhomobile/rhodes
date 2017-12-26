@@ -34,6 +34,8 @@ unix:!macx {
   DESTDIR = ../../../../platform/linux/bin/extensions
   OBJECTS_DIR = ../../../../platform/linux/bin/extensions/zlib
   INCLUDEPATH += ../../../../platform/shared/ruby/linux
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 win32 {
@@ -58,8 +60,7 @@ DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-  # QMAKE_CFLAGS += -fvisibility=hidden
-  # QMAKE_CXXFLAGS += -fvisibility=hidden
+
 }
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005

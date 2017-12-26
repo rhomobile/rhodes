@@ -70,6 +70,9 @@ unix:!macx {
   $$PWD/../../net/CURLNetRequest.cpp\
   $$PWD/../../net/ssl.cpp
   DEFINES += OS_SAILFISH OS_LINUX
+
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM

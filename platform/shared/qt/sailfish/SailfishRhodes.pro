@@ -1,7 +1,7 @@
 TARGET = harbour-sailfishrhodes
 QT += webkit core network quick #widgets
 CONFIG += c++14 sailfishapp sailfishapp_i18n ordered
-
+CONFIG += force_debug_info
 OTHER_FILES += $$PWD/data/*
 
 DEPLOYMENT_PATH = /usr/share/$${TARGET}
@@ -22,14 +22,14 @@ DISTFILES += rpm/harbour-sailfishrhodes.changes.in \
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128
 
-INCLUDEPATH += $$PWD/../../../../wm/rhodes
-INCLUDEPATH += $$PWD/../../curl/include
-INCLUDEPATH += $$PWD/../../sqlite
-DEPENDPATH  += $$PWD/../../sqlite
-INCLUDEPATH += $$PWD/../../ruby/include
-INCLUDEPATH += $$PWD/../../
-INCLUDEPATH += $$PWD/../../ruby
-INCLUDEPATH += $$PWD/../rhodes
+#INCLUDEPATH += $$PWD/../../../../wm/rhodes
+#INCLUDEPATH += $$PWD/../../curl/include
+#INCLUDEPATH += $$PWD/../../sqlite
+#DEPENDPATH  += $$PWD/../../sqlite
+#INCLUDEPATH += $$PWD/../../ruby/include
+#INCLUDEPATH += $$PWD/../../
+#INCLUDEPATH += $$PWD/../../ruby
+#INCLUDEPATH += $$PWD/../rhodes
 
 DEFINES += CPP_ELEVEN
 DEFINES += OS_SAILFISH
@@ -56,3 +56,5 @@ SUBDIRS += $$PWD/../rhodes
 
 QMAKE_CXXFLAGS_RELEASE += -MP9
 QMAKE_CXXFLAGS_DEBUG += -MP9
+QMAKE_CFLAGS += -fvisibility=hidden
+QMAKE_CXXFLAGS += -fvisibility=hidden

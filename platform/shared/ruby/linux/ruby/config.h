@@ -365,9 +365,9 @@
 #define FALSE   0
 #endif
 
-#define NO_INITIAL_LOAD_PATH
-#define NO_RUBY_SITE_LIB
-#define NO_RUBY_VENDOR_LIB
+//#define NO_INITIAL_LOAD_PATH
+//#define NO_RUBY_SITE_LIB
+//#define NO_RUBY_VENDOR_LIB
 //RHO
 
 #define HAVE_GETADDRINFO 1

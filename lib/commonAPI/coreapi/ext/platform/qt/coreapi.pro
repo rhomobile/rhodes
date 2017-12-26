@@ -6,7 +6,7 @@
     }
 
     equals(QT_VERSION, 5.6.2) {
-        QT += webkit
+        QT += core
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += c++14
         message(Deprecated sailfish webkit enabled)
@@ -41,6 +41,8 @@ unix:!macx {
   OBJECTS_DIR = $$PWD/../../../../../../platform/linux/bin/extensions/coreapi
   INCLUDEPATH += $$PWD/../../../../../../platform/shared/ruby/linux
   SOURCES += src/CNetworkDetect.cpp
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 win32 {

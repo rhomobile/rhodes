@@ -43,6 +43,9 @@ unix:!macx {
   DESTDIR = ../../../linux/bin/sqlite3
   OBJECTS_DIR = ../../../linux/bin/sqlite3/tmp
   SOURCES += ../../sqlite/sqlite3.c
+
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM

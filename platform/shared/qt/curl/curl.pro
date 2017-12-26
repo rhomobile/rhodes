@@ -58,6 +58,8 @@ unix:!macx {
   DESTDIR = $$PWD/../../../linux/bin/curl
   OBJECTS_DIR = $$PWD/../../../linux/bin/curl/tmp
   DEFINES += HAVE_CONFIG_H USE_RHOSSL OS_LINUX OS_SAILFISH
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 
 }
 
