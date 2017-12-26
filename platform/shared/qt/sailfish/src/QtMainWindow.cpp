@@ -45,6 +45,8 @@
 #include <QWebHistory>
 #include <QtNetwork/QNetworkCookie>
 #include <QDesktopServices>
+#include <sailfishapp.h>
+#include "impl/MainWindowImpl.h"
 
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
@@ -240,9 +242,33 @@ void QtMainWindow::on_actionRotate180_triggered()
 	RHODESAPP().callScreenRotationCallback(this->width(), this->height(), 180);
 }
 */
+void QtMainWindow::doExit(bool wait){
+    static bool finalize = true;
+    if (finalize){
+        if (wait){
+            QTimer::singleShot(50, [=](){
+                CMainWindow::getInstance()->diconnectFromUI();
+                CMainWindow::getInstance()->DestroyUi();
+                rho::common::CRhodesApp::Destroy();
+                QGuiApplication::instance()->quit();
+            }
+            );
+        }else{
+            CMainWindow::getInstance()->diconnectFromUI();
+            CMainWindow::getInstance()->DestroyUi();
+            rho::common::CRhodesApp::Destroy();
+            QGuiApplication::instance()->quit();
+        }
+
+        finalize = false;
+    }
+
+}
+
 void QtMainWindow::on_actionExit_triggered()
 {
-    QGuiApplication::instance()->quit();
+    doExit();
+
 }
 
 bool QtMainWindow::internalUrlProcessing(const QUrl& url)
@@ -705,7 +731,7 @@ void QtMainWindow::on_actionAbout_triggered()
 
 void QtMainWindow::exitCommand()
 {
-    QGuiApplication::instance()->exit();
+    doExit();
 }
 
 void QtMainWindow::navigateBackCommand()

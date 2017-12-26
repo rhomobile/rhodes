@@ -274,6 +274,66 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
     return true;
 }
 
+void CMainWindow::diconnectFromUI()
+{
+    QObject::disconnect(this, SIGNAL(doExitCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(exitCommand(void)) );
+    QObject::disconnect(this, SIGNAL(doNavigateBackCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(navigateBackCommand(void)) );
+    QObject::disconnect(this, SIGNAL(doNavigateForwardCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(navigateForwardCommand(void)) );
+    QObject::disconnect(this, SIGNAL(doWebviewNavigateBackCommand(int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(webviewNavigateBackCommand(int)) );
+    QObject::disconnect(this, SIGNAL(doLogCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(logCommand(void)) );
+    QObject::disconnect(this, SIGNAL(doRefreshCommand(int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(refreshCommand(int)) );
+    QObject::disconnect(this, SIGNAL(doNavigateCommand(TNavigateData*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(navigateCommand(TNavigateData*)) );
+    QObject::disconnect(this, SIGNAL(doExecuteJavaScriptCommand(TNavigateData*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(executeJavaScriptCommand(TNavigateData*)) );
+    QObject::disconnect(this, SIGNAL(doTakePicture(char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(takePicture(char*)) );
+    QObject::disconnect(this, SIGNAL(doSelectPicture(char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(selectPicture(char*)) );
+    QObject::disconnect(this, SIGNAL(doAlertShowPopup(CAlertParams*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(alertShowPopup(CAlertParams*)) );
+    QObject::disconnect(this, SIGNAL(doAlertHidePopup(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(alertHidePopup(void)) );
+    QObject::disconnect(this, SIGNAL(doDateTimePicker(CDateTimeMessage*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(dateTimePicker(CDateTimeMessage*)) );
+    QObject::disconnect(this, SIGNAL(doExecuteCommand(RhoNativeViewRunnable*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(executeCommand(RhoNativeViewRunnable*)) );
+    QObject::disconnect(this, SIGNAL(doExecuteRunnable(rho::common::IRhoRunnable*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(executeRunnable(rho::common::IRhoRunnable*)) );
+    QObject::disconnect(this, SIGNAL(doTakeSignature(void*)), //TODO: Signature::Params*
+        ((QtMainWindow*)qtMainWindow), SLOT(takeSignature(void*)) );
+    QObject::disconnect(this, SIGNAL(doFullscreenCommand(int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(fullscreenCommand(int)) );
+    QObject::disconnect(this, SIGNAL(doSetCookie(const char*, const char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setCookie(const char*, const char*)) );
+    QObject::disconnect(this, SIGNAL(doSetFrame(int,int,int,int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setFrame(int,int,int,int)) );
+    QObject::disconnect(this, SIGNAL(doSetPosition(int,int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setPosition(int,int)) );
+    QObject::disconnect(this, SIGNAL(doSetSize(int,int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setSize(int,int)) );
+    QObject::disconnect(this, SIGNAL(doLockSize(int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(lockSize(int)) );
+    QObject::disconnect(this, SIGNAL(doSetTitle(const char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setTitle(const char*)) );
+    QObject::disconnect(this, SIGNAL(doMinimizeWindow(void)),
+        this, SLOT(minimizeWindow(void)) );
+    QObject::disconnect(this, SIGNAL(doRestoreWindow(void)),
+        this, SLOT(restoreWindow(void)) );
+    QObject::disconnect(this, SIGNAL(doCreateCustomMenu(void)),
+        this, SLOT(createCustomMenuSlot(void)) );
+    QObject::disconnect(this, SIGNAL(doUnsetProxy()),
+        this, SLOT(unsetProxy()) );
+    QObject::disconnect(this, SIGNAL(doSetProxy(const char*, const char*, const char*, const char*)),
+        this, SLOT(setProxy(const char*, const char*, const char*, const char*)) );
+}
+
 void CMainWindow::messageLoop(void)
 {
     //((QApplication*)qtApplication)->exec();

@@ -85,10 +85,10 @@ char* parseToken(const char* start)
     return value;
 }
 
-
 int main(int argc, char *argv[])
 {
-    QGuiApplication * application = SailfishApp::application(argc, argv);
+    QScopedPointer<QGuiApplication> pApplication(SailfishApp::application(argc, argv));
+    QGuiApplication * application = const_cast<QGuiApplication *>(pApplication.data());
     qRegisterMetaType<QString>("QString");
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -96,9 +96,9 @@ int main(int argc, char *argv[])
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
 
 
-
     qDebug() << "Executable file: " + QString::fromLocal8Bit(argv[0]);
-    QQuickView * view  =  SailfishApp::createView();
+    QScopedPointer<QQuickView> pView(SailfishApp::createView());
+    QQuickView * view = const_cast<QQuickView * >(pView.data());
     QtMainWindow::setView(view);
 
     CMainWindow* m_appWindow = CMainWindow::getInstance();
@@ -161,12 +161,9 @@ int main(int argc, char *argv[])
 
     application->exec();
 
-    // stopping Rhodes application
-    rho_ringtone_manager_stop();
-    m_appWindow->DestroyUi();
-
-    rho::common::CRhodesApp::Destroy();
-
+    QtMainWindow::doExit(false);
 
     return  0;
 }
+
+
