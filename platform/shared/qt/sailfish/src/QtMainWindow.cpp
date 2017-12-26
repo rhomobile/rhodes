@@ -242,7 +242,7 @@ void QtMainWindow::on_actionRotate180_triggered()
 */
 void QtMainWindow::on_actionExit_triggered()
 {
-    QGuiApplication::exit();
+    QGuiApplication::instance()->quit();
 }
 
 bool QtMainWindow::internalUrlProcessing(const QUrl& url)
@@ -674,7 +674,8 @@ void QtMainWindow::menuAddAction(const QString & text, int item, bool enabled)
 
 void QtMainWindow::menuClear(void)
 {
-    //ui->menuMain->clear();
+    menuItemsList.clear();
+    commitMenuItemsList();
 }
 
 void QtMainWindow::menuAddSeparator()
@@ -808,17 +809,28 @@ void QtMainWindow::selectPicture(char* callbackUrl)
 bool QtMainWindow::copyDirRecursive(QString fromDir, QString toDir)
 {
     QDir dir(fromDir);
+    {
+        QDir tempDir(toDir);
+        tempDir.mkpath(toDir);
+    }
     if (!fromDir.endsWith(QDir::separator())) fromDir.append(QDir::separator());
     if (!toDir.endsWith(QDir::separator())) toDir.append(QDir::separator());
-    //qDebug() << "Recursive copy from dir " + fromDir + " to " + toDir;
+
+    qDebug() << "Recursive copy from dir " + fromDir + " to " + toDir;
     foreach (QString copyFile, dir.entryList(QDir::Files)){
         QString from = fromDir + copyFile;
         QString to = toDir + copyFile;
-        //qDebug() << "From: " + from + " to: " + to;
+        qDebug() << "From: " + from + " to: " + to;
         if (QFile::exists(to)){
-            if (!QFile::remove(to)){return false;}
+            if (!QFile::remove(to)){
+                qDebug() << "Can't remove file: " + to;
+                return false;
+            }
         }
-        if (QFile::copy(from, to) == false){return false;}
+        if (QFile::copy(from, to) == false){
+            qDebug() << "Can't copy file: " + from;
+            return false;
+        }
     }
 
     foreach (QString copyDir, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)){

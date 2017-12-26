@@ -491,7 +491,7 @@ static VALUE find_file(VALUE fname)
     VALUE res = 0;
     int nOK = 0;
 	char * filename = RSTRING_PTR(fname);
-    RAWLOG_INFO1("find_file: fname: %s", RSTRING_PTR(fname));
+    RAWLOG_INFO1("find_file: fname: %s", filename);
 
 #ifdef RHODES_EMULATOR
     if ( strncmp(RSTRING_PTR(fname), rho_simconf_getRhodesPath(), strlen(rho_simconf_getRhodesPath())) == 0 )

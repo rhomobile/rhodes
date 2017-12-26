@@ -2,7 +2,6 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import QtWebKit 3.0
 
-
 Page {
     id: mainPage
     SilicaFlickable {
@@ -82,10 +81,9 @@ Page {
                 height: parent.height
                 border.width: 1
 
-                SilicaWebView {
+                WebView {
                     id: webView
                     url: modelData.url
-
                     anchors.fill: parent
 
                     Connections {

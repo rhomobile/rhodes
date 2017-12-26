@@ -111,13 +111,14 @@ int main(int argc, char *argv[])
 
 
     qDebug() << "Writable location is: " + QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-    const QByteArray dir = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::DataLocation)).absolutePath().toLatin1();
+    const QByteArray dir = QStandardPaths::writableLocation(QStandardPaths::DataLocation).toLatin1();
     m_strRootPath = std::string(dir.constData(), dir.length());
     m_strRootPath += "/rho/";
     qDebug() << "Main directory is: " + QString::fromStdString(m_strRootPath);
     QString dataDirectory("/usr/share/" + application->applicationName() + "/data/rho/");
     QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
     //QDir::setCurrent(QString::fromStdString(m_strRootPath));
+
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
     LOGCONF().setLogToOutput(true);
     LOGCONF().setLogToFile(true);

@@ -1,7 +1,9 @@
 TARGET = harbour-sailfishrhodes
 QT += webkit core network quick #widgets
 CONFIG += c++14 sailfishapp sailfishapp_i18n ordered
-CONFIG += force_debug_info
+debug{
+    CONFIG += force_debug_info
+}
 OTHER_FILES += $$PWD/data/*
 
 DEPLOYMENT_PATH = /usr/share/$${TARGET}
