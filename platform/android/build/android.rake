@@ -2697,6 +2697,7 @@ def run_as_spec(device_flag, uninstall_app)
     if ((Time.now.to_i - tc_start_time.to_i) > tc_timeout_in_seconds)
         tc_overtime = true
     end
+    sleep(5) unless tc_overtime
   end
   puts "CurTime is "+Time.now.to_s
   app_is_runningz = AndroidTools.application_running(device_flag, $app_package_name)
@@ -2715,6 +2716,7 @@ def run_as_spec(device_flag, uninstall_app)
     if ((Time.now.to_i - tc_start_time.to_i) > tc_timeout_in_seconds)
         tc_overtime = true
     end
+    sleep(5) unless tc_overtime
   end
 
   puts "CurTime is "+Time.now.to_s
