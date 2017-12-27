@@ -11,15 +11,19 @@ class CustomWebViewTab : public QObject
     Q_PROPERTY(QString url READ getUrl WRITE setUrl NOTIFY urlChanged)
     Q_PROPERTY(bool activeTab READ isTabActive WRITE setActiveTab NOTIFY activeTabChanged)
     Q_PROPERTY(int tabBarIndex READ getTabBarIndex WRITE setTabBarIndex NOTIFY tabBarIndexChanged)
-
+    Q_PROPERTY(int scale READ getScale WRITE setScale NOTIFY scaleChanged)
     public:
         CustomWebViewTab(QString name, QObject *parent) : QObject(parent){
             text = name;
+            scale = 3;
         }
         explicit CustomWebViewTab(QString name, QString address, QObject *parent) : QObject(parent){
             text = name;
             url = address;
+            scale = 3;
         }
+
+
 
 
 public slots:
@@ -68,18 +72,28 @@ public slots:
             emit tabBarIndexChanged();
         }
 
+
+        int getScale() {
+            return scale;
+        }
+        void setScale(int value){
+            scale = value;
+            emit scaleChanged();
+        }
+
 private:
         QString text;
         QString url;
         int tabBarIndex;
         bool activeTab;
+        int scale;
 
 signals:
         void urlChanged();
         void textChanged();
         void tabBarIndexChanged();
         void activeTabChanged(); //from webView
-
+        void scaleChanged();
 
 
         void linkClicked(const QString); //from webView v
@@ -102,6 +116,10 @@ signals:
 };
 
 #endif // CUSTOMWEBVIEWTAB_H
+
+
+
+
 
 
 

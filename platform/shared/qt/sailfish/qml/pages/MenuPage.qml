@@ -26,7 +26,10 @@ Page {
                 anchors.verticalCenter: parent.verticalCenter
                 color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
             }
-            onClicked: modelData.clicked()
+            onClicked:{
+                modelData.clicked();
+                pageStack.pop();
+            }
         }
 
         VerticalScrollDecorator {}

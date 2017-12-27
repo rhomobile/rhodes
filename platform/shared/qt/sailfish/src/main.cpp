@@ -85,10 +85,10 @@ char* parseToken(const char* start)
     return value;
 }
 
-
 int main(int argc, char *argv[])
 {
-    QGuiApplication * application = SailfishApp::application(argc, argv);
+    QScopedPointer<QGuiApplication> pApplication(SailfishApp::application(argc, argv));
+    QGuiApplication * application = const_cast<QGuiApplication *>(pApplication.data());
     qRegisterMetaType<QString>("QString");
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -96,9 +96,9 @@ int main(int argc, char *argv[])
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
 
 
-
     qDebug() << "Executable file: " + QString::fromLocal8Bit(argv[0]);
-    QQuickView * view  =  SailfishApp::createView();
+    QScopedPointer<QQuickView> pView(SailfishApp::createView());
+    QQuickView * view = const_cast<QQuickView * >(pView.data());
     QtMainWindow::setView(view);
 
     CMainWindow* m_appWindow = CMainWindow::getInstance();
@@ -111,13 +111,14 @@ int main(int argc, char *argv[])
 
 
     qDebug() << "Writable location is: " + QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-    const QByteArray dir = QFileInfo(QStandardPaths::writableLocation(QStandardPaths::DataLocation)).absolutePath().toLatin1();
+    const QByteArray dir = QStandardPaths::writableLocation(QStandardPaths::DataLocation).toLatin1();
     m_strRootPath = std::string(dir.constData(), dir.length());
     m_strRootPath += "/rho/";
     qDebug() << "Main directory is: " + QString::fromStdString(m_strRootPath);
     QString dataDirectory("/usr/share/" + application->applicationName() + "/data/rho/");
     QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
     //QDir::setCurrent(QString::fromStdString(m_strRootPath));
+
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
     LOGCONF().setLogToOutput(true);
     LOGCONF().setLogToFile(true);
@@ -160,12 +161,9 @@ int main(int argc, char *argv[])
 
     application->exec();
 
-    // stopping Rhodes application
-    rho_ringtone_manager_stop();
-    m_appWindow->DestroyUi();
-
-    rho::common::CRhodesApp::Destroy();
-
+    QtMainWindow::doExit(false);
 
     return  0;
 }
+
+

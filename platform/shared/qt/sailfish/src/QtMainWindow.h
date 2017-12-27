@@ -144,6 +144,7 @@ public:
 
 
     static bool copyDirRecursive(QString fromDir, QString toDir);
+    static void doExit(bool wait = true);
 private:
     //void tabbarWebViewRestore(bool reload);
     void tabbarConnectWebView(CustomWebViewTab *webView);
