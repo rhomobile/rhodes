@@ -2691,7 +2691,7 @@ def run_as_spec(device_flag, uninstall_app)
   while !tc_overtime do
     app_is_running = AndroidTools.application_running(device_flag, $app_package_name)
     $logger.debug "%%% app_is_running="+app_is_running.to_s
-    if AndroidTools.application_running(device_flag, $app_package_name)
+    if app_is_running
         tc_overtime = true
     end
     if ((Time.now.to_i - tc_start_time.to_i) > tc_timeout_in_seconds)
@@ -2699,9 +2699,11 @@ def run_as_spec(device_flag, uninstall_app)
     end
     sleep(5) unless tc_overtime
   end
+  sleep(1)
   puts "CurTime is "+Time.now.to_s
   app_is_runningz = AndroidTools.application_running(device_flag, $app_package_name)
   puts "%%% app_is_runningz FINAL ="+app_is_runningz.to_s
+  sleep(1)
 
   puts "Waiting for log file: #{log_name}"
 
