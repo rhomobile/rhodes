@@ -2680,29 +2680,47 @@ def run_as_spec(device_flag, uninstall_app)
   Jake.before_run_spec
   start = Time.now
 
+  puts "CurTime is "+Time.now.to_s
   puts "Waiting for application ..."
 
-  for i in 0..600
+
+  tc_start_time = Time.now
+  tc_overtime = false
+  tc_timeout_in_seconds = 10*60
+
+  while !tc_overtime do
     app_is_running = AndroidTools.application_running(device_flag, $app_package_name)
     $logger.debug "%%% app_is_running="+app_is_running.to_s
     if AndroidTools.application_running(device_flag, $app_package_name)
-      break
-    else
-      sleep(1)
+        tc_overtime = true
+    end
+    if ((Time.now.to_i - tc_start_time.to_i) > tc_timeout_in_seconds)
+        tc_overtime = true
     end
   end
+  puts "CurTime is "+Time.now.to_s
   app_is_runningz = AndroidTools.application_running(device_flag, $app_package_name)
   puts "%%% app_is_runningz FINAL ="+app_is_runningz.to_s
 
   puts "Waiting for log file: #{log_name}"
 
-  for i in 0..120
-    if !File.exist?(log_name)
-      sleep(1)
-    else
-      break
+  tc_start_time = Time.now
+  tc_overtime = false
+  tc_timeout_in_seconds = 5*60
+
+  while !tc_overtime do
+    if File.exist?(log_name)
+      tc_overtime = true
+    end
+    if ((Time.now.to_i - tc_start_time.to_i) > tc_timeout_in_seconds)
+        tc_overtime = true
     end
   end
+
+  puts "CurTime is "+Time.now.to_s
+
+  logfile_is_exist = File.exist?(log_name)
+  puts "%%% logfile is exist FINAL ="+logfile_is_exist.to_s
 
   if !File.exist?(log_name)
     puts "Cannot read log file: " + log_name
@@ -2712,7 +2730,7 @@ def run_as_spec(device_flag, uninstall_app)
 
   timeout_in_seconds = 25*60
 
-  timeout_output_in_seconds = 120
+  timeout_output_in_seconds = 3*60
   last_output_time = Time.now
 
   log_lines = []
