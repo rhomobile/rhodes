@@ -62,14 +62,15 @@ def setup_ndk(ndkpath,apilevel,abi)
   tools = ndk.detect_toolchain abi
   tools.each { |name, path| eval "$#{name}bin = path" }  
 
-  $ndksysroot = ndk.sysroot apilevel, abi
-  puts "NDK sysroot: #{$ndksysroot}"
+  $ndksysroot = ndk.sysroot apilevel, abi 
 
   $ndkgccver = ndk.gccver
-
   $androidndkpath = ndkpath unless $androidndkpath
 
   $sysincludes = ndk.sysincludes apilevel, abi
+  $link_sysroot = ndk.link_sysroot apilevel, abi
+
+  puts "NDK sysroot: #{$ndksysroot}, linker sysroot: #{$link_sysroot}, GCC v#{$ndkgccver}, sysincludes: #{$sysincludes}"
 
   # Detect rlim_t
   if $have_rlim_t.nil?
@@ -336,15 +337,15 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-fPIC"
   args << "-Wl,-soname,#{File.basename(outname)}"
   args << "--sysroot"
-  args << $ndksysroot
+  args << $link_sysroot
   args << "-o"
   args << "\"#{outname}\""
   args += objects.collect { |x| "\"#{x}\""}
   args += additional if additional.is_a? Array and not additional.empty?
-  args << "-L#{$ndksysroot}/usr/lib"
-  args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
-  args << "#{$ndksysroot}/usr/lib/libc.so"
-  args << "#{$ndksysroot}/usr/lib/libm.so"
+  args << "-L#{$link_sysroot}/usr/lib"
+  args << "-Wl,-rpath-link=#{$link_sysroot}/usr/lib"
+  args << "#{$link_sysroot}/usr/lib/libc.so"
+  args << "#{$link_sysroot}/usr/lib/libm.so"
 
   cc_run($gccbin, args)
 end

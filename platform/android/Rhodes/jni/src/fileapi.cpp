@@ -1862,7 +1862,7 @@ RHO_GLOBAL int unlink(const char *path)
     errno = EPERM;
     return -1;
 }
-
+/*
 static int __sread(void *cookie, char *buf, int n)
 {
     RHO_LOG("__sread: %p", cookie);
@@ -1917,7 +1917,7 @@ static int __sclose(void *cookie)
     RHO_LOG("__sclose: %p", cookie);
     return close(((FILE *)cookie)->_file);
 }
-
+*/
 RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 {
     int flags, oflags;
@@ -1935,7 +1935,7 @@ RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
     if (fd < 0)
         return NULL;
 
-
+/*
     fp->_flags = flags;
     fp->_file = fd;
     fp->_cookie = fp;
@@ -1943,10 +1943,10 @@ RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
     fp->_write = __swrite;
     fp->_seek = __sseek;
     fp->_close = __sclose;
-
+*/
     // Do seek at our level as well even though oflags passed to open
-    if (oflags & O_APPEND)
-        (void) __sseek((void *)fp, (fpos_t)0, SEEK_END);
+    //if (oflags & O_APPEND)
+    //    (void) __sseek((void *)fp, (fpos_t)0, SEEK_END);
 
     RHO_LOG("fopen: %s (%s): fp: %p", path, mode, fp);
     return fp;

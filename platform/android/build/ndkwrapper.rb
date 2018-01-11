@@ -47,6 +47,10 @@ class NDKWrapper
     @rev_major, @rev_minor, @rev_tiny = val.split('.').map { |v| v.to_i }
   end
 
+  def link_sysroot( api, abi )
+    File.join( @root_path, 'platforms', "android-#{api}", "arch-#{abi}" )
+  end
+
   def sysroot( api, abi )
     if @rev_major >= 16
       sysroot_16 api,abi
