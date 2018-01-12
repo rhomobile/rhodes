@@ -308,9 +308,8 @@ String CJSONEntry::getStringObject( const char* name, const char* szDefValue )
     struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
     if ( obj != 0 )
     {
-        int len = json_object_get_string_len(obj);
         const char* str = json_object_get_string(obj);
-        return String(str,len);
+        return String(str);
     }
     else if (szDefValue != 0 )
     {
@@ -323,9 +322,8 @@ String CJSONEntry::getStringObject( const char* name, const char* szDefValue )
     
 String CJSONEntry::getStringObject()
 {
-    int len = json_object_get_string_len(m_object);
     const char* str = json_object_get_string(m_object);
-    return String(str,len);
+    return String(str);
 }
 
 
