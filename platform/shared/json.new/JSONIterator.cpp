@@ -308,15 +308,9 @@ String CJSONEntry::getStringObject( const char* name, const char* szDefValue )
     struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
     if ( obj != 0 )
     {
-        if (json_object_is_type(obj,json_type_string)) {
-            int len = json_object_get_string_len(obj);
-            const char* str = json_object_get_string(obj);
-            return String(str, len);
-        }
-        else {
-            const char* str = json_object_get_string(obj);
-            return String(str);
-        }
+        size_t len = 0;
+        const char* str = json_object_to_json_string_length(obj, JSON_C_TO_STRING_SPACED, &len);
+        return String(str, len);
     }
     else if (szDefValue != 0 )
     {
@@ -329,15 +323,9 @@ String CJSONEntry::getStringObject( const char* name, const char* szDefValue )
     
 String CJSONEntry::getStringObject()
 {
-    if (isString()) {
-        int len = json_object_get_string_len(m_object);
-        const char* str = json_object_get_string(m_object);
-        return String(str, len);
-    }
-    else {
-        const char* str = json_object_get_string(m_object);
-        return String(str);
-    }
+    size_t len = 0;
+    const char* str = json_object_to_json_string_length(m_object, JSON_C_TO_STRING_SPACED, &len);
+    return String(str, len);
 }
 
 
