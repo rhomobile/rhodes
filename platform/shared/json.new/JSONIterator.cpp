@@ -496,7 +496,12 @@ CJSONEntry CJSONEntry::getEntry(const char* name) const
                     sym += json_hex_chars[c & 0xf];
                     break;
             }
-        } else {
+        } else if ( c >= 0x80 ) {
+            char buf[5];
+            sprintf( buf, "\\x%02x", (int)c );
+            sym += buf;
+        }
+        else {
             switch (c) {
                 case '"':
                     sym = "\\\"";
