@@ -31,7 +31,9 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoConf.h"
 #include "common/Tokenizer.h"
+#ifndef RHO_RUBY_COMPILER
 #include "common/app_build_capabilities.h"
+#endif
 #include "ruby/ext/rho/rhoruby.h"
 
 namespace rho{

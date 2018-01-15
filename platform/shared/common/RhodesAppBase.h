@@ -33,7 +33,9 @@
 #include "common/IRhoClassFactory.h"
 #include "push/RhoPushManager.h"
 #include "api_generator/MethodResult.h"
+#ifndef RHO_RUBY_COMPILER
 #include "common/app_build_capabilities.h"
+#endif
 #include "common/app_build_configs.h"
 
 #undef DEFAULT_LOGCATEGORY
