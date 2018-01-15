@@ -33,14 +33,14 @@
 
 #include "zconf.h"
 
-/*
+
 #ifdef __cplusplus
 extern "C" {
-#endif
-*/
 
 namespace zlib
 {
+
+#endif
 
 #define ZLIB_VERSION "1.2.7"
 #define ZLIB_VERNUM 0x1270
@@ -1742,11 +1742,11 @@ ZEXTERN gzFile         ZEXPORT gzopen_w OF((const wchar_t *path,
                                             const char *mode));
 #endif
 
-}
-/*
 #ifdef __cplusplus
-}
+} //namespace zlib
+
+} //extern "C"
 #endif
-*/
+
 
 #endif /* ZLIB_H */

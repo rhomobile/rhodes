@@ -6,12 +6,12 @@
 #include <string>
 #include <memory>
 
-#if __cplusplus == 201103L
-#  include <unordered_map>
-#  define MAP_TEMPLATE std::unordered_map
-#else
+//#if __cplusplus == 201103L
+//#  include <unordered_map>
+//#  define MAP_TEMPLATE std::unordered_map
+//#else
 #  define MAP_TEMPLATE rho::Hashtable
-#endif
+//#endif
 
 
 

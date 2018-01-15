@@ -5,6 +5,7 @@
 //  Created by Alex Epifanoff on 17.02.15.
 //
 //
+#import <Foundation/Foundation.h>
 
 #import "IPhoneNetRequest.h"
 
