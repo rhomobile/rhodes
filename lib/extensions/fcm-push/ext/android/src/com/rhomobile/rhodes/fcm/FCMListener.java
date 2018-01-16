@@ -68,6 +68,7 @@ public class FCMListener extends AbstractRhoListener{
     @Override
     public void onResume(RhodesActivity activity) { 
          Logger.W("fcm", "FCM: onResume");
+         FCMIntentService.resume();
          
     }
     @Override

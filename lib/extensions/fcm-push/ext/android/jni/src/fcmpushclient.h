@@ -32,7 +32,7 @@
 
 #include "logging/RhoLog.h"
 #include "common/RhoStd.h"
-
+#include <queue>
 
 namespace rho { namespace fcm {
 
@@ -50,6 +50,9 @@ private:
     void setPropertyFromMethod(const char* methodName, CMethodResult &result);
     void refreshToken();
 
+    std::queue<String> callBacksQueue;
+    void executeCallBacks();
+    bool canExecuteNotifications;
 public:
     DEFINE_LOGCLASS;
 

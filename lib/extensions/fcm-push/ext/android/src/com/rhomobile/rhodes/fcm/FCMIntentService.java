@@ -46,14 +46,24 @@ import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+import android.os.Handler;
+
 
 public class FCMIntentService extends FirebaseMessagingService {
 
     private static final String TAG = FCMIntentService.class.getSimpleName();
     public static final FCMListener listener = FCMListener.getInstance();
+    static private String lastHandledIntent = null;
+    
+    private static FirebaseMessagingService savedService = null;
+    private static Map<String, Intent> savedIntents = new HashMap<String, Intent>();
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        lastHandledIntent = null;
         savedIntents.remove(remoteMessage.getMessageId());
 
         Logger.W(TAG, "FCM: onMessageReceived()");
@@ -73,8 +83,11 @@ public class FCMIntentService extends FirebaseMessagingService {
 
         Logger.W(TAG, "FCM: push message: " + remoteMessage.getNotification().getBody());
         Logger.W(TAG, "FCM: push message in JSON: " + jsonObject.toString());
+
         PushContract.handleMessage(ContextFactory.getContext(), jsonObject.toString(), FCMFacade.FCM_PUSH_CLIENT);
     }
+
+   
 
     @Override
     public void onDeletedMessages() {
@@ -91,7 +104,9 @@ public class FCMIntentService extends FirebaseMessagingService {
                 Object value = intent.getExtras().get(key);
                 //Logger.W(TAG, "Key: " + key + " Value: " + value);
                 if (key.equals("google.message_id")){
-                    savedIntents.put((String)value, intent);
+                    savedIntents.put((String) value, intent);
+                    lastHandledIntent = (String) value;
+                    Logger.W(TAG, "FCM: onHandleIntent() : message id captured");
                 }
             }
         }
@@ -111,7 +126,26 @@ public class FCMIntentService extends FirebaseMessagingService {
             Logger.W(TAG, "FCM: tryToHandleIntent() - can't handle intent");
         }
     }
-    private static FirebaseMessagingService savedService = null;
-    private static Map<String, Intent> savedIntents = new HashMap<String, Intent>();
+
+
+    static public void resume()
+    {
+        if (lastHandledIntent != null){
+
+            Timer timerObj = new Timer();
+            TimerTask timerTaskObj = new TimerTask() {
+                public void run() {
+                    if (lastHandledIntent != null){
+                        tryToHandleIntent(lastHandledIntent);
+                    }
+                }
+            };
+            timerObj.schedule(timerTaskObj, 1000);
+
+            
+        }
+    }
+
+
 
 }
