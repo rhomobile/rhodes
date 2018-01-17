@@ -2,6 +2,7 @@ TARGET = <%= @nameApp %>
 QT += webkit core widgets network quick
 CONFIG += sailfishapp c++14 sailfishapp_i18n ordered
 CONFIG += <%= @buildMode %>
+CONFIG += force_debug_info
 
 OTHER_FILES += $$PWD/data/*
 
@@ -55,3 +56,5 @@ SUBDIRS += $$PWD/../rhodes
 
 QMAKE_CXXFLAGS_RELEASE += -MP9
 QMAKE_CXXFLAGS_DEBUG += -MP9
+QMAKE_CFLAGS += -fvisibility=hidden
+QMAKE_CXXFLAGS += -fvisibility=hidden

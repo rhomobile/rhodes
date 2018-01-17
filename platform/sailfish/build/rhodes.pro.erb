@@ -21,10 +21,10 @@ INCLUDEPATH += <%= @rhoRoot %>/platform/shared\
 
 
 unix:!macx {
-  MOC_DIR = <%= @rhoRoot %>/platform/linux/bin/RhoSimulator/generated_files
-  UI_DIR = <%= @rhoRoot %>/platform/linux/bin/RhoSimulator/generated_files
+  MOC_DIR = $$PWD/generated_files
+  UI_DIR = $$PWD/generated_files
   OBJECTS_DIR = $$PWD/bin/tmp
-  RCC_DIR = <%= @rhoRoot %>/platform/linux/bin/RhoSimulator/resources
+  RCC_DIR = $$PWD/resources
   HEADERS += <%= @rhoRoot %>/platform/shared/net/linux/SSLImpl.h
   SOURCES += <%= @rhoRoot %>/platform/shared/net/linux/SSLImpl.cpp\
   <%= @rhoRoot %>/lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
@@ -54,7 +54,6 @@ HEADERS += <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoClassFactoryImpl.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoThreadImpl.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/iexecutable.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/MainWindowCallback.h\
-<%= @rhoRoot %>/platform/shared/qt/rhodes/QtLogView.h \
 <%= @rhoRoot %>/platform/shared/qt/rhodes/QtCustomStyle.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/mainwindowinterface.h \
 <%= @rhoRoot %>/platform/shared/qt/rhodes/guithreadfunchelper.h \
@@ -95,13 +94,12 @@ contains(DEFINES, OS_SAILFISH)  {
 SOURCES += \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/main.cpp \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtMainWindow.cpp \
-    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtWebPage.cpp \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/RhoNativeApiCall.cpp
 	
 
 HEADERS += <%= @rhoRoot %>/platform/shared/qt/sailfish/src/custommenuitem.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtMainWindow.h \
-    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtWebPage.h \
+	<%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtLogView.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/RhoNativeApiCall.h\
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/customtoolbaritem.h \
     <%= @rhoRoot %>/platform/shared/qt/sailfish/src/customwebviewtab.h

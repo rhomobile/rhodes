@@ -1,0 +1,12 @@
+ECHO OFF
+set MER_SSH_PORT=<%= @merPort %>
+set MER_SSH_PRIVATE_KEY=<%= @merPkey %>
+set MER_SSH_PROJECT_PATH=<%= @projectPath %>
+set MER_SSH_SDK_TOOLS=<%= @merSdkTools %>
+set MER_SSH_SHARED_HOME=<%= @merSharedHome %>
+set MER_SSH_SHARED_SRC=<%= @merSharedSrc %>
+set MER_SSH_SHARED_TARGET=<%= @merShTgtName %>
+set MER_SSH_TARGET_NAME=<%= @merTgtName %>
+set MER_SSH_USERNAME=<%= @merUserName %>
+
+"<%= @qmakePath %>" <%= @proPath %> -spec linux-g++ "CONFIG+=<%= @buildMode %>" "CONFIG+=<%= @qmlMode %>" && "<%= @makePath %>"
