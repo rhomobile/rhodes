@@ -331,3 +331,12 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/syncengine/libsyncengine.
 
 unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lcoreapi
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libcoreapi.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lzlib
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libzlib.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lMediacapture
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libMediacapture.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lBarcode
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libBarcode.a

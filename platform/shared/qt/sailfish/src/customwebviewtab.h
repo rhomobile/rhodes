@@ -113,6 +113,8 @@ signals:
         void isCurrentTabOnTop(); //from webView
         void switchToThisTab(); //to webView
 
+        void openQMLDocument(QString documentName);
+
 };
 
 #endif // CUSTOMWEBVIEWTAB_H

@@ -28,9 +28,9 @@ public:
     }
 
 #ifndef OS_SAILFISH
-    static QMainWindow * getMainWindow(){
+    static QtMainWindow * getMainWindow(){
         foreach (QWidget * widget, qApp->topLevelWidgets()) {
-            if (widget->inherits("QMainWindow")) return qobject_cast<QMainWindow *>(widget);
+            if (widget->inherits("QMainWindow")) return qobject_cast<QtMainWindow *>(widget);
         }
         return nullptr;
     }

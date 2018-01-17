@@ -6,7 +6,9 @@
 #include <zxing/MultiFormatReader.h>
 #include <zxing/DecodeHints.h>
 #include "CameraImageWrapper.h"
+#ifndef OS_SAILFISH
 #include "imagehandler.h"
+#endif
 #include <QTime>
 #include <QUrl>
 #include <zxing/qrcode/ErrorCorrectionLevel.h>
@@ -36,19 +38,25 @@ QZXing::QZXing(QObject *parent) : QObject(parent)
                DecoderFormat_CODABAR |
                DecoderFormat_ITF |
                DecoderFormat_Aztec);
+#ifndef OS_SAILFISH
     imageHandler = new ImageHandler();
+#endif
 }
 
 QZXing::~QZXing()
 {
+#ifndef OS_SAILFISH
     if (imageHandler) delete imageHandler;
+#endif
     if (decoder) delete decoder;
 }
 
 QZXing::QZXing(QZXing::DecoderFormat decodeHints, QObject *parent) : QObject(parent)
 {
     decoder = new MultiFormatReader();
+#ifndef OS_SAILFISH
     imageHandler = new ImageHandler();
+#endif
 
     setDecoder(decodeHints);
 }
@@ -246,11 +254,13 @@ QString QZXing::decodeImageFromFile(const QString& imageFilePath, int maxWidth, 
     QImage tmpImage = QImage(imageUrl.toLocalFile());
     return decodeImage(tmpImage, maxWidth, maxHeight, smoothTransformation);
 }
-
+#ifndef OS_SAILFISH
 QString QZXing::decodeImageQML(QObject *item)
 {
     return decodeSubImageQML(item);
 }
+
+
 
 QString QZXing::decodeSubImageQML(QObject *item,
                                   const double offsetX, const double offsetY,
@@ -291,7 +301,7 @@ QString QZXing::decodeSubImageQML(const QUrl &imageUrl,
     }
     return decodeImage(img);
 }
-
+#endif
 int QZXing::getProcessTimeOfLastDecoding()
 {
     return processingTime;

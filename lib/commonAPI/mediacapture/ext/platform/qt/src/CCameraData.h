@@ -13,7 +13,9 @@
 #include "../../platform/shared/qt/rhodes/iexecutable.h"
 #include "ImageFileNameGetter.h"
 #include "CameraDialogController.h"
+#ifndef OS_SAILFISH
 #include "CameraDialogBuilder.h"
+#endif
 
 class CCameraData : public CameraDialogController{
     Q_OBJECT
@@ -26,6 +28,10 @@ private:
     CCameraData(QCameraInfo &info);
 
     static QHash<QString, CCameraData *> camerasKeeper;
+#ifdef OS_SAILFISH
+    rho::apiGenerator::CMethodResult captureResult;
+    bool hasCallback = false;
+#endif
 
 public:
     ~CCameraData() {}//cleanAll();}
@@ -34,7 +40,7 @@ public:
     static const QList<QString> getKeys();
     static const QList<CCameraData *> getValues();
     static const bool isEmpty();
-    static CCameraData *getCameraData(QString &ID);
+    static CCameraData *getCameraData(QString ID);
 
     const QString getCameraType() const;
     const QString getCameraID() const;
@@ -43,8 +49,27 @@ public:
     static QMutex * getMutex();
 
     void showView(rho::apiGenerator::CMethodResult &oResult);
-    static QMainWindow *getQMainWindow();
+    static QtMainWindow * getQMainWindow();
     static void choosePicture(rho::apiGenerator::CMethodResult &oResult);
+signals:
+    void openCameraDialog(QString qmlDocument);
+public slots:
+#ifdef OS_SAILFISH
+    void captured(QString fileName){
+        qDebug() << "Captured: " + fileName;
+        rho::Hashtable<rho::String, rho::String>& mapRes = captureResult.getStringHash();
+        if (!fileName.isEmpty()){
+
+            mapRes["status"] = "ok";
+            mapRes["imageUri"] = fileName.toStdString();
+        }else{
+            mapRes["status"] = "canceled";
+            mapRes["message"] = "";
+        }
+        captureResult.set(mapRes);
+    }
+
+#endif
 
 };
 

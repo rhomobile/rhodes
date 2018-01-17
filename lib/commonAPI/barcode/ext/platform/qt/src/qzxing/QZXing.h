@@ -16,8 +16,9 @@
 namespace zxing {
 class MultiFormatReader;
 }
+#ifndef OS_SAILFISH
 class ImageHandler;
-
+#endif
 /**
   * A class containing a very very small subset of the ZXing library.
   * Created for ease of use.
@@ -100,6 +101,7 @@ public slots:
     /**
      * The decoding function accessible from QML. (Suggested for Qt 4.x)
      */
+#ifndef OS_SAILFISH
     QString decodeImageQML(QObject *item);
 
     /**
@@ -127,7 +129,7 @@ public slots:
     QString decodeSubImageQML(const QUrl &imageUrl,
                               const double offsetX = 0, const double offsetY = 0,
                               const double width = 0, const double height = 0);
-
+#endif
     /**
       * Get the prossecing time in millisecond of the last decode operation.
       * Added mainly as a statistic measure.
@@ -158,7 +160,9 @@ signals:
 private:
     zxing::MultiFormatReader *decoder;
     DecoderFormatType enabledDecoders;
+#ifndef OS_SAILFISH
     ImageHandler *imageHandler;
+#endif
     int processingTime;
     QString foundedFmt;
     QString charSet_;

@@ -49,9 +49,9 @@ $$PWD/../../../../lib/commonAPI/coreapi/ext/platform/qt/coreapi.pro \
 #$$PWD/../../../../lib/extensions/fcntl/ext/fcntl.pro \
 #$$PWD/../../../../lib/extensions/openssl/ext/openssl.pro \
 #$$PWD/../../../../lib/extensions/serialport/ext/serialport.pro \
-$$PWD/../../../../lib/extensions/zlib/ext/zlib.pro# \
-#$$PWD/../../../../lib/commonAPI/mediacapture/ext/platform/qt/MediaCapture.pro \
-#$$PWD/../../../../lib/commonAPI/barcode/ext/platform/qt/Barcode.pro
+$$PWD/../../../../lib/extensions/zlib/ext/zlib.pro \
+$$PWD/../../../../lib/commonAPI/mediacapture/ext/platform/qt/MediaCapture.pro \
+$$PWD/../../../../lib/commonAPI/barcode/ext/platform/qt/Barcode.pro
 
 SUBDIRS += $$PWD/../curl
 SUBDIRS += $$PWD/../rhodes

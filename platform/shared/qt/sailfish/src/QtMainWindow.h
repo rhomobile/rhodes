@@ -33,9 +33,9 @@
 #include "../rhodes/MainWindowCallback.h"
 #include "common/IRhoThreadImpl.h"
 #include "common/RhoNativeViewManager.h"
-#include "logging/RhoLog.h"
-#include "impl/AlertImpl.h"
-#include "impl/DateTimePickerImpl.h"
+#include "../../../logging/RhoLog.h"
+#include "../rhodes/impl/AlertImpl.h"
+#include "../rhodes/impl/DateTimePickerImpl.h"
 #include "api_generator/MethodResult.h"
 #include "QtLogView.h"
 #include "custommenuitem.h"
@@ -54,12 +54,14 @@ class QtMainWindow : public QObject
     Q_PROPERTY(int logicalDpiX READ getLogicalDpiX WRITE setLogicalDpiX NOTIFY logicalDpiXChanged)
     Q_PROPERTY(int logicalDpiY READ getLogicalDpiY WRITE setLogicalDpiY NOTIFY logicalDpiYChanged)
     Q_PROPERTY(int rotation READ getRotation WRITE setRotation NOTIFY rotationChanged)
+    Q_PROPERTY(QString usingDeviceID READ getUsingDeviceID WRITE setUsingDeviceID NOTIFY usingDeviceIDChanged)
+    Q_PROPERTY(QString targetFilePath READ getTargetFilePath WRITE setTargetFilePath NOTIFY targetFilePathChanged)
 
 public:
     QString mainWindowTitle;
-
     int rotation;
-
+    QString usingDeviceID;
+    QString targetFilePath;
     typedef QHash<QString, QVariant> QTabBarRuntimeParams;
 
     explicit QtMainWindow(QObject *parent = 0);
@@ -69,9 +71,6 @@ public:
 
     void paintEvent();
     void setCallback(IMainWindowCallback* callback);
-
-
-
 
     void bringToFront();
     void adjustWebInspector();
@@ -108,43 +107,52 @@ public:
     //void tabbarSetBadge(int index, const char* badge);
     void tabbarSetSwitchCallback(rho::apiGenerator::CMethodResult& oResult);
     static void setView(QQuickView *value);
+    static QQuickView * getView(){
+        return view;
+    }
+
+
     static QtMainWindow * getLastInstance(){
         return lastInstance;
     }
 
-
-
+    static void setContextProperty(QString name, QList<QObject*> list){
+        QQmlContext *context = lastInstance->view->rootContext();
+        context->setContextProperty(name, QVariant::fromValue(list));
+    }
 
     QList<CustomMenuItem *> menuItemsList;
     void commitMenuItemsList(){
-        QQmlContext *context = view->rootContext();
         QList<QObject *> objectList;
         foreach (CustomMenuItem * obj, menuItemsList) {objectList.append(obj);}
-        context->setContextProperty("mainMenuListModel", QVariant::fromValue(objectList));
+        setContextProperty("mainMenuListModel", objectList);
     }
 
     QList<CustomWebViewTab *> webViewsList;
 
     void commitWebViewsList(){
-        QQmlContext *context = view->rootContext();
+
         QList<QObject *> objectList;
         foreach (CustomWebViewTab * obj, webViewsList) {
             objectList.append(obj);
         }
-        context->setContextProperty("webViewsModel", QVariant::fromValue(objectList));
+        setContextProperty("webViewsModel", objectList);
     }
 
     QList<CustomToolBarItem *> toolBarButtonsList;
     void commitToolBarButtonsList(){
-        QQmlContext *context = view->rootContext();
         QList<QObject *> objectList;
         foreach (CustomToolBarItem * obj, toolBarButtonsList) {objectList.append(obj);}
-        context->setContextProperty("toolBarModel", QVariant::fromValue(objectList));
+        setContextProperty("toolBarModel", objectList);
     }
 
 
     static bool copyDirRecursive(QString fromDir, QString toDir);
     static void doExit(bool wait = true);
+
+
+
+
 private:
     //void tabbarWebViewRestore(bool reload);
     void tabbarConnectWebView(CustomWebViewTab *webView);
@@ -155,7 +163,7 @@ private:
     void internalSetProxy();
     static QQuickView * view;
     static QtMainWindow * lastInstance;
-private:
+
     IMainWindowCallback* mainWindowCallback;
     //std::vector<QWebView*> tabViews;
     //QWebView* main_webView;
@@ -195,6 +203,10 @@ public slots:
     void setRotation(int value){rotation = value;}
     QString getMainWindowTitle() const;
     void setMainWindowTitle(const QString &value);
+    QString getUsingDeviceID() const;
+    void setUsingDeviceID(const QString &value);
+    QString getTargetFilePath() const;
+    void setTargetFilePath(const QString &value);
 
 
     void exitCommand(void);
@@ -226,11 +238,15 @@ public slots:
     void toolbarActionEvent();
     void menuActionEvent();
 
+    void openQMLDocument(QString document);
+
 signals:
     void logicalDpiXChanged();
     void logicalDpiYChanged();
     void rotationChanged();
     void mainWindowTitleChanged();
+    void usingDeviceIDChanged();
+    void targetFilePathChanged();
 
 };
 

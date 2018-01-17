@@ -90,6 +90,8 @@ int main(int argc, char *argv[])
     QScopedPointer<QGuiApplication> pApplication(SailfishApp::application(argc, argv));
     QGuiApplication * application = const_cast<QGuiApplication *>(pApplication.data());
     qRegisterMetaType<QString>("QString");
+    //qmlRegisterCustomType<QtMainWindow>("harbour.rhodes.QtMainWindow",1,0"QtMainWindow");
+
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QString OSDetailsString= QString("Running on : %1 Application Compiled with QT Version :  %2 Running with QT Version %3")
@@ -102,7 +104,9 @@ int main(int argc, char *argv[])
     QtMainWindow::setView(view);
 
     CMainWindow* m_appWindow = CMainWindow::getInstance();
-    view->rootContext()->setContextObject(QtMainWindow::getLastInstance());
+
+    //view->rootContext()->setContextObject(QtMainWindow::getLastInstance());
+    view->rootContext()->setContextProperty("mainWindowObject", QtMainWindow::getLastInstance());
 
     // Create the main application window
     QObject::connect(view, &QQuickView::activeChanged, [=](){qDebug() << (view->isActive()?"Active":"Not active");});

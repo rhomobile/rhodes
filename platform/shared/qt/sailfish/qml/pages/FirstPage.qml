@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import QtWebKit 3.0
+import QtMultimedia 5.5
 
 Page {
     id: mainPage
@@ -113,6 +114,9 @@ Page {
                         }
                         onSwitchToThisTab:{
                             console.log("Trying to switch to this tab: don't realized");
+                        }
+                        onOpenQMLDocument:{
+                            pageStack.push(Qt.resolvedUrl(documentName));
                         }
                     }
 

@@ -47,7 +47,7 @@
 #include <QDesktopServices>
 #include <sailfishapp.h>
 #include "impl/MainWindowImpl.h"
-
+#include <QCameraInfo>
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
 #define stricmp strcasecmp
@@ -77,6 +77,28 @@ QString QtMainWindow::getMainWindowTitle() const
 void QtMainWindow::setMainWindowTitle(const QString &value)
 {
     mainWindowTitle = value;
+}
+
+QString QtMainWindow::getUsingDeviceID() const
+{
+    return usingDeviceID;
+}
+
+void QtMainWindow::setUsingDeviceID(const QString &value)
+{
+    usingDeviceID = value;
+    emit usingDeviceIDChanged();
+}
+
+QString QtMainWindow::getTargetFilePath() const
+{
+    return targetFilePath;
+}
+
+void QtMainWindow::setTargetFilePath(const QString &value)
+{
+    targetFilePath = value;
+    emit targetFilePathChanged();
 }
 
 QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
@@ -134,6 +156,7 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     commitToolBarButtonsList();
     commitWebViewsList();
 
+    //qDebug() << "Available cameras: " + QString::number(QCameraInfo::availableCameras().size());
     qDebug() << "End of main window cunstruction";
 }
 
@@ -714,6 +737,14 @@ void QtMainWindow::menuActionEvent()
     CustomMenuItem* action;
     if (sender() && (action = qobject_cast<CustomMenuItem*>(sender())) && mainWindowCallback)
         mainWindowCallback->onCustomMenuItemCommand(action->getItem());
+}
+
+
+void QtMainWindow::openQMLDocument(QString document)
+{
+    if(!webViewsList.isEmpty()){
+        emit webViewsList.first()->openQMLDocument(document);
+    }
 }
 
 void QtMainWindow::on_actionAbout_triggered()

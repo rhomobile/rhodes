@@ -4,8 +4,8 @@ import "pages"
 
 ApplicationWindow
 {
-    initialPage: Component{FirstPage { }
-    }
+
+    initialPage: Component{FirstPage { }}
     cover: Component {
         Cover {
             transparent: true
@@ -16,6 +16,10 @@ ApplicationWindow
             }
         }
     }
+
+
+
     allowedOrientations: Orientation.All
 }
+
 

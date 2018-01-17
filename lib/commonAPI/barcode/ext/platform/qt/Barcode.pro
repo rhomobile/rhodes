@@ -1,19 +1,19 @@
-QT += core gui widgets multimedia multimediawidgets network
+QT += core gui widgets multimedia network
 
     lessThan(QT_VERSION, 5.6.0): {
-        QT += webkit widgets webkitwidgets
+        QT += webkit widgets webkitwidgets multimediawidgets
         DEFINES += RHODES_VERSION_1
     }
 
     equals(QT_VERSION, 5.6.2) {
         QT += webkit widgets
         DEFINES += OS_SAILFISH OS_LINUX
-        CONFIG += c++14
+        CONFIG += sailfishapp c++14 sailfishapp_i18n
         message(Deprecated sailfish webkit enabled)
     }
 
     greaterThan(QT_VERSION, 5.7.0): {
-        QT += webengine webenginecore webenginewidgets
+        QT += webengine webenginecore webenginewidgets multimediawidgets
         CONFIG += c++14
         DEFINES += CPP_ELEVEN RHODES_VERSION_2
     }
@@ -36,10 +36,14 @@ $$RHODES_ROOT/platform/shared/ruby/include\
 $$RHODES_ROOT/platform/shared\
 ../../shared
 
+
 macx {
   DESTDIR = $$RHODES_ROOT/platform/osx/bin/extensions
   OBJECTS_DIR = $$RHODES_ROOT/platform/osx/bin/extensions/barcode
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/iphone
+HEADERS +=   src/BarcodeDialogBuilder.h \
+    src/BarcodeDialogView.h
+SOURCES += src/BarcodeDialogView.cpp
 }
 win32 {
   DESTDIR = $$RHODES_ROOT/platform/win32/bin/extensions
@@ -53,8 +57,24 @@ win32 {
     #DEFINES += _ITERATOR_DEBUG_LEVEL=2
   }
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/win32
+HEADERS +=   src/BarcodeDialogBuilder.h \
+    src/BarcodeDialogView.h
+SOURCES += src/BarcodeDialogView.cpp
 }
 
+unix:!macx {
+  INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/linux
+  INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish/src
+  INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish
+
+  contains(DEFINES, OS_LINUX)  {
+    DESTDIR = $$RHODES_ROOT/platform/linux/bin/extensions
+    OBJECTS_DIR = $$RHODES_ROOT/platform/linux/bin/extensions/barcode
+  }
+  contains(DEFINES, OS_SAILFISH)  {
+    HEADERS += src/barcodeqmlmodel.h
+  }
+}
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 
 !isEmpty(RHOSIMULATOR_BUILD) {
@@ -75,12 +95,11 @@ win32 {
   QMAKE_CXXFLAGS_DEBUG += -MP9
 }
 
+
 HEADERS += \
 ..\..\shared\generated\cpp\IBarcode.h\
 ..\..\shared\generated\cpp\BarcodeBase.h \
     src/BarcodeController.h \
-    src/BarcodeDialogBuilder.h \
-    src/BarcodeDialogView.h \
     src/decoderthread.h
 
 SOURCES += \
@@ -92,7 +111,7 @@ SOURCES += \
 ..\..\shared\generated\Barcode_ruby_api.c\
 src\Barcode_impl.cpp \
     src/BarcodeController.cpp \
-    src/BarcodeDialogView.cpp \
-    src/decoderthread.cpp
+    src/decoderthread.cpp \
+    src/barcodeqmlmodel.cpp
 
 RESOURCES += $$RHODES_ROOT/lib/commonAPI/barcode/ext/platform/qt/resources/barcode.qrc
