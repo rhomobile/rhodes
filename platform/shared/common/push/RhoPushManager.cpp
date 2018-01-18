@@ -52,6 +52,7 @@ void PushManager::addClient(IRhoPushClient* pClient)
     }
     m_Clients.addElement(pClient);
     LOG(INFO) + "Push client has added ("+pClient->getType()+")";
+    executeCallBacks();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -61,6 +62,7 @@ void PushManager::initClients()
     {
         (*I)->init();
     }
+    executeCallBacks();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -100,6 +102,9 @@ bool PushManager::callNotification(const String& type, const String& json, const
             return pClient->callNotification(json, data);
         } else
         {
+            pushQueue.push(QueueType(type,json,data));
+            if (pushQueue.size() > 1024) pushQueue.pop();
+
             LOG(WARNING) + "Wrong push message type: " + type;
             return false;
         }
@@ -121,6 +126,19 @@ IRhoPushClient* PushManager::getClient(const String& pushType)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+
+void PushManager::executeCallBacks()
+{
+    std::queue<QueueType> localQueue = pushQueue;
+    while (!pushQueue.empty()){pushQueue.pop();}
+    while (!localQueue.empty()){
+        QueueType item = localQueue.front();
+        callNotification(item.pushType, item.json, item.data);
+        localQueue.pop();
+    }
+
+}
 
 }}
 

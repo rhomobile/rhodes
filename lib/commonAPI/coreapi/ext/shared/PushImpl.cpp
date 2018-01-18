@@ -30,6 +30,8 @@
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
 #include "sync/RhoconnectClientManager.h"
+#include <queue>
+#include <utility>
 
 namespace rho {
 namespace push {
@@ -43,6 +45,7 @@ CPushManager* CPushManager::getInstance()
 //----------------------------------------------------------------------------------------------------------------------
 class CPushSingleton: public CPushManager, public CPushFactoryBase {
     VectorPtr<CPushClient*> m_clients;
+    std::queue<std::pair<String, String> > messageQueue;
     DEFINE_LOGCLASS;
 public:
     virtual ~CPushSingleton()
@@ -55,6 +58,16 @@ public:
     {
         m_clients.addElement(pClient);
         LOG(INFO) + "New push client has added: " + pClient->getId();
+
+        std::queue<std::pair<String, String> > localQueue = messageQueue;
+        while(!messageQueue.empty()){
+            messageQueue.pop();
+        }
+        while(!localQueue.empty()){
+            callBack(localQueue.front().first, localQueue.front().second);
+            localQueue.pop();
+        }
+
     }
     void setDeviceId(const String& id, const String& deviceId);
     void callBack(const String& id, const String& json);
@@ -116,9 +129,12 @@ void CPushSingleton::setDeviceId(const String& id, const String& deviceId)
 //----------------------------------------------------------------------------------------------------------------------
 void CPushSingleton::callBack(const String& id, const String& json)
 {
+    LOG(INFO) + "FCM: calling callBack";
     CPushClient* pClient = getClient(id);
     if(pClient == 0)
     {
+        messageQueue.push( std::pair<String,String>(id, json));
+        while (messageQueue.size() > 1024){messageQueue.pop();}
         LOG(ERROR) + "CPushSingleton::callBack: Unknown push client: " + id;
     }
     else
