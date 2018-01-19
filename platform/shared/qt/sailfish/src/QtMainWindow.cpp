@@ -67,6 +67,7 @@ using namespace rho::common;
 
 QtMainWindow * QtMainWindow::lastInstance = nullptr;
 QQuickView * QtMainWindow::view = nullptr;
+QString QtMainWindow::writableDir = "";
 
 
 QString QtMainWindow::getMainWindowTitle() const

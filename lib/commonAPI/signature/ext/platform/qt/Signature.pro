@@ -18,9 +18,8 @@ QT += core gui widgets multimedia network
         DEFINES += CPP_ELEVEN RHODES_VERSION_2
     }
 
-include(src/qzxing/QZXing.pri)
 
-TARGET = Barcode
+TARGET = Signature
 TEMPLATE = lib
 CONFIG += staticlib warn_on
 
@@ -39,27 +38,20 @@ $$RHODES_ROOT/platform/shared\
 
 macx {
   DESTDIR = $$RHODES_ROOT/platform/osx/bin/extensions
-  OBJECTS_DIR = $$RHODES_ROOT/platform/osx/bin/extensions/barcode
+  OBJECTS_DIR = $$RHODES_ROOT/platform/osx/bin/extensions/signature
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/iphone
-HEADERS +=   src/BarcodeDialogBuilder.h \
-    src/BarcodeDialogView.h
-SOURCES += src/BarcodeDialogView.cpp
 }
 win32 {
   DESTDIR = $$RHODES_ROOT/platform/win32/bin/extensions
-  OBJECTS_DIR = $$RHODES_ROOT/platform/win32/bin/extensions/barcode 
+  OBJECTS_DIR = $$RHODES_ROOT/platform/win32/bin/extensions/signature
   DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
   debug {
     DEFINES += _DEBUG DEBUG
   }
   release {
     DEFINES += _NDEBUG NDEBUG
-    #DEFINES += _ITERATOR_DEBUG_LEVEL=2
   }
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/win32
-HEADERS +=   src/BarcodeDialogBuilder.h \
-    src/BarcodeDialogView.h
-SOURCES += src/BarcodeDialogView.cpp
 }
 
 unix:!macx {
@@ -69,11 +61,11 @@ unix:!macx {
 
   contains(DEFINES, OS_LINUX)  {
     DESTDIR = $$RHODES_ROOT/platform/linux/bin/extensions
-    OBJECTS_DIR = $$RHODES_ROOT/platform/linux/bin/extensions/barcode
+    OBJECTS_DIR = $$RHODES_ROOT/platform/linux/bin/extensions/signature
   }
   contains(DEFINES, OS_SAILFISH)  {
-    HEADERS += src/barcodeqmlmodel.h
-    SOURCES += src/barcodeqmlmodel.cpp
+    HEADERS += src/signatureqmlmodel.h
+    SOURCES += src/signatureqmlmodel.cpp
   }
 }
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
@@ -96,22 +88,15 @@ win32 {
   QMAKE_CXXFLAGS_DEBUG += -MP9
 }
 
-
 HEADERS += \
-..\..\shared\generated\cpp\IBarcode.h\
-..\..\shared\generated\cpp\BarcodeBase.h \
-    src/BarcodeController.h \
-    src/decoderthread.h
+..\..\shared\generated\cpp\ISignature.h\
+..\..\shared\generated\cpp\SignatureBase.h
 
 SOURCES += \
-..\..\shared\generated\cpp\Barcode_js_wrap.cpp\
-..\..\shared\generated\cpp\Barcode_ruby_wrap.cpp\
-..\..\shared\generated\cpp\BarcodeBase.cpp\
-..\..\shared\generated\Barcode_api_init.cpp\
-..\..\shared\generated\Barcode_js_api.cpp\
-..\..\shared\generated\Barcode_ruby_api.c\
-src\Barcode_impl.cpp \
-    src/BarcodeController.cpp \
-    src/decoderthread.cpp
-
-RESOURCES += $$RHODES_ROOT/lib/commonAPI/barcode/ext/platform/qt/resources/barcode.qrc
+..\..\shared\generated\cpp\Signature_js_wrap.cpp\
+..\..\shared\generated\cpp\Signature_ruby_wrap.cpp\
+..\..\shared\generated\cpp\SignatureBase.cpp\
+..\..\shared\generated\Signature_api_init.cpp\
+..\..\shared\generated\Signature_js_api.cpp\
+..\..\shared\generated\Signature_ruby_api.c\
+src\Signature_impl.cpp

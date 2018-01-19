@@ -340,3 +340,6 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libMediacaptur
 
 unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lBarcode
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libBarcode.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lSignature
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libSignature.a

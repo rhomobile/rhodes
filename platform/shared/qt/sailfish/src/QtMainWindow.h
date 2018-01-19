@@ -44,7 +44,6 @@
 #include <sailfishapp.h>
 #include <QDesktopServices>
 
-
 class QtMainWindow : public QObject
 {
     Q_OBJECT
@@ -58,6 +57,9 @@ class QtMainWindow : public QObject
     Q_PROPERTY(QString targetFilePath READ getTargetFilePath WRITE setTargetFilePath NOTIFY targetFilePathChanged)
 
 public:
+    static QString writableDir;
+    static void setWritableDir(QString dir){writableDir = dir;}
+
     QString mainWindowTitle;
     int rotation;
     QString usingDeviceID;
@@ -114,6 +116,15 @@ public:
 
     static QtMainWindow * getLastInstance(){
         return lastInstance;
+    }
+
+    QString getDbFilesDir(){
+        QString dbfilesDir = writableDir + "db-dbfiles/";
+        QDir dir(dbfilesDir);
+        if (!dir.exists()){
+            dir.mkpath(dbfilesDir);
+        }
+        return dbfilesDir;
     }
 
     static void setContextProperty(QString name, QList<QObject*> list){

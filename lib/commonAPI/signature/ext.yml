@@ -15,4 +15,4 @@ project_paths:
   
 xml_api_paths: ext/Signature.xml
 
-platforms: ["iphone", "wm", "android"]
+platforms: ["iphone", "wm", "android", "win32", "sailfish"]
