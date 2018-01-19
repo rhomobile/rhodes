@@ -14,6 +14,8 @@ unix:!macx {
   DESTDIR = $$PWD/bin
   OBJECTS_DIR = $$PWD/bin/tmp
   SOURCES += <%= @rhoRoot %>/platform/shared/sqlite/sqlite3.c
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM

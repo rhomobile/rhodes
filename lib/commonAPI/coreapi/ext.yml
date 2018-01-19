@@ -13,6 +13,9 @@ android:
   manifest_changes: ext/platform/android/ApplicationManifestAdds.erb
   rhodes_listener: com.rho.coreapi.RhodesListener
   exttype: rakefile
+  
+sailfish:
+  proerb: ext/platform/qt/coreapi.pro.erb
 
 uwp:
   libraries: ["WebView", "NativeToolbar", "NativeTabbar", "Timer"]

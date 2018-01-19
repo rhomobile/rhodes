@@ -21,19 +21,21 @@ unix:!macx {
   INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/linux
   HEADERS += <%= @rhoRoot %>/platform/shared/ruby/linux/ruby/config.h
   SOURCES += \
-<%= @rhoRoot %>/platform/shared/ruby/missing/acosh.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/cbrt.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/crypt.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/dup2.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/erf.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/hypot.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/stdlib.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/strlcat.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/strlcpy.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/tgamma.c\
-<%= @rhoRoot %>/platform/shared/ruby/newline.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/explicit_bzero.c\
-<%= @rhoRoot %>/platform/shared/ruby/missing/setproctitle.c
+  <%= @rhoRoot %>/platform/shared/ruby/missing/acosh.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/cbrt.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/crypt.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/dup2.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/erf.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/hypot.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/stdlib.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/strlcat.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/strlcpy.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/tgamma.c\
+  <%= @rhoRoot %>/platform/shared/ruby/newline.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/explicit_bzero.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/setproctitle.c
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM

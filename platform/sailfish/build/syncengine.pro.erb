@@ -15,6 +15,8 @@ unix:!macx {
   DESTDIR = $$PWD/bin
   OBJECTS_DIR = $$PWD/bin/tmp
   DEFINES += _GNU_SOURCE OS_LINUX OS_SAILFISH
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM

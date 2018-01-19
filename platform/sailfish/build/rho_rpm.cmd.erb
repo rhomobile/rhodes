@@ -10,4 +10,4 @@ set MER_SSH_SHARED_TARGET=<%= @merShTgtName %>
 set MER_SSH_TARGET_NAME=<%= @merTgtName %>
 set MER_SSH_USERNAME=<%= @merUserName %>
 
-"<%= @qmakePath %>" <%= @proPath %> -spec linux-g++ "CONFIG+=<%= @buildMode %>" "CONFIG+=<%= @qmlMode %>" && "<%= @makePath %>" qmake_all && "<%= @makePath %>"
+"<%= @rpmPath %>"
