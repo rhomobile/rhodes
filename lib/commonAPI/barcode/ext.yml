@@ -10,6 +10,9 @@ android:
   exttype: rakefile
   sdk_addons: ['EMDK']
   
+sailfish:
+  proerb: ext/platform/qt/Barcode.pro.erb
+
 wp8:
   csharp_impl: yes
   root_namespace: rho
@@ -26,7 +29,7 @@ project_paths:
 
 xml_api_paths: ext/barcode.xml
 
-platforms: ["wm", "iphone", "android", "wp8", "win32", "uwp"]
+platforms: ["wm", "iphone", "android", "wp8", "win32", "uwp", "sailfish"]
 
 wm:
   files:

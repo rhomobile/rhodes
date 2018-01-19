@@ -16,6 +16,8 @@ unix:!macx {
   DESTDIR = $$PWD/bin
   OBJECTS_DIR = $$PWD/bin/tmp
   DEFINES += HAVE_CONFIG_H USE_RHOSSL
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE

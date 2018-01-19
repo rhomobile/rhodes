@@ -23,6 +23,9 @@ unix:!macx {
   SOURCES += <%= @rhoRoot %>/platform/shared/common/PosixThreadImpl.cpp\
   <%= @rhoRoot %>/platform/shared/net/CURLNetRequest.cpp\
   <%= @rhoRoot %>/platform/shared/net/ssl.cpp
+  
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM
