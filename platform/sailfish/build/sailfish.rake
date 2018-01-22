@@ -112,7 +112,7 @@ namespace "config" do
 
     if !$app_config["name"].nil?    
       $appname = $app_config["name"]
-      $final_name_app = "harbour-" + "#{$appname}"
+      $final_name_app = "harbour-" + "#{$appname.downcase}"
     else
       raise "Name application is not found in build.yaml!"
     end
@@ -152,6 +152,9 @@ namespace "config" do
     $srcdir = $rho_path
     $project_path = File.join($app_path, "project", "qt")
     $app_project_path = File.join($project_path, $final_name_app)
+
+    $target_path = File.join($app_path, "bin" "target", "sailfish")
+    mkdir_p $target_path
 
     #TODO: windows path way
     $virtualbox_path = ENV['VBOX_MSI_INSTALL_PATH']
@@ -280,6 +283,8 @@ namespace "build" do
       #if !File.exists?(target_rpm) raise "Target rpm not found!"
       rpmval_path = File.join($project_path, "rpmvalidation.cmd")
       system("\"#{rpmval_path}\" #{$target_rpm}")
+      #cp_r $target_rpm $target_path
+
       end
 
     end
@@ -432,5 +437,14 @@ end
 #MER_SSH_TARGET_NAME, SailfishOS-2.1.3.7-armv7hl
 #MER_SSH_USERNAME, mersdk
 
-#"C:\Program Files\Oracle\VirtualBox\\VBoxManage"  startvm "Sailfish OS Build Engine" --type headless
+#MER_SSH_USERNAME, mersdk
+#MER_SSH_TARGET_NAME, SailfishOS-2.1.3.7-i486
+#MER_SSH_SHARED_TARGET, C:/SailfishOS/mersdk/targets
+#MER_SSH_SHARED_SRC, C:/Users/n0men/
+#MER_SSH_SHARED_HOME, C:/Users/n0men
+#MER_SSH_SDK_TOOLS, C:\SailfishOS\settings\SailfishOS-SDK\mer-sdk-tools\Sailfish OS Build Engine\SailfishOS-2.1.3.7-i486
+#MER_SSH_PROJECT_PATH, C:/Users/n0men/Desktop/tau/kitchensinkRuby/project/qt/harbour-kitchensinkRuby
+#MER_SSH_PRIVATE_KEY, C:/SailfishOS/vmshare/ssh/private_keys/engine/mersdk
+#MER_SSH_PORT, 2222
+#MER_SSH_DEVICE_NAME, INOI R7 (ARM)
 
