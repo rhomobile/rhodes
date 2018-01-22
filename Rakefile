@@ -4243,7 +4243,7 @@ namespace "run" do
         sim_conf += "#{key}=#{value}\r\n"
       end
 
-      if ! (sim_conf.include? "platform=") || (sim_conf.include? "platform='UNKNOWN'")
+      if !(sim_conf.include? "platform=") || (sim_conf.include? "platform='UNKNOWN'")
         sim_conf += "platform=#{RUBY_PLATFORM}\r\n"
       end
 
