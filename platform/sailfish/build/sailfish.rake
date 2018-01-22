@@ -159,10 +159,6 @@ namespace "config" do
     #TODO: windows path way
     $virtualbox_path = ENV['VBOX_MSI_INSTALL_PATH']
     Rake::Task["build:sailfish:startvm"].invoke()
-    #if $virtualbox_path.empty? 
-    #  raise "Please, set VirtualBox variable environment..."
-    #end
-    #system("\"" + File.join($virtualbox_path, "VBoxManage.exe") + "\"" + " startvm \"Sailfish OS Build Engine\" --type headless")
   end
 
 end
@@ -265,6 +261,8 @@ namespace "build"  do
 
       if !vm_is_started?
         system("\"" + File.join($virtualbox_path, "VBoxManage.exe") + "\"" + " startvm \"Sailfish OS Build Engine\" --type headless") 
+        puts "Waiting 40 seconds vm..."
+        sleep 40.0
       end 
     end
 
