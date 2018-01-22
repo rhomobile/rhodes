@@ -153,12 +153,16 @@ namespace "config" do
     $project_path = File.join($app_path, "project", "qt")
     $app_project_path = File.join($project_path, $final_name_app)
 
-    $target_path = File.join($app_path, "bin" "target", "sailfish")
+    $target_path = File.join($app_path, "bin", "target", "sailfish")
     mkdir_p $target_path
 
     #TODO: windows path way
     $virtualbox_path = ENV['VBOX_MSI_INSTALL_PATH']
-    system("\"" + File.join($virtualbox_path, "VBoxManage.exe") + "\"" + " startvm \"Sailfish OS Build Engine\" --type headless")
+    Rake::Task["build:sailfish:startvm"].invoke()
+    #if $virtualbox_path.empty? 
+    #  raise "Please, set VirtualBox variable environment..."
+    #end
+    #system("\"" + File.join($virtualbox_path, "VBoxManage.exe") + "\"" + " startvm \"Sailfish OS Build Engine\" --type headless")
   end
 
 end
@@ -236,8 +240,41 @@ def add_extension_to_rhodes_project(ext)
   f = File.open(rhodes_project, "w") {|file| file << text }
 end
 
-namespace "build" do
+def vm_is_started?
+  require 'open3'
+
+  output = ""
+  cmd = "\"" + File.join($virtualbox_path, "VBoxManage.exe") + "\"" + " list runningvms"
+  Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+    if wait_thr.value != 0 
+        raise "Shell return error: #{wait_thr.value.to_s}\n STDOUT: #{stdout.read}" 
+    end
+    output = stdout.read
+  end
+
+  return output.include?("Sailfish OS Build Engine")
+end
+
+namespace "build"  do
   namespace "sailfish" do
+
+    task :startvm => "config:sailfish" do
+      if $virtualbox_path.empty? 
+        raise "Please, set VirtualBox variable environment..."
+      end
+
+      if !vm_is_started?
+        system("\"" + File.join($virtualbox_path, "VBoxManage.exe") + "\"" + " startvm \"Sailfish OS Build Engine\" --type headless") 
+      end 
+    end
+
+    task :stopvm => "config:sailfish" do
+      if $virtualbox_path.empty? 
+        raise "Please, set VirtualBox variable environment..."
+      end
+      system("\"" + File.join($virtualbox_path, "VBoxManage.exe") + "\"" + " controlvm \"Sailfish OS Build Engine\" poweroff")
+    end
+    
     task :rhobundle => ["project:sailfish:qt"] do
       print_timestamp('build:sailfish:rhobundle START')
       
@@ -262,7 +299,7 @@ namespace "build" do
     end
 
     task :deploy => ['config:sailfish'] do
-      deploy_path = File.join($app_path, "project", "qt", "rpm.cmd")
+      deploy_path = File.join($app_path, "project", "qt", "deploy.cmd")
       system(deploy_path)
     end
 
@@ -283,7 +320,7 @@ namespace "build" do
       #if !File.exists?(target_rpm) raise "Target rpm not found!"
       rpmval_path = File.join($project_path, "rpmvalidation.cmd")
       system("\"#{rpmval_path}\" #{$target_rpm}")
-      #cp_r $target_rpm $target_path
+      cp_r $target_rpm, $target_path
 
       end
 
