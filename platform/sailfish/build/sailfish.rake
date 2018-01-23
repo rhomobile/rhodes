@@ -32,6 +32,8 @@ require 'tempfile'
 include FileUtils
 
 require 'erb'
+require 'net/ssh'
+require 'net/scp'
 
 class QtProjectGenerator
   attr_accessor :rhoRoot
@@ -156,6 +158,18 @@ namespace "config" do
     $target_path = File.join($app_path, "bin", "target", "sailfish")
     mkdir_p $target_path
 
+    if !$app_config.nil? && !$app_config["sailfish"].nil?
+      $host_name = "192.168.2.15"
+      $user_name = "nemo"
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["host"].nil?
+        $host_name = $app_config["sailfish"]["device"]["host"]
+      end
+
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["user"].nil?
+        $user_name = $app_config["sailfish"]["device"]["user"]
+      end
+    end
+
     #TODO: windows path way
     $virtualbox_path = ENV['VBOX_MSI_INSTALL_PATH']
     Rake::Task["build:sailfish:startvm"].invoke()
@@ -167,6 +181,31 @@ namespace "device" do
   namespace "sailfish" do
     task :production => "build:sailfish:rhobundle" do
       Rake::Task["build:sailfish:rhodes"].invoke()
+    end
+
+    task :install => ["config:sailfish"] do
+
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
+        $ssh_key = $app_config["sailfish"]["device"]["key"]
+      end
+
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["password"].nil?
+        $pwd_host = $app_config["sailfish"]["device"]["password"]
+      else
+        raise "Key or password for deploy not found, set it!"
+      end
+      
+      session_ssh = nil
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
+        Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
+          install_rpm(session)
+        end
+      else
+        Net::SSH.start($host_name, $user_name, $pwd_host) do |session| 
+          install_rpm(session)    
+        end
+      end
+
     end
   end
 end
@@ -249,6 +288,44 @@ def vm_is_started?
   end
 
   return output.include?("Sailfish OS Build Engine")
+end
+
+def install_rpm(session)
+  $target_rpm = ""
+  Dir[File.join($target_path, "/**/*")].each do |file_name|
+    if file_name.include?("#{$final_name_app}-#{$version_app}")
+      $target_rpm = file_name
+    end
+  end
+
+  if !File.exists?($target_rpm)
+    raise "Target rpm not found!!!"
+  end
+
+  stdout = ""
+  session.scp.upload!($target_rpm, "/home/#{$user_name}/RPMS")
+  session.open_channel do |channel|
+    channel.on_request "exit-status" do |channel, data|
+      $exit_status = data.read_long
+    end
+    puts "devel-su rpm -Uvh /home/#{$user_name}/RPMS/#{File.basename $target_rpm}"
+
+    channel.on_data do |channel, data|
+      puts data.inspect
+    end
+
+    channel.exec("rpm -Uvh /home/#{$user_name}/RPMS/#{File.basename $target_rpm}") do |devel_channel, success|
+      if !success
+        raise "Open interactive mode failed!"
+      else
+        devel_channel.send_data("#{$pwd_host}\n")
+      end
+      #stdout << stream
+      #puts stdout
+      devel_channel.wait
+    end
+    channel.wait
+  end
 end
 
 namespace "build"  do
