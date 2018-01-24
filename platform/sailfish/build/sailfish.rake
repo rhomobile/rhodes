@@ -32,8 +32,8 @@ require 'tempfile'
 include FileUtils
 
 require 'erb'
-require 'net/ssh'
-require 'net/scp'
+#require 'net/ssh'
+#require 'net/scp'
 
 class QtProjectGenerator
   attr_accessor :rhoRoot
@@ -58,6 +58,7 @@ class ScriptGenerator
   attr_accessor :merShTgtName
   attr_accessor :merTgtName
   attr_accessor :merUserName
+  attr_accessor :merDevName
 
   def render_script(erbPath)
     tpl = File.read erbPath
@@ -161,6 +162,13 @@ namespace "config" do
     if !$app_config.nil? && !$app_config["sailfish"].nil?
       $host_name = "192.168.2.15"
       $user_name = "nemo"
+
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["type"].nil?
+        $dev_type = $app_config["sailfish"]["device"]["type"]
+      else
+        $dev_type = "vbox"
+      end
+
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["host"].nil?
         $host_name = $app_config["sailfish"]["device"]["host"]
       end
@@ -168,6 +176,15 @@ namespace "config" do
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["user"].nil?
         $user_name = $app_config["sailfish"]["device"]["user"]
       end
+      
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["device_name"].nil?
+        $dev_name = $app_config["sailfish"]["device"]["device_name"]
+      elsif $dev_type == "real"
+        raise "Please set dev_name for real device in device section!"
+      elsif $dev_type == "vbox"
+        $dev_name = "Sailfish OS Emulator"
+      end
+
     end
 
     #TODO: windows path way
@@ -185,28 +202,30 @@ namespace "device" do
 
     task :install => ["config:sailfish"] do
 
-      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
-        $ssh_key = $app_config["sailfish"]["device"]["key"]
-      end
+      Rake::Task["build:sailfish:deploy"].invoke()
+      #if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
+      #  $ssh_key = $app_config["sailfish"]["device"]["key"]
+      #end
 
-      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["password"].nil?
-        $pwd_host = $app_config["sailfish"]["device"]["password"]
-      else
-        raise "Key or password for deploy not found, set it!"
-      end
+      #if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["password"].nil?
+      #  $pwd_host = $app_config["sailfish"]["device"]["password"]
+      #else
+      #  raise "Key or password for deploy not found, set it!"
+      #end
       
-      session_ssh = nil
-      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
-        Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
-          install_rpm(session)
-        end
-      else
-        Net::SSH.start($host_name, $user_name, $pwd_host) do |session| 
-          install_rpm(session)    
-        end
-      end
+      #session_ssh = nil
+      #if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
+      #  Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
+      #    install_rpm(session)
+      #  end
+      #else
+      #  Net::SSH.start($host_name, $user_name, $pwd_host) do |session| 
+      #    install_rpm(session)    
+      #  end
+      #end
 
     end
+
   end
 end
 
@@ -310,11 +329,16 @@ def install_rpm(session)
     end
     puts "devel-su rpm -Uvh /home/#{$user_name}/RPMS/#{File.basename $target_rpm}"
 
-    channel.on_data do |channel, data|
-      puts data.inspect
-    end
-
     channel.exec("rpm -Uvh /home/#{$user_name}/RPMS/#{File.basename $target_rpm}") do |devel_channel, success|
+
+      devel_channel.on_data do |ch, data|
+        puts "data1"
+      end
+
+      devel_channel.on_extended_data do |ch, type, data|
+        puts "error1"
+      end
+
       if !success
         raise "Open interactive mode failed!"
       else
@@ -322,7 +346,7 @@ def install_rpm(session)
       end
       #stdout << stream
       #puts stdout
-      devel_channel.wait
+      #devel_channel.wait
     end
     channel.wait
   end
@@ -519,6 +543,7 @@ namespace 'project' do
       build_script_generator.merShTgtName = File.join($qtdir, "mersdk", "targets")
       build_script_generator.merTgtName = $current_target
       build_script_generator.merUserName = "mersdk"
+      build_script_generator.merDevName = $dev_name
 
       #TODO: windows paths way - temporary
       build_script_generator.qmakePath = File.join($current_build_sdk_dir, "qmake.cmd").gsub("/", "\\")
