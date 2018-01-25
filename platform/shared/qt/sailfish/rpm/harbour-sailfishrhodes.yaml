@@ -29,7 +29,11 @@ PkgConfigBR:
 
 
 # Build dependencies without a pkgconfig setup can be listed here
-#PkgBR:
+PkgBR:
+  #- bluez5
+  - libbluez-qt5
+  - qt5-qtconnectivity-qtbluetooth
+  #- bluez5-libs-devel
   #- libqtwebkit5-devel
   #- qt5-qtqml-import-webkitplugin-experimental
   #- libqtwebkit5-widgets-devel

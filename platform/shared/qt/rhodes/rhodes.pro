@@ -13,7 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
     }
 
     equals(QT_VERSION, 5.6.2) {
-        QT += webkit quick #widgets
+        QT += webkit quick bluetooth #widgets
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += sailfishapp c++14 sailfishapp_i18n
         message(Deprecated sailfish webkit enabled)
@@ -188,7 +188,10 @@ mainwindowinterface.h \
 guithreadfunchelper.h \
     impl/notificationsound.h \
     ../../net/ssl.h \
-    ../../unzip/zip.h
+    ../../unzip/zip.h \
+    impl/bluetoothhelper.h \
+    impl/bluetoothserver.h \
+    impl/bluetoothclient.h
 #TODO: make this like normal developer do
 
 
