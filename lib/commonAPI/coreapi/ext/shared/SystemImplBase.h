@@ -69,6 +69,8 @@ public:
 
     virtual void hideSplashScreen(rho::apiGenerator::CMethodResult& oResult);
 
+    virtual void getSystemInfo(rho::apiGenerator::CMethodResult& oResult);
+
     DEFINE_LOGCLASS
 };
 

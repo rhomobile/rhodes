@@ -139,6 +139,7 @@ static bool isfile(String const &path)
         size_t len;
     } index_files[] = {
         {"index" RHO_ERB_EXT, strlen("index" RHO_ERB_EXT)},
+        {"index" RHO_ERB_EXT RHO_ENCRYPTED_EXT, strlen("index" RHO_ERB_EXT RHO_ENCRYPTED_EXT)},
         {"index.html", 10},
         {"index.htm", 9},
         {"index.php", 9},
@@ -1127,6 +1128,14 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     //look for controller.rb or model_name_controller.rb
     if ((stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) && (stat(newfilename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)))
     {
+
+        String newfilename = CFilePath::join(m_root, route.application) + "/" + route.model + "/" + controllerName + "_controller" RHO_RB_EXT RHO_ENCRYPTED_EXT;
+        String filename = CFilePath::join(m_root, route.application) + "/" + route.model + "/controller" RHO_RB_EXT RHO_ENCRYPTED_EXT;
+        
+        //look for controller.rb or model_name_controller.rb
+        if ((stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) && (stat(newfilename.c_str(), &st) != 0 || !S_ISREG(st.st_mode))) {
+            return false;
+        }
 #ifdef RHODES_EMULATOR
         CTokenizer oTokenizer( RHOSIMCONF().getString("ext_path"), ";" );
 	    while (oTokenizer.hasMoreTokens()) 
@@ -1143,9 +1152,9 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
 
             return true;
         }
+        return false;
 #endif
 
-        return false;
     }
 
     return true;
@@ -1184,6 +1193,7 @@ static bool parse_range(HttpHeaderList const &hdrs, size_t *pbegin, size_t *pend
     
     return false;
 }
+    
 
 bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 {
@@ -1217,11 +1227,33 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 #endif
 
     bool doesNotExists = bCheckExist && (stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode));
+    bool encrypted = false;
+    
+    if (doesNotExists) {
+        String encrypted_path = fullPath + RHO_ENCRYPTED_EXT;
+        doesNotExists = bCheckExist && (stat(encrypted_path.c_str(), &st) != 0 || !S_ISREG(st.st_mode));
+        if (!doesNotExists) {
+            fullPath = encrypted_path;
+            encrypted = true;
+        }
+    }
+    
     if ( doesNotExists ) {
         // looking for files at 'rho/apps' at runtime folder
         fullPath = CFilePath::join( m_strRuntimeRoot, path );
+        doesNotExists = bCheckExist && (stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode));
     }
 
+    if (doesNotExists) {
+        String encrypted_path = fullPath + RHO_ENCRYPTED_EXT;
+        doesNotExists = bCheckExist && (stat(encrypted_path.c_str(), &st) != 0 || !S_ISREG(st.st_mode));
+        if (!doesNotExists) {
+            fullPath = encrypted_path;
+            encrypted = true;
+        }
+    }
+    
+    
     if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());
 
     if ( doesNotExists ) {
@@ -1282,84 +1314,216 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     // Content length
     char* buf = new char[FILE_BUF_SIZE];
     
-    String start_line;
-    
-    size_t file_size = st.st_size;
-    size_t range_begin = 0, range_end = file_size - 1;
-    size_t content_size = file_size;
-    if (parse_range(hdrs, &range_begin, &range_end))
-    {
-        if (range_end >= file_size)
-            range_end = file_size - 1;
-        if (range_begin >= range_end)
-            range_begin = range_end - 1;
-        content_size = range_end - range_begin + 1;
-        
-        if (fseek(fp, range_begin, SEEK_SET) == -1) {
-            RAWLOG_ERROR1("Can not seek to specified range start: %lu", (unsigned long)range_begin);
-			snprintf(buf, FILE_BUF_SIZE, "bytes */%lu", (unsigned long)file_size);
-			headers.push_back(Header("Content-Range", buf));
-			send_response(create_response("416 Request Range Not Satisfiable",headers));
-            fclose(fp);
-            delete[] buf;
-            return false;
-        }
-		
-		snprintf(buf, FILE_BUF_SIZE, "bytes %lu-%lu/%lu", (unsigned long)range_begin,
-                 (unsigned long)range_end, (unsigned long)file_size);
-        headers.push_back(Header("Content-Range", buf));
-        
-        start_line = "206 Partial Content";
-    }
-    else {
-        start_line = "200 OK";
-    }
-
-    
-    snprintf(buf, FILE_BUF_SIZE, "%lu", (unsigned long)content_size);
-    headers.push_back(Header("Content-Length", buf));
-    
-    // Send headers
-    if (!send_response(create_response(start_line, headers))) {
-        if (verbose) RAWLOG_ERROR1("Can not send headers while sending file %s", path.c_str());
-        fclose(fp);
-        delete[] buf;
-        return false;
-    }
     
     // Send body
-    for (size_t start = range_begin; start < range_end + 1;) {
-        size_t need_to_read = range_end - start + 1;
-        if (need_to_read == 0)
-            break;
+    
+    if (encrypted) {
+        size_t file_size = st.st_size;
+        unsigned char* full_file_buf = new unsigned char [file_size];
+        unsigned char* uncrypted_file_buf = new unsigned char [file_size*2];
         
-        if (need_to_read > FILE_BUF_SIZE)
-            need_to_read = FILE_BUF_SIZE;
+        size_t loaded = fread(full_file_buf, 1, file_size, fp);
+        if (loaded < file_size) {
+            if (ferror(fp) ) {
+                if (verbose) RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)0, strerror(errno));
+            } else if ( feof(fp) ) {
+                if (verbose) RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)file_size);
+            }
+            fclose(fp);
+            delete[] full_file_buf;
+            delete[] uncrypted_file_buf;
+            delete[] buf;
+            return false;
+        }
+        
+        int res = rho_decrypt_file((const char*)full_file_buf, file_size, (char*)uncrypted_file_buf, file_size*2);
+        
+        delete[] full_file_buf;
+        
+        file_size = res; // actual size of decrypted content
+        
+        
+        /* testing decrypt code
+        {
+            String decrypted_path = fullPath + ".decrypted";
+            FILE *f = fopen(decrypted_path.c_str(), "wb");
+            
+            fwrite(uncrypted_file_buf, file_size, 1, f);
+            fflush(f);
+            
+            fclose(f);
+        }
+         */
+        
+        String start_line;
+        
+        size_t current_pos = 0;
+        unsigned char* cur_ptr = uncrypted_file_buf;
+        
+        size_t range_begin = 0, range_end = file_size - 1;
+        size_t content_size = file_size;
+        
+        if (parse_range(hdrs, &range_begin, &range_end))
+        {
+            if (range_end >= file_size)
+                range_end = file_size - 1;
+            if (range_begin >= range_end)
+                range_begin = range_end - 1;
+            content_size = range_end - range_begin + 1;
+            
+            
+            current_pos = range_begin;
+            if (current_pos > file_size) {
+                RAWLOG_ERROR1("Can not seek to specified range start: %lu", (unsigned long)range_begin);
+                snprintf(buf, FILE_BUF_SIZE, "bytes */%lu", (unsigned long)file_size);
+                headers.push_back(Header("Content-Range", buf));
+                send_response(create_response("416 Request Range Not Satisfiable",headers));
+                delete[] buf;
+                delete[] uncrypted_file_buf;
+                return false;
+            }
+            
+            snprintf(buf, FILE_BUF_SIZE, "bytes %lu-%lu/%lu", (unsigned long)range_begin,
+                     (unsigned long)range_end, (unsigned long)file_size);
+            headers.push_back(Header("Content-Range", buf));
+            
+            start_line = "206 Partial Content";
+        }
+        else {
+            start_line = "200 OK";
+        }
+        
+        
+        snprintf(buf, FILE_BUF_SIZE, "%lu", (unsigned long)content_size);
+        headers.push_back(Header("Content-Length", buf));
+        
+        // Send headers
+        if (!send_response(create_response(start_line, headers))) {
+            if (verbose) RAWLOG_ERROR1("Can not send headers while sending file %s", path.c_str());
+            fclose(fp);
+            delete[] buf;
+            delete[] uncrypted_file_buf;
+            return false;
+        }
+        
+        for (size_t start = range_begin; start < range_end + 1;) {
+            size_t need_to_read = range_end - start + 1;
+            if (need_to_read == 0)
+                break;
+            
+            if (need_to_read > FILE_BUF_SIZE)
+                need_to_read = FILE_BUF_SIZE;
+            
 
-PROF_START("LOW_FILE");
-        size_t n = fread(buf, 1, need_to_read, fp);//fread(buf, 1, need_to_read, fp);
-PROF_STOP("LOW_FILE");
-        if (n < need_to_read) {
-			if (ferror(fp) ) {
-				if (verbose) RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)start, strerror(errno));
-			} else if ( feof(fp) ) {
-				if (verbose) RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)need_to_read);
-			}
+            cur_ptr = uncrypted_file_buf + current_pos;
+            
+            //PROF_START("LOW_FILE");
+            //size_t n = fread(buf, 1, need_to_read, fp);//fread(buf, 1, need_to_read, fp);
+            //PROF_STOP("LOW_FILE");
+            if ((current_pos + need_to_read) > file_size) {
+                if (verbose) RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)start, strerror(errno));
+                fclose(fp);
+                delete[] buf;
+                delete[] uncrypted_file_buf;
+                return false;
+            }
+            
+            start += need_to_read;
+            
+            if (!send_response_body(String((char*)cur_ptr, need_to_read))) {
+                if (verbose) RAWLOG_ERROR1("Can not send part of data while sending file %s", path.c_str());
+                fclose(fp);
+                delete[] buf;
+                delete[] uncrypted_file_buf;
+                return false;
+            }
+            
+            current_pos += need_to_read;
+        }
+        
+        
+        
+        delete[] uncrypted_file_buf;
+    }
+    else {
+        
+        String start_line;
+        
+        size_t file_size = st.st_size;
+        size_t range_begin = 0, range_end = file_size - 1;
+        size_t content_size = file_size;
+        if (parse_range(hdrs, &range_begin, &range_end))
+        {
+            if (range_end >= file_size)
+                range_end = file_size - 1;
+            if (range_begin >= range_end)
+                range_begin = range_end - 1;
+            content_size = range_end - range_begin + 1;
+            
+            if (fseek(fp, range_begin, SEEK_SET) == -1) {
+                RAWLOG_ERROR1("Can not seek to specified range start: %lu", (unsigned long)range_begin);
+                snprintf(buf, FILE_BUF_SIZE, "bytes */%lu", (unsigned long)file_size);
+                headers.push_back(Header("Content-Range", buf));
+                send_response(create_response("416 Request Range Not Satisfiable",headers));
+                fclose(fp);
+                delete[] buf;
+                return false;
+            }
+            
+            snprintf(buf, FILE_BUF_SIZE, "bytes %lu-%lu/%lu", (unsigned long)range_begin,
+                     (unsigned long)range_end, (unsigned long)file_size);
+            headers.push_back(Header("Content-Range", buf));
+            
+            start_line = "206 Partial Content";
+        }
+        else {
+            start_line = "200 OK";
+        }
+        
+        
+        snprintf(buf, FILE_BUF_SIZE, "%lu", (unsigned long)content_size);
+        headers.push_back(Header("Content-Length", buf));
+        
+        // Send headers
+        if (!send_response(create_response(start_line, headers))) {
+            if (verbose) RAWLOG_ERROR1("Can not send headers while sending file %s", path.c_str());
             fclose(fp);
             delete[] buf;
             return false;
         }
         
-        start += n;
-        
-        if (!send_response_body(String(buf, n))) {
-            if (verbose) RAWLOG_ERROR1("Can not send part of data while sending file %s", path.c_str());
-            fclose(fp);
-            delete[] buf;
-            return false;
+        for (size_t start = range_begin; start < range_end + 1;) {
+            size_t need_to_read = range_end - start + 1;
+            if (need_to_read == 0)
+                break;
+            
+            if (need_to_read > FILE_BUF_SIZE)
+                need_to_read = FILE_BUF_SIZE;
+            
+            PROF_START("LOW_FILE");
+            size_t n = fread(buf, 1, need_to_read, fp);//fread(buf, 1, need_to_read, fp);
+            PROF_STOP("LOW_FILE");
+            if (n < need_to_read) {
+                if (ferror(fp) ) {
+                    if (verbose) RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)start, strerror(errno));
+                } else if ( feof(fp) ) {
+                    if (verbose) RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)need_to_read);
+                }
+                fclose(fp);
+                delete[] buf;
+                return false;
+            }
+            
+            start += n;
+            
+            if (!send_response_body(String(buf, n))) {
+                if (verbose) RAWLOG_ERROR1("Can not send part of data while sending file %s", path.c_str());
+                fclose(fp);
+                delete[] buf;
+                return false;
+            }
         }
     }
-
 PROF_START("LOW_FILE");
     fclose(fp);
 PROF_STOP("LOW_FILE");
@@ -1477,6 +1641,11 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
         if (isindex(uri)) {
             if (!isfile(fullPath)) {
+                if (verbose) RAWLOG_INFO1("The file %s was not found", fullPath.c_str());
+                fullPath.append(RHO_ENCRYPTED_EXT);
+            }
+            
+            if (!isfile(fullPath)) {
                 if (verbose) RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
                 String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
                 send_response(create_response("404 Not Found",error));
@@ -1547,7 +1716,7 @@ String CHttpServer::directRequest( const String& method, const String& uri, cons
     pthread_cond_wait(&signal, m.getNativeMutex());
     pthread_mutex_unlock(m.getNativeMutex());
     
-    ret = m_pQueue->getResponse();
+    ret = req.getResponse();
   }
     if (is_net_trace()) {
         RAWTRACE1("$NetRequestProcess$ FINISH CHttpServer::directRequest uri = %s", uri.c_str());
@@ -1578,10 +1747,11 @@ bool CDirectHttpRequestQueue::run( )
           rho_ruby_stop_threadidle();
       }
       
-    m_response = "";
     
     if ( m_request != 0 )
     {
+      m_request->m_response = "";
+        
       CHttpServer::ResponseWriter respWriter;
       m_server.m_localResponseWriter = &respWriter;
       
@@ -1623,7 +1793,7 @@ bool CDirectHttpRequestQueue::run( )
       
       m_server.m_localResponseWriter = 0;
       
-      m_response = respWriter.getResponse();
+      m_request->m_response = respWriter.getResponse();
       
       pthread_cond_t* signal = m_request->signal;
       pthread_mutex_t* mutex = m_request->mutex;

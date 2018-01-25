@@ -1,0 +1,7 @@
+#entry: Init_Decrypt_extension
+javaentry: com.decrypt.Decrypt
+libraries: ["Decrypt"]
+android:
+  exttype: rakefile
+
+platforms: ["iphone", "android"]

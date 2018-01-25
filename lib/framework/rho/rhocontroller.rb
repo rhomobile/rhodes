@@ -58,31 +58,31 @@ module Rho
     def self.process_rho_object(params)
       if params['rho_callback'] && params['__rho_object']
         hashObjs = params['__rho_object']
-        
+
         hashObjs.each do |name,index|
             if name == '__rho_inline'
                 params.merge!( __rhoGetCallbackObject(index.to_i()) )
-                
+
                 if System.get_property('platform') == 'ANDROID'
                     barcodeModule = Object.const_get('Barcode') if Object.const_defined?('Barcode')
                     if barcodeModule && barcodeModule.respond_to?( :rho_process_moto_callback )
                         barcodeModule.rho_process_moto_callback(params)
                     end
-                end                
+                end
             else
                 params[name] = __rhoGetCallbackObject(index.to_i())
-            end    
+            end
         end
-        
+
         params.delete('__rho_object')
       end
     end
-    
+
     def self.before(&block)
       @@before = {} unless @@before
       @@before[self.to_s] = block if block_given?
     end
-    
+
     def serve(application,object_mapping,req,res)
       @request, @response = req, res
       @object_mapping = object_mapping
@@ -91,29 +91,29 @@ module Rho
       @redirected = false
 
       RhoController.process_rho_object(@params)
-      
+
       if @@before and @@before[self.class.to_s] and not @params['rho_callback']
-        @@before[self.class.to_s].call(@params,@request) 
+        @@before[self.class.to_s].call(@params,@request)
       end
-      
+
       act = req['action'].nil? ? default_action : req['action']
       if self.respond_to?(act)
         res = send req['action'].nil? ? default_action : req['action']
       else
         called_action = @request['action'].nil? ? default_action : @request['action']
-        unless Rho::file_exist?(@request[:modelpath]+called_action.to_s+RHO_ERB_EXT)
+        unless Rho::file_exist?(@request[:modelpath]+called_action.to_s+RHO_ERB_EXT) || Rho::file_exist?(@request[:modelpath]+called_action.to_s+RHO_ERB_EXT+RHO_ENCRYPTED_EXT)
           rho_error( "Action '#{act}' does not exist in controller or has private access."  )
           res = render :string => "<font size=\"+4\"><h2>404 Not Found.</h2>The action <i>#{called_action}</i> does not have a view or a controller</font>"
         end
       end
-      
+
       if @params['rho_callback']
         res = "" unless res.is_a?(String)
         return res
       end
-        
+
       res = render unless @rendered or @redirected
-        
+
       application.set_menu(@menu, @back_action)
   	  @menu = nil
   	  @back_action = nil;

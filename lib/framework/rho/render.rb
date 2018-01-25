@@ -32,8 +32,8 @@ module Rho
   class RhoController
     begin
       is_translator_exist = true
-      is_translator_exist = Rho::file_exist?( File.join(__rhoGetRuntimeDir(), 'lib/rhodes_translator' + RHO_RB_EXT) ) if !Rho::System.isRhoSimulator
-          
+      is_translator_exist = (Rho::file_exist?( File.join(__rhoGetRuntimeDir(), 'lib/rhodes_translator' + RHO_RB_EXT) ) || Rho::file_exist?( File.join(__rhoGetRuntimeDir(), 'lib/rhodes_translator' + RHO_RB_EXT + RHO_ENCRYPTED_EXT) )) if !Rho::System.isRhoSimulator
+
       if is_translator_exist
         require 'rhodes_translator'
         include RhodesTranslator::Translator
@@ -55,13 +55,13 @@ module Rho
       begin
           res = ""
 
-          if filename.end_with?(RHO_ERB_EXT)
+          if filename.end_with?(RHO_ERB_EXT) || filename.end_with?(RHO_RB_EXT + RHO_ENCRYPTED_EXT)
             if RhoApplication::current_controller()
                 puts "reuse current action controller."
-                res = RhoApplication::current_controller().inst_render_index(filename, req, res)            
+                res = RhoApplication::current_controller().inst_render_index(filename, req, res)
             else
                 res = (RhoController.new).inst_render_index(filename, req, res)
-            end    
+            end
           else
             res = IO.read(filename)
           end
@@ -73,24 +73,27 @@ module Rho
 
           res
       rescue Exception => exception
-        
+
         raise
-      end    
+      end
     end
 
     def inst_render_index(filename, req, res)
       rho_info 'inst_render_index'
       @request, @response = req, res
       @params = RhoSupport::query_params req
-      
+
       #@request, @response = {}
       #@params = {}
       require 'rho/rhoviewhelpers'
-      
+
       @content = eval_compiled_file(filename, getBinding() )
       if !xhr?
-          rho_info 'index layout' 
+          rho_info 'index layout'
           layout = File.dirname(filename) + "/layout" + RHO_ERB_EXT
+          if !Rho::file_exist?(layout)
+             layout = layout + RHO_ENCRYPTED_EXT
+          end
           @content = eval_compiled_file(layout, getBinding() ) if Rho::file_exist?(layout)
       else
           if @request["headers"]["Transition-Enabled"] == "true"
@@ -98,24 +101,24 @@ module Rho
             @content = "<div>#{@content}</div>"
           end
       end
-          
+
       @content
     end
 
     def getBinding
         binding
     end
-    
+
     @@cached_metadata = {}
     def self.cached_metadata
         @@cached_metadata
     end
-    
+
     def self.clean_cached_metadata
         @@cached_metadata.clear()
         #puts "meta deleted"
     end
-    
+
     def __get_model
         model = nil
         begin
@@ -123,28 +126,28 @@ module Rho
         rescue Exception => exc
         end
     end
-    
+
     def render(options = nil)
       if @params['rho_callback']
-        rho_error( "render call in callback. Call WebView.navigate instead" ) 
+        rho_error( "render call in callback. Call WebView.navigate instead" )
         return ""
-      end  
+      end
 
-      RhoProfiler.start_counter('ERB_RENDER')      
+      RhoProfiler.start_counter('ERB_RENDER')
 
       options = {} if options.nil? or !options.is_a?(Hash)
       options = options.symbolize_keys
 
       metaenabled = false
-      
+
       action = nil
       action = options[:action] if options[:action]
       action = @request['action'].nil? ? default_action : @request['action'] unless action
 
       if @request['model'] != nil
-        
+
         model = __get_model()
-            
+
         if model && model.respond_to?( :metadata ) and model.metadata != nil
           if $".include?( "rhodes_translator")
             metaenabled = model.metadata[action.to_s] != nil
@@ -169,13 +172,22 @@ module Rho
         if options[:file].nil? or !options[:file].is_a?(String)
           fname = @request[:modelpath]+action.to_s+RHO_ERB_EXT
           if Rho::file_exist?(fname)
-            @content = eval_compiled_file(fname, getBinding() )
+              @content = eval_compiled_file(fname, getBinding() )
           else
-            @content = ""
+              fname = fname+RHO_ENCRYPTED_EXT
+              if Rho::file_exist?(fname)
+                  @content = eval_compiled_file(fname, getBinding() )
+              else
+                  @content = ""
+              end
           end
         else
           options[:file] = options[:file].gsub(/\.erb$/,"").gsub(/^\/app/,"")
-          @content = eval_compiled_file(RhoApplication::get_app_path(@request['application'])+options[:file]+RHO_ERB_EXT, getBinding() )
+          fpath = RhoApplication::get_app_path(@request['application'])+options[:file]+RHO_ERB_EXT
+          if !Rho::file_exist?(fpath)
+             fpath = fpath + RHO_ENCRYPTED_EXT
+          end
+          @content = eval_compiled_file(fpath, getBinding() )
           options[:layout] = false if options[:layout].nil?
         end
       end
@@ -196,6 +208,9 @@ module Rho
 
       if options[:layout] != false
         layoutfile = RhoApplication::get_app_path(@request['application']) + options[:layout].to_s + RHO_ERB_EXT
+        if !Rho::file_exist?(layoutfile)
+           layoutfile = layoutfile + RHO_ENCRYPTED_EXT
+        end
         @content = eval_compiled_file(layoutfile, binding ) if Rho::file_exist?(layoutfile)
         rho_info 'Layout file: ' + layoutfile + '. Content size: ' + @content.length.to_s
       end
@@ -204,9 +219,9 @@ module Rho
       RhoController.start_geoview_notification()
       @back_action = options[:back] if options[:back]
       @rendered = true
-      
-      RhoProfiler.stop_counter('ERB_RENDER')      
-      
+
+      RhoProfiler.stop_counter('ERB_RENDER')
+
       @content
     end
 
@@ -214,7 +229,7 @@ module Rho
       if metadata.nil?
         model = nil
         model = Object.const_get(@request['model'].to_sym) if Object.const_defined?(@request['model'].to_sym)
-        
+
         if model && model.respond_to?( :metadata ) and model.metadata != nil
           metadata = model.metadata
         end
@@ -225,7 +240,7 @@ module Rho
       end
 
       return "" if metadata.nil?
-      
+
       action = action.to_s
       data = {}
       self.instance_variables.each do |sym|
@@ -233,9 +248,9 @@ module Rho
       end
 
       data["self"] = self
-      
+
       prepared = bind(data,metadata[action])
-      
+
       translate(prepared,action)
 
     end
@@ -283,12 +298,16 @@ module Rho
           end
 
         end
-        
+
         locals.set_vars(options[:locals])
-        
+
         modelpath = @request[:modelpath]
         modelpath = Rho::RhoFSConnector.get_model_path("app",model) if model
-        content = eval_compiled_file(modelpath+'_' + partial_name.to_s+RHO_ERB_EXT, locals.get_binding )
+        fpath = modelpath+'_' + partial_name.to_s+RHO_ERB_EXT
+        if !Rho::file_exist?(fpath)
+           fpath = fpath + RHO_ENCRYPTED_EXT
+        end
+        content = eval_compiled_file(fpath, locals.get_binding )
       else
         #xruby issue - https://www.pivotaltracker.com/story/show/3454121
         content = render_partial_collection(options,partial_name)

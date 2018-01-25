@@ -18,6 +18,11 @@ platform/shared/ruby/enc/utf_8.c
 platform/shared/ruby/enc/encdb.c
 platform/shared/ruby/enc/iso_8859_1.c
 platform/shared/ruby/enc/iso_8859_9.c
+platform/shared/ruby/enc/utf_16be.c
+platform/shared/ruby/enc/utf_16le.c
+platform/shared/ruby/enc/utf_32be.c
+platform/shared/ruby/enc/utf_32le.c
+platform/shared/ruby/enc/euc_jp.c
 platform/shared/ruby/enum.c
 platform/shared/ruby/enumerator.c
 platform/shared/ruby/error.c
@@ -108,3 +113,5 @@ platform/shared/ruby/variable.c
 platform/shared/ruby/version.c
 platform/shared/ruby/vm.c
 platform/shared/ruby/vm_dump.c
+platform/shared/ruby/enc/trans/utf_16_32.c
+platform/shared/ruby/enc/trans/single_byte.c

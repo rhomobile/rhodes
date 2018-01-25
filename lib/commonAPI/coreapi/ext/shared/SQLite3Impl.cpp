@@ -260,6 +260,7 @@ rho::String js_SQLite3_execute(const rho::String& strObjID, CJSONArray& argv, co
                     sqlite3_reset(statement);
 
                     oResult.setArgError( String("Unsupported argument type. Argument number: ") + convertToStringA(i));
+                    rho_db_unlock(*ppDB);
                     return oResult.toJSON();
 				}
             }

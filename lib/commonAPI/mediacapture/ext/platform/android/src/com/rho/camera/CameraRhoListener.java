@@ -25,6 +25,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Matrix;
 import android.media.MediaScannerConnection;
+import android.media.MediaScannerConnection.MediaScannerConnectionClient;
+import android.net.Uri;
+import android.os.IBinder;
+import android.content.ComponentName;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -146,7 +150,6 @@ IRhoListener {
 		Logger.T(TAG, "CameraRhoListener.onActivityResult() START");
 		Logger.T(TAG, "ActualProperties: ["+getActualPropertyMap()+"]");
 		Logger.T(TAG, "Properties: ["+propertyMap+"]");
-
 		try {
 			if (resultCode == Activity.RESULT_OK)
 			{
@@ -165,6 +168,7 @@ IRhoListener {
 				String strCaptureUri = getActualPropertyMap().get("captureUri");
 				if (strCaptureUri != null)
 				{
+					Logger.T(TAG, "strCaptureUri != null");
 					captureUri = Uri.parse(getActualPropertyMap().get("captureUri"));
 					getActualPropertyMap().put("default_camera_key_path", "");
 				}
@@ -184,12 +188,14 @@ IRhoListener {
 					try {
 						System.gc();
 						if (getActualPropertyMap().get("DeviceGallery_Key") == null){
+							Logger.T(TAG, "getActualPropertyMap().get(\"DeviceGallery_Key\") == null");
 							BitmapFactory.decodeFile(curUri.getPath(), options_only_size);
 							if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){
 								mBitmap = BitmapFactory.decodeFile(curUri.getPath());
 							}
 
 						}else{
+							Logger.T(TAG, "getActualPropertyMap().get(\"DeviceGallery_Key\") != null");
 							imgPath = getFilePath(curUri);
 							BitmapFactory.decodeFile(imgPath, options_only_size);
 							if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){
@@ -212,6 +218,7 @@ IRhoListener {
 					}
 					File file = null;
 					if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){
+						Logger.T(TAG, "!getActualPropertyMap().containsKey(\"fileName\") && getActualPropertyMap().get(\"ChoosePicture_Key\") == null");
 						file= new File(curUri.getPath());
 						file.renameTo(new File(file.getParentFile(), rename));
 						String pathAfterRename = file.getParentFile().getAbsolutePath() +"/"+rename;
@@ -226,6 +233,7 @@ IRhoListener {
 
 
 					if((getActualPropertyMap().get("outputFormat").equalsIgnoreCase("dataUri"))){
+						Logger.T(TAG, "getting outputFormat");
 						stream = new ByteArrayOutputStream();
 						mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 						byte[] byteArray = stream.toByteArray();
@@ -273,12 +281,17 @@ IRhoListener {
 						if (imgPath == null) {
 							try {
 								imgPath = getFilePath(intent.getData());
+								Logger.T(TAG, "second trying  to get imgPath ["+imgPath+"]");
 							}
 							catch (Exception e) {
 								e.printStackTrace();
 							}
 						}
 
+						if (imgPath == null) {
+							try{imgPath = intent.getData().getPath();}
+							catch(Exception e){}
+						}
 
 						if (fromGallery) {
 							Logger.T(TAG, "Is from Gallery");
@@ -288,6 +301,7 @@ IRhoListener {
 							Logger.T(TAG, "Path before copy: " + imgPath);
 							//File f = new File(imgPath);
 							File fileToDelete = new File(imgPath);
+
 							imgPath = copyImg(imgPath);
 							
 							if (!Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) {
@@ -574,7 +588,6 @@ IRhoListener {
 						file.renameTo(new File(bitmapPath));
 						fixTheGalleryIssue(bitmapPath);
 
-
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
@@ -582,9 +595,6 @@ IRhoListener {
 
 					Logger.T(TAG, "$$$ EXIF rotation finished $$$");
 				}
-
-
-
 
 				try{
 					DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent, resultCode);
@@ -620,16 +630,51 @@ IRhoListener {
 
 
 
-	private void fixTheGalleryIssue(String absoluteRenamedPath )
+	private void fixTheGalleryIssue(final String absoluteRenamedPath )
 	{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
 		{
-			MediaScannerConnection.scanFile(RhodesActivity.getContext(), new String[] {absoluteRenamedPath }, null, new MediaScannerConnection.OnScanCompletedListener() {
+			//if (true) return; //TODO : Check it
+			/*try{
+				MediaScannerConnection.scanFile(RhodesActivity.getContext(), 
+												new String[] {absoluteRenamedPath }, 
+												null, 
+												new MediaScannerConnection.OnScanCompletedListener() {
+													public void onScanCompleted(String path, Uri uri){}
+												}
+				);
+			}catch(Exception e){
+				Logger.T(TAG, "fixTheGalleryIssue exception: " + e.getMessage());
+				e.printStackTrace();
+			}*/
+			try{
+				final String szFile = absoluteRenamedPath;
 
-				public void onScanCompleted(String path, Uri uri)
-				{
-				}
-			});
+		        final MediaScannerConnection m_pScanner = new MediaScannerConnection(RhodesActivity.getContext(), null){
+		        	final String TAG = CameraRhoListener.class.getSimpleName() + " : MediaScannerConnection";
+
+			        @Override
+			        public void onServiceConnected(ComponentName className, IBinder service){
+			            super.onServiceConnected(className,service);
+			            try{
+			            	scanFile(absoluteRenamedPath, null);
+			            }catch(Exception e){
+							Logger.T(TAG, "onServiceConnected exception: " + e.getMessage());
+						}finally{
+							try{
+								disconnect();
+							}catch(Exception e){
+								Logger.T(TAG, "onServiceConnected disconnect exception: " + e.getMessage());
+							}
+						}
+			        }
+                };
+
+	            m_pScanner.connect();
+            }catch(Exception e){
+				Logger.T(TAG, "fixTheGalleryIssue exception: " + e.getMessage());
+				e.printStackTrace();
+			}
 
 		}
 		else
@@ -700,12 +745,27 @@ IRhoListener {
 						inResultMap.put("image_format",   "jpg");
 					}
 					else{
+						Bitmap decoded = null;
 						if((getActualPropertyMap().get("default_camera_key_path") != null) && (getActualPropertyMap().get("default_camera_key_path") != "")){
-							inResultMap.put("imageUri",  imgPath);
-							inResultMap.put("imageFormat",   "jpg");
+							try{
+								Logger.T(TAG, "imgPath is " + imgPath);
+								decoded = BitmapFactory.decodeFile(imgPath);
+								inResultMap.put("imageUri",  imgPath);
+								inResultMap.put("imageFormat",   "jpg");
+							}catch(Exception e){}
 						}else{
-							inResultMap.put("imageUri",  curUri.toString());
-							inResultMap.put("imageFormat",   "jpg");
+							try{
+								Logger.T(TAG, "curUri is " + curUri.toString());
+								decoded = BitmapFactory.decodeFile(curUri.toString());
+								inResultMap.put("imageUri",  curUri.toString());
+								inResultMap.put("imageFormat",   "jpg");
+							}catch(Exception e){}
+						}
+						if (decoded == null){
+							inResultMap.clear();
+							inResultMap.put("message", "File is empty or couldn't be decoded");
+							inResultMap.put("status", "error");
+							return null;
 						}
 					}
 					if(picChoosen_imagewidth > 0){
@@ -772,13 +832,13 @@ IRhoListener {
 			Cursor imageCursor = RhodesActivity.getContext().getContentResolver().query(
 			uri, null, null, null, null);
 			if(imageCursor.moveToFirst()){
-				mImgPath = imageCursor.getString(imageCursor
-				.getColumnIndex(MediaColumns.DATA));
+				mImgPath = imageCursor.getString(imageCursor.getColumnIndex(MediaColumns.DATA));
 				imageCursor.close();
 			}
 			resultPath = mImgPath;
 		}
 		catch (Exception e) {
+			Logger.T(TAG, "getFilePath exception 1 " + e.getMessage());
 			e.printStackTrace();
 		}
 		try {
@@ -798,8 +858,10 @@ IRhoListener {
 			}
 		}
 		catch (Exception e) {
+			Logger.T(TAG, "getFilePath exception 2 " + e.getMessage());
 			e.printStackTrace();
 		}
+
 		return resultPath;
 	}
 

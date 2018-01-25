@@ -31,18 +31,21 @@ public class EMDK3RhoListener extends AbstractRhoListener
 		Logger.D(TAG, "onCreateApplication-");
 	}
 
+
 	@Override
 	public void onCreate(RhodesActivity activity, Intent intent)
-	{
+	{		
+		Logger.D(TAG, "onCreate+");
 		if(isEMDK3Device())
 		{
 			emdk3Extension.initialize();
 		}
+		Logger.D(TAG, "onCreate-");		
 	}
 
 	@Override
 	public void onDestroy(RhodesActivity activity)
-	{
+	{		
 		Logger.D(TAG, "onDestroy+");
 		if(emdk3Extension != null)
 		{

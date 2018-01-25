@@ -607,4 +607,18 @@ int rho_sys_set_do_not_bakup_attribute(const char* path, int value)
     return 1;
 }
 
+
 #endif
+
+extern "C" int tau_decrypt_file(const char* filebuf, int filebuf_len, char* decrypted_buf, int maxlen, const char* key);
+
+extern "C" int rho_decrypt_file(const char* filebuf, int filebuf_len, char* decrypted_buf, int maxlen ) {
+    // execute function from extension "decryptstub"(empty implementstion) or "decrypt"(used openssl - binary from openssl.so)
+#if (defined(OS_ANDROID) || defined(OS_MACOSX)) && !defined(RHODES_EMULATOR)
+    const char* key = get_app_build_config_item("encrypt_files_key");
+    return tau_decrypt_file(filebuf, filebuf_len, decrypted_buf, maxlen, key);
+#else
+    //memcpy(decrypted_buf, filebuf, filebuf_len);
+    return filebuf_len;
+#endif
+}

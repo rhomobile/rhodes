@@ -35,13 +35,16 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <VALUE constName="AUTH_BASIC" value ="basic">
                         <DESC>Basic Authentication Type. uses authUser and authPassword.</DESC>
                     </VALUE>
+                    <VALUE constName="AUTH_DIGEST" value ="digest">
+                        <DESC>Digest Authentication Type. uses authUser and authPassword.</DESC>
+                    </VALUE>
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="authUser" type="STRING">
-                <DESC>User name for basic authentication. You must also specify `authType='basic'`</DESC>
+                <DESC>User name for basic authentication. You must also specify `authType='basic'` or `authType='digest'`</DESC>
             </PROPERTY>
             <PROPERTY name="authPassword" type="STRING">
-                <DESC>Password for basic authentication. You must also specify `authType='basic'</DESC>
+                <DESC>Password for basic authentication. You must also specify `authType='basic' or `authType='digest'`</DESC>
             </PROPERTY>
             <PROPERTY name="verifyPeerCertificate" type="BOOLEAN" default="true">
                 <DESC>Verify SSL certificates. When set to false it will allow untrusted certificates.</DESC>

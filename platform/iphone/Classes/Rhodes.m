@@ -343,6 +343,52 @@ static Rhodes *instance = NULL;
     //[cookies setObject:cookie forKey:basicUrl];
 }
 
+- (NSDictionary*)getCookies:(NSString*)url {
+    NSHTTPCookieStorage* storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    NSURL *urlObj = [NSURL URLWithString:url];
+    
+    NSArray<NSHTTPCookie*>* cookies = [storage cookiesForURL:urlObj];
+    NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:[cookies count]];
+    
+    for ( NSHTTPCookie* cookie in cookies ) {
+        NSString* name = [cookie name];
+        NSString* val = [cookie value];
+        
+        NSString* sRFCCookie = [NSString stringWithFormat:@"%@=%@",name,val];
+        
+        [dict setObject:sRFCCookie forKey:name];
+    }
+    
+    return dict;
+}
+
+- (BOOL)removeCookie:(NSString*)url name:(NSString*)cookieName {
+    NSHTTPCookieStorage* storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    NSURL *urlObj = [NSURL URLWithString:url];
+    
+    BOOL removed = false;
+
+    NSArray<NSHTTPCookie*>* cookies = [storage cookiesForURL:urlObj];
+    for ( NSHTTPCookie* cookie in cookies ) {
+        if ( [[cookie name] isEqualToString:cookieName] ) {
+            [storage deleteCookie:cookie];
+            removed = true;
+            break;
+        }
+    }
+    
+    return removed;
+}
+
+- (BOOL)removeAllCookies {
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (NSHTTPCookie* cookie in storage.cookies) {
+        [storage deleteCookie:cookie];
+    }
+    
+    return true;
+}
+
 //unused now
 - (NSString*)cookie:(NSString*)url {
     NSURL *parsed = [NSURL URLWithString:url];
@@ -844,7 +890,20 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 - (void) registerForPushNotifications:(id<IPushNotificationsReceiver>)receiver;
 {
 #ifdef APP_BUILD_CAPABILITY_PUSH
-    [self performSelectorOnMainThread:@selector(registerForPushNotificationsInternal:) withObject:receiver waitUntilDone:NO];
+    //[self performSelectorOnMainThread:@selector(registerForPushNotificationsInternal:) withObject:receiver waitUntilDone:NO];
+     pushReceiver = receiver;
+    if (mPushStoredData_DeviceToken != nil) {
+        [pushReceiver onPushRegistrationSucceed:mPushStoredData_DeviceToken];
+        mPushStoredData_DeviceToken = nil;
+    }
+    if (mPushStoredData_RegisterError != nil) {
+        [pushReceiver onPushRegistrationFailed:mPushStoredData_RegisterError];
+        mPushStoredData_RegisterError = nil;
+    }
+    if (mPushStoredData_UserInfo != nil) {
+        [pushReceiver onPushMessageReceived:mPushStoredData_UserInfo];
+        mPushStoredData_UserInfo = nil;
+    }
 #endif
 }
 
@@ -1057,6 +1116,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     
     self.mBlockExit = NO;
     
+    mPushStoredData_UserInfo = nil;
+    mPushStoredData_RegisterError = nil;
+    mPushStoredData_DeviceToken = nil;
     
     instance = self;
     eventStore = nil; 
@@ -1076,8 +1138,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     NSLog(@"didFinishLaunchingWithOptions: %@", url);
 	
     
-    //[self registerForRemoteNotification];
-    
+#ifdef APP_BUILD_CAPABILITY_PUSH
+    [self registerForRemoteNotification];
+#endif
     
 	// store start parameter
 	NSString* start_parameter = [NSString stringWithUTF8String:""];
@@ -1163,28 +1226,58 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     NSLog(@"PUSH My token is: %@", deviceToken);
+    //RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH My token is: %@", deviceToken] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushRegistrationSucceed:deviceToken];
+    }
+    else {
+        mPushStoredData_DeviceToken = [deviceToken copy];
     }
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
     NSLog(@"PUSH Failed to get token, error: %@", error);
+    //RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH Failed to get token, error: %@", error] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushRegistrationFailed:error];
     }
+    else {
+        mPushStoredData_RegisterError = [error copy];
+    }
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
+-(void) processPushMessage:(NSDictionary*)userInfo {
     NSLog(@"PUSH Received notification: %@", userInfo);
+    //RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH Received notification: %@", userInfo] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushMessageReceived:userInfo];
     }
-    
-//	[self processPushMessage:userInfo];
+    else {
+        mPushStoredData_UserInfo = [userInfo copy];
+    }
 }
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    [self processPushMessage:userInfo];
+}
+
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+    if(application.applicationState == UIApplicationStateInactive) {
+        NSLog(@"didReceiveRemoteNotification: Inactive");
+        [self processPushMessage:userInfo];
+        completionHandler(UIBackgroundFetchResultNoData);
+    } else if (application.applicationState == UIApplicationStateBackground) {
+        NSLog(@"didReceiveRemoteNotification: Background");
+        completionHandler(UIBackgroundFetchResultNoData);
+    } else {
+        //RAWLOG_INFO("didReceiveRemoteNotification: Active");
+        [self processPushMessage:userInfo];
+        completionHandler(UIBackgroundFetchResultNoData);
+    }
+}
+
 
 #endif //APP_BUILD_CAPABILITY_PUSH
 #endif //__IPHONE_3_0

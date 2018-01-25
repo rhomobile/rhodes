@@ -28,6 +28,9 @@
 require 'pathname'
 require 'socket'
 
+require 'openssl'
+require 'base64'
+
 
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
 SYNC_SERVER_CONSOLE_LOGIN = 'rhoadmin'
@@ -57,6 +60,84 @@ class Hash
     return false
   end
 end
+
+
+
+module AES
+  class << self
+
+
+    def encrypt(plain_text, key_64)
+
+        alg = "AES-256-CBC"
+
+        key = Base64.decode64(key_64)
+
+        iv = OpenSSL::Cipher::Cipher.new(alg).random_iv
+        iv_64 = Base64.encode64(iv).chomp
+
+        aes = OpenSSL::Cipher::Cipher.new(alg)
+        aes.encrypt
+        aes.key = key
+        aes.iv = iv
+		
+		sha1 = OpenSSL::Digest::SHA1.new
+		digest = sha1.digest(plain_text)
+
+        cipher = aes.update(plain_text)
+        cipher << aes.final
+
+        cipher_64 = Base64.encode64(cipher).chomp
+
+        #res = iv_64 + "$" + cipher_64
+        res = []
+        res << iv
+		res << digest
+        res << cipher
+        return res
+    end
+
+
+
+    def decrypt(data, key_64)
+
+        alg = "AES-256-CBC"
+
+        key = Base64.decode64(key_64)
+
+        iv_and_ctext = []
+        data.split('$').each do |part|
+          iv_and_ctext << Base64.decode64(part)
+        end
+
+        iv = iv_and_ctext[0]
+        cipher = iv_and_ctext[1]
+
+        de_aes = OpenSSL::Cipher::Cipher.new(alg)
+        de_aes.decrypt
+        de_aes.key = key
+        de_aes.iv = iv
+
+        decrypted_text = de_aes.update(cipher)
+        decrypted_text << de_aes.final
+
+        return decrypted_text
+    end
+
+    def key
+
+        alg = "AES-256-CBC"
+
+        key = OpenSSL::Cipher::Cipher.new(alg).random_key
+        key_64 = Base64.encode64(key).chomp
+        return key_64
+    end
+  end
+
+end
+
+
+
 
 # Class with around building things
 class Jake
@@ -675,9 +756,85 @@ class Jake
     f.close
   end
 
+  def self.generate_AES_key
+      return AES.key
+  end
+
+  def self.encrypt_files_by_AES(dir, key, extensions_list)
+
+      puts "Jake.encrypt_files( dir:"+dir.to_s+", key:"+key.to_s+", ext_list:"+extensions_list.to_s+") BEGIN"
+      if extensions_list == nil
+          puts "extensions_list is NIL !"
+          return
+      end
+      if !(extensions_list.is_a?(Array))
+          puts "extensions_list is not Array !"+extensions_list.class.to_s
+          return
+      end
+
+      psize    = dir.size + 1
+
+      Dir.glob(File.join(dir, '**/*')).sort.each do |f|
+        relpath = f[psize..-1]
+
+        if File.directory?(f)
+          type = 'dir'
+        elsif File.file?(f)
+          type = 'file'
+        else
+          next
+        end
+
+        #check file
+        extension = File.extname(f).delete(".")
+        if !extensions_list.include?(extension)
+            next
+        end
+
+        puts "    encrypt file: "+f.to_s+" ..."
+
+        #load file
+        content = File.binread(f)
+        #File.rename(f, f+".original")
+        File.delete(f)
+
+
+
+        #encrypt file
+        #encrypted_content = public_key.public_encrypt( content )
+        encrypted_content = AES.encrypt(content, key)
+
+
+        #decrypted_content = AES.decrypt(encrypted_content, key)
+        #File.open(f+".decrypted","wb") do |f|
+        #    f.write(decrypted_content)
+        #end
+
+        #save file
+        #output_f = File.new(f+".encrypted", "w")
+        #output_f.puts encrypted_content
+        #output_f.close
+
+        File.open(f+".encrypted","wb") do |f|
+            f.write(encrypted_content[0])
+            f.write(encrypted_content[1])
+			f.write(encrypted_content[2])
+        end
+
+
+        puts "        DONE"
+
+      end
+      puts "Jake.encrypt_files( dir:"+dir.to_s+", key:"+key.to_s+", ext_list:"+extensions_list.to_s+") END"
+
+  end
+
+
+
+
   def self.build_file_map(dir, file_name, in_memory = false)
     require 'digest/md5'
-    
+
     psize    = dir.size + 1
     file_map = Array.new
     file_map_name = File.join(dir, file_name)

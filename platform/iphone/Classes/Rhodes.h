@@ -76,6 +76,11 @@
     BOOL mBlockExit;
     BOOL mIsFullScreen;
     BOOL mScreenStateChanged;
+    
+    // push specific
+    NSDictionary* mPushStoredData_UserInfo;
+    NSError* mPushStoredData_RegisterError;
+    NSData* mPushStoredData_DeviceToken;
 }
 
 @property (nonatomic, retain) UIWindow *window;
@@ -118,6 +123,10 @@
 
 - (void)setCookie:(NSString*)cookie forUrl:(NSString*)url;
 - (NSString*)cookie:(NSString*)url;
+
+- (NSDictionary*)getCookies:(NSString*)url;
+- (BOOL)removeCookie:(NSString*)url name:(NSString*)cookieName;
+- (BOOL)removeAllCookies;
 
 - (id<RhoMainView,NSObject>)mainView;
 - (void)setMainView:(id<RhoMainView,NSObject>)view;

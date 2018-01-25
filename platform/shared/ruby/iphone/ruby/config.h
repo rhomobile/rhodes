@@ -360,4 +360,5 @@
 //RHO - for bigdecimal support
 #define HAVE_LABS 1
 #define HAVE_LLABS 1
-//RHO
+//RHO for encoding & convertors
+#define EXTSTATIC 1

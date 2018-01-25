@@ -321,6 +321,9 @@ typedef unsigned long rlim_t;
 #define howmany(x, y)  (((x) + ((y) - 1)) / (y))
 #endif
 
+//RHO for encoding & convertors
+#define EXTSTATIC 1
+
 //RHO
 #define RUBY_EXPORT 1
 //RHO

@@ -65,6 +65,7 @@
 		FAA714AB1DDE835500E5E7AD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAA714AA1DDE835500E5E7AD /* WebKit.framework */; };
 		FAC70A7C19D10F0A0036337B /* Default-667h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7419D10F0A0036337B /* Default-667h@2x.png */; };
 		FAC70A7D19D10F0A0036337B /* Default-736h@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7519D10F0A0036337B /* Default-736h@3x.png */; };
+		FAC70A9D19D10F0A0036337B /* Default-812h@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A9519D10F0A0036337B /* Default-812h@3x.png */; };
 		FAC70A7E19D10F0A0036337B /* Default-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7619D10F0A0036337B /* Default-Landscape@2x.png */; };
 		FAC70A7F19D10F0A0036337B /* Default-LandscapeLeft@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7719D10F0A0036337B /* Default-LandscapeLeft@2x.png */; };
 		FAC70A8019D10F0A0036337B /* Default-LandscapeRight@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAC70A7819D10F0A0036337B /* Default-LandscapeRight@2x.png */; };
@@ -169,6 +170,7 @@
 		FAA714AA1DDE835500E5E7AD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.1.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		FAC70A7419D10F0A0036337B /* Default-667h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-667h@2x.png"; sourceTree = "<group>"; };
 		FAC70A7519D10F0A0036337B /* Default-736h@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-736h@3x.png"; sourceTree = "<group>"; };
+		FAC70A9519D10F0A0036337B /* Default-812h@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-812h@3x.png"; sourceTree = "<group>"; };
 		FAC70A7619D10F0A0036337B /* Default-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x.png"; sourceTree = "<group>"; };
 		FAC70A7719D10F0A0036337B /* Default-LandscapeLeft@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-LandscapeLeft@2x.png"; sourceTree = "<group>"; };
 		FAC70A7819D10F0A0036337B /* Default-LandscapeRight@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-LandscapeRight@2x.png"; sourceTree = "<group>"; };
@@ -315,6 +317,7 @@
 			children = (
 				FAC70A7419D10F0A0036337B /* Default-667h@2x.png */,
 				FAC70A7519D10F0A0036337B /* Default-736h@3x.png */,
+				FAC70A9519D10F0A0036337B /* Default-812h@3x.png */,
 				FAC70A7619D10F0A0036337B /* Default-Landscape@2x.png */,
 				FAC70A7719D10F0A0036337B /* Default-LandscapeLeft@2x.png */,
 				FAC70A7819D10F0A0036337B /* Default-LandscapeRight@2x.png */,
@@ -506,6 +509,7 @@
 				FA20C1B3182AFD870036D304 /* esri.png in Resources */,
 				FAC70A8019D10F0A0036337B /* Default-LandscapeRight@2x.png in Resources */,
 				FAC70A7D19D10F0A0036337B /* Default-736h@3x.png in Resources */,
+				FAC70A9D19D10F0A0036337B /* Default-812h@3x.png in Resources */,
 				FAD18F281E3AF8100064808C /* gears@3x.png in Resources */,
 				FAD18F2C1E3AF8100064808C /* sync_btn@2x.png in Resources */,
 			);

@@ -164,6 +164,11 @@ module Rhogen
       file.destination = "#{name}/app/loading-736h@3x.png"
     end
 
+    file :loadingpng53 do |file|
+      file.source = 'app/loading-812h@3x.png'
+      file.destination = "#{name}/app/loading-812h@3x.png"
+    end
+
     file :loadingpngl do |file|
       file.source = 'app/loading-Landscape.png'
       file.destination = "#{name}/app/loading-Landscape.png"

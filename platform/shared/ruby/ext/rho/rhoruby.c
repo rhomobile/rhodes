@@ -31,6 +31,7 @@
 #endif
 #include "rhoruby.h"
 #include "vm_core.h"
+#include "transcode_data.h"
 
 #ifdef ENABLE_RUBY_VM_STAT
 #include "../stat/stat.h"
@@ -178,6 +179,19 @@ int   daylight;
 char *tzname[2];
 #endif
 
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
+
+void Init_utf_16_32();
+void Init_single_byte();
+
+void Init_transcoders() {
+    // in 1.9.3 names is fixed
+    Init_utf_16_32();
+    Init_single_byte();
+}
+
+#endif
+
 void RhoRubyStart()
 {
     const char* szRoot = rho_native_rhopath();
@@ -192,6 +206,9 @@ void RhoRubyStart()
 
     RUBY_INIT_STACK;
     ruby_init();
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
+    Init_transcoders();
+#endif
 #if defined(WIN32)
     rb_w32_sysinit(NULL,NULL);
 #endif

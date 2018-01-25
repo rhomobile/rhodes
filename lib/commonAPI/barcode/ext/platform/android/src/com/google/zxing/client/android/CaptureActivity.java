@@ -68,6 +68,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -76,6 +78,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.List;
 
 /**
  * The barcode reader activity itself. This is loosely based on the CameraPreview
@@ -119,7 +122,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   private static final String RETURN_URL_PARAM = "ret";
 
   private static final Set<ResultMetadataType> DISPLAYABLE_METADATA_TYPES;
-
+  private static boolean useFlash = false;
 
   static {
     DISPLAYABLE_METADATA_TYPES = new HashSet<ResultMetadataType>(5);
@@ -162,6 +165,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   private Button mCancelButton2 = null;
   private Button mRetakeButton = null;
   private Button mOKButton = null;
+  private Button mFlashButton = null;
   
   /**
    * When the beep has finished playing, rewind to queue up another one.
@@ -171,8 +175,6 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
       mediaPlayer.seekTo(0);
     }
   };
-
-
 
   ViewfinderView getViewfinderView() {
     return viewfinderView;
@@ -214,6 +216,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
     mCancelButton = (Button)findViewById(RhoExtManager.getResourceId("id", "cancel_button"));
     mRetakeButton = (Button)findViewById(RhoExtManager.getResourceId("id", "retake_button"));
     mOKButton = (Button)findViewById(RhoExtManager.getResourceId("id", "ok_button"));
+    mFlashButton = (Button)findViewById(RhoExtManager.getResourceId("id", "flash_button"));
     
     mCancelButton2.setOnClickListener( new OnClickListener() {
 		public void onClick(View v) {
@@ -225,15 +228,28 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
 		}});
     mRetakeButton.setOnClickListener( new OnClickListener() {
 		public void onClick(View v) {
+      Logger.I(LOGTAG, "onRetake()");
 			onRetake();
 		}});
     mOKButton.setOnClickListener( new OnClickListener() {
 		public void onClick(View v) {
+      Logger.I(LOGTAG, "onOK()");
 			onOK();
 		}});
+
+    mFlashButton.setOnClickListener( new OnClickListener() {
+    public void onClick(View v) {
+      Logger.I(LOGTAG, "CameraManager.get().setFlash()");
+      useFlash = !useFlash;
+      CameraManager.get().setFlash(useFlash);
+    }});
     
     mCancelButton2.setVisibility(View.VISIBLE);
-    
+    if (CameraManager.isFlashLightEnabled()){
+      mFlashButton.setVisibility(View.VISIBLE);
+    }else{
+      mFlashButton.setVisibility(View.GONE);
+    }
     showHelpOnFirstLaunch();
   }
   
@@ -245,6 +261,11 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   
   public void onRetake() {
       resetStatusView();
+    if (CameraManager.isFlashLightEnabled()){
+      mFlashButton.setVisibility(View.VISIBLE);
+    }else{
+      mFlashButton.setVisibility(View.GONE);
+    }
 	  if (handler != null) {
         handler.sendEmptyMessage(RhoExtManager.getResourceId("id", "restart_preview"));
       }
@@ -258,8 +279,6 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
       }
    	  BarcodeFactory.callOKCallback(lastResult, rhoBarcodeId);
   }
-  
-  
 
   @Override
   protected void onResume() {
@@ -296,6 +315,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
     //vibrate = prefs.getBoolean(PreferencesActivity.KEY_VIBRATE, false);
     //copyToClipboard = prefs.getBoolean(PreferencesActivity.KEY_COPY_TO_CLIPBOARD, true);
     initBeepSound();
+    Logger.I(LOGTAG, "onResume()");
   }
 
   @Override
@@ -310,7 +330,15 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
 
   @Override
   protected void onDestroy() {
+    Logger.I(LOGTAG, "onDestroy()");
     inactivityTimer.shutdown();
+
+    /*Camera camera = Camera.open();    
+    Parameters p = camera.getParameters();
+    p.setFlashMode(Parameters.FLASH_MODE_TORCH);
+    camera.setParameters(p);    
+    camera.startPreview();*/
+
     super.onDestroy();
   }
 
@@ -355,6 +383,26 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   }
 
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    Logger.I(LOGTAG, "surfaceChanged() " + String.valueOf(width) + " " + String.valueOf(height));
+    /*Camera camera = CameraManager.get().getCamera();
+    if (camera == null) return;
+    Logger.I(LOGTAG, "surfaceChanged() camera != null");
+
+    Camera.Parameters parameters = camera.getParameters();
+
+    List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
+    Camera.Size bestDimens = null;
+    Logger.I(LOGTAG, "surfaceChanged() trying to find best of dimens");
+    for(Camera.Size dimens : sizes){
+      Log.i(LOGTAG, "surfaceChanged(): Supported Size: " + dimens.width + "height : " + dimens.height);
+        if(dimens.width  <= 1024 && dimens.height <= 768){
+            if (bestDimens == null || (dimens.width > bestDimens.width && dimens.height > bestDimens.height)) {
+                bestDimens = dimens;
+            }
+        }
+    }
+    parameters.setPictureSize(bestDimens.width, bestDimens.height);
+    camera.setParameters(parameters);*/  
 
   }
 
@@ -367,6 +415,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   public void handleDecode(Result rawResult, Bitmap barcode) {
     inactivityTimer.onActivity();
     lastResult = rawResult;
+    Logger.I(LOGTAG, "handleDecode()");
     //historyManager.addHistoryItem(rawResult);
     if (barcode == null) {
       // This is from history -- no saved barcode
@@ -438,9 +487,11 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
     contentsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
     
     mCancelButton2.setVisibility(View.GONE);
+    mFlashButton.setVisibility(View.GONE);
     mCancelButton.setVisibility(View.VISIBLE);
     mRetakeButton.setVisibility(View.VISIBLE);
     mOKButton.setVisibility(View.VISIBLE);
+
     
   }
 
@@ -493,9 +544,12 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
     }
   }
 
+
+
   private void initCamera(SurfaceHolder surfaceHolder) {
     try {
       CameraManager.get().openDriver(surfaceHolder, camera_index);
+      CameraManager.get().setFlash(useFlash);
     } catch (IOException ioe) {
       Log.w(TAG, ioe);
       return;
@@ -525,6 +579,7 @@ private static final String TAG = CaptureActivity.class.getSimpleName();
   }
 
   public void drawViewfinder() {
+    Logger.I(LOGTAG, "drawViewfinder()");
     viewfinderView.drawViewfinder();
   }
 }

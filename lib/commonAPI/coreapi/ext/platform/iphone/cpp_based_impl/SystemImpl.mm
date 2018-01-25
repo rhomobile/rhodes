@@ -6,6 +6,7 @@
 #import "api_generator/iphone/CRubyConverter.h"
 #import "api_generator/iphone/CMethodResult.h"
 #import "Rhodes.h"
+#import "sys/utsname.h"
 
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
@@ -15,6 +16,7 @@
 #include "common/RhoFile.h"
 #include "unzip/zip.h"
 #include "db/DBAdapter.h"
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
@@ -377,8 +379,34 @@ namespace rho {
         }
     }
     
-    
-    
+
+
+    void SystemImplIphone::getSystemInfo(rho::apiGenerator::CMethodResult& oResult)
+    {
+        rho::Hashtable<rho::String, rho::String> retVal;
+
+//       retVal.put(key,value);
+
+        NSString *value = [[UIDevice currentDevice] localizedModel];       
+        retVal.put("build.localized.model", std::string([value UTF8String]));
+
+        struct utsname systemInfo;
+        uname(&systemInfo);
+        retVal.put("build.device", systemInfo.machine);
+
+        value = [[UIDevice currentDevice] model];       
+        retVal.put("build.model", std::string([value UTF8String]));
+
+        value = [[UIDevice currentDevice] name];
+        retVal.put("build.device.name", std::string([value UTF8String]));
+
+        NSString *osName = [[UIDevice currentDevice] systemName];       
+        NSString *osVersion = [[UIDevice currentDevice] systemVersion];
+        value = [@[osName, @", v.", osVersion] componentsJoinedByString:@""];
+        retVal.put("build.version.os", std::string([value UTF8String]));
+
+        oResult.set(retVal);
+    }
     
     
     

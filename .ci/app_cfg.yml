@@ -1,0 +1,27 @@
+auto_common_spec:
+  repo: 'https://github.com/rhomobile/RMS-Testing.git'
+  build_root: 'auto/feature_def/auto_common_spec'
+
+framework_spec:
+  repo: 'https://github.com/rhomobile/RMS-Testing.git'
+  build_root: 'auto/feature_def/framework_spec'
+
+sas:
+  repo: 'https://github.com/tauplatform/rhodes-system-api-samples.git'
+  build_root: '.'
+
+kitchenSinkJS:
+  repo: 'https://github.com/tauplatform/kitchensinkJS.git'
+  build_root: '.'
+
+kitchenSinkRuby:
+  repo: 'https://github.com/tauplatform/kitchensinkRuby.git'
+  build_root: '.'
+
+push_spec:
+  repo: ''
+  build_root: '.'
+
+rhoconnect-client_spec:
+  repo: ''
+  build_root: '.'
