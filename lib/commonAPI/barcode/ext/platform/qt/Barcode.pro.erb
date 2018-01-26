@@ -28,7 +28,7 @@ unix:!macx {
   INCLUDEPATH += <%= @rhoRoot %>/platform/shared/qt/sailfish
 
   contains(DEFINES, OS_LINUX)  {
-    DESTDIR = $$PWD/bin
+    DESTDIR = $$PWD/../extensions
     OBJECTS_DIR = $$PWD/bin/tmp
   }
   contains(DEFINES, OS_SAILFISH)  {

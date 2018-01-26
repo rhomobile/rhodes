@@ -19,7 +19,7 @@ INCLUDEPATH += <%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared\
 <%= @rhoRoot %>/platform/shared
 
 unix:!macx {
-  DESTDIR = $$PWD/bin
+  DESTDIR = $$PWD/../extensions
   OBJECTS_DIR = $$PWD/bin/tmp
   INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/linux
   SOURCES += <%= @rhoRoot %>/lib/commonAPI/coreapi/ext/platform/qt/src/CNetworkDetect.cpp

@@ -32,11 +32,12 @@ require 'tempfile'
 include FileUtils
 
 require 'erb'
-#require 'net/ssh'
+require 'net/ssh'
 #require 'net/scp'
 
 class QtProjectGenerator
   attr_accessor :rhoRoot
+  attr_accessor :extRoot
   attr_accessor :nameApp
   attr_accessor :versionApp
   attr_accessor :buildMode
@@ -194,6 +195,63 @@ namespace "config" do
 
 end
 
+def exec_ssh_command(session, cmd)
+  #session.scp.upload!($target_rpm, "/home/#{$user_name}/RPMS")
+  #session.open_channel do |channel|
+    #channel.on_request "exit-status" do |channel, data|
+      #$exit_status = data.read_long
+    #end
+    #puts "devel-su rpm -Uvh /home/#{$user_name}/RPMS/#{File.basename $target_rpm}"
+
+    #channel.exec("rpm -Uvh /home/#{$user_name}/RPMS/#{File.basename $target_rpm}") do |devel_channel, success|
+
+      #devel_channel.on_data do |ch, data|
+        #puts "data1"
+      #end
+
+      #devel_channel.on_extended_data do |ch, type, data|
+        #puts "error1"
+      #end
+
+      #if !success
+        #raise "Open interactive mode failed!"
+      #else
+        #devel_channel.send_data("#{$pwd_host}\n")
+      #end
+      #stdout << stream
+      #puts stdout
+      #devel_channel.wait
+    #end
+    #channel.wait
+  #end
+end
+
+namespace "run" do
+  task :sailfish => ["config:sailfish"] do
+    if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
+      $ssh_key = $app_config["sailfish"]["device"]["key"]
+    end
+  
+    if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["password"].nil?
+      $pwd_host = $app_config["sailfish"]["device"]["password"]
+    else
+      raise "Key or password for running app not found, set it!"
+    end
+
+    session_ssh = nil  
+    if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?    
+      Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
+        exec_ssh_command(session)        
+      end  
+    else    
+      Net::SSH.start($host_name, $user_name, $pwd_host) do |session|       
+        exec_ssh_command(session)    
+      end
+    end
+
+  end
+end
+
 namespace "device" do
   namespace "sailfish" do
     task :production => "build:sailfish:rhobundle" do
@@ -201,29 +259,8 @@ namespace "device" do
     end
 
     task :install => ["config:sailfish"] do
-
+      Rake::Task["build:sailfish:startvm"].invoke()
       Rake::Task["build:sailfish:deploy"].invoke()
-      #if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
-      #  $ssh_key = $app_config["sailfish"]["device"]["key"]
-      #end
-
-      #if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["password"].nil?
-      #  $pwd_host = $app_config["sailfish"]["device"]["password"]
-      #else
-      #  raise "Key or password for deploy not found, set it!"
-      #end
-      
-      #session_ssh = nil
-      #if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
-      #  Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
-      #    install_rpm(session)
-      #  end
-      #else
-      #  Net::SSH.start($host_name, $user_name, $pwd_host) do |session| 
-      #    install_rpm(session)    
-      #  end
-      #end
-
     end
 
   end
@@ -272,6 +309,7 @@ def add_extension_to_main_project(ext)
 end
 
 def add_extension_to_rhodes_project(ext)
+
   rhodes_project = File.join($project_path, "rhodes", "rhodes.pro")
 
   f = File.open(rhodes_project, "r")
@@ -279,7 +317,7 @@ def add_extension_to_rhodes_project(ext)
   ext_exists = false
 
   f.each_line do |line|
-    if line.include?("$$PWD/../#{ext.downcase}")
+    if line.include?("$$PWD/../extensions -l#{ext.downcase}")
       ext_exists = true
     end
     text = text + line
@@ -287,11 +325,12 @@ def add_extension_to_rhodes_project(ext)
   f.close
 
   if !ext_exists
-    text = text + "unix:!macx: LIBS += -L$$PWD/../#{ext.downcase}/bin -l#{ext.downcase} \n"
-    text = text + "unix:!macx: PRE_TARGETDEPS += $$PWD/../#{ext.downcase}/bin/lib#{ext.downcase}.a \n"
+    text = text + "unix:!macx: LIBS += -L$$PWD/../extensions -l#{ext.downcase} \n"
+    #text = text + "unix:!macx: PRE_TARGETDEPS += $$PWD/../extensions/lib#{ext.downcase}.a \n"
   end
 
   f = File.open(rhodes_project, "w") {|file| file << text }
+  return 
 end
 
 def vm_is_started?
@@ -307,49 +346,6 @@ def vm_is_started?
   end
 
   return output.include?("Sailfish OS Build Engine")
-end
-
-def install_rpm(session)
-  $target_rpm = ""
-  Dir[File.join($target_path, "/**/*")].each do |file_name|
-    if file_name.include?("#{$final_name_app}-#{$version_app}")
-      $target_rpm = file_name
-    end
-  end
-
-  if !File.exists?($target_rpm)
-    raise "Target rpm not found!!!"
-  end
-
-  stdout = ""
-  session.scp.upload!($target_rpm, "/home/#{$user_name}/RPMS")
-  session.open_channel do |channel|
-    channel.on_request "exit-status" do |channel, data|
-      $exit_status = data.read_long
-    end
-    puts "devel-su rpm -Uvh /home/#{$user_name}/RPMS/#{File.basename $target_rpm}"
-
-    channel.exec("rpm -Uvh /home/#{$user_name}/RPMS/#{File.basename $target_rpm}") do |devel_channel, success|
-
-      devel_channel.on_data do |ch, data|
-        puts "data1"
-      end
-
-      devel_channel.on_extended_data do |ch, type, data|
-        puts "error1"
-      end
-
-      if !success
-        raise "Open interactive mode failed!"
-      else
-        devel_channel.send_data("#{$pwd_host}\n")
-      end
-      #stdout << stream
-      #puts stdout
-      #devel_channel.wait
-    end
-    channel.wait
-  end
 end
 
 namespace "build"  do
@@ -428,6 +424,7 @@ namespace "build"  do
     task :extensions => ['project:sailfish:qt'] do
       puts "$app_extensions_list : #{$app_extensions_list}"
 
+      ext_link = "unix:!macx: PRE_TARGETDEPS += $$PWD/../extensions"
       $app_extensions_list.each do |ext, ext_path |
         next unless (ext_path)
         print_timestamp('process extension "' + ext + '" START')
@@ -447,7 +444,8 @@ namespace "build"  do
         puts "Path to erb project: " + erb_project_path
 
         generator = QtProjectGenerator.new
-        generator.rhoRoot = $rhodes_path_build_engine      
+        generator.rhoRoot = $rhodes_path_build_engine   
+        generator.extRoot = ext_path.gsub(File.expand_path('~'), "/home/mersdk/share")   
         generator.nameApp = $final_name_app 
         generator.buildMode = $connf_build
         
@@ -455,8 +453,12 @@ namespace "build"  do
 
         File.open(File.join($project_path, ext.downcase, "#{ext.downcase}.pro"), 'w' ) { |f| f.write generator.render_profile( erb_project_path ) }
         add_extension_to_main_project(ext)
+        if ext.downcase == "coreapi"
+          next
+        end
         add_extension_to_rhodes_project(ext)
       end
+      add_extension_to_rhodes_project("coreapi")
     end
 
   end
