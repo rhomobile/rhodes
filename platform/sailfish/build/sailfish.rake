@@ -32,7 +32,7 @@ require 'tempfile'
 include FileUtils
 
 require 'erb'
-require 'net/ssh'
+#require 'net/ssh'
 #require 'net/scp'
 
 class QtProjectGenerator
