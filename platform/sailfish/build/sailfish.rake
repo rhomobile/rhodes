@@ -32,8 +32,6 @@ require 'tempfile'
 include FileUtils
 
 require 'erb'
-#require 'net/ssh'
-#require 'net/scp'
 
 class QtProjectGenerator
   attr_accessor :rhoRoot
@@ -196,6 +194,12 @@ namespace "config" do
 end
 
 def exec_ssh_command(session, cmd)
+  puts "ssh command: #{cmd}"
+  result = session.exec!(cmd)
+
+  f = File.open(File.join($app_path, "logcat.txt"), "w") {|file| file << result }
+  f.close
+
   #session.scp.upload!($target_rpm, "/home/#{$user_name}/RPMS")
   #session.open_channel do |channel|
     #channel.on_request "exit-status" do |channel, data|
@@ -227,25 +231,25 @@ def exec_ssh_command(session, cmd)
 end
 
 namespace "run" do
+  require 'net/ssh'
   task :sailfish => ["config:sailfish"] do
     if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
       $ssh_key = $app_config["sailfish"]["device"]["key"]
-    end
-  
-    if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["password"].nil?
+    elsif !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["password"].nil?
       $pwd_host = $app_config["sailfish"]["device"]["password"]
     else
       raise "Key or password for running app not found, set it!"
     end
 
-    session_ssh = nil  
+    session_ssh = nil
+    puts "Connecting to device"
     if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?    
       Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
-        exec_ssh_command(session)        
+        exec_ssh_command(session, "xdg-open /usr/share/applications/#{$final_name_app}.desktop")        
       end  
     else    
       Net::SSH.start($host_name, $user_name, $pwd_host) do |session|       
-        exec_ssh_command(session)    
+        exec_ssh_command(session, "xdg-open /usr/share/applications/#{$final_name_app}.desktop")    
       end
     end
 
