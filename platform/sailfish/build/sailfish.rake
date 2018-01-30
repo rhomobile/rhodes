@@ -194,11 +194,15 @@ namespace "config" do
 end
 
 def exec_ssh_command(session, cmd)
+  f = File.open(File.join($app_path, "logcat.txt"), "w") do |file|
   puts "ssh command: #{cmd}"
-  result = session.exec!(cmd)
-
-  f = File.open(File.join($app_path, "logcat.txt"), "w") {|file| file << result }
-  f.close
+    result = session.exec!(cmd) do |chanel, stream, line|
+      p line
+      file << line
+    end
+  end
+  #f = File.open(File.join($app_path, "logcat.txt"), "w") {|file| file << result }
+  #f.close
 
   #session.scp.upload!($target_rpm, "/home/#{$user_name}/RPMS")
   #session.open_channel do |channel|
