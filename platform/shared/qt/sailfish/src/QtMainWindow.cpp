@@ -158,7 +158,7 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     commitWebViewsList();
 
     //qDebug() << "Available cameras: " + QString::number(QCameraInfo::availableCameras().size());
-    QTimer::singleShot(500, [&](){this->showEvent()})
+    QTimer::singleShot(500, [&](){this->showEvent();});
     qDebug() << "End of main window cunstruction";
 }
 
