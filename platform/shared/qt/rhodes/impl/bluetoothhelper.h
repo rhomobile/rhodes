@@ -3,9 +3,7 @@
 
 #include <QObject>
 #include <QtDBus/QDBusInterface>
-#include <QtBluetooth/QBluetoothServer>
-#include <QtBluetooth/QBluetoothLocalDevice>
-#include <QtBluetooth/QBluetoothServiceInfo>
+
 
 class BluetoothHelper : public QObject
 {

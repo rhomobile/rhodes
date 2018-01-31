@@ -2,6 +2,7 @@
 #define BLUETOOTHSERVER_H
 
 #include <QObject>
+/*
 #include <QtBluetooth/QBluetoothServer>
 #include <QtBluetooth/QBluetoothLocalDevice>
 #include <QtBluetooth/QBluetoothServiceInfo>
@@ -98,6 +99,6 @@ private slots:
     }
 };
 
-
+*/
 
 #endif // BLUETOOTHSERVER_H

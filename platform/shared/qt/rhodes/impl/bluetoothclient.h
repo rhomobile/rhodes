@@ -1,6 +1,6 @@
 #ifndef BLUETOOTHCLIENT_H
 #define BLUETOOTHCLIENT_H
-
+/*
 #include <QObject>
 #include <QtBluetooth/QBluetoothServer>
 #include <QtBluetooth/QBluetoothLocalDevice>
@@ -110,6 +110,6 @@ private slots:
         stopClient();
     }
 };
-
+*/
 
 #endif // BLUETOOTHCLIENT_H

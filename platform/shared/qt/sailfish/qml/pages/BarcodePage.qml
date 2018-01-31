@@ -5,6 +5,9 @@ import QtMultimedia 5.5
 Page {
     Camera {
         id: camera
+        focus.focusMode: Camera.FocusContinuous
+        focus.focusPointMode: Camera.FocusPointAuto
+
     }
 
     Timer {

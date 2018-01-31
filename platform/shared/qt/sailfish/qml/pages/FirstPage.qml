@@ -2,7 +2,7 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import QtWebKit 3.0
 import QtMultimedia 5.5
-
+import QtWebKit.experimental 1.0
 Page {
     id: mainPage
     SilicaFlickable {
@@ -106,8 +106,8 @@ Page {
                             webView.reload();
                         }
                         onEvaluateJavaScript:{
-                            console.log("Trying to evaluate JS: don't realized");
-
+                            console.log("Trying to evaluate JS");
+                            webView.experimental.evaluateJavaScript(pScript);
                         }
                         onSetCurrentTab:{
                             console.log("Trying to set current tab: don't realized");
