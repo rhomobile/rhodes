@@ -68,8 +68,8 @@ public:
 
     explicit QtMainWindow(QObject *parent = 0);
     ~QtMainWindow();
-    virtual void hideEvent(QHideEvent *);
-    virtual void showEvent(QShowEvent *);
+    void hideEvent();
+    void showEvent();
 
     void paintEvent();
     void setCallback(IMainWindowCallback* callback);
