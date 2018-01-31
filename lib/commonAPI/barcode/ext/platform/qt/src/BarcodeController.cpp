@@ -7,11 +7,6 @@ BarCodeController::BarCodeController() : QObject(QApplication::instance())
 {
     qRegisterMetaType<QList<QCameraInfo> >("QList<QCameraInfo>");
     qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
-#ifdef OS_SAILFISH
-    connect(this, SIGNAL(openBarcodeDialog(QString)),
-            QtMainWindow::getLastInstance(), SLOT(openQMLDocument(QString)), Qt::QueuedConnection);
-
-#endif
 }
 
 void BarCodeController::enumerate(rho::apiGenerator::CMethodResult& oResult) {

@@ -180,7 +180,7 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 #elif defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
         rho_ios_log_console_output(szMsg);
 #elif defined(OS_SAILFISH)
-        qDebug() << QString::fromStdString(strMsg);
+        //qDebug() << QString::fromStdString(strMsg);
 #endif
 
 #if !defined( OS_PLATFORM_MOTCE ) && !(defined(OS_MACOSX) && !defined(RHODES_EMULATOR))

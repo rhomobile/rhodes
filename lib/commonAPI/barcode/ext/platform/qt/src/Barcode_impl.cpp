@@ -11,6 +11,11 @@ class CBarcodeImpl: public CBarcodeBase
 public:
     CBarcodeImpl(const rho::String& strID): CBarcodeBase(){
         cameraID = QString::fromStdString(strID);
+        rho::apiGenerator::CMethodResult result;
+        rho::Hashtable<rho::String, rho::String> propsHash;
+        propsHash.put(barcode::PROPERTY_SCANNER_TYPE, "Camera");
+        propsHash.put(barcode::PROPERTY_FRIENDLY_NAME, getFriendlyName());
+        setProperties(propsHash, result);
     }
 
     void enable( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){
