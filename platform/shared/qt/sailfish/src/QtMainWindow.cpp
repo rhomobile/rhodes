@@ -158,6 +158,7 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     commitWebViewsList();
 
     //qDebug() << "Available cameras: " + QString::number(QCameraInfo::availableCameras().size());
+    QTimer::singleShot(500, [&](){this->showEvent()})
     qDebug() << "End of main window cunstruction";
 }
 
@@ -190,12 +191,12 @@ void QtMainWindow::setCallback(IMainWindowCallback* callback)
     mainWindowCallback = callback;
 }
 
-void QtMainWindow::hideEvent(QHideEvent *)
+void QtMainWindow::hideEvent()
 {
     if (mainWindowCallback) mainWindowCallback->onActivate(0);
 }
 
-void QtMainWindow::showEvent(QShowEvent *)
+void QtMainWindow::showEvent()
 {
     if (mainWindowCallback) mainWindowCallback->onActivate(1);
 }
