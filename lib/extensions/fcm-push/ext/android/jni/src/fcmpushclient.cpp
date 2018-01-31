@@ -65,7 +65,7 @@ String FcmPushClient::token = "";
 FcmPushClient::FcmPushClient()
 {
     LOG(TRACE) + "FcmPushInit()";
-
+    canExecuteNotifications = false;
     JNIEnv *env = jnienv();
 
     static jclass cls = rho_find_class(env, s_FCM_FACADE_CLASS);
@@ -157,13 +157,17 @@ void FcmPushClient::startNotifications(CMethodResult& result)
 {
     LOG(TRACE) + "Start FCM push notifications";
     m_oResult = result;
+    canExecuteNotifications = true;
+    executeCallBacks();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void FcmPushClient::stopNotifications(CMethodResult& result)
 {
     LOG(TRACE) + "Stop FCM push notifications";
+    canExecuteNotifications = false;
     m_oResult = CMethodResult();
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -185,10 +189,27 @@ bool FcmPushClient::callBack(const String& json)
 {
     LOG(TRACE) + "FCM push notification: " + json;
 
-    m_oResult.setJSON(json);
+    if (canExecuteNotifications){
+        m_oResult.setJSON(json);
+    }else{
+        if (callBacksQueue.size() < 1024){
+            callBacksQueue.push(json);
+        }
+    }
 
     return true;
 }
+
+void FcmPushClient::executeCallBacks()
+{
+
+    while (!callBacksQueue.empty()){
+        callBack(callBacksQueue.front());
+        callBacksQueue.pop();
+    }
+
+}
+
 
 }}
 

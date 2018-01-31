@@ -30,6 +30,9 @@
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
 #include "common/push/IRhoPushClient.h"
+#include <queue>
+#include <memory>
+#include <map>
 
 namespace rho { namespace common {
 
@@ -51,9 +54,24 @@ public:
     void setNotificationUrl(const String& url, const String& urlParams);
     bool callNotification(const String& pushType, const String& json, const String& data);
 
+    struct QueueType
+    {
+        QueueType(const String& pushType, const String& json, const String& data){
+            this->pushType = pushType;
+            this->json = json;
+            this->data = data;
+        }
+
+        String pushType;
+        String json; 
+        String data;
+    };
+    
 private:
     IRhoPushClient* getClient(const String& pushType);
 
+    std::queue<QueueType> pushQueue;
+    void executeCallBacks();
 private:
     CRhodesAppBase& m_rhoAppBase;
     VectorPtr<IRhoPushClient*> m_Clients;
