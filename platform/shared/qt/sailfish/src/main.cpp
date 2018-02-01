@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     QString dataDirectory("/usr/share/" + application->applicationName() + "/data/rho/");
     QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
     QtMainWindow::setWritableDir(QString::fromStdString(m_strRootPath));
-    //QDir::setCurrent(QString::fromStdString(m_strRootPath));
+    QDir::setCurrent(QString::fromStdString(m_strRootPath));
 
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
     LOGCONF().setLogToOutput(true);
