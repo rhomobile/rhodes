@@ -5,6 +5,11 @@ bool BarcodeQMLModel::getIsActive()
     return isActive;
 }
 
+bool BarcodeQMLModel::getIsGrabbing()
+{
+    return isGrabbing;
+}
+
 BarcodeQMLModel::BarcodeQMLModel(QObject *parent) : QObject(parent)
 {
     decThread = new DecoderThread(this);
@@ -32,13 +37,15 @@ void BarcodeQMLModel::scanningProcessMsg(){
             }else{
                 setResult("");
             }
-            decThread->imageCaptured(QtMainWindow::getView()->grabWindow());
+            QImage image = QtMainWindow::getView()->grabWindow();
+            decThread->imageCaptured(image.copy(0, (image.height()-image.width())/2, image.width(), image.width()));
         }else{
             isActive = false;
             lastId = decThread->getLastSavedValue().id;
             setResult("Encoded format " + decThread->getLastSavedValue().format +
                       ": " + decThread->getLastSavedValue().result);
-            QSound::play(":/barcodesounds/scanner_sound.wav");
+
+            //QSound::play(":/barcodesounds/scanner_sound.wav");
 
         }
 

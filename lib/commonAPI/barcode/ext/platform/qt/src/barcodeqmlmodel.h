@@ -22,6 +22,7 @@ class BarcodeQMLModel : public QObject
     Q_OBJECT
     Q_PROPERTY(QString result READ getResult WRITE setResult NOTIFY resultChanged)
     Q_PROPERTY(bool isActive READ getIsActive CONSTANT)
+    Q_PROPERTY(bool isGrabbing READ getIsGrabbing CONSTANT)
 public:
     QString result;
     static BarcodeQMLModel * getInstance(){
@@ -39,10 +40,13 @@ public:
 
 
 
+
+
 private:
     DecoderThread * decThread;
     rho::apiGenerator::CMethodResult oResult;
     bool isActive;
+    bool isGrabbing;
     QTimer * timer;
 
     quint32 lastId;
@@ -60,6 +64,7 @@ public slots:
     void setResult(QString value);
     QString getResult();
     bool getIsActive();
+    bool getIsGrabbing();
 
     void scanningProcessMsg();
     void restart();

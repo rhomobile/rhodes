@@ -2,6 +2,7 @@
 #define CUSTOMWEBVIEWTAB_H
 
 #include <QObject>
+#include <QDebug>
 
 #define SENDER_TAB ((CustomWebViewTab *) sender())
 class CustomWebViewTab : public QObject
@@ -80,6 +81,11 @@ public slots:
             scale = value;
             emit scaleChanged();
         }
+
+        void messageReceived(QString message){
+            qDebug() << "Message from JS code: " + message;
+        }
+
 
 private:
         QString text;

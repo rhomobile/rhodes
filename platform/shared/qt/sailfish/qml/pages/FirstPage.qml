@@ -3,6 +3,7 @@ import Sailfish.Silica 1.0
 import QtWebKit 3.0
 import QtMultimedia 5.5
 import QtWebKit.experimental 1.0
+
 Page {
     id: mainPage
     SilicaFlickable {
@@ -144,6 +145,12 @@ Page {
                     Component.onCompleted: {
                        console.log("Component complited")
                     }
+
+                    experimental.onMessageReceived: {
+                       console.log(message.data);
+                        modelData.messageReceived(message.data);
+                    }
+
                 }
             }
         }
