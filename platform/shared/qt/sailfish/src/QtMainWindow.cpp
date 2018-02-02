@@ -103,6 +103,10 @@ void QtMainWindow::setTargetFilePath(const QString &value)
     emit targetFilePathChanged();
 }
 
+
+
+
+
 QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     mainWindowCallback(NULL),
     cur_tbrp(0),
@@ -132,6 +136,9 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     connect(this, SIGNAL(logicalDpiYChanged()), this, SLOT(resizeEvent()));
     connect(this, SIGNAL(rotationChanged()), this, SLOT(resizeEvent()));
     connect(this, &QtMainWindow::rotationChanged, [&](){RHODESAPP().callScreenRotationCallback(getLogicalDpiX(), getLogicalDpiY(), getRotation());});
+
+    connect(this, SIGNAL(setCover(QString)), RootDelegate::getInstance(), SLOT(setCover(QString)), Qt::QueuedConnection);
+
     if (RHOCONF().isExist("http_proxy_host"))
     {
         setProxy(QString::fromStdString(RHOCONF().getString("http_proxy_host")),
@@ -153,13 +160,23 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     QObject::connect(webViewsList.first(), SIGNAL(loadFinished(bool)), this, SLOT(on_webView_loadFinished(bool)));
     QObject::connect(webViewsList.first(), SIGNAL(urlHasBeenChanged(QString)), this, SLOT(on_webView_urlChanged(QString)));
 
-
     commitMenuItemsList();
     commitToolBarButtonsList();
     commitWebViewsList();
 
+    QFileInfo loadingPageInfo(QString::fromStdString(CRhodesApp::getInstance()->getLoadingPngPath()));
+    if (loadingPageInfo.exists()){
+        webViewsList.first()->setUrl(QString::fromStdString(CRhodesApp::getInstance()->getLoadingPagePath()));
+    }
+    QFileInfo pngInfo(QString::fromStdString(CRhodesApp::getInstance()->getLoadingPngPath()));
+    if (pngInfo.exists()){
+        setCover(QString::fromStdString(CRhodesApp::getInstance()->getLoadingPngPath()));
+        QTimer::singleShot(3000, [&](){emit this->setCover("");});
+    }
+
     //qDebug() << "Available cameras: " + QString::number(QCameraInfo::availableCameras().size());
     QTimer::singleShot(500, [&](){this->showEvent();});
+
     qDebug() << "End of main window cunstruction";
 }
 
@@ -885,23 +902,11 @@ bool QtMainWindow::copyDirRecursive(QString fromDir, QString toDir)
 
         if (QFile::exists(to)){
 
-            QByteArray hashTo = getHashFromFile(to);
-            QByteArray hashFrom = getHashFromFile(from);
-            if (hashTo.size() == 0 || hashFrom.size() == 0){
-
-            }else if(hashFrom.size() == hashTo.size()){
-                bool b = true;
-                for(int i = 0; i < hashFrom.size(); i++){
-                    if (hashFrom.at(i) != hashTo.at(i)){ b = false; }
-                }
-                if (b){needToCopy = false;}
-            }
+            needToCopy = !isFilesEqual(from, to);
 
 
             if (needToCopy){
-                qDebug() << "From: " + from + " to: " + to;
-                qDebug() << "Hash from: " + hashFrom.toHex();
-                qDebug() << "Hash to: " + hashTo.toHex();
+                qDebug() << "Copy from: " + from + " to: " + to;
                 if (!QFile::remove(to)){
                     qDebug() << "Can't remove file: " + to;
                     return false;
@@ -914,6 +919,7 @@ bool QtMainWindow::copyDirRecursive(QString fromDir, QString toDir)
                 return false;
             }
         }
+        return true;
     }
 
     foreach (QString copyDir, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)){
@@ -924,6 +930,28 @@ bool QtMainWindow::copyDirRecursive(QString fromDir, QString toDir)
     }
     return true;
 }
+
+bool QtMainWindow::isFilesEqual(QString fileName1, QString fileName2)
+{
+    if (!QFile::exists(fileName1)) return false;
+    if (!QFile::exists(fileName2)) return false;
+
+    QByteArray hash1 = getHashFromFile(fileName1);
+    QByteArray hash2 = getHashFromFile(fileName2);
+
+    if (hash1.size() == 0 || hash2.size() == 0){return false;}
+    if (hash1.size() != hash2.size()){ return false;}
+
+
+    for(int i = 0; i < hash1.size(); i++){
+        if (hash1.at(i) != hash2.at(i)) return false;
+    }
+
+    return true;
+
+}
+
+
 
 QByteArray QtMainWindow::getHashFromFile(QString &fileName)
 {

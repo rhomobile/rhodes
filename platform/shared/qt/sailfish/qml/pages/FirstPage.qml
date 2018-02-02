@@ -6,7 +6,16 @@ import QtWebKit.experimental 1.0
 
 Page {
     id: mainPage
+    Image{
+        id: image
+        source: rootDelegate.cover
+        visible: rootDelegate.cover !== ""
+        anchors.fill: parent
+    }
+
     SilicaFlickable {
+        visible: rootDelegate.cover === ""
+        id: fickable
         anchors.fill: parent
 
         PullDownMenu {

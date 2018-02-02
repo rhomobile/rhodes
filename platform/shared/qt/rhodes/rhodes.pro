@@ -15,7 +15,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
     equals(QT_VERSION, 5.6.2) {
         QT += webkit quick #bluetooth #widgets
         DEFINES += OS_SAILFISH OS_LINUX
-        CONFIG += sailfishapp c++14 sailfishapp_i18n
+        CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
         message(Deprecated sailfish webkit enabled)
     }
 
@@ -233,6 +233,7 @@ HEADERS += $$PWD/../sailfish/src/custommenuitem.h \
     $$PWD/../sailfish/src/customwebviewtab.h \
     $$PWD/../sailfish/src/QtLogView.h \
     $$PWD/../sailfish/src/QtMainWindow.h \
+    $$PWD/../sailfish/src/RootDelegate.h \
     $$PWD/../sailfish/src/RhoNativeApiCall.h
 
 #DISTFILES += $$PWD/../sailfish/qml/harbour-sailfishrhodes.qml \

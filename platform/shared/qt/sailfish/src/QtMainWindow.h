@@ -41,6 +41,7 @@
 #include "custommenuitem.h"
 #include "customwebviewtab.h"
 #include "customtoolbaritem.h"
+#include "rootdelegate.h"
 #include <sailfishapp.h>
 #include <QDesktopServices>
 
@@ -55,6 +56,7 @@ class QtMainWindow : public QObject
     Q_PROPERTY(int rotation READ getRotation WRITE setRotation NOTIFY rotationChanged)
     Q_PROPERTY(QString usingDeviceID READ getUsingDeviceID WRITE setUsingDeviceID NOTIFY usingDeviceIDChanged)
     Q_PROPERTY(QString targetFilePath READ getTargetFilePath WRITE setTargetFilePath NOTIFY targetFilePathChanged)
+
 
 public:
     static QString writableDir;
@@ -159,8 +161,11 @@ public:
 
 
     static bool copyDirRecursive(QString fromDir, QString toDir);
+    static bool isFilesEqual(QString fileName1, QString fileName2);
     static QByteArray getHashFromFile(QString &fileName);
     static void doExit(bool wait = true);
+
+
 
 
 
@@ -252,6 +257,8 @@ public slots:
 
     void openQMLDocument(QString document);
 
+
+
 signals:
     void logicalDpiXChanged();
     void logicalDpiYChanged();
@@ -259,6 +266,8 @@ signals:
     void mainWindowTitleChanged();
     void usingDeviceIDChanged();
     void targetFilePathChanged();
+    void setCover(QString value);
+
 
 };
 

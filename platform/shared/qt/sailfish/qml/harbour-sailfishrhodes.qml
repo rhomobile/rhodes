@@ -9,11 +9,17 @@ ApplicationWindow
     cover: Component {
         Cover {
             transparent: true
-            Label {
+            anchors.fill: parent
+            Image {
+                source: "rho.png"
+                fillMode: Image.PreserveAspectFit
+                anchors.fill: parent
+            }
+            /*Label {
                 anchors.centerIn: parent
                 font.pixelSize: Theme.fontSizeLarge
-                text: "Cover"
-            }
+                text: "Rho"
+            }*/
         }
     }
 
