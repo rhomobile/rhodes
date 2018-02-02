@@ -59,11 +59,13 @@ void BarcodeQMLModel::restart(){
 
 void BarcodeQMLModel::done(){
     isActive = false;
-    rho::Hashtable<rho::String, rho::String>& mapRes = oResult.getStringHash();
-    mapRes[rho::barcode::HK_STATUS] = "ok";
-    mapRes[rho::barcode::HK_BARCODE] = decThread->getLastSavedValue().result.toStdString();
-    mapRes["format"] = decThread->getLastSavedValue().format.toStdString();
-    oResult.set(mapRes);
+    QTimer::singleShot(2000, [=](){
+        rho::Hashtable<rho::String, rho::String>& mapRes = oResult.getStringHash();
+        mapRes[rho::barcode::HK_STATUS] = "ok";
+        mapRes[rho::barcode::HK_BARCODE] = decThread->getLastSavedValue().result.toStdString();
+        mapRes["format"] = decThread->getLastSavedValue().format.toStdString();
+        oResult.set(mapRes);
+    });
 }
 
 void BarcodeQMLModel::cancel(){

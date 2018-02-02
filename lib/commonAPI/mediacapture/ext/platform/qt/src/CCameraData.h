@@ -51,24 +51,15 @@ public:
     void showView(rho::apiGenerator::CMethodResult &oResult);
     static QtMainWindow * getQMainWindow();
     static void choosePicture(rho::apiGenerator::CMethodResult &oResult);
+    QString targetFileName;
+    QString getTargetFileName() const;
+    void setTargetFileName(const QString &value);
+
 signals:
     void openCameraDialog(QString qmlDocument);
 public slots:
 #ifdef OS_SAILFISH
-    void captured(QString fileName){
-        qDebug() << "Captured: " + fileName;
-        rho::Hashtable<rho::String, rho::String>& mapRes = captureResult.getStringHash();
-        if (!fileName.isEmpty()){
-
-            mapRes["status"] = "ok";
-            mapRes["imageUri"] = fileName.toStdString();
-        }else{
-            mapRes["status"] = "canceled";
-            mapRes["message"] = "";
-        }
-        captureResult.set(mapRes);
-    }
-
+    void captured(QString fileName);
 #endif
 
 };

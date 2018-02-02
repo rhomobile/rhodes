@@ -10,9 +10,15 @@ void SignatureQMLModel::setFileName(QString value)
     fileName = value;
 }
 
+extern "C" {
+    const char* rho_native_rhopath();
+}
+
 SignatureQMLModel::SignatureQMLModel(QObject *parent) : QObject(parent)
 {
-    fileName = "signature.jpg";
+    QString targetPath = QtMainWindow::getLastInstance()->getDbFilesDir() ;
+    QDir tempDir(targetPath);
+    tempDir.mkpath(targetPath);
 }
 
 void SignatureQMLModel::done(){
@@ -31,6 +37,17 @@ void SignatureQMLModel::cancel(){
     oResult.set(mapRes);
 }
 
-void SignatureQMLModel::setOResult(rho::apiGenerator::CMethodResult &oResult){
+void SignatureQMLModel::setOResult(QString filePath, rho::apiGenerator::CMethodResult &oResult){
+
     this->oResult = oResult;
+
+    QString targetPath = filePath;
+    if(!targetPath.endsWith(".jpg", Qt::CaseInsensitive) || !targetPath.endsWith(".png", Qt::CaseInsensitive)){
+        targetPath.append(".jpg");
+    }
+    if(!targetPath.startsWith(QtMainWindow::getLastInstance()->getDbFilesDir(), Qt::CaseInsensitive)){
+        targetPath.prepend(QtMainWindow::getLastInstance()->getDbFilesDir());
+    }
+
+    setFileName(targetPath);
 }

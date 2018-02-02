@@ -118,8 +118,8 @@ public:
         return lastInstance;
     }
 
-    QString getDbFilesDir(){
-        QString dbfilesDir = writableDir + "db-dbfiles/";
+    static QString getDbFilesDir(){
+        QString dbfilesDir = writableDir + "db/db-files/";
         QDir dir(dbfilesDir);
         if (!dir.exists()){
             dir.mkpath(dbfilesDir);
@@ -159,6 +159,7 @@ public:
 
 
     static bool copyDirRecursive(QString fromDir, QString toDir);
+    static QByteArray getHashFromFile(QString &fileName);
     static void doExit(bool wait = true);
 
 

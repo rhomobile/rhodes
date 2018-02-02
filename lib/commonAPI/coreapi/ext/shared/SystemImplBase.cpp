@@ -102,6 +102,8 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
 #endif
 #elif defined(OS_ANDROID)
     oResult.set( PLATFORM_ANDROID );
+#elif defined(OS_SAILFISH)
+    oResult.set( L"SAILFISH" );
 #elif defined(OS_LINUX)
     oResult.set( L"LINUX" );
 #else

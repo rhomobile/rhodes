@@ -80,6 +80,7 @@ Page {
             anchors.fill: parent;
             onClicked: {
                 canvas.save(signatureModel[0].fileName);
+                console.log(signatureModel[0].fileName);
                 signatureModel[0].done();
                 pageStack.pop();
             }

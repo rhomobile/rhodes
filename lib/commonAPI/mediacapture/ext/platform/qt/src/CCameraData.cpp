@@ -108,3 +108,47 @@ void CCameraData::choosePicture(rho::apiGenerator::CMethodResult& oResult) {
     getter->run();
 }
 
+QString CCameraData::getTargetFileName() const
+{
+    return targetFileName;
+}
+
+void CCameraData::setTargetFileName(const QString &value)
+{
+    targetFileName = value;
+}
+#ifdef OS_SAILFISH
+extern "C" {
+const char* rho_native_rhopath();
+}
+void CCameraData::captured(QString fileName){
+    qDebug() << "Captured: " + fileName;
+    rho::Hashtable<rho::String, rho::String>& mapRes = captureResult.getStringHash();
+    if (!fileName.isEmpty()){
+        QString targetPath = getTargetFileName();
+        QFileInfo info(fileName);
+        if (targetPath.isEmpty()){
+            targetPath.append(QtMainWindow::getDbFilesDir() + "IMG_" + QDate::currentDate().toString("yyyyMMdd") +
+                              QTime::currentTime().toString("hhmmss") + "." + info.suffix());
+        }else if (!targetPath.endsWith(info.suffix())){
+            targetPath.append("." + info.suffix());
+        }
+        if (!targetPath.startsWith(QtMainWindow::getDbFilesDir())){
+            targetPath.prepend(QtMainWindow::getDbFilesDir());
+        }
+
+
+        QFile::copy(fileName, targetPath);
+
+        mapRes["status"] = "ok";
+        mapRes["imageUri"] = targetPath.toStdString();
+    }else{
+        mapRes["status"] = "canceled";
+        mapRes["message"] = "";
+    }
+    captureResult.set(mapRes);
+    QFile removable(fileName);
+    removable.remove();
+
+}
+#endif

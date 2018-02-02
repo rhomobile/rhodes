@@ -180,7 +180,7 @@ namespace rho {
         } 
 
         virtual void setFileName( const rho::String& fileName, rho::apiGenerator::CMethodResult& oResult) {
-
+            camera->setTargetFileName(QString::fromStdString(fileName));
         } 
 
         virtual void getCompressionFormat(rho::apiGenerator::CMethodResult& oResult) {

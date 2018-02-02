@@ -32,16 +32,18 @@ public:
 	/**************************************************************************/
     virtual void takeFullScreen( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 	{       
+        QString fileName;
         if (propertyMap.containsKey("signature_uri")){
-            SignatureQMLModel::getInstance()->setFileName(QString::fromStdString(propertyMap.get("signature_uri")));
+            fileName = QString::fromStdString(propertyMap.get("signature_uri"));
         }else if (propertyMap.containsKey("imageUri")){
-            SignatureQMLModel::getInstance()->setFileName(QString::fromStdString(propertyMap.get("imageUri")));
+            fileName = QString::fromStdString(propertyMap.get("imageUri"));
         }else if (propertyMap.containsKey("fileName")){
-            SignatureQMLModel::getInstance()->setFileName(QString::fromStdString(propertyMap.get("fileName")));
+            fileName = QString::fromStdString(propertyMap.get("fileName"));
         }else{
-            SignatureQMLModel::getInstance()->setFileName(QtMainWindow::getLastInstance()->getDbFilesDir() + "signature.jpg");
+            fileName = "signature_" + QDate::currentDate().toString("yyyyMMdd") +
+                    QTime::currentTime().toString("hhmmss") + ".jpg";
         }
-        SignatureQMLModel::getInstance()->setOResult(oResult);
+        SignatureQMLModel::getInstance()->setOResult(fileName, oResult);
         QtMainWindow::getLastInstance()->openQMLDocument("SignaturePage.qml");
 	}
 

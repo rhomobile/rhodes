@@ -54,7 +54,7 @@ public slots:
     void done();
     void cancel();
 
-    void setOResult(rho::apiGenerator::CMethodResult &oResult);
+    void setOResult(QString filePath, rho::apiGenerator::CMethodResult &oResult);
 
 };
 

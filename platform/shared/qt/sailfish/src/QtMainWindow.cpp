@@ -48,6 +48,7 @@
 #include <sailfishapp.h>
 #include "impl/MainWindowImpl.h"
 #include <QCameraInfo>
+#include <QCryptographicHash>
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
 #define stricmp strcasecmp
@@ -875,20 +876,43 @@ bool QtMainWindow::copyDirRecursive(QString fromDir, QString toDir)
     if (!fromDir.endsWith(QDir::separator())) fromDir.append(QDir::separator());
     if (!toDir.endsWith(QDir::separator())) toDir.append(QDir::separator());
 
-    qDebug() << "Recursive copy from dir " + fromDir + " to " + toDir;
+    //qDebug() << "Recursive copy from dir " + fromDir + " to " + toDir;
     foreach (QString copyFile, dir.entryList(QDir::Files)){
         QString from = fromDir + copyFile;
         QString to = toDir + copyFile;
-        qDebug() << "From: " + from + " to: " + to;
+
+        bool needToCopy = true;
+
         if (QFile::exists(to)){
-            if (!QFile::remove(to)){
-                qDebug() << "Can't remove file: " + to;
-                return false;
+
+            QByteArray hashTo = getHashFromFile(to);
+            QByteArray hashFrom = getHashFromFile(from);
+            if (hashTo.size() == 0 || hashFrom.size() == 0){
+
+            }else if(hashFrom.size() == hashTo.size()){
+                bool b = true;
+                for(int i = 0; i < hashFrom.size(); i++){
+                    if (hashFrom.at(i) != hashTo.at(i)){ b = false; }
+                }
+                if (b){needToCopy = false;}
+            }
+
+
+            if (needToCopy){
+                qDebug() << "From: " + from + " to: " + to;
+                qDebug() << "Hash from: " + hashFrom.toHex();
+                qDebug() << "Hash to: " + hashTo.toHex();
+                if (!QFile::remove(to)){
+                    qDebug() << "Can't remove file: " + to;
+                    return false;
+                }
             }
         }
-        if (QFile::copy(from, to) == false){
-            qDebug() << "Can't copy file: " + from;
-            return false;
+        if (needToCopy){
+            if (QFile::copy(from, to) == false){
+                qDebug() << "Can't copy file: " + from;
+                return false;
+            }
         }
     }
 
@@ -899,6 +923,15 @@ bool QtMainWindow::copyDirRecursive(QString fromDir, QString toDir)
         if (copyDirRecursive(from, to) == false){return false;}
     }
     return true;
+}
+
+QByteArray QtMainWindow::getHashFromFile(QString &fileName)
+{
+    QFile file(fileName);
+    file.open(QFile::ReadOnly);
+    QByteArray hash = QCryptographicHash::hash(file.readAll(), QCryptographicHash::Md5);
+    file.close();
+    return hash;
 }
 
 
@@ -1049,7 +1082,7 @@ void QtMainWindow::fullscreenCommand(int enable)
 
 bool QtMainWindow::getFullScreen()
 {
-    true;
+    return true;
 }
 
 void QtMainWindow::setCookie(const char* url, const char* cookie)

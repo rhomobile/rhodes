@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_SignatureQMLModel_t {
-    QByteArrayData data[12];
-    char stringdata0[139];
+    QByteArrayData data[13];
+    char stringdata0[148];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -38,14 +38,16 @@ QT_MOC_LITERAL(5, 59, 5), // "value"
 QT_MOC_LITERAL(6, 65, 4), // "done"
 QT_MOC_LITERAL(7, 70, 6), // "cancel"
 QT_MOC_LITERAL(8, 77, 10), // "setOResult"
-QT_MOC_LITERAL(9, 88, 33), // "rho::apiGenerator::CMethodRes..."
-QT_MOC_LITERAL(10, 122, 7), // "oResult"
-QT_MOC_LITERAL(11, 130, 8) // "fileName"
+QT_MOC_LITERAL(9, 88, 8), // "filePath"
+QT_MOC_LITERAL(10, 97, 33), // "rho::apiGenerator::CMethodRes..."
+QT_MOC_LITERAL(11, 131, 7), // "oResult"
+QT_MOC_LITERAL(12, 139, 8) // "fileName"
 
     },
     "SignatureQMLModel\0fileNameChanged\0\0"
     "getFileName\0setFileName\0value\0done\0"
-    "cancel\0setOResult\0rho::apiGenerator::CMethodResult&\0"
+    "cancel\0setOResult\0filePath\0"
+    "rho::apiGenerator::CMethodResult&\0"
     "oResult\0fileName"
 };
 #undef QT_MOC_LITERAL
@@ -57,7 +59,7 @@ static const uint qt_meta_data_SignatureQMLModel[] = {
        0,       // classname
        0,    0, // classinfo
        6,   14, // methods
-       1,   54, // properties
+       1,   56, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
@@ -71,7 +73,7 @@ static const uint qt_meta_data_SignatureQMLModel[] = {
        4,    1,   46,    2, 0x0a /* Public */,
        6,    0,   49,    2, 0x0a /* Public */,
        7,    0,   50,    2, 0x0a /* Public */,
-       8,    1,   51,    2, 0x0a /* Public */,
+       8,    2,   51,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -81,10 +83,10 @@ static const uint qt_meta_data_SignatureQMLModel[] = {
     QMetaType::Void, QMetaType::QString,    5,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 9,   10,
+    QMetaType::Void, QMetaType::QString, 0x80000000 | 10,    9,   11,
 
  // properties: name, type, flags
-      11, QMetaType::QString, 0x00095401,
+      12, QMetaType::QString, 0x00095401,
 
        0        // eod
 };
@@ -101,7 +103,7 @@ void SignatureQMLModel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         case 2: _t->setFileName((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 3: _t->done(); break;
         case 4: _t->cancel(); break;
-        case 5: _t->setOResult((*reinterpret_cast< rho::apiGenerator::CMethodResult(*)>(_a[1]))); break;
+        case 5: _t->setOResult((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< rho::apiGenerator::CMethodResult(*)>(_a[2]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {

@@ -101,6 +101,7 @@ HEADERS += \
 ../../shared/generated/cpp/ApplicationBase.h\
 ../../shared/generated/cpp/DatabaseBase.h\
 ../../shared/generated/cpp/IApplication.h\
+../../shared/generated/cpp/IConfig.h\
 ../../shared/generated/cpp/IDatabase.h\
 ../../shared/generated/cpp/ILog.h\
 ../../shared/generated/cpp/INativeMenubar.h\
@@ -133,11 +134,13 @@ HEADERS += \
 ../../shared/generated/cpp/SystemBase.h\
 ../../shared/generated/cpp/WebViewBase.h\
 ../../shared/generated/cpp/ITimer.h\
-../../shared/generated/cpp/TimerBase.h
+../../shared/generated/cpp/TimerBase.h\
+../../shared/generated/cpp/ConfigBase.h
 
 SOURCES += \
 ../../shared/SQLite3ImplRuby.c\
 ../../shared/ApplicationImpl.cpp\
+../../shared/ConfigImpl.cpp\
 ../../shared/FileImpl.cpp\
 ../../shared/InitExtension.cpp\
 ../../shared/LogImpl.cpp\
@@ -157,6 +160,9 @@ SOURCES += \
 ../../shared/generated/database_api_init.cpp\
 ../../shared/generated/database_js_api.cpp\
 ../../shared/generated/database_ruby_api.c\
+../../shared/generated/config_api_init.cpp\
+../../shared/generated/config_js_api.cpp\
+../../shared/generated/config_ruby_api.c\
 ../../shared/generated/log_api_init.cpp\
 ../../shared/generated/log_js_api.cpp\
 ../../shared/generated/log_ruby_api.c\
@@ -208,6 +214,9 @@ SOURCES += \
 ../../shared/generated/cpp/ApplicationBase.cpp\
 ../../shared/generated/cpp/Application_js_wrap.cpp\
 ../../shared/generated/cpp/Application_ruby_wrap.cpp\
+../../shared/generated/cpp/ConfigBase.cpp\
+../../shared/generated/cpp/Config_js_wrap.cpp\
+../../shared/generated/cpp/Config_ruby_wrap.cpp\
 ../../shared/generated/cpp/DatabaseBase.cpp\
 ../../shared/generated/cpp/Database_js_wrap.cpp\
 ../../shared/generated/cpp/Database_ruby_wrap.cpp\
