@@ -44,7 +44,7 @@
 #include <arpa/inet.h>
 #endif
 
-#if !defined(OS_WINCE)
+#if !defined(OS_WINCE) && !defined(OS_SAILFISH)
 #include <common/stat.h>
 #define HTTP_EAGAIN_TIMEOUT 10
 #define HTTP_EAGAIN_TIMEOUT_STR "10"
