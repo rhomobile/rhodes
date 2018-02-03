@@ -46,12 +46,13 @@
 
 #if !defined(OS_WINCE)
 #include <common/stat.h>
+#ifndef OS_SAILFISH
 #define HTTP_EAGAIN_TIMEOUT 10
 #define HTTP_EAGAIN_TIMEOUT_STR "10"
-#elif defined(OS_SAILFISH)
-#include <common/stat.h>
+#else
 #define HTTP_EAGAIN_TIMEOUT 60
 #define HTTP_EAGAIN_TIMEOUT_STR "60"
+#endif
 #else
 #include "CompatWince.h"
 #define HTTP_EAGAIN_TIMEOUT 60
