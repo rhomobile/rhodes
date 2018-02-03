@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     QScopedPointer<QGuiApplication> pApplication(SailfishApp::application(argc, argv));
     QGuiApplication * application = const_cast<QGuiApplication *>(pApplication.data());
     qRegisterMetaType<QString>("QString");
-    //qmlRegisterCustomType<QtMainWindow>("harbour.rhodes.QtMainWindow",1,0"QtMainWindow");
+    qmlRegisterUncreatableType<RootDelegate>("RootDelegate",1,0,"RootDelegate","Err");
 
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -101,18 +101,15 @@ int main(int argc, char *argv[])
     qDebug() << "Executable file: " + QString::fromLocal8Bit(argv[0]);
     QScopedPointer<QQuickView> pView(SailfishApp::createView());
     QQuickView * view = const_cast<QQuickView * >(pView.data());
+    RootDelegate::getInstance(view->rootContext()->engine())->moveToThread(view->rootContext()->engine()->thread());
     QtMainWindow::setView(view);
 
     CMainWindow* m_appWindow = CMainWindow::getInstance();
-
-    //view->rootContext()->setContextObject(QtMainWindow::getLastInstance());
-    view->rootContext()->setContextProperty("mainWindowObject", QtMainWindow::getLastInstance());
 
     // Create the main application window
     QObject::connect(view, &QQuickView::activeChanged, [=](){qDebug() << (view->isActive()?"Active":"Not active");});
     QObject::connect(view->engine(), &QQmlEngine::quit, application, &QGuiApplication::quit);
     qDebug() << "Main path to QML: " + SailfishApp::pathToMainQml().toString();
-
 
     qDebug() << "Writable location is: " + QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     const QByteArray dir = QStandardPaths::writableLocation(QStandardPaths::DataLocation).toLatin1();
@@ -120,7 +117,11 @@ int main(int argc, char *argv[])
     m_strRootPath += "/rho/";
     qDebug() << "Main directory is: " + QString::fromStdString(m_strRootPath);
     QString dataDirectory("/usr/share/" + application->applicationName() + "/data/rho/");
-    QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
+
+    if (!QtMainWindow::isFilesEqual(dataDirectory + "RhoBundleMap.txt",  QString::fromStdString(m_strRootPath) + "RhoBundleMap.txt")){
+        QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
+    }
+
     QtMainWindow::setWritableDir(QString::fromStdString(m_strRootPath));
     QDir::setCurrent(QString::fromStdString(m_strRootPath));
 
@@ -153,7 +154,7 @@ int main(int argc, char *argv[])
     RHODESAPP().setJSApplication(m_isJSApplication);
 
     m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
-
+    view->rootContext()->setContextProperty("rootDelegate", RootDelegate::getInstance());
     view->setSource(SailfishApp::pathToMainQml());
     view->showFullScreen();
     RHODESAPP().startApp();

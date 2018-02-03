@@ -1762,7 +1762,11 @@ void CRhodesApp::initAppUrls()
     }
 
 #ifndef RHODES_EMULATOR
+    #ifndef OS_SAILFISH
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/app/loading.html";
+    #else
+    m_strLoadingPagePath = getRhoRootPath() + "apps/app/loading.html";
+    #endif
 	m_strLoadingPngPath = getRhoRootPath() + "apps/app/loading.png";
 #else
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "app/loading.html";
