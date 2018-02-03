@@ -101,22 +101,15 @@ int main(int argc, char *argv[])
     qDebug() << "Executable file: " + QString::fromLocal8Bit(argv[0]);
     QScopedPointer<QQuickView> pView(SailfishApp::createView());
     QQuickView * view = const_cast<QQuickView * >(pView.data());
-    RootDelegate::getInstance(view->rootContext()->engine());
-    RootDelegate::getInstance()->moveToThread(view->rootContext()->engine()->thread());
+    RootDelegate::getInstance(view->rootContext()->engine())->moveToThread(view->rootContext()->engine()->thread());
     QtMainWindow::setView(view);
 
     CMainWindow* m_appWindow = CMainWindow::getInstance();
-
-
-    qmlRegisterUncreatableType<QtMainWindow>("QtMainWindow",1,0,"QtMainWindow","can not instantiate MyCPPClass in qml");
-    //view->rootContext()->setContextObject(QtMainWindow::getLastInstance());
-
 
     // Create the main application window
     QObject::connect(view, &QQuickView::activeChanged, [=](){qDebug() << (view->isActive()?"Active":"Not active");});
     QObject::connect(view->engine(), &QQmlEngine::quit, application, &QGuiApplication::quit);
     qDebug() << "Main path to QML: " + SailfishApp::pathToMainQml().toString();
-
 
     qDebug() << "Writable location is: " + QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     const QByteArray dir = QStandardPaths::writableLocation(QStandardPaths::DataLocation).toLatin1();

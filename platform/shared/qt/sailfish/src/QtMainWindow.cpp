@@ -901,9 +901,7 @@ bool QtMainWindow::copyDirRecursive(QString fromDir, QString toDir)
         bool needToCopy = true;
 
         if (QFile::exists(to)){
-
             needToCopy = !isFilesEqual(from, to);
-
 
             if (needToCopy){
                 qDebug() << "Copy from: " + from + " to: " + to;
@@ -919,7 +917,6 @@ bool QtMainWindow::copyDirRecursive(QString fromDir, QString toDir)
                 return false;
             }
         }
-        return true;
     }
 
     foreach (QString copyDir, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)){
