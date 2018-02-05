@@ -2596,6 +2596,7 @@ namespace "run" do
     task :spec => ["clean:iphone"] do
     #task :spec do
       is_timeout = false
+      is_correct_stop = false
       Jake.decorate_spec do
           Rake::Task['run:buildsim'].invoke
 
@@ -2636,9 +2637,12 @@ namespace "run" do
             sleep(1)
           end
 
-          timeout_in_seconds = 60*60
+          timeout_in_seconds = 30*60
 
           log_lines = []
+          last_spec_line = ""
+          last_spec_iseq_line = ""
+
 
           start_logging = Time.now
 
@@ -2657,14 +2661,25 @@ namespace "run" do
                 # FIXME: Workaround to avoid endless loop in the case of System.exit
                 # seg. fault: (SEGV received in SEGV handler)
                 # Looking at log end marker from mspec runner
-                $iphone_end_spec = true if line =~ /MSpec runner stopped/
+                is_mspec_stop = line =~ /MSpec runner stopped/
+                is_terminated = line =~ /\| \*\*\*Terminated\s+(.*)/
+
+                is_correct_stop = true if is_mspec_stop || is_terminated
+
+                $iphone_end_spec = true if is_mspec_stop
+
+
+                last_spec_line = line if line =~ /_spec/
+                last_spec_iseq_line = line if line =~ /_spec.iseq/
 
                 #check for timeout
                 if (Time.now.to_i - start_logging.to_i) > timeout_in_seconds
                     $iphone_end_spec = true
                     is_timeout = true
                 end
-
+                if $iphone_end_spec
+                    puts "%%% stop spec by this line : ["+line.to_s+"]"
+                end
                 break if $iphone_end_spec
               end
               sleep(3) unless $iphone_end_spec
@@ -2673,10 +2688,14 @@ namespace "run" do
 
           puts "Processing spec results ..."
           Jake.process_spec_results(start)
-          if is_timeout
+          if is_timeout || !is_correct_stop
+              puts "Tests has issues : is_timeout["+is_timeout.to_s+"], timeout["+timeout_in_seconds.to_s+" sec], not_correct_terminated_line["+(!is_correct_stop).to_s+"] !"
               puts "Tests stoped by timeout ( "+timeout_in_seconds.to_s+" sec ) !"
-              puts "This is last 64 lines from log :"
-              idx = log_lines.size-64
+              puts "last_spec_line = ["+last_spec_line.to_s+"]"
+              puts "last_spec_iseq_line = ["+last_spec_iseq_line.to_s+"]"
+              puts "last spec executed = ["+$latest_test_line.to_s+"]"
+              puts "This is last 1024 lines from log :"
+              idx = log_lines.size-1024
               if idx < 0
                   idx = 0
               end
@@ -2694,6 +2713,7 @@ namespace "run" do
       unless $dont_exit_on_failure
         exit 1 if is_timeout
         exit 1 if $total.to_i==0
+        exit 1 if !is_correct_stop
         exit $failed.to_i
       end
     end

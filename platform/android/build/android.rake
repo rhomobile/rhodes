@@ -743,25 +743,35 @@ namespace "config" do
       apilevel = nil
       target_name = nil
 
+      $logger.debug "Parsing 'list target' output"
+
       `"#{$androidbin}" list target`.split(/\n/).each do |line|
         line.chomp!
+
+        $logger.debug "parsing line: #{line}"
 
         if line =~ /^id:\s+([0-9]+)\s+or\s+\"(.*)\"/
           id = $1
           target_name = $2
 
+          $logger.debug "found target. ID: #{id}; name: #{target_name}"
+
           if $use_google_addon_api
+            $logger.debug "checking if target is applcable for Google API"
             if line =~ /Google Inc\.:Google APIs:([0-9]+)/
               apilevel = $1.to_i
               $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
+              $logger.debug "adding target #{id} for Google API"
             end
           end
         end
 
         unless $use_google_addon_api
+          $logger.debug "checking if target is applcable for non-Google API"
           if line =~ /^\s+API\s+level:\s+([0-9]+)$/
             apilevel = $1.to_i
             $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
+            $logger.debug "adding target #{id} for non-Google API"
           end
         end
 
@@ -771,15 +781,12 @@ namespace "config" do
             $2.split(/,\s*/).each do |abi|
               $androidtargets[apilevel][:abis] << abi
             end
-            puts $androidtargets[apilevel][:abis].inspect if USE_TRACES
+            $logger.debug "added target abis: #{pp $androidtargets[apilevel][:abis].inspect}"
           end
         end
       end
 
-      if USE_TRACES
-        puts "Android targets:"
-        puts $androidtargets.inspect
-      end
+      $logger.debug "Android targets:\n#{pp $androidtargets.inspect}"
 
     end
 
@@ -2658,9 +2665,11 @@ def run_as_spec(device_flag, uninstall_app)
   Thread.new {
     sleep 2000
     if device_flag == '-e'
-      AndroidTools.kill_adb_and_emulator
+      #AndroidTools.kill_adb_and_emulator
+      puts "%%% was AndroidTools.kill_adb_and_emulator !!!"
     else
-      AndroidTools.kill_adb_logcat device_flag, log_name
+      #AndroidTools.kill_adb_logcat device_flag, log_name
+      puts "%%% was AndroidTools.kill_adb_logcat device_flag, log_name !!!"
     end
   }
 
@@ -2671,46 +2680,142 @@ def run_as_spec(device_flag, uninstall_app)
   Jake.before_run_spec
   start = Time.now
 
+  puts "CurTime is "+Time.now.to_s
   puts "Waiting for application ..."
 
-  for i in 0..60
-    if AndroidTools.application_running(device_flag, $app_package_name)
-      break
-    else
-      sleep(1)
+
+  tc_start_time = Time.now
+  tc_overtime = false
+  tc_timeout_in_seconds = 10*60
+
+  while !tc_overtime do
+    app_is_running = AndroidTools.application_running(device_flag, $app_package_name)
+    $logger.debug "%%% app_is_running="+app_is_running.to_s
+    if app_is_running
+        tc_overtime = true
     end
+    if ((Time.now.to_i - tc_start_time.to_i) > tc_timeout_in_seconds)
+        tc_overtime = true
+    end
+    sleep(5) unless tc_overtime
   end
+  sleep(1)
+  puts "CurTime is "+Time.now.to_s
+  app_is_runningz = AndroidTools.application_running(device_flag, $app_package_name)
+  puts "%%% app_is_runningz FINAL ="+app_is_runningz.to_s
+  sleep(1)
 
   puts "Waiting for log file: #{log_name}"
 
-  for i in 0..120
-    if !File.exist?(log_name)
-      sleep(1)
-    else
-      break
+  tc_start_time = Time.now
+  tc_overtime = false
+  tc_timeout_in_seconds = 5*60
+
+  while !tc_overtime do
+    if File.exist?(log_name)
+      tc_overtime = true
     end
+    if ((Time.now.to_i - tc_start_time.to_i) > tc_timeout_in_seconds)
+        tc_overtime = true
+    end
+    sleep(5) unless tc_overtime
   end
+
+  puts "CurTime is "+Time.now.to_s
+
+  logfile_is_exist = File.exist?(log_name)
+  puts "%%% logfile is exist FINAL ="+logfile_is_exist.to_s
 
   if !File.exist?(log_name)
     puts "Cannot read log file: " + log_name
     exit(1)
   end
 
+
+  timeout_in_seconds = 25*60
+
+  timeout_output_in_seconds = 3*60
+  last_output_time = Time.now
+
+  log_lines = []
+
+  start_logging = Time.now
+  is_timeout = false
+
+  last_spec_line = ""
+  last_spec_iseq_line = ""
+
+  is_correct_stop = false
+  is_exit_by_app_not_run = false
+
+  app_exit_start_time = nil
+  app_exit_timeout_in_seconds = 60
+  app_is_running = true
+
   puts "Start reading log ..."
   File.open(log_name, 'r:UTF-8') do |io|
+    $logger.debug "%%% io="+io.to_s
     end_spec = false
     while !end_spec do
+      $logger.debug "%%% while start"
       io.each do |line|
-        puts line
+        #puts "%%% line="+line.to_s
+        $logger.debug line
+        log_lines << line
         if line.class.method_defined? "valid_encoding?"
           end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
         else
           end_spec = !Jake.process_spec_output(line)
         end
-        end_spec = true if line =~ /MSpec runner stopped/
+
+        is_mspec_stop = line =~ /MSpec runner stopped/
+        is_terminated = line =~ /\| \*\*\*Terminated\s+(.*)/
+
+        is_correct_stop = true if is_mspec_stop || is_terminated
+
+        end_spec = true if is_mspec_stop
+
+        if end_spec
+            puts "%%% stop spec !"
+            puts "%%% stop spec by this line : ["+line.to_s+"]"
+        end
+
+        last_spec_line = line if line =~ /_spec/
+        last_spec_iseq_line = line if line =~ /_spec.iseq/
+
+        #check for timeout
+        if (Time.now.to_i - start_logging.to_i) > timeout_in_seconds
+            end_spec = true
+            is_timeout = true
+            puts "%%% TIMEOUT !!!"
+        end
+        if (Time.now.to_i - last_output_time.to_i) > timeout_output_in_seconds
+            last_output_time = Time.now
+            puts "%%% please wait - application still running ..."
+        end
+
         break if end_spec
       end
-      break unless AndroidTools.application_running(device_flag, $app_package_name)
+      if (Time.now.to_i - last_output_time.to_i) > timeout_output_in_seconds
+          last_output_time = Time.now
+          puts "%%% please wait - application still running ..."
+      end
+      if app_is_running
+          app_is_running = AndroidTools.application_running(device_flag, $app_package_name)
+          puts "%%% application is not runned on simulator !!!" if !app_is_running
+          is_exit_by_app_not_run = !app_is_running
+          if !app_is_running
+              app_exit_start_time = Time.now
+          end
+      end
+
+      if !app_is_running
+          if (Time.now.to_i - app_exit_start_time.to_i) > app_exit_timeout_in_seconds
+              end_spec = true
+              puts "%%% application is not runned - stop waiting dealy for log processing !"
+          end
+      end
+      #break unless app_is_running
       sleep(5) unless end_spec
     end
   end
@@ -2718,16 +2823,38 @@ def run_as_spec(device_flag, uninstall_app)
   puts "Processing spec results ..."
   Jake.process_spec_results(start)
 
-  # stop app
-  uninstall_app = true if uninstall_app.nil? # by default uninstall spec app
-  do_uninstall(device_flag) if uninstall_app and ((device_flag != '-e') or AndroidTools.is_emulator_running)
-  if device_flag == '-e'
-    AndroidTools.kill_adb_and_emulator
-  else
-    AndroidTools.kill_adb_logcat(device_flag, log_name)
+  if is_timeout || (is_exit_by_app_not_run && !is_correct_stop)  || !is_correct_stop
+      puts "Tests has issues : is_timeout["+is_timeout.to_s+"], timeout["+timeout_in_seconds.to_s+" sec], app_exit_unexpected["+is_exit_by_app_not_run.to_s+"], not_correct_terminated_line["+(!is_correct_stop).to_s+"] !"
+      puts "last_spec_line = ["+last_spec_line.to_s+"]"
+      puts "last_spec_iseq_line = ["+last_spec_iseq_line.to_s+"]"
+      puts "last spec executed = ["+$latest_test_line.to_s+"]"
+      puts "This is last 5000 lines from log :"
+      idx = log_lines.size-5000
+      if idx < 0
+          idx = 0
+      end
+      while idx < log_lines.size
+          puts "line ["+idx.to_s+"]: "+log_lines[idx]
+          idx = idx + 1
+      end
   end
 
+  # stop app
+  #uninstall_app = true if uninstall_app.nil? # by default uninstall spec app
+  #do_uninstall(device_flag) if uninstall_app and ((device_flag != '-e') or AndroidTools.is_emulator_running)
+  #if device_flag == '-e'
+    #AndroidTools.kill_adb_and_emulator
+  #else
+    #AndroidTools.kill_adb_logcat(device_flag, log_name)
+  #end
+
   $stdout.flush
+
+  exit 1 if is_timeout
+  exit 1 if $total.to_i==0
+  exit 1 if !is_correct_stop
+  exit $failed.to_i
+
 end
 
 namespace "run" do
@@ -2745,7 +2872,7 @@ namespace "run" do
       throw "You must pass package name" if package_file.nil?
       throw "No file to run" if !File.exists?(package_file)
 
-      AndroidTools.run_emulator(:hidden => ENV['TRAVIS'])
+      AndroidTools.run_emulator(:hidden => ((ENV['TRAVIS'] != nil) && (ENV['TRAVIS'] != "")))
 
       AndroidTools.load_app_and_run('-e', File.expand_path(package_file), package_name)
     end
@@ -2778,7 +2905,7 @@ namespace "run" do
       task :debug => ['run:android:emulator:run']
       task :run => ['config:android:emulator'] do
         AndroidTools.kill_adb_logcat('-e')
-        AndroidTools.run_emulator(:hidden => ENV['TRAVIS'])
+        AndroidTools.run_emulator(:hidden => ((ENV['TRAVIS'] != nil) && (ENV['TRAVIS'] != "")))
 
         apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
         AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)

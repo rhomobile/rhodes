@@ -504,5 +504,8 @@ int rhoRubyVFPrintf(FILE *, const char *, va_list);
 
 //RHO
 
+//RHO for encoding & convertors
+#define EXTSTATIC 1
+
 
 #endif /* INCLUDE_RUBY_CONFIG_H */

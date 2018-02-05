@@ -461,5 +461,8 @@
 #define HAVE_RB_RATIONAL_DEN 1
 //RHO
 
+//RHO for encoding & convertors
+#define EXTSTATIC 1
+
 //RHO
 #endif /* INCLUDE_RUBY_CONFIG_H */

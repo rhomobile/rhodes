@@ -41,7 +41,7 @@ module MSpec
   def self.exc_count
     @exc_count
   end
-  
+
   def self.count
     @count
   end
@@ -89,6 +89,7 @@ module MSpec
       setup_env
       store :file, file
       actions :load
+      puts "MSPEC run spec: ["+file.to_s+"]"
       protect("loading #{file}") { Kernel.load file }
       actions :unload
     end
@@ -118,6 +119,9 @@ module MSpec
 
     store :file, file
     actions :load
+
+    puts "MSPEC run spec: ["+file.to_s+"]"
+
     protect("loading #{file}") { Kernel.load file }
     actions :unload
    end
@@ -134,17 +138,27 @@ module MSpec
   end
 
   def self.protect(location, &block)
+
+    #puts ">>>>>>"
+    #puts caller
+    #puts "<<<<<<"
+
+    passed = false
+
     begin
       @env.instance_eval(&block)
-      return true
+      #RHO
+      passed = true
+      #RHO
+      #return true
     rescue SystemExit => e
       raise e
     rescue Exception => exc
       register_exit 1
       actions :exception, ExceptionState.new(current && current.state, location, exc)
 
-        #RHO    
-        puts "FAIL: #{current} - #{exc.message}\n" + (@backtrace ? exc.backtrace.join("\n") : "")
+        #RHO
+        puts "FAIL: #{current} - #{exc.message}\n" + (@backtrace ? exc.backtrace.join("\n") : "")# + " @exc_count[#{@exc_count.to_s}]"
 
         not_supported = (exc.message=='RHO: not supported')
 
@@ -164,12 +178,25 @@ module MSpec
         if not_supported
           @not_supported_count+=1
         else
-          @exc_count+=1   
+          @exc_count+=1
         end
         #RHO
 
       return false
     end
+
+    #RHO
+    if passed
+        begin
+            #if current.to_s.length > 0
+                puts "PASSED: #{current.to_s} - OK"# +" @exc_count[#{@exc_count.to_s}]"
+            #end
+        rescue
+        end
+    end
+    return true
+    #RHO
+
   end
 
   # Guards can be nested, so a stack is necessary to know when we have

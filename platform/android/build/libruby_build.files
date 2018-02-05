@@ -125,3 +125,5 @@ platform/shared/ruby/ext/socket/unixserver.c
 platform/shared/ruby/ext/socket/unixsocket.c
 platform/shared/ruby/ext/io/nonblock/nonblock.c
 platform/shared/ruby/ext/io/wait/wait.c
+platform/shared/ruby/enc/trans/utf_16_32.c
+platform/shared/ruby/enc/trans/single_byte.c

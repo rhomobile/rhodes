@@ -289,67 +289,95 @@ end
 module_function :patch_avd_config
 
 def create_avd( avdname, apilevel, abi, use_google_apis )
-  puts "Creating new AVD. Name: #{avdname}; API level: #{apilevel}; ABI: #{abi}"
-  puts "Emulator params: #{$androidtargets[apilevel].inspect}"
+  @@logger.info "Creating new AVD. Name: #{avdname}; API level: #{apilevel}; ABI: #{abi}"
+  @@logger.info "Emulator params: #{$androidtargets[apilevel].inspect}"
 
   s_apis = use_google_apis ? "google_apis" : "default"
   avdmanager = File.join($androidsdkpath,'tools','bin','avdmanager')
 
-  #createavd = "echo no | \"#{avdmanager}\" --verbose create avd --name #{avdname} --package 'system-images;android-#{apilevel};#{s_apis};#{abi}' --sdcard 512M"
-  targetid = $androidtargets[apilevel][:id]
-  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{abi} --sdcard 512M"    
-  puts "Creating AVD image: #{createavd}"
-  IO.popen(createavd, 'r+') do |io|
-    io.puts "\n"
-    while line = io.gets
-      puts line
-    end
-    io.close
-    raise "Can't create AVD" unless $?.success?
-  end  
+  target = $androidtargets[apilevel]
+  targetid = target[:id] if target
+  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{s_apis}/#{abi} --sdcard 512M"    
+  @@logger.info "Creating AVD image old style: #{createavd}"
 
+  out, err, wait_thr = Jake.run_with_output(createavd)
+
+  @@logger.info "AVD create output:\n#{out}"
+  @@logger.warn "AVD create errors:\n#{err}" unless err.strip.empty?
+
+  unless ( err.strip.empty? and wait_thr.value.success? )
+    createavd = "echo no | \"#{avdmanager}\" --verbose create avd --name #{avdname} --package \"system-images;android-#{apilevel};#{s_apis};#{abi}\" --sdcard 512M"
+    @@logger.warn "Creating AVD failed. Will try new style: #{createavd}"
+    %x[#{createavd}]
+    raise "Can't create AVD" unless $?.success?
+  end
   patch_avd_config( avdname )
 end
 module_function :create_avd
 
+def get_installed_images_apilevels
+  levels = []
+  Dir.glob( File.join( $androidsdkpath, 'system-images', '*' ) ) { |d| 
+    l = File.basename(d).match(/android-(\d+)/)[1].to_i
+    levels << l
+  }
+  levels
+end
+module_function :get_installed_images_apilevels
+
 def get_avd_image_real_abi( apilevel, abi, use_google_apis)
-  target = $androidtargets[apilevel]
-  if target
-    s_apis = use_google_apis ? "google_apis" : "default"
-    target[:abis].each { |targetabi| 
-      return targetabi if targetabi =~ /#{s_apis}\/#{abi}/
-    }
-  end
+  @@logger.debug "get_avd_image_real_abi: #{apilevel}, #{abi}, #{use_google_apis}"
+
+  s_apis = use_google_apis ? "google_apis" : "default"
+  Dir.glob( File.join( $androidsdkpath, 'system-images', "android-#{apilevel}", s_apis, '*' ) ) { |dir|
+    @@logger.debug "looking at: #{dir}"
+    targetabi = File.basename(dir)
+    return targetabi if targetabi =~ /#{abi}/
+  }
   nil
 end
 module_function :get_avd_image_real_abi
 
 def get_avd_image( apilevel, abis, use_google_apis )
+  @@logger.debug "get_avd_image: #{apilevel}, #{abis.inspect}, #{use_google_apis}"
   i = abis.index('x86')
   (abis[0],abis[i] = abis[i],abis[0]) if i #will look for x86 first
-  target = $androidtargets[apilevel]
-  if target
-    abis.each do |abi|
-      realabi = get_avd_image_real_abi(apilevel,abi,true) #first always try Google APIs image;
-      realabi = get_avd_image_real_abi(apilevel,abi,use_google_apis) unless ( realabi and (!use_google_apis) )
-      return realabi if realabi
-    end  
-  end
+  abis.each do |abi|
+    realabi = get_avd_image_real_abi(apilevel,abi,use_google_apis)
+    return realabi, use_google_apis if realabi
+    realabi = get_avd_image_real_abi(apilevel,abi,true) unless use_google_apis
+    return realabi, true if realabi
+  end  
   nil
 end
 module_function :get_avd_image
 
 def find_suitable_avd_image( apilevel, abis, use_google_apis )
-  pp $androidtargets if USE_TRACES
+  @@logger.debug "Android targets:\n#{pp $androidtargets}"
 
-  realabi = get_avd_image( apilevel, abis, use_google_apis )
-  return apilevel, realabi if realabi
+  if apilevel
+    realabi = get_avd_image( apilevel, abis, use_google_apis )
+    return apilevel, realabi if realabi
+  end
 
-  puts "Can't find exact AVD image for requested API: #{apilevel}, ABIs: #{abis}, Google APIs: #{use_google_apis}. Will try something else."
+  @@logger.info "Can't find exact AVD image for requested API: #{apilevel}, ABIs: #{abis}, Google APIs: #{use_google_apis}. Will try something else."
 
   $androidtargets.keys().reverse_each do |apilevel|
-    realabi = get_avd_image(apilevel,abis,use_google_apis)
-    return apilevel, realabi if realabi
+    realabi, use_google = get_avd_image(apilevel,abis,use_google_apis)
+    return apilevel, realabi, use_google if realabi
+  end
+
+  @@logger.info "Can't find AVD image with installed platforms; will scan actual images available"
+
+  platforms = get_installed_images_apilevels
+  i = platforms.index(apilevel)
+  (platforms[0],platforms[i] = platforms[i],platforms[0]) if i
+
+  @@logger.debug "will iterate through platforms: #{pp platforms}"
+
+  platforms.each do |apilevel|
+    realabi, use_google = get_avd_image(apilevel,abis,use_google_apis)
+    return apilevel, realabi, use_google if realabi
   end
 
   return nil,nil
@@ -359,20 +387,34 @@ module_function :find_suitable_avd_image
 #return path to effective AVD - existion or newly created
 def prepare_avd(avdname, emuversion, abis, use_google_apis)
 
+  @@logger.debug "prepare_avd: #{avdname}, v#{emuversion}, #{abis.inspect}, g:#{use_google_apis}"
+  @@logger.debug "versions: #{pp $market_versions}"
+  @@logger.debug "targets: #{pp $androidtargets}"
+
   unless avdname
     avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
-    avdname += "google" if $use_google_addon_api    
+    avdname += "google" if $use_google_addon_api
   end
 
   #replace whitespaces in AVD name with underscores
   avdname.tr!(' ', '_');
 
+  @@logger.debug "Will try to find AVD: #{avdname}"
+
   unless File.directory?( avd_path(avdname) )
-    apilevel, abi = find_suitable_avd_image( apilevel, abis, use_google_apis)
+
+    @@logger.debug "AVD #{avdname} is not found, will try to find image and create a new one"
+
+    apilevel, abi, use_google_apis = find_suitable_avd_image( apilevel, abis, use_google_apis)
 
     raise "Can't find suitable emulator image for requested parameters: API Level: #{apilevel}; Allowed ABIs: #{abis.inspect}; Google APIs: #{use_google_apis}" unless ( apilevel and abi )
 
-    create_avd(avdname,apilevel,abi,use_google_apis)
+    avdname = "rhoAndroid#{apilevel}"
+    avdname += "google" if $use_google_addon_api
+
+    unless File.directory?( avd_path(avdname) )
+      create_avd(avdname,apilevel,abi,use_google_apis)
+    end
   end      
 
   avdname
@@ -394,6 +436,7 @@ def run_emulator(options = {})
     cmd << " -wipe-data" if options[:wipe]
     # cmd << " -verbose"
 
+    puts cmd
     start_emulator(cmd)
 
     cmd_start_emu = "#{$adb} -e wait-for-device shell getprop sys.boot_completed"
@@ -468,11 +511,12 @@ module_function :run_application
 
 def application_running(device_flag, pkgname)
   pkg = pkgname.gsub(/\./, '\.')
+  is_run = false
   system("\"#{$adb}\" start-server")
   `"#{$adb}" #{device_options(device_flag).join(' ')} shell ps`.split.each do |line|
-    return true if line =~ /#{pkg}/
+    is_run = true if line =~ /#{pkg}/
   end
-  false
+  return is_run
 end
 module_function :application_running
 

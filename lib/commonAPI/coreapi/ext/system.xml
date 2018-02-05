@@ -666,6 +666,13 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <DESC>Hide Splash Screen if delay is configured as -1 in rhoconfig.txt</DESC>
                 <PLATFORM>Android</PLATFORM>
             </METHOD>
+
+            <METHOD name="getSystemInfo">
+                <DESC>Gathers system dependent information ( hw info, installed packages etc ). Return key/value pairs depend on platform.</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <RETURN type="HASH"></RETURN>
+            </METHOD>
+
         </METHODS>
 
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>

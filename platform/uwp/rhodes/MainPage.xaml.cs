@@ -319,7 +319,11 @@ namespace rhodes
                     IAsyncOperation<StorageFolder> rhoFolderTask = StorageFolder.GetFolderFromPathAsync(rhoDir.FullName);
                     rhoFolderTask.AsTask().Wait();
                     IAsyncAction action = rhoFolderTask.GetResults().DeleteAsync();
-                    action.AsTask().Wait();
+                    try {
+                        action.AsTask().Start();
+                        action.AsTask().Wait();
+                    }
+                    catch (Exception e) { }
 
                     DirectoryCopy(appInstalledFolder.Path + "\\rho", rhoDir.FullName, true);
                     localFolder.CreateFileAsync("\\rho\\" + title, Windows.Storage.CreationCollisionOption.OpenIfExists);
@@ -329,7 +333,10 @@ namespace rhodes
 
             {
                 IAsyncOperation<StorageFile> task = localFolder.CreateFileAsync("nullfile", Windows.Storage.CreationCollisionOption.OpenIfExists);
-                task.AsTask().Wait();
+                try
+                {
+                    task.AsTask().Wait();
+                }catch(Exception e){}
             }
 
             getDispatcher();

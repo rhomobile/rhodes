@@ -17,42 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="..\..\shared\json\arraylist.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\json\bits.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\json\config.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\json\json.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\json\json_debug.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\json\json_object.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\json\json_object_private.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\json\json_tokener.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\json\json_util.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\json\JSONIterator.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\json\linkhash.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\json\printbuf.h">
-      <Filter>json</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\sync\ILoginListener.h">
       <Filter>sync</Filter>
     </ClInclude>
@@ -80,35 +44,74 @@
     <ClInclude Include="..\..\shared\sync\RhoconnectClientManager.h">
       <Filter>sync</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\strerror_override_private.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\strerror_override.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\snprintf_compat.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\random_seed.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\printbuf.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\math_compat.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\linkhash.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\json_visit.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\json_util.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\json_tokener.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\json_pointer.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\json_object_private.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\json_object_iterator.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\json_object.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\json_inttypes.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\json_config.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\json_c_version.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\json.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\debug.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\config.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\bits.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json.new\arraylist.h">
+      <Filter>json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\json\arraylist.c">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\json_debug.c">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\json_object.c">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\json_tokener.c">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\json_util.c">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\JSONIterator.cpp">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\linkhash.c">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\printbuf.c">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\RJSONTokener.c">
-      <Filter>json</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\db\DBAdapter.cpp">
       <Filter>db</Filter>
     </ClCompile>
@@ -126,6 +129,54 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\sync\RhoconnectClientManager.cpp">
       <Filter>sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\JSONIterator.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\strerror_override.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\RJSONTokener.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\random_seed.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\printbuf.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\linkhash.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\libjson.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\json_visit.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\json_util.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\json_tokener.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\json_pointer.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\json_object_iterator.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\json_object.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\json_c_version.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\debug.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\arraylist.c">
+      <Filter>json</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
