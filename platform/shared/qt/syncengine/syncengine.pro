@@ -68,36 +68,54 @@ win32 {
   QMAKE_CXXFLAGS_DEBUG += -MP9
 }
 
-HEADERS += ../../json/arraylist.h\
-../../json/bits.h\
-../../json/config.h\
-../../json/json_debug.h\
-../../json/json.h\
-../../json/json_object.h\
-../../json/json_object_private.h\
-../../json/json_tokener.h\
-../../json/json_util.h\
-../../json/linkhash.h\
-../../json/printbuf.h\
+
+HEADERS += ../../json.new/arraylist.h\
+../../json.new/strerror_override_private.h \
+../../json.new/strerror_override.h \
+../../json.new/snprintf_compat.h \
+../../json.new/random_seed.h \
+../../json.new/printbuf.h \
+../../json.new/math_compat.h \
+../../json.new/linkhash.h \
+../../json.new/json_visit.h \
+../../json.new/json_util.h \
+../../json.new/json_tokener.h \
+../../json.new/json_pointer.h \
+../../json.new/json_object_private.h \
+../../json.new/json_object_iterator.h \
+../../json.new/json_object.h \
+../../json.new/json_inttypes.h \
+../../json.new/json_config.h \
+../../json.new/json_c_version.h \
+../../json.new/json.h \
+../../json.new/debug.h \
+../../json.new/config.h \
+../../json.new/bits.h\
 ../../sync/RhoconnectClientManager.h\
 ../../sync/ILoginListener.h\
-../../json/JSONIterator.h\
 ../../db/DBAdapter.h\
 ../../db/DBAttrManager.h\
 ../../db/DBImportTransaction.h\
 ../../db/DBRequestHelper.h\
 ../../db/DBResult.h
 
-SOURCES += ../../json/arraylist.c\
-../../json/json_debug.c\
-../../json/json_object.c\
-../../json/json_tokener.c\
-../../json/json_util.c\
-../../json/linkhash.c\
-../../json/printbuf.c\
-../../json/RJSONTokener.c\
+SOURCES += ../../json.new/arraylist.c\
+../../json.new/JSONIterator.cpp\
+../../json.new/RJSONTokener.c\
+../../json.new/arraylist.c\
+../../json.new/json_object.c\
+../../json.new/json_tokener.c\
+../../json.new/json_util.c\
+../../json.new/linkhash.c\
+../../json.new/printbuf.c\
+../../json.new/debug.c\
+../../json.new/json_c_version.c\
+../../json.new/json_object_iterator.c\
+../../json.new/json_pointer.c\
+../../json.new/json_visit.c\
+../../json.new/random_seed.c\
+../../json.new/strerror_override.c\
 ../../sync/RhoconnectClientManager.cpp\
-../../json/JSONIterator.cpp\
 ../../db/DBAdapter.cpp\
 ../../db/DBAttrManager.cpp\
 ../../db/DBImportTransaction.cpp\

@@ -325,11 +325,25 @@ class Jake
     $passed ||= 0
     $failed ||= 0
     $notsupported ||= 0
+    $failed_lines ||= 0
+    $passed_lines ||= 0
+    $mspec_lines ||= 0
+    $jasmine_lines ||= 0
+    $total_lines_printed ||= 0
+    $latest_test_line = ""
     $faillog = []
     @default_file_name = "junit.xml"
     $junitname = ''
     $junitlogs = {@default_file_name => []}
     $getdump = false
+  end
+
+  def self.print_statistic_in_progress
+      new_total = ($mspec_lines + $jasmine_lines) / 10
+      if new_total*10 > $total_lines_printed
+          $total_lines_printed = new_total*10
+          puts " "+$total_lines_printed.to_s+" tests / "+($passed_lines+$failed_lines).to_s+" checks prоcessed. Latest test is ["+$latest_test_line.to_s+"]"
+      end
   end
 
   def self.process_spec_output(line)
@@ -347,13 +361,13 @@ class Jake
       end
 
       if line =~ /JUNIT\| (.*)/          # JUNIT| XML
-        $junitlogs[@default_file_name] << $1
+        $junitlogs[@default_file_name] << $1 if $junitlogs[@default_file_name] != nil
       elsif line =~ /JUNITNAME\|\s+(.*)/          # JUNITNAME| name
         $junitname = File.basename($1.strip,'.xml')
-        $junitlogs[$junitname] = []
+        $junitlogs[$junitname] = [] if $junitlogs[$junitname] != nil
       elsif line =~ /JUNITBLOB\| (.*)/
         if $junitname && $1
-          $junitlogs[$junitname] << $1
+          $junitlogs[$junitname] << $1 if $junitlogs[$junitname] != nil
         end
       end
 
@@ -377,12 +391,35 @@ class Jake
       elsif line =~ /\| \*\*\*Terminated\s+(.*)/ # | ***Terminated
         return false
       end
+      #passed Jasmine
+      #Jasmine specRunner| <ORM Db Reset specs> : VT302-0054 | should delete all records only from selected models propertyBag databaseFullResetEx : Passed.
+      if line =~ /I.* Jasmine specRunner\| .*Passed\./
+        $passed_lines = $passed_lines +1
+      end
+
+      #Jasmine test lines
+      #Jasmine specRunner| <ORM Db Reset specs> : VT302-0054 | should delete all records only from selected models propertyBag databaseFullResetEx started
+      if line =~ /I.* Jasmine specRunner\| (.*) started/
+        $jasmine_lines = $jasmine_lines +1
+        $latest_test_line = $1.chomp
+      end
+
+      # tests for MSpec
+      if line =~ /\| MSPEC run spec: \[(.*)\]/
+        $mspec_lines = $mspec_lines +1
+        $latest_test_line = $1.chomp
+      end
+      # Passed for MSpec
+      if line =~ /\| PASSED:/
+        $passed_lines = $passed_lines +1
+      end
       # Faillog for MSpec
       if line =~ /\| FAIL:/
         line = line.gsub(/I.*APP\|/,"\n\n***")
         if !$faillog.include?(line)
           $faillog << line
         end
+        $failed_lines = $failed_lines +1
         $getdump = true
       end
       # Faillog for Jusmine
@@ -391,8 +428,12 @@ class Jake
         if !$faillog.include?(line)
           $faillog << line
         end
+        $failed_lines = $failed_lines +1
         $getdump = true
       end
+
+      print_statistic_in_progress
+
       return true
   end
 
@@ -433,6 +474,10 @@ class Jake
     log(Logger::INFO,"Failed: #{$failed}")
     log(Logger::INFO,"Not supported by Rhodes: #{$notsupported}")
     log(Logger::INFO,"Failures stored in faillog.txt") if $failed.to_i > 0
+    log(Logger::INFO,"MSpec tests: #{$mspec_lines}")
+    log(Logger::INFO,"Jasmine tests: #{$jasmine_lines}")
+    log(Logger::INFO,"Passed checks: #{$passed_lines}")
+    log(Logger::INFO,"Failed checks: #{$failed_lines}")
     log(Logger::INFO,"************************")
     log(Logger::INFO,"\n")
   end

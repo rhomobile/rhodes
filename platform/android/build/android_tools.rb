@@ -436,6 +436,7 @@ def run_emulator(options = {})
     cmd << " -wipe-data" if options[:wipe]
     # cmd << " -verbose"
 
+    puts cmd
     start_emulator(cmd)
 
     cmd_start_emu = "#{$adb} -e wait-for-device shell getprop sys.boot_completed"
@@ -510,11 +511,12 @@ module_function :run_application
 
 def application_running(device_flag, pkgname)
   pkg = pkgname.gsub(/\./, '\.')
+  is_run = false
   system("\"#{$adb}\" start-server")
   `"#{$adb}" #{device_options(device_flag).join(' ')} shell ps`.split.each do |line|
-    return true if line =~ /#{pkg}/
+    is_run = true if line =~ /#{pkg}/
   end
-  false
+  return is_run
 end
 module_function :application_running
 

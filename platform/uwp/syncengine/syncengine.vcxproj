@@ -134,6 +134,8 @@
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
+      <WarningLevel>Level3</WarningLevel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,6 +153,8 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>false</IntrinsicFunctions>
+      <WarningLevel>Level3</WarningLevel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,6 +171,8 @@
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
+      <WarningLevel>Level3</WarningLevel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -183,6 +189,8 @@
       <CompileAsManaged>false</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <AdditionalOptions> /D "WINAPI_FAMILY=3" %(AdditionalOptions)</AdditionalOptions>
+      <WarningLevel>Level3</WarningLevel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -200,6 +208,8 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>false</IntrinsicFunctions>
+      <WarningLevel>Level3</WarningLevel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -216,6 +226,8 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
+      <WarningLevel>Level3</WarningLevel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -228,18 +240,28 @@
     <ClInclude Include="..\..\shared\db\DBImportTransaction.h" />
     <ClInclude Include="..\..\shared\db\DBRequestHelper.h" />
     <ClInclude Include="..\..\shared\db\DBResult.h" />
-    <ClInclude Include="..\..\shared\json\arraylist.h" />
-    <ClInclude Include="..\..\shared\json\bits.h" />
-    <ClInclude Include="..\..\shared\json\config.h" />
-    <ClInclude Include="..\..\shared\json\json.h" />
-    <ClInclude Include="..\..\shared\json\JSONIterator.h" />
-    <ClInclude Include="..\..\shared\json\json_debug.h" />
-    <ClInclude Include="..\..\shared\json\json_object.h" />
-    <ClInclude Include="..\..\shared\json\json_object_private.h" />
-    <ClInclude Include="..\..\shared\json\json_tokener.h" />
-    <ClInclude Include="..\..\shared\json\json_util.h" />
-    <ClInclude Include="..\..\shared\json\linkhash.h" />
-    <ClInclude Include="..\..\shared\json\printbuf.h" />
+    <ClInclude Include="..\..\shared\json.new\arraylist.h" />
+    <ClInclude Include="..\..\shared\json.new\bits.h" />
+    <ClInclude Include="..\..\shared\json.new\config.h" />
+    <ClInclude Include="..\..\shared\json.new\debug.h" />
+    <ClInclude Include="..\..\shared\json.new\json.h" />
+    <ClInclude Include="..\..\shared\json.new\json_config.h" />
+    <ClInclude Include="..\..\shared\json.new\json_c_version.h" />
+    <ClInclude Include="..\..\shared\json.new\json_inttypes.h" />
+    <ClInclude Include="..\..\shared\json.new\json_object.h" />
+    <ClInclude Include="..\..\shared\json.new\json_object_iterator.h" />
+    <ClInclude Include="..\..\shared\json.new\json_object_private.h" />
+    <ClInclude Include="..\..\shared\json.new\json_pointer.h" />
+    <ClInclude Include="..\..\shared\json.new\json_tokener.h" />
+    <ClInclude Include="..\..\shared\json.new\json_util.h" />
+    <ClInclude Include="..\..\shared\json.new\json_visit.h" />
+    <ClInclude Include="..\..\shared\json.new\linkhash.h" />
+    <ClInclude Include="..\..\shared\json.new\math_compat.h" />
+    <ClInclude Include="..\..\shared\json.new\printbuf.h" />
+    <ClInclude Include="..\..\shared\json.new\random_seed.h" />
+    <ClInclude Include="..\..\shared\json.new\snprintf_compat.h" />
+    <ClInclude Include="..\..\shared\json.new\strerror_override.h" />
+    <ClInclude Include="..\..\shared\json.new\strerror_override_private.h" />
     <ClInclude Include="..\..\shared\sync\ILoginListener.h" />
     <ClInclude Include="..\..\shared\sync\ISyncProtocol.h" />
     <ClInclude Include="..\..\shared\sync\RhoconnectClientManager.h" />
@@ -252,45 +274,22 @@
     <ClCompile Include="..\..\shared\db\DBImportTransaction.cpp" />
     <ClCompile Include="..\..\shared\db\DBRequestHelper.cpp" />
     <ClCompile Include="..\..\shared\db\DBResult.cpp" />
-    <ClCompile Include="..\..\shared\json\arraylist.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\JSONIterator.cpp" />
-    <ClCompile Include="..\..\shared\json\json_debug.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\json_object.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\json_tokener.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\json_util.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\linkhash.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\printbuf.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\json\RJSONTokener.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-    </ClCompile>
+    <ClCompile Include="..\..\shared\json.new\arraylist.c" />
+    <ClCompile Include="..\..\shared\json.new\debug.c" />
+    <ClCompile Include="..\..\shared\json.new\JSONIterator.cpp" />
+    <ClCompile Include="..\..\shared\json.new\json_c_version.c" />
+    <ClCompile Include="..\..\shared\json.new\json_object.c" />
+    <ClCompile Include="..\..\shared\json.new\json_object_iterator.c" />
+    <ClCompile Include="..\..\shared\json.new\json_pointer.c" />
+    <ClCompile Include="..\..\shared\json.new\json_tokener.c" />
+    <ClCompile Include="..\..\shared\json.new\json_util.c" />
+    <ClCompile Include="..\..\shared\json.new\json_visit.c" />
+    <ClCompile Include="..\..\shared\json.new\libjson.c" />
+    <ClCompile Include="..\..\shared\json.new\linkhash.c" />
+    <ClCompile Include="..\..\shared\json.new\printbuf.c" />
+    <ClCompile Include="..\..\shared\json.new\random_seed.c" />
+    <ClCompile Include="..\..\shared\json.new\RJSONTokener.c" />
+    <ClCompile Include="..\..\shared\json.new\strerror_override.c" />
     <ClCompile Include="..\..\shared\sync\RhoconnectClientManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

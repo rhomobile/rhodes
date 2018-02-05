@@ -53,6 +53,8 @@ import java.util.Vector;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
+
 import com.rhomobile.rhodes.event.EventStore;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
@@ -78,6 +80,7 @@ import com.rhomobile.rhodes.util.Utils;
 //import com.rhomobile.rhodes.camera.Camera;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -91,9 +94,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.pm.FeatureInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.PermissionInfo;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.hardware.Camera;
@@ -110,8 +115,10 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.Process;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -1632,6 +1639,125 @@ public class RhodesService extends Service {
 
     public static void removeSplashScreen() {
         getInstance().getMainView().removeSplashScreen();
+    }
+
+    public static Map getSystemInfo() {
+    	Map ret = new HashMap<String,String>();
+
+    	try {
+    		ret.put( "build.serial", 				Build.SERIAL );
+    		ret.put( "build.model", 				Build.MODEL );
+    		ret.put( "build.id", 					Build.ID );
+    		ret.put( "build.manufacturer", 			Build.MANUFACTURER );
+    		ret.put( "build.brand", 				Build.BRAND );
+    		ret.put( "build.type", 					Build.TYPE );
+    		ret.put( "build.user", 					Build.USER );
+    		ret.put( "build.board", 				Build.BOARD );
+    		ret.put( "build.host", 					Build.HOST );
+    		ret.put( "build.fingerprint", 			Build.FINGERPRINT );
+    		ret.put( "build.version.release",		Build.VERSION.RELEASE );
+    		ret.put( "build.version.incremental", 	Build.VERSION.INCREMENTAL );    		
+    		ret.put( "build.version.codename",		Build.VERSION.CODENAME );
+    		ret.put( "build.version.sdk",			String.valueOf(Build.VERSION.SDK_INT) );
+    		ret.put( "build.bootloader",			Build.BOOTLOADER );    		
+    		ret.put( "build.device",				Build.DEVICE );
+    		ret.put( "build.display",				Build.DISPLAY );
+    		ret.put( "build.hardware",				Build.HARDWARE );
+    		ret.put( "build.product",				Build.PRODUCT );
+    		ret.put( "build.radio",					Build.RADIO );
+			//if ( Build.VERSION.SDK_INT >= 21 ) {
+			//	ret.put("build.abis", TextUtils.join(",", Build.SUPPORTED_ABIS));
+			//}
+    		ret.put( "build.tags",					Build.TAGS );
+    		ret.put( "build.type",					Build.TYPE );
+    		ret.put( "build.time",					String.valueOf(Build.TIME) );
+    		ret.put( "build.user",					Build.USER );
+
+    		PackageManager pm = getContext().getPackageManager();
+    		String packageName = getContext().getPackageName();
+    		ApplicationInfo appInfo = pm.getApplicationInfo( packageName, 0 );
+    		PackageInfo pakInfo = pm.getPackageInfo( packageName,PackageManager.GET_PERMISSIONS|PackageManager.GET_META_DATA|PackageManager.GET_CONFIGURATIONS );
+
+    		StringBuilder sb = new StringBuilder();
+			StringBuilderPrinter sbp = new StringBuilderPrinter(sb);
+			appInfo.dump( sbp, "" );
+			ret.put( "app.info", sb.toString() );
+    		ret.put( "package.name", packageName );
+    		ret.put( "package.version", pakInfo.versionName );
+    		ret.put( "package.versioncode", String.valueOf( pakInfo.versionCode ));
+			ret.put( "package.permissions", TextUtils.join(",",pakInfo.requestedPermissions) );
+
+			List<String> pis = new ArrayList<String>();
+
+			if ( pakInfo.reqFeatures != null ) {
+				for (FeatureInfo fi : pakInfo.reqFeatures ) {
+					pis.add( fi.name + ":flags" + fi.flags + ":gl" + fi.getGlEsVersion() );
+				}
+				ret.put( "package.features", TextUtils.join(",",pis) );
+				pis.clear();
+			}
+
+    		for ( PackageInfo pi : pm.getInstalledPackages(0) ) {
+    			pis.add( pi.packageName + ":" + pi.versionName );
+			}
+			ret.put("packages", TextUtils.join(",",pis) );
+
+			ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo ni = cm.getActiveNetworkInfo();
+
+			if ( ni != null ) {
+				ret.put("network.detailedstate", ni.getDetailedState().toString());
+				ret.put("network.extrainfo", ni.getExtraInfo());
+				ret.put("network.failreason", ni.getReason());
+				ret.put("network.state", ni.getState().toString());
+				ret.put("network.subtype", ni.getSubtypeName());
+				ret.put("network.type", ni.getTypeName());
+				ret.put("network.available", String.valueOf(ni.isAvailable()));
+				ret.put("network.connected", String.valueOf(ni.isConnected()));
+				ret.put("network.connectedorconnecting", String.valueOf(ni.isConnectedOrConnecting()));
+				ret.put("network.failover", String.valueOf(ni.isFailover()));
+				ret.put("network.roaming", String.valueOf(ni.isRoaming()));
+			}
+
+			//TODO: for future use
+			//if ( Build.VERSION.SDK_INT >= 23 ) {
+			//	ret.put( "network.proxy", cm.getDefaultProxy().getHost() );
+			//	LinkProperties lp = cm.getLinkProperties( cm.getActiveNetwork() );
+			//}
+
+			TelephonyManager tm = (TelephonyManager)getContext().getSystemService(Context.TELEPHONY_SERVICE);
+			ret.put("cell.dataactivity", String.valueOf(tm.getDataActivity()) );
+			//ret.put("cell.datanetworktype", String.valueOf(tm.getDataNetworkType()));
+			ret.put("cell.datastate", String.valueOf(tm.getDataState()));
+			//if ( Build.VERSION.SDK_INT < 26 ) {
+			//	ret.put("cell.deviceid", String.valueOf(tm.getDeviceId()));
+			//}
+			ret.put("cell.operator", tm.getNetworkOperatorName() );
+			ret.put("cell.country", tm.getNetworkCountryIso() );
+			ret.put("cell.networktype", String.valueOf(tm.getNetworkType()));
+			ret.put("cell.phonetype", String.valueOf(tm.getPhoneType()));
+
+			ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+			ActivityManager activityManager = (ActivityManager) getContext().getSystemService(ACTIVITY_SERVICE);
+			activityManager.getMemoryInfo(mi);
+			double availableMegs = mi.availMem / 0x100000L;
+
+			ret.put("memory.total", String.valueOf(mi.availMem) );
+			ret.put("memory.available", String.valueOf(mi.totalMem) );
+			ret.put("memory.threshold", String.valueOf(mi.threshold) );
+			ret.put("memory.islowmem", String.valueOf(mi.lowMemory) );
+			ret.put("memory.percentavailable", String.valueOf(mi.availMem / (double)mi.totalMem * 100.0) );
+
+			Runtime runtime = Runtime.getRuntime();
+			ret.put("memory.runtimefree", String.valueOf(runtime.freeMemory()) );
+			ret.put("memory.runtimemax", String.valueOf(runtime.maxMemory()) );
+			ret.put("memory.runtimetotal", String.valueOf(runtime.totalMemory()) );
+
+    	} catch ( Exception e ) {
+    		ret.put( "error", e.toString() );
+    	}
+
+    	return ret;
     }
     
 }

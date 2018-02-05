@@ -312,6 +312,9 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
 		int milliseconds = oRhoConf.getInt("LogMemPeriod");
 		setCollectMemoryInfoInterval(milliseconds);
 	}
+
+    oRhoConf.addListener( this );
+
     m_bIsInitialized = true;
 }
 
@@ -384,6 +387,12 @@ void LogSettings::internalSinkLogMessage( String& strMsg ){
         for (Hashtable<ILogSink*, bool>::const_iterator it = m_pAuxSinks.begin(); it != m_pAuxSinks.end(); it++) {
             (*it).first->writeLogMessage(strMsg);
         }
+    }
+}
+
+void LogSettings::onSettingUpdated( const String& name, const String& newVal ) {
+    if ( strcasecmp(name.c_str(),"minseverity") == 0 ) {
+        setMinSeverity( atoi(newVal.c_str()) );
     }
 }
 

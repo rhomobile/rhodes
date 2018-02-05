@@ -1,7 +1,13 @@
 <service android:name="com.rhomobile.rhodes.fcm.FCMIntentService">
-	<intent-filter>
+	<intent-filter android:priority="900">
 	    <action android:name="com.google.firebase.MESSAGING_EVENT"/>
 	</intent-filter>
+</service>
+
+<service android:exported="true" android:name="com.google.firebase.messaging.FirebaseMessagingService">
+    <intent-filter android:priority="-500">
+        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+    </intent-filter>
 </service>
 
 <service android:name="com.rhomobile.rhodes.fcm.FCMTokenRefresherService" android:exported="true">
@@ -33,6 +39,5 @@
         <category android:name="<%=@appPackageName%>"/>
     </intent-filter>
 </receiver>
-
 
 <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
