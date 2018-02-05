@@ -996,7 +996,7 @@
 /* #undef USE_SCHANNEL */
 
 /* if you want POSIX threaded DNS lookup */
-#define USE_THREADS_POSIX 1
+//#define USE_THREADS_POSIX 1
 
 /* if you want Win32 threaded DNS lookup */
 /* #undef USE_THREADS_WIN32 */
@@ -1005,7 +1005,7 @@
 /* #undef USE_TLS_SRP */
 
 /* Use Unix domain sockets */
-#define USE_UNIX_SOCKETS 1
+// #define USE_UNIX_SOCKETS 1
 
 /* Define to 1 if you have the `normaliz' (WinIDN) library (-lnormaliz). */
 /* #undef USE_WIN32_IDN */
@@ -1067,6 +1067,6 @@
 /* RHO BEGIN */
 //#if defined(OS_IPHONE) || defined(OS_ANDROID) || defined(OS_WP8)
 #if defined(OS_IPHONE) || defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WP8) || defined(OS_UWP)
-#define USE_RHOSSL
+#define USE_RHOSSL 1
 #endif
 /* RHO END */

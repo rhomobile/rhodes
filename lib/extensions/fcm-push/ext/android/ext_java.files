@@ -1,3 +1,4 @@
 ext/android/src/com/rhomobile/rhodes/fcm/FCMFacade.java
 ext/android/src/com/rhomobile/rhodes/fcm/FCMIntentService.java
 ext/android/src/com/rhomobile/rhodes/fcm/FCMTokenRefresherService.java
+ext/android/src/com/rhomobile/rhodes/fcm/FCMListener.java

@@ -262,6 +262,10 @@
 		FA4CE29C1ECB316100DBA581 /* sockssocket.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE28C1ECB316100DBA581 /* sockssocket.c */; };
 		FA4CE29D1ECB316100DBA581 /* tcpserver.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE28D1ECB316100DBA581 /* tcpserver.c */; };
 		FA4CE29E1ECB316100DBA581 /* tcpsocket.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4CE28E1ECB316100DBA581 /* tcpsocket.c */; };
+		FA6B3F811FD21DFE008BFF0D /* utf_16_32.c in Sources */ = {isa = PBXBuildFile; fileRef = FA6B3F7F1FD21DFE008BFF0D /* utf_16_32.c */; };
+		FA6B3F821FD21DFE008BFF0D /* single_byte.c in Sources */ = {isa = PBXBuildFile; fileRef = FA6B3F801FD21DFE008BFF0D /* single_byte.c */; };
+		FA6B3F831FD21E05008BFF0D /* single_byte.c in Sources */ = {isa = PBXBuildFile; fileRef = FA6B3F801FD21DFE008BFF0D /* single_byte.c */; };
+		FA6B3F841FD21E07008BFF0D /* utf_16_32.c in Sources */ = {isa = PBXBuildFile; fileRef = FA6B3F7F1FD21DFE008BFF0D /* utf_16_32.c */; };
 		FAA66D031EEDE070003E0B1D /* nonblock.c in Sources */ = {isa = PBXBuildFile; fileRef = FAA66D021EEDE070003E0B1D /* nonblock.c */; };
 /* End PBXBuildFile section */
 
@@ -453,6 +457,8 @@
 		FA4CE28C1ECB316100DBA581 /* sockssocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sockssocket.c; path = ../../shared/ruby/ext/socket/sockssocket.c; sourceTree = "<group>"; };
 		FA4CE28D1ECB316100DBA581 /* tcpserver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tcpserver.c; path = ../../shared/ruby/ext/socket/tcpserver.c; sourceTree = "<group>"; };
 		FA4CE28E1ECB316100DBA581 /* tcpsocket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tcpsocket.c; path = ../../shared/ruby/ext/socket/tcpsocket.c; sourceTree = "<group>"; };
+		FA6B3F7F1FD21DFE008BFF0D /* utf_16_32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf_16_32.c; path = ../../shared/ruby/enc/trans/utf_16_32.c; sourceTree = "<group>"; };
+		FA6B3F801FD21DFE008BFF0D /* single_byte.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = single_byte.c; path = ../../shared/ruby/enc/trans/single_byte.c; sourceTree = "<group>"; };
 		FAA66D021EEDE070003E0B1D /* nonblock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nonblock.c; path = ../../shared/ruby/ext/io/nonblock/nonblock.c; sourceTree = "<group>"; };
 		FAA66D041EEDE07E003E0B1D /* wait.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = wait.c; path = ../../shared/ruby/ext/io/wait/wait.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -478,6 +484,7 @@
 		08FB7794FE84155DC02AAC07 /* rhorubylib */ = {
 			isa = PBXGroup;
 			children = (
+				FA6B3F7D1FD21B6F008BFF0D /* encoding */,
 				FAA66D041EEDE07E003E0B1D /* wait.c */,
 				FAA66D021EEDE070003E0B1D /* nonblock.c */,
 				FA4CE27E1ECB306800DBA581 /* socket */,
@@ -905,6 +912,23 @@
 			name = socket;
 			sourceTree = "<group>";
 		};
+		FA6B3F7D1FD21B6F008BFF0D /* encoding */ = {
+			isa = PBXGroup;
+			children = (
+				FA6B3F7E1FD21B78008BFF0D /* convertors */,
+			);
+			name = encoding;
+			sourceTree = "<group>";
+		};
+		FA6B3F7E1FD21B78008BFF0D /* convertors */ = {
+			isa = PBXGroup;
+			children = (
+				FA6B3F801FD21DFE008BFF0D /* single_byte.c */,
+				FA6B3F7F1FD21DFE008BFF0D /* utf_16_32.c */,
+			);
+			name = convertors;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1058,6 +1082,7 @@
 				A8A6D3851E24ADBD00016427 /* vm.c in Sources */,
 				A8A6D36F1E24ADBD00016427 /* st.c in Sources */,
 				A8A6D3731E24ADBD00016427 /* symbol.c in Sources */,
+				FA6B3F841FD21E07008BFF0D /* utf_16_32.c in Sources */,
 				A8A6D3911E24B3B000016427 /* unicode.c in Sources */,
 				A8A6D33D1E24ADBD00016427 /* enumerator.c in Sources */,
 				A8A6D34E1E24ADBD00016427 /* localeinit.c in Sources */,
@@ -1099,6 +1124,7 @@
 				A8A6D3131E24AADD00016427 /* rubymac.m in Sources */,
 				A8A6D3A31E258DD700016427 /* strscan.c in Sources */,
 				A8A6D3601E24ADBD00016427 /* regcomp.c in Sources */,
+				FA6B3F831FD21E05008BFF0D /* single_byte.c in Sources */,
 				A8A6D37E1E24ADBD00016427 /* version.c in Sources */,
 				A8A6D38F1E24B3B000016427 /* encdb.c in Sources */,
 				A8A6D32E1E24ADBD00016427 /* compar.c in Sources */,
@@ -1198,6 +1224,7 @@
 				A80AFD321E2413C60006FF68 /* ascii.c in Sources */,
 				A80AFE961E2415390006FF68 /* sprintf.c in Sources */,
 				A80AFEAE1E2415390006FF68 /* vm_backtrace.c in Sources */,
+				FA6B3F811FD21DFE008BFF0D /* utf_16_32.c in Sources */,
 				FA4CE2921ECB316100DBA581 /* ipsocket.c in Sources */,
 				A88C80A71E243FF80090E7E6 /* nativeviewmanager_wrap.c in Sources */,
 				A80AFE8D1E2415390006FF68 /* regsyntax.c in Sources */,
@@ -1226,6 +1253,7 @@
 				A80AFE591E2415390006FF68 /* file.c in Sources */,
 				A80AFE411E2415390006FF68 /* compile.c in Sources */,
 				FA4CE2911ECB316100DBA581 /* basicsocket.c in Sources */,
+				FA6B3F821FD21DFE008BFF0D /* single_byte.c in Sources */,
 				A80AFE641E2415390006FF68 /* inits.c in Sources */,
 				A80AFE7C1E2415390006FF68 /* prelude.c in Sources */,
 				A80AFD771E24144B0006FF68 /* iso_8859_9.c in Sources */,
