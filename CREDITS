@@ -2186,8 +2186,8 @@ Rhodes contains code from the following other projects:
  libcurl 7.19.7 (http://curl.haxx.se/)
  License: MIT/X derivate license(http://curl.haxx.se/docs/copyright.html)
 
- JSON-C 0.9 (http://oss.metaparadigm.com/json-c/)
- License: MIT derivate license (http://oss.metaparadigm.com/json-c/COPYING)
+ JSON-C 0.13 (https://github.com/json-c/json-c)
+ License: MIT derivate license (https://github.com/json-c/json-c/blob/master/COPYING)
 
  tcmalloc 1.2 (http://code.google.com/p/google-perftools/)
  License: BSD (http://www.opensource.org/licenses/bsd-license.php)
