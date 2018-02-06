@@ -36,7 +36,11 @@ extern "C" {
 #ifdef __SYMBIAN32__
 #include <sys/types.h>
 #endif //__SYMBIAN32__
-
+    
+#if defined(OS_MACOSX)
+#include <sys/types.h>
+#endif
+    
 #ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
