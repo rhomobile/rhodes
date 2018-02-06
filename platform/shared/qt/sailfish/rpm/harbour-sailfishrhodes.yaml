@@ -26,7 +26,7 @@ PkgConfigBR:
   - Qt5Qml
   - Qt5WebKit
   - Qt5Multimedia
-  #- Qt5Bluetooth
+  - Qt5Bluetooth
 
 
 # Build dependencies without a pkgconfig setup can be listed here
@@ -66,6 +66,7 @@ Files:
   - '%{_datadir}/applications/%{name}.desktop'
   - '%{_datadir}/icons/hicolor/*/apps/%{name}.png'
   - '%{_datadir}/%{name}/data'
+  - '%{_datadir}/mapplauncherd/privileges.d/%{name}'
 
 # For more information about yaml and what's supported in Sailfish OS
 # build system, please see https://wiki.merproject.org/wiki/Spectacle
