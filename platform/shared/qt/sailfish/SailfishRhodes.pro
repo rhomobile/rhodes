@@ -6,6 +6,11 @@ debug{
 }
 OTHER_FILES += $$PWD/data/*
 
+privileges.files = privileges/*
+privileges.path = /usr/share/mapplauncherd/privileges.d
+INSTALLS += privileges
+OTHER_FILES += privileges/*
+
 DEPLOYMENT_PATH = /usr/share/$${TARGET}
 data.files = data
 data.path = $${DEPLOYMENT_PATH}
@@ -20,7 +25,8 @@ DISTFILES += rpm/harbour-sailfishrhodes.changes.in \
     translations/*.ts \
     qml/harbour-sailfishrhodes.qml \
     qml/pages/MenuPage.qml \
-    qml/pages/FirstPage.qml
+    qml/pages/FirstPage.qml \
+    privileges/harbour-sailfishrhodes
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128
 
