@@ -47,7 +47,7 @@ TEMPLATE = subdirs
 SUBDIRS += $$PWD/../rubylib $$PWD/../rholib $$PWD/../sqlite3 $$PWD/../syncengine \
 $$PWD/../../../../lib/commonAPI/coreapi/ext/platform/qt/coreapi.pro \
 #$$PWD/../../../../lib/commonAPI/logCapture/ext/platform/qt/logCapture.pro \
-$$PWD/../../../../../rhoconnect-client/ext/rhoconnect-client/ext/platform/qt/rhoconnect-client.pro \
+#$$PWD/../../../../../rhoconnect-client/ext/rhoconnect-client/ext/platform/qt/rhoconnect-client.pro \
 #$$PWD/../../../../lib/extensions/digest/ext/digest.pro \
 #$$PWD/../../../../lib/extensions/digest-md5/ext/digest-md5.pro \
 #$$PWD/../../../../lib/extensions/digest-sha1/ext/digest-sha1.pro \

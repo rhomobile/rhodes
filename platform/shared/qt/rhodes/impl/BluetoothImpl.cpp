@@ -28,6 +28,7 @@
 #include "ext/rho/rhoruby.h"
 #include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
+#include "bluetooth/bluetoothhelper.h"
 
 extern "C" {
 
@@ -38,20 +39,22 @@ int rho_bluetooth_is_bluetooth_available()
 
 void rho_bluetooth_off_bluetooth()
 {
+    BluetoothHelper::getInstance()->setWorking(false);
 }
 
 void rho_bluetooth_set_device_name(const char* device_name)
 {
+    BluetoothHelper::getInstance()->setDeviceName(QString::fromLatin1(device_name));
 }
 
 VALUE rho_bluetooth_get_device_name()
 {
-    return rho_ruby_create_string("ERROR");
+    return BluetoothHelper::getInstance()->getDeviceName().toStdString();
 }
 
 const char* rho_bluetooth_get_last_error()
 {
-    return "ERROR";
+    return  BluetoothHelper::getInstance()->getLastError().toStdString();
 }
 
 const char* rho_bluetooth_create_session(const char* role, const char* callback_url)

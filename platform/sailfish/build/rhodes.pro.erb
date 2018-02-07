@@ -1,6 +1,7 @@
 QT += core gui network
 QT += multimedia
 QT += webkit
+QT += bluetooth
 
 message(Qt version: $$[QT_VERSION])
 
@@ -52,9 +53,10 @@ HEADERS += <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoClassFactoryImpl.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/DateTimePickerImpl.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/AlertImpl.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoThreadImpl.h\
-<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetoothhelper.h \
-<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetoothserver.h \
-<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetoothclient.h \
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothhelper.h \
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothserver.h \
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothclient.h \
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothdevicelabel.h \
 <%= @rhoRoot %>/platform/shared/qt/rhodes/iexecutable.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/MainWindowCallback.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/QtCustomStyle.h\

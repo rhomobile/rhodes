@@ -2,7 +2,6 @@
 #define BLUETOOTHSERVER_H
 
 #include <QObject>
-/*
 #include <QtBluetooth/QBluetoothServer>
 #include <QtBluetooth/QBluetoothLocalDevice>
 #include <QtBluetooth/QBluetoothServiceInfo>
@@ -43,9 +42,8 @@ public:
         serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceClassIds, classId);
 
         serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceName, "BT message sender");
-        serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceDescription,
-                                 "Example message sender");
-        serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceProvider, "fruct.org");
+        serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceDescription, "Message sender");
+        serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceProvider, "tau-technologies.com");
         serviceInfo.setServiceUuid(QBluetoothUuid(SERVICE_UUID));
 
         QBluetoothServiceInfo::Sequence publicBrowse;
@@ -74,7 +72,8 @@ private:
     QBluetoothServer *bluetoothServer;
     QBluetoothServiceInfo serviceInfo;
     QBluetoothSocket *socket;
-    const QString SERVICE_UUID = "1f2d6c5b-6a86-4b30-8b4e-3990043d73f1";
+
+    const QString SERVICE_UUID = "00000000-0000-1000-8000-00805F9B34FB";
 private slots:
     void clientConnected() {
         qDebug() << "clientConnected()";
@@ -89,16 +88,11 @@ private slots:
     }
     void readSocket() {
         qDebug() << "readSocket()";
-        const QString message = QString::fromUtf8(socket->readLine().trimmed());
+        const QString message = QString::fromUtf8(socket->readAll());
         emit messageReceived(message);
-        QString reversedMessage;
-        for (int i = message.size() - 1; i >= 0; i--) {
-            reversedMessage.append(message.at(i));
-        }
-        socket->write(reversedMessage.toUtf8());
     }
 };
 
-*/
+
 
 #endif // BLUETOOTHSERVER_H

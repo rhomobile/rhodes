@@ -1,6 +1,6 @@
 #ifndef BLUETOOTHCLIENT_H
 #define BLUETOOTHCLIENT_H
-/*
+
 #include <QObject>
 #include <QtBluetooth/QBluetoothServer>
 #include <QtBluetooth/QBluetoothLocalDevice>
@@ -38,7 +38,7 @@ public:
         discoveryAgent->stop();
     }
 private:
-    const QString SERVICE_UUID = "1f2d6c5b-6a86-4b30-8b4e-3990043d73f1";
+    const QString SERVICE_UUID = "00000000-0000-1000-8000-00805F9B34FB";
     QString message;
     QBluetoothSocket *socket = NULL;
     QBluetoothDeviceDiscoveryAgent* discoveryAgent;
@@ -104,12 +104,12 @@ private slots:
     }
     void readSocket() {
         qDebug() << "readSocket()";
-        QString receivedMessage = QString::fromUtf8(socket->readLine().trimmed());
+        QString receivedMessage = QString::fromUtf8(socket->readAll());
         emit messageReceived(receivedMessage);
         emit clientStatusChanged("Message received");
         stopClient();
     }
 };
-*/
+
 
 #endif // BLUETOOTHCLIENT_H

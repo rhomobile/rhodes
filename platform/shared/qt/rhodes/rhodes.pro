@@ -189,9 +189,10 @@ guithreadfunchelper.h \
     impl/notificationsound.h \
     ../../net/ssl.h \
     ../../unzip/zip.h \
-    impl/bluetoothhelper.h \
-    impl/bluetoothserver.h \
-    impl/bluetoothclient.h
+    impl/bluetooth/bluetoothhelper.h \
+    impl/bluetooth/bluetoothserver.h \
+    impl/bluetooth/bluetoothclient.h \
+    impl/bluetooth/bluetoothdevicelabel.h
 #TODO: make this like normal developer do
 
 
@@ -348,5 +349,5 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libBarcode.a
 unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lSignature
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libSignature.a
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lRhoconnect-client
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-client.a
+#unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lRhoconnect-client
+#unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-client.a

@@ -102,6 +102,7 @@ int main(int argc, char *argv[])
     QScopedPointer<QQuickView> pView(SailfishApp::createView());
     QQuickView * view = const_cast<QQuickView * >(pView.data());
     RootDelegate::getInstance(view->rootContext()->engine())->moveToThread(view->rootContext()->engine()->thread());
+    view->rootContext()->engine()->thread()->setPriority(QThread::TimeCriticalPriority);
     QtMainWindow::setView(view);
 
     CMainWindow* m_appWindow = CMainWindow::getInstance();
