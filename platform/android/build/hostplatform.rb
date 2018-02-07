@@ -18,7 +18,7 @@ module HostPlatform
 		if HostPlatform.windows?
 			'.exe'
 		else
-			'.'
+			''
 		end
 	end
 	module_function :exe_ext

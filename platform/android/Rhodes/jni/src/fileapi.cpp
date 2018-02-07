@@ -231,6 +231,18 @@ typedef int (*func_scandir_t)(const char *dir, struct dirent ***namelist,
     int (*filter)(const struct dirent *),
     int (*compar)(const struct dirent **, const struct dirent **));
 
+typedef size_t (*func_fread_t)(void* __buf, size_t __size, size_t __count, FILE* __fp);
+typedef size_t (*func_fwrite_t)(const void* __buf, size_t __size, size_t __count, FILE* __fp);
+typedef int (*func_fseek_t)(FILE* __fp, long __offset, int __whence);
+typedef long (*func_ftell_t)(FILE* __fp);
+typedef int (*func_fclose_t)(FILE* __fp);
+
+static func_fread_t real_fread;
+static func_fwrite_t real_fwrite;
+static func_fseek_t real_fseek;
+static func_ftell_t real_ftell;
+static func_fclose_t real_fclose;
+
 static func_access_t real_access;
 static func_close_t real_close;
 static func_dup2_t real_dup2;
@@ -596,6 +608,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_ioctl = (func_ioctl_t)dlsym(pc, "ioctl");
     real_fsync = (func_fsync_t)dlsym(pc, "fsync");
     real_fdatasync = (func_fdatasync_t)dlsym(pc, "fdatasync");
+    real_fread = (func_fread_t)dlsym(pc,"fread");
+    real_fwrite = (func_fwrite_t)dlsym(pc,"fwrite");
+    real_fseek = (func_fseek_t)dlsym(pc,"fseek");
+    real_ftell = (func_ftell_t)dlsym(pc,"ftell");
+    real_fclose = (func_fclose_t)dlsym(pc,"fclose");
 
     if (real_fdatasync == NULL) {
         //Android 2.1 have no fdatasync call. Use fsync instead
@@ -1952,6 +1969,37 @@ RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
     return fp;
 }
 
+size_t fread(void* __buf, size_t __size, size_t __count, FILE* __fp)
+{
+  if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+      return real_fread(__buf, __size, __count, __fp);
+
+  return read((int)__fp,__buf,__size*__count);
+}
+
+size_t fwrite(const void* __buf, size_t __size, size_t __count, FILE* __fp)
+{
+  if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+      return real_fwrite(__buf, __size, __count, __fp);
+
+  return write((int)__fp,__buf,__size*__count);
+}
+/*
+int fseek(FILE* __fp, long __offset, int __whence)
+{
+
+}
+
+long ftell(FILE* __fp)
+{
+
+}
+
+int fclose(FILE* __fp)
+{
+
+}
+*/
 RHO_GLOBAL int select(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct timeval *tv)
 {
     RHO_LOG("select: maxfd: %d", maxfd);
