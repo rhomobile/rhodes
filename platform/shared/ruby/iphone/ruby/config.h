@@ -156,7 +156,7 @@
 #define NUM2GIDT(v) NUM2UINT(v)
 #define PRI_GIDT_PREFIX PRI_INT_PREFIX
 #define rb_time_t time_t
-#define SIGNEDNESS_OF_TIME_T -1
+#define SIGNEDNESS_OF_TIME_T 1
 #define TIMET2NUM(v) LONG2NUM(v)
 #define NUM2TIMET(v) NUM2LONG(v)
 #define PRI_TIMET_PREFIX PRI_LONG_PREFIX
