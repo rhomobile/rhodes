@@ -36,6 +36,9 @@ unix:!macx {
   <%= @rhoRoot %>/platform/shared/ruby/missing/setproctitle.c
   QMAKE_CFLAGS += -fvisibility=hidden
   QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
+  
 }
 
 DEFINES += RHODES_QT_PLATFORM

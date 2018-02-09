@@ -48,6 +48,7 @@ class QtProjectGenerator
 end
 
 class ScriptGenerator
+  attr_accessor :isNixSystem
   attr_accessor :merPort
   attr_accessor :merPkey
   attr_accessor :projectPath
@@ -85,6 +86,24 @@ def isWindows?
   end
 end
 
+def PathToWindowsWay(path)
+  if isWindows?
+    return path.gsub("/", "\\")
+  else
+    return path
+  end
+  
+end
+
+def QuotedStrNixWay(str)
+  return isWindows? ? str : '"' + str + '"' 
+end
+
+def clrfTOlf(path)
+  text = File.open(path).read.gsub(/\r\n?/, "\n")
+  File.open(path, "w") { |f| f.write(text) }
+end
+
 namespace "config" do
   task :set_sailfish_platform do
     $current_platform = "sailfish"
@@ -93,7 +112,12 @@ namespace "config" do
   task :sailfish => :set_sailfish_platform do
     print_timestamp('config:sailfish START')
     Rake::Task["config:common"].invoke()
-    Rake::Task["config:qt"].invoke()
+
+    if $config["env"]["paths"]["sailfish"].nil?
+      raise "Please set path to sailfish sdk in rhobuld.yaml"
+    end
+    $qtdir = $config["env"]["paths"]["sailfish"]
+
 
     if !$app_config.nil? && !$app_config["sailfish"].nil?
       $connf_build = "Release"
@@ -135,14 +159,16 @@ namespace "config" do
       target = t.attr("name")
       if target.include? $target_arch
         $current_target = target
-        $current_build_sdk_dir = File.join($qtdir, "settings", "SailfishOS-SDK", 
-        "mer-sdk-tools", "Sailfish OS Build Engine", target)
-        $current_build_sdk_dir = $current_build_sdk_dir.gsub("\\", "/")
+
+        if isWindows?
+          $current_build_sdk_dir = File.join($qtdir, "settings", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", target)
+          $current_build_sdk_dir = $current_build_sdk_dir.gsub("\\", "/")
+        else
+          $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", target)
+        end
         break
       end
     end
-
-    $qtdir = ENV['QTDIR']
 
     if $current_build_sdk_dir == ""
       raise "Build arch sdk not found!"
@@ -186,8 +212,13 @@ namespace "config" do
 
     end
 
-    #TODO: windows path way
-    $virtualbox_path = ENV['VBOX_MSI_INSTALL_PATH']
+    if $config["env"]["paths"]["vbox"].nil? and isWindows?
+      raise "Please set vbox env variable in rhobuild.yml..."
+    end
+    $virtualbox_path = "VBoxManage"
+    if isWindows?
+      $virtualbox_path = File.join($config["env"]["paths"]["vbox"], "VBoxManage.exe") 
+    end
     Rake::Task["build:sailfish:startvm"].invoke()
   end
 
@@ -306,7 +337,8 @@ def add_extension_to_main_project(ext)
    f.each_line do |line|
      if line.include?('SUBDIRS') and !line.include?("$$PWD/../#{ext.downcase}")
       #before continue /r/n/ symbols and \\
-      line.insert(-3, " $$PWD/../#{ext.downcase}")
+      puts line
+      line.insert(line.index('\\'), " $$PWD/../#{ext.downcase}")
       #line = line + "$$PWD/../#{ext.downcase}/r/n"
      end
      text = text + line
@@ -345,7 +377,7 @@ def vm_is_started?
   require 'open3'
 
   output = ""
-  cmd = "\"" + File.join($virtualbox_path, "VBoxManage.exe") + "\"" + " list runningvms"
+  cmd = "\"" + $virtualbox_path + "\"" + " list runningvms"
   Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
     if wait_thr.value != 0 
         raise "Shell return error: #{wait_thr.value.to_s}\n STDOUT: #{stdout.read}" 
@@ -365,7 +397,7 @@ namespace "build"  do
       end
 
       if !vm_is_started?
-        system("\"" + File.join($virtualbox_path, "VBoxManage.exe") + "\"" + " startvm \"Sailfish OS Build Engine\" --type headless") 
+        system("\"" + $virtualbox_path + "\"" + " startvm \"Sailfish OS Build Engine\" --type headless") 
         puts "Waiting 40 seconds vm..."
         sleep 40.0
       end 
@@ -375,7 +407,7 @@ namespace "build"  do
       if $virtualbox_path.empty? 
         raise "Please, set VirtualBox variable environment..."
       end
-      system("\"" + File.join($virtualbox_path, "VBoxManage.exe") + "\"" + " controlvm \"Sailfish OS Build Engine\" poweroff")
+      system("\"" + $virtualbox_path + "\"" + " controlvm \"Sailfish OS Build Engine\" poweroff")
     end
     
     task :rhobundle => ["project:sailfish:qt"] do
@@ -419,13 +451,12 @@ namespace "build"  do
           $target_rpm = file_name
           puts "target rpm: " + $target_rpm
         end
+      end
 
-      #if !File.exists?(target_rpm) raise "Target rpm not found!"
       rpmval_path = File.join($project_path, "rpmvalidation.cmd")
-      system("\"#{rpmval_path}\" #{$target_rpm}")
+      system("\"#{rpmval_path}\" \"#{$target_rpm}\"")
       cp_r $target_rpm, $target_path
 
-      end
 
     end
 
@@ -530,6 +561,16 @@ namespace 'project' do
       File.open(File.join($project_path, "rholib", "rholib.pro"), 'w' ) { |f| f.write generator.render_profile( rholib_erb_path ) }
       File.open(File.join($project_path, "sqlite3", "sqlite3.pro"), 'w' ) { |f| f.write generator.render_profile( sqlite3_erb_path ) }
       File.open(File.join($project_path, "syncengine", "syncengine.pro"), 'w' ) { |f| f.write generator.render_profile( syncengine_erb_path ) }
+
+      if !isWindows?
+        clrfTOlf(File.join($project_path, "curl", "curl.pro"))
+        clrfTOlf(File.join($project_path, "rubylib", "rubylib.pro"))
+        clrfTOlf(File.join($project_path, "rholib", "rholib.pro"))
+        clrfTOlf(File.join($project_path, "sqlite3", "sqlite3.pro"))
+        clrfTOlf(File.join($project_path, "syncengine", "syncengine.pro"))
+      end
+
+
       File.open(File.join($project_path, $final_name_app, "#{$final_name_app}.desktop"), 'w' ) { |f| f.write generator.render_profile( desktop_erb_path ) }
       File.open(File.join($project_path, $final_name_app, "rpm", "#{$final_name_app}.yaml"), 'w' ) { |f| f.write generator.render_profile( yaml_erb_path ) }
       
@@ -544,32 +585,56 @@ namespace 'project' do
       end
       
       build_script_generator = BuildScriptGenerator.new
+      
+      #if isWindows?
+      #  build_script_generator.scriptHeader = "ECHO OFF"
+      #  build_script_generator.platformExport = "set"
+      #else
+      #  build_script_generator.scriptHeader = "#!/bin/sh"
+      #  build_script_generator.platformExport = "export"
+      #end
+
+      build_script_generator.isNixSystem = !isWindows?
       build_script_generator.merPort = 2222
       build_script_generator.merPkey = File.join $qtdir, "vmshare/ssh/private_keys/engine/mersdk"
-      build_script_generator.projectPath = File.join($project_path, $final_name_app)
-      build_script_generator.merSdkTools = $current_build_sdk_dir.gsub("/", "\\")
-      build_script_generator.merSharedHome = File.expand_path('~')
-      build_script_generator.merSharedSrc = File.expand_path('~')
-      build_script_generator.merShTgtName = File.join($qtdir, "mersdk", "targets")
-      build_script_generator.merTgtName = $current_target
+      build_script_generator.projectPath = QuotedStrNixWay(File.join($project_path, $final_name_app))
+      build_script_generator.merSdkTools = QuotedStrNixWay(PathToWindowsWay($current_build_sdk_dir))
+      build_script_generator.merSharedHome = QuotedStrNixWay(File.expand_path('~'))
+      build_script_generator.merSharedSrc = QuotedStrNixWay(File.expand_path('~'))
+      build_script_generator.merShTgtName = QuotedStrNixWay(File.join($qtdir, "mersdk", "targets"))
+      build_script_generator.merTgtName = QuotedStrNixWay($current_target)
       build_script_generator.merUserName = "mersdk"
-      build_script_generator.merDevName = $dev_name
+      build_script_generator.merDevName = QuotedStrNixWay($dev_name)
 
       #TODO: windows paths way - temporary
-      build_script_generator.qmakePath = File.join($current_build_sdk_dir, "qmake.cmd").gsub("/", "\\")
-      build_script_generator.proPath = File.join($project_path, $final_name_app, "#{$final_name_app}.pro").gsub("/", "\\")
+      cmd_suffix = isWindows? ? '.cmd' : ''
+      build_script_generator.qmakePath = PathToWindowsWay(File.join($current_build_sdk_dir, "qmake" + cmd_suffix))
+      build_script_generator.proPath = PathToWindowsWay(File.join($project_path, $final_name_app, "#{$final_name_app}.pro"))
       build_script_generator.buildMode = $connf_build.downcase
       build_script_generator.qmlMode = "qml_#{$connf_build.downcase}" 
-      build_script_generator.makePath = File.join($current_build_sdk_dir, "make.cmd").gsub("/", "\\")
-      build_script_generator.rpmPath =  File.join($current_build_sdk_dir, "rpm.cmd").gsub("/", "\\")
-      build_script_generator.rpmvalPath =  File.join($current_build_sdk_dir, "rpmvalidation.cmd").gsub("/", "\\")
-      build_script_generator.deployPath =  File.join($current_build_sdk_dir, "deploy.cmd").gsub("/", "\\")
+      build_script_generator.makePath = PathToWindowsWay(File.join($current_build_sdk_dir, "make" + cmd_suffix))
+      build_script_generator.rpmPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpm" + cmd_suffix))
+      build_script_generator.rpmvalPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpmvalidation" + cmd_suffix))
+      build_script_generator.deployPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "deploy" + cmd_suffix))
 
       File.open(File.join($project_path, "build.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( build_erb_path ) }
       File.open(File.join($project_path, "clean.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( clean_erb_path ) }
       File.open(File.join($project_path, "rpm.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( rpm_erb_path ) }
       File.open(File.join($project_path, "rpmvalidation.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( rpmval_erb_path ) }
       File.open(File.join($project_path, "deploy.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( deploy_erb_path ) }
+
+      if !isWindows?
+        FileUtils.chmod('+x', File.join($project_path, "build.cmd"))
+        FileUtils.chmod('+x', File.join($project_path, "clean.cmd"))
+        FileUtils.chmod('+x', File.join($project_path, "rpm.cmd"))
+        FileUtils.chmod('+x', File.join($project_path, "rpmvalidation.cmd"))
+        FileUtils.chmod('+x', File.join($project_path, "deploy.cmd"))
+        clrfTOlf(File.join($project_path, "build.cmd"))
+        clrfTOlf(File.join($project_path, "clean.cmd"))
+        clrfTOlf(File.join($project_path, "rpm.cmd"))
+        clrfTOlf(File.join($project_path, "rpmvalidation.cmd"))
+        clrfTOlf(File.join($project_path, "deploy.cmd"))
+      end
     end
   end
 end

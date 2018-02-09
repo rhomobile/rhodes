@@ -53,5 +53,9 @@ $$PWD/../rhodes
 
 QMAKE_CXXFLAGS_RELEASE += -MP9
 QMAKE_CXXFLAGS_DEBUG += -MP9
+
+QMAKE_CFLAGS_DEBUG -= -O2
+QMAKE_CXXFLAGS_DEBUG -= -O2
+
 QMAKE_CFLAGS += -fvisibility=hidden
 QMAKE_CXXFLAGS += -fvisibility=hidden

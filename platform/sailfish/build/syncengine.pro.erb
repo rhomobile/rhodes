@@ -17,6 +17,8 @@ unix:!macx {
   DEFINES += _GNU_SOURCE OS_LINUX OS_SAILFISH
   QMAKE_CFLAGS += -fvisibility=hidden
   QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 
 DEFINES += RHODES_QT_PLATFORM
