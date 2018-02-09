@@ -34,6 +34,8 @@ unix:!macx {
   contains(DEFINES, OS_SAILFISH)  {
     HEADERS += <%= @rhoRoot %>/lib/commonAPI/barcode/ext/platform/qt/src/barcodeqmlmodel.h
   }
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 

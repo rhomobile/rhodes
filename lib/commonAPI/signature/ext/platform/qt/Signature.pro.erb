@@ -32,6 +32,8 @@ unix:!macx {
     HEADERS += <%= @rhoRoot %>/lib/commonAPI/signature/ext/platform/qt/src/signatureqmlmodel.h
     SOURCES += <%= @rhoRoot %>/lib/commonAPI/signature/ext/platform/qt/src/signatureqmlmodel.cpp
   }
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 
