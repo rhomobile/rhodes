@@ -1,7 +1,4 @@
-QT += core gui network
-QT += multimedia
-QT += webkit
-QT += bluetooth
+QT += core gui network multimedia webkit bluetooth dbus
 
 message(Qt version: $$[QT_VERSION])
 
@@ -54,6 +51,7 @@ HEADERS += <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoClassFactoryImpl.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/AlertImpl.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoThreadImpl.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothhelper.h \
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothsender.h \
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothserver.h \
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothclient.h \
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothdevicelabel.h \

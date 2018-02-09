@@ -13,7 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
     }
 
     equals(QT_VERSION, 5.6.2) {
-        QT += webkit quick bluetooth #widgets
+        QT += webkit quick bluetooth dbus #widgets
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
         message(Deprecated sailfish webkit enabled)
@@ -192,7 +192,8 @@ guithreadfunchelper.h \
     impl/bluetooth/bluetoothhelper.h \
     impl/bluetooth/bluetoothserver.h \
     impl/bluetooth/bluetoothclient.h \
-    impl/bluetooth/bluetoothdevicelabel.h
+    impl/bluetooth/bluetoothdevicelabel.h \
+    impl/bluetooth/bluetoothsender.h
 #TODO: make this like normal developer do
 
 
@@ -349,5 +350,5 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libBarcode.a
 unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lSignature
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libSignature.a
 
-#unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lRhoconnect-client
-#unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-client.a
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lRhoconnect-client
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-client.a

@@ -26,6 +26,7 @@ Page {
 
             }
             Label {
+                anchors.top: deviceName.bottom
                 x: Theme.horizontalPageMargin
                 text: modelData.deviceId
                 height: deviceName.height / 1.5

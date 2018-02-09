@@ -6,33 +6,39 @@
 #include <QtBluetooth/QBluetoothLocalDevice>
 #include <QtBluetooth/QBluetoothServiceInfo>
 #include <QtDBus/QDBusInterface>
-
-class BluetoothServer : public QObject {
+#include <QtBluetooth/QBluetoothDeviceInfo>
+#include "bluetoothsender.h"
+class BluetoothServer : public BluetoothSender {
     Q_OBJECT
 public:
-    explicit BluetoothServer(QObject *parent = 0) : QObject(parent) {
+    explicit BluetoothServer(QBluetoothDeviceInfo &info, QString callback, QObject *parent = 0) :
+        BluetoothSender(info, callback, parent) {
+        bluetoothServer = nullptr;
         QDBusInterface bluetoothInterface("net.connman", "/net/connman/technology/bluetooth",
                                           "net.connman.Technology", QDBusConnection::systemBus(), this);
         bluetoothInterface.call("SetProperty", "Powered", QVariant::fromValue(QDBusVariant(true)));
 
-        QDBusInterface adapterListInterface("org.bluez", "/", "org.bluez.Manager",
-                                            QDBusConnection::systemBus(), this);
-        QVariant adapterPath = adapterListInterface.call("DefaultAdapter").arguments().at(0);
-        QDBusInterface bluetoothAdapter("org.bluez", adapterPath.value<QDBusObjectPath>().path(),
-                                        "org.bluez.Adapter", QDBusConnection::systemBus(), this);
-        bluetoothAdapter.call("SetProperty", "DiscoverableTimeout", QVariant::fromValue(QDBusVariant(0U)));
-        bluetoothAdapter.call("SetProperty", "Discoverable", QVariant::fromValue(QDBusVariant(true)));
+        startServer();
     }
     ~BluetoothServer() {
         stopServer();
     }
-    Q_INVOKABLE void startServer() {
+
+
+private:
+    QBluetoothServer *bluetoothServer;
+    QBluetoothServiceInfo serviceInfo;
+
+    const QString SERVICE_UUID = "00001101-0000-1000-8000-00805F9B34FB";
+private slots:
+    void startServer() {
         qDebug() << "startServer()";
         if (bluetoothServer) return;
         bluetoothServer = new QBluetoothServer(QBluetoothServiceInfo::RfcommProtocol, this);
-        connect(bluetoothServer, &QBluetoothServer::newConnection,
-                this, &BluetoothServer::clientConnected);
+        connect(bluetoothServer, &QBluetoothServer::newConnection, this, &BluetoothServer::clientConnected);
         QBluetoothAddress bluetoothAddress = QBluetoothLocalDevice().address();
+        QBluetoothHostInfo hostInfo;
+        setName(hostInfo.name());
         bluetoothServer->listen(bluetoothAddress);
 
         QBluetoothServiceInfo::Sequence classId;
@@ -58,39 +64,34 @@ public:
         serviceInfo.setAttribute(QBluetoothServiceInfo::ProtocolDescriptorList, protocolDescriptorList);
 
         serviceInfo.registerService(bluetoothAddress);
+
+        qDebug() << "Service registred";
     }
-    Q_INVOKABLE void stopServer() {
+    void stopServer() {
         qDebug() << "stopServer()";
         if (serviceInfo.isRegistered()) serviceInfo.unregisterService();
-        if (bluetoothServer != NULL) delete bluetoothServer;
-        bluetoothServer = NULL;
+        if (bluetoothServer != nullptr) delete bluetoothServer;
+        bluetoothServer = nullptr;
     }
 
-signals:
-    void messageReceived(QString message);
-private:
-    QBluetoothServer *bluetoothServer;
-    QBluetoothServiceInfo serviceInfo;
-    QBluetoothSocket *socket;
-
-    const QString SERVICE_UUID = "00000000-0000-1000-8000-00805F9B34FB";
-private slots:
     void clientConnected() {
         qDebug() << "clientConnected()";
         socket = bluetoothServer->nextPendingConnection();
         connect(socket, &QBluetoothSocket::readyRead, this, &BluetoothServer::readSocket);
         connect(socket, &QBluetoothSocket::disconnected, this, &BluetoothServer::clientDisconnected);
+        connected();
     }
     void clientDisconnected() {
         qDebug() << "clientDisconnected()";
         socket->deleteLater();
         socket = NULL;
+        disconnected();
     }
     void readSocket() {
         qDebug() << "readSocket()";
-        const QString message = QString::fromUtf8(socket->readAll());
-        emit messageReceived(message);
+        messageReceived(QString::fromUtf8(socket->readAll()));
     }
+
 };
 
 

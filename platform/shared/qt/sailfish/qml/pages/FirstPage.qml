@@ -96,6 +96,9 @@ Page {
                     id: webView
                     url: modelData.url
                     anchors.fill: parent
+                    experimental.preferredMinimumContentsWidth: Screen.width / 2
+                    experimental.customLayoutWidth: Screen.width / 2
+
 
                     Connections {
                         target: modelData
@@ -149,14 +152,15 @@ Page {
                             modelData.loadFinished(false);
                             console.log("Page " + url + " loaded with fail!");
                         }
+
                     }
                     onLinkHovered: modelData.linkClicked(hoveredUrl)
                     Component.onCompleted: {
-                       console.log("Component complited")
+                        console.log("Component complited")
                     }
 
                     experimental.onMessageReceived: {
-                       console.log(message.data);
+                        console.log(message.data);
                         modelData.messageReceived(message.data);
                     }
 
