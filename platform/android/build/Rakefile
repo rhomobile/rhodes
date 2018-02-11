@@ -8,7 +8,7 @@ raise 'SOURCELIS is not setT' if SOURCELIST.nil?
 
 BUILDARGS = ENV['BUILDARGS'].split if ENV['BUILDARGS']
 LINKARGS = ENV['LINKARGS'].split if ENV['LINKARGS']
-LINKDEPS = ENV['LINKDEPS'].split if ENV['LINKDEPS']
+LINKDEPS = (ENV['LINKDEPS'] || '').split
   
 TARGETDIR = ENV['TARGETPATH']
 raise "TARGETPATH is not set" if TARGETDIR.nil?
@@ -129,8 +129,7 @@ file TARGETLIB_MIPS => TARGETDIR_MIPS do |t|
 end
 multitask TARGETLIB_MIPS => OBJ_MIPS
 
-
-file SHAREDLIB_ARM => TARGETDIR_ARM do |t|
+file SHAREDLIB_ARM => [TARGETDIR_ARM, FileList.new(LINKDEPS)].flatten do |t|
     Rake::Task["config:arm"].invoke
     cc_link(t.name, OBJ_ARM, LINKARGS + get_stl_link_args('armeabi'), LINKDEPS) or raise "\e[31mLinking library failed: #{t.name}\e[0m"
     unless $debug
@@ -139,7 +138,7 @@ file SHAREDLIB_ARM => TARGETDIR_ARM do |t|
 end
 multitask SHAREDLIB_ARM => OBJ_ARM
 
-file SHAREDLIB_x86 => TARGETDIR_x86 do |t|
+file SHAREDLIB_x86 => [TARGETDIR_x86, FileList.new(LINKDEPS)].flatten do |t|
     Rake::Task["config:x86"].invoke
     cc_link(t.name, OBJ_x86, LINKARGS + get_stl_link_args('x86'), LINKDEPS) or raise "\e[31mLinking library failed: #{t.name}\e[0m"
     unless $debug
@@ -148,7 +147,7 @@ file SHAREDLIB_x86 => TARGETDIR_x86 do |t|
 end
 multitask SHAREDLIB_x86 => OBJ_x86
 
-file SHAREDLIB_MIPS => TARGETDIR_MIPS do |t|
+file SHAREDLIB_MIPS => [TARGETDIR_MIPS, FileList.new(LINKDEPS)].flatten do |t|
     Rake::Task["config:mips"].invoke
     cc_link(t.name, OBJ_x86, LINKARGS + get_stl_link_args('mips'), LINKDEPS) or raise "\e[31mLinking library failed: #{t.name}\e[0m"
     unless $debug
@@ -156,8 +155,8 @@ file SHAREDLIB_MIPS => TARGETDIR_MIPS do |t|
     end
 end
 multitask SHAREDLIB_MIPS => OBJ_MIPS
-
-
+  
+  
 namespace 'build' do
   task :arm => OBJ_ARM
   task :x86 => OBJ_x86
