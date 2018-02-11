@@ -536,7 +536,7 @@ def load_app_and_run(device_flag, apkfile, pkgname)
   argv = [$adb] + device_options(device_flag)
   argv << 'install'
   argv << '-r'
-  argv << apkfile
+  argv << "#{Jake.enquote apkfile}"
 
   cmd = argv.join(' ')
 
