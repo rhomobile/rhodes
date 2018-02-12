@@ -6,6 +6,11 @@ CONFIG += force_debug_info
 
 OTHER_FILES += $$PWD/data/*
 
+privileges.files = privileges/*
+privileges.path = /usr/share/mapplauncherd/privileges.d
+INSTALLS += privileges
+OTHER_FILES += privileges/*
+
 DEPLOYMENT_PATH = /usr/share/$${TARGET}
 data.files = data
 data.path = $${DEPLOYMENT_PATH}
@@ -17,7 +22,8 @@ DISTFILES += rpm/harbour-SailfishRhodes.changes.in \
     rpm/harbour-SailfishRhodes.spec \
     rpm/harbour-SailfishRhodes.yaml \
     harbour-SailfishRhodes.desktop \
-    translations/*.ts
+    translations/*.ts \
+	privileges/<%= @nameApp %>
 
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128
