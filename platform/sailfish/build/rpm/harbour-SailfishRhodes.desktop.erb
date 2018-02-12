@@ -2,5 +2,6 @@
 Type=Application
 X-Nemo-Application-Type=silica-qt5
 Icon=<%= @nameApp %>
-Exec=<%= @nameApp %>
 Name=<%= @nameApp %>
+
+Exec=invoker --type=silica-qt5 -s /usr/bin/<%= @nameApp %>

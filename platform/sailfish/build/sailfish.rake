@@ -519,6 +519,7 @@ namespace 'project' do
 
       desktop_erb_path = $rhodes_path + "/platform/sailfish/build/rpm/harbour-SailfishRhodes.desktop.erb"
       yaml_erb_path = $rhodes_path    + "/platform/sailfish/build/rpm/harbour-SailfishRhodes.yaml.erb"
+      priv_erb_path = $rhodes_path    + "/platform/sailfish/build/rpm/harbour-SailfishRhodes.erb"
 
       build_erb_path = $rhodes_path + "/platform/sailfish/build/rho_build.cmd.erb"
       clean_erb_path = $rhodes_path + "/platform/sailfish/build/rho_clean.cmd.erb"
@@ -535,6 +536,7 @@ namespace 'project' do
       mkdir_p File.join($project_path, "rhodes")
       mkdir_p File.join($project_path, $final_name_app)
       mkdir_p File.join($project_path, $final_name_app, "rpm")
+      mkdir_p File.join($project_path, $final_name_app, "privileges")
 
       if !File.exists?(File.join($project_path, $final_name_app, "qml")) 
         cp_r File.join($rhodes_path, "platform/shared/qt/sailfish/qml"), File.join($project_path, $final_name_app)
@@ -573,6 +575,7 @@ namespace 'project' do
 
       File.open(File.join($project_path, $final_name_app, "#{$final_name_app}.desktop"), 'w' ) { |f| f.write generator.render_profile( desktop_erb_path ) }
       File.open(File.join($project_path, $final_name_app, "rpm", "#{$final_name_app}.yaml"), 'w' ) { |f| f.write generator.render_profile( yaml_erb_path ) }
+      File.open(File.join($project_path, $final_name_app, "privileges", "#{$final_name_app}"), 'w' ) { |f| f.write generator.render_profile( priv_erb_path ) }
       
       rho_name_project = File.join($project_path, "rhodes", "rhodes.pro")
       if !File.exists?(rho_name_project)
@@ -638,7 +641,7 @@ namespace 'project' do
     end
   end
 end
-
+#http://doc.qt.io/qt-5/qmake-variable-reference.html#qmakespec
 #MER_SSH_PORT, 2222
 #MER_SSH_PRIVATE_KEY, C:/SailfishOS/vmshare/ssh/private_keys/engine/mersdk
 #MER_SSH_PROJECT_PATH, C:/Users/n0men/Desktop/tau/testapp/project/qt/curl
