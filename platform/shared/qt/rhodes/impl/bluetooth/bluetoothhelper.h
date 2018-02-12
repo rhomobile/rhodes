@@ -14,6 +14,9 @@
 #include <QQmlContext>
 #include <QQuickView>
 #include <QTime>
+#include <QMutex>
+#include <QMutexLocker>
+
 class BluetoothHelper : public QObject
 {
     Q_OBJECT
@@ -25,21 +28,70 @@ class BluetoothHelper : public QObject
         QtMainWindow::setContextProperty("bluetoothModel", objectList);
         QtMainWindow::setContextProperty("bluetoothListModel", QList<QObject*>());
 
-        connect(&timerRefresh, SIGNAL(timeout()), this, SLOT(referesh()));
+        connect(&timerRefresh, SIGNAL(timeout()), this, SLOT(refresh()));
         lastError = "OK";
     }
 public:
     static BluetoothHelper * getInstance(){
-        static BluetoothHelper instance;
-        return &instance;
+        static BluetoothHelper * instance = nullptr;
+        if (instance == nullptr){
+            instance = new BluetoothHelper(QtMainWindow::getLastInstance());
+        }
+        return instance;
     }
 
     BluetoothSender * getSession(const char* connected_device_name){
-        QString name = QString::fromLatin1(connected_device_name);
-        if (keeper.contains(name)){
-            return keeper.value(name);
+        return getSession(QString::fromLatin1(connected_device_name));
+    }
+
+    BluetoothSender * getSession(QString connected_device_name){
+        if (keeper.contains(connected_device_name)){
+            return keeper.value(connected_device_name);
         }else{
             return nullptr;
+        }
+    }
+
+    QString getLastError() const{return lastError;}
+    QString getDeviceName(){
+        if (hostInfo.name().isEmpty()){
+            hostInfo.setName("nemo");
+        }
+        return hostInfo.name();
+
+    }
+
+private:
+    QString lastSavedCallback;
+    QTimer timerRefresh;
+    QHash<QString, BluetoothDeviceLabel *> devicesKeeper;
+    QBluetoothDeviceDiscoveryAgent discoverer;
+    QString lastError;
+    QBluetoothHostInfo hostInfo;
+    QBluetoothLocalDevice localDevice;
+
+    QHash<QString, BluetoothSender *> keeper;
+
+signals:
+
+public slots:
+    void setDeviceName(QString name){hostInfo.setName(name);}
+
+    void sendMessage(QString connected_device_name, QString message){
+        qDebug() << "Sending message" << connected_device_name << message;
+        BluetoothSender * session = BluetoothHelper::getInstance()->getSession(connected_device_name);
+        if (session != nullptr){
+            session->sendMessage(message);
+        }else{
+            qDebug() << "Can't get a session";
+        }
+    }
+
+    void setCallback(QString connected_device_name, QString callback){
+        qDebug() << connected_device_name << callback;
+        BluetoothSender * session = getSession(connected_device_name);
+        if (session != nullptr){
+            session->setCallBack(callback);
         }
     }
 
@@ -52,6 +104,7 @@ public:
     }
 
     void setWorking(bool enable){
+        qDebug() << "Set working " + QString::number(enable);
         QDBusInterface bluetoothInterface("net.connman", "/net/connman/technology/bluetooth",
                                           "net.connman.Technology", QDBusConnection::systemBus(), this);
         bluetoothInterface.call("SetProperty", "Powered", QVariant::fromValue(QDBusVariant(enable)));
@@ -74,74 +127,10 @@ public:
         timerRefresh.start(1000);
         QtMainWindow::getLastInstance()->openQMLDocument("BluetoothObserverPage.qml");
     }
-    QString getLastError() const{return lastError;}
-    QString getDeviceName(){return hostInfo.name();}
-    void setDeviceName(QString name){hostInfo.setName(name);}
-
-    BluetoothServer * createServer(QString clientName, QString callback){
-        refresh();
-        if (keeper.contains(clientName)){
-            keeper.value(clientName)->deleteLater();
-        }
-
-        QBluetoothDeviceInfo info;
-        foreach (BluetoothDeviceLabel * vals, devicesKeeper.values()) {
-            if ((vals->getInfo().address().toString() == clientName) ||
-                (vals->getInfo().name() == clientName)){
-                info = vals->getInfo();
-            }
-        }
 
 
-        BluetoothServer * server = new BluetoothServer(info, callback, this);
-        keeper.insert(getDeviceName(), server);
-        return server;
-    }
-
-
-    BluetoothClient * createClient(QBluetoothDeviceInfo info, QString callback){
-        if (keeper.contains(info.name())){
-            keeper.value(info.name())->deleteLater();
-            keeper.remove(info.name());
-        }
-        if (keeper.contains(info.address().toString())){
-            keeper.value(info.address().toString())->deleteLater();
-            keeper.remove(info.address().toString());
-        }
-
-        BluetoothClient * client = new BluetoothClient(info, callback, this);
-        keeper.insert(info.name(), client);
-        return client;
-    }
-
-    BluetoothClient * createClient(QString serverName, QString callback){
-        refresh();
-
-        QBluetoothDeviceInfo info;
-        foreach (BluetoothDeviceLabel * vals, devicesKeeper.values()) {
-            if ((vals->getInfo().address().toString() == serverName) ||
-                (vals->getInfo().name() == serverName)){
-                info = vals->getInfo();
-            }
-        }
-
-        return createClient(info, callback);
-    }
-
-private:
-    QString lastSavedCallback;
-    QTimer timerRefresh;
-    QHash<QString, BluetoothDeviceLabel *> devicesKeeper;
-    QBluetoothDeviceDiscoveryAgent discoverer;
-    QString lastError;
-    QBluetoothHostInfo hostInfo;
-
-    QHash<QString, BluetoothSender *> keeper;
-
-signals:
-
-public slots:
     void cancel(){
+        qDebug() << "Cancelling";
         BluetoothSender::fireCancel(lastSavedCallback);
         stop();
     }
@@ -150,20 +139,20 @@ public slots:
         discoverer.stop();
     }
     void selected(){
+        stop();
         QBluetoothDeviceInfo info = qobject_cast<BluetoothDeviceLabel *>(sender())->getInfo();
         createClient(info, lastSavedCallback);
     }
 
     void refresh(){
-        QBluetoothLocalDevice localDevice;
-        QList<QBluetoothAddress> remotes;
-        if (localDevice.isValid()) {
-            localDevice.setHostMode(QBluetoothLocalDevice::HostDiscoverable);
-            remotes = localDevice.connectedDevices();
-        }
         QList<QBluetoothDeviceInfo> infos;
+
         foreach (QBluetoothDeviceInfo info, discoverer.discoveredDevices()) {
-            if (remotes.contains(info.address())){infos.append(info);}
+            QBluetoothLocalDevice::Pairing pairingStatus = localDevice.pairingStatus(info.address());
+            if (pairingStatus == QBluetoothLocalDevice::Paired ||
+                    pairingStatus == QBluetoothLocalDevice::AuthorizedPaired ){
+                infos.append(info);
+            }
         }
 
         foreach (QBluetoothDeviceInfo info, infos) {
@@ -195,12 +184,65 @@ public slots:
             QtMainWindow::setContextProperty("bluetoothListModel", objectList);
 
             foreach (BluetoothDeviceLabel * val, oldLabels) {val->deleteLater();}
-            QtMainWindow::getView()->update();
 
         }
 
+    }
 
 
+    BluetoothServer * createServer(QString clientName, QString callback){
+        qDebug() << "createServer" << clientName << callback;
+
+        refresh();
+        if (keeper.contains(clientName)){
+            keeper.value(clientName)->deleteLater();
+        }
+
+        QBluetoothDeviceInfo info;
+        foreach (BluetoothDeviceLabel * vals, devicesKeeper.values()) {
+            if ((vals->getInfo().address().toString() == clientName) ||
+                (vals->getInfo().name() == clientName)){
+                info = vals->getInfo();
+            }
+        }
+
+
+        BluetoothServer * server = new BluetoothServer(info, callback, this);
+        server->setName(getDeviceName());
+        keeper.insert(getDeviceName(), server);
+        qDebug() << "Server name is " + getDeviceName();
+        return server;
+    }
+
+
+    BluetoothClient * createClient(QBluetoothDeviceInfo info, QString callback){
+        qDebug() << info.name() << callback;
+        if (keeper.contains(info.name())){
+            keeper.value(info.name())->deleteLater();
+            keeper.remove(info.name());
+        }
+        if (keeper.contains(info.address().toString())){
+            keeper.value(info.address().toString())->deleteLater();
+            keeper.remove(info.address().toString());
+        }
+
+        BluetoothClient * client = new BluetoothClient(info, callback, this);
+
+        keeper.insert(info.name(), client);
+        return client;
+    }
+
+    BluetoothClient * createClient(QString serverName, QString callback){
+        refresh();
+
+        QBluetoothDeviceInfo info;
+        foreach (BluetoothDeviceLabel * vals, devicesKeeper.values()) {
+            if ((vals->getInfo().address().toString() == serverName) || (vals->getInfo().name() == serverName)){
+                info = vals->getInfo();
+            }
+        }
+
+        return createClient(info, callback);
     }
 };
 

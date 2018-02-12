@@ -17,12 +17,14 @@
 #include <QQueue>
 #include "ext/rho/rhoruby.h"
 #include "common/RhodesApp.h"
+#include <QMutex>
+#include <QMutexLocker>
 
 class BluetoothSender : public QObject
 {
     Q_OBJECT
 public:
-    explicit BluetoothSender(QBluetoothDeviceInfo &info, QString createSessionCallBack, QObject *parent = 0){
+    explicit BluetoothSender(QBluetoothDeviceInfo &info, QString createSessionCallBack, QObject *parent = 0) : QObject(parent){
         this->info = info;
         this->createSessionCallBack = createSessionCallBack;
     }
@@ -37,19 +39,23 @@ public:
 
     void messageReceived(const QString & message){
         if (!message.isEmpty()){
+            QMutexLocker locker(&mutex);
             messagesKeeper.enqueue(message);
             qDebug() << message;
+            locker.unlock();
             fireSessionCallBack(RHO_BT_SESSION_INPUT_DATA_RECEIVED);
         }
     }
 
     bool sendMessage(const QString & message){
+        qDebug() << message;
         if (socket != nullptr){
             if (socket->isOpen()){
                 socket->write(message.toUtf8());
                 return true;
             }else{
-                fireSessionCallBack(RHO_BT_SESSION_DISCONNECT);
+                //fireSessionCallBack(RHO_BT_SESSION_DISCONNECT);
+                fireSessionCallBack(RHO_BT_ERROR);
                 return false;
             }
         }
@@ -76,7 +82,20 @@ public:
     }
 
     QString getLastMessage(){
-        return messagesKeeper.dequeue();
+        QMutexLocker locker(&mutex);
+        if (!messagesKeeper.isEmpty()){
+            qDebug() << "Returning message " + messagesKeeper.first();
+            return std::move(messagesKeeper.dequeue());
+        }else{
+            qDebug() << "Returning message is empty";
+            return std::move(QString("ERROR"));
+        }
+    }
+
+
+    int getQueueSize(){
+        QMutexLocker locker(&mutex);
+        return messagesKeeper.size();
     }
 
     static void fireCancel(const QString &mCreateSessionCallback){
@@ -104,18 +123,18 @@ public:
         rho_http_free(norm_url);
     }
 
-
-
-
-
-
 protected:
+    QMutex mutex;
     QBluetoothDeviceInfo info;
     QString createSessionCallBack;
     QString callBack;
     QBluetoothSocket *socket = nullptr;
     QString name;
     QQueue<QString> messagesKeeper;
+    const QString SERVICE_UUID = "00001101-0000-1000-8000-00805F9B34FB";
+
+
+
 signals:
 
 public slots:

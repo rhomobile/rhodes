@@ -28,7 +28,7 @@
 #include "ext/rho/rhoruby.h"
 #include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
-#include "bluetooth/bluetoothhelper.h"
+#include "bluetooth/bluetooththread.h"
 
 extern "C" {
 
@@ -39,23 +39,23 @@ int rho_bluetooth_is_bluetooth_available()
 
 void rho_bluetooth_off_bluetooth()
 {
-    BluetoothHelper::getInstance()->setWorking(false);
+    BluetoothThread::getInstance()->setWorking(false);
 }
 
 void rho_bluetooth_set_device_name(const char* device_name)
 {
-    BluetoothHelper::getInstance()->setDeviceName(QString::fromLatin1(device_name));
+    BluetoothThread::getInstance()->setDeviceName(QString::fromLatin1(device_name));
 }
 
 VALUE rho_bluetooth_get_device_name()
 {
     //Friendly name of current device
-    return rho_ruby_create_string(BluetoothHelper::getInstance()->getDeviceName().toStdString().c_str());
+    return rho_ruby_create_string(BluetoothThread::getInstance()->getDeviceName().toStdString().c_str());
 }
 
 const char* rho_bluetooth_get_last_error()
 {
-    return  BluetoothHelper::getInstance()->getLastError().toStdString().c_str();
+    return BluetoothThread::getInstance()->getLastError().toStdString().c_str();
 }
 
 const char* rho_bluetooth_create_session(const char* role, const char* callback_url)
@@ -66,9 +66,9 @@ const char* rho_bluetooth_create_session(const char* role, const char* callback_
     // return: RHO_BT_OK
     if (strcmp(role, RHO_BT_ROLE_CLIENT) == 0)
     {
-        BluetoothHelper::getInstance()->openDeviceDiscover(QString::fromLocal8Bit(callback_url));
+        BluetoothThread::getInstance()->openDeviceDiscover(QString::fromLocal8Bit(callback_url));
     }else {
-        BluetoothHelper::getInstance()->createServer("", QString::fromLocal8Bit(callback_url));
+        BluetoothThread::getInstance()->createServer("", QString::fromLocal8Bit(callback_url));
     }
     return RHO_BT_OK;
 
@@ -76,38 +76,38 @@ const char* rho_bluetooth_create_session(const char* role, const char* callback_
 
 void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url)
 {
-    BluetoothSender * session = BluetoothHelper::getInstance()->getSession(connected_device_name);
-    if (session != nullptr){
-        session->setCallBack(QString::fromLocal8Bit(callback_url));
-    }
+    BluetoothThread::getInstance()->setCallback(QString::fromLocal8Bit(connected_device_name),
+                                                QString::fromLocal8Bit(callback_url));
+
 }
 
 void rho_bluetooth_session_disconnect(const char* connected_device_name)
 {
-    BluetoothHelper::getInstance()->remove(connected_device_name);
+    BluetoothThread::getInstance()->remove(connected_device_name);
 }
 
 int rho_bluetooth_session_get_status(const char* connected_device_name)
 {
-    return -1; 
+    BluetoothSender * session = BluetoothThread::getInstance()->getSession(connected_device_name);
+    if (session != nullptr){
+        return session->getQueueSize();
+    }
+    return -1;
 }
 
-const char* rho_bluetooth_session_read_string(const char* connected_device_name)
+VALUE rho_bluetooth_session_read_string(const char* connected_device_name)
 {
-    BluetoothSender * session = BluetoothHelper::getInstance()->getSession(connected_device_name);
+    BluetoothSender * session = BluetoothThread::getInstance()->getSession(connected_device_name);
     if (session != nullptr){
-        return session->getLastMessage().toStdString().c_str();
+        return rho_ruby_create_string(session->getLastMessage().toStdString().c_str());
     }
-    return "ERROR";
+    return rho_ruby_create_string("ERROR");
 }
 
 void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str)
 {
-    BluetoothSender * session = BluetoothHelper::getInstance()->getSession(connected_device_name);
-    if (session != nullptr){
-        session->sendMessage(QString::fromLocal8Bit(str));
-    }
-
+    BluetoothThread::getInstance()->sendMessage(QString::fromLocal8Bit(connected_device_name),
+                                                QString::fromLocal8Bit(str));
 }
 
 VALUE rho_bluetooth_session_read_data(const char* connected_device_name)
@@ -122,13 +122,13 @@ void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE d
 
 const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device)
 {
-    BluetoothHelper::getInstance()->createServer(QString::fromLocal8Bit(client_name), QString::fromLocal8Bit(callback_url));
+    BluetoothThread::getInstance()->createServer(QString::fromLocal8Bit(client_name), QString::fromLocal8Bit(callback_url));
     return RHO_BT_OK;
 }
 
 const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url)
 {
-    BluetoothHelper::getInstance()->createClient(QString::fromLocal8Bit(server_name), QString::fromLocal8Bit(callback_url));
+    BluetoothThread::getInstance()->createClient(QString::fromLocal8Bit(server_name), QString::fromLocal8Bit(callback_url));
     return RHO_BT_OK;
 }
 

@@ -92,7 +92,6 @@ int main(int argc, char *argv[])
     qRegisterMetaType<QString>("QString");
     qmlRegisterUncreatableType<RootDelegate>("RootDelegate",1,0,"RootDelegate","Err");
 
-
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QString OSDetailsString= QString("Running on : %1 Application Compiled with QT Version :  %2 Running with QT Version %3")
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());

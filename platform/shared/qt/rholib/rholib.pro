@@ -86,6 +86,8 @@ DEFINES += RHODES_QT_PLATFORM
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   # QMAKE_CFLAGS += -fvisibility=hidden
   # QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4189 /wd4018 /wd4189 /wd4996

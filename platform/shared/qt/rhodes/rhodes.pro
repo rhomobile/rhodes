@@ -165,6 +165,8 @@ DEFINES += RHODES_QT_PLATFORM
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
@@ -193,7 +195,8 @@ guithreadfunchelper.h \
     impl/bluetooth/bluetoothserver.h \
     impl/bluetooth/bluetoothclient.h \
     impl/bluetooth/bluetoothdevicelabel.h \
-    impl/bluetooth/bluetoothsender.h
+    impl/bluetooth/bluetoothsender.h \
+    impl/bluetooth/bluetooththread.h
 #TODO: make this like normal developer do
 
 

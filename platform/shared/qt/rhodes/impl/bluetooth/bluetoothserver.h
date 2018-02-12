@@ -29,7 +29,7 @@ private:
     QBluetoothServer *bluetoothServer;
     QBluetoothServiceInfo serviceInfo;
 
-    const QString SERVICE_UUID = "00001101-0000-1000-8000-00805F9B34FB";
+
 private slots:
     void startServer() {
         qDebug() << "startServer()";
@@ -50,7 +50,7 @@ private slots:
         serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceName, "BT message sender");
         serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceDescription, "Message sender");
         serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceProvider, "tau-technologies.com");
-        serviceInfo.setServiceUuid(QBluetoothUuid(SERVICE_UUID));
+        serviceInfo.setServiceUuid(QBluetoothUuid(QBluetoothUuid::SerialPort));
 
         QBluetoothServiceInfo::Sequence publicBrowse;
         publicBrowse << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::PublicBrowseGroup));
