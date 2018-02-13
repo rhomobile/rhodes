@@ -45,8 +45,9 @@ public:
     }
 
     BluetoothSender * getSession(QString connected_device_name){
-        if (keeper.contains(connected_device_name)){
-            return keeper.value(connected_device_name);
+        QMutexLocker locker(&mutex);
+        if (BluetoothSender::getKeeper()->contains(connected_device_name)){
+            return BluetoothSender::getKeeper()->value(connected_device_name);
         }else{
             return nullptr;
         }
@@ -69,8 +70,10 @@ private:
     QString lastError;
     QBluetoothHostInfo hostInfo;
     QBluetoothLocalDevice localDevice;
+    QMutex mutex;
 
-    QHash<QString, BluetoothSender *> keeper;
+
+
 
 signals:
 
@@ -96,10 +99,11 @@ public slots:
     }
 
     void remove(const char* connected_device_name){
+        QMutexLocker locker(&mutex);
         QString name = QString::fromLatin1(connected_device_name);
-        if (keeper.contains(name)){
-            keeper.value(name)->deleteLater();
-            keeper.remove(name);
+        if (BluetoothSender::getKeeper()->contains(name)){
+            BluetoothSender::getKeeper()->value(name)->deleteLater();
+            BluetoothSender::getKeeper()->remove(name);
         }
     }
 
@@ -194,9 +198,6 @@ public slots:
         qDebug() << "createServer" << clientName << callback;
 
         refresh();
-        if (keeper.contains(clientName)){
-            keeper.value(clientName)->deleteLater();
-        }
 
         QBluetoothDeviceInfo info;
         foreach (BluetoothDeviceLabel * vals, devicesKeeper.values()) {
@@ -206,29 +207,16 @@ public slots:
             }
         }
 
-
         BluetoothServer * server = new BluetoothServer(info, callback, this);
-        server->setName(getDeviceName());
-        keeper.insert(getDeviceName(), server);
-        qDebug() << "Server name is " + getDeviceName();
+
         return server;
     }
 
 
     BluetoothClient * createClient(QBluetoothDeviceInfo info, QString callback){
         qDebug() << info.name() << callback;
-        if (keeper.contains(info.name())){
-            keeper.value(info.name())->deleteLater();
-            keeper.remove(info.name());
-        }
-        if (keeper.contains(info.address().toString())){
-            keeper.value(info.address().toString())->deleteLater();
-            keeper.remove(info.address().toString());
-        }
 
         BluetoothClient * client = new BluetoothClient(info, callback, this);
-
-        keeper.insert(info.name(), client);
         return client;
     }
 

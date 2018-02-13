@@ -24,7 +24,7 @@ class BluetoothSender : public QObject
 {
     Q_OBJECT
 public:
-    explicit BluetoothSender(QBluetoothDeviceInfo &info, QString createSessionCallBack, QObject *parent = 0) : QObject(parent){
+    explicit BluetoothSender(QBluetoothDeviceInfo &info, QString createSessionCallBack, QObject *parent) : QObject(parent){
         this->info = info;
         this->createSessionCallBack = createSessionCallBack;
     }
@@ -35,6 +35,11 @@ public:
                 socket->close();
             }
         }
+    }
+
+    static QHash<QString, BluetoothSender *> * getKeeper(){
+        static QHash<QString, BluetoothSender *> keeper;
+        return &keeper;
     }
 
     void messageReceived(const QString & message){
@@ -63,7 +68,25 @@ public:
         return false;
     }
 
-    void connected(){
+    void removeSimularDevice(){
+        if (getKeeper()->contains(info.name())){
+            if (getKeeper()->value(info.name()) != this){
+                getKeeper()->value(info.name())->deleteLater();
+            }
+
+        }
+        if (getKeeper()->contains(info.address().toString())){
+            if (getKeeper()->value(info.address().toString()) != this){
+                getKeeper()->value(info.address().toString())->deleteLater();
+            }
+        }
+    }
+
+    void connected(){     
+        removeSimularDevice();
+        setName(info.name());
+        getKeeper()->insert(info.name(), this);
+
         fireCreateSessionCallBack(RHO_BT_OK);
     }
 
@@ -84,10 +107,8 @@ public:
     QString getLastMessage(){
         QMutexLocker locker(&mutex);
         if (!messagesKeeper.isEmpty()){
-            qDebug() << "Returning message " + messagesKeeper.first();
             return std::move(messagesKeeper.dequeue());
         }else{
-            qDebug() << "Returning message is empty";
             return std::move(QString("ERROR"));
         }
     }

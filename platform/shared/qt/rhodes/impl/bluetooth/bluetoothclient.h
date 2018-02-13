@@ -14,11 +14,12 @@
 class BluetoothClient : public BluetoothSender {
     Q_OBJECT
 public:
-    explicit BluetoothClient(QBluetoothDeviceInfo & info, QString callback, QObject *parent = 0) : BluetoothSender(info, callback, parent)  {
+    explicit BluetoothClient(QBluetoothDeviceInfo & info, QString callback, QObject *parent) : BluetoothSender(info, callback, parent)  {
         QDBusInterface bluetoothInterface("net.connman", "/net/connman/technology/bluetooth",
                                           "net.connman.Technology", QDBusConnection::systemBus(), this);
         bluetoothInterface.call("SetProperty", "Powered", QVariant::fromValue(QDBusVariant(true)));
-        setName(info.name());
+        //setName(info.name());
+        setName("Nemo");
         qDebug() << "Client addreass " + info.address().toString();
         discoveryAgent = new QBluetoothDeviceDiscoveryAgent(localDevice.address(), this);
         connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished, this, &BluetoothClient::deviceSearchFinished);
@@ -69,8 +70,8 @@ private:
         connect(socket, &QBluetoothSocket::readyRead, this, &BluetoothClient::readSocket);
         connect(socket, SIGNAL(error(QBluetoothSocket::SocketError)), this, SLOT(socketError(QBluetoothSocket::SocketError)));
         qDebug() << "Trying to connect to service";
-        socket->connectToService(address, QBluetoothUuid(QBluetoothUuid::SerialPort));
-
+        socket->connectToService(info.address(), QBluetoothUuid(SERVICE_UUID));
+        //socket->connectToService(address, 0);
 
     }
     void stopClient() {
@@ -84,8 +85,7 @@ private:
 
 private slots:
 
-    void pairingFinished(const QBluetoothAddress &address,
-                                          QBluetoothLocalDevice::Pairing pairing) {
+    void pairingFinished(const QBluetoothAddress &address, QBluetoothLocalDevice::Pairing pairing) {
         qDebug() << "pairingFinished()";
         startClient(address);
     }
@@ -112,14 +112,15 @@ private slots:
 
         if (deviceInfo.address().toString() == info.address().toString()){
             qDebug() << "Found target device - " + info.name();
+            foreach (QBluetoothUuid val, deviceInfo.serviceUuids()) {
+                qDebug() << "Available service: " + val.toString();
+            }
             if (deviceInfo.serviceUuids().contains(QBluetoothUuid(QBluetoothUuid::SerialPort))) {
                 requestPairing(deviceInfo.address());
                 discoveryAgent->stop();
             }else{
                 qDebug() << "Device does't contains serial service";
             }
-        }else{
-            qDebug() << "Not interested in " + deviceInfo.name();
         }
     }
 
@@ -141,25 +142,25 @@ private slots:
         QString msg;
         switch (error) {
             case QBluetoothSocket::UnknownSocketError:
-                msg = "QAbstractSocket::UnknownSocketError	An unknown error has occurred.";
+                msg = "An unknown error has occurred.";
                 break;
             case QBluetoothSocket::NoSocketError:
-                msg = "-2	No error. Used for testing.";
+                msg = "No error. Used for testing.";
                 break;
             case QBluetoothSocket::HostNotFoundError:
-                msg = "QAbstractSocket::HostNotFoundError	Could not find the remote host.";
+                msg = "Could not find the remote host.";
                 break;
             case QBluetoothSocket::ServiceNotFoundError:
-                msg = "QAbstractSocket::SocketAddressNotAvailableError	Could not find the service UUID on remote host.";
+                msg = "Could not find the service UUID on remote host.";
                 break;
             case QBluetoothSocket::NetworkError:
-                msg = "QAbstractSocket::NetworkError	Attempt to read or write from socket returned an error";
+                msg = "Attempt to read or write from socket returned an error";
                 break;
             case QBluetoothSocket::UnsupportedProtocolError:
-                msg = "8	The Protocol is not supported on this platform.";
+                msg = "The Protocol is not supported on this platform.";
                 break;
             case QBluetoothSocket::OperationError:
-                msg = "QAbstractSocket::OperationError	An operation was attempted while the socket was in a state that did not permit it.";
+                msg = "An operation was attempted while the socket was in a state that did not permit it.";
                 break;
             default:
                 msg = "Unknown error";

@@ -120,7 +120,7 @@ Page {
                         }
                         onEvaluateJavaScript:{
                             console.log("Trying to evaluate JS");
-
+                            webView.experimental.evaluateJavaScript(pScript)
                         }
                         onSetCurrentTab:{
                             console.log("Trying to set current tab: don't realized");

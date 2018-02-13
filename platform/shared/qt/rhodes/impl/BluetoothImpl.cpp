@@ -90,6 +90,7 @@ int rho_bluetooth_session_get_status(const char* connected_device_name)
 {
     BluetoothSender * session = BluetoothThread::getInstance()->getSession(connected_device_name);
     if (session != nullptr){
+        qDebug() << "Status is " + QString::number(session->getQueueSize());
         return session->getQueueSize();
     }
     return -1;
