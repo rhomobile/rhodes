@@ -67,6 +67,7 @@ private:
         connect(socket, &QBluetoothSocket::connected, this, &BluetoothClient::socketConnected);
         connect(socket, &QBluetoothSocket::disconnected, this, &BluetoothClient::socketDisconnected);
         connect(socket, &QBluetoothSocket::readyRead, this, &BluetoothClient::readSocket);
+        connect(socket, SIGNAL(error(QBluetoothSocket::SocketError)), this, SLOT(socketError(QBluetoothSocket::SocketError)));
         qDebug() << "Trying to connect to service";
         socket->connectToService(address, QBluetoothUuid(QBluetoothUuid::SerialPort));
 
@@ -135,6 +136,38 @@ private slots:
         qDebug() << "readSocket()";
         messageReceived(QString::fromUtf8(socket->readAll()));
     }
+
+    void socketError(QBluetoothSocket::SocketError error){
+        QString msg;
+        switch (error) {
+            case QBluetoothSocket::UnknownSocketError:
+                msg = "QAbstractSocket::UnknownSocketError	An unknown error has occurred.";
+                break;
+            case QBluetoothSocket::NoSocketError:
+                msg = "-2	No error. Used for testing.";
+                break;
+            case QBluetoothSocket::HostNotFoundError:
+                msg = "QAbstractSocket::HostNotFoundError	Could not find the remote host.";
+                break;
+            case QBluetoothSocket::ServiceNotFoundError:
+                msg = "QAbstractSocket::SocketAddressNotAvailableError	Could not find the service UUID on remote host.";
+                break;
+            case QBluetoothSocket::NetworkError:
+                msg = "QAbstractSocket::NetworkError	Attempt to read or write from socket returned an error";
+                break;
+            case QBluetoothSocket::UnsupportedProtocolError:
+                msg = "8	The Protocol is not supported on this platform.";
+                break;
+            case QBluetoothSocket::OperationError:
+                msg = "QAbstractSocket::OperationError	An operation was attempted while the socket was in a state that did not permit it.";
+                break;
+            default:
+                msg = "Unknown error";
+                break;
+        }
+        qDebug() << "Error detected: " + msg;
+    }
+
 };
 
 

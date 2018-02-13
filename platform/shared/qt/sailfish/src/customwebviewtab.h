@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+//#include "logging/RhoLog.h"
 
 #define SENDER_TAB ((CustomWebViewTab *) sender())
 class CustomWebViewTab : public QObject
@@ -13,7 +14,7 @@ class CustomWebViewTab : public QObject
     Q_PROPERTY(bool activeTab READ isTabActive WRITE setActiveTab NOTIFY activeTabChanged)
     Q_PROPERTY(int tabBarIndex READ getTabBarIndex WRITE setTabBarIndex NOTIFY tabBarIndexChanged)
     Q_PROPERTY(int scale READ getScale WRITE setScale NOTIFY scaleChanged)
-    public:
+public:
         CustomWebViewTab(QString name, QObject *parent) : QObject(parent){
             text = name;
             scale = 3;
@@ -83,7 +84,7 @@ public slots:
         }
 
         void messageReceived(QString message){
-            qDebug() << "Message from JS code: " + message;
+            emit msg("WebView", "Message from JS code: " + message);
         }
 
 
@@ -120,6 +121,8 @@ signals:
         void switchToThisTab(); //to webView
 
         void openQMLDocument(QString documentName);
+
+        void msg(QString,QString);
 
 };
 

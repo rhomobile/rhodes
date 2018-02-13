@@ -159,6 +159,7 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     QObject::connect(webViewsList.first(), SIGNAL(loadStarted()), this, SLOT(on_webView_loadStarted()));
     QObject::connect(webViewsList.first(), SIGNAL(loadFinished(bool)), this, SLOT(on_webView_loadFinished(bool)));
     QObject::connect(webViewsList.first(), SIGNAL(urlHasBeenChanged(QString)), this, SLOT(on_webView_urlChanged(QString)));
+    QObject::connect(webViewsList.first(), SIGNAL(msg(QString,QString)), this, SLOT(rawLog(QString,QString)), Qt::QueuedConnection);
 
     commitMenuItemsList();
     commitToolBarButtonsList();
@@ -549,6 +550,7 @@ void QtMainWindow::tabbarConnectWebView(CustomWebViewTab* webView)
             QObject::connect(webView, SIGNAL(loadStarted()), this, SLOT(on_webView_loadStarted()));
             QObject::connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(on_webView_loadFinished(bool)));
             QObject::connect(webView, SIGNAL(urlHasBeenChanged(QString)), this, SLOT(on_webView_urlChanged(QString)));
+            QObject::connect(webView, SIGNAL(msg(QString,QString)), this, SLOT(rawLog(QString,QString)), Qt::QueuedConnection);
         }
     }
 }
@@ -561,6 +563,7 @@ void QtMainWindow::tabbarDisconnectWebView(CustomWebViewTab *webView)
             QObject::disconnect(webView, SIGNAL(loadStarted()), this, SLOT(on_webView_loadStarted()));
             QObject::disconnect(webView, SIGNAL(loadFinished(bool)), this, SLOT(on_webView_loadFinished(bool)));
             QObject::disconnect(webView, SIGNAL(urlHasBeenChanged(QUrl)), this, SLOT(on_webView_urlChanged(QUrl)));
+            QObject::disconnect(webView, SIGNAL(msg(QString,QString)), this, SLOT(rawLog(QString,QString)));
         }
     }
 }
@@ -765,6 +768,11 @@ void QtMainWindow::openQMLDocument(QString document)
     if(!webViewsList.isEmpty()){
         emit webViewsList.first()->openQMLDocument(document);
     }
+}
+
+void QtMainWindow::rawLog(QString category, QString msg)
+{
+    RAWLOGC_INFO(category.toStdString().c_str() , msg.toStdString().c_str());
 }
 
 void QtMainWindow::on_actionAbout_triggered()
