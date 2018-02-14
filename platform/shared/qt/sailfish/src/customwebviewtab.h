@@ -17,12 +17,12 @@ class CustomWebViewTab : public QObject
 public:
         CustomWebViewTab(QString name, QObject *parent) : QObject(parent){
             text = name;
-            scale = 5.0;
+            scale = 2.0;
         }
         explicit CustomWebViewTab(QString name, QString address, QObject *parent) : QObject(parent){
             text = name;
             url = address;
-            scale = 5.0;
+            scale = 2.0;
         }
 
 public slots:
