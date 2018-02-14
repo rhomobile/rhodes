@@ -311,15 +311,13 @@ static VALUE create_request_hash(String const &application, String const &model,
 #endif
 
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root, bool enable_external_access, bool started_as_separated_simple_server)
-    :m_active(false), m_port(port), verbose(true), m_IP_adress("")
-#ifdef OS_MACOSX
-    , m_localResponseWriter(0)
-    , m_pQueue(0)    
-#endif
+    : CHttpServer(port, root, user_root, runtime_root)
 {
+
+    RAWTRACE2( "CHttpServer::CHttpServer HTTP Server additional parameters: enable_external_access: %d, started_as_separated_simple_server: %s", (int)enable_external_access, (int)started_as_separated_simple_server );
+
     m_enable_external_access = enable_external_access;
-    m_started_as_separated_simple_server = started_as_separated_simple_server;
-    CHttpServer(port, root, user_root, runtime_root);
+    m_started_as_separated_simple_server = started_as_separated_simple_server;    
 }
     
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
@@ -329,9 +327,12 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     , m_pQueue(0)
 #endif
 {
+    RAWTRACE4( "CHttpServer::CHttpServer Starting HTTP Server on port %d, root: %s, user_root: %s, runtime_root: %s", port, root.c_str(), user_root.c_str(), runtime_root.c_str() );
+
     m_enable_external_access = false;
     m_started_as_separated_simple_server = false;
     m_root = CFilePath::normalizePath(root);
+
 #ifdef RHODES_EMULATOR
     m_strRhoRoot = m_root;
     m_strRuntimeRoot = runtime_root;
@@ -347,29 +348,6 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     m_userroot = CFilePath::normalizePath(user_root);
     m_strRhoUserRoot = m_userroot;
 	m_listener = INVALID_SOCKET;
-	m_sock = INVALID_SOCKET;
-}
-    
-CHttpServer::CHttpServer(int port, String const &root)
-    :m_active(false), m_port(port), verbose(true), m_IP_adress("")
-#ifdef OS_MACOSX
-    , m_localResponseWriter(0)
-    , m_pQueue(0)
-#endif
-{
-    m_enable_external_access = false;
-    m_started_as_separated_simple_server = false;
-    
-	m_root = CFilePath::normalizePath(root);
-    m_strRuntimeRoot = (m_strRhoRoot = m_root.substr(0, m_root.length()-5)) +
-#if defined(OS_WP8) || defined(OS_UWP)
-         "rho";
-#else
-         "/rho/apps";
-#endif
-    m_userroot = CFilePath::normalizePath(root);
-    m_strRhoUserRoot = m_root.substr(0, m_root.length()-5);
-    m_listener = INVALID_SOCKET;
 	m_sock = INVALID_SOCKET;
 }
 
@@ -545,8 +523,7 @@ bool CHttpServer::run()
         RHODESAPP().notifyLocalServerStarted();
 
     for(;;) 
-    {
-        if (verbose) RAWTRACE("Waiting for connections...");
+    {        
 #ifndef RHO_NO_RUBY_API
         if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
             rho_ruby_start_threadidle();
@@ -559,7 +536,9 @@ bool CHttpServer::run()
         unsigned long nTimeout = RHODESAPP().getTimer().getNextTimeout();
         tv.tv_sec = nTimeout/1000;
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
-        
+
+        if (verbose) RAWTRACE2("Waiting for connections: %d.%d...", tv.tv_sec, tv.tv_usec);
+
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
         
         //int errsv = errno;
