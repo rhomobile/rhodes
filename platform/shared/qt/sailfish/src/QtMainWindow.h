@@ -257,7 +257,7 @@ public slots:
 
     void openQMLDocument(QString document);
 
-
+    void rawLog(QString category, QString msg);
 
 signals:
     void logicalDpiXChanged();

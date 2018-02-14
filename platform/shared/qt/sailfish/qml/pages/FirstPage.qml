@@ -120,7 +120,7 @@ Page {
                         }
                         onEvaluateJavaScript:{
                             console.log("Trying to evaluate JS");
-                            webView.experimental.evaluateJavaScript(pScript);
+                            webView.experimental.evaluateJavaScript(pScript)
                         }
                         onSetCurrentTab:{
                             console.log("Trying to set current tab: don't realized");
@@ -147,20 +147,21 @@ Page {
                         if (loadRequest.status == WebView.LoadSucceededStatus){
                             modelData.loadFinished(true);
                             console.log("Page " + url + " loaded!");
+                            //webView.experimental.evaluateJavaScript("navigator.qt.postMessage(\"Message from js\")");
                         }
                         if (loadRequest.status == WebView.LoadFailedStatus){
                             modelData.loadFinished(false);
                             console.log("Page " + url + " loaded with fail!");
                         }
-
                     }
                     onLinkHovered: modelData.linkClicked(hoveredUrl)
                     Component.onCompleted: {
                         console.log("Component complited")
                     }
 
+                    experimental.preferences.navigatorQtObjectEnabled: true;
+
                     experimental.onMessageReceived: {
-                        console.log(message.data);
                         modelData.messageReceived(message.data);
                     }
 

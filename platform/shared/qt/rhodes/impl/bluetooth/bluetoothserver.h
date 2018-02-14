@@ -44,7 +44,7 @@ private slots:
         QBluetoothServiceInfo::Sequence classId;
         classId << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::SerialPort));
         serviceInfo.setAttribute(QBluetoothServiceInfo::BluetoothProfileDescriptorList, classId);
-        classId.prepend(QVariant::fromValue(QBluetoothUuid(SERVICE_UUID)));
+        classId.prepend(QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::SerialPort)));
         serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceClassIds, classId);
 
         serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceName, "BT message sender");
@@ -77,6 +77,9 @@ private slots:
     void clientConnected() {
         qDebug() << "clientConnected()";
         socket = bluetoothServer->nextPendingConnection();
+        if (info.address().toString() != socket->peerAddress().toString()){
+            info = QBluetoothDeviceInfo(socket->peerAddress(), socket->peerName(), 0);
+        }
         connect(socket, &QBluetoothSocket::readyRead, this, &BluetoothServer::readSocket);
         connect(socket, &QBluetoothSocket::disconnected, this, &BluetoothServer::clientDisconnected);
         connected();

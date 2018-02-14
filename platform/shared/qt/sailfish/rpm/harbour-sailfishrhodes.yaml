@@ -35,7 +35,6 @@ PkgBR:
   - bluez5
   - libbluez-qt5
   - qt5-qtconnectivity-qtbluetooth
-  - qt5-qtconnectivity-qtsdpscanner
   #- bluez5-libs-devel
   #- libqtwebkit5-devel
   #- qt5-qtqml-import-webkitplugin-experimental
@@ -59,6 +58,7 @@ PkgBR:
 # Runtime dependencies which are not automatically detected
 Requires:
   - sailfishsilica-qt5 >= 0.10.9 
+  - qt5-qtconnectivity-qtsdpscanner
 
 # All installed files
 Files:
