@@ -3,7 +3,7 @@
  * Alan Stern <stern@rowland.harvard.edu>
  * Daniel E. Shipton <dshipton@redshiptechnologies.com>
  * Ryan C. Payne <rpayne-oss@bullittsystems.com>
- * Manuel "MaG" A. Guilamo <maguilamo.c@gmail.com>
+ * Manuel "MaG" A. Güílamo <maguilamo.c@gmail.com>
  *
  * This code is hereby licensed for public consumption under either the
  * GNU GPL v2 or greater.
@@ -91,8 +91,15 @@ VALUE sp_create_impl(class, _port)
    char *port;
    char *ports[] = {
 #if defined(OS_LINUX) || defined(OS_CYGWIN)
+
+  //RHO
+  #if !defined(OS_SAILFISH)
       "/dev/ttyS0", "/dev/ttyS1", "/dev/ttyS2", "/dev/ttyS3",
       "/dev/ttyS4", "/dev/ttyS5", "/dev/ttyS6", "/dev/ttyS7"
+  #else // OS_SAILFISH
+      "/dev/ttyUSB0"
+  #endif //OS_SAILFISH
+
 #elif defined(OS_FREEBSD) || defined(OS_NETBSD) || defined(OS_OPENBSD) || defined(OS_DARWIN)
       "/dev/cuaa0", "/dev/cuaa1", "/dev/cuaa2", "/dev/cuaa3",
       "/dev/cuaa4", "/dev/cuaa5", "/dev/cuaa6", "/dev/cuaa7"
@@ -110,7 +117,14 @@ VALUE sp_create_impl(class, _port)
    struct termios params;
 
    NEWOBJ(sp, struct RFile);
-   rb_secure(3);
+
+//RHO
+#ifdef OS_SAILFISH
+   rb_secure(1);
+#else
+   rb_secure(4);
+#endif
+
    OBJSETUP(sp, class, T_FILE);
    MakeOpenFile((VALUE) sp, fp);
 
