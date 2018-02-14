@@ -116,7 +116,13 @@ public:
 
     int getQueueSize(){
         QMutexLocker locker(&mutex);
-        return messagesKeeper.size();
+        int msize = messagesKeeper.size();
+        if (msize > 0){
+            return msize;
+        } else if (!socket->isOpen()){
+            return -1;
+        }
+        return 0;
     }
 
     static void fireCancel(const QString &mCreateSessionCallback){

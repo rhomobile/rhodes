@@ -147,7 +147,7 @@ Page {
                         if (loadRequest.status == WebView.LoadSucceededStatus){
                             modelData.loadFinished(true);
                             console.log("Page " + url + " loaded!");
-                            //webView.experimental.evaluateJavaScript("navigator.qt.postMessage(\"Message from js\")");
+                            //webView.experimental.evaluateJavaScript("navigator.qt.postMessage(navigator.userAgent)");
                         }
                         if (loadRequest.status == WebView.LoadFailedStatus){
                             modelData.loadFinished(false);

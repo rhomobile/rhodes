@@ -113,12 +113,23 @@ void rho_bluetooth_session_write_string(const char* connected_device_name, const
 
 VALUE rho_bluetooth_session_read_data(const char* connected_device_name)
 {
+    BluetoothSender * session = BluetoothThread::getInstance()->getSession(connected_device_name);
+    if (session != nullptr){
+        QString array = session->getLastMessage();
+        return rho_ruby_create_byte_array((unsigned char*)(const_cast<char *>(array.toStdString().c_str())), array.size());
+    }
     return rho_ruby_get_NIL();
 }
 
 void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE data)
 {
-    //TODO: rho_bluetooth_session_write_data
+    int size = rho_ruby_unpack_byte_array(data, 0, 0);
+    if (size > 0){
+        char buf[size];
+        size = rho_ruby_unpack_byte_array(data, (unsigned char *) buf, size);
+        QString str = QString::fromLocal8Bit(buf, size);
+        BluetoothThread::getInstance()->sendMessage(QString::fromLocal8Bit(connected_device_name), str);
+    }
 }
 
 const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device)
