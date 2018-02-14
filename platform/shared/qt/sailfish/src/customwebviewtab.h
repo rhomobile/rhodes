@@ -13,20 +13,17 @@ class CustomWebViewTab : public QObject
     Q_PROPERTY(QString url READ getUrl WRITE setUrl NOTIFY urlChanged)
     Q_PROPERTY(bool activeTab READ isTabActive WRITE setActiveTab NOTIFY activeTabChanged)
     Q_PROPERTY(int tabBarIndex READ getTabBarIndex WRITE setTabBarIndex NOTIFY tabBarIndexChanged)
-    Q_PROPERTY(int scale READ getScale WRITE setScale NOTIFY scaleChanged)
+    Q_PROPERTY(double scale READ getScale WRITE setScale NOTIFY scaleChanged)
 public:
         CustomWebViewTab(QString name, QObject *parent) : QObject(parent){
             text = name;
-            scale = 3;
+            scale = 5.0;
         }
         explicit CustomWebViewTab(QString name, QString address, QObject *parent) : QObject(parent){
             text = name;
             url = address;
-            scale = 3;
+            scale = 5.0;
         }
-
-
-
 
 public slots:
 
@@ -75,16 +72,16 @@ public slots:
         }
 
 
-        int getScale() {
+        double getScale() {
             return scale;
         }
-        void setScale(int value){
+        void setScale(double value){
             scale = value;
             emit scaleChanged();
         }
 
         void messageReceived(QString message){
-            emit msg("WebView", "Message from JS code: " + message);
+            emit msg("WebView", message);
         }
 
 
@@ -93,7 +90,7 @@ private:
         QString url;
         int tabBarIndex;
         bool activeTab;
-        int scale;
+        double scale;
 
 signals:
         void urlChanged();

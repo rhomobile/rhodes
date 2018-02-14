@@ -96,8 +96,8 @@ Page {
                     id: webView
                     url: modelData.url
                     anchors.fill: parent
-                    experimental.preferredMinimumContentsWidth: Screen.width / 2
-                    experimental.customLayoutWidth: Screen.width / 2
+                    experimental.preferredMinimumContentsWidth: Screen.width / modelData.scale
+                    experimental.customLayoutWidth: Screen.width / modelData.scale
 
 
                     Connections {
@@ -151,7 +151,8 @@ Page {
                         }
                         if (loadRequest.status == WebView.LoadFailedStatus){
                             modelData.loadFinished(false);
-                            console.log("Page " + url + " loaded with fail!");
+                            console.log("Page " + url + " loaded with fail: " + errorCode + " " + errorString);
+                            modelData.messageReceived("Loading error: " + errorCode + " " + errorString);
                         }
                     }
                     onLinkHovered: modelData.linkClicked(hoveredUrl)
