@@ -1047,10 +1047,10 @@ VALUE rho_ruby_main_thread()
 VALUE rho_ruby_current_thread()
 {
     if (!rho_ruby_is_started())
-        return 0;
+        return Qnil;
 
     if ( ruby_native_thread_p() != 1 )
-        return 0;
+        return Qnil;
 
     return rb_thread_current();
 }
