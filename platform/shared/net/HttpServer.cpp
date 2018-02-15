@@ -97,10 +97,6 @@ static bool is_net_trace() {
 
 
 
-
-
-//extern "C" void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
-
 namespace rho
 {
 namespace net
