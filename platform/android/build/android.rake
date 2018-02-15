@@ -723,6 +723,8 @@ namespace "config" do
     $libname = {}
     $native_libs.each do |x|
       $objdir[x] = File.join($tmpdir, x)
+
+      #TODO: path is actually incorrect since library build splits it to dirname and basename inserting ABI in between. Not touching it right now not wanting to break things, but need to review/fix it eventually.
       $libname[x] = File.join($app_builddir, x, "lib#{x}.a")
     end
 
@@ -1705,8 +1707,9 @@ namespace "build" do
         
         deps = []
         libs = []
+
         $libname.each do |name, lib|
-          deps << lib
+          deps << File.join( File.dirname(lib), realabi, File.basename(lib) )
           libs << name
           args << "-L\"#{File.dirname(lib)}/#{realabi}\""
         end

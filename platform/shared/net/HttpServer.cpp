@@ -100,11 +100,11 @@ static bool is_net_trace() {
     return res == 1;
 }
 
+#ifndef RHO_NO_RUBY_API
+    typedef void rb_unblock_function_t(void *);    
+    extern "C" void* rb_thread_call_without_gvl(void *(*func)(void *data), void *data1, rb_unblock_function_t *ubf, void *data2);
+#endif //RHO_NO_RUBY_API
 
-
-
-
-//extern "C" void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
 
 namespace rho
 {
@@ -508,6 +508,63 @@ void CHttpServer::disableAllLogging()
     verbose = false;
 }
 
+int CHttpServer::select_internal()
+{
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(m_listener, &readfds);
+
+    timeval tv = {0,0};
+    unsigned long nTimeout = RHODESAPP().getTimer().getNextTimeout();
+    tv.tv_sec = nTimeout/1000;
+    tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
+    
+
+    if (verbose) RAWTRACE2("Waiting for connections: %d.%d...", tv.tv_sec, tv.tv_usec);
+
+    int ret = 0;
+
+#ifndef RHO_NO_RUBY_API
+
+    bool is_main_ruby_thread = (rho_ruby_main_thread() == rho_ruby_current_thread());
+
+    struct no_gvl_select_args
+    {
+        fd_set* p_readfds;
+        SOCKET listener;
+        timeval tv;
+    };
+
+    struct internal
+    {
+        static void* lambda( void* opaque )
+        {
+            no_gvl_select_args* args = (no_gvl_select_args*)opaque;
+            bool tv_is_zero = ((args->tv.tv_sec) == 0 && (args->tv.tv_usec == 0));
+            return (void*)select((args->listener)+1, args->p_readfds, NULL, NULL, tv_is_zero?0:&(args->tv) );
+        }
+    };
+
+    if (rho_ruby_is_started() && is_main_ruby_thread)
+    {
+        no_gvl_select_args args;
+        args.p_readfds = &readfds;
+        args.listener = m_listener;
+        args.tv = tv;
+
+        //NOTE: this is required to unlock Ruby VM globally which locks other threads by default. Omitting this will result in other threads freeze if started from Ruby
+        ret = (int)rb_thread_call_without_gvl(internal::lambda,&args,0,0);
+    }
+    else
+    {
+#endif //RHO_NO_RUBY_API
+        ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
+#ifndef RHO_NO_RUBY_API
+    }        
+#endif //RHO_NO_RUBY_API
+
+}
+
 bool CHttpServer::run()
 {
     if (verbose) LOG(INFO) + "Start HTTP server";
@@ -523,30 +580,9 @@ bool CHttpServer::run()
         RHODESAPP().notifyLocalServerStarted();
 
     for(;;) 
-    {        
-#ifndef RHO_NO_RUBY_API
-        if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
-            rho_ruby_start_threadidle();
-#endif
-        fd_set readfds;
-        FD_ZERO(&readfds);
-        FD_SET(m_listener, &readfds);
-
-        timeval tv = {0,0};
-        unsigned long nTimeout = RHODESAPP().getTimer().getNextTimeout();
-        tv.tv_sec = nTimeout/1000;
-        tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
-
-        if (verbose) RAWTRACE2("Waiting for connections: %d.%d...", tv.tv_sec, tv.tv_usec);
-
-        int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
+    {
+        int ret = select_internal();
         
-        //int errsv = errno;
-        
-#ifndef RHO_NO_RUBY_API
-        if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
-            rho_ruby_stop_threadidle();
-#endif
         bool bProcessed = false;
         if (ret > 0) 
         {

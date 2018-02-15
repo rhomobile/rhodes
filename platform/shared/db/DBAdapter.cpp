@@ -1512,7 +1512,7 @@ void CRubyMutex::create()
     if ( !m_bIgnore && !m_valMutex)
     {
         unsigned long curThread = rho_ruby_current_thread();
-        if ( curThread != NULL )
+        if ( curThread != Qnil )
             m_valMutex = rho_ruby_create_mutex();
     }
 }
