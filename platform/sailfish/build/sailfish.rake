@@ -442,6 +442,7 @@ namespace "build"  do
     end
 
     task :deploy_bundle => ['config:sailfish'] do
+      $skip_build_extensions = true
       Rake::Task["build:sailfish:rhobundle"].execute
       puts "Deploy bundle started"
       session_ssh = nil
