@@ -32,6 +32,8 @@ require 'tempfile'
 include FileUtils
 
 require 'erb'
+require 'net/ssh'
+require 'net/scp'
 
 class QtProjectGenerator
   attr_accessor :rhoRoot
@@ -219,6 +221,18 @@ namespace "config" do
     if isWindows?
       $virtualbox_path = File.join($config["env"]["paths"]["vbox"], "VBoxManage.exe") 
     end
+
+    if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
+      $ssh_key = $app_config["sailfish"]["device"]["key"]
+    end
+    if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["password"].nil?
+      $pwd_host = $app_config["sailfish"]["device"]["password"]
+    end
+    if $app_config["sailfish"]["device"]["key"].nil? &&
+       $app_config["sailfish"]["device"]["password"].nil?
+      raise "Key or password for running app not found, set it!"
+    end
+
     Rake::Task["build:sailfish:startvm"].invoke()
   end
 
@@ -232,55 +246,32 @@ def exec_ssh_command(session, cmd)
       file << line
     end
   end
-  #f = File.open(File.join($app_path, "logcat.txt"), "w") {|file| file << result }
-  #f.close
+end
 
-  #session.scp.upload!($target_rpm, "/home/#{$user_name}/RPMS")
-  #session.open_channel do |channel|
-    #channel.on_request "exit-status" do |channel, data|
-      #$exit_status = data.read_long
-    #end
-    #puts "devel-su rpm -Uvh /home/#{$user_name}/RPMS/#{File.basename $target_rpm}"
-
-    #channel.exec("rpm -Uvh /home/#{$user_name}/RPMS/#{File.basename $target_rpm}") do |devel_channel, success|
-
-      #devel_channel.on_data do |ch, data|
-        #puts "data1"
-      #end
-
-      #devel_channel.on_extended_data do |ch, type, data|
-        #puts "error1"
-      #end
-
-      #if !success
-        #raise "Open interactive mode failed!"
-      #else
-        #devel_channel.send_data("#{$pwd_host}\n")
-      #end
-      #stdout << stream
-      #puts stdout
-      #devel_channel.wait
-    #end
-    #channel.wait
-  #end
+def exec_ssh_with_sudo_command(session, cmd)
+  puts cmd
+  channel = session.open_channel do |channel, success|
+    channel.on_data do |channel, data|
+        if data.to_s.include?("Password")
+          puts data.to_s
+          puts "password sent: #{$pwd_host}"
+          channel.send_data "#{$pwd_host}\n"
+        end
+    end
+    channel.request_pty
+    channel.exec("devel-su #{cmd}")
+    channel.wait
+  end
+  channel.wait
 end
 
 namespace "run" do
-  require 'net/ssh'
   task :sailfish => ["config:sailfish"] do
-    if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
-      $ssh_key = $app_config["sailfish"]["device"]["key"]
-    elsif !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["password"].nil?
-      $pwd_host = $app_config["sailfish"]["device"]["password"]
-    else
-      raise "Key or password for running app not found, set it!"
-    end
-
     session_ssh = nil
     puts "Connecting to device"
     if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?    
       Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
-        exec_ssh_command(session, "xdg-open /usr/share/applications/#{$final_name_app}.desktop")        
+        exec_ssh_command(session, "xdg-open /usr/share/applications/#{$final_name_app}.desktop")  
       end  
     else    
       Net::SSH.start($host_name, $user_name, $pwd_host) do |session|       
@@ -388,6 +379,18 @@ def vm_is_started?
   return output.include?("Sailfish OS Build Engine")
 end
 
+def deploy_bundle(session)
+  path_to_bundle = "/usr/share/#{$final_name_app}/data"
+  puts "Clear bundle directory"
+  exec_ssh_command(session, "rm -rf /home/nemo/.local/share/Rhomobile/#{$final_name_app}/rho")
+  exec_ssh_with_sudo_command(session, "rm -rf /usr/share/#{$final_name_app}/data/rho")
+  puts "Push bundle on device at #{path_to_bundle}"
+  session.scp.upload!(File.join($project_path, $final_name_app, 'data', 'rho'), 
+     "/home/#{$user_name}/RPMS", :recursive => [true])
+  exec_ssh_with_sudo_command(session, "mv /home/#{$user_name}/RPMS/rho #{path_to_bundle}")
+  exec_ssh_with_sudo_command(session, "chown -R root:root #{path_to_bundle}")
+end
+
 namespace "build"  do
   namespace "sailfish" do
 
@@ -436,6 +439,22 @@ namespace "build"  do
     task :deploy => ['config:sailfish'] do
       deploy_path = File.join($app_path, "project", "qt", "deploy.cmd")
       system(deploy_path)
+    end
+
+    task :deploy_bundle => ['config:sailfish'] do
+      Rake::Task["build:sailfish:rhobundle"].execute
+      puts "Deploy bundle started"
+      session_ssh = nil
+      puts "Connecting to device"
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?    
+        Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
+          deploy_bundle(session)
+        end  
+      else    
+        Net::SSH.start($host_name, $user_name, $pwd_host) do |session|       
+          deploy_bundle(session)
+        end
+      end
     end
 
     task :rhodes => ["project:sailfish:qt"] do
