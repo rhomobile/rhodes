@@ -35,6 +35,7 @@
 #include "common/Tokenizer.h"
 #ifndef RHO_NO_RUBY 
 #include "ruby/ext/rho/rhoruby.h"
+#include "ruby/ruby.h"
 #endif //RHO_NO_RUBY
 #include "common/app_build_configs.h"
 #include "DBImportTransaction.h"

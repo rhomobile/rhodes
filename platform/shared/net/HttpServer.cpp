@@ -508,12 +508,8 @@ void CHttpServer::disableAllLogging()
     verbose = false;
 }
 
-int CHttpServer::select_internal()
+int CHttpServer::select_internal( SOCKET listener, fd_set& readfds )
 {
-    fd_set readfds;
-    FD_ZERO(&readfds);
-    FD_SET(m_listener, &readfds);
-
     timeval tv = {0,0};
     unsigned long nTimeout = RHODESAPP().getTimer().getNextTimeout();
     tv.tv_sec = nTimeout/1000;
@@ -549,7 +545,7 @@ int CHttpServer::select_internal()
     {
         no_gvl_select_args args;
         args.p_readfds = &readfds;
-        args.listener = m_listener;
+        args.listener = listener;
         args.tv = tv;
 
         //NOTE: this is required to unlock Ruby VM globally which locks other threads by default. Omitting this will result in other threads freeze if started from Ruby
@@ -558,7 +554,7 @@ int CHttpServer::select_internal()
     else
     {
 #endif //RHO_NO_RUBY_API
-        ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
+        ret = select(listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
 #ifndef RHO_NO_RUBY_API
     }        
 #endif //RHO_NO_RUBY_API
@@ -581,7 +577,11 @@ bool CHttpServer::run()
 
     for(;;) 
     {
-        int ret = select_internal();
+        fd_set readfds;
+        FD_ZERO(&readfds);        
+        FD_SET(m_listener, &readfds);
+
+        int ret = select_internal(m_listener, readfds);
         
         bool bProcessed = false;
         if (ret > 0) 
