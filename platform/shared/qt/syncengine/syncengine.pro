@@ -19,8 +19,9 @@ TEMPLATE = lib
 
 CONFIG += staticlib warn_on
 
-INCLUDEPATH += ../..\
-../../json
+INCLUDEPATH += $$PWD/../..\
+$$PWD/../../json
+
 
 macx {
   DESTDIR = ../../../osx/bin/syncengine
@@ -45,6 +46,9 @@ unix:!macx {
   DEFINES += _GNU_SOURCE OS_LINUX OS_SAILFISH
   QMAKE_CFLAGS += -fvisibility=hidden
   QMAKE_CXXFLAGS += -fvisibility=hidden
+
+  INCLUDEPATH += $$PWD/../../ruby/include\
+                 $$PWD/../../ruby/linux
 }
 
 DEFINES += RHODES_QT_PLATFORM
