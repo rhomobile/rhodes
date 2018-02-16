@@ -35,6 +35,7 @@
 #include "common/Tokenizer.h"
 #ifndef RHO_NO_RUBY 
 #include "ruby/ext/rho/rhoruby.h"
+#include "ruby/ruby.h"
 #endif //RHO_NO_RUBY
 #include "common/app_build_configs.h"
 #include "DBImportTransaction.h"
@@ -1510,7 +1511,7 @@ void CRubyMutex::create()
     if ( !m_bIgnore && !m_valMutex)
     {
         unsigned long curThread = rho_ruby_current_thread();
-        if ( curThread != NULL )
+        if ( curThread != Qnil )
             m_valMutex = rho_ruby_create_mutex();
     }
 }
