@@ -30,6 +30,8 @@
 #include <QThread>
 #include "common/IRhoThreadImpl.h"
 #include "logging/RhoLog.h"
+#include <QMutex>
+#include <QMutexLocker>
 
 namespace rho{
 namespace common{
@@ -60,9 +62,11 @@ private:
     };
     QRhoThread* m_Thread;
     QThread* m_waitThread;
+    QMutex mutex;
+
     #if defined(OS_WINDOWS_DESKTOP)
-	CRITICAL_SECTION gCS;
-	CRITICAL_SECTION gCSstopwait;
+        CRITICAL_SECTION gCS;
+        CRITICAL_SECTION gCSstopwait;
     #endif
 };
 
