@@ -1530,6 +1530,8 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
+      args << "-I\"#{$shareddir}/ruby/include\""
+      args << "-I\"#{$shareddir}/ruby/android\""
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhodb_build.files')
