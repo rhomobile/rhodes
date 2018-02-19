@@ -145,7 +145,7 @@ public slots:
     void selected(){
         stop();
         QBluetoothDeviceInfo info = qobject_cast<BluetoothDeviceLabel *>(sender())->getInfo();
-        createClient(info, lastSavedCallback);
+        createClient(info, info.name(), lastSavedCallback);
     }
 
     void refresh(){
@@ -213,24 +213,27 @@ public slots:
     }
 
 
-    BluetoothClient * createClient(QBluetoothDeviceInfo info, QString callback){
+    BluetoothClient * createClient(QBluetoothDeviceInfo info, QString name, QString callback){
         qDebug() << info.name() << callback;
 
-        BluetoothClient * client = new BluetoothClient(info, callback, this);
+        BluetoothClient * client = new BluetoothClient(info, name, callback, this);
         return client;
     }
 
     BluetoothClient * createClient(QString serverName, QString callback){
         refresh();
 
+
         QBluetoothDeviceInfo info;
         foreach (BluetoothDeviceLabel * vals, devicesKeeper.values()) {
+            qDebug() << "Avalable device info: " + info.name() + " " + info.address().toString();
             if ((vals->getInfo().address().toString() == serverName) || (vals->getInfo().name() == serverName)){
                 info = vals->getInfo();
+                qDebug() << "Target device info: " + info.name() + " " + info.address().toString();
             }
         }
 
-        return createClient(info, callback);
+        return createClient(info, serverName, callback);
     }
 };
 

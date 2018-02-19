@@ -14,12 +14,12 @@
 class BluetoothClient : public BluetoothSender {
     Q_OBJECT
 public:
-    explicit BluetoothClient(QBluetoothDeviceInfo & info, QString callback, QObject *parent) : BluetoothSender(info, callback, parent)  {
+    explicit BluetoothClient(QBluetoothDeviceInfo & info, QString name, QString callback, QObject *parent) : BluetoothSender(info, callback, parent)  {
         QDBusInterface bluetoothInterface("net.connman", "/net/connman/technology/bluetooth",
                                           "net.connman.Technology", QDBusConnection::systemBus(), this);
         bluetoothInterface.call("SetProperty", "Powered", QVariant::fromValue(QDBusVariant(true)));
         //setName(info.name());
-        setName("Nemo");
+        setName(name);
         qDebug() << "Client addreass " + info.address().toString();
         discoveryAgent = new QBluetoothDeviceDiscoveryAgent(localDevice.address(), this);
         connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished, this, &BluetoothClient::deviceSearchFinished);
@@ -40,7 +40,7 @@ private:
     QString callback;
     QBluetoothLocalDevice localDevice;
     QBluetoothDeviceDiscoveryAgent * discoveryAgent;
-
+    int trying = 0;
 
     void requestPairing(const QBluetoothAddress &address) {
         qDebug() << "requestPairing";
@@ -99,28 +99,37 @@ private slots:
         discoveryAgent->stop();
     }
 
+
     void deviceSearchFinished() {
         qDebug() << "deviceSearchFinished()";
         if (socket == NULL) {
-            qDebug() << "Device not found";
+            if (trying < 10){
+                trying++;
+                discoveryAgent->start();
+            }else{
+                qDebug() << "Device not found";
+            }
         }
     }
+
 
 
     void deviceDiscovered(const QBluetoothDeviceInfo &deviceInfo) {
         qDebug() << "deviceDiscovered() - " + deviceInfo.name() + " - " + deviceInfo.address().toString();
 
-        if (deviceInfo.address().toString() == info.address().toString()){
-            qDebug() << "Found target device - " + info.name();
+        if (deviceInfo.address().toString() == info.address().toString() || deviceInfo.name() == info.name() ||
+            deviceInfo.address().toString() == name || deviceInfo.name() == name){
+            info = deviceInfo;
+            qDebug() << "Found target device - " + deviceInfo.name();
             foreach (QBluetoothUuid val, deviceInfo.serviceUuids()) {
                 qDebug() << "Available service: " + val.toString();
             }
             if (deviceInfo.serviceUuids().contains(QBluetoothUuid(QBluetoothUuid::SerialPort))) {
                 requestPairing(deviceInfo.address());
-                discoveryAgent->stop();
             }else{
                 qDebug() << "Device does't contains serial service";
             }
+            discoveryAgent->stop();
         }
     }
 

@@ -19,6 +19,7 @@
 #include "common/RhodesApp.h"
 #include <QMutex>
 #include <QMutexLocker>
+#include <QTimer>
 
 class BluetoothSender : public QObject
 {
@@ -27,6 +28,9 @@ public:
     explicit BluetoothSender(QBluetoothDeviceInfo &info, QString createSessionCallBack, QObject *parent) : QObject(parent){
         this->info = info;
         this->createSessionCallBack = createSessionCallBack;
+        savedMessageTimer.setSingleShot(true);
+        connect(&savedMessageTimer, SIGNAL(timeout()), this, SLOT(sendSavedMessage()));
+
     }
     virtual ~BluetoothSender(){
 
@@ -43,13 +47,12 @@ public:
     }
 
     void messageReceived(const QString & message){
+        savedMessageTimer.stop();
         if (!message.isEmpty()){
             QMutexLocker locker(&mutex);
-            messagesKeeper.enqueue(message);
-            qDebug() << message;
-            locker.unlock();
-            fireSessionCallBack(RHO_BT_SESSION_INPUT_DATA_RECEIVED);
+            savedMessage.append(message);
         }
+        savedMessageTimer.start(50);
     }
 
     bool sendMessage(const QString & message){
@@ -114,6 +117,7 @@ public:
     }
 
 
+
     int getQueueSize(){
         QMutexLocker locker(&mutex);
         int msize = messagesKeeper.size();
@@ -160,11 +164,22 @@ protected:
     QQueue<QString> messagesKeeper;
     const QString SERVICE_UUID = "00001101-0000-1000-8000-00805F9B34FB";
 
-
+    QString savedMessage;
+    QTimer savedMessageTimer;
 
 signals:
 
 public slots:
+    void sendSavedMessage(){
+        QMutexLocker locker(&mutex);
+        if (!savedMessage.isEmpty()){
+            messagesKeeper.enqueue(savedMessage);
+            qDebug() << savedMessage;
+            savedMessage.clear();
+            locker.unlock();
+            fireSessionCallBack(RHO_BT_SESSION_INPUT_DATA_RECEIVED);
+        }
+    }
 };
 
 #endif // BLUETOOTHSENDER_H

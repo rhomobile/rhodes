@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QThread>
 //#include "logging/RhoLog.h"
 
 #define SENDER_TAB ((CustomWebViewTab *) sender())

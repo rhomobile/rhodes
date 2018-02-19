@@ -47,14 +47,14 @@ TEMPLATE = subdirs
 SUBDIRS += $$PWD/../rubylib $$PWD/../rholib $$PWD/../sqlite3 $$PWD/../syncengine \
 $$PWD/../../../../lib/commonAPI/coreapi/ext/platform/qt/coreapi.pro \
 #$$PWD/../../../../lib/commonAPI/logCapture/ext/platform/qt/logCapture.pro \
-$$PWD/../../../../../rhoconnect-client/ext/rhoconnect-client/ext/platform/qt/rhoconnect-client.pro \
+#$$PWD/../../../../../rhoconnect-client/ext/rhoconnect-client/ext/platform/qt/rhoconnect-client.pro \
 #$$PWD/../../../../lib/extensions/digest/ext/digest.pro \
 #$$PWD/../../../../lib/extensions/digest-md5/ext/digest-md5.pro \
 #$$PWD/../../../../lib/extensions/digest-sha1/ext/digest-sha1.pro \
 #$$PWD/../../../../lib/extensions/digest-sha2/ext/digest-sha2.pro \
 #$$PWD/../../../../lib/extensions/fcntl/ext/fcntl.pro \
 #$$PWD/../../../../lib/extensions/openssl/ext/openssl.pro \
-#$$PWD/../../../../lib/extensions/serialport/ext/serialport.pro \
+$$PWD/../../../../lib/extensions/serialport/ext/serialport.pro \
 $$PWD/../../../../lib/extensions/zlib/ext/zlib.pro \
 $$PWD/../../../../lib/commonAPI/mediacapture/ext/platform/qt/MediaCapture.pro \
 $$PWD/../../../../lib/commonAPI/barcode/ext/platform/qt/Barcode.pro \
