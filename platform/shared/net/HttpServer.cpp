@@ -558,7 +558,7 @@ int CHttpServer::select_internal( SOCKET listener, fd_set& readfds )
 #ifndef RHO_NO_RUBY_API
     }        
 #endif //RHO_NO_RUBY_API
-
+    return ret;
 }
 
 bool CHttpServer::run()
