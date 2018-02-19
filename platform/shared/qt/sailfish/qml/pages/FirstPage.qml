@@ -13,11 +13,12 @@ Page {
         visible: rootDelegate.cover !== ""
         anchors.fill: parent
     }
+    /*
     KeepAlive {
         id: keepAlive
         enabled: true;
     }
-
+    */
     SilicaFlickable {
         visible: rootDelegate.cover === ""
         id: fickable
