@@ -19,6 +19,7 @@
 #include "impl/MainWindowImpl.h"
 #include "QtMainWindow.h"
 #include "QtLogView.h"
+#include <QtWebEngine/QtWebEngine>
 #include "../../platform/shared/qt/rhodes/RhoSimulator.h"
 
 using namespace rho;
@@ -86,11 +87,20 @@ char* parseToken(const char* start)
 
 int main(int argc, char *argv[])
 {
+    QString debugAddress;
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost) && debugAddress.isEmpty())
+        debugAddress = address.toString();
+    }
+    if (!debugAddress.isEmpty()){debugAddress.append(":");}
+    debugAddress.append("9090");
+    qDebug() << "Debug address is " + debugAddress;
+    qputenv("QTWEBENGINE_REMOTE_DEBUGGING", debugAddress.toLocal8Bit());
     QScopedPointer<QGuiApplication> pApplication(SailfishApp::application(argc, argv));
     QGuiApplication * application = const_cast<QGuiApplication *>(pApplication.data());
     qRegisterMetaType<QString>("QString");
     qmlRegisterUncreatableType<RootDelegate>("RootDelegate",1,0,"RootDelegate","Err");
-
+    QtWebEngine::initialize();
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QString OSDetailsString= QString("Running on : %1 Application Compiled with QT Version :  %2 Running with QT Version %3")
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
@@ -116,11 +126,11 @@ int main(int argc, char *argv[])
     qDebug() << "Main directory is: " + QString::fromStdString(m_strRootPath);
     QString dataDirectory("/usr/share/" + application->applicationName() + "/data/rho/");
 
-    if (!QtMainWindow::isFilesEqual(dataDirectory + "RhoBundleMap.txt",  QString::fromStdString(m_strRootPath) + "RhoBundleMap.txt")){
-        //QDir dirToDelete(QString::fromStdString(m_strRootPath));
-        //dirToDelete.removeRecursively();
+    //if (!QtMainWindow::isFilesEqual(dataDirectory + "RhoBundleMap.txt",  QString::fromStdString(m_strRootPath) + "RhoBundleMap.txt")){
+        QDir dirToDelete(QString::fromStdString(m_strRootPath));
+        dirToDelete.removeRecursively();
         QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
-    }
+    //}
 
     QtMainWindow::setWritableDir(QString::fromStdString(m_strRootPath));
     QDir::setCurrent(QString::fromStdString(m_strRootPath));

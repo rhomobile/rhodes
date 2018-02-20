@@ -1,8 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import QtWebKit 3.0
+import QtWebEngine 1.0
 import QtMultimedia 5.5
-import QtWebKit.experimental 1.0
 //import Nemo.KeepAlive 1.1
 
 Page {
@@ -98,13 +97,12 @@ Page {
                 height: parent.height
                 border.width: 1
 
-                WebView {
+                WebEngineView {
                     id: webView
                     url: modelData.url
                     anchors.fill: parent
-                    experimental.preferredMinimumContentsWidth: Screen.width / modelData.scale
-                    experimental.customLayoutWidth: Screen.width / modelData.scale
-
+                    //zoomFactor: modelData.scale
+                    visible: true
 
                     Connections {
                         target: modelData
@@ -126,7 +124,7 @@ Page {
                         }
                         onEvaluateJavaScript:{
                             console.log("Trying to evaluate JS");
-                            webView.experimental.evaluateJavaScript(pScript)
+                            webView.runJavaScript(pScript)
                         }
                         onSetCurrentTab:{
                             console.log("Trying to set current tab: don't realized");
@@ -146,33 +144,32 @@ Page {
                     }
 
                     onLoadingChanged: {
-                        if (loadRequest.status == WebView.LoadStartedStatus){
+                        if (loadRequest.status == WebEngineView.LoadStartedStatus){
                             modelData.loadStarted();
                             console.log("Loading " + url + " started...");
                         }
-                        if (loadRequest.status == WebView.LoadSucceededStatus){
+                        if (loadRequest.status == WebEngineView.LoadSucceededStatus){
                             modelData.loadFinished(true);
                             console.log("Page " + url + " loaded!");
-                            //webView.experimental.evaluateJavaScript("navigator.qt.postMessage(navigator.userAgent)");
                         }
-                        if (loadRequest.status == WebView.LoadFailedStatus){
+                        if (loadRequest.status == WebEngineView.LoadFailedStatus){
                             modelData.loadFinished(false);
                             console.log("Page " + url + " loaded with fail: " +
                                         loadRequest.errorCode + " " + loadRequest.errorString);
                             modelData.messageReceived("Loading error: " + url + " : "+ loadRequest.errorCode + " " + loadRequest.errorString);
                         }
                     }
-                    onLinkHovered: modelData.linkClicked(hoveredUrl)
+                    onLinkHovered: {
+                        console.log("Link clicked: " + hoveredUrl);
+                        modelData.linkClicked(hoveredUrl)
+                    }
                     Component.onCompleted: {
                         console.log("Component complited")
                     }
-                    //experimental.preferences.javascriptEnabled: true;
-                    //experimental.preferences.fileAccessFromFileURLsAllowed: true;
-                    //experimental.preferences.webGLEnabled: true;
-                    experimental.preferences.navigatorQtObjectEnabled: true;
 
-                    experimental.onMessageReceived: {
-                        modelData.messageReceived(message.data);
+
+                    onJavaScriptConsoleMessage: {
+                        modelData.messageReceived(message);
                     }
 
                 }

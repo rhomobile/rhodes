@@ -13,7 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
     }
 
     equals(QT_VERSION, 5.6.2) {
-        QT += webkit quick bluetooth dbus #widgets
+        QT += webkit quick bluetooth dbus webengine #widgets
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
         message(Deprecated sailfish webkit enabled)
@@ -353,8 +353,8 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libBarcode.a
 unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lSignature
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libSignature.a
 
-#unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lRhoconnect-client
-#unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-client.a
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lRhoconnect-client
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-client.a
 
 unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lserialport
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libserialport.a
