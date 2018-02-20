@@ -157,17 +157,18 @@ Page {
                         }
                         if (loadRequest.status == WebView.LoadFailedStatus){
                             modelData.loadFinished(false);
-                            console.log("Page " + url + " loaded with fail: " + errorCode + " " + errorString);
-                            modelData.messageReceived("Loading error: " + errorCode + " " + errorString);
+                            console.log("Page " + url + " loaded with fail: " +
+                                        loadRequest.errorCode + " " + loadRequest.errorString);
+                            modelData.messageReceived("Loading error: " + url + " : "+ loadRequest.errorCode + " " + loadRequest.errorString);
                         }
                     }
                     onLinkHovered: modelData.linkClicked(hoveredUrl)
                     Component.onCompleted: {
                         console.log("Component complited")
                     }
-                    experimental.preferences.javascriptEnabled: true;
-                    experimental.preferences.fileAccessFromFileURLsAllowed: true;
-                    experimental.preferences.webGLEnabled: true;
+                    //experimental.preferences.javascriptEnabled: true;
+                    //experimental.preferences.fileAccessFromFileURLsAllowed: true;
+                    //experimental.preferences.webGLEnabled: true;
                     experimental.preferences.navigatorQtObjectEnabled: true;
 
                     experimental.onMessageReceived: {
