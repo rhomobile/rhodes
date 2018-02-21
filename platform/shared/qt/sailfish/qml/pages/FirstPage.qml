@@ -3,7 +3,7 @@ import Sailfish.Silica 1.0
 import QtWebKit 3.0
 import QtMultimedia 5.5
 import QtWebKit.experimental 1.0
-import Nemo.KeepAlive 1.1
+//import Nemo.KeepAlive 1.1
 
 Page {
     id: mainPage
@@ -13,11 +13,12 @@ Page {
         visible: rootDelegate.cover !== ""
         anchors.fill: parent
     }
+    /*
     KeepAlive {
         id: keepAlive
         enabled: true;
     }
-
+    */
     SilicaFlickable {
         visible: rootDelegate.cover === ""
         id: fickable
@@ -156,17 +157,18 @@ Page {
                         }
                         if (loadRequest.status == WebView.LoadFailedStatus){
                             modelData.loadFinished(false);
-                            console.log("Page " + url + " loaded with fail: " + errorCode + " " + errorString);
-                            modelData.messageReceived("Loading error: " + errorCode + " " + errorString);
+                            console.log("Page " + url + " loaded with fail: " +
+                                        loadRequest.errorCode + " " + loadRequest.errorString);
+                            modelData.messageReceived("Loading error: " + url + " : "+ loadRequest.errorCode + " " + loadRequest.errorString);
                         }
                     }
                     onLinkHovered: modelData.linkClicked(hoveredUrl)
                     Component.onCompleted: {
                         console.log("Component complited")
                     }
-                    experimental.preferences.javascriptEnabled: true;
-                    experimental.preferences.fileAccessFromFileURLsAllowed: true;
-                    experimental.preferences.webGLEnabled: true;
+                    //experimental.preferences.javascriptEnabled: true;
+                    //experimental.preferences.fileAccessFromFileURLsAllowed: true;
+                    //experimental.preferences.webGLEnabled: true;
                     experimental.preferences.navigatorQtObjectEnabled: true;
 
                     experimental.onMessageReceived: {

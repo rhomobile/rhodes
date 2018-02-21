@@ -19,7 +19,6 @@
 #include "impl/MainWindowImpl.h"
 #include "QtMainWindow.h"
 #include "QtLogView.h"
-
 #include "../../platform/shared/qt/rhodes/RhoSimulator.h"
 
 using namespace rho;
@@ -103,7 +102,6 @@ int main(int argc, char *argv[])
     RootDelegate::getInstance(view->rootContext()->engine())->moveToThread(view->rootContext()->engine()->thread());
     view->rootContext()->engine()->thread()->setPriority(QThread::TimeCriticalPriority);
     QtMainWindow::setView(view);
-
     CMainWindow* m_appWindow = CMainWindow::getInstance();
 
     // Create the main application window
@@ -119,6 +117,8 @@ int main(int argc, char *argv[])
     QString dataDirectory("/usr/share/" + application->applicationName() + "/data/rho/");
 
     if (!QtMainWindow::isFilesEqual(dataDirectory + "RhoBundleMap.txt",  QString::fromStdString(m_strRootPath) + "RhoBundleMap.txt")){
+        //QDir dirToDelete(QString::fromStdString(m_strRootPath));
+        //dirToDelete.removeRecursively();
         QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
     }
 
