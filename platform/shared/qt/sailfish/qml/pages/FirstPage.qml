@@ -107,30 +107,30 @@ Page {
                     Connections {
                         target: modelData
                         onSetHtml: {
-                            console.log("Setting HTML");
+                            modelData.messageReceived("Setting HTML");
                             webView.loadHtml(pHtml);
                         }
                         onGoBack:{
-                            console.log("Going back");
+                            modelData.messageReceived("Going back");
                             webView.goBack();
                         }
                         onGoForward:{
-                            console.log("Going forward");
+                            modelData.messageReceived("Going forward");
                             webView.goForward();
                         }
                         onRefresh:{
-                            console.log("Reloading page");
+                            modelData.messageReceived("Reloading page");
                             webView.reload();
                         }
                         onEvaluateJavaScript:{
-                            console.log("Trying to evaluate JS");
+                            modelData.messageReceived("Trying to evaluate JS");
                             webView.runJavaScript(pScript)
                         }
                         onSetCurrentTab:{
-                            console.log("Trying to set current tab: don't realized");
+                            modelData.messageReceived("Trying to set current tab: don't realized");
                         }
                         onSwitchToThisTab:{
-                            console.log("Trying to switch to this tab: don't realized");
+                            modelData.messageReceived("Trying to switch to this tab: don't realized");
                         }
                         onOpenQMLDocument:{
                             pageStack.push(Qt.resolvedUrl(documentName));
@@ -139,34 +139,32 @@ Page {
 
 
                     onNavigationRequested: {
-                        console.log(request.url)
-                        console.log(request.action)
+                        modelData.messageReceived("onNavigationRequested" + request.url + " : " + request.action)
                     }
 
                     onLoadingChanged: {
                         if (loadRequest.status == WebEngineView.LoadStartedStatus){
+                            modelData.messageReceived("Loading " + url + " started...");
                             modelData.loadStarted();
-                            console.log("Loading " + url + " started...");
                         }
                         if (loadRequest.status == WebEngineView.LoadSucceededStatus){
+                            modelData.messageReceived("Page " + url + " loaded!");
                             modelData.loadFinished(true);
-                            console.log("Page " + url + " loaded!");
                         }
                         if (loadRequest.status == WebEngineView.LoadFailedStatus){
-                            modelData.loadFinished(false);
                             console.log("Page " + url + " loaded with fail: " +
-                                        loadRequest.errorCode + " " + loadRequest.errorString);
-                            modelData.messageReceived("Loading error: " + url + " : "+ loadRequest.errorCode + " " + loadRequest.errorString);
+                                        loadRequest.errorCode.toString() + " " + loadRequest.errorString);
+                            modelData.loadFinished(false);
+                            modelData.messageReceived("Loading error: " + url + " : "+ loadRequest.errorCode.toString() + " " + loadRequest.errorString);
                         }
                     }
                     onLinkHovered: {
-                        console.log("Link clicked: " + hoveredUrl);
+                        modelData.messageReceived("Link clicked: " + hoveredUrl);
                         modelData.linkClicked(hoveredUrl)
                     }
                     Component.onCompleted: {
-                        console.log("Component complited")
+                        modelData.messageReceived("Component complited")
                     }
-
 
                     onJavaScriptConsoleMessage: {
                         modelData.messageReceived(message);
@@ -218,6 +216,5 @@ Page {
                 }
             }
         }
-
     }
 }
