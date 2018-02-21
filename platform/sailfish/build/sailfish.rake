@@ -590,12 +590,12 @@ namespace 'project' do
       mkdir_p File.join($project_path, $final_name_app, "rpm")
       mkdir_p File.join($project_path, $final_name_app, "privileges")
 
-      if !File.exists?(File.join($project_path, $final_name_app, "qml")) 
+      #if !File.exists?(File.join($project_path, $final_name_app, "qml")) 
         cp_r File.join($rhodes_path, "platform/shared/qt/sailfish/qml"), File.join($project_path, $final_name_app)
         File.rename(
           File.join($project_path, $final_name_app, "qml", "harbour-sailfishrhodes.qml"), 
           File.join($project_path, $final_name_app, "qml", "#{$final_name_app}.qml"))
-      end
+      #end
 
       if !File.exists?(File.join($project_path, $final_name_app, "icons")) 
         cp_r File.join($rhodes_path, "platform/shared/qt/sailfish/icons"), File.join($project_path, $final_name_app)
