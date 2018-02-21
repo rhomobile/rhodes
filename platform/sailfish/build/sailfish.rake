@@ -391,6 +391,21 @@ def deploy_bundle(session)
   exec_ssh_with_sudo_command(session, "chown -R root:root #{path_to_bundle}")
 end
 
+def force_install(session)
+  exec_ssh_command(session, "mkdir /home/#{$user_name}/RPMS/#{$final_name_app}")
+  puts "scp From : " + File.join($project_path, $final_name_app, "RPMS")
+  puts "To : " + "/home/#{$user_name}/RPMS/#{$final_name_app}"
+  session.scp.upload!(File.join($project_path, $final_name_app, 'RPMS'),
+     "/home/#{$user_name}/RPMS/#{$final_name_app}", :recursive => [true])
+
+  Dir[File.join($project_path, $final_name_app, "RPMS/**/*")].each do |file_name|
+    puts File.basename(file_name, ".rpm")
+    exec_ssh_with_sudo_command(session, "rpm -e #{File.basename(file_name, ".rpm")} --nodeps")
+  end
+  exec_ssh_with_sudo_command(session, "rpm -ivh /home/#{$user_name}/RPMS/#{$final_name_app}/RPMS/*.rpm --nodeps")
+  exec_ssh_command(session, "rm -rf /home/#{$user_name}/RPMS/#{$final_name_app}")
+end
+
 namespace "build"  do
   namespace "sailfish" do
 
@@ -457,6 +472,23 @@ namespace "build"  do
         end
       end
     end
+
+    task :force_install => ['config:sailfish'] do
+      $skip_build_extensions = true
+      session_ssh = nil
+      puts "Connecting to device"
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?    
+        Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
+          force_install(session)
+        end  
+      else    
+        Net::SSH.start($host_name, $user_name, $pwd_host) do |session|       
+          force_install(session)
+        end
+      end
+    end
+
+    
 
     task :rhodes => ["project:sailfish:qt"] do
       print_timestamp('build:sailfish:rhodes START')
@@ -558,12 +590,12 @@ namespace 'project' do
       mkdir_p File.join($project_path, $final_name_app, "rpm")
       mkdir_p File.join($project_path, $final_name_app, "privileges")
 
-      if !File.exists?(File.join($project_path, $final_name_app, "qml")) 
+      #if !File.exists?(File.join($project_path, $final_name_app, "qml")) 
         cp_r File.join($rhodes_path, "platform/shared/qt/sailfish/qml"), File.join($project_path, $final_name_app)
         File.rename(
           File.join($project_path, $final_name_app, "qml", "harbour-sailfishrhodes.qml"), 
           File.join($project_path, $final_name_app, "qml", "#{$final_name_app}.qml"))
-      end
+      #end
 
       if !File.exists?(File.join($project_path, $final_name_app, "icons")) 
         cp_r File.join($rhodes_path, "platform/shared/qt/sailfish/icons"), File.join($project_path, $final_name_app)
