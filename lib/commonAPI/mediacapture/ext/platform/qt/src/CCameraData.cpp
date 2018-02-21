@@ -137,8 +137,21 @@ void CCameraData::captured(QString fileName){
             targetPath.prepend(QtMainWindow::getDbFilesDir());
         }
 
+        //if (mapRes.containsKey("maxWidth") || mapRes.containsKey("maxHeight")){
+        QImage image(fileName);
+        if (image.width() > image.height()){
+            if (image.width() > 1024){
+                image.scaledToWidth(1024);
+            }
+        }else{
+            if (image.height() > 1024){
+                image.scaledToHeight(1024);
+            }
+        }
+        image.save(targetPath);
 
-        QFile::copy(fileName, targetPath);
+            //QFile::copy(fileName, targetPath);
+
 
         mapRes["status"] = "ok";
         mapRes["imageUri"] = targetPath.toStdString();

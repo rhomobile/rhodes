@@ -31,7 +31,7 @@ public slots:
 #else
         QString newFileName;
 #endif
-        if(fInfo.isFile() && !newFileName.isEmpty() && QFile::copy(fileName,newFileName)){
+        if(fInfo.isFile() && !newFileName.isEmpty() && QFile::copy(fileName, newFileName)){
 #ifndef OS_SAILFISH
             CameraDialogView::getImageData(mapRes, newFileName);
 #else

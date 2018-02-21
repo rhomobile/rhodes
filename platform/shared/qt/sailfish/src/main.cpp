@@ -116,11 +116,11 @@ int main(int argc, char *argv[])
     qDebug() << "Main directory is: " + QString::fromStdString(m_strRootPath);
     QString dataDirectory("/usr/share/" + application->applicationName() + "/data/rho/");
 
-    if (!QtMainWindow::isFilesEqual(dataDirectory + "RhoBundleMap.txt",  QString::fromStdString(m_strRootPath) + "RhoBundleMap.txt")){
+    //if (!QtMainWindow::isFilesEqual(dataDirectory + "RhoBundleMap.txt",  QString::fromStdString(m_strRootPath) + "RhoBundleMap.txt")){
         //QDir dirToDelete(QString::fromStdString(m_strRootPath));
         //dirToDelete.removeRecursively();
         QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
-    }
+    //}
 
     QtMainWindow::setWritableDir(QString::fromStdString(m_strRootPath));
     QDir::setCurrent(QString::fromStdString(m_strRootPath));
