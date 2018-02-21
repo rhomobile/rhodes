@@ -10,7 +10,10 @@ Page {
         id: image
         source: rootDelegate.cover
         visible: rootDelegate.cover !== ""
-        anchors.fill: parent
+        anchors.top: menuButton.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
     /*
     KeepAlive {
@@ -18,21 +21,29 @@ Page {
         enabled: true;
     }
     */
-    SilicaFlickable {
-        visible: rootDelegate.cover === ""
-        id: fickable
-        anchors.fill: parent
-
-        PullDownMenu {
-            MenuItem {
-                text: "Menu"
-                onClicked: pageStack.push(Qt.resolvedUrl("MenuPage.qml"))
-            }
-            MenuItem {
-                text: "Exit"
-                onClicked: pageStack.push(Qt.quit())
+    Rectangle {
+        width: parent.itemWidth
+        height: 20
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        color: "black"
+        id: menuButton
+        MouseArea {
+            anchors.fill: menuButton
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("MenuPage.qml"))
             }
         }
+    }
+
+    Rectangle {
+        visible: rootDelegate.cover === ""
+        id: fickable
+        anchors.top: menuButton.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
 
         Row {
             id: tabHeader
@@ -155,7 +166,8 @@ Page {
                             console.log("Page " + url + " loaded with fail: " +
                                         loadRequest.errorCode.toString() + " " + loadRequest.errorString);
                             modelData.loadFinished(false);
-                            modelData.messageReceived("Loading error: " + url + " : "+ loadRequest.errorCode.toString() + " " + loadRequest.errorString);
+                            modelData.messageReceived("Loading error: " + url + " : "+
+                                                      loadRequest.errorCode.toString() + " " + loadRequest.errorString);
                         }
                     }
                     onLinkHovered: {
