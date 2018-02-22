@@ -30,8 +30,6 @@ public:
         this->createSessionCallBack = createSessionCallBack;
         savedMessageTimer.setSingleShot(true);
         connect(&savedMessageTimer, SIGNAL(timeout()), this, SLOT(sendSavedMessage()));
-        connect(&timer, &QTimer::timeout, [&](){fireSessionCallBack(RHO_BT_SESSION_INPUT_DATA_RECEIVED);});
-        timer.start(10);
     }
     virtual ~BluetoothSender(){
 
@@ -41,7 +39,7 @@ public:
             }
         }
     }
-    QTimer timer;
+
     static QHash<QString, BluetoothSender *> * getKeeper(){
         static QHash<QString, BluetoothSender *> keeper;
         return &keeper;
