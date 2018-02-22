@@ -19,6 +19,7 @@
 #include "impl/MainWindowImpl.h"
 #include "QtMainWindow.h"
 #include "QtLogView.h"
+#include <QWebSettings>
 #include "../../platform/shared/qt/rhodes/RhoSimulator.h"
 
 using namespace rho;
@@ -101,6 +102,13 @@ int main(int argc, char *argv[])
     QQuickView * view = const_cast<QQuickView * >(pView.data());
     RootDelegate::getInstance(view->rootContext()->engine())->moveToThread(view->rootContext()->engine()->thread());
     view->rootContext()->engine()->thread()->setPriority(QThread::TimeCriticalPriority);
+
+    QWebSettings::globalSettings( )->setAttribute( QWebSettings::PrivateBrowsingEnabled, true );
+    QWebSettings::globalSettings( )->setAttribute( QWebSettings::LocalContentCanAccessRemoteUrls, true );
+    QWebSettings::setMaximumPagesInCache( 0 );
+    QWebSettings::setObjectCacheCapacities( 0, 0, 0 );
+    QWebSettings::clearMemoryCaches( );
+
     QtMainWindow::setView(view);
     CMainWindow* m_appWindow = CMainWindow::getInstance();
 
@@ -116,11 +124,11 @@ int main(int argc, char *argv[])
     qDebug() << "Main directory is: " + QString::fromStdString(m_strRootPath);
     QString dataDirectory("/usr/share/" + application->applicationName() + "/data/rho/");
 
-    //if (!QtMainWindow::isFilesEqual(dataDirectory + "RhoBundleMap.txt",  QString::fromStdString(m_strRootPath) + "RhoBundleMap.txt")){
+    if (!QtMainWindow::isFilesEqual(dataDirectory + "RhoBundleMap.txt",  QString::fromStdString(m_strRootPath) + "RhoBundleMap.txt")){
         //QDir dirToDelete(QString::fromStdString(m_strRootPath));
         //dirToDelete.removeRecursively();
         QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
-    //}
+    }
 
     QtMainWindow::setWritableDir(QString::fromStdString(m_strRootPath));
     QDir::setCurrent(QString::fromStdString(m_strRootPath));

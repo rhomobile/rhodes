@@ -169,7 +169,7 @@ Page {
                             modelData.messageReceived("Loading error: " + url + " : "+
                                                       loadRequest.errorCode.toString() + " " + loadRequest.errorString);
                         }
-                        }
+                    }
                     onLinkHovered: {
                         modelData.messageReceived("Link clicked: " + hoveredUrl);
                         modelData.linkClicked(hoveredUrl)
