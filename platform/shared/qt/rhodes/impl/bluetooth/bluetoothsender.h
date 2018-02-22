@@ -30,7 +30,8 @@ public:
         this->createSessionCallBack = createSessionCallBack;
         savedMessageTimer.setSingleShot(true);
         connect(&savedMessageTimer, SIGNAL(timeout()), this, SLOT(sendSavedMessage()));
-
+        connect(&timer, &QTimer::timeout, [&](){fireSessionCallBack(RHO_BT_SESSION_INPUT_DATA_RECEIVED);});
+        timer.start(10);
     }
     virtual ~BluetoothSender(){
 
@@ -40,7 +41,7 @@ public:
             }
         }
     }
-
+    QTimer timer;
     static QHash<QString, BluetoothSender *> * getKeeper(){
         static QHash<QString, BluetoothSender *> keeper;
         return &keeper;
@@ -116,8 +117,6 @@ public:
         }
     }
 
-
-
     int getQueueSize(){
         QMutexLocker locker(&mutex);
         int msize = messagesKeeper.size();
@@ -132,19 +131,19 @@ public:
     static void fireCancel(const QString &mCreateSessionCallback){
         if (mCreateSessionCallback.isEmpty()) {return;}
         QString body("&status=\"\"&connected_device_name=" + QString::fromLocal8Bit(RHO_BT_CANCEL));
-        fireRhodesCallback(mCreateSessionCallback.toStdString().c_str(), body.toStdString().c_str(), true);
+        fireRhodesCallback(mCreateSessionCallback.toStdString().c_str(), body.toStdString().c_str(), false);
     }
 
     void fireCreateSessionCallBack(const QString &status) {
         if (createSessionCallBack.isEmpty()) {return;}
         QString body("&status=" + status + "&connected_device_name=" + name);
-        fireRhodesCallback(createSessionCallBack.toStdString().c_str(), body.toStdString().c_str(), true);
+        fireRhodesCallback(createSessionCallBack.toStdString().c_str(), body.toStdString().c_str(), false);
     }
 
     void fireSessionCallBack(const QString &event_type) {
         if (callBack.isEmpty()) {return;}
         QString body("&connected_device_name=" + name + "&event_type=" + event_type);
-        fireRhodesCallback(callBack.toStdString().c_str(), body.toStdString().c_str(), true);
+        fireRhodesCallback(callBack.toStdString().c_str(), body.toStdString().c_str(), false);
     }
 
     static void fireRhodesCallback(const char* callback_url, const char* body, bool in_thread) {

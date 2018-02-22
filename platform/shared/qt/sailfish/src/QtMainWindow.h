@@ -136,22 +136,31 @@ public:
 
     QList<CustomMenuItem *> menuItemsList;
     void commitMenuItemsList(){
-        /*bool containsExit = false;
+        bool countExit = 0;
         foreach (CustomMenuItem * var, menuItemsList) {
-            if (var->getText().contains("Exit", Qt::CaseInsensitive) || var->getText().contains("Quit",Qt::CaseInsensitive)){
-                containsExit = true;
+            if (var->getText().contains("Exit", Qt::CaseInsensitive) ||
+                    var->getText().contains("Quit",Qt::CaseInsensitive) ||
+                    var->getText().contains("Close",Qt::CaseInsensitive)){
+                countExit++;
             }
         }
-        if (!containsExit && !menuItemsList.isEmpty()){
-            CustomMenuItem * exitItem = new CustomMenuItem("Exit", this);
-            connect(exitItem, SIGNAL(isClicked()), this, SLOT(exitCommand()));
-            menuItemsList.append(exitItem);
-        }*/
+        if (exitItem != nullptr){
+            if (countExit == 0){
+                menuItemsList.append(exitItem);
+            }
+            if (countExit == 1){
+                if (menuItemsList.removeAll(exitItem) > 0) {menuItemsList.append(exitItem);}
+            }
+            if (countExit > 1){
+                menuItemsList.removeAll(exitItem);
+            }
+        }
         QList<QObject *> objectList;
         foreach (CustomMenuItem * obj, menuItemsList) {objectList.append(obj);}
         setContextProperty("mainMenuListModel", objectList);
     }
 
+    CustomMenuItem * exitItem = nullptr;
     QList<CustomWebViewTab *> webViewsList;
 
     void commitWebViewsList(){

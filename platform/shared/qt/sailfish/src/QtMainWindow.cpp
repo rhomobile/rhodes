@@ -161,6 +161,9 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     QObject::connect(webViewsList.first(), SIGNAL(urlHasBeenChanged(QString)), this, SLOT(on_webView_urlChanged(QString)));
     QObject::connect(webViewsList.first(), SIGNAL(msg(QString,QString)), this, SLOT(rawLog(QString,QString)), Qt::QueuedConnection);
 
+    CustomMenuItem * exitItem = new CustomMenuItem("Exit", this);
+    connect(exitItem, SIGNAL(isClicked()), this, SLOT(exitCommand()));
+
     commitMenuItemsList();
     commitToolBarButtonsList();
     commitWebViewsList();
