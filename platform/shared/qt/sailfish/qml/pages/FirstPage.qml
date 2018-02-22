@@ -3,7 +3,7 @@ import Sailfish.Silica 1.0
 import QtWebKit 3.0
 import QtMultimedia 5.5
 import QtWebKit.experimental 1.0
-//import Nemo.KeepAlive 1.1
+import Nemo.KeepAlive 1.1
 
 Page {
     id: mainPage
@@ -16,12 +16,12 @@ Page {
         anchors.left: parent.left
         anchors.right: parent.right
     }
-    /*
+
     KeepAlive {
         id: keepAlive
         enabled: true;
     }
-    */
+
     Rectangle {
         width: parent.itemWidth
         height: 20
@@ -181,7 +181,7 @@ Page {
                     //experimental.preferences.fileAccessFromFileURLsAllowed: true;
                     //experimental.preferences.webGLEnabled: true;
                     experimental.preferences.navigatorQtObjectEnabled: true;
-
+                    experimental.preferences.offlineWebApplicationCacheEnabled: false;
                     experimental.onMessageReceived: {
                         modelData.messageReceived(message.data);
                     }
