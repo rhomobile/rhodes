@@ -19,7 +19,8 @@
 #include "impl/MainWindowImpl.h"
 #include "QtMainWindow.h"
 #include "QtLogView.h"
-#include <QWebSettings>
+#include <QtWebEngine/QtWebEngine>
+
 #include "../../platform/shared/qt/rhodes/RhoSimulator.h"
 
 using namespace rho;
@@ -87,27 +88,29 @@ char* parseToken(const char* start)
 
 int main(int argc, char *argv[])
 {
+    QString debugAddress;
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost) && debugAddress.isEmpty())
+        debugAddress = address.toString();
+    }
+    if (!debugAddress.isEmpty()){debugAddress.append(":");}
+    debugAddress.append("9090");
+    qputenv("QTWEBENGINE_REMOTE_DEBUGGING", debugAddress.toLocal8Bit());
     QScopedPointer<QGuiApplication> pApplication(SailfishApp::application(argc, argv));
     QGuiApplication * application = const_cast<QGuiApplication *>(pApplication.data());
     qRegisterMetaType<QString>("QString");
     qmlRegisterUncreatableType<RootDelegate>("RootDelegate",1,0,"RootDelegate","Err");
-
+    QtWebEngine::initialize();
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
         QString OSDetailsString= QString("Running on : %1 Application Compiled with QT Version :  %2 Running with QT Version %3")
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
 
-
+    QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
     qDebug() << "Executable file: " + QString::fromLocal8Bit(argv[0]);
     QScopedPointer<QQuickView> pView(SailfishApp::createView());
     QQuickView * view = const_cast<QQuickView * >(pView.data());
     RootDelegate::getInstance(view->rootContext()->engine())->moveToThread(view->rootContext()->engine()->thread());
     view->rootContext()->engine()->thread()->setPriority(QThread::TimeCriticalPriority);
-
-    QWebSettings::globalSettings( )->setAttribute( QWebSettings::PrivateBrowsingEnabled, true );
-    QWebSettings::globalSettings( )->setAttribute( QWebSettings::LocalContentCanAccessRemoteUrls, true );
-    QWebSettings::setMaximumPagesInCache( 0 );
-    QWebSettings::setObjectCacheCapacities( 0, 0, 0 );
-    QWebSettings::clearMemoryCaches( );
 
     QtMainWindow::setView(view);
     CMainWindow* m_appWindow = CMainWindow::getInstance();
@@ -124,11 +127,11 @@ int main(int argc, char *argv[])
     qDebug() << "Main directory is: " + QString::fromStdString(m_strRootPath);
     QString dataDirectory("/usr/share/" + application->applicationName() + "/data/rho/");
 
-    if (!QtMainWindow::isFilesEqual(dataDirectory + "RhoBundleMap.txt",  QString::fromStdString(m_strRootPath) + "RhoBundleMap.txt")){
+    //if (!QtMainWindow::isFilesEqual(dataDirectory + "RhoBundleMap.txt",  QString::fromStdString(m_strRootPath) + "RhoBundleMap.txt")){
         //QDir dirToDelete(QString::fromStdString(m_strRootPath));
         //dirToDelete.removeRecursively();
         QtMainWindow::copyDirRecursive(dataDirectory, QString::fromStdString(m_strRootPath));
-    }
+    //}
 
     QtMainWindow::setWritableDir(QString::fromStdString(m_strRootPath));
     QDir::setCurrent(QString::fromStdString(m_strRootPath));
@@ -156,6 +159,8 @@ int main(int argc, char *argv[])
     }
 
     RAWLOGC_INFO("QTMain", "Rhodes started");
+    debugAddress.prepend("Debug address is ");
+    RAWLOGC_INFO("QTMain", debugAddress.toStdString().c_str());
 
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRootPath);
 
@@ -166,7 +171,6 @@ int main(int argc, char *argv[])
     view->setSource(SailfishApp::pathToMainQml());
     view->showFullScreen();
     RHODESAPP().startApp();
-    qDebug() << "Rho app started";
     //QTimer::singleShot(1000, ()[&]{rho_rhodesapp_callUiCreatedCallback();});
     rho_rhodesapp_callUiCreatedCallback();
 

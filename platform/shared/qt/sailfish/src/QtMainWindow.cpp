@@ -40,9 +40,6 @@
 #include "rubyext/NativeToolbarExt.h"
 #include "RhoNativeApiCall.h"
 #include "statistic/RhoProfiler.h"
-#include <QWebSettings>
-#include <QWebSecurityOrigin>
-#include <QWebHistory>
 #include <QtNetwork/QNetworkCookie>
 #include <QDesktopServices>
 #include <sailfishapp.h>
