@@ -37,6 +37,10 @@
 #include <algorithm>
 #include <iterator>
 
+#include <pthread.h>
+#include <sched.h>
+#include <errno.h>
+
 //#include <errno.h>
 
 
@@ -563,6 +567,14 @@ int CHttpServer::select_internal( SOCKET listener, fd_set& readfds )
 
 bool CHttpServer::run()
 {
+    #ifdef OS_SAILFISH
+    pthread_t current_thread = pthread_self();
+    struct sched_param params = { 0 };
+    params.sched_priority = 9;
+    pthread_setschedparam(current_thread, SCHED_FIFO, &params);
+    #endif
+
+
     if (verbose) LOG(INFO) + "Start HTTP server";
 
     if (!init())
