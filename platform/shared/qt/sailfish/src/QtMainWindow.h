@@ -136,6 +136,17 @@ public:
 
     QList<CustomMenuItem *> menuItemsList;
     void commitMenuItemsList(){
+        /*bool containsExit = false;
+        foreach (CustomMenuItem * var, menuItemsList) {
+            if (var->getText().contains("Exit", Qt::CaseInsensitive) || var->getText().contains("Quit",Qt::CaseInsensitive)){
+                containsExit = true;
+            }
+        }
+        if (!containsExit && !menuItemsList.isEmpty()){
+            CustomMenuItem * exitItem = new CustomMenuItem("Exit", this);
+            connect(exitItem, SIGNAL(isClicked()), this, SLOT(exitCommand()));
+            menuItemsList.append(exitItem);
+        }*/
         QList<QObject *> objectList;
         foreach (CustomMenuItem * obj, menuItemsList) {objectList.append(obj);}
         setContextProperty("mainMenuListModel", objectList);

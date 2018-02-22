@@ -353,8 +353,8 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libBarcode.a
 unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lSignature
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libSignature.a
 
-#unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lRhoconnect-client
-#unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-client.a
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lRhoconnect-client
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-client.a
 
 unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lserialport
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libserialport.a

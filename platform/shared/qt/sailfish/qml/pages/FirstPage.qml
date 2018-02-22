@@ -11,7 +11,10 @@ Page {
         id: image
         source: rootDelegate.cover
         visible: rootDelegate.cover !== ""
-        anchors.fill: parent
+        anchors.top: menuButton.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
     /*
     KeepAlive {
@@ -19,21 +22,29 @@ Page {
         enabled: true;
     }
     */
-    SilicaFlickable {
-        visible: rootDelegate.cover === ""
-        id: fickable
-        anchors.fill: parent
-
-        PullDownMenu {
-            MenuItem {
-                text: "Menu"
-                onClicked: pageStack.push(Qt.resolvedUrl("MenuPage.qml"))
-            }
-            MenuItem {
-                text: "Exit"
-                onClicked: pageStack.push(Qt.quit())
+    Rectangle {
+        width: parent.itemWidth
+        height: 20
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        color: "black"
+        id: menuButton
+        MouseArea {
+            anchors.fill: menuButton
+            onClicked: {
+                pageStack.push(Qt.resolvedUrl("MenuPage.qml"))
             }
         }
+    }
+
+    Rectangle {
+        visible: rootDelegate.cover === ""
+        id: fickable
+        anchors.top: menuButton.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
 
         Row {
             id: tabHeader
@@ -109,30 +120,30 @@ Page {
                     Connections {
                         target: modelData
                         onSetHtml: {
-                            console.log("Setting HTML");
+                            modelData.messageReceived("Setting HTML");
                             webView.loadHtml(pHtml);
                         }
                         onGoBack:{
-                            console.log("Going back");
+                            modelData.messageReceived("Going back");
                             webView.goBack();
                         }
                         onGoForward:{
-                            console.log("Going forward");
+                            modelData.messageReceived("Going forward");
                             webView.goForward();
                         }
                         onRefresh:{
-                            console.log("Reloading page");
+                            modelData.messageReceived("Reloading page");
                             webView.reload();
                         }
                         onEvaluateJavaScript:{
-                            console.log("Trying to evaluate JS");
+                            modelData.messageReceived("Trying to evaluate JS");
                             webView.experimental.evaluateJavaScript(pScript)
                         }
                         onSetCurrentTab:{
-                            console.log("Trying to set current tab: don't realized");
+                            modelData.messageReceived("Trying to set current tab: don't realized");
                         }
                         onSwitchToThisTab:{
-                            console.log("Trying to switch to this tab: don't realized");
+                            modelData.messageReceived("Trying to switch to this tab: don't realized");
                         }
                         onOpenQMLDocument:{
                             pageStack.push(Qt.resolvedUrl(documentName));
@@ -141,30 +152,30 @@ Page {
 
 
                     onNavigationRequested: {
-                        console.log(request.url)
-                        console.log(request.action)
+                        modelData.messageReceived("onNavigationRequested" + request.url + " : " + request.action)
                     }
 
                     onLoadingChanged: {
                         if (loadRequest.status == WebView.LoadStartedStatus){
                             modelData.loadStarted();
-                            console.log("Loading " + url + " started...");
+                            modelData.messageReceived("Loading " + url + " started...");
                         }
                         if (loadRequest.status == WebView.LoadSucceededStatus){
                             modelData.loadFinished(true);
-                            console.log("Page " + url + " loaded!");
-                            //webView.experimental.evaluateJavaScript("navigator.qt.postMessage(navigator.userAgent)");
+                            modelData.messageReceived("Page " + url + " loaded!");
                         }
                         if (loadRequest.status == WebView.LoadFailedStatus){
                             modelData.loadFinished(false);
-                            console.log("Page " + url + " loaded with fail: " +
-                                        loadRequest.errorCode + " " + loadRequest.errorString);
-                            modelData.messageReceived("Loading error: " + url + " : "+ loadRequest.errorCode + " " + loadRequest.errorString);
+                            modelData.messageReceived("Loading error: " + url + " : "+
+                                                      loadRequest.errorCode.toString() + " " + loadRequest.errorString);
                         }
+                        }
+                    onLinkHovered: {
+                        modelData.messageReceived("Link clicked: " + hoveredUrl);
+                        modelData.linkClicked(hoveredUrl)
                     }
-                    onLinkHovered: modelData.linkClicked(hoveredUrl)
                     Component.onCompleted: {
-                        console.log("Component complited")
+                        modelData.messageReceived("Component complited")
                     }
                     //experimental.preferences.javascriptEnabled: true;
                     //experimental.preferences.fileAccessFromFileURLsAllowed: true;
@@ -221,6 +232,5 @@ Page {
                 }
             }
         }
-
     }
 }
