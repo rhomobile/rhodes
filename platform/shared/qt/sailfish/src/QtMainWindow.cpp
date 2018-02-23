@@ -148,8 +148,6 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
 
     lastInstance = this;
 
-    //for (int i = 0; i < 7; i++){menuItemsList.append(new CustomMenuItem("Item " + QString::number(i), this));}
-
     webViewsList.append(new CustomWebViewTab("MainWebView", "about:blanc", this));
 
     QObject::connect(webViewsList.first(), SIGNAL(linkClicked(const QString&)), this, SLOT(on_webView_linkClicked(const QString&)));

@@ -1,7 +1,8 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import QtWebEngine 1.0
+import QtWebKit 3.0
 import QtMultimedia 5.5
+import QtWebKit.experimental 1.0
 import Nemo.KeepAlive 1.1
 
 Page {
@@ -108,12 +109,13 @@ Page {
                 height: parent.height
                 border.width: 1
 
-                WebEngineView {
+                WebView {
                     id: webView
                     url: modelData.url
                     anchors.fill: parent
-                    //zoomFactor: modelData.scale
-                    visible: true
+                    experimental.preferredMinimumContentsWidth: Screen.width / modelData.scale
+                    experimental.customLayoutWidth: Screen.width / modelData.scale
+
 
                     Connections {
                         target: modelData
@@ -135,7 +137,7 @@ Page {
                         }
                         onEvaluateJavaScript:{
                             modelData.messageReceived("Trying to evaluate JS");
-                            webView.runJavaScript(pScript)
+                            webView.experimental.evaluateJavaScript(pScript)
                         }
                         onSetCurrentTab:{
                             modelData.messageReceived("Trying to set current tab: don't realized");
@@ -154,18 +156,15 @@ Page {
                     }
 
                     onLoadingChanged: {
-                        if (loadRequest.status == WebEngineView.LoadStartedStatus){
-                            modelData.messageReceived("Loading " + url + " started...");
+                        if (loadRequest.status == WebView.LoadStartedStatus){
                             modelData.loadStarted();
+                            modelData.messageReceived("Loading " + url + " started...");
                         }
-                        if (loadRequest.status == WebEngineView.LoadSucceededStatus){
-                            modelData.messageReceived("Page " + url + " loaded!");
+                        if (loadRequest.status == WebView.LoadSucceededStatus){
                             modelData.loadFinished(true);
-
+                            modelData.messageReceived("Page " + url + " loaded!");
                         }
-                        if (loadRequest.status == WebEngineView.LoadFailedStatus){
-                            console.log("Page " + url + " loaded with fail: " +
-                                        loadRequest.errorCode.toString() + " " + loadRequest.errorString);
+                        if (loadRequest.status == WebView.LoadFailedStatus){
                             modelData.loadFinished(false);
                             modelData.messageReceived("Loading error: " + url + " : "+
                                                       loadRequest.errorCode.toString() + " " + loadRequest.errorString);
@@ -178,10 +177,13 @@ Page {
                     Component.onCompleted: {
                         modelData.messageReceived("Component complited")
                     }
-
-
-                    onJavaScriptConsoleMessage: {
-                        modelData.messageReceived(message);
+                    //experimental.preferences.javascriptEnabled: true;
+                    //experimental.preferences.fileAccessFromFileURLsAllowed: true;
+                    //experimental.preferences.webGLEnabled: true;
+                    experimental.preferences.navigatorQtObjectEnabled: true;
+                    experimental.preferences.offlineWebApplicationCacheEnabled: false;
+                    experimental.onMessageReceived: {
+                        modelData.messageReceived(message.data);
                     }
 
                 }

@@ -2954,6 +2954,7 @@ void rho_net_request(const char *url)
     getNetRequest().pullData(strCallbackUrl.c_str(), NULL);
 }
     
+//TODO: this function can crash application if you use it many times (it creates threads and probably don't delete them)
 void rho_net_request_with_data_in_separated_thread(const char *url, const char *str_body) {
     String strCallbackUrl = RHODESAPP().canonicalizeRhoUrl(url);
     String strBody = str_body;
