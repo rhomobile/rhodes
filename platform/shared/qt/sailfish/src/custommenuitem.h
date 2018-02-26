@@ -12,9 +12,20 @@ class CustomMenuItem : public QObject
     Q_PROPERTY(QString text READ getText CONSTANT)
 public:
 
-    explicit CustomMenuItem(QString name, int item, QObject *parent): QObject(parent){text = name; this->item = item;}
-    CustomMenuItem(QString name, QObject *parent): QObject(parent){text = name;}
-    CustomMenuItem(QString name, QString action, QObject *parent): QObject(parent){text = name; this->action = action;}
+    explicit CustomMenuItem(QString name, int item, QObject *parent): QObject(parent){
+        text = name;
+        this->item = item;
+        qDebug() << "Creating menu item " + name;
+    }
+    CustomMenuItem(QString name, QObject *parent): QObject(parent){
+        text = name;
+        qDebug() << "Creating menu item " + name;
+    }
+    CustomMenuItem(QString name, QString action, QObject *parent): QObject(parent){
+        text = name;
+        this->action = action;
+        qDebug() << "Creating menu item " + name;
+    }
     QString getText(){return text;}
     int getItem() const{
         return item;

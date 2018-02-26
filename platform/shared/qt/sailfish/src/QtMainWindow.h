@@ -136,22 +136,11 @@ public:
 
     QList<CustomMenuItem *> menuItemsList;
     void commitMenuItemsList(){
-        bool countExit = 0;
-        foreach (CustomMenuItem * var, menuItemsList) {
-            if (var->getText().contains("Exit", Qt::CaseInsensitive) ||
-                    var->getText().contains("Quit",Qt::CaseInsensitive) ||
-                    var->getText().contains("Close",Qt::CaseInsensitive)){
-                countExit++;
-            }
-        }
+        qDebug() << "Committing menu items";
         if (exitItem != nullptr){
-            if (countExit == 0){
+            if (menuItemsList.isEmpty()){
                 menuItemsList.append(exitItem);
-            }
-            if (countExit == 1){
-                if (menuItemsList.removeAll(exitItem) > 0) {menuItemsList.append(exitItem);}
-            }
-            if (countExit > 1){
+            }else if (menuItemsList.size() > 1){
                 menuItemsList.removeAll(exitItem);
             }
         }

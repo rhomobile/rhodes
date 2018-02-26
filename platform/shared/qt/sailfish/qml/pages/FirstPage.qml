@@ -150,9 +150,8 @@ Page {
                         }
                     }
 
-
                     onNavigationRequested: {
-                        modelData.messageReceived("onNavigationRequested" + request.url + " : " + request.action)
+                        modelData.messageReceived("onNavigationRequested " + request.url + " : " + request.action)
                     }
 
                     onLoadingChanged: {

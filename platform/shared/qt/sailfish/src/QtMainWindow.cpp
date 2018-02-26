@@ -101,9 +101,6 @@ void QtMainWindow::setTargetFilePath(const QString &value)
 }
 
 
-
-
-
 QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     mainWindowCallback(NULL),
     cur_tbrp(0),
@@ -125,6 +122,7 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     //qs->setOfflineStorageDefaultQuota(1024*1024*1024);
     //rho::String rs_dir = RHODESAPP().getRhoRootPath()+RHO_EMULATOR_DIR;
     //qs->enablePersistentStorage(rs_dir.c_str());
+
 
 
     GuiThreadFuncHelper::getInstance(this);
@@ -156,7 +154,7 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     QObject::connect(webViewsList.first(), SIGNAL(urlHasBeenChanged(QString)), this, SLOT(on_webView_urlChanged(QString)));
     QObject::connect(webViewsList.first(), SIGNAL(msg(QString,QString)), this, SLOT(rawLog(QString,QString)), Qt::QueuedConnection);
 
-    CustomMenuItem * exitItem = new CustomMenuItem("Exit", this);
+    exitItem = new CustomMenuItem("Exit", this);
     connect(exitItem, SIGNAL(isClicked()), this, SLOT(exitCommand()));
 
     commitMenuItemsList();
@@ -440,6 +438,7 @@ void QtMainWindow::navigate(QString url, int index)
             QString errStr = test.errorString();
             if (errStr.length() > 0 )
                 LOG(ERROR) + "WebView navigate: failed to parse URL: " + errStr.toStdString();
+
 
             tab->loadUrl(url);
         }
@@ -734,7 +733,7 @@ void QtMainWindow::setToolbarStyle(bool border, QString background, int viewHeig
 
 void QtMainWindow::menuAddAction(const QString & text, int item, bool enabled)
 {
-
+    qDebug() << "Menu adding action";
     CustomMenuItem * m = new CustomMenuItem(text, item, this);
     connect(m, SIGNAL(isClicked()), this, SLOT(menuActionEvent()));
     menuItemsList.append(m);
@@ -744,6 +743,7 @@ void QtMainWindow::menuAddAction(const QString & text, int item, bool enabled)
 
 void QtMainWindow::menuClear(void)
 {
+    qDebug() << "Clearing menu";
     menuItemsList.clear();
     commitMenuItemsList();
 }
