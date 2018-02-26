@@ -1336,11 +1336,24 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     
     // Detect mime type
     headers.push_back(Header("Content-Type", get_mime_type(path)));
+
+    /*
     if ( String_startsWith(path, "/public") )
     {
         headers.push_back(Header("Expires", "Thu, 15 Apr 2020 20:00:00 GMT") );
         headers.push_back(Header("Cache-Control", "max-age=2592000") );
     }
+    */
+    if ( String_startsWith(path, "/public") )
+    {
+        headers.push_back(Header("Expires", "Thu, 15 Apr 2000 20:00:00 GMT") );
+        headers.push_back(Header("Cache-Control", "max-age=0") );
+        headers.push_back(Header("Cache-Control", "no-cache") );
+        headers.push_back(Header("Cache-Control", "no-store") );
+    }
+
+
+
 
     // Content length
     char* buf = new char[FILE_BUF_SIZE];
