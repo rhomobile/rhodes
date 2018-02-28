@@ -30,6 +30,7 @@
 #include <jni.h>
 #include "common/IRhoCrypt.h"
 #include "logging/RhoLog.h"
+#include "sqlite/sqlite3.h"
 
 namespace rho {
 namespace common{

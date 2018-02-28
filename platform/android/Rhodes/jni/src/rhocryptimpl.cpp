@@ -54,7 +54,7 @@ CRhoCryptImpl::CRhoCryptImpl() : m_obj(0), m_dataOut(0)
     m_obj = env->NewGlobalRef(obj);
     env->DeleteLocalRef(obj);
 
-    m_dataOut = (unsigned char*)malloc(1024); //sqlite page size
+    m_dataOut = (unsigned char*)malloc(RHO_DEFAULT_CRYPTO_PAGE_SIZE); //sqlite page size
 }
 
 CRhoCryptImpl::~CRhoCryptImpl()
