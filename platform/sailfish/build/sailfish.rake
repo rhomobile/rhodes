@@ -78,6 +78,7 @@ class BuildScriptGenerator < ScriptGenerator
   attr_accessor :rpmPath
   attr_accessor :rpmvalPath
   attr_accessor :deployPath
+  attr_accessor :nThreads
 end
 
 def isWindows?
@@ -231,6 +232,12 @@ namespace "config" do
     if $app_config["sailfish"]["device"]["key"].nil? &&
        $app_config["sailfish"]["device"]["password"].nil?
       raise "Key or password for running app not found, set it!"
+    end
+
+    if !$app_config["sailfish"]["build_threads"].nil?
+      $build_threads = $app_config["sailfish"]["build_threads"]
+    else
+      $build_threads = 4
     end
 
     Rake::Task["build:sailfish:startvm"].invoke()
@@ -671,6 +678,7 @@ namespace 'project' do
       build_script_generator.rpmPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpm" + cmd_suffix))
       build_script_generator.rpmvalPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "rpmvalidation" + cmd_suffix))
       build_script_generator.deployPath =  PathToWindowsWay(File.join($current_build_sdk_dir, "deploy" + cmd_suffix))
+      build_script_generator.nThreads = $build_threads
 
       File.open(File.join($project_path, "build.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( build_erb_path ) }
       File.open(File.join($project_path, "clean.cmd"), 'w' ) { |f| f.write build_script_generator.render_script( clean_erb_path ) }

@@ -10,4 +10,4 @@ cd <%= @projectPath %>
 <%= @isNixSystem ? 'export' : 'SET' %> MER_SSH_TARGET_NAME=<%= @merTgtName %>
 <%= @isNixSystem ? 'export' : 'SET' %> MER_SSH_USERNAME=<%= @merUserName %>
 
-"<%= @qmakePath %>" <%= @proPath %> -spec linux-g++ "CONFIG+=<%= @buildMode %>" "CONFIG+=<%= @qmlMode %>" && "<%= @makePath %>" qmake_all && "<%= @makePath %>"
+"<%= @qmakePath %>" <%= @proPath %> -spec linux-g++ "CONFIG+=<%= @buildMode %>" "CONFIG+=<%= @qmlMode %>" && "<%= @makePath %>" qmake_all && "<%= @makePath %>" -j<%= @nThreads %>
