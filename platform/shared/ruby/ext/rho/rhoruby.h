@@ -66,8 +66,6 @@ void rho_ruby_uiDestroyed();
 void rho_ruby_loadserversources(const char* szData);
 void rho_ruby_loadallsyncsources();
 void rho_ruby_reset_db_on_sync_user_changed();
-void rho_ruby_start_threadidle();
-void rho_ruby_stop_threadidle();
 int  rho_ruby_is_started();
 void rho_ruby_callmethod(const char* szMethodPath);
 VALUE rho_ruby_callmethod_arg(VALUE classValue, const char *name, VALUE arg);

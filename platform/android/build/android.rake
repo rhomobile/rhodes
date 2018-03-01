@@ -723,6 +723,8 @@ namespace "config" do
     $libname = {}
     $native_libs.each do |x|
       $objdir[x] = File.join($tmpdir, x)
+
+      #TODO: path is actually incorrect since library build splits it to dirname and basename inserting ABI in between. Not touching it right now not wanting to break things, but need to review/fix it eventually.
       $libname[x] = File.join($app_builddir, x, "lib#{x}.a")
     end
 
@@ -1528,6 +1530,8 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
+      args << "-I\"#{$shareddir}/ruby/include\""
+      args << "-I\"#{$shareddir}/ruby/android\""
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhodb_build.files')
@@ -1705,8 +1709,9 @@ namespace "build" do
         
         deps = []
         libs = []
+
         $libname.each do |name, lib|
-          deps << lib
+          deps << File.join( File.dirname(lib), realabi, File.basename(lib) )
           libs << name
           args << "-L\"#{File.dirname(lib)}/#{realabi}\""
         end
@@ -1804,6 +1809,7 @@ namespace "build" do
 
       generator.versionName = $app_config["version"]
       generator.versionCode = version
+      generator.allowBackup = ($app_config["android"]["allowBackup"] == "false" ? "false" : "true") if $app_config["android"]
       generator.installLocation = 'auto'
       generator.minSdkVer = $min_sdk_level
       generator.targetSdkVer = $target_sdk_level

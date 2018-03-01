@@ -14,17 +14,21 @@ TEMPLATE = lib
 CONFIG += staticlib warn_on
 
 INCLUDEPATH += ../..\
+#../../ruby/include\
 ../../json
 
 macx {
   DESTDIR = ../../../osx/bin/syncengine
   OBJECTS_DIR = ../../../osx/bin/syncengine/tmp
+  #INCLUDEPATH += ../../ruby/osx
 }
 
 win32 {
   DESTDIR = ../../../win32/bin/syncengine
   OBJECTS_DIR = ../../../win32/bin/syncengine/tmp
   DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  DEFINES += BUFSIZ=512 STATIC_LINKED RUBY_EXPORT
+  #INCLUDEPATH += ../../ruby/win32
   Debug {
     DEFINES += _DEBUG DEBUG
   }
