@@ -1144,7 +1144,6 @@ RHO_GLOBAL int close(int fd)
 }
 
 
-
 RHO_GLOBAL ssize_t pread(int fd, void *buf, size_t count, off_t offset)
 {
     RHO_LOG("pread: BEGIN fd %d: offset: %ld: count: %ld", fd, (long)offset, (long)count);
@@ -1937,6 +1936,7 @@ static int __sclose(void *cookie)
 */
 RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 {
+    RHO_ERROR_LOG("fopen");
     int flags, oflags;
     FILE *fp = 0;
 
@@ -1971,35 +1971,49 @@ RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 
 size_t fread(void* __buf, size_t __size, size_t __count, FILE* __fp)
 {
-  if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
-      return real_fread(__buf, __size, __count, __fp);
-
-  return read((int)__fp,__buf,__size*__count);
+    RHO_ERROR_LOG("fread");
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || (unsigned long int)(__fp) < RHO_FD_BASE)
+        return real_fread(__buf, __size, __count, __fp);
+    RHO_ERROR_LOG("fread2");
+    return read((int)__fp,__buf,__size*__count);
 }
 
 size_t fwrite(const void* __buf, size_t __size, size_t __count, FILE* __fp)
 {
-  if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
-      return real_fwrite(__buf, __size, __count, __fp);
-
-  return write((int)__fp,__buf,__size*__count);
+    RHO_ERROR_LOG("fwrite");
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || (unsigned long int)(__fp) < RHO_FD_BASE)
+        return real_fwrite(__buf, __size, __count, __fp);
+    RHO_ERROR_LOG("fwrite2");
+    return write((int)__fp,__buf,__size*__count);
 }
-/*
+
 int fseek(FILE* __fp, long __offset, int __whence)
 {
-
+    RHO_ERROR_LOG("fseek");
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || (unsigned long int)(__fp) < RHO_FD_BASE)
+        return real_fseek(__fp, __offset, __whence);
+    RHO_ERROR_LOG("fseek2");
+    return lseek((int)__fp, __offset, __whence);
 }
 
 long ftell(FILE* __fp)
 {
-
+    RHO_ERROR_LOG("ftell");
+    //if (rho_fs_mode == RHO_FS_DISK_ONLY || (unsigned long int)(__fp) < RHO_FD_BASE)
+        return real_ftell(__fp);
+    //RHO_ERROR_LOG("ftell2");
+   // return tell((int)__fp);
 }
 
 int fclose(FILE* __fp)
 {
-
+    RHO_ERROR_LOG("fclose");
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || (unsigned long int)(__fp) < RHO_FD_BASE)
+        return real_fclose(__fp);
+    RHO_ERROR_LOG("fclose2");
+    return close((int)__fp);
 }
-*/
+
 RHO_GLOBAL int select(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct timeval *tv)
 {
     RHO_LOG("select: maxfd: %d", maxfd);
@@ -2038,7 +2052,7 @@ RHO_GLOBAL int select(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct t
     }
 
     count = real_select(maxfd, rfd, wfd, efd, tv);
-   RHO_LOG("select: return %d (native)", count);
+    RHO_LOG("select: return %d (native)", count);
     return count;
 }
 RHO_GLOBAL int getdents(unsigned int fd, struct dirent *dirp, unsigned int count)
