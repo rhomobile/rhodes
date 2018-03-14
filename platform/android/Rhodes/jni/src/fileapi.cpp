@@ -236,12 +236,14 @@ typedef size_t (*func_fwrite_t)(const void* __buf, size_t __size, size_t __count
 typedef int (*func_fseek_t)(FILE* __fp, long __offset, int __whence);
 typedef long (*func_ftell_t)(FILE* __fp);
 typedef int (*func_fclose_t)(FILE* __fp);
+typedef FILE * (*func_fopen_t)(const char* fname, const char* mode);
 
 static func_fread_t real_fread;
 static func_fwrite_t real_fwrite;
 static func_fseek_t real_fseek;
 static func_ftell_t real_ftell;
 static func_fclose_t real_fclose;
+static func_fopen_t real_fopen;
 
 static func_access_t real_access;
 static func_close_t real_close;
@@ -613,7 +615,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_fseek = (func_fseek_t)dlsym(pc,"fseek");
     real_ftell = (func_ftell_t)dlsym(pc,"ftell");
     real_fclose = (func_fclose_t)dlsym(pc,"fclose");
-
+    real_fopen = (func_fopen_t)dlsym(pc,"fopen");
     if (real_fdatasync == NULL) {
         //Android 2.1 have no fdatasync call. Use fsync instead
         RHO_LOG("No fdatasync implementation, using fsync instead");
@@ -1923,7 +1925,7 @@ RHO_GLOBAL int unlink(const char *path)
 #define	__SAPP	0x0100		/* fdopen()ed in append mode */
 #define	__SOFF	0x1000		/* set iff _offset is in fact correct */
 
-static int __sread(void *cookie, char *buf, int n)
+/*static int __sread(void *cookie, char *buf, int n)
 {
     RHO_LOG("__sread: %p", cookie);
 
@@ -1980,7 +1982,7 @@ static int __sclose(void *cookie)
     RHO_LOG("__sclose: %p", cookie);
     //return close((getOldFile((FILE *)cookie))->_file);
     return fclose((FILE *)cookie);
-}
+}*/
 
 RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 {
@@ -1990,28 +1992,20 @@ RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
     RHO_LOG("fopen: %s (%s)", path, mode);
 
     if ((flags = __sflags(mode, &oflags)) == 0) return NULL;
-    if((fp = __sfp()) == 0) return NULL;
-
-    int fd = open(path, oflags, DEFFILEMODE);
-    RHO_LOG("fopen: %s (%s): fd: %d", path, mode, fd);
-    if (fd < 0) return NULL;
-
+    //if((fp = __sfp()) == 0) return NULL;
+    fp = real_fopen(path, mode);
+    //int fd = open(path, oflags, DEFFILEMODE);
+    
+    
     OldFile * oldFp = getOldFile(fp);
 
-
-    oldFp->_flags = flags;
-    oldFp->_file = fd;
-    oldFp->_cookie = fp;
-    oldFp->_read = __sread;
-    oldFp->_write = __swrite;
-    oldFp->_seek = __sseek;
-    oldFp->_close = __sclose;
+    RHO_LOG("fopen: %s (%s): fd: %d", path, mode, oldFp->_file);
 
     // Do seek at our level as well even though oflags passed to open
-    //if (oflags & O_APPEND)
-    //    (void) __sseek((void *)fp, (fpos_t)0, SEEK_END);
+    if (oflags & O_APPEND)
+        fseek(fp, (fpos_t)0, SEEK_END);
 
-    RHO_LOG("fopen: %s (%s): fp: %p", path, mode, fp);
+
     return fp;
 }
 
@@ -2040,7 +2034,7 @@ long ftell(FILE* __fp)
 {
     //if (rho_fs_mode == RHO_FS_DISK_ONLY || getOldFile(__fp)->_file < RHO_FD_BASE)
     return real_ftell(__fp);
-   // return tell((int)__fp);
+   // return tell(getOldFile(__fp)->_file);
 }
 
 int fclose(FILE* __fp)
