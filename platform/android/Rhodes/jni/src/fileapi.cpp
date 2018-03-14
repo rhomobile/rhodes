@@ -944,46 +944,6 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_needEmulat
     //RHO_LOG("Java_com_rhomobile_rhodes_file_RhoFileApi_needEmulate: need: %d", (int)need);
     return need;
 }
-struct OldSbuf {
-        unsigned char   *_base;
-        int             _size;
-};
-typedef struct OldFile {
-        unsigned char *_p;      /* current position in (some) buffer */
-        int     _r;             /* read space left for getc() */
-        int     _w;             /* write space left for putc() */
-        short   _flags;         /* flags, below; this FILE is free if 0 */
-        short   _file;          /* fileno, if Unix descriptor, else -1 */
-        struct  OldSbuf _bf;     /* the buffer (at least 1 byte, if !NULL) */
-        int     _lbfsize;       /* 0 or -_bf._size, for inline putc */
-
-        /* operations */
-        void    *_cookie;       /* cookie passed to io functions */
-        int     (*_close)(void *);
-        int     (*_read) (void *, char *, int);
-        fpos_t  (*_seek) (void *, fpos_t, int);
-        int     (*_write)(void *, const char *, int);
-
-        /* separate buffer for long sequences of ungetc() */
-        struct  OldSbuf _ub;     /* ungetc buffer */
-        struct __sFILEX *_extra; /* additions to FILE to not break ABI */
-        int     _ur;            /* saved _r when _r is counting ungetc data */
-
-        /* tricks to meet minimum requirements even when malloc() fails */
-        unsigned char _ubuf[3]; /* guarantee an ungetc() buffer */
-        unsigned char _nbuf[1]; /* guarantee a getc() buffer */
-
-        /* separate buffer for fgetln() when line crosses buffer boundary */
-        struct  OldSbuf _lb;     /* buffer for fgetln() */
-
-        /* Unix stdio files get aligned to block boundaries on fseek() */
-        int     _blksize;       /* stat.st_blksize (may be != _bf._size) */
-        fpos_t  _offset;        /* current lseek offset (see WARNING) */
-} OldFile;
-
-OldFile * getOldFile(FILE * fp){
-    return (OldFile *)fp;
-}
 
 RHO_GLOBAL int open(const char *path, int oflag, ...)
 {
@@ -1921,22 +1881,17 @@ RHO_GLOBAL int unlink(const char *path)
     errno = EPERM;
     return -1;
 }
-
-#define	__SAPP	0x0100		/* fdopen()ed in append mode */
-#define	__SOFF	0x1000		/* set iff _offset is in fact correct */
-
-/*static int __sread(void *cookie, char *buf, int n)
+/*
+static int __sread(void *cookie, char *buf, int n)
 {
     RHO_LOG("__sread: %p", cookie);
 
     //scoped_lock_t guard(rho_file_mtx);
 
-    OldFile *fp = getOldFile((FILE*)cookie);
+    FILE *fp = (FILE*)cookie;
     int ret;
 
-    //ret = read(fp->_file, buf, n);
-    ret = fread(buf, 1, n, (FILE *)cookie);
-
+    ret = read(fp->_file, buf, n);
     if (ret >= 0)
         fp->_offset += ret;
     else
@@ -1950,13 +1905,12 @@ static int __swrite(void *cookie, const char *buf, int n)
 
     //scoped_lock_t guard(rho_file_mtx);
 
-    OldFile *fp = getOldFile((FILE*)cookie);
+    FILE *fp = (FILE*)cookie;
 
     if (fp->_flags & __SAPP)
         lseek(fp->_file, (off_t)0, SEEK_END);
     fp->_flags &= ~__SOFF;
-    //return write(fp->_file, buf, n);
-    return fwrite(buf, 1, n, (FILE*)cookie);
+    return write(fp->_file, buf, n);
 }
 
 static fpos_t __sseek(void *cookie, fpos_t offset, int whence)
@@ -1965,7 +1919,7 @@ static fpos_t __sseek(void *cookie, fpos_t offset, int whence)
 
     //scoped_lock_t guard(rho_file_mtx);
 
-    OldFile *fp = getOldFile((FILE*)cookie);
+    FILE *fp = (FILE*)cookie;
     off_t ret = lseek(fp->_file, (off_t)offset, whence);
     if (ret == (off_t)-1)
         fp->_flags &= ~__SOFF;
@@ -1980,10 +1934,9 @@ static fpos_t __sseek(void *cookie, fpos_t offset, int whence)
 static int __sclose(void *cookie)
 {
     RHO_LOG("__sclose: %p", cookie);
-    //return close((getOldFile((FILE *)cookie))->_file);
-    return fclose((FILE *)cookie);
-}*/
-
+    return close(((FILE *)cookie)->_file);
+}
+*/
 RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 {
     int flags, oflags;
@@ -1992,14 +1945,7 @@ RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
     RHO_LOG("fopen: %s (%s)", path, mode);
 
     if ((flags = __sflags(mode, &oflags)) == 0) return NULL;
-    //if((fp = __sfp()) == 0) return NULL;
     fp = real_fopen(path, mode);
-    //int fd = open(path, oflags, DEFFILEMODE);
-    
-    
-    OldFile * oldFp = getOldFile(fp);
-
-    RHO_LOG("fopen: %s (%s): fd: %d", path, mode, oldFp->_file);
 
     // Do seek at our level as well even though oflags passed to open
     if (oflags & O_APPEND)
@@ -2011,37 +1957,41 @@ RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 
 size_t fread(void* __buf, size_t __size, size_t __count, FILE* __fp)
 {
-    if (rho_fs_mode == RHO_FS_DISK_ONLY || getOldFile(__fp)->_file < RHO_FD_BASE)
+    int fd = fileno(__fp);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_fread(__buf, __size, __count, __fp);
-    return read(getOldFile(__fp)->_file,__buf,__size*__count);
+    return read(fd,__buf,__size*__count);
 }
 
 size_t fwrite(const void* __buf, size_t __size, size_t __count, FILE* __fp)
 {
-    if (rho_fs_mode == RHO_FS_DISK_ONLY || getOldFile(__fp)->_file < RHO_FD_BASE)
+    int fd = fileno(__fp);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_fwrite(__buf, __size, __count, __fp);
-    return write(getOldFile(__fp)->_file,__buf,__size*__count);
+    return write(fd,__buf,__size*__count);
 }
 
 int fseek(FILE* __fp, long __offset, int __whence)
 {
-    if (rho_fs_mode == RHO_FS_DISK_ONLY || getOldFile(__fp)->_file < RHO_FD_BASE)
+    int fd = fileno(__fp);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_fseek(__fp, __offset, __whence);
-    return lseek(getOldFile(__fp)->_file, __offset, __whence);
+    return lseek(fd, __offset, __whence);
 }
 
 long ftell(FILE* __fp)
 {
-    //if (rho_fs_mode == RHO_FS_DISK_ONLY || getOldFile(__fp)->_file < RHO_FD_BASE)
+    //if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
     return real_ftell(__fp);
-   // return tell(getOldFile(__fp)->_file);
+   // return tell(fd);
 }
 
 int fclose(FILE* __fp)
 {
-    if (rho_fs_mode == RHO_FS_DISK_ONLY || getOldFile(__fp)->_file < RHO_FD_BASE)
+    int fd = fileno(__fp);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
         return real_fclose(__fp);
-    return close(getOldFile(__fp)->_file);
+    return close(fd);
 }
 
 RHO_GLOBAL int select(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct timeval *tv)
