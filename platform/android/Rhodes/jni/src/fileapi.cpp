@@ -33,6 +33,7 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
+
 #include <cstring>
 #include <algorithm>
 
@@ -169,12 +170,6 @@ static func_sfp_t __sfp;
 // int pipe2(int pipefd[2], int flags);
 
 // int pipe(int pipefd[2]);
-
-
-
-
-
-
 
 
 typedef int (*func_access_t)(const char *path, int mode);
@@ -1937,6 +1932,34 @@ static int __sclose(void *cookie)
     return close(((FILE *)cookie)->_file);
 }
 */
+
+
+static int android_read(void* cookie, char* buf, int size) {
+    return AAsset_read((AAsset*)cookie, buf, size);
+}
+
+static int android_write(void* cookie, const char* buf, int size) {
+    return EACCES; // can't provide write access to the apk
+}
+
+static fpos_t android_seek(void* cookie, fpos_t offset, int whence) {
+    return AAsset_seek((AAsset*)cookie, offset, whence);
+}
+
+static int android_close(void* cookie) {
+    AAsset_close((AAsset*)cookie);
+    return 0;
+}
+
+FILE* android_fopen(const char* fname, const char* mode) {
+    if(mode[0] == 'w') return NULL;
+
+    AAsset* asset = AAssetManager_open(pAssetManager, fname, 0);
+    if(!asset) return NULL;
+
+    return funopen(asset, android_read, android_write, android_seek, android_close);
+}
+
 RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 {
     int flags, oflags;
@@ -1945,8 +1968,19 @@ RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
     RHO_LOG("fopen: %s (%s)", path, mode);
 
     if ((flags = __sflags(mode, &oflags)) == 0) return NULL;
+    rho::String relpath = make_rel_path(make_full_path(path));
     fp = real_fopen(path, mode);
 
+    if (fp == NULL) {
+        fp = real_fopen(relpath.c_str(), mode);
+    }
+
+    if (fp == NULL){
+        fp = android_fopen(path, mode);
+        if (fp == NULL){
+            fp = android_fopen(relpath.c_str(), mode);
+        }
+    }
     // Do seek at our level as well even though oflags passed to open
     if (oflags & O_APPEND)
         fseek(fp, (fpos_t)0, SEEK_END);
