@@ -8,31 +8,8 @@
 	<string>Bremen</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
-	<key>CFBundleIconFile</key>
-	<string>icon72.png</string>
-	<key>CFBundleIconFiles</key>
-	<array>
-		<string>icon144</string>
-		<string>icon72</string>
-		<string>icon114</string>
-		<string>icon57</string>
-		<string>icon120</string>
-		<string>icon60</string>
-		<string>icon76</string>
-		<string>icon152</string>
-		<string>icon180</string>
-	</array>
-	<key>CFBundleIconFiles~ipad</key>
-	<array>
-		<string>icon152</string>
-		<string>icon76</string>
-		<string>icon144</string>
-		<string>icon72</string>
-		<string>icon120</string>
-		<string>icon57</string>
-		<string>icon114</string>
-		<string>icon180</string>
-	</array>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.test.bremen</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -62,74 +39,6 @@
 	<true/>
 	<key>UIApplicationExitsOnSuspend</key>
 	<false/>
-	<key>UILaunchImageFile</key>
-	<string>Default</string>
-	<key>UILaunchImages</key>
-	<array>
-    		<dict>
-        		<key>UILaunchImageMinimumOSVersion</key>
-        		<string>8.0</string>
-        		<key>UILaunchImageName</key>
-        		<string>Default-568h</string>
-        		<key>UILaunchImageOrientation</key>
-        		<string>Portrait</string>
-        		<key>UILaunchImageSize</key>
-        		<string>{320, 568}</string>
-    		</dict>
-    		<dict>
-        		<key>UILaunchImageMinimumOSVersion</key>
-        		<string>8.0</string>
-        		<key>UILaunchImageName</key>
-        		<string>Default-667h</string>
-        		<key>UILaunchImageOrientation</key>
-        		<string>Portrait</string>
-        		<key>UILaunchImageSize</key>
-        		<string>{375, 667}</string>
-    		</dict>
-    		<dict>
-        		<key>UILaunchImageMinimumOSVersion</key>
-        		<string>8.0</string>
-        		<key>UILaunchImageName</key>
-        		<string>Default-736h</string>
-        		<key>UILaunchImageOrientation</key>
-        		<string>Portrait</string>
-        		<key>UILaunchImageSize</key>
-        		<string>{414, 736}</string>
-    		</dict>
-			<dict>
-        		<key>UILaunchImageMinimumOSVersion</key>
-        		<string>11.0</string>
-        		<key>UILaunchImageName</key>
-        		<string>Default-812h</string>
-        		<key>UILaunchImageOrientation</key>
-        		<string>Portrait</string>
-        		<key>UILaunchImageSize</key>
-        		<string>{375, 812}</string>
-    		</dict>
-	</array>
-	<key>UILaunchImages~ipad</key>
-	<array>
-		<dict>
-			<key>UILaunchImageMinimumOSVersion</key>
-			<string>7.0</string>
-			<key>UILaunchImageName</key>
-			<string>Default-Landscape</string>
-			<key>UILaunchImageOrientation</key>
-			<string>Landscape</string>
-			<key>UILaunchImageSize</key>
-			<string>{768, 1024}</string>
-		</dict>
-		<dict>
-			<key>UILaunchImageMinimumOSVersion</key>
-			<string>7.0</string>
-			<key>UILaunchImageName</key>
-			<string>Default-Portrait</string>
-			<key>UILaunchImageOrientation</key>
-			<string>Portrait</string>
-			<key>UILaunchImageSize</key>
-			<string>{768, 1024}</string>
-		</dict>
-	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

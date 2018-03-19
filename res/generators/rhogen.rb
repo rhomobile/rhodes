@@ -724,6 +724,14 @@ module Rhogen
       end
     end
 
+    directory :assets do |directory|
+      directory.source = 'Media.xcassets'
+      directory.destination = 'project/iphone/Media.xcassets'
+      if File.exists?(directory.destination)
+        directory.destination = 'project/iphone/toremoved'
+      end
+    end
+
     #directory :settings do |directory|
     #  #@options[:force] = true
     #  directory.source = 'Settings.bundle'
