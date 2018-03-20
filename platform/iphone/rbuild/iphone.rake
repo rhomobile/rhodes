@@ -31,6 +31,8 @@ require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 $out_file_buf_enable = false
 $out_file_buf_path = 'rhobuildlog.txt'
 $out_file_buf = []
+APPLE_PUSH = 0
+FCM_PUSH = 1
 
 puts 'iphone.rake execute' if USE_TRACES
 puts 'ENV["RHO_BUNDLE_BUILD_LOG_FILE"] = '+ENV["RHO_BUNDLE_BUILD_LOG_FILE"].to_s if USE_TRACES
@@ -717,7 +719,6 @@ def set_default_images(make_bak, plist_hash)
   remove_lines_from_xcode_project(images_to_remove)
 end
 
-
 def update_xcode_project_files_by_capabilities
     info_plist = $app_path + "/project/iphone/Info.plist"
     dev_ent = $app_path + "/project/iphone/rhorunner_development.entitlements"
@@ -726,6 +727,16 @@ def update_xcode_project_files_by_capabilities
     hash_info_plist = load_plist(info_plist)
     hash_dev_ent = load_plist(dev_ent)
     hash_prd_ent = load_plist(prd_ent)
+
+    #if($push_type == FCM_PUSH)
+      #framework_src = File.join($startdir, 'lib', 'extensions', 'fcm-push', 'ext', 'iphone', 'Frameworks')
+      #firebase_h_src = File.join($startdir, 'platform', 'iphone', 'Firebase.h')
+      #googleservice_plist_src = File.join($startdir, 'platform', 'iphone', 'GoogleService-Info.plist')
+      #framework_dst = File.join($app_path, 'project', 'iphone')
+      #cp_r framework_src, framework_dst
+      #cp_r firebase_h_src, framework_dst
+      #cp_r googleservice_plist_src, framework_dst
+    #end
 
     #bluetooth
     bt_capability = false
@@ -955,8 +966,20 @@ namespace "config" do
 
   namespace "iphone" do
     task :app_config do
+      
+      if $app_config['extensions'].index('fcm-push') || 
+        (!$app_config['iphone'].nil? && $app_config['iphone']['extensions'].index('fcm-push') )
+        $push_type = FCM_PUSH
+        puts 'Its fcm push'
+      elsif $app_config['extensions'].index('applePush') || 
+        (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].index('applePush') )
+        $push_type = APPLE_PUSH
+        puts 'Its apple push'
+      end
+
       if $app_config['capabilities'].index('push')
-        $app_config['extensions'] << 'applePush' unless $app_config['extensions'].index('applePush')
+        $app_config['extensions'] << 'applePush' if ($push_type == APPLE_PUSH)
+        #$app_config['extensions'] << 'fcm-push' if ($push_type == FCM_PUSH)
       end
 
       $file_map_name = "rhofilelist.txt"
@@ -1703,6 +1726,8 @@ namespace "build" do
       ENV["XCODEBUILD"] = $xcodebuild
       ENV["CONFIGURATION"] ||= $configuration
 
+      ENV["RHO_APP_DIR"] = $app_path
+
 
 
       build_script = File.join(extpath, 'build')
@@ -2186,7 +2211,6 @@ namespace "build" do
       #cp properties_src, properties_dst
       Jake.copyIfNeeded properties_src, properties_dst
 
-
       # old code for use prebuild libraries:
 
       #copy libCoreAPI.a and Rhodes.a
@@ -2264,7 +2288,7 @@ namespace "build" do
               rm_rf File.join('project','iphone','toremoved')
               rm_rf File.join('project','iphone','toremovef')
             end
-
+            
             update_xcode_project_files_by_capabilities
 
         else
