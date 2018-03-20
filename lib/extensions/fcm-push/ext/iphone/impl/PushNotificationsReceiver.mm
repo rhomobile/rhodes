@@ -48,12 +48,13 @@ static PushNotificationsReceiver *instance = nil;
     free(szpin);
 }
 
-//- (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
-//    NSLog(@"FCM registration token: %@", fcmToken);
-    
-    // TODO: If necessary send token to application server.
-    // Note: This callback is fired at each app startup and whenever a new token is generated.
-//}
+- (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
+    NSLog(@"FCM registration token: %@", fcmToken);
+}
+
+- (void)messaging:(FIRMessaging *)messaging didReceiveMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+    NSLog(@"FCM Received data message: %@", remoteMessage.appData);
+}
 
 - (void) onPushRegistrationFailed:(NSError *)error
 {
