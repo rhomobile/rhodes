@@ -582,6 +582,9 @@ def set_app_icon
           appicon = appicon_new
       end
       if File.exists? appicon
+          if File.exists? ipath
+            rm_f ipath
+          end
          cp appicon, ipath
       else
          #puts "WARNING: application should have next icon file : "+ name + '.png !!!'
@@ -649,11 +652,11 @@ def set_default_images(make_bak, plist_hash)
          appimage =  resourcesiamge
       end
 
-      if File.exists? imag
-        rm_f imag
-      end
       #bundlei = File.join($srcdir, defname + '.png')
       if File.exist? appimage
+          if File.exists? imag
+            rm_f imag
+          end
         cp appimage, imag
       else
           BuildOutput.warning("Can not found next default file : "+ name + ' , Use default Rhodes image !!!' )
