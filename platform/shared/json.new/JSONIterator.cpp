@@ -384,7 +384,7 @@ uint64 CJSONEntry::getUInt64(const char* name)
     uint64 nRes = 0;
     struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
     if ( obj != 0 )
-        nRes = (uint64)json_object_get_int(obj);
+        nRes = (uint64)json_object_get_int64(obj);
 
     return nRes;
 }
