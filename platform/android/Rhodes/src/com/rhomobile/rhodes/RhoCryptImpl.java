@@ -60,7 +60,7 @@ public class RhoCryptImpl
         {
             
             m_dbKeyData = Base64.decode(strOldKey);//, Base64.DEFAULT);
-            m_nKeyLenBit = m_dbKeyData.length;
+            m_nKeyLenBit = m_dbKeyData.length * 8;
             Logger.I(TAG, "Key is successfully read from Shared Preferences");
             if(DEBUG) {
                 Logger.I(TAG, "Key: " + dumpKey(m_dbKeyData));
