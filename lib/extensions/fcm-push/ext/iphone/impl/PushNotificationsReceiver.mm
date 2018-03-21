@@ -1,14 +1,14 @@
 //
 //  PushNotificationsListener.m
-//  ApplePush
+//  fcm-push
 //
-//  Created by Alex Epifanoff on 01.07.13.
+//  Created by Alexei Shishkin on 21.03.18.
 //
 //
 
 #import "PushNotificationsReceiver.h"
 #include "Push.h"
-#import "Firebase.h"
+#import "Rhodes.h"
 
 @implementation PushNotificationsReceiver
 
@@ -20,9 +20,13 @@ static PushNotificationsReceiver *instance = nil;
         instance = [[PushNotificationsReceiver alloc] init];
     }
 
-    [FIRApp configure];
-    [FIRMessaging messaging].delegate = self;
-    [FIRMessaging messaging].shouldEstablishDirectChannel = true;
+    instance->isDirectMessage = false;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+       [FIRApp configure];
+       [FIRMessaging messaging].delegate = instance;
+       [FIRMessaging messaging].shouldEstablishDirectChannel = true;
+    });
     
     return instance;
 }
@@ -30,31 +34,45 @@ static PushNotificationsReceiver *instance = nil;
 
 - (void) onPushRegistrationSucceed:(NSData *)deviceToken
 {
-    NSLog(@"Device token is %@", deviceToken);
+    NSLog(@"Apple device token is %@", deviceToken);
 
-    [FIRMessaging messaging].APNSToken = deviceToken;
+    dispatch_async(dispatch_get_main_queue(), ^{
+       [FIRMessaging messaging].APNSToken = deviceToken;
+    });
      
-    NSMutableString *stringBuffer = [NSMutableString stringWithCapacity:([deviceToken length] * 2)];
-    const unsigned char *dataBuffer = (const unsigned char*)[deviceToken bytes];
-    for (int i = 0; i < [deviceToken length]; ++i) {
-        [stringBuffer appendFormat:@"%02x", (unsigned int)dataBuffer[ i ]];
-    }
+    //NSMutableString *stringBuffer = [NSMutableString stringWithCapacity:([deviceToken length] * 2)];
+    //const unsigned char *dataBuffer = (const unsigned char*)[deviceToken bytes];
+    //for (int i = 0; i < [deviceToken length]; ++i) {
+    //    [stringBuffer appendFormat:@"%02x", (unsigned int)dataBuffer[ i ]];
+    //}
     
-    char* szpin = strdup([stringBuffer cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-    RAWLOG_INFO1("device pin: %s\n", szpin);
+    //char* szpin = strdup([stringBuffer cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    //RAWLOG_INFO1("device pin: %s\n", szpin);
     
+    //rho::push::CPushManager::getInstance()->setDeviceId("google",szpin);
+    
+    //free(szpin);
+}
+
+- (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
+    NSLog(@"FCM registration token: %@", fcmToken);
+
+    char* szpin = strdup([fcmToken cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+    RAWLOG_INFO1("device fcm pin: %s\n", szpin);
     rho::push::CPushManager::getInstance()->setDeviceId("google",szpin);
     
     free(szpin);
 }
 
-- (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
-    NSLog(@"FCM registration token: %@", fcmToken);
+- (void)messaging:(FIRMessaging *)messaging didReceiveMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+    isDirectMessage = true;
+    NSLog(@"FCM Received direct message: %@", remoteMessage.appData);
+    [self onPushMessageReceived:remoteMessage.appData];
 }
 
-- (void)messaging:(FIRMessaging *)messaging didReceiveMessage:(FIRMessagingRemoteMessage *)remoteMessage {
-    NSLog(@"FCM Received data message: %@", remoteMessage.appData);
-}
+//- (void)messaging:(FIRMessaging *)messaging didRefreshRegistrationToken:(NSString *)fcmToken {
+//    NSLog(@"FCM refresh token: %@", fcmToken);
+//}
 
 - (void) onPushRegistrationFailed:(NSError *)error
 {
@@ -153,7 +171,7 @@ static PushNotificationsReceiver *instance = nil;
 
 - (void) onPushMessageReceived:(NSDictionary *)userInfo
 {
-    //[[FIRMessaging messaging] appDidReceiveMessage:userInfo];
+    [[FIRMessaging messaging] appDidReceiveMessage:userInfo];
     NSMutableString* json = [[NSMutableString alloc] init];
     NSDictionary* processedMessage = [PushNotificationsReceiver ansMessageToRhodesMessage:userInfo];
     
@@ -164,8 +182,5 @@ static PushNotificationsReceiver *instance = nil;
     [processedMessage dealloc];
     [json dealloc];
 }
-
-
-
 
 @end

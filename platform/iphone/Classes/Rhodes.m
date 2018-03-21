@@ -1156,9 +1156,6 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 
 #ifdef APP_BUILD_CAPABILITY_PUSH
-    //[FIRApp configure];
-    //[FIRMessaging messaging].delegate = self;
-    //[FIRMessaging messaging].shouldEstablishDirectChannel = true;
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
         // iOS 7.1 or earlier. Disable the deprecation warnings.
 #pragma clang diagnostic push
@@ -1255,16 +1252,6 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
     NSDictionary *userInfo = notification.request.content.userInfo;
     
-    // With swizzling disabled you must let Messaging know about the message, for Analytics
-    //[[FIRMessaging messaging] appDidReceiveMessage:userInfo];
-    
-    // Print message ID.
-    if (userInfo[kGCMMessageIDKey]) {
-        NSLog(@"Message ID: %@", userInfo[kGCMMessageIDKey]);
-    }
-    
-    // Print full message.
-    NSLog(@"Full message: %@", userInfo);
     [self processPushMessage:userInfo];
     
     // Change this to your preferred presentation option
@@ -1327,7 +1314,6 @@ withCompletionHandler:(void(^)())completionHandler {
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     NSLog(@"PUSH My token is: %@", deviceToken);
-    //[FIRMessaging messaging].APNSToken = deviceToken;
     //RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH My token is: %@", deviceToken] UTF8String]);
     if ( pushReceiver != nil ) {
         [pushReceiver onPushRegistrationSucceed:deviceToken];
@@ -1352,7 +1338,6 @@ withCompletionHandler:(void(^)())completionHandler {
 -(void) processPushMessage:(NSDictionary*)userInfo {
     NSLog(@"PUSH Received notification: %@", userInfo);
     //RAWLOG_INFO1([[NSString stringWithFormat:@"PUSH Received notification: %@", userInfo] UTF8String]);
-    //[[FIRMessaging messaging] appDidReceiveMessage:userInfo];
     if ( pushReceiver != nil ) {
         [pushReceiver onPushMessageReceived:userInfo];
     }
