@@ -39,19 +39,6 @@ static PushNotificationsReceiver *instance = nil;
     dispatch_async(dispatch_get_main_queue(), ^{
        [FIRMessaging messaging].APNSToken = deviceToken;
     });
-     
-    //NSMutableString *stringBuffer = [NSMutableString stringWithCapacity:([deviceToken length] * 2)];
-    //const unsigned char *dataBuffer = (const unsigned char*)[deviceToken bytes];
-    //for (int i = 0; i < [deviceToken length]; ++i) {
-    //    [stringBuffer appendFormat:@"%02x", (unsigned int)dataBuffer[ i ]];
-    //}
-    
-    //char* szpin = strdup([stringBuffer cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-    //RAWLOG_INFO1("device pin: %s\n", szpin);
-    
-    //rho::push::CPushManager::getInstance()->setDeviceId("google",szpin);
-    
-    //free(szpin);
 }
 
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
@@ -101,6 +88,63 @@ static PushNotificationsReceiver *instance = nil;
         }
     }
     
+    return ret;
+}
+
++ (NSDictionary*)FormalizeMessage:(NSDictionary*)dict
+{
+    NSMutableDictionary* ret = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
+
+    [dict enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {  
+        if([(NSString*)key isEqualToString:@"gcm.message_id"])
+        {
+            [ret setObject:value forKey:@"id"];
+        }
+        else if([(NSString*)key isEqualToString:@"from"])
+        {
+            [ret setObject:value forKey:@"from"];
+        }
+        else if([(NSString*)key isEqualToString:@"notification"])
+        {
+            NSDictionary* notification = value;
+            if([notification isKindOfClass:[NSDictionary class]])
+            {
+                if (id body = notification[@"body"])
+                    [ret setObject:body forKey:@"body"];
+                if(id title = notification[@"title"])
+                    [ret setObject:title forKey:@"title"];
+            }
+        }
+        else if([(NSString*)key isEqualToString:@"aps"])
+        {
+            if([value isKindOfClass:[NSDictionary class]])
+            {
+                NSDictionary* aps = value;
+                if(id alert = aps[@"alert"])
+                {
+                    if([alert isKindOfClass:[NSDictionary class]])
+                    {
+                        if (id body = alert[@"body"])
+                           [ret setObject:body forKey:@"body"];
+                        if(id title = alert[@"title"])
+                           [ret setObject:title forKey:@"title"];
+                    }
+                }
+            }
+        }
+        else
+        {
+            [data setObject:value forKey:key];
+        }
+
+    }];
+
+    NSDictionary* data_copy = [[data copy] autorelease];
+    [ret setObject:data_copy forKey:@"data"];
+
+    [data dealloc];
+
     return ret;
 }
 
@@ -173,8 +217,8 @@ static PushNotificationsReceiver *instance = nil;
 {
     [[FIRMessaging messaging] appDidReceiveMessage:userInfo];
     NSMutableString* json = [[NSMutableString alloc] init];
-    NSDictionary* processedMessage = [PushNotificationsReceiver ansMessageToRhodesMessage:userInfo];
-    
+
+    NSDictionary* processedMessage = [PushNotificationsReceiver FormalizeMessage:userInfo];
     json = [PushNotificationsReceiver dictToJSON:processedMessage context:json];
     
     rho::push::CPushManager::getInstance()->callBack("google", [json UTF8String]);
