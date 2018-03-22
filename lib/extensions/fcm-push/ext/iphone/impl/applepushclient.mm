@@ -76,7 +76,7 @@ void ApplePushClient::doUnregister()
 
 }
 //----------------------------------------------------------------------------------------------------------------------
-const String ApplePushClient::s_Type = "google";
+const String ApplePushClient::s_Type = "fcm";
 
 ApplePushClient::ApplePushClient()
 {

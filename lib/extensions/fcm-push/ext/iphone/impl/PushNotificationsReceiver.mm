@@ -46,7 +46,7 @@ static PushNotificationsReceiver *instance = nil;
 
     char* szpin = strdup([fcmToken cStringUsingEncoding:[NSString defaultCStringEncoding]]);
     RAWLOG_INFO1("device fcm pin: %s\n", szpin);
-    rho::push::CPushManager::getInstance()->setDeviceId("google",szpin);
+    rho::push::CPushManager::getInstance()->setDeviceId("fcm",szpin);
     
     free(szpin);
 }
@@ -221,7 +221,7 @@ static PushNotificationsReceiver *instance = nil;
     NSDictionary* processedMessage = [PushNotificationsReceiver FormalizeMessage:userInfo];
     json = [PushNotificationsReceiver dictToJSON:processedMessage context:json];
     
-    rho::push::CPushManager::getInstance()->callBack("google", [json UTF8String]);
+    rho::push::CPushManager::getInstance()->callBack("fcm", [json UTF8String]);
     
     [processedMessage dealloc];
     [json dealloc];

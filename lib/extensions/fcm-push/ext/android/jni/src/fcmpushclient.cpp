@@ -36,14 +36,14 @@
 #include "fcmpushclient.h"
 
 //----------------------------------------------------------------------------------------------------------------------
-extern "C" void Init_FCMPushClient()
+extern "C" void Init_FCMPush_extension()
 {
     // create FCM push client
-    RAWTRACEC("Init_FCMPushClient", "creating FCM client >>>>>>>>>>>>>>");
+    RAWTRACEC("Init_FCMPush_extension", "creating FCM client >>>>>>>>>>>>>>");
 
     rho::fcm::FcmPushClient* pClient = new rho::fcm::FcmPushClient();
 
-    RAWTRACEC("Init_FCMPushClient", "adding FCM client >>>>>>>>>>>>>>>>");
+    RAWTRACEC("Init_FCMPush_extension", "adding FCM client >>>>>>>>>>>>>>>>");
 
     rho::push::CPushManager::getInstance()->addClient(pClient);
 }
