@@ -33,6 +33,7 @@ $out_file_buf_path = 'rhobuildlog.txt'
 $out_file_buf = []
 APPLE_PUSH = 0
 FCM_PUSH = 1
+UNKNOWN_PUSH = -1
 
 puts 'iphone.rake execute' if USE_TRACES
 puts 'ENV["RHO_BUNDLE_BUILD_LOG_FILE"] = '+ENV["RHO_BUNDLE_BUILD_LOG_FILE"].to_s if USE_TRACES
@@ -975,11 +976,9 @@ namespace "config" do
         (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].index('applePush') )
         $push_type = APPLE_PUSH
         puts 'Its apple push'
-      end
-
-      if $app_config['capabilities'].index('push')
-        $app_config['extensions'] << 'applePush' if ($push_type == APPLE_PUSH)
-        #$app_config['extensions'] << 'fcm-push' if ($push_type == FCM_PUSH)
+      elsif $app_config['capabilities'].index('push')
+        $app_config['extensions'] << 'applePush'
+        $push_type = APPLE_PUSH
       end
 
       $file_map_name = "rhofilelist.txt"
