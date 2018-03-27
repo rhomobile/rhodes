@@ -164,7 +164,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <RETURN type="STRING"/>
             </METHOD>
             <METHOD name="quit">
-                <DESC>Quit the application. Quitting the application while license screen is shown will be slightly delayed.</DESC>
+                <DESC>Quit the application.</DESC>
             </METHOD>
             <METHOD name="minimize">
                 <DESC>Minimize or move the application to background. When running in RhoSimulator this method is supported only for Windows OS.</DESC>

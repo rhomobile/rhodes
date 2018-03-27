@@ -1,6 +1,6 @@
 <?xml version = "1.0"?>
 <API>
-	<MODULE name="Device" parent="Rho" license="Required">
+	<MODULE name="Device" parent="Rho">
         <HELP_OVERVIEW>The Device API provides access to some device level functionality that is only available on Symbol devices such as suspend, calibrate, powerOff, wake, reboot etc.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API
