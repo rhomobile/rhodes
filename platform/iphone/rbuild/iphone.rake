@@ -833,6 +833,61 @@ def update_xcode_project_files_by_capabilities
         remove_lines_from_xcode_project(['com.apple.Push = {enabled = 1;};'])
     end
 
+    if $push_type == APPLE_PUSH || !push_capability
+      lines_to_delete = []
+      lines_to_delete << 'AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */; };'
+      lines_to_delete << 'AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */; };'
+      lines_to_delete << 'AC1F5D6120615B6C00B818B8 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */; };'
+      lines_to_delete << 'AC1F5D6220615B6C00B818B8 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */; };'
+      lines_to_delete << 'AC1F5D6320615B6C00B818B8 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */; };'
+      lines_to_delete << 'AC1F5D6420615B6C00B818B8 /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */; };'
+      lines_to_delete << 'AC1F5D6520615B6C00B818B8 /* FirebaseNanoPB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */; };'
+      lines_to_delete << 'AC1F5D6620615B6C00B818B8 /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */; };'
+      lines_to_delete << 'AC1F5D6720615B6C00B818B8 /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5E20615B6C00B818B8 /* nanopb.framework */; };'
+      lines_to_delete << 'AC1F5D6920615B8E00B818B8 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D6820615B8600B818B8 /* StoreKit.framework */; };'
+      lines_to_delete << 'ACB0C9CB2058111F00A7F5E0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */; };'
+
+      lines_to_delete << 'AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleToolboxForMac.framework; path = Frameworks/GoogleToolboxForMac.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMessaging.framework; path = Frameworks/FirebaseMessaging.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseNanoPB.framework; path = Frameworks/FirebaseNanoPB.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5E20615B6C00B818B8 /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Frameworks/nanopb.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D6820615B8600B818B8 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };'
+      lines_to_delete << 'ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };'
+
+      lines_to_delete << 'AC1F5D6920615B8E00B818B8 /* StoreKit.framework */,'
+      lines_to_delete << 'AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework */,'
+      lines_to_delete << 'AC1F5D6120615B6C00B818B8 /* FirebaseCore.framework */,'
+      lines_to_delete << 'AC1F5D6220615B6C00B818B8 /* FirebaseCoreDiagnostics.framework */,'
+      lines_to_delete << 'AC1F5D6320615B6C00B818B8 /* FirebaseInstanceID.framework */,'
+      lines_to_delete << 'AC1F5D6420615B6C00B818B8 /* FirebaseMessaging.framework */,'
+      lines_to_delete << 'AC1F5D6520615B6C00B818B8 /* FirebaseNanoPB.framework */,'
+      lines_to_delete << 'AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework */,'
+      lines_to_delete << 'AC1F5D6720615B6C00B818B8 /* nanopb.framework */,'
+      lines_to_delete << 'AC1F5D6620615B6C00B818B8 /* Protobuf.framework */,'
+
+      lines_to_delete << 'ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */,'
+
+      lines_to_delete << 'AC1F5D6820615B8600B818B8 /* StoreKit.framework */,'
+      lines_to_delete << 'AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */,'
+      lines_to_delete << 'AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */,'
+      lines_to_delete << 'AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */,'
+      lines_to_delete << 'AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */,'
+      lines_to_delete << 'AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */,'
+      lines_to_delete << 'AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */,'
+      lines_to_delete << 'AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */,'
+      lines_to_delete << 'AC1F5D5E20615B6C00B818B8 /* nanopb.framework */,'
+      lines_to_delete << 'AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */,'
+
+      lines_to_delete << 'ACB0C9CB2058111F00A7F5E0 /* GoogleService-Info.plist in Resources */,'
+
+      remove_lines_from_xcode_project(lines_to_delete)
+    end
+
     #keychain access
     enable_keychain = false
     if $app_config['capabilities'] != nil
@@ -969,11 +1024,13 @@ namespace "config" do
     task :app_config do
       
       if $app_config['extensions'].index('fcm-push') || 
-        (!$app_config['iphone'].nil? && $app_config['iphone']['extensions'].index('fcm-push') )
+        (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].nil? && 
+          $app_config['iphone']['extensions'].index('fcm-push') )
         $push_type = FCM_PUSH
         puts 'Its fcm push'
       elsif $app_config['extensions'].index('applePush') || 
-        (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].index('applePush') )
+        (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].nil? &&
+          !$app_config['iphone']['extensions'].index('applePush') )
         $push_type = APPLE_PUSH
         puts 'Its apple push'
       elsif $app_config['capabilities'].index('push')
