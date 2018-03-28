@@ -462,8 +462,15 @@ CJSONEntry CJSONEntry::getEntry(const char* name) const
 //return size of UTF char ( 2,3,4 ) or 0 for invalid char
 static inline int isValidUTF8Sequence( const char* p, int maxLen )
 {
-    if ( maxLen > 4 ) {
-        maxLen = 4;
+//JNI would crash on 4bytes UTF
+#ifdef OS_ANDROID
+    static const int cMaxUtfSize = 3;
+#else
+    static const int cMaxUtfSize = 4;
+#endif
+
+    if ( maxLen > cMaxUtfSize ) {
+        maxLen = cMaxUtfSize;
     }
 
     int expectedLen = 0;
@@ -471,9 +478,12 @@ static inline int isValidUTF8Sequence( const char* p, int maxLen )
 
     //determine sequence length from first char
     //11110xxx = 4, 1110xxxx = 3, 110xxxxx = 2, treat 1-byte UTF as invalid
+#ifndef OS_ANDROID
     if ( (c&0xF8)==0xF0 ) {
         expectedLen = 4;
-    } else if ( (c&0xF0)==0xE0) {
+    } else 
+#endif //OS_ANDROID
+    if ( (c&0xF0)==0xE0) {
         expectedLen = 3;
     } else if ( (c&0xE0)==0xC0) {
         expectedLen = 2;
@@ -481,7 +491,9 @@ static inline int isValidUTF8Sequence( const char* p, int maxLen )
 
     //no breaks here is intentional. Check rest bytes in sequence for valid mask: 10xxxxxx.
     switch(expectedLen) {
+#ifndef OS_ANDROID
         case 4: if ((p[3]&0xC0)!=0x80) return 0;
+#endif
         case 3: if ((p[2]&0xC0)!=0x80) return 0;
         case 2: if ((p[1]&0xC0)!=0x80) return 0;
     }
