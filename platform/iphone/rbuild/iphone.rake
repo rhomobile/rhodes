@@ -655,6 +655,8 @@ def set_default_images(make_bak, plist_hash)
     contents_json = JSON.parse(File.read(contents_json_fname))
     contents_json_was_changed = false
 
+    launch_image_is_valid = false
+
     LOADINGIMAGES.each do |name|
       oldname = name.sub('Default', 'loading')
       imag = File.join(ipath, name)
@@ -681,6 +683,12 @@ def set_default_images(make_bak, plist_hash)
           #end
         puts "$$$ appimage = "+appimage
         cp appimage, imag
+
+        if name != "Default.png"
+            # should be not just Default.png
+            launch_image_is_valid = true
+        end
+
       else
           puts "$$$ NO appimage = "+appimage
           images = contents_json["images"]
@@ -696,6 +704,12 @@ def set_default_images(make_bak, plist_hash)
     if contents_json_was_changed
         content = JSON.generate(contents_json)
         File.open( contents_json_fname, "w"){|file| file.write(content)}
+    end
+
+    if !launch_image_is_valid
+        # we shoud remove LaunchImage from project - app not has launch image
+        BuildOutput.warning("remove LaunchImage from project - because not found any applicable images (old 320x480 is not enough!)")
+        remove_lines_from_xcode_project(["ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;"])
     end
 
   rescue => e
