@@ -44,7 +44,7 @@ import com.rhomobile.rhodes.util.ContextFactory;
 public class RhoCryptImpl 
 {
     private static final String TAG = "RhoCryptJava";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
 	byte[] m_dbKeyData;
 	String m_strDBPartition;
