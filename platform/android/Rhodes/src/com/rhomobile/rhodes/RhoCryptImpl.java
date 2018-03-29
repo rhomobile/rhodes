@@ -44,7 +44,7 @@ import com.rhomobile.rhodes.util.ContextFactory;
 public class RhoCryptImpl 
 {
     private static final String TAG = "RhoCryptJava";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
 	byte[] m_dbKeyData;
 	String m_strDBPartition;
@@ -60,7 +60,7 @@ public class RhoCryptImpl
         {
             
             m_dbKeyData = Base64.decode(strOldKey);//, Base64.DEFAULT);
-            m_nKeyLenBit = m_dbKeyData.length * 8;
+            m_nKeyLenBit = m_dbKeyData.length * 8; // Here we are checking database key length for finding out if it is AES-128 or AES-256
             Logger.I(TAG, "Key is successfully read from Shared Preferences");
             if(DEBUG) {
                 Logger.I(TAG, "Key: " + dumpKey(m_dbKeyData));
