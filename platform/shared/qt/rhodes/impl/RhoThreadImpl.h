@@ -30,8 +30,7 @@
 #include <QThread>
 #include "common/IRhoThreadImpl.h"
 #include "logging/RhoLog.h"
-#include <QMutex>
-#include <QMutexLocker>
+#include <QSharedPointer>
 
 namespace rho{
 namespace common{
@@ -51,18 +50,32 @@ public:
 private:
     void setThreadPriority(IRhoRunnable::EPriority ePriority);
 private:
-    class QRhoThread: public QThread
+    class QtThread: public QThread
     {
     public:
-        QRhoThread(IRhoRunnable* pRunnable): QThread(), m_Runnable(pRunnable) {}
+        QtThread():QThread(){}
+        virtual ~QtThread(){
+            if (isRunning()){
+                quit();
+            }
+            if (isRunning()){
+                terminate();
+            }
+        }
+    };
+
+
+    class QRhoThread: public QtThread
+    {
+    public:
+        QRhoThread(IRhoRunnable* pRunnable): QtThread(), m_Runnable(pRunnable) {}
         void run() { m_Runnable->runObject(); }
-        static void sleep(unsigned long timeout) { QThread::sleep(timeout); }
+        static void sleep(unsigned long timeout) { QtThread::sleep(timeout); }
     private:
         IRhoRunnable* m_Runnable;
     };
     QRhoThread* m_Thread;
-    QThread* m_waitThread;
-    QMutex mutex;
+    QtThread* m_waitThread;
 
     #if defined(OS_WINDOWS_DESKTOP)
         CRITICAL_SECTION gCS;

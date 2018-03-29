@@ -496,7 +496,7 @@ void QtMainWindow::on_menuMain_aboutToShow()
 
 void QtMainWindow::slotNavigate(QString url, int index)
 {
-    QWebEngineView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : webView;
+    QtWebEngineView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : webView;
 
     if (wv) {
         if (url.startsWith("javascript:", Qt::CaseInsensitive)) {
@@ -522,7 +522,7 @@ void QtMainWindow::slotNavigate(QString url, int index)
 
 void QtMainWindow::GoBack(int index)
 {
-    QWebEngineView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : webView;
+    QtWebEngineView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : webView;
     if (wv)
         wv->back();
 }
@@ -534,7 +534,7 @@ void QtMainWindow::GoForward(void)
 
 void QtMainWindow::Refresh(int index)
 {
-    QWebEngineView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : webView;
+    QtWebEngineView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : webView;
     if (wv) {
         if (mainWindowCallback) {
             const QByteArray asc_url = wv->url().toString().toLatin1();
@@ -607,7 +607,7 @@ void QtMainWindow::setUpWebPage(QWebEnginePage *page)
 int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color,
                                QTabBarRuntimeParams& tbrp)
 {
-    QWebEngineView* wv = main_webView;
+    QtWebEngineView* wv = main_webView;
         if (!tbrp["use_current_view_for_tab"].toBool()) {
         // creating web view
         wv = new QtWebEngineView(this);
@@ -643,7 +643,7 @@ void QtMainWindow::tabbarShow()
     tabBar->show();
 }
 
-void QtMainWindow::tabbarConnectWebView(QWebEngineView *webView)
+void QtMainWindow::tabbarConnectWebView(QtWebEngineView *webView)
 {
     if (webView) {
         webView->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX); //->show();
@@ -657,7 +657,7 @@ void QtMainWindow::tabbarConnectWebView(QWebEngineView *webView)
     }
 }
 
-void QtMainWindow::tabbarDisconnectWebView(QWebEngineView* webView)
+void QtMainWindow::tabbarDisconnectWebView(QtWebEngineView* webView)
 {
     if (webView) {
         webView->setMaximumSize(0,0); //->hide();
@@ -979,7 +979,7 @@ void QtMainWindow::executeJavaScriptCommand(TNavigateData* nd)
 {
     if (nd) {
         if (nd->url) {
-            QWebEngineView* wv = (nd->index < tabViews.size()) && (nd->index >= 0) ? tabViews[nd->index] : webView;
+            QtWebEngineView* wv = (nd->index < tabViews.size()) && (nd->index >= 0) ? tabViews[nd->index] : webView;
             if (wv)
                 wv->page()->runJavaScript(QString::fromWCharArray(nd->url));
             free(nd->url);
