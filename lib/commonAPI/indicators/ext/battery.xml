@@ -1,6 +1,6 @@
 <?xml version = "1.0"?>
 <API>
-    <MODULE name="Battery" parent="Rho" license="Required">
+    <MODULE name="Battery" parent="Rho">
         <HELP_OVERVIEW>The Battery API is used to notify the user of the remaining power in the battery. Windows Mobile / CE devices also support displaying a small indicator to show the available power.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API

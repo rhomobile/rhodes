@@ -17,6 +17,17 @@
 		46B007071033776600D0C2F4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46B007061033776600D0C2F4 /* CoreGraphics.framework */; };
 		5C59AB4212DDA22E00ED4A1E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C59AB4112DDA22E00ED4A1E /* Security.framework */; };
 		A81EA26A20228C0600E2F8AD /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A81EA26920228C0600E2F8AD /* Media.xcassets */; };
+		AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */; };
+		AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */; };
+		AC1F5D6120615B6C00B818B8 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */; };
+		AC1F5D6220615B6C00B818B8 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */; };
+		AC1F5D6320615B6C00B818B8 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */; };
+		AC1F5D6420615B6C00B818B8 /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */; };
+		AC1F5D6520615B6C00B818B8 /* FirebaseNanoPB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */; };
+		AC1F5D6620615B6C00B818B8 /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */; };
+		AC1F5D6720615B6C00B818B8 /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5E20615B6C00B818B8 /* nanopb.framework */; };
+		AC1F5D6920615B8E00B818B8 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D6820615B8600B818B8 /* StoreKit.framework */; };
+		ACB0C9CB2058111F00A7F5E0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */; };
 		BDA4BAA0109A347400467AB9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA4BA9F109A347400467AB9 /* libz.dylib */; };
 		BDFBD99610B1B99A00BAAFAB /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */; };
 		C0539BFE1767169700D53DF7 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0539BFD1767169700D53DF7 /* MediaPlayer.framework */; };
@@ -94,6 +105,17 @@
 		46B007061033776600D0C2F4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		5C59AB4112DDA22E00ED4A1E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		A81EA26920228C0600E2F8AD /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleToolboxForMac.framework; path = Frameworks/GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
+		AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };
+		AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
+		AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };
+		AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMessaging.framework; path = Frameworks/FirebaseMessaging.framework; sourceTree = "<group>"; };
+		AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseNanoPB.framework; path = Frameworks/FirebaseNanoPB.framework; sourceTree = "<group>"; };
+		AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };
+		AC1F5D5E20615B6C00B818B8 /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Frameworks/nanopb.framework; sourceTree = "<group>"; };
+		AC1F5D6820615B8600B818B8 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };
+		ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BD72CCE4112D629F003B7D27 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDA4BA9F109A347400467AB9 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
@@ -150,6 +172,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAE53749205C1034009B14DC /* libstdc++.6.0.9.tbd in Frameworks */,
+				AC1F5D6920615B8E00B818B8 /* StoreKit.framework */,
+				AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework */,
+				AC1F5D6120615B6C00B818B8 /* FirebaseCore.framework */,
+				AC1F5D6220615B6C00B818B8 /* FirebaseCoreDiagnostics.framework */,
+				AC1F5D6320615B6C00B818B8 /* FirebaseInstanceID.framework */,
+				AC1F5D6420615B6C00B818B8 /* FirebaseMessaging.framework */,
+				AC1F5D6520615B6C00B818B8 /* FirebaseNanoPB.framework */,
+				AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework */,
+				AC1F5D6720615B6C00B818B8 /* nanopb.framework */,
+				AC1F5D6620615B6C00B818B8 /* Protobuf.framework */,
 				FAA714AB1DDE835500E5E7AD /* WebKit.framework in Frameworks */,
 				FA8266821BC05F46006871AB /* GameKit.framework in Frameworks */,
 				C076329B186DDD24005019BA /* ExternalAccessory.framework in Frameworks */,
@@ -205,6 +237,7 @@
 			isa = PBXGroup;
 			children = (
 				A81EA26920228C0600E2F8AD /* Media.xcassets */,
+				ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */,
 				FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */,
 				FA52317212E750F300AB55CC /* Resources */,
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -232,6 +265,16 @@
 			isa = PBXGroup;
 			children = (
 				FAE53748205C1034009B14DC /* libstdc++.6.0.9.tbd */,
+				AC1F5D6820615B8600B818B8 /* StoreKit.framework */,
+				AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */,
+				AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */,
+				AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */,
+				AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */,
+				AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */,
+				AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */,
+				AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */,
+				AC1F5D5E20615B6C00B818B8 /* nanopb.framework */,
+				AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */,
 				FAA714AA1DDE835500E5E7AD /* WebKit.framework */,
 				FA8266811BC05F46006871AB /* GameKit.framework */,
 				C076329A186DDD24005019BA /* ExternalAccessory.framework */,
@@ -389,6 +432,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACB0C9CB2058111F00A7F5E0 /* GoogleService-Info.plist in Resources */,
 				FAD18F2B1E3AF8100064808C /* sync_btn.png in Resources */,
 				FAD18F241E3AF8100064808C /* back_btn@3x.png in Resources */,
 				FA20C1A9182AFD760036D304 /* back_btn.png in Resources */,
@@ -494,6 +538,11 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -540,6 +589,11 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
@@ -571,6 +625,11 @@
 				CODE_SIGN_ENTITLEMENTS = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;

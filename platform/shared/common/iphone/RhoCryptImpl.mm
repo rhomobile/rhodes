@@ -33,7 +33,7 @@
 #import <CommonCrypto/CommonCryptor.h>
 
 #define kChosenCipherBlockSize	kCCBlockSizeAES128
-#define kChosenCipherKeySize	kCCKeySizeAES128
+#define kChosenCipherKeySize	kCCKeySizeAES256
 #define kChosenDigestLength		CC_SHA1_DIGEST_LENGTH
 
 // (See cssmtype.h and cssmapple.h on the Mac OS X SDK.)
@@ -412,7 +412,7 @@ int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char*
 	
 	size_t movedBytes = 0;
 	
-	checkError( CCCrypt(  kCCEncrypt, kCCAlgorithmAES128,
+	checkError( CCCrypt(  kCCEncrypt, kCCAlgorithmAES,
 					   0, //kCCOptionPKCS7Padding
 					   (const void *)m_dbKeyData,
 					   kChosenCipherKeySize,
@@ -437,7 +437,7 @@ int CRhoCryptImpl::db_decrypt( const char* szPartition, int size, unsigned char*
 	
 	size_t movedBytes = 0;
 	
-	checkError( CCCrypt(  kCCDecrypt, kCCAlgorithmAES128,
+	checkError( CCCrypt(  kCCDecrypt, kCCAlgorithmAES,
 									   0, //kCCOptionPKCS7Padding
 									   (const void *)m_dbKeyData,
 									   kChosenCipherKeySize,

@@ -107,6 +107,14 @@ Sample Build.yml
 
 </DESC>
                             </PARAM>
+                            <PARAM name="createChooser" type="BOOLEAN">
+                                <DESC>Wrap the intent in an action chooser that display the list of available services that can handle the intent. See : <![CDATA[ <a href="https://developer.android.com/reference/android/content/Intent.html#createChooser(android.content.Intent,%20java.lang.CharSequence)">Intent.createChooser</a>.]]>
+</DESC>
+                            </PARAM>
+                            <PARAM name="chooserTitle" type="STRING">
+                                <DESC>Set the chooser title if 'createChooser' is enabled. See : <![CDATA[ <a href="https://developer.android.com/reference/android/content/Intent.html#createChooser(android.content.Intent,%20java.lang.CharSequence)">Intent.createChooser</a>.]]>
+</DESC>
+                            </PARAM>
                          </PARAMS>
                     </PARAM>
                 </PARAMS>
