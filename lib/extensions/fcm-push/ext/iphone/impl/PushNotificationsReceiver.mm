@@ -130,6 +130,10 @@ static PushNotificationsReceiver *instance = nil;
                         if(id title = alert[@"title"])
                            [ret setObject:title forKey:@"title"];
                     }
+                    else
+                    {
+                        [ret setObject:alert forKey:@"body"];
+                    }
                 }
             }
         }
