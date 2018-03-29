@@ -130,7 +130,7 @@ static PushNotificationsReceiver *instance = nil;
                         if(id title = alert[@"title"])
                            [ret setObject:title forKey:@"title"];
                     }
-                    else
+                    else if([alert isKindOfClass:[NSString class]])
                     {
                         [ret setObject:alert forKey:@"body"];
                     }
