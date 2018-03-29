@@ -24,6 +24,7 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), 'iphonecommon'))
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 
@@ -31,6 +32,9 @@ require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 $out_file_buf_enable = false
 $out_file_buf_path = 'rhobuildlog.txt'
 $out_file_buf = []
+APPLE_PUSH = 0
+FCM_PUSH = 1
+UNKNOWN_PUSH = -1
 
 puts 'iphone.rake execute' if USE_TRACES
 puts 'ENV["RHO_BUNDLE_BUILD_LOG_FILE"] = '+ENV["RHO_BUNDLE_BUILD_LOG_FILE"].to_s if USE_TRACES
@@ -546,12 +550,46 @@ def set_app_icon
   #ipath = $config["build"]["iphonepath"]
 
   begin
+
     ICONS.each do |icon|
       name = icon
       ipath = $app_path + "/project/iphone/Media.xcassets/AppIcon.appiconset"
       icon = File.join(ipath, name)
       appicon_old = File.join($app_path, 'icon', name)
       appicon = appicon_old
+      if icon == 'icon1024.png'
+          itunes_artwork_default = File.join($app_path, "resources","ios","iTunesArtwork.png")
+          itunes_artwork  = itunes_artwork_default
+          if !$app_config["iphone"].nil?
+            if !$app_config["iphone"]["production"].nil?
+              if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
+                art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+                if File.exists? art_test_name
+                  itunes_artwork = art_test_name
+                else
+                  art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
+                  if File.exists? art_test_name
+                    itunes_artwork = art_test_name
+                  else
+                    itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+                  end
+                end
+              end
+            end
+          end
+          itunes_artwork_2 = itunes_artwork
+          itunes_artwork_2 = itunes_artwork_2.gsub(".png", "@2x.png")
+          if itunes_artwork_2.index('@2x') == nil
+            itunes_artwork_2 = itunes_artwork_2.gsub(".PNG", "@2x.PNG")
+          end
+          if itunes_artwork_2.index('@2x') == nil
+            itunes_artwork_2 = itunes_artwork_2 + '@2x'
+          end
+
+          if File.exists? itunes_artwork_2
+              appicon = itunes_artwork_2
+          end
+      end
       appicon_new = File.join($app_path, 'resources', 'ios', name)
       if File.exists? appicon_new
           appicon = appicon_new
@@ -612,6 +650,11 @@ def set_default_images(make_bak, plist_hash)
   puts "set_default_images"
   ipath = $app_path + "/project/iphone/Media.xcassets/LaunchImage.launchimage"
   begin
+
+    contents_json_fname = File.join($app_path, "/project/iphone/Media.xcassets/LaunchImage.launchimage/Contents.json")
+    contents_json = JSON.parse(File.read(contents_json_fname))
+    contents_json_was_changed = false
+
     LOADINGIMAGES.each do |name|
       oldname = name.sub('Default', 'loading')
       imag = File.join(ipath, name)
@@ -628,21 +671,38 @@ def set_default_images(make_bak, plist_hash)
       end
 
       #bundlei = File.join($srcdir, defname + '.png')
+      if File.exists? imag
+        rm_f imag
+      end
+
       if File.exist? appimage
-          if File.exists? imag
-            rm_f imag
-          end
+          #if File.exists? imag
+          #  rm_f imag
+          #end
+        puts "$$$ appimage = "+appimage
         cp appimage, imag
       else
-          BuildOutput.warning("Can not found next default file : "+ name + ' , Use default Rhodes image !!!' )
+          puts "$$$ NO appimage = "+appimage
+          images = contents_json["images"]
+          images.each do |image|
+              if image["filename"] == name
+                  images.delete(image)
+                  contents_json_was_changed = true
+              end
+          end
+          BuildOutput.warning("Can not found next default file : "+ name + ' , removed from project but can be required for AppStore - please add this image if it required !!!' )
       end
     end
+    if contents_json_was_changed
+        content = JSON.generate(contents_json)
+        File.open( contents_json_fname, "w"){|file| file.write(content)}
+    end
+
   rescue => e
     puts "WARNING!!! Can not change default image: #{e.to_s}"
   end
 
 end
-
 
 def update_xcode_project_files_by_capabilities
     info_plist = $app_path + "/project/iphone/Info.plist"
@@ -652,6 +712,16 @@ def update_xcode_project_files_by_capabilities
     hash_info_plist = load_plist(info_plist)
     hash_dev_ent = load_plist(dev_ent)
     hash_prd_ent = load_plist(prd_ent)
+
+    #if($push_type == FCM_PUSH)
+      #framework_src = File.join($startdir, 'lib', 'extensions', 'fcm-push', 'ext', 'iphone', 'Frameworks')
+      #firebase_h_src = File.join($startdir, 'platform', 'iphone', 'Firebase.h')
+      #googleservice_plist_src = File.join($startdir, 'platform', 'iphone', 'GoogleService-Info.plist')
+      #framework_dst = File.join($app_path, 'project', 'iphone')
+      #cp_r framework_src, framework_dst
+      #cp_r firebase_h_src, framework_dst
+      #cp_r googleservice_plist_src, framework_dst
+    #end
 
     #bluetooth
     bt_capability = false
@@ -745,6 +815,61 @@ def update_xcode_project_files_by_capabilities
         hash_dev_ent.delete('aps-environment')
         hash_prd_ent.delete('aps-environment')
         remove_lines_from_xcode_project(['com.apple.Push = {enabled = 1;};'])
+    end
+
+    if $push_type == APPLE_PUSH || !push_capability
+      lines_to_delete = []
+      lines_to_delete << 'AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */; };'
+      lines_to_delete << 'AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */; };'
+      lines_to_delete << 'AC1F5D6120615B6C00B818B8 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */; };'
+      lines_to_delete << 'AC1F5D6220615B6C00B818B8 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */; };'
+      lines_to_delete << 'AC1F5D6320615B6C00B818B8 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */; };'
+      lines_to_delete << 'AC1F5D6420615B6C00B818B8 /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */; };'
+      lines_to_delete << 'AC1F5D6520615B6C00B818B8 /* FirebaseNanoPB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */; };'
+      lines_to_delete << 'AC1F5D6620615B6C00B818B8 /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */; };'
+      lines_to_delete << 'AC1F5D6720615B6C00B818B8 /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5E20615B6C00B818B8 /* nanopb.framework */; };'
+      lines_to_delete << 'AC1F5D6920615B8E00B818B8 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D6820615B8600B818B8 /* StoreKit.framework */; };'
+      lines_to_delete << 'ACB0C9CB2058111F00A7F5E0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */; };'
+
+      lines_to_delete << 'AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleToolboxForMac.framework; path = Frameworks/GoogleToolboxForMac.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMessaging.framework; path = Frameworks/FirebaseMessaging.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseNanoPB.framework; path = Frameworks/FirebaseNanoPB.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5E20615B6C00B818B8 /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Frameworks/nanopb.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D6820615B8600B818B8 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };'
+      lines_to_delete << 'ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };'
+
+      lines_to_delete << 'AC1F5D6920615B8E00B818B8 /* StoreKit.framework */,'
+      lines_to_delete << 'AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework */,'
+      lines_to_delete << 'AC1F5D6120615B6C00B818B8 /* FirebaseCore.framework */,'
+      lines_to_delete << 'AC1F5D6220615B6C00B818B8 /* FirebaseCoreDiagnostics.framework */,'
+      lines_to_delete << 'AC1F5D6320615B6C00B818B8 /* FirebaseInstanceID.framework */,'
+      lines_to_delete << 'AC1F5D6420615B6C00B818B8 /* FirebaseMessaging.framework */,'
+      lines_to_delete << 'AC1F5D6520615B6C00B818B8 /* FirebaseNanoPB.framework */,'
+      lines_to_delete << 'AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework */,'
+      lines_to_delete << 'AC1F5D6720615B6C00B818B8 /* nanopb.framework */,'
+      lines_to_delete << 'AC1F5D6620615B6C00B818B8 /* Protobuf.framework */,'
+
+      lines_to_delete << 'ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */,'
+
+      lines_to_delete << 'AC1F5D6820615B8600B818B8 /* StoreKit.framework */,'
+      lines_to_delete << 'AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */,'
+      lines_to_delete << 'AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */,'
+      lines_to_delete << 'AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */,'
+      lines_to_delete << 'AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */,'
+      lines_to_delete << 'AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */,'
+      lines_to_delete << 'AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */,'
+      lines_to_delete << 'AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */,'
+      lines_to_delete << 'AC1F5D5E20615B6C00B818B8 /* nanopb.framework */,'
+      lines_to_delete << 'AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */,'
+
+      lines_to_delete << 'ACB0C9CB2058111F00A7F5E0 /* GoogleService-Info.plist in Resources */,'
+
+      remove_lines_from_xcode_project(lines_to_delete)
     end
 
     #keychain access
@@ -881,8 +1006,20 @@ namespace "config" do
 
   namespace "iphone" do
     task :app_config do
-      if $app_config['capabilities'].index('push')
-        $app_config['extensions'] << 'applePush' unless $app_config['extensions'].index('applePush')
+      
+      if $app_config['extensions'].index('fcm-push') || 
+        (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].nil? && 
+          $app_config['iphone']['extensions'].index('fcm-push') )
+        $push_type = FCM_PUSH
+        puts 'Its fcm push'
+      elsif $app_config['extensions'].index('applePush') || 
+        (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].nil? &&
+          !$app_config['iphone']['extensions'].index('applePush') )
+        $push_type = APPLE_PUSH
+        puts 'Its apple push'
+      elsif $app_config['capabilities'].index('push')
+        $app_config['extensions'] << 'applePush'
+        $push_type = APPLE_PUSH
       end
 
       $file_map_name = "rhofilelist.txt"
@@ -1629,6 +1766,8 @@ namespace "build" do
       ENV["XCODEBUILD"] = $xcodebuild
       ENV["CONFIGURATION"] ||= $configuration
 
+      ENV["RHO_APP_DIR"] = $app_path
+
 
 
       build_script = File.join(extpath, 'build')
@@ -2112,7 +2251,6 @@ namespace "build" do
       #cp properties_src, properties_dst
       Jake.copyIfNeeded properties_src, properties_dst
 
-
       # old code for use prebuild libraries:
 
       #copy libCoreAPI.a and Rhodes.a
@@ -2185,7 +2323,7 @@ namespace "build" do
               rm_rf File.join('project','iphone','toremoved')
               rm_rf File.join('project','iphone','toremovef')
             end
-
+            
             update_xcode_project_files_by_capabilities
 
         else

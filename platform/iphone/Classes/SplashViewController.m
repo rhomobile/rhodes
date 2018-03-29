@@ -30,6 +30,10 @@
 
 #include "common/RhoConf.h"
 
+static UIImage* splash_image = nil;
+
+CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
+CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180/M_PI;};
 
 
 @implementation RhoSplashImageView
@@ -48,7 +52,7 @@
 	}
 #endif
 	
-
+    /*
 	BOOL is_need_left = NO;
 	
 	NSString* imagePath = [SplashViewController detectLoadingImage:rect rotation_to_left:&is_need_left];
@@ -58,7 +62,10 @@
         return;
     
     UIImage *img = [[UIImage alloc] initWithContentsOfFile:imagePath];
-	
+	*/
+    UIImage *img = [SplashViewController getLoadingImage];
+    
+    
     self.image = img;
     
     self.contentMode = UIViewContentModeScaleToFill;
@@ -177,6 +184,10 @@
 	self = [super init];
     parentView = v;
     CGRect frame = [[UIScreen mainScreen] bounds];
+    
+    
+    
+    
     splashView = [[RhoSplashImageView alloc] initWithFrame:frame];
 	
 	splashView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -236,187 +247,150 @@
     [super dealloc];
 }
 
-+ (NSString*)detectLoadingImage:(CGRect)myframe rotation_to_left:(BOOL*)rotation_to_left {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-	
-	NSString * result = nil;
-	
-    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    
-	NSString *pngLoadingPath = [NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
-	NSString *pngDefaultPath = [NSString stringWithFormat:@"%@/Default.png", resourcePath];
-	NSString *pngDefault2xPath = [NSString stringWithFormat:@"%@/Default@2x.png", resourcePath];
-	NSString *pngDefaultPortraitPath = [NSString stringWithFormat:@"%@/Default-Portrait.png", resourcePath];
-	NSString *pngDefaultPortraitUpsideDownPath = [NSString stringWithFormat:@"%@/Default-PortraitUpsideDown.png", resourcePath];
-	NSString *pngDefaultLandscapePath = [NSString stringWithFormat:@"%@/Default-Landscape.png", resourcePath];
-	NSString *pngDefaultLandscapeLeftPath = [NSString stringWithFormat:@"%@/Default-LandscapeLeft.png", resourcePath];
-	NSString *pngDefaultLandscapeRightPath = [NSString stringWithFormat:@"%@/Default-LandscapeRight.png", resourcePath];
-	NSString *pngDefaultiPhone5 = [NSString stringWithFormat:@"%@/Default-568h@2x.png", resourcePath];
-    NSString *pngDefaultiPhone6 = [NSString stringWithFormat:@"%@/Default-667h@2x.png", resourcePath];
-    NSString *pngDefaultiPhone6plus = [NSString stringWithFormat:@"%@/Default-736h@3x.png", resourcePath];
-	NSString *pngDefaultiPhoneX = [NSString stringWithFormat:@"%@/Default-812h@3x.png", resourcePath];
 
-	CGRect win_frame = [[[UIApplication sharedApplication] keyWindow] bounds];
 
-	CGRect frame = myframe;
-	float scales = 1;//[[UIScreen mainScreen] scale];
-#ifdef __IPHONE_4_0
-	if ( [[UIScreen mainScreen] respondsToSelector:@selector(scale)] ) {
-		scales = [[UIScreen mainScreen] scale];
-	}
-#endif
-
-	BOOL is_HiResolution = ((frame.size.width*scales) > 500);
-	BOOL is_iPad = NO;
-
-	NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
-	if ([model hasPrefix:@"iPad"]) {
-		is_iPad = YES;
-	}
-
-	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-
-	if (is_iPad) {
-		if ([fileManager fileExistsAtPath:pngDefaultPath]) {
-			result = pngDefaultPath;
-		}
-		if ([fileManager fileExistsAtPath:pngDefault2xPath]) {
-			result = pngDefault2xPath;
-		}
-		if ((orientation == UIInterfaceOrientationPortrait) || (orientation == UIInterfaceOrientationPortraitUpsideDown) ) {
-			if ([fileManager fileExistsAtPath:pngDefaultPortraitPath]) {
-				result = pngDefaultPortraitPath;
-			}
-			if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
-				if ([fileManager fileExistsAtPath:pngDefaultPortraitUpsideDownPath]) {
-					result = pngDefaultPortraitUpsideDownPath;
-				}
-			}
-		}
-		else {
-			*rotation_to_left = YES;
-			if ([fileManager fileExistsAtPath:pngDefaultLandscapePath]) {
-				result = pngDefaultLandscapePath;
-				*rotation_to_left = NO;
-			}
-			if (orientation == UIInterfaceOrientationLandscapeLeft) {
-				if ([fileManager fileExistsAtPath:pngDefaultLandscapeLeftPath]) {
-					result = pngDefaultLandscapeLeftPath;
-					*rotation_to_left = NO;
-				}
-			}
-			else {
-				if ([fileManager fileExistsAtPath:pngDefaultLandscapeRightPath]) {
-					result = pngDefaultLandscapeRightPath;
-					*rotation_to_left = NO;
-				}
-			}
-		}
-	}
-	else {
-		if ([fileManager fileExistsAtPath:pngDefaultPath]) {
-			result = pngDefaultPath;
-		}
-		if (is_HiResolution) {
-			if ([fileManager fileExistsAtPath:pngDefault2xPath]) {
-				result = pngDefault2xPath;
-			}
-            // check for iPhone5 screen
-            if (frame.size.height*scales >= (1136-1)) {
-                if ([fileManager fileExistsAtPath:pngDefaultiPhone5]) {
-                    result = pngDefaultiPhone5;
-                }
-            }
-            if (frame.size.height*scales >= (1334-1)) {
-                if ([fileManager fileExistsAtPath:pngDefaultiPhone6]) {
-                    result = pngDefaultiPhone6;
-                }
-            }
-            if (frame.size.height*scales >= (2208-1)) {
-                if ([fileManager fileExistsAtPath:pngDefaultiPhone6plus]) {
-                    result = pngDefaultiPhone6plus;
-                }
-            }
-			if (frame.size.height*scales >= (2436-1)) {
-                if ([fileManager fileExistsAtPath:pngDefaultiPhoneX]) {
-                    result = pngDefaultiPhoneX;
-                }
-            }
-		}
-	}
-	if (result == nil) {
-		if ([fileManager fileExistsAtPath:pngDefaultPath]) {
-			result = pngDefaultPath;
-		}
-		else if ([fileManager fileExistsAtPath:pngDefault2xPath]) {
-			result = pngDefault2xPath;
-		}
-        else if ([fileManager fileExistsAtPath:pngDefaultiPhone5]) {
-            result = pngDefaultiPhone5;
-        }
-        else if ([fileManager fileExistsAtPath:pngDefaultiPhone6]) {
-            result = pngDefaultiPhone6;
-        }
-        else if ([fileManager fileExistsAtPath:pngDefaultiPhone6plus]) {
-            result = pngDefaultiPhone6plus;
-        }
-		else if ([fileManager fileExistsAtPath:pngDefaultiPhoneX]) {
-            result = pngDefaultiPhoneX;
-        }
-		else if ([fileManager fileExistsAtPath:pngDefaultPortraitPath]) {
-			result = pngDefaultPortraitPath;
-		}
-		else if ([fileManager fileExistsAtPath:pngDefaultLandscapePath]) {
-			result = pngDefaultLandscapePath;
-		}
-		else if ([fileManager fileExistsAtPath:pngDefaultPortraitUpsideDownPath]) {
-			result = pngDefaultPortraitUpsideDownPath;
-		}
-		else if ([fileManager fileExistsAtPath:pngDefaultLandscapeLeftPath]) {
-			result = pngDefaultLandscapeLeftPath;
-		}
-		else if ([fileManager fileExistsAtPath:pngDefaultLandscapeRightPath]) {
-			result = pngDefaultLandscapeRightPath;
-		}
-	}
-
-	return result;
++ (UIImage*)getLoadingImage {
+    [SplashViewController hasLoadingImage];
+    return splash_image;
 }
 
+
 + (BOOL)hasLoadingImage {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    
+    if (splash_image != nil) {
+        return YES;
+    }
+    // try to detect
+    NSString* pngLaunchImage = @"LaunchImage";
+    NSString* pngLaunchImage2 = nil;
+    NSString *pngLaunchImagePath = @"LaunchImage";
+    NSString *pngLaunchImage568Path = @"LaunchImage-700-568h";
+    NSString *pngLaunchImage667Path = @"LaunchImage-800-667h";
+    NSString *pngLaunchImage736PortraitPath = @"LaunchImage-800-Portrait-736h";
+    NSString *pngLaunchImage736LandscapePath = @"LaunchImage-800-Landscape-736h";
+    NSString *pngLaunchImage2436PortraitPath = @"LaunchImage-1100-Portrait-2436h";
+    NSString *pngLaunchImage2436LandscapePath = @"LaunchImage-1100-Landscape-2436h";
 
-	//NSString *pngLoadingPath = [NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
-	NSString *pngDefaultPath = [NSString stringWithFormat:@"%@/Default.png", resourcePath];
-	NSString *pngDefault2xPath = [NSString stringWithFormat:@"%@/Default@2x.png", resourcePath];
-	NSString *pngDefaultPortraitPath = [NSString stringWithFormat:@"%@/Default-Portrait.png", resourcePath];
-	NSString *pngDefaultPortraitUpsideDownPath = [NSString stringWithFormat:@"%@/Default-PortraitUpsideDown.png", resourcePath];
-	NSString *pngDefaultLandscapePath = [NSString stringWithFormat:@"%@/Default-Landscape.png", resourcePath];
-	NSString *pngDefaultLandscapeLeftPath = [NSString stringWithFormat:@"%@/Default-LandscapeLeft.png", resourcePath];
-	NSString *pngDefaultLandscapeRightPath = [NSString stringWithFormat:@"%@/Default-LandscapeRight.png", resourcePath];
-	NSString *pngDefaultiPhone5 = [NSString stringWithFormat:@"%@/Default-568h@2x.png", resourcePath];
-    NSString *pngDefaultiPhone6 = [NSString stringWithFormat:@"%@/Default-667@2x.png", resourcePath];
-    NSString *pngDefaultiPhone6plus = [NSString stringWithFormat:@"%@/Default-736h@3x.png", resourcePath];
-	NSString *pngDefaultiPhoneX = [NSString stringWithFormat:@"%@/Default-812h@3x.png", resourcePath];
+    NSString *pngLaunchImageIPADPortraitPath = @"LaunchImage-Portrait~ipad";
+    NSString *pngLaunchImageIPADLandscapePath = @"LaunchImage-Landscape~ipad";
 
-	return (
-			//([fileManager fileExistsAtPath:pngLoadingPath]) ||
-			([fileManager fileExistsAtPath:pngDefaultPath]) ||
-			([fileManager fileExistsAtPath:pngDefault2xPath]) ||
-			([fileManager fileExistsAtPath:pngDefaultPortraitPath]) ||
-			([fileManager fileExistsAtPath:pngDefaultPortraitUpsideDownPath]) ||
-			([fileManager fileExistsAtPath:pngDefaultLandscapeLeftPath]) ||
-			([fileManager fileExistsAtPath:pngDefaultLandscapeRightPath]) ||
-			([fileManager fileExistsAtPath:pngDefaultiPhone5]) ||
-            ([fileManager fileExistsAtPath:pngDefaultiPhone6]) ||
-            ([fileManager fileExistsAtPath:pngDefaultiPhone6plus]) ||
-			([fileManager fileExistsAtPath:pngDefaultiPhoneX]) ||
-			([fileManager fileExistsAtPath:pngDefaultLandscapePath])
-	);
+    UIScreen *screen = [UIScreen mainScreen];
+    CGFloat screenHeight = screen.bounds.size.height;
+    BOOL isPortrait = YES;
+    if (screen.bounds.size.width > screenHeight) {
+        screenHeight = screen.bounds.size.width;
+        isPortrait = NO;
+    }
+    CGFloat scale = screen.scale;
+    BOOL isiPhone = ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone);
+    BOOL isiPad = ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad);
+    
+    
+    BOOL canBeRotated = NO;
+    
+    if (isiPad) {
+        if (isPortrait) {
+            pngLaunchImage = pngLaunchImageIPADPortraitPath;
+        }
+        else {
+            pngLaunchImage = pngLaunchImageIPADLandscapePath;
+            pngLaunchImage2 = pngLaunchImageIPADPortraitPath;
+        }
+    }
+    else {
+        if (screenHeight >= (812-1)) {
+            // iPhoneX
+            if (isPortrait) {
+                pngLaunchImage = pngLaunchImage2436PortraitPath;
+            }
+            else {
+                pngLaunchImage = pngLaunchImage2436LandscapePath;
+                pngLaunchImage2 = pngLaunchImage2436PortraitPath;
+            }
+        }
+        else {
+            if (screenHeight >= (736-1)) {
+                // iPhonePlus
+                if (isPortrait) {
+                    pngLaunchImage = pngLaunchImage736PortraitPath;
+                }
+                else {
+                    pngLaunchImage = pngLaunchImage736LandscapePath;
+                    pngLaunchImage2 = pngLaunchImage736PortraitPath;
+                }
+            }
+            else {
+                if (screenHeight >= (667-1)) {
+                    // iPhone6,7
+                    pngLaunchImage = pngLaunchImage667Path;
+                    canBeRotated = YES;
+                }
+                else {
+                    if (screenHeight >= (568-1)) {
+                        // iPhone5
+                        pngLaunchImage = pngLaunchImage568Path;
+                        canBeRotated = YES;
+                    }
+                    else {
+                        // old iPhones
+                        pngLaunchImage = pngLaunchImagePath;
+                        canBeRotated = YES;
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    float angle = 0.0;
+    if (!isPortrait) {
+        angle = -90.0;
+        UIInterfaceOrientation statusBarOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+        if (statusBarOrientation == UIInterfaceOrientationLandscapeLeft) {
+            angle = 90.0;
+        }
+    }
 
+    splash_image = [UIImage imageNamed:pngLaunchImage inBundle:nil compatibleWithTraitCollection:nil];
+    
+    if ((splash_image == nil) && (pngLaunchImage2 != nil)) {
+        splash_image = [UIImage imageNamed:pngLaunchImage2 inBundle:nil compatibleWithTraitCollection:nil];
+        canBeRotated = YES;
+    }
+    
+    
+    if ((splash_image != nil) && (canBeRotated) && ((angle < -0.01) || (angle > 0.01)) ) {
+        // calculate the size of the rotated view's containing box for our drawing space
+        UIView *rotatedViewBox = [[UIView alloc] initWithFrame:CGRectMake(0,0,splash_image.size.width, splash_image.size.height)];
+        CGAffineTransform t = CGAffineTransformMakeRotation(DegreesToRadians(angle));
+        rotatedViewBox.transform = t;
+        CGSize rotatedSize = rotatedViewBox.frame.size;
+        [rotatedViewBox release];
+        
+        // Create the bitmap context
+        UIGraphicsBeginImageContext(rotatedSize);
+        CGContextRef bitmap = UIGraphicsGetCurrentContext();
+        
+        // Move the origin to the middle of the image so we will rotate and scale around the center.
+        CGContextTranslateCTM(bitmap, rotatedSize.width/2, rotatedSize.height/2);
+        
+        //   // Rotate the image context
+        CGContextRotateCTM(bitmap, DegreesToRadians(angle));
+        
+        // Now, draw the rotated/scaled image into the context
+        CGContextScaleCTM(bitmap, 1.0, -1.0);
+        CGContextDrawImage(bitmap, CGRectMake(-splash_image.size.width / 2, -splash_image.size.height / 2, splash_image.size.width, splash_image.size.height), [splash_image CGImage]);
+        
+        UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        splash_image = [newImage retain];
+    }
 
+    if (splash_image != nil) {
+        splash_image = [splash_image retain];
+    }
+    return (splash_image != nil);
+   
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
