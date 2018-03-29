@@ -24,6 +24,7 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), 'iphonecommon'))
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 
@@ -546,12 +547,46 @@ def set_app_icon
   #ipath = $config["build"]["iphonepath"]
 
   begin
+
     ICONS.each do |icon|
       name = icon
       ipath = $app_path + "/project/iphone/Media.xcassets/AppIcon.appiconset"
       icon = File.join(ipath, name)
       appicon_old = File.join($app_path, 'icon', name)
       appicon = appicon_old
+      if icon == 'icon1024.png'
+          itunes_artwork_default = File.join($app_path, "resources","ios","iTunesArtwork.png")
+          itunes_artwork  = itunes_artwork_default
+          if !$app_config["iphone"].nil?
+            if !$app_config["iphone"]["production"].nil?
+              if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
+                art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+                if File.exists? art_test_name
+                  itunes_artwork = art_test_name
+                else
+                  art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
+                  if File.exists? art_test_name
+                    itunes_artwork = art_test_name
+                  else
+                    itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+                  end
+                end
+              end
+            end
+          end
+          itunes_artwork_2 = itunes_artwork
+          itunes_artwork_2 = itunes_artwork_2.gsub(".png", "@2x.png")
+          if itunes_artwork_2.index('@2x') == nil
+            itunes_artwork_2 = itunes_artwork_2.gsub(".PNG", "@2x.PNG")
+          end
+          if itunes_artwork_2.index('@2x') == nil
+            itunes_artwork_2 = itunes_artwork_2 + '@2x'
+          end
+
+          if File.exists? itunes_artwork_2
+              appicon = itunes_artwork_2
+          end
+      end
       appicon_new = File.join($app_path, 'resources', 'ios', name)
       if File.exists? appicon_new
           appicon = appicon_new
@@ -612,6 +647,11 @@ def set_default_images(make_bak, plist_hash)
   puts "set_default_images"
   ipath = $app_path + "/project/iphone/Media.xcassets/LaunchImage.launchimage"
   begin
+
+    contents_json_fname = File.join($app_path, "/project/iphone/Media.xcassets/LaunchImage.launchimage/Contents.json")
+    contents_json = JSON.parse(File.read(contents_json_fname))
+    contents_json_was_changed = false
+
     LOADINGIMAGES.each do |name|
       oldname = name.sub('Default', 'loading')
       imag = File.join(ipath, name)
@@ -628,15 +668,33 @@ def set_default_images(make_bak, plist_hash)
       end
 
       #bundlei = File.join($srcdir, defname + '.png')
+      if File.exists? imag
+        rm_f imag
+      end
+
       if File.exist? appimage
-          if File.exists? imag
-            rm_f imag
-          end
+          #if File.exists? imag
+          #  rm_f imag
+          #end
+        puts "$$$ appimage = "+appimage
         cp appimage, imag
       else
-          BuildOutput.warning("Can not found next default file : "+ name + ' , Use default Rhodes image !!!' )
+          puts "$$$ NO appimage = "+appimage
+          images = contents_json["images"]
+          images.each do |image|
+              if image["filename"] == name
+                  images.delete(image)
+                  contents_json_was_changed = true
+              end
+          end
+          BuildOutput.warning("Can not found next default file : "+ name + ' , removed from project but can be required for AppStore - please add this image if it required !!!' )
       end
     end
+    if contents_json_was_changed
+        content = JSON.generate(contents_json)
+        File.open( contents_json_fname, "w"){|file| file.write(content)}
+    end
+
   rescue => e
     puts "WARNING!!! Can not change default image: #{e.to_s}"
   end
