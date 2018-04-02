@@ -108,6 +108,7 @@ public:
     void tabbarSetBadge(int index, const char* badge);
     void tabbarSetSwitchCallback(rho::apiGenerator::CMethodResult& oResult);
     static quint16 getDebPort();
+    static QtMainWindow * lastInstance;
 private:
     void tabbarWebViewRestore(bool reload);
     void tabbarConnectWebView(QtWebEngineView *webView);
@@ -194,6 +195,7 @@ public slots:
 
 signals:
     void navigate(QString url, int index);
+    void onClose();
 protected:
     void resizeEvent(QResizeEvent *);
 };

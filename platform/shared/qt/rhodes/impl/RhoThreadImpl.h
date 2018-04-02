@@ -31,6 +31,8 @@
 #include "common/IRhoThreadImpl.h"
 #include "logging/RhoLog.h"
 #include <QSharedPointer>
+#include <QMutex>
+#include <QMutexLocker>
 
 namespace rho{
 namespace common{
@@ -74,12 +76,16 @@ private:
     private:
         IRhoRunnable* m_Runnable;
     };
+
     QRhoThread* m_Thread;
     QtThread* m_waitThread;
 
-    #if defined(OS_WINDOWS_DESKTOP)
-        CRITICAL_SECTION gCS;
-        CRITICAL_SECTION gCSstopwait;
+#ifdef OS_WINDOWS_DESKTOP
+#define NEED_MUTEX_LOCKERS
+#endif
+    #if defined(NEED_MUTEX_LOCKERS)
+        QMutex gCS;
+        QMutex gCSstopwait;
     #endif
 };
 

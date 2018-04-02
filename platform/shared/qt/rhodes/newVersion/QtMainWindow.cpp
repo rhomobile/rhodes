@@ -68,7 +68,7 @@ extern "C" {
 }
 using namespace rho;
 using namespace rho::common;
-
+QtMainWindow * QtMainWindow::lastInstance = nullptr;
 
 QMenuBar* QtMainWindow::createMenu() {
 
@@ -112,6 +112,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     cur_tbrp(0), m_alertDialog(0), m_LogicalDpiX(0), m_LogicalDpiY(0), firstShow(true), m_bFirstLoad(true),
     toolBarSeparatorWidth(0), m_proxy(QNetworkProxy(QNetworkProxy::DefaultProxy)), m_logView(0)
 {
+    lastInstance = this;
     menuMain = NULL;
     createMenu();
 
@@ -311,6 +312,7 @@ void QtMainWindow::closeEvent(QCloseEvent *ce)
     if (m_logView)
         m_logView->close();
     QMainWindow::closeEvent(ce);
+
 }
 
 void QtMainWindow::resizeEvent(QResizeEvent *event)
@@ -442,7 +444,7 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
     else
     {
         LOG(ERROR) + "Page load failed.";
-        webView->setHtml("<html><head><title>Error Loading Page</title></head><body><h1>Error Loading Page.</h1></body></html>");
+        //webView->setHtml("<html><head><title>Error Loading Page</title></head><body><h1>Error Loading Page.</h1></body></html>");
     }
 
     PROF_STOP("BROWSER_PAGE");
