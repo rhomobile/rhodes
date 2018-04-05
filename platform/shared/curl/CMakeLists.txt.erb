@@ -1,0 +1,111 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+project(curl)      
+
+add_definitions(-DHAVE_CONFIG_H -DOS_ANDROID)
+
+
+
+set(SOURCE_LIB
+<%= @rhoRoot %>/platform/shared/curl/lib/amigaos.c
+<%= @rhoRoot %>/platform/shared/curl/lib/base64.c
+<%= @rhoRoot %>/platform/shared/curl/lib/connect.c
+<%= @rhoRoot %>/platform/shared/curl/lib/content_encoding.c
+<%= @rhoRoot %>/platform/shared/curl/lib/cookie.c
+<%= @rhoRoot %>/platform/shared/curl/lib/curl_addrinfo.c
+<%= @rhoRoot %>/platform/shared/curl/lib/curl_memrchr.c
+<%= @rhoRoot %>/platform/shared/curl/lib/rand.c
+<%= @rhoRoot %>/platform/shared/curl/lib/curl_sspi.c
+<%= @rhoRoot %>/platform/shared/curl/lib/dict.c
+<%= @rhoRoot %>/platform/shared/curl/lib/easy.c
+<%= @rhoRoot %>/platform/shared/curl/lib/escape.c
+<%= @rhoRoot %>/platform/shared/curl/lib/file.c
+<%= @rhoRoot %>/platform/shared/curl/lib/formdata.c
+<%= @rhoRoot %>/platform/shared/curl/lib/ftp.c
+<%= @rhoRoot %>/platform/shared/curl/lib/getenv.c
+<%= @rhoRoot %>/platform/shared/curl/lib/getinfo.c
+<%= @rhoRoot %>/platform/shared/curl/lib/vtls/gtls.c
+<%= @rhoRoot %>/platform/shared/curl/lib/hash.c
+<%= @rhoRoot %>/platform/shared/curl/lib/hostasyn.c
+<%= @rhoRoot %>/platform/shared/curl/lib/hostip.c
+<%= @rhoRoot %>/platform/shared/curl/lib/hostip4.c
+<%= @rhoRoot %>/platform/shared/curl/lib/hostip6.c
+<%= @rhoRoot %>/platform/shared/curl/lib/hostsyn.c
+<%= @rhoRoot %>/platform/shared/curl/lib/http.c
+<%= @rhoRoot %>/platform/shared/curl/lib/http_chunks.c
+<%= @rhoRoot %>/platform/shared/curl/lib/http_digest.c
+<%= @rhoRoot %>/platform/shared/curl/lib/http_negotiate.c
+<%= @rhoRoot %>/platform/shared/curl/lib/if2ip.c
+<%= @rhoRoot %>/platform/shared/curl/lib/inet_ntop.c
+<%= @rhoRoot %>/platform/shared/curl/lib/inet_pton.c
+<%= @rhoRoot %>/platform/shared/curl/lib/krb5.c
+<%= @rhoRoot %>/platform/shared/curl/lib/ldap.c
+<%= @rhoRoot %>/platform/shared/curl/lib/llist.c
+<%= @rhoRoot %>/platform/shared/curl/lib/md5.c
+<%= @rhoRoot %>/platform/shared/curl/lib/memdebug.c
+<%= @rhoRoot %>/platform/shared/curl/lib/mprintf.c
+<%= @rhoRoot %>/platform/shared/curl/lib/multi.c
+<%= @rhoRoot %>/platform/shared/curl/lib/netrc.c
+<%= @rhoRoot %>/platform/shared/curl/lib/vtls/nss.c
+<%= @rhoRoot %>/platform/shared/curl/lib/nonblock.c
+<%= @rhoRoot %>/platform/shared/curl/lib/nwlib.c
+<%= @rhoRoot %>/platform/shared/curl/lib/nwos.c
+<%= @rhoRoot %>/platform/shared/curl/lib/parsedate.c
+<%= @rhoRoot %>/platform/shared/curl/lib/progress.c
+<%= @rhoRoot %>/platform/shared/curl/lib/rhossl.c
+<%= @rhoRoot %>/platform/shared/curl/lib/security.c
+<%= @rhoRoot %>/platform/shared/curl/lib/select.c
+<%= @rhoRoot %>/platform/shared/curl/lib/sendf.c
+<%= @rhoRoot %>/platform/shared/curl/lib/share.c
+<%= @rhoRoot %>/platform/shared/curl/lib/slist.c
+<%= @rhoRoot %>/platform/shared/curl/lib/socks.c
+<%= @rhoRoot %>/platform/shared/curl/lib/socks_gssapi.c
+<%= @rhoRoot %>/platform/shared/curl/lib/socks_sspi.c
+<%= @rhoRoot %>/platform/shared/curl/lib/speedcheck.c
+<%= @rhoRoot %>/platform/shared/curl/lib/splay.c
+<%= @rhoRoot %>/platform/shared/curl/lib/ssh.c
+<%= @rhoRoot %>/platform/shared/curl/lib/strdup.c
+<%= @rhoRoot %>/platform/shared/curl/lib/strerror.c
+<%= @rhoRoot %>/platform/shared/curl/lib/strtok.c
+<%= @rhoRoot %>/platform/shared/curl/lib/strtoofft.c
+<%= @rhoRoot %>/platform/shared/curl/lib/telnet.c
+<%= @rhoRoot %>/platform/shared/curl/lib/tftp.c
+<%= @rhoRoot %>/platform/shared/curl/lib/timeval.c
+<%= @rhoRoot %>/platform/shared/curl/lib/transfer.c
+<%= @rhoRoot %>/platform/shared/curl/lib/url.c
+<%= @rhoRoot %>/platform/shared/curl/lib/version.c
+<%= @rhoRoot %>/platform/shared/curl/lib/vtls/vtls.c
+<%= @rhoRoot %>/platform/shared/curl/lib/asyn-thread.c
+<%= @rhoRoot %>/platform/shared/curl/lib/strcase.c
+<%= @rhoRoot %>/platform/shared/curl/lib/pipeline.c
+<%= @rhoRoot %>/platform/shared/curl/lib/conncache.c
+<%= @rhoRoot %>/platform/shared/curl/lib/warnless.c
+<%= @rhoRoot %>/platform/shared/curl/lib/wildcard.c
+<%= @rhoRoot %>/platform/shared/curl/lib/http_proxy.c
+<%= @rhoRoot %>/platform/shared/curl/lib/pop3.c
+<%= @rhoRoot %>/platform/shared/curl/lib/smtp.c
+<%= @rhoRoot %>/platform/shared/curl/lib/imap.c
+<%= @rhoRoot %>/platform/shared/curl/lib/rtsp.c
+<%= @rhoRoot %>/platform/shared/curl/lib/gopher.c
+<%= @rhoRoot %>/platform/shared/curl/lib/dotdot.c
+<%= @rhoRoot %>/platform/shared/curl/lib/curl_threads.c
+<%= @rhoRoot %>/platform/shared/curl/lib/fileinfo.c
+<%= @rhoRoot %>/platform/shared/curl/lib/pingpong.c
+<%= @rhoRoot %>/platform/shared/curl/lib/curl_sasl.c
+<%= @rhoRoot %>/platform/shared/curl/lib/vauth/vauth.c
+<%= @rhoRoot %>/platform/shared/curl/lib/vauth/cleartext.c
+<%= @rhoRoot %>/platform/shared/curl/lib/vauth/digest.c
+<%= @rhoRoot %>/platform/shared/curl/lib/vauth/oauth2.c
+<%= @rhoRoot %>/platform/shared/curl/lib/ftplistparser.c
+<%= @rhoRoot %>/platform/shared/curl/lib/vauth/cram.c
+<%= @rhoRoot %>/platform/shared/curl/lib/hmac.c
+<%= @rhoRoot %>/platform/shared/curl/lib/curl_fnmatch.c
+<%= @rhoRoot %>/platform/shared/curl/lib/curl_gethostname.c
+)
+
+include_directories(<%= @rhoRoot %>/platform/shared/curl/include)
+include_directories(<%= @rhoRoot %>/platform/shared/curl/lib)
+include_directories(<%= @rhoRoot %>/platform/shared)
+
+add_library(curl STATIC ${SOURCE_LIB})
+

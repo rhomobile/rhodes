@@ -1,0 +1,86 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+PROJECT(rhodes)
+
+add_library(
+             rhodes
+             SHARED
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/RhoClassFactory.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/JNIRhoRuby.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/JNIRhoJS.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/bluetooth.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/callbacks.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/datetimepicker.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/event.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/fileapi.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/geolocation.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/logconf.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/logger.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/mapview.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/nativebar.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/nativeview.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/navbar.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/phonebook.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/rhoconf.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/rhodes.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/rhodesapp.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/rhodessystem.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/ringtones.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/socketimpl.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/splashscreen.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/sslimpl.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/webview.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/rhocryptimpl.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/extmanager.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/MethodExecutorJni.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/MethodResultJni.cpp
+             )
+
+include_directories(<%= @appincdir %>)
+include_directories(<%= @rhoRoot %>/platform/shared)
+include_directories(<%= @rhoRoot %>/platform/shared/common)
+include_directories(<%= @rhoRoot %>/platform/shared/api_generator)
+include_directories(<%= @rhoRoot %>/platform/shared/sqlite)
+include_directories(<%= @rhoRoot %>/platform/shared/curl/include)
+include_directories(<%= @rhoRoot %>/platform/shared/ruby/include)
+include_directories(<%= @rhoRoot %>/platform/shared/ruby/android)
+include_directories(<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared)
+include_directories(<%= @rhoRoot %>/platform/android/Rhodes/jni/include)
+include_directories(<%= @rhoRoot %>/platform/android/Rhodes/jni/include/rhodes)
+include_directories(<%= @rhoRoot %>/platform/android/Rhodes/jni/include/rhodes/details)
+
+find_library(log-lib log )
+find_library(z-lib z)
+find_library(dl-lib dl)
+find_library(android-lib android)
+find_library(libc-lib c)
+find_library(libm-lib m)
+
+set(CORE_LIBS
+rhocommon
+curl
+sqlite
+ruby
+json
+rholog
+rhodb
+rhosync
+)
+
+set(EXT_LIBS
+<%= @extLibs %>
+)
+
+target_link_libraries(
+                       rhodes
+                       ${CORE_LIBS}
+                       ${EXT_LIBS}
+                       rhocommon
+                       curl
+                       ${android-lib}
+                       ${log-lib}
+                       ${z-lib}
+                       ${dl-lib}
+                       ${libc-lib}
+                       ${libm-lib}
+                     )

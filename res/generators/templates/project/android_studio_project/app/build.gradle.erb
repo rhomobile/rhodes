@@ -47,6 +47,25 @@ android {
             path "CMakeLists.txt"
         }
     }
+	
+	buildTypes {
+        release {
+            minifyEnabled false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+	
+    defaultConfig {
+        ndk {
+            abiFilters '<%= @targetArch %>'
+        }
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_TOOLCHAIN=gcc', '-DANDROID_ARM_MODE=<%= @targetArch.include?('arm') ? 'arm' : @targetArch %>'
+            }
+        }
+    }
+
 }
 
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -73,7 +92,7 @@ task rhoBuild(type:Exec) {
 
 rhoBuild.outputs.upToDateWhen { new File(rhoBuildDir).exists() }
 
-preBuild.dependsOn rhoBuild
+//preBuild.dependsOn rhoBuild
 
 tasks.whenTaskAdded { task ->
     logger.debug 'TASK ADDED: ' + task.toString();
@@ -85,6 +104,25 @@ tasks.whenTaskAdded { task ->
         logger.debug 'SKIPPING NDK BUILD TASK'
         task.outputs.upToDateWhen { true }
     }
+	
+	if (task.name.contains("processDebugResources"))
+    {
+        logger.debug 'DISABLED: ' + task.toString();
+        task.enabled = false;
+    }
+
+    if (task.name.contains("compileDebugJavaWithJavac"))
+    {
+        logger.debug 'DISABLED: ' + task.toString();
+        task.enabled = false;
+    }
+
+    if (task.name.contains("transformNativeLibsWithMergeJniLibsForDebug"))
+    {
+        logger.debug 'DISABLED: ' + task.toString();
+        task.enabled = false;
+    }
+
 }
 
 dependencies {
