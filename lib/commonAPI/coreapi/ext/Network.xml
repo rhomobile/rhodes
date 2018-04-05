@@ -89,12 +89,18 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                             <PARAM name="createFolders" type="BOOLEAN" default="false">
                                 <DESC>CreateFolders can automatically create the directory path.</DESC>
                             </PARAM>
+                            <PARAM name="wantReceiveProgressCallbacks" type="BOOLEAN" default="false">
+                                <DESC>Set to true to receive progress callbacks with status 'progress_headers' and 'progress_data'.</DESC>
+                            </PARAM>
                         </PARAMS>
                     </PARAM>
                 </PARAMS>
 
                 <RETURN type="HASH">
                     <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>Status of the callback can be 'ok', 'error', 'progress_headers' and 'progress_data'.</DESC>
+                        </PARAM>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
                         </PARAM>
@@ -109,6 +115,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                         </PARAM>
                         <PARAM name="fileExists" type="BOOLEAN">
                             <DESC>When overwriteFile is false and file exists, when error return and this flag set to true.</DESC>
+                        </PARAM>
+                        <PARAM name="length" type="BOOLEAN">
+                            <DESC>Length of received content for 'progress_data' callback.</DESC>
                         </PARAM>
                     </PARAMS>
                 </RETURN>
