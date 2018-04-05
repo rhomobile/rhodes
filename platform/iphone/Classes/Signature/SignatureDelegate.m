@@ -114,8 +114,10 @@ SignatureDelegate* ourSD = nil;
     NSString *folder = [[AppManager getDbPath] stringByAppendingPathComponent:@"/db-files"];
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:folder])
-        [fileManager createDirectoryAtPath:folder attributes:nil];
+    if (![fileManager fileExistsAtPath:folder]) {
+        NSError* error;
+        [fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error];
+    }
 
     NSString *now = [[[NSDate date] descriptionWithLocale:nil]
              stringByReplacingOccurrencesOfString: @":" withString: @"."];
@@ -182,7 +184,7 @@ SignatureDelegate* ourSD = nil;
 } 
 
 -(void)doDone:(UIImage*)image {
-	[[[[Rhodes sharedInstance] mainView] getMainViewController] dismissModalViewControllerAnimated:YES]; 
+	[[[[Rhodes sharedInstance] mainView] getMainViewController] dismissViewControllerAnimated:YES completion:nil];
     [self useImage:image]; 
     //[signatureViewController.view removeFromSuperview];
     signatureViewController = nil;
@@ -193,7 +195,7 @@ SignatureDelegate* ourSD = nil;
 }
 
 -(void)doCancel {
-	[[[[Rhodes sharedInstance] mainView] getMainViewController] dismissModalViewControllerAnimated:YES];
+	[[[[Rhodes sharedInstance] mainView] getMainViewController] dismissViewControllerAnimated:YES completion:nil];
     if (callbackHolder)
     {
         NSMutableDictionary* result = [NSMutableDictionary dictionaryWithObjectsAndKeys: @"cancel", @"status", @"", @"imageUri", @"User canceled operation.", @"message", nil];
