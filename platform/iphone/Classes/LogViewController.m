@@ -126,7 +126,7 @@ extern int rho_conf_send_log(const char*);
 
 - (void)actionClose:(id)sender
 {
-	[self dismissModalViewControllerAnimated:YES]; 
+	[self dismissViewControllerAnimated:YES completion:nil]; 
 	self.view.hidden = YES;
 }
 

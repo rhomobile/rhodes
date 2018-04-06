@@ -497,8 +497,11 @@ extern const char* rho_rhodesapp_getblobsdirpath();
         NSString *folder = [NSString stringWithUTF8String:rho_rhodesapp_getblobsdirpath()];
         
         NSFileManager *fileManager = [NSFileManager defaultManager];
-        if (![fileManager fileExistsAtPath:folder])
-            [fileManager createDirectoryAtPath:folder attributes:nil];
+        if (![fileManager fileExistsAtPath:folder]) {
+            NSError* error;
+            [fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error];
+            
+        }
         NSRange area;
         if ([name length] >= 4) {
             area.location = [name length] - 4;
