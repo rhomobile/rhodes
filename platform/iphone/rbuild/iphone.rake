@@ -2183,6 +2183,13 @@ namespace "build" do
         itunes_artwork_in_project = File.join($app_path, "project","iphone","iTunesArtwork")
         itunes_artwork_in_project_2 = File.join($app_path, "project","iphone","iTunesArtwork@2x")
         itunes_artwork = File.join($app_path, "project","iphone","iTunesArtwork")
+        marketing_image_in_assets = File.join($app_path, "project","iphone","Media.xcassets","AppIcon.appiconset","iTunesArtwork@2x.png")
+      itunes_artwork_new = File.join($app_path, "resources","ios","iTunesArtwork.png")
+      if File.exists? itunes_artwork_new
+          itunes_artwork = itunes_artwork_new
+      end
+
+      default_marketing_image_for_assets = File.join($app_path,'resources','ios','iTunesArtwork@2x.png')
 
       if !$app_config["iphone"].nil?
         if !$app_config["iphone"]["production"].nil?
@@ -2222,6 +2229,13 @@ namespace "build" do
         cp itunes_artwork_2,itunes_artwork_in_project_2
       else
         BuildOutput.warning("iTunesArtwork@2x (image required for iTunes) not found - use default !!!" )
+      end
+
+      begin
+        rm_rf marketing_image_in_assets
+        cp default_marketing_image_for_assets, marketing_image_in_assets
+      rescue Exception => e
+        BuildOutput.warning( "Can't copy marketing image for assets from #{default_marketing_image_for_assets} to #{marketing_image_in_assets}: #{e.to_s}")
       end
 
       rm_rf File.join('project','iphone','toremoved')
