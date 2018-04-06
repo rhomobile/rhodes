@@ -105,24 +105,30 @@ tasks.whenTaskAdded { task ->
         task.outputs.upToDateWhen { true }
     }
 	
-	if (task.name.contains("processDebugResources"))
+	if (task.name.contains("processDebugResources") || task.name.contains("processReleaseResources"))
     {
         logger.debug 'DISABLED: ' + task.toString();
         task.enabled = false;
     }
 
-    if (task.name.contains("compileDebugJavaWithJavac"))
+
+    if (task.name.contains("compileDebugJavaWithJavac") || task.name.contains("compileReleaseJavaWithJavac"))
     {
         logger.debug 'DISABLED: ' + task.toString();
         task.enabled = false;
     }
 
-    if (task.name.contains("transformNativeLibsWithMergeJniLibsForDebug"))
+    if (task.name.contains("externalNativeBuildDebug"))
+        externalNativeBuildDebug.finalizedBy(rhoBuild);
+    else if(task.name.contains("externalNativeBuildRelease"))
+        externalNativeBuildRelease.finalizedBy(rhoBuild);
+
+    if (task.name.contains("transformNativeLibsWithMergeJniLibsForDebug") ||
+            task.name.contains("transformNativeLibsWithMergeJniLibsForRelease"))
     {
         logger.debug 'DISABLED: ' + task.toString();
         task.enabled = false;
     }
-
 }
 
 dependencies {

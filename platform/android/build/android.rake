@@ -465,6 +465,7 @@ namespace "config" do
 
     $java = $config["env"]["paths"]["java"]
 
+    $skip_so_build = false
     $neon_root = nil
     $neon_root = $config["env"]["paths"]["neon"] unless $config["env"]["paths"].nil?
     if !($app_config["paths"].nil? or $app_config["paths"]["neon"].nil?)
@@ -1724,6 +1725,10 @@ namespace "build" do
 
     task :librhodes => [:libs, :extensions, :genconfig] do
       print_timestamp('build:android:librhodes START')
+      if $skip_so_build
+        puts "Skip building rhodes shared library"
+        return
+      end
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
 
       args = []
@@ -2669,6 +2674,25 @@ namespace "device" do
         raise "Error installing APK file"
       end
       puts "Install complete"
+    end
+
+    task :studio_build => ['config:android'] do
+      $skip_so_build = true
+      $abis = $app_config['android']['abis'] if $app_config["android"]
+      $abis = ['arm'] unless $abis
+      abi = $abis[0]
+      realabi = 'armeabi' if abi == 'arm'
+
+      project_app_path = File.join $app_path,'project','android_studio', 'app'
+      librhodes_path = File.join project_app_path, 'build', 'intermediates', 
+        'cmake', $debug ? 'debug' : 'release', 'obj', realabi, 'librhodes.so'
+
+      target_path = File.join $app_builddir, 'librhodes', 'lib', realabi
+      if !File.exists?(target_path) 
+        mkdir_p target_path
+      end
+      cp_r librhodes_path, target_path
+      Rake::Task["device:android:production"].invoke
     end
 
     desc "Build production signed for device"
