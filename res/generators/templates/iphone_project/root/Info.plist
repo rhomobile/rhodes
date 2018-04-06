@@ -79,5 +79,7 @@
      <array>
           <string>gamekit</string>
      </array>
+	 <key>CFBundleAllowMixedLocalizations</key>
+	 <true/>
 </dict>
 </plist>
