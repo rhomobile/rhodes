@@ -109,7 +109,7 @@ static RhoMapViewController *mc = nil;
 }
 
 - (void)close {
-    [self dismissModalViewControllerAnimated:YES]; 
+    [self dismissViewControllerAnimated:YES completion:nil]; 
     
 	UIWindow *window = [[Rhodes sharedInstance] rootWindow];
 
