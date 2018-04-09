@@ -54,8 +54,11 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
 
+extern bool isNewInstallation;
 static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned int ziplen);
 //const char* RhoGetRootPath();
+
+
 
 VALUE rho_sys_has_wifi_network();
 VALUE rho_sys_has_cell_network();
@@ -276,14 +279,16 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     BOOL restoreSymLinks_only = NO;
 
     BOOL contentChanged = force_update_content;
+
+    isNewInstallation = !(bool)([fileManager fileExistsAtPath:filePathOld]);
+
     if (nameChanged)
         contentChanged = YES;
 	else {
 		filePathNew = [bundleRoot stringByAppendingPathComponent:@"hash"];
 		filePathOld = [rhoRoot stringByAppendingPathComponent:@"hash"];
 
-        contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
-        
+        contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];        
         // check for lost sym-links (upgrade OS or reinstall application without change version)
         if (!contentChanged) {
             // check exist of sym-link

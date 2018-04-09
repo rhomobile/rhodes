@@ -38,6 +38,10 @@
 
 // (See cssmtype.h and cssmapple.h on the Mac OS X SDK.)
 
+extern "C" {
+bool isNewInstallation;
+};
+
 enum {
 	CSSM_ALGID_NONE =					0x00000000L,
 	CSSM_ALGID_VENDOR_DEFINED =			CSSM_ALGID_NONE + 0x80000000L,
@@ -459,6 +463,13 @@ void CRhoCryptImpl::generateNewKey()
 	
 void CRhoCryptImpl::initContext(const char* szPartition)
 {
+	if(isNewInstallation && !m_dbKeyData)
+	{
+	    deleteKeyFromStorageOld(getStorageKeyTagOld256(m_strDBPartition.c_str()));
+		deleteKeyFromStorageOld(getStorageKeyTagOld(m_strDBPartition.c_str()));
+		deleteKeyFromStorageNew(getStorageKeyTagNew256(m_strDBPartition.c_str()));
+		deleteKeyFromStorageNew(getStorageKeyTagNew(m_strDBPartition.c_str()));
+	}
     if ( m_dbKeyData )
         return;
 
