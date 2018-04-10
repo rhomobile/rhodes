@@ -25,8 +25,9 @@ DISTFILES += rpm/harbour-sailfishrhodes.changes.in \
     translations/*.ts \
     qml/harbour-sailfishrhodes.qml \
     qml/pages/MenuPage.qml \
-    qml/pages/FirstPage.qml \
-    privileges/harbour-sailfishrhodes
+    privileges/harbour-sailfishrhodes \
+    qml/pages/FirstPageWE.qml \
+    qml/pages/FirstPageWK.qml
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128
 

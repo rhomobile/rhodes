@@ -5,11 +5,12 @@
         QT -= core
     }
 
-    equals(QT_VERSION, 5.6.2) {
-        QT += core
-        DEFINES += OS_SAILFISH OS_LINUX
-        CONFIG += c++14
-        message(Deprecated sailfish webkit enabled)
+    equals(QT_MAJOR_VERSION, 5) {
+        equals(QT_MINOR_VERSION, 6) {
+            QT += core
+            DEFINES += OS_SAILFISH OS_LINUX
+            CONFIG += c++14
+        }
     }
 
     lessThan(QT_VERSION, 5.6.0): {

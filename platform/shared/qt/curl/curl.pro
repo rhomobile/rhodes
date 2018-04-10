@@ -4,8 +4,10 @@
         DEFINES += RHODES_VERSION_2
     }
 
-    equals(QT_VERSION, 5.6.2) {
-        DEFINES += OS_SAILFISH OS_LINUX
+    equals(QT_MAJOR_VERSION, 5) {
+        equals(QT_MINOR_VERSION, 6) {
+            DEFINES += OS_SAILFISH OS_LINUX
+        }
     }
 
     lessThan(QT_VERSION, 5.6.0): {

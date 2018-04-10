@@ -7,9 +7,8 @@
 #ifndef OS_SAILFISH
 #include <QMainWindow>
 #include <QApplication>
-#else
-#include "mainwindowinterface.h"
 #endif
+#include "mainwindowinterface.h"
 
 class IExecutable : public QObject
 {

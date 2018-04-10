@@ -12,11 +12,13 @@ greaterThan(QT_MAJOR_VERSION, 4):{
         DEFINES += RHODES_VERSION_1
     }
 
-    equals(QT_VERSION, 5.6.2) {
-        QT += webkit quick bluetooth dbus #widgets
-        DEFINES += OS_SAILFISH OS_LINUX
-        CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
-        message(Deprecated sailfish webkit enabled)
+    equals(QT_MAJOR_VERSION, 5) {
+        equals(QT_MINOR_VERSION, 6) {
+            QT += webkit quick bluetooth dbus #widgets
+            DEFINES += OS_SAILFISH OS_LINUX
+            CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
+            message(Deprecated sailfish webkit enabled)
+        }
     }
 
     greaterThan(QT_VERSION, 5.7.0): {
@@ -240,10 +242,6 @@ HEADERS += $$PWD/../sailfish/src/custommenuitem.h \
     $$PWD/../sailfish/src/QtMainWindow.h \
     $$PWD/../sailfish/src/RootDelegate.h \
     $$PWD/../sailfish/src/RhoNativeApiCall.h
-
-#DISTFILES += $$PWD/../sailfish/qml/harbour-sailfishrhodes.qml \
-#    $$PWD/../sailfish/qml/pages/FirstPage.qml \
-#    $$PWD/../sailfish/qml/pages/MenuPage.qml
 
 
 }

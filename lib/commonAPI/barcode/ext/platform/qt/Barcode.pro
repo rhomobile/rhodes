@@ -5,11 +5,13 @@ QT += core gui widgets multimedia network
         DEFINES += RHODES_VERSION_1
     }
 
-    equals(QT_VERSION, 5.6.2) {
-        QT += webkit widgets
-        DEFINES += OS_SAILFISH OS_LINUX
-        CONFIG += sailfishapp c++14 sailfishapp_i18n
-        message(Deprecated sailfish webkit enabled)
+    equals(QT_MAJOR_VERSION, 5) {
+        equals(QT_MINOR_VERSION, 6) {
+            QT += webkit widgets
+            DEFINES += OS_SAILFISH OS_LINUX
+            CONFIG += sailfishapp c++14 sailfishapp_i18n
+            message(Sailfish enabled)
+        }
     }
 
     greaterThan(QT_VERSION, 5.7.0): {

@@ -9,6 +9,7 @@ class RootDelegate : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString cover READ getCover WRITE setCover NOTIFY coverChanged)
+    Q_PROPERTY(bool webEngineEnabled READ getWebEngineEnabled CONSTANT)
 public:
     static RootDelegate * getInstance(QObject * parent = 0){
         static RootDelegate * instance = new RootDelegate(parent);
@@ -16,9 +17,14 @@ public:
     }
 
     QString cover;
+    bool webEngineEnabled;
+
+
 private:
     explicit RootDelegate(QObject *parent = 0) : QObject(parent)
-    {}
+    {
+        webEngineEnabled = false;
+    }
 signals:
     void coverChanged();
 
@@ -32,6 +38,12 @@ public slots:
         cover = value;
         coverChanged();
     }
+    bool getWebEngineEnabled() const
+    {
+        return webEngineEnabled;
+    }
 };
 
 #endif // ROOTDELEGATE_H
+
+

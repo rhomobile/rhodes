@@ -85,6 +85,8 @@ char* parseToken(const char* start)
     return value;
 }
 
+
+
 int main(int argc, char *argv[])
 {
     QScopedPointer<QGuiApplication> pApplication(SailfishApp::application(argc, argv));
@@ -105,6 +107,7 @@ int main(int argc, char *argv[])
 
     QWebSettings::globalSettings( )->setAttribute( QWebSettings::PrivateBrowsingEnabled, true );
     QWebSettings::globalSettings( )->setAttribute( QWebSettings::LocalContentCanAccessRemoteUrls, true );
+    QWebSettings::globalSettings( )->setAttribute( QWebSettings::OfflineWebApplicationCacheEnabled, true );
     QWebSettings::setMaximumPagesInCache( 0 );
     QWebSettings::setObjectCacheCapacities( 0, 0, 0 );
     QWebSettings::clearMemoryCaches( );

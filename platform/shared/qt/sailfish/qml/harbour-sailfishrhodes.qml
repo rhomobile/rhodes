@@ -4,8 +4,9 @@ import "pages"
 
 ApplicationWindow
 {
+    id: applicationWindow
+    initialPage: FirstPageWK { }
 
-    initialPage: Component{FirstPage { }}
     cover: Component {
         Cover {
             transparent: true
@@ -23,9 +24,26 @@ ApplicationWindow
         }
     }
 
-
-
     allowedOrientations: Orientation.All
+    states: [
+        State {
+           name: "webEngine"
+           PropertyChanges {
+               target: applicationWindow
+               initialPage: Component{FirstPageWE { }}
+           }
+        },
+        State {
+            name: "webKit"
+            PropertyChanges {
+                target: applicationWindow
+                initialPage: Component{FirstPageWK { }}
+            }
+        }
+    ]
+    Component.onCompleted: {
+        //applicationWindow.state = rootDelegate.webEngineEnabled ? "webEngine" : "webKit"
+    }
 }
 
 
