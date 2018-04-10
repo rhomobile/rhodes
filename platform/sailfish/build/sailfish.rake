@@ -152,26 +152,33 @@ namespace "config" do
       $version_app = "1.0"
     end
 
-    require 'nokogiri'
-    current_targets = File.join($qtdir, "mersdk", "targets", "targets.xml")
-    current_targets = current_targets.gsub("\\", "/")
+    if $app_config["sailfish"]["target_sdk"].nil?
+    
+      require 'nokogiri'
+      current_targets = File.join($qtdir, "mersdk", "targets", "targets.xml")
+      current_targets = current_targets.gsub("\\", "/")
 
-    doc = File.open(current_targets) { |f| Nokogiri::XML(f) }
-    $current_build_sdk_dir = ""
-    doc.xpath("//target").each do |t|
-      target = t.attr("name")
-      if target.include? $target_arch
-        $current_target = target
-
-        if isWindows?
-          $current_build_sdk_dir = File.join($qtdir, "settings", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", target)
-          $current_build_sdk_dir = $current_build_sdk_dir.gsub("\\", "/")
-        else
-          $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", target)
+      doc = File.open(current_targets) { |f| Nokogiri::XML(f) }
+      $current_build_sdk_dir = ""
+      doc.xpath("//target").each do |t|
+        target = t.attr("name")
+        if target.include? $target_arch
+          $current_target = target
+          break
         end
-        break
       end
+    else
+      $current_target = $app_config["sailfish"]["target_sdk"]
     end
+
+
+    if isWindows?
+      $current_build_sdk_dir = File.join($qtdir, "settings", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
+      $current_build_sdk_dir = $current_build_sdk_dir.gsub("\\", "/")
+    else
+      $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
+    end
+
 
     if $current_build_sdk_dir == ""
       raise "Build arch sdk not found!"
