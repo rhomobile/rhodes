@@ -39,6 +39,7 @@ class QtProjectGenerator
   attr_accessor :rhoRoot
   attr_accessor :extRoot
   attr_accessor :nameApp
+  attr_accessor :enableQWebEngine
   attr_accessor :versionApp
   attr_accessor :buildMode
 
@@ -245,6 +246,13 @@ namespace "config" do
       $build_threads = $app_config["sailfish"]["build_threads"]
     else
       $build_threads = 4
+    end
+
+    $enableQWebEngine = ""
+    if !$app_config["sailfish"]["enable_web_engine"].nil?
+      if (($app_config["sailfish"]["enable_web_engine"] == true) || ($app_config["sailfish"]["enable_web_engine"] == "true"))
+        $enableQWebEngine = "ENABLE_Q_WEB_ENGINE"
+      end
     end
 
     Rake::Task["build:sailfish:startvm"].invoke()
@@ -553,6 +561,7 @@ namespace "build"  do
         generator.extRoot = ext_path.gsub(File.expand_path('~'), "/home/mersdk/share")   
         generator.nameApp = $final_name_app 
         generator.buildMode = $connf_build
+        generator.enableQWebEngine = $enableQWebEngine
         
         mkdir_p File.join($project_path, ext.downcase)
 
@@ -621,6 +630,7 @@ namespace 'project' do
       generator = QtProjectGenerator.new
       generator.rhoRoot = $rhodes_path_build_engine
       generator.nameApp = $final_name_app
+      generator.enableQWebEngine = $enableQWebEngine
       generator.versionApp = $version_app     
       generator.buildMode = $connf_build
       

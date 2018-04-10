@@ -23,7 +23,11 @@ public:
 private:
     explicit RootDelegate(QObject *parent = 0) : QObject(parent)
     {
+#ifndef ENABLE_Q_WEB_ENGINE
         webEngineEnabled = false;
+#else
+        webEngineEnabled = true;
+#endif
     }
 signals:
     void coverChanged();

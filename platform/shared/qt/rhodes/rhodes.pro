@@ -14,7 +14,16 @@ greaterThan(QT_MAJOR_VERSION, 4):{
 
     equals(QT_MAJOR_VERSION, 5) {
         equals(QT_MINOR_VERSION, 6) {
-            QT += webkit quick bluetooth dbus #widgets
+            DEFINES += ENABLE_Q_WEB_ENGINE
+
+            !contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+                QT += webkit
+            }
+            contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+                QT += webengine
+            }
+
+            QT += quick bluetooth dbus #widgets
             DEFINES += OS_SAILFISH OS_LINUX
             CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
             message(Deprecated sailfish webkit enabled)

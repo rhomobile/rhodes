@@ -5,7 +5,13 @@ import "pages"
 ApplicationWindow
 {
     id: applicationWindow
-    initialPage: FirstPageWK { }
+
+    Loader {
+       id: firstPage
+       source: rootDelegate.webEngineEnabled ? "pages/FirstPageWE.qml" : "pages/FirstPageWK.qml"
+    }
+
+    initialPage: firstPage.item
 
     cover: Component {
         Cover {
@@ -16,34 +22,9 @@ ApplicationWindow
                 fillMode: Image.PreserveAspectFit
                 anchors.fill: parent
             }
-            /*Label {
-                anchors.centerIn: parent
-                font.pixelSize: Theme.fontSizeLarge
-                text: "Rho"
-            }*/
         }
     }
 
     allowedOrientations: Orientation.All
-    states: [
-        State {
-           name: "webEngine"
-           PropertyChanges {
-               target: applicationWindow
-               initialPage: Component{FirstPageWE { }}
-           }
-        },
-        State {
-            name: "webKit"
-            PropertyChanges {
-                target: applicationWindow
-                initialPage: Component{FirstPageWK { }}
-            }
-        }
-    ]
-    Component.onCompleted: {
-        //applicationWindow.state = rootDelegate.webEngineEnabled ? "webEngine" : "webKit"
-    }
+
 }
-
-

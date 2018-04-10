@@ -1,4 +1,13 @@
-QT += core gui network multimedia webkit bluetooth dbus
+QT += core gui network multimedia bluetooth dbus
+
+DEFINES += <%= @enableQWebEngine %>
+
+!contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+    QT += webkit
+}
+contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+    QT += webengine
+}
 
 message(Qt version: $$[QT_VERSION])
 
