@@ -245,7 +245,7 @@ namespace "config" do
     if !$app_config["sailfish"]["build_threads"].nil?
       $build_threads = $app_config["sailfish"]["build_threads"]
     else
-      $build_threads = 4
+      $build_threads = 1
     end
 
     $enableQWebEngine = ""
