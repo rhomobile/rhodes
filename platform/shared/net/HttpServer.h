@@ -170,6 +170,8 @@ private:
     callback_t registered(String const &uri);
     void call_ruby_proc( rho::String const &query, String const &body );
 
+    int select_internal( SOCKET listener, fd_set& readfds );
+
 private:
     bool m_active;
     int m_port;

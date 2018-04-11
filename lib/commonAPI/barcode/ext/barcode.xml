@@ -1,8 +1,8 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Barcode" parent="Rho" license="Required">
-
+    <MODULE name="Barcode" parent="Rho">
+0
         <ALIASES>
             <ALIAS new="Barcode" deprecated="true"/>
         </ALIASES>

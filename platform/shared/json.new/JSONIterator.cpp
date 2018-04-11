@@ -384,7 +384,7 @@ uint64 CJSONEntry::getUInt64(const char* name)
     uint64 nRes = 0;
     struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
     if ( obj != 0 )
-        nRes = (uint64)json_object_get_int(obj);
+        nRes = (uint64)json_object_get_int64(obj);
 
     return nRes;
 }
@@ -458,6 +458,49 @@ CJSONEntry CJSONEntry::getEntry(const char* name) const
     return quoteValue( rho::common::convertToStringA(strValue) );
 }
 
+
+//return size of UTF char ( 2,3,4 ) or 0 for invalid char
+static inline int isValidUTF8Sequence( const char* p, int maxLen )
+{
+//JNI would crash on 4bytes UTF
+#ifdef OS_ANDROID
+    static const int cMaxUtfSize = 3;
+#else
+    static const int cMaxUtfSize = 4;
+#endif
+
+    if ( maxLen > cMaxUtfSize ) {
+        maxLen = cMaxUtfSize;
+    }
+
+    int expectedLen = 0;
+    const char c = *p;
+
+    //determine sequence length from first char
+    //11110xxx = 4, 1110xxxx = 3, 110xxxxx = 2, treat 1-byte UTF as invalid
+#ifndef OS_ANDROID
+    if ( (c&0xF8)==0xF0 ) {
+        expectedLen = 4;
+    } else 
+#endif //OS_ANDROID
+    if ( (c&0xF0)==0xE0) {
+        expectedLen = 3;
+    } else if ( (c&0xE0)==0xC0) {
+        expectedLen = 2;
+    }
+
+    //no breaks here is intentional. Check rest bytes in sequence for valid mask: 10xxxxxx.
+    switch(expectedLen) {
+#ifndef OS_ANDROID
+        case 4: if ((p[3]&0xC0)!=0x80) return 0;
+#endif
+        case 3: if ((p[2]&0xC0)!=0x80) return 0;
+        case 2: if ((p[1]&0xC0)!=0x80) return 0;
+    }
+
+    return expectedLen;
+}
+
 /*static*/ String CJSONEntry::quoteValue(const String& strValue)
 {
     // string for symbols
@@ -468,7 +511,7 @@ CJSONEntry CJSONEntry::getEntry(const char* name) const
     // \" + <1 char per symbol in an average case> + \"
     strRes.reserve(strValue.length()+2);
     strRes += "\"";
-    
+
     size_t pos = 0, start_offset = 0, len = strValue.length();
     for(; pos < len; ++pos)
     {
@@ -497,9 +540,15 @@ CJSONEntry CJSONEntry::getEntry(const char* name) const
                     break;
             }
         } else if ( c >= 0x80 ) {
-            char buf[5];
-            sprintf( buf, "\\x%02x", (int)c );
-            sym += buf;
+            const char* pStr = &(strValue.c_str()[pos]);
+            int utfChars = isValidUTF8Sequence(pStr, len-pos);
+            if (utfChars > 1) { //valid 2-3-4 byte UTF8 sequence
+                pos += (utfChars-1); //shift position
+            } else { //assume a binary value, escape as byte
+                sym = "\\u00";
+                sym += json_hex_chars[c >> 4];
+                sym += json_hex_chars[c & 0xf];
+            }
         }
         else {
             switch (c) {

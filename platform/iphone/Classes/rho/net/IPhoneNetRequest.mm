@@ -574,7 +574,16 @@ public:
     
     [m_pReq setHTTPBodyStream:[NSInputStream inputStreamWithFileAtPath:m_multipartTempPath]];
     
-    NSDictionary *fileDictionary = [[NSFileManager defaultManager] fileAttributesAtPath:m_multipartTempPath traverseLink:YES];
+    NSDictionary *fileDictionary = nil;
+    {
+        NSString *fullPath = [m_multipartTempPath stringByResolvingSymlinksInPath];
+        NSError *error = nil;
+        fileDictionary = [[NSFileManager defaultManager] attributesOfItemAtPath:fullPath error:&error];
+    }
+    if (fileDictionary == nil) {
+        return false;
+    }
+      
     unsigned long fileSize = [fileDictionary fileSize];
     
     [m_pReq setValue:[NSString stringWithFormat:@"%lu",fileSize] forHTTPHeaderField:@"content-length"];

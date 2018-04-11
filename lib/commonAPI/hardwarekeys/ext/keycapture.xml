@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 
 <API>
-    <MODULE name="KeyCapture" parent="Rho" license="Required">
+    <MODULE name="KeyCapture" parent="Rho">
         <HELP_OVERVIEW>The KeyCapture module is used to intercept or override hardware keys. It is typically used to provide certain application functions through the use of the device's physical keyboard or other hardware enabled buttons.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API

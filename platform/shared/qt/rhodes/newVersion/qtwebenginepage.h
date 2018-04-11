@@ -17,6 +17,7 @@ protected:
     bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame);
 signals:
     void linkClicked();
+    void onLinkClicked(QUrl);
 public slots:
 };
 

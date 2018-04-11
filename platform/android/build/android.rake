@@ -285,7 +285,6 @@ namespace 'project' do
 
       project_template_path = File.join 'res','generators','templates','project','android_studio_project'
 
-
       main_gradle_script = File.join( project_template_path, 'build.gradle' )
       gradle_properties = File.join( project_template_path, 'gradle.properties' )
       gradlew = File.join( project_template_path, 'gradlew' )
@@ -294,7 +293,40 @@ namespace 'project' do
       app_gradle_template = File.join( project_template_path, 'app', 'build.gradle.erb' )
       project_path = File.join $app_path,'project','android_studio'
       project_app_path = File.join $app_path,'project','android_studio', 'app'
+
       cmake_template_path = File.join( project_template_path, 'app', 'CMakeLists.txt.erb' )
+      cmake_template_ruby = File.join( $shareddir, 'ruby', 'CMakeLists.txt.erb')
+      cmake_template_curl = File.join( $shareddir, 'curl', 'CMakeLists.txt.erb')
+      cmake_template_db = File.join( $shareddir, 'db', 'CMakeLists.txt.erb')
+      cmake_template_common = File.join( $shareddir, 'common', 'CMakeLists.txt.erb')
+      cmake_template_logging = File.join( $shareddir, 'logging', 'CMakeLists.txt.erb')
+      cmake_template_sync = File.join( $shareddir, 'sync', 'CMakeLists.txt.erb')
+      cmake_template_json = File.join( $shareddir, 'json.new', 'CMakeLists.txt.erb')
+      cmake_template_sqlite = File.join( $shareddir, 'sqlite', 'CMakeLists.txt.erb')
+      cmake_template_rhodes = File.join('platform', 'android', 'build', 'CMakeLists.txt.erb')
+
+      $abis = $app_config['android']['abis'] if $app_config["android"]
+      $abis = ['arm'] unless $abis
+      abi = $abis[0]
+      
+      realabi = 'armeabi' if abi == 'arm'
+
+      external_string = ''
+      ext_libs = ''
+      extlibs = Dir.glob(File.join($app_builddir, 'extensions', '**', realabi, 'lib*.a'))
+      extlibs.each do |lib|
+        extname = File.basename(lib).gsub('lib', '').gsub('.a', '')
+        external_string += ("add_library(#{extname} STATIC IMPORTED GLOBAL)\n" +        
+        "set_property(TARGET #{extname} PROPERTY IMPORTED_LOCATION #{lib})\n")
+        if extname == "coreapi"
+          next
+        end
+        ext_libs += ("#{extname}\n")
+      end
+      ext_libs += 'coreapi'
+
+
+
       cpp_stub_path = File.join( project_template_path, 'app', 'stub.cpp' )
 
       rhodes_path = File.absolute_path '.'
@@ -303,19 +335,51 @@ namespace 'project' do
       generator.rhoRoot = rhodes_path
       generator.buildToolsVersion = $build_tools_ver
       generator.applicationId = $app_package_name
-      generator.minSdkVersion = $min_sdk_level
-      generator.targetSdkVersion = $min_sdk_level > 14 ? $min_sdk_level : 14
+      generator.targetSdkVersion = $found_api_level
+      generator.minSdkVersion = $found_api_level
+      generator.appincdir = $appincdir
+      generator.buildMode = $debug ? 'Debug' : 'Release'
+      generator.externalDeps = external_string
+      generator.extLibs = ext_libs
+      generator.targetArch = realabi
 
       generator.compileSdkVersion = $found_api_level
       generator.versionName = $app_config["version"]
 
-
       mkdir_p File.join(project_path,'app')
+      mkdir_p File.join(project_app_path,'curl')
+      mkdir_p File.join(project_app_path,'rhodb')
+      mkdir_p File.join(project_app_path,'rhocommon')
+      mkdir_p File.join(project_app_path,'rhosync')
+      mkdir_p File.join(project_app_path,'sqlite')
+      mkdir_p File.join(project_app_path,'ruby')
+      mkdir_p File.join(project_app_path,'json')
+      mkdir_p File.join(project_app_path,'rholog')
+      mkdir_p File.join(project_app_path,'rhodes')
 
       app_gradle_path = File.join( project_path, 'app', 'build.gradle')
-      cmake_path = File.join( project_path, 'app', 'CMakeLists.txt')
+      cmake_path_main = File.join( project_path, 'app', 'CMakeLists.txt')
+      cmake_path_ruby = File.join( project_path, 'app', 'ruby', 'CMakeLists.txt')
+      cmake_path_curl = File.join( project_path, 'app', 'curl', 'CMakeLists.txt')
+      cmake_path_rhodb = File.join( project_path, 'app', 'rhodb', 'CMakeLists.txt')
+      cmake_path_rhocommon = File.join( project_path, 'app', 'rhocommon', 'CMakeLists.txt')
+      cmake_path_rhosync = File.join( project_path, 'app', 'rhosync', 'CMakeLists.txt')
+      cmake_path_sqlite = File.join( project_path, 'app', 'sqlite', 'CMakeLists.txt')
+      cmake_path_json = File.join( project_path, 'app', 'json', 'CMakeLists.txt')
+      cmake_path_rholog = File.join( project_path, 'app', 'rholog', 'CMakeLists.txt')
+      cmake_path_rhodes = File.join( project_path, 'app', 'rhodes', 'CMakeLists.txt')
+
       File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
-      File.open( cmake_path, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_path ) }
+      File.open( cmake_path_main, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_path ) }
+      File.open( cmake_path_ruby, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_ruby ) }
+      File.open( cmake_path_curl, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_curl ) }
+      File.open( cmake_path_rhodb, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_db ) }
+      File.open( cmake_path_rhocommon, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_common ) }
+      File.open( cmake_path_rhosync, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_sync ) }
+      File.open( cmake_path_sqlite, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_sqlite ) }
+      File.open( cmake_path_json, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_json ) }
+      File.open( cmake_path_rholog, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_logging ) }
+      File.open( cmake_path_rhodes, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_rhodes ) }
 
       cp main_gradle_script,  project_path
       cp gradle_properties,   project_path
@@ -401,6 +465,7 @@ namespace "config" do
 
     $java = $config["env"]["paths"]["java"]
 
+    $skip_so_build = false
     $neon_root = nil
     $neon_root = $config["env"]["paths"]["neon"] unless $config["env"]["paths"].nil?
     if !($app_config["paths"].nil? or $app_config["paths"]["neon"].nil?)
@@ -723,6 +788,8 @@ namespace "config" do
     $libname = {}
     $native_libs.each do |x|
       $objdir[x] = File.join($tmpdir, x)
+
+      #TODO: path is actually incorrect since library build splits it to dirname and basename inserting ABI in between. Not touching it right now not wanting to break things, but need to review/fix it eventually.
       $libname[x] = File.join($app_builddir, x, "lib#{x}.a")
     end
 
@@ -1528,6 +1595,8 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
+      args << "-I\"#{$shareddir}/ruby/include\""
+      args << "-I\"#{$shareddir}/ruby/android\""
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhodb_build.files')
@@ -1656,6 +1725,10 @@ namespace "build" do
 
     task :librhodes => [:libs, :extensions, :genconfig] do
       print_timestamp('build:android:librhodes START')
+      if $skip_so_build
+        puts "Skip building rhodes shared library"
+        return
+      end
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
 
       args = []
@@ -1705,8 +1778,9 @@ namespace "build" do
         
         deps = []
         libs = []
+
         $libname.each do |name, lib|
-          deps << lib
+          deps << File.join( File.dirname(lib), realabi, File.basename(lib) )
           libs << name
           args << "-L\"#{File.dirname(lib)}/#{realabi}\""
         end
@@ -1804,6 +1878,7 @@ namespace "build" do
 
       generator.versionName = $app_config["version"]
       generator.versionCode = version
+      generator.allowBackup = ($app_config["android"]["allowBackup"] == "false" ? "false" : "true") if $app_config["android"]
       generator.installLocation = 'auto'
       generator.minSdkVer = $min_sdk_level
       generator.targetSdkVer = $target_sdk_level
@@ -2599,6 +2674,25 @@ namespace "device" do
         raise "Error installing APK file"
       end
       puts "Install complete"
+    end
+
+    task :studio_build => ['config:android'] do
+      $skip_so_build = true
+      $abis = $app_config['android']['abis'] if $app_config["android"]
+      $abis = ['arm'] unless $abis
+      abi = $abis[0]
+      realabi = 'armeabi' if abi == 'arm'
+
+      project_app_path = File.join $app_path,'project','android_studio', 'app'
+      librhodes_path = File.join project_app_path, 'build', 'intermediates', 
+        'cmake', $debug ? 'debug' : 'release', 'obj', realabi, 'librhodes.so'
+
+      target_path = File.join $app_builddir, 'librhodes', 'lib', realabi
+      if !File.exists?(target_path) 
+        mkdir_p target_path
+      end
+      cp_r librhodes_path, target_path
+      Rake::Task["device:android:production"].invoke
     end
 
     desc "Build production signed for device"

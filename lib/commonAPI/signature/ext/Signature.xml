@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="Signature" parent="Rho" license="Required">
+    <MODULE name="Signature" parent="Rho">
         <HELP_OVERVIEW>creates a rectangular box within which the user can draw by using a finger or the device's stylus to record handwritten data. Common usages for this tag include the capture of client/customer signatures and the input of handwritten text/notations. It is recommended to not to rotate the device when Signature window is shown.</HELP_OVERVIEW>
         <MORE_HELP>
 ## Enabling the API

@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+project(rholog)      
+
+add_definitions(-DOS_ANDROID)
+
+set(SOURCE_LIB
+<%= @rhoRoot %>/platform/shared/logging/RhoLogConf.cpp
+<%= @rhoRoot %>/platform/shared/logging/RhoLogConf.cpp
+<%= @rhoRoot %>/platform/shared/logging/RhoLog.cpp
+<%= @rhoRoot %>/platform/shared/logging/RhoLogSink.cpp
+<%= @rhoRoot %>/platform/shared/logging/RhoPlainLog.cpp
+)
+
+include_directories(<%= @rhoRoot %>/platform/shared)
+
+add_library(rholog STATIC ${SOURCE_LIB})
+

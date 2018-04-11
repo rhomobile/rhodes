@@ -21,6 +21,9 @@ void QtWebEnginePage::javaScriptConsoleMessage(const QString& message, int lineN
 bool QtWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
 {
     bool flag = QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
+    if (type == QWebEnginePage::NavigationTypeLinkClicked){
+        emit onLinkClicked(url);
+    }
     emit linkClicked();
     return flag;
 }
