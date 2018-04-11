@@ -1784,7 +1784,9 @@ bool CDirectHttpRequestQueue::run( )
       
       if (rho_ruby_is_started() )
       {
+#ifndef RHO_NO_RUBY_API
           rb_thread_call_without_gvl(internal::lambda,&m_thread,0,0);
+#endif
       }
       else
       {
