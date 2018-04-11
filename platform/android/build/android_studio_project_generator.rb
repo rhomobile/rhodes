@@ -2,6 +2,11 @@ require 'erb'
 
 class AndroidStudioProjectGenerator
   attr_accessor :rhoRoot
+  attr_accessor :appincdir
+  attr_accessor :buildMode
+  attr_accessor :extLibs
+  attr_accessor :externalDeps
+  attr_accessor :targetArch
   attr_accessor :compileSdkVersion
   attr_accessor :buildToolsVersion
   attr_accessor :applicationId

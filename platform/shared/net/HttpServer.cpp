@@ -553,7 +553,7 @@ int CHttpServer::select_internal( SOCKET listener, fd_set& readfds )
         args.tv = tv;
 
         //NOTE: this is required to unlock Ruby VM globally which locks other threads by default. Omitting this will result in other threads freeze if started from Ruby
-        ret = (int)rb_thread_call_without_gvl(internal::lambda,&args,0,0);
+        ret = (int)(long)rb_thread_call_without_gvl(internal::lambda,&args,0,0);
     }
     else
     {
@@ -1780,17 +1780,24 @@ bool CDirectHttpRequestQueue::run( )
   do
   {
       
-      if (rho_ruby_is_started() ) {
-          rho_ruby_start_threadidle();
+      struct internal
+      {
+          static void* lambda(void* opaque)
+          {
+              common::CRhoThread* t = (common::CRhoThread*)opaque;
+              t->wait(-1);
+              return 0;
+          }
+      };
+      
+      if (rho_ruby_is_started() )
+      {
+          rb_thread_call_without_gvl(internal::lambda,&m_thread,0,0);
       }
-      
-     m_thread.wait(-1);
-
-      
-      if (rho_ruby_is_started() ) {
-          rho_ruby_stop_threadidle();
+      else
+      {
+          m_thread.wait(-1);
       }
-      
     
     if ( m_request != 0 )
     {

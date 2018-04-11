@@ -47,8 +47,19 @@
 #import "IPushNotificationsReceiver.h"
 #import "IAppMessageReceiver.h"
 
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+#import <UserNotifications/UserNotifications.h>;
+#endif
+
+// Copied from Apple's header in case it is missing in some cases (e.g. pre-Xcode 8 builds).
+#ifndef NSFoundationVersionNumber_iOS_9_x_Max
+#define NSFoundationVersionNumber_iOS_9_x_Max 1299
+#endif
+
+NSString *const kGCMMessageIDKey = @"gcm.message_id";
+
 @interface Rhodes : NSObject <UIApplicationDelegate,
-    UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate>
+    UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate, UNUserNotificationCenterDelegate>
 {
     AppManager *appManager;
     UIApplication *application;

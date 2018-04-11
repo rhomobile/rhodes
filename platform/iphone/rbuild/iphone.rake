@@ -24,6 +24,7 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), 'iphonecommon'))
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 
@@ -31,6 +32,9 @@ require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 $out_file_buf_enable = false
 $out_file_buf_path = 'rhobuildlog.txt'
 $out_file_buf = []
+APPLE_PUSH = 0
+FCM_PUSH = 1
+UNKNOWN_PUSH = -1
 
 puts 'iphone.rake execute' if USE_TRACES
 puts 'ENV["RHO_BUNDLE_BUILD_LOG_FILE"] = '+ENV["RHO_BUNDLE_BUILD_LOG_FILE"].to_s if USE_TRACES
@@ -370,7 +374,7 @@ def update_plist_procedure
         end
 
 
-         set_app_icon(false)
+         set_app_icon()
          set_default_images(false, hash)
       end
 end
@@ -408,40 +412,7 @@ def set_signing_identity(identity,profile,entitlements,provisioning_style,develo
   File.open(fname,"w") { |f| f.write(buf) }
 end
 
-BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon57.png', 'icon60.png', 'icon72.png', 'icon76.png', 'icon114.png', 'icon120.png', 'icon144.png', 'icon152.png', 'icon180.png', 'Info.plist', 'Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png', 'Default-667h@2x.png', 'Default-736h@3x.png', 'Default-812h@3x.png']
-CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-Portrait@2x.png', 'Default-PortraitUpsideDown.png', 'Default-PortraitUpsideDown@2x.png', 'Default-Landscape.png', 'Default-Landscape@2x.png', 'Default-LandscapeLeft.png', 'Default-LandscapeLeft@2x.png', 'Default-LandscapeRight.png', 'Default-LandscapeRight@2x.png', 'Default-568h@2x.png', 'Default-667h@2x.png', 'Default-736h@3x.png', 'Default-812h@3x.png']
 
-def make_project_bakup
-     BAKUP_FILES.each do |f|
-           filename_origin = $config["build"]["iphonepath"] + "/" +f
-           filename_bak = $config["build"]["iphonepath"] + "/project_bakup/" +f
-           is_folder = File.directory? filename_bak
-           if File.exists? filename_origin
-                if (!File.exists? filename_bak) && (!is_folder)
-                    bak_folder = $config["build"]["iphonepath"] + "/project_bakup"
-                    mkdir_p bak_folder
-                    cp_r filename_origin,filename_bak
-                end
-           end
-     end
-end
-
-def restore_project_from_bak
-    CLEAR_FILES.each do |f|
-        filename = $config["build"]["iphonepath"] + "/" +f
-        if File.exists? filename
-            rm_rf filename
-        end
-    end
-     BAKUP_FILES.each do |f|
-           filename_origin = $config["build"]["iphonepath"] + "/" +f
-           filename_bak = $config["build"]["iphonepath"] + "/project_bakup/" +f
-           if File.exists? filename_bak
-                   rm_rf filename_origin
-                   cp_r filename_bak,filename_origin
-           end
-     end
-end
 
 def make_app_info
   fname = File.join($app_path, 'bin', 'target', 'iOS', $sdk, $configuration, 'app_info.txt')
@@ -500,21 +471,23 @@ def prepare_production_ipa (app_path, app_name)
   return ipa_file_path
 end
 
-def copy_all_png_from_icon_folder_to_product(app_path)
-   rm_rf File.join(app_path, "*.png")
 
-   app_icon_folder = File.join($app_path, 'resources', 'ios')
-   if File.exists? app_icon_folder
-       # NEW resources
-       Dir.glob(File.join(app_icon_folder, "icon*.png")).each do |icon_file|
-         cp icon_file, app_path
-       end
-   else
-       app_icon_folder = File.join($app_path, 'icon')
-       Dir.glob(File.join(app_icon_folder, "*.png")).each do |icon_file|
-         cp icon_file, app_path
-       end
-   end
+#TODO: support assets !
+def copy_all_png_from_icon_folder_to_product(app_path)
+#   rm_rf File.join(app_path, "*.png")
+#
+#   app_icon_folder = File.join($app_path, 'resources', 'ios')
+#   if File.exists? app_icon_folder
+#       # NEW resources
+#       Dir.glob(File.join(app_icon_folder, "icon*.png")).each do |icon_file|
+#         cp icon_file, app_path
+#       end
+#   else
+#       app_icon_folder = File.join($app_path, 'icon')
+#       Dir.glob(File.join(app_icon_folder, "*.png")).each do |icon_file|
+#         cp icon_file, app_path
+#       end
+#   end
 end
 
 def prepare_production_plist (app_path, app_name)
@@ -548,55 +521,87 @@ def prepare_production_plist (app_path, app_name)
     fAlx.close()
 end
 
-ICONS = [['icon152','icon152'], ['icon76','icon76'], ['icon60','icon60'], ['icon120','icon120'], ['icon144','icon144'], ['icon57','icon57'], ['icon72','icon72'], ['icon114','icon114'], ['icon180', 'icon180']]
 
-def copy_all_icons_to_production_folder
-  ICONS.each do |pair|
+ICONS = [
+'icon20.png',
+'icon29.png',
+'icon40.png',
+'icon50.png',
+'icon57.png',
+'icon58.png',
+'icon60.png',
+'icon72.png',
+'icon76.png',
+'icon80.png',
+'icon87.png',
+'icon100.png',
+'icon114.png',
+'icon120.png',
+'icon144.png',
+'icon152.png',
+'icon167.png',
+'icon180.png',
+'icon1024.png']
 
-  end
-end
 
-def restore_app_icon
-  puts "restore icon"
-  #ipath = $config["build"]["iphonepath"]
-  ipath = $app_path + "/project/iphone"
-  ICONS.each do |pair|
-    name = pair[0]
-    ibak = File.join(ipath, name + '.bak')
-    icon = File.join(ipath, name + '.png')
-    next if !File.exists? ibak
-    rm_f icon
-    cp ibak, icon
-    rm_f ibak
-  end
-end
 
-def set_app_icon(make_bak)
+def set_app_icon
   puts "set icon"
   #ipath = $config["build"]["iphonepath"]
-  ipath = $app_path + "/project/iphone"
 
   begin
-    ICONS.each do |pair|
-      name = pair[0]
-      #ibak = File.join(ipath, name + '.bak')
-      icon = File.join(ipath, name + '.png')
-      appicon_old = File.join($app_path, 'icon', pair[1] + '.png')
-      appicon = appicon_old
-      appicon_new = File.join($app_path, 'resources', 'ios', pair[1] + '.png')
 
+    ICONS.each do |icon|
+      name = icon
+      ipath = $app_path + "/project/iphone/Media.xcassets/AppIcon.appiconset"
+      icon = File.join(ipath, name)
+      appicon_old = File.join($app_path, 'icon', name)
+      appicon = appicon_old
+      if icon == 'icon1024.png'
+          itunes_artwork_default = File.join($app_path, "resources","ios","iTunesArtwork.png")
+          itunes_artwork  = itunes_artwork_default
+          if !$app_config["iphone"].nil?
+            if !$app_config["iphone"]["production"].nil?
+              if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
+                art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+                if File.exists? art_test_name
+                  itunes_artwork = art_test_name
+                else
+                  art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
+                  if File.exists? art_test_name
+                    itunes_artwork = art_test_name
+                  else
+                    itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+                  end
+                end
+              end
+            end
+          end
+          itunes_artwork_2 = itunes_artwork
+          itunes_artwork_2 = itunes_artwork_2.gsub(".png", "@2x.png")
+          if itunes_artwork_2.index('@2x') == nil
+            itunes_artwork_2 = itunes_artwork_2.gsub(".PNG", "@2x.PNG")
+          end
+          if itunes_artwork_2.index('@2x') == nil
+            itunes_artwork_2 = itunes_artwork_2 + '@2x'
+          end
+
+          if File.exists? itunes_artwork_2
+              appicon = itunes_artwork_2
+          end
+      end
+      appicon_new = File.join($app_path, 'resources', 'ios', name)
       if File.exists? appicon_new
           appicon = appicon_new
       end
-
-      #if make_bak
-      #   cp icon, ibak unless File.exists? ibak
-      #end
       if File.exists? appicon
+          if File.exists? ipath
+            rm_f ipath
+          end
          cp appicon, ipath
       else
          #puts "WARNING: application should have next icon file : "+ name + '.png !!!'
-         BuildOutput.warning("Can not found next icon file : "+ name + '.png , Use default image !!!' )
+         BuildOutput.warning("Can not found next icon file : "+ name + ' , Use default Rhodes image !!!' )
       end
     end
   rescue => e
@@ -604,37 +609,22 @@ def set_app_icon(make_bak)
   end
 end
 
-LOADINGIMAGES = ['loading', 'loading@2x', 'loading-Portrait', 'loading-Portrait@2x', 'loading-PortraitUpsideDown', 'loading-PortraitUpsideDown@2x', 'loading-Landscape', 'loading-Landscape@2x', 'loading-LandscapeLeft', 'loading-LandscapeLeft@2x', 'loading-LandscapeRight', 'loading-LandscapeRight@2x', 'loading-568h@2x', 'loading-667h@2x', 'loading-736h@3x', 'loading-812h@3x']
 
-LOADINGIMAGES_PLIST = {
-    'Default.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default', 'UILaunchImageSize' => '{320,480}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '7.0'}},
-    'Default-568h@2x.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default-568h', 'UILaunchImageSize' => '{320, 568}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '8.0'}},
-    'Default-667h@2x.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default-667h', 'UILaunchImageSize' => '{375, 667}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '8.0'}},
-    'Default-736h@3x.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default-736h', 'UILaunchImageSize' => '{414, 736}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '8.0'}},
-    'Default-812h@3x.png' => {'plist_root' => 'UILaunchImages', 'plist_item' => {'UILaunchImageName' => 'Default-812h', 'UILaunchImageSize' => '{375, 812}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '11.0'}},
-    'Default-Portrait.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-Portrait', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'Portrait', 'UILaunchImageMinimumOSVersion' => '7.0'}},
-    'Default-Landscape.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-Landscape', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'Landscape', 'UILaunchImageMinimumOSVersion' => '7.0'}},
-    'Default-PortraitUpsideDown.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-PortraitUpsideDown', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'PortraitUpsideDown', 'UILaunchImageMinimumOSVersion' => '7.0'}},
-    'Default-LandscapeLeft.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-LandscapeLeft', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'LandscapeLeft', 'UILaunchImageMinimumOSVersion' => '7.0'}},
-    'Default-LandscapeRight.png' => {'plist_root' => 'UILaunchImages~ipad', 'plist_item' => {'UILaunchImageName' => 'Default-LandscapeRight', 'UILaunchImageSize' => '{768, 1024}', 'UILaunchImageOrientation' => 'LandscapeRight', 'UILaunchImageMinimumOSVersion' => '7.0'}},
-}
 
-def restore_default_images
-  puts "restore_default_images"
-  #ipath = $config["build"]["iphonepath"]
-  ipath = $app_path + "/project/iphone"
-  LOADINGIMAGES.each do |name|
-    defname = name.sub('loading', 'Default')
-    ibak = File.join(ipath, defname + '.bak')
-    imag = File.join(ipath, defname + '.png')
-    rm_f imag
-    next if !File.exists? ibak
-    rm_f imag
-    cp ibak, imag
-    rm_f ibak
-  end
-end
-
+LOADINGIMAGES = [
+'Default.png',
+'Default@2x.png',
+'Default-568h@2x.png',
+'Default-667h@2x.png',
+'Default-736h@3x.png',
+'Default-812h@3x.png',
+'Default-Portrait.png',
+'Default-Portrait@2x.png',
+'Default-Landscape.png',
+'Default-Landscape@2x.png',
+'Default-Landscape-736h@3x.png',
+'Default-Landscape-812h@3x.png'
+]
 
 def remove_lines_from_xcode_project(array_with_substrings)
     appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
@@ -658,17 +648,23 @@ end
 
 def set_default_images(make_bak, plist_hash)
   puts "set_default_images"
-  #ipath = $config["build"]["iphonepath"]
-  ipath = $app_path + "/project/iphone"
-  existing_loading_images = []
+  ipath = $app_path + "/project/iphone/Media.xcassets/LaunchImage.launchimage"
   begin
+
+    contents_json_fname = File.join($app_path, "/project/iphone/Media.xcassets/LaunchImage.launchimage/Contents.json")
+    contents_json = JSON.parse(File.read(contents_json_fname))
+    contents_json_was_changed = false
+
+    launch_image_is_valid = false
+
     LOADINGIMAGES.each do |name|
-      defname = name.sub('loading', 'Default')
-      #ibak = File.join(ipath, defname + '.bak')
-      imag = File.join(ipath, defname + '.png')
-      appimage = File.join($app_path, 'app', name + '.png')
-      appsimage = File.join($app_path, 'app', name + '.iphone.png')
-      resourcesiamge = File.join($app_path, 'resources', 'ios', defname + '.png')
+      oldname = name.sub('Default', 'loading')
+      imag = File.join(ipath, name)
+
+      appimage = File.join($app_path, 'app', oldname)
+      name_ios_ext = oldname.sub('.png', '.iphone.png')
+      appsimage = File.join($app_path, 'app', name_ios_ext)
+      resourcesiamge = File.join($app_path, 'resources', 'ios', name)
       if File.exists? appsimage
          appimage =  appsimage
       end
@@ -676,47 +672,51 @@ def set_default_images(make_bak, plist_hash)
          appimage =  resourcesiamge
       end
 
+      #bundlei = File.join($srcdir, defname + '.png')
       if File.exists? imag
-        #if make_bak
-        #   cp imag, ibak unless File.exists? ibak
-        #end
         rm_f imag
       end
-      #bundlei = File.join($srcdir, defname + '.png')
-      #cp appimage, bundlei unless !File.exist? appimage
-      if File.exists? appimage
-         cp appimage, imag
-         existing_loading_images << (defname + '.png')
+
+      if File.exist? appimage
+          #if File.exists? imag
+          #  rm_f imag
+          #end
+        puts "$$$ appimage = "+appimage
+        cp appimage, imag
+
+        if name != "Default.png"
+            # should be not just Default.png
+            launch_image_is_valid = true
+        end
+
+      else
+          puts "$$$ NO appimage = "+appimage
+          images = contents_json["images"]
+          images.each do |image|
+              if image["filename"] == name
+                  images.delete(image)
+                  contents_json_was_changed = true
+              end
+          end
+          BuildOutput.warning("Can not found next default file : "+ name + ' , removed from project but can be required for AppStore - please add this image if it required !!!' )
       end
     end
+    if contents_json_was_changed
+        content = JSON.generate(contents_json)
+        File.open( contents_json_fname, "w"){|file| file.write(content)}
+    end
+
+    if !launch_image_is_valid
+        # we shoud remove LaunchImage from project - app not has launch image
+        BuildOutput.warning("remove LaunchImage from project - because not found any applicable images (old 320x480 is not enough!)")
+        remove_lines_from_xcode_project(["ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;"])
+    end
+
   rescue => e
     puts "WARNING!!! Can not change default image: #{e.to_s}"
   end
 
-  # remove missed loading images from project
-
-  images_to_remove = []
-  LOADINGIMAGES.each do |name|
-     if !existing_loading_images.include?(name.sub('loading', 'Default') + '.png')
-        images_to_remove << (name.sub('loading', 'Default') + '.png')
-     end
-  end
-
-  plist_hash['UILaunchImages'] = []
-  plist_hash['UILaunchImages~ipad'] = []
-
-
-  existing_loading_images.each do |img|
-     plist_item = LOADINGIMAGES_PLIST[img]
-     if plist_item != nil
-        plist_hash[plist_item['plist_root']] << plist_item['plist_item']
-     end
-  end
-
-
-  remove_lines_from_xcode_project(images_to_remove)
 end
-
 
 def update_xcode_project_files_by_capabilities
     info_plist = $app_path + "/project/iphone/Info.plist"
@@ -726,6 +726,16 @@ def update_xcode_project_files_by_capabilities
     hash_info_plist = load_plist(info_plist)
     hash_dev_ent = load_plist(dev_ent)
     hash_prd_ent = load_plist(prd_ent)
+
+    #if($push_type == FCM_PUSH)
+      #framework_src = File.join($startdir, 'lib', 'extensions', 'fcm-push', 'ext', 'iphone', 'Frameworks')
+      #firebase_h_src = File.join($startdir, 'platform', 'iphone', 'Firebase.h')
+      #googleservice_plist_src = File.join($startdir, 'platform', 'iphone', 'GoogleService-Info.plist')
+      #framework_dst = File.join($app_path, 'project', 'iphone')
+      #cp_r framework_src, framework_dst
+      #cp_r firebase_h_src, framework_dst
+      #cp_r googleservice_plist_src, framework_dst
+    #end
 
     #bluetooth
     bt_capability = false
@@ -819,6 +829,61 @@ def update_xcode_project_files_by_capabilities
         hash_dev_ent.delete('aps-environment')
         hash_prd_ent.delete('aps-environment')
         remove_lines_from_xcode_project(['com.apple.Push = {enabled = 1;};'])
+    end
+
+    if $push_type == APPLE_PUSH || !push_capability
+      lines_to_delete = []
+      lines_to_delete << 'AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */; };'
+      lines_to_delete << 'AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */; };'
+      lines_to_delete << 'AC1F5D6120615B6C00B818B8 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */; };'
+      lines_to_delete << 'AC1F5D6220615B6C00B818B8 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */; };'
+      lines_to_delete << 'AC1F5D6320615B6C00B818B8 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */; };'
+      lines_to_delete << 'AC1F5D6420615B6C00B818B8 /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */; };'
+      lines_to_delete << 'AC1F5D6520615B6C00B818B8 /* FirebaseNanoPB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */; };'
+      lines_to_delete << 'AC1F5D6620615B6C00B818B8 /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */; };'
+      lines_to_delete << 'AC1F5D6720615B6C00B818B8 /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5E20615B6C00B818B8 /* nanopb.framework */; };'
+      lines_to_delete << 'AC1F5D6920615B8E00B818B8 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D6820615B8600B818B8 /* StoreKit.framework */; };'
+      lines_to_delete << 'ACB0C9CB2058111F00A7F5E0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */; };'
+
+      lines_to_delete << 'AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleToolboxForMac.framework; path = Frameworks/GoogleToolboxForMac.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMessaging.framework; path = Frameworks/FirebaseMessaging.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseNanoPB.framework; path = Frameworks/FirebaseNanoPB.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D5E20615B6C00B818B8 /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Frameworks/nanopb.framework; sourceTree = "<group>"; };'
+      lines_to_delete << 'AC1F5D6820615B8600B818B8 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };'
+      lines_to_delete << 'ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };'
+
+      lines_to_delete << 'AC1F5D6920615B8E00B818B8 /* StoreKit.framework */,'
+      lines_to_delete << 'AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework */,'
+      lines_to_delete << 'AC1F5D6120615B6C00B818B8 /* FirebaseCore.framework */,'
+      lines_to_delete << 'AC1F5D6220615B6C00B818B8 /* FirebaseCoreDiagnostics.framework */,'
+      lines_to_delete << 'AC1F5D6320615B6C00B818B8 /* FirebaseInstanceID.framework */,'
+      lines_to_delete << 'AC1F5D6420615B6C00B818B8 /* FirebaseMessaging.framework */,'
+      lines_to_delete << 'AC1F5D6520615B6C00B818B8 /* FirebaseNanoPB.framework */,'
+      lines_to_delete << 'AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework */,'
+      lines_to_delete << 'AC1F5D6720615B6C00B818B8 /* nanopb.framework */,'
+      lines_to_delete << 'AC1F5D6620615B6C00B818B8 /* Protobuf.framework */,'
+
+      lines_to_delete << 'ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */,'
+
+      lines_to_delete << 'AC1F5D6820615B8600B818B8 /* StoreKit.framework */,'
+      lines_to_delete << 'AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */,'
+      lines_to_delete << 'AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */,'
+      lines_to_delete << 'AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */,'
+      lines_to_delete << 'AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */,'
+      lines_to_delete << 'AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */,'
+      lines_to_delete << 'AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */,'
+      lines_to_delete << 'AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */,'
+      lines_to_delete << 'AC1F5D5E20615B6C00B818B8 /* nanopb.framework */,'
+      lines_to_delete << 'AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */,'
+
+      lines_to_delete << 'ACB0C9CB2058111F00A7F5E0 /* GoogleService-Info.plist in Resources */,'
+
+      remove_lines_from_xcode_project(lines_to_delete)
     end
 
     #keychain access
@@ -955,8 +1020,20 @@ namespace "config" do
 
   namespace "iphone" do
     task :app_config do
-      if $app_config['capabilities'].index('push')
-        $app_config['extensions'] << 'applePush' unless $app_config['extensions'].index('applePush')
+      
+      if $app_config['extensions'].index('fcm-push') || 
+        (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].nil? && 
+          $app_config['iphone']['extensions'].index('fcm-push') )
+        $push_type = FCM_PUSH
+        puts 'Its fcm push'
+      elsif $app_config['extensions'].index('applePush') || 
+        (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].nil? &&
+          !$app_config['iphone']['extensions'].index('applePush') )
+        $push_type = APPLE_PUSH
+        puts 'Its apple push'
+      elsif $app_config['capabilities'].index('push')
+        $app_config['extensions'] << 'applePush'
+        $push_type = APPLE_PUSH
       end
 
       $file_map_name = "rhofilelist.txt"
@@ -1284,7 +1361,7 @@ namespace "config" do
     #xcode_configuration = ENV['CONFIGURATION']
     #$configuration = xcode_configuration if not xcode_configuration.nil?
 
-    make_project_bakup
+    #make_project_bakup
   end
 end
 
@@ -1702,6 +1779,8 @@ namespace "build" do
       # added by dmitrys
       ENV["XCODEBUILD"] = $xcodebuild
       ENV["CONFIGURATION"] ||= $configuration
+
+      ENV["RHO_APP_DIR"] = $app_path
 
 
 
@@ -2186,7 +2265,6 @@ namespace "build" do
       #cp properties_src, properties_dst
       Jake.copyIfNeeded properties_src, properties_dst
 
-
       # old code for use prebuild libraries:
 
       #copy libCoreAPI.a and Rhodes.a
@@ -2221,11 +2299,6 @@ namespace "build" do
 
     end
 
-
-    #[build:iphone:restore_xcode_project]
-    task :restore_xcode_project => ["config:iphone"] do
-       restore_project_from_bak
-    end
 
     #[build:iphone:setup_xcode_project]
     desc "make/change generated XCode project for build application"
@@ -2264,7 +2337,7 @@ namespace "build" do
               rm_rf File.join('project','iphone','toremoved')
               rm_rf File.join('project','iphone','toremovef')
             end
-
+            
             update_xcode_project_files_by_capabilities
 
         else
@@ -2335,56 +2408,6 @@ namespace "build" do
 
       Rake::Task['build:bundle:prepare_native_generated_files'].invoke
 
-      #iTunesArtwork
-        itunes_artwork_in_project = File.join($app_path, "project","iphone","iTunesArtwork")
-        itunes_artwork_in_project_2 = File.join($app_path, "project","iphone","iTunesArtwork@2x")
-        itunes_artwork = File.join($app_path, "project","iphone","iTunesArtwork")
-
-      itunes_artwork_new = File.join($app_path, "resources","ios","iTunesArtwork.png")
-      if File.exists? itunes_artwork_new
-          itunes_artwork = itunes_artwork_new
-      end
-
-
-      if !$app_config["iphone"].nil?
-        if !$app_config["iphone"]["production"].nil?
-          if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
-            art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
-            if File.exists? art_test_name
-              itunes_artwork = art_test_name
-            else
-              art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
-              if File.exists? art_test_name
-                itunes_artwork = art_test_name
-              else
-                itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
-              end
-            end
-          end
-        end
-      end
-
-      itunes_artwork_2 = itunes_artwork
-      itunes_artwork_2 = itunes_artwork_2.gsub(".png", "@2x.png")
-      if itunes_artwork_2.index('@2x') == nil
-        itunes_artwork_2 = itunes_artwork_2.gsub(".PNG", "@2x.PNG")
-      end
-      if itunes_artwork_2.index('@2x') == nil
-        itunes_artwork_2 = itunes_artwork_2 + '@2x'
-      end
-
-      if itunes_artwork != itunes_artwork_in_project
-        rm_rf itunes_artwork_in_project
-        cp itunes_artwork,itunes_artwork_in_project
-      else
-        BuildOutput.warning("iTunesArtwork (image required for iTunes) not found - use default !!!" )
-      end
-      if (File.exists? itunes_artwork_2) && (itunes_artwork_2 != itunes_artwork_in_project_2)
-        rm_rf itunes_artwork_in_project_2
-        cp itunes_artwork_2,itunes_artwork_in_project_2
-      else
-        BuildOutput.warning("iTunesArtwork@2x (image required for iTunes) not found - use default !!!" )
-      end
 
       rm_rf File.join('project','iphone','toremoved')
       rm_rf File.join('project','iphone','toremovef')

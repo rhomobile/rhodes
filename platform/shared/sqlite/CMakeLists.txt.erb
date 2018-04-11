@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+project(sqlite)
+
+add_definitions(-DOS_ANDROID)
+
+set(SOURCE_LIB
+<%= @rhoRoot %>/platform/shared/sqlite/sqlite3.c
+)
+
+include_directories(<%= @rhoRoot %>/platform/shared)
+
+add_library(sqlite STATIC ${SOURCE_LIB})
+

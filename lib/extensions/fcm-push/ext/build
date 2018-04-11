@@ -1,9 +1,13 @@
 #!/bin/sh
 
-
 if [ "$RHO_PLATFORM" = "android" ]; then
 
-cd android
+cd ./android
+rake --trace
+
+elif [ "$RHO_PLATFORM" = "iphone" ]; then
+
+cd ./iphone
 rake --trace
 
 fi

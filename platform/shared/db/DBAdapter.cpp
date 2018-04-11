@@ -23,7 +23,6 @@
 * 
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
-
 #include "DBAdapter.h"
 #include "sync/RhoconnectClientManager.h"
 
@@ -44,6 +43,7 @@
 #include "DBRequestHelper.h"
 
 #include <sstream>
+
 
 #undef DEBUG_SQL_TRACE
 

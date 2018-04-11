@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+project(rhosync)      
+
+add_definitions(-DOS_ANDROID)
+
+set(SOURCE_LIB
+<%= @rhoRoot %>/platform/shared/sync/RhoconnectClientManager.cpp
+)
+
+include_directories(<%= @rhoRoot %>/platform/shared/sync)
+include_directories(<%= @rhoRoot %>/platform/shared)
+include_directories(<%= @rhoRoot %>/platform/shared/sqlite)
+
+add_library(rhosync STATIC ${SOURCE_LIB})
+

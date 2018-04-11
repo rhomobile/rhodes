@@ -84,6 +84,9 @@ extern void init_rhoext_Signature();
 extern void Init_encdb(void);
 extern void ruby_init_prelude(void);
 extern void Init_transcode(void);
+extern void Init_IO(void);
+extern void Init_wait(void);
+extern void Init_nonblock(void);
 
 
 //RhoSupport extension
@@ -196,6 +199,11 @@ void RhoRubyStart()
 #endif
 
     ruby_init();
+
+    Init_IO();
+    Init_wait();
+    Init_nonblock();
+
     Init_encdb();
 #if defined(OS_MACOSX) || defined(OS_ANDROID)
     Init_transcode();

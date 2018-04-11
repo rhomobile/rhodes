@@ -54,8 +54,11 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
 
+extern bool isNewInstallation;
 static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned int ziplen);
 //const char* RhoGetRootPath();
+
+
 
 VALUE rho_sys_has_wifi_network();
 VALUE rho_sys_has_cell_network();
@@ -186,8 +189,10 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 		NSError *error;
 		[fileManager removeItemAtPath:appPath error:&error];
 	}
-    [fileManager createDirectoryAtPath:appPath attributes:NULL];
-	
+    {
+        NSError* error;
+        [fileManager createDirectoryAtPath:appPath withIntermediateDirectories:YES attributes:nil error:&error];
+    }
 	static char appRoot[FILENAME_MAX];
 	[appPath getFileSystemRepresentation:appRoot maxLength:sizeof(appRoot)];
 	return UnzipApplication( appRoot, [appData bytes], [appData length]);
@@ -203,9 +208,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 	
 	if (!remove && dir) {
         NSError *error;
-		if (![fileManager fileExistsAtPath:target])
+        if (![fileManager fileExistsAtPath:target]) {
 			[fileManager createDirectoryAtPath:target withIntermediateDirectories:YES attributes:nil error:&error];
-		
+        }
 		NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:source];
 		NSString *child;
 		while (child = [enumerator nextObject]) {
@@ -274,14 +279,16 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     BOOL restoreSymLinks_only = NO;
 
     BOOL contentChanged = force_update_content;
+
+    isNewInstallation = !(bool)([fileManager fileExistsAtPath:filePathOld]);
+
     if (nameChanged)
         contentChanged = YES;
 	else {
 		filePathNew = [bundleRoot stringByAppendingPathComponent:@"hash"];
 		filePathOld = [rhoRoot stringByAppendingPathComponent:@"hash"];
 
-        contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
-        
+        contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];        
         // check for lost sym-links (upgrade OS or reinstall application without change version)
         if (!contentChanged) {
             // check exist of sym-link

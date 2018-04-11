@@ -78,6 +78,7 @@ $app_basedir = pwd
 $is_webkit_engine = false
 $startdir = File.dirname(__FILE__)
 $startdir.gsub!('\\', '/')
+$push_type = -1
 
 chdir File.dirname(__FILE__), :verbose => (Rake.application.options.trace == true)
 

@@ -1,0 +1,370 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AC380131206025C9005A40FF /* Firebase.h in Headers */ = {isa = PBXBuildFile; fileRef = AC380127206025C9005A40FF /* Firebase.h */; };
+		AC38018C2061324D005A40FF /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC3801832061324C005A40FF /* GoogleToolboxForMac.framework */; };
+		AC38018D2061324D005A40FF /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC3801842061324C005A40FF /* FirebaseMessaging.framework */; };
+		AC38018E2061324D005A40FF /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC3801852061324C005A40FF /* FirebaseCore.framework */; };
+		AC38018F2061324D005A40FF /* FirebaseNanoPB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC3801862061324C005A40FF /* FirebaseNanoPB.framework */; };
+		AC3801902061324D005A40FF /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC3801872061324C005A40FF /* nanopb.framework */; };
+		AC3801912061324D005A40FF /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC3801882061324C005A40FF /* FirebaseCoreDiagnostics.framework */; };
+		AC3801922061324D005A40FF /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC3801892061324C005A40FF /* Protobuf.framework */; };
+		AC3801932061324D005A40FF /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC38018A2061324D005A40FF /* FirebaseInstanceID.framework */; };
+		AC3801942061324D005A40FF /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC38018B2061324D005A40FF /* FirebaseAnalytics.framework */; };
+		FAC155E7145855CF0016F3BD /* applePush_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* applePush_Prefix.pch */; };
+		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+		FACF84D118C7DC0C00871A64 /* applepushclient.mm in Sources */ = {isa = PBXBuildFile; fileRef = FACF84CD18C7DC0C00871A64 /* applepushclient.mm */; };
+		FACF84D218C7DC0C00871A64 /* applepushclient.h in Headers */ = {isa = PBXBuildFile; fileRef = FACF84CE18C7DC0C00871A64 /* applepushclient.h */; };
+		FACF84D318C7DC0C00871A64 /* PushNotificationsReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = FACF84CF18C7DC0C00871A64 /* PushNotificationsReceiver.h */; };
+		FACF84D418C7DC0C00871A64 /* PushNotificationsReceiver.mm in Sources */ = {isa = PBXBuildFile; fileRef = FACF84D018C7DC0C00871A64 /* PushNotificationsReceiver.mm */; };
+		FACF84D618C7E08F00871A64 /* applePushSetup.c in Sources */ = {isa = PBXBuildFile; fileRef = FACF84D518C7E08F00871A64 /* applePushSetup.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AC380127206025C9005A40FF /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
+		AC38018120603829005A40FF /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };
+		AC3801832061324C005A40FF /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleToolboxForMac.framework; path = Frameworks/GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		AC3801842061324C005A40FF /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMessaging.framework; path = Frameworks/FirebaseMessaging.framework; sourceTree = "<group>"; };
+		AC3801852061324C005A40FF /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };
+		AC3801862061324C005A40FF /* FirebaseNanoPB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseNanoPB.framework; path = Frameworks/FirebaseNanoPB.framework; sourceTree = "<group>"; };
+		AC3801872061324C005A40FF /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Frameworks/nanopb.framework; sourceTree = "<group>"; };
+		AC3801882061324C005A40FF /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
+		AC3801892061324C005A40FF /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };
+		AC38018A2061324D005A40FF /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };
+		AC38018B2061324D005A40FF /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libfcm-push.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libfcm-push.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FACF84CD18C7DC0C00871A64 /* applepushclient.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = applepushclient.mm; path = impl/applepushclient.mm; sourceTree = "<group>"; };
+		FACF84CE18C7DC0C00871A64 /* applepushclient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = applepushclient.h; path = impl/applepushclient.h; sourceTree = "<group>"; };
+		FACF84CF18C7DC0C00871A64 /* PushNotificationsReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PushNotificationsReceiver.h; path = impl/PushNotificationsReceiver.h; sourceTree = "<group>"; };
+		FACF84D018C7DC0C00871A64 /* PushNotificationsReceiver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = PushNotificationsReceiver.mm; path = impl/PushNotificationsReceiver.mm; sourceTree = "<group>"; };
+		FACF84D518C7E08F00871A64 /* applePushSetup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = applePushSetup.c; path = impl/applePushSetup.c; sourceTree = "<group>"; };
+		FAD45FD51225FED600141873 /* applePush_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = applePush_Prefix.pch; sourceTree = "<group>"; };
+		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC38018C2061324D005A40FF /* GoogleToolboxForMac.framework in Frameworks */,
+				AC38018E2061324D005A40FF /* FirebaseCore.framework in Frameworks */,
+				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
+				AC3801902061324D005A40FF /* nanopb.framework in Frameworks */,
+				AC38018F2061324D005A40FF /* FirebaseNanoPB.framework in Frameworks */,
+				AC3801912061324D005A40FF /* FirebaseCoreDiagnostics.framework in Frameworks */,
+				AC38018D2061324D005A40FF /* FirebaseMessaging.framework in Frameworks */,
+				AC3801932061324D005A40FF /* FirebaseInstanceID.framework in Frameworks */,
+				AC3801942061324D005A40FF /* FirebaseAnalytics.framework in Frameworks */,
+				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
+				AC3801922061324D005A40FF /* Protobuf.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libfcm-push.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* applePush */ = {
+			isa = PBXGroup;
+			children = (
+				AC380127206025C9005A40FF /* Firebase.h */,
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = applePush;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AC38018B2061324D005A40FF /* FirebaseAnalytics.framework */,
+				AC3801852061324C005A40FF /* FirebaseCore.framework */,
+				AC3801882061324C005A40FF /* FirebaseCoreDiagnostics.framework */,
+				AC38018A2061324D005A40FF /* FirebaseInstanceID.framework */,
+				AC3801842061324C005A40FF /* FirebaseMessaging.framework */,
+				AC3801862061324C005A40FF /* FirebaseNanoPB.framework */,
+				AC3801832061324C005A40FF /* GoogleToolboxForMac.framework */,
+				AC3801872061324C005A40FF /* nanopb.framework */,
+				AC3801892061324C005A40FF /* Protobuf.framework */,
+				AC38018120603829005A40FF /* StoreKit.framework */,
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FAD4602C12260A8500141873 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FA3E1F161779EF7600F5E33A /* impl */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* applePush_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		FA3E1F161779EF7600F5E33A /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FACF84D518C7E08F00871A64 /* applePushSetup.c */,
+				FACF84CD18C7DC0C00871A64 /* applepushclient.mm */,
+				FACF84CE18C7DC0C00871A64 /* applepushclient.h */,
+				FACF84CF18C7DC0C00871A64 /* PushNotificationsReceiver.h */,
+				FACF84D018C7DC0C00871A64 /* PushNotificationsReceiver.mm */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FACF84D218C7DC0C00871A64 /* applepushclient.h in Headers */,
+				AC380131206025C9005A40FF /* Firebase.h in Headers */,
+				FAC155E7145855CF0016F3BD /* applePush_Prefix.pch in Headers */,
+				FACF84D318C7DC0C00871A64 /* PushNotificationsReceiver.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* fcm-push */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "fcm-push" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "fcm-push";
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libfcm-push.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "fcm-push" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* applePush */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* fcm-push */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FACF84D118C7DC0C00871A64 /* applepushclient.mm in Sources */,
+				FACF84D618C7E08F00871A64 /* applePushSetup.c in Sources */,
+				FACF84D418C7DC0C00871A64 /* PushNotificationsReceiver.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes",
+					"$(RHO_ROOT)/platform/iphone/Classes/NativeView",
+					"$(RHO_ROOT)/platform/iphone/Classes/Signature",
+					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
+					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
+					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes",
+					"$(RHO_ROOT)/platform/iphone/Classes/NativeView",
+					"$(RHO_ROOT)/platform/iphone/Classes/Signature",
+					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
+					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
+					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = "/tmp/fcm-push.dst";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = applePush_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes",
+					"$(RHO_ROOT)/platform/iphone/Classes/NativeView",
+					"$(RHO_ROOT)/platform/iphone/Classes/Signature",
+					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
+					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
+					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
+				);
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = "fcm-push";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = "/tmp/fcm-push.dst";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = applePush_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes",
+					"$(RHO_ROOT)/platform/iphone/Classes/NativeView",
+					"$(RHO_ROOT)/platform/iphone/Classes/Signature",
+					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
+					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
+					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
+				);
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = "fcm-push";
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "fcm-push" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "fcm-push" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}
