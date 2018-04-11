@@ -39,6 +39,7 @@ class QtProjectGenerator
   attr_accessor :rhoRoot
   attr_accessor :extRoot
   attr_accessor :nameApp
+  attr_accessor :desktopAppName
   attr_accessor :enableQWebEngine
   attr_accessor :versionApp
   attr_accessor :buildMode
@@ -559,6 +560,7 @@ namespace "build"  do
         generator = QtProjectGenerator.new
         generator.rhoRoot = $rhodes_path_build_engine   
         generator.extRoot = ext_path.gsub(File.expand_path('~'), "/home/mersdk/share")   
+        generator.desktopAppName = $appname
         generator.nameApp = $final_name_app 
         generator.buildMode = $connf_build
         generator.enableQWebEngine = $enableQWebEngine
@@ -629,6 +631,7 @@ namespace 'project' do
 
       generator = QtProjectGenerator.new
       generator.rhoRoot = $rhodes_path_build_engine
+      generator.desktopAppName = $appname
       generator.nameApp = $final_name_app
       generator.enableQWebEngine = $enableQWebEngine
       generator.versionApp = $version_app     
