@@ -93,6 +93,8 @@ char* parseToken(const char* start)
 
 int main(int argc, char *argv[])
 {
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling); // DPI support
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps); //HiDPI pixmaps
 #ifdef ENABLE_Q_WEB_ENGINE
     QString debugAddress;
     foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {

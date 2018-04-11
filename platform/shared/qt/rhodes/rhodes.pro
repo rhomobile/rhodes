@@ -14,7 +14,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
 
     equals(QT_MAJOR_VERSION, 5) {
         equals(QT_MINOR_VERSION, 6) {
-            DEFINES += ENABLE_Q_WEB_ENGINE
+            #DEFINES += ENABLE_Q_WEB_ENGINE
 
             !contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
                 QT += webkit
@@ -31,7 +31,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
     }
 
     greaterThan(QT_VERSION, 5.7.0): {
-        QT += webengine webenginecore webenginewidgets
+        QT += webengine webenginecore webenginewidgets multimediawidgets bluetooth dbus
         message(Webengine enabled)
         CONFIG += c++14
         DEFINES += RHODES_VERSION_2
@@ -200,8 +200,6 @@ QtCustomStyle.h\
 mainwindowinterface.h \
 guithreadfunchelper.h \
     impl/notificationsound.h \
-    ../../net/ssl.h \
-    ../../unzip/zip.h \
     impl/bluetooth/bluetoothhelper.h \
     impl/bluetooth/bluetoothserver.h \
     impl/bluetooth/bluetoothclient.h \
@@ -233,8 +231,6 @@ impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
 ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp \
     impl/notificationsound.cpp \
-    ../../net/ssl.cpp \
-    ../../unzip/zip.cpp \
     ../../../../lib/commonAPI/coreapi/ext/shared/SystemImplBase.cpp
 #TODO: make this like normal developer do
 
@@ -242,6 +238,8 @@ contains(DEFINES, OS_SAILFISH)  {
 SOURCES += \
     $$PWD/../sailfish/src/main.cpp \
     $$PWD/../sailfish/src/QtMainWindow.cpp \
+    ../../net/ssl.cpp \
+    ../../unzip/zip.cpp \
     $$PWD/../sailfish/src/RhoNativeApiCall.cpp
 
 HEADERS += $$PWD/../sailfish/src/custommenuitem.h \
@@ -250,6 +248,8 @@ HEADERS += $$PWD/../sailfish/src/custommenuitem.h \
     $$PWD/../sailfish/src/QtLogView.h \
     $$PWD/../sailfish/src/QtMainWindow.h \
     $$PWD/../sailfish/src/RootDelegate.h \
+    ../../net/ssl.h \
+    ../../unzip/zip.h \
     $$PWD/../sailfish/src/RhoNativeApiCall.h
 
 
@@ -324,6 +324,8 @@ newVersion/WebUrlRequestInterceptor.cpp
 }
 RESOURCES += resources/common.qrc
 
+
+contains(DEFINES, OS_SAILFISH)  {
 unix:!macx:
 LIBS += -L$$PWD/../../../linux/bin/sqlite3/ -lsqlite3
 INCLUDEPATH += $$PWD/../../sqlite
@@ -365,3 +367,4 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-
 
 unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lserialport
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libserialport.a
+}

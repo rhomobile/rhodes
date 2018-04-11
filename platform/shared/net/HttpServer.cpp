@@ -36,11 +36,11 @@
 
 #include <algorithm>
 #include <iterator>
-
+#ifndef OS_WINDOWS_DESKTOP
 #include <pthread.h>
 #include <sched.h>
 #include <errno.h>
-
+#endif
 //#include <errno.h>
 
 

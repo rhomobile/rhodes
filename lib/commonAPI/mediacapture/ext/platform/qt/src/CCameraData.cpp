@@ -75,9 +75,8 @@ CCameraData::CCameraData(QCameraInfo &info):CameraDialogController(0){
     else{
         cameraType = QString::fromStdString(rho::ICamera::CAMERA_TYPE_FRONT);
     } 
-#else
-
     connect(getQMainWindow(), SIGNAL(captured(QString)), this, SLOT(captured(QString)));
+#else   
     cameraID = QString::fromStdString(rho::ICamera::CAMERA_TYPE_BACK);
     cameraType = QString::fromStdString(rho::ICamera::CAMERA_TYPE_BACK);
     connect(this, SIGNAL(openCameraDialog(QString)),
@@ -152,7 +151,7 @@ void CCameraData::captured(QString fileName){
 
             //QFile::copy(fileName, targetPath);
 
-
+        qDebug() << "Target path is " + targetPath;
         mapRes["status"] = "ok";
         mapRes["imageUri"] = targetPath.toStdString();
     }else{

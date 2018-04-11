@@ -125,9 +125,10 @@ void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE d
 {
     int size = rho_ruby_unpack_byte_array(data, 0, 0);
     if (size > 0){
-        char buf[size];
+        char * buf = new char[size];
         size = rho_ruby_unpack_byte_array(data, (unsigned char *) buf, size);
         QString str = QString::fromLocal8Bit(buf, size);
+        delete [] buf;
         BluetoothThread::getInstance()->sendMessage(QString::fromLocal8Bit(connected_device_name), str);
     }
 }

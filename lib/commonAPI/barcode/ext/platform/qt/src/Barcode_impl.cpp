@@ -107,7 +107,9 @@ IBarcode* CBarcodeFactory::createModuleByID(const rho::String& strID)
 
 IBarcodeSingleton* CBarcodeFactory::createModuleSingleton()
 {
+    #ifdef OS_SAILFISH
     BarcodeQMLModel::getInstance();
+    #endif
     BarCodeController::refresh();
     static IBarcodeSingleton* instance = new CBarcodeSingleton();
     return instance;

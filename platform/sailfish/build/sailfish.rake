@@ -120,7 +120,7 @@ namespace "config" do
     if $config["env"]["paths"]["sailfish"].nil?
       raise "Please set path to sailfish sdk in rhobuld.yaml"
     end
-    $qtdir = $config["env"]["paths"]["sailfish"]
+    $sailfishdir = $config["env"]["paths"]["sailfish"]
 
 
     if !$app_config.nil? && !$app_config["sailfish"].nil?
@@ -156,7 +156,7 @@ namespace "config" do
     if $app_config["sailfish"]["target_sdk"].nil?
     
       require 'nokogiri'
-      current_targets = File.join($qtdir, "mersdk", "targets", "targets.xml")
+    current_targets = File.join($sailfishdir, "mersdk", "targets", "targets.xml")
       current_targets = current_targets.gsub("\\", "/")
 
       doc = File.open(current_targets) { |f| Nokogiri::XML(f) }
@@ -174,7 +174,7 @@ namespace "config" do
 
 
     if isWindows?
-      $current_build_sdk_dir = File.join($qtdir, "settings", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
+      $current_build_sdk_dir = File.join($sailfishdir, "settings", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
       $current_build_sdk_dir = $current_build_sdk_dir.gsub("\\", "/")
     else
       $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
@@ -675,12 +675,12 @@ namespace 'project' do
 
       build_script_generator.isNixSystem = !isWindows?
       build_script_generator.merPort = 2222
-      build_script_generator.merPkey = File.join $qtdir, "vmshare/ssh/private_keys/engine/mersdk"
+      build_script_generator.merPkey = File.join $sailfishdir, "vmshare/ssh/private_keys/engine/mersdk"
       build_script_generator.projectPath = QuotedStrNixWay(File.join($project_path, $final_name_app))
       build_script_generator.merSdkTools = QuotedStrNixWay(PathToWindowsWay($current_build_sdk_dir))
       build_script_generator.merSharedHome = QuotedStrNixWay(File.expand_path('~'))
       build_script_generator.merSharedSrc = QuotedStrNixWay(File.expand_path('~'))
-      build_script_generator.merShTgtName = QuotedStrNixWay(File.join($qtdir, "mersdk", "targets"))
+      build_script_generator.merShTgtName = QuotedStrNixWay(File.join($sailfishdir, "mersdk", "targets"))
       build_script_generator.merTgtName = QuotedStrNixWay($current_target)
       build_script_generator.merUserName = "mersdk"
       build_script_generator.merDevName = QuotedStrNixWay($dev_name)

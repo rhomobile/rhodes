@@ -4,10 +4,6 @@
 #include <QObject>
 #include <QThread>
 #include <QDebug>
-#ifndef OS_SAILFISH
-#include <QMainWindow>
-#include <QApplication>
-#endif
 #include "mainwindowinterface.h"
 
 class IExecutable : public QObject
@@ -26,18 +22,9 @@ public:
 #endif
     }
 
-#ifndef OS_SAILFISH
-    static QtMainWindow * getMainWindow(){
-        foreach (QWidget * widget, qApp->topLevelWidgets()) {
-            if (widget->inherits("QMainWindow")) return qobject_cast<QtMainWindow *>(widget);
-        }
-        return nullptr;
-    }
-#else
     static QtMainWindow * getMainWindow(){
         return QtMainWindow::getLastInstance();
     }
-#endif
 
     virtual ~IExecutable(){}
 

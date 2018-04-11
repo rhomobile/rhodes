@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QtDBus/QDBusInterface>
 #include <QString>
-#include "../sailfish/src/QtMainWindow.h"
+#include "mainwindowinterface.h"
 #include <QTimer>
 #include <QBluetoothHostInfo>
 #include "bluetoothdevicelabel.h"
@@ -25,9 +25,10 @@ class BluetoothHelper : public QObject
     {
         QList<QObject *> objectList;
         objectList.append(this);
+        #ifdef OS_SAILFISH
         QtMainWindow::setContextProperty("bluetoothModel", objectList);
         QtMainWindow::setContextProperty("bluetoothListModel", QList<QObject*>());
-
+        #endif
         connect(&timerRefresh, SIGNAL(timeout()), this, SLOT(refresh()));
         lastError = "OK";
     }
@@ -129,7 +130,9 @@ public slots:
         discoverer.start();
         refresh();
         timerRefresh.start(1000);
+        #ifdef OS_SAILFISH
         QtMainWindow::getLastInstance()->openQMLDocument("BluetoothObserverPage.qml");
+        #endif
     }
 
 
@@ -185,8 +188,9 @@ public slots:
                 objectList.append(val);
                 connect(val, SIGNAL(onSelect()), this, SLOT(selected()));
             }
+            #ifdef OS_SAILFISH
             QtMainWindow::setContextProperty("bluetoothListModel", objectList);
-
+            #endif
             foreach (BluetoothDeviceLabel * val, oldLabels) {val->deleteLater();}
 
         }

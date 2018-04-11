@@ -108,6 +108,10 @@ public:
     void tabbarSetBadge(int index, const char* badge);
     void tabbarSetSwitchCallback(rho::apiGenerator::CMethodResult& oResult);
     static quint16 getDebPort();
+    static QtMainWindow * lastInstance;
+    static QtMainWindow * getLastInstance(){
+        return lastInstance;
+    }
 private:
     void tabbarWebViewRestore(bool reload);
     void tabbarConnectWebView(QWebEngineView *webView);

@@ -35,7 +35,9 @@
 #include "common/Tokenizer.h"
 #ifndef RHO_NO_RUBY 
 #include "ruby/ext/rho/rhoruby.h"
+#ifndef WINDOWS_PLATFORM
 #include "ruby/ruby.h"
+#endif
 #endif //RHO_NO_RUBY
 #include "common/app_build_configs.h"
 #include "DBImportTransaction.h"
@@ -1513,8 +1515,13 @@ void CRubyMutex::create()
     if ( !m_bIgnore && !m_valMutex)
     {
         unsigned long curThread = rho_ruby_current_thread();
-        if ( curThread != Qnil )
+#ifndef WINDOWS_PLATFORM
+        if ( curThread != Qnil)
             m_valMutex = rho_ruby_create_mutex();
+#else
+        if ( curThread != (VALUE)4) //this is ruby Qnil. If we'll include ruby.h - God, help us fix all of this
+            m_valMutex = rho_ruby_create_mutex();
+#endif
     }
 }
 

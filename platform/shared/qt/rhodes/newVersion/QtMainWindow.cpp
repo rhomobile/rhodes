@@ -42,7 +42,6 @@
 #undef null
 #include "RhoNativeApiCall.h"
 #include "statistic/RhoProfiler.h"
-#include <
 #include <QStylePainter>
 #include <QResizeEvent>
 #include <QLabel>
@@ -69,7 +68,7 @@ extern "C" {
 }
 using namespace rho;
 using namespace rho::common;
-
+QtMainWindow * QtMainWindow::lastInstance = nullptr;
 
 QMenuBar* QtMainWindow::createMenu() {
 
@@ -193,7 +192,7 @@ currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId()
     } else {
         unsetProxy();
     }
-
+    lastInstance = this;
     QWebEngineProfile * profile = QWebEngineProfile::defaultProfile();
 
     rho::String rs_dir = RHODESAPP().getRhoRootPath()+RHO_EMULATOR_DIR;
