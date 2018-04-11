@@ -14,7 +14,7 @@ greaterThan(QT_MAJOR_VERSION, 4):{
 
     equals(QT_MAJOR_VERSION, 5) {
         equals(QT_MINOR_VERSION, 6) {
-            #DEFINES += ENABLE_Q_WEB_ENGINE
+            DEFINES += ENABLE_Q_WEB_ENGINE
 
             !contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
                 QT += webkit
