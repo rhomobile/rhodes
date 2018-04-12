@@ -58,8 +58,7 @@ namespace "build" do
     target_lib = $targetdir + '/libfcm-push.a'
     target_app = File.join($app_path, 'project', 'iphone')
 
-    cp_r File.join(iphone_path, 'Frameworks'), target_app
-    cp_r File.join(ENV['RHO_ROOT'], 'platform', 'iphone', 'GoogleService-Info.plist'), target_app
+    cp_r File.join($app_path, 'GoogleService-Info.plist'), target_app
 
     rm_rf 'build'
     rm_rf target_lib
