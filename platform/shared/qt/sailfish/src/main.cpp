@@ -127,12 +127,12 @@ int main(int argc, char *argv[])
     view->rootContext()->engine()->thread()->setPriority(QThread::TimeCriticalPriority);
 
     #ifndef ENABLE_Q_WEB_ENGINE
-    QWebSettings::globalSettings( )->setAttribute( QWebSettings::PrivateBrowsingEnabled, true );
+    /*QWebSettings::globalSettings( )->setAttribute( QWebSettings::PrivateBrowsingEnabled, true );
     QWebSettings::globalSettings( )->setAttribute( QWebSettings::LocalContentCanAccessRemoteUrls, true );
     QWebSettings::globalSettings( )->setAttribute( QWebSettings::OfflineWebApplicationCacheEnabled, true );
     QWebSettings::setMaximumPagesInCache( 0 );
     QWebSettings::setObjectCacheCapacities( 0, 0, 0 );
-    QWebSettings::clearMemoryCaches( );
+    QWebSettings::clearMemoryCaches( );*/
     #endif
     QtMainWindow::setView(view);
     CMainWindow* m_appWindow = CMainWindow::getInstance();
