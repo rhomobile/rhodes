@@ -1727,7 +1727,7 @@ namespace "build" do
       print_timestamp('build:android:librhodes START')
       if $skip_so_build
         puts "Skip building rhodes shared library"
-        return
+        next
       end
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
 
