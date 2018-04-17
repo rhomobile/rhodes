@@ -179,7 +179,7 @@ int   daylight;
 char *tzname[2];
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WINDOWS_DESKTOP)
 
 void Init_utf_16_32();
 void Init_single_byte();

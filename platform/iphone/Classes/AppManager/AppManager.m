@@ -151,8 +151,10 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 		NSError *error;
 		[fileManager removeItemAtPath:appPath error:&error];
 	}
-    [fileManager createDirectoryAtPath:appPath attributes:NULL];
-	
+    {
+        NSError* error;
+        [fileManager createDirectoryAtPath:appPath withIntermediateDirectories:YES attributes:nil error:&error];
+    }
 	static char appRoot[FILENAME_MAX];
 	[appPath getFileSystemRepresentation:appRoot maxLength:sizeof(appRoot)];
 	return UnzipApplication( appRoot, [appData bytes], [appData length]);
@@ -168,9 +170,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 	
 	if (!remove && dir) {
         NSError *error;
-		if (![fileManager fileExistsAtPath:target])
+        if (![fileManager fileExistsAtPath:target]) {
 			[fileManager createDirectoryAtPath:target withIntermediateDirectories:YES attributes:nil error:&error];
-		
+        }
 		NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:source];
 		NSString *child;
 		while (child = [enumerator nextObject]) {

@@ -25,9 +25,11 @@ static RhoVideoCapture* ourRhoVideoCapture = nil;
         NSString *folder = [NSString stringWithUTF8String:rho_rhodesapp_getblobsdirpath()];
         
         NSFileManager *fileManager = [NSFileManager defaultManager];
-        if (![fileManager fileExistsAtPath:folder])
-            [fileManager createDirectoryAtPath:folder attributes:nil];
-        
+        if (![fileManager fileExistsAtPath:folder]) {
+            NSError* error;
+            [fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error];
+            
+        }
         ourRhoVideoCapture.destination = [folder stringByAppendingPathComponent:@"Videocapture.mp4"];
     }
     return ourRhoVideoCapture;
@@ -65,9 +67,12 @@ static RhoVideoCapture* ourRhoVideoCapture = nil;
             NSString *folder = [NSString stringWithUTF8String:rho_rhodesapp_getblobsdirpath()];
             
             NSFileManager *fileManager = [NSFileManager defaultManager];
-            if (![fileManager fileExistsAtPath:folder])
-                [fileManager createDirectoryAtPath:folder attributes:nil];
-            
+            if (![fileManager fileExistsAtPath:folder]) {
+                NSError* error;
+                [fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error];
+                
+            }
+                
             destination = [folder stringByAppendingPathComponent:value];
         }
     }

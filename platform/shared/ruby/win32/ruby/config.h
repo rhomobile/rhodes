@@ -193,7 +193,8 @@
 config.h: nul
 !endif
 #endif
-
+//RHO for encoding & convertors
+#define EXTSTATIC 1
 //RHO
 #define RUBY_EXPORT 1
 #define HAVE_SOCKADDR_STORAGE 1

@@ -1685,6 +1685,7 @@ namespace "build" do
 
       generator.versionName = $app_config["version"]
       generator.versionCode = version
+      generator.allowBackup = ($app_config["android"]["allowBackup"] == "false" ? "false" : "true") if $app_config["android"]
       generator.installLocation = 'auto'
       generator.minSdkVer = $min_sdk_level
       generator.targetSdkVer = $target_sdk_level

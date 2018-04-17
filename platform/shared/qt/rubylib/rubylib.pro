@@ -203,4 +203,12 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/ext/signature/signature_wrap.c\
 ../../ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c\
 ../../ruby/ext/bluetooth/bluetooth_wrap.c\
-../../ruby/enc/encdb.c
+../../ruby/enc/encdb.c\
+../../ruby/enc/utf_16be.c\
+../../ruby/enc/utf_16le.c\
+../../ruby/enc/utf_32be.c\
+../../ruby/enc/utf_32le.c\
+../../ruby/enc/euc_jp.c\
+../../ruby/enc/iso_8859_1.c\
+../../ruby/enc/trans/utf_16_32.c\
+../../ruby/enc/trans/single_byte.c
