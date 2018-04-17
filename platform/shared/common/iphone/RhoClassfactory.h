@@ -50,6 +50,9 @@ public:
         if (RHOCONF().isExist("ios_net_curl")) {
             useCurl = RHOCONF().getBool("ios_net_curl");
         }
+#ifdef RHODES_EMULATOR
+        useCurl = true;
+#endif
         if ( useCurl ) {
           return new net::CURLNetRequest();
         } else {

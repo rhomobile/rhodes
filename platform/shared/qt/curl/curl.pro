@@ -13,6 +13,7 @@ macx {
   OBJECTS_DIR = ../../../osx/bin/curl/tmp
   DEFINES += USE_SSLEAY USE_OPENSSL # USE_RHOSSL
   HEADERS += ../../curl/lib/config-mac.h
+  INCLUDEPATH += /Users/MOHUS/tauplatform/openssl-1.0.2/include
 SOURCES += ../../curl/lib/http_ntlm.c\
 ../../curl/lib/qssl.c\
 ../../curl/lib/ssluse.c

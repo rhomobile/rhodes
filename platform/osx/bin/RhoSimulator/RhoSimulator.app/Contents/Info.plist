@@ -7,7 +7,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleGetInfoString</key>
-	<string>RhoSimulator 5.4.0, Copyright 2010-2013 Motorola Solutions, Inc.</string>
+	<string>RhoSimulator 5.5.0.33, Copyright 2010-2016 Symbol Technologies LLC.</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
