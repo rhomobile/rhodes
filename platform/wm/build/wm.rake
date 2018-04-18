@@ -2408,6 +2408,7 @@ namespace "run" do
 
         $stdout.flush
         chdir $startdir
+        $failed = 1
         if ($failed > 0) 
           puts "Specs failed with " + $failed.to_s + " failes"
           exit 1
