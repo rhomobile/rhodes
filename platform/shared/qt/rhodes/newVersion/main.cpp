@@ -110,7 +110,6 @@ char* parseToken(const char* start)
 
 int main(int argc, char *argv[])
 {
-    //argc = 1;
     QApplication app(argc, argv);
 #ifdef RHODES_MAC_BUILD
     qputenv("QTWEBENGINE_REMOTE_DEBUGGING", QString::number(QtMainWindow::getDebPort()).toLocal8Bit());

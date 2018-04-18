@@ -2365,7 +2365,7 @@ namespace "run" do
       db_path = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/db'
       rm_rf db_path if File.exists?(db_path)
     end
-
+    #run:win32:spec
     task :spec => [:delete_db] do
 
       Jake.decorate_spec do
@@ -2373,7 +2373,7 @@ namespace "run" do
         Rake::Task['build:win32'].invoke
 
         #remove log file
-        win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
+        win32rhopath = File.join($startdir, $config["build"]["wmpath"],"bin/win32/rhodes/", $buildcfg, 'rho')
         win32logpath = File.join(win32rhopath,"RhoLog.txt")
         win32logpospath = File.join(win32rhopath,"RhoLog.txt_pos")
         win32configpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
@@ -2385,13 +2385,33 @@ namespace "run" do
         start = Time.now
 
         args = [' ']
-        Jake.run2( "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
+
+        targetFile = "bin/win32/rhodes/" + $buildcfg + "/rhodes.exe"
+        targetFileFullName = File.join($config["build"]["wmpath"],targetFile)
+        start = Time.now
+        if File.exists? targetFileFullName
+          Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFileFullName}")
+        end
+
+        counter = 0
+        Jake.run2(targetFile, args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
+          counter += 1
+        end
+        counter = 0
+        sleep(5)
+        File.open(win32logpath, 'r:UTF-8').each do |line|
+          counter += 1
           Jake.process_spec_output(line)
         end
+        puts "Checked lines: " + counter.to_s
         Jake.process_spec_results(start)
 
         $stdout.flush
         chdir $startdir
+        if ($failed > 0) 
+          puts "Specs failed with " + $failed.to_s + " failes"
+          exit 1
+        end
       end
     end
 

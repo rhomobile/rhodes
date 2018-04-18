@@ -197,7 +197,11 @@ def get_dir_hash(dir, init = nil)
 end
 
 #------------------------------------------------------------------------
-
+namespace "do" do
+  task :nothing do
+    puts "Nothing to do"
+  end
+end
 namespace "framework" do
   task :spec do
     loadpath = $LOAD_PATH.inject("") { |load_path,pe| load_path += " -I" + pe }
