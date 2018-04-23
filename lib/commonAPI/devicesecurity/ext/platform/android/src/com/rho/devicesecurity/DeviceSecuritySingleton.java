@@ -229,7 +229,7 @@ class DeviceSecuritySingleton extends DeviceSecuritySingletonBase implements IDe
                 rating += 3;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.W( TAG, "Can't get bluetooth adapter ( " + e.toString() + " ). Skipping security checks for bluetooth." );            
         }    
 
         return rating > 3;
