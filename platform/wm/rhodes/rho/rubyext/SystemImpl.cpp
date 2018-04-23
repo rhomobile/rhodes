@@ -74,11 +74,11 @@ const char* rho_sys_qt_getWebviewFramework();
 
 bool rho_rhosim_window_closed()
 {
-#ifdef RHODES_EMULATOR
+/*#ifdef RHODES_EMULATOR
     return CMainWindow::mainWindowClosed;
-#else
+#else*/
     return false;
-#endif
+//#endif
 }
 
 void rho_wmsys_run_app_with_show(const wchar_t* szPath, const wchar_t* szParams, bool bShow )

@@ -200,7 +200,11 @@ currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId()
     QString path(QString(rs_dir.c_str()));
     profile->setPersistentStoragePath(path);
     profile->setCachePath(path);
+#ifdef RHODES_EMULATOR
+    profile->setHttpCacheMaximumSize(0);
+#else
     profile->setHttpCacheMaximumSize(0x40000000);
+#endif
     profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
 
     webView->setContextMenuPolicy(Qt::NoContextMenu);

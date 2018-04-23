@@ -51,6 +51,7 @@ public:
     virtual void sleep(unsigned int nTimeout);
 private:
     void setThreadPriority(IRhoRunnable::EPriority ePriority);
+    rho::String threadId;
 private:
     class QtThread: public QThread
     {
