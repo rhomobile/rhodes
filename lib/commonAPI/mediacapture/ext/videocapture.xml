@@ -42,15 +42,21 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM, CE, Android</PLATFORM>
             </PROPERTY>
 
-            <PROPERTY name="resolution" type="STRING" generateAccessors="true" default="HIGH">
+            <PROPERTY name="resolution" type="STRING" generateAccessors="true" default="high">
                 <DESC>The resolution of the video file to be captured.</DESC>
-                <PLATFORM>WM, CE, Android</PLATFORM>
+                <PLATFORM>WM, CE, Android, iOS</PLATFORM>
                 <VALUES>
                     <VALUE constName="LOW" value="low">
                         <DESC>Low resolution.</DESC>
+                        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
+                    </VALUE>
+                    <VALUE constName="MEDIUM" value="medium">
+                        <DESC>Medium resolution.</DESC>
+                        <PLATFORM>iOS</PLATFORM>
                     </VALUE>
                     <VALUE constName="HIGH" value="high">
                         <DESC>High resolution.</DESC>
+                        <PLATFORM>WM, CE, Android, iOS</PLATFORM>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
