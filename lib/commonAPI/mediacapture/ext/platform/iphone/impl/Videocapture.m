@@ -14,9 +14,12 @@
     NSString *folder = [NSString stringWithUTF8String:rho_rhodesapp_getblobsdirpath()];
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:folder])
+    if (![fileManager fileExistsAtPath:folder]) {
+        NSError* error;
+        [fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error];
+    }
         [fileManager createDirectoryAtPath:folder attributes:nil];
-    NSString* destination = [folder stringByAppendingPathComponent:@"Videocapture.mp4"];
+    NSString* destination = [folder stringByAppendingPathComponent:@"Videocapture.mov"];
     [self setFileName:destination methodResult:nil];
 
     return self;
@@ -28,6 +31,18 @@
     return [durStr intValue];
 }
 
+-(BOOL) isHighResolution {
+    NSString* resStr = (NSString*)[mProperties objectForKey:@"resolution"];
+    return ([resStr isEqualToString:@"high"] || [resStr isEqualToString:@"HIGH"]);
+}
+-(BOOL) isMediumResolution {
+    NSString* resStr = (NSString*)[mProperties objectForKey:@"resolution"];
+    return ([resStr isEqualToString:@"medium"] || [resStr isEqualToString:@"MEDIUM"]);
+}
+-(BOOL) isLowResolution {
+    NSString* resStr = (NSString*)[mProperties objectForKey:@"resolution"];
+    return ([resStr isEqualToString:@"low"] || [resStr isEqualToString:@"LOW"]);
+}
 
 
 
@@ -62,7 +77,16 @@
     cameraUI.allowsEditing = NO;
 
     cameraUI.delegate = delegate;
-
+    
+    if ([self isHighResolution]) {
+        cameraUI.videoQuality = UIImagePickerControllerQualityTypeHigh;
+    }
+    if ([self isMediumResolution]) {
+        cameraUI.videoQuality = UIImagePickerControllerQualityTypeMedium;
+    }
+    if ([self isLowResolution]) {
+        cameraUI.videoQuality = UIImagePickerControllerQualityTypeLow;
+    }
     cameraUI.videoMaximumDuration = (NSTimeInterval) ((double)[self getDurationInt]/1000.0);
 
     moviePickerController = cameraUI;
