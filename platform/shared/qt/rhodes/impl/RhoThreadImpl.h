@@ -33,6 +33,7 @@
 #include <QSharedPointer>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QTimer>
 
 namespace rho{
 namespace common{
@@ -79,15 +80,10 @@ private:
     };
 
     QRhoThread* m_Thread;
-    QtThread* m_waitThread;
+    QSharedPointer<QtThread> m_waitThread;
+    QMutex mutex;
+    QMutex mutexWaiter;
 
-#ifdef OS_WINDOWS_DESKTOP
-#define NEED_MUTEX_LOCKERS
-#endif
-    #if defined(NEED_MUTEX_LOCKERS)
-        QMutex gCS;
-        QMutex gCSstopwait;
-    #endif
 };
 
 }

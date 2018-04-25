@@ -4294,7 +4294,7 @@ namespace "run" do
           cp File.join(qtdir, "bin/Qt5Core.dll"), newDir
           args << "-remote-debugging-port=9090"
         end
-
+        #Jake.run "taskkill /f /im RhoSimulator.exe"
         cmd = File.join(newDir, 'rhosimulator.exe')
       elsif RUBY_PLATFORM =~ /darwin/
         if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
