@@ -51,7 +51,7 @@ if Rho::System.isRhoSimulator
 	        puts "eval_compiled_file : #{fname}"
 	        
 	        strFile = IO.read(fname)
-	        code = ERB.new(strFile).src
+	        code = ERB.new(strFile.force_encoding 'UTF-8').src
 	        
 		    eval(code, bind)
 	    end
