@@ -30,6 +30,8 @@ namespace "build" do
     $sdkroot = ENV['SDKROOT']
     raise "SDKROOT is not set" if $sdkroot.nil?
 
+    $app_path = ENV["RHO_APP_DIR"]
+    raise "RHO_APP_DIR is not set" if $app_path.nil?
 
     $arch = ENV['ARCHS']
     raise "ARCHS is not set" if $arch.nil?
@@ -55,6 +57,9 @@ namespace "build" do
 
     puts Jake.run($xcodebuild,args)
     ret = $?
+
+    target_app = File.join($app_path, 'project', 'iphone', 'Resources')
+    #cp_r File.join(iphone_path, 'BarcodeViewController.xib'), target_app
 
     # copy result to $targetdir
     result_lib = iphone_path + '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/libBarcode.a'
