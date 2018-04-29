@@ -1,0 +1,46 @@
+Build RhoSimulator for Mac OS X
+
+
+Make folder  RhoSimBuild
+
+
+1. install QT 5.8.0
+2. install next repos into RhoSimBuild:
+
+https://github.com/rhomobile/rhodes
+https://github.com/rhomobile/rhoconnect-client
+
+https://github.com/tauplatform/openssl
+switch to “OpenSSL_1_1_0-stable” branch
+
+3. build openssl:
+
+3.1 go to RhoSimBuild/openssl
+3.2. run tau_build_macos_lib.sh script
+libs will be placed into : RhoSimBuild/openssl//libopenssl_macosx/
+
+4. check Mac OS X SDK in 
+
+RhoSimBuild/rhodes/platform/shared/qt/RhoSimulator.pro
+
+QMAKE_MAC_SDK = macosx10.13
+
+5. build RhoSimulator :
+
+go to RhoSimBuild/rhodes/
+
+run :
+rake build:osx:rhosimulator
+
+6. compress RhoSimulator:
+
+compress 
+RhoSimBuild/rhodes/platform/osx/bin/RhoSimulator/RhoSimulator.app
+
+into 
+RhoSimBuild/rhodes/platform/osx/bin/RhoSimulator/RhoSimulator.app.zip
+
+and commit this zip
+
+
+
