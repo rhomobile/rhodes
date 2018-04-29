@@ -17,6 +17,7 @@ unix:!macx {
 }
 macx {
  SUBDIRS += curl
+ QMAKE_MAC_SDK = macosx10.13
 }
 CONFIG += ordered
 SUBDIRS += rhodes

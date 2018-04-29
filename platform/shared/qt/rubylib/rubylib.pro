@@ -172,6 +172,8 @@ SOURCES += \
 ../../ruby/enc/utf_32le.c \
 ../../ruby/enc/euc_jp.c \
 ../../ruby/enc/windows_31j.c \
+../../ruby/enc/trans/single_byte.c \
+../../ruby/enc/trans/utf_16_32.c \
 ../../ruby/enum.c \
 ../../ruby/enumerator.c \
 ../../ruby/error.c \

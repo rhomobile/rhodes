@@ -38,11 +38,13 @@ class SSLImpl : public ISSL
 public:
     void *createStorage();
     void freeStorage(void *ptr);
-    
+
     CURLcode connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage, char* host_name);
     void shutdown(void *storage);
     ssize_t send(const void *mem, size_t len, void *storage);
     ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage);
+    virtual bool rand(unsigned char *entropy, size_t length);
+
 };
 
 } // namespace net
