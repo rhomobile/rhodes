@@ -16,6 +16,7 @@ CONFIG += staticlib warn_on
 
 INCLUDEPATH += \
 ../../../../platform/shared/ruby/include\
+../../../../platform/shared/ruby\
 ../../../../platform/shared\
 ../../../../platform/shared/common
 
