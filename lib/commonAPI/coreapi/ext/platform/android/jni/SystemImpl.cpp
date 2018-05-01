@@ -62,6 +62,7 @@ public:
     virtual void runApplication(const rho::String&, const rho::String&, bool, rho::apiGenerator::CMethodResult& result);
     virtual void getHasCamera(rho::apiGenerator::CMethodResult& result);
     virtual void getPhoneNumber(rho::apiGenerator::CMethodResult& result);
+    virtual void getExternalStorageDirectoryPath(rho::apiGenerator::CMethodResult& result);
     virtual void getHasNetwork(rho::apiGenerator::CMethodResult& result);
     virtual void getHasWifiNetwork(rho::apiGenerator::CMethodResult& result);
     virtual void getHasCellNetwork(rho::apiGenerator::CMethodResult& result);
@@ -313,7 +314,11 @@ void CSystemImpl::getPhoneNumber(CMethodResult& result)
     rho_sysimpl_get_property("phone_number", result);
 }
 //----------------------------------------------------------------------------------------------------------------------
-
+void CSystemImpl::getExternalStorageDirectoryPath(CMethodResult& result)
+{
+    rho_sysimpl_get_property("external_storage_directory_path", result);
+}
+//----------------------------------------------------------------------------------------------------------------------
 void CSystemImpl::getHasNetwork(rho::apiGenerator::CMethodResult& result)
 {
     rho_sysimpl_get_property("has_network", result);
@@ -388,7 +393,6 @@ void CSystemImpl::getSystemInfo(rho::apiGenerator::CMethodResult& result)
 
     JNI_EXCEPTION_CHECK(env, result);
 }
-//----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 
 class CSystemFactory: public CSystemFactoryBase
