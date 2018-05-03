@@ -1,4 +1,4 @@
-/*------------------------------------------------------------------------
+ /*------------------------------------------------------------------------
 * (The MIT License)
 * 
 * Copyright (c) 2008-2011 Rhomobile, Inc.
@@ -1105,7 +1105,12 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 	[toolbar release];
     [resultText release];
 #ifdef ZXING
-    [capture release];
+    if (capture)    
+        [capture release];
+    if(boundLayer)    
+        [boundLayer release];
+    if(timer_)
+        [timer_ release];
 #endif
 
     if (mBeep != 0) {
@@ -1153,7 +1158,7 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
         CGPoint cgPoint = CGPointMake(resultPoint.x, resultPoint.y);
         CGPoint transformedPoint = CGPointApplyAffineTransform(cgPoint, inverse);
 
-        UIBezierPath* path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(transformedPoint.x, transformedPoint.y, 100, 100)];
+        UIBezierPath* path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(transformedPoint.x, transformedPoint.y, 20, 20)];
         
         if(prevPath)
         {
@@ -1193,7 +1198,28 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
     boundLayer.fillColor = [[UIColor clearColor] CGColor];
 }
 
+-(void)onTick:(NSTimer*)timer
+{
+    boundLayer.strokeColor = [[UIColor clearColor] CGColor];
+    boundLayer.fillColor = [[UIColor clearColor] CGColor];
+    timer_ = nil;
+}
+
 - (void)captureResult:(ZXCapture *)capture result:(ZXResult *)result {
+
+    if(timer_) 
+    {
+        if(timer_.valid)
+        {
+          [timer_ invalidate];
+          timer_ = nil  ;
+        }
+    }
+
+    timer_ = [NSTimer scheduledTimerWithTimeInterval: 1.0
+                      target: self
+                      selector:@selector(onTick:)
+                      userInfo: nil repeats:NO];
 
     if (!result) return;
 

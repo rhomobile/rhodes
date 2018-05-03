@@ -74,7 +74,7 @@
     id<IMethodResult> methodResult;
     
     ZXCapture *capture;
-    NSTimer*  timer;
+    NSTimer*  timer_;
 
     UIView *signatureView; 
 	UIToolbar *toolbar;
