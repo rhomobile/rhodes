@@ -1141,7 +1141,60 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 }
 
 #ifdef ZXING
+
+-(void)drawCirlesElemets: (ZXResult*) result
+{
+    if (!result) return;
+
+    CGAffineTransform inverse = CGAffineTransformInvert(_captureSizeTransform);
+    UIBezierPath* prevPath = NULL;
+    for (ZXResultPoint *resultPoint in result.resultPoints)
+    {
+        CGPoint cgPoint = CGPointMake(resultPoint.x, resultPoint.y);
+        CGPoint transformedPoint = CGPointApplyAffineTransform(cgPoint, inverse);
+
+        UIBezierPath* path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(transformedPoint.x, transformedPoint.y, 100, 100)];
+        
+        if(prevPath)
+        {
+            [prevPath appendPath: path];
+            //prevPath = path;
+        }
+        else prevPath = path;
+    }
+
+    [boundLayer setPath: [prevPath CGPath]];
+    boundLayer.lineWidth = 2.0;
+    boundLayer.strokeColor = [[UIColor redColor] CGColor];
+    boundLayer.fillColor = [[UIColor clearColor] CGColor];
+}
+
+-(void)drawLineElemets: (ZXResult*) result
+{
+    if (!result) return;
+
+    CGAffineTransform inverse = CGAffineTransformInvert(_captureSizeTransform);
+    ZXResultPoint *startPoint = [result.resultPoints objectAtIndex:0];
+    ZXResultPoint *endPoint = [result.resultPoints objectAtIndex:1];
+
+    CGPoint cgPoint0 = CGPointMake(startPoint.x, startPoint.y);
+    CGPoint transformedPoint0 = CGPointApplyAffineTransform(cgPoint0, inverse);
+
+    CGPoint cgPoint1 = CGPointMake(endPoint.x, endPoint.y);
+    CGPoint transformedPoint1 = CGPointApplyAffineTransform(cgPoint1, inverse);
+    
+    UIBezierPath* path = [[UIBezierPath alloc] init];
+    [path moveToPoint: transformedPoint0];
+    [path addLineToPoint: transformedPoint1];
+    [boundLayer setPath:[path CGPath]];
+    
+    boundLayer.lineWidth = 2.0;
+    boundLayer.strokeColor = [[UIColor redColor] CGColor];
+    boundLayer.fillColor = [[UIColor clearColor] CGColor];
+}
+
 - (void)captureResult:(ZXCapture *)capture result:(ZXResult *)result {
+
     if (!result) return;
 
     if(![result.text isEqualToString:resultText.text])
@@ -1149,6 +1202,40 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
         if (mBeep != 0) 
             AudioServicesPlaySystemSound(mBeep);        
     }
+
+    if(!boundLayer)
+    {
+       boundLayer = [CAShapeLayer layer];
+       [self.view.layer addSublayer:boundLayer];
+    }
+
+    NSInteger count = [result.resultPoints count];
+
+    if(count == 2)
+    {
+        [self drawLineElemets: result];
+    }
+    else
+    {
+        [self drawCirlesElemets: result];
+    }
+
+    //CGAffineTransform inverse = CGAffineTransformInvert(_captureSizeTransform);
+    //ZXResultPoint *startPoint = [result.resultPoints objectAtIndex:0];
+    //ZXResultPoint *endPoint = [result.resultPoints objectAtIndex:1];
+
+    //CGPoint cgPoint0 = CGPointMake(startPoint.x, startPoint.y);
+    //CGPoint transformedPoint0 = CGPointApplyAffineTransform(cgPoint0, inverse);
+
+    //CGPoint cgPoint1 = CGPointMake(endPoint.x, endPoint.y);
+    //CGPoint transformedPoint1 = CGPointApplyAffineTransform(cgPoint1, inverse);
+
+    //boundLayer.bounds = CGRectMake(transformedPoint.x, transformedPoint.y, 400, 400);
+    //[boundLayer setPath:[[UIBezierPath bezierPathWithRect:
+    //    CGRectMake(transformedPoint0.x, transformedPoint0.y, transformedPoint1.x - transformedPoint0.x, 100)] CGPath]];
+    //boundLayer.lineWidth = 2.0;
+    //boundLayer.strokeColor = [[UIColor redColor] CGColor];
+    //boundLayer.fillColor = [[UIColor clearColor] CGColor];
 
     resultText.text = result.text;
         

@@ -82,6 +82,7 @@
     SystemSoundID mBeep;
 
     CGAffineTransform _captureSizeTransform;
+    CAShapeLayer* boundLayer;
 }
 
 @property (nonatomic, strong) ZXCapture *capture;
