@@ -1503,7 +1503,7 @@ namespace rho{
 namespace common{
 
 #ifndef RHO_NO_RUBY
-CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(NULL)
+CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(Qnil), m_valMutex(Qnil)
 {
     m_bIgnore = bIgnore || RHOCONF().getBool("no_ruby_threads");
 }
@@ -1513,13 +1513,11 @@ void CRubyMutex::create()
     if ( !m_bIgnore && !m_valMutex)
     {
         unsigned long curThread = rho_ruby_current_thread();
-#ifndef WINDOWS_PLATFORM
+
         if ( curThread != Qnil)
+        {
             m_valMutex = rho_ruby_create_mutex();
-#else
-        if ( curThread != (VALUE)4) //this is ruby Qnil. If we'll include ruby.h - God, help us fix all of this
-            m_valMutex = rho_ruby_create_mutex();
-#endif
+        }
     }
 }
 
@@ -1544,11 +1542,11 @@ boolean CRubyMutex::isMainRubyThread()
 
 void CRubyMutex::Lock()
 {
-    if ( m_valMutex == NULL )
+    if ( m_valMutex == Qnil )
         return;
 
-    unsigned long curThread = rho_ruby_current_thread();
-    if ( curThread == NULL )
+    VALUE curThread = rho_ruby_current_thread();
+    if ( curThread == Qnil )
         return;
 
     if ( m_valThread != curThread )
@@ -1562,13 +1560,13 @@ void CRubyMutex::Lock()
 
 void CRubyMutex::Unlock()
 {
-    if ( m_valMutex == NULL || m_nLockCount == 0)
+    if ( m_valMutex == Qnil || m_nLockCount == 0)
         return;
 
     m_nLockCount--;
     if ( m_nLockCount == 0 )
     {
-        m_valThread = NULL;
+        m_valThread = Qnil;
         rho_ruby_unlock_mutex(m_valMutex);
     }
 }
