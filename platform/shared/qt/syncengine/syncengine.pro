@@ -3,9 +3,6 @@ QT -= core
         CONFIG += c++14
         DEFINES += CPP_ELEVEN
         DEFINES += RHODES_VERSION_2
-        LIBS += -lmsvcrt.lib
-        LIBS += -lvcruntime.lib
-        LIBS += -lucrt.lib
     }
 
     lessThan(QT_VERSION, 5.6.0): {
