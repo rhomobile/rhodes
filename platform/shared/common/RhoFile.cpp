@@ -34,6 +34,11 @@
 extern "C" void recursiveDeleteDirectory(const std::wstring &path);
 #endif
 
+#if defined(WINDOWS_PLATFORM) && !defined(OS_WP8) && !defined(OS_UWP)
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
 
 //#if !defined(WINDOWS_PLATFORM)
 #if !defined(OS_UWP) && !defined(OS_WINCE)

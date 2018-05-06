@@ -24,7 +24,7 @@ macx {
 win32 {
   DESTDIR = ../../../win32/bin/sqlite3
   OBJECTS_DIR = ../../../win32/bin/sqlite3/tmp
-  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE WIN32_LEAN_AND_MEAN
   Debug {
     DEFINES += _DEBUG DEBUG
   }
