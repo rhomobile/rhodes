@@ -50,6 +50,7 @@
 
 #include <windows.h>
 #include <time.h>
+#include <stdlib.h>
 #ifdef _MSC_VER
 #pragma warning(disable:4100)
 #pragma warning(disable:4189)

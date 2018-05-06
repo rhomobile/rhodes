@@ -30,26 +30,9 @@
 #include "DBAttrManager.h"
 #include "logging/RhoLog.h"
 #include "common/IRhoCrypt.h"
+#include "DBLock.h"
 
 namespace rho{
-namespace common{
-class CRubyMutex
-{
-    int m_nLockCount;
-    unsigned long m_valThread, m_valMutex;
-    boolean m_bIgnore;
-public:
-    CRubyMutex(boolean bIgnore);
-    ~CRubyMutex();
-
-    void create();
-    boolean isMainRubyThread();
-    void Lock();
-    void Unlock();
-
-    void close();
-};
-}
 
 namespace db{
 	
@@ -61,7 +44,7 @@ class CDBAdapter
     String   m_strDbPartition;
 
     Hashtable<String,sqlite3_stmt*> m_mapStatements;
-    common::CRubyMutex m_mxRuby;
+    CRubyMutex m_mxRuby;
     common::CMutex m_mxDB;
     boolean m_bUIWaitDB;
     unsigned m_nTransactionCounter;
@@ -382,13 +365,6 @@ private:
     boolean migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVer);
     void copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbTo);
     void copyChangedValues(CDBAdapter& db);
-};
-	
-class DBLock {
-	CDBAdapter& _db;
-public:
-	DBLock(CDBAdapter& db) : _db(db) { _db.Lock(); }
-	~DBLock() { _db.Unlock(); }
 };
 
 }
