@@ -9,8 +9,10 @@
 #undef open
 #undef close
 #endif
-
 #endif
+
+#include "sync/RhoconnectClientManager.h"
+#include "common/RhoSystem.h"
 
 namespace rho {
 
@@ -117,7 +119,7 @@ boolean CRubyMutexImpl::isMainRubyThread()
 	if ( (!sync::RhoconnectClientManager::haveRhoconnectClientImpl()) || (!sync::RhoconnectClientManager::haveSyncThread()))
         return true;
 
-	return sync::RhoconnectClientManager::syncThreadGetThreadID() != CSystem::getThreadID();
+    return sync::RhoconnectClientManager::syncThreadGetThreadID() != rho::common::CSystem::getThreadID();
 }
 
 void CRubyMutexImpl::Lock()
