@@ -9,10 +9,12 @@
 #undef open
 #undef close
 #endif
-#endif
-
+#else
 #include "sync/RhoconnectClientManager.h"
 #include "common/RhoSystem.h"
+#endif
+
+
 
 namespace rho {
 
