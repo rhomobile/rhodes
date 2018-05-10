@@ -68,6 +68,7 @@
 #endif
 
 
+
 #ifdef ZXING
 @interface BarcodeViewController : UIViewController <ZXCaptureDelegate> {
     UITextView *resultText;
