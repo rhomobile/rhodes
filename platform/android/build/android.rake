@@ -2689,6 +2689,14 @@ namespace "device" do
       abi = $abis[0]
       realabi = 'armeabi' if abi == 'arm'
 
+      if abi == 'arm'
+        realabi = 'armeabi'
+      else 
+        realabi = abi
+      end
+
+      
+
       project_app_path = File.join $app_path,'project','android_studio', 'app'
       librhodes_path = File.join project_app_path, 'build', 'intermediates', 
         'cmake', $debug ? 'debug' : 'release', 'obj', realabi, 'librhodes.so'
