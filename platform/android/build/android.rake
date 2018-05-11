@@ -311,6 +311,12 @@ namespace 'project' do
       
       realabi = 'armeabi' if abi == 'arm'
 
+      if abi == 'arm'
+        realabi = 'armeabi'
+      else 
+        realabi = abi
+      end
+
       external_string = ''
       ext_libs = ''
       extlibs = Dir.glob(File.join($app_builddir, 'extensions', '**', realabi, 'lib*.a'))
