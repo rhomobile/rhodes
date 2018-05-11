@@ -586,6 +586,14 @@ uint8_t hexDataBeepAIFF[0x451e] = {
 
 static BarcodeViewController* bv = nil;
 
+#ifdef ZXING
+void destroyView()
+{
+    [bv release];
+    bv = nil;
+}
+#endif
+
 @interface RhoCreateBarcodeViewTask : NSObject {}
 
 + (void)run:(NSString*)value;
@@ -1105,10 +1113,10 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 	[toolbar release];
     [resultText release];
 #ifdef ZXING
-    if (capture)    
-        [capture release];
-    if(boundLayer)    
-        [boundLayer release];
+    if (self.capture)    
+        [self.capture release];
+    //if(boundLayer)    
+        //[boundLayer release];
     if(timer_)
         [timer_ release];
 #endif
