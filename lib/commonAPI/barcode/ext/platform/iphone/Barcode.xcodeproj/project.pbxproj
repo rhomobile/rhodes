@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		AA747D9F0F9514B9006C5449 /* Barcode_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Barcode_Prefix.pch */; };
+		AC3113DB2090484500B94E0D /* libzbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F0B136AF9BD009D6E63 /* libzbar.a */; };
+		ACC8390A20890CB000677617 /* libZXingObjC-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ACC838DA2087838100677617 /* libZXingObjC-iOS.a */; };
 		FA21F9FA170658EE0061F9DC /* barcode_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA21F9F7170658EE0061F9DC /* barcode_api_init.cpp */; };
 		FA21F9FB170658EE0061F9DC /* barcode_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA21F9F8170658EE0061F9DC /* barcode_js_api.cpp */; };
 		FA21F9FC170658EE0061F9DC /* barcode_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA21F9F9170658EE0061F9DC /* barcode_ruby_api.c */; };
@@ -28,7 +30,6 @@
 		FA21FA1A170659370061F9DC /* barcode_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA21FA19170659370061F9DC /* barcode_js_wrap.mm */; };
 		FA21FA1B17065D5E0061F9DC /* BarcodeCallbackHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA839301455F7210002F4E6 /* BarcodeCallbackHelper.h */; };
 		FA21FA1C17065D610061F9DC /* BarcodeCallbackHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA839311455F7210002F4E6 /* BarcodeCallbackHelper.mm */; };
-		FA4D3F0C136AF9BD009D6E63 /* libzbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F0B136AF9BD009D6E63 /* libzbar.a */; };
 		FA4D3F44136B0789009D6E63 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F43136B0789009D6E63 /* Foundation.framework */; };
 		FA4D3F46136B0793009D6E63 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F45136B0793009D6E63 /* CoreGraphics.framework */; };
 		FA4D3F48136B079C009D6E63 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F47136B079C009D6E63 /* UIKit.framework */; };
@@ -50,8 +51,61 @@
 		FAD38B2E1720615100C8E560 /* BarcodeFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = FAD38B2C1720615100C8E560 /* BarcodeFactory.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		AC3113D4208FBBAD00B94E0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ACC838D02087838000677617 /* ZXingObjC.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 25403CB2166A96FA00E13304;
+			remoteInfo = "ZXingObjC-iOS";
+		};
+		ACC838D92087838100677617 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ACC838D02087838000677617 /* ZXingObjC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25403CB3166A96FA00E13304;
+			remoteInfo = "ZXingObjC-iOS";
+		};
+		ACC838DB2087838100677617 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ACC838D02087838000677617 /* ZXingObjC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25403CC4166A96FA00E13304;
+			remoteInfo = "Unit Tests iOS";
+		};
+		ACC838DD2087838100677617 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ACC838D02087838000677617 /* ZXingObjC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25404166166AADAC00E13304;
+			remoteInfo = "ZXingObjC-osx";
+		};
+		ACC838DF2087838100677617 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ACC838D02087838000677617 /* ZXingObjC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25404178166AADAC00E13304;
+			remoteInfo = "Unit Tests OS X";
+		};
+		ACC838E12087838100677617 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ACC838D02087838000677617 /* ZXingObjC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2540439E166ABA0A00E13304;
+			remoteInfo = "OS X Framework";
+		};
+		ACC838E32087838100677617 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ACC838D02087838000677617 /* ZXingObjC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DB72547F1A523C9200EFF81B;
+			remoteInfo = "iOS Framework";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		AA747D9E0F9514B9006C5449 /* Barcode_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Barcode_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		ACC838D02087838000677617 /* ZXingObjC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ZXingObjC.xcodeproj; path = ZXingObjC/ZXingObjC.xcodeproj; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libBarcode.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libBarcode.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA21F9F7170658EE0061F9DC /* barcode_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = barcode_api_init.cpp; path = ../../shared/generated/barcode_api_init.cpp; sourceTree = "<group>"; };
 		FA21F9F8170658EE0061F9DC /* barcode_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = barcode_js_api.cpp; path = ../../shared/generated/barcode_js_api.cpp; sourceTree = "<group>"; };
@@ -103,6 +157,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC3113DB2090484500B94E0D /* libzbar.a in Frameworks */,
+				ACC8390A20890CB000677617 /* libZXingObjC-iOS.a in Frameworks */,
 				FA4D3F50136B07BB009D6E63 /* CoreVideo.framework in Frameworks */,
 				FA4D3F4E136B07B2009D6E63 /* CoreMedia.framework in Frameworks */,
 				FA4D3F4C136B07AB009D6E63 /* AVFoundation.framework in Frameworks */,
@@ -110,7 +166,6 @@
 				FA4D3F48136B079C009D6E63 /* UIKit.framework in Frameworks */,
 				FA4D3F46136B0793009D6E63 /* CoreGraphics.framework in Frameworks */,
 				FA4D3F44136B0789009D6E63 /* Foundation.framework in Frameworks */,
-				FA4D3F0C136AF9BD009D6E63 /* libzbar.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -128,6 +183,7 @@
 		0867D691FE84028FC02AAC07 /* Barcode */ = {
 			isa = PBXGroup;
 			children = (
+				ACC838D02087838000677617 /* ZXingObjC.xcodeproj */,
 				FA21F9F0170658620061F9DC /* CommonAPI */,
 				FA4D3F51136B07CA009D6E63 /* libiconv.dylib */,
 				FA4D3F4F136B07BB009D6E63 /* CoreVideo.framework */,
@@ -180,6 +236,19 @@
 				AA747D9E0F9514B9006C5449 /* Barcode_Prefix.pch */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		ACC838D12087838000677617 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ACC838DA2087838100677617 /* libZXingObjC-iOS.a */,
+				ACC838DC2087838100677617 /* Unit Tests iOS.xctest */,
+				ACC838DE2087838100677617 /* libZXingObjC-osx.a */,
+				ACC838E02087838100677617 /* Unit Tests OS X.xctest */,
+				ACC838E22087838100677617 /* ZXingObjC.framework */,
+				ACC838E42087838100677617 /* ZXingObjC.framework */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		FA21F9F0170658620061F9DC /* CommonAPI */ = {
@@ -294,6 +363,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				AC3113D5208FBBAD00B94E0D /* PBXTargetDependency */,
 			);
 			name = Barcode;
 			productName = Barcode;
@@ -316,16 +386,68 @@
 				Japanese,
 				French,
 				German,
+				en,
 			);
 			mainGroup = 0867D691FE84028FC02AAC07 /* Barcode */;
 			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = ACC838D12087838000677617 /* Products */;
+					ProjectRef = ACC838D02087838000677617 /* ZXingObjC.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				D2AAC07D0554694100DB518D /* Barcode */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		ACC838DA2087838100677617 /* libZXingObjC-iOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libZXingObjC-iOS.a";
+			remoteRef = ACC838D92087838100677617 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		ACC838DC2087838100677617 /* Unit Tests iOS.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Unit Tests iOS.xctest";
+			remoteRef = ACC838DB2087838100677617 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		ACC838DE2087838100677617 /* libZXingObjC-osx.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libZXingObjC-osx.a";
+			remoteRef = ACC838DD2087838100677617 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		ACC838E02087838100677617 /* Unit Tests OS X.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Unit Tests OS X.xctest";
+			remoteRef = ACC838DF2087838100677617 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		ACC838E22087838100677617 /* ZXingObjC.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ZXingObjC.framework;
+			remoteRef = ACC838E12087838100677617 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		ACC838E42087838100677617 /* ZXingObjC.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ZXingObjC.framework;
+			remoteRef = ACC838E32087838100677617 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D2AAC07B0554694100DB518D /* Sources */ = {
@@ -357,6 +479,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		AC3113D5208FBBAD00B94E0D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "ZXingObjC-iOS";
+			targetProxy = AC3113D4208FBBAD00B94E0D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		1DEB921F08733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -364,9 +494,11 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/Barcode.dst;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					./ZXingObjC,
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -387,15 +519,21 @@
 					/Users/MOHUS/rhodes/platform/shared/ruby/include,
 					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
 					/Users/MOHUS/rhodes/platform/shared,
+					"./ZXingObjC/ZXingObjC/**",
 				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/ZXingObjC\"/**",
 					"\"$(SRCROOT)/ZBarSDK\"",
+					"$(PROJECT_DIR)/ZBarSDK",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				OTHER_LDFLAGS = "-liconv";
+				OTHER_LDFLAGS = (
+					"-liconv",
+					"-ObjC",
+				);
 				PRODUCT_NAME = Barcode;
 				SDKROOT = iphoneos;
 			};
@@ -406,9 +544,11 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				DSTROOT = /tmp/Barcode.dst;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					./ZXingObjC,
 				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -426,15 +566,21 @@
 					/Users/MOHUS/rhodes/platform/shared/ruby/include,
 					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
 					/Users/MOHUS/rhodes/platform/shared,
+					"./ZXingObjC/ZXingObjC/**",
 				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/ZXingObjC\"/**",
 					"\"$(SRCROOT)/ZBarSDK\"",
+					"$(PROJECT_DIR)/ZBarSDK",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				OTHER_LDFLAGS = "-liconv";
+				OTHER_LDFLAGS = (
+					"-liconv",
+					"-ObjC",
+				);
 				PRODUCT_NAME = Barcode;
 				SDKROOT = iphoneos;
 			};
@@ -463,6 +609,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
@@ -491,6 +638,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
