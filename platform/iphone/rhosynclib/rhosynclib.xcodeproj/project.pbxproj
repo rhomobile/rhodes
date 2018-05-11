@@ -13,6 +13,8 @@
 		5C9817340FBC4F70002597A5 /* DBAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817300FBC4F70002597A5 /* DBAdapter.h */; };
 		5C9817350FBC4F70002597A5 /* DBResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9817310FBC4F70002597A5 /* DBResult.cpp */; };
 		5C9817360FBC4F70002597A5 /* DBResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817320FBC4F70002597A5 /* DBResult.h */; };
+		A883B678209EA23E00A7F10D /* DBLock.h in Headers */ = {isa = PBXBuildFile; fileRef = A883B676209EA23D00A7F10D /* DBLock.h */; };
+		A883B679209EA23E00A7F10D /* DBLock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A883B677209EA23D00A7F10D /* DBLock.cpp */; };
 		C503935916821F9C0025B96C /* RhoconnectClientManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C503935816821F9C0025B96C /* RhoconnectClientManager.cpp */; };
 		C522F0FC159B1FFF007FF96E /* DBImportTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C522F0F8159B1FFF007FF96E /* DBImportTransaction.cpp */; };
 		C522F0FD159B1FFF007FF96E /* DBImportTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = C522F0F9159B1FFF007FF96E /* DBImportTransaction.h */; };
@@ -65,6 +67,8 @@
 		5C9817300FBC4F70002597A5 /* DBAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBAdapter.h; path = ../../shared/db/DBAdapter.h; sourceTree = SOURCE_ROOT; };
 		5C9817310FBC4F70002597A5 /* DBResult.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBResult.cpp; path = ../../shared/db/DBResult.cpp; sourceTree = SOURCE_ROOT; };
 		5C9817320FBC4F70002597A5 /* DBResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBResult.h; path = ../../shared/db/DBResult.h; sourceTree = SOURCE_ROOT; };
+		A883B676209EA23D00A7F10D /* DBLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBLock.h; path = ../../shared/db/DBLock.h; sourceTree = "<group>"; };
+		A883B677209EA23D00A7F10D /* DBLock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBLock.cpp; path = ../../shared/db/DBLock.cpp; sourceTree = "<group>"; };
 		C503935616821E340025B96C /* RhoconnectClientManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RhoconnectClientManager.h; path = ../../shared/sync/RhoconnectClientManager.h; sourceTree = "<group>"; };
 		C503935816821F9C0025B96C /* RhoconnectClientManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoconnectClientManager.cpp; path = ../../shared/sync/RhoconnectClientManager.cpp; sourceTree = "<group>"; };
 		C522F0F8159B1FFF007FF96E /* DBImportTransaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBImportTransaction.cpp; path = ../../shared/db/DBImportTransaction.cpp; sourceTree = "<group>"; };
@@ -163,6 +167,8 @@
 		5C98172E0FBC4F53002597A5 /* db */ = {
 			isa = PBXGroup;
 			children = (
+				A883B677209EA23D00A7F10D /* DBLock.cpp */,
+				A883B676209EA23D00A7F10D /* DBLock.h */,
 				C522F0F8159B1FFF007FF96E /* DBImportTransaction.cpp */,
 				C522F0F9159B1FFF007FF96E /* DBImportTransaction.h */,
 				C522F0FA159B1FFF007FF96E /* DBRequestHelper.cpp */,
@@ -245,6 +251,7 @@
 				FA4D37FD1FDE241700E84045 /* json_tokener.h in Headers */,
 				FA4D37FF1FDE241700E84045 /* debug.h in Headers */,
 				FA4D38181FDE241700E84045 /* json_object_iterator.h in Headers */,
+				A883B678209EA23E00A7F10D /* DBLock.h in Headers */,
 				FA4D380F1FDE241700E84045 /* json_visit.h in Headers */,
 				FA4D38051FDE241700E84045 /* random_seed.h in Headers */,
 				FA4D380D1FDE241700E84045 /* math_compat.h in Headers */,
@@ -324,6 +331,7 @@
 				FA4D38011FDE241700E84045 /* json_util.c in Sources */,
 				FA4D38061FDE241700E84045 /* linkhash.c in Sources */,
 				FA4D381B1FDE241700E84045 /* json_tokener.c in Sources */,
+				A883B679209EA23E00A7F10D /* DBLock.cpp in Sources */,
 				FA4D38001FDE241700E84045 /* json_pointer.c in Sources */,
 				FA4D37FB1FDE241700E84045 /* json_object_iterator.c in Sources */,
 				5C9817330FBC4F70002597A5 /* DBAdapter.cpp in Sources */,

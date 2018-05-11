@@ -1177,6 +1177,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
             [application registerUserNotificationSettings:settings];
         } else {
             // iOS 10 or later
+#if 0
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
             // For iOS 10 display notification (sent via APNS)
             [UNUserNotificationCenter currentNotificationCenter].delegate = self;
@@ -1186,6 +1187,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
             | UNAuthorizationOptionBadge;
             [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
             }];
+#endif
 #endif
         }
         
@@ -1245,6 +1247,7 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 }
 
 #ifdef APP_BUILD_CAPABILITY_PUSH
+#if 0
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 // Handle incoming notification messages while app is in the foreground.
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
@@ -1276,6 +1279,7 @@ withCompletionHandler:(void(^)())completionHandler {
     
     completionHandler();
 }
+#endif
 #endif
 #endif
 

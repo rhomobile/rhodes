@@ -29,6 +29,11 @@
 #if defined(RHODES_QT_PLATFORM)
 
 #include <windows.h>
+
+#ifdef OS_WINDOWS_DESKTOP
+#include <Shellapi.h>
+#endif //OS_WINDOWS_DESKTOP
+
 #include "common/RhoDefs.h"
 #include "common/RhoStd.h"
 #undef null

@@ -938,7 +938,10 @@ public class RhodesService extends Service {
 				int noofCameras = Camera.getNumberOfCameras();
 				hasCamera = noofCameras == 0 ? false : true;
 				return hasCamera;// Boolean.TRUE;
-			} else {
+			} else if (name.equalsIgnoreCase("external_storage_directory_path")) {
+              				return Environment.getExternalStorageDirectory().getPath();
+
+            } else {
 				return RhoExtManager.getImplementationInstance().getProperty(
 						name);
 			}

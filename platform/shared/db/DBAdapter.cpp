@@ -24,6 +24,7 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 #include "DBAdapter.h"
+
 #include "sync/RhoconnectClientManager.h"
 
 #include "common/RhoFile.h"
@@ -32,15 +33,13 @@
 #include "common/RhodesApp.h"
 #include "common/RhoAppAdapter.h"
 #include "common/Tokenizer.h"
-#ifndef RHO_NO_RUBY 
-#include "ruby/ext/rho/rhoruby.h"
-#ifndef WINDOWS_PLATFORM
-#include "ruby/ruby.h"
-#endif
-#endif //RHO_NO_RUBY
 #include "common/app_build_configs.h"
 #include "DBImportTransaction.h"
 #include "DBRequestHelper.h"
+
+#ifndef RHO_NO_RUBY
+#include "ruby/ext/rho/rhoruby.h"
+#endif //RHO_NO_RUBY
 
 #include <sstream>
 
@@ -1497,116 +1496,4 @@ void rho_db_decrypt( const char* szPartition, int nPartLen, int size, unsigned c
         db.getCrypt()->db_decrypt(strPartition.c_str(), size, data);
 }
 
-}
-
-namespace rho{
-namespace common{
-
-#ifndef RHO_NO_RUBY
-CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(NULL)
-{
-    m_bIgnore = bIgnore || RHOCONF().getBool("no_ruby_threads");
-}
-
-void CRubyMutex::create()
-{
-    if ( !m_bIgnore && !m_valMutex)
-    {
-        unsigned long curThread = rho_ruby_current_thread();
-#ifndef WINDOWS_PLATFORM
-        if ( curThread != Qnil)
-            m_valMutex = rho_ruby_create_mutex();
-#else
-        if ( curThread != (VALUE)4) //this is ruby Qnil. If we'll include ruby.h - God, help us fix all of this
-            m_valMutex = rho_ruby_create_mutex();
-#endif
-    }
-}
-
-CRubyMutex::~CRubyMutex()
-{
-    close();    
-}
-
-void CRubyMutex::close()
-{
-    if ( m_valMutex )
-    {
-        rho_ruby_destroy_mutex(m_valMutex);
-        m_valMutex = 0;
-    }
-}
-
-boolean CRubyMutex::isMainRubyThread()
-{
-    return rho_ruby_main_thread() == rho_ruby_current_thread();
-}
-
-void CRubyMutex::Lock()
-{
-    if ( m_valMutex == NULL )
-        return;
-
-    unsigned long curThread = rho_ruby_current_thread();
-    if ( curThread == NULL )
-        return;
-
-    if ( m_valThread != curThread )
-    {
-        rho_ruby_lock_mutex(m_valMutex);
-        m_valThread = curThread;
-        m_nLockCount = 1;
-    }else
-        m_nLockCount += 1;
-}
-
-void CRubyMutex::Unlock()
-{
-    if ( m_valMutex == NULL || m_nLockCount == 0)
-        return;
-
-    m_nLockCount--;
-    if ( m_nLockCount == 0 )
-    {
-        m_valThread = NULL;
-        rho_ruby_unlock_mutex(m_valMutex);
-    }
-}
-#else //RHO_NO_RUBY
-CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(NULL)
-{
-}
-
-CRubyMutex::~CRubyMutex()
-{
-}
-
-boolean CRubyMutex::isMainRubyThread()
-{
-	if ( (!sync::RhoconnectClientManager::haveRhoconnectClientImpl()) || (!sync::RhoconnectClientManager::haveSyncThread()))
-//    if ( !sync::CSyncThread::getInstance() )
-        return true;
-
-    //return sync::CSyncThread::getInstance()->getThreadID() != CSystem::getThreadID();
-	return sync::RhoconnectClientManager::syncThreadGetThreadID() != CSystem::getThreadID();
-}
-
-void CRubyMutex::Lock()
-{
-}
-
-void CRubyMutex::Unlock()
-{
-}
-
-void CRubyMutex::close()
-{
-}
-
-void CRubyMutex::create()
-    {
-        
-    }
-#endif //RHO_NO_RUBY
-}
 }

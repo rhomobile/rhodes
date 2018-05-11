@@ -130,6 +130,11 @@ void CSystemImplBase::getPhoneNumber(CMethodResult& oResult)
     oResult.set(L"");
 }
 
+void CSystemImplBase::getExternalStorageDirectoryPath(CMethodResult& oResult)
+{
+    oResult.set(L"");
+}
+
 void CSystemImplBase::getDevicePushId(CMethodResult& oResult)
 {
     rho::String strDeviceID;
