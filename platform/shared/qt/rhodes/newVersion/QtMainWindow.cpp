@@ -195,6 +195,9 @@ currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId()
     }
 
     QWebEngineProfile * profile = QWebEngineProfile::defaultProfile();
+    #ifdef RHODES_EMULATOR
+    profile->setHttpUserAgent("RhoSimulator");
+    #endif
 
     rho::String rs_dir = RHODESAPP().getRhoRootPath()+RHO_EMULATOR_DIR;
     QString path(QString(rs_dir.c_str()));
