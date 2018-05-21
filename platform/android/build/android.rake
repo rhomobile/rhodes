@@ -309,18 +309,19 @@ namespace 'project' do
       $abis = ['arm'] unless $abis
       abi = $abis[0]
       
-      realabi = 'armeabi' if abi == 'arm'
-
       if abi == 'arm'
         realabi = 'armeabi'
+        studio_realabi = 'armeabi-v7a'
       else 
         realabi = abi
+        studio_realabi = abi
       end
 
       external_string = ''
       ext_libs = ''
       extlibs = Dir.glob(File.join($app_builddir, 'extensions', '**', realabi, 'lib*.a'))
       extlibs.each do |lib|
+
         extname = File.basename(lib).gsub('lib', '').gsub('.a', '')
         external_string += ("add_library(#{extname} STATIC IMPORTED GLOBAL)\n" +        
         "set_property(TARGET #{extname} PROPERTY IMPORTED_LOCATION #{lib})\n")
@@ -347,7 +348,7 @@ namespace 'project' do
       generator.buildMode = $debug ? 'Debug' : 'Release'
       generator.externalDeps = external_string
       generator.extLibs = ext_libs
-      generator.targetArch = realabi
+      generator.targetArch = studio_realabi
 
       generator.compileSdkVersion = $found_api_level
       generator.versionName = $app_config["version"]
@@ -2687,10 +2688,9 @@ namespace "device" do
       $abis = $app_config['android']['abis'] if $app_config["android"]
       $abis = ['arm'] unless $abis
       abi = $abis[0]
-      realabi = 'armeabi' if abi == 'arm'
 
       if abi == 'arm'
-        realabi = 'armeabi'
+        realabi = 'armeabi-v7a'
       else 
         realabi = abi
       end
