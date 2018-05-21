@@ -47,7 +47,7 @@ CRubyMutexImpl::CRubyMutexImpl(bool bIgnore) : m_nLockCount(0), m_valThread(Qnil
 
 void CRubyMutexImpl::create()
 {
-    if ( !m_bIgnore && !m_valMutex)
+    if ( !m_bIgnore &&  ( m_valMutex==Qnil ) )
     {
         unsigned long curThread = rho_ruby_current_thread();
 
@@ -68,7 +68,7 @@ void CRubyMutexImpl::close()
     if ( m_valMutex )
     {
         rho_ruby_destroy_mutex(m_valMutex);
-        m_valMutex = 0;
+        m_valMutex = Qnil;
     }
 }
 
