@@ -89,7 +89,7 @@ def QTInfo(qtcurrentversion)
       eqstatus = is_equal("5.9",qtcurrentversion)
       puts "Checking for 5.9 - #{eqstatus}"
       if(eqstatus)
-          value = 4 # 5.9
+          value = 5 # 5.9
       end
 
       return value
@@ -715,12 +715,43 @@ namespace "config" do
     task :qt do
       next if $prebuild_win32
 
+
+      $qtdir = ENV['QTDIR']
+      unless !$qtdir.nil? && ($qtdir !~ /^\s*$/) && File.directory?($qtdir)
+        puts "\nPlease, set QTDIR environment variable to Qt root directory path"
+        exit 1
+      end
+
+      # Search for QT 5 or QT 4 files
+      qt5corefile =File.join($qtdir, "bin/Qt5Core.dll");
+      qt4corefile =File.join($qtdir, "bin/QtCore4.dll");
+      if File.exists?(qt5corefile)
+          qtcorefile=qt5corefile
+      elsif  File.exists?(qt4corefile)
+          qtcorefile=qt4corefile
+      end
+
+      if qtcorefile.nil?
+          puts "\nNo QT File exists in #{$qtdir}"
+          exit 1
+      end
+
+      $QVersion=GetFileVersion(qtcorefile)
+      puts "Current QT Version Found : #{$QVersion}"
+      $qtversionindex = QTInfo($QVersion)
+      puts "QT Version Found and Index for further checking is #{$qtversionindex}"
+
       $msvc_version = $app_config["win32"]["msvc"] if $app_config && $app_config["win32"] && $app_config["win32"]["msvc"]
 
       # use Visual Studio 2015 by default
       $vs_version = 2015
       $vscommontools = ENV['VS140COMNTOOLS']
-      $qmake_makespec = 'win32-msvc2015'
+
+      if $qtversionindex == 5
+          $qmake_makespec = 'win32-msvc'
+      else
+          $qmake_makespec = 'win32-msvc2015'
+      end
       
       # if win32:msvc is not defined in build.yml, then automatically detect installed Visual Studio
       if $msvc_version.nil?
@@ -756,9 +787,13 @@ namespace "config" do
           exit 1
         end
       elsif $msvc_version == "2015"
-        $vs_version = 2015
-        $vscommontools = ENV['VS140COMNTOOLS']
-        $qmake_makespec = 'win32-msvc2015'
+          $vs_version = 2015
+          $vscommontools = ENV['VS140COMNTOOLS']
+        if $qtversionindex == 5
+          $qmake_makespec = 'win32-msvc'
+        else
+          $qmake_makespec = 'win32-msvc2015'
+        end
         
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2015"
@@ -775,47 +810,24 @@ namespace "config" do
 
       $vscommontools << '\\' unless $vscommontools.end_with?('\\') || $vscommontools.end_with?('/')
 
-      $qtdir = ENV['QTDIR']
-      unless !$qtdir.nil? && ($qtdir !~ /^\s*$/) && File.directory?($qtdir)
-        puts "\nPlease, set QTDIR environment variable to Qt root directory path"
-        exit 1
+      
+      
+      if ($qtversionindex != 0)
+        puts "Found QT Version : #{$QVersion}"
+      else
+        puts "Unknown QT Version : #{$QVersion}"
       end
 
-     # Search for QT 5 or QT 4 files
-     qt5corefile =File.join($qtdir, "bin/Qt5Core.dll");
-     qt4corefile =File.join($qtdir, "bin/QtCore4.dll");
-     if File.exists?(qt5corefile)
-          qtcorefile=qt5corefile
-     elsif  File.exists?(qt4corefile)
-          qtcorefile=qt4corefile
-     end
-     
-     if qtcorefile.nil?
-          puts "\nNo QT File exists in #{$qtdir}"
-          exit 1
-     end
-     
-          $QVersion=GetFileVersion(qtcorefile)
-          puts "Current QT Version Found : #{$QVersion}"
-          $qtversionindex = QTInfo($QVersion)
-          puts "QT Version Found and Index for further checking is #{$qtversionindex}"
-          
-          if ($qtversionindex != 0)
-            puts "Found QT Version : #{$QVersion}"
-          else
-            puts "Unknown QT Version : #{$QVersion}"
-          end
-
-          puts "Visual Studio Found/Default for build.yml is #{$vs_version} , Code will be Compiled against Visual Studio #{$vs_version}"
-          
-         if $vs_version == 2008 &&  $qtversionindex == 3
-               puts "\n Visual Studio 2008 is not currently supported for this QT version "
-          exit 1
-        end
-          if $vs_version != 2015 &&  $qtversionindex == 4
-               puts "\n Visual Studio  #{$vs_version} is not currently supported for this QT version "
-          exit 1
-        end
+      puts "Visual Studio Found/Default for build.yml is #{$vs_version} , Code will be Compiled against Visual Studio #{$vs_version}"
+      
+      if $vs_version == 2008 &&  $qtversionindex == 3
+        puts "\n Visual Studio 2008 is not currently supported for this QT version "
+        exit 1
+      end
+      if $vs_version != 2015 &&  ($qtversionindex == 4 || $qtversionindex == 5)
+        puts "\n Visual Studio  #{$vs_version} is not currently supported for this QT version "
+        exit 1
+      end
        
       $qt_project_dir = File.join( $startdir, 'platform/shared/qt/' )
     end
@@ -1394,30 +1406,35 @@ namespace "build" do
                       end
                     end
                when 4 #5.8.0.0
-
                   possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
-
-                   format ="Found QT Version : #{$QVersion}" 
-
-                   begin
-
+                  format ="Found QT Version : #{$QVersion}" 
+                  begin
                     possible_targets.each do |target|
-                      targetFile = File.join($target_path, target + ".exe")
-                      break if File.file?(targetFile)
-                    end
-
-                    $logger.debug "Looking for app executable: #{targetFile}"
-                   
-                    raise "#{targetFile} not found" unless File.file?(targetFile)
-
-                    Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
-                    #cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
-
-                  rescue Exception => e
-
-                    $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
-
+                    targetFile = File.join($target_path, target + ".exe")
+                    break if File.file?(targetFile)
                   end
+                  $logger.debug "Looking for app executable: #{targetFile}"                  
+                  raise "#{targetFile} not found" unless File.file?(targetFile)
+                  Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
+                  #cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
+                  rescue Exception => e
+                    $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
+                  end
+                when 5 #5.9.5.0
+                possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
+                format ="Found QT Version : #{$QVersion}" 
+                begin
+                  possible_targets.each do |target|
+                  targetFile = File.join($target_path, target + ".exe")
+                  break if File.file?(targetFile)
+                end
+                $logger.debug "Looking for app executable: #{targetFile}"                  
+                raise "#{targetFile} not found" unless File.file?(targetFile)
+                Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
+                #cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
+                rescue Exception => e
+                  $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
+                end
                else
                     format ="Unknown QT Version : #{$QVersion}"
               end
@@ -2306,8 +2323,9 @@ namespace "run" do
     Rake::Task["build:win32:deployqt"].invoke unless $prebuild_win32
 
     cp $qt_icon_path, $target_path + "/icon.png"
-    cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
-
+    if $qtversionindex == 4
+      cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
+    end
     args = ['--remote-debugging-port=9090']
     #    chdir rundir
     #    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
