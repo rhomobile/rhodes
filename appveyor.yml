@@ -3,7 +3,7 @@ image: Visual Studio 2015
 platform: x86
 clone_folder: C:\TAU\rhodes
 environment:
-  QTDIR: C:\Qt\5.8\msvc2015
+  QTDIR: C:\Qt\5.8\msvc2013
   matrix:
     - win32_rhosimulator:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
