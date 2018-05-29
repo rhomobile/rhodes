@@ -23,6 +23,9 @@
 #
 # http://rhomobile.com
 #------------------------------------------------------------------------
+require 'rubygems'
+$zippath = "res/build-tools/7za.exe"
+
  VS_FIXEDFILEINFO = Struct.new("VS_FIXEDFILEINFO", :Signature, :StrucVersion, :FileVersionMS, :FileVersionLS, :ProductVersionMS, :ProductVersionLS, :FileFlagsMask, :FileFlags, :FileOS, :FileType, :FileSubtype, :FileDateMS, :FileDateLS)
  
  
@@ -1421,20 +1424,20 @@ namespace "build" do
                     $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
                   end
                 when 5 #5.9.5.0
-                possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
-                format ="Found QT Version : #{$QVersion}" 
-                begin
-                  possible_targets.each do |target|
-                  targetFile = File.join($target_path, target + ".exe")
-                  break if File.file?(targetFile)
-                end
-                $logger.debug "Looking for app executable: #{targetFile}"                  
-                raise "#{targetFile} not found" unless File.file?(targetFile)
-                Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
-                #cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
-                rescue Exception => e
-                  $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
-                end
+                  possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
+                  format ="Found QT Version : #{$QVersion}" 
+                  begin
+                    possible_targets.each do |target|
+                    targetFile = File.join($target_path, target + ".exe")
+                    break if File.file?(targetFile)
+                  end
+                  $logger.debug "Looking for app executable: #{targetFile}"                  
+                  raise "#{targetFile} not found" unless File.file?(targetFile)
+                  Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
+                  #cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
+                  rescue Exception => e
+                    $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
+                  end
                else
                     format ="Unknown QT Version : #{$QVersion}"
               end
@@ -1609,6 +1612,17 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), $target_path
 
       Rake::Task["build:win32:deployqt"].invoke
+
+
+      directory = $target_path
+      zipfile_name = File.join($target_path, "RhoSimulator.zip")
+
+      args = []
+      args << "a"
+      args << "-tzip"
+      args << zipfile_name
+      args << directory + "/*"
+      puts Jake.run($zippath, args)
     end
   end
 
