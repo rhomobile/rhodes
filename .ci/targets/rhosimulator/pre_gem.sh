@@ -5,6 +5,32 @@ cp ./rhobuild.yml.example ./rhobuild.yml
 
 set -e
 
+
+echo Downloading Qt
+set -v
+set -e
+
+DOWNLOAD_URL=https://download.qt.io/archive/qt/5.9/5.9.5/qt-opensource-mac-x64-5.9.5.dmg
+INSTALLER=`basename $DOWNLOAD_URL`
+INSTALLER_NAME=${INSTALLER%.*}
+ENVFILE=qt-5.9.5-osx.env
+APPFILE=/Volumes/${INSTALLER_NAME}/${INSTALLER_NAME}.app/Contents/MacOS/${INSTALLER_NAME}
+echo $INSTALLER_NAME
+echo $APPFILE
+
+wget -nv -c $DOWNLOAD_URL
+hdiutil attach ${INSTALLER}
+ls /Volumes
+echo Installing Qt
+extract-qt-installer $APPFILE $PWD/Qt
+hdiutil detach /Volumes/${INSTALLER_NAME}
+
+echo Create $ENVFILE
+cat << EOF > $ENVFILE
+export PATH=$PWD/Qt/5.9.5/clang_64/bin:$PATH
+EOF
+echo Qt installed
+
 if [ $TRAVIS_BRANCH == "CI" ]
 then
 	BRANCH="master"
