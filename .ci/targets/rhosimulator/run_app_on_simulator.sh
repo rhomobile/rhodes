@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -x
 
-rake run:rhosimulator:spec --trace
+rake run:iphone:rhosimulator --trace

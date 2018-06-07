@@ -21,7 +21,8 @@ cd ../openssl
 
 echo "Building rhosim"
 cd $TRAVIS_BUILD_DIR
-rake build:osx:rhosimulator > build.log
+rake build:osx:rhosimulator
+# > build.log
 
 OUT=$?
 
