@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 set -x
-echo "Building rhosim is not supported yet"
-exit 0
 
 cp ./rhobuild.yml.example ./rhobuild.yml
-
-echo "Installing Rhoconnect client"
 
 set -e
 
@@ -16,12 +12,18 @@ else
 	BRANCH=$TRAVIS_BRANCH
 fi
 
-git clone -b $BRANCH https://github.com/rhomobile/rhoconnect-client.git ../rhoconnect-client
+echo "Installing Rhoconnect client"
+git clone -b master https://github.com/rhomobile/rhoconnect-client.git ../rhoconnect-client
 
-rake build:rhosimulator > build.log
+git clone -b OpenSSL_1_1_0-stable https://github.com/tauplatform/openssl.git ../openssl
+cd ../openssl
+./tau_build_macos_lib.sh
+
+echo "Building rhosim"
+cd $TRAVIS_BUILD_DIR
+rake build:osx:rhosimulator > build.log
+
 OUT=$?
-
-git clean -fdx
 
 if [ $OUT -eq 0 ];then
    echo "RhoSimulator built successfully"

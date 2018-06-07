@@ -128,9 +128,9 @@ matrix:
   #   os: osx
   #   env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkRuby"
 
-  #- language: objective-c
-  #  os: osx
-  #  env: RHO_TARGET="rhosimulator"    RHO_APP="auto_common_spec"
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="rhosimulator"    RHO_APP="auto_common_spec"
 
   # - language: objective-c
   #   os: osx
