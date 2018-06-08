@@ -224,13 +224,13 @@ BOOL WriteRegFile (HKEY hroot, LPCWSTR psubkey, LPCWSTR psetting, DWORD type, co
 	ok = FALSE;
 #ifndef CPP_ELEVEN
 	if (hroot == HKEY_LOCAL_MACHINE)
-		proot = L"HKEY_LOCAL_MACHINE";
+		proot = (WCHAR *) L"HKEY_LOCAL_MACHINE";
 	else if (hroot == HKEY_CURRENT_USER)
-		proot = L"HKEY_CURRENT_USER";
+		proot = (WCHAR *) L"HKEY_CURRENT_USER";
 	else if (hroot == HKEY_CLASSES_ROOT)
-		proot = L"HKEY_CLASSES_ROOT";
+		proot = (WCHAR *) L"HKEY_CLASSES_ROOT";
 	else if (hroot == HKEY_USERS)
-		proot = L"HKEY_USERS";
+		proot = (WCHAR *) L"HKEY_USERS";
 	else
 	{
 		LOG(WARNING) + "Unknown hive: " + (DWORD)hroot;
@@ -239,13 +239,13 @@ BOOL WriteRegFile (HKEY hroot, LPCWSTR psubkey, LPCWSTR psetting, DWORD type, co
 #else
     std::wstring temwstr;
     if (hroot == HKEY_LOCAL_MACHINE)
-        temwstr = L"HKEY_LOCAL_MACHINE";
+        temwstr = (WCHAR *) L"HKEY_LOCAL_MACHINE";
     else if (hroot == HKEY_CURRENT_USER)
-        temwstr = L"HKEY_CURRENT_USER";
+        temwstr = (WCHAR *) L"HKEY_CURRENT_USER";
     else if (hroot == HKEY_CLASSES_ROOT)
-        temwstr = L"HKEY_CLASSES_ROOT";
+        temwstr = (WCHAR *) L"HKEY_CLASSES_ROOT";
     else if (hroot == HKEY_USERS)
-        temwstr = L"HKEY_USERS";
+        temwstr = (WCHAR *) L"HKEY_USERS";
     else
     {
         LOG(WARNING) + "Unknown hive: " + (DWORD)hroot;
@@ -385,13 +385,13 @@ BOOL DeleteRegFile (HKEY hroot, LPCWSTR psubkey, LPCWSTR psetting)
 	ok = FALSE;
 #ifndef CPP_ELEVEN
 	if (hroot == HKEY_LOCAL_MACHINE)
-		proot = L"HKEY_LOCAL_MACHINE";
+		proot = (WCHAR *) L"HKEY_LOCAL_MACHINE";
 	else if (hroot == HKEY_CURRENT_USER)
-        proot = L"HKEY_CURRENT_USER";
+        proot = (WCHAR *) L"HKEY_CURRENT_USER";
 	else if (hroot == HKEY_CLASSES_ROOT)
-		proot = L"HKEY_CLASSES_ROOT";
+		proot = (WCHAR *) L"HKEY_CLASSES_ROOT";
 	else if (hroot == HKEY_USERS)
-		proot = L"HKEY_USERS";
+		proot = (WCHAR *) L"HKEY_USERS";
 	else
 	{
 		LOG(WARNING) + "Unknown hive: " + (DWORD)hroot;
@@ -400,13 +400,13 @@ BOOL DeleteRegFile (HKEY hroot, LPCWSTR psubkey, LPCWSTR psetting)
 #else
     std::wstring tempwstr;
     if (hroot == HKEY_LOCAL_MACHINE)
-        tempwstr = L"HKEY_LOCAL_MACHINE";
+        tempwstr = (WCHAR *) L"HKEY_LOCAL_MACHINE";
     else if (hroot == HKEY_CURRENT_USER)
-        tempwstr = L"HKEY_CURRENT_USER";
+        tempwstr = (WCHAR *) L"HKEY_CURRENT_USER";
     else if (hroot == HKEY_CLASSES_ROOT)
-        tempwstr = L"HKEY_CLASSES_ROOT";
+        tempwstr = (WCHAR *) L"HKEY_CLASSES_ROOT";
     else if (hroot == HKEY_USERS)
-        tempwstr = L"HKEY_USERS";
+        tempwstr = (WCHAR *) L"HKEY_USERS";
     else
     {
         LOG(WARNING) + "Unknown hive: " + (DWORD)hroot;
@@ -452,13 +452,13 @@ BOOL CreateDeleteRegFile (HKEY hroot, LPCWSTR psubkey, LPCWSTR psetting)
 	ok = FALSE;
 #ifndef CPP_ELEVEN
 	if (hroot == HKEY_LOCAL_MACHINE)
-		proot = L"HKEY_LOCAL_MACHINE";
+		proot = (WCHAR *) L"HKEY_LOCAL_MACHINE";
 	else if (hroot == HKEY_CURRENT_USER)
-		proot = L"HKEY_CURRENT_USER";
+		proot = (WCHAR *) L"HKEY_CURRENT_USER";
 	else if (hroot == HKEY_CLASSES_ROOT)
-		proot = L"HKEY_CLASSES_ROOT";
+		proot = (WCHAR *) L"HKEY_CLASSES_ROOT";
 	else if (hroot == HKEY_USERS)
-		proot = L"HKEY_USERS";
+		proot = (WCHAR *) L"HKEY_USERS";
 	else
 	{
 		LOG(WARNING) + "Unknown hive: " + (DWORD)hroot;
@@ -467,13 +467,13 @@ BOOL CreateDeleteRegFile (HKEY hroot, LPCWSTR psubkey, LPCWSTR psetting)
 #else
     std::wstring tempstr;
     if (hroot == HKEY_LOCAL_MACHINE)
-        tempstr = L"HKEY_LOCAL_MACHINE";
+        tempstr = (WCHAR *) L"HKEY_LOCAL_MACHINE";
     else if (hroot == HKEY_CURRENT_USER)
-        tempstr = L"HKEY_CURRENT_USER";
+        tempstr = (WCHAR *) L"HKEY_CURRENT_USER";
     else if (hroot == HKEY_CLASSES_ROOT)
-        tempstr = L"HKEY_CLASSES_ROOT";
+        tempstr = (WCHAR *) L"HKEY_CLASSES_ROOT";
     else if (hroot == HKEY_USERS)
-        tempstr = L"HKEY_USERS";
+        tempstr = (WCHAR *) L"HKEY_USERS";
     else
     {
         LOG(WARNING) + "Unknown hive: " + (DWORD)hroot;

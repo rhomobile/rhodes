@@ -8,8 +8,8 @@ set -e
 
 echo Downloading Qt
 #DOWNLOAD_URL=https://download.qt.io/archive/qt/5.9/5.9.5/qt-opensource-mac-x64-5.9.5.dmg
-./dmginstall.sh https://download.qt.io/official_releases/qt/5.9/5.9.5/qt-opensource-mac-x64-5.9.5.dmg
-#brew update && brew install qt5 --with-qtwebengine
+#./dmginstall.sh https://download.qt.io/official_releases/qt/5.9/5.9.5/qt-opensource-mac-x64-5.9.5.dmg
+brew update && brew install qt5 --with-qtwebengine
 echo Qt installed
 
 if [ $TRAVIS_BRANCH == "CI" ]

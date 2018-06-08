@@ -1,7 +1,6 @@
 QT       += core gui widgets
 
-greaterThan(QT_VERSION, 4.7): lessThan(QT_VERSION, 5.0): QT += declarative
-greaterThan(QT_MAJOR_VERSION, 4): QT += quick
+QT += quick
 
 DEFINES += QZXING_LIBRARY \
         ZXING_ICONV_CONST \

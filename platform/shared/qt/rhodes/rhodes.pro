@@ -1,16 +1,16 @@
 QT += core gui network
 
 message(Qt version: $$[QT_VERSION])
-greaterThan(QT_MAJOR_VERSION, 4):{
+isEqual(QT_MAJOR_VERSION, 5):{
     QT += multimedia multimediawidgets
 
-    lessThan(QT_VERSION, 5.6.0): {
+    lessThan(QT_MINOR_VERSION, 6): {
         QT += webkit widgets webkitwidgets
         message(Deprecated webkit enabled)
         DEFINES += RHODES_VERSION_1
         INCLUDEPATH += oldVersion
     }
-    greaterThan(QT_VERSION, 5.6.0): {
+    greaterThan(QT_MINOR_VERSION, 6): {
         QT += webengine webenginecore webenginewidgets
         message(Webengine enabled)
         CONFIG += c++14
@@ -30,7 +30,7 @@ INCLUDEPATH += ../..\
 ../../ruby/include
 
 macx {
-  greaterThan(QT_VERSION, 5.6.0): {
+  greaterThan(QT_MINOR_VERSION, 6): {
       DEFINES += RHODES_MAC_BUILD
   }
   ICON = resources/rho.icns
@@ -62,7 +62,7 @@ macx {
 }
 
 win32 {
-  greaterThan(QT_VERSION, 5.6.0): {
+  greaterThan(QT_MINOR_VERSION, 6): {
       DEFINES += CPP_ELEVEN
   }
   CONFIG += embed_manifest_exe

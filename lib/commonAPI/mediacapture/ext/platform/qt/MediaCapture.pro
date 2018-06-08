@@ -1,14 +1,14 @@
 QT += core gui widgets multimedia multimediawidgets network
 
-    lessThan(QT_VERSION, 5.6.0): {
-        QT += webkit widgets webkitwidgets
-        DEFINES += RHODES_VERSION_1
-    }
-    greaterThan(QT_VERSION, 5.6.0): {
-        QT += webengine webenginecore webenginewidgets
-        CONFIG += c++14
-        DEFINES += CPP_ELEVEN RHODES_VERSION_2
-    }
+lessThan(QT_MINOR_VERSION, 6): {
+    QT += webkit widgets webkitwidgets
+    DEFINES += RHODES_VERSION_1
+}
+greaterThan(QT_MINOR_VERSION, 6): {
+    QT += webengine webenginecore webenginewidgets
+    CONFIG += c++14
+    DEFINES += CPP_ELEVEN RHODES_VERSION_2
+}
 
 TARGET = Mediacapture
 TEMPLATE = lib
