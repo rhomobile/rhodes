@@ -8,7 +8,7 @@ set -e
 
 echo Downloading Qt
 #DOWNLOAD_URL=https://download.qt.io/archive/qt/5.9/5.9.5/qt-opensource-mac-x64-5.9.5.dmg
-brew update && brew install qt5 
+brew update && brew install qt595 
 echo Qt installed
 
 if [ $TRAVIS_BRANCH == "CI" ]
