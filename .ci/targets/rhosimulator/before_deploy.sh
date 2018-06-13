@@ -2,4 +2,4 @@
 
 set -x
 
-cp $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app $BUILD_ARTEFACTS_DIR
+cp $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/*.zip $BUILD_ARTEFACTS_DIR
