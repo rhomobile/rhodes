@@ -5,12 +5,13 @@ cp ./rhobuild.yml.example ./rhobuild.yml
 
 set -e
 
-brew update && brew install gcc
+
 
 echo Downloading Qt
 #DOWNLOAD_URL=https://download.qt.io/archive/qt/5.9/5.9.5/qt-opensource-mac-x64-5.9.5.dmg
 #./dmginstall.sh https://download.qt.io/official_releases/qt/5.9/5.9.5/qt-opensource-mac-x64-5.9.5.dmg
 #brew update && brew install qt5 --with-qtwebengine
+export "CC=/usr/bin/gcc -arch i386"
 wget -q https://s3.amazonaws.com/files.tau-technologies.com/buildenv/Qt5.9.5.tar.gz -O $HOME/Qt5.9.5.tar.gz
 tar -xzf $HOME/Qt5.9.5.tar.gz -C $HOME/
 echo Qt installed
