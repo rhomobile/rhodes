@@ -34,7 +34,9 @@ echo "Building rhosim"
 cd $TRAVIS_BUILD_DIR
 rm $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app.zip
 rake build:osx:rhosimulator
-zip $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app.zip $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app
+cd $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/
+zip -r RhoSimulator.app.zip RhoSimulator.app
+cd $TRAVIS_BUILD_DIR
 # > build.log
 
 OUT=$?
