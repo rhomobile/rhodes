@@ -11,7 +11,7 @@ echo Downloading Qt
 #./dmginstall.sh https://download.qt.io/official_releases/qt/5.9/5.9.5/qt-opensource-mac-x64-5.9.5.dmg
 #brew update && brew install qt5 --with-qtwebengine
 wget -q https://s3.amazonaws.com/files.tau-technologies.com/buildenv/Qt5.9.5.tar.gz -O $HOME/Qt5.9.5.tar.gz
-unzip -q $HOME/Qt5.9.5.tar.gz -d $HOME/
+tar -xzf $HOME/Qt5.9.5.tar.gz
 echo Qt installed
 
 if [ $TRAVIS_BRANCH == "CI" ]
