@@ -70,7 +70,7 @@ env:
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
   - S3_JOB_DIR="$TRAVIS_COMMIT"/"travis-$TRAVIS_JOB_NUMBER"_"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
-  - QTDIR="/usr/local/Cellar/qt/5.11.0"
+  - QTDIR="$HOME/Qt5.9.5"
 
 osx_image: xcode9.1
 
