@@ -31,7 +31,7 @@ script:
 
 - |
   if [[ -n $RHO_APP ]]; then
-    git clone $(.ci/app_repo.rb) $HOME/$RHO_APP";
+    git clone $(.ci/app_repo.rb) $HOME/$RHO_APP;
     cd $HOME/$RHO_APP/$(.ci/app_build_root.rb);
   fi
 
