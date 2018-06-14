@@ -11,7 +11,6 @@ install:
 - gem install rest-client --no-document
 - gem install listen --no-document
 - gem install zip --no-document
-- .ci/install_rhoconnect-client.sh
 
 script:
 - cd $TRAVIS_BUILD_DIR
@@ -22,6 +21,7 @@ script:
 - rvm gemset use rhodes
 - travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
+- .ci/install_rhoconnect-client.sh
 
 - cd $HOME
 - rhodes app vanilla_rhodes_app

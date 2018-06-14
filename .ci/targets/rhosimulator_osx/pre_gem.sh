@@ -14,6 +14,9 @@ wget -q https://s3.amazonaws.com/files.tau-technologies.com/buildenv/Qt5.9.5.tar
 tar -xzf $HOME/Qt5.9.5.tar.gz -C $HOME/
 echo Qt installed
 
+echo "Installing Rhoconnect client"	
+git clone -b $BRANCH https://github.com/rhomobile/rhoconnect-client.git ../rhoconnect-client
+
 git clone -b OpenSSL_1_1_0-stable https://github.com/tauplatform/openssl.git ../openssl
 cd ../openssl
 ./tau_build_macos_lib.sh
