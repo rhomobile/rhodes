@@ -5,8 +5,6 @@ cp ./rhobuild.yml.example ./rhobuild.yml
 
 set -e
 
-
-
 echo Downloading Qt
 #DOWNLOAD_URL=https://download.qt.io/archive/qt/5.9/5.9.5/qt-opensource-mac-x64-5.9.5.dmg
 #./dmginstall.sh https://download.qt.io/official_releases/qt/5.9/5.9.5/qt-opensource-mac-x64-5.9.5.dmg
@@ -23,8 +21,8 @@ else
 	BRANCH=$TRAVIS_BRANCH
 fi
 
-echo "Installing Rhoconnect client"
-git clone -b master https://github.com/rhomobile/rhoconnect-client.git ../rhoconnect-client
+#echo "Installing Rhoconnect client"
+#git clone -b $BRANCH https://github.com/rhomobile/rhoconnect-client.git ../rhoconnect-client
 
 git clone -b OpenSSL_1_1_0-stable https://github.com/tauplatform/openssl.git ../openssl
 cd ../openssl
