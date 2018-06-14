@@ -29,8 +29,11 @@ script:
 - rhodes nodejsapp vanilla_rhodes_nodejsapp
 - cd $TRAVIS_BUILD_DIR
 
-- "[[ ! -z  $RHO_APP ]] && git clone $(.ci/app_repo.rb) $HOME/$RHO_APP"
-- "[[ ! -z  $RHO_APP ]] && cd $HOME/$RHO_APP/$(.ci/app_build_root.rb)"
+- |
+  if [[ -n $RHO_APP ]]; then
+    git clone $(.ci/app_repo.rb) $HOME/$RHO_APP";
+    cd $HOME/$RHO_APP/$(.ci/app_build_root.rb);
+  fi
 
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh
 
