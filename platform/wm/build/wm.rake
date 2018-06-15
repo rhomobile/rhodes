@@ -95,6 +95,12 @@ def QTInfo(qtcurrentversion)
           value = 5 # 5.9
       end
 
+      eqstatus = is_equal("5.11",qtcurrentversion)
+      puts "Checking for 5.11 - #{eqstatus}"
+      if(eqstatus)
+          value = 6 # 5.11
+      end
+
       return value
 end
 
@@ -743,14 +749,13 @@ namespace "config" do
       puts "Current QT Version Found : #{$QVersion}"
       $qtversionindex = QTInfo($QVersion)
       puts "QT Version Found and Index for further checking is #{$qtversionindex}"
-
       $msvc_version = $app_config["win32"]["msvc"] if $app_config && $app_config["win32"] && $app_config["win32"]["msvc"]
 
       # use Visual Studio 2015 by default
       $vs_version = 2015
       $vscommontools = ENV['VS140COMNTOOLS']
 
-      if $qtversionindex == 5
+      if $qtversionindex == 5 || $qtversionindex == 6 
           $qmake_makespec = 'win32-msvc'
       else
           $qmake_makespec = 'win32-msvc2015'
@@ -792,7 +797,7 @@ namespace "config" do
       elsif $msvc_version == "2015"
           $vs_version = 2015
           $vscommontools = ENV['VS140COMNTOOLS']
-        if $qtversionindex == 5
+        if $qtversionindex == 5 || $qtversionindex == 6 
           $qmake_makespec = 'win32-msvc'
         else
           $qmake_makespec = 'win32-msvc2015'
@@ -827,7 +832,7 @@ namespace "config" do
         puts "\n Visual Studio 2008 is not currently supported for this QT version "
         exit 1
       end
-      if $vs_version != 2015 &&  ($qtversionindex == 4 || $qtversionindex == 5)
+      if $vs_version != 2015 &&  ($qtversionindex == 4 || $qtversionindex == 5 || $qtversionindex == 6)
         puts "\n Visual Studio  #{$vs_version} is not currently supported for this QT version "
         exit 1
       end
@@ -1287,9 +1292,11 @@ namespace "build" do
        puts format
      
      #1 - 4.7.4.0     
-     #2- 5.1.1.0 
+     #2 - 5.1.1.0 
      #3 - 5.5.0.0
      #4 - 5.8.0.0
+     #5 - 5.9.5.0
+     #6 - 5.11.0.0
        case $qtversionindex
                  when 1 # 4.7.4.0
                     format ="Found QT Version : #{$QVersion}"
@@ -1408,22 +1415,7 @@ namespace "build" do
                         end
                       end
                     end
-               when 4 #5.8.0.0
-                  possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
-                  format ="Found QT Version : #{$QVersion}" 
-                  begin
-                    possible_targets.each do |target|
-                    targetFile = File.join($target_path, target + ".exe")
-                    break if File.file?(targetFile)
-                  end
-                  $logger.debug "Looking for app executable: #{targetFile}"                  
-                  raise "#{targetFile} not found" unless File.file?(targetFile)
-                  Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
-                  #cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
-                  rescue Exception => e
-                    $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
-                  end
-                when 5 #5.9.5.0
+               when 4, 5, 6
                   possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
                   format ="Found QT Version : #{$QVersion}" 
                   begin
@@ -1614,15 +1606,15 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       Rake::Task["build:win32:deployqt"].invoke
 
 
-      directory = $target_path
-      zipfile_name = File.join($target_path, "RhoSimulator.zip")
+      #directory = $target_path
+      #zipfile_name = File.join($target_path, "RhoSimulator.zip")
 
-      args = []
-      args << "a"
-      args << "-tzip"
-      args << zipfile_name
-      args << directory + "/*"
-      puts Jake.run($zippath, args)
+      #args = []
+      #args << "a"
+      #args << "-tzip"
+      #args << zipfile_name
+      #args << directory + "/*"
+      #puts Jake.run($zippath, args)
     end
   end
 
