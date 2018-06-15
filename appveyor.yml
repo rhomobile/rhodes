@@ -14,7 +14,7 @@ environment:
       app_name: RhoSimulator
       target_os: win32
       target_artefact_path: C:\Ruby23\lib\ruby\gems\2.3.0\gems\rhodes-6.0.0\platform\win32\RhoSimulator\
-      target_artefact_file_name: 
+      target_artefact_file_name: RhoSimulator.zip
 
     - win32_auto_common_spec:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
@@ -165,7 +165,7 @@ deploy:
       secure: WzHfCbltmZTLnQxLo5/3BzBLHLnuiMIK6aDkoB10by58eOngCcTKvHJUGbtkfcsp
     bucket: tau-autobuilds
     region: eu-central-1
-    folder: '$(APPVEYOR_REPO_NAME)/$(APPVEYOR_REPO_BRANCH)/$(APPVEYOR_REPO_COMMIT)/$(target_os)-$(app_name)'
-    artifact: /.*/
+    folder: '$(APPVEYOR_REPO_NAME)/$(APPVEYOR_REPO_BRANCH)/$(APPVEYOR_REPO_COMMIT)/appveyor-${APPVEYOR_BUILD_NUMBER}.$(APPVEYOR_JOB_NUMBER)_win32-$(target_os)-$(app_name)'
+    artifact: '${target_artefact_file_name}'
     set_public: true
     max_error_retry: 5
