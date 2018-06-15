@@ -14,6 +14,13 @@ wget -q https://s3.amazonaws.com/files.tau-technologies.com/buildenv/Qt5.9.5.tar
 tar -xzf $HOME/Qt5.9.5.tar.gz -C $HOME/
 echo Qt installed
 
+if [ $TRAVIS_BRANCH == "CI" ]
+then
+	BRANCH="master"
+else
+	BRANCH=$TRAVIS_BRANCH
+fi
+
 echo "Installing Rhoconnect client"	
 git clone -b $BRANCH https://github.com/rhomobile/rhoconnect-client.git ../rhoconnect-client
 
