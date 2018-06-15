@@ -1606,15 +1606,15 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       Rake::Task["build:win32:deployqt"].invoke
 
 
-      #directory = $target_path
-      #zipfile_name = File.join($target_path, "RhoSimulator.zip")
+      directory = $target_path
+      zipfile_name = File.join($target_path, "RhoSimulator.zip")
 
-      #args = []
-      #args << "a"
-      #args << "-tzip"
-      #args << zipfile_name
-      #args << directory + "/*"
-      #puts Jake.run($zippath, args)
+      args = []
+      args << "a"
+      args << "-tzip"
+      args << zipfile_name
+      args << directory + "/*"
+      puts Jake.run($zippath, args)
     end
   end
 
