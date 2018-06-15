@@ -166,6 +166,7 @@ deploy:
     bucket: tau-autobuilds
     region: eu-central-1
     folder: '$(APPVEYOR_REPO_NAME)/$(APPVEYOR_REPO_BRANCH)/$(APPVEYOR_REPO_COMMIT)/appveyor-${APPVEYOR_BUILD_NUMBER}.$(APPVEYOR_JOB_NUMBER)_win32-$(target_os)-$(app_name)'
-    artifact: '${target_artefact_file_name}'
+    artifact: /.*/
+    unzip: true
     set_public: true
     max_error_retry: 5
