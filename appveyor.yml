@@ -14,7 +14,7 @@ environment:
       app_name: RhoSimulator
       target_os: win32
       target_artefact_path: C:\Ruby23\lib\ruby\gems\2.3.0\gems\rhodes-6.0.0\platform\win32\RhoSimulator\
-      target_artefact_file_name: "*"
+      target_artefact_file_name: 
 
     - win32_auto_common_spec:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
