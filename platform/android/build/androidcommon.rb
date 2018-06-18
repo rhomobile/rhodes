@@ -354,14 +354,14 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   if $gccbin.include? "toolchains\\x86"
     localabi = "x86"
   end
-  #libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
-  #if File.exists? libandroid_support
-  #  args << "-L\"#{libandroid_support}\""
-  #  args << "-landroid_support"
-  #  puts "libandroid_support exists"
-  #else
-  #  puts "libandroid_support does not exists"
-  #end
+  libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
+  if File.exists? libandroid_support
+    args << "-L\"#{libandroid_support}\""
+    args << "-landroid_support"
+    puts "libandroid_support exists"
+  else
+    puts "libandroid_support does not exists"
+  end
 
   cc_run($gccbin, args)
 end

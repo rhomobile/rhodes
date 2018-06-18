@@ -1703,13 +1703,13 @@ namespace "build" do
           args << "-L\"#{File.dirname(lib)}\""
         end
 
-        #libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", realabi)
+        libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", realabi)
         
-        #if File.exists? libandroid_support
-        #  args << "-L\"#{libandroid_support}\""
-        #  args << "-landroid_support"
-        #  puts "libandroid_support exists"
-        #end
+        if File.exists? libandroid_support
+          args << "-L\"#{libandroid_support}\""
+          args << "-landroid_support"
+          puts "libandroid_support exists"
+        end
         
         deps = []
         libs = []
