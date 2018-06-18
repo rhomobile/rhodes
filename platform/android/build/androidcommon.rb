@@ -346,6 +346,22 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,-rpath-link=#{$link_sysroot}/usr/lib"
   args << "#{$link_sysroot}/usr/lib/libc.so"
   args << "#{$link_sysroot}/usr/lib/libm.so"
+  
+  localabi = "armeabi"
+  if $gccbin.include? "toolchains/x86"
+    localabi = "x86"
+  end
+  if $gccbin.include? "toolchains\\x86"
+    localabi = "x86"
+  end
+  #libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
+  #if File.exists? libandroid_support
+  #  args << "-L\"#{libandroid_support}\""
+  #  args << "-landroid_support"
+  #  puts "libandroid_support exists"
+  #else
+  #  puts "libandroid_support does not exists"
+  #end
 
   cc_run($gccbin, args)
 end

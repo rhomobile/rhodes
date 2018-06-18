@@ -1697,11 +1697,19 @@ namespace "build" do
         realabi = abi
         realabi = 'armeabi' if abi == 'arm'
 
-        extlibs = Dir.glob(File.join($app_builddir,'extensions','**',realabi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")
+        extlibs = Dir.glob(File.join($app_builddir,'extensions','**',realabi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")       
 
         extlibs.each do |lib|
           args << "-L\"#{File.dirname(lib)}\""
         end
+
+        #libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", realabi)
+        
+        #if File.exists? libandroid_support
+        #  args << "-L\"#{libandroid_support}\""
+        #  args << "-landroid_support"
+        #  puts "libandroid_support exists"
+        #end
         
         deps = []
         libs = []

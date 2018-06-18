@@ -32,7 +32,7 @@
 #include <android/log.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
-
+#include <jni.h>
 
 #include <cstring>
 #include <algorithm>
@@ -45,6 +45,15 @@
 
 #include "rhodes/fileapi.h"
 #include "rhodes/jni/com_rhomobile_rhodes_file_RhoFileApi.h"
+
+/*#undef stdin;   
+#undef stdout;   
+#undef stderr; 
+extern FILE __sF[] __REMOVED_IN(23);
+FILE * stdin = (&__sF[0]);
+FILE * stdout = (&__sF[1]);
+FILE * stderr = (&__sF[2]);*/
+
 
 #ifdef RHO_NOT_IMPLEMENTED
 #undef RHO_NOT_IMPLEMENTED
@@ -560,6 +569,8 @@ void forceStatMapElement(const rho_stat_map_t::value_type& element)
         return;
     }
 }
+
+ 
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
   (JNIEnv *env, jclass)
