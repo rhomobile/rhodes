@@ -30,7 +30,8 @@ cd ../openssl
 
 echo "Building rhosim"
 cd $TRAVIS_BUILD_DIR
-rm $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app.zip
+#rm $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app.zip
+rm -rf $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/*
 rake build:osx:rhosimulator
 cd $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/
 zip -r RhoSimulator.app.zip RhoSimulator.app

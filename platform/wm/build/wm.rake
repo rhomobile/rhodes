@@ -1583,7 +1583,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
     end
 
-    task :rhosimulator => ["clean:rhosimulator", "config:rhosimulator", "config:set_win32_platform", "config:wm", "config:qt", "build:rhosimulator_version", "config:win32:qt"] do
+    task :rhosimulator => ["config:rhosimulator", "config:set_win32_platform", "config:wm", "config:qt", "build:rhosimulator_version", "config:win32:qt"] do
       $config["platform"] = $current_platform
       chdir $startdir
       init_extensions(pwd, nil)
