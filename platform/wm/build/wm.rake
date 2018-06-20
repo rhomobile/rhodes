@@ -1583,7 +1583,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
     end
 
-    task :rhosimulator => ["config:rhosimulator", "config:set_win32_platform", "config:wm", "config:qt", "build:rhosimulator_version", "config:win32:qt"] do
+    task :rhosimulator => ["clean:win32:rhosimulator", "config:rhosimulator", "config:set_win32_platform", "config:wm", "config:qt", "build:rhosimulator_version", "config:win32:qt"] do
       $config["platform"] = $current_platform
       chdir $startdir
       init_extensions(pwd, nil)
@@ -1931,10 +1931,11 @@ namespace "clean" do
   desc "Clean wm"
   task :wm => "clean:wm:all" do
   end
-
-  task :rhosimulator do
-    rhoSimDir = File.join( $startdir, "platform/win32/RhoSimulator" )
-    FileUtils.rm_rf("#{rhoSimDir}/.", secure: true)
+  namespace "win32" do
+    task :rhosimulator do
+      rhoSimDir = File.join( $startdir, "platform/win32/RhoSimulator" )
+      FileUtils.rm_rf("#{rhoSimDir}/.", secure: true)
+    end
   end
 
   namespace "wince" do
