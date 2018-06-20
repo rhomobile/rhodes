@@ -83,7 +83,7 @@ namespace "build" do
         end
     end
 
-    task :rhosimulator => ["config:rhosimulator", "config:set_osx_platform", "config:osx", "config:qt", "build:rhosimulator_version"] do
+    task :rhosimulator => ["clean:rhosimulator", "config:rhosimulator", "config:set_osx_platform", "config:osx", "config:qt", "build:rhosimulator_version"] do
         $config["platform"] = $current_platform
         chdir $startdir
         $extensions_lib = ''
@@ -138,5 +138,10 @@ end
 namespace "clean" do
   task :osx => ["config:rhosimulator", "config:set_osx_platform", "config:osx"] do
     rm_rf File.join($startdir, 'platform/osx/bin')
+  end
+
+  task :rhosimulator do
+    rhoSimDir = File.join( $build_dir, 'RhoSimulator/RhoSimulator.app' )
+    FileUtils.rm_rf("#{rhoSimDir}/.", secure: true)
   end
 end
