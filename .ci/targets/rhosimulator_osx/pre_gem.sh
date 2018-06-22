@@ -34,7 +34,7 @@ cd $TRAVIS_BUILD_DIR
 rm -rf $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/*
 rake build:osx:rhosimulator
 cd $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/
-zip --symlinks -r RhoSimulator.app.zip RhoSimulator.app
+zip -r -y RhoSimulator.app.zip RhoSimulator.app
 cd $TRAVIS_BUILD_DIR
 # > build.log
 
