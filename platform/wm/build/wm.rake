@@ -2416,15 +2416,15 @@ namespace "run" do
 
         args = [' ']
 
-        targetFile = "bin/win32/rhodes/" + $buildcfg + "/rhodes.exe"
-        targetFileFullName = File.join($config["build"]["wmpath"],targetFile)
+        targetFile = "../rhodes.exe"
+        targetDirectory = File.join($config["build"]["wmpath"], "bin/win32/rhodes/", $buildcfg, "rho")
+        targetFileFullName = File.join(targetDirectory, targetFile)
         start = Time.now
         if File.exists? targetFileFullName
           Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFileFullName}")
         end
-
         counter = 0
-        Jake.run2(targetFile, args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
+        Jake.run2(targetFile, args, {:directory => targetDirectory, :nowait => false}) do |line|
           counter += 1
         end
         counter = 0

@@ -43,7 +43,7 @@ environment:
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\framework_spec\
       build_command: "device:win32:production"
-      after_build_command: "do:nothing"
+      after_build_command: "run:win32:spec"
       app_name: framework_spec
       target_os: win32
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
