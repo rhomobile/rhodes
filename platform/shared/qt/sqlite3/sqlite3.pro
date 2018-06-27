@@ -1,11 +1,11 @@
 QT -= core
-    greaterThan(QT_VERSION, 5.6.0): {
+    greaterThan(QT_MINOR_VERSION, 6): {
         CONFIG += c++14
         DEFINES += CPP_ELEVEN
         DEFINES += RHODES_VERSION_2
     }
 
-    lessThan(QT_VERSION, 5.6.0): {
+    lessThan(QT_MINOR_VERSION, 6): {
         DEFINES += RHODES_VERSION_1
     }
 TARGET = sqlite3
@@ -24,7 +24,7 @@ macx {
 win32 {
   DESTDIR = ../../../win32/bin/sqlite3
   OBJECTS_DIR = ../../../win32/bin/sqlite3/tmp
-  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE WIN32_LEAN_AND_MEAN
   Debug {
     DEFINES += _DEBUG DEBUG
   }

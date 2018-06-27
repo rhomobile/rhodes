@@ -50,7 +50,7 @@ public class RhoCryptImpl
 	String m_strDBPartition;
 	final String m_strPrefName = "rho_internal_data";
 	Cipher m_encryptCipher, m_decryptCipher;
-	final int m_nKeyLenBit = 128;  // 192 and 256 bits may not be available
+	int m_nKeyLenBit = 256;  // 192 and 256 bits may not be available
 
     private void readKeyFromStorage()
     {
@@ -60,6 +60,7 @@ public class RhoCryptImpl
         {
             
             m_dbKeyData = Base64.decode(strOldKey);//, Base64.DEFAULT);
+            m_nKeyLenBit = m_dbKeyData.length * 8; // Here we are checking database key length for finding out if it is AES-128 or AES-256
             Logger.I(TAG, "Key is successfully read from Shared Preferences");
             if(DEBUG) {
                 Logger.I(TAG, "Key: " + dumpKey(m_dbKeyData));
@@ -135,7 +136,7 @@ public class RhoCryptImpl
 	    
 		byte[] iv = new byte[]
      	{
-     	    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+     	    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
      	};
 	    
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);

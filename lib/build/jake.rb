@@ -1282,4 +1282,8 @@ class Jake
     end
   end
 
+  def self.enquote str
+    "\"#{str}\""
+  end
+
 end

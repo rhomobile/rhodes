@@ -1,13 +1,13 @@
 QT -= core
-    greaterThan(QT_VERSION, 5.6.0): {
-        CONFIG += c++14
-        DEFINES += CPP_ELEVEN
-        DEFINES += RHODES_VERSION_2
-    }
+greaterThan(QT_MINOR_VERSION, 6): {
+    CONFIG += c++14
+    DEFINES += CPP_ELEVEN
+    DEFINES += RHODES_VERSION_2
+}
 
-    lessThan(QT_VERSION, 5.6.0): {
-        DEFINES += RHODES_VERSION_1
-    }
+lessThan(QT_MINOR_VERSION, 6): {
+    DEFINES += RHODES_VERSION_1
+}
 
 TARGET = zlib
 TEMPLATE = lib
@@ -16,6 +16,7 @@ CONFIG += staticlib warn_on
 
 INCLUDEPATH += \
 ../../../../platform/shared/ruby/include\
+../../../../platform/shared/ruby\
 ../../../../platform/shared\
 ../../../../platform/shared/common
 

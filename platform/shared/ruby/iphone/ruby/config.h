@@ -135,8 +135,17 @@
 
 #define SIZEOF_FLOAT 4
 #define SIZEOF_DOUBLE 8
+
+//RHO
+#if TARGET_RT_64_BIT
 #define SIZEOF_TIME_T 8
 #define SIZEOF_CLOCK_T 8
+#else
+#define SIZEOF_TIME_T 4
+#define SIZEOF_CLOCK_T 4
+#endif
+//RHO
+
 #define PACKED_STRUCT(x) x __attribute__((packed))
 #define PACKED_STRUCT_UNALIGNED(x) x
 #define PRI_LL_PREFIX "ll"
@@ -172,14 +181,34 @@
 #define PRI_MODET_PREFIX PRI_INT_PREFIX
 #define rb_rlim_t rlim_t
 #define SIGNEDNESS_OF_RLIM_T +1
+
+//RHO
+#if TARGET_RT_64_BIT
+#define RLIM2NUM(v) ULONG2NUM(v)
+#define NUM2RLIM(v) NUM2ULONG(v)
+#define PRI_RLIM_PREFIX PRI_LONG_PREFIX
+#else //32bit
 #define RLIM2NUM(v) ULL2NUM(v)
 #define NUM2RLIM(v) NUM2ULL(v)
 #define PRI_RLIM_PREFIX PRI_LL_PREFIX
+#endif
+//RHO
+
 #define rb_off_t off_t
 #define SIGNEDNESS_OF_OFF_T -1
+
+//RHO
+#if TARGET_RT_64_BIT
+#define OFFT2NUM(v) LONG2NUM(v)
+#define NUM2OFFT(v) NUM2LONG(v)
+#define PRI_OFFT_PREFIX PRI_LONG_PREFIX
+#else //32bit
 #define OFFT2NUM(v) LL2NUM(v)
 #define NUM2OFFT(v) NUM2LL(v)
 #define PRI_OFFT_PREFIX PRI_LL_PREFIX
+#endif
+//RHO
+
 #define rb_clockid_t int
 #define SIGNEDNESS_OF_CLOCKID_T -1
 #define CLOCKID2NUM(v) INT2NUM(v)

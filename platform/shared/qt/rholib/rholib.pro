@@ -1,11 +1,11 @@
 QT -= core
-    greaterThan(QT_VERSION, 5.6.0): {
+    greaterThan(QT_MINOR_VERSION, 6): {
         CONFIG += c++14
         DEFINES += RHODES_VERSION_2
         DEFINES += AJAXSERVER
     }
 
-    lessThan(QT_VERSION, 5.6.0): {
+    lessThan(QT_MINOR_VERSION, 6): {
         DEFINES += RHODES_VERSION_1
     }
 
@@ -19,7 +19,7 @@ INCLUDEPATH += ../..\
 ../../../../lib/commonAPI
 
 macx {
-  greaterThan(QT_VERSION, 5.6.0): {
+  greaterThan(QT_MINOR_VERSION, 6): {
       DEFINES += RHODES_MAC_BUILD
   }
   DESTDIR = ../../../osx/bin/rholib
@@ -34,12 +34,12 @@ macx {
 }
 
 win32 {
-  greaterThan(QT_VERSION, 5.6.0): {
+  greaterThan(QT_MINOR_VERSION, 6): {
       DEFINES += CPP_ELEVEN
   }
   DESTDIR = ../../../win32/bin/rholib
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
-  DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS _UNICODE UNICODE
+  DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS _UNICODE UNICODE WIN32_LEAN_AND_MEAN
   Debug {
     DEFINES += _DEBUG DEBUG
   }

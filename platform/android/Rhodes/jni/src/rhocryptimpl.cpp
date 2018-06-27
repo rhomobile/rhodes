@@ -54,7 +54,7 @@ CRhoCryptImpl::CRhoCryptImpl() : m_obj(0), m_dataOut(0)
     m_obj = env->NewGlobalRef(obj);
     env->DeleteLocalRef(obj);
 
-    m_dataOut = (unsigned char*)malloc(1024); //sqlite page size
+    m_dataOut = (unsigned char*)malloc(RHO_DEFAULT_CRYPTO_PAGE_SIZE); //sqlite page size
 }
 
 CRhoCryptImpl::~CRhoCryptImpl()
@@ -68,6 +68,11 @@ CRhoCryptImpl::~CRhoCryptImpl()
 
 int CRhoCryptImpl::db_decrypt( const char* szPartition, int size, unsigned char* data )
 {
+    if(RHO_DEFAULT_CRYPTO_PAGE_SIZE < (unsigned int)size)
+    {
+        LOG(ERROR) + "Output buffer to decrypted is small!!!";
+        return 0;
+    }
     //LOG(INFO) + "C:db_decrypt";
     JNIEnv *env = jnienv();
     jhobject dataInObj = env->NewDirectByteBuffer(data, size);

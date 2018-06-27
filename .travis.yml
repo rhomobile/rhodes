@@ -29,8 +29,11 @@ script:
 - rhodes nodejsapp vanilla_rhodes_nodejsapp
 - cd $TRAVIS_BUILD_DIR
 
-- git clone $(.ci/app_repo.rb) $HOME/$RHO_APP
-- cd $HOME/$RHO_APP/$(.ci/app_build_root.rb)
+- |
+  if [[ -n $RHO_APP ]]; then
+    git clone $(.ci/app_repo.rb) $HOME/$RHO_APP;
+    cd $HOME/$RHO_APP/$(.ci/app_build_root.rb);
+  fi
 
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh
 
@@ -68,14 +71,15 @@ env:
   global:
   - ANDROID_NDK_HOME=$HOME/android-ndk-r12b
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
-  - S3_JOB_DIR="$TRAVIS_COMMIT"/"travis-$TRAVIS_JOB_NUMBER"_"$TRAVIS_OS_NAME"
+  - S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
+  - QTDIR="$HOME/Qt5.9.5/5.9.5/clang_64"
 
 osx_image: xcode9.1
 
 matrix:
   include:
-      
+
   - language: objective-c
     os: osx
     env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
@@ -128,9 +132,9 @@ matrix:
   #   os: osx
   #   env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkRuby"
 
-  #- language: objective-c
-  #  os: osx
-  #  env: RHO_TARGET="rhosimulator"    RHO_APP="auto_common_spec"
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="rhosimulator_osx"
 
   # - language: objective-c
   #   os: osx

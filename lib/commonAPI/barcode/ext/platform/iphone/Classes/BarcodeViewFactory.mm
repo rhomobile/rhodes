@@ -7,12 +7,19 @@
 #import <strings.h>
 
 
+#ifdef ZXING
+extern "C" void destroyView();
+#endif
+
 class BarcodeNativeView : public NativeView {
 public:
 	BarcodeNativeView() {
 		//mView = nil;
 	}
 	virtual ~BarcodeNativeView() {
+#ifdef ZXING
+		destroyView();
+#endif
 		//[mView release];
 		//mView = nil;
 	}

@@ -65,7 +65,7 @@
 #  endif
 #endif
 
-#if defined(macintosh) && defined(__MRC__)
+#if (defined(macintosh) && defined(__MRC__)) || defined(RHODES_MAC_BUILD)
 #  include "config-mac.h"
 #endif
 

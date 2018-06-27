@@ -41,9 +41,8 @@ typedef int SOCKET;
 #else
 #  if defined(OS_WINCE)
 #    include <winsock.h>
-#  elif defined(OS_WP8) || defined(OS_UWP)
-#    //include "ruby/wp8/winsock_wp8.h"
-#      include <winsock2.h>
+#  else
+#    include <WinSock2.h>
 #  endif
 #  define RHO_NET_ERROR_CODE ::WSAGetLastError()
 #endif
@@ -169,6 +168,8 @@ private:
     
     callback_t registered(String const &uri);
     void call_ruby_proc( rho::String const &query, String const &body );
+
+    int select_internal( SOCKET listener, fd_set& readfds );
 
 private:
     bool m_active;

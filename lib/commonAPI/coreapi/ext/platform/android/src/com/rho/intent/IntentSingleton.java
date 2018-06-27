@@ -32,6 +32,8 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
     private IMethodResult methodResult;
     private IntentReceiver mReceiver = new IntentReceiver();
    
+    private static final String HK_CREATE_CHOOSER = "createChooser";
+    private static final String HK_CHOOSER_TITLE = "chooserTitle";
     
     private List<Map.Entry<Integer, IMethodResult>> localMethodResults = new ArrayList<Map.Entry<Integer, IMethodResult>>();
 
@@ -55,6 +57,8 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
         Object uriObj = params.get(HK_URI);
         Object mimeObj = params.get(HK_MIME_TYPE);
         Object extrasObj = params.get(HK_DATA);
+        Object createChooserObj = params.get(HK_CREATE_CHOOSER);
+        Object chooserTitleObj = params.get(HK_CHOOSER_TITLE);
 
         String action = null;
         List<String> categories = null;
@@ -63,6 +67,8 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
         String uri = null;
         String mime = null;
         Map<String, Object> extras = null;
+        Boolean createChooser = null;
+        String chooserTitle = null;
 
         //--- Check param types ---
 
@@ -117,7 +123,21 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
             }
             extras = (Map<String, Object>)extrasObj;
         }
+
+        if (createChooserObj != null) {
+            if (!Boolean.class.isInstance(createChooserObj)) {
+                throw new RuntimeException("Wrong intent createChooser: " + createChooserObj.toString());
+            }
+            createChooser = (Boolean)createChooserObj;
+        }
         
+        if (chooserTitleObj != null) {
+            if (!String.class.isInstance(chooserTitleObj)) {
+                throw new RuntimeException("Wrong intent chooserTitle: " + chooserTitleObj.toString());
+            }
+            chooserTitle = (String)chooserTitleObj;
+        }
+
         //--- Fill intent fields ---
         
         if (action != null) { 
@@ -215,6 +235,10 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                     throw new RuntimeException("Wrong intent data: " + entry.getValue().getClass().getName() + " is not supported as value");
                 }
             }
+        }
+        
+        if (createChooser != null && createChooser){
+            intent = Intent.createChooser(intent, chooserTitle);
         }
         
         return intent;

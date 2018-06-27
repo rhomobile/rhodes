@@ -1,4 +1,4 @@
-/*------------------------------------------------------------------------
+ /*------------------------------------------------------------------------
 * (The MIT License)
 * 
 * Copyright (c) 2008-2011 Rhomobile, Inc.
@@ -586,7 +586,13 @@ uint8_t hexDataBeepAIFF[0x451e] = {
 
 static BarcodeViewController* bv = nil;
 
-
+#ifdef ZXING
+void destroyView()
+{
+    [bv release];
+    bv = nil;
+}
+#endif
 
 @interface RhoCreateBarcodeViewTask : NSObject {}
 
@@ -598,12 +604,14 @@ static BarcodeViewController* bv = nil;
 
 static RhoCreateBarcodeViewTask* instance_create = nil;
 
+
 -(void)runCommand:(NSObject*)callback {
     //if (mc) {
     //    [mc close];
     //    mc = nil;
     //}
     BarcodeViewController* bvc = nil;
+
     if ([callback  isKindOfClass:[NSString class]]) {
         bvc = [[BarcodeViewController alloc] initWithCallback:(NSString*)callback];
     }
@@ -613,7 +621,6 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
     
 	bv = bvc;
 	[BarcodeViewManager openView];
-    
 }
 
 +(void) run:(NSObject*)value {
@@ -623,12 +630,8 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
     [instance_create performSelectorOnMainThread:@selector(runCommand:) withObject:value waitUntilDone:NO];
 }
 
+
 @end
-
-
-
-
-
 
 
 @implementation BarcodeViewController
@@ -740,17 +743,19 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
     resultText.font = [resultText.font fontWithSize:22];
     resultText.editable = NO;
     
+#ifndef ZXING
     readerView = [ZBarReaderView new];
     readerView = [readerView initWithImageScanner:[[ZBarImageScanner alloc] init]];//initWithFrame:srect];//CGRectZero];
+
     //readerView = [[ZBarReaderView alloc] initWithFrame:srect];//CGRectZero];
 	readerView.frame = srect;
     
 	readerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
 	readerView.autoresizesSubviews = YES;
     
-
     // the delegate receives decode results
     readerView.readerDelegate = self;
+#endif
     
     
 	//signatureView = [[SignatureView alloc] initWithFrame:CGRectZero];
@@ -760,12 +765,14 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
     
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
     self.view.autoresizesSubviews = YES;
-	
+#ifndef ZXING
 	[self.view addSubview:readerView];
+#endif
 	[self.view addSubview:resultText];
 	[self.view addSubview:toolbar];
 
 	//[readerView start];
+#ifndef ZXING
     [readerView start];
     
     // the delegate receives decode results
@@ -777,6 +784,7 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
                      initWithViewController: self];
         cameraSim.readerView = readerView;
     }
+#endif
     
     [self.view layoutSubviews];
     
@@ -804,15 +812,19 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
+#ifndef ZXING
 	UIView* content = [[UIView alloc] initWithFrame:CGRectZero];
 	content.autoresizesSubviews = YES;
 
 	self.view = content;
 	[content release];
-    
-    
-    
-    
+#else
+    UIView* content = [[UIView alloc] initWithFrame:CGRectZero];
+	content.autoresizesSubviews = YES;
+
+	self.view = content;
+	[content release];
+#endif
 }
 
 - (void)doDone:(id)sender {
@@ -878,11 +890,97 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 ///*
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    
-	//[self.view 
+
+  [super viewDidLoad];
+
+#ifdef ZXING
+  self.capture = [[ZXCapture alloc] init];
+  self.capture.camera = self.capture.back;
+  self.capture.focusMode = AVCaptureFocusModeContinuousAutoFocus;
+
+  [self.view.layer addSublayer:self.capture.layer];
+#endif
+
 }
 //*/
+#ifdef ZXING
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  self.capture.delegate = self;
+
+  [self applyOrientation];
+}
+
+- (void)applyOrientation {
+	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+	float scanRectRotation;
+	float captureRotation;
+
+	switch (orientation) {
+		case UIInterfaceOrientationPortrait:
+			captureRotation = 0;
+			scanRectRotation = 90;
+			break;
+		case UIInterfaceOrientationLandscapeLeft:
+			captureRotation = 90;
+			scanRectRotation = 180;
+			break;
+		case UIInterfaceOrientationLandscapeRight:
+			captureRotation = 270;
+			scanRectRotation = 0;
+			break;
+		case UIInterfaceOrientationPortraitUpsideDown:
+			captureRotation = 180;
+			scanRectRotation = 270;
+			break;
+		default:
+			captureRotation = 0;
+			scanRectRotation = 90;
+			break;
+	}
+	[self applyRectOfInterest:orientation];
+	CGAffineTransform transform = CGAffineTransformMakeRotation((CGFloat) (captureRotation / 180 * M_PI));
+	[self.capture setTransform:transform];
+	[self.capture setRotation:scanRectRotation];
+	self.capture.layer.frame = self.view.frame;
+}
+
+- (void)applyRectOfInterest:(UIInterfaceOrientation)orientation {
+	CGFloat scaleVideo, scaleVideoX, scaleVideoY;
+	CGFloat videoSizeX, videoSizeY;
+	//CGRect transformedVideoRect = self.scanRectView.frame;
+    CGRect transformedVideoRect = self.view.frame;
+	if([self.capture.sessionPreset isEqualToString:AVCaptureSessionPreset1920x1080]) {
+		videoSizeX = 1080;
+		videoSizeY = 1920;
+	} else {
+		videoSizeX = 720;
+		videoSizeY = 1280;
+	}
+	if(UIInterfaceOrientationIsPortrait(orientation)) {
+		scaleVideoX = self.view.frame.size.width / videoSizeX;
+		scaleVideoY = self.view.frame.size.height / videoSizeY;
+		scaleVideo = MAX(scaleVideoX, scaleVideoY);
+		if(scaleVideoX > scaleVideoY) {
+			transformedVideoRect.origin.y += (scaleVideo * videoSizeY - self.view.frame.size.height) / 2;
+		} else {
+			transformedVideoRect.origin.x += (scaleVideo * videoSizeX - self.view.frame.size.width) / 2;
+		}
+	} else {
+		scaleVideoX = self.view.frame.size.width / videoSizeY;
+		scaleVideoY = self.view.frame.size.height / videoSizeX;
+		scaleVideo = MAX(scaleVideoX, scaleVideoY);
+		if(scaleVideoX > scaleVideoY) {
+			transformedVideoRect.origin.y += (scaleVideo * videoSizeX - self.view.frame.size.height) / 2;
+		} else {
+			transformedVideoRect.origin.x += (scaleVideo * videoSizeY - self.view.frame.size.width) / 2;
+		}
+	}
+	_captureSizeTransform = CGAffineTransformMakeScale(1/scaleVideo, 1/scaleVideo);
+	self.capture.scanRect = CGRectApplyAffineTransform(transformedVideoRect, _captureSizeTransform);
+}
+#endif
 
 - (BOOL) shouldAutorotateToInterfaceOrientation: (UIInterfaceOrientation) orient
 {
@@ -892,8 +990,24 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     //[readerView willRotateToInterfaceOrientation:self.interfaceOrientation duration:0];
+#ifdef ZXING
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	[self applyOrientation];
+#endif
 }
 
+#ifdef ZXING
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator {
+	[super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+	[coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+	} completion:^(id<UIViewControllerTransitionCoordinatorContext> context)
+	{
+		[self applyOrientation];
+	}];
+}
+#endif
+
+#ifndef ZXING
 - (void) willRotateToInterfaceOrientation: (UIInterfaceOrientation) orientation
                                  duration: (NSTimeInterval) duration
 {
@@ -901,19 +1015,29 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
     [readerView willRotateToInterfaceOrientation: orientation
                                         duration: duration];
 }
+#endif
 
 - (void) viewDidAppear: (BOOL) animated
 {
     // run the reader when the view is visible
+#ifndef ZXING
     [readerView start];
+#else
+    [self.capture start];
+#endif
 }
 
 - (void) viewWillDisappear: (BOOL) animated
 {
+#ifndef ZXING
     [readerView stop];
+#else
+    [self.capture stop];
+#endif
 }
 
 
+#ifndef ZXING
 - (void) readerView: (ZBarReaderView*) view
      didReadSymbols: (ZBarSymbolSet*) syms
           fromImage: (UIImage*) img
@@ -949,12 +1073,10 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
             
         }
         
-        
-        
-        
         break;
     }
 }
+#endif
 
 
 +(UIView*)getCurrentView
@@ -979,13 +1101,26 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 
 
 - (void)dealloc {
+#ifndef ZXING
 	[readerView removeFromSuperview];
+#endif
 	[toolbar removeFromSuperview];
     [resultText removeFromSuperview];
+#ifndef ZXING
 	[readerView release];
     readerView = nil;
+#endif
 	[toolbar release];
     [resultText release];
+#ifdef ZXING
+    if (self.capture)    
+        [self.capture release];
+    //if(boundLayer)    
+        //[boundLayer release];
+    if(timer_)
+        [timer_ release];
+#endif
+
     if (mBeep != 0) {
         AudioServicesDisposeSystemSoundID(mBeep);
     }
@@ -994,6 +1129,7 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 
 - (void)orientationChanged:(NSNotification *)note
 {
+#ifndef ZXING
     UIInterfaceOrientation app_io = [[UIApplication sharedApplication] statusBarOrientation];
     switch (app_io) {
         case UIInterfaceOrientationPortrait:
@@ -1012,6 +1148,155 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
         default:
             break;
     }
+#else
+    [self applyOrientation];
+#endif
 }
+
+#ifdef ZXING
+
+-(void)drawCirlesElemets: (ZXResult*) result
+{
+    if (!result) return;
+
+    CGAffineTransform inverse = CGAffineTransformInvert(_captureSizeTransform);
+    UIBezierPath* prevPath = NULL;
+    for (ZXResultPoint *resultPoint in result.resultPoints)
+    {
+        CGPoint cgPoint = CGPointMake(resultPoint.x, resultPoint.y);
+        CGPoint transformedPoint = CGPointApplyAffineTransform(cgPoint, inverse);
+
+        UIBezierPath* path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(transformedPoint.x, transformedPoint.y, 20, 20)];
+        
+        if(prevPath)
+        {
+            [prevPath appendPath: path];
+            //prevPath = path;
+        }
+        else prevPath = path;
+    }
+
+    [boundLayer setPath: [prevPath CGPath]];
+    boundLayer.lineWidth = 2.0;
+    boundLayer.strokeColor = [[UIColor redColor] CGColor];
+    boundLayer.fillColor = [[UIColor clearColor] CGColor];
+}
+
+-(void)drawLineElemets: (ZXResult*) result
+{
+    if (!result) return;
+
+    CGAffineTransform inverse = CGAffineTransformInvert(_captureSizeTransform);
+    ZXResultPoint *startPoint = [result.resultPoints objectAtIndex:0];
+    ZXResultPoint *endPoint = [result.resultPoints objectAtIndex:1];
+
+    CGPoint cgPoint0 = CGPointMake(startPoint.x, startPoint.y);
+    CGPoint transformedPoint0 = CGPointApplyAffineTransform(cgPoint0, inverse);
+
+    CGPoint cgPoint1 = CGPointMake(endPoint.x, endPoint.y);
+    CGPoint transformedPoint1 = CGPointApplyAffineTransform(cgPoint1, inverse);
+    
+    UIBezierPath* path = [[UIBezierPath alloc] init];
+    [path moveToPoint: transformedPoint0];
+    [path addLineToPoint: transformedPoint1];
+    [boundLayer setPath:[path CGPath]];
+    
+    boundLayer.lineWidth = 2.0;
+    boundLayer.strokeColor = [[UIColor redColor] CGColor];
+    boundLayer.fillColor = [[UIColor clearColor] CGColor];
+}
+
+-(void)onTick:(NSTimer*)timer
+{
+    boundLayer.strokeColor = [[UIColor clearColor] CGColor];
+    boundLayer.fillColor = [[UIColor clearColor] CGColor];
+    timer_ = nil;
+}
+
+- (void)captureResult:(ZXCapture *)capture result:(ZXResult *)result {
+
+    if(timer_) 
+    {
+        if(timer_.valid)
+        {
+          [timer_ invalidate];
+          timer_ = nil  ;
+        }
+    }
+
+    timer_ = [NSTimer scheduledTimerWithTimeInterval: 1.0
+                      target: self
+                      selector:@selector(onTick:)
+                      userInfo: nil repeats:NO];
+
+    if (!result) return;
+
+    if(![result.text isEqualToString:resultText.text])
+    {
+        if (mBeep != 0) 
+            AudioServicesPlaySystemSound(mBeep);        
+    }
+
+    if(!boundLayer)
+    {
+       boundLayer = [CAShapeLayer layer];
+       [self.view.layer addSublayer:boundLayer];
+    }
+
+    NSInteger count = [result.resultPoints count];
+
+    if(count == 2)
+    {
+        [self drawLineElemets: result];
+    }
+    else
+    {
+        [self drawCirlesElemets: result];
+    }
+
+    //CGAffineTransform inverse = CGAffineTransformInvert(_captureSizeTransform);
+    //ZXResultPoint *startPoint = [result.resultPoints objectAtIndex:0];
+    //ZXResultPoint *endPoint = [result.resultPoints objectAtIndex:1];
+
+    //CGPoint cgPoint0 = CGPointMake(startPoint.x, startPoint.y);
+    //CGPoint transformedPoint0 = CGPointApplyAffineTransform(cgPoint0, inverse);
+
+    //CGPoint cgPoint1 = CGPointMake(endPoint.x, endPoint.y);
+    //CGPoint transformedPoint1 = CGPointApplyAffineTransform(cgPoint1, inverse);
+
+    //boundLayer.bounds = CGRectMake(transformedPoint.x, transformedPoint.y, 400, 400);
+    //[boundLayer setPath:[[UIBezierPath bezierPathWithRect:
+    //    CGRectMake(transformedPoint0.x, transformedPoint0.y, transformedPoint1.x - transformedPoint0.x, 100)] CGPath]];
+    //boundLayer.lineWidth = 2.0;
+    //boundLayer.strokeColor = [[UIColor redColor] CGColor];
+    //boundLayer.fillColor = [[UIColor clearColor] CGColor];
+
+    resultText.text = result.text;
+        
+        {
+            UIBarButtonItem *btn_fixed = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+            UIBarButtonItem* btn_cancel = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(doCancel:)];
+            UIBarButtonItem* btn_space = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+            UIBarButtonItem* btn_done = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doDone:)];
+            
+            NSMutableArray *btns = [NSMutableArray arrayWithCapacity:6];
+            [btns addObject:btn_fixed];
+            [btns addObject:btn_cancel];
+            [btns addObject:btn_fixed];
+            [btns addObject:btn_space];
+            [btns addObject:btn_done];
+            
+            [btn_fixed release];
+            [btn_cancel release];
+            [btn_space release];
+            [btn_done release];
+            
+            [toolbar setItems:btns];
+            
+        }
+    
+
+}
+#endif
 
 @end

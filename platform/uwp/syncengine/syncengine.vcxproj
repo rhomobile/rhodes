@@ -81,22 +81,22 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;..\..\shared\ruby\include\;..\..\shared\ruby\uwp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;..\..\shared\ruby\include\;..\..\shared\ruby\uwp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;..\..\shared\ruby\include\;..\..\shared\ruby\uwp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;..\..\shared\ruby\include\;..\..\shared\ruby\uwp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;..\..\shared\ruby\include\;..\..\shared\ruby\uwp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>..\..\shared\json;..\..\shared;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\shared\json;..\..\shared;..\..\shared\ruby\include\;..\..\shared\ruby\uwp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <OutDir>..\bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
@@ -240,6 +240,7 @@
     <ClInclude Include="..\..\shared\db\DBImportTransaction.h" />
     <ClInclude Include="..\..\shared\db\DBRequestHelper.h" />
     <ClInclude Include="..\..\shared\db\DBResult.h" />
+    <ClInclude Include="..\..\shared\db\DBLock.h" />
     <ClInclude Include="..\..\shared\json.new\arraylist.h" />
     <ClInclude Include="..\..\shared\json.new\bits.h" />
     <ClInclude Include="..\..\shared\json.new\config.h" />
@@ -274,6 +275,7 @@
     <ClCompile Include="..\..\shared\db\DBImportTransaction.cpp" />
     <ClCompile Include="..\..\shared\db\DBRequestHelper.cpp" />
     <ClCompile Include="..\..\shared\db\DBResult.cpp" />
+    <ClCompile Include="..\..\shared\db\DBLock.cpp" />
     <ClCompile Include="..\..\shared\json.new\arraylist.c" />
     <ClCompile Include="..\..\shared\json.new\debug.c" />
     <ClCompile Include="..\..\shared\json.new\JSONIterator.cpp" />

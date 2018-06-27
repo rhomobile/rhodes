@@ -1,12 +1,12 @@
-    greaterThan(QT_VERSION, 5.6.0): {
-        CONFIG += c++14
-        DEFINES += CPP_ELEVEN
-        DEFINES += RHODES_VERSION_2
-    }
+greaterThan(QT_MINOR_VERSION, 6): {
+    CONFIG += c++14
+    DEFINES += CPP_ELEVEN
+    DEFINES += RHODES_VERSION_2
+}
 
-    lessThan(QT_VERSION, 5.6.0): {
-        DEFINES += RHODES_VERSION_1
-    }
+lessThan(QT_MINOR_VERSION, 6): {
+    DEFINES += RHODES_VERSION_1
+}
 TEMPLATE = subdirs
 SUBDIRS = rubylib rholib sqlite3 syncengine \
 ../../../lib/commonAPI/coreapi/ext/platform/qt/coreapi.pro \

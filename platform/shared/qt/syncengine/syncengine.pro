@@ -1,11 +1,11 @@
 QT -= core
-    greaterThan(QT_VERSION, 5.6.0): {
+    greaterThan(QT_MINOR_VERSION, 6): {
         CONFIG += c++14
         DEFINES += CPP_ELEVEN
         DEFINES += RHODES_VERSION_2
     }
 
-    lessThan(QT_VERSION, 5.6.0): {
+    lessThan(QT_MINOR_VERSION, 6): {
         DEFINES += RHODES_VERSION_1
     }
 TARGET = syncengine
@@ -14,17 +14,21 @@ TEMPLATE = lib
 CONFIG += staticlib warn_on
 
 INCLUDEPATH += ../..\
+../../ruby/include\
 ../../json
 
 macx {
   DESTDIR = ../../../osx/bin/syncengine
   OBJECTS_DIR = ../../../osx/bin/syncengine/tmp
+  INCLUDEPATH += ../../ruby/osx
 }
 
 win32 {
   DESTDIR = ../../../win32/bin/syncengine
   OBJECTS_DIR = ../../../win32/bin/syncengine/tmp
   DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  DEFINES += BUFSIZ=512 STATIC_LINKED RUBY_EXPORT WIN32_LEAN_AND_MEAN
+  INCLUDEPATH += ../../ruby/win32
   Debug {
     DEFINES += _DEBUG DEBUG
   }
@@ -89,7 +93,8 @@ HEADERS += ../../json.new/arraylist.h\
 ../../db/DBAttrManager.h\
 ../../db/DBImportTransaction.h\
 ../../db/DBRequestHelper.h\
-../../db/DBResult.h
+../../db/DBResult.h\
+../../db/DBLock.h
 
 SOURCES += ../../json.new/arraylist.c\
 ../../json.new/JSONIterator.cpp\
@@ -112,4 +117,6 @@ SOURCES += ../../json.new/arraylist.c\
 ../../db/DBAttrManager.cpp\
 ../../db/DBImportTransaction.cpp\
 ../../db/DBRequestHelper.cpp\
-../../db/DBResult.cpp
+../../db/DBResult.cpp\
+../../db/DBLock.cpp
+

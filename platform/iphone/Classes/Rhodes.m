@@ -131,10 +131,6 @@ static BOOL app_created = NO;
 }
 @end
 
-
-
-
-
 @implementation Rhodes
 
 @synthesize window, player, cookies, signatureDelegate, nvDelegate, mBlockExit,  mScreenStateChanged, mNetworkPollCondition;
@@ -1132,7 +1128,6 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 #ifdef __IPHONE_3_0
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    
     self.mBlockExit = NO;
 
     mPushStoredData_UserInfo = nil;
@@ -1161,6 +1156,44 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 
 #ifdef APP_BUILD_CAPABILITY_PUSH
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1) {
+        // iOS 7.1 or earlier. Disable the deprecation warnings.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        UIRemoteNotificationType allNotificationTypes =
+        (UIRemoteNotificationTypeSound |
+         UIRemoteNotificationTypeAlert |
+         UIRemoteNotificationTypeBadge);
+        [application registerForRemoteNotificationTypes:allNotificationTypes];
+#pragma clang diagnostic pop
+    } else {
+        // iOS 8 or later
+        // [START register_for_notifications]
+        if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+            UIUserNotificationType allNotificationTypes =
+            (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+            UIUserNotificationSettings *settings =
+            [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
+            [application registerUserNotificationSettings:settings];
+        } else {
+            // iOS 10 or later
+#if 0
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+            // For iOS 10 display notification (sent via APNS)
+            [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+            UNAuthorizationOptions authOptions =
+            UNAuthorizationOptionAlert
+            | UNAuthorizationOptionSound
+            | UNAuthorizationOptionBadge;
+            [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            }];
+#endif
+#endif
+        }
+        
+        //[application registerForRemoteNotifications];
+        // [END register_for_notifications]
+    }
     [self registerForRemoteNotification];
 #endif
 
@@ -1212,6 +1245,43 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 	
 	return NO;
 }
+
+#ifdef APP_BUILD_CAPABILITY_PUSH
+#if 0
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+// Handle incoming notification messages while app is in the foreground.
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+    NSDictionary *userInfo = notification.request.content.userInfo;
+    
+    [self processPushMessage:userInfo];
+    
+    // Change this to your preferred presentation option
+    completionHandler(UNNotificationPresentationOptionNone);
+}
+
+// Handle notification messages after display notification is tapped by the user.
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+didReceiveNotificationResponse:(UNNotificationResponse *)response
+#if defined(__IPHONE_11_0)
+         withCompletionHandler:(void(^)(void))completionHandler {
+#else
+withCompletionHandler:(void(^)())completionHandler {
+#endif
+    NSDictionary *userInfo = response.notification.request.content.userInfo;
+    if (userInfo[kGCMMessageIDKey]) {
+        NSLog(@"Message ID: %@", userInfo[kGCMMessageIDKey]);
+    }
+    
+    // Print full message.
+    NSLog(@"%@", userInfo);
+    
+    completionHandler();
+}
+#endif
+#endif
+#endif
 
 - (void) exit_with_errormessage:(NSString*)title message:(NSString*)message 
 {

@@ -1,4 +1,6 @@
-entry: Init_FCMPushClient
+entry: Init_FCMPush_extension
+iphone:
+  javaentry: com.applepush.ApplePush
 android:
   exttype: rakefile
   manifest_changes: 
