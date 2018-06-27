@@ -198,7 +198,11 @@ def get_dir_hash(dir, init = nil)
 end
 
 #------------------------------------------------------------------------
-
+namespace "do" do
+  task :nothing do
+    puts "Nothing to do"
+  end
+end
 namespace "framework" do
   task :spec do
     loadpath = $LOAD_PATH.inject("") { |load_path,pe| load_path += " -I" + pe }
@@ -4287,11 +4291,11 @@ namespace "run" do
         #cp_r File.join(oldDir, "."), newDir
 
         qtdir = ENV['QTDIR']
-        if !qtdir.nil?
-          cp File.join(qtdir, "bin/Qt5Core.dll"), newDir
+        #if !qtdir.nil?
+          #cp File.join(qtdir, "bin/Qt5Core.dll"), newDir
           args << "-remote-debugging-port=9090"
-        end
-
+        #end
+        #Jake.run "taskkill /f /im RhoSimulator.exe"
         cmd = File.join(newDir, 'rhosimulator.exe')
       elsif RUBY_PLATFORM =~ /darwin/
         if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0

@@ -1341,7 +1341,11 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     if ( String_startsWith(path, "/public") )
     {
         headers.push_back(Header("Expires", "Thu, 15 Apr 2020 20:00:00 GMT") );
+#ifdef RHODES_EMULATOR
+        headers.push_back(Header("Cache-Control", "max-age=0") );
+#else
         headers.push_back(Header("Cache-Control", "max-age=2592000") );
+#endif
     }
     */
     if ( String_startsWith(path, "/public") )
@@ -1792,7 +1796,9 @@ bool CDirectHttpRequestQueue::run( )
       
       if (rho_ruby_is_started() )
       {
+#ifndef RHO_NO_RUBY_API
           rb_thread_call_without_gvl(internal::lambda,&m_thread,0,0);
+#endif
       }
       else
       {

@@ -47,7 +47,7 @@
 #include "statistic/RhoProfiler.h"
 
 #include "eval_intern.h"
-
+#include "encindex.h"
 #include "rhoruby.h"
 
 #undef DEFAULT_LOGCATEGORY
@@ -65,6 +65,26 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad);
 VALUE RhoPreparePath(VALUE path);
 //VALUE rb_iseq_eval(VALUE iseqval);
 static void Init_RhoJSON();
+static const char * encodingIndexToString(int index);
+
+static const char * encodingIndexToString(int index){
+    switch (index) {
+        case ENCINDEX_ASCII: return "ASCII";
+        case ENCINDEX_UTF_8: return "UTF_8";
+        case ENCINDEX_US_ASCII: return "US_ASCII";
+        case ENCINDEX_UTF_16BE: return "UTF_16BE";
+        case ENCINDEX_UTF_16LE: return "UTF_16LE";
+        case ENCINDEX_UTF_32BE: return "UTF_32BE";
+        case ENCINDEX_UTF_32LE: return "UTF_32LE";
+        case ENCINDEX_UTF_16: return "UTF_16";
+        case ENCINDEX_UTF_32: return "UTF_32";
+        case ENCINDEX_UTF8_MAC: return "UTF8_MAC";
+        case ENCINDEX_EUC_JP: return "EUC_JP";
+        case ENCINDEX_Windows_31J: return "Windows_31J";
+        default: return "UNKNOWN";
+    }
+    return "STRANGE ERROR";
+}
 
 VALUE __rhoGetCurrentDir(void)
 {
@@ -191,6 +211,7 @@ static VALUE loadISeqFromFile(VALUE path)
         //rb_funcall(fiseq, rb_intern("close"), 0 );
 //        seq = VM::InstructionSequence.load(arr)
         seq = rb_funcall(rb_cISeq, rb_intern("load"), 1, arr);
+
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);
     
@@ -667,6 +688,8 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
 #else
         //rb_gc_disable();
         seq = loadISeqFromFile(path);
+
+        RAWLOG_INFO1("require_compiled: Loaded file encoded in %s", encodingIndexToString(rb_enc_get_index(seq)));
         *result = rb_funcall(seq, rb_intern("eval"), 0 );
         //*result = rb_iseq_eval(seq);
         

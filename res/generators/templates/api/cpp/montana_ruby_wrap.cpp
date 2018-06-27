@@ -73,6 +73,13 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
 end %>
 {
     rho::apiGenerator::CMethodResult oRes;
+<% if module_method.access != ModuleMethod::ACCESS_STATIC %>
+    if(!pObj)
+    {
+        oRes.setArgError("Invalid object!");
+        return oRes.toRuby();
+    }
+<% end %>
 <% if module_method.result != nil
     if module_method.result.sub_param && module_method.result.sub_param.name %>
     oRes.setParamName( "<%= module_method.result.sub_param.name %>" );<%

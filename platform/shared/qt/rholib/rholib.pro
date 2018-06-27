@@ -1,19 +1,19 @@
-    greaterThan(QT_MINOR_VERSION, 6): {
-        CONFIG += c++14
-        DEFINES += RHODES_VERSION_2
-        DEFINES += AJAXSERVER
-    }
+greaterThan(QT_MINOR_VERSION, 6): {
+    CONFIG += c++14
+    DEFINES += RHODES_VERSION_2
+    DEFINES += AJAXSERVER
+}
 
-    equals(QT_MAJOR_VERSION, 5) {
-        equals(QT_MINOR_VERSION, 6) {
-            DEFINES += OS_SAILFISH
-            QT += core
-        }
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        DEFINES += OS_SAILFISH
+        QT += core
     }
+}
 
-    lessThan(QT_MINOR_VERSION, 6): {
-        DEFINES += RHODES_VERSION_1
-    }
+lessThan(QT_MINOR_VERSION, 6): {
+    DEFINES += RHODES_VERSION_1
+}
 
 TARGET = rholib
 TEMPLATE = lib
@@ -45,7 +45,7 @@ win32 {
   }
   DESTDIR = ../../../win32/bin/rholib
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
-  DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS _UNICODE UNICODE
+  DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS _UNICODE UNICODE WIN32_LEAN_AND_MEAN
   Debug {
     DEFINES += _DEBUG DEBUG
   }

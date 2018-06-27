@@ -3,6 +3,7 @@ greaterThan(QT_MINOR_VERSION, 6): {
     DEFINES += CPP_ELEVEN
     DEFINES += RHODES_VERSION_2
 }
+
 equals(QT_MAJOR_VERSION, 5) {
     equals(QT_MINOR_VERSION, 6) {
         QT += webkit widgets

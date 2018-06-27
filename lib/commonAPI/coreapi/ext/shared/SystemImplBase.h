@@ -13,6 +13,7 @@ public:
     virtual void getPlatform(CMethodResult& oResult);
     virtual void getHasCamera(CMethodResult& oResult);
     virtual void getPhoneNumber(CMethodResult& oResult);
+    virtual void getExternalStorageDirectoryPath(CMethodResult& oResult);
     virtual void getDevicePushId(CMethodResult& oResult);
     virtual void getOsVersion(CMethodResult& oResult);
     virtual void getIsSymbolDevice(CMethodResult& oResult);

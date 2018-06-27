@@ -81,7 +81,7 @@ task rhoBuild(type:Exec) {
         commandLine 'rake'
     }
 
-    args 'device:android:production'
+    args 'device:android:studio_build'
 
     standardOutput = new ByteArrayOutputStream()
 

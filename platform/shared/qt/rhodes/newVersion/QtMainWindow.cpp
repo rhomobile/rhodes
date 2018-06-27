@@ -195,12 +195,19 @@ currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId()
     }
     lastInstance = this;
     QWebEngineProfile * profile = QWebEngineProfile::defaultProfile();
+    #ifdef RHODES_EMULATOR
+    profile->setHttpUserAgent("RhoSimulator");
+    #endif
 
     rho::String rs_dir = RHODESAPP().getRhoRootPath()+RHO_EMULATOR_DIR;
     QString path(QString(rs_dir.c_str()));
     profile->setPersistentStoragePath(path);
     profile->setCachePath(path);
+#ifdef RHODES_EMULATOR
+    profile->setHttpCacheMaximumSize(0);
+#else
     profile->setHttpCacheMaximumSize(0x40000000);
+#endif
     profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
 
     webView->setContextMenuPolicy(Qt::NoContextMenu);

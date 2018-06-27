@@ -23,6 +23,9 @@
 #
 # http://rhomobile.com
 #------------------------------------------------------------------------
+require 'rubygems'
+$zippath = "res/build-tools/7za.exe"
+
  VS_FIXEDFILEINFO = Struct.new("VS_FIXEDFILEINFO", :Signature, :StrucVersion, :FileVersionMS, :FileVersionLS, :ProductVersionMS, :ProductVersionLS, :FileFlagsMask, :FileFlags, :FileOS, :FileType, :FileSubtype, :FileDateMS, :FileDateLS)
  
  
@@ -89,7 +92,13 @@ def QTInfo(qtcurrentversion)
       eqstatus = is_equal("5.9",qtcurrentversion)
       puts "Checking for 5.9 - #{eqstatus}"
       if(eqstatus)
-          value = 4 # 5.9
+          value = 5 # 5.9
+      end
+
+      eqstatus = is_equal("5.11",qtcurrentversion)
+      puts "Checking for 5.11 - #{eqstatus}"
+      if(eqstatus)
+          value = 6 # 5.11
       end
 
       return value
@@ -715,12 +724,42 @@ namespace "config" do
     task :qt do
       next if $prebuild_win32
 
+
+      $qtdir = ENV['QTDIR']
+      unless !$qtdir.nil? && ($qtdir !~ /^\s*$/) && File.directory?($qtdir)
+        puts "\nPlease, set QTDIR environment variable to Qt root directory path"
+        exit 1
+      end
+
+      # Search for QT 5 or QT 4 files
+      qt5corefile =File.join($qtdir, "bin/Qt5Core.dll");
+      qt4corefile =File.join($qtdir, "bin/QtCore4.dll");
+      if File.exists?(qt5corefile)
+          qtcorefile=qt5corefile
+      elsif  File.exists?(qt4corefile)
+          qtcorefile=qt4corefile
+      end
+
+      if qtcorefile.nil?
+          puts "\nNo QT File exists in #{$qtdir}"
+          exit 1
+      end
+
+      $QVersion=GetFileVersion(qtcorefile)
+      puts "Current QT Version Found : #{$QVersion}"
+      $qtversionindex = QTInfo($QVersion)
+      puts "QT Version Found and Index for further checking is #{$qtversionindex}"
       $msvc_version = $app_config["win32"]["msvc"] if $app_config && $app_config["win32"] && $app_config["win32"]["msvc"]
 
       # use Visual Studio 2015 by default
       $vs_version = 2015
       $vscommontools = ENV['VS140COMNTOOLS']
-      $qmake_makespec = 'win32-msvc2015'
+
+      if $qtversionindex == 5 || $qtversionindex == 6 
+          $qmake_makespec = 'win32-msvc'
+      else
+          $qmake_makespec = 'win32-msvc2015'
+      end
       
       # if win32:msvc is not defined in build.yml, then automatically detect installed Visual Studio
       if $msvc_version.nil?
@@ -756,9 +795,13 @@ namespace "config" do
           exit 1
         end
       elsif $msvc_version == "2015"
-        $vs_version = 2015
-        $vscommontools = ENV['VS140COMNTOOLS']
-        $qmake_makespec = 'win32-msvc2015'
+          $vs_version = 2015
+          $vscommontools = ENV['VS140COMNTOOLS']
+        if $qtversionindex == 5 || $qtversionindex == 6 
+          $qmake_makespec = 'win32-msvc'
+        else
+          $qmake_makespec = 'win32-msvc2015'
+        end
         
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2015"
@@ -775,47 +818,24 @@ namespace "config" do
 
       $vscommontools << '\\' unless $vscommontools.end_with?('\\') || $vscommontools.end_with?('/')
 
-      $qtdir = ENV['QTDIR']
-      unless !$qtdir.nil? && ($qtdir !~ /^\s*$/) && File.directory?($qtdir)
-        puts "\nPlease, set QTDIR environment variable to Qt root directory path"
-        exit 1
+      
+      
+      if ($qtversionindex != 0)
+        puts "Found QT Version : #{$QVersion}"
+      else
+        puts "Unknown QT Version : #{$QVersion}"
       end
 
-     # Search for QT 5 or QT 4 files
-     qt5corefile =File.join($qtdir, "bin/Qt5Core.dll");
-     qt4corefile =File.join($qtdir, "bin/QtCore4.dll");
-     if File.exists?(qt5corefile)
-          qtcorefile=qt5corefile
-     elsif  File.exists?(qt4corefile)
-          qtcorefile=qt4corefile
-     end
-     
-     if qtcorefile.nil?
-          puts "\nNo QT File exists in #{$qtdir}"
-          exit 1
-     end
-     
-          $QVersion=GetFileVersion(qtcorefile)
-          puts "Current QT Version Found : #{$QVersion}"
-          $qtversionindex = QTInfo($QVersion)
-          puts "QT Version Found and Index for further checking is #{$qtversionindex}"
-          
-          if ($qtversionindex != 0)
-            puts "Found QT Version : #{$QVersion}"
-          else
-            puts "Unknown QT Version : #{$QVersion}"
-          end
-
-          puts "Visual Studio Found/Default for build.yml is #{$vs_version} , Code will be Compiled against Visual Studio #{$vs_version}"
-          
-         if $vs_version == 2008 &&  $qtversionindex == 3
-               puts "\n Visual Studio 2008 is not currently supported for this QT version "
-          exit 1
-        end
-          if $vs_version != 2015 &&  $qtversionindex == 4
-               puts "\n Visual Studio  #{$vs_version} is not currently supported for this QT version "
-          exit 1
-        end
+      puts "Visual Studio Found/Default for build.yml is #{$vs_version} , Code will be Compiled against Visual Studio #{$vs_version}"
+      
+      if $vs_version == 2008 &&  $qtversionindex == 3
+        puts "\n Visual Studio 2008 is not currently supported for this QT version "
+        exit 1
+      end
+      if $vs_version != 2015 &&  ($qtversionindex == 4 || $qtversionindex == 5 || $qtversionindex == 6)
+        puts "\n Visual Studio  #{$vs_version} is not currently supported for this QT version "
+        exit 1
+      end
        
       $qt_project_dir = File.join( $startdir, 'platform/shared/qt/' )
     end
@@ -1272,9 +1292,11 @@ namespace "build" do
        puts format
      
      #1 - 4.7.4.0     
-     #2- 5.1.1.0 
+     #2 - 5.1.1.0 
      #3 - 5.5.0.0
      #4 - 5.8.0.0
+     #5 - 5.9.5.0
+     #6 - 5.11.0.0
        case $qtversionindex
                  when 1 # 4.7.4.0
                     format ="Found QT Version : #{$QVersion}"
@@ -1393,30 +1415,20 @@ namespace "build" do
                         end
                       end
                     end
-               when 4 #5.8.0.0
-
+               when 4, 5, 6
                   possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
-
-                   format ="Found QT Version : #{$QVersion}" 
-
-                   begin
-
+                  format ="Found QT Version : #{$QVersion}" 
+                  begin
                     possible_targets.each do |target|
-                      targetFile = File.join($target_path, target + ".exe")
-                      break if File.file?(targetFile)
-                    end
-
-                    $logger.debug "Looking for app executable: #{targetFile}"
-                   
-                    raise "#{targetFile} not found" unless File.file?(targetFile)
-
-                    Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFile}")
-                    #cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
-
+                    targetFile = File.join($target_path, target + ".exe")
+                    break if File.file?(targetFile)
+                  end
+                  $logger.debug "Looking for app executable: #{targetFile}"                  
+                  raise "#{targetFile} not found" unless File.file?(targetFile)
+                  Jake.run3("#{File.join($qtdir, 'bin/windeployqt --release --no-quick-import --force')} #{targetFile}")
+                  #cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
                   rescue Exception => e
-
                     $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
-
                   end
                else
                     format ="Unknown QT Version : #{$QVersion}"
@@ -1571,7 +1583,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
     end
 
-    task :rhosimulator => ["config:rhosimulator", "config:set_win32_platform", "config:wm", "config:qt", "build:rhosimulator_version", "config:win32:qt"] do
+    task :rhosimulator => ["clean:win32:rhosimulator", "config:rhosimulator", "config:set_win32_platform", "config:wm", "config:qt", "build:rhosimulator_version", "config:win32:qt"] do
       $config["platform"] = $current_platform
       chdir $startdir
       init_extensions(pwd, nil)
@@ -1592,6 +1604,17 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), $target_path
 
       Rake::Task["build:win32:deployqt"].invoke
+
+
+      directory = $target_path
+      zipfile_name = File.join($target_path, "RhoSimulator.zip")
+
+      args = []
+      args << "a"
+      args << "-tzip"
+      args << zipfile_name
+      args << directory + "/*"
+      puts Jake.run($zippath, args)
     end
   end
 
@@ -1907,6 +1930,12 @@ namespace "clean" do
 
   desc "Clean wm"
   task :wm => "clean:wm:all" do
+  end
+  namespace "win32" do
+    task :rhosimulator do
+      rhoSimDir = File.join( $startdir, "platform/win32/RhoSimulator" )
+      FileUtils.rm_rf("#{rhoSimDir}/.", secure: true)
+    end
   end
 
   namespace "wince" do
@@ -2306,8 +2335,9 @@ namespace "run" do
     Rake::Task["build:win32:deployqt"].invoke unless $prebuild_win32
 
     cp $qt_icon_path, $target_path + "/icon.png"
-    cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
-
+    if $qtversionindex == 4
+      cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
+    end
     args = ['--remote-debugging-port=9090']
     #    chdir rundir
     #    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
@@ -2365,7 +2395,7 @@ namespace "run" do
       db_path = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/db'
       rm_rf db_path if File.exists?(db_path)
     end
-
+    #run:win32:spec
     task :spec => [:delete_db] do
 
       Jake.decorate_spec do
@@ -2373,7 +2403,7 @@ namespace "run" do
         Rake::Task['build:win32'].invoke
 
         #remove log file
-        win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
+        win32rhopath = File.join($startdir, $config["build"]["wmpath"],"bin/win32/rhodes/", $buildcfg, 'rho')
         win32logpath = File.join(win32rhopath,"RhoLog.txt")
         win32logpospath = File.join(win32rhopath,"RhoLog.txt_pos")
         win32configpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
@@ -2385,13 +2415,34 @@ namespace "run" do
         start = Time.now
 
         args = [' ']
-        Jake.run2( "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
+
+        targetFile = "../rhodes.exe"
+        targetDirectory = File.join($config["build"]["wmpath"], "bin/win32/rhodes/", $buildcfg, "rho")
+        targetFileFullName = File.join(targetDirectory, targetFile)
+        start = Time.now
+        if File.exists? targetFileFullName
+          Jake.run3("#{File.join($qtdir, 'bin/windeployqt')} #{targetFileFullName}")
+        end
+        counter = 0
+        Jake.run2(targetFile, args, {:directory => targetDirectory, :nowait => false}) do |line|
+          counter += 1
+        end
+        counter = 0
+        sleep(5)
+        File.open(win32logpath, 'r:UTF-8').each do |line|
+          counter += 1
           Jake.process_spec_output(line)
         end
+        puts "Checked lines: " + counter.to_s
         Jake.process_spec_results(start)
 
         $stdout.flush
         chdir $startdir
+        
+        if ($failed > 0) 
+          puts "Specs failed with " + $failed.to_s + " failes"
+          exit 1
+        end
       end
     end
 

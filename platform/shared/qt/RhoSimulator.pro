@@ -3,6 +3,7 @@ greaterThan(QT_MINOR_VERSION, 6): {
     DEFINES += CPP_ELEVEN
     DEFINES += RHODES_VERSION_2
 }
+
 equals(QT_MAJOR_VERSION, 5) {
     equals(QT_MINOR_VERSION, 6) {
         QT += webkit widgets
@@ -24,6 +25,7 @@ unix:!macx {
 }
 macx {
  SUBDIRS += curl
+ QMAKE_MAC_SDK = macosx10.13
 }
 CONFIG += ordered
 SUBDIRS += rhodes

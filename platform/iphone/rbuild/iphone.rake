@@ -763,6 +763,28 @@ def update_xcode_project_files_by_capabilities
         end
     end
 
+    if $app_config['iphone'] != nil
+        if $app_config['iphone']['extensions'] != nil
+          if $app_config['iphone']['extensions'].index('barcode')
+              if $app_config['iphone']['barcode_engine'] != nil
+                  $barcode_engine = $app_config['iphone']['barcode_engine'].upcase
+                  if $barcode_engine != 'ZXING' &&  $barcode_engine != 'ZBAR' then
+                      raise 'Unknown barcode engine, select ZBar or ZXing please...'
+                  end
+              else
+                  $barcode_engine = 'ZXING'
+              end
+          end
+        end
+    end
+
+    if !$barcode_engine.to_s.empty?
+      File.open(File.join($startdir, "platform", "shared", "common", "barcode_engine.h"), 'w+') do |file|
+        file.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+        file.puts "#define #{$barcode_engine} 1"
+      end
+    end
+
     #external_accessory
     zebra_printing_ext = false
     if $app_config['extensions'] != nil

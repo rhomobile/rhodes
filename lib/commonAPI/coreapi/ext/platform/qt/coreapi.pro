@@ -44,12 +44,12 @@ unix:!macx {
 }
 
 win32 {
-  greaterThan(QT_VERSION, 5.6.0): {
+  greaterThan(QT_MINOR_VERSION, 6): {
       DEFINES += CPP_ELEVEN
   }
   DESTDIR = ../../../../../../platform/win32/bin/extensions
   OBJECTS_DIR = ../../../../../../platform/win32/bin/extensions/coreapi
-  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE WIN32_LEAN_AND_MEAN
   Debug {
     DEFINES += _DEBUG DEBUG
   }

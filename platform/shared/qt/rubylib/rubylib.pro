@@ -7,13 +7,14 @@ greaterThan(QT_MINOR_VERSION, 6): {
     LIBS += -lucrt.lib
 }
 
-    equals(QT_MAJOR_VERSION, 5) {
-        equals(QT_MINOR_VERSION, 6) {
-            QT += core
-            DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
-            CONFIG += c++14
-        }
+
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        QT += core
+        DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
+        CONFIG += c++14
     }
+}
 
 lessThan(QT_MINOR_VERSION, 6): {
     DEFINES += RHODES_VERSION_1
@@ -56,7 +57,7 @@ win32 {
   OBJECTS_DIR = ../../../win32/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/win32
   DEFINES -= _UNICODE UNICODE
-  DEFINES += _WIN32 WIN32 _WINDOWS _LIB BUFSIZ=512 STATIC_LINKED RUBY_EXPORT
+  DEFINES += _WIN32 WIN32 _WINDOWS _LIB BUFSIZ=512 STATIC_LINKED RUBY_EXPORT WIN32_LEAN_AND_MEAN
   Debug {
     DEFINES += _DEBUG DEBUG
   }
@@ -186,6 +187,8 @@ SOURCES += \
 ../../ruby/enc/utf_32le.c \
 ../../ruby/enc/euc_jp.c \
 ../../ruby/enc/windows_31j.c \
+../../ruby/enc/trans/single_byte.c \
+../../ruby/enc/trans/utf_16_32.c \
 ../../ruby/enum.c \
 ../../ruby/enumerator.c \
 ../../ruby/error.c \

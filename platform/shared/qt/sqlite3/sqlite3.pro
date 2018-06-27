@@ -1,19 +1,20 @@
-    greaterThan(QT_MINOR_VERSION, 6): {
+greaterThan(QT_MINOR_VERSION, 6): {
+    CONFIG += c++14
+    DEFINES += CPP_ELEVEN
+    DEFINES += RHODES_VERSION_2
+}
+
+
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
         CONFIG += c++14
-        DEFINES += CPP_ELEVEN
-        DEFINES += RHODES_VERSION_2
     }
+}
 
-    equals(QT_MAJOR_VERSION, 5) {
-        equals(QT_MINOR_VERSION, 6) {
-            DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
-            CONFIG += c++14
-        }
-    }
-
-    lessThan(QT_MINOR_VERSION, 6): {
-        DEFINES += RHODES_VERSION_1
-    }
+lessThan(QT_MINOR_VERSION, 6): {
+    DEFINES += RHODES_VERSION_1
+}
 TARGET = sqlite3
 TEMPLATE = lib
 
@@ -30,7 +31,7 @@ macx {
 win32 {
   DESTDIR = ../../../win32/bin/sqlite3
   OBJECTS_DIR = ../../../win32/bin/sqlite3/tmp
-  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE WIN32_LEAN_AND_MEAN
   Debug {
     DEFINES += _DEBUG DEBUG
   }

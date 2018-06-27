@@ -45,8 +45,10 @@ macx {
 }
 win32 {
   DESTDIR = $$RHODES_ROOT/platform/win32/bin/extensions
-  OBJECTS_DIR = $$RHODES_ROOT/platform/win32/bin/extensions/mediacapture
-  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+
+  OBJECTS_DIR = $$RHODES_ROOT/platform/win32/bin/extensions/mediacapture 
+  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE WIN32_LEAN_AND_MEAN
+
   debug {
     DEFINES += _DEBUG DEBUG
   }
