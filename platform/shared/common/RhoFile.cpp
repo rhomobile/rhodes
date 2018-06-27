@@ -367,10 +367,15 @@ int CRhoFile::getPos() const {
     if ( !isOpened() )
         return -1;
 
+    #ifdef OS_LINUX
+    off_t pos;
+    if((pos = ftello(m_file))!= -1)
+    #else
     fpos_t pos;
     if(fgetpos(m_file, &pos) == 0)
+    #endif
     {
-        return pos;
+        return (int)pos;
     } else
     {
         return -1;
@@ -798,7 +803,7 @@ extern "C" void rho_file_set_fs_mode(int mode) {
 }
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_LINUX)
     void rho_file_impl_move_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
         
     }

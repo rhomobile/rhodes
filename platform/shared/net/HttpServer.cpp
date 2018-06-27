@@ -36,7 +36,11 @@
 
 #include <algorithm>
 #include <iterator>
-
+#ifndef OS_WINDOWS_DESKTOP
+#include <pthread.h>
+#include <sched.h>
+#include <errno.h>
+#endif
 //#include <errno.h>
 
 
@@ -46,8 +50,13 @@
 
 #if !defined(OS_WINCE)
 #include <common/stat.h>
+#ifndef OS_SAILFISH
 #define HTTP_EAGAIN_TIMEOUT 10
 #define HTTP_EAGAIN_TIMEOUT_STR "10"
+#else
+#define HTTP_EAGAIN_TIMEOUT 60
+#define HTTP_EAGAIN_TIMEOUT_STR "60"
+#endif
 #else
 #include "CompatWince.h"
 #define HTTP_EAGAIN_TIMEOUT 60
@@ -306,15 +315,13 @@ static VALUE create_request_hash(String const &application, String const &model,
 #endif
 
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root, bool enable_external_access, bool started_as_separated_simple_server)
-    :m_active(false), m_port(port), verbose(true), m_IP_adress("")
-#ifdef OS_MACOSX
-    , m_localResponseWriter(0)
-    , m_pQueue(0)    
-#endif
+    : CHttpServer(port, root, user_root, runtime_root)
 {
+
+    RAWTRACE2( "CHttpServer::CHttpServer HTTP Server additional parameters: enable_external_access: %d, started_as_separated_simple_server: %s", (int)enable_external_access, (int)started_as_separated_simple_server );
+
     m_enable_external_access = enable_external_access;
-    m_started_as_separated_simple_server = started_as_separated_simple_server;
-    CHttpServer(port, root, user_root, runtime_root);
+    m_started_as_separated_simple_server = started_as_separated_simple_server;    
 }
     
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
@@ -324,9 +331,12 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     , m_pQueue(0)
 #endif
 {
+    RAWTRACE4( "CHttpServer::CHttpServer Starting HTTP Server on port %d, root: %s, user_root: %s, runtime_root: %s", port, root.c_str(), user_root.c_str(), runtime_root.c_str() );
+
     m_enable_external_access = false;
     m_started_as_separated_simple_server = false;
     m_root = CFilePath::normalizePath(root);
+
 #ifdef RHODES_EMULATOR
     m_strRhoRoot = m_root;
     m_strRuntimeRoot = runtime_root;
@@ -342,29 +352,6 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     m_userroot = CFilePath::normalizePath(user_root);
     m_strRhoUserRoot = m_userroot;
 	m_listener = INVALID_SOCKET;
-	m_sock = INVALID_SOCKET;
-}
-    
-CHttpServer::CHttpServer(int port, String const &root)
-    :m_active(false), m_port(port), verbose(true), m_IP_adress("")
-#ifdef OS_MACOSX
-    , m_localResponseWriter(0)
-    , m_pQueue(0)
-#endif
-{
-    m_enable_external_access = false;
-    m_started_as_separated_simple_server = false;
-    
-	m_root = CFilePath::normalizePath(root);
-    m_strRuntimeRoot = (m_strRhoRoot = m_root.substr(0, m_root.length()-5)) +
-#if defined(OS_WP8) || defined(OS_UWP)
-         "rho";
-#else
-         "/rho/apps";
-#endif
-    m_userroot = CFilePath::normalizePath(root);
-    m_strRhoUserRoot = m_root.substr(0, m_root.length()-5);
-    m_listener = INVALID_SOCKET;
 	m_sock = INVALID_SOCKET;
 }
 
@@ -580,6 +567,14 @@ int CHttpServer::select_internal( SOCKET listener, fd_set& readfds )
 
 bool CHttpServer::run()
 {
+    #ifdef OS_SAILFISH
+    pthread_t current_thread = pthread_self();
+    struct sched_param params = { 0 };
+    params.sched_priority = 9;
+    pthread_setschedparam(current_thread, SCHED_FIFO, &params);
+    #endif
+
+
     if (verbose) LOG(INFO) + "Start HTTP server";
 
     if (!init())
@@ -1341,6 +1336,8 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     
     // Detect mime type
     headers.push_back(Header("Content-Type", get_mime_type(path)));
+
+    /*
     if ( String_startsWith(path, "/public") )
     {
         headers.push_back(Header("Expires", "Thu, 15 Apr 2020 20:00:00 GMT") );
@@ -1350,6 +1347,17 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         headers.push_back(Header("Cache-Control", "max-age=2592000") );
 #endif
     }
+    */
+    if ( String_startsWith(path, "/public") )
+    {
+        headers.push_back(Header("Expires", "Thu, 15 Apr 2000 20:00:00 GMT") );
+        headers.push_back(Header("Cache-Control", "max-age=0") );
+        headers.push_back(Header("Cache-Control", "no-cache") );
+        headers.push_back(Header("Cache-Control", "no-store") );
+    }
+
+
+
 
     // Content length
     char* buf = new char[FILE_BUF_SIZE];

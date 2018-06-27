@@ -4,6 +4,14 @@ greaterThan(QT_MINOR_VERSION, 6): {
     DEFINES += RHODES_VERSION_2
 }
 
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        QT += webkit widgets
+        DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
+        CONFIG += c++14
+    }
+}
+
 lessThan(QT_MINOR_VERSION, 6): {
     DEFINES += RHODES_VERSION_1
 }

@@ -26,10 +26,22 @@ namespace rho {
     public:
 
         CCameraSingletonImpl(): CCameraSingletonBase() {
-            if (CCameraData::getValues().isEmpty()){CameraRefresher::refresh();}
+#ifndef OS_SAILFISH
+            if (CCameraData::getValues().isEmpty()){
+                CameraRefresher::refresh();
+            }
             foreach (CCameraData * data, CCameraData::getValues()) {
                 defaultCameras.insert(data->getCameraType(), data->getCameraID());
             }
+#else
+            QCameraInfo info;
+            CCameraData::addNewCamera(info);
+            defaultCameras.insert(ICamera::CAMERA_TYPE_BACK, ICamera::CAMERA_TYPE_BACK);
+
+            QList<QObject *> objectList;
+            foreach (CCameraData * obj, CCameraData::getValues()) {objectList.append(obj);}
+            QtMainWindow::setContextProperty("camerasModel", objectList);
+#endif
         }
 
         virtual ~CCameraSingletonImpl(){
@@ -40,14 +52,13 @@ namespace rho {
         // enumerate Returns the cameras present on your device, allowing you to access your device's front or back camera. 
         virtual void enumerate(rho::apiGenerator::CMethodResult& oResult) {
             rho::Vector<rho::String> arIDs = oResult.getStringArray();
-
             if(!CCameraData::isEmpty()){
                 foreach (QString value, CCameraData::getKeys()) {
                     arIDs.addElement(value.toStdString());
                 }
-                oResult.set(arIDs);
             }
 
+            oResult.set(arIDs);
         } 
 
         // getCameraByType Returns the camera of requested type if that camera exist - else return nil. 
@@ -57,7 +68,33 @@ namespace rho {
         // choosePicture Choose a picture from the album. 
 
         static void getImageData(rho::Hashtable<String,String> & mapRes, QString fileNameToOpen){
+#ifndef OS_SAILFISH
             CameraDialogView::getImageData(mapRes, fileNameToOpen);
+#else
+            QImage image(fileNameToOpen);
+            if (image.isNull()){
+                mapRes["status"] = "error";
+                mapRes["message"] = "Image loading error";
+                return;
+            }
+            mapRes["status"] = "ok";
+
+            rho::String uri = QDir::current().relativeFilePath(fileNameToOpen).toStdString();
+            rho::String height = QString::number(image.height()).toStdString();
+            rho::String width = QString::number(image.width()).toStdString();
+            rho::String format = (QFileInfo(fileNameToOpen)).suffix().toStdString();
+
+            mapRes["imageUri"] = uri;
+            mapRes["imageHeight"] = height;
+            mapRes["imageWidth"] = width;
+            mapRes["imageFormat"] = format;
+
+            mapRes["image_uri"] = uri;
+            mapRes["image_height"] = height;
+            mapRes["image_width"] = width;
+            mapRes["image_format"] = format;
+
+#endif
         }
 
         virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {
@@ -70,15 +107,23 @@ namespace rho {
             // RAWLOGC_INFO("copyImageToDeviceGallery","Camera");
             QString originalFileName(QString::fromStdString(pathToImage));
             QFileInfo info(originalFileName);
+#ifndef OS_SAILFISH
             QString newFileName(CameraDialogView::getImageDir().absolutePath() + "/" + info.fileName());
+#else
+            QString newFileName;
+#endif
             QFile::copy(originalFileName, newFileName);
             oResult.set(newFileName.toStdString());
         } 
 
         virtual rho::String getInitialDefaultID(){
+#ifndef OS_SAILFISH
             QString defaultId = defaultCameras.value(ICamera::CAMERA_TYPE_FRONT);
             if (!defaultId.isEmpty()) return defaultId.toStdString();
             else return defaultCameras.value(ICamera::CAMERA_TYPE_BACK).toStdString();
+#else
+            return ICamera::CAMERA_TYPE_BACK;
+#endif
         }
 
     };
@@ -97,7 +142,9 @@ namespace rho {
         }
 
         virtual void getCameraType(rho::apiGenerator::CMethodResult& oResult) {
-            if (camera != nullptr){oResult.set(camera->getCameraType().toStdString());}
+            if (camera != nullptr){
+                oResult.set(camera->getCameraType().toStdString());
+            }
         } 
 
         virtual void getMaxWidth(rho::apiGenerator::CMethodResult& oResult) {
@@ -133,7 +180,7 @@ namespace rho {
         } 
 
         virtual void setFileName( const rho::String& fileName, rho::apiGenerator::CMethodResult& oResult) {
-
+            camera->setTargetFileName(QString::fromStdString(fileName));
         } 
 
         virtual void getCompressionFormat(rho::apiGenerator::CMethodResult& oResult) {

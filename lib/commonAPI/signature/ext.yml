@@ -13,6 +13,9 @@ project_paths:
   wm: ext/platform/wm/Signature.vcproj
   win32: ext/platform/wm/Signature.vcproj
   
+sailfish:
+  proerb: ext/platform/qt/Signature.pro.erb
+  
 xml_api_paths: ext/Signature.xml
 
-platforms: ["iphone", "wm", "android"]
+platforms: ["iphone", "wm", "android", "win32", "sailfish"]

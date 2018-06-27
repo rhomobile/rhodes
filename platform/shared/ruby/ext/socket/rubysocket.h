@@ -438,4 +438,9 @@ const char *inet_ntop(int, const void *, char *, size_t);
 const char *WSAAPI inet_ntop(int, const void *, char *, size_t);
 #endif
 
+#ifdef OS_LINUX
+#undef AF_PACKET
+#undef SIOCGIFCONF
+#endif
+
 #endif

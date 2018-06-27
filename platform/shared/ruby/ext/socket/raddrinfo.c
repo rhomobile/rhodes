@@ -9,7 +9,7 @@
 ************************************************/
 
 #include "rubysocket.h"
-
+#undef AF_PACKET
 #if defined(INET6) && (defined(LOOKUP_ORDER_HACK_INET) || defined(LOOKUP_ORDER_HACK_INET6))
 #define LOOKUP_ORDERS (sizeof(lookup_order_table) / sizeof(lookup_order_table[0]))
 static const int lookup_order_table[] = {

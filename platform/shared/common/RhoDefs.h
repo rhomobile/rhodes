@@ -42,6 +42,7 @@
 # define OS_CYGWIN
 #elif defined(linux) || defined(__linux) || defined(__linux__)
 # define OS_LINUX
+# define OS_SAILFISH
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
 # define OS_MACOSX
 #elif defined(__FreeBSD__)

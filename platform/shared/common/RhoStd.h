@@ -28,7 +28,9 @@
 #define _RHOSTD_H_
 
 #include "RhoPort.h"
+#ifndef OS_LINUX
 #define _GLIBCXX_CSTDLIB 1
+#endif
 namespace std
 {
 	using ::rand;	

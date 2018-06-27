@@ -193,7 +193,7 @@ currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId()
     } else {
         unsetProxy();
     }
-
+    lastInstance = this;
     QWebEngineProfile * profile = QWebEngineProfile::defaultProfile();
     #ifdef RHODES_EMULATOR
     profile->setHttpUserAgent("RhoSimulator");

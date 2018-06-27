@@ -1,19 +1,26 @@
-QT -= core
-  greaterThan(QT_MINOR_VERSION, 6): {
-      CONFIG += c++14
-      DEFINES += RHODES_VERSION_2
-  }
+greaterThan(QT_MINOR_VERSION, 6): {
+    CONFIG += c++14
+    DEFINES += RHODES_VERSION_2
+}
 
-  lessThan(QT_MINOR_VERSION, 6): {
-      DEFINES += RHODES_VERSION_1
-  }
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        DEFINES += OS_SAILFISH OS_LINUX
+    }
+}
+
+lessThan(QT_MINOR_VERSION, 6): {
+    DEFINES += RHODES_VERSION_1
+}
+
 TARGET = curl
 TEMPLATE = lib
 
 CONFIG += staticlib warn_on
 
 INCLUDEPATH += ../..\
-../../curl/include
+../../curl/include\
+../../curl/lib
 
 macx {
   greaterThan(QT_MINOR_VERSION, 6): {
@@ -52,9 +59,12 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/curl
-  OBJECTS_DIR = ../../../linux/bin/curl/tmp
-  DEFINES += HAVE_CONFIG_H USE_RHOSSL
+  DESTDIR = $$PWD/../../../linux/bin/curl
+  OBJECTS_DIR = $$PWD/../../../linux/bin/curl/tmp
+  DEFINES += HAVE_CONFIG_H USE_RHOSSL OS_LINUX OS_SAILFISH
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
+
 }
 
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
@@ -66,6 +76,8 @@ DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4101 /wd4005
@@ -75,6 +87,7 @@ win32 {
 }
 
 HEADERS += ../../curl/lib/arpa_telnet.h\
+../../curl/lib/curl_setup.h \
 ../../curl/lib/connect.h\
 ../../curl/lib/content_encoding.h\
 ../../curl/lib/cookie.h\
@@ -85,7 +98,6 @@ HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/curl_md5.h\
 ../../curl/lib/curl_memory.h\
 ../../curl/lib/curl_memrchr.h\
-../../curl/lib/curl_rand.h\
 ../../curl/lib/dict.h\
 ../../curl/lib/dotdot.h\
 ../../curl/lib/easyif.h\
@@ -95,7 +107,7 @@ HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/ftp.h\
 ../../curl/lib/ftplistparser.h\
 ../../curl/lib/getinfo.h\
-../../curl/lib/gtls.h\
+../../curl/lib/vtls/gtls.h\
 ../../curl/lib/hash.h\
 ../../curl/lib/hostip.h\
 ../../curl/lib/http.h\
@@ -111,15 +123,11 @@ HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/multiif.h\
 ../../curl/lib/netrc.h\
 ../../curl/lib/nonblock.h\
-../../curl/lib/nssg.h\
+../../curl/lib/vtls/nssg.h\
 ../../curl/lib/parsedate.h\
 ../../curl/lib/progress.h\
-../../curl/lib/qssl.h\
-../../curl/lib/rawstr.h\
 ../../curl/lib/select.h\
 ../../curl/lib/sendf.h\
-../../curl/lib/setup.h\
-../../curl/lib/setup_once.h\
 ../../curl/lib/share.h\
 ../../curl/lib/slist.h\
 ../../curl/lib/sockaddr.h\
@@ -127,10 +135,7 @@ HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/speedcheck.h\
 ../../curl/lib/splay.h\
 ../../curl/lib/ssh.h\
-../../curl/lib/sslgen.h\
-../../curl/lib/ssluse.h\
 ../../curl/lib/strdup.h\
-../../curl/lib/strequal.h\
 ../../curl/lib/strerror.h\
 ../../curl/lib/strtok.h\
 ../../curl/lib/strtoofft.h\
@@ -141,16 +146,39 @@ HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/url.h\
 ../../curl/lib/urldata.h\
 ../../curl/include/curl/curl.h\
-../../curl/include/curl/curlbuild.h\
-../../curl/include/curl/curlrules.h\
 ../../curl/include/curl/curlver.h\
 ../../curl/include/curl/easy.h\
 ../../curl/include/curl/mprintf.h\
 ../../curl/include/curl/multi.h\
 ../../curl/include/curl/stdcheaders.h\
 ../../curl/include/curl/typecheck-gcc.h\
-../../curl/include/curl/types.h\
-../../curl/lib/rhossl.h
+../../curl/lib/rhossl.h \
+../../curl/lib/vtls/gtls.h \
+../../curl/lib/vtls/vtls.h \
+../../curl/include/curl/system.h \
+../../curl/lib/strcase.h \
+    ../../curl/lib/asyn.h \
+    ../../curl/lib/warnless.h \
+    ../../curl/lib/vauth/digest.h \
+    ../../curl/lib/vauth/vauth.h \
+    ../../curl/lib/pingpong.h \
+    ../../curl/lib/pipeline.h \
+    ../../curl/lib/http_proxy.h \
+    ../../curl/lib/conncache.h \
+    ../../curl/lib/dotdot.h \
+    ../../curl/lib/fileinfo.h \
+    ../../curl/lib/ftplistparser.h \
+    ../../curl/lib/gopher.h \
+    ../../curl/lib/hostcheck.h \
+    ../../curl/lib/imap.h \
+    ../../curl/lib/pop3.h \
+    ../../curl/lib/smb.h \
+    ../../curl/lib/wildcard.h \
+    ../../curl/lib/curl_sasl.h \
+    ../../curl/lib/rtsp.h \
+    ../../curl/lib/curl_threads.h \
+    ../../curl/lib/curl_gethostname.h \
+    ../../curl/lib/curl_fnmatch.h
 
 SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/asyn-thread.c\
@@ -164,6 +192,7 @@ SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/curl_fnmatch.c\
 ../../curl/lib/curl_gethostname.c\
 ../../curl/lib/curl_memrchr.c\
+
 ../../curl/lib/curl_multibyte.c\
 ../../curl/lib/curl_ntlm_core.c\
 ../../curl/lib/curl_rtmp.c\

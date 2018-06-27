@@ -1,13 +1,20 @@
-QT -= core
-    greaterThan(QT_MINOR_VERSION, 6): {
-        CONFIG += c++14
-        DEFINES += CPP_ELEVEN
-        DEFINES += RHODES_VERSION_2
-    }
+greaterThan(QT_MINOR_VERSION, 6): {
+    CONFIG += c++14
+    DEFINES += CPP_ELEVEN
+    DEFINES += RHODES_VERSION_2
+}
 
-    lessThan(QT_MINOR_VERSION, 6): {
-        DEFINES += RHODES_VERSION_1
+
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
+        CONFIG += c++14
     }
+}
+
+lessThan(QT_MINOR_VERSION, 6): {
+    DEFINES += RHODES_VERSION_1
+}
 TARGET = sqlite3
 TEMPLATE = lib
 
@@ -18,7 +25,7 @@ INCLUDEPATH += ../..
 macx {
   DESTDIR = ../../../osx/bin/sqlite3
   OBJECTS_DIR = ../../../osx/bin/sqlite3/tmp
-  SOURCES += ../../sqlite/crypto.c
+  SOURCES += ../../sqlite/sqlite3.c
 }
 
 win32 {
@@ -36,6 +43,10 @@ win32 {
 unix:!macx {
   DESTDIR = ../../../linux/bin/sqlite3
   OBJECTS_DIR = ../../../linux/bin/sqlite3/tmp
+  SOURCES += ../../sqlite/sqlite3.c
+
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM
@@ -46,6 +57,8 @@ DEFINES += RHODES_QT_PLATFORM
 
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4101
@@ -57,4 +70,5 @@ win32 {
 HEADERS += ../../sqlite/sqlite3.h\
 ../../sqlite/sqlite3ext.h
 
-SOURCES += ../../sqlite/sqlite3.c
+SOURCES += ../../sqlite/sqlite3.c \
+    ../../sqlite/crypto.c

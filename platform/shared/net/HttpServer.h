@@ -113,7 +113,6 @@ public:
     typedef void (*callback_t)(void *arg, String const &query);
     
 public:
-    CHttpServer(int port, String const &root);
     CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root);
     CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root, bool enable_external_access, bool started_as_separated_simple_server);
     ~CHttpServer();

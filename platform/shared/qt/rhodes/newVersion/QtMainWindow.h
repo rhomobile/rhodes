@@ -109,10 +109,13 @@ public:
     void tabbarSetSwitchCallback(rho::apiGenerator::CMethodResult& oResult);
     static quint16 getDebPort();
     static QtMainWindow * lastInstance;
+    static QtMainWindow * getLastInstance(){
+        return lastInstance;
+    }
 private:
     void tabbarWebViewRestore(bool reload);
-    void tabbarConnectWebView(QtWebEngineView *webView);
-    void tabbarDisconnectWebView(QtWebEngineView *webView);
+    void tabbarConnectWebView(QWebEngineView *webView);
+    void tabbarDisconnectWebView(QWebEngineView* webView);
     bool internalUrlProcessing(const QUrl& url);
     void setUpWebPage(QWebEnginePage *page);
     void doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button);
@@ -122,8 +125,8 @@ private:
 
 private:
     IMainWindowCallback* mainWindowCallback;
-    std::vector<QtWebEngineView*> tabViews;
-    QtWebEngineView* main_webView;
+    std::vector<QWebEngineView*> tabViews;
+    QWebEngineView* main_webView;
     QTabBarRuntimeParams* cur_tbrp;
     QMessageBox *m_alertDialog;
     //TODO: CSyncStatusDlg *m_SyncStatusDlg;
@@ -137,7 +140,7 @@ private:
     QtLogView* m_logView;
     QToolBar * toolBar;
     QToolBar * toolBarRight;
-    QtWebEngineView * webView;
+    QWebEngineView * webView;
     QtNativeTabBar * tabBar;
     QVBoxLayout * verticalLayout;
     QMenu * menuMain;
@@ -195,7 +198,6 @@ public slots:
 
 signals:
     void navigate(QString url, int index);
-    void onClose();
 protected:
     void resizeEvent(QResizeEvent *);
 };

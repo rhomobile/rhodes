@@ -4,6 +4,16 @@ lessThan(QT_MINOR_VERSION, 6): {
     QT += webkit widgets webkitwidgets
     DEFINES += RHODES_VERSION_1
 }
+
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        QT += webkit widgets
+        DEFINES += OS_SAILFISH OS_LINUX
+        CONFIG += sailfishapp c++14 sailfishapp_i18n
+        message(Sailfish enabled)
+    }
+}
+
 greaterThan(QT_MINOR_VERSION, 6): {
     QT += webengine webenginecore webenginewidgets
     CONFIG += c++14
@@ -28,10 +38,14 @@ $$RHODES_ROOT/platform/shared/ruby/include\
 $$RHODES_ROOT/platform/shared\
 ../../shared
 
+
 macx {
   DESTDIR = $$RHODES_ROOT/platform/osx/bin/extensions
   OBJECTS_DIR = $$RHODES_ROOT/platform/osx/bin/extensions/barcode
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/iphone
+HEADERS +=   src/BarcodeDialogBuilder.h \
+    src/BarcodeDialogView.h
+SOURCES += src/BarcodeDialogView.cpp
 }
 win32 {
   DESTDIR = $$RHODES_ROOT/platform/win32/bin/extensions
@@ -45,8 +59,25 @@ win32 {
     #DEFINES += _ITERATOR_DEBUG_LEVEL=2
   }
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/win32
+HEADERS +=   src/BarcodeDialogBuilder.h \
+    src/BarcodeDialogView.h
+SOURCES += src/BarcodeDialogView.cpp
 }
 
+unix:!macx {
+  INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/linux
+  INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish/src
+  INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish
+
+  contains(DEFINES, OS_LINUX)  {
+    DESTDIR = $$RHODES_ROOT/platform/linux/bin/extensions
+    OBJECTS_DIR = $$RHODES_ROOT/platform/linux/bin/extensions/barcode
+  }
+  contains(DEFINES, OS_SAILFISH)  {
+    HEADERS += src/barcodeqmlmodel.h
+    SOURCES += src/barcodeqmlmodel.cpp
+  }
+}
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 
 !isEmpty(RHOSIMULATOR_BUILD) {
@@ -56,6 +87,8 @@ DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
@@ -67,12 +100,11 @@ win32 {
   QMAKE_CXXFLAGS_DEBUG += -MP9
 }
 
+
 HEADERS += \
 ..\..\shared\generated\cpp\IBarcode.h\
 ..\..\shared\generated\cpp\BarcodeBase.h \
     src/BarcodeController.h \
-    src/BarcodeDialogBuilder.h \
-    src/BarcodeDialogView.h \
     src/decoderthread.h
 
 SOURCES += \
@@ -84,7 +116,6 @@ SOURCES += \
 ..\..\shared\generated\Barcode_ruby_api.c\
 src\Barcode_impl.cpp \
     src/BarcodeController.cpp \
-    src/BarcodeDialogView.cpp \
     src/decoderthread.cpp
 
 RESOURCES += $$RHODES_ROOT/lib/commonAPI/barcode/ext/platform/qt/resources/barcode.qrc

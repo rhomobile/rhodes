@@ -10,6 +10,11 @@
 #ifndef RUBY_DEFINES_H
 #define RUBY_DEFINES_H 1
 
+#ifdef OS_LINUX
+#include <stddef.h>
+#include <stdint.h>
+#endif
+
 #if defined(__cplusplus)
 extern "C" {
 #if 0

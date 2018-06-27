@@ -32,7 +32,7 @@
 #define RHOSIMULATOR_NAME "RhoSimulator"
 
 #ifndef RHO_SYMBIAN
-#include "RhoSimulatorVersion.h"
+//#include "RhoSimulatorVersion.h"
 #endif // RHO_SYMBIAN
 
 #if defined(RHODES_EMULATOR)
@@ -43,6 +43,8 @@
 #endif
 #elif defined(OS_WINDOWS_DESKTOP)
 #define RHO_PLATFORM_NAME_AT "on Win32"
+#elif defined(OS_LINUX)
+#define RHO_PLATFORM_NAME_AT "on Linux"
 #else
 #define RHO_PLATFORM_NAME_AT "on OS X"
 #endif

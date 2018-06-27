@@ -1,0 +1,33 @@
+QT -= core
+
+DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
+
+TARGET = sqlite3
+TEMPLATE = lib
+
+CONFIG += staticlib warn_on
+CONFIG += <%= @buildMode %>
+
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared
+
+unix:!macx {
+  DESTDIR = $$PWD/bin
+  OBJECTS_DIR = $$PWD/bin/tmp
+  SOURCES += <%= @rhoRoot %>/platform/shared/sqlite/sqlite3.c
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
+}
+
+DEFINES += RHODES_QT_PLATFORM
+
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+}
+
+HEADERS += <%= @rhoRoot %>/platform/shared/sqlite/sqlite3.h\
+<%= @rhoRoot %>/platform/shared/sqlite/sqlite3ext.h
+
+SOURCES += <%= @rhoRoot %>/platform/shared/sqlite/sqlite3.c \
+<%= @rhoRoot %>/platform/shared/sqlite/crypto.c
