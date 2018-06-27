@@ -70,5 +70,6 @@ bool SSLImpl::rand(unsigned char *entropy, size_t length)
     return false;
 }
 
+
 } // namespace net
 } // namespace rho

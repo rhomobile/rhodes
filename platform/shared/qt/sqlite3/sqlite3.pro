@@ -1,8 +1,7 @@
-    greaterThan(QT_VERSION, 5.7.0): {
+    greaterThan(QT_MINOR_VERSION, 6): {
         CONFIG += c++14
         DEFINES += CPP_ELEVEN
         DEFINES += RHODES_VERSION_2
-        QT -= core
     }
 
     equals(QT_MAJOR_VERSION, 5) {
@@ -12,9 +11,8 @@
         }
     }
 
-    lessThan(QT_VERSION, 5.6.0): {
+    lessThan(QT_MINOR_VERSION, 6): {
         DEFINES += RHODES_VERSION_1
-        QT -= core
     }
 TARGET = sqlite3
 TEMPLATE = lib

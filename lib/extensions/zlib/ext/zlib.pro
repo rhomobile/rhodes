@@ -1,20 +1,19 @@
-    greaterThan(QT_VERSION, 5.7.0): {
-        CONFIG += c++14
-        DEFINES += CPP_ELEVEN
-        DEFINES += RHODES_VERSION_2
-        QT -= core
-    }
+greaterThan(QT_MINOR_VERSION, 6): {
+    CONFIG += c++14
+    DEFINES += CPP_ELEVEN
+    DEFINES += RHODES_VERSION_2
+}
 
-    equals(QT_MAJOR_VERSION, 5) {
-        equals(QT_MINOR_VERSION, 6) {
-            DEFINES += OS_SAILFISH OS_LINUX
-        }
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        DEFINES += OS_SAILFISH OS_LINUX
     }
+}
 
-    lessThan(QT_VERSION, 5.6.0): {
-        DEFINES += RHODES_VERSION_1
-        QT -= core
-    }
+lessThan(QT_MINOR_VERSION, 6): {
+    DEFINES += RHODES_VERSION_1
+}
+
 
 TARGET = zlib
 TEMPLATE = lib

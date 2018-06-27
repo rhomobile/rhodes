@@ -1,8 +1,7 @@
-    greaterThan(QT_VERSION, 5.7.0): {
+    greaterThan(QT_MINOR_VERSION, 6): {
         CONFIG += c++14
         DEFINES += RHODES_VERSION_2
         DEFINES += AJAXSERVER
-        QT -= core
     }
 
     equals(QT_MAJOR_VERSION, 5) {
@@ -12,9 +11,8 @@
         }
     }
 
-    lessThan(QT_VERSION, 5.6.0): {
+    lessThan(QT_MINOR_VERSION, 6): {
         DEFINES += RHODES_VERSION_1
-        QT -= core
     }
 
 TARGET = rholib
@@ -27,7 +25,7 @@ INCLUDEPATH += ../..\
 ../../../../lib/commonAPI
 
 macx {
-  greaterThan(QT_VERSION, 5.6.0): {
+  greaterThan(QT_MINOR_VERSION, 6): {
       DEFINES += RHODES_MAC_BUILD
   }
   DESTDIR = ../../../osx/bin/rholib
@@ -42,7 +40,7 @@ macx {
 }
 
 win32 {
-  greaterThan(QT_VERSION, 5.6.0): {
+  greaterThan(QT_MINOR_VERSION, 6): {
       DEFINES += CPP_ELEVEN
   }
   DESTDIR = ../../../win32/bin/rholib

@@ -1,5 +1,6 @@
 QT       += core gui widgets quick
 
+
 DEFINES += QZXING_LIBRARY \
         ZXING_ICONV_CONST \
         DISABLE_LIBRARY_FEATURES

@@ -1,15 +1,14 @@
 QT += core gui network
 
 message(Qt version: $$[QT_VERSION])
+isEqual(QT_MAJOR_VERSION, 5):{
+    QT += multimedia multimediawidgets
 
-greaterThan(QT_MAJOR_VERSION, 4):{
-    QT += multimedia
-
-    lessThan(QT_VERSION, 5.6.0): {
+    lessThan(QT_MINOR_VERSION, 6): {
         QT += webkit widgets webkitwidgets
         message(Deprecated webkit enabled)
-        INCLUDEPATH += oldVersion
         DEFINES += RHODES_VERSION_1
+        INCLUDEPATH += oldVersion
     }
 
     equals(QT_MAJOR_VERSION, 5) {
@@ -27,12 +26,11 @@ greaterThan(QT_MAJOR_VERSION, 4):{
             QT += quick bluetooth dbus #widgets
             DEFINES += OS_SAILFISH OS_LINUX
             CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
-
         }
     }
 
-    greaterThan(QT_VERSION, 5.7.0): {
-        QT += webengine webenginecore webenginewidgets multimediawidgets bluetooth dbus
+    greaterThan(QT_MINOR_VERSION, 6): {
+        QT += webengine webenginecore webenginewidgets
         message(Webengine enabled)
         CONFIG += c++14
         DEFINES += RHODES_VERSION_2
