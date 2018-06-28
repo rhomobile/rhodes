@@ -7,7 +7,9 @@
 #include <QString>
 #include "mainwindowinterface.h"
 #include <QTimer>
+#ifdef OS_SAILFISH
 #include <QBluetoothHostInfo>
+#endif
 #include "bluetoothdevicelabel.h"
 #include "bluetoothclient.h"
 #include "bluetoothserver.h"

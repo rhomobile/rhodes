@@ -104,8 +104,7 @@ void CSystemImpl::getIsEmulator(CMethodResult& oResult)
 
 #ifdef OS_WINDOWS_DESKTOP
     oResult.set(false);
-#else
-#ifdef OS_SAILFISH
+#elif OS_SAILFISH
     oResult.set(false);
 #else
 	TCHAR buf[255];
