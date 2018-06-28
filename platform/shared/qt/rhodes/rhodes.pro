@@ -1,4 +1,4 @@
-QT += core gui network
+QT += core gui network bluetooth
 
 message(Qt version: $$[QT_VERSION])
 isEqual(QT_MAJOR_VERSION, 5):{

@@ -3,16 +3,16 @@
 
 
 #include <QObject>
-#include <QtDBus/QDBusInterface>
-#include <QString>
-#include "mainwindowinterface.h"
-#include <QTimer>
 #ifdef OS_SAILFISH
-#include <QBluetoothHostInfo>
+#include <QtDBus/QDBusInterface>
 #endif
 #include "bluetoothdevicelabel.h"
 #include "bluetoothclient.h"
 #include "bluetoothserver.h"
+#include <QString>
+#include "mainwindowinterface.h"
+#include <QTimer>
+#include <QBluetoothHostInfo>
 #include <QQmlContext>
 #include <QQuickView>
 #include <QTime>
@@ -112,12 +112,15 @@ public slots:
 
     void setWorking(bool enable){
         qDebug() << "Set working " + QString::number(enable);
+        #ifdef OS_SAILFISH
         QDBusInterface bluetoothInterface("net.connman", "/net/connman/technology/bluetooth",
                                           "net.connman.Technology", QDBusConnection::systemBus(), this);
         bluetoothInterface.call("SetProperty", "Powered", QVariant::fromValue(QDBusVariant(enable)));
+        #endif
     }
 
     void setVisible(bool visible, quint32 timerInMs = 0){
+        #ifdef OS_SAILFISH
         QDBusInterface adapterListInterface("org.bluez", "/", "org.bluez.Manager", QDBusConnection::systemBus(), this);
         QVariant adapterPath = adapterListInterface.call("DefaultAdapter").arguments().at(0);
 
@@ -125,6 +128,7 @@ public slots:
           "org.bluez.Adapter", QDBusConnection::systemBus(), this);
         bluetoothAdapter.call("SetProperty", "DiscoverableTimeout", QVariant::fromValue(QDBusVariant(timerInMs)));
         bluetoothAdapter.call("SetProperty", "Discoverable", QVariant::fromValue(QDBusVariant(visible)));
+        #endif
     }
 
     void openDeviceDiscover(QString callbackUrl){

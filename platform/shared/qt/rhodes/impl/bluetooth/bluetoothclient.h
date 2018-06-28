@@ -7,18 +7,21 @@
 #include <QtBluetooth/QBluetoothServiceInfo>
 #include <QtBluetooth/QBluetoothDeviceDiscoveryAgent>
 #include <QtBluetooth/QBluetoothSocket>
+#ifdef OS_SAILFISH
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusVariant>
+#endif
 #include "bluetoothsender.h"
 
 class BluetoothClient : public BluetoothSender {
     Q_OBJECT
 public:
     explicit BluetoothClient(QBluetoothDeviceInfo & info, QString name, QString callback, QObject *parent) : BluetoothSender(info, callback, parent)  {
+        #ifdef OS_SAILFISH
         QDBusInterface bluetoothInterface("net.connman", "/net/connman/technology/bluetooth",
                                           "net.connman.Technology", QDBusConnection::systemBus(), this);
         bluetoothInterface.call("SetProperty", "Powered", QVariant::fromValue(QDBusVariant(true)));
-        //setName(info.name());
+        #endif
         setName(name);
         qDebug() << "Client addreass " + info.address().toString();
         discoveryAgent = new QBluetoothDeviceDiscoveryAgent(localDevice.address(), this);

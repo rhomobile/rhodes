@@ -5,7 +5,9 @@
 #include <QtBluetooth/QBluetoothServer>
 #include <QtBluetooth/QBluetoothLocalDevice>
 #include <QtBluetooth/QBluetoothServiceInfo>
+#ifdef OS_SAILFISH
 #include <QtDBus/QDBusInterface>
+#endif
 #include <QtBluetooth/QBluetoothDeviceInfo>
 #include "bluetoothsender.h"
 class BluetoothServer : public BluetoothSender {
@@ -14,9 +16,11 @@ public:
     explicit BluetoothServer(QBluetoothDeviceInfo &info, QString callback, QObject *parent = 0) :
         BluetoothSender(info, callback, parent) {
         bluetoothServer = nullptr;
+#ifdef OS_SAILFISH
         QDBusInterface bluetoothInterface("net.connman", "/net/connman/technology/bluetooth",
                                           "net.connman.Technology", QDBusConnection::systemBus(), this);
         bluetoothInterface.call("SetProperty", "Powered", QVariant::fromValue(QDBusVariant(true)));
+#endif
 
         startServer();
     }
