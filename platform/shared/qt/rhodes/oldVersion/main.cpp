@@ -24,7 +24,6 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#include <QtQuick>
 #include <string>
 #include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
@@ -277,7 +276,7 @@ int main(int argc, char *argv[])
     m_appWindow->DestroyUi();
     rho::common::CRhodesApp::Destroy();
 
-    return SailfishApp::main(argc, argv);
+    return 0;
 }
 
 #ifdef OS_SYMBIAN

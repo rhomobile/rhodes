@@ -443,7 +443,6 @@ dladdr_path(const void* addr)
 void
 ruby_init_loadpath_safe(int safe_level, const char* szRoot)
 {
-
     VALUE load_path;
     ID id_initial_load_path_mark;
     const char *paths = ruby_initial_load_paths;
@@ -570,11 +569,9 @@ ruby_init_loadpath_safe(int safe_level, const char* szRoot)
     while (*paths) {
         size_t len = strlen(paths);
         VALUE path = RUBY_RELATIVE(paths, len);
-
         rb_ivar_set(path, id_initial_load_path_mark, path);
         rb_ary_push(load_path, path);
         RAWLOGC_INFO("RUBY PATHS: " ,RSTRING_PTR(path));
-
         paths += len + 1;
     }
 
