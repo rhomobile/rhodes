@@ -171,6 +171,7 @@ Take a fresh clean installation of Mac OS X with all available Software Updates 
    - redis-namespace
    - resque
    - rest-client
+   - net-ssh
    - rhoconnect
    - rhoconnect-adapters
    - rhodes

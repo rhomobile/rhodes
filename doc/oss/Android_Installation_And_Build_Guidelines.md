@@ -24,6 +24,7 @@
 		- ```gem install listen --version 3.0.6```			<i>- Must be installed</i>
 		- ```gem install templater``` 		<i>- Must be installed</i>
 		- ```gem install uuid```			<i>- Must be installed</i>
+		- ```gem install net-ssh```			<i>- Must be installed</i>
 		- ```gem install CFPropertyList```	<i>- Install only if required and not present</i>
 		- ```gem install rubyzip``` <i>- Install only if required and not present</i>
 		- ```gem install rhomobile-debug``` <i>- Install only if required and not present</i>
