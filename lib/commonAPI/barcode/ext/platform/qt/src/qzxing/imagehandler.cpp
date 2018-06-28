@@ -2,9 +2,7 @@
 #include <QGraphicsObject>
 #include <QImage>
 #include <QPainter>
-
 #include <QStyleOptionGraphicsItem>
-
 #include <QDebug>
 
 ImageHandler::ImageHandler(QObject *parent) :
@@ -26,7 +24,6 @@ QImage ImageHandler::extractQImage(QObject *imageObj,
     QImage img(item->boundingRect().size().toSize(), QImage::Format_RGB32);
     img.fill(QColor(255, 255, 255).rgb());
     QPainter painter(&img);
-
     QStyleOptionGraphicsItem styleOption;
     item->paint(&painter, &styleOption);
 
