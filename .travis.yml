@@ -11,7 +11,7 @@ install:
 - gem install rest-client --no-document
 - gem install listen --no-document
 - gem install zip --no-document
-- gem install net-ssh --no-document
+- gem install net-scp --no-document
 
 script:
 - cd $TRAVIS_BUILD_DIR

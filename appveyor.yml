@@ -113,7 +113,7 @@ install:
   - gem install rest-client --no-document -f
   - gem install listen --no-document -f
   - gem install zip --no-document -f
-  - gem install net-ssh --no-document -f
+  - gem install net-scp --no-document -f
 #  - gem install bundler --quiet --no-ri --no-rdoc -f
 #  - bundler --version
   
