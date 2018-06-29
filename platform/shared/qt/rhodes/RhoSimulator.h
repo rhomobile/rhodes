@@ -31,8 +31,8 @@
 
 #define RHOSIMULATOR_NAME "RhoSimulator"
 
-#ifndef RHO_SYMBIAN
-//#include "RhoSimulatorVersion.h"
+#ifndef OS_SAILFISH
+#include "RhoSimulatorVersion.h"
 #endif // RHO_SYMBIAN
 
 #if defined(RHODES_EMULATOR)

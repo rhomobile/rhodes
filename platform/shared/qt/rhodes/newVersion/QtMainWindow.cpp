@@ -927,7 +927,8 @@ void QtMainWindow::on_actionAbout_triggered()
 #ifdef RHODES_EMULATOR
     QMessageBox::about(this,
        RHOSIMULATOR_NAME,
-       QString(RHOSIMULATOR_NAME + " v" + RHOSIMULATOR_VERSION + "\n(QtWebEngine v" + QTWEBENGINECORE_VERSION_STR + ")\n(WebKit v%1) \nPlatform : %2 %3")
+       QString(QString(RHOSIMULATOR_NAME) + " v" +
+               QString(RHOSIMULATOR_VERSION) + "\n(QtWebEngine v" + QString(QTWEBENGINECORE_VERSION_STR) + ")\n(WebKit v%1) \nPlatform : %2 %3")
        .arg(QTWEBENGINECORE_VERSION_STR)
        .arg(RHOSIMCONF().getString("platform").c_str())
        .arg(OSDetails)
