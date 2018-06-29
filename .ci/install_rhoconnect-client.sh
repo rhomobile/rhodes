@@ -10,7 +10,7 @@ else
 	BRANCH=$TRAVIS_BRANCH
 fi
 
-git clone -b $BRANCH https://github.com/rhomobile/rhoconnect-client.git $HOME/rhoconnect-client
+git clone https://github.com/rhomobile/rhoconnect-client.git $HOME/rhoconnect-client
 cd $HOME/rhoconnect-client
 rake gem:make_gem
 gem install ./rhoconnect-client-$(cat ./version).gem --no-document
