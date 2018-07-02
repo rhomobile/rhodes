@@ -147,6 +147,7 @@ public:
 #endif
   
 private:
+    CHttpServer(){}
     bool init();
     void close_listener();
     bool process(SOCKET sock);
