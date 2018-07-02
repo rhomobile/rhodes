@@ -26,7 +26,6 @@
 
 #include "RhoLog.h"
 
-
 using namespace rho;
 
 extern "C"{

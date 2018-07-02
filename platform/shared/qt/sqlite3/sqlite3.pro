@@ -4,7 +4,6 @@ greaterThan(QT_MINOR_VERSION, 6): {
     DEFINES += RHODES_VERSION_2
 }
 
-
 equals(QT_MAJOR_VERSION, 5) {
     equals(QT_MINOR_VERSION, 6) {
         DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
@@ -25,7 +24,6 @@ INCLUDEPATH += ../..
 macx {
   DESTDIR = ../../../osx/bin/sqlite3
   OBJECTS_DIR = ../../../osx/bin/sqlite3/tmp
-  SOURCES += ../../sqlite/sqlite3.c
 }
 
 win32 {
@@ -43,7 +41,6 @@ win32 {
 unix:!macx {
   DESTDIR = ../../../linux/bin/sqlite3
   OBJECTS_DIR = ../../../linux/bin/sqlite3/tmp
-  SOURCES += ../../sqlite/sqlite3.c
 
   QMAKE_CFLAGS += -fvisibility=hidden
   QMAKE_CXXFLAGS += -fvisibility=hidden
