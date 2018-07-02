@@ -107,6 +107,7 @@ void CSystemImpl::getIsEmulator(CMethodResult& oResult)
 #elif OS_SAILFISH
     oResult.set(false);
 #else
+
 	TCHAR buf[255];
 	SystemParametersInfo(SPI_GETOEMINFO, 255, &buf, NULL);
 	bool bEmulator = (wcsnicmp(buf, _T("Microsoft DeviceEmulator"), 24)==0);
