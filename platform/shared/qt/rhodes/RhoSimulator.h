@@ -36,11 +36,7 @@
 #endif // RHO_SYMBIAN
 
 #if defined(RHODES_EMULATOR)
-#ifdef RHODES_MAC_BUILD
 #define RHO_PLATFORM_NAME_AT "in RhoSimulator"
-#else
-#define RHO_PLATFORM_NAME_AT "in "RHOSIMULATOR_NAME
-#endif
 #elif defined(OS_WINDOWS_DESKTOP)
 #define RHO_PLATFORM_NAME_AT "on Win32"
 #elif defined(OS_SAILFISH)

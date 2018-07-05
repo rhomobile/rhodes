@@ -51,7 +51,8 @@ HEADERS += <%= @rhoRoot %>/platform/shared/json/arraylist.h\
 <%= @rhoRoot %>/platform/shared/db/DBAttrManager.h\
 <%= @rhoRoot %>/platform/shared/db/DBImportTransaction.h\
 <%= @rhoRoot %>/platform/shared/db/DBRequestHelper.h\
-<%= @rhoRoot %>/platform/shared/db/DBResult.h
+<%= @rhoRoot %>/platform/shared/db/DBResult.h\
+<%= @rhoRoot %>/platform/shared/db/DBLock.h
 
 SOURCES += <%= @rhoRoot %>/platform/shared/json/arraylist.c\
 <%= @rhoRoot %>/platform/shared/json/json_debug.c\
@@ -67,4 +68,5 @@ SOURCES += <%= @rhoRoot %>/platform/shared/json/arraylist.c\
 <%= @rhoRoot %>/platform/shared/db/DBAttrManager.cpp\
 <%= @rhoRoot %>/platform/shared/db/DBImportTransaction.cpp\
 <%= @rhoRoot %>/platform/shared/db/DBRequestHelper.cpp\
-<%= @rhoRoot %>/platform/shared/db/DBResult.cpp
+<%= @rhoRoot %>/platform/shared/db/DBResult.cpp\
+<%= @rhoRoot %>/platform/shared/db/DBLock.cpp

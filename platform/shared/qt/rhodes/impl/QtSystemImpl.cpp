@@ -66,7 +66,7 @@ const char* rho_sys_qt_getWebviewFramework()
     if (qt_webview_framework[0] == '\0') {
 
         #if defined(RHODES_VERSION_1) || (defined(OS_SAILFISH) && !defined(ENABLE_Q_WEB_ENGINE))
-        const QByteArray ver = QString("WEBKIT/").append(qWebKitVersion()).toLatin1();
+        const QByteArray ver = QString("WEBKIT").toLatin1();
         #endif
 
         #if defined(RHODES_VERSION_2) || (defined(OS_SAILFISH) && defined(ENABLE_Q_WEB_ENGINE))
