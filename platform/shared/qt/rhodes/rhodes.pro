@@ -67,8 +67,8 @@ macx {
   UI_DIR = ../../../osx/bin/RhoSimulator/generated_files
   OBJECTS_DIR = ../../../osx/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../osx/bin/RhoSimulator/resources
-  HEADERS +=
-  SOURCES +=\
+  HEADERS += impl/SSLImpl.h
+  SOURCES += impl/SSLImpl.cpp\
 ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
   LIBS += -lz -lldap
   LIBS += -L../../../osx/bin/curl -lcurl
@@ -136,8 +136,6 @@ oldnames.lib wininet.lib Iphlpapi.lib Dbghelp.lib ws2_32.lib Crypt32.lib gdiplus
 unix:!macx {
 !contains(DEFINES, OS_SAILFISH) {
   DESTDIR = $$PWD/../../../linux/bin/RhoSimulator
-  HEADERS += impl/SSLImpl.h
-  SOURCES += impl/SSLImpl.cpp
 }
 contains(DEFINES, OS_SAILFISH) {
   #DESTDIR = $$PWD/../Build_Sailfish_Application
