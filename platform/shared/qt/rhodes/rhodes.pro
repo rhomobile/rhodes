@@ -136,6 +136,8 @@ oldnames.lib wininet.lib Iphlpapi.lib Dbghelp.lib ws2_32.lib Crypt32.lib gdiplus
 unix:!macx {
 !contains(DEFINES, OS_SAILFISH) {
   DESTDIR = $$PWD/../../../linux/bin/RhoSimulator
+  HEADERS += impl/SSLImpl.h
+  SOURCES += impl/SSLImpl.cpp
 }
 contains(DEFINES, OS_SAILFISH) {
   #DESTDIR = $$PWD/../Build_Sailfish_Application
@@ -273,7 +275,6 @@ oldVersion/qtscrollevent_p.h\
 oldVersion/QtNativeTabBar.h\
 oldVersion/QtWebPage.h\
 oldVersion/DateTimeDialog.h\
-
 oldVersion/RhoNativeApiCall.h
 
 SOURCES += oldVersion/main.cpp\
@@ -295,7 +296,6 @@ FORMS += oldVersion/ExternalWebView.ui\
 oldVersion/QtMainWindow.ui\
 oldVersion/QtWebInspector.ui\
 oldVersion/DateTimeDialog.ui
-
 }
 
 contains(DEFINES, RHODES_VERSION_2) {
@@ -309,7 +309,6 @@ newVersion/ExternalWebView.h\
 newVersion/QWebEngineViewSelectionSuppressor.h\
 newVersion/DateTimeDialog.h \
 newVersion/WebUrlRequestInterceptor.h
-
 
 SOURCES += newVersion/QtMainWindow.cpp\
 newVersion/RhoNativeApiCall.cpp\
