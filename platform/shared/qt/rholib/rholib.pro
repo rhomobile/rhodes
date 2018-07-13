@@ -48,8 +48,13 @@ win32 {
   }
   INCLUDEPATH += ../../../win32/include
   HEADERS += ../../rubyext/WebView.h
-  QMAKE_CXXFLAGS_RELEASE += -MP9
-  QMAKE_CXXFLAGS_DEBUG += -MP9
+
+    QMAKE_CXXFLAGS_RELEASE += /MP9 /O2
+    QMAKE_CXXFLAGS_DEBUG += /MP9 /O2
+
+    QMAKE_CFLAGS_RELEASE += /O2 /MD
+    QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO += /O2
+    QMAKE_CFLAGS_DEBUG += /Zi /MDd
 }
 
 unix:!macx {

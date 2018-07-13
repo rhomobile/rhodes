@@ -125,8 +125,13 @@ DEFINES += RHODES_QT_PLATFORM
   # incompatible with gcc 4.2 / Xcode 4: -Wself-assign
 }
 win32 {
-  QMAKE_CFLAGS_WARN_ON += /wd4244 /wd4133 /wd4996 /wd4554 /wd4018 /wd4101 /wd4005 /wd4146 /wd4047 /wd4100 /wd4189 /wd4646 /wd4645
-  QMAKE_CFLAGS_RELEASE += /O2
+    QMAKE_CFLAGS_WARN_ON += /wd4244 /wd4133 /wd4996 /wd4554 /wd4018 /wd4101 /wd4005 /wd4146 /wd4047 /wd4100 /wd4189 /wd4646 /wd4645
+    QMAKE_CXXFLAGS_RELEASE += /MP9 /O2
+    QMAKE_CXXFLAGS_DEBUG += /MP9 /O2
+
+    QMAKE_CFLAGS_RELEASE += /O2 /MD
+    QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO += /O2
+    QMAKE_CFLAGS_DEBUG += /Zi /MDd
 }
 
 HEADERS += ../../ruby/ext/rho/rhoruby.h\
