@@ -61,9 +61,9 @@ android:
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository    
-  - build-tools-22.0.1
-  - android-${RHO_ANDROID_LEVEL:-19}
-  - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
+  - build-tools-26.0.2
+  - android-${RHO_ANDROID_LEVEL:-26}
+  - addon-google_apis-google-${RHO_ANDROID_LEVEL:-26}
 
 env:
   global:
