@@ -449,6 +449,10 @@ namespace "config" do
 
       android_api_levels = AndroidTools.get_installed_api_levels
       android_api_levels.sort!
+
+      puts "Installed versions: "
+      puts AndroidTools.get_installed_market_versions
+      
       $found_api_level = android_api_levels.last
 
       #If user has mentioned version under android, then select that particular api level.
