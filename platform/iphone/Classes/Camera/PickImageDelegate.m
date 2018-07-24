@@ -170,8 +170,10 @@
     UIImage* img = theImage;
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:folder])
-        [fileManager createDirectoryAtPath:folder attributes:nil];
+    if (![fileManager fileExistsAtPath:folder]) {
+        NSError* error;
+        [fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error];
+    }
 
     NSString *now = [[[NSDate date] descriptionWithLocale:nil]
              stringByReplacingOccurrencesOfString: @":" withString: @"."];
@@ -485,7 +487,7 @@
         [self sendCancelCallback];
     }
     // Remove the picker interface and release the picker object. 
-    [picker dismissModalViewControllerAnimated:YES];
+    [picker dismissViewControllerAnimated:YES completion:nil];
     [picker.view removeFromSuperview];
 	//picker.view.hidden = YES;
     [picker release];
@@ -508,7 +510,7 @@
     //it (along with the crop rectangle) from the dictionary in the editingInfo parameter. 
     [self useImage:image]; 
     // Remove the picker interface and release the picker object. 
-    [picker dismissModalViewControllerAnimated:YES];
+    [picker dismissViewControllerAnimated:YES completion:nil];
     [picker.view removeFromSuperview];
 	//picker.view.hidden = YES;
     [picker release];
@@ -524,7 +526,7 @@
     [self sendCancelCallback];
     
     // Remove the picker interface and release the picker object. 
-    [picker dismissModalViewControllerAnimated:YES]; 
+    [picker dismissViewControllerAnimated:YES completion:nil]; 
     [picker.view removeFromSuperview];
 	//picker.view.hidden = YES;
     [picker release]; 

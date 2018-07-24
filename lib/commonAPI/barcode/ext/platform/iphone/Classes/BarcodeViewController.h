@@ -54,10 +54,42 @@
 //#import "RhoMainView.h"
 //#import "RhoViewController.h"
 //#import "ZBarSDK/Headers/ZBarSDK/ZBarSDK.h"
-#import "ZBarSDK.h"
+
 #import "api_generator/iphone/IMethodResult.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import "common/barcode_engine.h"
 
+//#define ZXING 1
+
+#ifndef ZXING
+#import "ZBarSDK.h"
+#else
+#import "ZXingObjC.h"
+#endif
+
+
+
+#ifdef ZXING
+@interface BarcodeViewController : UIViewController <ZXCaptureDelegate> {
+    UITextView *resultText;
+    NSString* callback_url;
+    id<IMethodResult> methodResult;
+    
+    ZXCapture *capture;
+    NSTimer*  timer_;
+
+    UIView *signatureView; 
+	UIToolbar *toolbar;
+
+    SystemSoundID mBeep;
+
+    CGAffineTransform _captureSizeTransform;
+    CAShapeLayer* boundLayer;
+}
+
+@property (nonatomic, strong) ZXCapture *capture;
+
+#else
 
 @interface BarcodeViewController : UIViewController <ZBarReaderViewDelegate> {
 	UIView *signatureView; 
@@ -77,6 +109,7 @@
 @property (nonatomic, retain) ZBarReaderView *readerView;
 @property (nonatomic, retain) UITextView *resultText;
 @property (nonatomic, retain) NSString* callback_url;
+#endif
 
 
 +(void)createBarcodeView:(NSObject*)callback;

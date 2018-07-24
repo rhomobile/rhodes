@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+project(rhodb)      
+
+add_definitions(-DOS_ANDROID)
+
+set(SOURCE_LIB
+<%= @rhoRoot %>/platform/shared/db/DBAdapter.cpp
+<%= @rhoRoot %>/platform/shared/db/DBAttrManager.cpp
+<%= @rhoRoot %>/platform/shared/db/DBResult.cpp
+<%= @rhoRoot %>/platform/shared/db/DBImportTransaction.cpp
+<%= @rhoRoot %>/platform/shared/db/DBRequestHelper.cpp
+<%= @rhoRoot %>/platform/shared/db/DBLock.cpp
+)
+
+include_directories(<%= @rhoRoot %>/platform/shared/db)
+include_directories(<%= @rhoRoot %>/platform/shared/ruby/include)
+include_directories(<%= @rhoRoot %>/platform/shared/ruby/android)
+include_directories(<%= @rhoRoot %>/platform/shared)
+include_directories(<%= @rhoRoot %>/platform/shared/sqlite)
+
+add_library(rhodb STATIC ${SOURCE_LIB})
+

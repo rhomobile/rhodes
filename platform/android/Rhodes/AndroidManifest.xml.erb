@@ -26,7 +26,8 @@
   <application android:name='com.rhomobile.rhodes.RhodesApplication'
                android:label='@string/app_name'
                android:icon='@mipmap/icon'
-               android:debuggable='<%= @debuggable %>'>
+               android:debuggable='<%= @debuggable %>'
+               android:allowBackup='<%= @allowBackup %>'>
 
     <!-- Uses libraries -->
     <% @usesLibraries.each do |name, isrequired| %>
@@ -58,7 +59,7 @@
     <activity android:name='com.rhomobile.rhodes.mapview.MapView' android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.bluetooth.RhoBluetoothDeviceListActivity' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <activity android:name='com.rhomobile.rhodes.ui.LogViewDialog'  android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
-    <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='true'/>
+    <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='false'/>
 
     <provider android:name='com.rhomobile.rhodes.LocalFileProvider' android:authorities='<%=@appPackageName%>' android:grantUriPermissions='false'>
       <grant-uri-permission android:pathPrefix='/rhodes/apps/'/>

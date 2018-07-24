@@ -1,16 +1,16 @@
 QT += core gui network
 
 message(Qt version: $$[QT_VERSION])
-greaterThan(QT_MAJOR_VERSION, 4):{
+isEqual(QT_MAJOR_VERSION, 5):{
     QT += multimedia multimediawidgets
 
-    lessThan(QT_VERSION, 5.6.0): {
+    lessThan(QT_MINOR_VERSION, 6): {
         QT += webkit widgets webkitwidgets
         message(Deprecated webkit enabled)
         DEFINES += RHODES_VERSION_1
         INCLUDEPATH += oldVersion
     }
-    greaterThan(QT_VERSION, 5.6.0): {
+    greaterThan(QT_MINOR_VERSION, 6): {
         QT += webengine webenginecore webenginewidgets
         message(Webengine enabled)
         CONFIG += c++14
@@ -30,7 +30,7 @@ INCLUDEPATH += ../..\
 ../../ruby/include
 
 macx {
-  greaterThan(QT_VERSION, 5.6.0): {
+  greaterThan(QT_MINOR_VERSION, 6): {
       DEFINES += RHODES_MAC_BUILD
   }
   ICON = resources/rho.icns
@@ -49,8 +49,8 @@ macx {
   LIBS += -L../../../osx/bin/rholib -lrholib
   LIBS += -L../../../osx/bin/sqlite3 -lsqlite3
   LIBS += -L../../../osx/bin/syncengine -lsyncengine
-  LIBS += -L/Users/MOHUS/tauplatform/openssl-1.0.2 -lcrypto
-  LIBS += -L/Users/MOHUS/tauplatform/openssl-1.0.2 -lssl
+  LIBS += -L../../../../../openssl/libopenssl_macosx -lcrypto
+  LIBS += -L../../../../../openssl/libopenssl_macosx -lssl
   LIBS += -framework CoreFoundation
   PRE_TARGETDEPS += ../../../osx/bin/rubylib/librubylib.a\
 ../../../osx/bin/rholib/librholib.a\
@@ -62,7 +62,7 @@ macx {
 }
 
 win32 {
-  greaterThan(QT_VERSION, 5.6.0): {
+  greaterThan(QT_MINOR_VERSION, 6): {
       DEFINES += CPP_ELEVEN
   }
   CONFIG += embed_manifest_exe
@@ -74,15 +74,16 @@ win32 {
   RCC_DIR =  ../../../win32/bin/RhoSimulator/resources
   RC_FILE = resources/simulator.rc
   HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
-../../../wm/rhodes/stdafx.h
+    ../../../wm/rhodes/stdafx.h\
+    newVersion/AppRunningFlag.h
   SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp\
-../../../wm/rhodes/rho/rubyext/SystemImpl.cpp\
-../../../wm/rhodes/rho/common/ExtManager.cpp
+    ../../../wm/rhodes/rho/rubyext/SystemImpl.cpp\
+    ../../../wm/rhodes/rho/common/ExtManager.cpp
   RESOURCES += resources/simulator.qrc
   INCLUDEPATH += ../../../wm/rhodes\
-../../wtl80/include
+    ../../wtl80/include
   DEFINES -= _UNICODE
-  DEFINES += WIN32 _WINDOWS UNICODE QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS
+  DEFINES += WIN32 _WINDOWS UNICODE QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS WIN32_LEAN_AND_MEAN
 
   Debug {
     DEFINES += _DEBUG DEBUG
@@ -139,8 +140,12 @@ DEFINES += RHODES_QT_PLATFORM
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
   QMAKE_CXXFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
-  QMAKE_CFLAGS_RELEASE += /O2
-  QMAKE_CXXFLAGS_RELEASE += /O2
+    QMAKE_CXXFLAGS_RELEASE += /MP9 /O2
+    QMAKE_CXXFLAGS_DEBUG += /MP9 /O2
+
+    QMAKE_CFLAGS_RELEASE += /O2 /MD
+    QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO += /O2
+    QMAKE_CFLAGS_DEBUG += /Zi /MDd
 }
 
 HEADERS += impl/RhoClassFactoryImpl.h\
@@ -158,7 +163,8 @@ QtLogView.h \
 QtCustomStyle.h\
 mainwindowinterface.h \
 guithreadfunchelper.h \
-    impl/notificationsound.h
+impl/notificationsound.h
+
 
 
 SOURCES += impl/AlertImpl.cpp\

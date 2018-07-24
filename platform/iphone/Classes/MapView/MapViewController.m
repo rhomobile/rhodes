@@ -117,7 +117,7 @@ static MapViewController *mc = nil;
 }
 
 - (void)close {
-    [self dismissModalViewControllerAnimated:YES]; 
+    [self dismissViewControllerAnimated:YES completion:nil];
     
 	UIWindow *window = [[Rhodes sharedInstance] rootWindow];
 
@@ -435,7 +435,7 @@ static MapViewController *mc = nil;
     RAWLOG_INFO1("Callout tapped... Url = %s\n", [url UTF8String]);
     id<RhoMainView> mainView = [[Rhodes sharedInstance] mainView];
     [mainView navigateRedirect:url tab:[mainView activeTab]];
-    [self dismissModalViewControllerAnimated:YES]; 
+    [self dismissViewControllerAnimated:YES completion:nil]; 
     [self close];
 	//mc = nil;
     //self.view.hidden = YES;

@@ -30,6 +30,10 @@
 #include <QThread>
 #include "common/IRhoThreadImpl.h"
 #include "logging/RhoLog.h"
+#include <QSharedPointer>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QTimer>
 
 namespace rho{
 namespace common{
@@ -48,22 +52,38 @@ public:
     virtual void sleep(unsigned int nTimeout);
 private:
     void setThreadPriority(IRhoRunnable::EPriority ePriority);
+    rho::String threadId;
 private:
-    class QRhoThread: public QThread
+    class QtThread: public QThread
     {
     public:
-        QRhoThread(IRhoRunnable* pRunnable): QThread(), m_Runnable(pRunnable) {}
+        QtThread():QThread(){}
+        virtual ~QtThread(){
+            if (isRunning()){
+                quit();
+            }
+            if (isRunning()){
+                terminate();
+            }
+        }
+    };
+
+
+    class QRhoThread: public QtThread
+    {
+    public:
+        QRhoThread(IRhoRunnable* pRunnable): QtThread(), m_Runnable(pRunnable) {}
         void run() { m_Runnable->runObject(); }
-        static void sleep(unsigned long timeout) { QThread::sleep(timeout); }
+        static void sleep(unsigned long timeout) { QtThread::sleep(timeout); }
     private:
         IRhoRunnable* m_Runnable;
     };
+
     QRhoThread* m_Thread;
-    QThread* m_waitThread;
-    #if defined(OS_WINDOWS_DESKTOP)
-	CRITICAL_SECTION gCS;
-	CRITICAL_SECTION gCSstopwait;
-    #endif
+    QSharedPointer<QtThread> m_waitThread;
+    QMutex mutex;
+    QMutex mutexWaiter;
+
 };
 
 }

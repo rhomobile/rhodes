@@ -1,0 +1,10 @@
+//
+// Prefix header for all source files of the 'ZXingObjC' target in the 'ZXingObjC' project
+//
+
+#ifdef __OBJC__
+  #import <Foundation/Foundation.h>
+  #import <XCTest/XCTest.h>
+
+  #import "ZXingObjC.h"
+#endif

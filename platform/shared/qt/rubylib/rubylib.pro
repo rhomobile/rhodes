@@ -1,16 +1,16 @@
 QT -= core
-    greaterThan(QT_VERSION, 5.6.0): {
-        CONFIG += c++14
-        DEFINES += RHODES_VERSION_2
-        QMAKE_CXXFLAGS += -nologo -DNT=1 -ML -Zi -O2b2x -G5
-        LIBS += -lmsvcrt.lib
-        LIBS += -lvcruntime.lib
-        LIBS += -lucrt.lib
-    }
+greaterThan(QT_MINOR_VERSION, 6): {
+    CONFIG += c++14
+    DEFINES += RHODES_VERSION_2
+    QMAKE_CXXFLAGS += -nologo -DNT=1 -ML -Zi -O2b2x -G5
+    LIBS += -lmsvcrt.lib
+    LIBS += -lvcruntime.lib
+    LIBS += -lucrt.lib
+}
 
-    lessThan(QT_VERSION, 5.6.0): {
-        DEFINES += RHODES_VERSION_1
-    }
+lessThan(QT_MINOR_VERSION, 6): {
+    DEFINES += RHODES_VERSION_1
+}
 TARGET = rubylib
 TEMPLATE = lib
 
@@ -22,7 +22,7 @@ INCLUDEPATH += ../../ruby/include\
 ../..
 
 macx {
-  greaterThan(QT_VERSION, 5.6.0): {
+  greaterThan(QT_MINOR_VERSION, 6): {
       DEFINES += RHODES_MAC_BUILD
       DEFINES += CPP_ELEVEN
   }
@@ -42,14 +42,14 @@ macx {
 }
 
 win32 {
-  greaterThan(QT_VERSION, 5.6.0): {
+  greaterThan(QT_MINOR_VERSION, 6): {
       DEFINES += CPP_ELEVEN
   }
   DESTDIR = ../../../win32/bin/rubylib
   OBJECTS_DIR = ../../../win32/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/win32
   DEFINES -= _UNICODE UNICODE
-  DEFINES += _WIN32 WIN32 _WINDOWS _LIB BUFSIZ=512 STATIC_LINKED RUBY_EXPORT
+  DEFINES += _WIN32 WIN32 _WINDOWS _LIB BUFSIZ=512 STATIC_LINKED RUBY_EXPORT WIN32_LEAN_AND_MEAN
   Debug {
     DEFINES += _DEBUG DEBUG
   }
@@ -125,8 +125,13 @@ DEFINES += RHODES_QT_PLATFORM
   # incompatible with gcc 4.2 / Xcode 4: -Wself-assign
 }
 win32 {
-  QMAKE_CFLAGS_WARN_ON += /wd4244 /wd4133 /wd4996 /wd4554 /wd4018 /wd4101 /wd4005 /wd4146 /wd4047 /wd4100 /wd4189 /wd4646 /wd4645
-  QMAKE_CFLAGS_RELEASE += /O2
+    QMAKE_CFLAGS_WARN_ON += /wd4244 /wd4133 /wd4996 /wd4554 /wd4018 /wd4101 /wd4005 /wd4146 /wd4047 /wd4100 /wd4189 /wd4646 /wd4645
+    QMAKE_CXXFLAGS_RELEASE += /MP9 /O2
+    QMAKE_CXXFLAGS_DEBUG += /MP9 /O2
+
+    QMAKE_CFLAGS_RELEASE += /O2 /MD
+    QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO += /O2
+    QMAKE_CFLAGS_DEBUG += /Zi /MDd
 }
 
 HEADERS += ../../ruby/ext/rho/rhoruby.h\
@@ -172,6 +177,8 @@ SOURCES += \
 ../../ruby/enc/utf_32le.c \
 ../../ruby/enc/euc_jp.c \
 ../../ruby/enc/windows_31j.c \
+../../ruby/enc/trans/single_byte.c \
+../../ruby/enc/trans/utf_16_32.c \
 ../../ruby/enum.c \
 ../../ruby/enumerator.c \
 ../../ruby/error.c \

@@ -1,0 +1,70 @@
+cmake_minimum_required(VERSION 3.4.1)
+
+project(rhocommon)      
+
+add_definitions(-DOS_ANDROID)
+
+set(SOURCE_LIB
+<%= @rhoRoot %>/platform/shared/common/app_build_configs.c
+<%= @rhoRoot %>/platform/shared/common/AppMenu.cpp
+<%= @rhoRoot %>/platform/shared/common/AppMenu.cpp
+<%= @rhoRoot %>/platform/shared/common/map/BaseMapEngine.cpp
+<%= @rhoRoot %>/platform/shared/common/map/GeocodingMapEngine.cpp
+<%= @rhoRoot %>/platform/shared/common/map/ESRIMapEngine.cpp
+<%= @rhoRoot %>/platform/shared/common/map/GoogleMapEngine.cpp
+<%= @rhoRoot %>/platform/shared/common/map/OSMMapEngine.cpp
+<%= @rhoRoot %>/platform/shared/common/map/MapEngine.cpp
+<%= @rhoRoot %>/platform/shared/common/push/RhoPushManager.cpp
+<%= @rhoRoot %>/platform/shared/common/PosixThreadImpl.cpp
+<%= @rhoRoot %>/platform/shared/common/RhoConf.cpp
+<%= @rhoRoot %>/platform/shared/common/RhoFile.cpp
+<%= @rhoRoot %>/platform/shared/common/RhoMath.cpp
+<%= @rhoRoot %>/platform/shared/common/rhoparams.cpp
+<%= @rhoRoot %>/platform/shared/common/RhoThread.cpp
+<%= @rhoRoot %>/platform/shared/common/SplashScreen.cpp
+<%= @rhoRoot %>/platform/shared/common/ThreadQueue.cpp
+<%= @rhoRoot %>/platform/shared/common/Tokenizer.cpp
+<%= @rhoRoot %>/platform/shared/common/RhoTime.cpp
+<%= @rhoRoot %>/platform/shared/common/BundleManager.cpp
+<%= @rhoRoot %>/platform/shared/net/CURLNetRequest.cpp
+<%= @rhoRoot %>/platform/shared/net/HttpServer.cpp
+<%= @rhoRoot %>/platform/shared/net/ssl.cpp
+<%= @rhoRoot %>/platform/shared/net/URI.cpp
+<%= @rhoRoot %>/platform/shared/net/INetRequest.cpp
+<%= @rhoRoot %>/platform/shared/rubyext/GeoLocation.cpp
+<%= @rhoRoot %>/platform/shared/rubyext/RhoAppAdapter.cpp
+<%= @rhoRoot %>/platform/shared/rubyext/System.cpp
+<%= @rhoRoot %>/platform/shared/statistic/RhoProfiler.cpp
+<%= @rhoRoot %>/platform/shared/unzip/unzip.cpp
+<%= @rhoRoot %>/platform/shared/unzip/zip.cpp
+<%= @rhoRoot %>/platform/shared/unzip/zutil.cpp
+<%= @rhoRoot %>/platform/shared/unzip/adler32.cpp
+<%= @rhoRoot %>/platform/shared/unzip/crc32.cpp
+<%= @rhoRoot %>/platform/shared/unzip/inftrees.cpp
+<%= @rhoRoot %>/platform/shared/unzip/infback.cpp
+<%= @rhoRoot %>/platform/shared/unzip/inffast.cpp
+<%= @rhoRoot %>/platform/shared/unzip/trees.cpp
+<%= @rhoRoot %>/platform/shared/unzip/inflate.cpp
+<%= @rhoRoot %>/platform/shared/unzip/deflate.cpp
+<%= @rhoRoot %>/platform/shared/unzip/gzwrite.cpp
+<%= @rhoRoot %>/platform/shared/unzip/gzclose.cpp
+<%= @rhoRoot %>/platform/shared/unzip/gzread.cpp
+<%= @rhoRoot %>/platform/shared/unzip/gzlib.cpp
+<%= @rhoRoot %>/platform/shared/unzip/gunzip.cpp
+<%= @rhoRoot %>/platform/shared/api_generator/js_helpers.cpp
+<%= @rhoRoot %>/platform/shared/api_generator/MethodResult.cpp
+<%= @rhoRoot %>/platform/shared/api_generator/StringifyHelper.cpp
+<%= @rhoRoot %>/platform/shared/tinyxml2/tinyxml2.cpp
+<%= @rhoRoot %>/platform/shared/common/RhodesApp.cpp
+<%= @rhoRoot %>/platform/shared/common/RhodesAppBase.cpp
+)
+
+include_directories(<%= @rhoRoot %>/platform/shared/curl/include)
+include_directories(<%= @rhoRoot %>/platform/shared/ruby/include)
+include_directories(<%= @rhoRoot %>/platform/shared/ruby/android)
+include_directories(<%= @rhoRoot %>/platform/shared)
+include_directories(<%= @rhoRoot %>/platform/common)
+include_directories(<%= @rhoRoot %>/lib/commonAPI)
+
+add_library(rhocommon STATIC ${SOURCE_LIB})
+

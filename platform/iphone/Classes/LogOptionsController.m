@@ -182,13 +182,13 @@
 	rho_logconf_setSeverity(selectedRow);
 	rho_logconf_saveSettings();
 	
-	[self dismissModalViewControllerAnimated:YES]; 
+	[self ddismissViewControllerAnimated:YES completion:nil];
 	self.view.hidden = YES;
 }
 
 - (void)actionCancel:(id)sender
 {
-	[self dismissModalViewControllerAnimated:YES]; 
+	[self dismissViewControllerAnimated:YES completion:nil]; 
 	self.view.hidden = YES;
 }
 

@@ -15,7 +15,7 @@ macx {
   OBJECTS_DIR = ../../../../platform/osx/bin/extensions/openssl
   INCLUDEPATH += ../../../../platform/shared/ruby/iphone macosx
   HEADERS += macosx/extconf.h
-  INCLUDEPATH += /Users/MOHUS/tauplatform/openssl-1.0.2/include
+  INCLUDEPATH += ../../../../../openssl/include
 }
 win32 {
   DESTDIR = ../../../../platform/win32/bin/extensions

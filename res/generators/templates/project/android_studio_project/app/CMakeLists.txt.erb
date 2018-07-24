@@ -1,76 +1,16 @@
-file(GLOB_RECURSE all_plt "<%= @rhoRoot %>/platform/*.*")
-
-# For more information about using CMake with Android Studio, read the
-# documentation: https://d.android.com/studio/projects/add-native-code.html
-
-# Sets the minimum version of CMake required to build the native library.
-
 cmake_minimum_required(VERSION 3.4.1)
 
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
-# Gradle automatically packages shared libraries with your APK.
+PROJECT(RhodesProject)
+set(CMAKE_BUILD_TYPE <%= @buildMode %>)
 
-file(GLOB_RECURSE all_ruby "<%= @rhoRoot %>/platform/shared/ruby/*.*")
-file(GLOB_RECURSE all_curl "<%= @rhoRoot %>/platform/shared/curl/*.*")
-file(GLOB_RECURSE all_sqlite "<%= @rhoRoot %>/platform/shared/sqlite/*.*")
-file(GLOB all_net "<%= @rhoRoot %>/platform/shared/net/*.*")
-file(GLOB all_log "<%= @rhoRoot %>/platform/shared/logging/*.*")
-file(GLOB_RECURSE all_cmn "<%= @rhoRoot %>/platform/shared/common/*.*")
-file(GLOB all_unzip "<%= @rhoRoot %>/platform/shared/unzip/*.*")
-file(GLOB all_apigen "<%= @rhoRoot %>/platform/shared/api_generator/*.*")
-file(GLOB all_rext "<%= @rhoRoot %>/platform/shared/rubyext/*.*")
-file(GLOB_RECURSE all_jni "<%= @rhoRoot %>/platform/android/Rhodes/jni/*.*")
-file(GLOB all_stlprt "<%= @rhoRoot %>/platform/shared/stlport/src/*.*")
+<%= @externalDeps %>
 
-add_library( # Sets the name of the library.
-             native-lib
-
-             # Sets the library as a shared library.
-             SHARED
-
-             # Provides a relative path to your source file(s).
-             ${all_ruby}
-             ${all_curl}
-             ${all_sqlite}
-             ${all_net}
-             ${all_log}
-             ${all_cmn}
-             ${all_unzip}
-             ${all_apigen}
-             ${all_rext}
-             ${all_jni}
-			 ${all_stlprt}
-             )
-
-include_directories("<%= @rhoRoot %>/platform/shared/curl/include")
-include_directories("<%= @rhoRoot %>/platform/shared/net")
-include_directories("<%= @rhoRoot %>/platform/shared/logging")
-include_directories("<%= @rhoRoot %>/platform/shared/common")
-include_directories("<%= @rhoRoot %>/platform/android/Rhodes/jni/include")
-include_directories("<%= @rhoRoot %>/platform/shared/stlport/stlport")
-
-# Searches for a specified prebuilt library and stores the path as a
-# variable. Because CMake includes system libraries in the search path by
-# default, you only need to specify the name of the public NDK library
-# you want to add. CMake verifies that the library exists before
-# completing its build.
-
-find_library( # Sets the name of the path variable.
-              log-lib
-
-              # Specifies the name of the NDK library that
-              # you want CMake to locate.
-              log )
-
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in this
-# build script, prebuilt third-party libraries, or system libraries.
-
-target_link_libraries( # Specifies the target library.
-                       native-lib
-
-                       # Links the target library to the log library
-                       # included in the NDK.
-                       ${log-lib} )
+add_subdirectory(./curl)
+add_subdirectory(./ruby)
+add_subdirectory(./sqlite)
+add_subdirectory(./json)
+add_subdirectory(./rholog)
+add_subdirectory(./rhocommon)
+add_subdirectory(./rhodb)
+add_subdirectory(./rhosync)
+add_subdirectory(./rhodes)

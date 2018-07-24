@@ -44,6 +44,9 @@
 #include "QtLogView.h"
 
 #include "../../platform/shared/qt/rhodes/RhoSimulator.h"
+#ifdef OS_WINDOWS_DESKTOP
+#include "AppRunningFlag.h"
+#endif
 
 using namespace rho;
 using namespace rho::common;
@@ -110,7 +113,6 @@ char* parseToken(const char* start)
 
 int main(int argc, char *argv[])
 {
-    //argc = 1;
     QApplication app(argc, argv);
 #ifdef RHODES_MAC_BUILD
     qputenv("QTWEBENGINE_REMOTE_DEBUGGING", QString::number(QtMainWindow::getDebPort()).toLocal8Bit());
@@ -261,6 +263,10 @@ int main(int argc, char *argv[])
     m_appWindow->Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
 #else
     m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
+#endif
+
+#ifdef OS_WINDOWS_DESKTOP
+    AppRunningFlag appRunning(QString::fromStdString(RHODESAPP().getAppName()));
 #endif
 
     RHODESAPP().startApp();
