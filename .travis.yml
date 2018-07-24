@@ -64,13 +64,12 @@ android:
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository    
-  - build-tools-26.0.2
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
 
 env:
   global:
-  - ANDROID_NDK_HOME=$HOME/android-ndk-r16b
+  - ANDROID_NDK_HOME=$HOME/android-ndk-r12b
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
   - S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
@@ -91,7 +90,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="23"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"
 
   #- language: android
   #  os: linux
@@ -99,7 +98,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="23"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec"
 
   #- language: android
   #  os: linux

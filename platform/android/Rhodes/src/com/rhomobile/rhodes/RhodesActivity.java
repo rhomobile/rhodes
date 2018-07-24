@@ -482,25 +482,25 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     private void pauseWebViews( boolean pause ) {
 	if ( mMainView != null ) {
-            IRhoWebView wv = mMainView.getWebView(-1);
-            if ( wv != null ) {
-                if ( pause ) {
-                    wv.onPause();
-                } else {
-                    wv.onResume();
-                }
-            } else {
-                for ( int i = 0; i < mMainView.getTabsCount(); ++i ) {
-                    wv = mMainView.getWebView(i);
-                    if ( wv != null ) {
-                        if ( pause ) {
-                            wv.onPause();
-                        } else {
-                            wv.onResume();
-                        }
-                    }
-                }
-            }
+	    IRhoWebView wv = mMainView.getWebView(-1);
+	    if ( wv != null ) {
+		if ( pause ) {
+		    wv.onPause();
+		} else {
+		    wv.onResume();
+		}
+	    } else {
+		for ( int i = 0; i < mMainView.getTabsCount(); ++i ) {
+		    wv = mMainView.getWebView(i);
+		    if ( wv != null ) {
+			if ( pause ) {
+			    wv.onPause();
+			} else {
+			    wv.onResume();
+			}
+		    }
+		}
+	    }
     	}
     }
 

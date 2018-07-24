@@ -313,9 +313,10 @@ public class RhoFileApi {
     public static void initialCopy(Context ctx, String assets[])
     {
         am = ctx.getAssets();
-        for(String asset: assets){
+        for(String asset: assets)
+        {
             //copy(makeRelativePath(getRootPath() + asset));
-			copyFileOrFolder(ctx, makeRelativePath(getRootPath() + asset));
+		copyFileOrFolder(ctx, makeRelativePath(getRootPath() + asset));
         }
     }
 

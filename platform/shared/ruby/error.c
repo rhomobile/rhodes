@@ -46,10 +46,6 @@ VALUE rb_eEINPROGRESS;
 
 extern const char ruby_description[];
 
-#ifdef OS_ANDROID
-
-#endif
-
 //RHO
 #include "logging/RhoLog.h"
 int rhoRubyFPrintf(FILE *, const char *, ...);
