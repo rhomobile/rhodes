@@ -56,7 +56,7 @@ end
 
 def setup_ndk(ndkpath,apilevel,abi)
   puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})" if USE_TRACES
-
+  $apilevel = apilevel
   ndk = NDKWrapper.new( ndkpath )
   
   tools = ndk.detect_toolchain abi
@@ -104,6 +104,7 @@ def cc_def_args
     args << "-DANDROID"
     args << "-DOS_ANDROID"
     args << "-DRHO_DEBUG"
+    args << "-D__ANDROID_API__=#{$apilevel}" if $apilevel
     args << "-DHAVE_RLIM_T" if $have_rlim_t
     unless $debug
       args << "-O2"
