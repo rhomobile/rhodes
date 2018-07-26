@@ -2,4 +2,4 @@
 
 set -x
 
-rake device:android:debug --trace
+rake device:android:debug
