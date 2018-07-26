@@ -91,7 +91,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="23"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="19"
 
   #- language: android
   #  os: linux
@@ -99,7 +99,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="23"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="19"
 
   #- language: android
   #  os: linux
