@@ -543,7 +543,6 @@ namespace "config" do
         else
           puts "No Android platform found of version #{$app_config['android']['version']}. Picking the latest one Android #{AndroidTools.get_market_version $found_api_level} available in machine"
         end
-        exit 1
       end
     end
 
