@@ -75,7 +75,7 @@ def setup_ndk(ndkpath,apilevel,abi)
   # Detect rlim_t
   if $have_rlim_t.nil?
     $have_rlim_t = false
-    resource_h = File.join(ndkpath, 'build', 'platforms', "android-#{apilevel}", "arch-arm", "usr", "include", "sys", "resource.h")
+    resource_h = File.join(ndkpath, 'build', 'platforms', "android-#{apilevel}", "arch-#{abi}", "usr", "include", "sys", "resource.h")
     if File.exists? resource_h
       File.open(resource_h, 'r') do |f|
         while line = f.gets
