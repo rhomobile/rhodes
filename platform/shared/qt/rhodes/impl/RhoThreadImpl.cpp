@@ -45,11 +45,11 @@ CRhoThreadImpl::CRhoThreadImpl(): m_Thread(0), m_waitThread(new QtThread())
 CRhoThreadImpl::~CRhoThreadImpl()
 {
 
-    LOG(INFO) + RHOQTPREFIX + "CRhoThreadImpl destructor";
+    LOG(TRACE) + RHOQTPREFIX + "CRhoThreadImpl destructor";
     stopWait();
     stop(0);
 
-    LOG(INFO) + RHOQTPREFIX + "~CRhoThreadImpl - before entering mutex locker";
+    LOG(TRACE) + RHOQTPREFIX + "~CRhoThreadImpl - before entering mutex locker";
     QMutexLocker locker(&mutex);
     LOG(TRACE) + RHOQTPREFIX + "~CRhoThreadImpl - after entering mutex locker";
 
@@ -96,7 +96,7 @@ void CRhoThreadImpl::setThreadPriority(IRhoRunnable::EPriority ePriority)
 
 void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
 {
-    LOG(INFO) + RHOQTPREFIX + "stop";
+    LOG(TRACE) + RHOQTPREFIX + "stop";
 
     LOG(TRACE) + RHOQTPREFIX + "stop - before enter entering mutex locker";
     QMutexLocker locker(&mutex);
@@ -132,11 +132,11 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
 
 int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 {
-    LOG(INFO) + RHOQTPREFIX + "wait";
+    LOG(TRACE) + RHOQTPREFIX + "wait";
 	bool isVeyBigTimeoutvalue = false; 
     if ((nTimeoutMs == 4294966296)||(nTimeoutMs == 4294967295)){isVeyBigTimeoutvalue = true;}
 
-    LOG(INFO) + RHOQTPREFIX + "wait - m_waitThread exists before calling stopWait";
+    LOG(TRACE) + RHOQTPREFIX + "wait - m_waitThread exists before calling stopWait";
     stopWait();
     LOG(TRACE) + RHOQTPREFIX + "wait - m_waitThread exists after calling stopWait";
 
@@ -144,19 +144,19 @@ int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 
     LOG(TRACE) + RHOQTPREFIX + "wait - before m_waitThread->start";
     m_waitThread.data()->start();
-    LOG(INFO) + RHOQTPREFIX + "wait - after m_waitThread->start";
+    LOG(TRACE) + RHOQTPREFIX + "wait - after m_waitThread->start";
 	bool result;
 	if(isVeyBigTimeoutvalue)
 	{
-        LOG(INFO) + RHOQTPREFIX + "wait - before wait for a long time nTimeoutMs:-  "+nTimeoutMs;
+        LOG(TRACE) + RHOQTPREFIX + "wait - before wait for a long time nTimeoutMs:-  "+nTimeoutMs;
         waitLocker.unlock();
         result = m_waitThread.data()->wait(1000UL*nTimeoutMs) ? 0 : 1;
-        LOG(INFO) + RHOQTPREFIX + "wait - after wait for a long time Result:-  "+result;
+        LOG(TRACE) + RHOQTPREFIX + "wait - after wait for a long time Result:-  "+result;
     }else{
-        LOG(INFO) + RHOQTPREFIX + "wait - before wait for a short time nTimeoutMs:-  "+nTimeoutMs;
+        LOG(TRACE) + RHOQTPREFIX + "wait - before wait for a short time nTimeoutMs:-  "+nTimeoutMs;
         waitLocker.unlock();
         result = m_waitThread.data()->wait(1UL*nTimeoutMs) ? 0 : 1;
-        LOG(INFO) + RHOQTPREFIX + "wait - after wait for a short time Result:-  "+result;
+        LOG(TRACE) + RHOQTPREFIX + "wait - after wait for a short time Result:-  "+result;
 	}
     LOG(TRACE) + RHOQTPREFIX + "wait - finish before return";
     return result;
@@ -164,9 +164,9 @@ int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 
 void CRhoThreadImpl::stopWait()
 {
-    LOG(INFO) + RHOQTPREFIX + "stopWait - before mutex";
+    LOG(TRACE) + RHOQTPREFIX + "stopWait - before mutex";
     QMutexLocker waitLocker(&mutexWaiter);
-    LOG(INFO) + RHOQTPREFIX + "stopWait - after mutex and before msleep";
+    LOG(TRACE) + RHOQTPREFIX + "stopWait - after mutex and before msleep";
     QRhoThread::msleep(2);
     LOG(TRACE) + RHOQTPREFIX + "stopWait - before quit()";
     m_waitThread.data()->quit();

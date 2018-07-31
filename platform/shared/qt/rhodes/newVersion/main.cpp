@@ -292,6 +292,7 @@ int main(int argc, char *argv[])
     m_appWindow->DestroyUi();
 
     rho::common::CRhodesApp::Destroy();
+    QThread::currentThread()->msleep(3000);
     return 0;
 }
 

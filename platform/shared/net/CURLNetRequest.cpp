@@ -780,7 +780,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
 }
 
 CURLNetRequest::CURLHolder::CURLHolder()
-    :m_active(0)
+    :m_active(0), m_lock(new common::CMutex())
 {
     m_bTraceCalls = rho_conf_getBool("net_trace") && !rho_conf_getBool("log_skip_post");
     timeout = rho_conf_getInt("net_timeout");
@@ -801,7 +801,8 @@ CURLNetRequest::CURLHolder::~CURLHolder()
     
 void CURLNetRequest::CURLHolder::activate()
 {
-    common::CMutexLock guard(m_lock);
+    std::shared_ptr<common::CMutex> l_lock = m_lock;
+    common::CMutexLock guard(*l_lock.get());
     if (m_active > 0)
         return;
     ++m_active;
@@ -810,7 +811,8 @@ void CURLNetRequest::CURLHolder::activate()
 
 void CURLNetRequest::CURLHolder::deactivate()
 {
-    common::CMutexLock guard(m_lock);
+    std::shared_ptr<common::CMutex> l_lock = m_lock;
+    common::CMutexLock guard(*l_lock.get());
     if (m_active == 0)
         return;
     --m_active;
@@ -832,7 +834,8 @@ CURLcode CURLNetRequest::CURLHolder::perform()
     CURLcode result;
     for(;;)
     {
-        common::CMutexLock guard(m_lock);
+        std::shared_ptr<common::CMutex> l_lock = m_lock;
+        common::CMutexLock guard(*l_lock.get());
         if (m_active <= 0) {
             RAWLOG_INFO("CURLNetRequest: request was canceled from another thread !");
             if ( !rho_conf_getBool("log_skip_post") )
