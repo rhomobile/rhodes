@@ -35,8 +35,8 @@
 #include "ruby/ext/rho/rhoruby.h"
 
 namespace rho{
-std::shared_ptr<common::CMutex> LogSettings::m_FlushLock = std::shared_ptr<common::CMutex>(new common::CMutex);
-std::shared_ptr<common::CMutex> LogSettings::m_CatLock = std::shared_ptr<common::CMutex>(new common::CMutex);
+smart_pointer<common::CMutex> LogSettings::m_FlushLock = smart_pointer<common::CMutex>(new common::CMutex);
+smart_pointer<common::CMutex> LogSettings::m_CatLock = smart_pointer<common::CMutex>(new common::CMutex);
 
 LogSettings::MemoryInfoCollectorThread::MemoryInfoCollectorThread( LogSettings& logSettings ) :
                  m_collectMemoryIntervalMilliseconds(0), m_pCollector(0), m_logSettings(logSettings)
@@ -46,7 +46,7 @@ LogSettings::MemoryInfoCollectorThread::MemoryInfoCollectorThread( LogSettings& 
 
 void LogSettings::MemoryInfoCollectorThread::run()
 {
-    std::shared_ptr<common::CMutex> l_accessLock = m_accessLock;
+    smart_pointer<common::CMutex> l_accessLock = m_accessLock;
     while( !isStopping() )    
     {
         unsigned int toWait = 0;
@@ -81,21 +81,21 @@ void LogSettings::MemoryInfoCollectorThread::run()
 
 void LogSettings::MemoryInfoCollectorThread::setCollectMemoryInfoInterval( unsigned int interval )
 {
-    std::shared_ptr<common::CMutex> l_accessLock = m_accessLock;
+    smart_pointer<common::CMutex> l_accessLock = m_accessLock;
     common::CMutexLock lock(*l_accessLock.get());
     m_collectMemoryIntervalMilliseconds = interval;
 }
 
 void LogSettings::MemoryInfoCollectorThread::setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector )
 {
-    std::shared_ptr<common::CMutex> l_accessLock = m_accessLock;
+    smart_pointer<common::CMutex> l_accessLock = m_accessLock;
     common::CMutexLock lock(*l_accessLock.get());
     m_pCollector = memInfoCollector;   
 }
 
 boolean LogSettings::MemoryInfoCollectorThread::willCollect() const
 {
-    std::shared_ptr<common::CMutex> l_accessLock = m_accessLock;
+    smart_pointer<common::CMutex> l_accessLock = m_accessLock;
     common::CMutexLock lock(*l_accessLock.get());
     return (m_collectMemoryIntervalMilliseconds>0) && (m_pCollector!=0);
 }
@@ -324,7 +324,7 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
 
 void LogSettings::setLogFilePath(const String& logFilePath){
     if ( m_strLogFilePath.compare(logFilePath) != 0 ){
-        std::shared_ptr<common::CMutex> l_FlushLock = m_FlushLock;
+        smart_pointer<common::CMutex> l_FlushLock = m_FlushLock;
         common::CMutexLock oLock(*l_FlushLock.get());
 
         //try to open new path first
@@ -342,7 +342,7 @@ void LogSettings::setLogFilePath(const String& logFilePath){
 }
 
 void LogSettings::clearLog(){
-    std::shared_ptr<common::CMutex> l_FlushLock = m_FlushLock;
+    smart_pointer<common::CMutex> l_FlushLock = m_FlushLock;
     common::CMutexLock oLock(*l_FlushLock.get());
 
     if ( m_pFileSink ){
@@ -373,7 +373,7 @@ void LogSettings::removeAuxSink( ILogSink* sink )
 }
 
 void LogSettings::internalSinkLogMessage( String& strMsg ){
-    std::shared_ptr<common::CMutex> l_FlushLock = m_FlushLock;
+    smart_pointer<common::CMutex> l_FlushLock = m_FlushLock;
     common::CMutexLock oLock(*l_FlushLock.get());
 
 	if ( isLogToFile() )
@@ -405,7 +405,7 @@ void LogSettings::onSettingUpdated( const String& name, const String& newVal ) {
 
 bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
     //TODO: Optimize categories search : add map
-    std::shared_ptr<common::CMutex> l_CatLock = m_CatLock;
+    smart_pointer<common::CMutex> l_CatLock = m_CatLock;
     common::CMutexLock oLock(*l_CatLock.get());
 
     if ( m_strDisabledCategories.length() > 0 && strstr(m_strDisabledCategories.c_str(), cat.getName().c_str() ) != 0 )
@@ -418,7 +418,7 @@ bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
 }
 
 void LogSettings::setEnabledCategories( const char* szCatList ){
-    std::shared_ptr<common::CMutex> l_CatLock = m_CatLock;
+    smart_pointer<common::CMutex> l_CatLock = m_CatLock;
     common::CMutexLock oLock(*l_CatLock.get());
 
     if ( szCatList && *szCatList )
@@ -428,7 +428,7 @@ void LogSettings::setEnabledCategories( const char* szCatList ){
 }
 
 void LogSettings::setDisabledCategories( const char* szCatList ){
-    std::shared_ptr<common::CMutex> l_CatLock = m_CatLock;
+    smart_pointer<common::CMutex> l_CatLock = m_CatLock;
     common::CMutexLock oLock(*l_CatLock.get());
 
     if ( szCatList && *szCatList )

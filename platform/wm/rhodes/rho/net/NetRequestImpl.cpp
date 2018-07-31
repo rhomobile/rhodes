@@ -65,7 +65,7 @@ namespace net {
 
 IMPLEMENT_LOGCLASS(CNetRequestImpl,"Net");
 
-std::shared_ptr<common::CMutex> CNetRequestImpl::m_mxInternet = std::shared_ptr<common::CMutex>(new common::CMutex);
+smart_pointer<common::CMutex> CNetRequestImpl::m_mxInternet = smart_pointer<common::CMutex>(new common::CMutex);
 HINTERNET      CNetRequestImpl::m_hInternet;
 HANDLE         CNetRequestImpl::m_hWceConnMgrConnection;
 
@@ -941,7 +941,7 @@ void CNetRequestImpl::free_url_components(URL_COMPONENTS *uri)
 
 bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 {
-    std::shared_ptr<common::CMutex> l_mxInternet = m_mxInternet;
+    smart_pointer<common::CMutex> l_mxInternet = m_mxInternet;
     if (!bLocalHost)
     {
         common::CMutexLock lock(*l_mxInternet.get());
@@ -1000,7 +1000,7 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 
 /*static*/void CNetRequestImpl::deinitConnection()
 {
-    std::shared_ptr<common::CMutex> l_mxInternet = m_mxInternet;
+    smart_pointer<common::CMutex> l_mxInternet = m_mxInternet;
     common::CMutexLock lock(*l_mxInternet.get());
 
     if (m_hInternet)

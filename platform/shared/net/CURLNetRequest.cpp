@@ -801,7 +801,7 @@ CURLNetRequest::CURLHolder::~CURLHolder()
     
 void CURLNetRequest::CURLHolder::activate()
 {
-    std::shared_ptr<common::CMutex> l_lock = m_lock;
+    smart_pointer<common::CMutex> l_lock = m_lock;
     common::CMutexLock guard(*l_lock.get());
     if (m_active > 0)
         return;
@@ -811,7 +811,7 @@ void CURLNetRequest::CURLHolder::activate()
 
 void CURLNetRequest::CURLHolder::deactivate()
 {
-    std::shared_ptr<common::CMutex> l_lock = m_lock;
+    smart_pointer<common::CMutex> l_lock = m_lock;
     common::CMutexLock guard(*l_lock.get());
     if (m_active == 0)
         return;
@@ -834,7 +834,7 @@ CURLcode CURLNetRequest::CURLHolder::perform()
     CURLcode result;
     for(;;)
     {
-        std::shared_ptr<common::CMutex> l_lock = m_lock;
+        smart_pointer<common::CMutex> l_lock = m_lock;
         common::CMutexLock guard(*l_lock.get());
         if (m_active <= 0) {
             RAWLOG_INFO("CURLNetRequest: request was canceled from another thread !");

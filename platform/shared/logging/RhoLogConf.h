@@ -35,8 +35,11 @@
 #include "common/RhoTime.h"
 #include "common/RhoThread.h"
 #include "common/RhoConf.h"
+#ifdef OS_MACOSX
+#include <tr1/memory>
+#else
 #include <memory>
-
+#endif
 namespace rho {
 
 class LogCategory;
@@ -63,7 +66,7 @@ class LogSettings : public common::IRhoSettingsListener {
         IMemoryInfoCollector*   m_pCollector;
         LogSettings&            m_logSettings;
         
-        mutable std::shared_ptr<common::CMutex> m_accessLock;
+        mutable smart_pointer<common::CMutex> m_accessLock;
     public:
         MemoryInfoCollectorThread( LogSettings& logSettings );
         virtual void run();
@@ -103,8 +106,8 @@ class LogSettings : public common::IRhoSettingsListener {
     Hashtable<ILogSink*, bool> m_pAuxSinks;
     IMemoryInfoCollector* m_pMemoryInfoCollector;
 
-    static std::shared_ptr<common::CMutex> m_FlushLock;
-    static std::shared_ptr<common::CMutex> m_CatLock;
+    static smart_pointer<common::CMutex> m_FlushLock;
+    static smart_pointer<common::CMutex> m_CatLock;
 
 public:
     LogSettings();

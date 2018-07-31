@@ -40,6 +40,12 @@ typedef CRITICAL_SECTION MutexType;
 typedef pthread_mutex_t MutexType;
 #endif 
 
+#ifdef OS_MACOSX
+#define smart_pointer std::tr1::shared_ptr
+#else
+#define smart_pointer std::shared_ptr
+#endif
+
 class CMutex{
 public:
     inline CMutex();
