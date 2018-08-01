@@ -90,7 +90,11 @@ class CURLNetRequest : public CNetRequestBase
         CURL *m_curl;
         CURLM *m_curlm;
         char *errbuf[CURL_ERROR_SIZE];
+#ifdef mutexSmartPointer
+        mutexSmartPointer m_lock;
+#else
         common::CMutex m_lock;
+#endif
         int m_active;
         
         boolean m_bTraceCalls;

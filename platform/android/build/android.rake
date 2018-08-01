@@ -929,6 +929,8 @@ namespace "config" do
             else
               raise "android:exttype is 'prebuilt' but prebuilt path is not found #{prebuiltpath.inspect}"
             end
+          elsif extconf_android['prebuilts']
+            prebuiltpath = File.join( extpath, extconf_android['prebuilts'] )            
           end
 
           android_listener = extconf["android_rhodes_activity_listener"]
@@ -1063,6 +1065,7 @@ namespace "config" do
             Dir.glob(File.join(prebuiltpath, '**', 'lib*.so')).each do |lib|
               next if lib =~ /adds/
               arch = File.basename(File.dirname(lib))
+
               if lib =~ /noautoload/
                 libdirpath = File.join(targetpath,'noautoload','lib',arch)
               else
@@ -2106,6 +2109,7 @@ namespace "build" do
       f.puts "    // Load native .so libraries"
       Dir.glob($app_builddir + "/**/lib*.so").reverse.each do |lib|
         next if lib =~ /noautoload/
+
         libname = File.basename(lib).gsub(/^lib/, '').gsub(/\.so$/, '')
         f.puts "    Log.d(TAG, \"Loading lib #{libname}\");"
         f.puts "    System.loadLibrary(\"#{libname}\");"

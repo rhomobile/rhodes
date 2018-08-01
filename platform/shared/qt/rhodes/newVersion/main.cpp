@@ -44,6 +44,9 @@
 #include "QtLogView.h"
 
 #include "../../platform/shared/qt/rhodes/RhoSimulator.h"
+#ifdef OS_WINDOWS_DESKTOP
+#include "AppRunningFlag.h"
+#endif
 
 using namespace rho;
 using namespace rho::common;
@@ -262,6 +265,10 @@ int main(int argc, char *argv[])
     m_appWindow->Initialize(convertToStringW(RHODESAPP().getAppTitle()).c_str());
 #endif
 
+#ifdef OS_WINDOWS_DESKTOP
+    AppRunningFlag appRunning(QString::fromStdString(RHODESAPP().getAppName()));
+#endif
+
     RHODESAPP().startApp();
 
     // Navigate to the "loading..." page
@@ -285,6 +292,7 @@ int main(int argc, char *argv[])
     m_appWindow->DestroyUi();
 
     rho::common::CRhodesApp::Destroy();
+
     return 0;
 }
 
