@@ -54,18 +54,21 @@ CLogFileSink::CLogFileSink(const LogSettings& oSettings)
 
 CLogFileSink::~CLogFileSink()
 {
-	if(m_pFile)
-		delete m_pFile;
+    if(m_pFile){
+        if (m_pFile->isOpened()){
+            m_pFile->flush();
+        }
+        delete m_pFile;
+    }
 }
 
 
 void CLogFileSink::writeLogMessage( String& strMsg ){
     unsigned int len = strMsg.length();
 
-    if ( !m_pFile )
-        m_pFile = new common::CRhoFile();
+    if ( m_pFile ){}else{m_pFile = new common::CRhoFile();}
 
-    if ( !m_pFile->isOpened() ){
+    if ( m_pFile->isOpened() ){}else{
         m_pFile->open( getLogConf().getLogFilePath().c_str(), common::CRhoFile::OpenForAppend );
         m_nFileLogSize = m_pFile->size();
         loadLogPosition();
@@ -84,7 +87,17 @@ void CLogFileSink::writeLogMessage( String& strMsg ){
     }
 
     int nWritten = m_pFile->write( strMsg.c_str(), len );
+#ifdef OS_WINDOWS_DESKTOP
+    static int writeCounter = 0;
+    static const bool isMinsNull = LOGCONF().getMinSeverity() == L_TRACE;
+    if (isMinsNull){
+        m_pFile->flush();
+    }else{
+        if ((++writeCounter % 16) == 0) m_pFile->flush();
+    }
+#else
     m_pFile->flush();
+#endif
 
     if ( m_nCirclePos >= 0 )
         m_nCirclePos += nWritten;
@@ -100,7 +113,11 @@ int CLogFileSink::getCurPos()
 }
 
 void CLogFileSink::clear(){
-    if ( m_pFile )    {
+    if ( m_pFile )
+    {
+        if (m_pFile->isOpened()){
+            m_pFile->flush();
+        }
         delete m_pFile;
         m_pFile = NULL;
     }
