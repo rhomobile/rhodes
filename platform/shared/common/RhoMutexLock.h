@@ -40,10 +40,10 @@ typedef CRITICAL_SECTION MutexType;
 typedef pthread_mutex_t MutexType;
 #endif 
 
-#ifdef OS_MACOSX
-#define smart_pointer std::tr1::shared_ptr
+#if defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
+//#define mutexSmartPointer std::tr1::shared_ptr<common::CMutex>
 #else
-#define smart_pointer std::shared_ptr
+#define mutexSmartPointer std::shared_ptr<common::CMutex>
 #endif
 
 class CMutex{
