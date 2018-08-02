@@ -56,9 +56,13 @@ class Addrinfo
         when 0 # success or EISCONN, other errors raise
           break
         when :wait_writable
-          sock.wait_writable(timeout) or
-            raise Errno::ETIMEDOUT, 'user specified timeout'
-        end while true
+          IO.select(nil, [sock]) # wait 3-way handshake completion
+          begin
+              sock.connect_nonblock(self) # check connection failure
+          rescue Errno::EISCONN
+              raise Errno::ETIMEDOUT, 'user specified timeout'
+          end
+	end while true
       else
         sock.connect(self)
       end
