@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -31,6 +31,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Map;
+import java.util.Hashtable;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -44,16 +46,20 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import com.rhomobile.rhodes.extmanager.IRhoListener;
+import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
 
-public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
+public class RhoBluetoothManagerNew extends AbstractRhoListener implements IRhoBluetoothManager,IRhoListener {
 
 
 
 	private boolean mBluetoothIsEnabled = false;
-	
+
     private static final String TAG = "RhoBluetoothManagerNew";
- 	
-	
+
+
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "DEVICE_NAME";
     public static final String TOAST = "toast";
@@ -64,38 +70,38 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 
     // Name of the connected device
     private String mDeviceName = null;
-    
+
     private String mConnectedDeviceName = null;
     //StringBuffer mInput;
     byte[] mInputBuffer;
     int    mInputBufferSize;
- 	
+
     // Local Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter = null;
 
     // Member object for the chat services
     private RhoBluetoothSession mSession = null;
-    
-    private String mCreateSessionCallback;
-    
+
+    private IMethodResult mCreateSessionCallback;
+
     //private String mRole;
-	
+
 	private Activity mActivity;
-	
+
 	public RhoBluetoothManagerNew () {
 		RhoBluetoothManager.logi(TAG, "RhoBluetoothManagerNew()");
 	}
-	
+
 	public void init() {
 		RhoBluetoothManager.logi(TAG, "init()");
 		// constructor
 		mActivity = RhodesActivity.getInstance();
 		mDeviceName = "NONAME";
-		
+
 		mInputBuffer = new byte[1024];
 		mInputBufferSize = 0;
-		
-		
+
+
 		mBluetoothIsEnabled = false;
 		// check feature
 		PackageManager pm = RhodesService.getInstance().getPackageManager();
@@ -125,17 +131,17 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 			RhoBluetoothManager.logi(TAG, "sharedInstance - Bluetooth permission is INACTIVE !");
 			mBluetoothIsEnabled = false;
 		}
-		
-		
+
+
 		//mInput = new StringBuffer("");
-		
-		
+
+
         // Get local Bluetooth adapter
 		if (mBluetoothIsEnabled) {
 			RhoBluetoothManager.logi(TAG, "bluetooth is enabled");
 			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        
-        	if (mBluetoothAdapter != null) { 
+
+        	if (mBluetoothAdapter != null) {
             	if (mBluetoothAdapter.isEnabled()) {
             		if (mSession == null) {
                 		setupSession();
@@ -148,8 +154,10 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		else {
 			RhoBluetoothManager.logi(TAG, "bluetooth is disabled");
 		}
+
+		RhoExtManager.getInstance().addRhoListener(this);
 	}
-	
+
 	public void setDeviceName(String device_name) {
 		RhoBluetoothManager.logi(TAG, "setDeviceName("+device_name+")");
 		mDeviceName = device_name;
@@ -157,7 +165,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
         	mBluetoothAdapter.setName(device_name);
         }
 	}
-	
+
     /**
      * Sends a message.
      * @param message  A string of text to send.
@@ -191,7 +199,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 
          }
     }
-	
+
     /**
      * Sends a message.
      * @param message  A string of text to send.
@@ -212,8 +220,8 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
          }
     }
 
-    
-    
+
+
    private void setupSession() {
 	   RhoBluetoothManager.logi(TAG, "setupSession()");
         mSession = new RhoBluetoothSession(mActivity, null);
@@ -230,12 +238,12 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 			}
 	   });
    }
-   
+
    public void onSessionDisconnected() {
 	   RhoBluetoothManager.logi(TAG, "onSessionDisconnected()");
 	   PerformOnUiThread.exec( new Runnable() {
 			public void run() {
-				if (sharedInstance().getSession().getCallbackURL() == null) {
+				if (sharedInstance().getSession().getCallback() == null) {
 					fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR_STRING, "");
 				}
 				else {
@@ -275,17 +283,17 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 			}
 	   });
    }
-   
+
    public void onSessionConnectedDeviceName(String name) {
 	   RhoBluetoothManager.logi(TAG, "onSessionConnectedDeviceName("+name+")");
 	   mConnectedDeviceName = name;
    }
-   
+
    public void onSessionToast(String message) {
 	   RhoBluetoothManager.logi(TAG, "TOAST: " + message);
    }
-   
- 
+
+
     public void onDeviceListActivityFinished( boolean is_ok, String adress) {
     	RhoBluetoothManager.logi(TAG, "onDeviceListActivityFinished()");
     	if (is_ok) {
@@ -294,7 +302,12 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
         	mSession.connect(device);
     	}
     }
-    
+
+	@Override
+	public void onActivityResult(RhodesActivity activity, int reqCode, int resCode, Intent intent) {
+		onActivityResultPrivate(reqCode, resCode, intent);
+	}
+
     public void onActivityResultPrivate(int requestCode, int resultCode, Intent data) {
     	RhoBluetoothManager.logi(TAG, "onActivityResultPrivate " + resultCode);
         switch (requestCode) {
@@ -328,9 +341,9 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
             }
         }
     }
-    
-	   
-	   
+
+
+
 	public RhoBluetoothManagerNew sharedInstance() {
 		return (RhoBluetoothManagerNew)RhoBluetoothManager.sharedInstance();
 	}
@@ -338,14 +351,14 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 	public RhoBluetoothSession getSession() {
 		return mSession;
 	}
-	
-	
+
+
 	private void startClient() {
 		RhoBluetoothManager.logi(TAG, "startClient()");
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
 	    		RhoBluetoothManager.logi(TAG, "startClient (UI thread command)");
-		    	if (mBluetoothAdapter != null) { 
+		    	if (mBluetoothAdapter != null) {
 		    		RhoBluetoothManager.logi(TAG, "   mBluetoothAdapter != null");
 			        Intent serverIntent = new Intent(mActivity, RhoBluetoothDeviceListActivity.class);
 			        //mActivity.startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
@@ -358,13 +371,13 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 			}
 		});
     }
-	
+
 	private void startServer() {
 		RhoBluetoothManager.logi(TAG, "startServer()");
 		PerformOnUiThread.exec( new Runnable() {
 			public void run() {
 				RhoBluetoothManager.logi(TAG, "startServer (UI thread command)");
-		    	if (mBluetoothAdapter != null) { 
+		    	if (mBluetoothAdapter != null) {
 		    		RhoBluetoothManager.logi(TAG, "   mBluetoothAdapter != null");
 			        if (mBluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
 			            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
@@ -385,21 +398,21 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 			}
 		});
 	}
-	
+
 	public int is_bluetooth_available() {
 		//SREMBPD00122615
 		BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 			if (bluetoothAdapter != null) {
 				if (!bluetoothAdapter.isEnabled())
 					return 0;
-				else 
+				else
 					return 1;
 			}
 			else
 					return 0;
-		
+
 	}
-	
+
 	public void off_bluetooth() {
 		if (!mBluetoothIsEnabled) return;
 		RhoBluetoothManager.logi(TAG, "off_bluetooth()");
@@ -408,7 +421,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 			sharedInstance().getSession().stop();
 		}
 	}
-	
+
 	public void set_device_name(String device_name) {
 		if (!mBluetoothIsEnabled) return;
 		RhoBluetoothManager.logi(TAG, "set_device_name("+device_name+")");
@@ -420,17 +433,17 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		RhoBluetoothManager.logi(TAG, "get_device_name() : "+sharedInstance().mDeviceName);
 		return sharedInstance().mDeviceName;
 	}
-	
+
 	public int get_last_error() {
 		if (!mBluetoothIsEnabled) return RhoBluetoothManager.BTC_ERROR;
 		return RhoBluetoothManager.BTC_OK;
 	}
-	
-	public int create_session(String role, String callback_url) {
-		if (!mBluetoothIsEnabled) return RhoBluetoothManager.BTC_ERROR;
-		RhoBluetoothManager.logi(TAG, "create_session("+role+", "+callback_url+");");
 
-		sharedInstance().mCreateSessionCallback = callback_url;
+	public int create_session(String role, IMethodResult callback) {
+		if (!mBluetoothIsEnabled) return RhoBluetoothManager.BTC_ERROR;
+		RhoBluetoothManager.logi(TAG, "create_session("+role+");");
+
+		sharedInstance().mCreateSessionCallback = callback;
 		//sharedInstance().mRole = role;
 		if (role.equalsIgnoreCase(RhoBluetoothManager.BT_ROLE_SERVER)) {
 			sharedInstance().startServer();
@@ -440,38 +453,41 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		}
 		return RhoBluetoothManager.BTC_OK;
 	}
-	
+
 	public void fireCreateSessionCallback(String status, String connected_device_name) {
-		RhoBluetoothManager.logi(TAG, "fireCreateSessionCallback(status["+status+"], connected_device_name["+connected_device_name+"])");
-		StringBuffer body = new StringBuffer();
-		body.append("&status=");
-		body.append(status);
-		body.append("&connected_device_name=");
-		body.append(connected_device_name);
+		RhoBluetoothManager.logi(TAG, "fireCreateSessionCallback(status["+status+"], connectionID/connected_device_name["+connected_device_name+"])");
+
+		Map<String,Object> resHash = new Hashtable<String,Object>();
+		resHash.put("status", status);
+		resHash.put("connectionID", connected_device_name);
+		resHash.put("connected_device_name", connected_device_name);
+
 		if (mCreateSessionCallback != null) {
-			RhoBluetoothManager.onCallback(mCreateSessionCallback, body.toString());
+			mCreateSessionCallback.set(resHash);
 		}
 	}
 
-	
-	public void session_set_callback(String connected_device_name, String callback_url) {
+
+	public void session_set_callback(String connected_device_name, IMethodResult callback) {
 		if (!mBluetoothIsEnabled) return;
-		RhoBluetoothManager.logi(TAG, "session_set_callback : "+callback_url);
-		sharedInstance().getSession().setCallbackURL(callback_url);
+		RhoBluetoothManager.logi(TAG, "session_set_callback : "+callback);
+		sharedInstance().getSession().setCallback(callback);
 	}
-	
+
 	public void fireSessionCallback(String connected_device_name, String event_type) {
-		RhoBluetoothManager.logi(TAG, "fireSessionCallback event_type = "+event_type);
-		StringBuffer body = new StringBuffer();
-		body.append("&connected_device_name=");
-		body.append(connected_device_name);
-		body.append("&event_type=");
-		body.append(event_type);
-		if (mSession.getCallbackURL() != null) {
-			RhoBluetoothManager.onCallback(mSession.getCallbackURL(), body.toString());
+		RhoBluetoothManager.logi(TAG, "fireSessionCallback status/event_type = "+event_type);
+
+		Map<String,Object> resHash = new Hashtable<String,Object>();
+		resHash.put("status", event_type);
+		resHash.put("event_type", event_type);
+		resHash.put("connectionID", connected_device_name);
+		resHash.put("connected_device_name", connected_device_name);
+
+		if (mSession.getCallback() != null) {
+			mSession.getCallback().set(resHash);
 		}
 	}
-	
+
 
 	public void session_disconnect(String connected_device_name) {
 		if (!mBluetoothIsEnabled) return;
@@ -481,7 +497,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 			sharedInstance().getSession().stop();
 		}
 	}
-	
+
 	public int session_get_status(String connected_device_name) {
 		if (!mBluetoothIsEnabled) return -1;
 		RhoBluetoothManager.logi(TAG, "session_get_status : "+String.valueOf(sharedInstance().mInputBufferSize));
@@ -518,7 +534,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		RhoBluetoothManager.logi(TAG, "session_write_string("+str+")");
 		sharedInstance().sendMessage(str);
 	}
-	
+
 	public int session_read_data(String connected_device_name, byte[] buf, int max_length) {
 		if (!mBluetoothIsEnabled) return 0;
 		RhoBluetoothManager.logi(TAG, "session_read_data()");
@@ -565,18 +581,18 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 	}
 
 
-	public void create_custom_server_session(String client_name, String callback_url) {
+	public void create_custom_server_session(String client_name, IMethodResult callback) {
 		if (!mBluetoothIsEnabled) return;
-		RhoBluetoothManager.logi(TAG, "create_custom_server_session(client_name["+client_name+"], callback["+callback_url+"])");
-		sharedInstance().mCreateSessionCallback = callback_url;
+		RhoBluetoothManager.logi(TAG, "create_custom_server_session(client_name["+client_name+"])");
+		sharedInstance().mCreateSessionCallback = callback;
 		sharedInstance().startServer();
 	}
 
-	public void create_custom_client_session(String server_name, String callback_url) {
+	public void create_custom_client_session(String server_name, IMethodResult callback) {
 		if (!mBluetoothIsEnabled) return;
 		final String sname = server_name;
-		RhoBluetoothManager.logi(TAG, "create_custom_client_session(server_name["+server_name+"], callback["+callback_url+"])");
-		sharedInstance().mCreateSessionCallback = callback_url;
+		RhoBluetoothManager.logi(TAG, "create_custom_client_session(server_name["+server_name+"])");
+		sharedInstance().mCreateSessionCallback = callback;
 		PerformOnUiThread.exec( new Runnable() {
 			public void run() {
 				RhoBluetoothManager.logi(TAG, "create_custom_client_session (UI Thread command)");
@@ -601,7 +617,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 			}
 		});
 	}
-	
+
 	public void stop_current_connection_process() {
 		if (!mBluetoothIsEnabled) return;
 		RhoBluetoothManager.logi(TAG, "stop_current_connection_process()");
@@ -611,8 +627,8 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		}
 	}
 
-	
-	
-	
-	
+
+
+
+
 }

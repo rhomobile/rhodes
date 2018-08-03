@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/BluetoothConnection.cpp
+ext/platform/android/generated/jni/bluetoothconnection_ruby_wrap.cpp
+ext/platform/android/generated/jni/bluetoothconnection_js_wrap.cpp
+ext/platform/android/jni/Bluetooth_impl.cpp
+ext/shared/generated/bluetoothconnection_api_init.cpp
+ext/shared/generated/bluetoothconnection_js_api.cpp
+ext/shared/generated/bluetoothconnection_ruby_api.c

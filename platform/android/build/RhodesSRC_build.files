@@ -31,13 +31,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/api/RhoApiDefaultId.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/RhoApiFactory.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/RhoApiObject.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/RhoApiPropertyBag.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/IRhoBluetoothManager.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothDeviceListActivity.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManager.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManagerNew.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManagerOld.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothSession.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/UUIDHelper.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePicker.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePickerScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/event/Event.java

@@ -1,0 +1,224 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="BluetoothConnection" parent="Rho">
+        <HELP_OVERVIEW>Example extension api</HELP_OVERVIEW>
+        <MORE_HELP>This is example of API. Implementation contain in extension.</MORE_HELP>
+
+        <TEMPLATES>
+        </TEMPLATES>
+
+        <CONSTANTS>
+          <CONSTANT name="STATUS_OK" value="OK" type="STRING">
+              <DESC>all is OK</DESC>
+          </CONSTANT>
+          <CONSTANT name="STATUS_ERROR" value="ERROR" type="STRING">
+              <DESC>some error is occured during method call. Check error via lastError property</DESC>
+          </CONSTANT>
+          <CONSTANT name="STATUS_CANCEL" value="CANCEL" type="STRING">
+              <DESC>user cancelled operation</DESC>
+          </CONSTANT>
+          <CONSTANT name="ROLE_SERVER" value="ROLE_SERVER" type="STRING">
+              <DESC>server role</DESC>
+          </CONSTANT>
+          <CONSTANT name="ROLE_CLIENT" value="ROLE_CLIENT" type="STRING">
+              <DESC>client role</DESC>
+          </CONSTANT>
+          <CONSTANT name="ERROR_NO_ERRORS" value="OK" type="STRING">
+              <DESC></DESC>
+          </CONSTANT>
+          <CONSTANT name="ERROR_NOT_FOUND" value="NOT_FOUND" type="STRING">
+              <DESC></DESC>
+          </CONSTANT>
+          <CONSTANT name="ERROR_UNKNOWN" value="UNKNOWN" type="STRING">
+              <DESC></DESC>
+          </CONSTANT>
+          <CONSTANT name="CONNECTION_STATUS_INPUT_DATA_RECEIVED" value="SESSION_INPUT_DATA_RECEIVED" type="STRING">
+              <DESC></DESC>
+          </CONSTANT>
+          <CONSTANT name="CONNECTION_STATUS_DISCONNECTED" value="SESSION_DISCONNECT" type="STRING">
+              <DESC></DESC>
+          </CONSTANT>
+          <CONSTANT name="CONNECTION_STATUS_ERROR" value="ERROR" type="STRING">
+              <DESC></DESC>
+          </CONSTANT>
+        </CONSTANTS>
+
+         <PROPERTIES>
+            <DESC>list of properties supported by instance of object</DESC>
+            <PROPERTY name="isAvailable" type="BOOLEAN" readOnly="true" access="STATIC" generateAccessors="true">
+                <DESC>return TRUE if Bluetooth available for connection now</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="deviceName" type="STRING" access="STATIC" generateAccessors="true">
+                <DESC>name of this device - show on connected device</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="lastError" type="STRING" readOnly="true" access="STATIC" generateAccessors="true">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="connectionID" type="STRING" readOnly="true" generateAccessors="true">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="status" type="INTEGER" readOnly="true" generateAccessors="true">
+                <DESC> -1 if error, 0 if empty or more than zero if data waiting for read </DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS>
+
+            <METHOD name="enableBluetooth" access="STATIC">
+                <DESC>enable BT HW</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+            </METHOD>
+
+            <METHOD name="disableBluetooth" access="STATIC">
+                <DESC>disable BT HW</DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+            </METHOD>
+
+            <METHOD name="getConnectionByID" access="STATIC">
+                <PLATFORM>Android, iOS</PLATFORM>
+                <DESC></DESC>
+                <PARAMS>
+                    <PARAM name="connectionID" type="STRING">
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="SELF_INSTANCE">
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="createConnection" access="STATIC" hasCallback="mandatory">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <PARAMS>
+                    <PARAM name="role" type="STRING">
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>STATUS_* code. See error code by lastError property</DESC>
+                        </PARAM>
+                        <PARAM name="connectionID" type="STRING">
+                            <DESC></DESC>
+                            <CAN_BE_NIL/>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="createServerConnection" access="STATIC" hasCallback="mandatory">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>STATUS_* code. See error code by lastError property</DESC>
+                        </PARAM>
+                        <PARAM name="connectionID" type="STRING">
+                            <DESC></DESC>
+                            <CAN_BE_NIL/>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="createClientConnection" access="STATIC" hasCallback="mandatory">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <PARAMS>
+                    <PARAM name="serverName" type="STRING">
+                    </PARAM>
+                </PARAMS>
+                <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>STATUS_* code. See error code by lastError property</DESC>
+                        </PARAM>
+                        <PARAM name="connectionID" type="STRING">
+                            <DESC></DESC>
+                            <CAN_BE_NIL/>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="stopCurrentConnectionProcess" access="STATIC">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+            </METHOD>
+
+            <METHOD name="setCallback" hasCallback="mandatory">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="status" type="STRING">
+                            <DESC>see CONNECTION_STATUS_ </DESC>
+                        </PARAM>
+                        <PARAM name="connectionID" type="STRING">
+                                <DESC></DESC>
+                                <CAN_BE_NIL/>
+                            </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="writeData">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <PARAMS>
+                    <PARAM name="data" type="ARRAY">
+                        <DESC></DESC>
+                        <PARAM name="byte" type="INTEGER"></PARAM>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="readData">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <RETURN type="ARRAY">
+                    <DESC></DESC>
+                    <PARAM name="byte" type="INTEGER"></PARAM>
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="writeString">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <PARAMS>
+                    <PARAM name="string" type="STRING">
+                        <DESC></DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="readString">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <RETURN type="STRING">
+                    <DESC></DESC>
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="disconnect">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+            </METHOD>
+
+
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>

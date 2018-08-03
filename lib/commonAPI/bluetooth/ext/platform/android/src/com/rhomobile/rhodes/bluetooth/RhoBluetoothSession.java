@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -39,18 +39,20 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import com.rhomobile.rhodes.api.IMethodResult;
+
 public class RhoBluetoothSession {
 
 	// events for listener
 	public static String BT_SESSION_INPUT_DATA_RECEIVED = "SESSION_INPUT_DATA_RECEIVED";
 	public static String BT_SESSION_DISCONNECT = "SESSION_DISCONNECT";
 	public static String BT_SESSION_ERROR = "ERROR";
-	
-	
-	
+
+
+
     // Debugging
     private static final String TAG = "RhoBluetoothSession";
- 
+
     // Name for the SDP record when creating server socket
     private static final String NAME = "btspp";
 
@@ -69,8 +71,8 @@ public class RhoBluetoothSession {
     public static final int STATE_LISTEN = 1;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
-    
-    private String mCallbackUrl;
+
+    private IMethodResult mCallback;
 
     /**
      * Constructor. Prepares a new RhoBluetoothSession session.
@@ -80,17 +82,17 @@ public class RhoBluetoothSession {
     public RhoBluetoothSession(Context context, Handler handler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
-        mCallbackUrl = null;
+        mCallback = null;
     }
 
-    public void setCallbackURL(String url) {
-    	mCallbackUrl = url;
+    public void setCallback(IMethodResult callback) {
+    	mCallback = callback;
     }
-    
-    public String getCallbackURL() {
-    	return mCallbackUrl;
+
+    public IMethodResult getCallback() {
+    	return mCallback;
     }
-    
+
     /**
      * Set the current state of the chat connection
      * @param state  An integer defining the current connection state
@@ -105,7 +107,7 @@ public class RhoBluetoothSession {
         case RhoBluetoothSession.STATE_CONNECTED:
         	RhoBluetoothManager.logi(TAG, "     STATE_CONNECTED");
             //fireCreateSessionCallback(BTC_OK, mConnectedDeviceName);
-        	mCallbackUrl = null;
+        	mCallback = null;
         	RhoBluetoothManager.sharedInstance().onSessionConnectedOK();
             break;
         case RhoBluetoothSession.STATE_LISTEN:
@@ -113,7 +115,7 @@ public class RhoBluetoothSession {
         	break;
         case RhoBluetoothSession.STATE_NONE:
         	//fireSessionCallback(mConnectedDeviceName, mSession.BT_SESSION_DISCONNECT);
-        	mCallbackUrl = null;
+        	mCallback = null;
         	RhoBluetoothManager.logi(TAG, "     STATE_NONE");
         	RhoBluetoothManager.sharedInstance().onSessionDisconnected();
             break;
@@ -439,8 +441,11 @@ public class RhoBluetoothSession {
             while (true) {
                 try {
                     // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
+					bytes = 0;
+					//while ((mmInStream.available() > 0) && (bytes < 1024)) {
 
+						bytes += mmInStream.read(buffer, bytes, 1024 - bytes);
+					//}
                     // Send the obtained bytes to the UI Activity
                     //mHandler.obtainMessage(RhoBluetoothManager.MESSAGE_READ, bytes, -1, buffer)
                     //        .sendToTarget();
@@ -479,9 +484,9 @@ public class RhoBluetoothSession {
             	RhoBluetoothManager.loge(TAG, "close() of connect socket failed");
             }
         }
-    }	
-	
-	
-	
-	
+    }
+
+
+
+
 }
