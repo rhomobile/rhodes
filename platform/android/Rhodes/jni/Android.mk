@@ -11,7 +11,6 @@ LOCAL_SRC_FILES := \
     src/JNIRhoJS.cpp \
     src/JNIRhoRuby.cpp \
     src/alert.cpp \
-    src/bluetooth.cpp \
     src/callbacks.cpp \
     src/camera.cpp \
     src/datetimepicker.cpp \

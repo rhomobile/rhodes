@@ -24,12 +24,16 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#import "Rhodes.h"
 #import "Bluetooth.h"
-#import "AppManager.h"
+//#import "AppManager.h"
+
 #import "common/RhodesApp.h"
 #include "logging/RhoLog.h"
-#include "ruby/ext/rho/rhoruby.h"
+
+
+#import "IBluetoothConnection.h"
+
+#import "Rhodes.h"
 
 
 #define BTC_OK  "OK"
@@ -51,10 +55,14 @@
 #define BT_RHOMOBILE_SESSION_ID @"RhomobileBluetoothSession"
 
 
+
+
+
+#define BT_CONNECTED_DEVICE_NAME @"connected_device_name"
+#define BT_EVENT_TYPE @"event_type"
+
+
 #define kMaxPacketSize 1024
-
-
-#ifdef APP_BUILD_CAPABILITY_BLUETOOTH
 
 
 
@@ -73,8 +81,8 @@ static RhoBluetoothManager *instance = NULL;
 		instance.deviceName = [[UIDevice currentDevice] name];
 		instance.connectedDeviceName = nil;
 		instance.connectedDeviceID = nil;
-		instance.connectionCallbackURL = nil;
-		instance.sessionCallbackURL = nil;
+		instance.connectionCallback = nil;
+		instance.sessionCallback = nil;
 		instance.packets = [NSMutableArray arrayWithCapacity:128];
 	}
     return instance;
@@ -90,7 +98,7 @@ static RhoBluetoothManager *instance = NULL;
 }
 
 
-@synthesize mysession, deviceName, connectedDeviceName, connectedDeviceID, connectionCallbackURL, sessionCallbackURL, packets, mode, custom_connect_client_name, custom_connect_server_name;
+@synthesize mysession, deviceName, connectedDeviceName, connectedDeviceID, connectionCallback, sessionCallback, packets, mode, custom_connect_client_name, custom_connect_server_name;
 
 
 #pragma mark -
@@ -165,13 +173,13 @@ static RhoBluetoothManager *instance = NULL;
 #pragma mark Data Send/Receive Methods
 
 - (void)receiveData:(NSData *)data fromPeer:(NSString *)peer inSession:(GKSession *)session context:(void *)context { 
-	static int lastPacketTime = -1;
+	//static int lastPacketTime = -1;
 
 	unsigned char *incomingPacket = (unsigned char *)[data bytes];
-	int incomingPacketSize= [data length];
+	int incomingPacketSize= (int)[data length];
 	
 	[self addToPackets:incomingPacket length:incomingPacketSize];
-	[self fireSessionCallback:connectedDeviceName event_type:BT_SESSION_INPUT_DATA_RECEIVED];
+	[self fireSessionCallback:connectedDeviceName event_type:CONNECTION_STATUS_INPUT_DATA_RECEIVED];
 }
 
 - (void)sendData:(GKSession *)session withData:(void *)data ofLength:(int)length reliable:(BOOL)howtosend {
@@ -200,7 +208,7 @@ static RhoBluetoothManager *instance = NULL;
 }
 
 - (void)sendNSData:(NSData*)cdata {
-	[self sendData:self.mysession withData:[cdata bytes] ofLength:[cdata length] reliable:YES];
+	[self sendData:self.mysession withData:[cdata bytes] ofLength:(int)[cdata length] reliable:YES];
 }
 
 #pragma mark GKSessionDelegate Methods
@@ -210,7 +218,7 @@ static RhoBluetoothManager *instance = NULL;
 	
 	if(state == GKPeerStateDisconnected) {
 		// We've been disconnected from the other peer.
-		[self fireSessionCallback:connectedDeviceName event_type:BT_SESSION_DISCONNECT];
+		[self fireSessionCallback:connectedDeviceName event_type:CONNECTION_STATUS_DISCONNECTED];
 		
 	} 
     if ((state == GKPeerStateConnected) && ((self.mode == CLIENT_MODE) || (self.mode == SERVER_MODE))) {
@@ -253,41 +261,42 @@ static RhoBluetoothManager *instance = NULL;
 }
 
 - (void)fireConnectionCallback:(NSString*)status connected_device_name:(NSString*)connected_device_name {
-	if (connectionCallbackURL == nil) {
+	if (connectionCallback == nil) {
 		return;
 	}
-	NSString* strBody = @"";
-	strBody = [strBody stringByAppendingString:@"&status="];
-	strBody = [strBody stringByAppendingString:status];
-	strBody = [strBody stringByAppendingString:@"&connected_device_name="];
-	strBody = [strBody stringByAppendingString:connected_device_name];
-    char* norm_url = rho_http_normalizeurl([connectionCallbackURL UTF8String]);
-	rho_net_request_with_data(norm_url, [strBody UTF8String]);
-    rho_http_free(norm_url);
+    
+    NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
+    
+    [dict setValue:status forKey:HK_STATUS];
+    [dict setValue:connected_device_name forKey:HK_CONNECTION_ID];
+    [dict setValue:connected_device_name forKey:BT_CONNECTED_DEVICE_NAME];
+
+    [connectionCallback setResult:dict];
 }
 
 - (void)fireSessionCallback:(NSString*)connected_device_name event_type:(NSString*)event_type {
-	if (sessionCallbackURL == nil) {
+	if (sessionCallback == nil) {
 		return;
 	}
-	NSString* strBody = @"";
-	strBody = [strBody stringByAppendingString:@"&connected_device_name="];
-	strBody = [strBody stringByAppendingString:connected_device_name];
-	strBody = [strBody stringByAppendingString:@"&event_type="];
-	strBody = [strBody stringByAppendingString:event_type];
-    char* norm_url = rho_http_normalizeurl([sessionCallbackURL UTF8String]);
-	rho_net_request_with_data(norm_url, [strBody UTF8String]);
-    rho_http_free(norm_url);
+    
+    NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
+
+    [dict setValue:event_type forKey:HK_STATUS];
+    [dict setValue:event_type forKey:BT_EVENT_TYPE];
+    [dict setValue:connected_device_name forKey:HK_CONNECTION_ID];
+    [dict setValue:connected_device_name forKey:BT_CONNECTED_DEVICE_NAME];
+
+    [sessionCallback setResult:dict];
 }
 
 
-- (void)startConnect:(NSString*)callback {
+- (void)startConnect:(id<IMethodResult>)callback {
     self.mode = PEER_MODE;
 	self.mysession = nil;
 	self.connectedDeviceName = nil;
 	self.connectedDeviceID = nil;
 	
-	self.connectionCallbackURL = callback;
+	self.connectionCallback = callback;
 	[self performSelectorOnMainThread:@selector(startPicker:) withObject:BT_ROLE_SERVER waitUntilDone:NO];
 }
 
@@ -318,20 +327,20 @@ static RhoBluetoothManager *instance = NULL;
     }
 }
 
-- (void)startServerConnect:(NSString*)client_name callback:(NSString*)callback {
+- (void)startServerConnect:(NSString*)client_name callback:(id<IMethodResult>)callback {
 	self.mysession = nil;
 	self.connectedDeviceName = nil;
 	self.connectedDeviceID = nil;
     self.custom_connect_client_name = client_name;
-	self.connectionCallbackURL = callback;
+	self.connectionCallback = callback;
 	[self performSelectorOnMainThread:@selector(startServerConnection:) withObject:BT_ROLE_CLIENT waitUntilDone:NO];
 }
 
-- (void)startClientConnect:(NSString*)server_name callback:(NSString*)callback {
+- (void)startClientConnect:(NSString*)server_name callback:(id<IMethodResult>)callback {
 	self.mysession = nil;
 	self.connectedDeviceName = nil;
 	self.connectedDeviceID = nil;
-	self.connectionCallbackURL = callback;
+	self.connectionCallback = callback;
     self.custom_connect_server_name = server_name;
 	[self performSelectorOnMainThread:@selector(startClientConnection:) withObject:BT_ROLE_SERVER waitUntilDone:NO];
 }
@@ -430,8 +439,8 @@ static RhoBluetoothManager *instance = NULL;
 	}
 	[self invalidateSession:self.mysession];
 	self.mysession = nil;
-	[self fireSessionCallback:connectedDeviceName event_type:BT_SESSION_DISCONNECT];
-	self.sessionCallbackURL = nil;
+	[self fireSessionCallback:connectedDeviceName event_type:CONNECTION_STATUS_DISCONNECTED];
+	self.sessionCallback = nil;
 }
 
 - (void)doDisconnect {
@@ -450,6 +459,8 @@ static RhoBluetoothManager *instance = NULL;
 @end
 
 
+
+/*
 
 int rho_bluetooth_is_bluetooth_available() {
 	return 1;
@@ -546,88 +557,4 @@ void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE d
 	[[RhoBluetoothManager sharedInstance] sendData:buf length:size];
 	free(buf);
 }
-
-#else
-
-
-int rho_bluetooth_is_bluetooth_available() {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-    return 0;
-}
-
-void rho_bluetooth_off_bluetooth() {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-}
-
-void rho_bluetooth_set_device_name(const char* device_name) {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-}
-
-VALUE rho_bluetooth_get_device_name() {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-    return rho_ruby_get_NIL();
-}
-
-const char* rho_bluetooth_get_last_error() {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-    return BTC_OK;
-}
-
-const char* rho_bluetooth_create_session(const char* role, const char* callback_url) {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-    return BTC_OK;
-}
-
-
-const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device) {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-    return BTC_OK;
-}
-
-const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url) {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-    return BTC_OK;
-}
-
-const char* rho_bluetooth_stop_current_connection_process() {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-    return BTC_OK;
-}
-
-
-
-void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url) {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-}
-
-void rho_bluetooth_session_disconnect(const char* connected_device_name) {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-}
-
-int rho_bluetooth_session_get_status(const char* connected_device_name) {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-    return 0;
-}
-
-VALUE rho_bluetooth_session_read_string(const char* connected_device_name) {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-    return rho_ruby_get_NIL();
-}
-
-void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str) {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-}
-
-VALUE rho_bluetooth_session_read_data(const char* connected_device_name) {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-    return rho_ruby_get_NIL();
-}
-
-void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE data) {
-    RAWLOG_ERROR("ERROR: BLUETOOTH is not enabled - add bluetooth capability to build.yml !");
-}
-
-
-#endif APP_BUILD_CAPABILITY_BLUETOOTH
-
-
+*/

@@ -1,0 +1,16 @@
+ext/platform/android/generated/src/com/rho/bluetoothconnection/BluetoothConnectionBase.java
+ext/platform/android/generated/src/com/rho/bluetoothconnection/BluetoothConnectionFactorySingleton.java
+ext/platform/android/generated/src/com/rho/bluetoothconnection/BluetoothConnectionSingletonBase.java
+ext/platform/android/generated/src/com/rho/bluetoothconnection/IBluetoothConnection.java
+ext/platform/android/generated/src/com/rho/bluetoothconnection/IBluetoothConnectionFactory.java
+ext/platform/android/generated/src/com/rho/bluetoothconnection/IBluetoothConnectionSingleton.java
+ext/platform/android/src/com/rho/bluetoothconnection/BluetoothConnection.java
+ext/platform/android/src/com/rho/bluetoothconnection/BluetoothConnectionFactory.java
+ext/platform/android/src/com/rho/bluetoothconnection/BluetoothConnectionSingleton.java
+ext/platform/android/src/com/rhomobile/rhodes/bluetooth/IRhoBluetoothManager.java
+ext/platform/android/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothDeviceListActivity.java
+ext/platform/android/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManager.java
+ext/platform/android/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManagerNew.java
+ext/platform/android/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManagerOld.java
+ext/platform/android/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothSession.java
+ext/platform/android/src/com/rhomobile/rhodes/bluetooth/UUIDHelper.java

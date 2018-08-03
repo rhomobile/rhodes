@@ -12,6 +12,9 @@ import com.rhomobile.rhodes.RhodesService;
 public abstract class AbstractRhoListener implements IRhoListener {
 
     @Override
+    public void onCreateApplication(IRhoExtManager extManager) { }
+
+    @Override
     public void onCreate(RhodesActivity activity, Intent intent) { }
 
     @Override

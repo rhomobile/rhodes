@@ -34,7 +34,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
+//import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
@@ -411,7 +411,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         Logger.T(TAG, "onActivityResult");
 
-        RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
+        //RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
        // com.rhomobile.rhodes.camera.Camera.onActivityResult(requestCode, resultCode, data);
         try{
             RhoExtManager.getImplementationInstance().onActivityResult(this, requestCode, resultCode, data);
