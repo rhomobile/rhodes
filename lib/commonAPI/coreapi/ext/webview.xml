@@ -191,7 +191,7 @@ From RhoElements 2.1 onwards the default value was changed to work out of the bo
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="currentLocation">
+            <METHOD name="currentLocation" runInThread="ui">
                 <DESC>Returns the relative url (location) of the current page(without server and port); the last URL loaded to WebView from Ruby controller action.
 
 If you open your page in WebView, and after it makes a few jumps by linking (for example, to outside web adresses for example), currentLocation will still return the initial url opened in WebView. Also, if you use JQMobile, current_location has the initial URL, but does not reflect the actual window.location containing the JQMobile additional address by adding #, etc. See currentUrl.</DESC>
