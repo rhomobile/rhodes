@@ -43,6 +43,9 @@ class QtProjectGenerator
   attr_accessor :enableQWebEngine
   attr_accessor :versionApp
   attr_accessor :buildMode
+  attr_accessor :enableDBUS
+  attr_accessor :ymlBluetooth
+  attr_accessor :ymlSpdscanner
 
   def render_profile(erbPath)
     tpl = File.read erbPath
@@ -255,6 +258,18 @@ namespace "config" do
         $enableQWebEngine = "ENABLE_Q_WEB_ENGINE"
       end
     end
+
+    $enableDBUS = ""
+    $ymlBluetooth = ""
+    $ymlSpdscanner = ""
+    if $app_config["extensions"].include?("bluetooth")
+      $enableDBUS = "QT += dbus bluetooth"
+      $ymlBluetooth = "- Qt5Bluetooth"
+      $ymlSpdscanner = "- qt5-qtconnectivity-qtsdpscanner"
+    end
+
+
+    
 
     Rake::Task["build:sailfish:startvm"].invoke()
   end
@@ -564,7 +579,10 @@ namespace "build"  do
         generator.nameApp = $final_name_app 
         generator.buildMode = $connf_build
         generator.enableQWebEngine = $enableQWebEngine
-        
+        generator.enableDBUS = $enableDBUS
+        generator.ymlBluetooth = $ymlBluetooth
+        generator.ymlSpdscanner = $ymlSpdscanner
+
         mkdir_p File.join($project_path, ext.downcase)
 
         File.open(File.join($project_path, ext.downcase, "#{ext.downcase}.pro"), 'w' ) { |f| f.write generator.render_profile( erb_project_path ) }
@@ -636,7 +654,10 @@ namespace 'project' do
       generator.enableQWebEngine = $enableQWebEngine
       generator.versionApp = $version_app     
       generator.buildMode = $connf_build
-      
+      generator.enableDBUS = $enableDBUS
+      generator.ymlBluetooth = $ymlBluetooth
+      generator.ymlSpdscanner = $ymlSpdscanner
+
       File.open(File.join($project_path, "curl", "curl.pro"), 'w' ) { |f| f.write generator.render_profile( curl_erb_path ) }
       File.open(File.join($project_path, "rubylib", "rubylib.pro"), 'w' ) { |f| f.write generator.render_profile( rubylib_erb_path ) }
       File.open(File.join($project_path, "rholib", "rholib.pro"), 'w' ) { |f| f.write generator.render_profile( rholib_erb_path ) }

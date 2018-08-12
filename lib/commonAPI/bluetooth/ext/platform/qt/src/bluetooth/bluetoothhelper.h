@@ -1,7 +1,6 @@
 #ifndef BLUETOOTHHELPER_H
 #define BLUETOOTHHELPER_H
 
-
 #include <QObject>
 #ifdef OS_SAILFISH
 #include <QtDBus/QDBusInterface>
@@ -66,7 +65,7 @@ public:
     }
 
 private:
-    QString lastSavedCallback;
+    rho::apiGenerator::CMethodResult lastSavedCallback;
     QTimer timerRefresh;
     QHash<QString, BluetoothDeviceLabel *> devicesKeeper;
     QBluetoothDeviceDiscoveryAgent discoverer;
@@ -93,20 +92,19 @@ public slots:
         }
     }
 
-    void setCallback(QString connected_device_name, QString callback){
-        qDebug() << connected_device_name << callback;
+    void setCallback(QString connected_device_name, rho::apiGenerator::CMethodResult callback){
+        qDebug() << connected_device_name;
         BluetoothSender * session = getSession(connected_device_name);
         if (session != nullptr){
             session->setCallBack(callback);
         }
     }
 
-    void remove(const char* connected_device_name){
+    void remove(QString & connected_device_name){
         QMutexLocker locker(&mutex);
-        QString name = QString::fromLatin1(connected_device_name);
-        if (BluetoothSender::getKeeper()->contains(name)){
-            BluetoothSender::getKeeper()->value(name)->deleteLater();
-            BluetoothSender::getKeeper()->remove(name);
+        if (BluetoothSender::getKeeper()->contains(connected_device_name)){
+            BluetoothSender::getKeeper()->value(connected_device_name)->deleteLater();
+            BluetoothSender::getKeeper()->remove(connected_device_name);
         }
     }
 
@@ -131,8 +129,8 @@ public slots:
         #endif
     }
 
-    void openDeviceDiscover(QString callbackUrl){
-        lastSavedCallback = callbackUrl;
+    void openDeviceDiscover(rho::apiGenerator::CMethodResult callback){
+        lastSavedCallback = callback;
         discoverer.start();
         refresh();
         timerRefresh.start(1000);
@@ -204,8 +202,8 @@ public slots:
     }
 
 
-    BluetoothServer * createServer(QString clientName, QString callback){
-        qDebug() << "createServer" << clientName << callback;
+    BluetoothServer * createServer(QString clientName, rho::apiGenerator::CMethodResult callback){
+        qDebug() << "createServer" << clientName;
 
         refresh();
 
@@ -223,14 +221,14 @@ public slots:
     }
 
 
-    BluetoothClient * createClient(QBluetoothDeviceInfo info, QString name, QString callback){
-        qDebug() << info.name() << callback;
+    BluetoothClient * createClient(QBluetoothDeviceInfo info, QString name, rho::apiGenerator::CMethodResult callback){
+        qDebug() << info.name();
 
         BluetoothClient * client = new BluetoothClient(info, name, callback, this);
         return client;
     }
 
-    BluetoothClient * createClient(QString serverName, QString callback){
+    BluetoothClient * createClient(QString serverName, rho::apiGenerator::CMethodResult callback){
         refresh();
 
 

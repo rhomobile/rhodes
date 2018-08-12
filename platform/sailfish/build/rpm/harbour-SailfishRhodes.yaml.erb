@@ -19,15 +19,15 @@ PkgConfigBR:
   - Qt5Core
   - Qt5Qml
   - Qt5WebKit
-  - Qt5Bluetooth
+  <%= @ymlBluetooth %>
 
 PkgBR:
   - qt5-qtqml-import-webkitplugin-experimental
 
 Requires:
   - sailfishsilica-qt5 >= 0.10.9 
-  - qt5-qtconnectivity-qtsdpscanner
-
+  <%= ymlSpdscanner %>
+  
 Files:
   - '%{_bindir}'
   - '%{_datadir}/%{name}'

@@ -6,12 +6,15 @@ android:
   adds: ext/platform/android/additional_files
   source_list: ext/platform/android/ext_java.files
   exttype: rakefile
-wp8:
+uwp:
   csharp_impl: yes
   root_namespace: rho
 
+sailfish:
+  proerb: ext/platform/qt/Bluetooth.pro.erb
+
 project_paths:
-  wp8: ext/platform/wp8/BluetoothLib.vcxproj
+  uwp: ext/platform/uwp/BluetoothLib.vcxproj
   wm: ext/platform/wm/Bluetooth.vcproj
   
 xml_api_paths: ext/BluetoothConnection.xml

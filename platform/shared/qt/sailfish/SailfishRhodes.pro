@@ -59,7 +59,8 @@ $$PWD/../../../../lib/extensions/serialport/ext/serialport.pro \
 $$PWD/../../../../lib/extensions/zlib/ext/zlib.pro \
 $$PWD/../../../../lib/commonAPI/mediacapture/ext/platform/qt/MediaCapture.pro \
 $$PWD/../../../../lib/commonAPI/barcode/ext/platform/qt/Barcode.pro \
-$$PWD/../../../../lib/commonAPI/signature/ext/platform/qt/Signature.pro
+$$PWD/../../../../lib/commonAPI/signature/ext/platform/qt/Signature.pro\
+$$PWD/../../../../lib/commonAPI/bluetooth/ext/platform/qt/Bluetooth.pro
 
 SUBDIRS += $$PWD/../curl
 SUBDIRS += $$PWD/../rhodes

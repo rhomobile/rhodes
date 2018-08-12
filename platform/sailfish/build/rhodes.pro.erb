@@ -1,4 +1,5 @@
-QT += core gui network multimedia bluetooth dbus
+QT += core gui network multimedia
+<%= @enableDBUS %>
 
 DEFINES += <%= @enableQWebEngine %>
 
@@ -61,12 +62,6 @@ HEADERS += <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoClassFactoryImpl.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/DateTimePickerImpl.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/AlertImpl.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoThreadImpl.h\
-<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothhelper.h \
-<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothsender.h \
-<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothserver.h \
-<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothclient.h \
-<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetooththread.h \
-<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/bluetooth/bluetoothdevicelabel.h \
 <%= @rhoRoot %>/platform/shared/qt/rhodes/iexecutable.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/MainWindowCallback.h\
 <%= @rhoRoot %>/platform/shared/qt/rhodes/QtCustomStyle.h\

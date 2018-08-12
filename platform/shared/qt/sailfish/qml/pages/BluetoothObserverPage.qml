@@ -16,28 +16,28 @@ Page {
 
 
         delegate: BackgroundItem {
-            id: delegate
-            Label {
-                id: deviceName
-                x: Theme.horizontalPageMargin
-                text: modelData.deviceName
-                anchors.verticalCenter: parent.verticalCenter
-                color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
+            height: 150
+            width: Screen.width
 
-            }
             Label {
-                anchors.top: deviceName.bottom
-                x: Theme.horizontalPageMargin
-                text: modelData.deviceId
-                height: deviceName.height / 1.5
                 anchors.verticalCenter: parent.verticalCenter
-                color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
+                anchors.horizontalCenter: parent.horizontalCenter
+                id: deviceName
+                //x: Theme.horizontalPageMargin
+                text: "   " + modelData.deviceName + "\n   " + modelData.deviceId
+                color: Theme.primaryColor
+                anchors.top: parent.top
+
             }
 
             onClicked:{
+                console.log("Clicked on " + deviceName)
                 modelData.clicked();
                 pageStack.pop();
             }
+
+
+
         }
 
         VerticalScrollDecorator {}

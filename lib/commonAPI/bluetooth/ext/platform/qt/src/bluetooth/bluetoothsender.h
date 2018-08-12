@@ -15,7 +15,7 @@
 #include <QtBluetooth/QBluetoothDeviceInfo>
 #include <QtBluetooth/QBluetoothSocket>
 #include <QQueue>
-#include "ext/rho/rhoruby.h"
+//#include "ext/rho/rhoruby.h"
 #include "common/RhodesApp.h"
 #include <QMutex>
 #include <QMutexLocker>
@@ -25,11 +25,13 @@ class BluetoothSender : public QObject
 {
     Q_OBJECT
 public:
-    explicit BluetoothSender(QBluetoothDeviceInfo &info, QString createSessionCallBack, QObject *parent) : QObject(parent){
+    explicit BluetoothSender(QBluetoothDeviceInfo &info, rho::apiGenerator::CMethodResult &createSessionCallBack,
+                             QObject *parent) : QObject(parent){
         this->info = info;
         this->createSessionCallBack = createSessionCallBack;
         savedMessageTimer.setSingleShot(true);
         connect(&savedMessageTimer, SIGNAL(timeout()), this, SLOT(sendSavedMessage()));
+        qDebug() << "Sender created";
     }
     virtual ~BluetoothSender(){
 
@@ -46,6 +48,7 @@ public:
     }
 
     void messageReceived(const QString & message){
+        qDebug() << message;
         savedMessageTimer.stop();
         if (!message.isEmpty()){
             QMutexLocker locker(&mutex);
@@ -101,7 +104,7 @@ public:
         name = value;
     }
 
-    void setCallBack(const QString &value)
+    void setCallBack(rho::apiGenerator::CMethodResult &value)
     {
         callBack = value;
     }
@@ -126,36 +129,34 @@ public:
         return 0;
     }
 
-    static void fireCancel(const QString &mCreateSessionCallback){
-        if (mCreateSessionCallback.isEmpty()) {return;}
-        QString body("&status=\"\"&connected_device_name=" + QString::fromLocal8Bit(RHO_BT_CANCEL));
-        fireRhodesCallback(mCreateSessionCallback.toStdString().c_str(), body.toStdString().c_str(), false);
+    static void fireCancel(rho::apiGenerator::CMethodResult &mCreateSessionCallback){
+        if (!mCreateSessionCallback.hasCallback()) {return;}
+        auto map = mCreateSessionCallback.getStringHash();
+        map.put("status", RHO_BT_CANCEL);
+        mCreateSessionCallback.set(map);
     }
 
     void fireCreateSessionCallBack(const QString &status) {
-        if (createSessionCallBack.isEmpty()) {return;}
-        QString body("&status=" + status + "&connected_device_name=" + name);
-        fireRhodesCallback(createSessionCallBack.toStdString().c_str(), body.toStdString().c_str(), false);
+        if (!createSessionCallBack.hasCallback()) {return;}
+        auto map = createSessionCallBack.getStringHash();
+        map.put("status", status.toStdString());
+        map.put("connectionID", name.toStdString());
+        createSessionCallBack.set(map);
     }
 
     void fireSessionCallBack(const QString &event_type) {
-        if (callBack.isEmpty()) {return;}
-        QString body("&connected_device_name=" + name + "&event_type=" + event_type);
-        fireRhodesCallback(callBack.toStdString().c_str(), body.toStdString().c_str(), false);
-    }
-
-    static void fireRhodesCallback(const char* callback_url, const char* body, bool in_thread) {
-        char* norm_url = rho_http_normalizeurl(callback_url);
-        if (in_thread) {rho_net_request_with_data_in_separated_thread(norm_url, body);}
-        else {rho_net_request_with_data(norm_url, body);}
-        rho_http_free(norm_url);
+        if (!callBack.hasCallback()) {return;}
+        auto map = callBack.getStringHash();
+        map.put("status", event_type.toStdString());
+        map.put("connectionID", name.toStdString());
+        callBack.set(map);
     }
 
 protected:
     QMutex mutex;
     QBluetoothDeviceInfo info;
-    QString createSessionCallBack;
-    QString callBack;
+    rho::apiGenerator::CMethodResult createSessionCallBack;
+    rho::apiGenerator::CMethodResult callBack;
     QBluetoothSocket *socket = nullptr;
     QString name;
     QQueue<QString> messagesKeeper;

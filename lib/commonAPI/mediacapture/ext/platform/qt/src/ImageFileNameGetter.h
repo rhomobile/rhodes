@@ -3,12 +3,12 @@
 
 #include <QString>
 #include <QList>
-#include <QFileDialog>
 #include <QStandardPaths>
 #include <QImage>
 #include <QTimer>
 #include "ImageFilenameGetterResult.h"
 #ifndef OS_SAILFISH
+#include <QFileDialog>
 #include "CameraDialogView.h"
 #endif
 class ImageFileNameGetter : public IExecutable

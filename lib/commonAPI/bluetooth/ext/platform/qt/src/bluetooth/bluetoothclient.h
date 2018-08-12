@@ -16,7 +16,9 @@
 class BluetoothClient : public BluetoothSender {
     Q_OBJECT
 public:
-    explicit BluetoothClient(QBluetoothDeviceInfo & info, QString name, QString callback, QObject *parent) : BluetoothSender(info, callback, parent)  {
+    explicit BluetoothClient(QBluetoothDeviceInfo & info, QString name,
+                             rho::apiGenerator::CMethodResult createSessionCallBack, QObject *parent) :
+        BluetoothSender(info, createSessionCallBack, parent)  {
         #ifdef OS_SAILFISH
         QDBusInterface bluetoothInterface("net.connman", "/net/connman/technology/bluetooth",
                                           "net.connman.Technology", QDBusConnection::systemBus(), this);

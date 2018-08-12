@@ -2,10 +2,12 @@
 //  CameraImpl.cpp
 #include <Qt>
 #include <QHash>
+#ifndef OS_SAILFISH
 #include <QtGui>
 #include <QtWidgets>
 #include <QApplication>
 #include <QWindow>
+#endif
 #include "CCameraData.h"
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"

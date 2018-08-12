@@ -109,6 +109,7 @@ int main(int argc, char *argv[])
     QScopedPointer<QGuiApplication> pApplication(SailfishApp::application(argc, argv));
     QGuiApplication * application = const_cast<QGuiApplication *>(pApplication.data());
     qRegisterMetaType<QString>("QString");
+    qRegisterMetaType<rho::apiGenerator::CMethodResult>("rho::apiGenerator::CMethodResult");
     qmlRegisterUncreatableType<RootDelegate>("RootDelegate",1,0,"RootDelegate","Err");
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

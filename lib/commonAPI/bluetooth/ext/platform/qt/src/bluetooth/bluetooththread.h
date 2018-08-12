@@ -13,6 +13,7 @@ class BluetoothThread : public QThread
         msleep(1);
         QMutexLocker locker(&mutex);
     }
+
 public:
     static BluetoothThread * getInstance(){
         static BluetoothThread instance;
@@ -23,13 +24,15 @@ public:
         BluetoothHelper::getInstance();
         connect(this, SIGNAL(sendMessage(QString,QString)), BluetoothHelper::getInstance(), SLOT(sendMessage(QString,QString)),
                 Qt::QueuedConnection);
-        connect(this, SIGNAL(setCallback(QString,QString)), BluetoothHelper::getInstance(), SLOT(setCallback(QString,QString)),
+        connect(this, SIGNAL(setCallback(QString,rho::apiGenerator::CMethodResult)), BluetoothHelper::getInstance(), SLOT(setCallback(QString,rho::apiGenerator::CMethodResult)),
                 Qt::QueuedConnection);
-        connect(this, SIGNAL(openDeviceDiscover(QString)), BluetoothHelper::getInstance(), SLOT(openDeviceDiscover(QString)),
+        connect(this, SIGNAL(openDeviceDiscover(rho::apiGenerator::CMethodResult)), BluetoothHelper::getInstance(), SLOT(openDeviceDiscover(rho::apiGenerator::CMethodResult)),
                 Qt::QueuedConnection);
-        connect(this, SIGNAL(createClient(QString,QString)), BluetoothHelper::getInstance(), SLOT(createClient(QString,QString)),
+        connect(this, SIGNAL(createClient(QString,rho::apiGenerator::CMethodResult)), BluetoothHelper::getInstance(),
+                SLOT(createClient(QString,rho::apiGenerator::CMethodResult)),
                 Qt::QueuedConnection);
-        connect(this, SIGNAL(createServer(QString,QString)), BluetoothHelper::getInstance(), SLOT(createServer(QString,QString)),
+        connect(this, SIGNAL(createServer(QString,rho::apiGenerator::CMethodResult)), BluetoothHelper::getInstance(),
+                SLOT(createServer(QString,rho::apiGenerator::CMethodResult)),
                 Qt::QueuedConnection);
         connect(this, SIGNAL(setWorking(bool)), BluetoothHelper::getInstance(), SLOT(setWorking(bool)),
                 Qt::QueuedConnection);
@@ -44,22 +47,18 @@ public:
     }
 
     QString getDeviceName(){
-        qDebug() << "Getting device name";
         return BluetoothHelper::getInstance()->getDeviceName();
     }
 
-    BluetoothSender * getSession(const char* connected_device_name){
-        qDebug() << QString::fromLocal8Bit(connected_device_name);
+    BluetoothSender * getSession(QString &connected_device_name){
         return BluetoothHelper::getInstance()->getSession(connected_device_name);
     }
 
-    void remove(const char* connected_device_name){
-        qDebug() << QString::fromLocal8Bit(connected_device_name);
+    void remove(QString &connected_device_name){
         BluetoothHelper::getInstance()->remove(connected_device_name);
     }
 
     QString getLastError(){
-        qDebug() << "Getting last error";
         return BluetoothHelper::getInstance()->getLastError();
     }
 
@@ -69,13 +68,13 @@ signals:
     void setDeviceName(QString name);
     void setWorking(bool b);
     void sendMessage(QString connected_device_name, QString message);
-    void setCallback(QString connected_device_name, QString callback);
+    void setCallback(QString connected_device_name, rho::apiGenerator::CMethodResult callback);
 
-    void openDeviceDiscover(QString callbackUrl);
+    void openDeviceDiscover(rho::apiGenerator::CMethodResult callbackUrl);
 
-    void createServer(QString clientName, QString callback);
+    void createServer(QString clientName, rho::apiGenerator::CMethodResult oResult);
 
-    void createClient(QString serverName, QString callback);
+    void createClient(QString serverName, rho::apiGenerator::CMethodResult oResult);
 
 };
 

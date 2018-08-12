@@ -1,7 +1,7 @@
-QT += core gui widgets multimedia multimediawidgets network
+QT += core gui multimedia network
 
 lessThan(QT_MINOR_VERSION, 6): {
-    QT += webkit widgets webkitwidgets
+    QT += webkit widgets webkitwidgets widgets multimediawidgets
     DEFINES += RHODES_VERSION_1
 }
 
@@ -15,7 +15,7 @@ equals(QT_MAJOR_VERSION, 5) {
 }
 
 greaterThan(QT_MINOR_VERSION, 6): {
-    QT += webengine webenginecore webenginewidgets
+    QT += webengine webenginecore webenginewidgets widgets multimediawidgets
     CONFIG += c++14
     DEFINES += CPP_ELEVEN RHODES_VERSION_2
 }

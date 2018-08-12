@@ -1,11 +1,8 @@
-QT += core gui network bluetooth
-
+QT += core gui network
 message(Qt version: $$[QT_VERSION])
 isEqual(QT_MAJOR_VERSION, 5):{
-    QT += multimedia multimediawidgets
-
     lessThan(QT_MINOR_VERSION, 6): {
-        QT += webkit widgets webkitwidgets
+        QT += webkit widgets webkitwidgets multimedia multimediawidgets
         message(Deprecated webkit enabled)
         DEFINES += RHODES_VERSION_1
         INCLUDEPATH += oldVersion
@@ -23,7 +20,7 @@ isEqual(QT_MAJOR_VERSION, 5):{
                 QT += webengine
             }
 
-            QT += quick bluetooth dbus #widgets
+            QT += quick multimedia dbus bluetooth
             DEFINES += OS_SAILFISH OS_LINUX
             CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
         }
@@ -31,7 +28,7 @@ isEqual(QT_MAJOR_VERSION, 5):{
 
 
     greaterThan(QT_MINOR_VERSION, 6): {
-        QT += webengine webenginecore webenginewidgets
+        QT += webengine webenginecore webenginewidgets multimedia multimediawidgets
         message(Webengine enabled)
         CONFIG += c++14
         DEFINES += RHODES_VERSION_2
@@ -204,15 +201,7 @@ MainWindowCallback.h\
 QtCustomStyle.h\
 mainwindowinterface.h \
 guithreadfunchelper.h \
-impl/notificationsound.h \
-impl/bluetooth/bluetoothhelper.h \
-impl/bluetooth/bluetoothserver.h \
-impl/bluetooth/bluetoothclient.h \
-impl/bluetooth/bluetoothdevicelabel.h \
-impl/bluetooth/bluetoothsender.h \
-impl/bluetooth/bluetooththread.h
-
-
+impl/notificationsound.h
 
 SOURCES += impl/AlertImpl.cpp\
 impl/BluetoothImpl.cpp\
@@ -369,4 +358,7 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-
 
 unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lserialport
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libserialport.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lbluetooth
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libbluetooth.a
 }

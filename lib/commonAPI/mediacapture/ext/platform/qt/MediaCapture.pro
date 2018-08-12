@@ -1,20 +1,20 @@
-QT += core gui widgets multimedia multimediawidgets network
+QT += core gui multimedia network
 
 lessThan(QT_MINOR_VERSION, 6): {
-    QT += webkit widgets webkitwidgets
+    QT += webkit widgets webkitwidgets widgets multimediawidgets
     DEFINES += RHODES_VERSION_1
 }
 
 equals(QT_MAJOR_VERSION, 5) {
     equals(QT_MINOR_VERSION, 6) {
-        QT += webkit widgets quick
+        QT += webkit quick
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += sailfishapp c++14 sailfishapp_i18n
     }
 }
 
 greaterThan(QT_MINOR_VERSION, 6): {
-    QT += webengine webenginecore webenginewidgets
+    QT += webengine webenginecore webenginewidgets widgets multimediawidgets
     CONFIG += c++14
     DEFINES += CPP_ELEVEN RHODES_VERSION_2
 }
@@ -54,7 +54,6 @@ win32 {
   }
   release {
     DEFINES += _NDEBUG NDEBUG
-    #DEFINES += _ITERATOR_DEBUG_LEVEL=2
   }
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/win32
   RCC_DIR = $$RHODES_ROOT/lib/commonAPI/mediacapture/ext/platform/qt/resources
