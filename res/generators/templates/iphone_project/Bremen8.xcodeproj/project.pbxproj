@@ -52,6 +52,7 @@
 		FA4D3F8D136B0A98009D6E63 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F8C136B0A98009D6E63 /* libiconv.dylib */; };
 		FA522FE112E49D6F00AB55CC /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA522FE012E49D6F00AB55CC /* QuartzCore.framework */; };
 		FA52309412E55CA700AB55CC /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA52309312E55CA700AB55CC /* EventKit.framework */; };
+		FA5890522117F05C006768DB /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA5890512117F05C006768DB /* WebKit.framework */; };
 		FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA673A5615FCD787005CAD64 /* CoreMotion.framework */; };
 		FA6747E71D3DD1D000F0A09D /* rhorunner_production.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = FA376CEC1D3DC3BA00CAD973 /* rhorunner_production.entitlements */; };
 
@@ -69,7 +70,6 @@
 		FAD18F2B1E3AF8100064808C /* sync_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = FAD18F201E3AF8100064808C /* sync_btn.png */; };
 		FAD18F2C1E3AF8100064808C /* sync_btn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAD18F211E3AF8100064808C /* sync_btn@2x.png */; };
 		FAD18F2D1E3AF8100064808C /* sync_btn@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAD18F221E3AF8100064808C /* sync_btn@3x.png */; };
-		FAE53749205C1034009B14DC /* libstdc++.6.0.9.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = FAE53748205C1034009B14DC /* libstdc++.6.0.9.tbd */; };
 		FAED78CE183C3CF400BC7028 /* libRhodes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED7893183C3A8200BC7028 /* libRhodes.a */; };
 		FAF3BF3218E26D3B00860FCA /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FAF3BF3018E26D3B00860FCA /* app_build_configs.c */; };
 		FAF3BF3318E26D3B00860FCA /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = FAF3BF3118E26D3B00860FCA /* extensions.c */; };
@@ -144,6 +144,7 @@
 		FA4D3F8C136B0A98009D6E63 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/usr/lib/libiconv.dylib; sourceTree = DEVELOPER_DIR; };
 		FA522FE012E49D6F00AB55CC /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		FA52309312E55CA700AB55CC /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
+		FA5890512117F05C006768DB /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		FA673A5615FCD787005CAD64 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/CoreMotion.framework; sourceTree = DEVELOPER_DIR; };
 		FA6A403318319D0E00794752 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/MapKit.framework; sourceTree = DEVELOPER_DIR; };
 		FA8266811BC05F46006871AB /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/GameKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -160,7 +161,6 @@
 		FAD18F201E3AF8100064808C /* sync_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sync_btn.png; path = Resources/sync_btn.png; sourceTree = "<group>"; };
 		FAD18F211E3AF8100064808C /* sync_btn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "sync_btn@2x.png"; path = "Resources/sync_btn@2x.png"; sourceTree = "<group>"; };
 		FAD18F221E3AF8100064808C /* sync_btn@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "sync_btn@3x.png"; path = "Resources/sync_btn@3x.png"; sourceTree = "<group>"; };
-		FAE53748205C1034009B14DC /* libstdc++.6.0.9.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.6.0.9.tbd"; path = "Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.2.sdk/usr/lib/libstdc++.6.0.9.tbd"; sourceTree = DEVELOPER_DIR; };
 		FAED788D183C3A8100BC7028 /* Rhodes.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Rhodes.xcodeproj; path = Rhodes/Rhodes.xcodeproj; sourceTree = "<group>"; };
 		FAF3BF3018E26D3B00860FCA /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = Rhodes/app_build_configs.c; sourceTree = "<group>"; };
 		FAF3BF3118E26D3B00860FCA /* extensions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extensions.c; path = Rhodes/extensions.c; sourceTree = "<group>"; };
@@ -171,7 +171,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAE53749205C1034009B14DC /* libstdc++.6.0.9.tbd in Frameworks */,
 				AC1F5D6920615B8E00B818B8 /* StoreKit.framework */,
 				AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework */,
 				AC1F5D6120615B6C00B818B8 /* FirebaseCore.framework */,
@@ -182,7 +181,7 @@
 				AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework */,
 				AC1F5D6720615B6C00B818B8 /* nanopb.framework */,
 				AC1F5D6620615B6C00B818B8 /* Protobuf.framework */,
-				FAA714AB1DDE835500E5E7AD /* WebKit.framework in Frameworks */,
+				FA5890522117F05C006768DB /* WebKit.framework in Frameworks */,
 				FA8266821BC05F46006871AB /* GameKit.framework in Frameworks */,
 				C076329B186DDD24005019BA /* ExternalAccessory.framework in Frameworks */,
 				FAED78CE183C3CF400BC7028 /* libRhodes.a in Frameworks */,
@@ -264,7 +263,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FAE53748205C1034009B14DC /* libstdc++.6.0.9.tbd */,
 				AC1F5D6820615B8600B818B8 /* StoreKit.framework */,
 				AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */,
 				AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */,
@@ -275,7 +273,7 @@
 				AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */,
 				AC1F5D5E20615B6C00B818B8 /* nanopb.framework */,
 				AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */,
-				FAA714AA1DDE835500E5E7AD /* WebKit.framework */,
+				FA5890512117F05C006768DB /* WebKit.framework */,
 				FA8266811BC05F46006871AB /* GameKit.framework */,
 				C076329A186DDD24005019BA /* ExternalAccessory.framework */,
 				FA6A403318319D0E00794752 /* MapKit.framework */,
@@ -532,7 +530,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = "rhorunner_development.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -583,7 +581,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = "rhorunner_development.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -657,7 +655,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_ENTITLEMENTS = "rhorunner_production.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";

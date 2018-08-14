@@ -547,9 +547,9 @@
 		1DEB927908733DD40010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				FRAMEWORK_SEARCH_PATHS = /Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -566,16 +566,16 @@
 				);
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
-				VALID_ARCHS = "i386 x86_64";
+				VALID_ARCHS = "x86_64";
 			};
 			name = Debug;
 		};
 		1DEB927A08733DD40010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				FRAMEWORK_SEARCH_PATHS = /Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = .;
@@ -591,7 +591,7 @@
 				);
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
-				VALID_ARCHS = "i386 x86_64";
+				VALID_ARCHS = "x86_64";
 			};
 			name = Release;
 		};

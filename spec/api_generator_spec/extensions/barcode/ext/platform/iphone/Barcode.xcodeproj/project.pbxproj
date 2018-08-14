@@ -255,7 +255,7 @@
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -276,7 +276,7 @@
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -288,7 +288,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/Barcode.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -298,11 +298,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Barcode_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = Barcode;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "i386 armv7";
+				VALID_ARCHS = "x86_64 armv7";
 			};
 			name = Debug;
 		};
@@ -310,17 +310,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				DSTROOT = /tmp/Barcode.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Barcode_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = Barcode;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "i386  armv7";
+				VALID_ARCHS = "x86_64 armv7";
 			};
 			name = Release;
 		};

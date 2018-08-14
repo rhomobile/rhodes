@@ -280,7 +280,7 @@
 					../../../../../../platform/shared/api_generator,
 					../../../../../../platform/shared,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				New_Setting = "";
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -301,7 +301,7 @@
 					../../../../../../platform/shared/api_generator,
 					../../../../../../platform/shared,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				New_Setting = "";
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -321,7 +321,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = JavascriptVM_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OTHER_CFLAGS = "-DRHO_NO_JS_API";
 				PRODUCT_NAME = JavascriptVM;
@@ -338,7 +338,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = JavascriptVM_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OTHER_CFLAGS = "-DRHO_NO_JS_API";
 				PRODUCT_NAME = JavascriptVM;

@@ -333,7 +333,7 @@
 					/Users/MOHUS/rhodes.development_extras/rhodes/platform/shared/ruby/ext/rho,
 					/Users/MOHUS/rhodes.development_extras/rhodes/platform/iphone/Classes/MapView,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -361,7 +361,7 @@
 					/Users/MOHUS/rhodes.development_extras/rhodes/platform/shared/ruby/ext/rho,
 					/Users/MOHUS/rhodes.development_extras/rhodes/platform/iphone/Classes/MapView,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -397,7 +397,7 @@
 					/Users/MOHUS/rhodes.development_extras/rhodes/platform/iphone/Classes,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = Development;
 				SDKROOT = iphoneos;
@@ -428,7 +428,7 @@
 					/Users/MOHUS/rhodes.development_extras/rhodes/platform/iphone/Classes,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = Development;
 				SDKROOT = iphoneos;
