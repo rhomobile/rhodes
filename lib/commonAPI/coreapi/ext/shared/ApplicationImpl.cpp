@@ -217,7 +217,7 @@ public:
 
     virtual void getInvalidSecurityTokenStartPath(rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set( RHOCONF().getString("invalid_security_token_start_path") );
+        oResult.set(RHOCONF().getString("invalid_security_token_start_path"));
     }
 
     virtual void setInvalidSecurityTokenStartPath( const rho::String& invalidSecurityTokenStartPath, rho::apiGenerator::CMethodResult& oResult)
@@ -232,7 +232,7 @@ public:
 
     virtual void getRhoPlatformVersion(rho::apiGenerator::CMethodResult& oResult)
     {
-        //TODO: getRhoPlatformVersion
+        oResult.set(RHOCONF().getString("rhodes_gem_version"));
     }
 };
 

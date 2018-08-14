@@ -888,6 +888,9 @@ class Jake
             next
         end
 
+        #skip empty files
+        next unless File.size?(f)
+
         puts "    encrypt file: "+f.to_s+" ..."
 
         #load file
