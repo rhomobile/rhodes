@@ -522,7 +522,7 @@
 					"./ZXingObjC/ZXingObjC/**",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/ZXingObjC\"/**",
@@ -569,7 +569,7 @@
 					"./ZXingObjC/ZXingObjC/**",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/ZXingObjC\"/**",
@@ -607,7 +607,7 @@
 					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
 					/Users/MOHUS/rhodes/platform/shared,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
@@ -636,7 +636,7 @@
 					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
 					/Users/MOHUS/rhodes/platform/shared,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;

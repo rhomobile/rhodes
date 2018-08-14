@@ -1703,7 +1703,7 @@
 					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
 					/Users/MOHUS/rhodes/platform/shared,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -1731,7 +1731,7 @@
 					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
 					/Users/MOHUS/tauplatform/rhodes/platform/shared,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -1767,7 +1767,7 @@
 					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = CoreAPI;
 				SDKROOT = iphoneos;
@@ -1798,7 +1798,7 @@
 					/Users/MOHUS/rhodes/platform/iphone/Classes,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = CoreAPI;
 				SDKROOT = iphoneos;
