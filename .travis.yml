@@ -70,7 +70,7 @@ android:
 
 env:
   global:
-  - ANDROID_NDK_HOME=$HOME/android-ndk-r16b
+  - ANDROID_NDK_HOME=$HOME/android-ndk-r17b
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
   - S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"

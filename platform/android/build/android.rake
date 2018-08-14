@@ -1785,6 +1785,7 @@ namespace "build" do
         rlibs << "log"
         rlibs << "dl"
         rlibs << "z"
+        rlibs << "stdc++"
 
         rlibs.map! { |x| "-l#{x}" }
 
@@ -1804,6 +1805,8 @@ namespace "build" do
           args << "-landroid_support"
           puts "libandroid_support exists"
         end
+
+
         
         deps = []
         libs = []

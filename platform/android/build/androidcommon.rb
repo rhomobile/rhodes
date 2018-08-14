@@ -133,7 +133,12 @@ def cpp_def_args
     #args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include','backward')}\""
-    args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi','include')}\""
+    
+    dirArmeabi = File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi','include')
+    if !File.directory?(dirArmeabi)
+      dirArmeabi = File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi-v7a','include')
+    end
+    args << "-I\"#{dirArmeabi}\""
     args
 end
 
@@ -316,7 +321,7 @@ end
 def get_stl_link_args(abi)
   args = []
   args << "-L#{File.join($androidndkpath, "sources","cxx-stl","gnu-libstdc++",$ndkgccver,'libs',abi)}"
-  args << "-lgnustl_static"
+  #args << "-lgnustl_static"
   args
 end
 
@@ -326,12 +331,14 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   return true if FileUtils.uptodate? outname, dependencies
 
   args = []
+
   if $ndkabi == "arm-eabi"
     args << "-nostdlib"
     args << "-Wl,-shared,-Bsymbolic"
   else
     args << "-shared"
   end
+  #args << "-static-libstdc++"
   args << "-Wl,--no-whole-archive"
   args << "-Wl,--no-undefined"
   args << "-Wl,-z,defs"
@@ -347,7 +354,8 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,-rpath-link=#{$link_sysroot}/usr/lib"
   args << "#{$link_sysroot}/usr/lib/libc.so"
   args << "#{$link_sysroot}/usr/lib/libm.so"
-  
+  #args << "#{$link_sysroot}/usr/lib/libstdc++.so"
+
   localabi = "armeabi"
   if $gccbin.include? "toolchains/x86"
     localabi = "x86"
@@ -355,13 +363,39 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   if $gccbin.include? "toolchains\\x86"
     localabi = "x86"
   end
-  libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
-  if File.exists? libandroid_support
-    args << "-L\"#{libandroid_support}\""
-    args << "-landroid_support"
-    puts "libandroid_support exists"
+  
+  #libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
+  #if File.exists? libandroid_support
+  #  args << "-L\"#{libandroid_support}\""
+  #  args << "-landroid_support"
+  #  puts "libandroid_support exists"
+  #else
+  #  localabi = "armeabi-v7a"
+  #  libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
+  #  if File.exists? libandroid_support
+  #    args << "-L\"#{libandroid_support}\""
+  #    args << "-landroid_support"
+  #    puts "libandroid_support exists"
+  #  else
+  #    puts "libandroid_support does not exists"
+  #  end
+  #end
+
+  libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
+  if File.exists? libgnustl_static
+    args << "-L\"#{libgnustl_static}\""
+    args << "-lgnustl_static"
+    puts "libgnustl_static exists"
   else
-    puts "libandroid_support does not exists"
+    localabi = "armeabi-v7a"
+    libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
+    if File.exists? libgnustl_static
+      args << "-L\"#{libgnustl_static}\""
+      args << "-lgnustl_static"
+      puts "libgnustl_static exists"
+    else
+      puts "libgnustl_static does not exists"
+    end
   end
 
   cc_run($gccbin, args)
