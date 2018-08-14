@@ -763,20 +763,36 @@ def update_xcode_project_files_by_capabilities
         end
     end
 
+    barcode_etension_exist = false
+    if $app_config['extensions'] != nil
+      if $app_config['extensions'].index('barcode')
+          barcode_etension_exist = true
+      end
+    end
     if $app_config['iphone'] != nil
         if $app_config['iphone']['extensions'] != nil
           if $app_config['iphone']['extensions'].index('barcode')
-              if $app_config['iphone']['barcode_engine'] != nil
-                  $barcode_engine = $app_config['iphone']['barcode_engine'].upcase
-                  if $barcode_engine != 'ZXING' &&  $barcode_engine != 'ZBAR' then
-                      raise 'Unknown barcode engine, select ZBar or ZXing please...'
-                  end
-              else
-                  $barcode_engine = 'ZXING'
-              end
+              barcode_etension_exist = true
           end
         end
     end
+
+    if barcode_etension_exist
+        if $app_config['iphone'] != nil
+            if $app_config['iphone']['barcode_engine'] != nil
+                $barcode_engine = $app_config['iphone']['barcode_engine'].upcase
+                if $barcode_engine != 'ZXING' &&  $barcode_engine != 'ZBAR' then
+                    raise 'ERROR: Unknown barcode engine, select ZBar or ZXing please in build.yml [iphone][barcode_engine] setup to ZXING or ZBAR !'
+                end
+            else
+                $barcode_engine = 'ZXING'
+            end
+        else
+            $barcode_engine = 'ZXING'
+        end
+    end
+
+    puts "$$$ $barcode_engine.to_s = "+$barcode_engine.to_s
 
     if !$barcode_engine.to_s.empty?
       File.open(File.join($startdir, "platform", "shared", "common", "barcode_engine.h"), 'w+') do |file|

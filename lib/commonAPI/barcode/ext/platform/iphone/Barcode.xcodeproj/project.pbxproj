@@ -492,6 +492,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/Barcode.dst;
 				ENABLE_BITCODE = NO;
@@ -543,6 +544,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LIBRARY = "libc++";
 				DSTROOT = /tmp/Barcode.dst;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
