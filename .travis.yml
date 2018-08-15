@@ -70,7 +70,7 @@ android:
 
 env:
   global:
-  - ANDROID_NDK_HOME=$HOME/android-ndk-r17b
+  - ANDROID_NDK_HOME=$HOME/android-ndk-r$NDK_NUMBER
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
   - S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
@@ -91,7 +91,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="19"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17b"
 
   #- language: android
   #  os: linux
@@ -99,7 +99,23 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="19"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17b"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="16b"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="16b"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c"
 
   #- language: android
   #  os: linux
