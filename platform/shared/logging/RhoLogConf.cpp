@@ -35,8 +35,13 @@
 #include "ruby/ext/rho/rhoruby.h"
 
 namespace rho{
+#ifdef mutexSmartPointer
+mutexSmartPointer LogSettings::m_FlushLock = mutexSmartPointer(new common::CMutex);
+mutexSmartPointer LogSettings::m_CatLock = mutexSmartPointer(new common::CMutex);
+#else
 common::CMutex LogSettings::m_FlushLock;
 common::CMutex LogSettings::m_CatLock;
+#endif
 
 LogSettings::MemoryInfoCollectorThread::MemoryInfoCollectorThread( LogSettings& logSettings ) :
                  m_collectMemoryIntervalMilliseconds(0), m_pCollector(0), m_logSettings(logSettings)
@@ -46,11 +51,18 @@ LogSettings::MemoryInfoCollectorThread::MemoryInfoCollectorThread( LogSettings& 
 
 void LogSettings::MemoryInfoCollectorThread::run()
 {
+#ifdef mutexSmartPointer
+    mutexSmartPointer l_accessLock = m_accessLock;
+#endif
     while( !isStopping() )    
     {
         unsigned int toWait = 0;
         {
+#ifdef mutexSmartPointer
+            common::CMutexLock lock(*l_accessLock.get());
+#else
             common::CMutexLock lock(m_accessLock);
+#endif
             toWait = m_collectMemoryIntervalMilliseconds;
         }
         
@@ -63,7 +75,11 @@ void LogSettings::MemoryInfoCollectorThread::run()
 
         if (!isStopping())
         {
+#ifdef mutexSmartPointer
+            common::CMutexLock lock(*l_accessLock.get());
+#else
             common::CMutexLock lock(m_accessLock);
+#endif
             if ( m_pCollector!=0 )
             {
                 String str = m_pCollector->collect();
@@ -80,19 +96,34 @@ void LogSettings::MemoryInfoCollectorThread::run()
 
 void LogSettings::MemoryInfoCollectorThread::setCollectMemoryInfoInterval( unsigned int interval )
 {
+#ifdef mutexSmartPointer
+    mutexSmartPointer l_accessLock = m_accessLock;
+    common::CMutexLock lock(*l_accessLock.get());
+#else
     common::CMutexLock lock(m_accessLock);
+#endif
     m_collectMemoryIntervalMilliseconds = interval;
 }
 
 void LogSettings::MemoryInfoCollectorThread::setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector )
 {
-    common::CMutexLock lock(m_accessLock); 
+#ifdef mutexSmartPointer
+    mutexSmartPointer l_accessLock = m_accessLock;
+    common::CMutexLock lock(*l_accessLock.get());
+#else
+    common::CMutexLock lock(m_accessLock);
+#endif
     m_pCollector = memInfoCollector;   
 }
 
 boolean LogSettings::MemoryInfoCollectorThread::willCollect() const
 {
-    common::CMutexLock lock(m_accessLock); 
+#ifdef mutexSmartPointer
+    mutexSmartPointer l_accessLock = m_accessLock;
+    common::CMutexLock lock(*l_accessLock.get());
+#else
+    common::CMutexLock lock(m_accessLock);
+#endif
     return (m_collectMemoryIntervalMilliseconds>0) && (m_pCollector!=0);
 }
 
@@ -320,7 +351,12 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
 
 void LogSettings::setLogFilePath(const String& logFilePath){
     if ( m_strLogFilePath.compare(logFilePath) != 0 ){
+#ifdef mutexSmartPointer
+        mutexSmartPointer l_FlushLock = m_FlushLock;
+        common::CMutexLock oLock(*l_FlushLock.get());
+#else
         common::CMutexLock oLock(m_FlushLock);
+#endif
 
         //try to open new path first
         common::CRhoFile file;
@@ -337,7 +373,12 @@ void LogSettings::setLogFilePath(const String& logFilePath){
 }
 
 void LogSettings::clearLog(){
-    common::CMutexLock oLock(m_FlushLock);
+#ifdef mutexSmartPointer
+        mutexSmartPointer l_FlushLock = m_FlushLock;
+        common::CMutexLock oLock(*l_FlushLock.get());
+#else
+        common::CMutexLock oLock(m_FlushLock);
+#endif
 
     if ( m_pFileSink ){
         m_pFileSink->clear();
@@ -367,7 +408,12 @@ void LogSettings::removeAuxSink( ILogSink* sink )
 }
 
 void LogSettings::internalSinkLogMessage( String& strMsg ){
-    common::CMutexLock oLock(m_FlushLock);
+#ifdef mutexSmartPointer
+        mutexSmartPointer l_FlushLock = m_FlushLock;
+        common::CMutexLock oLock(*l_FlushLock.get());
+#else
+        common::CMutexLock oLock(m_FlushLock);
+#endif
 
 	if ( isLogToFile() )
         m_pFileSink->writeLogMessage(strMsg);
@@ -398,8 +444,12 @@ void LogSettings::onSettingUpdated( const String& name, const String& newVal ) {
 
 bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
     //TODO: Optimize categories search : add map
+#ifdef mutexSmartPointer
+    mutexSmartPointer l_CatLock = m_CatLock;
+    common::CMutexLock oLock(*l_CatLock.get());
+#else
     common::CMutexLock oLock(m_CatLock);
-
+#endif
     if ( m_strDisabledCategories.length() > 0 && strstr(m_strDisabledCategories.c_str(), cat.getName().c_str() ) != 0 )
         return false;
 
@@ -410,7 +460,12 @@ bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
 }
 
 void LogSettings::setEnabledCategories( const char* szCatList ){
+#ifdef mutexSmartPointer
+    mutexSmartPointer l_CatLock = m_CatLock;
+    common::CMutexLock oLock(*l_CatLock.get());
+#else
     common::CMutexLock oLock(m_CatLock);
+#endif
 
     if ( szCatList && *szCatList )
     	m_strEnabledCategories = szCatList;
@@ -419,7 +474,12 @@ void LogSettings::setEnabledCategories( const char* szCatList ){
 }
 
 void LogSettings::setDisabledCategories( const char* szCatList ){
+#ifdef mutexSmartPointer
+    mutexSmartPointer l_CatLock = m_CatLock;
+    common::CMutexLock oLock(*l_CatLock.get());
+#else
     common::CMutexLock oLock(m_CatLock);
+#endif
 
     if ( szCatList && *szCatList )
     	m_strDisabledCategories = szCatList;

@@ -130,7 +130,11 @@ class CNetRequestImpl : public CNetRequestBase
 {
     DEFINE_LOGCLASS;
 
+#ifdef mutexSmartPointer
+    static mutexSmartPointer m_mxInternet;
+#else
     static common::CMutex m_mxInternet;
+#endif
     static HINTERNET m_hInternet;
     static HANDLE    m_hWceConnMgrConnection;
     HINTERNET  m_hConnection, m_hRequest;

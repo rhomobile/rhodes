@@ -83,7 +83,7 @@ VALUE json_convert_to_ruby(json_object * jobj) {
             return rho_ruby_create_double(json_object_get_double(jobj));
             break;
         case json_type_int:
-            return rho_ruby_create_integer(json_object_get_int(jobj));
+            return rho_ruby_create_integer(json_object_get_int64(jobj));
             break;
         case json_type_null:
             return rho_ruby_get_NIL();

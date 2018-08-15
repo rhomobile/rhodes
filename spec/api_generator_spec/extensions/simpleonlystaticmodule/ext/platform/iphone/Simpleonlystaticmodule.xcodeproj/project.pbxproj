@@ -291,7 +291,7 @@
 					"/Users/MOHUS/rhodes/platform/shared/ruby/iphone",
 					"/Users/MOHUS/rhodes/platform/shared",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -317,7 +317,7 @@
 					"/Users/MOHUS/rhodes/platform/shared/ruby/iphone",
 					"/Users/MOHUS/rhodes/platform/shared",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -339,11 +339,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = SimpleOnlyStaticModule_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = SimpleOnlyStaticModule;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "i386 armv7";
+				VALID_ARCHS = "x86_64 armv7";
 			};
 			name = Debug;
 		};
@@ -357,11 +357,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = SimpleOnlyStaticModule_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = SimpleOnlyStaticModule;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "i386  armv7";
+				VALID_ARCHS = "x86_64 armv7";
 			};
 			name = Release;
 		};

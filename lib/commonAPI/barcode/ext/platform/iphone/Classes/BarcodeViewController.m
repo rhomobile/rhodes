@@ -58,7 +58,7 @@
 
 //#import "AppManager.h"
 //#import "Rhodes.h"
-#import "common/RhodesApp.h"
+#include "common/RhodesApp.h"
 
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
