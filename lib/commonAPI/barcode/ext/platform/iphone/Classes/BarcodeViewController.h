@@ -57,7 +57,7 @@
 
 #import "api_generator/iphone/IMethodResult.h"
 #import <AudioToolbox/AudioToolbox.h>
-#import "common/barcode_engine.h"
+#include "common/barcode_engine.h"
 
 //#define ZXING 1
 

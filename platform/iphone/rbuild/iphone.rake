@@ -763,20 +763,36 @@ def update_xcode_project_files_by_capabilities
         end
     end
 
+    barcode_etension_exist = false
+    if $app_config['extensions'] != nil
+      if $app_config['extensions'].index('barcode')
+          barcode_etension_exist = true
+      end
+    end
     if $app_config['iphone'] != nil
         if $app_config['iphone']['extensions'] != nil
           if $app_config['iphone']['extensions'].index('barcode')
-              if $app_config['iphone']['barcode_engine'] != nil
-                  $barcode_engine = $app_config['iphone']['barcode_engine'].upcase
-                  if $barcode_engine != 'ZXING' &&  $barcode_engine != 'ZBAR' then
-                      raise 'Unknown barcode engine, select ZBar or ZXing please...'
-                  end
-              else
-                  $barcode_engine = 'ZXING'
-              end
+              barcode_etension_exist = true
           end
         end
     end
+
+    if barcode_etension_exist
+        if $app_config['iphone'] != nil
+            if $app_config['iphone']['barcode_engine'] != nil
+                $barcode_engine = $app_config['iphone']['barcode_engine'].upcase
+                if $barcode_engine != 'ZXING' &&  $barcode_engine != 'ZBAR' then
+                    raise 'ERROR: Unknown barcode engine, select ZBar or ZXing please in build.yml [iphone][barcode_engine] setup to ZXING or ZBAR !'
+                end
+            else
+                $barcode_engine = 'ZXING'
+            end
+        else
+            $barcode_engine = 'ZXING'
+        end
+    end
+
+    puts "$$$ $barcode_engine.to_s = "+$barcode_engine.to_s
 
     if !$barcode_engine.to_s.empty?
       File.open(File.join($startdir, "platform", "shared", "common", "barcode_engine.h"), 'w+') do |file|
@@ -1107,13 +1123,14 @@ namespace "config" do
 
     #check for XCode 6
     xcode_version = get_xcode_version
-    if xcode_version[0].to_i >= 6
+    xcode_version = xcode_version[0..(xcode_version.index('.')-1)]	
+    if xcode_version.to_i >= 6
       $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_6')
     end
-    if xcode_version[0].to_i >= 7
+    if xcode_version.to_i >= 7
       $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_7')
     end
-    if xcode_version[0].to_i >= 8
+    if xcode_version.to_i >= 8
       $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_8')
     end
 
@@ -1128,16 +1145,17 @@ namespace "config" do
       if !File.exists? '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/DVTiPhoneSimulatorRemoteClient.framework'
         #check for XCode 6
         xcode_version = get_xcode_version
-        if xcode_version[0].to_i >= 8
+        xcode_version = xcode_version[0..(xcode_version.index('.')-1)]	
+        if xcode_version.to_i >= 8
           $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_8')
-        elsif xcode_version[0].to_i >= 7
+        elsif xcode_version.to_i >= 7
           $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_7')
-        elsif xcode_version[0].to_i >= 6
+        elsif xcode_version.to_i >= 6
           $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_6')
-          if xcode_version[0].to_i >= 7
+          if xcode_version.to_i >= 7
             $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_7')
           end
-          if xcode_version[0].to_i >= 8
+          if xcode_version.to_i >= 8
             $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_8')
           end
         else
