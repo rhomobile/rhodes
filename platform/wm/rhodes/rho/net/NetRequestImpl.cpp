@@ -64,8 +64,11 @@ namespace rho {
 namespace net {
 
 IMPLEMENT_LOGCLASS(CNetRequestImpl,"Net");
-
+#ifdef mutexSmartPointer
+mutexSmartPointer CNetRequestImpl::m_mxInternet = mutexSmartPointer(new common::CMutex);
+#else
 common::CMutex CNetRequestImpl::m_mxInternet;
+#endif
 HINTERNET      CNetRequestImpl::m_hInternet;
 HANDLE         CNetRequestImpl::m_hWceConnMgrConnection;
 
@@ -941,9 +944,16 @@ void CNetRequestImpl::free_url_components(URL_COMPONENTS *uri)
 
 bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 {
+#ifdef mutexSmartPointer
+    mutexSmartPointer l_mxInternet = m_mxInternet;
+#endif
     if (!bLocalHost)
     {
+#ifdef mutexSmartPointer
+        common::CMutexLock lock(*l_mxInternet.get());
+#else
         common::CMutexLock lock(m_mxInternet);
+#endif
 
         if (RHO_IS_WMDEVICE)
         {
@@ -952,7 +962,11 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
         }
     }
 
-    common::CMutexLock lock(m_mxInternet);
+#ifdef mutexSmartPointer
+        common::CMutexLock lock(*l_mxInternet.get());
+#else
+        common::CMutexLock lock(m_mxInternet);
+#endif
 
     /****************************************/
     //SR ID - EMBPD00120791
@@ -999,8 +1013,12 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 
 /*static*/void CNetRequestImpl::deinitConnection()
 {
+#ifdef mutexSmartPointer
+    mutexSmartPointer l_mxInternet = m_mxInternet;
+    common::CMutexLock lock(*l_mxInternet.get());
+#else
     common::CMutexLock lock(m_mxInternet);
-
+#endif
     if (m_hInternet)
         InternetCloseHandle(m_hInternet);
     m_hInternet = NULL;

@@ -74,6 +74,13 @@
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
+
+-keep public class * implements android.media.MediaScannerConnection.OnScanCompletedListener{*;}
+-keep public interface android.media.MediaScannerConnection.OnScanCompletedListener{*;}
+-keepclasseswithmembers class * {
+    public void onScanCompleted(java.lang.String,android.net.Uri);
+}
+
 -keep public class com.android.**
 -keep public class java.lang.**
 -keep public class com.android.vending.licensing.ILicensingService

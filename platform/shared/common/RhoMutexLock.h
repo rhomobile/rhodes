@@ -40,6 +40,10 @@ typedef CRITICAL_SECTION MutexType;
 typedef pthread_mutex_t MutexType;
 #endif 
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+#define mutexSmartPointer std::shared_ptr<common::CMutex>
+#endif
+
 class CMutex{
 public:
     inline CMutex();

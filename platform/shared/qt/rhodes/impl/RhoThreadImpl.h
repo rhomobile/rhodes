@@ -79,10 +79,10 @@ private:
         IRhoRunnable* m_Runnable;
     };
 
-    QRhoThread* m_Thread;
+    QSharedPointer<QRhoThread> m_Thread;
     QSharedPointer<QtThread> m_waitThread;
-    QMutex mutex;
-    QMutex mutexWaiter;
+    QSharedPointer<QMutex> mutex;
+    QSharedPointer<QMutex> mutexWaiter;
 
 };
 

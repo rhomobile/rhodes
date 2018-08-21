@@ -684,15 +684,17 @@ module Rhogen
 
 	def get_xcode_version
   		info_path = '/Applications/XCode.app/Contents/version.plist'
-  		ret_value = '0.0'
+  		version = '0.0'
   		if File.exists? info_path
     		hash = load_plist(info_path)
-    		ret_value = hash['CFBundleShortVersionString'] if hash.has_key?('CFBundleShortVersionString')
+    		version = hash['CFBundleShortVersionString'] if hash.has_key?('CFBundleShortVersionString')
   		else
     		puts '$$$ can not find XCode version file ['+info_path+']'
   		end
-  		puts '$$$ XCode version is '+ret_value
-  		return ret_value
+  		puts '$$$ XCode version is '+version
+		major_version = version[0..(version.index('.')-1)]
+		puts '$$$ XCode major version is '+major_version
+  		return major_version
 	end
 
 
@@ -746,12 +748,13 @@ module Rhogen
       #@options[:skip] = true
       template.source = 'Bremen.xcodeproj/project.pbxproj'
       xcode_version = get_xcode_version
-	  if xcode_version[0].to_i >= 7
+	  if xcode_version.to_i >= 7
         template.source = 'Bremen7.xcodeproj/project.pbxproj'
       end
-      if xcode_version[0].to_i >= 8
+      if xcode_version.to_i >= 8
         template.source = 'Bremen8.xcodeproj/project.pbxproj'
       end
+      puts "$$$ template.source = "+template.source.to_s
       template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
       if File.exists?(template.destination)
         #puts '$$$$$$$$$$$$$$$$ EXIST'+template.destination
@@ -879,7 +882,7 @@ module Rhogen
       #@options[:skip] = true
       template.source = 'Bremen7_prebuild.xcodeproj/project.pbxproj'
       xcode_version = get_xcode_version
-      if xcode_version[0].to_i >= 7
+      if xcode_version.to_i >= 7
         template.source = 'Bremen7_prebuild.xcodeproj/project.pbxproj'
       end
       template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
