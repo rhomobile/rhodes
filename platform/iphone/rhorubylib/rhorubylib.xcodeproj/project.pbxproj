@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A80083E220FFA1100051E96E /* date_parse.c in Sources */ = {isa = PBXBuildFile; fileRef = A80083DE20FFA10F0051E96E /* date_parse.c */; };
+		A80083E320FFA1100051E96E /* date_strptime.c in Sources */ = {isa = PBXBuildFile; fileRef = A80083DF20FFA10F0051E96E /* date_strptime.c */; };
+		A80083E420FFA1100051E96E /* date_core.c in Sources */ = {isa = PBXBuildFile; fileRef = A80083E020FFA10F0051E96E /* date_core.c */; };
+		A80083E520FFA1100051E96E /* date_strftime.c in Sources */ = {isa = PBXBuildFile; fileRef = A80083E120FFA1100051E96E /* date_strftime.c */; };
+		A80083E720FFA1250051E96E /* date_tmx.h in Headers */ = {isa = PBXBuildFile; fileRef = A80083E620FFA1250051E96E /* date_tmx.h */; };
 		A80AFD321E2413C60006FF68 /* ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFC5B1E2413C60006FF68 /* ascii.c */; };
 		A80AFD641E2413C70006FF68 /* unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFD241E2413C60006FF68 /* unicode.c */; };
 		A80AFD651E2413C70006FF68 /* us_ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFD251E2413C60006FF68 /* us_ascii.c */; };
@@ -270,6 +275,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A80083DE20FFA10F0051E96E /* date_parse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = date_parse.c; path = ../../shared/ruby/ext/date/date_parse.c; sourceTree = "<group>"; };
+		A80083DF20FFA10F0051E96E /* date_strptime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = date_strptime.c; path = ../../shared/ruby/ext/date/date_strptime.c; sourceTree = "<group>"; };
+		A80083E020FFA10F0051E96E /* date_core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = date_core.c; path = ../../shared/ruby/ext/date/date_core.c; sourceTree = "<group>"; };
+		A80083E120FFA1100051E96E /* date_strftime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = date_strftime.c; path = ../../shared/ruby/ext/date/date_strftime.c; sourceTree = "<group>"; };
+		A80083E620FFA1250051E96E /* date_tmx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = date_tmx.h; path = ../../shared/ruby/ext/date/date_tmx.h; sourceTree = "<group>"; };
 		A80AFC5B1E2413C60006FF68 /* ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ascii.c; sourceTree = "<group>"; };
 		A80AFD241E2413C60006FF68 /* unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unicode.c; sourceTree = "<group>"; };
 		A80AFD251E2413C60006FF68 /* us_ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = us_ascii.c; sourceTree = "<group>"; };
@@ -484,6 +494,7 @@
 		08FB7794FE84155DC02AAC07 /* rhorubylib */ = {
 			isa = PBXGroup;
 			children = (
+				A80083DD20FFA0E60051E96E /* date */,
 				FA6B3F7D1FD21B6F008BFF0D /* encoding */,
 				FAA66D041EEDE07E003E0B1D /* wait.c */,
 				FAA66D021EEDE070003E0B1D /* nonblock.c */,
@@ -616,6 +627,18 @@
 				A8A6D30E1E24AADD00016427 /* librubymac.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A80083DD20FFA0E60051E96E /* date */ = {
+			isa = PBXGroup;
+			children = (
+				A80083E620FFA1250051E96E /* date_tmx.h */,
+				A80083E020FFA10F0051E96E /* date_core.c */,
+				A80083DE20FFA10F0051E96E /* date_parse.c */,
+				A80083E120FFA1100051E96E /* date_strftime.c */,
+				A80083DF20FFA10F0051E96E /* date_strptime.c */,
+			);
+			name = date;
 			sourceTree = "<group>";
 		};
 		A80AFC5A1E2413C60006FF68 /* enc */ = {
@@ -998,6 +1021,7 @@
 				A88C80A31E243FF80090E7E6 /* event.h in Headers */,
 				A80AFEA71E2415390006FF68 /* transdb.h in Headers */,
 				A80AFE8E1E2415390006FF68 /* revision.h in Headers */,
+				A80083E720FFA1250051E96E /* date_tmx.h in Headers */,
 				A80AFE8F1E2415390006FF68 /* ruby_atomic.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1181,6 +1205,7 @@
 				A80AFE851E2415390006FF68 /* regcomp.c in Sources */,
 				A80AFE741E2415390006FF68 /* node.c in Sources */,
 				A88C80A91E243FF80090E7E6 /* ringtones_wrap.c in Sources */,
+				A80083E320FFA1100051E96E /* date_strptime.c in Sources */,
 				A80AFE9A1E2415390006FF68 /* struct.c in Sources */,
 				A80AFE3D1E2415390006FF68 /* array.c in Sources */,
 				A80AFE4D1E2415390006FF68 /* dmyext.c in Sources */,
@@ -1210,6 +1235,7 @@
 				FA4CE2941ECB316100DBA581 /* raddrinfo.c in Sources */,
 				A80AFEB91E2415390006FF68 /* vm_trace.c in Sources */,
 				FA4CE2961ECB316100DBA581 /* udpsocket.c in Sources */,
+				A80083E520FFA1100051E96E /* date_strftime.c in Sources */,
 				A80AFE6E1E2415390006FF68 /* marshal.c in Sources */,
 				A80AFE401E2415390006FF68 /* compar.c in Sources */,
 				A80AFEB11E2415390006FF68 /* vm_dump.c in Sources */,
@@ -1234,6 +1260,7 @@
 				A88C807D1E243F140090E7E6 /* geolocation_wrap.c in Sources */,
 				A80AFD651E2413C70006FF68 /* us_ascii.c in Sources */,
 				A80AFD731E2414360006FF68 /* encdb.c in Sources */,
+				A80083E420FFA1100051E96E /* date_core.c in Sources */,
 				A80AFEBA1E2415390006FF68 /* vm.c in Sources */,
 				A88C80A21E243FF80090E7E6 /* calendar_wrap.c in Sources */,
 				A8A6D2E61E2498AC00016427 /* loadpath.c in Sources */,
@@ -1272,6 +1299,7 @@
 				A80AFE3E1E2415390006FF68 /* bignum.c in Sources */,
 				A8A6D2E81E24998400016427 /* localeinit.c in Sources */,
 				A80AFE831E2415390006FF68 /* rational.c in Sources */,
+				A80083E220FFA1100051E96E /* date_parse.c in Sources */,
 				A80AFE451E2415390006FF68 /* debug.c in Sources */,
 				A80AFE901E2415390006FF68 /* ruby.c in Sources */,
 				A80AFE861E2415390006FF68 /* regenc.c in Sources */,
