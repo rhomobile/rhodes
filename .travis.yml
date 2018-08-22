@@ -75,7 +75,7 @@ env:
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
   - QTDIR="$HOME/Qt5.9.5/5.9.5/clang_64"
 
-osx_image: xcode9.1
+#osx_image: xcode9.1
 
 matrix:
   include:
