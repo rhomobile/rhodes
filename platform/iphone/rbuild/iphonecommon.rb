@@ -38,6 +38,21 @@ class IPhoneBuild
           end
       end
 
+      def init_logger
+          if $logger.nil?
+              $logger = Logger.new(STDOUT)
+              if ENV["RHODES_BUILD_LOGGER_LEVEL"] and ENV["RHODES_BUILD_LOGGER_LEVEL"] != ""
+                  level = ENV["RHODES_BUILD_LOGGER_LEVEL"]
+                  if level == "DEBUG"
+                      $logger.level = Logger::DEBUG
+                  end
+                  if level == "INFO"
+                      $logger.level = Logger::INFO
+                  end
+              end
+          end
+      end
+
       def process_output(input,options = {})
         lines = input.encode('UTF-8', :invalid => :replace).split(/\r?\n/)
         result = []
@@ -68,6 +83,7 @@ class IPhoneBuild
       end
 
       def run_and_trace(cmd,args,options = {})
+        init_logger
         if options[:rootdir]
           $rootdir = options[:rootdir]
         else
