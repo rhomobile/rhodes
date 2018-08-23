@@ -84,6 +84,7 @@ chdir File.dirname(__FILE__), :verbose => (Rake.application.options.trace == tru
 
 
 require File.join(pwd, 'lib/build/jake.rb')
+require File.join(pwd, 'lib/build/RhoLogger.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 require File.join(pwd, 'lib/build/GeneralTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
@@ -106,47 +107,23 @@ module Rake
     attr_accessor :current_task
   end
   class Task
-    alias :old_execute :execute 
+    alias :old_execute :execute
     def execute(args=nil)
-      Rake.application.current_task = @name  
+      Rake.application.current_task = @name
       old_execute(args)
     end
   end #class Task
 end #module Rake
 
-class Logger
-  alias :original_add :add
 
-  def add(severity, message = nil, progname = nil)
-    if (self.level == Logger::DEBUG)
-      begin
-        #try to get rake task name
-        taskName = Rake.application.current_task
-      rescue Exception => e
-      end
-      
-      if message
-        message = "#{taskName}|\t#{message}"
-      else
-        progname = "#{taskName}|\t#{progname}"
-      end
-    end
-    original_add( severity, message, progname )
-  end
-end
 
-def puts( s )
-  if $logger
-    $logger.info( s )
-  else
-    Kernel::puts( s )
-  end
-end
 
 $logger = Logger.new(STDOUT)
 if Rake.application.options.trace
+  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "DEBUG"
   $logger.level = Logger::DEBUG
 else
+  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "INFO"
   $logger.level = Logger::INFO
 end
 

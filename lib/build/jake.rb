@@ -150,12 +150,32 @@ class Jake
   end
 
   def self.log( severity, message )
+    if @@logger.nil?
+        init_logger
+    end
     if @@logger
       @@logger.log(severity, message)
     else
       puts message
     end
   end
+
+  def self.init_logger
+      if @@logger.nil?
+          @@logger = Logger.new(STDOUT)
+          $logger = @@logger
+          if ENV["RHODES_BUILD_LOGGER_LEVEL"] and ENV["RHODES_BUILD_LOGGER_LEVEL"] != ""
+              level = ENV["RHODES_BUILD_LOGGER_LEVEL"]
+              if level == "DEBUG"
+                  @@logger.level = Logger::DEBUG
+              end
+              if level == "INFO"
+                  @@logger.level = Logger::INFO
+              end
+          end
+      end
+  end
+
 
   def self.config(configfile)
     require 'yaml'
