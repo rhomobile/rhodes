@@ -4,44 +4,51 @@ before_install:
 
 install:
 ## cache build
-##- rvm install 2.3.4
+- rvm list
+- rvm gemset list
+- gem list
+- rvm install 2.3.4
 - rvm use 2.3.4
-##- rvm gemset create rhodes
+- rvm gemset create rhodes
 - rvm gemset use rhodes
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
-##- gem install rest-client -v 1.7.3 --no-document
-##- gem install listen -v 3.0.6 --no-document
-##- gem install zip --no-document
-##- gem install templater -v 1.0.0 --no-document
-##- gem install rake -v 12.0.0 --no-document
-##- gem install uuid -v 2.3.7 --no-document
-##- gem install systemu -v 2.6.4 --no-document
-##- gem install json -v 1.8.3 --no-document
-##- gem install CFPropertyList -v 2.2.8 --no-document
-##- gem install naturally -v 1.3.2 --no-document
-##- gem install simctl -v 1.5.6 --no-document
-##- gem install listen -v 3.0.6 --no-document
-##- gem install rubyzip -v 1.2.1 --no-document
-##- gem install ffi -v 1.9.14 --no-document
-##- gem install rdoc -v 4.2.2 --no-document
-##- gem install deep_merge -v 1.1.1 --no-document
-##- gem install nokogiri -v 1.8.2 --no-document
+- gem install rest-client -v 1.7.3 --no-document
+- gem install listen -v 3.0.6 --no-document
+- gem install zip --no-document
+- gem install templater -v 1.0.0 --no-document
+- gem install rake -v 12.0.0 --no-document
+- gem install uuid -v 2.3.7 --no-document
+- gem install systemu -v 2.6.4 --no-document
+- gem install json -v 1.8.3 --no-document
+- gem install CFPropertyList -v 2.2.8 --no-document
+- gem install naturally -v 1.3.2 --no-document
+- gem install simctl -v 1.5.6 --no-document
+- gem install listen -v 3.0.6 --no-document
+- gem install rubyzip -v 1.2.1 --no-document
+- gem install ffi -v 1.9.14 --no-document
+- gem install rdoc -v 4.2.2 --no-document
+- gem install deep_merge -v 1.1.1 --no-document
+- gem install nokogiri -v 1.8.2 --no-document
 
 
 script:
+- rvm list
+- rvm gemset list
+- gem list
+
 - cd $TRAVIS_BUILD_DIR
 #- .ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
-- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/pre_gem.sh
-- rake gem
-- travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
-- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
-- .ci/install_rhoconnect-client.sh
+##- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/pre_gem.sh
+##- rake gem
+##- travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
+##- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
+##- .ci/install_rhoconnect-client.sh
 
 - cd $HOME
-- rhodes app vanilla_rhodes_app
-- rhodes jsapp vanilla_rhodes_jsapp
-- rhodes nodejsapp vanilla_rhodes_nodejsapp
+##- rhodes app vanilla_rhodes_app
+##- rhodes jsapp vanilla_rhodes_jsapp
+##- rhodes nodejsapp vanilla_rhodes_nodejsapp
 - cd $TRAVIS_BUILD_DIR
 
 - |
@@ -50,12 +57,14 @@ script:
     cd $HOME/$RHO_APP/$(.ci/app_build_root.rb);
   fi
 
-- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh
+##- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh
 
 #TODO: change this to run specs in auto mode and collect results
-- travis_wait 30 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/run_app_on_simulator.sh
+##- travis_wait 30 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/run_app_on_simulator.sh
 
-
+- rvm list
+- rvm gemset list
+- gem list
 
 cache:
   directories:
@@ -79,7 +88,7 @@ deploy:
   region: eu-central-1
   on:
     all_branches: true
-  
+
 android:
   components:
   - tools
@@ -87,7 +96,7 @@ android:
   - sdkmanager tools
   - extra-google-google_play_services
   - extra-google-m2repository
-  - extra-android-m2repository    
+  - extra-android-m2repository
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
 
@@ -108,21 +117,21 @@ matrix:
     os: osx
     env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX"
 
-  - language: objective-c
-    os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"
+##  - language: objective-c
+##    os: osx
+##    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"
+##  - language: android
+##    os: linux
+##    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"
 
   #- language: android
   #  os: linux
   #  env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24"
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec"   CACHE_NAME="RVM_LINUX"
+##  - language: android
+##    os: linux
+##    env: RHO_TARGET="android"    RHO_APP="framework_spec"   CACHE_NAME="RVM_LINUX"
 
   #- language: android
   #  os: linux
@@ -156,9 +165,9 @@ matrix:
   #   os: osx
   #   env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkRuby"
 
-  - language: objective-c
-    os: osx
-    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"
+##  - language: objective-c
+##    os: osx
+##    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"
 
   # - language: objective-c
   #   os: osx
@@ -177,4 +186,4 @@ matrix:
   #   env: RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkRuby"
 
   #  - RHO_TARGET="rhosimulator"    RHO_APP="push_spec"
-  #  - RHO_TARGET="rhosimulator"    RHO_APP="rhoconnect-client_spec"  
+  #  - RHO_TARGET="rhosimulator"    RHO_APP="rhoconnect-client_spec"
