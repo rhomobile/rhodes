@@ -40,6 +40,13 @@ script:
 #TODO: change this to run specs in auto mode and collect results
 - travis_wait 30 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/run_app_on_simulator.sh
 
+cache:
+  directories:
+    - /home/travis/.rvm/
+
+before_cache:
+  - gem uninstall rhodes -a
+
 before_deploy:
 - mkdir $BUILD_ARTEFACTS_DIR
 - "$TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_deploy.sh"
