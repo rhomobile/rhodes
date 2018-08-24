@@ -3,4 +3,4 @@ set -x
 
 cd $HOME/vanilla_rhodes_app
 
-rake run:iphone:rhosimulator --trace
+rake run:iphone:rhosimulator

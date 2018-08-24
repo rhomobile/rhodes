@@ -48,7 +48,7 @@ script:
 #- .ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/pre_gem.sh
 - rake gem
-- travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
+- travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document --ignore-dependencies -f
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
 - .ci/install_rhoconnect-client.sh
 

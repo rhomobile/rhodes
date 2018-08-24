@@ -78,7 +78,7 @@ namespace "build" do
                     $extensions_lib << " -l#{ext}"
                     $pre_targetdeps << " ../../../osx/bin/extensions/lib#{ext}.a"
                 end
-                Jake.run3('./build', extpath)
+                Jake.run3('./build', extpath, {}, true)
             end
         end
     end
@@ -101,7 +101,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         end
 
         app_path = File.join( $build_dir, 'RhoSimulator/RhoSimulator.app' )
-        Jake.run3("#{$remove} -Rf #{app_path}")
+        Jake.run3("#{$remove} -Rf #{app_path}", nil, {}, true)
 
         File.open(File.join($startdir, 'platform/shared/qt/rhodes/resources/Info.plist'), "wb") do |fversion|
             fversion.write( %{<?xml version="1.0" encoding="UTF-8"?>
@@ -126,11 +126,11 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         end
 
         qmake = "#{$qmake} -o Makefile -r -spec macx-clang RhoSimulator.pro RHOSIMULATOR_BUILD=1"
-        Jake.run3(qmake                        , $qt_project_dir)
-        #Jake.run3("#{$make} clean"             , $qt_project_dir)
-        Jake.run3("#{$make} all"               , $qt_project_dir)
-        Jake.run3("#{$macdeployqt} #{app_path}", $qt_project_dir)
-        #Jake.run3("#{$make} clean"             , $qt_project_dir)
+        Jake.run3(qmake                        , $qt_project_dir, {}, true)
+        #Jake.run3("#{$make} clean"             , $qt_project_dir, {}, true)
+        Jake.run3("#{$make} all"               , $qt_project_dir, {}, true)
+        Jake.run3("#{$macdeployqt} #{app_path}", $qt_project_dir, {}, true)
+        #Jake.run3("#{$make} clean"             , $qt_project_dir, {}, true)
     end
   end
 end
