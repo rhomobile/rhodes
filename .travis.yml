@@ -4,13 +4,13 @@ before_install:
 
 install:
 ## cache build
-##- rvm list
-##- rvm gemset list
-##- gem list
-##- rvm install 2.3.4
-##- rvm use 2.3.4
-##- rvm gemset create rhodes
-##- rvm gemset use rhodes
+- rvm list
+- rvm gemset list
+- gem list
+- rvm install 2.3.4
+- rvm use 2.3.4
+- rvm gemset create rhodes
+- rvm gemset use rhodes
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
 ##- gem install rest-client -v 1.7.3 --no-document
@@ -76,7 +76,7 @@ script:
 
 cache:
   directories:
-    - /home/travis/.rvm/
+    - $HOME/travis/.rvm
 
 before_cache:
   - echo Y | gem uninstall rhodes -a -I
