@@ -101,7 +101,9 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         end
 
         app_path = File.join( $build_dir, 'RhoSimulator/RhoSimulator.app' )
-        Jake.run3("#{$remove} -Rf #{app_path}", nil, {}, true)
+        if File.exists? app_path
+          Jake.run3("#{$remove} -Rf #{app_path}", nil, {}, true)
+        end
 
         File.open(File.join($startdir, 'platform/shared/qt/rhodes/resources/Info.plist'), "wb") do |fversion|
             fversion.write( %{<?xml version="1.0" encoding="UTF-8"?>
