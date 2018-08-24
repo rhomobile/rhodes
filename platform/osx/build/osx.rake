@@ -128,10 +128,10 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         end
 
         qmake = "#{$qmake} -o Makefile -r -spec macx-clang RhoSimulator.pro RHOSIMULATOR_BUILD=1"
-        Jake.run3(qmake                        , $qt_project_dir, {}, true)
-        #Jake.run3("#{$make} clean"             , $qt_project_dir, {}, true)
-        Jake.run3("#{$make} all"               , $qt_project_dir, {}, true)
-        Jake.run3("#{$macdeployqt} #{app_path}", $qt_project_dir, {}, true)
+        Jake.run3(qmake                        , $qt_project_dir, {}, false)
+        #Jake.run3("#{$make} clean"             , $qt_project_dir, {}, false)
+        Jake.run3("#{$make} all"               , $qt_project_dir, {}, false)
+        Jake.run3("#{$macdeployqt} #{app_path}", $qt_project_dir, {}, false)
         #Jake.run3("#{$make} clean"             , $qt_project_dir, {}, true)
     end
   end
