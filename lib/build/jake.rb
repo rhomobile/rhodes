@@ -580,6 +580,7 @@ class Jake
 
   def self.run3_dont_fail(command, cd = nil, env = {}, use_run2 = false)
     set_list = []
+	currentdir = ""
     env.each_pair do |k, v|
       if RUBY_PLATFORM =~ /(win|w)32$/
         set_list << "set \"#{k}=#{v}\"&&"
@@ -597,7 +598,12 @@ class Jake
         cd_ = cd.gsub('/', "\\")
         to_run = "cd /d \"#{cd_}\"&&#{to_run}"
       else
-        to_run = "cd '#{cd}'&&#{to_run}"
+        if use_run2
+          currentdir = Dir.pwd()
+          Dir.chdir cd
+        else
+          to_run = "cd '#{cd}'&&#{to_run}"
+        end
       end
     end
 
@@ -611,6 +617,9 @@ class Jake
     if use_run2
         self.run2(to_run, []) do |line|
             log Logger::DEBUG,line
+        end
+        if not cd.nil?
+          Dir.chdir currentdir
         end
         return $?.exitstatus == 0
     else
