@@ -45,7 +45,7 @@ cache:
     - /home/travis/.rvm/
 
 before_cache:
-  - gem uninstall rhodes -a
+  - echo Y | gem uninstall rhodes -a
 
 before_deploy:
 - mkdir $BUILD_ARTEFACTS_DIR
