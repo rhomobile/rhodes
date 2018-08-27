@@ -118,15 +118,15 @@ matrix:
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
+    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX"
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"
+    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"
 
   #- language: android
   #  os: linux
@@ -134,7 +134,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec"   CACHE_NAME="RVM_LINUX"
 
   #- language: android
   #  os: linux
@@ -170,7 +170,7 @@ matrix:
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="rhosimulator_osx"
+    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"
 
   # - language: objective-c
   #   os: osx
