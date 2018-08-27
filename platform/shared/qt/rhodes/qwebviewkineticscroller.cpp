@@ -300,8 +300,8 @@ QWebFrame *QWebViewKineticScrollerPrivate::scrollingFrameAt(const QPointF &pos) 
     if (web) {
         QWebFrame *mainFrame = web->page()->mainFrame();
         hitFrame = mainFrame->hitTestContent(pos.toPoint()).frame();
+        if (!hitFrame)return 0;
         QSize range = hitFrame->contentsSize() - hitFrame->geometry().size();
-        
         while (hitFrame && range.width() <= 1 && range.height() <= 1)
             hitFrame = hitFrame->parentFrame();
     }
