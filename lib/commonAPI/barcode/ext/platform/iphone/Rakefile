@@ -55,8 +55,9 @@ namespace "build" do
     chdir iphone_path
     args = ['build', '-target', 'Barcode', '-configuration', $configuration, '-sdk', $sdk, '-quiet']
 
-    puts Jake.run($xcodebuild,args)
-    ret = $?
+    require File.join(ENV['RHO_ROOT'], 'platform','iphone','rbuild','iphonecommon')
+
+    ret = IPhoneBuild.run_and_trace($xcodebuild,args)
 
     target_app = File.join($app_path, 'project', 'iphone', 'Resources')
     #cp_r File.join(iphone_path, 'BarcodeViewController.xib'), target_app
@@ -65,7 +66,7 @@ namespace "build" do
     result_lib = iphone_path + '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/libBarcode.a'
     target_lib = $targetdir + '/libBarcode.a'
 
-    mkdir_p $targetdir    
+    mkdir_p $targetdir
     cp result_lib,target_lib
 
   end
