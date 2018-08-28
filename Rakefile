@@ -220,7 +220,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
+$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'security_token', 'encrypt_database', 'use_deprecated_encryption','android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
 
 $winxpe_build = false
 
