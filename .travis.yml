@@ -3,6 +3,7 @@ before_install:
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
 
 install:
+- ANDROID_NDK_HOME="$HOME/android-ndk-r$NDK_NUMBER"
 - rvm install 2.3.4
 - rvm use 2.3.4
 
@@ -13,6 +14,7 @@ install:
 - gem install zip --no-document
 
 script:
+- ANDROID_NDK_HOME="$HOME/android-ndk-r$NDK_NUMBER"
 - cd $TRAVIS_BUILD_DIR
 #- .ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/pre_gem.sh
@@ -90,7 +92,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17b" ANDROID_NDK_HOME="$HOME/android-ndk-r$NDK_NUMBER"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17b" 
 
   #- language: android
   #  os: linux
@@ -98,23 +100,23 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17b" ANDROID_NDK_HOME="$HOME/android-ndk-r$NDK_NUMBER"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17b"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="16b" ANDROID_NDK_HOME="$HOME/android-ndk-r$NDK_NUMBER"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="16b"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="16b" ANDROID_NDK_HOME="$HOME/android-ndk-r$NDK_NUMBER"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="16b"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c" ANDROID_NDK_HOME="$HOME/android-ndk-r$NDK_NUMBER"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c" ANDROID_NDK_HOME="$HOME/android-ndk-r$NDK_NUMBER"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c"
 
   #- language: android
   #  os: linux

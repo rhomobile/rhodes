@@ -90,20 +90,21 @@ class NDKWrapper
     last_api_level = 0
     api_levels.each do |cur_api_level|
       puts "Checking is API level enough: #{cur_api_level}"  if USE_TRACES
-      break if cur_api_level > apilevel.to_i
+      break if cur_api_level > max_ndk_api_level
       last_api_level = cur_api_level
     end
 
+    sys_abi_root = nil
     variants.each do |variant|
-      sysroot = File.join(@root_path, variant, "android-#{last_api_level}/arch-#{abi}")
-      next unless File.directory? sysroot      
+      sys_abi_root = File.join(@root_path, variant, "android-#{last_api_level}/arch-#{abi}")
+      next unless File.directory? sys_abi_root      
       break
     end
-    if sysroot.nil?
+    if sys_abi_root.nil?
       raise "Can't detect NDK sysroot (corrupted NDK installation?)"
     end
 
-    sysroot
+    sys_abi_root
   end
 
   def detect_toolchain( abi )
