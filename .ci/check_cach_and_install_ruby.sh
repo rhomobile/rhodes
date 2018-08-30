@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -x
 
-RHODES_INSTALLED=$(gem list | grep rhodes)
+RHODES_INSTALLED=$(rvm list | grep ruby-2.3.4)
 if [[ -z RHODES_INSTALLED ]]; then
 rvm install 2.3.4
 rvm use 2.3.4
