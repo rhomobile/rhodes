@@ -150,12 +150,32 @@ class Jake
   end
 
   def self.log( severity, message )
+    if @@logger.nil?
+        init_logger
+    end
     if @@logger
       @@logger.log(severity, message)
     else
       puts message
     end
   end
+
+  def self.init_logger
+      if @@logger.nil?
+          @@logger = Logger.new(STDOUT)
+          $logger = @@logger
+          if ENV["RHODES_BUILD_LOGGER_LEVEL"] and ENV["RHODES_BUILD_LOGGER_LEVEL"] != ""
+              level = ENV["RHODES_BUILD_LOGGER_LEVEL"]
+              if level == "DEBUG"
+                  @@logger.level = Logger::DEBUG
+              end
+              if level == "INFO"
+                  @@logger.level = Logger::INFO
+              end
+          end
+      end
+  end
+
 
   def self.config(configfile)
     require 'yaml'
@@ -560,6 +580,7 @@ class Jake
 
   def self.run3_dont_fail(command, cd = nil, env = {}, use_run2 = false)
     set_list = []
+	currentdir = ""
     env.each_pair do |k, v|
       if RUBY_PLATFORM =~ /(win|w)32$/
         set_list << "set \"#{k}=#{v}\"&&"
@@ -577,7 +598,12 @@ class Jake
         cd_ = cd.gsub('/', "\\")
         to_run = "cd /d \"#{cd_}\"&&#{to_run}"
       else
-        to_run = "cd '#{cd}'&&#{to_run}"
+        if use_run2
+          currentdir = Dir.pwd()
+          Dir.chdir cd
+        else
+          to_run = "cd '#{cd}'&&#{to_run}"
+        end
       end
     end
 
@@ -592,6 +618,9 @@ class Jake
         self.run2(to_run, []) do |line|
             log Logger::DEBUG,line
         end
+        if not cd.nil?
+          Dir.chdir currentdir
+        end
         return $?.exitstatus == 0
     else
         res = system(to_run)
@@ -604,8 +633,8 @@ class Jake
   end
 
 
-  def self.run3(command, cd = nil, env = {})
-    fail "[#{command}]" unless self.run3_dont_fail(command, cd, env)
+  def self.run3(command, cd = nil, env = {}, use_run2 = false)
+    fail "[#{command}]" unless self.run3_dont_fail(command, cd, env, use_run2)
   end
 
   def self.run4(command)
