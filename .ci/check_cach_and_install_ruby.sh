@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -x
 
-RHODES_INSTALLED=$(rvm list | grep ruby-2.3.4)
-if [[ -z RHODES_INSTALLED ]]; then
+RUBY_INSTALLED=$(rvm list | grep ruby-2.3.4)
+if [[ -z RUBY_INSTALLED ]]; then
 rvm install 2.3.4
 rvm use 2.3.4
 rvm gemset create rhodes
