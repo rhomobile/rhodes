@@ -5,6 +5,7 @@ RUBY_INSTALLED=$(rvm list | grep ruby-2.3.4)
 echo $RUBY_INSTALLED
 if [[ -z $RUBY_INSTALLED ]]; then
 rvm install 2.3.4
+bash --login
 rvm use 2.3.4
 rvm gemset create rhodes
 rvm gemset use rhodes
