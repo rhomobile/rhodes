@@ -1435,17 +1435,21 @@ public class RhodesService extends Service {
 		// Get serial number from UUID file built into image
 		try
 		{
-		    if (isSymbolDevice())
-		    {
-				BufferedReader reader = new BufferedReader(new FileReader("/sys/hardware_id/uuid"));
-				uuid = reader.readLine();
-				Logger.T(TAG, "uuid: " + uuid);
+		    if (isSymbolDevice()){
+		    	BufferedReader reader = null;
+				try{
+					reader = new BufferedReader(new FileReader("/sys/hardware_id/uuid"));
+					uuid = reader.readLine();
+				}catch (IOException e) {
+					Logger.E(TAG, "Error on reading UUID from file: " + e.getMessage());
+				}finally{
+					reader.close();
+				}
 		    }
-		    else
-		    {
+		    if (uuid.equals("")){
 				uuid = computeUUID();
-				Logger.T(TAG, "uuid: " + uuid);
 		    }
+		    Logger.T(TAG, "uuid: " + uuid);
 		}
 		catch (Throwable e)
 		{

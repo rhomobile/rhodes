@@ -107,7 +107,7 @@ public class CameraPreview implements SurfaceHolder.Callback {
         int rotation = ((Activity)mContext).getWindowManager().getDefaultDisplay().getRotation();
     	int degrees = 0;
     	String DeviceOriginalOrinetation=getDeviceOrientation(surfaceRect.right,surfaceRect.bottom,rotation);
-    	if(DeviceOriginalOrinetation=="LANDSCAPE")
+    	if (DeviceOriginalOrinetation.equals("LANDSCAPE"))
 		{
 			switch (rotation) 
 			{
