@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -x
 
-GEMS_INSTALLED=$(rvm gemset list | grep rest-client)
+GEMS_INSTALLED=$(rvm gem list | grep rest-client)
 echo $GEMS_INSTALLED
 if [[ -z $GEMS_INSTALLED ]]; then
 
