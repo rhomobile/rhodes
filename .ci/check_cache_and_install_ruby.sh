@@ -5,6 +5,8 @@ RUBY_INSTALLED=$(rvm list | grep ruby-2.3.4)
 echo $RUBY_INSTALLED
 if [[ -z $RUBY_INSTALLED ]]; then
 rvm install 2.3.4
+fi
+
 bash --login
 rvm use 2.3.4
 rvm gemset create rhodes
@@ -30,5 +32,5 @@ gem install ffi -v 1.9.14 --no-document
 gem install rdoc -v 4.2.2 --no-document
 gem install deep_merge -v 1.1.1 --no-document
 gem install nokogiri -v 1.8.2 --no-document
-fi
+
 
