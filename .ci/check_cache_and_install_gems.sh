@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 set -x
 
-GEMS_INSTALLED=$(rvm gemset list | grep rhodes)
+GEMS_INSTALLED=$(rvm gemset list | grep rest-client)
 echo $GEMS_INSTALLED
 if [[ -z $GEMS_INSTALLED ]]; then
-rvm gemset create rhodes
-rvm gemset use rhodes
 
 rvm gemset list
 gem list
-
 gem install rest-client -v 1.7.3 --no-document
 gem install listen -v 3.0.6 --no-document
 gem install zip --no-document
