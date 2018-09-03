@@ -3,23 +3,29 @@ before_install:
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
 
 install:
-- rvm install 2.3.4
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_ruby.sh
 - rvm use 2.3.4
-
+- |
+  if [[ -z $(rvm gemset list | grep rhodes) ]]; then
+    rvm gemset create rhodes;
+  fi
+- rvm gemset use rhodes
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_gems.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
-- gem install rest-client --no-document
-- gem install listen --no-document
-- gem install zip --no-document
 
 script:
+- rvm list
+- rvm use 2.3.4
+- rvm gemset list
+- rvm gemset use rhodes
+- gem list
+
 - cd $TRAVIS_BUILD_DIR
 #- .ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/pre_gem.sh
 - rake gem
-- rvm gemset create rhodes
-- rvm gemset use rhodes
-- travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
+- travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document --ignore-dependencies -f
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
 - .ci/install_rhoconnect-client.sh
 
@@ -40,6 +46,13 @@ script:
 #TODO: change this to run specs in auto mode and collect results
 - travis_wait 30 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/run_app_on_simulator.sh
 
+cache:
+  directories:
+    - $HOME/.rvm
+
+before_cache:
+  - echo Y | gem uninstall rhodes -a -I
+
 before_deploy:
 - mkdir $BUILD_ARTEFACTS_DIR
 - "$TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_deploy.sh"
@@ -55,7 +68,7 @@ deploy:
   region: eu-central-1
   on:
     all_branches: true
-  
+
 android:
   components:
   - tools
@@ -82,15 +95,15 @@ matrix:
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
+    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX"
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"
+    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX"
 
   #- language: android
   #  os: linux
@@ -98,7 +111,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX"
 
   #- language: android
   #  os: linux
@@ -134,7 +147,7 @@ matrix:
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="rhosimulator_osx"
+    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"
 
   # - language: objective-c
   #   os: osx
