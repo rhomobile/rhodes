@@ -22,7 +22,7 @@ else
 fi
 
 echo "Installing Rhoconnect client"	
-git clone -b $BRANCH https://github.com/rhomobile/rhoconnect-client.git ../rhoconnect-client
+git clone -b master https://github.com/rhomobile/rhoconnect-client.git ../rhoconnect-client
 
 git clone -b OpenSSL_1_1_0-stable https://github.com/tauplatform/openssl.git ../openssl
 cd ../openssl

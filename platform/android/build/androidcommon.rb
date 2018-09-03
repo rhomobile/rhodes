@@ -28,6 +28,8 @@ require 'tempfile'
 require 'open3'
 require 'stringio'
 require 'pathname'
+require_relative 'ndkwrapper'
+require_relative 'hostplatform'
 
 #common functions for compiling android
 #
@@ -38,30 +40,10 @@ require 'pathname'
 
 USE_TRACES = Rake.application.options.trace
 
-if RUBY_PLATFORM =~ /(win|w)32$/
-  $bat_ext = ".bat"
-  $exe_ext = ".exe"
-else
-  $bat_ext = ""
-  $exe_ext = ""
-end
-
 $output_lock = Mutex.new
 
 def num_cpus
-  num = nil
-  if RUBY_PLATFORM =~ /linux/
-    num = `cat /proc/cpuinfo | grep processor | wc -l`.gsub("\n", '')
-  elsif RUBY_PLATFORM =~ /darwin/
-    num = `sysctl -n hw.ncpu`.gsub("\n", '')
-  elsif RUBY_PLATFORM =~ /w(in)?32/
-    num = ENV['NUMBER_OF_PROCESSORS']
-  else
-    num = 1
-  end
-  num = num.to_i
-  num = 1 if num == 0
-  num
+  HostPlatform.num_cpus
 end
 
 def get_sources(sourcelist)
@@ -72,139 +54,28 @@ def get_objects(sources, objdir)
     sources.map { |src| File.join(objdir, File.basename(src) + ".o") }    
 end
 
-def detect_toolchain(ndkpath, abi)
-  $ndktools = nil
-  $ndkabi = "unknown"
-  $ndkgccver = "unknown"
-  ndkhostvariants = []
-  if RUBY_PLATFORM =~ /(win|w)32$/
-      bufcheck64 = `WMIC OS get OSArchitecture`.split[1]
-      ndkhostvariants << 'windows-x86_64' if bufcheck64 and bufcheck64.include?('64')
-      ndkhostvariants << 'windows'
-  else
-      ndkhostvariants = [
-        `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, 
-        `uname -s`.downcase!.chomp! + '-x86'
-      ]
-  end
-
-  toolchainversions = ['4.8','4.9']
-
-  toolchain = 'unknown-toolchain'
-  if abi == 'arm'
-    toolchain = 'arm-linux-androideabi'
-  elsif abi == 'x86'
-    toolchain = 'x86'
-  elsif abi == 'x86_64'
-    toolchain = 'x86_64'
-  elsif abi == 'mips'
-    toolchain = 'mipsel-linux-android'
-  else
-    raise "Unknown ABI: {abi}";
-  end
-
-  ndkhostvariants.each do |ndkhost|
-      puts "Checking toolchain for host: #{ndkhost}" if USE_TRACES
-
-      toolchainversions.each do |version|
-        variants = []
-        variants << File.join(ndkpath,'build','prebuilt',ndkhost,"#{toolchain}-#{version}")
-        variants << File.join(ndkpath,'toolchains',"#{toolchain}-#{version}",'prebuilt',ndkhost)
-
-        variants.each do |variant|
-          puts "Check toolchain path: #{variant}" if USE_TRACES    
-          next unless File.directory? variant
-
-          $ndktools = variant
-          $ndkabi = toolchain#toolchain.gsub(/^(.*)-([^-]*)$/, '\1')
-          $ndkgccver = version#toolchain.gsub(/^(.*)-([^-]*)$/, '\2')
-          
-          $ndkabi = 'i686-linux-android' if $ndkabi == 'x86'
-          $ndkabi = 'x86_64-linux-android' if $ndkabi == 'x86_64'
-
-          puts "Toolchain is detected: #{$ndktools}, abi: #{$ndkabi}, version: #{$ndkgccver}" if USE_TRACES
-          
-          ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
-              name = tool.gsub('+', 'p')
-
-              toolpath = check_tool( tool, $ndktools, $ndkabi)
-
-              eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
-          end
-
-          return
-        end
-      end
-  end
-
-  if $ndktools.nil?
-    raise "Can't detect NDK toolchain path (corrupted NDK installation?)"
-  end  
-end
-
-def check_tool( tool, ndktoolsdir, abi )
-  toolpath = File.join(ndktoolsdir,'bin',"#{abi}-#{tool}#{$exe_ext}")
-  puts "Checking tool path #{toolpath} for tool #{tool}" if USE_TRACES
-  
-  if File.file? toolpath
-    return toolpath
-  else
-    raise "Can't find tool #{tool} at path #{toolpath} (corrupted NDK installation or unsupported NDK?)"
-  end
-end
-
 def setup_ndk(ndkpath,apilevel,abi)
   puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})" if USE_TRACES
+  $apilevel = apilevel
+  ndk = NDKWrapper.new( ndkpath )
   
-  detect_toolchain ndkpath, abi
+  tools = ndk.detect_toolchain abi
+  tools.each { |name, path| eval "$#{name}bin = path" }  
 
-  variants = []
-  variants << "platforms"
-  variants << File.join("build", "platforms")
+  $ndksysroot = ndk.sysroot apilevel, abi 
 
-  api_levels = Array.new
-
-  max_ndk_api_level = 19 #we use some functions missing from API 20 and forth
-
-  variants.each do |variant|
-    puts "Check NDK folder: #{variant}" if USE_TRACES
-    Dir.glob(File.join(ndkpath, variant, "*")).each do |platform|
-      sys_root = File.join platform, "arch-arm"
-      puts "Checking #{sys_root} for NDK nsysroot"  if USE_TRACES
-      next unless File.directory? sys_root
-      next unless platform =~ /android-([0-9]+)$/
-      api_level = $1.to_i 
-      api_levels.push api_level if (api_level<=max_ndk_api_level)
-      puts "NDK API level: #{api_level}" if USE_TRACES
-    end
-  end
-  
-  api_levels.sort!
-
-  last_api_level = 0
-  api_levels.each do |cur_api_level|
-    puts "Checking is API level enough: #{cur_api_level}"  if USE_TRACES
-    break if cur_api_level > apilevel.to_i
-    last_api_level = cur_api_level
-  end
-
-  variants.each do |variant|
-    sysroot = File.join(ndkpath, variant, "android-#{last_api_level}/arch-#{abi}")
-    next unless File.directory? sysroot
-    $ndksysroot = sysroot
-    break
-  end
-  if $ndksysroot.nil?
-    raise "Can't detect NDK sysroot (corrupted NDK installation?)"
-  end
-  puts "NDK sysroot: #{$ndksysroot}"
-
+  $ndkgccver = ndk.gccver
   $androidndkpath = ndkpath unless $androidndkpath
+
+  $sysincludes = ndk.sysincludes apilevel, abi
+  $link_sysroot = ndk.link_sysroot apilevel, abi
+
+  puts "NDK sysroot: #{$ndksysroot}, linker sysroot: #{$link_sysroot}, GCC v#{$ndkgccver}, sysincludes: #{$sysincludes}"
 
   # Detect rlim_t
   if $have_rlim_t.nil?
     $have_rlim_t = false
-    resource_h = File.join(ndkpath, 'build', 'platforms', "android-#{apilevel}", "arch-arm", "usr", "include", "sys", "resource.h")
+    resource_h = File.join(ndkpath, 'build', 'platforms', "android-#{apilevel}", "arch-#{abi}", "usr", "include", "sys", "resource.h")
     if File.exists? resource_h
       File.open(resource_h, 'r') do |f|
         while line = f.gets
@@ -222,6 +93,7 @@ def cc_def_args
     args = []
     args << "--sysroot"
     args << $ndksysroot
+    args << "-isystem #{$sysincludes}" if $sysincludes    
     args << "-fPIC"
     args << "-Wall"
     args << "-Wextra"
@@ -232,6 +104,7 @@ def cc_def_args
     args << "-DANDROID"
     args << "-DOS_ANDROID"
     args << "-DRHO_DEBUG"
+    args << "-D__ANDROID_API__=#{$apilevel}" if $apilevel
     args << "-DHAVE_RLIM_T" if $have_rlim_t
     unless $debug
       args << "-O2"
@@ -260,7 +133,12 @@ def cpp_def_args
     #args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include','backward')}\""
-    args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi','include')}\""
+    
+    dirArmeabi = File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi','include')
+    if !File.directory?(dirArmeabi)
+      dirArmeabi = File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi-v7a','include')
+    end
+    args << "-I\"#{dirArmeabi}\""
     args
 end
 
@@ -443,7 +321,7 @@ end
 def get_stl_link_args(abi)
   args = []
   args << "-L#{File.join($androidndkpath, "sources","cxx-stl","gnu-libstdc++",$ndkgccver,'libs',abi)}"
-  args << "-lgnustl_static"
+  #args << "-lgnustl_static"
   args
 end
 
@@ -453,27 +331,72 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   return true if FileUtils.uptodate? outname, dependencies
 
   args = []
+
   if $ndkabi == "arm-eabi"
     args << "-nostdlib"
     args << "-Wl,-shared,-Bsymbolic"
   else
     args << "-shared"
   end
+  #args << "-static-libstdc++"
   args << "-Wl,--no-whole-archive"
   args << "-Wl,--no-undefined"
   args << "-Wl,-z,defs"
   args << "-fPIC"
   args << "-Wl,-soname,#{File.basename(outname)}"
   args << "--sysroot"
-  args << $ndksysroot
+  args << $link_sysroot
   args << "-o"
   args << "\"#{outname}\""
   args += objects.collect { |x| "\"#{x}\""}
   args += additional if additional.is_a? Array and not additional.empty?
-  args << "-L#{$ndksysroot}/usr/lib"
-  args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
-  args << "#{$ndksysroot}/usr/lib/libc.so"
-  args << "#{$ndksysroot}/usr/lib/libm.so"
+  args << "-L#{$link_sysroot}/usr/lib"
+  args << "-Wl,-rpath-link=#{$link_sysroot}/usr/lib"
+  args << "#{$link_sysroot}/usr/lib/libc.so"
+  args << "#{$link_sysroot}/usr/lib/libm.so"
+  #args << "#{$link_sysroot}/usr/lib/libstdc++.so"
+
+  localabi = "armeabi"
+  if $gccbin.include? "toolchains/x86"
+    localabi = "x86"
+  end
+  if $gccbin.include? "toolchains\\x86"
+    localabi = "x86"
+  end
+  
+  #libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
+  #if File.exists? libandroid_support
+  #  args << "-L\"#{libandroid_support}\""
+  #  args << "-landroid_support"
+  #  puts "libandroid_support exists"
+  #else
+  #  localabi = "armeabi-v7a"
+  #  libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
+  #  if File.exists? libandroid_support
+  #    args << "-L\"#{libandroid_support}\""
+  #    args << "-landroid_support"
+  #    puts "libandroid_support exists"
+  #  else
+  #    puts "libandroid_support does not exists"
+  #  end
+  #end
+
+  libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
+  if File.exists? libgnustl_static
+    args << "-L\"#{libgnustl_static}\""
+    args << "-lgnustl_static"
+    puts "libgnustl_static exists"
+  else
+    localabi = "armeabi-v7a"
+    libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
+    if File.exists? libgnustl_static
+      args << "-L\"#{libgnustl_static}\""
+      args << "-lgnustl_static"
+      puts "libgnustl_static exists"
+    else
+      puts "libgnustl_static does not exists"
+    end
+  end
 
   cc_run($gccbin, args)
 end
@@ -485,7 +408,7 @@ def cc_clean(name)
 end
 
 def java_compile(outpath, classpath, srclist)
-    javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
+    javac = $config["env"]["paths"]["java"] + "/javac#{HostPlatform.exe_ext}"
 
     args = []
     args << "-g"
@@ -577,8 +500,8 @@ def apk_build(sdk, apk_name, res_name, dex_name, debug)
     params = ['-Xmx1024m', '-classpath', $sdklibjar, 'com.android.sdklib.build.ApkBuilderMain', apk_name]
 
     params += ['-u', '-z', res_name, '-f', dex_name]
-    
-    Jake.run File.join($java, 'java'+$exe_ext), params
+
+    Jake.run File.join($java, "java#{HostPlatform.exe_ext}"), params
     unless $?.success?
         Dir.chdir prev_dir
         raise 'Error building APK file'
