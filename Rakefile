@@ -3528,11 +3528,7 @@ namespace "build" do
       error = nil
 
       begin
-        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-          output = stdout.read
-          error = stderr.read
-          status = wait_thr.value
-        end
+        output, error, status = Open3.capture3(cmd)
       rescue Exception => e
         puts "Minify error: #{e.inspect}"
         error = e.inspect
