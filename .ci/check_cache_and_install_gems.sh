@@ -7,7 +7,7 @@ if [[ -z $GEMS_INSTALLED ]]; then
 
 rvm gemset list
 gem list
-gem install rest-client -v 1.7.3 --no-document
+gem install rest-client -v 2.0.2 --no-document
 gem install listen -v 3.0.6 --no-document
 gem install zip --no-document
 gem install templater -v 1.0.0 --no-document
