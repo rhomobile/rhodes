@@ -31,6 +31,7 @@ require 'logger'
 
 require 'openssl'
 require 'base64'
+require 'stringio'
 
 
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
@@ -102,27 +103,25 @@ module AES
 
     def decrypt(data, key_64)
 
-        alg = "AES-256-CBC"
+                alg = "AES-256-CBC"
 
-        key = Base64.decode64(key_64)
+                key = Base64.decode64(key_64)
 
-        iv_and_ctext = []
-        data.split('$').each do |part|
-          iv_and_ctext << Base64.decode64(part)
-        end
+                istream = StringIO.new(data)
 
-        iv = iv_and_ctext[0]
-        cipher = iv_and_ctext[1]
+                iv = istream.read(16)
+                digest = istream.read(20)
+                cipher = istream.read()
 
-        de_aes = OpenSSL::Cipher::Cipher.new(alg)
-        de_aes.decrypt
-        de_aes.key = key
-        de_aes.iv = iv
+                de_aes = OpenSSL::Cipher::Cipher.new(alg)
+                de_aes.decrypt
+                de_aes.key = key
+                de_aes.iv = iv
 
-        decrypted_text = de_aes.update(cipher)
-        decrypted_text << de_aes.final
+                decrypted_text = de_aes.update(cipher)
+                decrypted_text << de_aes.final
 
-        return decrypted_text
+                return decrypted_text
     end
 
     def key
@@ -919,6 +918,8 @@ class Jake
 
         #skip empty files
         next unless File.size?(f)
+
+        next unless (File.basename(f) != "rhoconfig.txt")
 
         puts "    encrypt file: "+f.to_s+" ..."
 
