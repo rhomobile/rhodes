@@ -1602,6 +1602,14 @@ module Rhogen
 
 end
 
+# fix issue with Templater and Ruby >= 2.5
+# issue produced by extlib gem required by templater
+# extlib add to_hash method to Array class
+# Ruby >= 2.5 use it by unrecognized cause and destroy parameter when  OptionParser.parse!() called
+# so, solution is remove to_hash from Array because no code from Templater use this method
+class Array
+      remove_method :to_hash
+end
 
 =begin
 # Stub this method to force 1.8 compatibility (come on templater!)
