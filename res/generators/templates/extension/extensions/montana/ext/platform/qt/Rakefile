@@ -5,7 +5,7 @@ def build_extension(name)
   fail "[qmake #{name}.pro]" unless $? == 0
   #puts Jake.run($make, ['clean'])
   fail "[make clean]" unless $? == 0
-  puts Jake.run($make, ['all'])
+  puts Jake.run($make, ['release'])
   fail "[make all]" unless $? == 0
 end
 
