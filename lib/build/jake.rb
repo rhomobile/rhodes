@@ -920,6 +920,8 @@ class Jake
         next unless File.size?(f)
 
         next unless (File.basename(f) != "rhoconfig.txt")
+        next unless (File.basename(f) != "rhofilelist.txt")
+        next unless (File.basename(f) != "app_manifest.txt")
 
         puts "    encrypt file: "+f.to_s+" ..."
 
