@@ -1,21 +1,29 @@
-QT -= core
-    greaterThan(QT_MINOR_VERSION, 6): {
-        CONFIG += c++14
-        DEFINES += CPP_ELEVEN
-        DEFINES += RHODES_VERSION_2
-    }
+greaterThan(QT_MINOR_VERSION, 6): {
+    CONFIG += c++14
+    DEFINES += CPP_ELEVEN
+    DEFINES += RHODES_VERSION_2
+}
 
-    lessThan(QT_MINOR_VERSION, 6): {
-        DEFINES += RHODES_VERSION_1
+
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
+        CONFIG += c++14
     }
+}
+
+lessThan(QT_MINOR_VERSION, 6): {
+    DEFINES += RHODES_VERSION_1
+}
 TARGET = syncengine
 TEMPLATE = lib
 
 CONFIG += staticlib warn_on
 
-INCLUDEPATH += ../..\
-../../ruby/include\
-../../json
+
+INCLUDEPATH += $$PWD/../..\
+$$PWD/../../ruby/include\
+$$PWD/../../json
 
 macx {
   DESTDIR = ../../../osx/bin/syncengine
@@ -38,9 +46,14 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/syncengine
-  OBJECTS_DIR = ../../../linux/bin/syncengine/tmp
-  DEFINES += _GNU_SOURCE
+  DESTDIR = $$PWD/../../../linux/bin/syncengine
+  OBJECTS_DIR = $$PWD/../../../linux/bin/syncengine/tmp
+  DEFINES += _GNU_SOURCE OS_LINUX OS_SAILFISH
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
+
+  INCLUDEPATH += $$PWD/../../ruby/include\
+                 $$PWD/../../ruby/linux
 }
 
 DEFINES += RHODES_QT_PLATFORM
@@ -54,6 +67,8 @@ DEFINES += RHODES_QT_PLATFORM
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   # QMAKE_CFLAGS += -fvisibility=hidden
   # QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 win32 {
     QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100

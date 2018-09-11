@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="emmlapi"
+	>
+	<UserMacro
+		Name="RHO_ROOT_DEMO"
+		Value="c:\projects\rhodes"
+	/>
+	<UserMacro
+		Name="TEMP_FILES_DIR_DEMO"
+		Value="$(RHO_ROOT)\platform\wm\bin\$(PlatformName)\extensions\$(ProjectName)"
+	/>
+</VisualStudioPropertySheet>

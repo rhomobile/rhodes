@@ -7,7 +7,9 @@
 #include <QList>
 #include <QEventLoop>
 #include <QtGui>
+#ifndef OS_SAILFISH
 #include <QApplication>
+#endif
 #include "CCameraData.h"
 #include "../../platform/shared/qt/rhodes/guithreadfunchelper.h"
 

@@ -22,7 +22,9 @@
 static void dln_loaderror(const char *format, ...);
 #endif
 #include "dln.h"
-
+#ifdef OS_LINUX
+#include "ruby/ruby.h"
+#endif
 #ifdef OS_UWP
 #include "ruby/ruby.h"
 #include <Dbghelp.h>

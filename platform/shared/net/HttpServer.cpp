@@ -36,7 +36,11 @@
 
 #include <algorithm>
 #include <iterator>
-
+#ifdef OS_SAILFISH
+#include <pthread.h>
+#include <sched.h>
+#include <errno.h>
+#endif
 //#include <errno.h>
 
 
@@ -46,8 +50,13 @@
 
 #if !defined(OS_WINCE)
 #include <common/stat.h>
+#ifndef OS_SAILFISH
 #define HTTP_EAGAIN_TIMEOUT 10
 #define HTTP_EAGAIN_TIMEOUT_STR "10"
+#else
+#define HTTP_EAGAIN_TIMEOUT 60
+#define HTTP_EAGAIN_TIMEOUT_STR "60"
+#endif
 #else
 #include "CompatWince.h"
 #define HTTP_EAGAIN_TIMEOUT 60
@@ -580,6 +589,14 @@ int CHttpServer::select_internal( SOCKET listener, fd_set& readfds )
 
 bool CHttpServer::run()
 {
+    #ifdef OS_SAILFISH
+    pthread_t current_thread = pthread_self();
+    struct sched_param params = { 0 };
+    params.sched_priority = 9;
+    pthread_setschedparam(current_thread, SCHED_FIFO, &params);
+    #endif
+
+
     if (verbose) LOG(INFO) + "Start HTTP server";
 
     if (!init())

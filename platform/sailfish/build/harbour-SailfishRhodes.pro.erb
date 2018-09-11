@@ -1,0 +1,67 @@
+TARGET = <%= @nameApp %>
+QT += webkit core widgets network quick
+CONFIG += sailfishapp c++14 sailfishapp_i18n ordered
+CONFIG += <%= @buildMode %>
+CONFIG += force_debug_info
+
+OTHER_FILES += $$PWD/data/*
+
+privileges.files = privileges/*
+privileges.path = /usr/share/mapplauncherd/privileges.d
+INSTALLS += privileges
+OTHER_FILES += privileges/*
+
+DEPLOYMENT_PATH = /usr/share/$${TARGET}
+data.files = data
+data.path = $${DEPLOYMENT_PATH}
+
+INSTALLS += data
+
+DISTFILES += rpm/harbour-SailfishRhodes.changes.in \
+    rpm/harbour-SailfishRhodes.changes.run.in \
+    rpm/harbour-SailfishRhodes.spec \
+    rpm/harbour-SailfishRhodes.yaml \
+    harbour-SailfishRhodes.desktop \
+    translations/*.ts \
+	privileges/<%= @nameApp %>
+
+
+SAILFISHAPP_ICONS = 86x86 108x108 128x128
+
+INCLUDEPATH += <%= @rhoRoot %>/platform/wm/rhodes
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/curl/include
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/sqlite
+DEPENDPATH  += <%= @rhoRoot %>/platform/shared/sqlite
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/include
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby
+INCLUDEPATH += $$PWD/../rhodes
+
+DEFINES += CPP_ELEVEN
+DEFINES += OS_SAILFISH
+DEFINES += OS_LINUX
+
+TEMPLATE = subdirs
+SUBDIRS += $$PWD/../rubylib $$PWD/../rholib $$PWD/../sqlite3 $$PWD/../syncengine $$PWD/../curl\
+$$PWD/../rhodes
+#$$PWD/../../../../lib/commonAPI/logCapture/ext/platform/qt/logCapture.pro \
+#$$PWD/../../../../../rhoconnect-client/ext/rhoconnect-client/ext/platform/qt/rhoconnect-client.pro \
+#$$PWD/../../../../lib/extensions/digest/ext/digest.pro \
+#$$PWD/../../../../lib/extensions/digest-md5/ext/digest-md5.pro \
+#$$PWD/../../../../lib/extensions/digest-sha1/ext/digest-sha1.pro \
+#$$PWD/../../../../lib/extensions/digest-sha2/ext/digest-sha2.pro \
+#$$PWD/../../../../lib/extensions/fcntl/ext/fcntl.pro \
+#$$PWD/../../../../lib/extensions/openssl/ext/openssl.pro \
+#$$PWD/../../../../lib/extensions/serialport/ext/serialport.pro \
+#<%= @rhoRoot %>/lib/extensions/zlib/ext/zlib.pro# \
+#$$PWD/../../../../lib/commonAPI/mediacapture/ext/platform/qt/MediaCapture.pro \
+#$$PWD/../../../../lib/commonAPI/barcode/ext/platform/qt/Barcode.pro
+
+QMAKE_CXXFLAGS_RELEASE += -MP9
+QMAKE_CXXFLAGS_DEBUG += -MP9
+
+QMAKE_CFLAGS_DEBUG -= -O2
+QMAKE_CXXFLAGS_DEBUG -= -O2
+
+QMAKE_CFLAGS += -fvisibility=hidden
+QMAKE_CXXFLAGS += -fvisibility=hidden

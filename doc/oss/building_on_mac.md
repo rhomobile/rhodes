@@ -72,6 +72,7 @@ In Terminal, execute the following commands to install the required gems on the 
 	$ gem install uuid
 	$ gem install systemu
 	$ gem install json
+	$ gem install net-scp
 	$ gem install rest-client
 	$ gem install CFPropertyList
 	$ gem install listen --version 3.0.6

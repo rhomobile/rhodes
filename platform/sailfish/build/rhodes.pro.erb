@@ -1,0 +1,146 @@
+QT += core gui network multimedia
+<%= @enableDBUS %>
+
+DEFINES += <%= @enableQWebEngine %>
+
+!contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+    QT += webkit
+}
+contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+    QT += webengine
+}
+
+message(Qt version: $$[QT_VERSION])
+
+CONFIG += sailfishapp c++14 sailfishapp_i18n
+DEFINES += OS_SAILFISH OS_LINUX
+
+contains(DEFINES, OS_SAILFISH)  {
+    TARGET = <%= @nameApp %>
+    TEMPLATE = app
+}
+
+CONFIG += warn_on
+CONFIG += <%= @buildMode %>
+
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared\
+<%= @rhoRoot %>/platform/shared/ruby\
+<%= @rhoRoot %>/platform/shared/ruby/include
+
+
+unix:!macx {
+  MOC_DIR = $$PWD/generated_files
+  UI_DIR = $$PWD/generated_files
+  OBJECTS_DIR = $$PWD/bin/tmp
+  RCC_DIR = $$PWD/resources
+  HEADERS += <%= @rhoRoot %>/platform/shared/net/linux/SSLImpl.h
+  SOURCES += <%= @rhoRoot %>/platform/shared/net/linux/SSLImpl.cpp\
+  <%= @rhoRoot %>/lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/curl/include\
+  <%= @rhoRoot %>/platform/shared/qt/rhodes
+  LIBS += -lpthread
+  LIBS += -ldl -lz
+  LIBS += -L../sqlite3/bin -lsqlite3
+  
+  DEFINES += QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB OS_LINUX
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
+}
+
+DEFINES += RHODES_QT_PLATFORM
+
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+}
+
+HEADERS += <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoClassFactoryImpl.h\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/MainWindowImpl.h\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/NativeToolbarImpl.h\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/NativeTabbarImpl.h\
+<%= @rhoRoot %>/platform/shared/rubyext/NativeToolbarExt.h\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/DateTimePickerImpl.h\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/AlertImpl.h\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoThreadImpl.h\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/iexecutable.h\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/MainWindowCallback.h\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/QtCustomStyle.h\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/mainwindowinterface.h \
+<%= @rhoRoot %>/platform/shared/qt/rhodes/guithreadfunchelper.h \
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/notificationsound.h \
+<%= @rhoRoot %>/platform/shared/net/ssl.h \
+<%= @rhoRoot %>/platform/shared/unzip/zip.h
+#TODO: make this like normal developer do
+
+
+SOURCES += <%= @rhoRoot %>/platform/shared/qt/rhodes/impl/AlertImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/BluetoothImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/CalendarImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/CameraImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/DateTimePickerImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/GeoLocationImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/MapViewImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/NativeToolbarImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/PhonebookImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoClassFactoryImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhodesImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoFileImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoNativeViewManagerImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RhoThreadImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/RingtoneManagerImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/SignatureImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/QtSystemImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/WebViewImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/MainWindowImpl.cpp\
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/NativeTabbarImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp \
+<%= @rhoRoot %>/platform/shared/qt/rhodes/impl/notificationsound.cpp \
+<%= @rhoRoot %>/platform/shared/net/ssl.cpp \
+<%= @rhoRoot %>/platform/shared/unzip/zip.cpp \
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/SystemImplBase.cpp
+#TODO: make this like normal developer do
+
+contains(DEFINES, OS_SAILFISH)  {
+SOURCES += \
+    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/main.cpp \
+    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtMainWindow.cpp \
+    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/RhoNativeApiCall.cpp
+	
+
+HEADERS += <%= @rhoRoot %>/platform/shared/qt/sailfish/src/custommenuitem.h \
+    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtMainWindow.h \
+	<%= @rhoRoot %>/platform/shared/qt/sailfish/src/QtLogView.h \
+    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/RhoNativeApiCall.h\
+    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/RootDelegate.h \
+    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/customtoolbaritem.h \
+    <%= @rhoRoot %>/platform/shared/qt/sailfish/src/customwebviewtab.h
+
+#DISTFILES += $$PWD/../sailfish/qml/harbour-SailfishRhodes.qml \
+#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/cover/harbour-CoverPage.qml \
+#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/harbour-FirstPageWK.qml \
+#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/harbour-FirstPageWE.qml \
+#    <%= @rhoRoot %>/platform/shared/qt/sailfish/qml/pages/harbour-MenuPage.qml
+}
+
+#RESOURCES += resources/common.qrc
+
+unix:!macx:
+LIBS += -L$$PWD/../sqlite3/bin -lsqlite3
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/sqlite
+DEPENDPATH += <%= @rhoRoot %>/platform/shared/sqlite
+
+unix:!macx: LIBS += -L$$PWD/../curl/bin -lcurl
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/curl/include
+DEPENDPATH += <%= @rhoRoot %>/platform/shared/curl/include
+unix:!macx: PRE_TARGETDEPS += $$PWD/../curl/bin/libcurl.a\
+
+unix:!macx: LIBS += -L$$PWD/../rubylib/bin -lrubylib
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/include
+DEPENDPATH += <%= @rhoRoot %>/platform/shared/ruby/include
+unix:!macx: PRE_TARGETDEPS += $$PWD/../rubylib/bin/librubylib.a
+
+unix:!macx: LIBS += -L$$PWD/../rholib/bin -lrholib -lcurl
+unix:!macx: PRE_TARGETDEPS += $$PWD/../rholib/bin/librholib.a
+
+unix:!macx: LIBS += -L$$PWD/../syncengine/bin -lsyncengine -lsqlite3
+unix:!macx: PRE_TARGETDEPS += $$PWD/../syncengine/bin/libsyncengine.a

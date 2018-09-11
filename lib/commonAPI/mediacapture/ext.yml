@@ -15,6 +15,9 @@ android:
   adds: ext/platform/android/adds
   exttype: rakefile
 
+sailfish:
+  proerb: ext/platform/qt/MediaCapture.pro.erb
+
 wp8:
   libraries: ["Camera"]
   camera:
@@ -35,7 +38,7 @@ project_paths:
   
 xml_api_paths: ext/camera.xml, ext/videocapture.xml
 
-platforms: ["wm", "iphone", "android", "wp8" , "uwp", "win32"]
+platforms: ["wm", "iphone", "android", "wp8" , "uwp", "win32", "sailfish"]
 
 wm:
   files:

@@ -1,0 +1,159 @@
+QT -= core
+
+DEFINES += OS_SAILFISH OS_LINUX
+
+TARGET = rholib
+TEMPLATE = lib
+
+CONFIG += staticlib warn_on
+CONFIG += <%= @buildMode %>
+
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared\
+<%= @rhoRoot %>/platform/shared/ruby\
+<%= @rhoRoot %>/lib/commonAPI
+
+unix:!macx {
+  DESTDIR = $$PWD/bin
+  OBJECTS_DIR = $$PWD/bin/tmp
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/curl/include
+  DEFINES += _GNU_SOURCE
+  HEADERS += <%= @rhoRoot %>/platform/shared/common/PosixThreadImpl.h\
+  <%= @rhoRoot %>/platform/shared/net/CURLNetRequest.h\
+  <%= @rhoRoot %>/platform/shared/net/ssl.h
+  SOURCES += <%= @rhoRoot %>/platform/shared/common/PosixThreadImpl.cpp\
+  <%= @rhoRoot %>/platform/shared/net/CURLNetRequest.cpp\
+  <%= @rhoRoot %>/platform/shared/net/ssl.cpp
+  
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
+}
+
+DEFINES += RHODES_QT_PLATFORM
+
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  # QMAKE_CFLAGS += -fvisibility=hidden
+  # QMAKE_CXXFLAGS += -fvisibility=hidden
+}
+
+
+HEADERS += <%= @rhoRoot %>/platform/shared/common/RhoAppAdapter.h\
+<%= @rhoRoot %>/platform/shared/common/IRhoThreadImpl.h\
+<%= @rhoRoot %>/platform/shared/common/RhoThread.h\
+<%= @rhoRoot %>/platform/shared/common/RhodesAppBase.h\
+<%= @rhoRoot %>/platform/shared/common/RhodesApp.h\
+<%= @rhoRoot %>/platform/shared/common/RhoConf.h\
+<%= @rhoRoot %>/platform/shared/common/RhoSimConf.h\
+<%= @rhoRoot %>/platform/shared/statistic/RhoProfiler.h\
+<%= @rhoRoot %>/platform/shared/common/RhoDefs.h\
+<%= @rhoRoot %>/platform/shared/common/RhoFatalError.h\
+<%= @rhoRoot %>/platform/shared/common/RhoFile.h\
+<%= @rhoRoot %>/platform/shared/common/RhoFilePath.h\
+<%= @rhoRoot %>/platform/shared/common/RhoMutexLock.h\
+<%= @rhoRoot %>/platform/shared/common/RhoPort.h\
+<%= @rhoRoot %>/platform/shared/common/RhoStd.h\
+<%= @rhoRoot %>/platform/shared/common/RhoSystem.h\
+<%= @rhoRoot %>/platform/shared/common/RhoTime.h\
+<%= @rhoRoot %>/platform/shared/common/StringConverter.h\
+<%= @rhoRoot %>/platform/shared/logging/RhoLog.h\
+<%= @rhoRoot %>/platform/shared/logging/RhoLogCat.h\
+<%= @rhoRoot %>/platform/shared/logging/RhoLogConf.h\
+<%= @rhoRoot %>/platform/shared/logging/RhoLogSink.h\
+<%= @rhoRoot %>/platform/shared/common/Tokenizer.h\
+<%= @rhoRoot %>/platform/shared/rubyext/GeoLocation.h\
+<%= @rhoRoot %>/platform/shared/common/AutoPointer.h\
+<%= @rhoRoot %>/platform/shared/common/InputStream.h\
+<%= @rhoRoot %>/platform/shared/common/irhoclassfactory.h\
+<%= @rhoRoot %>/platform/shared/common/ThreadQueue.h\
+<%= @rhoRoot %>/platform/shared/net/URI.h\
+<%= @rhoRoot %>/platform/shared/common/AppMenu.h\
+<%= @rhoRoot %>/platform/shared/net/INetRequest.h\
+<%= @rhoRoot %>/platform/shared/net/HttpServer.h\
+<%= @rhoRoot %>/platform/shared/common/SplashScreen.h\
+<%= @rhoRoot %>/platform/shared/common/rhoparams.h\
+<%= @rhoRoot %>/platform/shared/common/app_build_configs.h\
+<%= @rhoRoot %>/platform/shared/common/RhoMath.h\
+<%= @rhoRoot %>/platform/shared/common/map/ESRIMapEngine.h\
+<%= @rhoRoot %>/platform/shared/common/map/GoogleMapEngine.h\
+<%= @rhoRoot %>/platform/shared/common/map/MapEngine.h\
+<%= @rhoRoot %>/platform/shared/common/push/IRhoPushClient.h\
+<%= @rhoRoot %>/platform/shared/common/push/RhoPushManager.h\
+<%= @rhoRoot %>/platform/shared/api_generator/BaseClasses.h\
+<%= @rhoRoot %>/platform/shared/api_generator/GeneratorQueue.h\
+<%= @rhoRoot %>/platform/shared/api_generator/MethodResult.h\
+<%= @rhoRoot %>/platform/shared/api_generator/js_helpers.h\
+<%= @rhoRoot %>/platform/shared/api_generator/StringifyHelper.h
+
+SOURCES += <%= @rhoRoot %>/platform/shared/common/RhoTime.cpp\
+<%= @rhoRoot %>/platform/shared/rubyext/RhoAppAdapter.cpp\
+<%= @rhoRoot %>/platform/shared/common/RhoThread.cpp\
+<%= @rhoRoot %>/platform/shared/common/RhodesAppBase.cpp\
+<%= @rhoRoot %>/platform/shared/common/RhodesApp.cpp\
+<%= @rhoRoot %>/platform/shared/common/RhoConf.cpp\
+<%= @rhoRoot %>/platform/shared/common/RhoSimConf.cpp\
+<%= @rhoRoot %>/platform/shared/statistic/RhoProfiler.cpp\
+<%= @rhoRoot %>/platform/shared/common/RhoFile.cpp\
+<%= @rhoRoot %>/platform/shared/logging/RhoLog.cpp\
+<%= @rhoRoot %>/platform/shared/logging/RhoLogConf.cpp\
+<%= @rhoRoot %>/platform/shared/logging/RhoLogSink.cpp\
+<%= @rhoRoot %>/platform/shared/logging/RhoPlainLog.cpp\
+<%= @rhoRoot %>/platform/shared/common/Tokenizer.cpp\
+<%= @rhoRoot %>/platform/shared/rubyext/GeoLocation.cpp\
+<%= @rhoRoot %>/platform/shared/common/ThreadQueue.cpp\
+<%= @rhoRoot %>/platform/shared/net/INetRequest.cpp\
+<%= @rhoRoot %>/platform/shared/net/URI.cpp\
+<%= @rhoRoot %>/platform/shared/common/AppMenu.cpp\
+<%= @rhoRoot %>/platform/shared/common/rhoparams.cpp\
+<%= @rhoRoot %>/platform/shared/rubyext/System.cpp\
+<%= @rhoRoot %>/platform/shared/net/HttpServer.cpp\
+<%= @rhoRoot %>/platform/shared/common/SplashScreen.cpp\
+<%= @rhoRoot %>/platform/shared/common/app_build_configs.c\
+<%= @rhoRoot %>/platform/shared/common/map/OSMMapEngine.cpp\
+<%= @rhoRoot %>/platform/shared/common/map/GeocodingMapEngine.cpp\
+<%= @rhoRoot %>/platform/shared/common/map/BaseMapEngine.cpp\
+<%= @rhoRoot %>/platform/shared/common/RhoMath.cpp\
+<%= @rhoRoot %>/platform/shared/common/map/ESRIMapEngine.cpp\
+<%= @rhoRoot %>/platform/shared/common/map/GoogleMapEngine.cpp\
+<%= @rhoRoot %>/platform/shared/common/map/MapEngine.cpp\
+<%= @rhoRoot %>/platform/shared/common/BundleManager.cpp\
+<%= @rhoRoot %>/platform/shared/common/push/RhoPushManager.cpp\
+<%= @rhoRoot %>/platform/shared/api_generator/js_helpers.cpp\
+<%= @rhoRoot %>/platform/shared/api_generator/MethodResult.cpp\
+<%= @rhoRoot %>/platform/shared/api_generator/StringifyHelper.cpp
+
+HEADERS += <%= @rhoRoot %>/platform/shared/unzip/zip.h\
+<%= @rhoRoot %>/platform/shared/unzip/unzip.h\
+<%= @rhoRoot %>/platform/shared/unzip/gunzip.h\
+<%= @rhoRoot %>/platform/shared/unzip/crc32.h\
+<%= @rhoRoot %>/platform/shared/unzip/deflate.h\
+<%= @rhoRoot %>/platform/shared/unzip/inffast.h\
+<%= @rhoRoot %>/platform/shared/unzip/inffixed.h\
+<%= @rhoRoot %>/platform/shared/unzip/inflate.h\
+<%= @rhoRoot %>/platform/shared/unzip/gzguts.h\
+<%= @rhoRoot %>/platform/shared/unzip/inftrees.h\
+<%= @rhoRoot %>/platform/shared/unzip/trees.h\
+<%= @rhoRoot %>/platform/shared/unzip/unzip.h\
+<%= @rhoRoot %>/platform/shared/unzip/zconf.h\
+<%= @rhoRoot %>/platform/shared/unzip/zip.h\
+<%= @rhoRoot %>/platform/shared/unzip/zlib.h\
+<%= @rhoRoot %>/platform/shared/unzip/zutil.h
+SOURCES += <%= @rhoRoot %>/platform/shared/unzip/unzip.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/adler32.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/crc32.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/deflate.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/gunzip.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/gzclose.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/gzlib.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/gzread.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/gzwrite.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/infback.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/inffast.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/inflate.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/inftrees.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/trees.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/unzip.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/zip.cpp\
+<%= @rhoRoot %>/platform/shared/unzip/zutil.cpp

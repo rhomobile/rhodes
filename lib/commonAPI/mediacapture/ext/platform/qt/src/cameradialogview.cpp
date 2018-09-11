@@ -21,7 +21,6 @@ CameraDialogView::CameraDialogView(QCameraInfo &info, rho::apiGenerator::CMethod
     connect(imageCapture, SIGNAL(imageSaved(int, const QString)), this, SLOT(imageSaved(int,const QString)));
 
 
-
     QVBoxLayout * vblay = new QVBoxLayout(this);
     videoWidget = new QVideoWidget(this);
     vblay->addWidget(videoWidget,0,Qt::AlignCenter);

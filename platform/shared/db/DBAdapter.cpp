@@ -1247,10 +1247,12 @@ String CDBAdapter::exportDatabase() {
 	close(false);
 
 	String ret = zipName;
-	
-	if (rho_sys_zip_files_with_path_array_ptr(zipName.c_str(),basePath.c_str(),fileList,0)!=0) {
-		ret = "";
-	}
+
+#ifndef OS_LINUX
+    if (rho_sys_zip_files_with_path_array_ptr(zipName.c_str(),basePath.c_str(),fileList,0)!=0) {
+        ret = "";
+    }
+#endif
 
 	open(path,ver,false,false);
 	

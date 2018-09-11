@@ -11,12 +11,17 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QHash>
+#ifndef OS_SAILFISH
 #include "BarcodeDialogBuilder.h"
+#else
+#include "barcodeqmlmodel.h"
+#endif
 
 #include "../../../../../platform/shared/api_generator/MethodResult.h"
 #include "../../../../../platform/shared/common/RhoStd.h"
 #include "../../platform/shared/qt/rhodes/iexecutable.h"
 #include "../../platform/shared/qt/rhodes/guithreadfunchelper.h"
+
 
 class BarCodeController : public QObject
 {

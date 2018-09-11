@@ -193,7 +193,7 @@ currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId()
     } else {
         unsetProxy();
     }
-
+    lastInstance = this;
     QWebEngineProfile * profile = QWebEngineProfile::defaultProfile();
     #ifdef RHODES_EMULATOR
     profile->setHttpUserAgent("RhoSimulator");
@@ -923,10 +923,14 @@ void QtMainWindow::on_actionAbout_triggered()
 {
     QString OSDetails= QString("\nOS  : %1  \nApp Compiled with QT Version :  %2 \nRunning with QT Version %3")
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
-#ifndef RHO_SYMBIAN
+
 #ifdef RHODES_EMULATOR
-    QMessageBox::about(this, RHOSIMULATOR_NAME, QString(RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebEngine v" QTWEBENGINECORE_VERSION_STR ")\n(WebKit v%1) \nPlatform : %2 %3").arg(QTWEBENGINECORE_VERSION_STR)
-       .arg(RHOSIMCONF().getString( "platform").c_str())
+    QMessageBox::about(this,
+       RHOSIMULATOR_NAME,
+       QString(QString(RHOSIMULATOR_NAME) + " v" +
+               QString(RHOSIMULATOR_VERSION) + "\n(QtWebEngine v" + QString(QTWEBENGINECORE_VERSION_STR) + ")\n(WebKit v%1) \nPlatform : %2 %3")
+       .arg(QTWEBENGINECORE_VERSION_STR)
+       .arg(RHOSIMCONF().getString("platform").c_str())
        .arg(OSDetails)
        );
 #else
@@ -935,8 +939,6 @@ void QtMainWindow::on_actionAbout_triggered()
         .arg(QString::fromStdString(RHOCONF().getString("app_version")))
         .arg(OSDetails)
         );
-#endif
-
 #endif
 }
 

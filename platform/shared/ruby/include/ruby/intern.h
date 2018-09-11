@@ -232,8 +232,10 @@ VALUE rb_enumeratorize(VALUE, VALUE, int, const VALUE *);
 typedef VALUE rb_enumerator_size_func(VALUE, VALUE, VALUE);
 VALUE rb_enumeratorize_with_size(VALUE, VALUE, int, const VALUE *, rb_enumerator_size_func *);
 #ifndef RUBY_EXPORT
+#ifndef OS_SAILFISH
 #define rb_enumeratorize_with_size(obj, id, argc, argv, size_fn) \
     rb_enumeratorize_with_size(obj, id, argc, argv, (rb_enumerator_size_func *)(size_fn))
+#endif
 #endif
 #define SIZED_ENUMERATOR(obj, argc, argv, size_fn) \
     rb_enumeratorize_with_size((obj), ID2SYM(rb_frame_this_func()), \

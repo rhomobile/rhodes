@@ -159,6 +159,7 @@ load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp8/build/wp.rake')
 load File.join(pwd, 'platform/uwp/build/uwp.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
+load File.join(pwd, 'platform/sailfish/build/sailfish.rake')
 
 
 #------------------------------------------------------------------------

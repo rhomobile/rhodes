@@ -1,8 +1,13 @@
-QT -= core
 greaterThan(QT_MINOR_VERSION, 6): {
     CONFIG += c++14
     DEFINES += CPP_ELEVEN
     DEFINES += RHODES_VERSION_2
+}
+
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        DEFINES += OS_SAILFISH OS_LINUX
+    }
 }
 
 lessThan(QT_MINOR_VERSION, 6): {
@@ -25,6 +30,15 @@ macx {
   OBJECTS_DIR = ../../../../platform/osx/bin/extensions/zlib
   INCLUDEPATH += ../../../../platform/shared/ruby/iphone
 }
+
+unix:!macx {
+  DESTDIR = ../../../../platform/linux/bin/extensions
+  OBJECTS_DIR = ../../../../platform/linux/bin/extensions/zlib
+  INCLUDEPATH += ../../../../platform/shared/ruby/linux
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
+}
+
 win32 {
   DESTDIR = ../../../../platform/win32/bin/extensions
   OBJECTS_DIR = ../../../../platform/win32/bin/extensions/zlib
@@ -47,8 +61,9 @@ DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-  # QMAKE_CFLAGS += -fvisibility=hidden
-  # QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
+
 }
 win32 {
     QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005

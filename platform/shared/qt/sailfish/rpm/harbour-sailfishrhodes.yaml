@@ -1,0 +1,72 @@
+Name: harbour-sailfishrhodes
+Summary: My Sailfish OS Application
+Version: 0.1
+Release: 1
+# The contents of the Group field should be one of the groups listed here:
+# http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
+Group: Qt/Qt
+URL: http://example.org/
+License: LICENSE
+# This must be generated before uploading a package to a remote build service.
+# Usually this line does not need to be modified.
+Sources:
+- '%{name}-%{version}.tar.bz2'
+Description: |
+  Short description of my Sailfish OS Application
+Configure: none
+# The qtc5 builder inserts macros to allow QtCreator to have fine
+# control over qmake/make execution
+Builder: qtc5
+
+# This section specifies build dependencies that are resolved using pkgconfig.
+# This is the preferred way of specifying build dependencies for your package.
+PkgConfigBR:
+  - sailfishapp >= 1.0.2
+  - Qt5Core
+  - Qt5Qml
+  - Qt5WebKit
+  - Qt5Multimedia
+  - Qt5Bluetooth
+
+# Build dependencies without a pkgconfig setup can be listed here
+PkgBR:
+  - qt5-qtqml-import-webkitplugin-experimental
+  - bluez5
+  - libbluez-qt5
+  - qt5-qtconnectivity-qtbluetooth
+  #- bluez5-libs-devel
+  #- libqtwebkit5-devel
+  #- qt5-qtqml-import-webkitplugin-experimental
+  #- libqtwebkit5-widgets-devel
+  #- qt5-qtcore-devel
+  #- qt5-qtdeclarative-import-multimedia
+  #- qt5-qtmultimedia
+  #- qt5-qtdeclarative-devel
+  #- qt5-qtdeclarative-qtquick-devel
+  #- qt5-qtdeclarative-qtquickparticles-devel
+  #- qt5-qtfeedback-devel
+  #- qt5-qtgui-devel
+  #- qt5-qtlocation-devel
+  #- qt5-qtmultimedia-devel
+  #- qt5-qtnetwork-devel
+  #- qt5-qtopengl-devel
+  #- qt5-qtwebsockets-devel
+
+
+
+# Runtime dependencies which are not automatically detected
+Requires:
+  - sailfishsilica-qt5 >= 0.10.9 
+  - qt5-qtconnectivity-qtsdpscanner
+
+# All installed files
+Files:
+  - '%{_bindir}'
+  - '%{_datadir}/%{name}'
+  - '%{_datadir}/applications/%{name}.desktop'
+  - '%{_datadir}/icons/hicolor/*/apps/%{name}.png'
+  - '%{_datadir}/%{name}/data'
+  - '%{_datadir}/mapplauncherd/privileges.d/%{name}'
+
+# For more information about yaml and what's supported in Sailfish OS
+# build system, please see https://wiki.merproject.org/wiki/Spectacle

@@ -14,10 +14,10 @@ These are the most common steps required for setting up a development host for t
 		* At the command prompt, type **```gem install <gem_name>``` (i.e. ```rest_client```, ```rest-client```, ```listen```, etc.)** 
 		* Set the Ruby environment variables prior to use of the ```gem``` command:
 		- ```gem install rest_client``` 	<i>- Must be installed</i>
-		- ```gem install rest-client```		<i>- Must be installed</i>
 		- ```gem install listen --version 3.0.6```			<i>- Must be installed</i>
 		- ```gem install templater``` 		<i>- Must be installed</i>
 		- ```gem install uuid```			<i>- Must be installed</i>
+		- ```gem install net-scp```			<i>- Must be installed</i>		
 		- ```gem install CFPropertyList```	<i>- Install only if required and not present</i>
 		- ```gem install rubyzip``` <i>- Install only if required and not present</i>
 		- ```gem install rhomobile-debug``` <i>- Install only if required and not present</i>

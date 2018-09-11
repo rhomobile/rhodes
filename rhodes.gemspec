@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency('systemu', '2.6.4')
   s.add_dependency('json', '1.8.6')
   s.add_dependency('rest-client', '2.0.2')
+  s.add_dependency('net-scp','1.2.1')
   s.add_dependency('CFPropertyList', '2.2.8')
   s.add_dependency('naturally', '1.3.2')
   s.add_dependency('simctl', '1.5.6')

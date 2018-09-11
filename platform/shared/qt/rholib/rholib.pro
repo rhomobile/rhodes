@@ -1,13 +1,19 @@
-QT -= core
-    greaterThan(QT_MINOR_VERSION, 6): {
-        CONFIG += c++14
-        DEFINES += RHODES_VERSION_2
-        DEFINES += AJAXSERVER
-    }
+greaterThan(QT_MINOR_VERSION, 6): {
+    CONFIG += c++14
+    DEFINES += RHODES_VERSION_2
+    DEFINES += AJAXSERVER
+}
 
-    lessThan(QT_MINOR_VERSION, 6): {
-        DEFINES += RHODES_VERSION_1
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        DEFINES += OS_SAILFISH
+        QT += core
     }
+}
+
+lessThan(QT_MINOR_VERSION, 6): {
+    DEFINES += RHODES_VERSION_1
+}
 
 TARGET = rholib
 TEMPLATE = lib
@@ -58,16 +64,20 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/rholib
-  OBJECTS_DIR = ../../../linux/bin/rholib/tmp
-  INCLUDEPATH += ../../curl/include
+  DESTDIR = $$PWD/../../../linux/bin/rholib
+  OBJECTS_DIR = $$PWD/../../../linux/bin/rholib/tmp
+  INCLUDEPATH += $$PWD/../../curl/include
   DEFINES += _GNU_SOURCE
-  HEADERS += ../../common/PosixThreadImpl.h\
-../../net/CURLNetRequest.h\
-../../net/ssl.h
-  SOURCES += ../../common/PosixThreadImpl.cpp\
-../../net/CURLNetRequest.cpp\
-../../net/ssl.cpp
+  HEADERS += $$PWD/../../common/PosixThreadImpl.h\
+  $$PWD/../../net/CURLNetRequest.h\
+  $$PWD/../../net/ssl.h
+  SOURCES += $$PWD/../../common/PosixThreadImpl.cpp\
+  $$PWD/../../net/CURLNetRequest.cpp\
+  $$PWD/../../net/ssl.cpp
+  DEFINES += OS_SAILFISH OS_LINUX
+
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM
@@ -81,6 +91,8 @@ DEFINES += RHODES_QT_PLATFORM
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   # QMAKE_CFLAGS += -fvisibility=hidden
   # QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4189 /wd4018 /wd4189 /wd4996

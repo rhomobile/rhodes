@@ -33,6 +33,7 @@
 #include "NativeTabbarImpl.h"
 #undef null
 #include <QString>
+#ifndef OS_SAILFISH
 #include <QApplication>
 #if QT_VERSION >= 0x050000
 #include <QtWidgets/QAction>
@@ -40,6 +41,7 @@
 #include <QtGui/QAction>
 #endif
 
+#endif
 //IMPLEMENT_LOGCLASS(CNativeTabbar,"NativeTabbar");
 
 using namespace rho;
