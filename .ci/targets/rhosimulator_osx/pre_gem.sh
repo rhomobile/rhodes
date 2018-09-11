@@ -11,7 +11,7 @@ tar -xzf $HOME/Qt5.9.5.tar.gz -C $HOME/
 echo Qt installed
 
 echo "Installing Rhoconnect client"	
-git clone https://github.com/rhomobile/rhoconnect-client.git ../rhoconnect-client
+git clone -b master https://github.com/rhomobile/rhoconnect-client.git ../rhoconnect-client
 
 git clone -b OpenSSL_1_1_0-stable https://github.com/tauplatform/openssl.git ../openssl
 cd ../openssl
@@ -24,6 +24,7 @@ rm -rf $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/*
 rake build:osx:rhosimulator
 cd $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/
 zip -r -y RhoSimulator.app.zip RhoSimulator.app
+rm -rf $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app
 cd $TRAVIS_BUILD_DIR
 # > build.log
 

@@ -87,6 +87,7 @@ extern void Init_transcode(void);
 extern void Init_IO(void);
 extern void Init_wait(void);
 extern void Init_nonblock(void);
+extern void Init_date_core(void);
 
 
 //RhoSupport extension
@@ -250,6 +251,8 @@ void RhoRubyStart()
     Init_socket(); //+
     Init_RhoEvent();
     Init_Calendar();
+        
+    Init_date_core();
 
     Init_Extensions();
 
@@ -264,6 +267,8 @@ void RhoRubyStart()
 
 	Init_socket();
 	Init_stringio();
+        
+    Init_date_core();
 
 	Init_Extensions();
 #endif //OS_WP8

@@ -521,14 +521,25 @@ namespace "config" do
 
       android_api_levels = AndroidTools.get_installed_api_levels
       android_api_levels.sort!
+
+      puts "Installed versions: "
+      puts AndroidTools.get_installed_market_versions
+      
       $found_api_level = android_api_levels.last
 
       #If user has mentioned version under android, then select that particular api level.
       if $app_config["android"]["version"]
         apilevel = AndroidTools.get_api_level $app_config["android"]["version"]
+        if(!apilevel)
+          apilevel = AndroidTools.get_api_level ($app_config["android"]["version"] + ".0")
+        end
+        if(!apilevel)
+          apilevel = AndroidTools.get_api_level ($app_config["android"]["version"][0...-2])
+        end
         if(apilevel)
           $androidplatform = AndroidTools.get_platform apilevel
           $found_api_level = apilevel
+          puts "Found api level #{apilevel}"
         else
           puts "No Android platform found of version #{$app_config['android']['version']}. Picking the latest one Android #{AndroidTools.get_market_version $found_api_level} available in machine"
         end
@@ -1774,18 +1785,29 @@ namespace "build" do
         rlibs << "log"
         rlibs << "dl"
         rlibs << "z"
+        rlibs << "stdc++"
 
         rlibs.map! { |x| "-l#{x}" }
 
         realabi = abi
         realabi = 'armeabi' if abi == 'arm'
 
-        extlibs = Dir.glob(File.join($app_builddir,'extensions','**',realabi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")
+        extlibs = Dir.glob(File.join($app_builddir,'extensions','**',realabi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")       
 
         extlibs.each do |lib|
           args << "-L\"#{File.dirname(lib)}\""
         end
 
+        libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", realabi)
+        
+        if File.exists? libandroid_support
+          args << "-L\"#{libandroid_support}\""
+          args << "-landroid_support"
+          puts "libandroid_support exists"
+        end
+
+
+        
         deps = []
         libs = []
 

@@ -35,6 +35,7 @@ platform/shared/*/iphone/*/build/*
 platform/shared/*/iphone/build/*
 platform/shared/*/win32/bin/*
 platform/shared/qt/*/*/Debug
+platform/shared/common/barcode_engine.h
 platform/symbian/bld.inf
 platform/symbian/curl/bld.inf
 platform/symbian/curl/curl_lib.mmp

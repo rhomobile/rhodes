@@ -60,6 +60,8 @@ applog: rholog.txt
 
 iphone:
   configuration: Release
+  ## emulatortarget can be "iphone", "ipad" or UUID or Name of already exist simulator
+  #emulatortarget: iphone
   ## Note: sdk can be 3 predefined value : latest, latest_simulator, latest_device
   ## simulator or device detect by rake command for "rake run:iphone" is simulator, for "rake device:iphone:production" is device
   ## sdk also can be defined exactly like:  iphonesimulator10.2 or iphoneos10.2

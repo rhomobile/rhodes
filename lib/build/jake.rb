@@ -31,6 +31,7 @@ require 'logger'
 
 require 'openssl'
 require 'base64'
+require 'stringio'
 
 
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
@@ -102,27 +103,25 @@ module AES
 
     def decrypt(data, key_64)
 
-        alg = "AES-256-CBC"
+                alg = "AES-256-CBC"
 
-        key = Base64.decode64(key_64)
+                key = Base64.decode64(key_64)
 
-        iv_and_ctext = []
-        data.split('$').each do |part|
-          iv_and_ctext << Base64.decode64(part)
-        end
+                istream = StringIO.new(data)
 
-        iv = iv_and_ctext[0]
-        cipher = iv_and_ctext[1]
+                iv = istream.read(16)
+                digest = istream.read(20)
+                cipher = istream.read()
 
-        de_aes = OpenSSL::Cipher::Cipher.new(alg)
-        de_aes.decrypt
-        de_aes.key = key
-        de_aes.iv = iv
+                de_aes = OpenSSL::Cipher::Cipher.new(alg)
+                de_aes.decrypt
+                de_aes.key = key
+                de_aes.iv = iv
 
-        decrypted_text = de_aes.update(cipher)
-        decrypted_text << de_aes.final
+                decrypted_text = de_aes.update(cipher)
+                decrypted_text << de_aes.final
 
-        return decrypted_text
+                return decrypted_text
     end
 
     def key
@@ -150,12 +149,32 @@ class Jake
   end
 
   def self.log( severity, message )
+    if @@logger.nil?
+        init_logger
+    end
     if @@logger
       @@logger.log(severity, message)
     else
       puts message
     end
   end
+
+  def self.init_logger
+      if @@logger.nil?
+          @@logger = Logger.new(STDOUT)
+          $logger = @@logger
+          if ENV["RHODES_BUILD_LOGGER_LEVEL"] and ENV["RHODES_BUILD_LOGGER_LEVEL"] != ""
+              level = ENV["RHODES_BUILD_LOGGER_LEVEL"]
+              if level == "DEBUG"
+                  @@logger.level = Logger::DEBUG
+              end
+              if level == "INFO"
+                  @@logger.level = Logger::INFO
+              end
+          end
+      end
+  end
+
 
   def self.config(configfile)
     require 'yaml'
@@ -560,6 +579,7 @@ class Jake
 
   def self.run3_dont_fail(command, cd = nil, env = {}, use_run2 = false)
     set_list = []
+	currentdir = ""
     env.each_pair do |k, v|
       if RUBY_PLATFORM =~ /(win|w)32$/
         set_list << "set \"#{k}=#{v}\"&&"
@@ -577,7 +597,12 @@ class Jake
         cd_ = cd.gsub('/', "\\")
         to_run = "cd /d \"#{cd_}\"&&#{to_run}"
       else
-        to_run = "cd '#{cd}'&&#{to_run}"
+        if use_run2
+          currentdir = Dir.pwd()
+          Dir.chdir cd
+        else
+          to_run = "cd '#{cd}'&&#{to_run}"
+        end
       end
     end
 
@@ -592,6 +617,9 @@ class Jake
         self.run2(to_run, []) do |line|
             log Logger::DEBUG,line
         end
+        if not cd.nil?
+          Dir.chdir currentdir
+        end
         return $?.exitstatus == 0
     else
         res = system(to_run)
@@ -604,8 +632,8 @@ class Jake
   end
 
 
-  def self.run3(command, cd = nil, env = {})
-    fail "[#{command}]" unless self.run3_dont_fail(command, cd, env)
+  def self.run3(command, cd = nil, env = {}, use_run2 = false)
+    fail "[#{command}]" unless self.run3_dont_fail(command, cd, env, use_run2)
   end
 
   def self.run4(command)
@@ -890,6 +918,10 @@ class Jake
 
         #skip empty files
         next unless File.size?(f)
+
+        next unless (File.basename(f) != "rhoconfig.txt")
+        next unless (File.basename(f) != "rhofilelist.txt")
+        next unless (File.basename(f) != "app_manifest.txt")
 
         puts "    encrypt file: "+f.to_s+" ..."
 

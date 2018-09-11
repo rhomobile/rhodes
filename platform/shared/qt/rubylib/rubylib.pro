@@ -214,6 +214,10 @@ SOURCES += \
 ../../ruby/ext/rho/rhosupport.c \
 ../../ruby/ext/rhoconf/rhoconf_wrap.c \
 ../../ruby/ext/ringtones/ringtones_wrap.c \
+../../ruby/ext/date/date_parse.c \
+../../ruby/ext/date/date_strptime.c \
+../../ruby/ext/date/date_core.c \
+../../ruby/ext/date/date_strftime.c \
 ../../ruby/ext/socket/ancdata.c \
 ../../ruby/ext/socket/basicsocket.c \
 ../../ruby/ext/socket/constants.c \

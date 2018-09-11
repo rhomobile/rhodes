@@ -345,6 +345,7 @@ void CDBAdapter::CDBVersion::toFile(const String& strFilePath)const//throws Exce
 	//try{
         CRhoFile::deleteFile( strFilePath.c_str() );
         CRhoFile::writeStringToFile(strFilePath.c_str(), strFullVer);
+        LOG(INFO) + "Saving DB Version: " + strFullVer;
 	//}catch (Exception e) {
    // 	LOG.ERROR("writeDBVersion failed.", e);
     //	throw e;
@@ -353,6 +354,7 @@ void CDBAdapter::CDBVersion::toFile(const String& strFilePath)const//throws Exce
 
 boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVer )
 {
+    if (usingDeprecatedPageSize()) return true;
     LOG(INFO) + "Try migrate database from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer;
     if ( (dbVer.m_strRhoVer.find("1.4") == 0)&& (dbNewVer.m_strRhoVer.find("1.5")==0||dbNewVer.m_strRhoVer.find("1.4")==0) )
     {
@@ -420,7 +422,7 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
 	CDBVersion dbVer;  
 	dbVer.fromFile(m_strDbVerPath);
 
-	if (dbVer.m_strRhoVer.length() == 0 )
+	if (dbVer.m_strRhoVer.length() == 0)
 	{
 		dbNewVer.toFile(m_strDbVerPath);
 		return;
@@ -442,7 +444,13 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
     if ( bRhoReset && !bAppReset && !bDbFormatChanged )
         bRhoReset = !migrateDB(dbVer, dbNewVer);
 
-    if ( bRhoReset || bAppReset || bDbFormatChanged)
+        LOG(INFO) + "bRhoReset: " + bRhoReset;
+        LOG(INFO) + "bAppReset: " + bAppReset;
+        LOG(INFO) + "bDbFormatChanged: " + bDbFormatChanged;
+
+        LOG(INFO) + "Reset Database( format changed ):" + m_strDbPath;
+
+    if ( bRhoReset || bAppReset || bDbFormatChanged )
 	{
         LOG(INFO) + "Reset database because version is changed.";
 

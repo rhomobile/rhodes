@@ -33,6 +33,10 @@ device_uid = ARGV[3]
 device = SimCtl.device(udid: device_uid)
 
 if device == nil
+    device = SimCtl.device(name: device_uid)
+end
+
+if device == nil
 
     devicetype = SimCtl.devicetype(name: 'iPhone 7')
     devicename = 'Rhomobile iPhone7 '+sdk_ver

@@ -31,6 +31,10 @@ platform/shared/ruby/eval.c
 platform/shared/ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c
 platform/shared/ruby/ext/calendar/calendar_wrap.c
 platform/shared/ruby/ext/calendar/event_wrap.c
+platform/shared/ruby/ext/date/date_parse.c
+platform/shared/ruby/ext/date/date_strptime.c
+platform/shared/ruby/ext/date/date_core.c
+platform/shared/ruby/ext/date/date_strftime.c
 platform/shared/ruby/ext/datetimepicker/datetimepicker_wrap.c
 platform/shared/ruby/ext/geolocation/geolocation_wrap.c
 platform/shared/ruby/ext/mapview/mapview_wrap.c
