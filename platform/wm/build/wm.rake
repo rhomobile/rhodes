@@ -1627,7 +1627,6 @@ PRE_TARGETDEPS += #{pre_targetdeps}
     ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
     ENV['RHO_VSCMNTOOLS'] = $vscommontools
     Jake.run3('rhosimulator_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
-
     $target_path = File.join( $startdir, $vcbindir, $sdk, 'rhodes', $buildcfg)
     if not File.directory?($target_path)
       Dir.mkdir($target_path)

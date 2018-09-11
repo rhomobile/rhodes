@@ -97,6 +97,10 @@ matrix:
 
   - language: objective-c
     os: osx
+    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"
+
+  - language: objective-c
+    os: osx
     env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX"
 
   - language: objective-c
@@ -115,13 +119,13 @@ matrix:
     os: linux
     env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17b"
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="16b" 
+  #- language: android
+  #  os: linux
+  #  env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="16b" 
 
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="16b"
+  #- language: android
+  #  os: linux
+  #  env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="16b"
 
   - language: android
     os: linux
@@ -162,10 +166,6 @@ matrix:
   # - language: objective-c
   #   os: osx
   #   env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkRuby"
-
-  - language: objective-c
-    os: osx
-    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"
 
   # - language: objective-c
   #   os: osx
