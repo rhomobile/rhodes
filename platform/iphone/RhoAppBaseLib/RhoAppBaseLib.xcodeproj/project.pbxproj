@@ -26,8 +26,6 @@
 		FA20C2BE182B07AA0036D304 /* AppManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C227182B04140036D304 /* AppManager.h */; };
 		FA20C2BF182B07AA0036D304 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C228182B04140036D304 /* AppManager.m */; };
 		FA20C2C0182B07AA0036D304 /* AppManagerI.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C229182B04140036D304 /* AppManagerI.h */; };
-		FA20C2C1182B07AE0036D304 /* Bluetooth.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C22B182B04140036D304 /* Bluetooth.h */; };
-		FA20C2C2182B07AE0036D304 /* Bluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C22C182B04140036D304 /* Bluetooth.m */; };
 		FA20C2C3182B07B60036D304 /* DateTimePickerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C231182B04140036D304 /* DateTimePickerDelegate.h */; };
 		FA20C2C4182B07B60036D304 /* DateTimePickerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C232182B04140036D304 /* DateTimePickerDelegate.m */; };
 		FA20C2C5182B07B60036D304 /* DateTime.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C233182B04140036D304 /* DateTime.h */; };
@@ -701,7 +699,6 @@
 				FA20C2D8182B07CB0036D304 /* SplittedMainView.h in Headers */,
 				FA11F249192121BF00FB1301 /* IRhoExtension.h in Headers */,
 				FA20C2E5182B07D10036D304 /* GoogleGeocoder.h in Headers */,
-				FA20C2C1182B07AE0036D304 /* Bluetooth.h in Headers */,
 				FAA5A5AE182B0E9B00590B1F /* rhorunner_Prefix.pch in Headers */,
 				FA20C2CC182B07BE0036D304 /* LocationController.h in Headers */,
 				FA89817A18917EAF00AF5E39 /* SignatureDelegate.h in Headers */,
@@ -829,7 +826,6 @@
 				FA20C2D3182B07C50036D304 /* LogOptionsController.m in Sources */,
 				FA20C2FA182B07EB0036D304 /* RhoClassFactory.cpp in Sources */,
 				FA20C30E182B08080036D304 /* Rhodes.m in Sources */,
-				FA20C2C2182B07AE0036D304 /* Bluetooth.m in Sources */,
 				FA20C2C4182B07B60036D304 /* DateTimePickerDelegate.m in Sources */,
 				FA20C2DB182B07CB0036D304 /* SplitViewDelegate.m in Sources */,
 				FA20C2FC182B07EB0036D304 /* RhoFileImpl.m in Sources */,

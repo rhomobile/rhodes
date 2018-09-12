@@ -1,7 +1,6 @@
 platform/android/Rhodes/jni/src/RhoClassFactory.cpp
 platform/android/Rhodes/jni/src/JNIRhoRuby.cpp
 platform/android/Rhodes/jni/src/JNIRhoJS.cpp
-platform/android/Rhodes/jni/src/bluetooth.cpp
 platform/android/Rhodes/jni/src/callbacks.cpp
 platform/android/Rhodes/jni/src/datetimepicker.cpp
 platform/android/Rhodes/jni/src/event.cpp

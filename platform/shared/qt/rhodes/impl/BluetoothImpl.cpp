@@ -38,57 +38,73 @@ int rho_bluetooth_is_bluetooth_available()
 
 void rho_bluetooth_off_bluetooth()
 {
+
 }
 
 void rho_bluetooth_set_device_name(const char* device_name)
 {
+
 }
 
 VALUE rho_bluetooth_get_device_name()
 {
-    return rho_ruby_create_string("ERROR");
+    //Friendly name of current device
+    return rho_ruby_create_string("");
 }
 
 const char* rho_bluetooth_get_last_error()
 {
-    return "ERROR";
+    return NULL;
 }
 
 const char* rho_bluetooth_create_session(const char* role, const char* callback_url)
 {
-    return "ERROR";
+    // role : server or client
+    // client: create ui and dicovering
+    // server: just starting server
+    // return: RHO_BT_OK
+
+    return NULL;
+
 }
 
 void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url)
 {
+
+
 }
 
 void rho_bluetooth_session_disconnect(const char* connected_device_name)
 {
+
 }
 
 int rho_bluetooth_session_get_status(const char* connected_device_name)
 {
-    return -1; 
+
+    return -1;
 }
 
-const char* rho_bluetooth_session_read_string(const char* connected_device_name)
+VALUE rho_bluetooth_session_read_string(const char* connected_device_name)
 {
-    return "ERROR";
+
+    return rho_ruby_create_string("ERROR");
 }
 
 void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str)
 {
+
 }
 
 VALUE rho_bluetooth_session_read_data(const char* connected_device_name)
 {
+
     return rho_ruby_get_NIL();
 }
 
 void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE data)
 {
-    //TODO: rho_bluetooth_session_write_data
+
 }
 
 const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device)
@@ -98,6 +114,7 @@ const char* rho_bluetooth_create_custom_server_session(const char* client_name, 
 
 const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url)
 {
+
     return NULL;
 }
 

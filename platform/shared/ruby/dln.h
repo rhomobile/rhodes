@@ -16,7 +16,9 @@
 //#include "include\ruby\intern.h"
 #include "include\ruby\defines.h"
 #endif
-
+#ifdef OS_LINUX
+#include <ruby/defines.h>
+#endif
 
 #ifdef __cplusplus
 # ifndef  HAVE_PROTOTYPES

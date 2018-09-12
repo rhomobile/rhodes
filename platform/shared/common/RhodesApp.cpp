@@ -1520,7 +1520,12 @@ void CRhodesApp::initHttpServer()
     strAppRootPath += "apps";
 #endif
 
+#ifdef OS_SAILFISH
+    //m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath, true, false); This thing doesn't work
     m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath);
+#else
+    m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath);
+#endif
     m_httpServer->register_uri("/system/geolocation", rubyext::CGeoLocation::callback_geolocation);
     m_httpServer->register_uri("/system/syncdb", callback_syncdb);
     m_httpServer->register_uri("/system/redirect_to", callback_redirect_to);
@@ -1762,7 +1767,11 @@ void CRhodesApp::initAppUrls()
     }
 
 #ifndef RHODES_EMULATOR
+    #ifndef OS_SAILFISH
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/app/loading.html";
+    #else
+    m_strLoadingPagePath = getRhoRootPath() + "apps/app/loading.html";
+    #endif
 	m_strLoadingPngPath = getRhoRootPath() + "apps/app/loading.png";
 #else
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "app/loading.html";
@@ -2950,6 +2959,7 @@ void rho_net_request(const char *url)
     getNetRequest().pullData(strCallbackUrl.c_str(), NULL);
 }
     
+//TODO: this function can crash application if you use it many times (it creates threads and probably don't delete them)
 void rho_net_request_with_data_in_separated_thread(const char *url, const char *str_body) {
     String strCallbackUrl = RHODESAPP().canonicalizeRhoUrl(url);
     String strBody = str_body;

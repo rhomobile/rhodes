@@ -22,8 +22,12 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <ctype.h>
-
+#include "logging/RhoLog.h"
 #include "posixnames.h"
+
+#ifdef OS_SAILFISH
+#include "linux/ruby/config.h"
+#endif
 
 #ifdef __hpux
 #include <sys/pstat.h>
@@ -554,19 +558,21 @@ ruby_init_loadpath_safe(int safe_level, const char* szRoot)
 #define RUBY_RELATIVE(path, len) rubylib_path_new((path), (len))
 #define PREFIX_PATH() RUBY_RELATIVE(ruby_exec_prefix, exec_prefix_len)
 #endif
+    RAWLOGC_INFO("RUBY szRoot: ", szRoot);
     load_path = GET_VM()->load_path;
 
     if (safe_level == 0) {
-	ruby_push_include(getenv("RUBYLIB"), identical_path);
+        ruby_push_include(getenv("RUBYLIB"), identical_path);
     }
 
     id_initial_load_path_mark = INITIAL_LOAD_PATH_MARK;
     while (*paths) {
-	size_t len = strlen(paths);
-	VALUE path = RUBY_RELATIVE(paths, len);
-    rb_ivar_set(path, id_initial_load_path_mark, path);
-	rb_ary_push(load_path, path);
-	paths += len + 1;
+        size_t len = strlen(paths);
+        VALUE path = RUBY_RELATIVE(paths, len);
+        rb_ivar_set(path, id_initial_load_path_mark, path);
+        rb_ary_push(load_path, path);
+        RAWLOGC_INFO("RUBY PATHS: " ,RSTRING_PTR(path));
+        paths += len + 1;
     }
 
     rb_const_set(rb_cObject, rb_intern_const("TMP_RUBY_PREFIX"), rb_obj_freeze(PREFIX_PATH()));
@@ -580,8 +586,8 @@ add_modules(VALUE *req_list, const char *mod)
     VALUE feature;
 
     if (!list) {
-	*req_list = list = rb_ary_new();
-	RBASIC_CLEAR_CLASS(list);
+        *req_list = list = rb_ary_new();
+        RBASIC_CLEAR_CLASS(list);
     }
     feature = rb_str_new2(mod);
     RBASIC_CLEAR_CLASS(feature);

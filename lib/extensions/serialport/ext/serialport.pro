@@ -8,6 +8,26 @@ CONFIG += staticlib warn_on
 INCLUDEPATH += ../../../../platform/shared/ruby/include\
 ../../../../platform/shared
 
+lessThan(QT_VERSION, 5.6.0): {
+    QT += webkit widgets webkitwidgets multimediawidgets
+    DEFINES += RHODES_VERSION_1
+}
+
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        QT += webkit widgets
+        DEFINES += OS_SAILFISH OS_LINUX
+        CONFIG += sailfishapp c++14 sailfishapp_i18n
+    }
+}
+
+greaterThan(QT_VERSION, 5.7.0): {
+    QT += webengine webenginecore webenginewidgets multimediawidgets
+    CONFIG += c++14
+    DEFINES += CPP_ELEVEN RHODES_VERSION_2
+}
+
+
 macx {
   DESTDIR = ../../../../platform/osx/bin/extensions
   OBJECTS_DIR = ../../../../platform/osx/bin/extensions/serialport
@@ -32,19 +52,29 @@ DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
   DEFINES += RHODES_EMULATOR
 }
 
+unix:!macx {
+  INCLUDEPATH += ../../../../platform/shared/ruby/linux
+  INCLUDEPATH += ../../../../platform/shared/qt/sailfish/src
+  INCLUDEPATH += ../../../../platform/shared/qt/sailfish
+  INCLUDEPATH += ../../../../platform/shared/ruby/linux
+  DESTDIR = ../../../../platform/linux/bin/extensions
+}
+
+
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-  # QMAKE_CFLAGS += -fvisibility=hidden
-  # QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden 
 }
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
   QMAKE_CXXFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
   QMAKE_CFLAGS_RELEASE += /O2
   QMAKE_CXXFLAGS_RELEASE += /O2
+  SOURCES += win_serialport_impl.c
 }
 
 HEADERS += serialport.h
 
-SOURCES += serialport.c posix_serialport_impl.c win_serialport_impl.c
+SOURCES += serialport.c posix_serialport_impl.c 

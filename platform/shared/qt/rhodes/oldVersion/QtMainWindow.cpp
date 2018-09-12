@@ -635,7 +635,7 @@ void QtMainWindow::tabbarShow()
     ui->tabBar->show();
 }
 
-void QtMainWindow::tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector)
+void QtMainWindow::tabbarConnectWebView(QWebView* webView)
 {
     if (webView) {
         webView->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX); //->show();

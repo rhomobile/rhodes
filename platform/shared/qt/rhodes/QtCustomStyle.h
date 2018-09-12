@@ -1,3 +1,4 @@
+#ifndef OS_SAILFISH
 #ifndef QTCUSTOMSTYLE_H
 #define QTCUSTOMSTYLE_H
 
@@ -17,3 +18,4 @@ class QtCustomStyle : public QProxyStyle
 };
 
 #endif //QTCUSTOMSTYLE_H
+#endif

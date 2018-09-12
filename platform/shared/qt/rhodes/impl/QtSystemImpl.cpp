@@ -34,7 +34,9 @@
 
 #include <QLocale>
 #include <QDesktopServices>
+#ifndef OS_SAILFISH
 #include <QMessageBox>
+#endif
 #include "MainWindowImpl.h"
 #include <QUrl>
 #ifdef RHODES_VERSION_2
@@ -42,6 +44,7 @@
 #endif
 #ifdef RHODES_VERSION_1
 #include <QWebPage>
+#include <QtWebKit/QWebElement>
 #if QT_VERSION >= 0x050000
 #include <QtWebKit/qtwebkitversion.h>
 #else
@@ -59,20 +62,23 @@ extern "C" {
 
 const char* rho_sys_qt_getWebviewFramework()
 {
+#ifndef OS_SAILFISH
     if (qt_webview_framework[0] == '\0') {
 
-        #ifdef RHODES_VERSION_1
+        #if defined(RHODES_VERSION_1)
         const QByteArray ver = QString("WEBKIT/").append(qWebKitVersion()).toLatin1();
         #endif
 
-        #ifdef RHODES_VERSION_2
+        #if defined(RHODES_VERSION_2)
         const QByteArray ver = QString("WEBENGINE/").append(QTWEBENGINE_VERSION_STR).toLatin1();
         #endif
+        
         if (ver.length() < 32) {
             strncpy(qt_webview_framework, ver.constData(), ver.length());
             qt_webview_framework[ver.length()] = '\0';
         }
     }
+#endif
     return qt_webview_framework;
 }
 
@@ -277,7 +283,9 @@ void rho_sys_set_application_icon_badge(int badge_number)
 
 void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 {
+#ifndef OS_SAILFISH
     QMessageBox::critical(0, QString(szTitle), QString(szMsg));
+#endif
 }
 
 RHO_GLOBAL void rho_platform_restart_application()

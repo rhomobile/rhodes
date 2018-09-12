@@ -3,5 +3,12 @@ libraries: [ "serialport" ]
 
 project_paths:
   wm: ext/serialport.vcproj
+
+android:
+  exttype: rakefile
+
+sailfish:
+  proerb: ext/platform/sailfish/serialport.pro.erb  
   
-platforms: ["wm", "win32"]  
+platforms: ["wm", "win32", "android", "sailfish"]  
+

@@ -1,4 +1,3 @@
-QT -= core
 greaterThan(QT_MINOR_VERSION, 6): {
     CONFIG += c++14
     DEFINES += RHODES_VERSION_2
@@ -6,6 +5,15 @@ greaterThan(QT_MINOR_VERSION, 6): {
     LIBS += -lmsvcrt.lib
     LIBS += -lvcruntime.lib
     LIBS += -lucrt.lib
+}
+
+
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        QT += core
+        DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
+        CONFIG += c++14
+    }
 }
 
 lessThan(QT_MINOR_VERSION, 6): {
@@ -31,14 +39,14 @@ macx {
   OBJECTS_DIR = ../../../osx/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/osx
   HEADERS += ../../ruby/ext/socket/constants.h\
-../../ruby/osx/ruby/config.h\
-../../ruby/osx/crt_externs.h\
-../../ruby/iseq.h\
-../../ruby/thread_pthread.h
+  ../../ruby/osx/ruby/config.h\
+  ../../ruby/osx/crt_externs.h\
+  ../../ruby/iseq.h\
+  ../../ruby/thread_pthread.h
   SOURCES += ../../ruby/newline.c\
-../../ruby/thread_pthread.c\
-../../ruby/missing/setproctitle.c \
-../../ruby/missing/explicit_bzero.c
+  ../../ruby/thread_pthread.c\
+  ../../ruby/missing/setproctitle.c \
+  ../../ruby/missing/explicit_bzero.c
 }
 
 win32 {
@@ -95,10 +103,10 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/rubylib
-  OBJECTS_DIR = ../../../linux/bin/rubylib/tmp
-  INCLUDEPATH += ../../ruby/linux
-  HEADERS += ../../ruby/linux/ruby/config.h
+  DESTDIR = $$PWD/../../../linux/bin/rubylib
+  OBJECTS_DIR = $$PWD/../../../linux/bin/rubylib/tmp
+  INCLUDEPATH += $$PWD/../../ruby/linux
+  HEADERS += $$PWD/../../ruby/linux/ruby/config.h
   SOURCES += \
 #../../ruby/miniprelude.c\
 ../../ruby/missing/acosh.c\
@@ -111,7 +119,12 @@ unix:!macx {
 ../../ruby/missing/strlcat.c\
 ../../ruby/missing/strlcpy.c\
 ../../ruby/missing/tgamma.c\
-../../ruby/newline.c
+../../ruby/newline.c\
+../../ruby/missing/explicit_bzero.c\
+../../ruby/missing/setproctitle.c
+
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM
@@ -123,6 +136,8 @@ DEFINES += RHODES_QT_PLATFORM
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   # incompatible with gcc 4.2 / Xcode 4: -Wself-assign
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 win32 {
     QMAKE_CFLAGS_WARN_ON += /wd4244 /wd4133 /wd4996 /wd4554 /wd4018 /wd4101 /wd4005 /wd4146 /wd4047 /wd4100 /wd4189 /wd4646 /wd4645

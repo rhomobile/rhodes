@@ -37,11 +37,12 @@
 #include "rubyext/NativeToolbarExt.h"
 #undef null
 #include <QString>
-#include <QApplication>
+#ifndef OS_SAILFISH
 #if QT_VERSION >= 0x050000
 #include <QtWidgets/QAction>
 #else
 #include <QtGui/QAction>
+#endif
 #endif
 
 //IMPLEMENT_LOGCLASS(CNativeToolbar,"NativeToolbar");

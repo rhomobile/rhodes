@@ -125,6 +125,23 @@ wm:
 win32:
   deployqt: 1
   deploymsvc: 1
+  msvc: 2015
+
+sailfish:
+  configuration: Release
+  target: 'arm'
+  target_sdk: 'SailfishOS-2.1.4.13-armv7hl'
+  build_threads: 1
+  enable_web_engine: false
+  device:
+    type: real
+    device_name: INOI R7 (ARM)
+    user: nemo
+    key: C:/SailfishOS/vmshare/ssh/private_keys/INOI_R7_(ARM)/nemo
+    password: 123
+    host: '192.168.2.15'
+  extensions: ["mediacapture", "barcode", "signature", "rhoconnect-client", "serialport"]
+
 
 extensions: [<%=@rhoconnectclient_ext%>]
 

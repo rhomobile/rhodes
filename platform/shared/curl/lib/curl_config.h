@@ -365,7 +365,9 @@
 #define HAVE_IOCTL_FIONBIO 1
 
 /* Define to 1 if you have a working ioctl SIOCGIFADDR function. */
+#ifndef OS_LINUX
 #define HAVE_IOCTL_SIOCGIFADDR 1
+#endif
 
 /* Define to 1 if you have the <io.h> header file. */
 /* #undef HAVE_IO_H */
@@ -633,8 +635,9 @@
 /* #undef HAVE_STRCMPI */
 
 /* Define to 1 if you have the strdup function. */
+#ifndef OS_LINUX
 #define HAVE_STRDUP 1
-
+#endif
 /* Define to 1 if you have the strerror_r function. */
 #define HAVE_STRERROR_R 1
 
@@ -1005,7 +1008,7 @@
 /* #undef USE_TLS_SRP */
 
 /* Use Unix domain sockets */
-// #define USE_UNIX_SOCKETS 1
+//#define USE_UNIX_SOCKETS 1
 
 /* Define to 1 if you have the `normaliz' (WinIDN) library (-lnormaliz). */
 /* #undef USE_WIN32_IDN */
@@ -1067,6 +1070,6 @@
 /* RHO BEGIN */
 //#if defined(OS_IPHONE) || defined(OS_ANDROID) || defined(OS_WP8)
 #if defined(OS_IPHONE) || defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WP8) || defined(OS_UWP)
-#define USE_RHOSSL 1
+#define USE_RHOSSL
 #endif
 /* RHO END */

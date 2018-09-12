@@ -1,17 +1,34 @@
 QT += core gui network
-
 message(Qt version: $$[QT_VERSION])
 isEqual(QT_MAJOR_VERSION, 5):{
-    QT += multimedia multimediawidgets
-
     lessThan(QT_MINOR_VERSION, 6): {
-        QT += webkit widgets webkitwidgets
+        QT += webkit widgets webkitwidgets multimedia multimediawidgets
         message(Deprecated webkit enabled)
         DEFINES += RHODES_VERSION_1
         INCLUDEPATH += oldVersion
     }
+
+    equals(QT_MAJOR_VERSION, 5) {
+        equals(QT_MINOR_VERSION, 6) {
+            DEFINES += ENABLE_Q_WEB_ENGINE
+
+            !contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+                QT += webkit
+                message(Deprecated sailfish webkit enabled)
+            }
+            contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+                QT += webengine
+            }
+
+            QT += quick multimedia dbus bluetooth
+            DEFINES += OS_SAILFISH OS_LINUX
+            CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
+        }
+    }
+
+
     greaterThan(QT_MINOR_VERSION, 6): {
-        QT += webengine webenginecore webenginewidgets
+        QT += webengine webenginecore webenginewidgets multimedia multimediawidgets
         message(Webengine enabled)
         CONFIG += c++14
         DEFINES += RHODES_VERSION_2
@@ -20,8 +37,15 @@ isEqual(QT_MAJOR_VERSION, 5):{
 }
 
 #DEFINES += RHODES_EMULATOR
-TARGET = RhoSimulator
-TEMPLATE = app
+
+!contains(DEFINES, OS_SAILFISH)  {
+    TARGET = RhoSimulator
+    TEMPLATE = app
+}
+contains(DEFINES, OS_SAILFISH)  {
+    TARGET = harbour-sailfishrhodes
+    TEMPLATE = app
+}
 
 CONFIG += warn_on
 
@@ -108,23 +132,37 @@ oldnames.lib wininet.lib Iphlpapi.lib Dbghelp.lib ws2_32.lib Crypt32.lib gdiplus
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/RhoSimulator
-  MOC_DIR = ../../../linux/bin/RhoSimulator/generated_files
-  UI_DIR = ../../../linux/bin/RhoSimulator/generated_files
-  OBJECTS_DIR = ../../../linux/bin/RhoSimulator/tmp
-  RCC_DIR =  ../../../linux/bin/RhoSimulator/resources
-  # INCLUDEPATH += ../../curl/include
-  LIBS += -lcurl
-  # LIBS += -L../../../osx/bin/curl -lcurl
-  LIBS += -L../../../linux/bin/rubylib -lrubylib
-  LIBS += -L../../../linux/bin/rholib -lrholib
+!contains(DEFINES, OS_SAILFISH) {
+  DESTDIR = $$PWD/../../../linux/bin/RhoSimulator
+}
+contains(DEFINES, OS_SAILFISH) {
+  #DESTDIR = $$PWD/../Build_Sailfish_Application
+}
+  MOC_DIR = $$PWD/../../../linux/bin/RhoSimulator/generated_files
+  UI_DIR = $$PWD/../../../linux/bin/RhoSimulator/generated_files
+  OBJECTS_DIR = $$PWD/../../../linux/bin/RhoSimulator/tmp
+  RCC_DIR =  $$PWD/../../../linux/bin/RhoSimulator/resources
+  HEADERS += $$PWD/../../net/linux/SSLImpl.h
+  SOURCES += $$PWD/../../net/linux/SSLImpl.cpp\
+  ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
+  INCLUDEPATH += ../../curl/include\
+  #../../ruby/linux\
+  LIBS += -lpthread
+  LIBS += -ldl -lz
+  #LIBS += -L../../../linux/bin/extensions -lcoreapi
   LIBS += -L../../../linux/bin/sqlite3 -lsqlite3
-  LIBS += -L../../../linux/bin/syncengine -lsyncengine
-  PRE_TARGETDEPS += ../../../linux/bin/curl/libcurl.a\
-../../../linux/bin/rubylib/librubylib.a\
-../../../linux/bin/rholib/librholib.a\
-../../../linux/bin/sqlite3/libsqlite3.a\
-../../../linux/bin/syncengine/libsyncengine.a
+  #LIBS += -L../../../linux/bin/curl -lcurl
+  #LIBS += -L../../../linux/bin/rubylib -lrubylib
+  #LIBS += -L../../../linux/bin/rholib -lrholib
+  #LIBS += -L../../../linux/bin/syncengine -lsyncengine
+  #PRE_TARGETDEPS += \
+  #../../../linux/bin/rubylib/librubylib.a\
+  #../../../linux/bin/curl/libcurl.a\
+  #../../../linux/bin/rholib/librholib.a\
+  #../../../linux/bin/sqlite3/libsqlite3.a\
+  #../../../linux/bin/extensions/libcoreapi.a\
+  #../../../linux/bin/syncengine/libsyncengine.a
+  DEFINES += QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB OS_LINUX
 }
 
 DEFINES += RHODES_QT_PLATFORM
@@ -136,6 +174,8 @@ DEFINES += RHODES_QT_PLATFORM
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100 /wd4005
@@ -158,14 +198,10 @@ impl/AlertImpl.h\
 impl/RhoThreadImpl.h\
 iexecutable.h\
 MainWindowCallback.h\
-RhoSimulator.h\
-QtLogView.h \
 QtCustomStyle.h\
 mainwindowinterface.h \
 guithreadfunchelper.h \
 impl/notificationsound.h
-
-
 
 SOURCES += impl/AlertImpl.cpp\
 impl/BluetoothImpl.cpp\
@@ -188,11 +224,33 @@ impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
 ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp \
-    impl/notificationsound.cpp
+    impl/notificationsound.cpp \
+    ../../../../lib/commonAPI/coreapi/ext/shared/SystemImplBase.cpp
+#TODO: make this like normal developer do
+
+contains(DEFINES, OS_SAILFISH)  {
+SOURCES += \
+    $$PWD/../sailfish/src/main.cpp \
+    $$PWD/../sailfish/src/QtMainWindow.cpp \
+    ../../net/ssl.cpp \
+    ../../unzip/zip.cpp \
+    $$PWD/../sailfish/src/RhoNativeApiCall.cpp
+
+HEADERS += $$PWD/../sailfish/src/custommenuitem.h \
+    $$PWD/../sailfish/src/customtoolbaritem.h \
+    $$PWD/../sailfish/src/customwebviewtab.h \
+    $$PWD/../sailfish/src/QtLogView.h \
+    $$PWD/../sailfish/src/QtMainWindow.h \
+    $$PWD/../sailfish/src/RootDelegate.h \
+    ../../net/ssl.h \
+    ../../unzip/zip.h \
+    $$PWD/../sailfish/src/RhoNativeApiCall.h
 
 
+}
 contains(DEFINES, RHODES_VERSION_1)  {
 HEADERS += oldVersion/ExternalWebView.h\
+QtLogView.h \
 oldVersion/qwebviewkineticscroller.h\
 oldVersion/QtMainWindow.h\
 oldVersion/qkineticscroller.h\
@@ -207,7 +265,6 @@ oldVersion/qtscrollerfilter_p.h\
 oldVersion/qtscrollevent.h\
 oldVersion/qtscrollevent_p.h\
 oldVersion/QtNativeTabBar.h\
-oldVersion/QtWebInspector.h\
 oldVersion/QtWebPage.h\
 oldVersion/DateTimeDialog.h\
 oldVersion/RhoNativeApiCall.h
@@ -216,7 +273,6 @@ SOURCES += oldVersion/main.cpp\
 oldVersion/ExternalWebView.cpp\
 oldVersion/QtMainWindow.cpp\
 oldVersion/QtNativeTabBar.cpp\
-oldVersion/QtWebInspector.cpp\
 oldVersion/QtWebPage.cpp\
 oldVersion/qkineticscroller.cpp\
 oldVersion/qwebviewkineticscroller.cpp\
@@ -236,6 +292,7 @@ oldVersion/DateTimeDialog.ui
 
 contains(DEFINES, RHODES_VERSION_2) {
 HEADERS += newVersion/QtMainWindow.h\
+QtLogView.h \
 newVersion/RhoNativeApiCall.h\
 newVersion/QtNativeTabBar.h\
 newVersion/QtWebEngineView.h\
@@ -257,3 +314,51 @@ newVersion/WebUrlRequestInterceptor.cpp
 
 }
 RESOURCES += resources/common.qrc
+
+
+contains(DEFINES, OS_SAILFISH)  {
+unix:!macx:
+LIBS += -L$$PWD/../../../linux/bin/sqlite3/ -lsqlite3
+INCLUDEPATH += $$PWD/../../sqlite
+DEPENDPATH += $$PWD/../../sqlite
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/curl/ -lcurl
+INCLUDEPATH += $$PWD/../../curl/include
+DEPENDPATH += $$PWD/../../curl/include
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/curl/libcurl.a\
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/rubylib/ -lrubylib
+INCLUDEPATH += $$PWD/../../ruby/include
+DEPENDPATH += $$PWD/../../ruby/include
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/rubylib/librubylib.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/rholib/ -lrholib -lcurl
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/rholib/librholib.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/syncengine/ -lsyncengine -lsqlite3
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/syncengine/libsyncengine.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lcoreapi
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libcoreapi.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lzlib
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libzlib.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lMediacapture
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libMediacapture.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lBarcode
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libBarcode.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lSignature
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libSignature.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lRhoconnect-client
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-client.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lserialport
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libserialport.a
+
+unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lbluetooth
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libbluetooth.a
+}

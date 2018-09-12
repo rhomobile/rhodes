@@ -23,9 +23,17 @@ void BarCodeController::enumerate(rho::apiGenerator::CMethodResult& oResult) {
 void BarCodeController::openDialog(rho::apiGenerator::CMethodResult &oResult, QString cameraId)
 {
     if (camerasKeeper.contains(cameraId)){
+#ifndef OS_SAILFISH
         BarcodeDialogBuilder * builder = new BarcodeDialogBuilder(camerasKeeper.value(cameraId),
                                                                   oResult, IExecutable::getMainWindow());
         emit builder->run();
+#else
+
+        BarcodeQMLModel::getInstance()->setOResult(oResult);
+        BarcodeQMLModel::getInstance()->restart();
+        QtMainWindow::getLastInstance()->openQMLDocument("BarcodePage.qml");
+
+#endif
     }
 }
 
@@ -45,13 +53,19 @@ QList<QString> BarCodeController::getIDs()
 }
 
 void BarCodeController::getCameraInfo(){
+#ifndef OS_SAILFISH
     QMetaObject::invokeMethod(GuiThreadFuncHelper::getInstance(), "availableCameras",
                               Qt::QueuedConnection, Q_ARG(QObject *, this));
     QTimer::singleShot(500, &(this->loop), SLOT(quit()));
     loop.exec();
+#else
+    QCameraInfo cameraInfo;
+    camerasKeeper.insert("back", cameraInfo);
+#endif
 }
 
 void BarCodeController::availableCameras(QList<QCameraInfo> info){
+#ifndef OS_SAILFISH
     if(camerasKeeper.isEmpty()){
         int deviceCounter = 0;
         foreach (QCameraInfo cameraInfo, info) {
@@ -59,4 +73,5 @@ void BarCodeController::availableCameras(QList<QCameraInfo> info){
         }
     }
     loop.quit();
+#endif
 }

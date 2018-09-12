@@ -7,7 +7,9 @@
 #include <QCamera>
 #include <QVBoxLayout>
 #include <QDebug>
+#ifndef OS_SAILFISH
 #include <QVideoWidget>
+#endif
 #include <QThread>
 #include <QDebug>
 #include <QFileInfo>

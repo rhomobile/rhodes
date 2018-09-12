@@ -126,7 +126,6 @@
 		A88C80751E243EBC0090E7E6 /* rhosupport.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80711E243EBC0090E7E6 /* rhosupport.c */; };
 		A88C807D1E243F140090E7E6 /* geolocation_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80781E243F140090E7E6 /* geolocation_wrap.c */; };
 		A88C807F1E243F140090E7E6 /* rhoconf_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C807B1E243F140090E7E6 /* rhoconf_wrap.c */; };
-		A88C80A01E243FF80090E7E6 /* bluetooth_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80921E243FF80090E7E6 /* bluetooth_wrap.c */; };
 		A88C80A21E243FF80090E7E6 /* calendar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80951E243FF80090E7E6 /* calendar_wrap.c */; };
 		A88C80A31E243FF80090E7E6 /* event.h in Headers */ = {isa = PBXBuildFile; fileRef = A88C80961E243FF80090E7E6 /* event.h */; };
 		A88C80A51E243FF80090E7E6 /* event_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80981E243FF80090E7E6 /* event_wrap.c */; };
@@ -1228,7 +1227,6 @@
 				A80AFD641E2413C70006FF68 /* unicode.c in Sources */,
 				A80AFE481E2415390006FF68 /* dln.c in Sources */,
 				FA4CE2951ECB316100DBA581 /* socket.c in Sources */,
-				A88C80A01E243FF80090E7E6 /* bluetooth_wrap.c in Sources */,
 				A88C80731E243EBC0090E7E6 /* rhoruby.c in Sources */,
 				FA4CE29B1ECB316100DBA581 /* ifaddr.c in Sources */,
 				A80AFE541E2415390006FF68 /* error.c in Sources */,

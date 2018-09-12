@@ -27,7 +27,7 @@
 		* At the command prompt, type **```gem install <gem_name>``` (i.e. ```rest_client```, ```rest-client```, ```listen```, etc.)** 
 		* Set the Ruby environment variables prior to use of the ```gem``` command:
 		- ```gem install rest_client``` 	<i>- Must be installed</i>
-		- ```gem install rest-client```		<i>- Must be installed</i>
+		- ```gem install net-scp```		<i>- Must be installed</i>
 		- ```gem install listen --version 3.0.6```			<i>- Must be installed</i>
 		- ```gem install templater``` 		<i>- Must be installed</i>
 		- ```gem install uuid```			<i>- Must be installed</i>

@@ -1,6 +1,4 @@
-QT       += core gui widgets
-
-QT += quick
+QT       += core gui widgets quick
 
 DEFINES += QZXING_LIBRARY \
         ZXING_ICONV_CONST \
