@@ -32,8 +32,6 @@ require 'tempfile'
 include FileUtils
 
 require 'erb'
-require 'net/ssh'
-require 'net/scp'
 
 class QtProjectGenerator
   attr_accessor :rhoRoot
@@ -117,7 +115,7 @@ namespace "config" do
     $current_platform = "sailfish"
   end
 
-  task :sailfish => :set_sailfish_platform do
+  task :sailfish => [:set_sailfish_platform, "switch_app"] do
     print_timestamp('config:sailfish START')
     Rake::Task["config:common"].invoke()
 
@@ -305,6 +303,10 @@ end
 
 namespace "run" do
   task :sailfish => ["config:sailfish"] do
+
+      require 'net/ssh'
+      require 'net/scp'
+
     session_ssh = nil
     puts "Connecting to device"
     if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?    
@@ -495,6 +497,10 @@ namespace "build"  do
     end
 
     task :deploy_bundle => ['config:sailfish'] do
+
+        require 'net/ssh'
+        require 'net/scp'
+
       $skip_build_extensions = true
       Rake::Task["build:sailfish:rhobundle"].execute
       puts "Deploy bundle started"
@@ -512,6 +518,8 @@ namespace "build"  do
     end
 
     task :force_install => ['config:sailfish'] do
+        require 'net/ssh'
+        require 'net/scp'
       $skip_build_extensions = true
       session_ssh = nil
       puts "Connecting to device"
