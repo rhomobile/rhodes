@@ -34,10 +34,13 @@ macx {
 ../../curl/lib\
 ../../curl/lib/vauth\
 ../../curl/lib/vtls
+
 SOURCES += ../../curl/lib/http_ntlm.c\
 ../../curl/lib/vauth/ntlm.c\
 ../../curl/lib/smb.c\
-../../curl/lib/vtls/openssl.c
+../../curl/lib/vtls/openssl.c\
+../../curl/lib/curl_ntlm_core.c\
+../../curl/lib/curl_endian.c
 
 
 #../../curl/lib/qssl.c\
