@@ -168,7 +168,7 @@ QtMainWindow::QtMainWindow(QObject *parent) : QObject(parent),
     QFileInfo pngInfo(QString::fromStdString(CRhodesApp::getInstance()->getLoadingPngPath()));
     if (pngInfo.exists()){
         setCover(QString::fromStdString(CRhodesApp::getInstance()->getLoadingPngPath()));
-        QTimer::singleShot(3000, [&](){emit this->setCover("");});
+        QTimer::singleShot(30000, [&](){emit this->setCover("");});
     }
 
     //qDebug() << "Available cameras: " + QString::number(QCameraInfo::availableCameras().size());

@@ -161,6 +161,7 @@ Page {
                             modelData.loadStarted();
                         }
                         if (loadRequest.status == WebEngineView.LoadSucceededStatus){
+                            rootDelegate.cover = ""
                             modelData.messageReceived("Page " + url + " loaded!");
                             modelData.loadFinished(true);
                         }

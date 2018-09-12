@@ -160,6 +160,7 @@ Page {
                             modelData.messageReceived("Loading " + url + " started...");
                         }
                         if (loadRequest.status == WebView.LoadSucceededStatus){
+                            rootDelegate.cover = ""
                             modelData.loadFinished(true);
                             modelData.messageReceived("Page " + url + " loaded!");
                         }
