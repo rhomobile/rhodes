@@ -33,6 +33,9 @@ include FileUtils
 
 require 'erb'
 
+
+$early_init = false
+
 class QtProjectGenerator
   attr_accessor :rhoRoot
   attr_accessor :extRoot
@@ -115,6 +118,11 @@ namespace "config" do
     $current_platform = "sailfish"
   end
 
+  task :early_init do
+    $early_init = true
+    Rake::Task["config:sailfish"].execute()
+  end
+
   task :sailfish => [:set_sailfish_platform, "switch_app"] do
     print_timestamp('config:sailfish START')
     Rake::Task["config:common"].invoke()
@@ -142,6 +150,10 @@ namespace "config" do
       raise "Sailfish section is not found!"
     end
 
+    if $early_init
+      next
+    end
+
     if !$app_config["name"].nil?    
       $appname = $app_config["name"]
       $final_name_app = "harbour-" + "#{$appname.downcase}"
@@ -158,7 +170,7 @@ namespace "config" do
     if $app_config["sailfish"]["target_sdk"].nil?
     
       require 'nokogiri'
-    current_targets = File.join($sailfishdir, "mersdk", "targets", "targets.xml")
+      current_targets = File.join($sailfishdir, "mersdk", "targets", "targets.xml")
       current_targets = current_targets.gsub("\\", "/")
 
       doc = File.open(current_targets) { |f| Nokogiri::XML(f) }
@@ -198,17 +210,13 @@ namespace "config" do
     mkdir_p $target_path
 
     if !$app_config.nil? && !$app_config["sailfish"].nil?
-      $host_name = "192.168.2.15"
+      $host_name = ""
       $user_name = "nemo"
 
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["type"].nil?
         $dev_type = $app_config["sailfish"]["device"]["type"]
       else
         $dev_type = "vbox"
-      end
-
-      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["host"].nil?
-        $host_name = $app_config["sailfish"]["device"]["host"]
       end
 
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["user"].nil?
@@ -218,9 +226,28 @@ namespace "config" do
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["device_name"].nil?
         $dev_name = $app_config["sailfish"]["device"]["device_name"]
       elsif $dev_type == "real"
-        raise "Please set dev_name for real device in device section!"
+        raise "Please set device name for real device in device section!\n" +        
+        "Add device if required (sailfish:device:add_device) and set 'device_name' field in build.yml.\n" +
+        "For list device use: sailfish:device:list\n"
       elsif $dev_type == "vbox"
         $dev_name = "Sailfish OS Emulator"
+      end
+
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["host"].nil?
+        $host_name = $app_config["sailfish"]["device"]["host"]
+      else
+        host = get_value($dev_name, "ip")
+        if host.empty?
+          if $dev_type == "vbox"
+            puts "Ip address not found! Set localhost as default."
+            $host_name = "localhost"
+          else
+            puts "Not found ip address for real device!"
+            $host_name = ""
+          end
+        else
+          $host_name = host
+        end
       end
 
     end
@@ -233,14 +260,22 @@ namespace "config" do
       $virtualbox_path = File.join($config["env"]["paths"]["vbox"], "VBoxManage.exe") 
     end
 
+    $ssh_key = nil
+    $pwd_host = nil
+
     if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?
       $ssh_key = $app_config["sailfish"]["device"]["key"]
+    else
+      $ssh_key = File.join($sailfishdir, "vmshare", get_value($dev_name, "sshkeypath"), "nemo")
+      $ssh_key = $ssh_key.gsub("\\", "/")
+      puts "path to ssh key: #{$ssh_key}"
     end
+
     if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["password"].nil?
       $pwd_host = $app_config["sailfish"]["device"]["password"]
     end
-    if $app_config["sailfish"]["device"]["key"].nil? &&
-       $app_config["sailfish"]["device"]["password"].nil?
+
+    if $pwd_host.nil? && $ssh_key.nil?
       raise "Key or password for running app not found, set it!"
     end
 
@@ -301,25 +336,43 @@ def exec_ssh_with_sudo_command(session, cmd)
   channel.wait
 end
 
+require 'net/ssh'
+require 'net/scp'
+
 namespace "run" do
   task :sailfish => ["config:sailfish"] do
-
-      require 'net/ssh'
-      require 'net/scp'
-
     session_ssh = nil
+    puts $ssh_key
     puts "Connecting to device"
-    if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?    
+    if !$ssh_key.nil?    
       Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
         exec_ssh_command(session, "xdg-open /usr/share/applications/#{$final_name_app}.desktop")  
       end  
-    else    
-      Net::SSH.start($host_name, $user_name, $pwd_host) do |session|       
+    else   
+      if $pwd_host.nil?
+        raise "Key or password not found set it in device section! or add device"
+      end 
+      Net::SSH.start($host_name, $user_name, :password => $pwd_host) do |session|       
         exec_ssh_command(session, "xdg-open /usr/share/applications/#{$final_name_app}.desktop")    
       end
     end
 
   end
+end
+
+def get_value(device, key)
+  device_xml = File.join $sailfishdir, "vmshare", "devices.xml"
+  device_xml = device_xml.gsub("\\", "/")
+
+  require 'nokogiri'
+  doc = File.open(device_xml) { |f| Nokogiri::XML(f) }
+  doc.xpath("//devices/device").each do |t|
+    if t.attr("name") == device
+      value = t.xpath("./#{key}").text
+      return value.to_s 
+    end
+  end
+  return ""
 end
 
 namespace "device" do
@@ -331,6 +384,103 @@ namespace "device" do
     task :install => ["config:sailfish"] do
       Rake::Task["build:sailfish:startvm"].invoke()
       Rake::Task["build:sailfish:deploy"].invoke()
+    end
+
+    task :add_device  => ["config:early_init"] do
+
+      print_timestamp('device:sailfish:add_device starting')
+      device_xml = File.join $sailfishdir, "vmshare", "devices.xml"
+      device_xml = device_xml.gsub("\\", "/")
+
+      ssh_dir = File.join $sailfishdir, "vmshare", "ssh", "private_keys"
+      ssh_dir = ssh_dir.gsub("\\", "/")
+
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["device_name"].nil?
+        $dev_name = $app_config["sailfish"]["device"]["device_name"]
+      else
+        puts "Enter device name: "      
+        $dev_name = STDIN.gets
+        $dev_name = $dev_name.chomp("\n")
+      end
+
+      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["host"].nil?
+        $host_name = $app_config["sailfish"]["device"]["host"]
+        puts "host: #{$host_name}"
+      else
+        puts "Enter network address: "      
+        $host_name = STDIN.gets
+        $host_name = $host_name.chomp("\n")
+      end
+
+      require 'nokogiri'
+      puts device_xml
+      doc = File.open(device_xml) { |f| Nokogiri::XML(f) }
+      doc.xpath("//devices/device").each do |t|
+        ip = t.xpath("./ip").text
+        name = t.attr("name")
+        if name == $dev_name
+          raise "Device with this name already registered!"
+        end
+      end
+
+      puts "Enter password from device, to generate the ssh key: "
+      $pwd_host = STDIN.noecho(&:gets).chomp
+      $user_name = "nemo"
+
+      mkdir_p File.join(ssh_dir, $dev_name)
+
+      yes = true
+      if(File.exists? File.join(ssh_dir, $dev_name, "nemo"))
+        puts "Key for this device exists, do you want to replace it? (yes/no)"      
+        yes = STDIN.gets == "yes\n"
+      end
+
+      if(yes)
+        Net::SSH.start($host_name, $user_name, :password => $pwd_host) do |session|    
+          exec_ssh_command(session, "[ -e ~/nemo ] && rm ~/nemo")
+          exec_ssh_command(session, "[ -e ~/nemo.pub ] && rm ~/nemo.pub")       
+          exec_ssh_command(session, "ssh-keygen -f ~/nemo -t rsa -b 2048 -N \"\"")
+          exec_ssh_command(session, "~/nemo.pub >> ~/.ssh/authorized_keys")
+          session.scp.download!("/home/#{$user_name}/nemo", File.join(ssh_dir, $dev_name, "nemo"))
+          session.scp.download!("/home/#{$user_name}/nemo.pub", File.join(ssh_dir, $dev_name, "nemo.pub"))
+          exec_ssh_command(session, "rm ~/nemo")
+          exec_ssh_command(session, "rm ~/nemo.pub")      
+        end
+      end
+
+      devices_node = doc.xpath("//devices/device")
+      new_node = Nokogiri::XML::Builder.new { |xml|
+        xml.device("name" => $dev_name, "type" => "real") do
+          xml.ip { xml.text($host_name) }
+          xml.sshkeypath { xml.text("ssh/private_keys/#{$dev_name}") }
+        end
+      }
+      devices_node.last.parent.add_child(new_node.doc.root)
+
+      File.open(device_xml, 'w') { |file| file.write(doc.to_s) }
+    end
+
+    task :list_device  => ["config:early_init"] do
+      print_timestamp('device:sailfish:list_device starting')
+      device_xml = File.join $sailfishdir, "vmshare", "devices.xml"
+      device_dir = File.join $sailfishdir, "vmshare"
+      device_xml = device_xml.gsub("\\", "/")
+      device_dir = device_dir.gsub("\\", "/")
+
+      require 'nokogiri'
+      puts device_xml
+      puts "==============="
+      doc = File.open(device_xml) { |f| Nokogiri::XML(f) }
+      doc.xpath("//devices/device").each do |t|
+        ip = t.xpath("./ip").text
+        name = t.attr("name")
+        sshkeypath = t.xpath("./sshkeypath").text
+
+        puts "ip: #{ip}"
+        puts "name: #{name}"
+        puts "sshkeypath: #{File.join device_dir, sshkeypath}"
+        puts "==============="
+      end
     end
 
   end
@@ -506,12 +656,15 @@ namespace "build"  do
       puts "Deploy bundle started"
       session_ssh = nil
       puts "Connecting to device"
-      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?    
+      if !$ssh_key.nil?    
         Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
           deploy_bundle(session)
         end  
       else    
-        Net::SSH.start($host_name, $user_name, $pwd_host) do |session|       
+        if $pwd_host.nil?
+          raise "Key or password not found set it in device section! or add device"
+        end
+        Net::SSH.start($host_name, $user_name, :password => $pwd_host) do |session|       
           deploy_bundle(session)
         end
       end
@@ -523,12 +676,15 @@ namespace "build"  do
       $skip_build_extensions = true
       session_ssh = nil
       puts "Connecting to device"
-      if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["key"].nil?    
+      if !$ssh_key.nil?    
         Net::SSH.start($host_name, $user_name, :host_key => "ssh-rsa", :keys => [ $ssh_key ]) do |session| 
           force_install(session)
         end  
       else    
-        Net::SSH.start($host_name, $user_name, $pwd_host) do |session|       
+        if $pwd_host.nil?
+          raise "Key or password not found set it in device section! or add device"
+        end
+        Net::SSH.start($host_name, $user_name, :password => $pwd_host) do |session|       
           force_install(session)
         end
       end
