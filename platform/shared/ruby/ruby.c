@@ -25,7 +25,9 @@
 #include "logging/RhoLog.h"
 #include "posixnames.h"
 
-#ifdef OS_SAILFISH
+#if defined(OS_SAILFISH)
+#include "sailfish/ruby/config.h"
+#elif defined(OS_LINUX)
 #include "linux/ruby/config.h"
 #endif
 

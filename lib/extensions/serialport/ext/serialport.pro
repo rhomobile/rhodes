@@ -53,10 +53,9 @@ DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 }
 
 unix:!macx {
-  INCLUDEPATH += ../../../../platform/shared/ruby/linux
+  INCLUDEPATH += ../../../../platform/shared/ruby/sailfish
   INCLUDEPATH += ../../../../platform/shared/qt/sailfish/src
   INCLUDEPATH += ../../../../platform/shared/qt/sailfish
-  INCLUDEPATH += ../../../../platform/shared/ruby/linux
   DESTDIR = ../../../../platform/linux/bin/extensions
 }
 

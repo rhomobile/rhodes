@@ -56,7 +56,7 @@ win32 {
 }
 
 unix:!macx {
-  INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/linux
+  INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/sailfish
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish/src
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish
 

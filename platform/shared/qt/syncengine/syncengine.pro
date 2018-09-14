@@ -53,7 +53,7 @@ unix:!macx {
   QMAKE_CXXFLAGS += -fvisibility=hidden
 
   INCLUDEPATH += $$PWD/../../ruby/include\
-                 $$PWD/../../ruby/linux
+                 $$PWD/../../ruby/sailfish
 }
 
 DEFINES += RHODES_QT_PLATFORM
