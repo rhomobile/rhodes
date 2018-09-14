@@ -37,7 +37,7 @@ macx {
 unix:!macx {
   DESTDIR = $$PWD/../../../../../../platform/linux/bin/extensions
   OBJECTS_DIR = $$PWD/../../../../../../platform/linux/bin/extensions/coreapi
-  INCLUDEPATH += $$PWD/../../../../../../platform/shared/ruby/linux
+  INCLUDEPATH += $$PWD/../../../../../../platform/shared/ruby/sailfish
   SOURCES += src/CNetworkDetect.cpp
   QMAKE_CFLAGS += -fvisibility=hidden
   QMAKE_CXXFLAGS += -fvisibility=hidden

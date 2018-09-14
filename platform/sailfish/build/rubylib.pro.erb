@@ -18,8 +18,8 @@ INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/include\
 unix:!macx {
   DESTDIR = $$PWD/bin
   OBJECTS_DIR = $$PWD/bin/tmp
-  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/linux
-  HEADERS += <%= @rhoRoot %>/platform/shared/ruby/linux/ruby/config.h
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/sailfish
+  HEADERS += <%= @rhoRoot %>/platform/shared/ruby/sailfish/ruby/config.h
   SOURCES += \
   <%= @rhoRoot %>/platform/shared/ruby/missing/acosh.c\
   <%= @rhoRoot %>/platform/shared/ruby/missing/cbrt.c\
