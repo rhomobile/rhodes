@@ -440,7 +440,7 @@ namespace "device" do
           exec_ssh_command(session, "[ -e ~/nemo ] && rm ~/nemo")
           exec_ssh_command(session, "[ -e ~/nemo.pub ] && rm ~/nemo.pub")       
           exec_ssh_command(session, "ssh-keygen -f ~/nemo -t rsa -b 2048 -N \"\"")
-          exec_ssh_command(session, "~/nemo.pub >> ~/.ssh/authorized_keys")
+          exec_ssh_command(session, "cat ~/nemo.pub >> ~/.ssh/authorized_keys")
           session.scp.download!("/home/#{$user_name}/nemo", File.join(ssh_dir, $dev_name, "nemo"))
           session.scp.download!("/home/#{$user_name}/nemo.pub", File.join(ssh_dir, $dev_name, "nemo.pub"))
           exec_ssh_command(session, "rm ~/nemo")
