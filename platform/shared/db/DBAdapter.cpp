@@ -960,16 +960,26 @@ void CDBAdapter::executeBatch(const char* szSql, CDBError& error)
         sqlite3_free(errmsg);
 }
 	
+extern "C" String tau_decrypt_file_simple(String const fullPath);
+
 void CDBAdapter::createSchema()
 {
+    LOG(INFO)+"Creating schema";
 #ifdef RHODES_EMULATOR
-    String strPath = CFilePath::join( RHOSIMCONF().getRhodesPath(), "platform/shared/db/res/db/syncdb.schema" );
+    String strPath = CFilePath::join( RHOSIMCONF().getRhodesPath(), "platform/shared/db/res/db/syncdb.schema");
 #else
     String strPath = CFilePath::join( RHODESAPP().getRhoRootPath(), "db/syncdb.schema" );
 #endif
 
     String strSqlScript;
-    CRhoFile::loadTextFile(strPath.c_str(), strSqlScript);
+
+    if (CRhoFile::isFileExist(strPath.c_str())){
+        LOG(INFO)+"Schema not encrypted";
+        CRhoFile::loadTextFile(strPath.c_str(), strSqlScript);
+    }else{
+        LOG(INFO) + "Schema encrypted";
+        strSqlScript = tau_decrypt_file_simple(strPath + ".encrypted");
+    }
 
     if ( strSqlScript.length() == 0 )
     {
@@ -979,7 +989,7 @@ void CDBAdapter::createSchema()
 
 	CDBError dbError;
 	executeBatch(strSqlScript.c_str(), dbError);
-	
+
     if ( dbError.isOK() )
         createTriggers();
 }

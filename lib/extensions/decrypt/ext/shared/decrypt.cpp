@@ -186,9 +186,66 @@ extern "C" int tau_decrypt_file(const char* filebuf, int filebuf_len, char* decr
 
 }
 
+/*extern "C" void tau_encrypt_file_simple(unsigned char *indata, int size, char * outputFileName, const char * ckey)
+{
+    int outLen1 = 0; 
+    int outLen2 = 0;
 
+    unsigned char *outdata = new unsigned char[size*2];
+    //unsigned char ivec[] = "dontusethisinput";
 
+    FILE * output = fopen(outputFileName, "wb");;
 
+    //Set up encryption
+    EVP_CIPHER_CTX *ctx = NULL;
+    if(!(ctx = EVP_CIPHER_CTX_new())) handleOpenSSLErrors();
+
+    EVP_EncryptInit(ctx, EVP_aes_256_cbc(), ckey, NULL);
+    EVP_EncryptUpdate(ctx, outdata, &outLen1, indata, size);
+    EVP_EncryptFinal(ctx, outdata + outLen1, &outLen2);
+
+    fwrite(outdata, sizeof(char), outLen1 + outLen2, output);
+    fclose(output);
+    delete [] outdata;
+}
+*/
+extern "C" String tau_decrypt_file_simple(String const fullPath){
+
+    const char* key = get_app_build_config_item("encrypt_files_key");
+    if (!key){
+        return "";
+    }
+
+    FILE *fp = fopen(fullPath.c_str(), "rb");
+    fseek(fp, 0, SEEK_END);
+    int encrytedFileSize = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    char* encryptedFileBuff = new char [encrytedFileSize];
+    char* decrypedFileBuff = new char [encrytedFileSize*2];
+    
+    size_t loaded = fread(encryptedFileBuff, 1, encrytedFileSize, fp);
+    if (loaded < encrytedFileSize) {
+        if (ferror(fp) ) {
+            RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)0, strerror(errno));
+        } else if ( feof(fp) ) {
+            RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)encrytedFileSize);
+        }
+        fclose(fp);
+        delete[] encryptedFileBuff;
+        delete[] decrypedFileBuff;
+        return "";
+    }
+    
+    int decrytedFileSize = rho_decrypt_file((const char*)encryptedFileBuff, encrytedFileSize, 
+                                                    (char*)decrypedFileBuff, encrytedFileSize*2);
+    
+    delete[] encryptedFileBuff;
+    String result = String(const_cast< const char * > (decrypedFileBuff), decrytedFileSize);
+    delete[] decrypedFileBuff;
+
+    return std::move(result);
+}
 
 //extern "C" void Init_Decrypt_extension() {
 //
