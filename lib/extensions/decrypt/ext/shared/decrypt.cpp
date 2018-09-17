@@ -209,43 +209,7 @@ extern "C" int tau_decrypt_file(const char* filebuf, int filebuf_len, char* decr
     delete [] outdata;
 }
 */
-extern "C" String tau_decrypt_file_simple(String const fullPath){
 
-    const char* key = get_app_build_config_item("encrypt_files_key");
-    if (!key){
-        return "";
-    }
-
-    FILE *fp = fopen(fullPath.c_str(), "rb");
-    fseek(fp, 0, SEEK_END);
-    int encrytedFileSize = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-
-    char* encryptedFileBuff = new char [encrytedFileSize];
-    char* decrypedFileBuff = new char [encrytedFileSize*2];
-    
-    size_t loaded = fread(encryptedFileBuff, 1, encrytedFileSize, fp);
-    if (loaded < encrytedFileSize) {
-        if (ferror(fp) ) {
-            RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)0, strerror(errno));
-        } else if ( feof(fp) ) {
-            RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)encrytedFileSize);
-        }
-        fclose(fp);
-        delete[] encryptedFileBuff;
-        delete[] decrypedFileBuff;
-        return "";
-    }
-    
-    int decrytedFileSize = rho_decrypt_file((const char*)encryptedFileBuff, encrytedFileSize, 
-                                                    (char*)decrypedFileBuff, encrytedFileSize*2);
-    
-    delete[] encryptedFileBuff;
-    String result = String(const_cast< const char * > (decrypedFileBuff), decrytedFileSize);
-    delete[] decrypedFileBuff;
-
-    return std::move(result);
-}
 
 //extern "C" void Init_Decrypt_extension() {
 //

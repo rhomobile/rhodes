@@ -369,6 +369,7 @@ private:
 
     void checkDBVersion(String& strVer);
     void createSchema();
+    String tauDecryptTextFile(const String fullPath);
     void createTriggers();
     boolean checkDbError(int rc);
     boolean checkDbErrorEx(int rc, rho::db::CDBResult& res);
