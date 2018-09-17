@@ -34,7 +34,7 @@ macx {
 unix:!macx {
   DESTDIR = ../../../../platform/linux/bin/extensions
   OBJECTS_DIR = ../../../../platform/linux/bin/extensions/zlib
-  INCLUDEPATH += ../../../../platform/shared/ruby/linux
+  INCLUDEPATH += ../../../../platform/shared/ruby/sailfish
   QMAKE_CFLAGS += -fvisibility=hidden
   QMAKE_CXXFLAGS += -fvisibility=hidden
 }

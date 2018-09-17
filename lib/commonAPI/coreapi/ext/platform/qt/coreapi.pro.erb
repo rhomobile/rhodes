@@ -21,7 +21,7 @@ INCLUDEPATH += <%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared\
 unix:!macx {
   DESTDIR = $$PWD/../extensions
   OBJECTS_DIR = $$PWD/bin/tmp
-  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/linux
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/sailfish
   SOURCES += <%= @rhoRoot %>/lib/commonAPI/coreapi/ext/platform/qt/src/CNetworkDetect.cpp
   QMAKE_CFLAGS += -fvisibility=hidden
   QMAKE_CXXFLAGS += -fvisibility=hidden
