@@ -269,7 +269,11 @@ CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180/M_PI;};
     NSString *pngLaunchImage736PortraitPath = @"LaunchImage-800-Portrait-736h";
     NSString *pngLaunchImage736LandscapePath = @"LaunchImage-800-Landscape-736h";
     NSString *pngLaunchImage2436PortraitPath = @"LaunchImage-1100-Portrait-2436h";
+    NSString *pngLaunchImage2688PortraitPath = @"LaunchImage-1200-Portrait-2688h";
+    NSString *pngLaunchImage1792PortraitPath = @"LaunchImage-1200-Portrait-1792h";
     NSString *pngLaunchImage2436LandscapePath = @"LaunchImage-1100-Landscape-2436h";
+    NSString *pngLaunchImage2688LandscapePath = @"LaunchImage-1200-Landscape-2688h";
+    NSString *pngLaunchImage1792LandscapePath = @"LaunchImage-1200-Landscape-1792h";
 
     NSString *pngLaunchImageIPADPortraitPath = @"LaunchImage-Portrait~ipad";
     NSString *pngLaunchImageIPADLandscapePath = @"LaunchImage-Landscape~ipad";
@@ -298,43 +302,67 @@ CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180/M_PI;};
         }
     }
     else {
-        if (screenHeight >= (812-1)) {
-            // iPhoneX
+        if ((screenHeight >= (896-1)) && (screenHeight <= (896+1))) {
+            // iPhoneXS MAX
             if (isPortrait) {
-                pngLaunchImage = pngLaunchImage2436PortraitPath;
+                pngLaunchImage = pngLaunchImage2688PortraitPath;
             }
             else {
-                pngLaunchImage = pngLaunchImage2436LandscapePath;
-                pngLaunchImage2 = pngLaunchImage2436PortraitPath;
+                pngLaunchImage = pngLaunchImage2688LandscapePath;
+                pngLaunchImage2 = pngLaunchImage2688PortraitPath;
             }
         }
         else {
-            if (screenHeight >= (736-1)) {
-                // iPhonePlus
+            if ((screenHeight >= (828-1)) && (screenHeight <= (828+1))) {
+                // iPhoneXR
                 if (isPortrait) {
-                    pngLaunchImage = pngLaunchImage736PortraitPath;
+                    pngLaunchImage = pngLaunchImage1792PortraitPath;
                 }
                 else {
-                    pngLaunchImage = pngLaunchImage736LandscapePath;
-                    pngLaunchImage2 = pngLaunchImage736PortraitPath;
+                    pngLaunchImage = pngLaunchImage1792LandscapePath;
+                    pngLaunchImage2 = pngLaunchImage1792PortraitPath;
                 }
             }
             else {
-                if (screenHeight >= (667-1)) {
-                    // iPhone6,7
-                    pngLaunchImage = pngLaunchImage667Path;
-                    canBeRotated = YES;
-                }
-                else {
-                    if (screenHeight >= (568-1)) {
-                        // iPhone5
-                        pngLaunchImage = pngLaunchImage568Path;
-                        canBeRotated = YES;
+                if ((screenHeight >= (812-1)) && (screenHeight <= (812+1))) {
+                    // iPhoneX or iPhone XS
+                    if (isPortrait) {
+                        pngLaunchImage = pngLaunchImage2436PortraitPath;
                     }
                     else {
-                        // old iPhones
-                        pngLaunchImage = pngLaunchImagePath;
-                        canBeRotated = YES;
+                        pngLaunchImage = pngLaunchImage2436LandscapePath;
+                        pngLaunchImage2 = pngLaunchImage2436PortraitPath;
+                    }
+                }
+                else {
+                    if (screenHeight >= (736-1)) {
+                        // iPhonePlus
+                        if (isPortrait) {
+                            pngLaunchImage = pngLaunchImage736PortraitPath;
+                        }
+                        else {
+                            pngLaunchImage = pngLaunchImage736LandscapePath;
+                            pngLaunchImage2 = pngLaunchImage736PortraitPath;
+                        }
+                    }
+                    else {
+                        if (screenHeight >= (667-1)) {
+                            // iPhone6,7
+                            pngLaunchImage = pngLaunchImage667Path;
+                            canBeRotated = YES;
+                        }
+                        else {
+                            if (screenHeight >= (568-1)) {
+                                // iPhone5
+                                pngLaunchImage = pngLaunchImage568Path;
+                                canBeRotated = YES;
+                            }
+                            else {
+                                // old iPhones
+                                pngLaunchImage = pngLaunchImagePath;
+                                canBeRotated = YES;
+                            }
+                        }
                     }
                 }
             }
