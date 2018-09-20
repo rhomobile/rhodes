@@ -19,6 +19,41 @@ For access to prior documentation, please visit **[Zebra's RhoMobile documentati
 
 [Getting Source Code](https://github.com/rhomobile/rhodes/blob/master/doc/oss/getting_source_code.md) - How to use git to download all the source code that Zebra is making available.
 
+## RhoMobile versions
+
+RhoMobile has a mainstream development branch which is forked for stable releases and further patches for them.
+Every major release is named by MAJOR.MINOR numbers with separate branch created for it ( for instance 6-1-stable ).
+After stable version is released patches are applied to it with increased PATCH number as MAJOR.MINOR.PATCH.
+Patches may include bug fixes or back porting of some features ( new platforms support etc ). New functional features are usually not included to patches for previous releases.
+Version naming is mostly based on Semantic Versioning v2 spec ( https://semver.org/spec/v2.0.0.html ) with some differences.
+
+Current development builds versions always have increased MINOR number compared to already released stable version. Only latest development build usually should be actual for developers who want to use all latest features. For other users most recent stable release with applied patches is recommended.
+
+Development builds does not have to end up in a stable branch. Instead, minor version number may be increased after certain amount of features is accumulated.
+
+Development, Alpha and Beta releases have corresponding indication after PATCH value.
+
+Example of RhoMobile release tree ( just for reference, it may not correspond to actual releases ):
+
+6.1.0
+  |  \
+  |   6.1.1
+  |   |
+  |   6.1.2 - Previous supported stable/patched release. May lack some latest features.
+  |
+7.0.0.dev1 - obsolete development build. Not recommended for use.
+  |
+7.0.0.dev2 - obsolete development build. Not recommended for use.
+  |
+7.0.0.alphaX - alpha releases for 7.0. Not recommended for use.
+  |
+7.0.0.betaX  - beta releases for 7.0. Not recommended for use.
+  |
+7.0.0 - initial 7.0 stable release
+  | \
+  |  7.0.1 - Latest stable/patched release. Recommended for most users.
+  |
+7.1.0.devX - Latest development release. Not recommended for production but contains all recent features.
 
 ## Installation
 
