@@ -35,6 +35,7 @@ Development, Alpha and Beta releases have corresponding indication after PATCH v
 
 Example of RhoMobile release tree ( just for reference, it may not correspond to actual releases ):
 
+```
 6.1.0
   |  \
   |   6.1.1
@@ -54,6 +55,7 @@ Example of RhoMobile release tree ( just for reference, it may not correspond to
   |  7.0.1 - Latest stable/patched release. Recommended for most users.
   |
 7.1.0.devX - Latest development release. Not recommended for production but contains all recent features.
+```
 
 ## Installation
 
