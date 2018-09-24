@@ -28,6 +28,7 @@
 		FA6C5CB120DB1E9C003B3001 /* bluetoothconnection_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA6C5CAF20DB1E9C003B3001 /* bluetoothconnection_js_wrap.mm */; };
 		FA6C5CB520DB1EB3003B3001 /* bluetoothconnection_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C5CB220DB1EB3003B3001 /* bluetoothconnection_api_init.cpp */; };
 		FA6C5CB720DB1EB3003B3001 /* bluetoothconnection_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA6C5CB420DB1EB3003B3001 /* bluetoothconnection_ruby_api.c */; };
+		FA925DBB21589FD700219FB5 /* bluetoothconnection_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA6C5CB320DB1EB3003B3001 /* bluetoothconnection_js_api.cpp */; };
 		FAC155E7145855CF0016F3BD /* Bluetooth_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Bluetooth_Prefix.pch */; };
 		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
@@ -271,6 +272,7 @@
 				FA23B2EB21064BB7003E675A /* BluetoothConnectionFactory.m in Sources */,
 				FA6C5CB720DB1EB3003B3001 /* bluetoothconnection_ruby_api.c in Sources */,
 				FA6C5CA920DB1E8D003B3001 /* BluetoothConnectionBase.m in Sources */,
+				FA925DBB21589FD700219FB5 /* bluetoothconnection_js_api.cpp in Sources */,
 				FA6C5CB020DB1E9C003B3001 /* bluetoothconnection_ruby_wrap.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
