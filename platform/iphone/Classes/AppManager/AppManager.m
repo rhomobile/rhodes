@@ -281,6 +281,11 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     BOOL contentChanged = force_update_content;
 
     isNewInstallation = !(bool)([fileManager fileExistsAtPath:filePathOld]);
+    // additional check for backup restore
+    NSString *db_folder = [rhoDBRoot stringByAppendingPathComponent:@"db"];
+    if ([fileManager fileExistsAtPath:db_folder]) {
+        isNewInstallation = false;
+    }
 
     if (nameChanged)
         contentChanged = YES;
