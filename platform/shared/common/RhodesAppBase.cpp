@@ -573,11 +573,12 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 	}
     
     
-    const char* rho_app_canonicalize_rho_url(const char* url) {
-        static char res[FILENAME_MAX];
+    int rho_app_canonicalize_rho_url(const char* url, char* result, int max_len) {
         rho::String s_res = RHODESAPPBASE().canonicalizeRhoUrl(url);
-        strncpy(res, s_res.c_str(), sizeof(res)-1);
-        return res;
+        if (result != NULL) {
+            strncpy(result, s_res.c_str(), max_len);
+        }
+        return (int)s_res.length();
     }
 
 } //extern "C"
