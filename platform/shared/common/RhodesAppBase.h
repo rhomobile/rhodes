@@ -173,7 +173,7 @@ int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
 	
 void rho_net_request_with_data(const char *url, const char *str_body);
     
-const char* rho_app_canonicalize_rho_url(const char* url);
+int rho_app_canonicalize_rho_url(const char* url, char* result, int max_len);
 
 int rho_decrypt_file(const char* filebuf, int filebuf_len, char* decrypted_buf, int maxlen);
 	
