@@ -1233,7 +1233,7 @@ int rho_ruby_is_string(VALUE val)
 
 int rho_ruby_is_integer(VALUE val)
 {
-    return (TYPE(val) == T_FIXNUM) ? 1 : 0;
+    return (TYPE(val) == T_FIXNUM) || (TYPE(val) == T_BIGNUM) ? 1 : 0;
 }
 
 int rho_ruby_is_boolean(VALUE val)
