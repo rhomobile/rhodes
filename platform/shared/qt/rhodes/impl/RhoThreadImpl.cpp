@@ -36,8 +36,10 @@ using namespace rho::common;
 IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThreadQT");
 #define RHOQTPREFIX ("RHOQT " + threadId + " ")
 
-CRhoThreadImpl::CRhoThreadImpl(): m_Thread(0), m_waitThread(new QtThread())
+CRhoThreadImpl::CRhoThreadImpl(): m_waitThread(new QtThread())
 {
+    mutex = QSharedPointer<QMutex>(new QMutex());
+    mutexWaiter = QSharedPointer<QMutex>(new QMutex());
     threadId = QString::number((quint64)this, 16).prepend("0x").toStdString();
     QObject::connect(qApp, SIGNAL(destroyed(QObject*)), m_waitThread.data(), SLOT(quit()));
 }
@@ -66,7 +68,7 @@ CRhoThreadImpl::~CRhoThreadImpl()
 void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority)
 {
     LOG(TRACE) + RHOQTPREFIX + "start";
-    if (m_Thread)
+    if (!m_Thread.isNull())
 	{
         LOG(TRACE) + RHOQTPREFIX + "start - m_Thread exists before calling stop";
 		stop(0);
