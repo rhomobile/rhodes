@@ -80,9 +80,9 @@ android:
   - extra-google-m2repository
   - extra-android-m2repository
   - build-tools-26.0.2
-  - android-${RHO_ANDROID_LEVEL:-24}
-  - addon-google_apis-google-${RHO_ANDROID_LEVEL:-24}
-
+  - android-${RHO_ANDROID_LEVEL:-19}
+  - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
+  - sys-img-armeabi-v7a-android-26
 env:
   global:
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
@@ -109,7 +109,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="24" NDK_NUMBER="17b"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17b"
 
   #- language: android
   #  os: linux
@@ -117,7 +117,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="24" NDK_NUMBER="17b"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17b"
 
   #- language: android
   #  os: linux
@@ -129,11 +129,11 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="24" NDK_NUMBER="15c"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="24" NDK_NUMBER="15c"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c"
 
   #- language: android
   #  os: linux
