@@ -80,8 +80,8 @@ android:
   - extra-google-m2repository
   - extra-android-m2repository
   - build-tools-26.0.2
-  - android-25
-  - addon-google_apis-google-25
+  - android-26
+  - addon-google_apis-google-26
   - sys-img-armeabi-v7a-android-26
 env:
   global:
