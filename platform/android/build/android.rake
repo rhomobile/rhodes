@@ -1853,7 +1853,7 @@ namespace "build" do
         ENV['LINKDEPS'] = (deps+extlibs).join(' ')
 
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "link:#{abi}"]
-        args << '--trace' if USE_TRACES
+        args << '--trace' #if USE_TRACES
         cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhodes"
         #Jake.run3("rake #{args.join(' ')}")
       end
