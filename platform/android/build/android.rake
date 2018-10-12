@@ -1854,7 +1854,7 @@ namespace "build" do
 
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "link:#{abi}"]
         args << '--trace' #if USE_TRACES
-        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhodes"
+        cc_run('rake', args, nil, false, nil, true) or raise "Build failed: rhodes"
         #Jake.run3("rake #{args.join(' ')}")
       end
       print_timestamp('build:android:librhodes FINISH')
