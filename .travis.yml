@@ -80,9 +80,9 @@ android:
   - extra-google-m2repository
   - extra-android-m2repository
   - build-tools-26.0.2
-  - android-22
-  - addon-google_apis-google-22
-  - sys-img-armeabi-v7a-android-22
+  - android-20
+  - addon-google_apis-google-20
+  - sys-img-armeabi-v7a-android-20
 env:
   global:
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
