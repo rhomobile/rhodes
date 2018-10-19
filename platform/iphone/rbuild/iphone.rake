@@ -851,20 +851,8 @@ def update_xcode_project_files_by_capabilities
     end
 
     #push
-    push_capability = false
-    if $app_config['capabilities'] != nil
-        if $app_config['capabilities'].index('push')
-            push_capability = true
-        end
-    end
-    if $app_config['iphone'] != nil
-        if $app_config['iphone']['capabilities'] != nil
-            if $app_config['iphone']['capabilities'].index('push')
-                push_capability = true
-            end
-        end
-    end
-    if push_capability
+
+    if $ios_push_capability
         hash_dev_ent['aps-environment'] = 'development'
         hash_prd_ent['aps-environment'] = 'production'
     else
@@ -873,7 +861,7 @@ def update_xcode_project_files_by_capabilities
         remove_lines_from_xcode_project(['com.apple.Push = {enabled = 1;};'])
     end
 
-    if $push_type == APPLE_PUSH || !push_capability
+    if $push_type == APPLE_PUSH || !$ios_push_capability
       lines_to_delete = []
       lines_to_delete << 'AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */; };'
       lines_to_delete << 'AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */; };'
@@ -1062,21 +1050,50 @@ namespace "config" do
 
   namespace "iphone" do
     task :app_config do
-      
-      if $app_config['extensions'].index('fcm-push') || 
-        (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].nil? && 
-          $app_config['iphone']['extensions'].index('fcm-push') )
-        $push_type = FCM_PUSH
-        puts 'Its fcm push'
-      elsif $app_config['extensions'].index('applePush') || 
-        (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].nil? &&
-          !$app_config['iphone']['extensions'].index('applePush') )
-        $push_type = APPLE_PUSH
-        puts 'Its apple push'
-      elsif $app_config['capabilities'].index('push')
-        $app_config['extensions'] << 'applePush'
-        $push_type = APPLE_PUSH
-      end
+
+        puts 'Detect Push options'
+        $ios_push_capability = false
+
+        if !$app_config['capabilities'].nil?
+            if !$app_config['capabilities'].index('push').nil?
+                $ios_push_capability = true
+            end
+        end
+        if !$app_config['iphone'].nil?
+            if !$app_config['iphone']['capabilities'].nil?
+                if !$app_config['iphone']['capabilities'].index('push').nil?
+                    $ios_push_capability = true
+                end
+            end
+        end
+
+       $push_type = APPLE_PUSH
+
+       if $ios_push_capability
+         if  ((!$app_config['extensions'].nil?) && !$app_config['extensions'].index('fcm-push').nil?) ||
+             (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].nil? &&
+             !$app_config['iphone']['extensions'].index('fcm-push').nil? )
+           $push_type = FCM_PUSH
+           puts 'Its fcm push'
+         else
+           puts 'Its apple push'
+         end
+       else
+         puts 'Its no push'
+       end
+
+       if $ios_push_capability && ($push_type == APPLE_PUSH)
+           # add ApplePush extension if it not exists
+           if  !( ((!$app_config['extensions'].nil?) && !$app_config['extensions'].index('applePush').nil?) ||
+               (!$app_config['iphone'].nil? && !$app_config['iphone']['extensions'].nil? &&
+               !$app_config['iphone']['extensions'].index('applePush').nil? ) )
+             if $app_config['extensions'].nil?
+                   $app_config['extensions'] = []
+             end
+             $app_config['extensions'] << 'applePush'
+             puts "applePush extension added"
+           end
+       end
 
       $file_map_name = "rhofilelist.txt"
     end
@@ -3750,7 +3767,7 @@ namespace "device" do
         #/usr/bin/codesign -f -s "iPhone Distribution: Certificate Name" --resource-rules "Payload/Application.app/ResourceRules.plist" "Payload/Application.app"
 
         if entitlements == nil
-           if $app_config['capabilities'].index('push')
+           if $ios_push_capability
               #make fix file
               tmp_ent_dir = File.join($app_path, "/project/iphone/push_fix_entitlements")
               rm_rf tmp_ent_dir
