@@ -2026,6 +2026,9 @@ namespace "build" do
 
       set_app_name_android($appname)
 
+      #copy default xml resources. can be overwritten by extensions
+      cp_r File.join( $rhores, 'xml'), File.join($appres,'xml')
+
       puts 'EXT:  add additional files to project before build'
       Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', '*')).each do |res|
         if File.directory?(res) && (res != '.') && (res != '..')
