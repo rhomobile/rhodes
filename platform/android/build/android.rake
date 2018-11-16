@@ -1920,6 +1920,8 @@ namespace "build" do
       generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
       generator.apikey = $gapikey if $gapikey
       generator.debuggable = $debug
+      generator.buildSdkVer = $found_api_level
+      generator.buildToolsVer = $build_tools_ver
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
 
@@ -2025,9 +2027,6 @@ namespace "build" do
       print_timestamp('build:android:resources START')
 
       set_app_name_android($appname)
-
-      #copy default xml resources. can be overwritten by extensions
-      cp_r File.join( $rhores, 'xml'), File.join($appres,'xml')
 
       puts 'EXT:  add additional files to project before build'
       Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', '*')).each do |res|
