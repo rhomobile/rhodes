@@ -135,6 +135,10 @@ matrix:
     os: linux
     env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c"
 
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="28" NDK_NUMBER="17c"
+
   #- language: android
   #  os: linux
   #  env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="24"
