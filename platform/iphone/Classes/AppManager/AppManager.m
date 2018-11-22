@@ -281,6 +281,11 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     BOOL contentChanged = force_update_content;
 
     isNewInstallation = !(bool)([fileManager fileExistsAtPath:filePathOld]);
+    // additional check for backup restore
+    NSString *db_folder = [rhoDBRoot stringByAppendingPathComponent:@"db"];
+    if ([fileManager fileExistsAtPath:db_folder]) {
+        isNewInstallation = false;
+    }
 
     if (nameChanged)
         contentChanged = YES;
@@ -843,6 +848,9 @@ static float get_scale() {
  "iPhone10,1", "iPhone10,4"                 = "iPhone 8"
  "iPhone10,2", "iPhone10,5"                 = "iPhone 8 Plus"
  "iPhone10,3", "iPhone10,6"                 = "iPhone X"
+ "iPhone11,2"                               = "iPhone XS"
+ "iPhone11,4", "iPhone11,6"                 = "iPhone XS MAX"
+ "iPhone11,8"                               = "iPhone XR"
  "iPad2,1", "iPad2,2", "iPad2,3", "iPad2,4" = "iPad 2"
  "iPad3,1", "iPad3,2", "iPad3,3"            = "iPad 3"
  "iPad3,4", "iPad3,5", "iPad3,6"            = "iPad 4"
@@ -946,6 +954,7 @@ float getPPI() {
         [model isEqualToString:@"iPhone9,3"] ||
         [model isEqualToString:@"iPhone10,1"] ||
         [model isEqualToString:@"iPhone10,4"] ||
+        [model isEqualToString:@"iPhone11,8"] ||
         [model isEqualToString:@"iPad4,4"] ||
         [model isEqualToString:@"iPad4,5"] ||
         [model isEqualToString:@"iPad4,6"] ||
@@ -965,13 +974,16 @@ float getPPI() {
         [model isEqualToString:@"iPhone9,2"] ||
         [model isEqualToString:@"iPhone9,4"] ||
         [model isEqualToString:@"iPhone10,2"] ||
-        [model isEqualToString:@"iPhone10,2"]
+        [model isEqualToString:@"iPhone10,5"]
         ) {
         return 401.0;
     }
     if (
         [model isEqualToString:@"iPhone10,3"] ||
-        [model isEqualToString:@"iPhone10,6"]
+        [model isEqualToString:@"iPhone10,6"] ||
+        [model isEqualToString:@"iPhone11,2"] ||
+        [model isEqualToString:@"iPhone11,4"] ||
+        [model isEqualToString:@"iPhone11,6"]
         ) {
         return 458.0;
     }

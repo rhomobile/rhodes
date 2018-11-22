@@ -188,7 +188,7 @@ IRhoListener {
 		ByteArrayOutputStream stream = null;
 		Logger.T(TAG, "CameraRhoListener.onActivityResult() START");
 		Logger.T(TAG, "ActualProperties: ["+getActualPropertyMap()+"]");
-		boolean fromGallery = false;//(getActualPropertyMap().get("fromGallery") != null);
+		boolean fromGallery = (getActualPropertyMap().get("fromGallery") == "true");
 		try {
 			if (resultCode == Activity.RESULT_OK)
 			{
@@ -329,18 +329,37 @@ IRhoListener {
 									imgPath = intent.getData().toString();
 									fixTheGalleryIssue(imgPath);
 								}
+								Logger.T(TAG, "Path before copy: " + imgPath);
+								imgPath = copyImg(imgPath);
 							}catch(Exception e){}
+							File f= new File(imgPath);
+							Logger.T(TAG, "Path after copy: " + imgPath);
+							getActualPropertyMap().put("default_camera_key_path", "default_camera_key_path_value");
+							BitmapFactory.Options options = new BitmapFactory.Options();
+							options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+							try {
+								BitmapFactory.decodeStream(new FileInputStream(f), null, options_only_size);
+								if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){
+									f.renameTo(new File(f.getParentFile(), rename));
+									String pathAfterRename = f.getParentFile().getAbsolutePath() +"/"+rename;
+									fixTheGalleryIssue(pathAfterRename);
+								}
+							} catch (FileNotFoundException e) {
+								e.printStackTrace();
+							}
+							picChoosen_imagewidth = options_only_size.outWidth;
+							picChoosen_imageheight = options_only_size.outHeight;
 						} else {
 							Logger.T(TAG, "Not from Gallery");
 							Logger.T(TAG, "Path before copy: " + imgPath);
 							//File f = new File(imgPath);
 							File fileToDelete = new File(imgPath);
 							imgPath = copyImg(imgPath);
-							
+
 							if (!Boolean.parseBoolean(propertyMap.get("saveToDeviceGallery"))) {
 								deleteFile(fileToDelete);
 						    }
-							
+
 							File f= new File(imgPath);
 							Logger.T(TAG, "Path after copy: " + imgPath);
 							getActualPropertyMap().put("default_camera_key_path", "default_camera_key_path_value");
@@ -748,7 +767,7 @@ IRhoListener {
 				else{
 					inResultMap.put("status","ok");
 					if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
-						inResultMap.put("image_uri",  "db/db-files/"+ curUri.toString().substring(curUri.toString().lastIndexOf("/")+1, curUri.toString().length()));
+						inResultMap.put("image_uri",  "db/db-files/"+ imgPath.substring(imgPath.lastIndexOf("/")+1, imgPath.length()));
 						inResultMap.put("image_format",   "jpg");
 					}
 					else{

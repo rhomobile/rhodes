@@ -55,7 +55,8 @@ JAVA_PACKAGE_NAME = 'com.rhomobile.rhodes'
 # For complete list of android API levels and its mapping to
 # market names (such as "Android-1.5" etc) see output of
 # command "android list targets"
-ANDROID_SDK_LEVEL = 9
+ANDROID_MIN_SDK_LEVEL = 19
+ANDROID_SDK_LEVEL = 26
 
 ANDROID_PERMISSIONS = {
     'audio' => ['RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS'],
@@ -502,13 +503,13 @@ namespace "config" do
     $min_sdk_level = $app_config["android"]["minSDK"] unless $app_config["android"].nil?
     $min_sdk_level = $config["android"]["minSDK"] if $min_sdk_level.nil? and not $config["android"].nil?
     $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
-    $min_sdk_level = ANDROID_SDK_LEVEL if $min_sdk_level.nil?
+    $min_sdk_level = ANDROID_MIN_SDK_LEVEL if $min_sdk_level.nil?
 
 
     $target_sdk_level = $app_config["android"]["targetSDK"] unless $app_config["android"].nil?
     $target_sdk_level = $config["android"]["targetSDK"] if $target_sdk_level.nil? and not $config["android"].nil?
     $target_sdk_level = $target_sdk_level.to_i unless $target_sdk_level.nil?
-    $target_sdk_level = (($min_sdk_level > 14) ? $min_sdk_level : 14) if $target_sdk_level.nil?
+    $target_sdk_level = ANDROID_SDK_LEVEL if $target_sdk_level.nil?
 
     $max_sdk_level = $app_config["android"]["maxSDK"] unless $app_config["android"].nil?
 
@@ -1852,8 +1853,8 @@ namespace "build" do
         ENV['LINKDEPS'] = (deps+extlibs).join(' ')
 
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "link:#{abi}"]
-        args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhodes"
+        args << '--trace' #if USE_TRACES
+        cc_run('rake', args, nil, false, nil, true) or raise "Build failed: rhodes"
         #Jake.run3("rake #{args.join(' ')}")
       end
       print_timestamp('build:android:librhodes FINISH')
@@ -1919,6 +1920,8 @@ namespace "build" do
       generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
       generator.apikey = $gapikey if $gapikey
       generator.debuggable = $debug
+      generator.buildSdkVer = $found_api_level
+      generator.buildToolsVer = $build_tools_ver
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
 

@@ -3,7 +3,7 @@ image: Visual Studio 2015
 platform: x86
 clone_folder: C:\TAU\rhodes
 environment:
-  QTDIR: C:\Qt\5.9.5\msvc2015
+  QTDIR: C:\Qt\5.9\msvc2015
   matrix:
     - win32_rhosimulator:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
@@ -13,7 +13,7 @@ environment:
       after_build_command: "do:nothing"
       app_name: RhoSimulator
       target_os: win32
-      target_artefact_path: C:\Ruby23\lib\ruby\gems\2.3.0\gems\rhodes-6.0.0\platform\win32\RhoSimulator\
+      target_artefact_path: C:\Ruby23\lib\ruby\gems\2.3.0\gems\rhodes-7.1.0\platform\win32\RhoSimulator\
       target_artefact_file_name: RhoSimulator.zip
 
     - win32_auto_common_spec:

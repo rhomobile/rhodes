@@ -3469,14 +3469,15 @@ namespace "build" do
         end
       end
 
+      chdir startdir
+      cp_r "platform/shared/db/res/db", File.join($srcdir, "db")
+
       #encrypt files
       if $encrypt_aes_key != nil
           Jake.encrypt_files_by_AES($srcdir, $encrypt_aes_key, $app_config["encrypt_file_extensions"])
       end
 
-
       chdir startdir
-      cp_r "platform/shared/db/res/db", File.join($srcdir, "db")
 
       # create bundle map file with the final information
       Jake.build_file_map($srcdir, $file_map_name)

@@ -3,9 +3,9 @@
 Currently Rhomobile solution supported and improved by TAU Technologies (partner of Zebra Technologies).
 For questions on commercial support contact [contact mail](mailto:info@tau-technologies.com) or reach out to the [TAU Technologies website](http://www.tau-technologies.com).
 
-Current actual version is Rhomobile Suite 6.0. [Download RMS 6.0](http://tau-technologies.com/developers/downloads/)
+Current actual version is Rhomobile Suite 7.0. [Download RMS 7.0](http://tau-technologies.com/developers/downloads/)
 
-Actual documentation located on [RMS 6.0 documentation](http://docs.tau-technologies.com/en/6.0/home)
+Actual documentation located on [RMS 7.0 documentation](http://docs.tau-technologies.com/en/7.0/home)
 
 
 # RhoMobile Open Source Documentation
@@ -19,34 +19,71 @@ For access to prior documentation, please visit **[Zebra's RhoMobile documentati
 
 [Getting Source Code](https://github.com/rhomobile/rhodes/blob/master/doc/oss/getting_source_code.md) - How to use git to download all the source code that Zebra is making available.
 
+## RhoMobile versions
+
+RhoMobile has a mainstream development branch which is forked for stable releases and further patches for them.
+Every major release is named by MAJOR.MINOR numbers with separate branch created for it ( for instance 6-1-stable ).
+After stable version is released patches are applied to it with increased PATCH number as MAJOR.MINOR.PATCH.
+Patches may include bug fixes or back porting of some features ( new platforms support etc ). New functional features are usually not included to patches for previous releases.
+Version naming is mostly based on Semantic Versioning v2 spec ( https://semver.org/spec/v2.0.0.html ) with some differences.
+
+Current development builds versions always have increased MINOR number compared to already released stable version. Only latest development build usually should be actual for developers who want to use all latest features. For other users most recent stable release with applied patches is recommended.
+
+Development builds does not have to end up in a stable branch. Instead, minor version number may be increased after certain amount of features is accumulated.
+
+Development, Alpha and Beta releases have corresponding indication after PATCH value.
+
+Example of RhoMobile release tree ( just for reference, it may not correspond to actual releases ):
+
+```
+6.1.0
+  |  \
+  |   6.1.1
+  |   |
+  |   6.1.2 - Previous supported stable/patched release. May lack some latest features.
+  |
+7.0.0.dev1 - obsolete development build. Not recommended for use.
+  |
+7.0.0.dev2 - obsolete development build. Not recommended for use.
+  |
+7.0.0.alphaX - alpha releases for 7.0. Not recommended for use.
+  |
+7.0.0.betaX  - beta releases for 7.0. Not recommended for use.
+  |
+7.0.0 - initial 7.0 stable release
+  | \
+  |  7.0.1 - Latest stable/patched release. Recommended for most users.
+  |
+7.1.0.devX - Latest development release. Not recommended for production but contains all recent features.
+```
 
 ## Installation
 
-[Windows First-time Install (32- and 64-bit)](http://docs.tau-technologies.com/en/6.0/guide/rhomobile-install#windows-first-time-install-32--and-64-bit) - How to install RhoMobile Suite on Windows (32- and 64-bit).
+[Windows First-time Install (32- and 64-bit)](http://docs.tau-technologies.com/en/7.0/guide/rhomobile-install#windows-first-time-install-32--and-64-bit) - How to install RhoMobile Suite on Windows (32- and 64-bit).
 
-[Mac OS X First-time Install](http://docs.tau-technologies.com/en/6.0/guide/rhomobile-install#mac-os-x-first-time-install) - How to install RhoMobile Suite on Mac OS.
+[Mac OS X First-time Install](http://docs.tau-technologies.com/en/7.0/guide/rhomobile-install#mac-os-x-first-time-install) - How to install RhoMobile Suite on Mac OS.
 
 ## Building apps
  
-[Build for Android](http://docs.tau-technologies.com/en/6.0/guide/build_android) - How to build apps for Android.
+[Build for Android](http://docs.tau-technologies.com/en/7.0/guide/build_android) - How to build apps for Android.
 
-[Build for iOS](http://docs.tau-technologies.com/en/6.0/guide/build_ios) - How to build apps for iOS.
+[Build for iOS](http://docs.tau-technologies.com/en/7.0/guide/build_ios) - How to build apps for iOS.
 
-[Building for Windows](http://docs.tau-technologies.com/en/6.0/guide/build_win) - How to build apps for Windows.
+[Building for Windows](http://docs.tau-technologies.com/en/7.0/guide/build_win) - How to build apps for Windows.
 
-[Building for Windows ME/CE](http://docs.tau-technologies.com/en/6.0/guide/build_wm) - How to build apps for Windows Mobile.
+[Building for Windows ME/CE](http://docs.tau-technologies.com/en/7.0/guide/build_wm) - How to build apps for Windows Mobile.
 
-[Building for Windows 10(UWP)](http://docs.tau-technologies.com/en/6.0/guide/build_uwp) - How to build apps for Windows 10(UWP).
+[Building for Windows 10(UWP)](http://docs.tau-technologies.com/en/7.0/guide/build_uwp) - How to build apps for Windows 10(UWP).
 
 
 ## RhoConnect Push Synchronization 
-[Introduction to Push](http://docs.tau-technologies.com/en/6.0/rhoconnect/push)
+[Introduction to Push](http://docs.tau-technologies.com/en/7.0/rhoconnect/push)
 
-[Set up Google Cloud Messaging on client and server for Rhodes Android Device](http://docs.tau-technologies.com/en/6.0/rhoconnect/push-client-setup-android) - Setting Up RhoConnect Push-Based Synchronization with Google Cloud Messaging.
+[Set up Google Cloud Messaging on client and server for Rhodes Android Device](http://docs.tau-technologies.com/en/7.0/rhoconnect/push-client-setup-android) - Setting Up RhoConnect Push-Based Synchronization with Google Cloud Messaging.
 
-[Set up Apple Push Notification Service on client and server for Rhodes iOS Device](http://docs.tau-technologies.com/en/6.0/rhoconnect/push-client-setup-ios) - Setting Up RhoConnect Push-Based Synchronization with Apple Push Notification Service.
+[Set up Apple Push Notification Service on client and server for Rhodes iOS Device](http://docs.tau-technologies.com/en/7.0/rhoconnect/push-client-setup-ios) - Setting Up RhoConnect Push-Based Synchronization with Apple Push Notification Service.
 
-[Set up RhoConnect Push Service on client and server for Rhodes Android and Windows Mobile/CE Devices](http://docs.tau-technologies.com/en/6.0/rhoconnect/push-client-setup-rps) - Setting Up for RhoConnect Push Service on Client Application for Windows Mobile/CE Devices.
+[Set up RhoConnect Push Service on client and server for Rhodes Android and Windows Mobile/CE Devices](http://docs.tau-technologies.com/en/7.0/rhoconnect/push-client-setup-rps) - Setting Up for RhoConnect Push Service on Client Application for Windows Mobile/CE Devices.
 
 
 ## Windows Mobile/CE Docs

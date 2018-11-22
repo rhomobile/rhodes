@@ -651,6 +651,9 @@ public class CameraObject extends CameraBase implements ICameraObject {
             actualPropertyMap.putAll(propertyMap);
             setActualPropertyMap(actualPropertyMap);
 
+            if (Boolean.parseBoolean(actualPropertyMap.get("deprecated"))) {
+                deprecated_take_pic = true;
+            }
             String outputFormat = actualPropertyMap.get("outputFormat");
             String filePath = null;
 

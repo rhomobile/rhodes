@@ -2334,7 +2334,7 @@ namespace "run" do
     Rake::Task["build:win32:deployqt"].invoke unless $prebuild_win32
 
     app_rhodir = File.join($startdir, 'platform', 'win32', 'bin', 'RhoSimulator', 'rho')
-    rm_rf rhodir if File.exists?(app_rhodir)
+    rm_rf app_rhodir if File.exists?(app_rhodir)
     bundleDir = File.join($bindir, 'RhoBundle')
     FileUtils.cp_r bundleDir, app_rhodir
 

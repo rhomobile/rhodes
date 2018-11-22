@@ -131,8 +131,11 @@ void rho_webview_navigate(const char* url, int index)
     //id arg1 = [NSString stringWithUTF8String:url];
     id arg1 = final_path;
 #else
-    id arg1 = [NSString stringWithUTF8String:rho_app_canonicalize_rho_url(url)];
-    [NSString stringWithUTF8String:url];
+    int len = rho_app_canonicalize_rho_url(url, NULL, 0);
+    char* buf = malloc(len+2);
+    rho_app_canonicalize_rho_url(url, buf, len+2);
+    id arg1 = [NSString stringWithUTF8String:buf];
+    free(buf);
 #endif
     id runnable = [RhoWebViewNavigateTask class];
     id arg2 = [NSValue valueWithBytes:&index objCType:@encode(int)];

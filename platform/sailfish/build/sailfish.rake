@@ -336,11 +336,13 @@ def exec_ssh_with_sudo_command(session, cmd)
   channel.wait
 end
 
-require 'net/ssh'
-require 'net/scp'
 
 namespace "run" do
   task :sailfish => ["config:sailfish"] do
+
+      require 'net/ssh'
+      require 'net/scp'
+
     session_ssh = nil
     puts $ssh_key
     puts "Connecting to device"
@@ -387,6 +389,9 @@ namespace "device" do
     end
 
     task :add_device  => ["config:early_init"] do
+
+        require 'net/ssh'
+        require 'net/scp'
 
       print_timestamp('device:sailfish:add_device starting')
       device_xml = File.join $sailfishdir, "vmshare", "devices.xml"

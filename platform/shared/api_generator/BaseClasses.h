@@ -49,6 +49,9 @@ public:
         if ( !m_pCommandQueue )
         {
             m_pCommandQueue = new CGeneratorQueue();
+            #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+                m_pCommandQueue->setPollInterval(1);
+            #endif
             m_pCommandQueue->setLogCategory(getModuleLogCategory());
             m_pCommandQueue->start(rho::common::CThreadQueue::epLow);
         }
