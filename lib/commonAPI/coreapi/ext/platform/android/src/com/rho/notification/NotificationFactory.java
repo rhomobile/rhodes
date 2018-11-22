@@ -8,6 +8,10 @@ import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoListener;
 
+import android.content.Context;
+import android.content.Intent;
+
+
 public class NotificationFactory extends AbstractRhoListener implements INotificationFactory, IRhoListener
 {
 	private NotificationSingleton singleton;
@@ -19,6 +23,8 @@ public class NotificationFactory extends AbstractRhoListener implements INotific
 	@Override
 	public INotificationSingleton getApiSingleton()
 	{
+		if(NotificationScheduler.singleton != null)
+			singleton = NotificationScheduler.singleton;
 		if(singleton == null) singleton = new NotificationSingleton();
 		return singleton;
 	}
@@ -56,9 +62,16 @@ public class NotificationFactory extends AbstractRhoListener implements INotific
 		}
 	}
 
+	@Override
+    public void onCreate(RhodesActivity activity, Intent intent) {
+		NotificationScheduler.singleton = (NotificationSingleton)getApiSingleton();
+		NotificationScheduler.setReminder(activity, AlarmReceiver.class, 0, 0);	
+    }
+
     @Override
     public void onCreateApplication(IRhoExtManager extManager) {
         NotificationFactorySingleton.setInstance(this);
-        extManager.addRhoListener(this);
+		extManager.addRhoListener(this);
+		
     }
 }

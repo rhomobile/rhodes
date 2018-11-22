@@ -63,6 +63,12 @@ public class NotificationSingleton implements INotificationSingleton
     protected AudioTrack audioTrack = null;
 	private Vibrator vibrator;
 	private MediaPlayer currentMP;
+	private Context ctx = null;
+
+	public void setContext(Context c)
+	{
+		ctx = c;
+	}
 
     @Override
     public void showPopup(final Map<String, Object> propertyMap, final IMethodResult result) {
@@ -74,7 +80,7 @@ public class NotificationSingleton implements INotificationSingleton
             
             Logger.T(TAG, "Add notification: " + lastNotificationId);
             
-            notification = new Notification(lastNotificationId, propertyMap, result);
+            notification = new Notification(lastNotificationId, propertyMap, result, ctx);
             notifications.append(lastNotificationId, notification);
         }
         
