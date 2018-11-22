@@ -15,6 +15,134 @@
 
 static UIAlertView *currentAlert = nil;
 static BOOL is_current_alert_status = NO;
+static BOOL granted_notification = NO;
+
+@interface NotificationReminder : NSObject<UNUserNotificationCenterDelegate> {
+    id<IMethodResult> callbackHolder;
+    UNUserNotificationCenter* center;
+    NSString* title;
+    NSString* message;
+}
+
+- (id)init;
+- (void)setCallback:(id<IMethodResult>)value;
+- (void)setReminder:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult;
+- (void)dealloc;
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+          didReceiveNotificationResponse:(UNNotificationResponse *)response
+          withCompletionHandler:(void (^)(void))completionHandler;
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center 
+           willPresentNotification:(UNNotification *)notification 
+           withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler;
+
+@end
+
+@implementation NotificationReminder
+
+- (id)init {
+    callbackHolder = nil;
+    center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate = self;
+
+    if(granted_notification == NO && center)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert + UNAuthorizationOptionSound)
+                completionHandler:^(BOOL granted, NSError * _Nullable error) {
+                granted_notification = granted;
+            }];
+        });
+    }
+
+    return self;
+}
+
+- (void)setCallback:(id<IMethodResult>)value {
+    callbackHolder = value;
+}
+
+- (void)dealloc {
+    callbackHolder = nil;
+    center = nil;
+    title = @"Alert";
+    message = @"";
+    [super dealloc];
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+          didReceiveNotificationResponse:(UNNotificationResponse *)response
+          withCompletionHandler:(void (^)(void))completionHandler {
+   if ([response.actionIdentifier isEqualToString:UNNotificationDismissActionIdentifier]) {
+       // The user dismissed the notification without taking action.
+   }
+   else if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
+   }
+ 
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center 
+           willPresentNotification:(UNNotification *)notification 
+           withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler 
+{
+    NSLog(@"Notification recived"); 
+    completionHandler(UNAuthorizationOptionAlert + UNAuthorizationOptionSound);
+}
+
+-(void) setReminder:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
+
+    if(granted_notification == NO)
+    {
+        NSLog(@"Waning!!! Notification not granted!!!"); 
+    }
+
+    if ([propertyMap isKindOfClass:[NSDictionary class]])
+    {
+        NSEnumerator* enumerator = [propertyMap keyEnumerator];
+        NSObject* obj = nil;
+
+        while ((obj = [enumerator nextObject]) != nil) 
+        {
+            NSString* objKey = (NSString*)obj;
+            NSObject* objVal = [propertyMap objectForKey:objKey];
+
+            NSString* objStr = @"";
+            if ([objVal isKindOfClass:[NSString class]])
+            {
+                objStr = (NSString*)objVal;
+            }
+            else
+                continue;
+
+            if ([objKey isEqualToString:HK_TITLE]) {
+                title = objStr;
+            } else if ([objKey isEqualToString:HK_MESSAGE]) {
+                message = objStr;            
+            }    
+        }
+    }
+
+
+
+    UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+    content.title = [NSString localizedUserNotificationStringForKey:@"Wake up!" arguments:nil];
+    content.body = [NSString localizedUserNotificationStringForKey:@"Rise and shine! It's morning time!" arguments:nil];
+    content.sound = [UNNotificationSound defaultSound];
+
+    UNTimeIntervalNotificationTrigger* trigger = [UNTimeIntervalNotificationTrigger
+                     triggerWithTimeInterval:(2*60) repeats: YES];
+    
+    UNNotificationRequest* request = [UNNotificationRequest
+       requestWithIdentifier:@"MorningAlarm" content:content trigger:trigger];
+
+    [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {   
+        if (error != nil) {       
+            NSLog(@"%@", error.localizedDescription);        
+            }
+    }];
+
+}
+
+@end
 
 @interface AlertShowPopupTask : NSObject<UIAlertViewDelegate> {
     NSMutableArray *buttons;
@@ -240,6 +368,9 @@ static BOOL is_current_alert_status = NO;
 @implementation NotificationSingleton
 
 -(void) showPopup:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
+    id reminder = [[NotificationReminder alloc] init];
+    [reminder setReminder:propertyMap methodResult:methodResult];
+
     id runnable = [[AlertShowPopupTask alloc] init];
     [propertyMap retain];
     if ([methodResult hasCallback])
