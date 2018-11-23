@@ -470,6 +470,7 @@ def get_android_major_minor(version)
        $major_version = array_ver[0].to_i
        $minor_version = array_ver[1].to_i
      end
+     return
   end
 
   $major_version = version.to_i
