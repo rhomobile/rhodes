@@ -21,6 +21,8 @@ class ManifestGenerator
   attr_accessor :apikey
   attr_accessor :buildSdkVer
   attr_accessor :buildToolsVer
+  attr_accessor :androidVerMaj
+  attr_accessor :androidVerMin
   
   attr_accessor :manifestManifestAdds
   attr_accessor :applicationManifestAdds
