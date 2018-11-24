@@ -12,8 +12,8 @@ unzip -q $HOME/emdk.zip -d $ANDROID_HOME/add-ons
 cd $HOME/.android && printf "android\nandroid\nTRAVIS-CI\nCI-SYSTEM\nTAU\nUNIVERSE\nUNIVERSE\nUN\nyes\n\n" | keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000
 #download 
 
-EMULEVEL=${RHO_ANDROID_LEVEL:-26}
-EMULEVEL=$((EMULEVEL>25?25:EMULEVEL))
+#EMULEVEL=${RHO_ANDROID_LEVEL:-26}
+#EMULEVEL=$((EMULEVEL>25?25:EMULEVEL))
 
-echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-${EMULEVEL};default;armeabi-v7a"
-echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-${EMULEVEL};google_apis;armeabi-v7a"
+#echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-${EMULEVEL};default;armeabi-v7a"
+#echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-${EMULEVEL};google_apis;armeabi-v7a"

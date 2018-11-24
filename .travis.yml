@@ -81,9 +81,8 @@ android:
   - extra-android-m2repository
   - build-tools-26.0.1
   - android-${RHO_ANDROID_LEVEL:-19}
-  - android-25
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
-  - sys-img-armeabi-v7a-android-26
+  - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
 env:
   global:
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
@@ -136,9 +135,9 @@ matrix:
     os: linux
     env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c"
 
-#  - language: android
-#    os: linux
-#    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="28" NDK_NUMBER="17c"
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="25" NDK_NUMBER="17c"
 
   #- language: android
   #  os: linux
