@@ -82,7 +82,7 @@ android:
   - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
 env:
   global:
-  - ANDROID_NDK_HOME=$HOME/android-ndk-r12b
+  - ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
   - S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
