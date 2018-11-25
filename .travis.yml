@@ -79,7 +79,7 @@ android:
   - extra-android-m2repository    
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
-
+  - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
 env:
   global:
   - ANDROID_NDK_HOME=$HOME/android-ndk-r12b
@@ -95,6 +95,10 @@ matrix:
 
   - language: objective-c
     os: osx
+    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"
+
+  - language: objective-c
+    os: osx
     env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX"
 
   - language: objective-c
@@ -103,67 +107,12 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX"
-
-  #- language: android
-  #  os: linux
-  #  env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="15c"
 
-  #- language: android
-  #  os: linux
-  #  env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="24"
-
-  #- language: android
-  #  os: linux
-  #  env: RHO_TARGET="android"    RHO_APP="sas"
-
-  #- language: android
-  #  os: linux
-  #  env: RHO_TARGET="android"    RHO_APP="kitchenSinkJS"
-
-  #- language: android
-  #  os: linux
-  #  env: RHO_TARGET="android"    RHO_APP="kitchenSinkRuby"
-
-  #- language: objective-c
-  #  os: osx
-  #  env: RHO_TARGET="iphone"    RHO_APP="framework_spec"
-
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="iphone"    RHO_APP="sas"
-
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkJS"
-
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkRuby"
-
-  - language: objective-c
-    os: osx
-    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"
-
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="rhosimulator"    RHO_APP="framework_spec"
-
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="rhosimulator"    RHO_APP="sas"
-
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkJS"
-
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkRuby"
-
-  #  - RHO_TARGET="rhosimulator"    RHO_APP="push_spec"
-  #  - RHO_TARGET="rhosimulator"    RHO_APP="rhoconnect-client_spec"  
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="24" NDK_NUMBER="15c"
