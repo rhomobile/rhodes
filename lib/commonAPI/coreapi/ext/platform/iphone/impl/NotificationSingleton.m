@@ -13,6 +13,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Alert"
 
+#define NOTIFICATION_ID @"RhoNotification"
+
 static UIAlertView *currentAlert = nil;
 static BOOL is_current_alert_status = NO;
 static BOOL granted_notification = NO;
@@ -28,6 +30,7 @@ static BOOL granted_notification = NO;
 - (void)setCallback:(id<IMethodResult>)value;
 - (void)setReminder:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult;
 - (void)dealloc;
+- (void)removeScheduler;
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
           didReceiveNotificationResponse:(UNNotificationResponse *)response
           withCompletionHandler:(void (^)(void))completionHandler;
@@ -35,7 +38,11 @@ static BOOL granted_notification = NO;
            willPresentNotification:(UNNotification *)notification 
            withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler;
 
++ (NotificationReminder*)instance;
+
 @end
+
+static NotificationReminder* reminder = nil;
 
 @implementation NotificationReminder
 
@@ -46,26 +53,51 @@ static BOOL granted_notification = NO;
 
     if(granted_notification == NO && center)
     {
+        dispatch_semaphore_t question_semaphore = dispatch_semaphore_create(0);
         dispatch_async(dispatch_get_main_queue(), ^{
             [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert + UNAuthorizationOptionSound)
                 completionHandler:^(BOOL granted, NSError * _Nullable error) {
                 granted_notification = granted;
+                dispatch_semaphore_signal(question_semaphore);
             }];
         });
+        dispatch_semaphore_wait(question_semaphore, DISPATCH_TIME_FOREVER);
+        dispatch_release(question_semaphore);
     }
 
     return self;
+}
+
++ (NotificationReminder*)instance {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        reminder = [[NotificationReminder alloc] init];
+    });
+    return reminder;
 }
 
 - (void)setCallback:(id<IMethodResult>)value {
     callbackHolder = value;
 }
 
+- (void)removeScheduler {
+    @synchronized(self)
+    {
+        if(center)
+        {
+            //NSArray* ids = [NSArray arrayWithObjects:NOTIFICATION_ID];
+            //[center removePendingNotificationRequestsWithIdentifiers:ids];
+            [center removeAllPendingNotificationRequests];
+        }
+    }
+}
+
 - (void)dealloc {
     callbackHolder = nil;
     center = nil;
-    title = @"Alert";
+    title = @"";
     message = @"";
+    reminder = nil;
     [super dealloc];
 }
 
@@ -95,6 +127,11 @@ static BOOL granted_notification = NO;
         NSLog(@"Waning!!! Notification not granted!!!"); 
     }
 
+    [self removeScheduler];
+
+    NSInteger interval = 0;
+    BOOL repeats = NO;
+
     if ([propertyMap isKindOfClass:[NSDictionary class]])
     {
         NSEnumerator* enumerator = [propertyMap keyEnumerator];
@@ -105,34 +142,28 @@ static BOOL granted_notification = NO;
             NSString* objKey = (NSString*)obj;
             NSObject* objVal = [propertyMap objectForKey:objKey];
 
-            NSString* objStr = @"";
-            if ([objVal isKindOfClass:[NSString class]])
-            {
-                objStr = (NSString*)objVal;
-            }
-            else
-                continue;
-
             if ([objKey isEqualToString:HK_TITLE]) {
-                title = objStr;
+                title = (NSString*)objVal;
             } else if ([objKey isEqualToString:HK_MESSAGE]) {
-                message = objStr;            
-            }    
+                message = (NSString*)objVal;            
+            } else if ([objKey isEqualToString:HK_INTERVAL]) {
+                interval = [(NSString*)objVal integerValue];
+            } else if ([objKey isEqualToString:HK_REPEATS]) {
+                repeats = [(NSString*)objVal boolValue];
+            } 
         }
     }
 
-
-
     UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-    content.title = [NSString localizedUserNotificationStringForKey:@"Wake up!" arguments:nil];
-    content.body = [NSString localizedUserNotificationStringForKey:@"Rise and shine! It's morning time!" arguments:nil];
+    content.title = [NSString localizedUserNotificationStringForKey:title arguments:nil];
+    content.body = [NSString localizedUserNotificationStringForKey:message arguments:nil];
     content.sound = [UNNotificationSound defaultSound];
 
     UNTimeIntervalNotificationTrigger* trigger = [UNTimeIntervalNotificationTrigger
-                     triggerWithTimeInterval:(2*60) repeats: YES];
+                     triggerWithTimeInterval:interval repeats: repeats];
     
     UNNotificationRequest* request = [UNNotificationRequest
-       requestWithIdentifier:@"MorningAlarm" content:content trigger:trigger];
+       requestWithIdentifier: NOTIFICATION_ID content:content trigger:trigger];
 
     [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {   
         if (error != nil) {       
@@ -367,10 +398,20 @@ static BOOL granted_notification = NO;
 
 @implementation NotificationSingleton
 
--(void) showPopup:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
-    id reminder = [[NotificationReminder alloc] init];
-    [reminder setReminder:propertyMap methodResult:methodResult];
+-(void) setScheduler:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult
+{
+    NotificationReminder* scheduler = [NotificationReminder instance];
+    [scheduler setReminder:propertyMap methodResult:methodResult];
+}
 
+-(void) removeScheduler:(id<IMethodResult>)methodResult;
+{
+    NotificationReminder* scheduler = [NotificationReminder instance];
+    [scheduler removeScheduler];
+}
+
+-(void) showPopup:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
+    
     id runnable = [[AlertShowPopupTask alloc] init];
     [propertyMap retain];
     if ([methodResult hasCallback])
