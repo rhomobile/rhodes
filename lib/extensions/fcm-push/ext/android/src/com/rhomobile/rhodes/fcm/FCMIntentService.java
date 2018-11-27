@@ -66,25 +66,47 @@ public class FCMIntentService extends FirebaseMessagingService {
         lastHandledIntent = null;
         savedIntents.remove(remoteMessage.getMessageId());
 
-        Logger.W(TAG, "FCM: onMessageReceived()");
-        Map<String, String> params = new HashMap<String, String>(); 
-        params.put("id", remoteMessage.getMessageId());
-        params.put("from", remoteMessage.getFrom());
-        params.put("to", remoteMessage.getTo());
-        params.put("body", remoteMessage.getNotification().getBody());
-        params.put("title", remoteMessage.getNotification().getTitle());
-        params.put("tag", remoteMessage.getNotification().getTag());
-        JSONObject jsonObject = new JSONObject(params);
-        try {
-            jsonObject.put("data", new JSONObject(remoteMessage.getData()));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        Logger.I(TAG, "FCM: onMessageReceived()");
+        Map<String, String> params = new HashMap<String, String>();
+
+        if (remoteMessage.getMessageId() != null) params.put("id", remoteMessage.getMessageId());
+        Logger.I(TAG, "FCM: id - " + remoteMessage.getMessageId());
+
+        if (remoteMessage.getFrom() != null) params.put("from", remoteMessage.getFrom());
+        Logger.I(TAG, "FCM: from - " + remoteMessage.getFrom());
+
+        if (remoteMessage.getTo() != null) params.put("to", remoteMessage.getTo());
+        Logger.I(TAG, "FCM: to - " + remoteMessage.getTo());
+
+        if (remoteMessage.getNotification() != null){
+            if (remoteMessage.getNotification().getBody() != null)  params.put("body", remoteMessage.getNotification().getBody());
+            Logger.I(TAG, "FCM: body - " + remoteMessage.getNotification().getBody());
+
+            if (remoteMessage.getNotification().getTitle() != null) params.put("title", remoteMessage.getNotification().getTitle());
+            Logger.I(TAG, "FCM: title - " + remoteMessage.getNotification().getTitle());
+
+            if (remoteMessage.getNotification().getTag() != null) params.put("tag", remoteMessage.getNotification().getTag());
+            Logger.I(TAG, "FCM: tag - " + remoteMessage.getNotification().getTag());
         }
 
-        Logger.W(TAG, "FCM: push message: " + remoteMessage.getNotification().getBody());
-        Logger.W(TAG, "FCM: push message in JSON: " + jsonObject.toString());
+        try{
+            JSONObject jsonObject = new JSONObject(params);
 
-        PushContract.handleMessage(ContextFactory.getContext(), jsonObject.toString(), FCMFacade.FCM_PUSH_CLIENT);
+            try {
+                jsonObject.put("data", new JSONObject(remoteMessage.getData()));
+                Logger.I(TAG, "FCM: data - " + remoteMessage.getData());
+            } catch (JSONException e) {
+                Logger.I(TAG, "FCM: jsonObject generation error");
+                e.printStackTrace();
+            }
+
+            Logger.W(TAG, "FCM: push message in JSON: " + jsonObject.toString());
+
+            PushContract.handleMessage(ContextFactory.getContext(), jsonObject.toString(), FCMFacade.FCM_PUSH_CLIENT);
+        }catch(Exception e){
+            Logger.E(TAG, "FCM: can't create object for handleMessage");
+            e.printStackTrace();
+        }
     }
 
    
