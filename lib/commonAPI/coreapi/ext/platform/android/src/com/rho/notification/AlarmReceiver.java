@@ -14,15 +14,13 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction() != null && context != null) {
             if (intent.getAction().equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)) {
-                NotificationScheduler.setReminder(context, AlarmReceiver.class, 0, 0);
+                NotificationScheduler.setReminder(context, AlarmReceiver.class);
                 return;
             }
         }
 
         Log.d(TAG, "onAlarmReceive: ");
-
-        NotificationScheduler.showNotification(context, RhodesActivity.class, 
-                  "You have 5 unwatched videos", "Watch them now?");
+        NotificationScheduler.showNotification(context, RhodesActivity.class);
 
     }
 }

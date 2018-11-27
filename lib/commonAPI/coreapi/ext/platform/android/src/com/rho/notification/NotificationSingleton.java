@@ -70,6 +70,20 @@ public class NotificationSingleton implements INotificationSingleton
 		ctx = c;
 	}
 
+	@Override
+	public void setScheduler(final Map<String, Object> propertyMap, final IMethodResult result)
+	{
+		Logger.T(TAG, "setScheduler");
+		NotificationScheduler.setReminderEx(propertyMap, result);
+	}
+
+	@Override
+	public void removeScheduler(final IMethodResult result)
+	{
+		Logger.T(TAG, "removeScheduler");
+		NotificationScheduler.cancelReminderEx();	
+	}
+
     @Override
     public void showPopup(final Map<String, Object> propertyMap, final IMethodResult result) {
         Logger.T(TAG, "showPopup");

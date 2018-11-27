@@ -65,7 +65,7 @@ public class NotificationFactory extends AbstractRhoListener implements INotific
 	@Override
     public void onCreate(RhodesActivity activity, Intent intent) {
 		NotificationScheduler.singleton = (NotificationSingleton)getApiSingleton();
-		NotificationScheduler.setReminder(activity, AlarmReceiver.class, 0, 0);	
+		NotificationScheduler.activity = activity;
     }
 
     @Override
