@@ -45,6 +45,8 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
+
+
 /**
  * Singleton for the Notification extension. Holds all of the implementation for this extension.
  * Uses code from both RhoElements2 and Rhodes3

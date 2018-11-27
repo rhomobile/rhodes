@@ -14,13 +14,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import java.util.Calendar;
-import android.util.Log;
+import com.rhomobile.rhodes.Logger;
 import android.os.SystemClock;
 
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.media.RingtoneManager;
+import android.content.SharedPreferences;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ import static android.content.Context.ALARM_SERVICE;
 
 public class NotificationScheduler {
     public static final int RHO_NOTIFICATION_CODE = 100;
-    public static final String TAG="NotificationScheduler";
+    public static final String TAG = "NotificationScheduler";
 
     public static NotificationSingleton singleton = null;
     public static RhodesActivity activity = null;
@@ -40,10 +41,10 @@ public class NotificationScheduler {
     private static String message = null;
     private static int interval = 0;
     private static Boolean repeats = false;
+    private static final String storage_name = "rho_notification_storage";
 
-    public static void setReminderEx(Map<String, Object> propertyMap, IMethodResult result)
-    {
-		Object titleObj = propertyMap.get(NotificationSingleton.HK_TITLE);
+    public static void setReminderEx(Map<String, Object> propertyMap, IMethodResult result) {
+        Object titleObj = propertyMap.get(NotificationSingleton.HK_TITLE);
         if (titleObj != null && (titleObj instanceof String))
             title = (String) titleObj;
 
@@ -59,64 +60,120 @@ public class NotificationScheduler {
         if (repeatObj != null && (repeatObj instanceof Boolean))
             repeats = (Boolean) repeatObj;
 
-        NotificationScheduler.setReminder(activity, AlarmReceiver.class);	
+        SharedPreferences settings = activity.getSharedPreferences(storage_name, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+
+        editor.putString(NotificationSingleton.HK_TITLE, title);
+        editor.putString(NotificationSingleton.HK_MESSAGE, message);
+        if (interval != 0)
+            editor.putInt(NotificationSingleton.HK_INTERVAL, interval);
+        if (repeats)
+            editor.putBoolean(NotificationSingleton.HK_REPEATS, repeats);
+
+        if (editor.commit()) {
+            Logger.I(TAG, "Key is successfully saved to Shared Preferences");
+        } else {
+            Logger.E(TAG, "Write key to Shared Preferences is failed");
+        }
+
+        NotificationScheduler.setReminder(activity, AlarmReceiver.class);
     }
 
-    public static void setReminder(Context context, Class<?> cls)
+    public static void getSchedulerSettings(Context context) 
     {
-        //Calendar calendar = Calendar.getInstance();
+        try {
 
-        //Calendar setcalendar = Calendar.getInstance();
-        //setcalendar.set(Calendar.HOUR_OF_DAY, hour);
-        //setcalendar.set(Calendar.MINUTE, min);
-        //setcalendar.set(Calendar.SECOND, 0);
+            SharedPreferences settings = context.getSharedPreferences(storage_name, Context.MODE_PRIVATE);
+
+            String deadValue = "not exists";
+            int deadInt = -1;
+
+            title = settings.getString(NotificationSingleton.HK_TITLE, deadValue);
+            if (title == deadValue) {
+                title = null;
+                Logger.E(TAG, "Key - HK_TITLE not found!");
+            }
+
+            message = settings.getString(NotificationSingleton.HK_MESSAGE, deadValue);
+            if (message == deadValue) {
+                message = null;
+                Logger.E(TAG, "Key - HK_MESSAGE not found!");
+            }
+
+            interval = settings.getInt(NotificationSingleton.HK_INTERVAL, deadInt);
+            if (interval == deadInt) {
+                interval = 0;
+                Logger.I(TAG, "Key - HK_MESSAGE not found!");
+            }
+
+            repeats = settings.getBoolean(NotificationSingleton.HK_REPEATS, false);
+        } 
+        catch (ClassCastException e) 
+        {
+            message = null;
+            title = null;
+            Logger.E(TAG, e.getMessage());
+        }
+
+    }
+
+    public static void setReminder(Context context, Class<?> cls) {
+        // Calendar calendar = Calendar.getInstance();
+
+        // Calendar setcalendar = Calendar.getInstance();
+        // setcalendar.set(Calendar.HOUR_OF_DAY, hour);
+        // setcalendar.set(Calendar.MINUTE, min);
+        // setcalendar.set(Calendar.SECOND, 0);
 
         cancelReminder(context, cls);
 
-        //if(setcalendar.before(calendar))
-        //    setcalendar.add(Calendar.DATE,1);
+        // if(setcalendar.before(calendar))
+        // setcalendar.add(Calendar.DATE,1);
 
         ComponentName receiver = new ComponentName(context, cls);
         PackageManager pm = context.getPackageManager();
 
-        pm.setComponentEnabledSetting(receiver,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+        pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP);
 
         Intent new_intent = new Intent(context, cls);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, RHO_NOTIFICATION_CODE, new_intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, RHO_NOTIFICATION_CODE, new_intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-        //am.setInexactRepeating(AlarmManager.RTC_WAKEUP, setcalendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        // am.setInexactRepeating(AlarmManager.RTC_WAKEUP,
+        // setcalendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + (interval * 1000),
-                (interval * 1000), pendingIntent);
+                repeats ? (interval * 1000) : 0, pendingIntent);
 
     }
 
-    public static void cancelReminderEx()
-    {
-        if(activity != null)
+    public static void cancelReminderEx() {
+        if (activity != null)
             cancelReminder(activity, AlarmReceiver.class);
     }
 
-    public static void cancelReminder(Context context, Class<?> cls)
-    {
+    public static void cancelReminder(Context context, Class<?> cls) {
         ComponentName receiver = new ComponentName(context, cls);
         PackageManager pm = context.getPackageManager();
 
-        pm.setComponentEnabledSetting(receiver,
-                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+        pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
 
         Intent new_intent = new Intent(context, cls);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, RHO_NOTIFICATION_CODE, new_intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, RHO_NOTIFICATION_CODE, new_intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
         am.cancel(pendingIntent);
         pendingIntent.cancel();
     }
 
-    public static void showNotification(Context context, Class<?> cls)
-    {
+    public static void showNotification(Context context, Class<?> cls) {
         Map<String, Object> props = new HashMap<String, Object>();
+
+        if (title == null || message == null) {
+            Logger.E(TAG, "Title and message must be set!!!");
+            return;
+        }
 
         props.put(NotificationSingleton.HK_TITLE, title);
         props.put(NotificationSingleton.HK_MESSAGE, message);
@@ -126,13 +183,12 @@ public class NotificationScheduler {
 
         props.put(NotificationSingleton.HK_TYPES, kinds);
 
-        if(singleton == null)
-        {
-           singleton = new NotificationSingleton();
-           singleton.setContext(context);
+        if (singleton == null) {
+            singleton = new NotificationSingleton();
+            singleton.setContext(context);
         }
         singleton.showPopup(props, null);
 
-        Log.i(TAG, "Notification recived!!!");
+        Logger.I(TAG, "Notification recived!!!");
     }
 }
