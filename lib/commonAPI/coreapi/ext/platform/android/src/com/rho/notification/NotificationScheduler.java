@@ -44,13 +44,11 @@ public class NotificationScheduler {
     private static final String storage_name = "rho_notification_storage";
     private static int hour = -1, minute = -1, seconds = -1;
 
-    private static Boolean checkTime()
-    {
+    private static Boolean checkTime() {
         return (hour >= 0 && hour <= 23) && (minute >= 0 && minute <= 59) && (seconds >= 0 && seconds <= 59);
     }
 
-    private static Boolean isCurrentTime()
-    {
+    private static Boolean isCurrentTime() {
         return hour == -1 || minute == -1 || seconds == -1;
     }
 
@@ -72,23 +70,25 @@ public class NotificationScheduler {
             repeats = (Boolean) repeatObj;
 
         Object startObj = propertyMap.get(NotificationSingleton.HK_START);
-        if (startObj != null && (startObj instanceof Map<?, ?>))
-        {
-            Map<String, Object> timeMap = (Map<String, Object>)startObj;
-            Object hourObj = timeMap.get(NotificationSingleton.HK_HOUR);        
-            if (hourObj != null && (hourObj instanceof Integer))            
+        if (startObj != null && (startObj instanceof Map<?, ?>)) {
+            Map<String, Object> timeMap = (Map<String, Object>) startObj;
+            Object hourObj = timeMap.get(NotificationSingleton.HK_HOUR);
+            if (hourObj != null && (hourObj instanceof Integer))
                 hour = (Integer) hourObj;
-            else hour = -1;
+            else
+                hour = -1;
 
-            Object minuteObj = timeMap.get(NotificationSingleton.HK_MINUTE);        
-            if (minuteObj != null && (minuteObj instanceof Integer))            
+            Object minuteObj = timeMap.get(NotificationSingleton.HK_MINUTE);
+            if (minuteObj != null && (minuteObj instanceof Integer))
                 minute = (Integer) minuteObj;
-            else minute = -1;
+            else
+                minute = -1;
 
-            Object secondObj = timeMap.get(NotificationSingleton.HK_SECONDS);        
-            if (secondObj != null && (secondObj instanceof Integer))            
+            Object secondObj = timeMap.get(NotificationSingleton.HK_SECONDS);
+            if (secondObj != null && (secondObj instanceof Integer))
                 seconds = (Integer) secondObj;
-            else seconds = -1;
+            else
+                seconds = -1;
         }
 
         SharedPreferences settings = activity.getSharedPreferences(storage_name, Context.MODE_PRIVATE);
@@ -113,8 +113,7 @@ public class NotificationScheduler {
         NotificationScheduler.setReminder(activity, AlarmReceiver.class);
     }
 
-    public static void getSchedulerSettings(Context context) 
-    {
+    public static void getSchedulerSettings(Context context) {
         try {
 
             SharedPreferences settings = context.getSharedPreferences(storage_name, Context.MODE_PRIVATE);
@@ -144,9 +143,7 @@ public class NotificationScheduler {
             hour = settings.getInt(NotificationSingleton.HK_HOUR, deadInt);
             seconds = settings.getInt(NotificationSingleton.HK_SECONDS, deadInt);
             minute = settings.getInt(NotificationSingleton.HK_MINUTE, deadInt);
-        } 
-        catch (ClassCastException e) 
-        {
+        } catch (ClassCastException e) {
             message = null;
             title = null;
             Logger.E(TAG, e.getMessage());
@@ -154,22 +151,19 @@ public class NotificationScheduler {
 
     }
 
-    public static void setReminder(Context context, Class<?> cls) 
-    {
+    public static void setReminder(Context context, Class<?> cls) {
         Calendar now = Calendar.getInstance();
         Calendar target = Calendar.getInstance();
 
-        if (!isCurrentTime()) 
-        {
+        if (!isCurrentTime()) {
             target.set(Calendar.HOUR_OF_DAY, hour);
             target.set(Calendar.MINUTE, minute);
             target.set(Calendar.SECOND, seconds);
 
-            if(target.before(now))    
-                target.add(Calendar.DATE,1);
+            if (target.before(now))
+                target.add(Calendar.DATE, 1);
 
         }
-
 
         cancelReminder(context, cls);
 
@@ -183,9 +177,8 @@ public class NotificationScheduler {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, RHO_NOTIFICATION_CODE, new_intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-        
-        if(interval < 0)
-        {
+
+        if (interval < 0) {
             Logger.E(TAG, "Interval is negative!!! Ignore...");
             interval = 0;
         }
@@ -196,16 +189,18 @@ public class NotificationScheduler {
 
             am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + (interval * 1000),
                     repeats ? (interval * 1000) : 0, pendingIntent);
-        }
-        else
-        {
-            Logger.I(TAG, "Scheduling: " + "mode - RTC_WAKEUP, time - " +
-                   Integer.toString(target.get(Calendar.HOUR_OF_DAY)) + ":" + 
-                   Integer.toString(target.get(Calendar.MINUTE)) + ":" + 
-                   Integer.toString(target.get(Calendar.SECOND)));
+        } else {
+            Logger.I(TAG,
+                    "Scheduling: " + "mode - RTC_WAKEUP, time - " + Integer.toString(target.get(Calendar.HOUR_OF_DAY))
+                            + ":" + Integer.toString(target.get(Calendar.MINUTE)) + ":"
+                            + Integer.toString(target.get(Calendar.SECOND)));
 
-            am.setRepeating(AlarmManager.RTC_WAKEUP, target.getTimeInMillis(),
-                    repeats ? (interval * 1000) : 0, pendingIntent);
+            if (checkTime()) {
+                am.setRepeating(AlarmManager.RTC_WAKEUP, target.getTimeInMillis(), repeats ? (interval * 1000) : 0,
+                        pendingIntent);
+            } else {
+                Logger.E(TAG, "Ivalid parameter for time!!!");
+            }
         }
 
     }
@@ -238,7 +233,6 @@ public class NotificationScheduler {
             return;
         }
 
-
         props.put(NotificationSingleton.HK_TITLE, title);
         props.put(NotificationSingleton.HK_MESSAGE, message);
 
@@ -253,8 +247,7 @@ public class NotificationScheduler {
         }
         singleton.showPopup(props, null);
 
-        if(repeats && interval == 0)
-        {
+        if (repeats && interval == 0) {
             setReminder(context, cls);
         }
 
