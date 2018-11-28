@@ -24,6 +24,9 @@ static BOOL granted_notification = NO;
     UNUserNotificationCenter* center;
     NSString* title;
     NSString* message;
+    NSInteger hour;
+    NSInteger minute;
+    NSInteger seconds;
 }
 
 - (id)init;
@@ -31,6 +34,8 @@ static BOOL granted_notification = NO;
 - (void)setReminder:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult;
 - (void)dealloc;
 - (void)removeScheduler;
+- (bool)checkTime;
+- (bool)isCurrentTime;
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
           didReceiveNotificationResponse:(UNNotificationResponse *)response
           withCompletionHandler:(void (^)(void))completionHandler;
@@ -50,6 +55,9 @@ static NotificationReminder* reminder = nil;
     callbackHolder = nil;
     center = [UNUserNotificationCenter currentNotificationCenter];
     center.delegate = self;
+    hour = -1;
+    minute = -1;
+    seconds = -1;
 
     if(granted_notification == NO && center)
     {
@@ -78,6 +86,14 @@ static NotificationReminder* reminder = nil;
 
 - (void)setCallback:(id<IMethodResult>)value {
     callbackHolder = value;
+}
+
+- (bool)checkTime {
+    return (hour >= 0 && hour <= 23) && (minute >= 0 && minute <= 59) && (seconds >= 0 && seconds <= 59);
+}
+
+- (bool)isCurrentTime {
+    return hour == -1 || minute == -1 || seconds == -1;
 }
 
 - (void)removeScheduler {
@@ -150,7 +166,34 @@ static NotificationReminder* reminder = nil;
                 interval = [(NSString*)objVal integerValue];
             } else if ([objKey isEqualToString:HK_REPEATS]) {
                 repeats = [(NSString*)objVal boolValue];
-            } 
+            } else if ([objKey isEqualToString:HK_START]) 
+            {
+                if([objVal isKindOfClass:[NSDictionary class]])
+                {
+                    NSDictionary* timeMap = (NSDictionary*)objVal;
+
+                    objVal = [timeMap objectForKey:HK_HOUR];
+                    if(objVal && [objVal isKindOfClass:[NSNumber  class]])                
+                        hour = [objVal integerValue];
+                    else hour = -1;
+
+                    objVal = [timeMap objectForKey:HK_MINUTE];
+                    if(objVal && [objVal isKindOfClass:[NSNumber  class]])                
+                        minute = [objVal integerValue];
+                    else minute = -1;
+
+                   objVal = [timeMap objectForKey:HK_SECONDS];
+                   if(objVal && [objVal isKindOfClass:[NSNumber  class]])                
+                        seconds = [objVal integerValue];
+                   else seconds = -1;
+                }
+                else
+                {
+                    hour = -1;
+                    minute = -1;
+                    seconds = -1;
+                }
+            }
         }
     }
 
@@ -159,8 +202,26 @@ static NotificationReminder* reminder = nil;
     content.body = [NSString localizedUserNotificationStringForKey:message arguments:nil];
     content.sound = [UNNotificationSound defaultSound];
 
-    UNTimeIntervalNotificationTrigger* trigger = [UNTimeIntervalNotificationTrigger
-                     triggerWithTimeInterval:interval repeats: repeats];
+    UNNotificationTrigger* trigger = nil;
+
+    if(![self isCurrentTime])
+    {
+        if(![self checkTime])
+        {
+            NSLog(@"Ivalid parameter for time!!!");
+            return;
+        }
+        NSDateComponents* date = [[NSDateComponents alloc] init];
+        date.hour = hour;
+        date.minute = minute;
+        date.second = seconds;
+        trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date repeats:repeats];
+        [date dealloc];
+    }
+    else
+    {
+        trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:interval repeats: repeats];
+    }
     
     UNNotificationRequest* request = [UNNotificationRequest
        requestWithIdentifier: NOTIFICATION_ID content:content trigger:trigger];
