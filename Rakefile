@@ -220,7 +220,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
+$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'security_token', 'encrypt_database', 'use_deprecated_encryption','android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
 
 $winxpe_build = false
 
@@ -3491,14 +3491,15 @@ namespace "build" do
         end
       end
 
+      chdir startdir
+      cp_r "platform/shared/db/res/db", File.join($srcdir, "db")
+
       #encrypt files
       if $encrypt_aes_key != nil
           Jake.encrypt_files_by_AES($srcdir, $encrypt_aes_key, $app_config["encrypt_file_extensions"])
       end
 
-
       chdir startdir
-      cp_r "platform/shared/db/res/db", File.join($srcdir, "db")
 
       # create bundle map file with the final information
       Jake.build_file_map($srcdir, $file_map_name)

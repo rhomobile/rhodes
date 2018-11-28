@@ -7113,7 +7113,9 @@ SQLITE_API int sqlite3_vtab_on_conflict(sqlite3 *);
 
 #ifndef _SQLITE3RTREE_H_
 #define _SQLITE3RTREE_H_
-
+//RHO
+void rhoInitSQLitePageSize(unsigned int size);
+//RHO
 
 #ifdef __cplusplus
 extern "C" {

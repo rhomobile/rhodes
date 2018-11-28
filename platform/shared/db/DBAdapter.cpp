@@ -345,6 +345,7 @@ void CDBAdapter::CDBVersion::toFile(const String& strFilePath)const//throws Exce
 	//try{
         CRhoFile::deleteFile( strFilePath.c_str() );
         CRhoFile::writeStringToFile(strFilePath.c_str(), strFullVer);
+        LOG(INFO) + "Saving DB Version: " + strFullVer;
 	//}catch (Exception e) {
    // 	LOG.ERROR("writeDBVersion failed.", e);
     //	throw e;
@@ -353,6 +354,7 @@ void CDBAdapter::CDBVersion::toFile(const String& strFilePath)const//throws Exce
 
 boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVer )
 {
+    if (usingDeprecatedPageSize()) return true;
     LOG(INFO) + "Try migrate database from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer;
     if ( (dbVer.m_strRhoVer.find("1.4") == 0)&& (dbNewVer.m_strRhoVer.find("1.5")==0||dbNewVer.m_strRhoVer.find("1.4")==0) )
     {
@@ -420,7 +422,7 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
 	CDBVersion dbVer;  
 	dbVer.fromFile(m_strDbVerPath);
 
-	if (dbVer.m_strRhoVer.length() == 0 )
+	if (dbVer.m_strRhoVer.length() == 0)
 	{
 		dbNewVer.toFile(m_strDbVerPath);
 		return;
@@ -442,7 +444,13 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
     if ( bRhoReset && !bAppReset && !bDbFormatChanged )
         bRhoReset = !migrateDB(dbVer, dbNewVer);
 
-    if ( bRhoReset || bAppReset || bDbFormatChanged)
+        LOG(INFO) + "bRhoReset: " + bRhoReset;
+        LOG(INFO) + "bAppReset: " + bAppReset;
+        LOG(INFO) + "bDbFormatChanged: " + bDbFormatChanged;
+
+        LOG(INFO) + "Reset Database( format changed ):" + m_strDbPath;
+
+    if ( bRhoReset || bAppReset || bDbFormatChanged )
 	{
         LOG(INFO) + "Reset database because version is changed.";
 
@@ -951,17 +959,62 @@ void CDBAdapter::executeBatch(const char* szSql, CDBError& error)
     if ( errmsg )
         sqlite3_free(errmsg);
 }
-	
+
+String CDBAdapter::tauDecryptTextFile(const String fullPath){
+    const char* key = get_app_build_config_item("encrypt_files_key");
+    if (!key){
+        return "";
+    }
+
+    FILE *fp = fopen(fullPath.c_str(), "rb");
+    fseek(fp, 0, SEEK_END);
+    int encrytedFileSize = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    char* encryptedFileBuff = new char [encrytedFileSize];
+    char* decrypedFileBuff = new char [encrytedFileSize*2];
+    
+    size_t loaded = fread(encryptedFileBuff, 1, encrytedFileSize, fp);
+    if (loaded < encrytedFileSize) {
+        if (ferror(fp) ) {
+            RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)0, strerror(errno));
+        } else if ( feof(fp) ) {
+            RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)encrytedFileSize);
+        }
+        fclose(fp);
+        delete[] encryptedFileBuff;
+        delete[] decrypedFileBuff;
+        return "";
+    }
+    
+    int decrytedFileSize = rho_decrypt_file((const char*)encryptedFileBuff, encrytedFileSize, 
+                                                    (char*)decrypedFileBuff, encrytedFileSize*2);
+    
+    delete[] encryptedFileBuff;
+    String result = String(const_cast< const char * > (decrypedFileBuff), decrytedFileSize);
+    delete[] decrypedFileBuff;
+
+    return std::move(result);
+}
+
 void CDBAdapter::createSchema()
 {
+    LOG(INFO)+"Creating schema";
 #ifdef RHODES_EMULATOR
-    String strPath = CFilePath::join( RHOSIMCONF().getRhodesPath(), "platform/shared/db/res/db/syncdb.schema" );
+    String strPath = CFilePath::join( RHOSIMCONF().getRhodesPath(), "platform/shared/db/res/db/syncdb.schema");
 #else
     String strPath = CFilePath::join( RHODESAPP().getRhoRootPath(), "db/syncdb.schema" );
 #endif
 
     String strSqlScript;
-    CRhoFile::loadTextFile(strPath.c_str(), strSqlScript);
+
+    if (CRhoFile::isFileExist(strPath.c_str())){
+        LOG(INFO)+"Schema not encrypted";
+        CRhoFile::loadTextFile(strPath.c_str(), strSqlScript);
+    }else{
+        LOG(INFO) + "Schema encrypted";
+        strSqlScript = tauDecryptTextFile(strPath + ".encrypted");
+    }
 
     if ( strSqlScript.length() == 0 )
     {
@@ -971,7 +1024,7 @@ void CDBAdapter::createSchema()
 
 	CDBError dbError;
 	executeBatch(strSqlScript.c_str(), dbError);
-	
+
     if ( dbError.isOK() )
         createTriggers();
 }
