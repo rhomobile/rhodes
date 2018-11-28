@@ -461,6 +461,21 @@ def setup_ext_env( extpath, extname )
   env
 end
 
+def get_android_major_minor(version)
+  puts version
+  if version.include? '.' then
+     array_ver = []
+     array_ver = version.split('.')
+     if array_ver.length >= 2 then 
+       $major_version = array_ver[0].to_i
+       $minor_version = array_ver[1].to_i
+     end
+     return
+  end
+
+  $major_version = version.to_i
+end
+
 namespace "config" do
   task :set_android_platform do
     $current_platform = "android"
@@ -531,6 +546,11 @@ namespace "config" do
       #If user has mentioned version under android, then select that particular api level.
       if $app_config["android"]["version"]
         apilevel = AndroidTools.get_api_level $app_config["android"]["version"]
+        version = $app_config["android"]["version"]
+        $major_version = 0
+        $minor_version = 0
+        get_android_major_minor(version)
+
         if(!apilevel)
           apilevel = AndroidTools.get_api_level ($app_config["android"]["version"] + ".0")
         end
@@ -1922,6 +1942,8 @@ namespace "build" do
       generator.debuggable = $debug
       generator.buildSdkVer = $found_api_level
       generator.buildToolsVer = $build_tools_ver
+      generator.androidVerMaj = $major_version
+      generator.androidVerMin = $minor_version
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
 
