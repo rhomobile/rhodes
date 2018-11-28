@@ -48,6 +48,13 @@ public:
 	{
 		alert_vibrate(duration);
 	}
+
+	virtual void setScheduler( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){
+
+	}
+    virtual void removeScheduler(rho::apiGenerator::CMethodResult& oResult){
+    	
+    }
 };
 
 class CNotificationFactory: public CNotificationFactoryBase
