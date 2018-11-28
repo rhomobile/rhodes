@@ -238,6 +238,7 @@ public class NotificationScheduler {
             return;
         }
 
+
         props.put(NotificationSingleton.HK_TITLE, title);
         props.put(NotificationSingleton.HK_MESSAGE, message);
 
@@ -251,6 +252,11 @@ public class NotificationScheduler {
             singleton.setContext(context);
         }
         singleton.showPopup(props, null);
+
+        if(repeats && interval == 0)
+        {
+            setReminder(context, cls);
+        }
 
         Logger.I(TAG, "Notification recived!!!");
     }
