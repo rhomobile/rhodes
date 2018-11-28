@@ -18,8 +18,7 @@
   <% end %>
   
   <!-- Uses permissions -->
-  <uses-permission android:name='android.permission.RECEIVE_BOOT_COMPLETED'/>
-  <% @usesPermissions.each do |name| %>
+   <% @usesPermissions.each do |name| %>
   <uses-permission android:name='<%=name%>'/>
   <% end %>
 
