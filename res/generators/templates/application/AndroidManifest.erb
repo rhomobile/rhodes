@@ -63,6 +63,12 @@
     <provider android:name='com.rhomobile.rhodes.LocalFileProvider' android:authorities='<%=@appPackageName%>' android:grantUriPermissions='false'>
       <grant-uri-permission android:pathPrefix='/rhodes/apps/'/>
     </provider>
+	
+	<receiver android:name='com.rho.notification.AlarmReceiver' android:enabled="false">
+     <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+     </intent-filter>
+    </receiver>
 
     <!-- application tag addon templates from extensions -->
     <% @applicationManifestAdds.each do |extAdd| %>

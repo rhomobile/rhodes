@@ -21,6 +21,8 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         <METHODS access="STATIC">
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
+			
+
                 <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on one of the buttons in the 'button' array. All custom icons' paths must be absolute paths to the icon file. Icon is not supported on iOS devices.</DESC>
                 <PLATFORM>WM, CE, Android, iOS, Win32</PLATFORM>
                 <PARAMS>
@@ -96,6 +98,51 @@ Example:
                         </PARAM>
                     </PARAMS>
                 </CALLBACK>
+            </METHOD>
+			
+			
+			<METHOD name="setScheduler" access="STATIC" hasCallback="none">
+			
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
+                <PARAMS>
+                    <PARAM name="propertyMap" type="HASH">
+                        <DESC>The properties associated with the popup.</DESC>
+                        <PARAMS>
+                            <PARAM name="message" type="String" default="">
+                                <DESC>Text displayed in the popup window.</DESC>
+                            </PARAM>
+                            <PARAM name="title" type="String" default="">
+                                <DESC>Title of the popup window.</DESC>
+                            </PARAM>
+							<PARAM name="start" type="HASH" >
+							    <DESC>Time to start h:m:s.</DESC>
+								<PARAMS>
+								    <PARAM name="hour" type="Integer">                            
+									    <DESC>Hour in hours</DESC>                        
+									</PARAM>                        
+									<PARAM name="minute" type="Integer">                            
+									    <DESC>Minute in minutes</DESC>                        
+									</PARAM>                        
+									<PARAM name="seconds" type="Integer">                            
+									    <DESC>Seconds in seconds</DESC>                        
+									</PARAM>
+								</PARAMS>
+                            </PARAM>
+							<PARAM name="interval" type="Integer" default="">
+                                <DESC>The time interval in seconds.</DESC>
+                            </PARAM>
+							<PARAM name="repeats" type="Boolean" default="true">
+                                <DESC>Repeat or not.</DESC>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+			
+			<METHOD name="removeScheduler" access="STATIC" hasCallback="none">
+                <DESC></DESC>
+                <PLATFORM>Android, iOS</PLATFORM>
             </METHOD>
 
             <METHOD name="hidePopup" access="STATIC" hasCallback="none">

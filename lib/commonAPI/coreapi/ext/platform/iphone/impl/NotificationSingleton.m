@@ -13,8 +13,228 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Alert"
 
+#define NOTIFICATION_ID @"RhoNotification"
+
 static UIAlertView *currentAlert = nil;
 static BOOL is_current_alert_status = NO;
+static BOOL granted_notification = NO;
+
+@interface NotificationReminder : NSObject<UNUserNotificationCenterDelegate> {
+    id<IMethodResult> callbackHolder;
+    UNUserNotificationCenter* center;
+    NSString* title;
+    NSString* message;
+    NSInteger hour;
+    NSInteger minute;
+    NSInteger seconds;
+}
+
+- (id)init;
+- (void)setCallback:(id<IMethodResult>)value;
+- (void)setReminder:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult;
+- (void)dealloc;
+- (void)removeScheduler;
+- (bool)checkTime;
+- (bool)isCurrentTime;
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+          didReceiveNotificationResponse:(UNNotificationResponse *)response
+          withCompletionHandler:(void (^)(void))completionHandler;
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center 
+           willPresentNotification:(UNNotification *)notification 
+           withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler;
+
++ (NotificationReminder*)instance;
+
+@end
+
+static NotificationReminder* reminder = nil;
+
+@implementation NotificationReminder
+
+- (id)init {
+    callbackHolder = nil;
+    center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate = self;
+    hour = -1;
+    minute = -1;
+    seconds = -1;
+
+    if(granted_notification == NO && center)
+    {
+        dispatch_semaphore_t question_semaphore = dispatch_semaphore_create(0);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert + UNAuthorizationOptionSound)
+                completionHandler:^(BOOL granted, NSError * _Nullable error) {
+                granted_notification = granted;
+                dispatch_semaphore_signal(question_semaphore);
+            }];
+        });
+        dispatch_semaphore_wait(question_semaphore, DISPATCH_TIME_FOREVER);
+        dispatch_release(question_semaphore);
+    }
+
+    return self;
+}
+
++ (NotificationReminder*)instance {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        reminder = [[NotificationReminder alloc] init];
+    });
+    return reminder;
+}
+
+- (void)setCallback:(id<IMethodResult>)value {
+    callbackHolder = value;
+}
+
+- (bool)checkTime {
+    return (hour >= 0 && hour <= 23) && (minute >= 0 && minute <= 59) && (seconds >= 0 && seconds <= 59);
+}
+
+- (bool)isCurrentTime {
+    return hour == -1 || minute == -1 || seconds == -1;
+}
+
+- (void)removeScheduler {
+    @synchronized(self)
+    {
+        if(center)
+        {
+            //NSArray* ids = [NSArray arrayWithObjects:NOTIFICATION_ID];
+            //[center removePendingNotificationRequestsWithIdentifiers:ids];
+            [center removeAllPendingNotificationRequests];
+        }
+    }
+}
+
+- (void)dealloc {
+    callbackHolder = nil;
+    center = nil;
+    title = @"";
+    message = @"";
+    reminder = nil;
+    [super dealloc];
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+          didReceiveNotificationResponse:(UNNotificationResponse *)response
+          withCompletionHandler:(void (^)(void))completionHandler {
+   if ([response.actionIdentifier isEqualToString:UNNotificationDismissActionIdentifier]) {
+       // The user dismissed the notification without taking action.
+   }
+   else if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
+   }
+ 
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center 
+           willPresentNotification:(UNNotification *)notification 
+           withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler 
+{
+    NSLog(@"Notification recived"); 
+    completionHandler(UNAuthorizationOptionAlert + UNAuthorizationOptionSound);
+}
+
+-(void) setReminder:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
+
+    if(granted_notification == NO)
+    {
+        NSLog(@"Waning!!! Notification not granted!!!"); 
+    }
+
+    [self removeScheduler];
+
+    NSInteger interval = 0;
+    BOOL repeats = NO;
+
+    if ([propertyMap isKindOfClass:[NSDictionary class]])
+    {
+        NSEnumerator* enumerator = [propertyMap keyEnumerator];
+        NSObject* obj = nil;
+
+        while ((obj = [enumerator nextObject]) != nil) 
+        {
+            NSString* objKey = (NSString*)obj;
+            NSObject* objVal = [propertyMap objectForKey:objKey];
+
+            if ([objKey isEqualToString:HK_TITLE]) {
+                title = (NSString*)objVal;
+            } else if ([objKey isEqualToString:HK_MESSAGE]) {
+                message = (NSString*)objVal;            
+            } else if ([objKey isEqualToString:HK_INTERVAL]) {
+                interval = [(NSString*)objVal integerValue];
+            } else if ([objKey isEqualToString:HK_REPEATS]) {
+                repeats = [(NSString*)objVal boolValue];
+            } else if ([objKey isEqualToString:HK_START]) 
+            {
+                if([objVal isKindOfClass:[NSDictionary class]])
+                {
+                    NSDictionary* timeMap = (NSDictionary*)objVal;
+
+                    objVal = [timeMap objectForKey:HK_HOUR];
+                    if(objVal && [objVal isKindOfClass:[NSNumber  class]])                
+                        hour = [objVal integerValue];
+                    else hour = -1;
+
+                    objVal = [timeMap objectForKey:HK_MINUTE];
+                    if(objVal && [objVal isKindOfClass:[NSNumber  class]])                
+                        minute = [objVal integerValue];
+                    else minute = -1;
+
+                   objVal = [timeMap objectForKey:HK_SECONDS];
+                   if(objVal && [objVal isKindOfClass:[NSNumber  class]])                
+                        seconds = [objVal integerValue];
+                   else seconds = -1;
+                }
+                else
+                {
+                    hour = -1;
+                    minute = -1;
+                    seconds = -1;
+                }
+            }
+        }
+    }
+
+    UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+    content.title = [NSString localizedUserNotificationStringForKey:title arguments:nil];
+    content.body = [NSString localizedUserNotificationStringForKey:message arguments:nil];
+    content.sound = [UNNotificationSound defaultSound];
+
+    UNNotificationTrigger* trigger = nil;
+
+    if(![self isCurrentTime])
+    {
+        if(![self checkTime])
+        {
+            NSLog(@"Ivalid parameter for time!!!");
+            return;
+        }
+        NSDateComponents* date = [[NSDateComponents alloc] init];
+        date.hour = hour;
+        date.minute = minute;
+        date.second = seconds;
+        trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date repeats:repeats];
+        [date dealloc];
+    }
+    else
+    {
+        trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:interval repeats: repeats];
+    }
+    
+    UNNotificationRequest* request = [UNNotificationRequest
+       requestWithIdentifier: NOTIFICATION_ID content:content trigger:trigger];
+
+    [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {   
+        if (error != nil) {       
+            NSLog(@"%@", error.localizedDescription);        
+            }
+    }];
+
+}
+
+@end
 
 @interface AlertShowPopupTask : NSObject<UIAlertViewDelegate> {
     NSMutableArray *buttons;
@@ -239,7 +459,20 @@ static BOOL is_current_alert_status = NO;
 
 @implementation NotificationSingleton
 
+-(void) setScheduler:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult
+{
+    NotificationReminder* scheduler = [NotificationReminder instance];
+    [scheduler setReminder:propertyMap methodResult:methodResult];
+}
+
+-(void) removeScheduler:(id<IMethodResult>)methodResult;
+{
+    NotificationReminder* scheduler = [NotificationReminder instance];
+    [scheduler removeScheduler];
+}
+
 -(void) showPopup:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
+    
     id runnable = [[AlertShowPopupTask alloc] init];
     [propertyMap retain];
     if ([methodResult hasCallback])
