@@ -50,15 +50,19 @@ public class Notification {
     ArrayList<ActionData> actions = new ArrayList<ActionData>();
     int iconResourceId;
     String iconPath;
-    List<String> kinds = new ArrayList<String>();;
+    List<String> kinds = new ArrayList<String>();
+    Context ctx = null;
     
     Dialog dialog;
 
-    public Notification(int id, Map<String, Object> props, IMethodResult result) {
+    public Notification(int id, Map<String, Object> props, IMethodResult result, Context c) {
         this.id = id;
         this.result = result;
         
-        Context ctx = ContextFactory.getUiContext();
+        if(c == null)
+            ctx = ContextFactory.getUiContext();
+        else
+            ctx = c;
         
         String iconName = null;
 
@@ -175,7 +179,8 @@ public class Notification {
         
         Logger.T(TAG, "Dialog: title: " + title + ", message: " + message + ", buttons: " + actions.size());
         
-        Context ctx = ContextFactory.getUiContext();
+        if(ctx == null)        
+           ctx = ContextFactory.getUiContext();
         int nTopPadding = 10;
 
         dialog = new Dialog(ctx);
@@ -277,7 +282,8 @@ public class Notification {
     public void showNotification() {
         Logger.T(TAG, "Notification: title: " + title + ", message: " + message);
         
-        Context ctx = ContextFactory.getContext();
+        if(ctx == null)        
+            ctx = ContextFactory.getContext();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx);
         builder.setTicker(message);
         if (title != null) {
@@ -374,7 +380,8 @@ public class Notification {
             });
         }
 
-        Context ctx = ContextFactory.getContext();
+        if(ctx == null)
+            ctx = ContextFactory.getContext();
         NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(id);
     }

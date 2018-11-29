@@ -18,7 +18,7 @@
   <% end %>
   
   <!-- Uses permissions -->
-  <% @usesPermissions.each do |name| %>
+   <% @usesPermissions.each do |name| %>
   <uses-permission android:name='<%=name%>'/>
   <% end %>
 
@@ -71,6 +71,12 @@
     <% @applicationManifestAdds.each do |extAdd| %>
       <%=render extAdd%>
     <% end %>
+
+    <receiver android:name='com.rho.notification.AlarmReceiver' android:enabled="false">
+     <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+     </intent-filter>
+    </receiver>
     
   </application>
 
