@@ -774,7 +774,7 @@ namespace "config" do
         $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
       end
 
-      AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:25.2.0')
+      AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:27.0.0')
 
       #setup_ndk($androidndkpath, $found_api_level, 'arm')
       $abis = $app_config['android']['abis'] if $app_config["android"]
@@ -1862,7 +1862,7 @@ namespace "build" do
 
       version = version["major"]*1000000 + version["minor"]*10000 + version["patch"]*100 + version["build"]
 
-      usesPermissions = ['android.permission.INTERNET', 'android.permission.PERSISTENT_ACTIVITY', 'android.permission.WAKE_LOCK']
+      usesPermissions = ['android.permission.RECEIVE_BOOT_COMPLETED', 'android.permission.INTERNET', 'android.permission.PERSISTENT_ACTIVITY', 'android.permission.WAKE_LOCK']
       $app_config["capabilities"].each do |cap|
         cap = ANDROID_PERMISSIONS[cap]
         next if cap.nil?

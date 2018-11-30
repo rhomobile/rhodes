@@ -7,9 +7,14 @@ class MavenDepsExtractor
   include Singleton
 
   @logger = nil
+  @api_level = 0
 
   def set_logger( logger )
     @logger = logger
+  end
+
+  def set_api_level( level )
+    @api_level = level
   end
 
   def initialize
@@ -213,8 +218,9 @@ class MavenDepsExtractor
     dependencies = @dependencies.values.flatten.map { |d| Hash[ ["grp_id","art_id","ver"].zip(split_dependency(d)) ] }
 
     repos = [
-      File.join($androidsdkpath,'extras','google','m2repository'),
-      File.join($androidsdkpath,'extras','android','m2repository')
+      "file://#{File.join($androidsdkpath,'extras','google','m2repository')}",
+      "file://#{File.join($androidsdkpath,'extras','android','m2repository')}",
+      "https://maven.google.com"
     ]
 
     tpl = File.read(File.join(@rhoroot,'platform','android','build','pom.erb'))
