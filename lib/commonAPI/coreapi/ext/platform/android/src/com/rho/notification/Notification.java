@@ -8,6 +8,7 @@ import java.util.Map;
 
 import android.app.Dialog;
 import android.app.NotificationManager;
+import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -36,12 +37,16 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
+import android.annotation.TargetApi;
+
 public class Notification {
     private static final String TAG = Notification.class.getSimpleName();
 
     private static final int DLG_MAIN_VIEW_ID = 1;
     
     static final String NOTIFICATION_ID = "nitification_id";
+    static final String NOTIFICATION_CHANEL_ID = "rho_notification_chanel_id";
+    static final String NOTIFICATION_CHANEL_NAME = "Rhodes notifications chanel";
 
     int id;
     IMethodResult result;
@@ -282,9 +287,27 @@ public class Notification {
     public void showNotification() {
         Logger.T(TAG, "Notification: title: " + title + ", message: " + message);
         
-        if(ctx == null)        
-            ctx = ContextFactory.getContext();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx);
+        if(ctx == null) ctx = ContextFactory.getContext();
+        
+        NotificationChannel channel = null;
+        NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            channel = notificationManager.getNotificationChannel(NOTIFICATION_CHANEL_ID);
+            if (channel == null) {
+                channel = new NotificationChannel(NOTIFICATION_CHANEL_ID, NOTIFICATION_CHANEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+                channel.enableVibration(true);
+                channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+
+        NotificationCompat.Builder builder = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            builder = new NotificationCompat.Builder(ctx, NOTIFICATION_CHANEL_ID);
+        else
+            builder = new NotificationCompat.Builder(ctx);
+
         builder.setTicker(message);
         if (title != null) {
             builder.setContentTitle(title);
@@ -309,10 +332,26 @@ public class Notification {
                 }
             }
         }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            channel.setShowBadge(true);
+        }
 
         builder.setSmallIcon(R.drawable.ic_notification);
         builder.setContentIntent(PendingIntent.getActivity(ctx, id, new Intent(ctx, RhodesActivity.class), PendingIntent.FLAG_UPDATE_CURRENT));
-        
+        //if(Build.VERSION.SDK_INT >= 21)        
+        //    builder.setVisibility(android.app.Notification.VISIBILITY_PUBLIC);
+        builder.setDefaults(android.app.Notification.DEFAULT_VIBRATE | android.app.Notification.DEFAULT_SOUND);
+
+        if(Build.VERSION.SDK_INT < 26)
+        {
+            builder.setPriority(android.app.Notification.PRIORITY_HIGH);
+        }
+        else
+        {
+            builder.setPriority(NotificationManager.IMPORTANCE_HIGH);
+        }
+
         if (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG)) {
             for (ActionData action: actions) {
                 
@@ -340,7 +379,6 @@ public class Notification {
             }
         }
         
-        NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         android.app.Notification notification = builder.build();
         notificationManager.notify(id, notification);
     }
@@ -405,7 +443,7 @@ public class Notification {
     }
     
     public boolean isNotificationAreaNeeded() {
-        return !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated) && (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION) || kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG));
+        return (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION) || kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG));
     }
 
     private static class ActionData
