@@ -8,7 +8,9 @@ import java.util.Map;
 
 import android.app.Dialog;
 import android.app.NotificationManager;
-import android.app.NotificationChannel;
+
+import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +18,7 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
+import android.app.Notification.Builder;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -288,25 +290,9 @@ public class Notification {
         Logger.T(TAG, "Notification: title: " + title + ", message: " + message);
         
         if(ctx == null) ctx = ContextFactory.getContext();
-        
-        NotificationChannel channel = null;
-        NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
-            channel = notificationManager.getNotificationChannel(NOTIFICATION_CHANEL_ID);
-            if (channel == null) {
-                channel = new NotificationChannel(NOTIFICATION_CHANEL_ID, NOTIFICATION_CHANEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-                channel.enableVibration(true);
-                channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
 
-        NotificationCompat.Builder builder = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            builder = new NotificationCompat.Builder(ctx, NOTIFICATION_CHANEL_ID);
-        else
-            builder = new NotificationCompat.Builder(ctx);
+
+        Builder builder = AndroidFunctionalityManager.getAndroidFunctionality().getNotificationBuilder(ctx,NOTIFICATION_CHANEL_ID,NOTIFICATION_CHANEL_NAME);
 
         builder.setTicker(message);
         if (title != null) {
@@ -332,25 +318,11 @@ public class Notification {
                 }
             }
         }
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
-            channel.setShowBadge(true);
-        }
 
         builder.setSmallIcon(R.drawable.ic_notification);
         builder.setContentIntent(PendingIntent.getActivity(ctx, id, new Intent(ctx, RhodesActivity.class), PendingIntent.FLAG_UPDATE_CURRENT));
-        //if(Build.VERSION.SDK_INT >= 21)        
-        //    builder.setVisibility(android.app.Notification.VISIBILITY_PUBLIC);
-        builder.setDefaults(android.app.Notification.DEFAULT_VIBRATE | android.app.Notification.DEFAULT_SOUND);
 
-        if(Build.VERSION.SDK_INT < 26)
-        {
-            builder.setPriority(android.app.Notification.PRIORITY_HIGH);
-        }
-        else
-        {
-            builder.setPriority(NotificationManager.IMPORTANCE_HIGH);
-        }
+        builder.setDefaults(android.app.Notification.DEFAULT_VIBRATE | android.app.Notification.DEFAULT_SOUND);
 
         if (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG)) {
             for (ActionData action: actions) {
@@ -379,6 +351,7 @@ public class Notification {
             }
         }
         
+        NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         android.app.Notification notification = builder.build();
         notificationManager.notify(id, notification);
     }

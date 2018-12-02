@@ -30,6 +30,9 @@ import com.rhomobile.rhodes.Logger;
 
 import android.webkit.WebView;
 
+import android.app.Notification.Builder;
+import android.content.Context;
+
 
 //Android 3.0.x
 class AndroidFunctionality11 extends AndroidFunctionality10 implements AndroidFunctionality {
@@ -43,5 +46,10 @@ class AndroidFunctionality11 extends AndroidFunctionality10 implements AndroidFu
 	    view.onResume();
 	    Logger.I(TAG, "Resume WebView");
 	}
-    }  
+    }
+
+	@Override
+	public Builder getNotificationBuilder( Context ctx, String channelID, String channelName ) {
+		return new android.app.Notification.Builder(ctx);
+	}
 }
