@@ -36,6 +36,8 @@ import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import android.app.Notification.Builder;
+
 // Android 1.0
 class AndroidFunctionality01 implements AndroidFunctionality {
 
@@ -83,5 +85,10 @@ class AndroidFunctionality01 implements AndroidFunctionality {
                 }
             }
         }
+    }
+
+    @Override
+    public Builder getNotificationBuilder( Context ctx, String channelID, String channelName ) {
+        throw new UnsupportedOperationException();
     }
 }

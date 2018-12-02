@@ -806,7 +806,7 @@ namespace "config" do
         $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
       end
 
-      AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:27.0.0')
+      AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:25.2.0')
 
       #setup_ndk($androidndkpath, $found_api_level, 'arm')
       $abis = $app_config['android']['abis'] if $app_config["android"]
