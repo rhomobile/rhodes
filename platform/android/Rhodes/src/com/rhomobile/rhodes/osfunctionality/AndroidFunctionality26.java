@@ -31,12 +31,15 @@ import android.app.Notification.Builder;
 import android.content.Context;
 import android.app.NotificationManager;
 import com.rhomobile.rhodes.Logger;
+import android.os.Build.VERSION;
 
 
 @RequiresApi(26)
 class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFunctionality {
 
     private static final String TAG = AndroidFunctionality26.class.getSimpleName();
+    private static final int IMPORTANCE_HIGH = 0x00000004;
+    private static final int PRIORITY_HIGH = 0x00000001;
 
     @Override
     public Builder getNotificationBuilder( Context ctx, String channelID, String channelName ) {
@@ -66,31 +69,27 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
                 createNCMethod.invoke(notificationManager,channel);
             }
 
-            java.lang.reflect.Constructor nbCtor = Builder.class.getConstructor( Context.class, String.class );
-            builder = (Builder)nbCtor.newInstance( ctx, channelID );
+            java.lang.reflect.Constructor nbCtor = android.os.Build.VERSION.SDK_INT >= 26 ? 
+                Builder.class.getConstructor( Context.class, String.class ) :
+                Builder.class.getConstructor( Context.class );
 
-            //TODO: Invoke all this:
-            /*        
-                    else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    {
-                        channel.setShowBadge(true);
-                    }
-            */
+            builder = android.os.Build.VERSION.SDK_INT >= 26 ? 
+                 (Builder)nbCtor.newInstance( ctx, channelID ) : 
+                 (Builder)nbCtor.newInstance( ctx );
 
-            //if(Build.VERSION.SDK_INT >= 21)        
-            //    builder.setVisibility(android.app.Notification.VISIBILITY_PUBLIC);
+            java.lang.reflect.Method setPriorityMethod = ncClass.getMethod("setPriority", Integer.class);
 
-            /*
-                    if(Build.VERSION.SDK_INT < 26)
-                    {
-                        builder.setPriority(android.app.Notification.PRIORITY_HIGH);
-                    }
-                    else
-                    {
-                        builder.setPriority(NotificationManager.IMPORTANCE_HIGH);
-                    }
-            */
-
+            if(android.os.Build.VERSION.SDK_INT >= 26)
+            {
+                java.lang.reflect.Method setShowBadgeMethod = ncClass.getMethod("setShowBadge", boolean.class);
+                setShowBadgeMethod.invoke(channel, true);
+                setPriorityMethod.invoke(builder, IMPORTANCE_HIGH);
+            }
+            else
+            {
+                setPriorityMethod.invoke(builder, PRIORITY_HIGH);
+                //builder.setVisibility(android.app.Notification.VISIBILITY_PUBLIC);
+            }
 
         } catch( Exception e ) {
             Logger.E( TAG, "Error initializing notification channel. Will create default builder" );
