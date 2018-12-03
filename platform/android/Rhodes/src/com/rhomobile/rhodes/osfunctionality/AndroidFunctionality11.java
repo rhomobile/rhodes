@@ -37,6 +37,8 @@ import android.content.Context;
 //Android 3.0.x
 class AndroidFunctionality11 extends AndroidFunctionality10 implements AndroidFunctionality {
 
+	private static final int PRIORITY_HIGH = 0x00000001;
+
     @Override
     public void pauseWebView( WebView view, boolean doPause ) {
 	if ( doPause ) {	    
@@ -50,6 +52,8 @@ class AndroidFunctionality11 extends AndroidFunctionality10 implements AndroidFu
 
 	@Override
 	public Builder getNotificationBuilder( Context ctx, String channelID, String channelName ) {
-		return new android.app.Notification.Builder(ctx);
+		Builder builder = new android.app.Notification.Builder(ctx);
+		builder.setPriority(PRIORITY_HIGH);
+		return builder;
 	}
 }
