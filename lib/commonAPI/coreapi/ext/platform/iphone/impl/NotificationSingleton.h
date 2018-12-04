@@ -16,6 +16,7 @@
 -(void) playFile:(NSString*)path media_type:(NSString*)media_type methodResult:(id<IMethodResult>)methodResult;
 -(void) beep:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult;
 -(void) vibrate:(int)duration methodResult:(id<IMethodResult>)methodResult;
+-(void) setScheduler:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult;
 
 
 

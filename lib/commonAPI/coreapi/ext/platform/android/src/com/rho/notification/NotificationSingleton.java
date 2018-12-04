@@ -45,6 +45,8 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
+
+
 /**
  * Singleton for the Notification extension. Holds all of the implementation for this extension.
  * Uses code from both RhoElements2 and Rhodes3
@@ -63,6 +65,26 @@ public class NotificationSingleton implements INotificationSingleton
     protected AudioTrack audioTrack = null;
 	private Vibrator vibrator;
 	private MediaPlayer currentMP;
+	private Context ctx = null;
+
+	public void setContext(Context c)
+	{
+		ctx = c;
+	}
+
+	@Override
+	public void setScheduler(final Map<String, Object> propertyMap, final IMethodResult result)
+	{
+		Logger.T(TAG, "setScheduler");
+		NotificationScheduler.setReminderEx(propertyMap, result);
+	}
+
+	@Override
+	public void removeScheduler(final IMethodResult result)
+	{
+		Logger.T(TAG, "removeScheduler");
+		NotificationScheduler.cancelReminderEx();	
+	}
 
     @Override
     public void showPopup(final Map<String, Object> propertyMap, final IMethodResult result) {
@@ -74,7 +96,7 @@ public class NotificationSingleton implements INotificationSingleton
             
             Logger.T(TAG, "Add notification: " + lastNotificationId);
             
-            notification = new Notification(lastNotificationId, propertyMap, result);
+            notification = new Notification(lastNotificationId, propertyMap, result, ctx);
             notifications.append(lastNotificationId, notification);
         }
         

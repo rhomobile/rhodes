@@ -37,6 +37,8 @@ ext/platform/android/src/com/rho/notification/NotificationFactory.java
 ext/platform/android/src/com/rho/notification/NotificationSingleton.java
 ext/platform/android/src/com/rho/notification/Notification.java
 ext/platform/android/src/com/rho/notification/NotificationIntentService.java
+ext/platform/android/src/com/rho/notification/NotificationScheduler.java
+ext/platform/android/src/com/rho/notification/AlarmReceiver.java
 ext/platform/android/generated/src/com/rho/intent/IntentBase.java
 ext/platform/android/generated/src/com/rho/intent/IntentFactorySingleton.java
 ext/platform/android/generated/src/com/rho/intent/IntentSingletonBase.java

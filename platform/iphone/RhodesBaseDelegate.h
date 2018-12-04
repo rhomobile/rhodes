@@ -10,7 +10,7 @@
 #import "Classes/Rhodes.h"
 
 @interface RhodesBaseDelegate : Rhodes <UIApplicationDelegate,
-UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate>
+UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate, UNUserNotificationCenterDelegate>
 {
     
 }
