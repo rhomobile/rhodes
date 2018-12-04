@@ -94,6 +94,10 @@ matrix:
 
   - language: objective-c
     os: osx
+    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"
+
+  - language: objective-c
+    os: osx
     env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX"
 
   - language: objective-c
