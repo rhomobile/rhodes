@@ -29,6 +29,7 @@ package com.rhomobile.rhodes.osfunctionality;
 import android.content.Context;
 import android.webkit.WebView;
 
+import android.app.Notification.Builder;
 
 public interface AndroidFunctionality {
     final String TAG = AndroidFunctionality.class.getSimpleName();
@@ -48,4 +49,6 @@ public interface AndroidFunctionality {
     int getScreenOrientation(Context context);
 
     void pauseWebView( WebView view, boolean doPause );
+
+    Builder getNotificationBuilder( Context ctx, String channelID, String channelName );
 }

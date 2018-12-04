@@ -8,6 +8,9 @@ import java.util.Map;
 
 import android.app.Dialog;
 import android.app.NotificationManager;
+
+import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +18,7 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
+import android.app.Notification.Builder;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -36,12 +39,16 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
+import android.annotation.TargetApi;
+
 public class Notification {
     private static final String TAG = Notification.class.getSimpleName();
 
     private static final int DLG_MAIN_VIEW_ID = 1;
     
     static final String NOTIFICATION_ID = "nitification_id";
+    static final String NOTIFICATION_CHANEL_ID = "rho_notification_chanel_id";
+    static final String NOTIFICATION_CHANEL_NAME = "Rhodes notifications chanel";
 
     int id;
     IMethodResult result;
@@ -282,9 +289,11 @@ public class Notification {
     public void showNotification() {
         Logger.T(TAG, "Notification: title: " + title + ", message: " + message);
         
-        if(ctx == null)        
-            ctx = ContextFactory.getContext();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx);
+        if(ctx == null) ctx = ContextFactory.getContext();
+
+
+        Builder builder = AndroidFunctionalityManager.getAndroidFunctionality().getNotificationBuilder(ctx,NOTIFICATION_CHANEL_ID,NOTIFICATION_CHANEL_NAME);
+
         builder.setTicker(message);
         if (title != null) {
             builder.setContentTitle(title);
@@ -312,7 +321,9 @@ public class Notification {
 
         builder.setSmallIcon(R.drawable.ic_notification);
         builder.setContentIntent(PendingIntent.getActivity(ctx, id, new Intent(ctx, RhodesActivity.class), PendingIntent.FLAG_UPDATE_CURRENT));
-        
+
+        builder.setDefaults(android.app.Notification.DEFAULT_VIBRATE | android.app.Notification.DEFAULT_SOUND);
+
         if (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG)) {
             for (ActionData action: actions) {
                 
@@ -405,7 +416,7 @@ public class Notification {
     }
     
     public boolean isNotificationAreaNeeded() {
-        return !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated) && (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION) || kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG));
+        return (kinds.contains(INotificationSingleton.TYPE_NOTIFICATION) || kinds.contains(INotificationSingleton.TYPE_NOTIFICATION_DIALOG));
     }
 
     private static class ActionData
