@@ -60,6 +60,9 @@
 #include <QWebEngineUrlRequestInfo>
 #include "QtNativeTabBar.h"
 #include "DateTimeDialog.h"
+#ifdef OS_WINDOWS_DESKTOP
+    #include <QtPlatformHeaders\QWindowsWindowFunctions>
+#endif
 
 class QtMainWindow : public QMainWindow
 {

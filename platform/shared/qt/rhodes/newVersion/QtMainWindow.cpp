@@ -1191,6 +1191,11 @@ void QtMainWindow::fullscreenCommand(int enable)
 #if defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
     if ((enable && !isFullScreen()) || (!enable && isFullScreen())) {
         this->menuBar()->setVisible(RHOCONF().getBool("w32_fullscreen_menu") || (!enable));
+
+#ifdef OS_WINDOWS_DESKTOP
+        QWindowsWindowFunctions::setHasBorderInFullScreen( windowHandle(), true );
+#endif
+
         setWindowModality(enable ? Qt::ApplicationModal : Qt::NonModal);
         setWindowState(windowState() ^ Qt::WindowFullScreen);
     }
