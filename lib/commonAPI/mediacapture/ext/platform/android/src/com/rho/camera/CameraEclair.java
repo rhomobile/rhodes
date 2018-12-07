@@ -23,23 +23,30 @@ public class CameraEclair extends CameraObject implements ICameraObject {
         getPropertiesMap().put("cameraType", "back");
         getPropertiesMap().put("compressionFormat", "jpg");
         getPropertiesMap().put("outputFormat", "image");
+        if (hasPermission()) {
+            openCamera();
+            Camera.Parameters params = getCamera().getParameters();
+            closeCamera();
 
-        openCamera();
-        Camera.Parameters params = getCamera().getParameters();
-        closeCamera();
-
-        mSupportedPictureSizes = params.getSupportedPictureSizes();
-        ISize maxSize = null;
-        for(android.hardware.Camera.Size size: mSupportedPictureSizes) {
-            Logger.D(TAG, "Possible picture size: " + size.width + "X" + size.height);
-            ISize curSize = new CameraSize(size);
-            if ((maxSize == null) || (curSize.D2() > maxSize.D2())) {
-                maxSize = curSize;
+            mSupportedPictureSizes = params.getSupportedPictureSizes();
+            ISize maxSize = null;
+            for(android.hardware.Camera.Size size: mSupportedPictureSizes) {
+                Logger.D(TAG, "Possible picture size: " + size.width + "X" + size.height);
+                ISize curSize = new CameraSize(size);
+                if ((maxSize == null) || (curSize.D2() > maxSize.D2())) {
+                    maxSize = curSize;
+                }
             }
-        }
 
-        getPropertiesMap().put("maxWidth", String.valueOf(maxSize.getWidth()));
-        getPropertiesMap().put("maxHeight", String.valueOf(maxSize.getHeight()));
+            getPropertiesMap().put("maxWidth", String.valueOf(maxSize.getWidth()));
+            getPropertiesMap().put("maxHeight", String.valueOf(maxSize.getHeight()));
+        }
+        else {
+            mSupportedPictureSizes = new ArrayList<Camera.Size>();
+            Logger.E(TAG, "Application has no permission to Camera access !!!");
+            getPropertiesMap().put("maxWidth", String.valueOf(0));
+            getPropertiesMap().put("maxHeight", String.valueOf(0));
+        }
     }
 
     @Override
@@ -162,6 +169,10 @@ public class CameraEclair extends CameraObject implements ICameraObject {
     }
 
     protected boolean hasAutoFocus() {
+        if (!hasPermission()) {
+            Logger.D(TAG, "Application has no permission to Camera access !!!");
+            return false;
+        }
         String focusMode = getCamera().getParameters().getFocusMode();
         boolean supported = false;
         if (focusMode != null) {
