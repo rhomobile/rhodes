@@ -9,6 +9,13 @@ import android.os.Environment;
 
 import com.rhomobile.rhodes.Logger;
 
+
+import android.support.v4.content.PermissionChecker;
+import android.support.v4.content.ContextCompat;
+import android.content.pm.PackageManager;
+import com.rhomobile.rhodes.RhodesActivity;
+import android.Manifest;
+
 public class CameraGingerbread extends CameraEclair implements ICameraObject {
     private static final String TAG = CameraGingerbread.class.getSimpleName();
     
@@ -33,38 +40,49 @@ public class CameraGingerbread extends CameraEclair implements ICameraObject {
             getPropertiesMap().put("cameraType", "unknown");
             break;
         }
-        
-        openCamera();
-        Camera.Parameters params = getCamera().getParameters();
-        closeCamera();
-        
-        List<android.hardware.Camera.Size> listSize = params.getSupportedPictureSizes();
-        ISize maxSize = null;
-        for(android.hardware.Camera.Size curSize: listSize) {
-            Logger.D(TAG, "Possible picture size: " + curSize.width + "X" + curSize.height);
-            if ((maxSize == null) || (curSize.width > maxSize.getWidth())) {
-                maxSize = new CameraSize(curSize);
-            }
-        }
 
-        getPropertiesMap().put("maxWidth", String.valueOf(maxSize.getWidth()));
-        getPropertiesMap().put("maxHeight", String.valueOf(maxSize.getHeight()));
+        if (hasPermission()) {
+            openCamera();
+            Camera.Parameters params = getCamera().getParameters();
+            closeCamera();
+
+            List<android.hardware.Camera.Size> listSize = params.getSupportedPictureSizes();
+            ISize maxSize = null;
+            for(android.hardware.Camera.Size curSize: listSize) {
+                Logger.D(TAG, "Possible picture size: " + curSize.width + "X" + curSize.height);
+                if ((maxSize == null) || (curSize.width > maxSize.getWidth())) {
+                    maxSize = new CameraSize(curSize);
+                }
+            }
+
+            getPropertiesMap().put("maxWidth", String.valueOf(maxSize.getWidth()));
+            getPropertiesMap().put("maxHeight", String.valueOf(maxSize.getHeight()));
+        }
+        else {
+            Logger.E(TAG, "Application has no permission to Camera access !!!");
+            getPropertiesMap().put("maxWidth", String.valueOf(0));
+            getPropertiesMap().put("maxHeight", String.valueOf(0));
+        }
     }
-    
+
 
     @Override synchronized
-    protected void openCamera() { 
-        if (mCameraUsers == 0) {
-            setCamera(Camera.open(getCameraIndex())); 
+    protected void openCamera() {
+        if (hasPermission()) {
+            if (mCameraUsers == 0) {
+                setCamera(Camera.open(getCameraIndex()));
+            }
+            mCameraUsers++;
         }
-        mCameraUsers++;
     }
 
     @Override synchronized
     protected void closeCamera() {
-        mCameraUsers--;
-        if (mCameraUsers == 0) {
-            getCamera().release();
+        if (hasPermission()) {
+            mCameraUsers--;
+            if (mCameraUsers == 0) {
+                getCamera().release();
+            }
         }
     }
 
@@ -102,21 +120,33 @@ public class CameraGingerbread extends CameraEclair implements ICameraObject {
         }
         getCamera().setParameters(params);
         getCamera().takePicture(null, null, new TakePictureCallback(previewActivity));
-        
+
         // commented the code because auto focus logic is moved as soon as camera previews not on button click
         /*if (hasAutoFocus()) {
             getCamera().autoFocus(new Camera.AutoFocusCallback() {
                 public void onAutoFocus(boolean success, Camera camera) {
-                	 
+
                     openCamera();
                 	getCamera().takePicture(null, null, new TakePictureCallback(previewActivity));
                     closeCamera();
                 }
             });
-            
+
         } else {
             getCamera().takePicture(null, null, new TakePictureCallback(previewActivity));
         }*/
         closeCamera();
     }
+
+    public boolean hasPermission() {
+        boolean res = (PermissionChecker.checkSelfPermission(RhodesActivity.getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED);
+        if (!res) {
+            Logger.E(TAG, "Application has no permission to Camera access !!!");
+        }
+        //else {
+        //    Logger.E(TAG, "Application has permission to Camera access !!!");
+        //}
+        return res;
+    }
+
 }

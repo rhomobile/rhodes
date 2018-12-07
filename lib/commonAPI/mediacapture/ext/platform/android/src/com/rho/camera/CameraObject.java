@@ -450,22 +450,29 @@ public class CameraObject extends CameraBase implements ICameraObject {
         getPropertiesMap().put("useRealBitmapResize", "true");
         getPropertiesMap().put("useRotationBitmapByEXIF", "true");
         getPropertiesMap().put("saveToDeviceGallery", "false");
-        openCamera();
-        Camera.Parameters params = getCamera().getParameters();
-        closeCamera();
+        if (hasPermission()) {
+            openCamera();
+            Camera.Parameters params = getCamera().getParameters();
+            closeCamera();
 
-        getPropertiesMap().put("maxWidth", String.valueOf(params.getPictureSize().width));
-        getPropertiesMap().put("maxHeight", String.valueOf(params.getPictureSize().height));
+            getPropertiesMap().put("maxWidth", String.valueOf(params.getPictureSize().width));
+            getPropertiesMap().put("maxHeight", String.valueOf(params.getPictureSize().height));
 
-        // default desired size not specified in documentation and XML !!!
-        //getPropertiesMap().put("desiredWidth", "640");
-        //getPropertiesMap().put("desiredHeight", "480");
+            // default desired size not specified in documentation and XML !!!
+            //getPropertiesMap().put("desiredWidth", "640");
+            //getPropertiesMap().put("desiredHeight", "480");
+        }
+        else {
+            Logger.E(TAG, "Application has no permission to Camera access !!!");
+            getPropertiesMap().put("maxWidth", String.valueOf(0));
+            getPropertiesMap().put("maxHeight", String.valueOf(0));
+        }
         getPropertiesMap().put("desiredWidth", "0");
         getPropertiesMap().put("desiredHeight", "0");
 
         storageDir = new File(Environment.getExternalStorageDirectory(), "RhoImages");
         createRhoCacheFolder();
-        
+
     }
 
     public void createRhoCacheFolder(){
@@ -637,6 +644,14 @@ public class CameraObject extends CameraBase implements ICameraObject {
 
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
+        if (!hasPermission()) {
+            Logger.E(TAG, "Application has no permission to Camera access !!!");
+            HashMap<String, Object> inResultMap = new HashMap<String,Object>();
+            inResultMap.put("message", "No CAMERA permission !");
+            inResultMap.put("status", "error");
+            result.set(inResultMap);
+            return;
+        }
 
         CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
         CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
@@ -822,6 +837,10 @@ public class CameraObject extends CameraBase implements ICameraObject {
     }
 
     private boolean hasAutoFocus() {
+        if (!hasPermission()) {
+            Logger.E(TAG, "Application has no permission to Camera access !!!");
+            return false;
+        }
         String focusMode = getCamera().getParameters().getFocusMode();
         boolean supported = false;
         if (focusMode != null) {
@@ -830,5 +849,11 @@ public class CameraObject extends CameraBase implements ICameraObject {
         return supported;
 
     }
+
+    public boolean hasPermission() {
+        //Logger.E(TAG, "Application has permission to Camera access DAFAULT !!!");
+        return true;
+    }
+
 
 }
