@@ -198,8 +198,8 @@ static NotificationReminder* reminder = nil;
     }
 
     UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-    content.title = [NSString localizedUserNotificationStringForKey:title arguments:nil];
-    content.body = [NSString localizedUserNotificationStringForKey:message arguments:nil];
+    content.title = title;//[NSString localizedUserNotificationStringForKey:title arguments:nil];
+    content.body = message;//[NSString localizedUserNotificationStringForKey:message arguments:nil];
     content.sound = [UNNotificationSound defaultSound];
 
     UNNotificationTrigger* trigger = nil;
