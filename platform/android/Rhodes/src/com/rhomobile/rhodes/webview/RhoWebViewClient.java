@@ -50,6 +50,8 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.CookieSyncManager;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 
 public class RhoWebViewClient extends WebViewClient
 {
@@ -249,6 +251,12 @@ public class RhoWebViewClient extends WebViewClient
             Logger.W(TAG, msg.toString());
             handler.cancel();
         }
+    }
+
+    @Override
+    public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+        WebResourceResponse response = super.shouldInterceptRequest(view, request);
+		return null;
     }
     
     @Override
