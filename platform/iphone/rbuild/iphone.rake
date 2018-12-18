@@ -29,6 +29,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'iphonecommon'))
 require File.dirname(__FILE__) + '/../../../lib/build/BuildConfig'
 
 
+$use_temp_keychain = false
+
 $out_file_buf_enable = false
 $out_file_buf_path = 'rhobuildlog.txt'
 $out_file_buf = []
@@ -1249,6 +1251,15 @@ namespace "config" do
         mp_latest_Time = nil
 
         if File.exists? mp_folder
+
+            if $use_temp_keychain
+                puts "Prepare temporary keychain for use security tool"
+                args = ['delete-keychain', 'tmp']
+                Jake.run2('security',args)
+                args = ['create-keychain', '-p ""','rhobuildtmp']
+                Jake.run2('security',args)
+            end
+
             Dir.entries(mp_folder).select do |entry|
                 path = File.join(mp_folder,entry)
                 #puts '$$$ '+path.to_s
@@ -1257,11 +1268,17 @@ namespace "config" do
                     plist_path = path
                     # make XML
                     xml_lines_arr = []
-                    args = ['cms', '-D', '-i', plist_path]
+
+                    if $use_temp_keychain
+                        args = ['cms', '-D', '-k', 'rhobuildtmp', '-i', plist_path]
+                    else
+                        args = ['cms', '-D', '-i', plist_path]
+                    end
                     Jake.run2('security',args,{:rootdir => $startdir, :hide_output => true}) do |line|
                         xml_lines_arr << line.to_s
                         true
                     end
+
                     xml_lines = xml_lines_arr.join.to_s
                     #puts '%%%%%%% '+xml_lines
 
@@ -1291,6 +1308,12 @@ namespace "config" do
                     end
                 end
             end
+
+            if $use_temp_keychain
+                args = ['delete-keychain', 'rhobuildtmp']
+                Jake.run2('security',args)
+            end
+
         end
         if mp_latest_UUID != nil
             $provisionprofile = mp_latest_UUID
@@ -2346,8 +2369,14 @@ namespace "build" do
 
     #[build:iphone:setup_xcode_project]
     desc "make/change generated XCode project for build application"
-    task :setup_xcode_project => ["config:iphone"] do
+    task :setup_xcode_project, [:use_temp_keychain] do |t, args|
       print_timestamp('build:iphone:setup_xcode_project START')
+
+      args.with_defaults(:use_temp_keychain => "do_not_use_temp_keychain")
+      $use_temp_keychain = args[:use_temp_keychain] == "use_temp_keychain"
+
+      Rake::Task['config:iphone'].invoke
+
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
@@ -3428,9 +3457,16 @@ namespace "device" do
   namespace "iphone" do
     # device:iphone:production
     desc "Builds and signs iphone for production"
-    task :production => ["config:iphone", "build:iphone:rhodes"] do
+    task :production, [:use_temp_keychain] do |t, args|
       print_timestamp('device:iphone:production START')
       #copy build results to app folder
+
+      args.with_defaults(:use_temp_keychain => "do_not_use_temp_keychain")
+      $use_temp_keychain = args[:use_temp_keychain] == "use_temp_keychain"
+
+      Rake::Task['config:iphone'].invoke
+      Rake::Task['build:iphone:rhodes'].invoke
+
 
       app_path = File.join($app_path, 'bin', 'target', 'iOS', $sdk, $configuration)
 
