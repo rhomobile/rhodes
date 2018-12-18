@@ -369,7 +369,7 @@ public class RhodesService extends Service {
         RhodesApplication.create();
 
         // Increase WebView rendering priority
-        WebView w = new WebView(context);
+		WebView w = new WebView(context);
         WebSettings webSettings = w.getSettings();
         webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
 
