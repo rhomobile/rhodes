@@ -106,6 +106,8 @@ public class SimpleMainView implements MainView {
 			
 		if (al instanceof WebView) {
 			// we have android WebView
+
+			((WebView)al).setWebViewClient(new RequestInterceptor());
 			
 			// check for exist developer extension
 			try {
