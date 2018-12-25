@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -x
 
-rake run:android:spec
+rake run:android:spec --trace
