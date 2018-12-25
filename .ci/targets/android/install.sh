@@ -19,5 +19,7 @@ cd $HOME/.android && printf "android\nandroid\nTRAVIS-CI\nCI-SYSTEM\nTAU\nUNIVER
 #EMULEVEL=${RHO_ANDROID_LEVEL:-26}
 #EMULEVEL=$((EMULEVEL>25?25:EMULEVEL))
 
+$ANDROID_HOME/tools/bin/sdkmanager tools
+
 #echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-${EMULEVEL};default;armeabi-v7a"
 #echo yes | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-${EMULEVEL};google_apis;armeabi-v7a"
