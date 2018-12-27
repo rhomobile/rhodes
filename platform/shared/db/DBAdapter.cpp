@@ -354,7 +354,6 @@ void CDBAdapter::CDBVersion::toFile(const String& strFilePath)const//throws Exce
 
 boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVer )
 {
-    if (usingDeprecatedPageSize()) return true;
     LOG(INFO) + "Try migrate database from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer;
     if ( (dbVer.m_strRhoVer.find("1.4") == 0)&& (dbNewVer.m_strRhoVer.find("1.5")==0||dbNewVer.m_strRhoVer.find("1.4")==0) )
     {
@@ -363,14 +362,22 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVe
         return true;
     }
 
-    if ( (dbVer.m_strRhoVer.find("2.0") == 0||dbVer.m_strRhoVer.find("2.1") == 0||dbVer.m_strRhoVer.find("2.2") == 0)&& 
-         (dbNewVer.m_strRhoVer.find("2.0")==0||dbNewVer.m_strRhoVer.find("2.1")==0||dbNewVer.m_strRhoVer.find("2.2")==0) )
+    
+    if ( ( (dbVer.m_strRhoVer.find("2.0") == 0) || (dbVer.m_strRhoVer.find("2.1") == 0) || (dbVer.m_strRhoVer.find("2.2") == 0) || (dbVer.m_strRhoVer.find("3.22.0") == 0))&&
+         ( (dbNewVer.m_strRhoVer.find("2.0")==0) || (dbNewVer.m_strRhoVer.find("2.1")==0) || (dbNewVer.m_strRhoVer.find("2.2")==0) || (dbNewVer.m_strRhoVer.find("3.22.0")==0) ) )
     {
         LOG(INFO) + "No migration required from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer;
         dbNewVer.toFile(m_strDbVerPath);
         return true;
     }
 
+    // we should never visit this code, but ...
+    if (usingDeprecatedPageSize()) {
+        LOG(INFO) + "No migration required with special use_deprecated_encryption flag in build.yml from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer;
+        //dbNewVer.toFile(m_strDbVerPath);
+        return true;
+    }
+    
     //1.2.x -> 1.5.x,1.4.x
     if ( (dbVer.m_strRhoVer.find("1.2") == 0)&& (dbNewVer.m_strRhoVer.find("1.5")==0||dbNewVer.m_strRhoVer.find("1.4")==0) )
     {
