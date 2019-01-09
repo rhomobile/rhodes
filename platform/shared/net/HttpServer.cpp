@@ -1655,6 +1655,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
     }
 
     String uri = arg_uri;
+    URI::urlScreening(uri);
 
     String fullPath = CFilePath::join(m_root, uri);
 #ifndef RHO_NO_RUBY_API    

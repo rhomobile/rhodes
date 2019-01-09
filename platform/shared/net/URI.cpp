@@ -218,7 +218,36 @@ String URI::urlEncode(const String& fullPath)
 
     if ( !bFound )
         strRes += fullPath;
+
 }
+
+
+    void URI::urlScreening(String& url)
+    {
+        String::size_type pos = 0;
+        const char* purl = url.c_str();
+
+        while((pos = url.find("&", pos)) != String::npos)
+        {
+            url = url.replace(pos, 1, "&amp;");
+            pos += 5;
+        }
+
+        pos = 0;
+        while((pos = url.find("<", pos)) != String::npos)
+        {
+            url = url.replace(pos, 1, "&lt;");
+            pos += 4;
+        }
+
+        pos = 0;
+        while((pos = url.find(">", pos)) != String::npos)
+        {
+            url = url.replace(pos, 1, "&gt;");
+            pos += 4;
+        }
+
+    }
 
 /*static*/String URI::urlDecode(const String& fullPath)
 {

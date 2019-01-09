@@ -42,6 +42,7 @@ public:
     static String urlEncode(const String& fullPath);
     static String urlDecode(const String& url);	
 	static void urlDecode(const String &url, String& ret );
+    static void urlScreening(String& url);
     static String urlEscapeSymbols(const String& url);	
     static void urlEscapeSymbols(const String& fullPath, String& strRes);
 
