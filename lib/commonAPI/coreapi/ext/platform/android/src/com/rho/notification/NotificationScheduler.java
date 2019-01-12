@@ -136,7 +136,7 @@ public class NotificationScheduler {
             interval = settings.getInt(NotificationSingleton.HK_INTERVAL, deadInt);
             if (interval == deadInt) {
                 interval = 0;
-                Logger.I(TAG, "Key - HK_MESSAGE not found!");
+                Logger.I(TAG, "Key - HK_INTERVAL not found!");
             }
 
             repeats = settings.getBoolean(NotificationSingleton.HK_REPEATS, false);
@@ -229,8 +229,12 @@ public class NotificationScheduler {
         Map<String, Object> props = new HashMap<String, Object>();
 
         if (title == null || message == null) {
-            Logger.E(TAG, "Title and message must be set!!!");
-            return;
+            getSchedulerSettings(context); //try getting settings
+            if(title == null || message == null)
+            {
+               Logger.E(TAG, "Title and message must be set!!!");
+               return;
+            }
         }
 
         props.put(NotificationSingleton.HK_TITLE, title);
