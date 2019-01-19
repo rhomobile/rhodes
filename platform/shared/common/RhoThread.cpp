@@ -26,6 +26,7 @@
 
 #include "RhoThread.h"
 #include "IRhoClassFactory.h"
+#include "RhoMutexLock.h"
 
 namespace rho {
 namespace common {
@@ -47,3 +48,27 @@ void CRhoThread::start(EPriority ePriority)
 
 }
 }
+
+# ifdef __cplusplus
+extern "C" {
+# endif
+
+void* rho_mutex_create() {
+    return (void*)(new rho::common::CMutex());
+}
+
+void rho_mutex_destroy(void* m) {
+    delete m;
+}
+
+void rho_mutex_lock(void* m) {
+    ((rho::common::CMutex*)m)->Lock();
+}
+
+void rho_mutex_release(void* m) {
+    ((rho::common::CMutex*)m)->Unlock();
+}
+
+# ifdef __cplusplus
+}
+#endif //__cplusplus

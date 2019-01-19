@@ -283,16 +283,12 @@ void CMethodResult::callCallback()
 #ifndef RHORC_NO_RUBY 
 CMethodResult::CMethodRubyValue::CMethodRubyValue(unsigned long val) : m_value(val)
 { 
-    VALUE oldGC = rho_ruby_disable_gc();
     rho_ruby_holdValue(m_value); 
-    rho_ruby_enable_gc(oldGC);
 }
 
 CMethodResult::CMethodRubyValue::~CMethodRubyValue()
 { 
-    VALUE oldGC = rho_ruby_disable_gc();
     rho_ruby_releaseValue(m_value); 
-    rho_ruby_enable_gc(oldGC);
 }
 #endif //RHORC_NO_RUBY
 
