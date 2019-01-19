@@ -91,6 +91,9 @@ void rho_ruby_releaseValue(VALUE val);
 VALUE rho_ruby_disable_gc();
 void  rho_ruby_enable_gc(VALUE val);
 
+void rho_ruby_gc_lock();
+void rho_ruby_gc_release();
+
 VALUE callFramework(VALUE hashReq);
 VALUE callServeIndex(char* index_name, VALUE hashReq);
 

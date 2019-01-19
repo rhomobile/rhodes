@@ -679,7 +679,9 @@ bool CHttpServer::run()
                 if (verbose) {
                     LOG(INFO) + "GC Start.";
                 }
+                rho_ruby_gc_lock();
                 rb_gc();
+                rho_ruby_gc_release();
                 if (verbose) {
                     LOG(INFO) + "GC End.";
                 }
@@ -1855,7 +1857,9 @@ bool CDirectHttpRequestQueue::run( )
         if ( bProcessed )
         {
           LOG(INFO) + "GC Start.";
+          rho_ruby_gc_lock();
           rb_gc();
+          rho_ruby_gc_release();
           LOG(INFO) + "GC End.";
         }
       }
