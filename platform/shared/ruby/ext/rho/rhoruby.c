@@ -121,6 +121,13 @@ extern int rho_conf_getBool(const char* szName);
 
 static int extensions_loaded = 0;
 
+
+extern void* rho_mutex_create();
+extern void rho_mutex_lock(void*);
+extern void rho_mutex_release(void*);
+
+static void* s_ruby_gc_lock;
+
 #if defined(WIN32)
 extern void rb_w32_sysinit(int *argc, char ***argv);
 #endif
@@ -180,6 +187,9 @@ void Init_transcoders() {
 
 void RhoRubyStart()
 {
+
+    s_ruby_gc_lock = rho_mutex_create();
+
     const char* szRoot = rho_native_rhopath();
 //RHO
 #if defined(_WIN32)
@@ -992,21 +1002,51 @@ void  rho_ruby_enable_gc(VALUE val)
         rb_gc_disable();
 }
 
+void rho_ruby_gc_lock() {
+    rho_mutex_lock( s_ruby_gc_lock );
+}
+
+void rho_ruby_gc_release() {
+    rho_mutex_release( s_ruby_gc_lock );
+}
+
 void rho_ruby_holdValue(VALUE val)
-{
+{    
+    rho_ruby_gc_lock();
+
     rb_gc_register_mark_object(val);
+
+    rho_ruby_gc_release();
 }
 
 void rho_ruby_releaseValue(VALUE val)
 {
-    VALUE ary = GET_THREAD()->vm->mark_object_ary;
-    int i = RARRAY_LEN(ary)-1;
-    for ( ; i >= 0; i-- ) {
-        if ( RARRAY_PTR(ary)[i]== val )
+    rho_ruby_gc_lock();
+
+    VALUE ary_ary = GET_VM()->mark_object_ary;
+
+    int bucket = RARRAY_LEN(ary_ary)-1;
+    int done = 0;
+    for ( ; bucket >= 0; bucket-- ) {
+        VALUE ary = rb_ary_at( ary_ary, INT2NUM(bucket) );
+
+         int i = RARRAY_LEN(ary)-1;
+         for ( ; i >= 0; i-- ) {
+             if ( RARRAY_PTR(ary)[i]== val )
+                 break;
+         }
+
+        if ( i >= 0 ) {
+            rb_ary_delete_at(ary,i);
+            done = 1;
+        }
+
+        if ( done != 0 ) {
             break;
+        }
     }
-    if ( i >= 0 )
-        rb_ary_delete_at(ary,i);
+
+    rho_ruby_gc_release();
 }
 
 extern VALUE rb_cMutex;
