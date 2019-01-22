@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/Keyboard.cpp
+ext/platform/android/generated/jni/keyboard_ruby_wrap.cpp
+ext/platform/android/generated/jni/keyboard_js_wrap.cpp
+ext/platform/android/jni/Keyboard_impl.cpp
+ext/shared/generated/keyboard_api_init.cpp
+ext/shared/generated/keyboard_js_api.cpp
+ext/shared/generated/keyboard_ruby_api.c

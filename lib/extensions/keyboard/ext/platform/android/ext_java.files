@@ -1,0 +1,9 @@
+ext/platform/android/generated/src/com/rho/keyboard/KeyboardBase.java
+ext/platform/android/generated/src/com/rho/keyboard/KeyboardFactorySingleton.java
+ext/platform/android/generated/src/com/rho/keyboard/KeyboardSingletonBase.java
+ext/platform/android/generated/src/com/rho/keyboard/IKeyboard.java
+ext/platform/android/generated/src/com/rho/keyboard/IKeyboardFactory.java
+ext/platform/android/generated/src/com/rho/keyboard/IKeyboardSingleton.java
+ext/platform/android/src/com/rho/keyboard/Keyboard.java
+ext/platform/android/src/com/rho/keyboard/KeyboardFactory.java
+ext/platform/android/src/com/rho/keyboard/KeyboardSingleton.java

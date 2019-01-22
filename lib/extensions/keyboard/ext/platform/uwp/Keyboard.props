@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+    <RHO_ROOT>..\..\..\..\..\..</RHO_ROOT>
+    <TEMP_FILES_DIR>$(RHO_ROOT)\platform\uwp\bin\$(Platform)\extensions\$(ProjectName)</TEMP_FILES_DIR>
+  </PropertyGroup>
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="RHO_ROOT">
+      <Value>$(RHO_ROOT)</Value>
+    </BuildMacro>
+    <BuildMacro Include="TEMP_FILES_DIR">
+      <Value>$(TEMP_FILES_DIR)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
