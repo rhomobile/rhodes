@@ -1,0 +1,28 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Keyboard" parent="Rho">
+        <HELP_OVERVIEW>Extesion for keyboard control</HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
+    
+        <TEMPLATES>
+            <DEFAULT_INSTANCE/>
+            <PROPERTY_BAG/>
+        </TEMPLATES>
+
+        <METHODS>
+            <METHOD name="setOpenKeyboard" generateAPI="true" generateDoc="true" access="STATIC">
+                <DESC>Open or close virtual keyboard (depends on parameter).</DESC>
+                <PARAMS>
+                    <PARAM name="isOpen" type="BOOLEAN"/>
+				</PARAMS>
+			</METHOD>
+        </METHODS>
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>7.0.5</VER_INTRODUCED>
+		<PLATFORM>Win32</PLATFORM>
+    </MODULE>
+</API>    
