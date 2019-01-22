@@ -7,6 +7,7 @@
 
 #ifdef RHODES_EMULATOR
 #define RHO_APPS_DIR ""
+#include "common/RhoSimConf.h"
 #else
 #define RHO_APPS_DIR "apps/"
 #endif
@@ -232,7 +233,11 @@ public:
 
     virtual void getRhoPlatformVersion(rho::apiGenerator::CMethodResult& oResult)
     {
+#ifndef RHODES_EMULATOR
         oResult.set(RHOCONF().getString("rhodes_gem_version"));
+#else
+        oResult.set(RHOSIMCONF().getString("rhodes_gem_version"));
+#endif
     }
 };
 

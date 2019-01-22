@@ -4054,6 +4054,8 @@ namespace "run" do
       sim_conf = "rhodes_path='#{$startdir}'\r\n"
       sim_conf += "app_version='#{$app_config["version"]}'\r\n"
       sim_conf += "app_name='#{$appname}'\r\n"
+      sim_conf += "rhodes_gem_version='#{ENV['rhodes_version']}'\r\n"
+
       if ( ENV['rho_reload_app_changes'] )
         sim_conf += "reload_app_changes=#{ENV['rho_reload_app_changes']}\r\n"
       else
