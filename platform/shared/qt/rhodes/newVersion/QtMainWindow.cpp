@@ -114,6 +114,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
 {
     lastInstance = this;
     menuMain = NULL;
+    if (RHOCONF().getBool("start_maximized")){
+        setWindowState(windowState() | Qt::WindowMaximized);
+    }
     createMenu();
 
 currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId();
@@ -436,10 +439,15 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
 
 void QtMainWindow::on_webView_loadStarted()
 {
-	if (firstShow && RHOCONF().getBool("full_screen")) {
-		firstShow = false;
-		fullscreenCommand(1);
-	}
+    if (firstShow){
+        firstShow = false;
+
+        if (RHOCONF().getBool("full_screen") && !RHOCONF().getBool("start_maximized")){
+            fullscreenCommand(1);
+        }
+    }
+
+
     LOG(INFO) + "WebView: loading...";
     PROF_START("BROWSER_PAGE");
 }
