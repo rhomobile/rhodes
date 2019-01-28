@@ -26,28 +26,26 @@ class CKeyboardSingleton: public CKeyboardSingletonBase
         Hashtable<String, String> hashRes;
         bool isOk = true;
 #ifdef OS_WINDOWS_DESKTOP
-        if (isOpen){
-            void *was;
-            Wow64DisableWow64FsRedirection (&was);
-            HINSTANCE keyboardProcess = ShellExecuteA (NULL, "open", "osk.exe", NULL, NULL, SW_SHOWDEFAULT);
-            Wow64RevertWow64FsRedirection (was);
-            if (!keyboardProcess){
-                isOk = false;
-            }
+        try {
+            if (isOpen){
+                void *was;
+                Wow64DisableWow64FsRedirection (&was);
+                HINSTANCE keyboardProcess = ShellExecuteA (NULL, "open", "osk.exe", NULL, NULL, SW_SHOWDEFAULT);
+                Wow64RevertWow64FsRedirection (was);
+                if (!keyboardProcess){
+                    isOk = false;
+                }
 
-        }else{
-            HANDLE hWnd = FindWindowW (L"OSKMainClass", NULL);
-            if (hWnd) {
-                PostMessage((HWND)hWnd, WM_SYSCOMMAND, SC_CLOSE, 0);
             }else{
-                isOk = false;
+                HANDLE hWnd = FindWindowW (L"OSKMainClass", NULL);
+                if (hWnd) {
+                    PostMessage((HWND)hWnd, WM_SYSCOMMAND, SC_CLOSE, 0);
+                }else{
+                    isOk = false;
+                }
             }
-            /*void *was;
-            Wow64DisableWow64FsRedirection (&was);
-            ShellExecuteA(NULL, "open", "tskill", "osk", NULL, SW_HIDE);
-
-            Wow64RevertWow64FsRedirection (was);*/
-
+        }catch (...) {
+            isOpen = false;
         }
 #endif
         if (isOk) {hashRes["status"] = "ok";}
