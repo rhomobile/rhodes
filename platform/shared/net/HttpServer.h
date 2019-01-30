@@ -31,6 +31,7 @@
 #include "logging/RhoLog.h"
 
 #include "common/RhoThread.h"
+#include "common/ISecurityTokenGenerator.h"
 
 #if !defined(WINDOWS_PLATFORM)
 typedef int SOCKET;
@@ -46,6 +47,8 @@ typedef int SOCKET;
 #  endif
 #  define RHO_NET_ERROR_CODE ::WSAGetLastError()
 #endif
+
+#define SECURITY_HEADER "User-Agent"
 
 namespace rho
 {
@@ -183,6 +186,8 @@ private:
     bool verbose;
     bool m_enable_external_access;
     bool m_started_as_separated_simple_server;
+    const rho::common::ISecurityTokenGenerator* m_generator;
+    bool secureTokenExists;
 
 #ifdef OS_MACOSX
     common::CMutex m_mxSyncRequest;

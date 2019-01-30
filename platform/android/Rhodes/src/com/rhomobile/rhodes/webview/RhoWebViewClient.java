@@ -27,6 +27,11 @@
 package com.rhomobile.rhodes.webview;
 
 import java.io.File;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.io.IOException;
+import java.util.Map;
 
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
@@ -255,8 +260,7 @@ public class RhoWebViewClient extends WebViewClient
 
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        WebResourceResponse response = super.shouldInterceptRequest(view, request);
-		return null;
+        return null;
     }
     
     @Override
