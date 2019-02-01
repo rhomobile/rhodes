@@ -229,10 +229,10 @@ int on_http_cb(http_parser* parser) { return 0; }
 
               
             if (force_https) {
-                 s = [NSMutableString stringWithFormat:@"https://127.0.0.1:%d%@",rho_http_get_port(),spath];
+                 s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"https",rho_http_get_port(),spath];
             }
             else {
-                s = [NSMutableString stringWithFormat:@"http://127.0.0.1:%d%@",rho_http_get_port(),spath];
+                s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"http", rho_http_get_port(),spath];
             }
   
               
