@@ -291,7 +291,7 @@ static Rhodes *instance = NULL;
 
 - (void)openMapLocation:(NSString*)query {
 	[self hideSplash];
-    NSURL* url = [NSURL URLWithString:[@"http://maps.google.com/?" stringByAppendingString:query]];
+    NSURL* url = [NSURL URLWithString:[@"https://maps.google.com/?" stringByAppendingString:query]];
     [[UIApplication sharedApplication] openURL:url];
 }
 
