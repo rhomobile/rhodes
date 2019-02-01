@@ -181,7 +181,7 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
     Command *cmd = (Command*)pCmd;
     GeoCodingCallback &cb = *(cmd->callback);
 
-    String url = "http://maps.googleapis.com/maps/api/geocode/json?";
+    String url = "https://maps.googleapis.com/maps/api/geocode/json?";
     
     if (cmd->is_inverse) {
         char* buf = new char[2048];
