@@ -30,6 +30,7 @@
 #include "common/RhoDefs.h"
 #include "common/IRhoClassFactory.h"
 #ifdef OS_WINDOWS_DESKTOP
+#include "SecurityTokenGeneratorImpl.h"
 #include "RhoThreadImpl.h"
 #include "rho/net/NetRequestImpl.h"
 #define CNETREQUESTIMPL new net::CNetRequestImpl()
@@ -69,6 +70,14 @@ public:
         return new net::SSLImpl();
 #endif
     }
+
+#ifdef OS_WINDOWS_DESKTOP
+    const rho::common::ISecurityTokenGenerator* CRhoClassFactory::createSecurityTokenGenerator()
+    {
+        static SecurityTokenGenerator global_generator;
+        return &global_generator;
+    }
+#endif
 
     IRhoCrypt* createRhoCrypt()
     {

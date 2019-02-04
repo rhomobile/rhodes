@@ -55,8 +55,6 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.CookieSyncManager;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 
 public class RhoWebViewClient extends WebViewClient
 {
@@ -258,10 +256,10 @@ public class RhoWebViewClient extends WebViewClient
         }
     }
 
-    @Override
-    public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        return null;
-    }
+    //@Override
+    //public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+    //    return null;
+    //}
     
     @Override
     public void onReceivedHttpAuthRequest (WebView view, HttpAuthHandler handler, String host, String realm) {
