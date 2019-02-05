@@ -71,13 +71,15 @@ public:
 #endif
     }
 
-#ifdef OS_WINDOWS_DESKTOP
     const rho::common::ISecurityTokenGenerator* CRhoClassFactory::createSecurityTokenGenerator()
     {
+#ifdef OS_WINDOWS_DESKTOP
         static SecurityTokenGenerator global_generator;
         return &global_generator;
-    }
+#else
+        return nullptr;
 #endif
+    }
 
     IRhoCrypt* createRhoCrypt()
     {
