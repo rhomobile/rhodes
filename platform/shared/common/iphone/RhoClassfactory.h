@@ -29,6 +29,7 @@
 #include <assert.h>
 
 #include "common/IRhoClassFactory.h"
+#include "common/ISecurityTokenGenerator.h"
 #include "net/CURLNetRequest.h"
 #include "common/PosixThreadImpl.h"
 #include "net/iphone/sslimpl.h"
@@ -77,6 +78,11 @@ public:
             m_pSsl = new net::SSLImpl();
         }
         return m_pSsl;
+    }
+
+    const rho::common::ISecurityTokenGenerator* CRhoClassFactory::createSecurityTokenGenerator()
+    {
+        return nullptr;
     }
 
 private:
