@@ -71,7 +71,7 @@ public:
 #endif
     }
 
-    const rho::common::ISecurityTokenGenerator* CRhoClassFactory::createSecurityTokenGenerator()
+    const rho::common::ISecurityTokenGenerator* createSecurityTokenGenerator()
     {
 #ifdef OS_WINDOWS_DESKTOP
         static SecurityTokenGenerator global_generator;
