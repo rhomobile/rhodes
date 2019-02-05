@@ -80,7 +80,7 @@ public:
         return m_pSsl;
     }
 
-    const rho::common::ISecurityTokenGenerator* CRhoClassFactory::createSecurityTokenGenerator()
+    const rho::common::ISecurityTokenGenerator* createSecurityTokenGenerator()
     {
         return nullptr;
     }
