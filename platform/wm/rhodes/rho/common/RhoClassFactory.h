@@ -29,6 +29,7 @@
 #include "common/IRhoClassFactory.h"
 #include "../net/NetRequestImpl.h"
 #include "RhoThreadImpl.h"
+#include "common/ISecurityTokenGenerator.h"
 
 namespace rho {
 namespace common {
@@ -50,6 +51,11 @@ public:
     net::ISSL* createSSLEngine()
     {
         return NULL;
+    }
+
+    const rho::common::ISecurityTokenGenerator* createSecurityTokenGenerator()
+    {
+        return nullptr;
     }
 
     virtual IRhoCrypt* createRhoCrypt();

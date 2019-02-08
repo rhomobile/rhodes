@@ -1784,8 +1784,10 @@ RHO_GLOBAL int ftruncate(int fd, off_t offset)
         return -1;
     }
 
-    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
-        return real_ftruncate(fd, offset);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE) {
+        int res = real_ftruncate(fd, offset);
+        return res;
+    }
 
     errno = EINVAL;
     return -1;
