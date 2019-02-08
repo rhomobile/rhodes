@@ -27,3 +27,4 @@ platform/android/Rhodes/jni/src/rhocryptimpl.cpp
 platform/android/Rhodes/jni/src/extmanager.cpp
 platform/android/Rhodes/jni/src/MethodExecutorJni.cpp
 platform/android/Rhodes/jni/src/MethodResultJni.cpp
+platform/android/Rhodes/jni/src/SecurityTokenGenerator.cpp

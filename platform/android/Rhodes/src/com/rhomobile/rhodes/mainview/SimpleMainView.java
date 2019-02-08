@@ -67,11 +67,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.rhomobile.rhodes.webview.RhoWebViewClient;
+import com.rhomobile.rhodes.SecurityTokenGenerator;
 
 public class SimpleMainView implements MainView {
 
@@ -106,7 +110,8 @@ public class SimpleMainView implements MainView {
 			
 		if (al instanceof WebView) {
 			// we have android WebView
-			
+			((WebView)al).getSettings().setUserAgentString(SecurityTokenGenerator.getInstance().getSecureAgent());
+
 			// check for exist developer extension
 			try {
 				Class<?> dev_class = Class.forName("com.rho.development.Development");

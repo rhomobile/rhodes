@@ -312,6 +312,7 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     , m_pQueue(0)    
 #endif
 {
+    //generator = rho_get_RhoClassFactory()->createNetRequestImpl();
     m_enable_external_access = enable_external_access;
     m_started_as_separated_simple_server = started_as_separated_simple_server;
     CHttpServer(port, root, user_root, runtime_root);
@@ -343,6 +344,11 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     m_strRhoUserRoot = m_userroot;
 	m_listener = INVALID_SOCKET;
 	m_sock = INVALID_SOCKET;
+
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
+    m_generator = !rho_conf_getInt("external_server_access") ? rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
+    secureTokenExists = false;
+#endif
 }
     
 CHttpServer::CHttpServer(int port, String const &root)
@@ -366,6 +372,11 @@ CHttpServer::CHttpServer(int port, String const &root)
     m_strRhoUserRoot = m_root.substr(0, m_root.length()-5);
     m_listener = INVALID_SOCKET;
 	m_sock = INVALID_SOCKET;
+
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
+    m_generator = !rho_conf_getInt("external_server_access") ? rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
+    secureTokenExists = false;
+#endif
 }
 
 CHttpServer::~CHttpServer()
@@ -944,6 +955,17 @@ bool CHttpServer::process(SOCKET sock)
         return false;
     }
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
+    if(m_generator && !secureTokenExists)
+    {
+        if (verbose) RAWLOG_ERROR("Rhodes service is only accessible via Rhodes application.");
+        send_response(create_response("403 Forbidden: Rhodes service is only accessible via Rhodes application."));
+        return false;
+    }
+
+    secureTokenExists = false;
+#endif
+
     if ( !String_endsWith( uri, "js_api_entrypoint" ) )
         if (verbose) RAWLOG_INFO1("Process URI: '%s'", uri.c_str());
 
@@ -997,6 +1019,12 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
                 Header hdr;
                 if (!parse_header(line, hdr) || hdr.name.empty())
                     return false;
+
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
+                if (m_generator && hdr.name == SECURITY_HEADER)
+                    secureTokenExists = hdr.value.find(m_generator->getSecurityToken()) != std::string::npos;
+#endif
+                
                 headers.push_back(hdr);
                 
                 String low;

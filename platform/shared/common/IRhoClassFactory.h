@@ -41,6 +41,7 @@ struct ICallbackObject
 namespace common {
 struct IRhoThreadImpl;
 struct IRhoCrypt;
+class ISecurityTokenGenerator;
 
 struct IRhoClassFactory
 {
@@ -52,6 +53,7 @@ struct IRhoClassFactory
     virtual IRhoCrypt* createRhoCrypt() = 0;
 
     virtual net::INetRequestImpl* createNetRequestImpl() = 0;
+    virtual const ISecurityTokenGenerator* createSecurityTokenGenerator() = 0;
 };
 
 }

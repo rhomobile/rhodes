@@ -163,7 +163,8 @@ QtLogView.h \
 QtCustomStyle.h\
 mainwindowinterface.h \
 guithreadfunchelper.h \
-impl/notificationsound.h
+impl/notificationsound.h\
+impl/SecurityTokenGeneratorImpl.h
 
 
 
@@ -187,8 +188,11 @@ impl/QtSystemImpl.cpp\
 impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
+impl/SecurityTokenGeneratorImpl.cpp\
 ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp \
-    impl/notificationsound.cpp
+impl/notificationsound.cpp \
+../../../../lib/commonAPI/coreapi/ext/shared/SystemImplBase.cpp
+#TODO: make this like normal developer do
 
 
 contains(DEFINES, RHODES_VERSION_1)  {

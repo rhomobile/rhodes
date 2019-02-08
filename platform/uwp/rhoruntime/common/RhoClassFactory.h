@@ -29,6 +29,7 @@
 #include "common/IRhoClassFactory.h"
 #include "net/CURLNetRequest.h"
 #include "RhoThreadImpl.h"
+#include "common/ISecurityTokenGenerator.h"
 
 namespace rho {
 namespace common {
@@ -45,6 +46,11 @@ public:
     virtual IRhoThreadImpl* createThreadImpl()
     {
         return new CRhoThreadImpl;
+    }
+    
+    const rho::common::ISecurityTokenGenerator* createSecurityTokenGenerator()
+    {
+        return nullptr;
     }
 
     virtual net::ISSL* createSSLEngine();
