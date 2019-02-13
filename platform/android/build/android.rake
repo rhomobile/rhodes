@@ -1296,6 +1296,8 @@ namespace "build" do
               args << '--trace' if USE_TRACES
             end
 
+            #puts "builddata: " + builddata[1] + " args: " + args.to_s + " builddata0: " + builddata[0].to_s
+            #puts ENV.to_s
             cc_run(builddata[1], args, builddata[0], false, nil, USE_TRACES) or raise "Extension build failed: #{builddata[0]}"
           else
             currentdir = Dir.pwd()
