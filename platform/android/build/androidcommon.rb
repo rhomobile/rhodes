@@ -65,12 +65,17 @@ def setup_ndk(ndkpath,apilevel,abi)
   $ndksysroot = ndk.sysroot apilevel, abi 
 
   $ndkgccver = ndk.gccver
+  $ndk_rev_major = ndk.rev_major
   $androidndkpath = ndkpath unless $androidndkpath
 
   $sysincludes = ndk.sysincludes apilevel, abi
   $link_sysroot = ndk.link_sysroot apilevel, abi
 
-  puts "NDK sysroot: #{$ndksysroot}, linker sysroot: #{$link_sysroot}, GCC v#{$ndkgccver}, sysincludes: #{$sysincludes}"
+  if($ndk_rev_major >= 18)
+    puts "NDK sysroot: #{$ndksysroot}, linker sysroot: #{$link_sysroot}, CLANG v#{$ndkgccver}, sysincludes: #{$sysincludes}"
+  else
+    puts "NDK sysroot: #{$ndksysroot}, linker sysroot: #{$link_sysroot}, GCC v#{$ndkgccver}, sysincludes: #{$sysincludes}"
+  end
 
   # Detect rlim_t
   if $have_rlim_t.nil?
@@ -87,10 +92,14 @@ def setup_ndk(ndkpath,apilevel,abi)
       end
     end
   end
+
+  puts "setup success!" if USE_TRACES
 end
 
 def cc_def_args
     args = []
+    args << "--target=armv7a-linux-androideabi23"
+    args << "-fno-addrsig"
     args << "--sysroot"
     args << $ndksysroot
     args << "-isystem #{$sysincludes}" if $sysincludes    
@@ -100,7 +109,7 @@ def cc_def_args
     args << "-Wno-sign-compare"
     args << "-Wno-unused"
     args << '-Wno-unused-parameter'
-    args << "-mandroid"
+    #args << "-mandroid"
     args << "-DANDROID"
     args << "-DOS_ANDROID"
     args << "-DRHO_DEBUG"
@@ -128,7 +137,8 @@ def cpp_def_args
     args << "-fvisibility-inlines-hidden"
     args << "-fno-exceptions"
     args << "-fno-rtti"
-    args << "-std=c++11"
+    #args << "-std=c++11"
+    args << "-stdlib=libc++"
     args << "-Wno-reorder"
     #args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
@@ -177,6 +187,7 @@ def cc_deps(filename, objdir, additional)
     end
   end
   ccbin = cc_get_ccbin(filename)
+  puts "ccbin: " + ccbin.to_s
   args = get_def_args(filename)
   args += additional unless additional.nil?
   out = `#{ccbin} #{args.join(' ')} -MM -MG #{filename}`

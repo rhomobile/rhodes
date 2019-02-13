@@ -131,7 +131,11 @@ class NDKWrapper
         ]
     end
 
-    toolchainversions = ['4.8','4.9']
+    if(@rev_major >= 18)
+      toolchainversions = ['8.0.0']
+    else
+      toolchainversions = ['4.8','4.9']
+    end
 
     toolchain = 'unknown-toolchain'
     if abi == 'arm'
@@ -151,8 +155,14 @@ class NDKWrapper
 
       toolchainversions.each do |version|
         variants = []
-        variants << File.join(@root_path,'build','prebuilt',ndkhost,"#{toolchain}-#{version}")
-        variants << File.join(@root_path,'toolchains',"#{toolchain}-#{version}",'prebuilt',ndkhost)
+
+        if(@rev_major >= 18)
+          variants << File.join(@root_path,'toolchains','llvm','prebuilt',ndkhost)
+        else
+          variants << File.join(@root_path,'build','prebuilt',ndkhost,"#{toolchain}-#{version}")
+          variants << File.join(@root_path,'toolchains',"#{toolchain}-#{version}",'prebuilt',ndkhost)
+        end
+
 
         variants.each do |variant|
           puts "Check toolchain path: #{variant}" if USE_TRACES    
@@ -169,7 +179,7 @@ class NDKWrapper
 
           tools = {}
           
-          ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
+          [ 'gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
               name = tool.gsub('+', 'p')
               tools[name] = check_tool( tool, ndktools, ndkabi)
           end
@@ -188,11 +198,26 @@ class NDKWrapper
     @gccver
   end
 
+  def rev_major
+    @rev_major
+  end
+
   def check_tool( tool, ndktoolsdir, abi )
     toolpath = File.join(ndktoolsdir,'bin',"#{abi}-#{tool}#{HostPlatform.exe_ext}")
+    if(@rev_major >= 18)
+      if (tool == 'gcc')
+        toolpath = File.join(ndktoolsdir,'bin',"clang#{HostPlatform.exe_ext}")
+      end
+      if (tool == 'g++')
+        toolpath = File.join(ndktoolsdir,'bin',"clang++#{HostPlatform.exe_ext}")
+      end
+    end
     puts "Checking tool path #{toolpath} for tool #{tool}" if USE_TRACES
     
     if File.file? toolpath
+      if(@rev_major >= 18)
+        toolpath += " --target=armv7a-linux-androideabi23 -fno-addrsig -stdlib=libc++"
+      end
       return toolpath
     else
       raise "Can't find tool #{tool} at path #{toolpath} (corrupted NDK installation or unsupported NDK?)"
