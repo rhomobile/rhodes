@@ -66,6 +66,7 @@ def setup_ndk(ndkpath,apilevel,abi)
 
   $ndkgccver = ndk.gccver
   $ndk_rev_major = ndk.rev_major
+  $target_toolchain = ndk.toolchain
   $androidndkpath = ndkpath unless $androidndkpath
 
   $sysincludes = ndk.sysincludes apilevel, abi
@@ -102,8 +103,13 @@ end
 
 def cc_def_args
     args = []
-    args << "--target=armv7a-linux-androideabi#{$apilevel}"
-    args << "-fno-addrsig"
+    if($ndk_rev_major >= 18)
+      args << "--target=#{$target_toolchain}#{$apilevel}"
+      args << "-fno-addrsig"
+      if ($target_toolchain == 'i686-linux-android' && $apilevel.to_i <= 23)
+        args << '-mstackrealign'
+      end
+    end
     args << "--sysroot"
     args << $ndksysroot
     args << "-isystem #{$sysincludes}" if $sysincludes    
@@ -113,7 +119,9 @@ def cc_def_args
     args << "-Wno-sign-compare"
     args << "-Wno-unused"
     args << '-Wno-unused-parameter'
-    #args << "-mandroid"
+    if($ndk_rev_major < 18)
+      args << "-mandroid"
+    end
     args << "-DANDROID"
     args << "-DOS_ANDROID"
     args << "-DRHO_DEBUG"
@@ -141,8 +149,13 @@ def cpp_def_args
     args << "-fvisibility-inlines-hidden"
     args << "-fno-exceptions"
     args << "-fno-rtti"
-    #args << "-std=c++11"
-    args << "-stdlib=libc++"
+
+    if($ndk_rev_major < 18)
+      args << "-std=c++11"
+    else
+      args << "-stdlib=libc++"
+    end
+
     args << "-Wno-reorder"
     #args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
@@ -354,8 +367,8 @@ def cc_link(outname, objects, additional = nil, deps = nil)
 
   if($ndk_rev_major >= 18)
     args << "-v"  
-    args << "--target=armv7a-linux-androideabi#{$apilevel}"
-    args << "-Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -fuse-ld=gold"
+    args << "--target=#{$target_toolchain}#{$apilevel}"
+    args << "-fuse-ld=gold"
   end
 
   if $ndkabi == "arm-eabi"
