@@ -121,12 +121,13 @@ extern int rho_conf_getBool(const char* szName);
 
 static int extensions_loaded = 0;
 
-
+#ifndef RHO_RUBY_COMPILER
 extern void* rho_mutex_create();
 extern void rho_mutex_lock(void*);
 extern void rho_mutex_release(void*);
-
 static void* s_ruby_gc_lock;
+#endif
+
 
 #if defined(WIN32)
 extern void rb_w32_sysinit(int *argc, char ***argv);
@@ -187,9 +188,9 @@ void Init_transcoders() {
 
 void RhoRubyStart()
 {
-
+#ifndef RHO_RUBY_COMPILER
     s_ruby_gc_lock = rho_mutex_create();
-
+#endif
     const char* szRoot = rho_native_rhopath();
 //RHO
 #if defined(_WIN32)
@@ -1003,11 +1004,15 @@ void  rho_ruby_enable_gc(VALUE val)
 }
 
 void rho_ruby_gc_lock() {
+    #ifndef RHO_RUBY_COMPILER
     rho_mutex_lock( s_ruby_gc_lock );
+    #endif
 }
 
 void rho_ruby_gc_release() {
+    #ifndef RHO_RUBY_COMPILER
     rho_mutex_release( s_ruby_gc_lock );
+    #endif
 }
 
 void rho_ruby_holdValue(VALUE val)
