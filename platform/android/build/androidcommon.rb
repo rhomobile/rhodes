@@ -71,6 +71,10 @@ def setup_ndk(ndkpath,apilevel,abi)
   $sysincludes = ndk.sysincludes apilevel, abi
   $link_sysroot = ndk.link_sysroot apilevel, abi
 
+  if ($ndk_rev_major >= 18)
+    $link_sysroot_ext = ndk.link_sysroot_level_ext apilevel, abi
+  end
+
   if($ndk_rev_major >= 18)
     puts "NDK sysroot: #{$ndksysroot}, linker sysroot: #{$link_sysroot}, CLANG v#{$ndkgccver}, sysincludes: #{$sysincludes}"
   else
@@ -98,7 +102,7 @@ end
 
 def cc_def_args
     args = []
-    args << "--target=armv7a-linux-androideabi23"
+    args << "--target=armv7a-linux-androideabi#{$apilevel}"
     args << "-fno-addrsig"
     args << "--sysroot"
     args << $ndksysroot
@@ -187,7 +191,6 @@ def cc_deps(filename, objdir, additional)
     end
   end
   ccbin = cc_get_ccbin(filename)
-  puts "ccbin: " + ccbin.to_s
   args = get_def_args(filename)
   args += additional unless additional.nil?
   out = `#{ccbin} #{args.join(' ')} -MM -MG #{filename}`
@@ -349,6 +352,12 @@ def cc_link(outname, objects, additional = nil, deps = nil)
 
   args = []
 
+  if($ndk_rev_major >= 18)
+    args << "-v"  
+    args << "--target=armv7a-linux-androideabi#{$apilevel}"
+    args << "-Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -fuse-ld=gold"
+  end
+
   if $ndkabi == "arm-eabi"
     args << "-nostdlib"
     args << "-Wl,-shared,-Bsymbolic"
@@ -367,8 +376,19 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "\"#{outname}\""
   args += objects.collect { |x| "\"#{x}\""}
   args += additional if additional.is_a? Array and not additional.empty?
-  args << "-L#{$link_sysroot}/usr/lib"
-  args << "-Wl,-rpath-link=#{$link_sysroot}/usr/lib"
+  if($ndk_rev_major >= 18)
+    args << "-L#{$link_sysroot}"
+    args << "-Wl,-rpath-link=#{$link_sysroot}"
+    args << "-L#{$link_sysroot_ext}"
+    args << "-Wl,-rpath-link=#{$link_sysroot_ext}"
+    args << "-L#{$link_sysroot_ext}/../"
+    args << "-Wl,-rpath-link=#{$link_sysroot_ext}/../"
+  else
+    args << "-L#{$link_sysroot}/usr/lib"
+    args << "-Wl,-rpath-link=#{$link_sysroot}/usr/lib"
+  end
+
+  
   args << "#{$link_sysroot}/usr/lib/libc.so"
   args << "#{$link_sysroot}/usr/lib/libm.so"
   #args << "#{$link_sysroot}/usr/lib/libstdc++.so"
@@ -381,37 +401,23 @@ def cc_link(outname, objects, additional = nil, deps = nil)
     localabi = "x86"
   end
   
-  #libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
-  #if File.exists? libandroid_support
-  #  args << "-L\"#{libandroid_support}\""
-  #  args << "-landroid_support"
-  #  puts "libandroid_support exists"
-  #else
-  #  localabi = "armeabi-v7a"
-  #  libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
-  #  if File.exists? libandroid_support
-  #    args << "-L\"#{libandroid_support}\""
-  #    args << "-landroid_support"
-  #    puts "libandroid_support exists"
-  #  else
-  #    puts "libandroid_support does not exists"
-  #  end
-  #end
 
-  libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
-  if File.exists? libgnustl_static
-    args << "-L\"#{libgnustl_static}\""
-    args << "-lgnustl_static"
-    puts "libgnustl_static exists"
-  else
-    localabi = "armeabi-v7a"
+  if($ndk_rev_major < 18)
     libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
     if File.exists? libgnustl_static
       args << "-L\"#{libgnustl_static}\""
       args << "-lgnustl_static"
       puts "libgnustl_static exists"
     else
-      puts "libgnustl_static does not exists"
+      localabi = "armeabi-v7a"
+      libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
+      if File.exists? libgnustl_static
+        args << "-L\"#{libgnustl_static}\""
+        args << "-lgnustl_static"
+        puts "libgnustl_static exists"
+      else
+        puts "libgnustl_static does not exists"
+      end
     end
   end
 
