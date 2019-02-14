@@ -82,11 +82,14 @@ class NDKWrapper
     File.join( @root_path, 'sysroot' )
   end
 
+  def toolchain
+    $toolchain
+  end
+
   def sysroot_18
     ndkhostvariant = ''
     if HostPlatform.windows?
-      bufcheck64 = `WMIC OS get OSArchitecture`.split[1]
-      ndkhostvariant = 'windows-x86_64' if bufcheck64 and bufcheck64.include?('64')
+      ndkhostvariant = 'windows-x86_64' if $bufcheck64 and $bufcheck64.include?('64')
     else
       ndkhostvariant = `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!
     end
@@ -143,8 +146,8 @@ class NDKWrapper
     ndkabi = "unknown"
     ndkhostvariants = []
     if HostPlatform.windows?
-        bufcheck64 = `WMIC OS get OSArchitecture`.split[1]
-        ndkhostvariants << 'windows-x86_64' if bufcheck64 and bufcheck64.include?('64')
+        $bufcheck64 = `WMIC OS get OSArchitecture`.split[1]
+        ndkhostvariants << 'windows-x86_64' if $bufcheck64 and $bufcheck64.include?('64')
         ndkhostvariants << 'windows'
     else
         ndkhostvariants = [
@@ -159,15 +162,31 @@ class NDKWrapper
       toolchainversions = ['4.8','4.9']
     end
 
-    toolchain = 'unknown-toolchain'
+    $toolchain = 'unknown-toolchain'
     if abi == 'arm'
-      toolchain = 'arm-linux-androideabi'
+      if @rev_major >= 18
+        $toolchain = 'armv7a-linux-androideabi'
+      else
+        $toolchain = 'arm-linux-androideabi'
+      end
     elsif abi == 'x86'
-      toolchain = 'x86'
+      if @rev_major >= 18
+        $toolchain = 'i686-linux-android'
+      else
+        $toolchain = 'x86'
+      end
     elsif abi == 'x86_64'
-      toolchain = 'x86_64'
+      if @rev_major >= 18
+        $toolchain = 'x86_64-linux-android'
+      else
+        $toolchain = 'x86_64'
+      end
     elsif abi == 'mips'
-      toolchain = 'mipsel-linux-android'
+      if @rev_major >= 18
+        raise "Mips not supported!"
+      else
+        $toolchain = 'mipsel-linux-android'
+      end
     else
       raise "Unknown ABI: {abi}";
     end
@@ -181,8 +200,8 @@ class NDKWrapper
         if(@rev_major >= 18)
           variants << File.join(@root_path,'toolchains','llvm','prebuilt',ndkhost)
         else
-          variants << File.join(@root_path,'build','prebuilt',ndkhost,"#{toolchain}-#{version}")
-          variants << File.join(@root_path,'toolchains',"#{toolchain}-#{version}",'prebuilt',ndkhost)
+          variants << File.join(@root_path,'build','prebuilt',ndkhost,"#{$toolchain}-#{version}")
+          variants << File.join(@root_path,'toolchains',"#{$toolchain}-#{version}",'prebuilt',ndkhost)
         end
 
 
@@ -191,7 +210,7 @@ class NDKWrapper
           next unless File.directory? variant
 
           ndktools = variant
-          ndkabi = toolchain
+          ndkabi = $toolchain
           @gccver = version
           
           ndkabi = 'i686-linux-android' if ndkabi == 'x86'
@@ -225,6 +244,10 @@ class NDKWrapper
   end
 
   def check_tool( tool, ndktoolsdir, abi )
+    if(@rev_major >= 18)
+      abi = 'arm-linux-androideabi' if abi == 'armv7a-linux-androideabi'
+    end
+
     toolpath = File.join(ndktoolsdir,'bin',"#{abi}-#{tool}#{HostPlatform.exe_ext}")
     if(@rev_major >= 18)
       if (tool == 'gcc')
@@ -237,9 +260,6 @@ class NDKWrapper
     puts "Checking tool path #{toolpath} for tool #{tool}" if USE_TRACES
     
     if File.file? toolpath
-      #if(@rev_major >= 18)
-      #  toolpath += " --target=armv7a-linux-androideabi23 -fno-addrsig -stdlib=libc++"
-      #end
       return toolpath
     else
       raise "Can't find tool #{tool} at path #{toolpath} (corrupted NDK installation or unsupported NDK?)"
