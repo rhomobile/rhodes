@@ -57,11 +57,30 @@ class NDKWrapper
       return path if File.directory?(path)
     }
 
-    raise "Unable to detect NDK link root for API: #{api}, ABI: #{abi}"    
+    raise "Unable to detect NDK link root for API: #{api}, ABI: #{abi}"      
+  end
+
+  def link_sysroot_level_ext( api, abi )
+
+    if @rev_major >= 18
+      triple = {
+        'arm'   => 'arm-linux-androideabi',
+        'arm64' => 'aarch64-linux-android',
+        'mips'  => 'mipsel-linux-android',
+        'mips64'=> 'mips64el-linux-android',
+        'x86'   => 'i686-linux-android',
+        'x86_64'=> 'x86_64-linux-android'
+      }
+      File.join( sysroot_18, 'usr', 'lib', triple[abi], api.to_s)
+    else
+      nil
+    end
   end
 
   def sysroot( api, abi )
-    if @rev_major >= 16
+    if @rev_major >= 18
+      sysroot_18
+    elsif @rev_major >= 16
       sysroot_16 api,abi
     else
       sysroot_pre_16 api,abi
@@ -70,6 +89,18 @@ class NDKWrapper
 
   def sysroot_16( api, abi )
     File.join( @root_path, 'sysroot' )
+  end
+
+  def sysroot_18
+    ndkhostvariant = ''
+    if HostPlatform.windows?
+      bufcheck64 = `WMIC OS get OSArchitecture`.split[1]
+      ndkhostvariant = 'windows-x86_64' if bufcheck64 and bufcheck64.include?('64')
+    else
+      ndkhostvariant = `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!
+    end
+
+    return File.join( @root_path, 'toolchains', 'llvm', 'prebuilt', ndkhostvariant, 'sysroot')
   end
 
   def sysroot_pre_16( api, abi )
@@ -215,9 +246,9 @@ class NDKWrapper
     puts "Checking tool path #{toolpath} for tool #{tool}" if USE_TRACES
     
     if File.file? toolpath
-      if(@rev_major >= 18)
-        toolpath += " --target=armv7a-linux-androideabi23 -fno-addrsig -stdlib=libc++"
-      end
+      #if(@rev_major >= 18)
+      #  toolpath += " --target=armv7a-linux-androideabi23 -fno-addrsig -stdlib=libc++"
+      #end
       return toolpath
     else
       raise "Can't find tool #{tool} at path #{toolpath} (corrupted NDK installation or unsupported NDK?)"
@@ -235,7 +266,11 @@ class NDKWrapper
         'x86'   => 'i686-linux-android',
         'x86_64'=> 'x86_64-linux-android'
       }
-      File.join( sysroot_16(api,abi), 'usr', 'include', triple[abi])
+      if  @rev_major >= 18
+        File.join( sysroot_18, 'usr', 'include', triple[abi])
+      else
+        File.join( sysroot_16(api,abi), 'usr', 'include', triple[abi])
+      end
     else
       nil
     end
