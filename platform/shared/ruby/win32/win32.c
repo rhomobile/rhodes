@@ -2426,7 +2426,7 @@ static inline ioinfo* _pioinfo(int);
 #define IOINFO_ARRAY_ELTS	(1 << IOINFO_L2E)
 #define _osfhnd(i)  (_pioinfo(i)->osfhnd)
 #define _osfile(i)  (_pioinfo(i)->osfile)
-#define _pipech(i)  (_pioinfo(i)->pipech)
+//#define _pipech(i)  (_pioinfo(i)->pipech)
 #define rb_acrt_lowio_lock_fh(i)   EnterCriticalSection(&_pioinfo(i)->lock)
 #define rb_acrt_lowio_unlock_fh(i) LeaveCriticalSection(&_pioinfo(i)->lock)
 
@@ -2442,12 +2442,16 @@ set_pioinfo_extra(void)
 
 //RHO start : trying to get _asatty address from both debug and release crt dlls
 //   vvv
+#ifndef RHO_RUBY_COMPILER
 # ifdef _DEBUG
 #  define UCRTBASE "ucrtbased.dll"
 # else
 #  define UCRTBASE "ucrtbase.dll"
 # endif
-	
+#else
+#define UCRTBASE "ucrtbase.dll"
+#endif // !RHO_RUBY_COMPILER
+
     /* get __pioinfo addr with _isatty */
     char *p = (char*)get_proc_address(UCRTBASE, "_isatty", NULL);
 
@@ -2462,7 +2466,6 @@ set_pioinfo_extra(void)
     char *rip;
     /* add rsp, _ */
 #  define FUNCTION_BEFORE_RET_MARK "\x48\x83\xc4"
-
 #  define FUNCTION_SKIP_BYTES 1
 #  ifdef _DEBUG
     /* lea rcx,[__pioinfo's addr in RIP-relative 32bit addr] */
@@ -2471,32 +2474,19 @@ set_pioinfo_extra(void)
     /* lea rdx,[__pioinfo's addr in RIP-relative 32bit addr] */
 #   define PIOINFO_MARK "\x48\x8d\x15"
 #  endif
+
 # else /* x86 */
-
-//RHO start
-//   vvv
-
-#define FUNCTION_BEFORE_RET_MARK "\x5d"
-
+    /* pop ebp */
+#  define FUNCTION_BEFORE_RET_MARK "\x5d"
 #  define FUNCTION_SKIP_BYTES 0
     /* mov eax,dword ptr [eax*4+100EB430h] */
 #  define PIOINFO_MARK "\x8B\x04\x85"
 # endif
     if (p) {
         for (pend += 10; pend < p + 300; pend++) {
-
-			int beforeRetFound = (memcmp(pend, FUNCTION_BEFORE_RET_MARK, sizeof(FUNCTION_BEFORE_RET_MARK) - 1) == 0);
-			char* pret = (pend + (sizeof(FUNCTION_BEFORE_RET_MARK) - 1) + FUNCTION_SKIP_BYTES);
-			int retFound = ( (*(pret) & FUNCTION_RET ) == FUNCTION_RET);
-			
             // find end of function
-			if ( beforeRetFound && retFound ) {
-			/*
-            if ( ( memcmp(pend, FUNCTION_BEFORE_RET_MARK, sizeof(FUNCTION_BEFORE_RET_MARK) - 1) == 0 ) &&
-                ( ( *(pend + (sizeof(FUNCTION_BEFORE_RET_MARK) - 1) + FUNCTION_SKIP_BYTES) & FUNCTION_RET ) == FUNCTION_RET ) ) {
-			*/
-//   ^^^
-//RHO end                
+            if (memcmp(pend, FUNCTION_BEFORE_RET_MARK, sizeof(FUNCTION_BEFORE_RET_MARK) - 1) == 0 &&
+                *(pend + (sizeof(FUNCTION_BEFORE_RET_MARK) - 1) + FUNCTION_SKIP_BYTES) & FUNCTION_RET == FUNCTION_RET) {
                 // search backwards from end of function
                 for (pend -= (sizeof(PIOINFO_MARK) - 1); pend > p; pend--) {
                     if (memcmp(pend, PIOINFO_MARK, sizeof(PIOINFO_MARK) - 1) == 0) {
@@ -2520,7 +2510,7 @@ set_pioinfo_extra(void)
 #else
     __pioinfo = *(ioinfo***)(p);
 #endif
-#else
+#endif
     int fd;
 
     fd = _open("NUL", O_RDONLY);
@@ -2535,7 +2525,6 @@ set_pioinfo_extra(void)
 	/* not found, maybe something wrong... */
 	pioinfo_extra = 0;
     }
-#endif
 }
 #else
 #define pioinfo_extra 0

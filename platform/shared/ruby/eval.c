@@ -110,12 +110,12 @@ ruby_options(int argc, char **argv)
     ruby_init_stack((void *)&iseq);
     PUSH_TAG();
     if ((state = EXEC_TAG()) == 0) {
-	SAVE_ROOT_JMPBUF(GET_THREAD(), iseq = ruby_process_options(argc, argv));
+		SAVE_ROOT_JMPBUF(GET_THREAD(), iseq = ruby_process_options(argc, argv));
     }
     else {
-	rb_clear_trace_func();
-	state = error_handle(state);
-	iseq = (void *)INT2FIX(state);
+		rb_clear_trace_func();
+		state = error_handle(state);
+		iseq = (void *)INT2FIX(state);
     }
     POP_TAG();
     return iseq;
