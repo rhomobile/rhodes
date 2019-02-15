@@ -10,7 +10,6 @@ environment:
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\auto_common_spec\
       build_command: "build:rhosimulator"
-      after_build_command: "do:nothing"
       app_name: RhoSimulator
       target_os: win32
       target_artefact_path: C:\Ruby23\lib\ruby\gems\2.3.0\gems\rhodes-6.0.0\platform\win32\RhoSimulator\
@@ -32,7 +31,6 @@ environment:
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\auto_common_spec\
       build_command: "device:uwp:production"
-      after_build_command: "do:nothing"
       app_name: auto_common_spec
       target_os: uwp
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\uwp\
@@ -54,7 +52,6 @@ environment:
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\framework_spec\
       build_command: "device:uwp:production"
-      after_build_command: "do:nothing"
       app_name: framework_spec
       target_os: uwp
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\uwp\
@@ -63,9 +60,7 @@ environment:
     - win32_kitchensinkJS:
       testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
       test_app_folder: C:\TAU\kitchensinkJS\
-      test_app_subfolder:
       build_command: "device:win32:production"
-      after_build_command: "do:nothing"
       app_name: KitchensinkJS
       target_os: win32
       target_artefact_path: C:\TAU\kitchensinkJS\bin\target\win32\
@@ -74,9 +69,7 @@ environment:
     - uwp_kitchensinkJS:
       testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
       test_app_folder: C:\TAU\kitchensinkJS\
-      test_app_subfolder:
       build_command: "device:uwp:production"
-      after_build_command: "do:nothing"
       app_name: KitchensinkJS
       target_os: uwp
       target_artefact_path: C:\TAU\kitchensinkJS\bin\target\uwp\
@@ -85,9 +78,7 @@ environment:
     - win32_kitchensinkRuby:
       testable_application_repository: https://github.com/tauplatform/kitchensinkRuby.git
       test_app_folder: C:\TAU\kitchensinkRuby\
-      test_app_subfolder:
       build_command: "device:win32:production"
-      after_build_command: "do:nothing"
       app_name: KitchensinkRuby
       target_os: win32
       target_artefact_path: C:\TAU\kitchensinkRuby\bin\target\win32\
@@ -96,13 +87,21 @@ environment:
     - uwp_kitchensinkRuby:
       testable_application_repository: https://github.com/tauplatform/kitchensinkRuby.git
       test_app_folder: C:\TAU\kitchensinkRuby\
-      test_app_subfolder:
       build_command: "device:uwp:production"
-      after_build_command: "do:nothing"
       app_name: KitchensinkRuby
       target_os: uwp
       target_artefact_path: C:\TAU\kitchensinkRuby\bin\target\uwp\
       target_artefact_file_name: kitchensinkRuby.appx
+
+    - win32_rho_ruby:
+      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+      test_app_folder: C:\TAU\RMS-Testing\
+      test_app_subfolder: auto\feature_def\auto_common_spec\
+      pre_build_command: "build:rhoruby"
+      build_command: "device:win32:production"
+      after_build_command: "run:win32:spec"
+      app_name: auto_common_spec
+      target_os: win32
     
 
 build: off
@@ -141,13 +140,14 @@ before_test:
 test_script:
   - git clone -b master %testable_application_repository% %test_app_folder%
   - cd %test_app_folder%
-  - cd %test_app_subfolder%
+  - IF DEFINED test_app_subfolder cd %test_app_subfolder%
   - rake clean:win32
   - rake clean:uwp
+  - IF DEFINED pre_build_command rake %pre_build_command% --trace
   - rake %build_command% --trace
-  - rake %after_build_command%
+  - IF DEFINED after_build_command rake %after_build_command%
   - md C:\TAU\rhodes\target\
-  - copy %target_artefact_path%%target_artefact_file_name% C:\TAU\rhodes\target\
+  - IF DEFINED target_artefact_file_name copy %target_artefact_path%%target_artefact_file_name% C:\TAU\rhodes\target\
   - cd C:\TAU\rhodes\target\
   - dir
   - echo %APPVEYOR_REPO_NAME%/%APPVEYOR_REPO_BRANCH%/%APPVEYOR_REPO_COMMIT%/appveyor-%APPVEYOR_BUILD_NUMBER%.%APPVEYOR_JOB_NUMBER%_win32-%target_os%-%app_name%
