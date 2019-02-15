@@ -3960,10 +3960,15 @@ namespace "build" do
   task :rhoruby => ["config:load"] do
     msbuild = $config["env"]["paths"]["msbuild"]
     msbuild = "msbuild" if msbuild.nil?
+
     rho_ruby_project = File.join($startdir, "platform/win32/RubyWin/RubyWin.2015.sln")
-    args = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32", 
-      '/p:VisualStudioVersion=14.0', '/t:Build', ] 
-    Jake.run(msbuild, args)
+    argsClean = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32", 
+      '/p:VisualStudioVersion=14.0', '/t:Clean'] 
+    Jake.run(msbuild, argsClean)
+
+    argsBuild = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32", 
+      '/p:VisualStudioVersion=14.0', '/t:Build'] 
+    Jake.run(msbuild, argsBuild)
     puts "RhoRuby rebuilded"
   end
 
