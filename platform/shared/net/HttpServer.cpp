@@ -346,7 +346,7 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 	m_sock = INVALID_SOCKET;
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
-    m_generator = !rho_conf_getInt("external_server_access") ? rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
+    m_generator = rho_conf_getInt("disable_external_access") ? rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
     secureTokenExists = false;
 #endif
 }
@@ -374,7 +374,7 @@ CHttpServer::CHttpServer(int port, String const &root)
 	m_sock = INVALID_SOCKET;
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
-    m_generator = !rho_conf_getInt("external_server_access") ? rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
+    m_generator = rho_conf_getInt("disable_external_access") ? rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
     secureTokenExists = false;
 #endif
 }
