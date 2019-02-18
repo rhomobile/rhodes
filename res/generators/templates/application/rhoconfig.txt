@@ -150,5 +150,5 @@ use_kinetic_scroll_on_windows = 1
 # by enable this option screenshot will be replaced by splash loading screen.
 #WebView.replaceContentBySplashWhenSnapshotBySystem = 1
 
-#external_server_access = 1
-# enable external access to rhodes http server
+#disable_external_access = 1
+# disable external access to rhodes http server
