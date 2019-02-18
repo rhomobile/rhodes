@@ -2538,7 +2538,7 @@ set_pioinfo_extra(void)
 #else
     __pioinfo = *(ioinfo***)(p);
 #endif
-#else
+#endif
     int fd;
 
     fd = _open("NUL", O_RDONLY);
@@ -2553,7 +2553,6 @@ set_pioinfo_extra(void)
 	/* not found, maybe something wrong... */
 	pioinfo_extra = 0;
     }
-#endif
 }
 #else
 #define pioinfo_extra 0
