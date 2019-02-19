@@ -163,17 +163,20 @@ rho::net::CNetResponseWrapper CNetRequestWrapper::pullCookies(const String& strU
 rho::net::CNetResponseWrapper CNetRequestWrapper::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
 {
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
-    const rho::common::ISecurityTokenGenerator* generator = rho_get_RhoClassFactory()->createSecurityTokenGenerator();
+    const rho::common::ISecurityTokenGenerator* generator = rho_conf_getInt("disable_external_access") ?
+        rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
+
     Hashtable<String,String> headers;
-    if(!pHeaders)
-        pHeaders = &headers;
     if(generator)
+    {
+        if(!pHeaders)
+            pHeaders = &headers;
 #if defined(OS_ANDROID)
         pHeaders->insert(std::make_pair(SECURITY_HEADER, "RhodesAgent RHO-SECURE-TOKEN=" + generator->getSecurityToken()));
 #elif defined(OS_WINDOWS_DESKTOP)
         pHeaders->insert(std::make_pair(SECURITY_HEADER, generator->getSecurityToken()));
 #endif
-
+    }
 #endif
     return m_pReqImpl->doRequest(method, strUrl, strBody, oSession, pHeaders );
 }
@@ -181,16 +184,20 @@ rho::net::CNetResponseWrapper CNetRequestWrapper::doRequest( const char* method,
 rho::net::CNetResponseWrapper CNetRequestWrapper::pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
-    const rho::common::ISecurityTokenGenerator* generator = rho_get_RhoClassFactory()->createSecurityTokenGenerator();
+    const rho::common::ISecurityTokenGenerator* generator = rho_conf_getInt("disable_external_access") ? 
+       rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
+
     Hashtable<String,String> headers;
-    if(!pHeaders)
-        pHeaders = &headers;
     if(generator)
+    {
+        if(!pHeaders)
+            pHeaders = &headers;
 #if defined(OS_ANDROID)
         pHeaders->insert(std::make_pair(SECURITY_HEADER, "RhodesAgent RHO-SECURE-TOKEN=" + generator->getSecurityToken()));
 #elif defined(OS_WINDOWS_DESKTOP)
         pHeaders->insert(std::make_pair(SECURITY_HEADER, generator->getSecurityToken()));
 #endif
+    }
 
 #endif
     return m_pReqImpl->pushMultipartData(strUrl, arItems, oSession, pHeaders);
