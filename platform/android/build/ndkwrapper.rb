@@ -65,7 +65,7 @@ class NDKWrapper
     if @rev_major >= 18
       triple = {
         'arm'   => 'arm-linux-androideabi',
-        'arm64' => 'aarch64-linux-android',
+        'aarch64' => 'aarch64-linux-android',
         'mips'  => 'mipsel-linux-android',
         'mips64'=> 'mips64el-linux-android',
         'x86'   => 'i686-linux-android',
@@ -196,6 +196,12 @@ class NDKWrapper
       else
         $toolchain = 'mipsel-linux-android'
       end
+    elsif abi == 'aarch64'
+      if @rev_major >= 18
+        $toolchain = 'aarch64-linux-android'
+      else
+        raise "Aarch64 not supported for this ndk version!"
+      end
     else
       raise "Unknown ABI: {abi}";
     end
@@ -280,7 +286,7 @@ class NDKWrapper
       #https://android.googlesource.com/platform/ndk/+/ndk-release-r16/docs/UnifiedHeaders.md
       triple = {
         'arm'   => 'arm-linux-androideabi',
-        'arm64' => 'aarch64-linux-android',
+        'aarch64' => 'aarch64-linux-android',
         'mips'  => 'mipsel-linux-android',
         'mips64'=> 'mips64el-linux-android',
         'x86'   => 'i686-linux-android',

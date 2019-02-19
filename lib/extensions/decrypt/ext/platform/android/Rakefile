@@ -58,6 +58,7 @@ end
 OBJDIR_ARM = File.join(OBJDIR,'arm')
 OBJDIR_x86 = File.join(OBJDIR,'x86')
 OBJDIR_MIPS = File.join(OBJDIR,'mips')
+OBJDIR_AARCH64 = File.join(OBJDIR,'aarch64')
 
 
 SRC = get_sources File.join(SOURCELIST)
@@ -65,14 +66,17 @@ SRC = get_sources File.join(SOURCELIST)
 OBJ_ARM = FileList.new(get_objects(SRC, OBJDIR_ARM))
 OBJ_x86 = FileList.new(get_objects(SRC, OBJDIR_x86))
 OBJ_MIPS = FileList.new(get_objects(SRC, OBJDIR_MIPS))
+OBJ_AARCH64 = FileList.new(get_objects(SRC, OBJDIR_AARCH64))
 
 TARGETDIR_ARM = File.join(TARGETDIR,'armeabi')
 TARGETDIR_x86 = File.join(TARGETDIR,'x86')
 TARGETDIR_MIPS = File.join(TARGETDIR,'mips')
+TARGETDIR_AARCH64 = File.join(TARGETDIR,'aarch64')
 
 TARGETLIB_ARM = File.join(TARGETDIR_ARM,TARGETLIB)
 TARGETLIB_x86 = File.join(TARGETDIR_x86,TARGETLIB)
 TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,TARGETLIB)
+ARGETLIB_AARCH64 = File.join(TARGETDIR_AARCH64,TARGETLIB)
 
 cd '../../..'
 
