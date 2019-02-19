@@ -789,9 +789,9 @@ module_function :read_manifest_package
 
     args = []
     args << "-sigalg"
-    args << "MD5withRSA"
-    args << "-digestalg"
-    args << "SHA1"
+    args << "SHA256withRSA"
+    #args << "-digestalg"
+    #args << "SHA256"
     args << "-verbose"
     args << "-keystore"
     args << keystore

@@ -8,6 +8,8 @@ end
 namespace :arch do
   task :arm => 'build:all'
   task :x86 => 'build:all'
+  task :aarch64 => 'build:all'
+  task :x86_64 => 'build:all'
 end
 
 task :default => "build:all"
