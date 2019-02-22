@@ -218,7 +218,11 @@ typedef int (*func_fchown_t)(int fd, uid_t uid, gid_t gid);
 typedef int (*func_lchown_t)(const char *path, uid_t uid, gid_t gid);
 typedef int (*func_link_t)(const char *src, const char *dst);
 typedef int (*func_symlink_t)(const char *src, const char *dst);
+#if defined(__aarch64__)
+typedef ssize_t (*func_readlink_t)(const char *path, char *buf, size_t bufsize);
+#else
 typedef int (*func_readlink_t)(const char *path, char *buf, size_t bufsize);
+#endif
 typedef int (*func_mkdir_t)(const char *path, mode_t mode);
 typedef int (*func_fchdir_t)(int fd);
 typedef int (*func_fcntl_t)(int fd, int command, ...);
@@ -1656,7 +1660,11 @@ RHO_GLOBAL int symlink(const char *src, const char *dst)
     return real_symlink(src, dst);
 }
 
+#if defined(__aarch64__)
+RHO_GLOBAL ssize_t readlink(const char *path, char *buf, size_t bufsize)
+#else
 RHO_GLOBAL int readlink(const char *path, char *buf, size_t bufsize)
+#endif
 {
     RHO_LOG("readlink: path=%s", path);
     if (!need_emulate(path))

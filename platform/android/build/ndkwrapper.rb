@@ -48,11 +48,11 @@ class NDKWrapper
   end
 
   def link_sysroot( api, abi )
-
+    linkabi = abi == "aarch64" ? "arm64" : abi
     #locate closest available NDK platform for target API
     n_api = api.to_i
     n_api.downto(1) { |i|
-      path = File.join( @root_path, 'platforms', "android-#{i.to_s}", "arch-#{abi}" )
+      path = File.join( @root_path, 'platforms', "android-#{i.to_s}", "arch-#{linkabi}" )
 
       return path if File.directory?(path)
     }

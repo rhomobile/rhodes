@@ -1031,7 +1031,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_deletemapviewp
 }
 
 void mapengine_delete_mapview_in_ui_thread(void* p) {
+#ifdef __aarch64__
+    size_t pl = (size_t)p;
+#else
 	int pl = (int)p;
+#endif
 
 	JNIEnv *env = jnienv();
 	jclass cls = rho_find_class(env, "com/rhomobile/rhodes/mapview/MapView");//env->FindClass("com/rhomobile/rhodes/mapview/MapView");//rho_find_class(env, "com/rhomobile/rhodes/mapview/MapView");
