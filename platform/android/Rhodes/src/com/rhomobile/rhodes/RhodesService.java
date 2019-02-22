@@ -1123,7 +1123,8 @@ public class RhodesService extends Service {
 		
 		builder.setSmallIcon(android.R.drawable.stat_sys_download);
 		builder.setDefaults(Notification.FLAG_ONGOING_EVENT);		
-		builder.setCustomContentView(expandedView);
+		//min API = 24
+		//builder.setCustomContentView(expandedView);
 		Intent intent = new Intent(ACTION_ASK_CANCEL_DOWNLOAD);
 		builder.setContentIntent(PendingIntent.getBroadcast(context, 0, intent, 0));
 		intent = new Intent(ACTION_CANCEL_DOWNLOAD);
