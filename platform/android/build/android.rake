@@ -2129,10 +2129,12 @@ namespace "build" do
       mkdir_p File.join($applibs,'armeabi')
       mkdir_p File.join($applibs,'armeabi-v7a')
       mkdir_p File.join($applibs,'x86')
+      mkdir_p File.join($applibs,'arm64-v8a')
       # Add .so libraries
       Dir.glob($app_builddir + "/**/lib*.so").each do |lib|
         arch = File.basename(File.dirname(lib))
         file = File.basename(lib)
+        arch = 'arm64-v8a'
         cp_r lib, File.join($applibs,arch,file)
       end
       $ext_android_additional_lib.each do |lib|

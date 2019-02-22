@@ -120,6 +120,7 @@ file TARGETLIB_AARCH64 => TARGETDIR_AARCH64 do |t|
     Rake::Task["config:aarch64"].invoke
     cc_ar t.name, OBJ_AARCH64 or raise "\e[31mCreating library failed: #{t.name}\e[0m"
 end
+multitask TARGETLIB_AARCH64 => OBJ_AARCH64
 
 multitask TARGETLIB_MIPS => OBJ_MIPS
 file V4JAR => [TARGETDIR] do
@@ -136,8 +137,8 @@ end
 namespace 'arch' do
   task :arm => [TARGETLIB_ARM]
   task :x86 => [TARGETLIB_x86]
-  task :aarch64 => [TARGETLIB_AARCH64]
   task :mips => [TARGETLIB_MIPS]
+  task :aarch64 => [TARGETLIB_AARCH64]
 end
 
 task :default => ["arch:arm", "arch:x86"]
