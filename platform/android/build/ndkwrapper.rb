@@ -48,7 +48,8 @@ class NDKWrapper
   end
 
   def link_sysroot( api, abi )
-      File.join( @root_path, 'platforms', "android-#{api}", "arch-#{abi}" )
+      linkabi = abi == "aarch64" ? "arm64" : abi
+      File.join( @root_path, 'platforms', "android-#{api}", "arch-#{linkabi}" )
   end
 
   def link_sysroot_level_ext( api, abi )
