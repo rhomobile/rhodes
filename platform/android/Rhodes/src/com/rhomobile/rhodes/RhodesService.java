@@ -83,6 +83,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Notification;
+import android.app.Notification.Builder;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -1093,10 +1094,6 @@ public class RhodesService extends Service {
 	private void updateDownloadNotification(String url, int totalBytes, int currentBytes) {
 		Context context = RhodesActivity.getContext();
 		
-		Notification n = new Notification();
-		n.icon = android.R.drawable.stat_sys_download;
-		n.flags |= Notification.FLAG_ONGOING_EVENT;
-		
 		RemoteViews expandedView = new RemoteViews(context.getPackageName(),
 				R.layout.status_bar_ongoing_event_progress_bar);
 		
@@ -1121,14 +1118,18 @@ public class RhodesService extends Service {
 				totalBytes < 0 ? 100 : totalBytes,
 				currentBytes,
 				totalBytes < 0);
-		n.contentView = expandedView;
-		
-		Intent intent = new Intent(ACTION_ASK_CANCEL_DOWNLOAD);
-		n.contentIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-		intent = new Intent(ACTION_CANCEL_DOWNLOAD);
-		n.deleteIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
-		mNM.notify(DOWNLOAD_PACKAGE_ID, n);
+		Builder builder = AndroidFunctionalityManager.getAndroidFunctionality().getNotificationBuilder(context,String.valueOf(DOWNLOAD_PACKAGE_ID),url);
+		
+		builder.setSmallIcon(android.R.drawable.stat_sys_download);
+		builder.setDefaults(Notification.FLAG_ONGOING_EVENT);		
+		builder.setCustomContentView(expandedView);
+		Intent intent = new Intent(ACTION_ASK_CANCEL_DOWNLOAD);
+		builder.setContentIntent(PendingIntent.getBroadcast(context, 0, intent, 0));
+		intent = new Intent(ACTION_CANCEL_DOWNLOAD);
+		builder.setDeleteIntent(PendingIntent.getBroadcast(context, 0, intent, 0));
+
+		mNM.notify(DOWNLOAD_PACKAGE_ID, builder.build() );
 	}
 	
 	private File downloadPackage(String url) throws IOException {
@@ -1216,9 +1217,9 @@ public class RhodesService extends Service {
 				break;
 			}
 			*/
-			
-			tmpFile = ctx.getFileStreamPath(UUID.randomUUID().toString() + ".apk");
-			os = ctx.openFileOutput(tmpFile.getName(), Context.MODE_WORLD_READABLE);
+		
+			tmpFile = new File( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), UUID.randomUUID().toString() + ".apk" );
+			os = ctx.openFileOutput(tmpFile.getName(), Context.MODE_PRIVATE);
 			
 			Logger.D(TAG, "Download " + url + " to " + tmpFile.getAbsolutePath() + "...");
 			
@@ -1267,6 +1268,10 @@ public class RhodesService extends Service {
 			return tmpFile;
 		}
 		catch (IOException e) {
+
+			Logger.E(TAG, e.toString());
+			e.printStackTrace();
+
 			if (tmpFile != null)
 				tmpFile.delete();
 			throw e;
