@@ -77,7 +77,7 @@ int GoogleMapView::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void
     //snprintf(buf, sizeof(buf), "http://a.tah.openstreetmap.org/Tiles/tile/%d/%d/%d.png", zoom, (int)p_column, (int)p_row);
 
     // Google Map
-    snprintf(buf, sizeof(buf), "http://maps.googleapis.com/maps/api/staticmap?center=%f,%f&zoom=%d&size=256x280&scale=1&maptype=%s&format=png&sensor=false&mobile=true", center_latitude, center_longitude, zoom, mapType().c_str());
+    snprintf(buf, sizeof(buf), "https://maps.googleapis.com/maps/api/staticmap?center=%f,%f&zoom=%d&size=256x280&scale=1&maptype=%s&format=png&sensor=false&mobile=true", center_latitude, center_longitude, zoom, mapType().c_str());
 
     // Google Map on Blackberry
 

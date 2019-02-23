@@ -3795,7 +3795,7 @@ namespace "device" do
 
               File.open(entitlements, 'w') do |f|
                   f.puts "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                  f.puts "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">"
+                  f.puts "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"https://www.apple.com/DTDs/PropertyList-1.0.dtd\">"
                   f.puts "<plist version=\"1.0\">"
                   f.puts "<dict>"
                   f.puts "<key>aps-environment</key>"

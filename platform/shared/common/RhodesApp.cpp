@@ -194,6 +194,14 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
 
     String strUrl = RHODESAPP().getBaseUrl();
     strUrl += strCallback;
+    
+    boolean force_https = false;
+#ifdef OS_MACOSX
+    if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
+        force_https = rho_conf_getBool("ios_https_local_server")!=0;
+    }
+#endif
+    
     NetResponse resp = getNetRequest().pullData( strUrl, NULL );
     if ( !resp.isOK() )
     {
@@ -205,9 +213,21 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
             bTryAgain = true;
         }
 #else
-        if ( String_startsWith( strUrl, "http://127.0.0.1:" ) )
+        String addr_number;
+        String addr_local;
+        if (force_https) {
+            addr_number = "https";
+            addr_local = "https";
+        }
+        else {
+            addr_number = "http";
+            addr_local = "http";
+        }
+        addr_number = addr_number + "://127.0.0.1:";
+        addr_local = addr_local + "://localhost:";
+        if ( String_startsWith( strUrl, addr_number ) )
         {
-            RHODESAPP().setBaseUrl("http://localhost:");
+            RHODESAPP().setBaseUrl(addr_local);
             bTryAgain = true;
         }
 #endif
@@ -1751,7 +1771,8 @@ void CRhodesApp::initAppUrls()
         m_strHomeUrl = "https://127.0.0.1:";
     }
     else {
-        m_strHomeUrl = "http://127.0.0.1:";
+        m_strHomeUrl = "http";
+        m_strHomeUrl = m_strHomeUrl + "://127.0.0.1:";
     }
     
     if (isNodeJSApplication()) {

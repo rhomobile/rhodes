@@ -52,7 +52,7 @@ OSMMapView::OSMMapView(IDrawingDevice *device)
     
     String url = RHOCONF().getString("OSM_map_url_roadmap");
     if (url.empty())
-        url = "http://tile.openstreetmap.org/";
+        url = "https://tile.openstreetmap.org/";
     if (url[url.size() - 1] != '/')
         url.push_back('/');    
     
