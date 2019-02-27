@@ -36,6 +36,7 @@
 
 #include <cstring>
 #include <algorithm>
+#include <cassert>
 
 #if __cplusplus == 201103L
 #include <unordered_map>
@@ -192,7 +193,9 @@ typedef int (*func_sflags_t)(const char *mode, int *optr);
 #define DEFFILEMODE  (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)
 #endif
 
+#ifndef __aarch64__
 static func_sflags_t __sflags;
+#endif
 static func_sfp_t __sfp;
 
 // ssize_t pread(int fd, void *buf, size_t count, off_t offset);
@@ -628,9 +631,20 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     midDeleteRecursively = getJNIClassStaticMethod(env, clsFileApi, "deleteRecursively", "(Ljava/lang/String;)I");
     if (!midDeleteRecursively) return;
 
+#if  defined(__aarch64__)
+    const char *libc = "/system/lib64/libc.so";
+#else
     const char *libc = "/system/lib/libc.so";
+#endif
     void *pc = dlopen(libc, RTLD_LAZY);
+    if(!pc) {
+        RHO_LOG("dlopen return: %s", dlerror());
+        assert(false);
+    }
+    assert(pc != nullptr);
+#ifndef __aarch64__
     __sflags = (func_sflags_t)dlsym(pc, "__sflags");
+#endif
     __sfp = (func_sfp_t)dlsym(pc, "__sfp");
     real_access = (func_access_t)dlsym(pc, "access");
     real_close = (func_close_t)dlsym(pc, "close");
@@ -2008,6 +2022,45 @@ FILE* android_fopen(const char* fname, const char* mode) {
 
     return funopen(asset, android_read, android_write, android_seek, android_close);
 }
+
+#ifdef __aarch64__
+int
+__sflags(const char *mode, int *optr)
+{
+    int ret, m, o;
+    switch (*mode++) {
+        case 'r':	/* open for reading */
+            //ret = __SRD;
+            ret = 1;
+            m = O_RDONLY;
+            o = 0;
+            break;
+        case 'w':	/* open for writing */
+            //ret = __SWR;
+            ret = 1;
+            m = O_WRONLY;
+            o = O_CREAT | O_TRUNC;
+            break;
+        case 'a':	/* open for appending */
+            //ret = __SWR;
+            ret = 1;
+            m = O_WRONLY;
+            o = O_CREAT | O_APPEND;
+            break;
+        default:	/* illegal mode */
+            errno = EINVAL;
+            return (0);
+    }
+    /* [rwa]\+ or [rwa]b\+ means read and write */
+    if (*mode == '+' || (*mode == 'b' && mode[1] == '+')) {
+        //ret = __SRW;
+        ret = 1;
+        m = O_RDWR;
+    }
+    *optr = m | o;
+    return (ret);
+}
+#endif
 
 RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 {
