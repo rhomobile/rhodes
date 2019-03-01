@@ -59,26 +59,52 @@
 #import <AudioToolbox/AudioToolbox.h>
 #include "common/barcode_engine.h"
 
-//#define ZXING 1
-
-#ifndef ZXING
-#import "ZBarSDK.h"
+#ifdef APPLE_BARCODE_ENGINE
+#import <AVFoundation/AVFoundation.h>
 #else
+#ifdef ZXING
 #import "ZXingObjC.h"
+#else
+#import "ZBarSDK.h"
+#endif
 #endif
 
 
+#ifdef APPLE_BARCODE_ENGINE
 
-#ifdef ZXING
-@interface BarcodeViewController : UIViewController <ZXCaptureDelegate> {
+@interface BarcodeViewController : UIViewController <AVCaptureMetadataOutputObjectsDelegate> {
     UITextView *resultText;
     NSString* callback_url;
     id<IMethodResult> methodResult;
     
+    UIView *signatureView;
+    UIToolbar *toolbar;
+    
+    SystemSoundID mBeep;
+
+    AVCaptureSession *_session;
+    AVCaptureDevice *_device;
+    AVCaptureDeviceInput *_input;
+    AVCaptureMetadataOutput *_output;
+    AVCaptureVideoPreviewLayer *_prevLayer;
+    
+    UIView *_highlightView;
+    
+}
+
+#else
+
+#ifdef ZXING
+
+@interface BarcodeViewController : UIViewController <ZXCaptureDelegate> {
+    UITextView *resultText;
+    NSString* callback_url;
+    id<IMethodResult> methodResult;
+
     ZXCapture *capture;
     NSTimer*  timer_;
 
-    UIView *signatureView; 
+    UIView *signatureView;
 	UIToolbar *toolbar;
 
     SystemSoundID mBeep;
@@ -90,25 +116,27 @@
 @property (nonatomic, strong) ZXCapture *capture;
 
 #else
-
+//ZBAR
 @interface BarcodeViewController : UIViewController <ZBarReaderViewDelegate> {
-	UIView *signatureView; 
+	UIView *signatureView;
 	UIToolbar *toolbar;
     NSTimer*  timer;
 
     ZBarReaderView *readerView;
     UITextView *resultText;
     ZBarCameraSimulator *cameraSim;
-    
+
     NSString* callback_url;
     id<IMethodResult> methodResult;
-    
+
     SystemSoundID mBeep;
 }
 
 @property (nonatomic, retain) ZBarReaderView *readerView;
 @property (nonatomic, retain) UITextView *resultText;
 @property (nonatomic, retain) NSString* callback_url;
+#endif
+
 #endif
 
 
