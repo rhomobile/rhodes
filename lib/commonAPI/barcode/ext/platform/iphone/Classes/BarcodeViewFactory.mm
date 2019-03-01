@@ -10,6 +10,9 @@
 #ifdef ZXING
 extern "C" void destroyView();
 #endif
+#ifdef APPLE_BARCODE_ENGINE
+extern "C" void destroyView();
+#endif
 
 class BarcodeNativeView : public NativeView {
 public:
@@ -19,6 +22,9 @@ public:
 	virtual ~BarcodeNativeView() {
 #ifdef ZXING
 		destroyView();
+#endif
+#ifdef APPLE_BARCODE_ENGINE
+        destroyView();
 #endif
 		//[mView release];
 		//mView = nil;
