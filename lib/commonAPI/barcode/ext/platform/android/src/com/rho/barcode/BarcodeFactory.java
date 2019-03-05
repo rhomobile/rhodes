@@ -51,6 +51,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	private int defaultEMDKScanner = -1;
 	protected final int KEYCODE_TRIGGER_1 = 102;
 	protected final int KEYCODE_TRIGGER_2 = 103;
+	protected final int KEYCODE_SCAN = 10036;
 	private int lastKeyAction;
 	private StartScannerTask startTask;
 	private StopScannerTask stopTask;
@@ -469,6 +470,22 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	{
 		return defaultEMDKScanner;
 	}
+
+	private boolean isKeyScan(int keyCode)
+	{
+		switch (keyCode) {
+			case KEYCODE_TRIGGER_2:
+			case KEYCODE_TRIGGER_1:
+			case KEYCODE_SCAN:
+			    return true;
+	
+			default:
+			{
+			    Logger.E(TAG, "Key code not found: " + keyCode);
+				return false;
+			}
+		}
+	} 
 	
 	public boolean onKey(int keyCode, KeyEvent event)
 	{
@@ -476,7 +493,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 		//TODO enabledScanner is not being populated by EMDK3 Scanner
 		if(enabledScanner != null)
 		{
-			if (((keyCode == KEYCODE_TRIGGER_1) || (keyCode == KEYCODE_TRIGGER_2)) && event.getRepeatCount() == 0)
+			if (isKeyScan(keyCode) && event.getRepeatCount() == 0)
 			{
 				boolean isDown = (event.getAction() == KeyEvent.ACTION_DOWN);
 				Logger.D(TAG, "Caught Trigger for the Scanner: " + isDown);
