@@ -14,6 +14,10 @@ public class BarcodeRhoExtension extends AbstractRhoExtension{
 	public boolean onNavigateStarted(IRhoExtManager extManager, String url,
 			IRhoWebView ext, boolean res) {
 		// TODO Auto-generated method stub
+		return res;
+	}
+
+	public boolean onBeforeNavigate(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
 		int disable_scanner_val = 0;
 		IRhoConfig rhoelementsGetConfig= null;
         IRhoWebView vi=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
@@ -38,8 +42,10 @@ public class BarcodeRhoExtension extends AbstractRhoExtension{
 			if(factory!=null)
 				factory.disableScannerOnNavigate();
 		}
-		return super.onNavigateStarted(extManager, url, ext, res);
-	}
+
+		//return res;
+		return super.onBeforeNavigate(extManager, url, ext, res);
+    }
 
 
 	
