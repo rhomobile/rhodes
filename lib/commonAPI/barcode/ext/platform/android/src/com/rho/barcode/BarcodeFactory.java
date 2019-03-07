@@ -493,6 +493,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 		//TODO enabledScanner is not being populated by EMDK3 Scanner
 		if(enabledScanner != null)
 		{
+			Logger.D(TAG, "Key code: " + keyCode);
 			if (isKeyScan(keyCode) && event.getRepeatCount() == 0)
 			{
 				boolean isDown = (event.getAction() == KeyEvent.ACTION_DOWN);
