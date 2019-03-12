@@ -1,0 +1,22 @@
+#pragma once
+
+
+// include all headers in one
+
+
+#include "RhoRubySingletone.h"
+#include "IRhoRuby.h"
+
+#include "IObject.h"
+#include "IArray.h"
+#include "IBoolean.h"
+#include "IFloat.h"
+#include "IHash.h"
+#include "IInteger.h"
+#include "IString.h"
+
+#include "IMutableArray.h"
+#include "IMutableString.h"
+
+#include "IRunnable.h"
+#include "IRefCountedObject.h"
