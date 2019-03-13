@@ -8,6 +8,7 @@ namespace ruby {
 typedef enum {
         None,
         // types decorate real ruby objects
+        Nil,
         Object,
         Boolean,
         Integer,
@@ -34,7 +35,7 @@ class IObject : public IRefCountedObject {
 public:
     virtual ~IObject() = 0;
 
-    virtual const char* getClass() = 0;
+    virtual const char* getClassName() = 0;
 
     virtual BASIC_TYPES getBasicType() = 0;
 

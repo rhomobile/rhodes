@@ -3,7 +3,7 @@
 
 #include "../api/IObject.h"
 #include "RefCountedObjectImpl.h"
-#include "common/RhoStd.h"
+//#include "common/RhoStd.h"
 
 namespace rho {
 namespace ruby {
@@ -13,9 +13,12 @@ namespace ruby {
 class ObjectImpl : public IObject, RefCountedObjectImpl  {
 
 public:
-    ObjectImpl(BASIC_TYPES basicType, char* className);
+    ObjectImpl(BASIC_TYPES basicType, const char* className);
+    ObjectImpl();
+    void setBasicType(BASIC_TYPES basicType);
+    void setClassName(const char* className);
     virtual ~ObjectImpl();
-    virtual const char* getClass();
+    virtual const char* getClassName();
     virtual BASIC_TYPES getBasicType();
 
     virtual void addRef();
@@ -24,7 +27,7 @@ public:
 
 private:
     BASIC_TYPES mBasicType;
-    rho::String mClassName;
+    char* mClassName;
 };
 
 }

@@ -23,7 +23,7 @@ RubyServerResponceImpl::~RubyServerResponceImpl(){
 }
 
 IString* RubyServerResponceImpl::getResponceBody() {
-    IMutableString* str = (IMutableString*)RhoRubySingletone::getRhoRuby()->makeMutableBaseTypeObject(BASIC_TYPES::MutableString);
+    IMutableString* str = (IMutableString*)RhoRubySingletone::getRhoRuby()->makeBaseTypeObject(BASIC_TYPES::MutableString);
     str->setUTF8(mBody);
     return str;
 }

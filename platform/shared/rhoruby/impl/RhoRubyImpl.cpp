@@ -17,7 +17,7 @@ namespace ruby {
 
     // call command in ruby thread
     void RhoRubyImpl::executeInRubyThread(IRunnable* command) {
-        
+
     }
 
     // call ruby server url (net request) and receive responce in callabck
@@ -38,7 +38,7 @@ namespace ruby {
     }
 
     // can be execute from any thread - for construct parameters for execute ruby code
-    IObject* RhoRubyImpl::makeMutableBaseTypeObject(BASIC_TYPES type) {
+    IObject* RhoRubyImpl::makeBaseTypeObject(BASIC_TYPES type) {
         return NULL;
     }
 

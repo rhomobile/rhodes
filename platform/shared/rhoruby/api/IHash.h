@@ -11,10 +11,10 @@ class IHash : public IObject {
 public:
     virtual ~IHash() = 0;
 
-    //array of strings
+    //array of IString
     virtual IArray* getKeys() = 0;
 
-    //array of strings
+    //return object by key
     virtual IObject* getItem(const char* key) = 0;
 
 };

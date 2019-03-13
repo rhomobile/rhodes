@@ -28,7 +28,7 @@ public:
     virtual IObject* getRubyClassObject(const char* full_class_name);
 
     // can be execute from any thread - for construct parameters for execute ruby code
-    virtual IObject* makeMutableBaseTypeObject(BASIC_TYPES type);
+    virtual IObject* makeBaseTypeObject(BASIC_TYPES type);
 
 
     // register callback for execute from Ruby side via - it is needed for direct call native code foem ruby code
@@ -42,7 +42,7 @@ public:
 
 private:
     //hashtable for native callback_id => callback pointer
-    // 
+    //
 
 };
 

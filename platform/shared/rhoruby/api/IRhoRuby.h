@@ -61,7 +61,8 @@ public:
     virtual IObject* getRubyClassObject(const char* full_class_name) = 0;
 
     // can be execute from any thread - for construct parameters for execute ruby code
-    virtual IObject* makeMutableBaseTypeObject(BASIC_TYPES type) = 0;
+    // developer can make only mutable objects and Nil
+    virtual IObject* makeBaseTypeObject(BASIC_TYPES type) = 0;
 
 
     // register callback for execute from Ruby side via - it is needed for direct call native code foem ruby code
