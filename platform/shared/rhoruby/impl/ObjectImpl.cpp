@@ -6,16 +6,19 @@
 namespace rho {
 namespace ruby {
 
-ObjectImpl::ObjectImpl(BASIC_TYPES basicType, const char* className)
+ObjectImpl::ObjectImpl(BASIC_TYPES basicType, const char* className, VALUE value)
 :RefCountedObjectImpl() {
     mBasicType = basicType;
     mClassName = NULL;
     setClassName(className);
+    mValue = NULL;
+    setValue(value);
 }
     
 ObjectImpl::ObjectImpl() {
     mBasicType = BASIC_TYPES::None;
     mClassName = NULL;
+    mValue = NULL;
 }
 
 void ObjectImpl::setBasicType(BASIC_TYPES basicType){
@@ -40,6 +43,9 @@ ObjectImpl::~ObjectImpl(){
     if (mClassName != NULL) {
         free(mClassName);
     }
+    if (mValue != NULL) {
+        rho_ruby_releaseValue(mValue);
+    }
 }
 
 const char* ObjectImpl::getClassName() {
@@ -50,6 +56,22 @@ BASIC_TYPES ObjectImpl::getBasicType(){
     return mBasicType;
 }
 
+void ObjectImpl::setValue(VALUE value) {
+    if (mValue != NULL) {
+        rho_ruby_releaseValue(mValue);
+    }
+    mValue = NULL;
+    if (value != NULL) {
+        mValue = value;
+        rho_ruby_holdValue(mValue);
+    }
+}
+
+VALUE ObjectImpl::getValue() {
+    return mValue;
+}
+
+    
 
 }
 }

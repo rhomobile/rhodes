@@ -7,7 +7,7 @@ namespace ruby {
 class IRunnable {
 
 public:
-    virtual ~IRunnable() = 0;
+    virtual ~IRunnable() {}
 
     virtual void run()=0;
 

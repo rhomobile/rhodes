@@ -8,7 +8,7 @@ namespace ruby {
 class IInteger : public IObject {
 
 public:
-    virtual ~IInteger() = 0;
+    virtual ~IInteger() {}
 
     virtual long int getInt() = 0;
 

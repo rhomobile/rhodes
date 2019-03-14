@@ -8,7 +8,7 @@ namespace ruby {
 class IRefCountedObject {
 
 public:
-    virtual ~IRefCountedObject() = 0;
+    virtual ~IRefCountedObject() {}
 
     virtual void addRef() = 0;
 

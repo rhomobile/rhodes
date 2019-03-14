@@ -8,7 +8,7 @@ namespace ruby {
 class IMutableArray : public IArray {
 
 public:
-    virtual ~IMutableArray() = 0;
+    virtual ~IMutableArray() {}
 
     virtual void addItem(IObject* item) = 0;
 

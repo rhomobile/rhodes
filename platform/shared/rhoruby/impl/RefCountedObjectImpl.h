@@ -7,7 +7,7 @@
 namespace rho {
 namespace ruby {
 
-class RefCountedObjectImpl : public IRefCountedObject {
+class RefCountedObjectImpl {
 
 public:
     RefCountedObjectImpl();
@@ -23,5 +23,11 @@ private:
 
 };
 
+class CRefCountedObject : public RefCountedObjectImpl, public IRefCountedObject {
+    CRefCountedObject() {}
+    virtual void addRef() {RefCountedObjectImpl::addRef();}
+    virtual void release() {RefCountedObjectImpl::release();}
+};
+    
 }
 }

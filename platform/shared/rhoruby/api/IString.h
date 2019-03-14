@@ -7,7 +7,7 @@ namespace ruby {
 class IString : public IObject {
     
 public:
-    virtual ~IString() = 0;
+    virtual ~IString() {}
     
     virtual const char* getUTF8() = 0;
     

@@ -8,7 +8,7 @@ namespace ruby {
 class IMutableBoolean : public IBoolean {
 
 public:
-    virtual ~IMutableBoolean() = 0;
+    virtual ~IMutableBoolean() {}
 
     virtual void setBool(bool value) = 0;
 

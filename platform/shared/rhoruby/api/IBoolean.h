@@ -7,7 +7,7 @@ namespace ruby {
 class IBoolean : public IObject {
 
 public:
-    virtual ~IBoolean() = 0;
+    virtual ~IBoolean() {}
 
     virtual bool getBool() = 0;
 

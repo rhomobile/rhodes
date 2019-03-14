@@ -8,7 +8,7 @@ namespace ruby {
 class INil : public IObject {
 
 public:
-    virtual ~INil() = 0;
+    virtual ~INil() {}
 
 };
 

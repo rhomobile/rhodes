@@ -14,6 +14,11 @@ MutableStringImpl::MutableStringImpl(bool is_mutable) {
     }
     setBasicType(basicType);
 }
+    
+MutableStringImpl::MutableStringImpl() {
+    mString = NULL;
+}
+
 
 MutableStringImpl::~MutableStringImpl() {
     if (mString != NULL) {

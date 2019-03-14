@@ -9,7 +9,7 @@ namespace ruby {
 class IHash : public IObject {
 
 public:
-    virtual ~IHash() = 0;
+    virtual ~IHash() {}
 
     //array of IString
     virtual IArray* getKeys() = 0;

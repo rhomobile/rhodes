@@ -7,7 +7,7 @@ namespace ruby {
 class IMutableInteger : public IInteger {
 
 public:
-    virtual ~IMutableInteger() = 0;
+    virtual ~IMutableInteger() {}
 
     virtual void setLong(long int value) = 0;
 

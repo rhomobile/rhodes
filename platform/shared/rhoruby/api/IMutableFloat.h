@@ -7,7 +7,7 @@ namespace ruby {
 class IMutableFloat : public IFloat {
 
 public:
-    virtual ~IMutableFloat() = 0;
+    virtual ~IMutableFloat() {}
 
     virtual void setDouble(double value) = 0;
 

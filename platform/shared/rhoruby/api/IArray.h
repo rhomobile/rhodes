@@ -8,7 +8,7 @@ namespace ruby {
 class IArray : public IObject {
 
 public:
-    virtual ~IArray() = 0;
+    virtual ~IArray() {}
 
     virtual int getItemsCount() = 0;
 

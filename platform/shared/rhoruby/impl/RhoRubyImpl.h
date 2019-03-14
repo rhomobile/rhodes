@@ -2,6 +2,7 @@
 
 
 #include "../api/IRhoRuby.h"
+#include "../../ruby/include/ruby.h"
 
 namespace rho {
 namespace ruby {
@@ -25,7 +26,7 @@ public:
     virtual IObject* executeRubyObjectMethod(IObject* object, const char* method_name, IObject* parameters);
 
     // this method recommended execute from ruby thread (from IRunnable command), but can be executed from other thread
-    virtual IObject* getRubyClassObject(const char* full_class_name);
+    virtual IObject* makeRubyClassObject(const char* full_class_name);
 
     // can be execute from any thread - for construct parameters for execute ruby code
     virtual IObject* makeBaseTypeObject(BASIC_TYPES type);
@@ -39,6 +40,9 @@ public:
     // util methods (used for parse responce from server etc.)
     virtual IObject* convertJSON_to_Objects(const char* json);
     virtual IString* convertObject_to_JSON(IObject* obj);
+
+    IObject* convertVALUE_to_Object(VALUE value);
+    VALUE convertObject_to_VALUE(IObject* obj);
 
 private:
     //hashtable for native callback_id => callback pointer

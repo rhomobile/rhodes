@@ -15,7 +15,18 @@ public:
     virtual ~NilImpl();
 
     virtual const char* getClassName();
+    
 };
 
+// C++ is sucks !
+class CNil : public NilImpl, public INil {
+public:
+    CNil() {}
+    virtual ~CNil() {}
+    virtual void addRef() {RefCountedObjectImpl::addRef();}
+    virtual void release() {RefCountedObjectImpl::release();}
+    virtual const char* getClassName() {return ObjectImpl::getClassName();}
+    virtual BASIC_TYPES getBasicType() {return ObjectImpl::getBasicType();}};
+    
 }
 }

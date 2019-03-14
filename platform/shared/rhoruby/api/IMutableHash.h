@@ -8,7 +8,7 @@ namespace ruby {
 class IMutableHash : public IHash {
 
 public:
-    virtual ~IMutableHash() = 0;
+    virtual ~IMutableHash() {}
 
     virtual void addItem(const char* key, IObject* item) = 0;
 

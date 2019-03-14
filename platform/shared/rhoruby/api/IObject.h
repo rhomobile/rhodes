@@ -9,6 +9,7 @@ typedef enum {
         None,
         // types decorate real ruby objects
         Nil,
+        Class,
         Object,
         Boolean,
         Integer,
@@ -33,7 +34,7 @@ typedef enum {
 class IObject : public IRefCountedObject {
 
 public:
-    virtual ~IObject() = 0;
+    virtual ~IObject() {}
 
     virtual const char* getClassName() = 0;
 

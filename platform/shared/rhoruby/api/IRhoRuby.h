@@ -44,7 +44,7 @@ public:
 class IRhoRuby {
 
 public:
-    virtual ~IRhoRuby() = 0;
+    virtual ~IRhoRuby() {}
 
     // call command in ruby thread
     virtual void executeInRubyThread(IRunnable* command) = 0;
@@ -58,7 +58,8 @@ public:
     virtual IObject* executeRubyObjectMethod(IObject* object, const char* method_name, IObject* parameters) = 0;
 
     // this method recommended execute from ruby thread (from IRunnable command), but can be executed from other thread
-    virtual IObject* getRubyClassObject(const char* full_class_name) = 0;
+    // full class name has :: delimiter
+    virtual IObject* makeRubyClassObject(const char* full_class_name) = 0;
 
     // can be execute from any thread - for construct parameters for execute ruby code
     // developer can make only mutable objects and Nil

@@ -7,7 +7,7 @@ namespace ruby {
 class IFloat : public IObject {
 
 public:
-    virtual ~IFloat() = 0;
+    virtual ~IFloat() {}
 
     virtual double getDouble() = 0;
 
