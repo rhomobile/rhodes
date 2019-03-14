@@ -13,6 +13,7 @@ MutableStringImpl::MutableStringImpl(bool is_mutable) {
         basicType = BASIC_TYPES::MutableString;
     }
     setBasicType(basicType);
+    mString = NULL;
 }
     
 MutableStringImpl::MutableStringImpl() {

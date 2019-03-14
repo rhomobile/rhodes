@@ -2,8 +2,14 @@
 #include <cstddef>
 #include "RhoRubyImpl.h"
 #include "ObjectImpl.h"
+
 #include "NilImpl.h"
 #include "MutableStringImpl.h"
+#include "MutableBooleanImpl.h"
+#include "MutableIntegerImpl.h"
+#include "MutableFloatImpl.h"
+#include "MutableArrayImpl.h"
+#include "MutableHashImpl.h"
 
 
 #include "../../ruby/ext/rho/rhoruby.h"
@@ -38,9 +44,6 @@ namespace ruby {
     // this method recommended execute from ruby thread (from IRunnable command), but can be executed from other thread for very simple opertions without modifying ruby objects
     IObject* RhoRubyImpl::executeRubyObjectMethod(IObject* object, const char* method_name, IObject* parameters) {
         if (object == NULL) {
-            return NULL;
-        }
-        if (object->getBasicType() != BASIC_TYPES::Class) {
             return NULL;
         }
         CObject* obj_impl = (CObject*)object;
@@ -111,7 +114,7 @@ namespace ruby {
     // this method recommended execute from ruby thread (from IRunnable command), but can be executed from other thread
     IObject* RhoRubyImpl::makeRubyClassObject(const char* full_class_name) {
         VALUE rb_klass = rb_path_to_class(rho_ruby_create_string(full_class_name));
-        CObject* rho_obj = new rho::ruby::CObject();
+        CObject* rho_obj = new CObject();
         rho_obj->setValue(rb_klass);
         rho_obj->setBasicType(BASIC_TYPES::Class);
         rho_obj->setClassName("Class");
@@ -148,84 +151,84 @@ namespace ruby {
         switch(rb_type(ruby_value)) {
             case T_STRING:
             {
-                CMutableString* str = new CMutableString();
-                str->setClassName("String");
-                str->setBasicType(BASIC_TYPES::String);
+                CMutableString* str = new CMutableString(false);
                 str->setValue(ruby_value);
                 str->setUTF8(RSTRING_PTR(ruby_value));
-                //[[NSString alloc] initWithBytes:RSTRING_PTR(value) length:RSTRING_LEN(value) encoding:NSUTF8StringEncoding];
                 return str;
             }
                 break;
             case T_FLOAT:
             {
-                //return [NSNumber numberWithDouble:RFLOAT_VALUE(ruby_value)];
-                return NULL;
+                CMutableFloat* o = new CMutableFloat(false);
+                o->setValue(ruby_value);
+                o->setDouble(RFLOAT_VALUE(ruby_value));
+                return o;
             }
                 break;
             case T_FIXNUM:
             case T_BIGNUM:
             {
-                //return [NSNumber numberWithInt:(int)(NUM2LL(ruby_value))];
-                return NULL;
+                CMutableInteger* o = new CMutableInteger(false);
+                o->setValue(ruby_value);
+                o->setLong((long int)(NUM2LL(ruby_value)));
+                return o;
             }
                 break;
             case T_TRUE:
             {
-                //return [NSNumber numberWithBool:YES];
-                return NULL;
+                CMutableBoolean* o = new CMutableBoolean(false);
+                o->setValue(ruby_value);
+                o->setBool(true);
+                return o;
             }
                 break;
             case T_FALSE:
             {
-                //return [NSNumber numberWithBool:NO];
-                return NULL;
+                CMutableBoolean* o = new CMutableBoolean(false);
+                o->setValue(ruby_value);
+                o->setBool(false);
+                return o;
             }
                 break;
             case T_ARRAY:
             {
-                /*
-                size = RARRAY_LEN(ruby_value);
-                NSMutableArray* ar = [NSMutableArray arrayWithCapacity:size];
+                CMutableArray* ar = new CMutableArray(false);
+                size = (int)RARRAY_LEN(ruby_value);
+                ar->reserve(size);
                 for (i = 0; i < size; ++i) {
                     VALUE item = rb_ary_entry(ruby_value, i);
-                    [ar addObject:[CRubyConverter convertFromRuby:item]];
+                    ar->addItem(convertVALUE_to_Object(item));
                 }
                 return ar;
-                 */
-                return NULL;
             }
                 break;
             case T_HASH:
             {
-                /*
                 VALUE keys = rb_funcall(ruby_value, rb_intern("keys"), 0, NULL);
-                size = RARRAY_LEN(keys);
-                NSMutableDictionary* dic = [NSMutableDictionary dictionaryWithCapacity:size];
+                size = (int)RARRAY_LEN(keys);
+                CMutableHash* hash = new CMutableHash(false);
                 for (i = 0; i < size; ++i) {
                     VALUE key = rb_ary_entry(keys, i);
                     VALUE value = rb_hash_aref(ruby_value, key);
-                    [dic setObject:[CRubyConverter convertFromRuby:value] forKey:[CRubyConverter convertFromRuby:key]];
+                    if (rb_type(key) != T_STRING) {
+                        key = rb_funcall(key, rb_intern("to_s"), 0, NULL);
+                    }
+                    hash->addItem(RSTRING_PTR(key), convertVALUE_to_Object(value));
                 }
-                return dic;
-                 */
-                return NULL;
+                return hash;
             }
                 break;
             default:
             {
-                VALUE value = ruby_value;
-                if (rho_ruby_is_NIL(value)) {
+                if (rho_ruby_is_NIL(ruby_value)) {
                     return new CNil();
                 }
-                if (rb_type(ruby_value) != T_STRING)
-                    value = rb_funcall(value, rb_intern("to_s"), 0, NULL);
-                CMutableString* str = new CMutableString();
-                str->setClassName("String");
-                str->setBasicType(BASIC_TYPES::String);
-                str->setValue(value);
-                str->setUTF8(RSTRING_PTR(value));
-                //[[NSString alloc] initWithBytes:RSTRING_PTR(value) length:RSTRING_LEN(value) encoding:NSUTF8StringEncoding];
+                CObject* str = new CObject();
+                VALUE v_class = rb_funcall(ruby_value, rb_intern("class"), 0, NULL);
+                VALUE v_class_name = rb_funcall(v_class, rb_intern("name"), 0, NULL);
+                str->setClassName(RSTRING_PTR(v_class_name));
+                str->setBasicType(BASIC_TYPES::Object);
+                str->setValue(ruby_value);
                 return str;
             }
         }

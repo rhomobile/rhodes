@@ -10,7 +10,7 @@ class IInteger : public IObject {
 public:
     virtual ~IInteger() {}
 
-    virtual long int getInt() = 0;
+    virtual long int getLong() = 0;
 
 };
 
