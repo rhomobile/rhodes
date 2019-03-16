@@ -592,7 +592,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	
 	public void onResume()
 	{
-		Logger.D(TAG, "onResume+");
+		Logger.D(TAG, "onResume+, previously enabled scanner: " + enabledScanner);
 
 		setPaused(false);
 		RhodesActivity.getContext().registerReceiver(this.batteryInfoReceiver,	new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
@@ -635,7 +635,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 
 	public void onPause()
 	{
-		Logger.D(TAG, "onPause+");
+		Logger.D(TAG, "onPause+, enabled scanner: " + enabledScanner);
 
 		setPaused(true);
 		if(enabledScanner != null)
