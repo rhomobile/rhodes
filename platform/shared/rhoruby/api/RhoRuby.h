@@ -16,7 +16,13 @@
 #include "IString.h"
 
 #include "IMutableArray.h"
+#include "IMutableBoolean.h"
+#include "IMutableFloat.h"
+#include "IMutableHash.h"
+#include "IMutableInteger.h"
 #include "IMutableString.h"
 
 #include "IRunnable.h"
 #include "IRefCountedObject.h"
+
+#include "SmartPointer.h"

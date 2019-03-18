@@ -44,6 +44,7 @@ IArray* MutableHashImpl::getKeys() {
         CMutableString* str_key = new CMutableString(false);
         str_key->setUTF8(key.c_str());
         ar->addItem(str_key);
+        str_key->release();
         it++;
     }
     return ar;
@@ -54,6 +55,7 @@ IObject* MutableHashImpl::getItem(const char* key) {
 }
 
 void MutableHashImpl::addItem(const char* key, IObject* item) {
+    item->addRef();
     mHash[key] = item;
 }
 

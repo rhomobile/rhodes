@@ -13,7 +13,7 @@ namespace ruby {
 class IRubyServerResponce {
 
 public:
-    virtual ~IRubyServerResponce() = 0;
+    virtual ~IRubyServerResponce() {}
 
     virtual IString* getResponceBody() = 0;
 
@@ -25,7 +25,7 @@ public:
 class IRubyServerCallback {
 
 public:
-    virtual ~IRubyServerCallback() = 0;
+    virtual ~IRubyServerCallback() {}
 
     virtual void onRubyServerResponce(IRubyServerResponce* responce) = 0;
 
@@ -34,7 +34,7 @@ public:
 
 class IRubyNativeCallback {
 public:
-    virtual ~IRubyNativeCallback() = 0;
+    virtual ~IRubyNativeCallback() {}
 
     virtual void onRubyNative(IObject* param) = 0;
 
@@ -50,7 +50,7 @@ public:
     virtual void executeInRubyThread(IRunnable* command) = 0;
 
     // call ruby server url (net request) and receive responce in callabck
-    virtual void executeRubyServerURL(const char* url, IRubyServerCallback* callback) = 0;
+    virtual void executeRubyServerURL(const char* url, const char* body, IRubyServerCallback* callback) = 0;
 
     // execute ruby code in current thread. parameters can be simple object (string, integer etc. - in this case one parameters will be passed to method.)
     // also parameters can be IArray - in this case list of parameters will be passed to method (parameters from array)

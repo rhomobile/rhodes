@@ -42,6 +42,7 @@ IObject* MutableArrayImpl::getItem(int index) {
 }
 
 void MutableArrayImpl::addItem(IObject* item) {
+    item->addRef();
     mVector.push_back(item);
 }
     

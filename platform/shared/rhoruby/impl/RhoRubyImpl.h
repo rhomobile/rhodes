@@ -4,6 +4,9 @@
 #include "../api/IRhoRuby.h"
 #include "../../ruby/include/ruby.h"
 
+#include <string>
+#include <map>
+
 namespace rho {
 namespace ruby {
 
@@ -18,7 +21,7 @@ public:
     virtual void executeInRubyThread(IRunnable* command);
 
     // call ruby server url (net request) and receive responce in callabck
-    virtual void executeRubyServerURL(const char* url, IRubyServerCallback* callback);
+    virtual void executeRubyServerURL(const char* url, const char* body, IRubyServerCallback* callback);
 
     // execute ruby code in current thread. parameters can be simple object (string, integer etc. - in this case one parameters will be passed to method.)
     // also parameters can be IArray - in this case list of parameters will be passed to method (parameters from array)
@@ -43,10 +46,12 @@ public:
 
     IObject* convertVALUE_to_Object(VALUE value);
     VALUE convertObject_to_VALUE(IObject* obj);
+    
+    VALUE rb_Rho_Ruby_callNativeCallback(int argc, VALUE *argv);
 
 private:
     //hashtable for native callback_id => callback pointer
-    //
+    std::map<std::string, IRubyNativeCallback*> mCallbacks;
 
 };
 

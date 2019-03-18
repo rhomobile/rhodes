@@ -1,7 +1,17 @@
 
 #include <cstddef>
+
+
+
+#include "ruby.h"
+
+
+
+
 #include "RhoRubyImpl.h"
 #include "ObjectImpl.h"
+#include "../api/RhoRubySingletone.h"
+
 
 #include "NilImpl.h"
 #include "MutableStringImpl.h"
@@ -15,6 +25,37 @@
 #include "../../ruby/ext/rho/rhoruby.h"
 
 
+static VALUE rb_api_mParent;
+static VALUE rb_api_mRubyNative;
+
+
+static void _free_class_object(void *p)
+{
+    ruby_xfree(p);
+}
+
+static VALUE _allocate_class_object(VALUE klass)
+{
+    VALUE valObj = 0;
+    char ** ppString = NULL;
+    void* pData = ALLOC(void*);
+    memset( pData, 0, sizeof(pData) );
+    
+    valObj = Data_Wrap_Struct(klass, 0, _free_class_object, pData);
+    
+    Data_Get_Struct(valObj, char *, ppString);
+    *ppString = (char*)xmalloc(20);
+    sprintf(*ppString, "%X", valObj);
+    
+    return valObj;
+}
+
+extern "C" VALUE c_rb_Rho_Ruby_callNativeCallback(int argc, VALUE *argv) {
+    rho::ruby::RhoRubyImpl* rr = (rho::ruby::RhoRubyImpl*)(rho::ruby::RhoRubySingletone::getRhoRuby());
+    return rr->rb_Rho_Ruby_callNativeCallback(argc, argv);
+}
+
+typedef VALUE (*ruby_method_func_type)(...);
 
 namespace rho {
 namespace ruby {
@@ -26,17 +67,26 @@ namespace ruby {
     }
 
     RhoRubyImpl::RhoRubyImpl() {
+        // register Rho::Ruby.callNativeCallback(callback_id, param)
 
+        rb_api_mParent = rb_define_module("Rho");
+        
+        rb_api_mRubyNative = rb_define_class_under(rb_api_mParent, "Ruby", rb_cObject);
+        
+        rb_define_alloc_func(rb_api_mRubyNative, _allocate_class_object);
+        
+        rb_define_singleton_method(rb_api_mRubyNative, "callNativeCallback", (ruby_method_func_type)c_rb_Rho_Ruby_callNativeCallback, -1);
+        
     }
 
     // call command in ruby thread
     void RhoRubyImpl::executeInRubyThread(IRunnable* command) {
-
+        
     }
 
     // call ruby server url (net request) and receive responce in callabck
-    void RhoRubyImpl::executeRubyServerURL(const char* url, IRubyServerCallback* callback) {
-
+    void RhoRubyImpl::executeRubyServerURL(const char* url, const char* body, IRubyServerCallback* callback) {
+        
     }
 
     // execute ruby code in current thread. parameters can be simple object (string, integer etc. - in this case one parameters will be passed to method.)
@@ -50,26 +100,30 @@ namespace ruby {
         
         int param_count = 0;
         IArray* params_array = NULL;
+
         
+        VALUE result = rho_ruby_get_NIL();
+        VALUE params[10];
+        int i;
+
         // check for array
         if (parameters != NULL) {
             if ((parameters->getBasicType() == BASIC_TYPES::Array) || (parameters->getBasicType() == BASIC_TYPES::MutableArray)) {
                 params_array = (IArray*)parameters;
                 param_count = params_array->getItemsCount();
+                if (param_count > 10) {
+                    param_count = 10;
+                }
+                for (i = 0; i < param_count; i++) {
+                    params[i] = convertObject_to_VALUE(params_array->getItem(i));
+                }
+            }
+            else {
+                param_count = 1;
+                params[0] = convertObject_to_VALUE(parameters);
             }
         }
         
-        VALUE result = rho_ruby_get_NIL();
-        VALUE params[10];
-        
-        //convert Objects into params
-        int i;
-        if (param_count > 10) {
-            param_count = 10;
-        }
-        for (i = 0; i < param_count; i++) {
-            params[i] = convertObject_to_VALUE(params_array->getItem(i));
-        }
         
         if (param_count == 0) {
             result = rb_funcall(obj_impl->getValue(), rb_intern(method_name), 0, NULL);
@@ -123,6 +177,53 @@ namespace ruby {
 
     // can be execute from any thread - for construct parameters for execute ruby code
     IObject* RhoRubyImpl::makeBaseTypeObject(BASIC_TYPES type) {
+        switch(type) {
+            case BASIC_TYPES::Array:
+            case BASIC_TYPES::MutableArray:
+            {
+                return new CMutableArray(true);
+            }
+                break;
+            case BASIC_TYPES::Boolean:
+            case BASIC_TYPES::MutableBoolean:
+            {
+                return new CMutableBoolean(true);
+            }
+                break;
+            case BASIC_TYPES::Float:
+            case BASIC_TYPES::MutableFloat:
+            {
+                return new CMutableFloat(true);
+            }
+                break;
+            case BASIC_TYPES::Hash:
+            case BASIC_TYPES::MutableHash:
+            {
+                return new CMutableHash(true);
+            }
+                break;
+            case BASIC_TYPES::Integer:
+            case BASIC_TYPES::MutableInteger:
+            {
+                return new CMutableInteger(true);
+            }
+                break;
+            case BASIC_TYPES::String:
+            case BASIC_TYPES::MutableString:
+            {
+                return new CMutableString(true);
+            }
+                break;
+            case BASIC_TYPES::Nil:
+            {
+                return new CNil();
+            }
+                break;
+            default:
+            {
+                return NULL;
+            }
+        }
         return NULL;
     }
 
@@ -130,11 +231,11 @@ namespace ruby {
     // register callback for execute from Ruby side via - it is needed for direct call native code foem ruby code
     // Rho::Ruby.callNativeCallback(callback_id, param)
     void RhoRubyImpl::addRubyNativeCallback(const char* callback_id, IRubyNativeCallback* callback) {
-
+        mCallbacks[callback_id] = callback;
     }
 
     void RhoRubyImpl::removeRubyNativeCallback(const char* callback_id) {
-
+        mCallbacks.erase(callback_id);
     }
 
     // util methods (used for parse responce from server etc.)
@@ -197,7 +298,9 @@ namespace ruby {
                 ar->reserve(size);
                 for (i = 0; i < size; ++i) {
                     VALUE item = rb_ary_entry(ruby_value, i);
-                    ar->addItem(convertVALUE_to_Object(item));
+                    IObject* o_item = convertVALUE_to_Object(item);
+                    ar->addItem(o_item);
+                    o_item->release();
                 }
                 return ar;
             }
@@ -213,7 +316,9 @@ namespace ruby {
                     if (rb_type(key) != T_STRING) {
                         key = rb_funcall(key, rb_intern("to_s"), 0, NULL);
                     }
-                    hash->addItem(RSTRING_PTR(key), convertVALUE_to_Object(value));
+                    IObject* o_item = convertVALUE_to_Object(value);
+                    hash->addItem(RSTRING_PTR(key), o_item);
+                    o_item->release();
                 }
                 return hash;
             }
@@ -236,8 +341,113 @@ namespace ruby {
     }
     
     VALUE RhoRubyImpl::convertObject_to_VALUE(IObject* obj) {
+        if (obj == NULL) {
+            return rho_ruby_get_NIL();
+        }
+        VALUE v = rho_ruby_get_NIL();
+        BASIC_TYPES o_type = obj->getBasicType();
+        switch(o_type) {
+        case BASIC_TYPES::Array:
+        case BASIC_TYPES::MutableArray:
+            {
+                IArray* ar = (IArray*)obj;
+                int count = ar->getItemsCount();
+                int i;
+                v = rho_ruby_create_array();
+                for (i = 0; i < count; i++) {
+                    IObject* r_obj = ar->getItem(i);
+                    VALUE objValue = convertObject_to_VALUE(r_obj);
+                    rho_ruby_add_to_array(v, objValue);
+                }
+                return v;
+            }
+            break;
+        case BASIC_TYPES::Boolean:
+        case BASIC_TYPES::MutableBoolean:
+            {
+                IBoolean* bo = (IBoolean*)obj;
+                v = rho_ruby_create_boolean(bo->getBool());
+                return v;
+            }
+            break;
+        case BASIC_TYPES::Float:
+        case BASIC_TYPES::MutableFloat:
+            {
+                IFloat* flo = (IFloat*)obj;
+                v = rho_ruby_create_double(flo->getDouble());
+                return v;
+            }
+            break;
+        case BASIC_TYPES::Hash:
+        case BASIC_TYPES::MutableHash:
+            {
+                v = rho_ruby_createHash();
+                IHash* ha = (IHash*)obj;
+                IArray* keys = ha->getKeys();
+                int i;
+                int count = keys->getItemsCount();
+                for (i = 0 ; i < count; i++) {
+                    IString* r_key = (IString*)keys->getItem(i);
+                    IObject* r_value = ha->getItem(r_key->getUTF8());
+                    VALUE vKey = convertObject_to_VALUE(r_key);
+                    VALUE vItem = convertObject_to_VALUE(r_value);
+                    rho_ruby_add_to_hash(v, vKey, vItem);
+                }
+                keys->release();
+                return v;
+            }
+            break;
+        case BASIC_TYPES::Integer:
+        case BASIC_TYPES::MutableInteger:
+            {
+                IInteger* in = (IInteger*)obj;
+                v = rho_ruby_create_integer(in->getLong());
+                return v;
+            }
+            break;
+        case BASIC_TYPES::String:
+        case BASIC_TYPES::MutableString:
+            {
+                IString* str = (IString*)obj;
+                v = rho_ruby_create_string(str->getUTF8());
+                return v;
+            }
+            break;
+        case BASIC_TYPES::Nil:
+            {
+                return rho_ruby_get_NIL();
+            }
+            break;
+        default:
+            {
+                return rho_ruby_get_NIL();
+            }
+        }
         return rho_ruby_get_NIL();
     }
+    
+    
+    VALUE RhoRubyImpl::rb_Rho_Ruby_callNativeCallback(int argc, VALUE *argv) {
+        if (argc != 2) {
+            return rho_ruby_get_NIL();
+        }
+        VALUE v_callback_id = argv[0];
+        VALUE v_param = argv[1];
+        
+        if (rb_type(v_callback_id) != T_STRING) {
+            return rho_ruby_get_NIL();
+        }
+        const char* callback_id = RSTRING_PTR(v_callback_id);
+        
+        IRubyNativeCallback* callback = mCallbacks[callback_id];
+        if (callback == NULL) {
+            return rho_ruby_get_NIL();
+        }
+        callback->onRubyNative(convertVALUE_to_Object(v_param));
+        return rho_ruby_get_NIL();
+    }
+
+    
     
     
 }
