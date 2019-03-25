@@ -262,6 +262,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 	
 //#define RHO_DONT_COPY_ON_START
     
+    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() START");
+
+    
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
 	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
@@ -281,31 +284,48 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     BOOL contentChanged = force_update_content;
 
     isNewInstallation = !(bool)([fileManager fileExistsAtPath:filePathOld]);
+    if (isNewInstallation) {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() isNewInstallation == true");
+    }
+    else {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() isNewInstallation == false");
+    }
+    
+    
     // additional check for backup restore
     NSString *db_folder = [rhoDBRoot stringByAppendingPathComponent:@"db"];
     if ([fileManager fileExistsAtPath:db_folder]) {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() DB folder is exist => SET isNewInstallation = false");
         isNewInstallation = false;
     }
 
-    if (nameChanged)
+    if (nameChanged) {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() nameChanged == true");
         contentChanged = YES;
+    }
 	else {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() nameChanged == false");
 		filePathNew = [bundleRoot stringByAppendingPathComponent:@"hash"];
 		filePathOld = [rhoRoot stringByAppendingPathComponent:@"hash"];
 
         contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];        
         // check for lost sym-links (upgrade OS or reinstall application without change version)
         if (!contentChanged) {
+            if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() old hash == new hash");
+
             // check exist of sym-link
             NSString* testName = [rhoRoot stringByAppendingPathComponent:@"lib"];
             if (![fileManager fileExistsAtPath:testName]) {
-                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Can not found main Sym-Link - we should restore all sym-links !");
+                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  Can not found main Sym-Link - we should restore all sym-links !");
                 contentChanged = YES;
                 restoreSymLinks_only = YES;
             }
             else {
-                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Main Sym-Link founded - disable restoring !");
+                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  Main Sym-Link founded - disable restoring !");
             }
+        }
+        else {
+            if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() old hash != new hash");
         }
         
 	}
@@ -313,15 +333,17 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     NSString* testName = [rhoRoot stringByAppendingPathComponent:@"lib"];
     BOOL libExist = [fileManager fileExistsAtPath:testName];
     if (libExist) {
-        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Lib File is Exist: %@", testName);
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  Lib File is Exist: %@", testName);
     }
     else {
-        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Lib File is NOT Exist: %@", testName);
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  Lib File is NOT Exist: %@", testName);
     }
 	
     
     if (contentChanged) {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  contentChanged == true");
         if (make_sym_links) {
+            if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  make_sym_links == true");
 //#ifdef RHO_DONT_COPY_ON_START
             // we have next situations when we should remove old content:
             // 1. we upgrade old version (where we copy all files)
