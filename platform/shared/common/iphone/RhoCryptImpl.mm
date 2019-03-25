@@ -104,6 +104,8 @@ static NSData* getStorageKeyTagOld(const char* szDBPartition)
 	NSString* strPartition = [[NSString alloc] initWithUTF8String:szDBPartition];
 	NSString* strAppName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
 	NSString* strTagName = [NSString stringWithFormat: @"com.rhomobile.%@.%@.dbkey", strAppName, strPartition];
+    
+    RAWLOG_INFO1("getStorageKeyTagOld() TAG = [%s]", [strTagName UTF8String]);
 		
 	NSData* resData = [strTagName dataUsingEncoding:NSUTF8StringEncoding];
 		
@@ -118,7 +120,9 @@ static NSData* getStorageKeyTagOld256(const char* szDBPartition)
 	NSString* strPartition = [[NSString alloc] initWithUTF8String:szDBPartition];
 	NSString* strAppName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
 	NSString* strTagName = [NSString stringWithFormat: @"com.rhomobile.%@.%@.dbkey256", strAppName, strPartition];
-		
+
+    RAWLOG_INFO1("getStorageKeyTagOld256() TAG = [%s]", [strTagName UTF8String]);
+
 	NSData* resData = [strTagName dataUsingEncoding:NSUTF8StringEncoding];
 		
 	//[strTagName release];
@@ -133,7 +137,8 @@ static NSData* getStorageKeyTagNew(const char* szDBPartition)
         NSString* strAppName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"];
         NSString* strTagName = [NSString stringWithFormat: @"com.tau.%@.%@.dbkey", strAppName, strPartition];
         
-        //NSLog(@"$$$ STORAGE_KEY_TAG = %@", strTagName);
+        RAWLOG_INFO1("getStorageKeyTagNew() TAG = [%s]", [strTagName UTF8String]);
+        //NSLog(@"STORAGE_KEY_TAG = %@", strTagName);
         
         NSData* resData = [strTagName dataUsingEncoding:NSUTF8StringEncoding];
         
@@ -149,7 +154,8 @@ static NSData* getStorageKeyTagNew256(const char* szDBPartition)
         NSString* strAppName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"];
         NSString* strTagName = [NSString stringWithFormat: @"com.tau.%@.%@.dbkey256", strAppName, strPartition];
         
-        //NSLog(@"$$$ STORAGE_KEY_TAG = %@", strTagName);
+       RAWLOG_INFO1("getStorageKeyTagNew256() TAG = [%s]", [strTagName UTF8String]);
+       //NSLog(@"STORAGE_KEY_TAG = %@", strTagName);
         
         NSData* resData = [strTagName dataUsingEncoding:NSUTF8StringEncoding];
         
@@ -169,33 +175,75 @@ void initSymmetrickKeyOld(NSMutableDictionary* querySymmetricKey, NSData* storag
 
 void CRhoCryptImpl::readKeyFromStorageOld()
 {
+    RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageOld() START");
 	NSData*	storageKeyTag = getStorageKeyTagOld256(m_strDBPartition.c_str());
 	OSStatus sanityCheck = noErr;
 	NSData * symmetricKeyReturn = nil;
 	
 	NSMutableDictionary * querySymmetricKey = [[NSMutableDictionary alloc] init];
-	
-	// Set the private key query dictionary.
-	initSymmetrickKeyOld(querySymmetricKey, storageKeyTag);
-	
-	// Get the key bits.
-	sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&symmetricKeyReturn);
 
-	if(sanityCheck != noErr)
-	{
-		sanityCheck = noErr;
-		symmetricKeyReturn = nil;
-		storageKeyTag = getStorageKeyTagOld(m_strDBPartition.c_str());
-		initSymmetrickKeyOld(querySymmetricKey, storageKeyTag);
-		sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&symmetricKeyReturn);
-		if(sanityCheck == noErr)
-			    currentKeySize = kCCKeySizeAES128;
-	}
+    
+    const char* depEncrypt = get_app_build_config_item("use_deprecated_encryption");
+    bool isUseDeprecatedEncryption = (depEncrypt && strcmp(depEncrypt, "1") == 0);
+    
+    
+    if (isUseDeprecatedEncryption) {
+        RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageOld() trye to read old firstly");
+        sanityCheck = noErr;
+        symmetricKeyReturn = nil;
+        storageKeyTag = getStorageKeyTagOld(m_strDBPartition.c_str());
+        initSymmetrickKeyOld(querySymmetricKey, storageKeyTag);
+        sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&symmetricKeyReturn);
+        if(sanityCheck == noErr) {
+            currentKeySize = kCCKeySizeAES128;
+            RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageOld() old key is OK - currentKeySize = kCCKeySizeAES128");
+        }
+        else {
+            RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageOld()     fail - > try to read new");
+            storageKeyTag = getStorageKeyTagOld256(m_strDBPartition.c_str());
+            sanityCheck = noErr;
+            symmetricKeyReturn = nil;
+            initSymmetrickKeyOld(querySymmetricKey, storageKeyTag);
+            sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&symmetricKeyReturn);
+            if(sanityCheck == noErr) {
+                RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageOld()      OK");
+            }
+        }
+    }
+    else {
+        
+        // Set the private key query dictionary.
+        initSymmetrickKeyOld(querySymmetricKey, storageKeyTag);
+        
+        // Get the key bits.
+        RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageOld() trye to read");
+        sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&symmetricKeyReturn);
+        
+        if(sanityCheck != noErr)
+        {
+            RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageOld()     fail - > try to read old");
+            
+            sanityCheck = noErr;
+            symmetricKeyReturn = nil;
+            storageKeyTag = getStorageKeyTagOld(m_strDBPartition.c_str());
+            initSymmetrickKeyOld(querySymmetricKey, storageKeyTag);
+            sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&symmetricKeyReturn);
+            if(sanityCheck == noErr) {
+                currentKeySize = kCCKeySizeAES128;
+                RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageOld() old key is OK - currentKeySize = kCCKeySizeAES128");
+            }
+        }
+        else {
+            RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageOld()      OK");
+            
+        }
+    }
 
 	if (sanityCheck == noErr && symmetricKeyReturn != nil && [symmetricKeyReturn length] == currentKeySize) 
 	{
 		m_dbKeyData = (uint8_t *)malloc( currentKeySize * sizeof(uint8_t) );
 		memcpy( m_dbKeyData, [symmetricKeyReturn bytes], currentKeySize );
+        RAWLOG_INFO1("CRhoCryptImpl::readKeyFromStorageOld() alloc and read key with size = %d", (int)currentKeySize);
 	}
 	if ( symmetricKeyReturn )
 		[symmetricKeyReturn release];
@@ -204,6 +252,7 @@ void CRhoCryptImpl::readKeyFromStorageOld()
 	
 	//if ( storageKeyTag )
 	//	[storageKeyTag release];
+    RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageOld() FINISH");
 }
     
 
@@ -232,6 +281,8 @@ static void initSymmetrickKeyNew(NSMutableDictionary* querySymmetricKey, NSData*
 
 void CRhoCryptImpl::readKeyFromStorageNew()
 {
+    RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageNew() START");
+
         NSData*    storageKeyTag = getStorageKeyTagNew256(m_strDBPartition.c_str());
         OSStatus sanityCheck = noErr;
 		
@@ -239,44 +290,89 @@ void CRhoCryptImpl::readKeyFromStorageNew()
         NSArray* keychainItemReturn = nil;
         
         NSMutableDictionary * querySymmetricKey = [[NSMutableDictionary alloc] init];
-        
-        initSymmetrickKeyNew(querySymmetricKey, storageKeyTag);
-        
-        // Get the key bits.
-        sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&keychainItemReturn);
-		if(sanityCheck != noErr) //try read old key
-		{
-			sanityCheck = noErr;
-			symmetricKeyReturn = nil;
-			keychainItemReturn = nil;
 
-			storageKeyTag = getStorageKeyTagNew(m_strDBPartition.c_str());
-			initSymmetrickKeyNew(querySymmetricKey, storageKeyTag);
-			sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&keychainItemReturn);
-			if(sanityCheck == noErr)
-			    currentKeySize = kCCKeySizeAES128;
-		}
-		
+    
+        const char* depEncrypt = get_app_build_config_item("use_deprecated_encryption");
+    bool isUseDeprecatedEncryption = (depEncrypt && strcmp(depEncrypt, "1") == 0);
+
+
+        if (isUseDeprecatedEncryption) {
+            // firstly check old key and use it if it exists !!!
+            RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageNew() try to read old key firstly");
+
+            sanityCheck = noErr;
+            symmetricKeyReturn = nil;
+            keychainItemReturn = nil;
+            
+            storageKeyTag = getStorageKeyTagNew(m_strDBPartition.c_str());
+            initSymmetrickKeyNew(querySymmetricKey, storageKeyTag);
+            sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&keychainItemReturn);
+            if(sanityCheck == noErr) {
+                currentKeySize = kCCKeySizeAES128;
+                RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageNew() old key is OK - currentKeySize = kCCKeySizeAES128");
+            }
+            else {
+                RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageNew() fail - try to read new key");
+                sanityCheck = noErr;
+                symmetricKeyReturn = nil;
+                keychainItemReturn = nil;
+                
+                storageKeyTag = getStorageKeyTagNew256(m_strDBPartition.c_str());
+                initSymmetrickKeyNew(querySymmetricKey, storageKeyTag);
+                sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&keychainItemReturn);
+                
+            }
+
+        }
+        else {
+            // firstly check new key and use it if it exists !!!
+            RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageNew() try to read new key firstly");
+            initSymmetrickKeyNew(querySymmetricKey, storageKeyTag);
+            
+            // Get the key bits.
+            sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&keychainItemReturn);
+            if(sanityCheck != noErr) //try read old key
+            {
+                RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageNew() fail - try to read old key");
+                
+                sanityCheck = noErr;
+                symmetricKeyReturn = nil;
+                keychainItemReturn = nil;
+                
+                storageKeyTag = getStorageKeyTagNew(m_strDBPartition.c_str());
+                initSymmetrickKeyNew(querySymmetricKey, storageKeyTag);
+                sanityCheck = SecItemCopyMatching((CFDictionaryRef)querySymmetricKey, (CFTypeRef *)&keychainItemReturn);
+                if(sanityCheck == noErr) {
+                    currentKeySize = kCCKeySizeAES128;
+                    RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageNew() old key is OK - currentKeySize = kCCKeySizeAES128");
+                }
+                
+            }
+        }
+    
+    
+    
         if (sanityCheck == noErr && keychainItemReturn != nil )
         {
             symmetricKeyReturn = (NSData*)[keychainItemReturn objectAtIndex:0];
             if ([symmetricKeyReturn length] == currentKeySize) {
+                RAWLOG_INFO1("CRhoCryptImpl::readKeyFromStorageNew() alloc and read key with size = %d", (int)currentKeySize);
                 m_dbKeyData = (uint8_t *)malloc( currentKeySize * sizeof(uint8_t) );
                 memcpy( m_dbKeyData, [symmetricKeyReturn bytes], currentKeySize );
             }
             else {
-                RAWLOG_ERROR2("$$$ STORAGE SecItemCopyMatching() invalid key size = %d, should be = %d", (int)[symmetricKeyReturn length], (int)currentKeySize);
+                RAWLOG_ERROR2("STORAGE SecItemCopyMatching() invalid key size = %d, should be = %d", (int)[symmetricKeyReturn length], (int)currentKeySize);
             }
         }
         else 
 		{
-			RAWLOG_ERROR("$$$ STORAGE SecItemCopyMatching() return  ERROR !");
-            RAWLOG_ERROR1("$$$ STORAGE SecItemCopyMatching() sanityCheck = %d", (int)sanityCheck);
+			RAWLOG_ERROR("STORAGE SecItemCopyMatching() return  ERROR !");
+            RAWLOG_ERROR1("STORAGE SecItemCopyMatching() sanityCheck = %d", (int)sanityCheck);
             
             if (sanityCheck == noErr && symmetricKeyReturn != nil) {
-                //NSLog(@"$$$ STORAGE SecItemCopyMatching() symmetricKeyReturn = %@", symmetricKeyReturn);
-                RAWLOG_ERROR1("$$$ STORAGE SecItemCopyMatching() symmetricKeyReturn length = %d", (int)[symmetricKeyReturn length]);
-                RAWLOG_ERROR1("$$$ STORAGE SecItemCopyMatching() currentKeySize = %d", (int)currentKeySize);
+                //NSLog(@"STORAGE SecItemCopyMatching() symmetricKeyReturn = %@", symmetricKeyReturn);
+                RAWLOG_ERROR1("STORAGE SecItemCopyMatching() symmetricKeyReturn length = %d", (int)[symmetricKeyReturn length]);
+                RAWLOG_ERROR1("STORAGE SecItemCopyMatching() currentKeySize = %d", (int)currentKeySize);
             }
             
             
@@ -285,13 +381,15 @@ void CRhoCryptImpl::readKeyFromStorageNew()
             [symmetricKeyReturn release];
         
         [querySymmetricKey release];
-        
+    RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorageNew() FINISH");
+
 }
     
     
 
 static void deleteKeyFromStorageOld(NSData* storageKeyTag)
 {
+    RAWLOG_INFO("deleteKeyFromStorageOld()");
 	OSStatus sanityCheck = noErr;
 	
 	NSMutableDictionary * querySymmetricKey = [[NSMutableDictionary alloc] init];
@@ -311,6 +409,7 @@ static void deleteKeyFromStorageOld(NSData* storageKeyTag)
     
 static void deleteKeyFromStorageNew(NSData* storageKeyTag)
 {
+    RAWLOG_INFO("deleteKeyFromStorageNew()");
         OSStatus sanityCheck = noErr;
         
         NSMutableDictionary * querySymmetricKey = [[NSMutableDictionary alloc] init];
@@ -342,6 +441,7 @@ static void deleteKeyFromStorageNew(NSData* storageKeyTag)
 	
 void CRhoCryptImpl::writeKeyToStorageOld()
 {
+    RAWLOG_INFO1("CRhoCryptImpl::writeKeyToStorageOld() currentKeySize = %d", (int)currentKeySize);
 	OSStatus sanityCheck = noErr;
 	NSData * symmetricKeyRef = NULL;	
 	NSData*	storageKeyTag = currentKeySize == kCCKeySizeAES256 ? 
@@ -384,6 +484,8 @@ void CRhoCryptImpl::writeKeyToStorageOld()
     
 void CRhoCryptImpl::writeKeyToStorageNew()
 {
+    RAWLOG_INFO1("CRhoCryptImpl::writeKeyToStorageNew() currentKeySize = %d", (int)currentKeySize);
+
         OSStatus sanityCheck = noErr;
         NSData * symmetricKeyRef = NULL;
         NSData*    storageKeyTag = currentKeySize == kCCKeySizeAES256 ? 
@@ -426,24 +528,63 @@ void CRhoCryptImpl::writeKeyToStorageNew()
 }
     
 void CRhoCryptImpl::readKeyFromStorage() {
-    readKeyFromStorageNew();
-    if ( m_dbKeyData ) {
-        // found new scheme key - use it
-        return;
-    }
-    else {
+    RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorage() START");
+
+    const char* depEncrypt = get_app_build_config_item("use_deprecated_encryption");
+    bool isUseDeprecatedEncryption = (depEncrypt && strcmp(depEncrypt, "1") == 0);
+    
+    if (isUseDeprecatedEncryption) {
         // try to read old scheme key
         readKeyFromStorageOld();
         if ( m_dbKeyData ) {
             // save to new scheme for future
+            RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorage() old key loaded");
             writeKeyToStorageNew();
+            return;
         }
+        else {
+            readKeyFromStorageNew();
+            if ( m_dbKeyData ) {
+                // found new scheme key - use it
+                RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorage() new key loaded");
+                RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorage() m_dbKeyData != NULL FINISH");
+                return;
+            }
+        }
+
+    }
+    else {
+        readKeyFromStorageNew();
+        if ( m_dbKeyData ) {
+            // found new scheme key - use it
+            RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorage() new key loaded");
+            RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorage() m_dbKeyData != NULL FINISH");
+            return;
+        }
+        else {
+            // try to read old scheme key
+            readKeyFromStorageOld();
+            if ( m_dbKeyData ) {
+                // save to new scheme for future
+                RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorage() old key loaded");
+                writeKeyToStorageNew();
+            }
+        }
+    }
+    
+    if ( m_dbKeyData ) {
+        RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorage() m_dbKeyData != NULL FINISH");
+    }
+    else {
+        RAWLOG_INFO("CRhoCryptImpl::readKeyFromStorage() m_dbKeyData == NULL FINISH");
     }
 }
 
     
 void CRhoCryptImpl::generateNewKey()
 {
+    RAWLOG_INFO1("CRhoCryptImpl::generateNewKey() currentKeySize = %d", (int)currentKeySize);
+    
 	OSStatus sanityCheck = noErr;
 	uint8_t * symmetricKey = NULL;
 	
@@ -463,25 +604,38 @@ void CRhoCryptImpl::generateNewKey()
 	
 void CRhoCryptImpl::initContext(const char* szPartition)
 {
+
+    RAWLOG_INFO1("CRhoCryptImpl::initContext() Partition = [%s]", szPartition);
+    m_strDBPartition = szPartition;
+
+    RAWLOG_INFO1("CRhoCryptImpl::initContext() START m_strDBPartition = [%s]", m_strDBPartition.c_str());
 	if(isNewInstallation && !m_dbKeyData)
 	{
+        RAWLOG_INFO("CRhoCryptImpl::initContext() (isNewInstallation && !m_dbKeyData) == true");
+        RAWLOG_INFO("CRhoCryptImpl::initContext() remove all keys from storage");
 	    deleteKeyFromStorageOld(getStorageKeyTagOld256(m_strDBPartition.c_str()));
 		deleteKeyFromStorageOld(getStorageKeyTagOld(m_strDBPartition.c_str()));
 		deleteKeyFromStorageNew(getStorageKeyTagNew256(m_strDBPartition.c_str()));
 		deleteKeyFromStorageNew(getStorageKeyTagNew(m_strDBPartition.c_str()));
 	}
-    if ( m_dbKeyData )
+    if ( m_dbKeyData ) {
+        RAWLOG_INFO("CRhoCryptImpl::initContext() m_dbKeyData != NULL");
+        RAWLOG_INFO("CRhoCryptImpl::initContext() FINISH");
         return;
+    }
 
-    m_strDBPartition = szPartition;
 	
 	readKeyFromStorage();
-    if ( m_dbKeyData )
+    if ( m_dbKeyData ) {
+        RAWLOG_INFO("CRhoCryptImpl::initContext() m_dbKeyData != NULL");
+        RAWLOG_INFO("CRhoCryptImpl::initContext() FINISH");
         return;
+    }
 
 	generateNewKey();
     writeKeyToStorageOld();
 	writeKeyToStorageNew();
+    RAWLOG_INFO("CRhoCryptImpl::initContext() FINISH");
 }
 
 int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char* data, unsigned char* dataOut )
