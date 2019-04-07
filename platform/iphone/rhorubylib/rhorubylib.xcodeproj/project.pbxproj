@@ -271,6 +271,7 @@
 		FA6B3F831FD21E05008BFF0D /* single_byte.c in Sources */ = {isa = PBXBuildFile; fileRef = FA6B3F801FD21DFE008BFF0D /* single_byte.c */; };
 		FA6B3F841FD21E07008BFF0D /* utf_16_32.c in Sources */ = {isa = PBXBuildFile; fileRef = FA6B3F7F1FD21DFE008BFF0D /* utf_16_32.c */; };
 		FAA66D031EEDE070003E0B1D /* nonblock.c in Sources */ = {isa = PBXBuildFile; fileRef = FAA66D021EEDE070003E0B1D /* nonblock.c */; };
+		FAE78BBA2254654B001A1150 /* rhoinit.c in Sources */ = {isa = PBXBuildFile; fileRef = A8CAD3DA1E67419C00ED8E7E /* rhoinit.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1232,6 +1233,7 @@
 				A80AFE541E2415390006FF68 /* error.c in Sources */,
 				FA4CE2941ECB316100DBA581 /* raddrinfo.c in Sources */,
 				A80AFEB91E2415390006FF68 /* vm_trace.c in Sources */,
+				FAE78BBA2254654B001A1150 /* rhoinit.c in Sources */,
 				FA4CE2961ECB316100DBA581 /* udpsocket.c in Sources */,
 				A80083E520FFA1100051E96E /* date_strftime.c in Sources */,
 				A80AFE6E1E2415390006FF68 /* marshal.c in Sources */,

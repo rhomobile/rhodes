@@ -214,7 +214,7 @@ namespace ruby {
                 return new CMutableString(true);
             }
                 break;
-            case BASIC_TYPES::Nil:
+            case BASIC_TYPES::RubyNil:
             {
                 return new CNil();
             }
@@ -413,7 +413,7 @@ namespace ruby {
                 return v;
             }
             break;
-        case BASIC_TYPES::Nil:
+        case BASIC_TYPES::RubyNil:
             {
                 return rho_ruby_get_NIL();
             }

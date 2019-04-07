@@ -49,6 +49,8 @@ int rho_rhodesapp_check_mode();
 void rho_splash_screen_start();
 
 
+//NSString* kGCMMessageIDKey = @"gcm.message_id";
+
 /*
 use this non-public code for see level of memory warning 
  
@@ -141,6 +143,11 @@ static Rhodes *instance = NULL;
 + (Rhodes*)sharedInstance {
     return instance;
 }
+
++(void) makeSharedInstance {
+    instance = [[Rhodes alloc] init];
+}
+
 
 + (UIApplication*)application {
     return [Rhodes sharedInstance]->application;
@@ -1126,7 +1133,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 
 #ifdef __IPHONE_3_0
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+- (BOOL)didFinishLaunchingWithOptionsInternal:(NSDictionary *)launchOptions application:(UIApplication *)application {
     
     self.mBlockExit = NO;
 
@@ -1246,6 +1254,11 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 	return NO;
 }
 
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    return [self didFinishLaunchingWithOptionsInternal:launchOptions application:application];
+}
+
+
 #ifdef APP_BUILD_CAPABILITY_PUSH
 #if 0
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
@@ -1270,9 +1283,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 withCompletionHandler:(void(^)())completionHandler {
 #endif
     NSDictionary *userInfo = response.notification.request.content.userInfo;
-    if (userInfo[kGCMMessageIDKey]) {
-        NSLog(@"Message ID: %@", userInfo[kGCMMessageIDKey]);
-    }
+    //if (userInfo[kGCMMessageIDKey]) {
+    //    NSLog(@"Message ID: %@", userInfo[kGCMMessageIDKey]);
+    //}
     
     // Print full message.
     NSLog(@"%@", userInfo);
@@ -1588,3 +1601,11 @@ BOOL rho_main_is_rotation_locked() {
 void rho_main_set_rotation_locked(BOOL locked) {
     [[Rhodes sharedInstance] setRotationLocked:locked];
 }
+
+
+
+//void rhomobile_lib_start_app() {
+ //   [Rhodes makeSharedInstance];
+//    [[Rhodes sharedInstance] didFinishLaunchingWithOptionsInternal:[NSMutableDictionary dictionaryWithCapacity:5] application:[UIApplication sharedApplication]];
+    
+//}

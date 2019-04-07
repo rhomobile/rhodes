@@ -9,7 +9,7 @@ namespace rho {
 namespace ruby {
 
 
-NilImpl::NilImpl():ObjectImpl(BASIC_TYPES::Nil, NULL, rho_ruby_get_NIL()) {
+NilImpl::NilImpl():ObjectImpl(BASIC_TYPES::RubyNil, NULL, rho_ruby_get_NIL()) {
 }
 
 NilImpl::~NilImpl() {

@@ -8,7 +8,7 @@ namespace ruby {
 typedef enum {
         None,
         // types decorate real ruby objects
-        Nil,
+        RubyNil,
         Class,
         Object,
         Boolean,

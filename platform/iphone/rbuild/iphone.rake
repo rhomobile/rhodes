@@ -1496,6 +1496,56 @@ namespace "build" do
 
     end
 
+
+    # [build:iphone:rhodeslib_bundle]
+    desc "Build iphone rhobundle - set target path :  rake build:iphone:rhodeslib_bundle['/Users/myuser/mypath']"
+    task :rhodeslib_bundle, [:target_path]  => ["config:set_iphone_platform", "config:common"] do |t, args|
+
+        print_timestamp('build:iphone:rhodeslib_bundle START')
+        # copied from build upgrade bundle
+
+        target_path = args[:target_path]
+
+        $skip_checking_XCode = true
+        $skip_build_rhodes_main = true
+        $skip_build_extensions = true
+        $skip_build_xmls = true
+        $use_prebuild_data = true
+
+        Rake::Task['config:iphone'].invoke
+
+        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+        iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
+
+        if !File.exist?(iphone_project)
+
+          puts '$ make iphone XCode project for application'
+          Rake::Task['build:iphone:make_xcode_project'].invoke
+
+        end
+
+        Rake::Task['build:iphone:rhobundle'].invoke
+
+        #puts '$$$$$$$$$$$$$$$$$$'
+        #puts 'targetdir = '+$targetdir.to_s
+        #puts 'bindir = '+$bindir.to_s
+
+
+        mkdir_p target_path if not File.exists? target_path
+        # copy RhoBundle folder from $bindir to target_path
+
+        source_RhoBundle = File.join($bindir, "RhoBundle")
+        target_RhoBundle = File.join(target_path, "RhoBundle")
+        rm_rf target_RhoBundle if File.exists? target_RhoBundle
+        cp_r source_RhoBundle, target_path
+
+        print_timestamp('build:iphone:rhodeslib_bundle FINISH')
+    end
+
+
+
     desc "build upgrade package with full bundle"
     task :upgrade_package => ["config:set_iphone_platform", "config:common"] do
 

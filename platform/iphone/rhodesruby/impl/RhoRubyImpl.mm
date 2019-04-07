@@ -1,0 +1,276 @@
+
+#import "RhoRubyImpl.h"
+#import "../api/RhoRubySingletone.h"
+
+//#include "../../../shared/rhoruby/api/RhoRuby.h"
+
+#import "RhoRubyNilImpl.h"
+#import "RhoRubyObjectImpl.h"
+#import "RhoRubyMutableArrayImpl.h"
+#import "RhoRubyMutableBooleanImpl.h"
+#import "RhoRubyMutableFloatImpl.h"
+#import "RhoRubyMutableHashImpl.h"
+#import "RhoRubyMutableIntegerImpl.h"
+#import "RhoRubyMutableStringImpl.h"
+#import "RhoRubyNilImpl.h"
+
+
+class CRhoRubyNativeCallbackHolder : public  rho::ruby::IRubyNativeCallback {
+public:
+    
+    CRhoRubyNativeCallbackHolder(id<IRhoRubyNativeCallback> callback) {
+        mCallback = callback;
+    }
+    
+    virtual ~CRhoRubyNativeCallbackHolder() {}
+    
+    virtual void onRubyNative(rho::ruby::IObject* param) {
+        RhoRubyImpl* rr = (RhoRubyImpl*)[RhoRubySingletone getRhoRuby];
+        id<IRhoRubyObject> r_object = [rr makeRhoRubyObjectFromCpp:param];
+        [mCallback onRubyNativeWithParam:r_object];
+    }
+    
+    
+private:
+    id<IRhoRubyNativeCallback> mCallback;
+    
+};
+
+
+
+
+
+@implementation RhoRubyImpl
+
+// call command in ruby thread
+-(void) executeInRubyThread:(id<IRhoRubyRunnable>)command {
+    //TODO
+}
+
+// call ruby server url (net request) and receive responce in callabck
+//virtual void executeRubyServerURL(const char* url, const char* body, IRubyServerCallback* callback) = 0;
+
+// execute ruby code in current thread. parameters can be simple object (string, integer etc. - in this case one parameters will be passed to method.)
+// also parameters can be IArray - in this case list of parameters will be passed to method (parameters from array)
+// this method recommended execute from ruby thread (from IRunnable command), but can be executed from other thread for very simple opertions without modifying ruby objects
+-(id<IRhoRubyObject>) executeRubyObjectMethod:(id<IRhoRubyObject>)rho_object method_name:(NSString*)method_name parameters:(id<IRhoRubyObject>)paramaters {
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    RhoRubyObjectImpl* rr_obj = (RhoRubyObjectImpl*)rho_object;
+    rho::ruby::IObject* cpp_param = NULL;
+    if (paramaters != nil) {
+        RhoRubyObjectImpl* rr_param = (RhoRubyObjectImpl*)paramaters;
+        cpp_param = [rr_param getCppObject];
+    }
+    rho::ruby::IObject* cpp_object = rr->executeRubyObjectMethod([rr_obj getCppObject], [method_name UTF8String], cpp_param);
+    id<IRhoRubyObject> r_object = [self makeRhoRubyObjectFromCpp:cpp_object];
+    cpp_object->release();
+    return r_object;
+}
+
+// this method recommended execute from ruby thread (from IRunnable command), but can be executed from other thread
+// full class name has :: delimiter
+-(id<IRhoRubyObject>) makeRubyClassObject:(NSString*)full_class_name {
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rho::ruby::IObject* cpp_object = rr->makeRubyClassObject([full_class_name UTF8String]);
+    id<IRhoRubyObject> r_object = [self makeRhoRubyObjectFromCpp:cpp_object];
+    cpp_object->release();
+    return r_object;
+}
+
+// can be execute from any thread - for construct parameters for execute ruby code
+// developer can make only mutable objects and Nil
+-(id<IRhoRubyObject>) makeBaseTypeObject:(RHO_RUBY_BASIC_TYPES)basic_type {
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rho::ruby::IObject* cpp_object = rr->makeBaseTypeObject([self convertBasicTypeToCpp:basic_type]);
+    id<IRhoRubyObject> r_object = [self makeRhoRubyObjectFromCpp:cpp_object];
+    cpp_object->release();
+    return r_object;
+}
+
+
+// register callback for execute from Ruby side via - it is needed for direct call native code foem ruby code
+// Rho::Ruby.callNativeCallback(callback_id, param)
+-(void) addRubyNativeCallback:(id<IRhoRubyNativeCallback>)native_callback callback_id:(NSString*)callback_id {
+    CRhoRubyNativeCallbackHolder* cc = new CRhoRubyNativeCallbackHolder(native_callback);
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rr->addRubyNativeCallback([callback_id UTF8String], cc);
+    
+}
+
+-(void) removeRubyNativeCallbackWithID:(NSString*)callback_id {
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rr->removeRubyNativeCallback([callback_id UTF8String]);
+}
+
+
+
+-(id<IRhoRubyObject>) makeRhoRubyObjectFromCpp:(rho::ruby::IObject*)cpp_object {
+    if (cpp_object == NULL) {
+        return nil;
+    }
+    rho::ruby::BASIC_TYPES cpp_type = cpp_object->getBasicType();
+    switch (cpp_type) {
+        case rho::ruby::BASIC_TYPES::RubyNil :
+            return [[RhoRubyNilImpl alloc] initWithCppObject:cpp_object];
+            break;
+        case rho::ruby::BASIC_TYPES::Array :
+        case rho::ruby::BASIC_TYPES::MutableArray :
+            return [[RhoRubyMutableArrayImpl alloc] initWithCppObject:cpp_object];
+            break;
+        case rho::ruby::BASIC_TYPES::Boolean :
+        case rho::ruby::BASIC_TYPES::MutableBoolean :
+            return [[RhoRubyMutableBooleanImpl alloc] initWithCppObject:cpp_object];
+            break;
+        case rho::ruby::BASIC_TYPES::Class :
+            return [[RhoRubyObjectImpl alloc] initWithCppObject:cpp_object];
+            break;
+        case rho::ruby::BASIC_TYPES::Float :
+        case rho::ruby::BASIC_TYPES::MutableFloat :
+            return [[RhoRubyMutableFloatImpl alloc] initWithCppObject:cpp_object];
+            break;
+        case rho::ruby::BASIC_TYPES::Hash :
+        case rho::ruby::BASIC_TYPES::MutableHash :
+            return [[RhoRubyMutableHashImpl alloc] initWithCppObject:cpp_object];
+            break;
+        case rho::ruby::BASIC_TYPES::Integer :
+        case rho::ruby::BASIC_TYPES::MutableInteger :
+            return [[RhoRubyMutableIntegerImpl alloc] initWithCppObject:cpp_object];
+            break;
+        case rho::ruby::BASIC_TYPES::String :
+        case rho::ruby::BASIC_TYPES::MutableString :
+            return [[RhoRubyMutableStringImpl alloc] initWithCppObject:cpp_object];
+            break;
+        case rho::ruby::BASIC_TYPES::None :
+            return nil;
+            break;
+        case rho::ruby::BASIC_TYPES::Object :
+            return [[RhoRubyObjectImpl alloc] initWithCppObject:cpp_object];
+            break;
+            
+        default:
+            break;
+    }
+    return nil;
+}
+
+-(RHO_RUBY_BASIC_TYPES) convertBasicTypeFromCpp:(rho::ruby::BASIC_TYPES)cppBasicType {
+    switch (cppBasicType) {
+        case rho::ruby::BASIC_TYPES::RubyNil :
+            return kRhoRubyNil;
+            break;
+        case rho::ruby::BASIC_TYPES::Array :
+            return kRhoRubyArray;
+            break;
+        case rho::ruby::BASIC_TYPES::Boolean :
+            return kRhoRubyBoolean;
+            break;
+        case rho::ruby::BASIC_TYPES::Class :
+            return kRhoRubyClass;
+            break;
+        case rho::ruby::BASIC_TYPES::Float :
+            return kRhoRubyFloat;
+            break;
+        case rho::ruby::BASIC_TYPES::Hash :
+            return kRhoRubyHash;
+            break;
+        case rho::ruby::BASIC_TYPES::Integer :
+            return kRhoRubyInteger;
+            break;
+        case rho::ruby::BASIC_TYPES::MutableArray :
+            return kRhoRubyMutableArray;
+            break;
+        case rho::ruby::BASIC_TYPES::MutableBoolean :
+            return kRhoRubyMutableBoolean;
+            break;
+        case rho::ruby::BASIC_TYPES::MutableFloat :
+            return kRhoRubyMutableFloat;
+            break;
+        case rho::ruby::BASIC_TYPES::MutableHash :
+            return kRhoRubyMutableHash;
+            break;
+        case rho::ruby::BASIC_TYPES::MutableInteger :
+            return kRhoRubyMutableInteger;
+            break;
+        case rho::ruby::BASIC_TYPES::MutableString :
+            return kRhoRubyMutableString;
+            break;
+        case rho::ruby::BASIC_TYPES::None :
+            return kRhoRubyNone;
+            break;
+        case rho::ruby::BASIC_TYPES::Object :
+            return kRhoRubyObject;
+            break;
+        case rho::ruby::BASIC_TYPES::String :
+            return kRhoRubyString;
+            break;
+            
+        default:
+            break;
+    }
+    
+    return kRhoRubyNone;
+}
+
+-(rho::ruby::BASIC_TYPES) convertBasicTypeToCpp:(RHO_RUBY_BASIC_TYPES)basicType {
+    switch (basicType) {
+        case kRhoRubyNil :
+            return rho::ruby::BASIC_TYPES::RubyNil;
+            break;
+        case kRhoRubyArray :
+            return rho::ruby::BASIC_TYPES::Array;
+            break;
+        case kRhoRubyBoolean :
+            return rho::ruby::BASIC_TYPES::Boolean;
+            break;
+        case kRhoRubyClass :
+            return rho::ruby::BASIC_TYPES::Class;
+            break;
+        case kRhoRubyFloat :
+            return rho::ruby::BASIC_TYPES::Float;
+            break;
+        case kRhoRubyHash :
+            return rho::ruby::BASIC_TYPES::Hash;
+            break;
+        case kRhoRubyInteger :
+            return rho::ruby::BASIC_TYPES::Integer;
+            break;
+        case kRhoRubyMutableArray :
+            return rho::ruby::BASIC_TYPES::MutableArray;
+            break;
+        case kRhoRubyMutableBoolean :
+            return rho::ruby::BASIC_TYPES::MutableBoolean;
+            break;
+        case kRhoRubyMutableFloat :
+            return rho::ruby::BASIC_TYPES::MutableFloat;
+            break;
+        case kRhoRubyMutableHash :
+            return rho::ruby::BASIC_TYPES::MutableHash;
+            break;
+        case kRhoRubyMutableInteger :
+            return rho::ruby::BASIC_TYPES::MutableInteger;
+            break;
+        case kRhoRubyMutableString :
+            return rho::ruby::BASIC_TYPES::MutableString;
+            break;
+        case kRhoRubyNone :
+            return rho::ruby::BASIC_TYPES::None;
+            break;
+        case kRhoRubyObject :
+            return rho::ruby::BASIC_TYPES::Object;
+            break;
+        case kRhoRubyString :
+            return rho::ruby::BASIC_TYPES::String;
+            break;
+            
+        default:
+            break;
+    }
+    
+    return rho::ruby::BASIC_TYPES::None;
+}
+
+
+@end
+
+
+
