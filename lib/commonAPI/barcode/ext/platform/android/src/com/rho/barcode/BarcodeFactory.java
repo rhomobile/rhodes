@@ -599,7 +599,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 
 		if (releaseEMDKOnPause) {		
 			Logger.D( TAG, "Will restore EMDK resources" );
-			if(emdk3Listener)			
+			if(emdk3Listener != null)			
 			    emdk3Listener.resume();			
 		}
 
@@ -648,7 +648,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 			Logger.D( TAG, "Will release EMDK resources" );
 			enabledScanner = null;
 			removeAllEMDKScannerIDs();
-			if(emdk3Listener)			
+			if(emdk3Listener != null)			
 			    emdk3Listener.pause();
 			setIsEMDKScannerSetupCalled(false);
 		}
