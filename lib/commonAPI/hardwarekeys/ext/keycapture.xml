@@ -25,11 +25,14 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
         </TEMPLATES>
 
         <CONSTANTS>
-          <CONSTANT name="IPHONE_VOLUME_UP" value="10" type="INTEGER" productException="eb">
+          <CONSTANT name="IPHONE_VOLUME_UP" value="IPHONE_VOLUME_UP" type="STRING" productException="eb">
               <DESC>IPhone volume up keyCode. Used to capture the volume up key when it is pressed.</DESC>
           </CONSTANT>
-          <CONSTANT name="IPHONE_VOLUME_DOWN" value="11" type="INTEGER" productException="eb">
+          <CONSTANT name="IPHONE_VOLUME_DOWN" value="IPHONE_VOLUME_DOWN" type="STRING" productException="eb">
               <DESC>IPhone volume down keyCode. Used to capture the volume down key when it is pressed.</DESC>
+          </CONSTANT>
+          <CONSTANT name="ALL_KEYS" value="ALL" type="STRING" productException="eb">
+              <DESC>all keys captured</DESC>
           </CONSTANT>
         </CONSTANTS>
 
@@ -254,13 +257,12 @@ end
                         <RUBY>
                 <![CDATA[
     def keyCallback
-    {
-        if(@params["keyValue"] == Rho::KeyCapture.IPHONE_VOLUME_UP){
+        if @params["keyValue"] == Rho::KeyCapture::IPHONE_VOLUME_UP
             //do something
-        }
-    }
+        end
+    end
 
-    Rho::KeyCapture.captureKey true, Rho::KeyCapture.IPHONE_VOLUME_UP, url_for(:action => :key_Callback)
+    Rho::KeyCapture.captureKey true, Rho::KeyCapture::IPHONE_VOLUME_UP, url_for(:action => :key_Callback)
                         ]]>
                         </RUBY>
                     </CODE>
@@ -311,7 +313,7 @@ When the specified key is pressed, the event will fire but the homeKey event wil
            <REMARK title="Capturing Function">
                 <DESC>If you have enabled the function key in the configuration settings and that function key has some special behavior in the Operating system the key will not be capturable unless you also set the 'FunctionKeysCapturable' option (see RhoElements Configuration Settings). An example of special behavior is the F6 and F7 keys on the MC75a (non QWERTY) which control the volume up and volume down. Although 'FunctionKeysCapturable' will allow you to capture Function keys it will also disable the special Function key behavior. Which buttons map to which function keys will differ from device to device, some devices such as the MC9500 have dedicated, labeled function keys whereas other devices such as the MC75a do not label the fact that their volume / red phone / green phone keys all behave as function keys internally.</DESC>
             </REMARK>
-            
+
             <REMARK title="Keys with multiple functionalities">
                 <DESC>Some keys which are meant for performing multiple functionalities but performs the single functionality may return the single code value. In that case it is recommended to remap the key code value with the expected desired keycode value.</DESC>
             </REMARK>
@@ -327,7 +329,7 @@ When the specified key is pressed, the event will fire but the homeKey event wil
             <REMARK title="F5 Key">
                 <DESC>In Internet Explorer the F5 key is used to refresh the current page. It is not recommended to rely on this functionality on Windows Mobile and it is not supported.</DESC>
             </REMARK>
-            
+
             <REMARK title="PTT Keys">
                 <DESC>On Android, PTT keys are capturable using captureTrigger method only.</DESC>
             </REMARK>
