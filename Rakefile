@@ -208,7 +208,7 @@ def make_application_build_config_header_file
   #f.puts "// Generated #{Time.now.to_s}"
   f.puts ""
   f.puts "#include <string.h>"
-  f.puts "#include <common/RhoConf.h>"
+  f.puts "#include \"common/RhoConf.h\""
   f.puts ""
   f.puts '//#include "app_build_configs.h"'
   if $rhosimulator_build

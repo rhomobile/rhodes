@@ -7,12 +7,21 @@
 +(RhodesLib*)getSharedInstance;
 
 //-(BOOL)didFinishLaunchingWithOptions:(NSDictionary *)launchOptions application:(UIApplication *)application
+-(void) startRhodes:(UIApplication *)application;
 
--(void) startRhodes;
+- (void)applicationWillResignActive:(UIApplication *)application;
 
--(void) onActivate;
 
--(void) onDeactivate;
+- (void)applicationDidEnterBackground:(UIApplication *)application;
+
+
+- (void)applicationWillEnterForeground:(UIApplication *)application;
+
+
+- (void)applicationDidBecomeActive:(UIApplication *)application;
+
+
+- (void)applicationWillTerminate:(UIApplication *)application;
 
 
 @end

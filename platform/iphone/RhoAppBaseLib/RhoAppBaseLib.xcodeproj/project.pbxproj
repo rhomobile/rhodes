@@ -241,6 +241,8 @@
 		FAE78C5422583F6C001A1150 /* RhoThreadImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C272182B04140036D304 /* RhoThreadImpl.m */; };
 		FAE78C5522583F6C001A1150 /* SplittedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C24B182B04140036D304 /* SplittedMainView.m */; };
 		FAE78C5622583F6C001A1150 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C25C182B04140036D304 /* MapViewController.m */; };
+		FAE78CE2225D0EC5001A1150 /* RhoMainViewStubImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CE0225D0EC5001A1150 /* RhoMainViewStubImpl.h */; };
+		FAE78CE3225D0EC5001A1150 /* RhoMainViewStubImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE78CE1225D0EC5001A1150 /* RhoMainViewStubImpl.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -375,6 +377,8 @@
 		FAA7149D1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoWebViewFabrique.h; sourceTree = "<group>"; };
 		FAA7149E1DDCAE2B00E5E7AD /* RhoWebViewFabrique.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoWebViewFabrique.m; sourceTree = "<group>"; };
 		FAE78C5C22583F6C001A1150 /* libRhoAppBaseStandaloneLib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRhoAppBaseStandaloneLib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAE78CE0225D0EC5001A1150 /* RhoMainViewStubImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoMainViewStubImpl.h; sourceTree = "<group>"; };
+		FAE78CE1225D0EC5001A1150 /* RhoMainViewStubImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoMainViewStubImpl.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -577,6 +581,8 @@
 		FA20C254182B04140036D304 /* MainView */ = {
 			isa = PBXGroup;
 			children = (
+				FAE78CE0225D0EC5001A1150 /* RhoMainViewStubImpl.h */,
+				FAE78CE1225D0EC5001A1150 /* RhoMainViewStubImpl.m */,
 				FAA7149D1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h */,
 				FAA7149E1DDCAE2B00E5E7AD /* RhoWebViewFabrique.m */,
 				FAA714921DDCAB6D00E5E7AD /* RhoUIWebView.h */,
@@ -872,6 +878,7 @@
 				FAE78BEE22583F6C001A1150 /* Event.h in Headers */,
 				FAE78BEF22583F6C001A1150 /* RhoExtManagerSingletone.h in Headers */,
 				FAE78BF022583F6C001A1150 /* NetworkStatusMonitor.h in Headers */,
+				FAE78CE2225D0EC5001A1150 /* RhoMainViewStubImpl.h in Headers */,
 				FAE78BF122583F6C001A1150 /* RhoWKWebView.h in Headers */,
 				FAE78BF222583F6C001A1150 /* NVViewController.h in Headers */,
 				FAE78BF322583F6C001A1150 /* NVDelegate.h in Headers */,
@@ -1064,6 +1071,7 @@
 				FAE78C2622583F6C001A1150 /* RunnableWrapper.mm in Sources */,
 				FAE78C2722583F6C001A1150 /* NetworkStatusMonitor.mm in Sources */,
 				FAE78C2822583F6C001A1150 /* SimpleMainView.m in Sources */,
+				FAE78CE3225D0EC5001A1150 /* RhoMainViewStubImpl.m in Sources */,
 				FAE78C2922583F6C001A1150 /* NVDelegate.m in Sources */,
 				FAE78C2A22583F6C001A1150 /* ParamsWrapper.m in Sources */,
 				FAE78C2B22583F6C001A1150 /* Reachability.m in Sources */,

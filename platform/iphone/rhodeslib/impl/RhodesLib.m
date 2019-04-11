@@ -17,18 +17,34 @@ static RhodesLib* sharedInstance = nil;
 }
 
 
--(void) startRhodes {
+-(void) startRhodes:(UIApplication *)application; {
     [Rhodes makeSharedInstance];
-    [[Rhodes sharedInstance] didFinishLaunchingWithOptionsInternal:[NSMutableDictionary dictionaryWithCapacity:5] application:[UIApplication sharedApplication]];
+    [[Rhodes sharedInstance] didFinishLaunchingWithOptionsInternal:[NSMutableDictionary dictionaryWithCapacity:5] application:application];
 
 }
 
--(void) onActivate {
-    
+- (void)applicationWillResignActive:(UIApplication *)application {
+    [[Rhodes sharedInstance] applicationWillResignActive:application];
 }
 
--(void) onDeactivate {
-    
+
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    [[Rhodes sharedInstance] applicationDidEnterBackground:application];
+}
+
+
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+    [[Rhodes sharedInstance] applicationWillEnterForeground:application];
+}
+
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    [[Rhodes sharedInstance] applicationDidBecomeActive:application];
+}
+
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+    [[Rhodes sharedInstance] applicationWillTerminate:application];
 }
 
 

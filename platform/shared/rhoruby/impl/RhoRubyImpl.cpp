@@ -24,6 +24,10 @@
 
 #include "../../ruby/ext/rho/rhoruby.h"
 
+#include "common/RhodesApp.h"
+
+#define RHOLIB_LOCAL_SERVER_URL "/system/rholib_callback"
+
 
 static VALUE rb_api_mParent;
 static VALUE rb_api_mRubyNative;
@@ -55,6 +59,14 @@ extern "C" VALUE c_rb_Rho_Ruby_callNativeCallback(int argc, VALUE *argv) {
     return rr->rb_Rho_Ruby_callNativeCallback(argc, argv);
 }
 
+static void rholib_local_server_callback_func(void *arg, rho::String const &strQuery) {
+    rho::ruby::RhoRubyImpl* rr = (rho::ruby::RhoRubyImpl*)(rho::ruby::RhoRubySingletone::getRhoRuby());
+    rr->rholib_local_server_callback();
+
+}
+
+
+
 typedef VALUE (*ruby_method_func_type)(...);
 
 namespace rho {
@@ -76,12 +88,43 @@ namespace ruby {
         rb_define_alloc_func(rb_api_mRubyNative, _allocate_class_object);
         
         rb_define_singleton_method(rb_api_mRubyNative, "callNativeCallback", (ruby_method_func_type)c_rb_Rho_Ruby_callNativeCallback, -1);
+     
+        
+        rho::common::CRhodesApp::getInstance()->registerLocalServerUrl(RHOLIB_LOCAL_SERVER_URL, rholib_local_server_callback_func);
+        
+        
+    }
+    
+    void RhoRubyImpl::rholib_local_server_callback() {
+        
+        int i;
+        std::vector<IRunnable*> copy_of_commands_list;
+
+        {
+            common::CMutexLock lock(m_mxSyncMutex);
+            for (i = 0; i<mRubyCommands.size(); i++) {
+                copy_of_commands_list.push_back(mRubyCommands[i]);
+            }
+            mRubyCommands.clear();
+        }
+        // call all copied commands
+
+        for (i = 0; i < copy_of_commands_list.size(); i++) {
+            if (copy_of_commands_list[i] != NULL) {
+                copy_of_commands_list[i]->run();
+            }
+        }
         
     }
 
+
     // call command in ruby thread
     void RhoRubyImpl::executeInRubyThread(IRunnable* command) {
-        
+        {
+            common::CMutexLock lock(m_mxSyncMutex);
+            mRubyCommands.push_back(command);
+        }
+        rho::common::CRhodesApp::getInstance()->callCallbackWithData(RHOLIB_LOCAL_SERVER_URL, "", "", false);
     }
 
     // call ruby server url (net request) and receive responce in callabck

@@ -3,9 +3,11 @@
 
 #include "../api/IRhoRuby.h"
 #include "../../ruby/include/ruby.h"
+#include "common/RhoMutexLock.h"
 
 #include <string>
 #include <map>
+#include <vector>
 
 namespace rho {
 namespace ruby {
@@ -48,10 +50,15 @@ public:
     VALUE convertObject_to_VALUE(IObject* obj);
     
     VALUE rb_Rho_Ruby_callNativeCallback(int argc, VALUE *argv);
+    void rholib_local_server_callback();
 
 private:
     //hashtable for native callback_id => callback pointer
     std::map<std::string, IRubyNativeCallback*> mCallbacks;
+    
+    
+    std::vector<IRunnable*> mRubyCommands;
+    common::CMutex m_mxSyncMutex;
 
 };
 

@@ -45,6 +45,12 @@
 #import "CRhoURLProtocol.h"
 #import "RhoExtManager/RhoExtManagerSingletone.h"
 
+
+#ifdef RHO_STANDALONE_LIB
+#import "RhoMainViewStubImpl.h"
+#endif
+
+
 int rho_rhodesapp_check_mode();
 void rho_splash_screen_start();
 
@@ -827,8 +833,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     
+#ifndef RHO_STANDALONE_LIB
+
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
-    
     
     const char* fs = get_app_build_config_item("iphone_full_screen");
     if (fs == NULL) {
@@ -863,7 +870,13 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 	}
 	
     [window makeKeyAndVisible];
-
+#else
+    
+    // standalone lib mode - no own UI
+    mainView = nil;
+    mainView = [[RhoMainViewStubImpl alloc] init];
+    
+#endif
  
 	CGRect rrr = [application statusBarFrame];
 	
@@ -1423,13 +1436,15 @@ withCompletionHandler:(void(^)())completionHandler {
 #ifdef __IPHONE_4_0
 - (void)applicationDidEnterBackground:(UIApplication *)app {
     
+    
+#ifndef RHO_STANDALONE_LIB
     if ([SplashViewController isReplaceContentWhenSnapshot]) {
         if (splashViewControllerSnapShot == nil) {
             splashViewControllerSnapShot = [[SplashViewController alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
         }
         [self.window.rootViewController presentViewController:[splashViewControllerSnapShot retain] animated:NO completion:NULL];
     }
-    
+#endif
 
     RAWLOG_INFO("Application go to background");
     rho_rhodesapp_callUiDestroyedCallback();
@@ -1476,9 +1491,11 @@ withCompletionHandler:(void(^)())completionHandler {
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+#ifndef RHO_STANDALONE_LIB
     if ([SplashViewController isReplaceContentWhenSnapshot]) {
         [self.window.rootViewController dismissViewControllerAnimated:NO completion:NO];
     }
+#endif
     [self registerForNotifications];
 }
 #endif

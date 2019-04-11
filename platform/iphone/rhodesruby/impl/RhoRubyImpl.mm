@@ -37,6 +37,25 @@ private:
 };
 
 
+class CRhoRubyRunnableHolder : public  rho::ruby::IRunnable {
+public:
+    
+    CRhoRubyRunnableHolder(id<IRhoRubyRunnable> command) {
+        mCommand = command;
+    }
+    
+    virtual ~CRhoRubyRunnableHolder() {}
+    
+    virtual void run() {
+        [mCommand rhoRubyRunnableRun];
+        delete this;
+    }
+
+private:
+    id<IRhoRubyRunnable> mCommand;
+    
+};
+
 
 
 
@@ -44,7 +63,8 @@ private:
 
 // call command in ruby thread
 -(void) executeInRubyThread:(id<IRhoRubyRunnable>)command {
-    //TODO
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rr->executeInRubyThread(new CRhoRubyRunnableHolder(command));
 }
 
 // call ruby server url (net request) and receive responce in callabck
