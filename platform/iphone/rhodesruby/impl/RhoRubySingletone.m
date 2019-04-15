@@ -1,6 +1,6 @@
 
 #import "../api/RhoRubySingletone.h"
-#import "RhoRubyImpl.h"
+#import "RhoRubyFabrique.h"
 
 
 static id<IRhoRuby> ourIRhoRuby = nil;
@@ -9,7 +9,7 @@ static id<IRhoRuby> ourIRhoRuby = nil;
 
 +(id<IRhoRuby>) getRhoRuby {
     if (ourIRhoRuby == nil) {
-        ourIRhoRuby = [[RhoRubyImpl alloc] init];
+        ourIRhoRuby = [RhoRubyFabrique createRhoRuby];
     }
     return ourIRhoRuby;
 }

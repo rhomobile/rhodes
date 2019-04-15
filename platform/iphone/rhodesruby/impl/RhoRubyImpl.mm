@@ -1,6 +1,7 @@
 
 #import "RhoRubyImpl.h"
 #import "../api/RhoRubySingletone.h"
+#import "RhoRubyFabrique.h"
 
 //#include "../../../shared/rhoruby/api/RhoRuby.h"
 
@@ -13,6 +14,16 @@
 #import "RhoRubyMutableIntegerImpl.h"
 #import "RhoRubyMutableStringImpl.h"
 #import "RhoRubyNilImpl.h"
+
+
+@implementation RhoRubyFabrique
+
++(id<IRhoRuby>) createRhoRuby {
+    return [[RhoRubyImpl alloc] init];
+}
+
+@end
+
 
 
 class CRhoRubyNativeCallbackHolder : public  rho::ruby::IRubyNativeCallback {

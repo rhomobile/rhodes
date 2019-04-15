@@ -62,7 +62,7 @@ extern "C" VALUE c_rb_Rho_Ruby_callNativeCallback(int argc, VALUE *argv) {
 static void rholib_local_server_callback_func(void *arg, rho::String const &strQuery) {
     rho::ruby::RhoRubyImpl* rr = (rho::ruby::RhoRubyImpl*)(rho::ruby::RhoRubySingletone::getRhoRuby());
     rr->rholib_local_server_callback();
-
+    rho_http_sendresponse(arg, "");
 }
 
 
