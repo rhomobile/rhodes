@@ -18,6 +18,17 @@
 			name = Framework;
 			productName = Framework;
 		};
+		FAD3576F22646BEF00419673 /* Framework copy */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FAD3577122646BEF00419673 /* Build configuration list for PBXAggregateTarget "Framework copy" */;
+			buildPhases = (
+				FAD3577022646BEF00419673 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "Framework copy";
+			productName = Framework;
+		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
@@ -87,19 +98,14 @@
 		FA7A09D422604B3B00B95E07 /* RhoRuby.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098822603D2000B95E07 /* RhoRuby.h */; };
 		FA7A09D522604B3B00B95E07 /* RhoRubySingletone.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098222603D2000B95E07 /* RhoRubySingletone.h */; };
 		FA7A09D622604B3B00B95E07 /* SmartPointer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FA7A098522603D2000B95E07 /* SmartPointer.h */; };
-		FA7A0AC822630FDA00B95E07 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0A9D22630F9B00B95E07 /* libcurl.a */; };
-		FA7A0AC922630FDF00B95E07 /* libRhoAppBaseStandaloneLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AB222630F9C00B95E07 /* libRhoAppBaseStandaloneLib.a */; };
-		FA7A0ACB22630FE600B95E07 /* librhoextlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AA922630F9C00B95E07 /* librhoextlib.a */; };
-		FA7A0ACD22630FEE00B95E07 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AB922630F9C00B95E07 /* librhorubylib.a */; };
-		FA7A0ACE22630FF200B95E07 /* librhosynclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AA322630F9C00B95E07 /* librhosynclib.a */; };
-		FA7A0ADA2263105100B95E07 /* RhodesLib.m in Sources */ = {isa = PBXBuildFile; fileRef = FA7A0AD12263102600B95E07 /* RhodesLib.m */; };
-		FA7A0ADB2263105600B95E07 /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = FA7A0AD42263102700B95E07 /* extensions.c */; };
-		FA7A0ADC2263105800B95E07 /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FA7A0AD52263102700B95E07 /* app_build_configs.c */; };
-		FA7A0ADE2263105D00B95E07 /* RhodesBaseDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA7A0AD72263102700B95E07 /* RhodesBaseDelegate.m */; };
-		FA7A0ADF2263105D00B95E07 /* rhodes_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7A0AD82263102700B95E07 /* rhodes_stub.cpp */; };
-		FA7A0AE022631AC400B95E07 /* RhodesLib.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A0ACF2263102600B95E07 /* RhodesLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		FA7A0AF322631F8700B95E07 /* libCoreAPI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AE622631E4E00B95E07 /* libCoreAPI.a */; };
-		FA7A0B0C22632D8400B95E07 /* librholib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0A9722630F9B00B95E07 /* librholib.a */; };
+		FAD35730226458D700419673 /* RhodesLib.h in Headers */ = {isa = PBXBuildFile; fileRef = FAD3572F226458D700419673 /* RhodesLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FAE3BEDA2265656000AE0C99 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0A9D22630F9B00B95E07 /* libcurl.a */; };
+		FAE3BEDB2265656800AE0C99 /* libRhoAppBaseStandaloneLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AB222630F9C00B95E07 /* libRhoAppBaseStandaloneLib.a */; };
+		FAE3BEDC2265656D00AE0C99 /* libRhoApplication.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD356C32264206E00419673 /* libRhoApplication.a */; };
+		FAE3BEDD2265657300AE0C99 /* librhoextlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AA922630F9C00B95E07 /* librhoextlib.a */; };
+		FAE3BEDE2265657700AE0C99 /* librholib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0A9722630F9B00B95E07 /* librholib.a */; };
+		FAE3BEDF2265657A00AE0C99 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AB922630F9C00B95E07 /* librhorubylib.a */; };
+		FAE3BEE02265657D00AE0C99 /* librhosynclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A0AA322630F9C00B95E07 /* librhosynclib.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -159,48 +165,6 @@
 			remoteGlobalIDString = A8A6D30E1E24AADD00016427;
 			remoteInfo = rubymac;
 		};
-		FA7A0ABC22630FB200B95E07 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FA7A0AA422630F9C00B95E07 /* rhoextlib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D;
-			remoteInfo = rhoextlib;
-		};
-		FA7A0ABE22630FB600B95E07 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FA7A0A9E22630F9C00B95E07 /* rhosynclib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = rhosynclib;
-		};
-		FA7A0AC022630FB900B95E07 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FA7A0AB322630F9C00B95E07 /* rhorubylib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = rhorubylib;
-		};
-		FA7A0AC222630FBD00B95E07 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FA7A0A9222630F9B00B95E07 /* RhoLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = RhoLib;
-		};
-		FA7A0AC422630FC100B95E07 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = FAE78BDF22583F6C001A1150;
-			remoteInfo = RhoAppBaseStandaloneLib;
-		};
-		FA7A0AC622630FC300B95E07 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FA7A0A9822630F9B00B95E07 /* curl.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = curl;
-		};
 		FA7A0AE522631E4E00B95E07 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FA7A0AE122631E4E00B95E07 /* Coreapi.xcodeproj */;
@@ -208,12 +172,75 @@
 			remoteGlobalIDString = FAC155F3145855CF0016F3BD;
 			remoteInfo = CoreAPI;
 		};
-		FA7A0AEE22631F7F00B95E07 /* PBXContainerItemProxy */ = {
+		FAD356C22264206E00419673 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = FA7A0AE122631E4E00B95E07 /* Coreapi.xcodeproj */;
+			containerPortal = FAD356B92264206E00419673 /* RhoApplication.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FA67F3632264051800482671;
+			remoteInfo = RhoApplication;
+		};
+		FAE3BECA2265652600AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAD356B92264206E00419673 /* RhoApplication.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = FAC155E5145855CF0016F3BD;
-			remoteInfo = CoreAPI;
+			remoteGlobalIDString = FA67F3622264051800482671;
+			remoteInfo = RhoApplication;
+		};
+		FAE3BECC2265653600AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AA422630F9C00B95E07 /* rhoextlib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = rhoextlib;
+		};
+		FAE3BECE2265653B00AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0A9E22630F9C00B95E07 /* rhosynclib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = rhosynclib;
+		};
+		FAE3BED02265653F00AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AB322630F9C00B95E07 /* rhorubylib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = rhorubylib;
+		};
+		FAE3BED22265654300AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0A9222630F9B00B95E07 /* RhoLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = RhoLib;
+		};
+		FAE3BED42265654900AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FAE78BDF22583F6C001A1150;
+			remoteInfo = RhoAppBaseStandaloneLib;
+		};
+		FAE3BED62265654F00AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = RhoAppBaseLib;
+		};
+		FAE3BED82265655200AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA7A0A9822630F9B00B95E07 /* curl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC045055464E500DB518D;
+			remoteInfo = curl;
+		};
+		FAE3BEED22656ED500AE0C99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAE3BEE922656ED500AE0C99 /* Decryptstub.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FAC155F3145855CF0016F3BD;
+			remoteInfo = Decryptstub;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -318,26 +345,16 @@
 		FA7A099122603D2100B95E07 /* IHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHash.h; path = ../../../../../shared/rhoruby/api/IHash.h; sourceTree = "<group>"; };
 		FA7A099222603D2100B95E07 /* IRhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRuby.h; path = ../../../../../shared/rhoruby/api/IRhoRuby.h; sourceTree = "<group>"; };
 		FA7A09AB2260419D00B95E07 /* StubCode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StubCode.m; sourceTree = "<group>"; };
-		FA7A0A8622630B1A00B95E07 /* libcurl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libcurl.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA7A0A8822630B1A00B95E07 /* libRhoAppBaseStandaloneLib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRhoAppBaseStandaloneLib.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA7A0A8A22630B1A00B95E07 /* librhoextlib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = librhoextlib.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA7A0A8C22630B1A00B95E07 /* librholib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = librholib.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA7A0A8E22630B1A00B95E07 /* librhorubylib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = librhorubylib.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA7A0A9022630B1A00B95E07 /* librhosynclib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = librhosynclib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA7A0A9222630F9B00B95E07 /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = ../../RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
 		FA7A0A9822630F9B00B95E07 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = ../../curl/curl.xcodeproj; sourceTree = "<group>"; };
 		FA7A0A9E22630F9C00B95E07 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = ../../rhosynclib/rhosynclib.xcodeproj; sourceTree = "<group>"; };
 		FA7A0AA422630F9C00B95E07 /* rhoextlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhoextlib.xcodeproj; path = ../../rhoextlib/rhoextlib.xcodeproj; sourceTree = "<group>"; };
 		FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoAppBaseLib.xcodeproj; path = ../../RhoAppBaseLib/RhoAppBaseLib.xcodeproj; sourceTree = "<group>"; };
 		FA7A0AB322630F9C00B95E07 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = ../../rhorubylib/rhorubylib.xcodeproj; sourceTree = "<group>"; };
-		FA7A0ACF2263102600B95E07 /* RhodesLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhodesLib.h; path = rhodeslib/api/RhodesLib.h; sourceTree = "<group>"; };
-		FA7A0AD12263102600B95E07 /* RhodesLib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhodesLib.m; path = rhodeslib/impl/RhodesLib.m; sourceTree = "<group>"; };
-		FA7A0AD42263102700B95E07 /* extensions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extensions.c; path = ../shared/ruby/ext/rho/extensions.c; sourceTree = "<group>"; };
-		FA7A0AD52263102700B95E07 /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = ../shared/common/app_build_configs.c; sourceTree = "<group>"; };
-		FA7A0AD62263102700B95E07 /* RhodesBaseDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhodesBaseDelegate.h; sourceTree = "<group>"; };
-		FA7A0AD72263102700B95E07 /* RhodesBaseDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhodesBaseDelegate.m; sourceTree = "<group>"; };
-		FA7A0AD82263102700B95E07 /* rhodes_stub.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rhodes_stub.cpp; sourceTree = "<group>"; };
 		FA7A0AE122631E4E00B95E07 /* Coreapi.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Coreapi.xcodeproj; path = ../../../../lib/commonAPI/coreapi/ext/platform/iphone/Coreapi.xcodeproj; sourceTree = "<group>"; };
+		FAD356B92264206E00419673 /* RhoApplication.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoApplication.xcodeproj; path = ../RhoApplication/RhoApplication.xcodeproj; sourceTree = "<group>"; };
+		FAD3572F226458D700419673 /* RhodesLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhodesLib.h; path = ../../../../rhodeslib/api/RhodesLib.h; sourceTree = "<group>"; };
+		FAE3BEE922656ED500AE0C99 /* Decryptstub.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Decryptstub.xcodeproj; path = ../../../../lib/extensions/decryptstub/ext/platform/iphone/Decryptstub.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -345,13 +362,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA7A0B0C22632D8400B95E07 /* librholib.a in Frameworks */,
-				FA7A0AF322631F8700B95E07 /* libCoreAPI.a in Frameworks */,
-				FA7A0ACE22630FF200B95E07 /* librhosynclib.a in Frameworks */,
-				FA7A0ACD22630FEE00B95E07 /* librhorubylib.a in Frameworks */,
-				FA7A0ACB22630FE600B95E07 /* librhoextlib.a in Frameworks */,
-				FA7A0AC922630FDF00B95E07 /* libRhoAppBaseStandaloneLib.a in Frameworks */,
-				FA7A0AC822630FDA00B95E07 /* libcurl.a in Frameworks */,
+				FAE3BEE02265657D00AE0C99 /* librhosynclib.a in Frameworks */,
+				FAE3BEDF2265657A00AE0C99 /* librhorubylib.a in Frameworks */,
+				FAE3BEDE2265657700AE0C99 /* librholib.a in Frameworks */,
+				FAE3BEDD2265657300AE0C99 /* librhoextlib.a in Frameworks */,
+				FAE3BEDC2265656D00AE0C99 /* libRhoApplication.a in Frameworks */,
+				FAE3BEDB2265656800AE0C99 /* libRhoAppBaseStandaloneLib.a in Frameworks */,
+				FAE3BEDA2265656000AE0C99 /* libcurl.a in Frameworks */,
 				FA7A094422603B4C00B95E07 /* Foundation.framework in Frameworks */,
 				FA7A094222603B4500B95E07 /* UIKit.framework in Frameworks */,
 				FA7A094022603B3F00B95E07 /* ImageIO.framework in Frameworks */,
@@ -386,6 +403,8 @@
 		FA7A08FD22603A0E00B95E07 = {
 			isa = PBXGroup;
 			children = (
+				FAE3BEE922656ED500AE0C99 /* Decryptstub.xcodeproj */,
+				FAD356B92264206E00419673 /* RhoApplication.xcodeproj */,
 				FA7A0AE122631E4E00B95E07 /* Coreapi.xcodeproj */,
 				FA7A0AA422630F9C00B95E07 /* rhoextlib.xcodeproj */,
 				FA7A0A9E22630F9C00B95E07 /* rhosynclib.xcodeproj */,
@@ -410,8 +429,7 @@
 		FA7A090922603A0F00B95E07 /* Rhodes */ = {
 			isa = PBXGroup;
 			children = (
-				FA7A0AD32263102600B95E07 /* rhodeslib */,
-				FA7A0AD92263102700B95E07 /* application */,
+				FAD3571D226458A000419673 /* RhodesLib */,
 				FA7A095822603CCC00B95E07 /* RhoRuby.cpp */,
 				FA7A095522603C4700B95E07 /* RhoRuby */,
 				FA7A090A22603A0F00B95E07 /* Rhodes.h */,
@@ -424,12 +442,6 @@
 		FA7A091222603A9000B95E07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FA7A0A8622630B1A00B95E07 /* libcurl.a */,
-				FA7A0A8822630B1A00B95E07 /* libRhoAppBaseStandaloneLib.a */,
-				FA7A0A8A22630B1A00B95E07 /* librhoextlib.a */,
-				FA7A0A8C22630B1A00B95E07 /* librholib.a */,
-				FA7A0A8E22630B1A00B95E07 /* librhorubylib.a */,
-				FA7A0A9022630B1A00B95E07 /* librhosynclib.a */,
 				FA7A094322603B4C00B95E07 /* Foundation.framework */,
 				FA7A094122603B4500B95E07 /* UIKit.framework */,
 				FA7A093F22603B3F00B95E07 /* ImageIO.framework */,
@@ -562,49 +574,34 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		FA7A0AD02263102600B95E07 /* api */ = {
-			isa = PBXGroup;
-			children = (
-				FA7A0ACF2263102600B95E07 /* RhodesLib.h */,
-			);
-			name = api;
-			sourceTree = "<group>";
-		};
-		FA7A0AD22263102600B95E07 /* impl */ = {
-			isa = PBXGroup;
-			children = (
-				FA7A0AD12263102600B95E07 /* RhodesLib.m */,
-			);
-			name = impl;
-			sourceTree = "<group>";
-		};
-		FA7A0AD32263102600B95E07 /* rhodeslib */ = {
-			isa = PBXGroup;
-			children = (
-				FA7A0AD02263102600B95E07 /* api */,
-				FA7A0AD22263102600B95E07 /* impl */,
-			);
-			name = rhodeslib;
-			path = ../../..;
-			sourceTree = "<group>";
-		};
-		FA7A0AD92263102700B95E07 /* application */ = {
-			isa = PBXGroup;
-			children = (
-				FA7A0AD42263102700B95E07 /* extensions.c */,
-				FA7A0AD52263102700B95E07 /* app_build_configs.c */,
-				FA7A0AD62263102700B95E07 /* RhodesBaseDelegate.h */,
-				FA7A0AD72263102700B95E07 /* RhodesBaseDelegate.m */,
-				FA7A0AD82263102700B95E07 /* rhodes_stub.cpp */,
-			);
-			name = application;
-			path = ../../..;
-			sourceTree = "<group>";
-		};
 		FA7A0AE222631E4E00B95E07 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				FA7A0AE622631E4E00B95E07 /* libCoreAPI.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAD356BA2264206E00419673 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAD356C32264206E00419673 /* libRhoApplication.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAD3571D226458A000419673 /* RhodesLib */ = {
+			isa = PBXGroup;
+			children = (
+				FAD3572F226458D700419673 /* RhodesLib.h */,
+			);
+			path = RhodesLib;
+			sourceTree = "<group>";
+		};
+		FAE3BEEA22656ED500AE0C99 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAE3BEEE22656ED500AE0C99 /* libDecryptstub.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -616,7 +613,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA7A0AE022631AC400B95E07 /* RhodesLib.h in Headers */,
+				FAD35730226458D700419673 /* RhodesLib.h in Headers */,
 				FA7A097C22603D0300B95E07 /* IRhoRuby.h in Headers */,
 				FA7A097D22603D0300B95E07 /* IRhoRubyFloat.h in Headers */,
 				FA7A097522603D0300B95E07 /* IRhoRubyNil.h in Headers */,
@@ -656,13 +653,14 @@
 			buildRules = (
 			);
 			dependencies = (
-				FA7A0AEF22631F7F00B95E07 /* PBXTargetDependency */,
-				FA7A0AC722630FC300B95E07 /* PBXTargetDependency */,
-				FA7A0AC522630FC100B95E07 /* PBXTargetDependency */,
-				FA7A0AC322630FBD00B95E07 /* PBXTargetDependency */,
-				FA7A0AC122630FB900B95E07 /* PBXTargetDependency */,
-				FA7A0ABF22630FB600B95E07 /* PBXTargetDependency */,
-				FA7A0ABD22630FB200B95E07 /* PBXTargetDependency */,
+				FAE3BED92265655200AE0C99 /* PBXTargetDependency */,
+				FAE3BED72265654F00AE0C99 /* PBXTargetDependency */,
+				FAE3BED52265654900AE0C99 /* PBXTargetDependency */,
+				FAE3BED32265654300AE0C99 /* PBXTargetDependency */,
+				FAE3BED12265653F00AE0C99 /* PBXTargetDependency */,
+				FAE3BECF2265653B00AE0C99 /* PBXTargetDependency */,
+				FAE3BECD2265653600AE0C99 /* PBXTargetDependency */,
+				FAE3BECB2265652600AE0C99 /* PBXTargetDependency */,
 			);
 			name = Rhodes;
 			productName = Rhodes;
@@ -706,8 +704,16 @@
 					ProjectRef = FA7A0A9822630F9B00B95E07 /* curl.xcodeproj */;
 				},
 				{
+					ProductGroup = FAE3BEEA22656ED500AE0C99 /* Products */;
+					ProjectRef = FAE3BEE922656ED500AE0C99 /* Decryptstub.xcodeproj */;
+				},
+				{
 					ProductGroup = FA7A0AAB22630F9C00B95E07 /* Products */;
 					ProjectRef = FA7A0AAA22630F9C00B95E07 /* RhoAppBaseLib.xcodeproj */;
+				},
+				{
+					ProductGroup = FAD356BA2264206E00419673 /* Products */;
+					ProjectRef = FAD356B92264206E00419673 /* RhoApplication.xcodeproj */;
 				},
 				{
 					ProductGroup = FA7A0AA522630F9C00B95E07 /* Products */;
@@ -730,6 +736,7 @@
 			targets = (
 				FA7A090622603A0E00B95E07 /* Rhodes */,
 				FA7A09D82260564500B95E07 /* Framework */,
+				FAD3576F22646BEF00419673 /* Framework copy */,
 			);
 		};
 /* End PBXProject section */
@@ -798,6 +805,20 @@
 			remoteRef = FA7A0AE522631E4E00B95E07 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		FAD356C32264206E00419673 /* libRhoApplication.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRhoApplication.a;
+			remoteRef = FAD356C22264206E00419673 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAE3BEEE22656ED500AE0C99 /* libDecryptstub.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDecryptstub.a;
+			remoteRef = FAE3BEED22656ED500AE0C99 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -826,6 +847,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
+			shellScript = "FRAMEWORK_NAME=\"Rhodes\"\n\nSIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework\"\n\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${FRAMEWORK_NAME}.framework\"\n\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\"\n\nFRAMEWORK=\"${UNIVERSAL_LIBRARY_DIR}/${FRAMEWORK_NAME}.framework\"\n\nOUTPUT_DIR=\"./${FRAMEWORK_NAME}-Aggregated\"\n\nARCHS=\"i386 x86_64\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${FRAMEWORK_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphonesimulator ARCHS=\"i386 x86_64\"\n\nARCHS=\"arm64 armv7 armv7s\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${FRAMEWORK_NAME} -sdk iphoneos -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphoneos ARCHS=\"arm64 armv7 armv7s\"\n\n\nrm -rf \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${FRAMEWORK}\"\n\nrm -rf \"$OUTPUT_DIR\"\nmkdir -p \"$OUTPUT_DIR\"\n\ncp -r \"${DEVICE_LIBRARY_PATH}/.\" \"${FRAMEWORK}\"\n\n\nrm -rf \"${FRAMEWORK}/${FRAMEWORK_NAME}\"\n\nlipo \"${SIMULATOR_LIBRARY_PATH}/${FRAMEWORK_NAME}\" \"${DEVICE_LIBRARY_PATH}/${FRAMEWORK_NAME}\" -create -output \"${FRAMEWORK}/${FRAMEWORK_NAME}\"\ncp -r \"${FRAMEWORK}\" \"$OUTPUT_DIR\"\n\n";
+		};
+		FAD3577022646BEF00419673 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
 			shellScript = "FRAMEWORK_NAME=\"Rhodes\"\n\nSIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework\"\n\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${FRAMEWORK_NAME}.framework\"\n\nDEVICE_BCSYMBOLMAP_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos\"\n\nDEVICE_DSYM_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${FRAMEWORK_NAME}.framework.dSYM\"\nSIMULATOR_DSYM_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework.dSYM\"\n\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\"\n\nFRAMEWORK=\"${UNIVERSAL_LIBRARY_DIR}/${FRAMEWORK_NAME}.framework\"\n\nOUTPUT_DIR=\"./${FRAMEWORK_NAME}-Aggregated\"\n\nARCHS=\"i386 x86_64\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -target ${FRAMEWORK_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphonesimulator ARCHS=\"i386 x86_64\"\n\nARCHS=\"arm64 armv7 armv7s\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -target ${FRAMEWORK_NAME} -sdk iphoneos -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphoneos ARCHS=\"arm64 armv7 armv7s\"\n\n\n\nrm -rf \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${FRAMEWORK}\"\n\nrm -rf \"$OUTPUT_DIR\"\nmkdir -p \"$OUTPUT_DIR\"\n\ncp -r \"${DEVICE_LIBRARY_PATH}/.\" \"${FRAMEWORK}\"\n\n\nrm -rf \"${FRAMEWORK}/${FRAMEWORK_NAME}\"\n\nlipo \"${SIMULATOR_LIBRARY_PATH}/${FRAMEWORK_NAME}\" \"${DEVICE_LIBRARY_PATH}/${FRAMEWORK_NAME}\" -create -output \"${FRAMEWORK}/${FRAMEWORK_NAME}\"\ncp -r \"${FRAMEWORK}\" \"$OUTPUT_DIR\"\n\n\ncp -r \"${DEVICE_DSYM_PATH}\" \"$OUTPUT_DIR\"\nlipo -create -output \"$OUTPUT_DIR/${FRAMEWORK_NAME}.framework.dSYM/Contents/Resources/DWARF/${FRAMEWORK_NAME}\" \\\n\"${DEVICE_DSYM_PATH}/Contents/Resources/DWARF/${FRAMEWORK_NAME}\" \\\n\"${SIMULATOR_DSYM_PATH}/Contents/Resources/DWARF/${FRAMEWORK_NAME}\" || exit 1\n\n\nUUIDs=$(dwarfdump --uuid \"${DEVICE_DSYM_PATH}\" | cut -d ' ' -f2)\nfor file in `find \"${DEVICE_BCSYMBOLMAP_PATH}\" -name \"*.bcsymbolmap\" -type f`; do\nfileName=$(basename \"$file\" \".bcsymbolmap\")\nfor UUID in $UUIDs; do\nif [[ \"$UUID\" = \"$fileName\" ]]; then\ncp -R \"$file\" \"$OUTPUT_DIR\"\ndsymutil --symbol-map \"$OUTPUT_DIR\"/\"$fileName\".bcsymbolmap \"$OUTPUT_DIR/${FRAMEWORK_NAME}.framework.dSYM\"\nfi\ndone\ndone\n";
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -835,11 +873,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA7A0ADE2263105D00B95E07 /* RhodesBaseDelegate.m in Sources */,
-				FA7A0ADC2263105800B95E07 /* app_build_configs.c in Sources */,
-				FA7A0ADA2263105100B95E07 /* RhodesLib.m in Sources */,
-				FA7A0ADB2263105600B95E07 /* extensions.c in Sources */,
-				FA7A0ADF2263105D00B95E07 /* rhodes_stub.cpp in Sources */,
 				FA7A09AC2260419D00B95E07 /* StubCode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -847,40 +880,45 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		FA7A0ABD22630FB200B95E07 /* PBXTargetDependency */ = {
+		FAE3BECB2265652600AE0C99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RhoApplication;
+			targetProxy = FAE3BECA2265652600AE0C99 /* PBXContainerItemProxy */;
+		};
+		FAE3BECD2265653600AE0C99 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = rhoextlib;
-			targetProxy = FA7A0ABC22630FB200B95E07 /* PBXContainerItemProxy */;
+			targetProxy = FAE3BECC2265653600AE0C99 /* PBXContainerItemProxy */;
 		};
-		FA7A0ABF22630FB600B95E07 /* PBXTargetDependency */ = {
+		FAE3BECF2265653B00AE0C99 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = rhosynclib;
-			targetProxy = FA7A0ABE22630FB600B95E07 /* PBXContainerItemProxy */;
+			targetProxy = FAE3BECE2265653B00AE0C99 /* PBXContainerItemProxy */;
 		};
-		FA7A0AC122630FB900B95E07 /* PBXTargetDependency */ = {
+		FAE3BED12265653F00AE0C99 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = rhorubylib;
-			targetProxy = FA7A0AC022630FB900B95E07 /* PBXContainerItemProxy */;
+			targetProxy = FAE3BED02265653F00AE0C99 /* PBXContainerItemProxy */;
 		};
-		FA7A0AC322630FBD00B95E07 /* PBXTargetDependency */ = {
+		FAE3BED32265654300AE0C99 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RhoLib;
-			targetProxy = FA7A0AC222630FBD00B95E07 /* PBXContainerItemProxy */;
+			targetProxy = FAE3BED22265654300AE0C99 /* PBXContainerItemProxy */;
 		};
-		FA7A0AC522630FC100B95E07 /* PBXTargetDependency */ = {
+		FAE3BED52265654900AE0C99 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RhoAppBaseStandaloneLib;
-			targetProxy = FA7A0AC422630FC100B95E07 /* PBXContainerItemProxy */;
+			targetProxy = FAE3BED42265654900AE0C99 /* PBXContainerItemProxy */;
 		};
-		FA7A0AC722630FC300B95E07 /* PBXTargetDependency */ = {
+		FAE3BED72265654F00AE0C99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RhoAppBaseLib;
+			targetProxy = FAE3BED62265654F00AE0C99 /* PBXContainerItemProxy */;
+		};
+		FAE3BED92265655200AE0C99 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = curl;
-			targetProxy = FA7A0AC622630FC300B95E07 /* PBXContainerItemProxy */;
-		};
-		FA7A0AEF22631F7F00B95E07 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = CoreAPI;
-			targetProxy = FA7A0AEE22631F7F00B95E07 /* PBXContainerItemProxy */;
+			targetProxy = FAE3BED82265655200AE0C99 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -921,6 +959,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -983,6 +1022,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1027,9 +1067,12 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = ../LibFactory;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
+					"-filelist",
+					rhodeslibs.txt,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.tautechnologies.Rhodes;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1063,9 +1106,12 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = ../LibFactory;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
+					"-filelist",
+					rhodeslibs.txt,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.tautechnologies.Rhodes;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -1082,11 +1128,35 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				LIBRARY_SEARCH_PATHS = ../LibFactory;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
 		FA7A09DB2260564500B95E07 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				LIBRARY_SEARCH_PATHS = ../LibFactory;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		FAD3577222646BEF00419673 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FAD3577322646BEF00419673 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = NO;
@@ -1123,6 +1193,15 @@
 			buildConfigurations = (
 				FA7A09DA2260564500B95E07 /* Debug */,
 				FA7A09DB2260564500B95E07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAD3577122646BEF00419673 /* Build configuration list for PBXAggregateTarget "Framework copy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAD3577222646BEF00419673 /* Debug */,
+				FAD3577322646BEF00419673 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

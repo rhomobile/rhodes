@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		FAD356FD226422D200419673 /* RhoAppBaseStandaloneLibAggregated */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FAD35701226422D200419673 /* Build configuration list for PBXAggregateTarget "RhoAppBaseStandaloneLibAggregated" */;
+			buildPhases = (
+				FAD35702226422D700419673 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = RhoAppBaseStandaloneLibAggregated;
+			productName = RhoAppBaseStandaloneLibAggregated;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		C04F28E019CAF3CA003E34BD /* RunnableWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C04F28DE19CAF3CA003E34BD /* RunnableWrapper.h */; };
 		C04F28E119CAF3CA003E34BD /* RunnableWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = C04F28DF19CAF3CA003E34BD /* RunnableWrapper.mm */; };
@@ -970,6 +984,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0500;
+				TargetAttributes = {
+					FAD356FD226422D200419673 = {
+						CreatedOnToolsVersion = 10.1;
+						DevelopmentTeam = PNQRMU2LPM;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = 1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "RhoAppBaseLib" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -987,9 +1008,30 @@
 			targets = (
 				D2AAC045055464E500DB518D /* RhoAppBaseLib */,
 				FAE78BDF22583F6C001A1150 /* RhoAppBaseStandaloneLib */,
+				FAD356FD226422D200419673 /* RhoAppBaseStandaloneLibAggregated */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		FAD35702226422D700419673 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "LIB_NAME=\"RhoAppBaseStandaloneLib\"\n\n#MY_BUILD_DIR = \"${BUILD_DIR}\"\nMY_BUILD_DIR=\"./build\"\n\nSIMULATOR_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${LIB_NAME}.a\"\n\nDEVICE_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${LIB_NAME}.a\"\n\nOUTPUT_DIR=\"./${LIB_NAME}-Aggregated\"\n\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator\"\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos\"\n\n\nARCHS=\"i386 x86_64\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator ARCHS=\"i386 x86_64\"\n\nARCHS=\"arm64 armv7 armv7s\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphoneos -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos ARCHS=\"arm64 armv7 armv7s\"\n\nrm -rf \"${OUTPUT_DIR}\"\n\nmkdir \"${OUTPUT_DIR}\"\n\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${OUTPUT_DIR}/lib${LIB_NAME}.a\"\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D2AAC044055464E500DB518D /* Sources */ = {
@@ -1204,6 +1246,7 @@
 		1DEB91F008733DB70010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1218,6 +1261,7 @@
 		1DEB91F108733DB70010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -1230,6 +1274,7 @@
 		46B0042B10332DC400D0C2F4 /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -1273,6 +1318,36 @@
 				STRIPFLAGS = "";
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared rhoextlib ../Classes/**";
+			};
+			name = Distribution;
+		};
+		FAD356FE226422D200419673 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FAD356FF226422D200419673 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		FAD35700226422D200419673 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 			};
 			name = Distribution;
 		};
@@ -1412,6 +1487,16 @@
 				1DEB91F008733DB70010E9CD /* Debug */,
 				1DEB91F108733DB70010E9CD /* Release */,
 				46B0042B10332DC400D0C2F4 /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAD35701226422D200419673 /* Build configuration list for PBXAggregateTarget "RhoAppBaseStandaloneLibAggregated" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAD356FE226422D200419673 /* Debug */,
+				FAD356FF226422D200419673 /* Release */,
+				FAD35700226422D200419673 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

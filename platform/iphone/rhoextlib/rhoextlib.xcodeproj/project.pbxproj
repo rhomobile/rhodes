@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		FAD356E5226421F200419673 /* rhoextlibAggregated */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FAD356E9226421F200419673 /* Build configuration list for PBXAggregateTarget "rhoextlibAggregated" */;
+			buildPhases = (
+				FAD356EA226421F800419673 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = rhoextlibAggregated;
+			productName = rhoextlibAggregated;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		AA747D9F0F9514B9006C5449 /* rhoextlib_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* rhoextlib_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
@@ -119,6 +133,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0500;
+				TargetAttributes = {
+					FAD356E5226421F200419673 = {
+						CreatedOnToolsVersion = 10.1;
+						DevelopmentTeam = PNQRMU2LPM;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "rhoextlib" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -133,9 +154,30 @@
 			projectRoot = "";
 			targets = (
 				D2AAC07D0554694100DB518D /* rhoextlib */,
+				FAD356E5226421F200419673 /* rhoextlibAggregated */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		FAD356EA226421F800419673 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "LIB_NAME=\"rhoextlib\"\n\n#MY_BUILD_DIR = \"${BUILD_DIR}\"\nMY_BUILD_DIR=\"./build\"\n\nSIMULATOR_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${LIB_NAME}.a\"\n\nDEVICE_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${LIB_NAME}.a\"\n\nOUTPUT_DIR=\"./${LIB_NAME}-Aggregated\"\n\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator\"\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos\"\n\n\nARCHS=\"i386 x86_64\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator ARCHS=\"i386 x86_64\"\n\nARCHS=\"arm64 armv7 armv7s\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphoneos -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos ARCHS=\"arm64 armv7 armv7s\"\n\nrm -rf \"${OUTPUT_DIR}\"\n\nmkdir \"${OUTPUT_DIR}\"\n\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${OUTPUT_DIR}/lib${LIB_NAME}.a\"\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D2AAC07B0554694100DB518D /* Sources */ = {
@@ -267,6 +309,33 @@
 			};
 			name = Distribution;
 		};
+		FAD356E6226421F200419673 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FAD356E7226421F200419673 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		FAD356E8226421F200419673 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Distribution;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -286,6 +355,16 @@
 				1DEB922308733DC00010E9CD /* Debug */,
 				1DEB922408733DC00010E9CD /* Release */,
 				46B0042310332DB600D0C2F4 /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAD356E9226421F200419673 /* Build configuration list for PBXAggregateTarget "rhoextlibAggregated" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAD356E6226421F200419673 /* Debug */,
+				FAD356E7226421F200419673 /* Release */,
+				FAD356E8226421F200419673 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

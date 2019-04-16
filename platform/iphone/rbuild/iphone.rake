@@ -1146,7 +1146,7 @@ namespace "config" do
 
     #check for XCode 6
     xcode_version = get_xcode_version
-    xcode_version = xcode_version[0..(xcode_version.index('.')-1)]	
+    xcode_version = xcode_version[0..(xcode_version.index('.')-1)]
     if xcode_version.to_i >= 6
       $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_6')
     end
@@ -1168,7 +1168,7 @@ namespace "config" do
       if !File.exists? '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/DVTiPhoneSimulatorRemoteClient.framework'
         #check for XCode 6
         xcode_version = get_xcode_version
-        xcode_version = xcode_version[0..(xcode_version.index('.')-1)]	
+        xcode_version = xcode_version[0..(xcode_version.index('.')-1)]
         if xcode_version.to_i >= 8
           $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_8')
         elsif xcode_version.to_i >= 7
@@ -1495,6 +1495,336 @@ namespace "build" do
       save_out_file
 
     end
+
+
+    # [build:iphone:rhodeslib_framework]
+    desc "Build iphone framework - set target path :  rake build:iphone:rhodeslib_framework['/Users/myuser/mypath']"
+    task :rhodeslib_framework, [:target_path]  => ["config:set_iphone_platform", "config:common"] do |t, args|
+
+        require   $startdir + '/lib/build/jake.rb'
+
+        print_timestamp('build:iphone:rhodeslib_framework START')
+        currentdir = Dir.pwd()
+
+
+        # copied from build upgrade bundle
+
+        target_path = args[:target_path]
+
+        Rake::Task['config:iphone'].invoke
+
+        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+        iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
+
+        if !File.exist?(iphone_project)
+
+          puts '$ make iphone XCode project for application'
+          Rake::Task['build:iphone:make_xcode_project'].invoke
+
+        end
+
+
+
+        # prepare tmp folder
+        lib_temp_dir = File.join($startdir, "platform/iphone/Framework/LibFactory")
+        rm_rf lib_temp_dir if File.exists? lib_temp_dir
+        mkdir_p lib_temp_dir
+
+        libs = []
+
+        # build rhodes system libs
+        rhodes_libs = {}
+        rhodes_libs['RhoApplication'] = { :path => File.join($startdir, "platform/iphone/Framework/RhoApplication"), :target => "RhoApplication"}
+        rhodes_libs['rhoextlib'] = { :path => File.join($startdir, "platform/iphone/rhoextlib"), :target => 'rhoextlib'}
+        rhodes_libs['rhosynclib'] = { :path => File.join($startdir, "platform/iphone/rhosynclib"), :target => 'rhosynclib'}
+        rhodes_libs['rhorubylib'] = { :path => File.join($startdir, "platform/iphone/rhorubylib"), :target => 'rhorubylib'}
+        rhodes_libs['RhoLib'] = { :path => File.join($startdir, "platform/iphone/RhoLib"), :target => 'RhoLib'}
+        rhodes_libs['curl'] = { :path => File.join($startdir, "platform/iphone/curl"), :target => 'curl'}
+        rhodes_libs['RhoAppBaseLib'] = { :path => File.join($startdir, "platform/iphone/RhoAppBaseLib"), :target => 'RhoAppBaseStandaloneLib'}
+
+        # skip this step - now all of those libsincluded into framework project
+        rhodes_libs = {}
+        rhodes_libs.each do |libname, libconfig|
+            # build
+            #args = ['install', '-scheme', libconfig[:target]+"Aggregated", '-project', libname + ".xcodeproj"]
+            Dir.chdir libconfig[:path]
+            #ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
+
+            lib_iphoneos_dir = File.join(libconfig[:path], "iphoneos")
+            lib_iphonesimulator_dir = File.join(libconfig[:path], "iphonesimulator")
+            lib_aggregated_dir = File.join(libconfig[:path], "aggregated")
+
+            lib_file_name = "lib" + libconfig[:target] + ".a"
+            lib_iphoneos_path = File.join(lib_iphoneos_dir, lib_file_name)
+            lib_iphonesimulator_path = File.join(lib_iphonesimulator_dir, lib_file_name)
+            lib_aggregated_path = File.join(lib_aggregated_dir, lib_file_name)
+
+            rm_rf lib_iphoneos_dir if File.exists? lib_iphoneos_dir
+            rm_rf lib_iphonesimulator_dir if File.exists? lib_iphonesimulator_dir
+            rm_rf lib_aggregated_dir if File.exists? lib_aggregated_dir
+
+            args = ['clean', 'build', '-scheme', libconfig[:target], '-project', libname + ".xcodeproj", "-sdk", "iphoneos", "-configuration", "Release"]
+            ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir,:string_for_add_to_command_line => ' CONFIGURATION_BUILD_DIR='+lib_iphoneos_dir+' ARCHS="arm64 arm64e armv7 armv7s"'})
+
+            args = ['clean', 'build', '-scheme', libconfig[:target], '-project', libname + ".xcodeproj", "-sdk", "iphonesimulator", "-configuration", "Release"]
+            ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir,:string_for_add_to_command_line => ' CONFIGURATION_BUILD_DIR='+lib_iphonesimulator_dir+' ARCHS="i386 x86_64"'})
+
+            mkdir_p lib_aggregated_dir
+
+            #result_lib = File.join(libconfig[:path], libconfig[:target]+"-Aggregated", lib_file_name)
+            args = []
+            args << "-create"
+            args << "-output"
+            args << lib_aggregated_path
+            args << lib_iphonesimulator_path
+            args << lib_iphoneos_path
+            IPhoneBuild.run_and_trace("lipo",args,{:rootdir => $startdir})
+
+            #copy result
+            target_lib = File.join(lib_temp_dir, lib_file_name)
+            cp_r lib_aggregated_path,target_lib
+
+            # count lib
+            libs << lib_file_name
+        end
+
+        #build extensions
+        Dir.chdir currentdir
+        Rake::Task['build:iphone:extension_libs'].invoke
+        #Rake::Task["build:bundle:noxruby"].execute
+
+        #copy extensions libs to tmp folder
+        puts "$$$ $app_extensions_list = "+$app_extensions_list.to_s
+        $app_extensions_list.each do |ext, commin_ext_path |
+            lib_ext_path = File.join($app_builddir, "extensions", ext, "lib")
+            # copy all libs from this folder
+            psize = lib_ext_path.size+1
+            Dir.glob(File.join(lib_ext_path,'*.a')).each do |artefact|
+                puts "    $$$ artefact = "+artefact.to_s
+               if (File.file? artefact)
+                   relpath = artefact[psize..-1]
+                   libs << relpath
+                   target_lib = File.join(lib_temp_dir, relpath)
+                   cp_r artefact, target_lib
+               end
+            end
+        end
+
+        #join libs to one fat
+        Dir.chdir lib_temp_dir
+
+        #libtool -static -o result.a libCoreAPI.a
+        #args = ["-static", "-o", "RhodesFrameworkStaticLib.a"]
+        args = ["-static", "-o", "libRhodesExtensionsLib.a"]
+        lib_list = ""
+        libs.each do |lib|
+            args << lib
+            lib_list << File.join(lib_temp_dir, lib) + "\n"
+        end
+        #ret = IPhoneBuild.run_and_trace("libtool",args,{:rootdir => $startdir})
+
+        #build framework base
+        framework_dir = File.join($startdir, "platform/iphone/Framework/Rhodes")
+        File.open(File.join(framework_dir,"rhodeslibs.txt"),"w") { |f| f.write lib_list }
+
+        args = ['clean', 'install', '-scheme', "Framework", '-project', "Rhodes.xcodeproj"]
+        Dir.chdir framework_dir
+        ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
+
+        # copy lib
+        #framework_lib_path = File.join(framework_dir, "Rhodes-Aggregated/Rhodes.framework/Rhodes")
+        #target_lib = File.join(lib_temp_dir, "Rhodes.a")
+        #cp_r framework_lib_path, target_lib
+        #libs << "Rhodes.a"
+
+        #copy final lib to framework
+        #rm_rf framework_lib_path
+        #cp_r File.join(lib_temp_dir, "RhodesFrameworkLib.a"), framework_lib_path
+
+        # copy result framework to target path
+        framework_path = File.join(framework_dir, "Rhodes-Aggregated/Rhodes.framework")
+        framework_target_path = File.join(target_path, "Rhodes.framework")
+        rm_rf framework_target_path if File.exists? framework_target_path
+        cp_r framework_path, framework_target_path
+
+        Dir.chdir currentdir
+        print_timestamp('build:iphone:rhodeslib_framework FINISH')
+    end
+
+    # [build:iphone:rhodeslib_prepare_xcodeproject]
+    desc "Prepare customers's XCode project for Rhodes Framework - set target path :  rake build:iphone:rhodeslib_prepare_xcodeproject['/Users/myuser/my_xcode_project_fullpath']"
+    task :rhodeslib_prepare_xcodeproject, [:project_path]  => ["config:set_iphone_platform", "config:common"] do |t, args|
+
+        print_timestamp('build:iphone:rhodeslib_prepare_xcodeproject START')
+        currentdir = Dir.pwd()
+
+
+        # copied from build upgrade bundle
+
+        project_path = args[:project_path]
+        project_dir = File.dirname(project_path)
+
+        doc = REXML::Document.new(File.new(project_path))
+
+
+
+
+        Dir.chdir currentdir
+        print_timestamp('build:iphone:rhodeslib_prepare_xcodeproject FINISH')
+    end
+
+=begin
+
+         #if use_old_scheme
+
+              elements = []
+              binplist = File.join(ENV['HOME'], 'Library', 'Preferences', 'com.apple.iphonesimulator.plist')
+              xmlplist = '/tmp/iphone.plist'
+              if File.exists? binplist
+                  `plutil -convert xml1 -o #{xmlplist} #{binplist}`
+
+                  elements = []
+                  doc = REXML::Document.new(File.new(xmlplist))
+                  nextignore = false
+                  doc.elements.each('plist/dict/*') do |element|
+                      if nextignore
+                          nextignore = false
+                          next
+                      end
+                      if element.name == 'key'
+                          if element.text == 'currentSDKRoot' or element.text == 'SimulateDevice'
+                              nextignore = true
+                              next
+                          end
+                      end
+
+                      elements << element
+                  end
+             end
+
+             e = REXML::Element.new 'key'
+             e.text = 'SimulateDevice'
+             elements << e
+             e = REXML::Element.new 'string'
+             e.text = $sdkver == '3.2' ? 'iPad' : 'iPhone'
+             elements << e
+             e = REXML::Element.new 'key'
+             e.text = 'currentSDKRoot'
+             elements << e
+             e = REXML::Element.new 'string'
+             e.text = $sdkroot
+             elements << e
+
+             File.open(xmlplist, 'w') do |f|
+                 f.puts "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                 f.puts "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">"
+                 f.puts "<plist version=\"1.0\">"
+                 f.puts "<dict>"
+                 elements.each do |e|
+                     f.puts "\t#{e.to_s}"
+                 end
+                 f.puts "</dict>"
+                 f.puts "</plist>"
+             end
+
+             `plutil -convert binary1 -o #{binplist} #{xmlplist}`
+
+             rhorunner = File.join($app_path, "/project/iphone") + "/build/#{$configuration}-iphonesimulator/rhorunner.app"
+             puts "rhorunner: #{rhorunner}"
+
+             puts "our app name: #{$app_config['name']}"
+             puts "simdir: #{$simdir}"
+
+             Dir.glob(File.join($simdir, $sdkver, "Applications", "*")).each do |simapppath|
+                 need_rm = true if File.directory? simapppath
+                 if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
+                     name = File.read(File.join(simapppath, 'rhorunner.app', 'name'))
+                     puts "found app name: #{name}"
+                     guid = File.basename(simapppath)
+                     puts "found guid: #{guid}"
+                     if name == $app_config['name']
+                         $guid = guid
+                         need_rm = false
+                     end
+                 end
+                 rm_rf simapppath if need_rm
+                 rm_rf simapppath + ".sb" if need_rm
+             end
+
+             puts "app guid: #{$guid}"
+
+             mkdir_p File.join($simdir, $sdkver)
+
+             simapp = File.join($simdir, $sdkver, "Applications")
+             simlink = File.join($simdir, $sdkver, "Library", "Preferences")
+
+             $simrhodes = File.join(simapp, $guid)
+             chmod 0744, File.join($simrhodes, "rhorunner.app", "rhorunner") unless !File.exists?(File.join($simrhodes, "rhorunner.app", "rhorunner"))
+
+             mkdir_p File.join($simrhodes, "Documents")
+             mkdir_p File.join($simrhodes, "Library", "Preferences")
+             mkdir_p File.join($simrhodes, "Library", "Caches", "Private Documents")
+
+             rm_rf File.join($simrhodes, 'rhorunner.app')
+             cp_r rhorunner, $simrhodes
+             ['com.apple.PeoplePicker.plist', '.GlobalPreferences.plist'].each do |f|
+                 `ln -f -s "#{simlink}/#{f}" "#{$simrhodes}/Library/Preferences/#{f}"`
+             end
+
+    #>>>>>>>>>>
+            #`echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
+            rholog = simapp + "/" + $guid + "/Library/Caches/Private Documents/rholog.txt"
+
+
+            #simpublic = simapp + "/" + $guid + "/Documents/apps/public"
+            simpublic = simapp + "/" + $guid + "/Library/Caches/Private Documents/apps/public"
+
+            apppublic = $app_path + "/sim-public-#{$sdkver}"
+
+
+            apprholog = $app_path + "/rholog-#{$sdkver}.txt"
+            apprholog = $app_path + "/" + $app_config["applog"] if $app_config["applog"]
+
+            rm_f apprholog
+            rm_f apppublic
+            #`ln -f -s "#{simpublic}" "#{apppublic}"`
+            #`ln -f -s "#{rholog}" "#{apprholog}"`
+            `echo > "#{rholog}"`
+            f = File.new("#{simapp}/#{$guid}.sb","w")
+            f << "(version 1)\n(debug deny)\n(allow default)\n"
+            f.close
+         #end
+
+=end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     # [build:iphone:rhodeslib_bundle]
@@ -1845,13 +2175,15 @@ namespace "build" do
           #rm_rf 'build'
           rm_rf result_lib_folder
 
-          args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
+          args = ['build', '-scheme', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
           additional_string = ''
           if simulator
               #args << '-arch'
               #args << 'i386'
-              additional_string = ' ARCHS="i386 x86_64"'
+              additional_string = ' CONFIGURATION_BUILD_DIR='+result_lib_folder+' ARCHS="i386 x86_64"'
+          else
+              additional_string = ' CONFIGURATION_BUILD_DIR='+result_lib_folder+' ARCHS="arm64 arm64e armv7 armv7s"'
           end
 
           require   rootdir + '/lib/build/jake.rb'
@@ -1907,7 +2239,9 @@ namespace "build" do
       ENV["TARGET_TEMP_DIR"] ||= target_dir
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
-      ENV["ARCHS"] ||= simulator ? "i386 x86_64" : "armv7 armv7s arm64"
+      ENV["ARCHS"] ||= simulator ? "i386 x86_64" : "arm64 arm64e armv7 armv7s"
+
+
       ENV["RHO_ROOT"] = $startdir
 
       # added by dmitrys
@@ -1940,11 +2274,17 @@ namespace "build" do
             else
                  puts 'build script in extension already executable : '+build_script
             end
+            if simulator
+                ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] = ' ARCHS="i386 x86_64"'
+            else
+                ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] = ' ARCHS="arm64 arm64e armv7 armv7s"'
+            end
             #puts '$$$$$$$$$$$$$$$$$$     START'
             currentdir = Dir.pwd()
             Dir.chdir extpath
             sh %{$SHELL ./build}
             #Jake.run32("$SHELL "+build_script)
+            ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] = ''
             Dir.chdir currentdir
             #puts '$$$$$$$$$$$$$$$$$$     FINISH'
             #if File.executable? build_script
@@ -2052,6 +2392,8 @@ namespace "build" do
 
     end
 
+
+
     #[build:iphone:extension_libs]
     task :extension_libs => ["config:iphone", "build:bundle:noxruby"] do
       #chdir 'platform/iphone'
@@ -2131,7 +2473,7 @@ namespace "build" do
                  cp libpath, libsimpath
                  rm_f libpath
 
-                 ENV["ARCHS"] = nil
+                 ENV["ARCHS"] = "arm64 arm64e armv7 armv7s"
                  ENV["SDK_NAME"] = devsdk
                  build_extension_lib(extpath, devsdk, prebuiltpath, xcodeproject, xcodetarget, depfile)
                  cp libpath, libdevpath
@@ -2228,7 +2570,7 @@ namespace "build" do
            rm_rf 'build'
            rm_rf target_lib
 
-           args = ['build', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject, '-quiet']
+           args = ['build', '-scheme', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject, '-quiet']
 
            additional_string = ''
            if simulator
@@ -2477,7 +2819,7 @@ namespace "build" do
               rm_rf File.join('project','iphone','toremoved')
               rm_rf File.join('project','iphone','toremovef')
             end
-            
+
             update_xcode_project_files_by_capabilities
 
         else
@@ -2634,7 +2976,7 @@ namespace "build" do
       #chdir $config["build"]["iphonepath"]
       chdir File.join($app_path, "project","iphone")
 
-      args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project, '-quiet']
+      args = ['build', '-scheme', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project, '-quiet']
 
       additional_string = ''
       if $sdk =~ /iphonesimulator/
@@ -3260,6 +3602,9 @@ namespace "clean" do
 
       iphone_project_folder = File.join($app_path, "project","iphone")
 
+      iphone_build_folder = File.join(iphone_project_folder,"build")
+      rm_rf iphone_build_folder if File.exists? iphone_build_folder
+
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
       appname_project = appname_fixed.slice(0, 1).capitalize + appname_fixed.slice(1..-1) + ".xcodeproj"
@@ -3269,7 +3614,7 @@ namespace "clean" do
 
         chdir iphone_project_folder
 
-        args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project, '-quiet']
+        args = ['clean', '-scheme', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk, '-project', appname_project, '-quiet']
         if RUBY_PLATFORM =~ /(win|w)32$/
         else
           ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
@@ -3365,9 +3710,9 @@ namespace "clean" do
 
       rm_rf 'build'
 
-      args = ['clean', '-target', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
+      args = ['clean', '-scheme', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
-      additional_string = ''
+      additional_string = ' ARCHS="arm64 arm64e armv7 armv7s"'
       if simulator
       #    args << '-arch'
       #    args << 'i386'
@@ -3407,7 +3752,7 @@ namespace "clean" do
       #ENV["TARGET_TEMP_DIR"] ||= target_dir
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
-      ENV["ARCHS"] ||= simulator ? "i386 x86_64" : "armv7 armv7s arm64"
+      ENV["ARCHS"] ||= simulator ? "i386 x86_64" : "arm64 arm64e armv7 armv7s"
       ENV["RHO_ROOT"] = $startdir
 
       # added by dmitrys
