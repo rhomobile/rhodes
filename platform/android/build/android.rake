@@ -39,6 +39,7 @@ require 'tempfile'
 include FileUtils
 
 USE_OWN_STLPORT = false
+$rhodes_as_lib = false
 #USE_TRACES = # see androidcommon.rb
 
 def get_market_version(apilevel)
@@ -618,6 +619,7 @@ namespace "config" do
 
     $rhores = File.join $androidpath, 'Rhodes','res'
     $appres = File.join $tmpdir,'res'
+    $appres_flats = File.join $tmpdir,'flats'
     $appassets = $srcdir
     $applibs = File.join $tmpdir,'lib'
 
@@ -697,11 +699,13 @@ namespace "config" do
         end
       end
 
+      $aapt2 = nil
       if build_tools_path
         puts "Using Android SDK build-tools: #{build_tools_path}"
         build_tools_path = File.join $androidsdkpath,'build-tools',build_tools_path
         $dxjar = File.join(build_tools_path,'lib','dx.jar')
         $aapt = File.join(build_tools_path, "aapt#{$exe_ext}")
+        $aapt2 = File.join(build_tools_path, "aapt2#{$exe_ext}")
       else
         $dxjar = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "lib", "dx.jar")
         $dxjar = File.join($androidsdkpath, "platform-tools", "lib", "dx.jar") unless File.exists? $dxjar
@@ -1192,6 +1196,23 @@ end
 
 namespace "build" do
   namespace "android" do
+
+    task :rhodeslib_bundle => ["config:android"] do
+      print_timestamp('build:android:rhodeslib_bundle START')
+
+
+      print_timestamp('build:android:rhodeslib_bundle FINISH')
+    end
+
+    task :rhodeslib_lib => [:rhobundle] do
+      print_timestamp('build:android:rhodeslib_lib START')
+      $rhodes_as_lib = true
+      Rake::Task["package:android"].invoke
+      #Rake::Task["build:android:extensions_java"].invoke
+
+      print_timestamp('build:android:rhodeslib_lib FINISH')
+    end
+
 
     desc "Build RhoBundle for android"
     task :rhobundle => ["config:android"] do
@@ -2193,12 +2214,55 @@ namespace "build" do
 
       puts "Generate initial R.java at #{$app_rjava_dir}"
 
-      args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
-      args += AndroidTools::MavenDepsExtractor.instance.aapt_args
+      if ($rhodes_as_lib)
+        puts $appres.to_s
+        puts $app_rjava_dir.to_s
+
+        mkdir_p $appres_flats
+
+        Dir.glob(File.join($appres,'**','*.*')) do |filepath|
+          args = ["compile", PathToWindowsWay(filepath), "-o", PathToWindowsWay($appres_flats)]
+          args << '-v' if USE_TRACES
+          Jake.run($aapt2, args)
+        end
+
+        flat_args = []
+        Dir.glob(File.join($appres_flats,'**','*.flat')) do |filepath|
+          flat_args << PathToWindowsWay(filepath)
+        end
+
+        FormatManifestToAapt2Compat($appmanifest)
+        
+        args = 
+        [
+          "link", 
+          "-o", PathToWindowsWay(File.join($bindir, "_tmp.aar")), 
+          "-I", PathToWindowsWay($androidjar)
+        ]
+        args += flat_args
+        args +=
+        [
+          "--manifest", PathToWindowsWay($appmanifest), 
+          "-A", PathToWindowsWay($appassets), 
+          "--java", PathToWindowsWay($app_rjava_dir), 
+          "--output-text-symbols", PathToWindowsWay(File.join($app_rjava_dir, 'R.txt'))
+        ]
+        #args += AndroidTools::MavenDepsExtractor.instance.aapt_args
+      else
+
+        args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
+        args += AndroidTools::MavenDepsExtractor.instance.aapt_args
+      end
 
       args << '-v' if USE_TRACES
 
-      Jake.run($aapt, args)
+      if ($rhodes_as_lib)
+        Jake.run($aapt2, args)
+        cp_r File.join($app_rjava_dir, 'com', 'rhomobile', $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
+        rm_rf File.join($app_rjava_dir, 'com', 'rhomobile', $appname, 'R.java')
+      else
+        Jake.run($aapt, args)
+      end
 
       raise 'Error in AAPT: R.java' unless $?.success?
 
@@ -2513,9 +2577,101 @@ namespace "build" do
   end
 end
 
+def prepare_aar_package
+  alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
+  #alljars += AndroidTools::MavenDepsExtractor.instance.jars
+
+  require 'set'
+  unique_jars = Set.new
+
+  args = ['cvf', 'classes.jar', '-C', '.', '.']
+  jarNamesCounter = 0
+  
+  $allclasses = File.join($tmpdir, 'allclasses')
+  mkdir_p $allclasses
+
+  puts "Creating classes.jar for aar package"
+  
+  if File.exist?(File.join($allclasses, 'classes.jar'))
+    rm_rf File.join($allclasses, 'classes.jar')
+  end
+
+  alljars.each do |jar|
+    Zip::File.open(jar) do |archive|
+      archive.glob("**/*.*").each do |pfile|
+        next if !(pfile.name =~ /.*\.class$/)
+        target = File.join($allclasses, pfile.name)
+        next if File.exist?(target)
+        mkdir_p File.dirname(target)
+        rm target if File.file?(target)
+        archive.extract( pfile, File.join(target) )
+      end
+    end
+  end
+
+  rm_rf File.join($allclasses, 'com', 'rhomobile', 'kitchensinkruby')
+
+  Jake.run($jarbin, args, $allclasses)
+
+  unless $?.success?
+    raise "Error while creating classes.jar"
+  end
+
+  resourcepkg = File.join($bindir, "#{$appname}-#{$app_config["version"]}.aar")
+
+  args = ["cvf", resourcepkg, 'classes.jar']
+  Jake.run($jarbin, args, $allclasses)
+  unless $?.success?
+    raise "Error packaging classes.jar file"
+  end
+
+  args = ["uf", resourcepkg, '-C', '.', 'assets']
+  Jake.run($jarbin, args, $tmpdir)
+  unless $?.success?
+    raise "Error packaging classes.jar file"
+  end
+
+  mkdir_p File.join($tmpdir, 'jni')
+
+  Dir.glob(File.join($tmpdir, 'lib', '*')).each do |lib|
+    cp_r lib, File.join($tmpdir, 'jni')
+  end
+
+  args = ["uf", resourcepkg]
+  Dir.glob(File.join(File.join($tmpdir, 'jni'),'**','lib*.so')).each do |jni|
+    arch = File.basename(File.dirname(jni))
+    args << "jni/#{arch}/#{File.basename(jni)}"
+  end
+  Jake.run($jarbin, args, $tmpdir)
+  unless $?.success?
+    raise "Error packaging native libraries"
+  end
+
+  args = ["uf", resourcepkg, 'R.txt']
+  Jake.run($jarbin, args, $app_rjava_dir)
+  unless $?.success?
+    raise "Error packaging R.txt file"
+  end
+
+  args = ["uf", resourcepkg, '-C', '.', 'res']
+  Jake.run($jarbin, args, $tmpdir)
+
+  args = ["uf", resourcepkg, 'AndroidManifest.xml']
+  Jake.run($jarbin, args, File.dirname($appmanifest))
+
+  #$appmanifest
+
+end
+
 namespace "package" do
   task :android => "build:android:all" do
     print_timestamp('package:android START')
+
+    if $rhodes_as_lib
+      prepare_aar_package()
+      next
+    end
+
     puts "Running dx utility"
     args = []
     args << "-Xmx1024m"
