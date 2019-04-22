@@ -31,6 +31,18 @@
 -(void) addRubyNativeCallback:(id<IRhoRubyNativeCallback>)native_callback callback_id:(NSString*)callback_id;
 -(void) removeRubyNativeCallbackWithID:(NSString*)callback_id;
 
+
+-(id<IRhoRubyObject>) convertJSON_to_Objects:(NSString*)json;
+-(NSString*) convertObject_to_JSON:(id<IRhoRubyObject>)obj;
+
+-(void) loadRubyFile:(NSString*)ruby_file_path;
+-(void) loadModel:(NSString*)ruby_file_path;
+-(id<IRhoRubyObject>) executeRubyMethod:(NSString*)full_class_name  method_name:(NSString*)method_name parameters:(id<IRhoRubyObject>)paramaters;
+
+//return JSON
+-(NSString*) executeRubyMethodWithJSON:(NSString*)full_class_name  method_name:(NSString*)method_name paramaters_in_json:(NSString*)paramaters_in_json;
+
+
 @end
 
 

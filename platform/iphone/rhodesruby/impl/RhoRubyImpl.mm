@@ -134,6 +134,54 @@ private:
 }
 
 
+-(id<IRhoRubyObject>) convertJSON_to_Objects:(NSString*)json {
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rho::ruby::IObject* cpp_obj = rr->convertJSON_to_Objects([json UTF8String]);
+    id<IRhoRubyObject> r_obj = [self makeRhoRubyObjectFromCpp:cpp_obj];
+    cpp_obj->release();
+    return r_obj;
+}
+
+-(NSString*) convertObject_to_JSON:(id<IRhoRubyObject>)obj {
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rho::ruby::IObject* cpp_obj = NULL;
+    if (obj != nil) {
+        RhoRubyObjectImpl* rr_obj = (RhoRubyObjectImpl*)obj;
+        cpp_obj = [rr_obj getCppObject];
+    }
+    rho::ruby::IString* res = rr->convertObject_to_JSON(cpp_obj);
+    return [NSString stringWithUTF8String:res->getUTF8()];
+}
+
+
+
+-(void) loadRubyFile:(NSString*)ruby_file_path {
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rr->loadRubyFile([ruby_file_path UTF8String]);
+}
+
+-(void) loadModel:(NSString*)ruby_file_path {
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rr->loadModel([ruby_file_path UTF8String]);
+}
+
+-(id<IRhoRubyObject>) executeRubyMethod:(NSString*)full_class_name  method_name:(NSString*)method_name parameters:(id<IRhoRubyObject>)paramaters {
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rho::ruby::IObject* cpp_param = NULL;
+    if (paramaters != nil) {
+        RhoRubyObjectImpl* rr_param = (RhoRubyObjectImpl*)paramaters;
+        cpp_param = [rr_param getCppObject];
+    }
+    rho::ruby::IObject* cpp_object = rr->executeRubyMethod([full_class_name UTF8String], [method_name UTF8String], cpp_param);
+    id<IRhoRubyObject> r_object = [self makeRhoRubyObjectFromCpp:cpp_object];
+    cpp_object->release();
+    return r_object;
+}
+
+-(NSString*) executeRubyMethodWithJSON:(NSString*)full_class_name  method_name:(NSString*)method_name paramaters_in_json:(NSString*)paramaters_in_json {
+    return nil;
+}
+
 
 -(id<IRhoRubyObject>) makeRhoRubyObjectFromCpp:(rho::ruby::IObject*)cpp_object {
     if (cpp_object == NULL) {

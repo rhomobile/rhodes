@@ -4,6 +4,7 @@
 #include "../api/IRhoRuby.h"
 #include "../../ruby/include/ruby.h"
 #include "common/RhoMutexLock.h"
+#include "json/JSONIterator.h"
 
 #include <string>
 #include <map>
@@ -45,6 +46,12 @@ public:
     // util methods (used for parse responce from server etc.)
     virtual IObject* convertJSON_to_Objects(const char* json);
     virtual IString* convertObject_to_JSON(IObject* obj);
+    
+    virtual void loadRubyFile(const char* ruby_file_path);
+    virtual void loadModel(const char* ruby_file_path);
+    virtual IObject* executeRubyMethod(const char* full_class_name, const char* method_name, IObject* parameters);
+    virtual IString* executeRubyMethodWithJSON(const char* full_class_name, const char* method_name, const char* parameters_in_json);
+    
 
     IObject* convertVALUE_to_Object(VALUE value);
     VALUE convertObject_to_VALUE(IObject* obj);
@@ -53,6 +60,8 @@ public:
     void rholib_local_server_callback();
 
 private:
+    IObject* convertJSON_to_Object(json::CJSONEntry* json_entry);
+    
     //hashtable for native callback_id => callback pointer
     std::map<std::string, IRubyNativeCallback*> mCallbacks;
     

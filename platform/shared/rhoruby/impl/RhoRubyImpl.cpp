@@ -21,7 +21,6 @@
 #include "MutableArrayImpl.h"
 #include "MutableHashImpl.h"
 
-
 #include "../../ruby/ext/rho/rhoruby.h"
 
 #include "common/RhodesApp.h"
@@ -281,14 +280,217 @@ namespace ruby {
         mCallbacks.erase(callback_id);
     }
 
-    // util methods (used for parse responce from server etc.)
-    IObject* RhoRubyImpl::convertJSON_to_Objects(const char* json) {
+
+
+    IObject* RhoRubyImpl::convertJSON_to_Object(json::CJSONEntry* jsonEntry) {
+        if (jsonEntry->isString()) {
+            rho::String str = jsonEntry->getStringObject();
+            IMutableString* ms = (IMutableString*)makeBaseTypeObject(BASIC_TYPES::MutableString);
+            ms->setUTF8(str.c_str());
+            return ms;
+        }
+        if (jsonEntry->isInteger()) {
+            IMutableInteger* ms = (IMutableInteger*)makeBaseTypeObject(BASIC_TYPES::MutableInteger);
+            ms->setLong(jsonEntry->getInt());
+            return ms;
+        }
+        if (jsonEntry->isFloat()) {
+            IMutableFloat* ms = (IMutableFloat*)makeBaseTypeObject(BASIC_TYPES::MutableFloat);
+            ms->setDouble(jsonEntry->getDouble());
+            return ms;
+        }
+        if (jsonEntry->isBoolean()) {
+            IMutableBoolean* ms = (IMutableBoolean*)makeBaseTypeObject(BASIC_TYPES::MutableBoolean);
+            ms->setBool(jsonEntry->getBoolean());
+            return ms;
+        }
+        if (jsonEntry->isArray()) {
+            rho::json::CJSONArray js_array(*jsonEntry);
+            int i;
+            int count = js_array.getSize();
+            IMutableArray* ms = (IMutableArray*)makeBaseTypeObject(BASIC_TYPES::MutableArray);
+            for (i =0 ; i < count; i++) {
+                rho::json::CJSONEntry js_entry = js_array[i];
+                IObject* item = convertJSON_to_Object(&js_entry);
+                if (item != NULL) {
+                    ms->addItem(item);
+                    item->release();
+                }
+                else {
+                    RAWLOG_ERROR1("ERROR during convert JSON data 2 ! data = %s", js_entry.getString());
+                }
+            }
+            return ms;
+        }
+        if (jsonEntry->isObject()) {
+            rho::json::CJSONStructIterator js_iterator(*jsonEntry);
+            IMutableHash* ms = (IMutableHash*)makeBaseTypeObject(BASIC_TYPES::MutableHash);
+            while (!js_iterator.isEnd()) {
+                rho::String key = js_iterator.getCurKey();
+                rho::json::CJSONEntry js_entry = js_iterator.getCurValue();
+                IObject* item = convertJSON_to_Object(&js_entry);
+                if (item != NULL) {
+                    ms->addItem(key.c_str(), item);
+                    item->release();
+                }
+                else {
+                    RAWLOG_ERROR1("ERROR during convert JSON data 2 ! data = %s", js_entry.getString());
+                }
+                js_iterator.next();
+            }
+            return ms;
+        }
         return NULL;
     }
 
+    // util methods (used for parse responce from server etc.)
+    IObject* RhoRubyImpl::convertJSON_to_Objects(const char* json) {
+        json::CJSONEntry oEntry(json);
+        return convertJSON_to_Object(&oEntry);
+    }
+
     IString* RhoRubyImpl::convertObject_to_JSON(IObject* obj) {
+        if (obj == NULL) {
+            return NULL;
+        }
+        BASIC_TYPES o_type = obj->getBasicType();
+        switch(o_type) {
+            case BASIC_TYPES::Array:
+            case BASIC_TYPES::MutableArray:
+            {
+                IArray* ar = (IArray*)obj;
+                int count = ar->getItemsCount();
+                int i;
+                rho::String str;
+                str = "[";
+                for (i = 0; i < count; i++) {
+                    IObject* r_obj = ar->getItem(i);
+                    IString* r_str = convertObject_to_JSON(r_obj);
+                    str.append(r_str->getUTF8());
+                    if (i < (count-1)) {
+                        str.append(",");
+                    }
+                    r_str->release();
+                }
+                str.append("]");
+                IMutableString* o_str = (IMutableString*)makeBaseTypeObject(BASIC_TYPES::MutableString);
+                o_str->setUTF8(str.c_str());
+                return o_str;
+            }
+                break;
+            case BASIC_TYPES::Boolean:
+            case BASIC_TYPES::MutableBoolean:
+            {
+                IBoolean* bo = (IBoolean*)obj;
+                IMutableString* o_str = (IMutableString*)makeBaseTypeObject(BASIC_TYPES::MutableString);
+                if (bo->getBool()) {
+                    o_str->setUTF8("true");
+                }
+                else {
+                    o_str->setUTF8("false");
+                }
+                return o_str;
+            }
+                break;
+            case BASIC_TYPES::Float:
+            case BASIC_TYPES::MutableFloat:
+            {
+                IFloat* flo = (IFloat*)obj;
+                char buf[100];
+                sprintf(buf, "%lf", flo->getDouble());
+                IMutableString* o_str = (IMutableString*)makeBaseTypeObject(BASIC_TYPES::MutableString);
+                o_str->setUTF8(buf);
+                return o_str;
+            }
+                break;
+            case BASIC_TYPES::Hash:
+            case BASIC_TYPES::MutableHash:
+            {
+                IHash* ha = (IHash*)obj;
+                IArray* keys = ha->getKeys();
+                int i;
+                int count = keys->getItemsCount();
+                rho::String str;
+                str = "{";
+                for (i = 0; i < count; i++) {
+                    IString* r_key = (IString*)keys->getItem(i);
+                    IObject* r_value = ha->getItem(r_key->getUTF8());
+                    IString* r_str = convertObject_to_JSON(r_value);
+                    str.append(rho::json::CJSONEntry::quoteValue(r_key->getUTF8()));
+                    str.append(":");
+                    str.append(r_str->getUTF8());
+                    if (i < (count-1)) {
+                        str.append(",");
+                    }
+                    r_str->release();
+                }
+                str.append("}");
+                IMutableString* o_str = (IMutableString*)makeBaseTypeObject(BASIC_TYPES::MutableString);
+                o_str->setUTF8(str.c_str());
+                return o_str;
+            }
+                break;
+            case BASIC_TYPES::Integer:
+            case BASIC_TYPES::MutableInteger:
+            {
+                IInteger* flo = (IInteger*)obj;
+                char buf[100];
+                sprintf(buf, "%ld", flo->getLong());
+                IMutableString* o_str = (IMutableString*)makeBaseTypeObject(BASIC_TYPES::MutableString);
+                o_str->setUTF8(buf);
+                return o_str;
+            }
+                break;
+            case BASIC_TYPES::String:
+            case BASIC_TYPES::MutableString:
+            {
+                IString* str = (IString*)obj;
+                IMutableString* o_str = (IMutableString*)makeBaseTypeObject(BASIC_TYPES::MutableString);
+                o_str->setUTF8(rho::json::CJSONEntry::quoteValue(str->getUTF8()).c_str());
+                return o_str;
+            }
+                break;
+            case BASIC_TYPES::RubyNil:
+            {
+                IMutableString* o_str = (IMutableString*)makeBaseTypeObject(BASIC_TYPES::MutableString);
+                o_str->setUTF8("null");
+                return o_str;
+            }
+                break;
+            default:
+            {
+                return NULL;
+            }
+        }
         return NULL;
     }
+    
+    void RhoRubyImpl::loadRubyFile(const char* ruby_file_path) {
+        rb_require(ruby_file_path);
+    }
+    
+    void RhoRubyImpl::loadModel(const char* ruby_file_path) {
+        VALUE rb_Kernel_klass = rb_path_to_class(rho_ruby_create_string("Kernel"));
+        rb_funcall(rb_Kernel_klass, rb_intern("require_model"), 1, rho_ruby_create_string(ruby_file_path));
+    }
+    
+    IObject* RhoRubyImpl::executeRubyMethod(const char* full_class_name, const char* method_name, IObject* parameters) {
+        IObject* obj = makeRubyClassObject(full_class_name);
+        IObject* result = executeRubyObjectMethod(obj, method_name, parameters);
+        obj->release();
+        return result;
+    }
+    
+    IString* RhoRubyImpl::executeRubyMethodWithJSON(const char* full_class_name, const char* method_name, const char* parameters_in_json) {
+        IObject* result = executeRubyMethod(full_class_name, method_name, convertJSON_to_Objects(parameters_in_json));
+        IString* str = convertObject_to_JSON(result);
+        result->release();
+        return str;
+    }
+
+    
+    
+    
 
     IObject* RhoRubyImpl::convertVALUE_to_Object(VALUE ruby_value) {
         int i, size;

@@ -52,6 +52,7 @@ public:
     // call ruby server url (net request) and receive responce in callabck
     virtual void executeRubyServerURL(const char* url, const char* body, IRubyServerCallback* callback) = 0;
 
+    
     // execute ruby code in current thread. parameters can be simple object (string, integer etc. - in this case one parameters will be passed to method.)
     // also parameters can be IArray - in this case list of parameters will be passed to method (parameters from array)
     // this method recommended execute from ruby thread (from IRunnable command), but can be executed from other thread for very simple opertions without modifying ruby objects
@@ -65,7 +66,6 @@ public:
     // developer can make only mutable objects and Nil
     virtual IObject* makeBaseTypeObject(BASIC_TYPES type) = 0;
 
-
     // register callback for execute from Ruby side via - it is needed for direct call native code foem ruby code
     // Rho::Ruby.callNativeCallback(callback_id, param)
     virtual void addRubyNativeCallback(const char* callback_id, IRubyNativeCallback* callback) = 0;
@@ -75,6 +75,13 @@ public:
     virtual IObject* convertJSON_to_Objects(const char* json) = 0;
     virtual IString* convertObject_to_JSON(IObject* obj) = 0;
 
+    virtual void loadRubyFile(const char* ruby_file_path) = 0;
+    virtual void loadModel(const char* ruby_file_path) = 0;
+    virtual IObject* executeRubyMethod(const char* full_class_name, const char* method_name, IObject* parameters) = 0;
+    
+    //return JSON
+    virtual IString* executeRubyMethodWithJSON(const char* full_class_name, const char* method_name, const char* parameters_in_json) = 0;
+    
 };
 
 }
