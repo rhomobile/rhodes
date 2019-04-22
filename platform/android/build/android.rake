@@ -2601,7 +2601,6 @@ def prepare_aar_package
       archive.glob("**/*.*").each do |pfile|
         next if !(pfile.name =~ /.*\.class$/)
         target = File.join($allclasses, pfile.name)
-        next if File.exist?(target)
         mkdir_p File.dirname(target)
         rm target if File.file?(target)
         archive.extract( pfile, File.join(target) )
