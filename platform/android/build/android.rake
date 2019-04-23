@@ -2577,6 +2577,44 @@ namespace "build" do
   end
 end
 
+def FormatManifestToAarCompat(path)
+  doc = File.open(path) { |f| Nokogiri::XML(f) }
+  root = doc.xpath("//manifest/*")
+  application = root.xpath("//application/*")
+
+  doc2 = doc.xpath("//manifest")
+  doc2[0].remove_attribute("versionCode")
+  doc2[0].remove_attribute("installLocation")
+  doc2[0]["xmlns:tools"] = "http://schemas.android.com/tools"
+
+  root.each do |node|
+    node["tools:node"] = "merge" if node.name.to_s == 'uses-permission'
+    node["tools:node"] = "merge" if node.name.to_s == 'uses-feature'
+    if node.name.to_s == 'application'
+      node["tools:node"] = "merge"
+      node.remove_attribute("name")
+      node.remove_attribute("label")
+      node.remove_attribute("icon")
+    end
+  end
+
+  application.each do |node|
+    node["tools:node"] = "merge"
+    if node["android:name"] == 'com.rhomobile.rhodes.RhodesActivity'
+      intent_filters = node.xpath(".//*/*")
+      intent_filters.each do |child|
+        if child["android:name"] == 'android.intent.action.MAIN'
+          child.parent.remove
+        end
+      end
+    end
+  end
+
+  new_doc = Nokogiri::XML::Document.parse(doc.to_s, nil, "UTF-8")
+  File.open(path, "w") {|file| file << new_doc.to_xml }
+end
+
+
 def prepare_aar_package
   alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
   #alljars += AndroidTools::MavenDepsExtractor.instance.jars
@@ -2655,6 +2693,7 @@ def prepare_aar_package
   args = ["uf", resourcepkg, '-C', '.', 'res']
   Jake.run($jarbin, args, $tmpdir)
 
+  FormatManifestToAarCompat($appmanifest)
   args = ["uf", resourcepkg, 'AndroidManifest.xml']
   Jake.run($jarbin, args, File.dirname($appmanifest))
 
