@@ -4,13 +4,30 @@
 #import "IRhoRubyNativeCallback.h"
 
 
+@protocol IRhoRubyNativeCallback <NSObject>
+
+-(void) onRubyNativeWithParam:(id<IRhoRubyObject>)param;
+
+@end
+
+
+@protocol IRubyLocalServerRequestCallback <NSObject>
+
+-(void) onLocalServerResponce:(NSString*)responce;
+
+@end
+
+
+
+
 @protocol IRhoRuby <NSObject>
 
 // call command in ruby thread
 -(void) executeInRubyThread:(id<IRhoRubyRunnable>)command;
 
-// call ruby server url (net request) and receive responce in callabck
-//virtual void executeRubyServerURL(const char* url, const char* body, IRubyServerCallback* callback) = 0;
+// call ruby server url (get request) and receive responce (body if exist or nil if error etc.)
+-(void) executeGetRequestToRubyServer:(NSString*)url callback:(id<IRubyLocalServerRequestCallback>)callback;
+
 
 // execute ruby code in current thread. parameters can be simple object (string, integer etc. - in this case one parameters will be passed to method.)
 // also parameters can be IArray - in this case list of parameters will be passed to method (parameters from array)
@@ -50,70 +67,3 @@
 
 
 
-
-
-
-/*#pragma once
-
-
-#include "IObject.h"
-#include "IArray.h"
-#include "IString.h"
-#include "IRunnable.h"
-
-namespace rho {
-namespace ruby {
-
-
-class IRubyServerResponce {
-
-public:
-    virtual ~IRubyServerResponce() {}
-
-    virtual IString* getResponceBody() = 0;
-
-};
-
-
-
-
-class IRubyServerCallback {
-
-public:
-    virtual ~IRubyServerCallback() {}
-
-    virtual void onRubyServerResponce(IRubyServerResponce* responce) = 0;
-
-};
-
-
-class IRubyNativeCallback {
-public:
-    virtual ~IRubyNativeCallback() {}
-
-    virtual void onRubyNative(IObject* param) = 0;
-
-};
-
-
-class IRhoRuby {
-
-public:
-    virtual ~IRhoRuby() {}
-
- 
-
-
-
-
-
-
-    // util methods (used for parse responce from server etc.)
-    virtual IObject* convertJSON_to_Objects(const char* json) = 0;
-    virtual IString* convertObject_to_JSON(IObject* obj) = 0;
-
-};
-
-}
-}
-*/

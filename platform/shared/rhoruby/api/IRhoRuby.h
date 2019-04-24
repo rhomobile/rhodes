@@ -10,34 +10,20 @@ namespace rho {
 namespace ruby {
 
 
-class IRubyServerResponce {
-
-public:
-    virtual ~IRubyServerResponce() {}
-
-    virtual IString* getResponceBody() = 0;
-
-};
-
-
-
-
-class IRubyServerCallback {
-
-public:
-    virtual ~IRubyServerCallback() {}
-
-    virtual void onRubyServerResponce(IRubyServerResponce* responce) = 0;
-
-};
-
-
 class IRubyNativeCallback {
 public:
     virtual ~IRubyNativeCallback() {}
 
     virtual void onRubyNative(IObject* param) = 0;
 
+};
+
+class IRubyLocalServerRequestCallback {
+public:
+    virtual ~IRubyLocalServerRequestCallback() {}
+    
+    virtual void onLocalServerResponce(IString* responce) = 0;
+    
 };
 
 
@@ -49,8 +35,8 @@ public:
     // call command in ruby thread
     virtual void executeInRubyThread(IRunnable* command) = 0;
 
-    // call ruby server url (net request) and receive responce in callabck
-    virtual void executeRubyServerURL(const char* url, const char* body, IRubyServerCallback* callback) = 0;
+    // call ruby server url (get request) and receive responce (body if exist or NULL if error etc.)
+    virtual void executeGetRequestToRubyServer(const char* url, IRubyLocalServerRequestCallback* callback) = 0;
 
     
     // execute ruby code in current thread. parameters can be simple object (string, integer etc. - in this case one parameters will be passed to method.)

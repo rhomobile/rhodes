@@ -1654,8 +1654,8 @@ namespace "build" do
     end
 
     # [build:iphone:rhodeslib_prepare_xcodeproject]
-    desc "Prepare customers's XCode project for Rhodes Framework - set target path :  rake build:iphone:rhodeslib_prepare_xcodeproject['/Users/myuser/my_xcode_project_fullpath']"
-    task :rhodeslib_prepare_xcodeproject, [:project_path]  => ["config:set_iphone_platform", "config:common"] do |t, args|
+    #desc "Prepare customers's XCode project for Rhodes Framework - set target path :  rake build:iphone:rhodeslib_prepare_xcodeproject['/Users/myuser/my_xcode_project_fullpath']"
+    task :rhodeslib_prepare_xcodeproject, [:project_path, :target_name]  => ["config:set_iphone_platform", "config:common"] do |t, args|
 
         print_timestamp('build:iphone:rhodeslib_prepare_xcodeproject START')
         currentdir = Dir.pwd()
@@ -1664,9 +1664,16 @@ namespace "build" do
         # copied from build upgrade bundle
 
         project_path = args[:project_path]
+        target_name = args[:target_name]
         project_dir = File.dirname(project_path)
 
-        doc = REXML::Document.new(File.new(project_path))
+        require 'xcodeproj'
+
+        project = Xcodeproj::Project.open(project_path)
+
+
+
+
 
 
 

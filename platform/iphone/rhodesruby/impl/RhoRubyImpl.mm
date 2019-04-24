@@ -68,6 +68,30 @@ private:
 };
 
 
+class CRhoRubyLocalServerRequestCallbackHolder : public  rho::ruby::IRubyLocalServerRequestCallback {
+public:
+    
+    CRhoRubyLocalServerRequestCallbackHolder(id<IRubyLocalServerRequestCallback> callback) {
+        mCallback = callback;
+    }
+    
+    virtual ~CRhoRubyLocalServerRequestCallbackHolder() {}
+    
+    virtual void onLocalServerResponce(rho::ruby::IString* responce) {
+        NSString* resp = nil;
+        if (responce != NULL) {
+            resp = [NSString stringWithUTF8String:responce->getUTF8()];
+        }
+        [mCallback onLocalServerResponce:resp];
+        //delete this;
+    }
+    
+    
+private:
+    id<IRubyLocalServerRequestCallback> mCallback;
+    
+};
+
 
 
 @implementation RhoRubyImpl
@@ -78,8 +102,10 @@ private:
     rr->executeInRubyThread(new CRhoRubyRunnableHolder(command));
 }
 
-// call ruby server url (net request) and receive responce in callabck
-//virtual void executeRubyServerURL(const char* url, const char* body, IRubyServerCallback* callback) = 0;
+-(void) executeGetRequestToRubyServer:(NSString*)url callback:(id<IRubyLocalServerRequestCallback>)callback {
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rr->executeGetRequestToRubyServer([url UTF8String], new CRhoRubyLocalServerRequestCallbackHolder(callback));
+}
 
 // execute ruby code in current thread. parameters can be simple object (string, integer etc. - in this case one parameters will be passed to method.)
 // also parameters can be IArray - in this case list of parameters will be passed to method (parameters from array)

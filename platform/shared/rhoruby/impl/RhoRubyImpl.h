@@ -23,8 +23,8 @@ public:
     // call command in ruby thread
     virtual void executeInRubyThread(IRunnable* command);
 
-    // call ruby server url (net request) and receive responce in callabck
-    virtual void executeRubyServerURL(const char* url, const char* body, IRubyServerCallback* callback);
+    // call ruby server url (get request) and receive responce (body if exist or NULL if error etc.)
+    virtual void executeGetRequestToRubyServer(const char* url, IRubyLocalServerRequestCallback* callback);
 
     // execute ruby code in current thread. parameters can be simple object (string, integer etc. - in this case one parameters will be passed to method.)
     // also parameters can be IArray - in this case list of parameters will be passed to method (parameters from array)
