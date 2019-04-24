@@ -138,7 +138,7 @@ end
 Jake.set_logger( $logger )
 
 
-def print_timestamp(msg = 'just for info')  
+def print_timestamp(msg = 'just for info')
   if $timestamp_start_milliseconds == 0
     $timestamp_start_milliseconds = (Time.now.to_f*1000.0).to_i
   end
@@ -208,7 +208,7 @@ def make_application_build_config_header_file
   #f.puts "// Generated #{Time.now.to_s}"
   f.puts ""
   f.puts "#include <string.h>"
-  f.puts "#include <common/RhoConf.h>"
+  f.puts "#include \"common/RhoConf.h\""
   f.puts ""
   f.puts '//#include "app_build_configs.h"'
   if $rhosimulator_build
@@ -3416,7 +3416,7 @@ namespace "build" do
           end
         else
           puts `#{cmd_str}`
-        end        
+        end
         unless $? == 0
           puts "Error interpreting erb code"
           exit 1
@@ -3962,12 +3962,12 @@ namespace "build" do
     msbuild = "msbuild" if msbuild.nil?
 
     rho_ruby_project = File.join($startdir, "platform/win32/RubyWin/RubyWin.2015.sln")
-    argsClean = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32", 
-      '/p:VisualStudioVersion=14.0', '/t:Clean'] 
+    argsClean = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32",
+      '/p:VisualStudioVersion=14.0', '/t:Clean']
     Jake.run(msbuild, argsClean)
 
-    argsBuild = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32", 
-      '/p:VisualStudioVersion=14.0', '/t:Build'] 
+    argsBuild = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32",
+      '/p:VisualStudioVersion=14.0', '/t:Build']
     Jake.run(msbuild, argsBuild)
     puts "RhoRuby rebuilded"
   end

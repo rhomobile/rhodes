@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		FAD356F72264229A00419673 /* RhoLibAggregated */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FAD356FB2264229A00419673 /* Build configuration list for PBXAggregateTarget "RhoLibAggregated" */;
+			buildPhases = (
+				FAD356FC226422A000419673 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = RhoLibAggregated;
+			productName = RhoLibAggregated;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		5C0F94DF132979140093FA1B /* RhoTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0F94DE132979140093FA1B /* RhoTime.cpp */; };
 		5C2CE15C122ACA9E005EDBC4 /* RhoAppAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C2CE15B122ACA9E005EDBC4 /* RhoAppAdapter.cpp */; };
@@ -102,7 +116,51 @@
 		C5D47763156A4ED000943A2D /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = C5D47761156A4ED000943A2D /* zip.h */; };
 		FA0E908D16B7FE000094CCDE /* CJSConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA0E908C16B7FE000094CCDE /* CJSConverter.mm */; };
 		FA1D452618D9E2BC0010CCF9 /* app_build_capabilities.h in Headers */ = {isa = PBXBuildFile; fileRef = FA1D452518D9E2BC0010CCF9 /* app_build_capabilities.h */; };
+		FA4A97992238AA6B009D6142 /* INil.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97862238AA68009D6142 /* INil.h */; };
+		FA4A979A2238AA6B009D6142 /* IHash.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97872238AA69009D6142 /* IHash.h */; };
+		FA4A979B2238AA6B009D6142 /* IObject.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97882238AA69009D6142 /* IObject.h */; };
+		FA4A979C2238AA6B009D6142 /* RhoRubySingletone.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97892238AA69009D6142 /* RhoRubySingletone.h */; };
+		FA4A979D2238AA6B009D6142 /* IArray.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A978A2238AA69009D6142 /* IArray.h */; };
+		FA4A979E2238AA6B009D6142 /* IString.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A978B2238AA69009D6142 /* IString.h */; };
+		FA4A979F2238AA6B009D6142 /* IBoolean.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A978C2238AA6A009D6142 /* IBoolean.h */; };
+		FA4A97A02238AA6B009D6142 /* IMutableInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A978D2238AA6A009D6142 /* IMutableInteger.h */; };
+		FA4A97A12238AA6C009D6142 /* IInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A978E2238AA6A009D6142 /* IInteger.h */; };
+		FA4A97A22238AA6C009D6142 /* IMutableFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A978F2238AA6A009D6142 /* IMutableFloat.h */; };
+		FA4A97A32238AA6C009D6142 /* IRunnable.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97902238AA6A009D6142 /* IRunnable.h */; };
+		FA4A97A42238AA6C009D6142 /* IMutableHash.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97912238AA6A009D6142 /* IMutableHash.h */; };
+		FA4A97A52238AA6C009D6142 /* IRefCountedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97922238AA6A009D6142 /* IRefCountedObject.h */; };
+		FA4A97A62238AA6C009D6142 /* IRhoRuby.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97932238AA6B009D6142 /* IRhoRuby.h */; };
+		FA4A97A72238AA6C009D6142 /* RhoRuby.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97942238AA6B009D6142 /* RhoRuby.h */; };
+		FA4A97A82238AA6C009D6142 /* IMutableBoolean.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97952238AA6B009D6142 /* IMutableBoolean.h */; };
+		FA4A97A92238AA6C009D6142 /* IFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97962238AA6B009D6142 /* IFloat.h */; };
+		FA4A97AA2238AA6C009D6142 /* IMutableArray.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97972238AA6B009D6142 /* IMutableArray.h */; };
+		FA4A97AB2238AA6C009D6142 /* IMutableString.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97982238AA6B009D6142 /* IMutableString.h */; };
+		FA4A97C32238AA86009D6142 /* MutableFloatImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97AC2238AA83009D6142 /* MutableFloatImpl.cpp */; };
+		FA4A97C42238AA86009D6142 /* NilImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97AD2238AA83009D6142 /* NilImpl.h */; };
+		FA4A97C52238AA86009D6142 /* MutableBooleanImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97AE2238AA83009D6142 /* MutableBooleanImpl.h */; };
+		FA4A97C62238AA86009D6142 /* RubyServerResponceImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97AF2238AA83009D6142 /* RubyServerResponceImpl.h */; };
+		FA4A97C72238AA86009D6142 /* MutableFloatImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97B02238AA83009D6142 /* MutableFloatImpl.h */; };
+		FA4A97C82238AA86009D6142 /* MutableStringImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97B12238AA83009D6142 /* MutableStringImpl.cpp */; };
+		FA4A97C92238AA86009D6142 /* MutableIntegerImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97B22238AA83009D6142 /* MutableIntegerImpl.h */; };
+		FA4A97CA2238AA86009D6142 /* MutableStringImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97B32238AA83009D6142 /* MutableStringImpl.h */; };
+		FA4A97CB2238AA86009D6142 /* NilImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97B42238AA84009D6142 /* NilImpl.cpp */; };
+		FA4A97CC2238AA86009D6142 /* MutableIntegerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97B52238AA84009D6142 /* MutableIntegerImpl.cpp */; };
+		FA4A97CD2238AA86009D6142 /* ObjectImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97B62238AA84009D6142 /* ObjectImpl.cpp */; };
+		FA4A97CE2238AA86009D6142 /* RhoRubyImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97B72238AA84009D6142 /* RhoRubyImpl.cpp */; };
+		FA4A97CF2238AA86009D6142 /* MutableArrayImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97B82238AA84009D6142 /* MutableArrayImpl.cpp */; };
+		FA4A97D02238AA86009D6142 /* MutableHashImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97B92238AA84009D6142 /* MutableHashImpl.cpp */; };
+		FA4A97D12238AA86009D6142 /* MutableArrayImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97BA2238AA84009D6142 /* MutableArrayImpl.h */; };
+		FA4A97D22238AA86009D6142 /* RefCountedObjectImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97BB2238AA85009D6142 /* RefCountedObjectImpl.cpp */; };
+		FA4A97D32238AA86009D6142 /* RefCountedObjectImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97BC2238AA85009D6142 /* RefCountedObjectImpl.h */; };
+		FA4A97D42238AA86009D6142 /* RubyServerResponceImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97BD2238AA85009D6142 /* RubyServerResponceImpl.cpp */; };
+		FA4A97D52238AA86009D6142 /* ObjectImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97BE2238AA85009D6142 /* ObjectImpl.h */; };
+		FA4A97D62238AA86009D6142 /* MutableBooleanImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97BF2238AA85009D6142 /* MutableBooleanImpl.cpp */; };
+		FA4A97D72238AA86009D6142 /* RhoRubySingletone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4A97C02238AA86009D6142 /* RhoRubySingletone.cpp */; };
+		FA4A97D82238AA86009D6142 /* MutableHashImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97C12238AA86009D6142 /* MutableHashImpl.h */; };
+		FA4A97D92238AA86009D6142 /* RhoRubyImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A97C22238AA86009D6142 /* RhoRubyImpl.h */; };
+		FA4A980D223F5A48009D6142 /* SmartPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4A980C223F5A48009D6142 /* SmartPointer.h */; };
 		FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */; };
+		FA67F3472263A01000482671 /* RhoRubyFabrique.h in Headers */ = {isa = PBXBuildFile; fileRef = FA67F3462263A00E00482671 /* RhoRubyFabrique.h */; };
 		FA6B222617026477009D1398 /* MethodResultConvertor.h in Headers */ = {isa = PBXBuildFile; fileRef = FA6B222517026477009D1398 /* MethodResultConvertor.h */; };
 		FAA714A91DDE5B6F00E5E7AD /* RhoNativeViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA714A81DDE5B6F00E5E7AD /* RhoNativeViewManager.h */; };
 		FAC6EE5B143B1FC800B8E352 /* BaseMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE4F143B1FC800B8E352 /* BaseMapEngine.cpp */; };
@@ -121,6 +179,45 @@
 		FAC6EE6A143B20B600B8E352 /* RhoMath.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE68143B20B600B8E352 /* RhoMath.h */; };
 		FAD0471E1757A81700000F15 /* CJSEntryPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = FAD0471C1757A81700000F15 /* CJSEntryPoint.h */; };
 		FAD0471F1757A81700000F15 /* CJSEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAD0471D1757A81700000F15 /* CJSEntryPoint.mm */; };
+		FAE78C89225848C9001A1150 /* RhoRubySingletone.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C75225848C7001A1150 /* RhoRubySingletone.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FAE78C8A225848C9001A1150 /* IRhoRubyMutableInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C76225848C7001A1150 /* IRhoRubyMutableInteger.h */; };
+		FAE78C8B225848C9001A1150 /* IRhoRuby.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C77225848C7001A1150 /* IRhoRuby.h */; };
+		FAE78C8C225848C9001A1150 /* IRhoRubyMutableString.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C78225848C7001A1150 /* IRhoRubyMutableString.h */; };
+		FAE78C8D225848C9001A1150 /* IRhoRubyInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C79225848C7001A1150 /* IRhoRubyInteger.h */; };
+		FAE78C8E225848C9001A1150 /* IRhoRubyMutableArray.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C7A225848C7001A1150 /* IRhoRubyMutableArray.h */; };
+		FAE78C8F225848C9001A1150 /* IRhoRubyRunnable.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C7B225848C7001A1150 /* IRhoRubyRunnable.h */; };
+		FAE78C91225848C9001A1150 /* IRhoRubyMutableHash.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C7D225848C8001A1150 /* IRhoRubyMutableHash.h */; };
+		FAE78C92225848C9001A1150 /* IRhoRubyObject.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C7E225848C8001A1150 /* IRhoRubyObject.h */; };
+		FAE78C93225848C9001A1150 /* RhoRuby.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C7F225848C8001A1150 /* RhoRuby.h */; };
+		FAE78C94225848C9001A1150 /* IRhoRubyBoolean.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C80225848C8001A1150 /* IRhoRubyBoolean.h */; };
+		FAE78C95225848C9001A1150 /* IRhoRubyMutableBoolean.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C81225848C8001A1150 /* IRhoRubyMutableBoolean.h */; };
+		FAE78C96225848C9001A1150 /* IRhoRubyNil.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C82225848C8001A1150 /* IRhoRubyNil.h */; };
+		FAE78C97225848C9001A1150 /* IRhoRubyArray.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C83225848C8001A1150 /* IRhoRubyArray.h */; };
+		FAE78C98225848C9001A1150 /* IRhoRubyMutableFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C84225848C8001A1150 /* IRhoRubyMutableFloat.h */; };
+		FAE78C99225848C9001A1150 /* IRhoRubyHash.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C85225848C8001A1150 /* IRhoRubyHash.h */; };
+		FAE78C9A225848C9001A1150 /* IRhoRubyString.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C86225848C8001A1150 /* IRhoRubyString.h */; };
+		FAE78C9B225848C9001A1150 /* IRefCountedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C87225848C8001A1150 /* IRefCountedObject.h */; };
+		FAE78C9C225848C9001A1150 /* IRhoRubyFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C88225848C8001A1150 /* IRhoRubyFloat.h */; };
+		FAE78CCB225850C5001A1150 /* RhoRubyObjectImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAE78CA122584B62001A1150 /* RhoRubyObjectImpl.mm */; };
+		FAE78CCC2259054F001A1150 /* RhoRubyNilImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAE78C9E22584B62001A1150 /* RhoRubyNilImpl.mm */; };
+		FAE78CCD22590B58001A1150 /* RhoRubyMutableArrayImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAE78CA522584B62001A1150 /* RhoRubyMutableArrayImpl.mm */; };
+		FAE78CCE22590EA7001A1150 /* RhoRubySingletone.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE78CA922584B63001A1150 /* RhoRubySingletone.m */; };
+		FAE78CCF22590F3E001A1150 /* RhoRubyImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAE78CB122584B63001A1150 /* RhoRubyImpl.mm */; };
+		FAE78CD022595A8B001A1150 /* RhoRubyMutableBooleanImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAE78C9F22584B62001A1150 /* RhoRubyMutableBooleanImpl.mm */; };
+		FAE78CD122597116001A1150 /* RhoRubyMutableFloatImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAE78CA422584B62001A1150 /* RhoRubyMutableFloatImpl.mm */; };
+		FAE78CD222597164001A1150 /* RhoRubyMutableIntegerImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAE78CA722584B62001A1150 /* RhoRubyMutableIntegerImpl.mm */; };
+		FAE78CD32259727C001A1150 /* RhoRubyMutableArrayImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CB322584B63001A1150 /* RhoRubyMutableArrayImpl.h */; };
+		FAE78CD422597281001A1150 /* RhoRubyMutableBooleanImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CB222584B63001A1150 /* RhoRubyMutableBooleanImpl.h */; };
+		FAE78CD522597285001A1150 /* RhoRubyMutableFloatImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CA322584B62001A1150 /* RhoRubyMutableFloatImpl.h */; };
+		FAE78CD6225972A1001A1150 /* RhoRubyMutableIntegerImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CA222584B62001A1150 /* RhoRubyMutableIntegerImpl.h */; };
+		FAE78CD7225972A6001A1150 /* RhoRubyNilImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CA622584B62001A1150 /* RhoRubyNilImpl.h */; };
+		FAE78CD8225972AC001A1150 /* RhoRubyObjectImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CAC22584B63001A1150 /* RhoRubyObjectImpl.h */; };
+		FAE78CD9225972C8001A1150 /* RhoRubyImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CA822584B63001A1150 /* RhoRubyImpl.h */; };
+		FAE78CDA22597409001A1150 /* RhoRubyMutableStringImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CAB22584B63001A1150 /* RhoRubyMutableStringImpl.h */; };
+		FAE78CDB22597413001A1150 /* RhoRubyMutableStringImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAE78CA022584B62001A1150 /* RhoRubyMutableStringImpl.mm */; };
+		FAE78CDC22597590001A1150 /* RhoRubyMutableHashImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CB022584B63001A1150 /* RhoRubyMutableHashImpl.h */; };
+		FAE78CDD22597593001A1150 /* RhoRubyMutableHashImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAE78CAA22584B63001A1150 /* RhoRubyMutableHashImpl.mm */; };
+		FAE78CDF22597B4F001A1150 /* IRhoRubyNativeCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78CDE22597B4F001A1150 /* IRhoRubyNativeCallback.h */; };
 		FAEF1DCA16AED9D200E22B05 /* BaseClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DB916AED9D200E22B05 /* BaseClasses.h */; };
 		FAEF1DCB16AED9D200E22B05 /* GeneratorQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DBA16AED9D200E22B05 /* GeneratorQueue.h */; };
 		FAEF1DCC16AED9D200E22B05 /* CJSConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DBC16AED9D200E22B05 /* CJSConverter.h */; };
@@ -237,8 +334,52 @@
 		D2AAC046055464E500DB518D /* librholib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librholib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0E908C16B7FE000094CCDE /* CJSConverter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CJSConverter.mm; sourceTree = "<group>"; };
 		FA1D452518D9E2BC0010CCF9 /* app_build_capabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app_build_capabilities.h; path = ../../shared/common/app_build_capabilities.h; sourceTree = "<group>"; };
+		FA4A97862238AA68009D6142 /* INil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INil.h; path = ../../shared/rhoruby/api/INil.h; sourceTree = "<group>"; };
+		FA4A97872238AA69009D6142 /* IHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IHash.h; path = ../../shared/rhoruby/api/IHash.h; sourceTree = "<group>"; };
+		FA4A97882238AA69009D6142 /* IObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IObject.h; path = ../../shared/rhoruby/api/IObject.h; sourceTree = "<group>"; };
+		FA4A97892238AA69009D6142 /* RhoRubySingletone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubySingletone.h; path = ../../shared/rhoruby/api/RhoRubySingletone.h; sourceTree = "<group>"; };
+		FA4A978A2238AA69009D6142 /* IArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IArray.h; path = ../../shared/rhoruby/api/IArray.h; sourceTree = "<group>"; };
+		FA4A978B2238AA69009D6142 /* IString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IString.h; path = ../../shared/rhoruby/api/IString.h; sourceTree = "<group>"; };
+		FA4A978C2238AA6A009D6142 /* IBoolean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IBoolean.h; path = ../../shared/rhoruby/api/IBoolean.h; sourceTree = "<group>"; };
+		FA4A978D2238AA6A009D6142 /* IMutableInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableInteger.h; path = ../../shared/rhoruby/api/IMutableInteger.h; sourceTree = "<group>"; };
+		FA4A978E2238AA6A009D6142 /* IInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IInteger.h; path = ../../shared/rhoruby/api/IInteger.h; sourceTree = "<group>"; };
+		FA4A978F2238AA6A009D6142 /* IMutableFloat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableFloat.h; path = ../../shared/rhoruby/api/IMutableFloat.h; sourceTree = "<group>"; };
+		FA4A97902238AA6A009D6142 /* IRunnable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRunnable.h; path = ../../shared/rhoruby/api/IRunnable.h; sourceTree = "<group>"; };
+		FA4A97912238AA6A009D6142 /* IMutableHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableHash.h; path = ../../shared/rhoruby/api/IMutableHash.h; sourceTree = "<group>"; };
+		FA4A97922238AA6A009D6142 /* IRefCountedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRefCountedObject.h; path = ../../shared/rhoruby/api/IRefCountedObject.h; sourceTree = "<group>"; };
+		FA4A97932238AA6B009D6142 /* IRhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRuby.h; path = ../../shared/rhoruby/api/IRhoRuby.h; sourceTree = "<group>"; };
+		FA4A97942238AA6B009D6142 /* RhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRuby.h; path = ../../shared/rhoruby/api/RhoRuby.h; sourceTree = "<group>"; };
+		FA4A97952238AA6B009D6142 /* IMutableBoolean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableBoolean.h; path = ../../shared/rhoruby/api/IMutableBoolean.h; sourceTree = "<group>"; };
+		FA4A97962238AA6B009D6142 /* IFloat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IFloat.h; path = ../../shared/rhoruby/api/IFloat.h; sourceTree = "<group>"; };
+		FA4A97972238AA6B009D6142 /* IMutableArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableArray.h; path = ../../shared/rhoruby/api/IMutableArray.h; sourceTree = "<group>"; };
+		FA4A97982238AA6B009D6142 /* IMutableString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMutableString.h; path = ../../shared/rhoruby/api/IMutableString.h; sourceTree = "<group>"; };
+		FA4A97AC2238AA83009D6142 /* MutableFloatImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MutableFloatImpl.cpp; path = ../../shared/rhoruby/impl/MutableFloatImpl.cpp; sourceTree = "<group>"; };
+		FA4A97AD2238AA83009D6142 /* NilImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NilImpl.h; path = ../../shared/rhoruby/impl/NilImpl.h; sourceTree = "<group>"; };
+		FA4A97AE2238AA83009D6142 /* MutableBooleanImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MutableBooleanImpl.h; path = ../../shared/rhoruby/impl/MutableBooleanImpl.h; sourceTree = "<group>"; };
+		FA4A97AF2238AA83009D6142 /* RubyServerResponceImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RubyServerResponceImpl.h; path = ../../shared/rhoruby/impl/RubyServerResponceImpl.h; sourceTree = "<group>"; };
+		FA4A97B02238AA83009D6142 /* MutableFloatImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MutableFloatImpl.h; path = ../../shared/rhoruby/impl/MutableFloatImpl.h; sourceTree = "<group>"; };
+		FA4A97B12238AA83009D6142 /* MutableStringImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MutableStringImpl.cpp; path = ../../shared/rhoruby/impl/MutableStringImpl.cpp; sourceTree = "<group>"; };
+		FA4A97B22238AA83009D6142 /* MutableIntegerImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MutableIntegerImpl.h; path = ../../shared/rhoruby/impl/MutableIntegerImpl.h; sourceTree = "<group>"; };
+		FA4A97B32238AA83009D6142 /* MutableStringImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MutableStringImpl.h; path = ../../shared/rhoruby/impl/MutableStringImpl.h; sourceTree = "<group>"; };
+		FA4A97B42238AA84009D6142 /* NilImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NilImpl.cpp; path = ../../shared/rhoruby/impl/NilImpl.cpp; sourceTree = "<group>"; };
+		FA4A97B52238AA84009D6142 /* MutableIntegerImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MutableIntegerImpl.cpp; path = ../../shared/rhoruby/impl/MutableIntegerImpl.cpp; sourceTree = "<group>"; };
+		FA4A97B62238AA84009D6142 /* ObjectImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ObjectImpl.cpp; path = ../../shared/rhoruby/impl/ObjectImpl.cpp; sourceTree = "<group>"; };
+		FA4A97B72238AA84009D6142 /* RhoRubyImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoRubyImpl.cpp; path = ../../shared/rhoruby/impl/RhoRubyImpl.cpp; sourceTree = "<group>"; };
+		FA4A97B82238AA84009D6142 /* MutableArrayImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MutableArrayImpl.cpp; path = ../../shared/rhoruby/impl/MutableArrayImpl.cpp; sourceTree = "<group>"; };
+		FA4A97B92238AA84009D6142 /* MutableHashImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MutableHashImpl.cpp; path = ../../shared/rhoruby/impl/MutableHashImpl.cpp; sourceTree = "<group>"; };
+		FA4A97BA2238AA84009D6142 /* MutableArrayImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MutableArrayImpl.h; path = ../../shared/rhoruby/impl/MutableArrayImpl.h; sourceTree = "<group>"; };
+		FA4A97BB2238AA85009D6142 /* RefCountedObjectImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RefCountedObjectImpl.cpp; path = ../../shared/rhoruby/impl/RefCountedObjectImpl.cpp; sourceTree = "<group>"; };
+		FA4A97BC2238AA85009D6142 /* RefCountedObjectImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RefCountedObjectImpl.h; path = ../../shared/rhoruby/impl/RefCountedObjectImpl.h; sourceTree = "<group>"; };
+		FA4A97BD2238AA85009D6142 /* RubyServerResponceImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RubyServerResponceImpl.cpp; path = ../../shared/rhoruby/impl/RubyServerResponceImpl.cpp; sourceTree = "<group>"; };
+		FA4A97BE2238AA85009D6142 /* ObjectImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjectImpl.h; path = ../../shared/rhoruby/impl/ObjectImpl.h; sourceTree = "<group>"; };
+		FA4A97BF2238AA85009D6142 /* MutableBooleanImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MutableBooleanImpl.cpp; path = ../../shared/rhoruby/impl/MutableBooleanImpl.cpp; sourceTree = "<group>"; };
+		FA4A97C02238AA86009D6142 /* RhoRubySingletone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoRubySingletone.cpp; path = ../../shared/rhoruby/impl/RhoRubySingletone.cpp; sourceTree = "<group>"; };
+		FA4A97C12238AA86009D6142 /* MutableHashImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MutableHashImpl.h; path = ../../shared/rhoruby/impl/MutableHashImpl.h; sourceTree = "<group>"; };
+		FA4A97C22238AA86009D6142 /* RhoRubyImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyImpl.h; path = ../../shared/rhoruby/impl/RhoRubyImpl.h; sourceTree = "<group>"; };
+		FA4A980C223F5A48009D6142 /* SmartPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SmartPointer.h; path = ../../shared/rhoruby/api/SmartPointer.h; sourceTree = "<group>"; };
 		FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = ../../shared/common/app_build_configs.c; sourceTree = SOURCE_ROOT; };
 		FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app_build_configs.h; path = ../../shared/common/app_build_configs.h; sourceTree = SOURCE_ROOT; };
+		FA67F3462263A00E00482671 /* RhoRubyFabrique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyFabrique.h; path = ../rhodesruby/impl/RhoRubyFabrique.h; sourceTree = "<group>"; };
 		FA6B222517026477009D1398 /* MethodResultConvertor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MethodResultConvertor.h; path = ../../shared/api_generator/MethodResultConvertor.h; sourceTree = "<group>"; };
 		FAA714A81DDE5B6F00E5E7AD /* RhoNativeViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoNativeViewManager.h; path = ../../shared/common/RhoNativeViewManager.h; sourceTree = "<group>"; };
 		FAC6EE4F143B1FC800B8E352 /* BaseMapEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseMapEngine.cpp; path = ../../shared/common/map/BaseMapEngine.cpp; sourceTree = "<group>"; };
@@ -257,6 +398,47 @@
 		FAC6EE68143B20B600B8E352 /* RhoMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoMath.h; path = ../../shared/common/RhoMath.h; sourceTree = "<group>"; };
 		FAD0471C1757A81700000F15 /* CJSEntryPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJSEntryPoint.h; sourceTree = "<group>"; };
 		FAD0471D1757A81700000F15 /* CJSEntryPoint.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CJSEntryPoint.mm; sourceTree = "<group>"; };
+		FAE78C75225848C7001A1150 /* RhoRubySingletone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubySingletone.h; path = ../rhodesruby/api/RhoRubySingletone.h; sourceTree = "<group>"; };
+		FAE78C76225848C7001A1150 /* IRhoRubyMutableInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableInteger.h; path = ../rhodesruby/api/IRhoRubyMutableInteger.h; sourceTree = "<group>"; };
+		FAE78C77225848C7001A1150 /* IRhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRuby.h; path = ../rhodesruby/api/IRhoRuby.h; sourceTree = "<group>"; };
+		FAE78C78225848C7001A1150 /* IRhoRubyMutableString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableString.h; path = ../rhodesruby/api/IRhoRubyMutableString.h; sourceTree = "<group>"; };
+		FAE78C79225848C7001A1150 /* IRhoRubyInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyInteger.h; path = ../rhodesruby/api/IRhoRubyInteger.h; sourceTree = "<group>"; };
+		FAE78C7A225848C7001A1150 /* IRhoRubyMutableArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableArray.h; path = ../rhodesruby/api/IRhoRubyMutableArray.h; sourceTree = "<group>"; };
+		FAE78C7B225848C7001A1150 /* IRhoRubyRunnable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyRunnable.h; path = ../rhodesruby/api/IRhoRubyRunnable.h; sourceTree = "<group>"; };
+		FAE78C7D225848C8001A1150 /* IRhoRubyMutableHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableHash.h; path = ../rhodesruby/api/IRhoRubyMutableHash.h; sourceTree = "<group>"; };
+		FAE78C7E225848C8001A1150 /* IRhoRubyObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyObject.h; path = ../rhodesruby/api/IRhoRubyObject.h; sourceTree = "<group>"; };
+		FAE78C7F225848C8001A1150 /* RhoRuby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRuby.h; path = ../rhodesruby/api/RhoRuby.h; sourceTree = "<group>"; };
+		FAE78C80225848C8001A1150 /* IRhoRubyBoolean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyBoolean.h; path = ../rhodesruby/api/IRhoRubyBoolean.h; sourceTree = "<group>"; };
+		FAE78C81225848C8001A1150 /* IRhoRubyMutableBoolean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableBoolean.h; path = ../rhodesruby/api/IRhoRubyMutableBoolean.h; sourceTree = "<group>"; };
+		FAE78C82225848C8001A1150 /* IRhoRubyNil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyNil.h; path = ../rhodesruby/api/IRhoRubyNil.h; sourceTree = "<group>"; };
+		FAE78C83225848C8001A1150 /* IRhoRubyArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyArray.h; path = ../rhodesruby/api/IRhoRubyArray.h; sourceTree = "<group>"; };
+		FAE78C84225848C8001A1150 /* IRhoRubyMutableFloat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableFloat.h; path = ../rhodesruby/api/IRhoRubyMutableFloat.h; sourceTree = "<group>"; };
+		FAE78C85225848C8001A1150 /* IRhoRubyHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyHash.h; path = ../rhodesruby/api/IRhoRubyHash.h; sourceTree = "<group>"; };
+		FAE78C86225848C8001A1150 /* IRhoRubyString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyString.h; path = ../rhodesruby/api/IRhoRubyString.h; sourceTree = "<group>"; };
+		FAE78C87225848C8001A1150 /* IRefCountedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRefCountedObject.h; path = ../rhodesruby/api/IRefCountedObject.h; sourceTree = "<group>"; };
+		FAE78C88225848C8001A1150 /* IRhoRubyFloat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyFloat.h; path = ../rhodesruby/api/IRhoRubyFloat.h; sourceTree = "<group>"; };
+		FAE78C9E22584B62001A1150 /* RhoRubyNilImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoRubyNilImpl.mm; path = ../rhodesruby/impl/RhoRubyNilImpl.mm; sourceTree = "<group>"; };
+		FAE78C9F22584B62001A1150 /* RhoRubyMutableBooleanImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoRubyMutableBooleanImpl.mm; path = ../rhodesruby/impl/RhoRubyMutableBooleanImpl.mm; sourceTree = "<group>"; };
+		FAE78CA022584B62001A1150 /* RhoRubyMutableStringImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoRubyMutableStringImpl.mm; path = ../rhodesruby/impl/RhoRubyMutableStringImpl.mm; sourceTree = "<group>"; };
+		FAE78CA122584B62001A1150 /* RhoRubyObjectImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoRubyObjectImpl.mm; path = ../rhodesruby/impl/RhoRubyObjectImpl.mm; sourceTree = "<group>"; };
+		FAE78CA222584B62001A1150 /* RhoRubyMutableIntegerImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyMutableIntegerImpl.h; path = ../rhodesruby/impl/RhoRubyMutableIntegerImpl.h; sourceTree = "<group>"; };
+		FAE78CA322584B62001A1150 /* RhoRubyMutableFloatImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyMutableFloatImpl.h; path = ../rhodesruby/impl/RhoRubyMutableFloatImpl.h; sourceTree = "<group>"; };
+		FAE78CA422584B62001A1150 /* RhoRubyMutableFloatImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoRubyMutableFloatImpl.mm; path = ../rhodesruby/impl/RhoRubyMutableFloatImpl.mm; sourceTree = "<group>"; };
+		FAE78CA522584B62001A1150 /* RhoRubyMutableArrayImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoRubyMutableArrayImpl.mm; path = ../rhodesruby/impl/RhoRubyMutableArrayImpl.mm; sourceTree = "<group>"; };
+		FAE78CA622584B62001A1150 /* RhoRubyNilImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyNilImpl.h; path = ../rhodesruby/impl/RhoRubyNilImpl.h; sourceTree = "<group>"; };
+		FAE78CA722584B62001A1150 /* RhoRubyMutableIntegerImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoRubyMutableIntegerImpl.mm; path = ../rhodesruby/impl/RhoRubyMutableIntegerImpl.mm; sourceTree = "<group>"; };
+		FAE78CA822584B63001A1150 /* RhoRubyImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyImpl.h; path = ../rhodesruby/impl/RhoRubyImpl.h; sourceTree = "<group>"; };
+		FAE78CA922584B63001A1150 /* RhoRubySingletone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoRubySingletone.m; path = ../rhodesruby/impl/RhoRubySingletone.m; sourceTree = "<group>"; };
+		FAE78CAA22584B63001A1150 /* RhoRubyMutableHashImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoRubyMutableHashImpl.mm; path = ../rhodesruby/impl/RhoRubyMutableHashImpl.mm; sourceTree = "<group>"; };
+		FAE78CAB22584B63001A1150 /* RhoRubyMutableStringImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyMutableStringImpl.h; path = ../rhodesruby/impl/RhoRubyMutableStringImpl.h; sourceTree = "<group>"; };
+		FAE78CAC22584B63001A1150 /* RhoRubyObjectImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyObjectImpl.h; path = ../rhodesruby/impl/RhoRubyObjectImpl.h; sourceTree = "<group>"; };
+		FAE78CAD22584B63001A1150 /* RubyServerResponceImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RubyServerResponceImpl.h; path = ../rhodesruby/impl/RubyServerResponceImpl.h; sourceTree = "<group>"; };
+		FAE78CAE22584B63001A1150 /* RubyServerResponceImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RubyServerResponceImpl.mm; path = ../rhodesruby/impl/RubyServerResponceImpl.mm; sourceTree = "<group>"; };
+		FAE78CB022584B63001A1150 /* RhoRubyMutableHashImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyMutableHashImpl.h; path = ../rhodesruby/impl/RhoRubyMutableHashImpl.h; sourceTree = "<group>"; };
+		FAE78CB122584B63001A1150 /* RhoRubyImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoRubyImpl.mm; path = ../rhodesruby/impl/RhoRubyImpl.mm; sourceTree = "<group>"; };
+		FAE78CB222584B63001A1150 /* RhoRubyMutableBooleanImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyMutableBooleanImpl.h; path = ../rhodesruby/impl/RhoRubyMutableBooleanImpl.h; sourceTree = "<group>"; };
+		FAE78CB322584B63001A1150 /* RhoRubyMutableArrayImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoRubyMutableArrayImpl.h; path = ../rhodesruby/impl/RhoRubyMutableArrayImpl.h; sourceTree = "<group>"; };
+		FAE78CDE22597B4F001A1150 /* IRhoRubyNativeCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyNativeCallback.h; path = ../rhodesruby/api/IRhoRubyNativeCallback.h; sourceTree = "<group>"; };
 		FAEF1DB916AED9D200E22B05 /* BaseClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseClasses.h; path = ../../shared/api_generator/BaseClasses.h; sourceTree = "<group>"; };
 		FAEF1DBA16AED9D200E22B05 /* GeneratorQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeneratorQueue.h; path = ../../shared/api_generator/GeneratorQueue.h; sourceTree = "<group>"; };
 		FAEF1DBC16AED9D200E22B05 /* CJSConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJSConverter.h; sourceTree = "<group>"; };
@@ -298,6 +480,8 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				FAE78C7222584867001A1150 /* rhoruby_iphone */,
+				FABD36D9222CDEE6005A2693 /* rhoruby */,
 				FAEF1DB716AED9B700E22B05 /* api_generator */,
 				5C7162600F8B7DEE0096B6AA /* common */,
 				5C7162630F8B7DF40096B6AA /* logging */,
@@ -489,6 +673,72 @@
 			name = Documentation;
 			sourceTree = "<group>";
 		};
+		FABD36D9222CDEE6005A2693 /* rhoruby */ = {
+			isa = PBXGroup;
+			children = (
+				FABD36DA222CDEF1005A2693 /* api */,
+				FABD36DB222CDEF6005A2693 /* impl */,
+			);
+			name = rhoruby;
+			sourceTree = "<group>";
+		};
+		FABD36DA222CDEF1005A2693 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FA4A980C223F5A48009D6142 /* SmartPointer.h */,
+				FA4A978A2238AA69009D6142 /* IArray.h */,
+				FA4A978C2238AA6A009D6142 /* IBoolean.h */,
+				FA4A97962238AA6B009D6142 /* IFloat.h */,
+				FA4A97872238AA69009D6142 /* IHash.h */,
+				FA4A978E2238AA6A009D6142 /* IInteger.h */,
+				FA4A97972238AA6B009D6142 /* IMutableArray.h */,
+				FA4A97952238AA6B009D6142 /* IMutableBoolean.h */,
+				FA4A978F2238AA6A009D6142 /* IMutableFloat.h */,
+				FA4A97912238AA6A009D6142 /* IMutableHash.h */,
+				FA4A978D2238AA6A009D6142 /* IMutableInteger.h */,
+				FA4A97982238AA6B009D6142 /* IMutableString.h */,
+				FA4A97862238AA68009D6142 /* INil.h */,
+				FA4A97882238AA69009D6142 /* IObject.h */,
+				FA4A97922238AA6A009D6142 /* IRefCountedObject.h */,
+				FA4A97932238AA6B009D6142 /* IRhoRuby.h */,
+				FA4A97902238AA6A009D6142 /* IRunnable.h */,
+				FA4A978B2238AA69009D6142 /* IString.h */,
+				FA4A97942238AA6B009D6142 /* RhoRuby.h */,
+				FA4A97892238AA69009D6142 /* RhoRubySingletone.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
+		FABD36DB222CDEF6005A2693 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA4A97B82238AA84009D6142 /* MutableArrayImpl.cpp */,
+				FA4A97BA2238AA84009D6142 /* MutableArrayImpl.h */,
+				FA4A97BF2238AA85009D6142 /* MutableBooleanImpl.cpp */,
+				FA4A97AE2238AA83009D6142 /* MutableBooleanImpl.h */,
+				FA4A97AC2238AA83009D6142 /* MutableFloatImpl.cpp */,
+				FA4A97B02238AA83009D6142 /* MutableFloatImpl.h */,
+				FA4A97B92238AA84009D6142 /* MutableHashImpl.cpp */,
+				FA4A97C12238AA86009D6142 /* MutableHashImpl.h */,
+				FA4A97B52238AA84009D6142 /* MutableIntegerImpl.cpp */,
+				FA4A97B22238AA83009D6142 /* MutableIntegerImpl.h */,
+				FA4A97B12238AA83009D6142 /* MutableStringImpl.cpp */,
+				FA4A97B32238AA83009D6142 /* MutableStringImpl.h */,
+				FA4A97B42238AA84009D6142 /* NilImpl.cpp */,
+				FA4A97AD2238AA83009D6142 /* NilImpl.h */,
+				FA4A97B62238AA84009D6142 /* ObjectImpl.cpp */,
+				FA4A97BE2238AA85009D6142 /* ObjectImpl.h */,
+				FA4A97BB2238AA85009D6142 /* RefCountedObjectImpl.cpp */,
+				FA4A97BC2238AA85009D6142 /* RefCountedObjectImpl.h */,
+				FA4A97B72238AA84009D6142 /* RhoRubyImpl.cpp */,
+				FA4A97C22238AA86009D6142 /* RhoRubyImpl.h */,
+				FA4A97C02238AA86009D6142 /* RhoRubySingletone.cpp */,
+				FA4A97BD2238AA85009D6142 /* RubyServerResponceImpl.cpp */,
+				FA4A97AF2238AA83009D6142 /* RubyServerResponceImpl.h */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
 		FAC6EE4C143B1F1E00B8E352 /* map */ = {
 			isa = PBXGroup;
 			children = (
@@ -506,6 +756,71 @@
 				FAC6EE5A143B1FC800B8E352 /* OSMMapEngine.h */,
 			);
 			name = map;
+			sourceTree = "<group>";
+		};
+		FAE78C7222584867001A1150 /* rhoruby_iphone */ = {
+			isa = PBXGroup;
+			children = (
+				FAE78C7322584889001A1150 /* api */,
+				FAE78C742258488F001A1150 /* impl */,
+			);
+			name = rhoruby_iphone;
+			sourceTree = "<group>";
+		};
+		FAE78C7322584889001A1150 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FAE78CDE22597B4F001A1150 /* IRhoRubyNativeCallback.h */,
+				FAE78C83225848C8001A1150 /* IRhoRubyArray.h */,
+				FAE78C80225848C8001A1150 /* IRhoRubyBoolean.h */,
+				FAE78C88225848C8001A1150 /* IRhoRubyFloat.h */,
+				FAE78C85225848C8001A1150 /* IRhoRubyHash.h */,
+				FAE78C79225848C7001A1150 /* IRhoRubyInteger.h */,
+				FAE78C7A225848C7001A1150 /* IRhoRubyMutableArray.h */,
+				FAE78C81225848C8001A1150 /* IRhoRubyMutableBoolean.h */,
+				FAE78C84225848C8001A1150 /* IRhoRubyMutableFloat.h */,
+				FAE78C7D225848C8001A1150 /* IRhoRubyMutableHash.h */,
+				FAE78C76225848C7001A1150 /* IRhoRubyMutableInteger.h */,
+				FAE78C78225848C7001A1150 /* IRhoRubyMutableString.h */,
+				FAE78C82225848C8001A1150 /* IRhoRubyNil.h */,
+				FAE78C7E225848C8001A1150 /* IRhoRubyObject.h */,
+				FAE78C87225848C8001A1150 /* IRefCountedObject.h */,
+				FAE78C77225848C7001A1150 /* IRhoRuby.h */,
+				FAE78C7B225848C7001A1150 /* IRhoRubyRunnable.h */,
+				FAE78C86225848C8001A1150 /* IRhoRubyString.h */,
+				FAE78C7F225848C8001A1150 /* RhoRuby.h */,
+				FAE78C75225848C7001A1150 /* RhoRubySingletone.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
+		FAE78C742258488F001A1150 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA67F3462263A00E00482671 /* RhoRubyFabrique.h */,
+				FAE78CB322584B63001A1150 /* RhoRubyMutableArrayImpl.h */,
+				FAE78CA522584B62001A1150 /* RhoRubyMutableArrayImpl.mm */,
+				FAE78CB222584B63001A1150 /* RhoRubyMutableBooleanImpl.h */,
+				FAE78C9F22584B62001A1150 /* RhoRubyMutableBooleanImpl.mm */,
+				FAE78CA322584B62001A1150 /* RhoRubyMutableFloatImpl.h */,
+				FAE78CA422584B62001A1150 /* RhoRubyMutableFloatImpl.mm */,
+				FAE78CB022584B63001A1150 /* RhoRubyMutableHashImpl.h */,
+				FAE78CAA22584B63001A1150 /* RhoRubyMutableHashImpl.mm */,
+				FAE78CA222584B62001A1150 /* RhoRubyMutableIntegerImpl.h */,
+				FAE78CA722584B62001A1150 /* RhoRubyMutableIntegerImpl.mm */,
+				FAE78CAB22584B63001A1150 /* RhoRubyMutableStringImpl.h */,
+				FAE78CA022584B62001A1150 /* RhoRubyMutableStringImpl.mm */,
+				FAE78CA622584B62001A1150 /* RhoRubyNilImpl.h */,
+				FAE78C9E22584B62001A1150 /* RhoRubyNilImpl.mm */,
+				FAE78CAC22584B63001A1150 /* RhoRubyObjectImpl.h */,
+				FAE78CA122584B62001A1150 /* RhoRubyObjectImpl.mm */,
+				FAE78CA822584B63001A1150 /* RhoRubyImpl.h */,
+				FAE78CB122584B63001A1150 /* RhoRubyImpl.mm */,
+				FAE78CA922584B63001A1150 /* RhoRubySingletone.m */,
+				FAE78CAD22584B63001A1150 /* RubyServerResponceImpl.h */,
+				FAE78CAE22584B63001A1150 /* RubyServerResponceImpl.mm */,
+			);
+			name = impl;
 			sourceTree = "<group>";
 		};
 		FAEF1DB716AED9B700E22B05 /* api_generator */ = {
@@ -557,70 +872,131 @@
 				5C71626F0F8B7E170096B6AA /* RhoDefs.h in Headers */,
 				5C7162700F8B7E170096B6AA /* RhoFatalError.h in Headers */,
 				5C7162720F8B7E170096B6AA /* RhoFile.h in Headers */,
+				FA4A97D12238AA86009D6142 /* MutableArrayImpl.h in Headers */,
 				FA1D452618D9E2BC0010CCF9 /* app_build_capabilities.h in Headers */,
 				5C7162730F8B7E170096B6AA /* RhoFilePath.h in Headers */,
+				FAE78CD32259727C001A1150 /* RhoRubyMutableArrayImpl.h in Headers */,
 				5C7162740F8B7E170096B6AA /* RhoMutexLock.h in Headers */,
+				FAE78CD422597281001A1150 /* RhoRubyMutableBooleanImpl.h in Headers */,
+				FAE78CD8225972AC001A1150 /* RhoRubyObjectImpl.h in Headers */,
 				5C7162750F8B7E170096B6AA /* RhoPort.h in Headers */,
+				FAE78C8A225848C9001A1150 /* IRhoRubyMutableInteger.h in Headers */,
+				FA4A97D32238AA86009D6142 /* RefCountedObjectImpl.h in Headers */,
 				5C7162760F8B7E170096B6AA /* RhoStd.h in Headers */,
 				5C7162770F8B7E170096B6AA /* RhoSystem.h in Headers */,
 				5C7162780F8B7E170096B6AA /* RhoTime.h in Headers */,
+				FA4A97C72238AA86009D6142 /* MutableFloatImpl.h in Headers */,
 				5C7162790F8B7E170096B6AA /* StringConverter.h in Headers */,
+				FA4A979B2238AA6B009D6142 /* IObject.h in Headers */,
 				5C7162840F8B7E330096B6AA /* RhoLog.h in Headers */,
 				5C7162850F8B7E330096B6AA /* RhoLogCat.h in Headers */,
 				5C7162870F8B7E330096B6AA /* RhoLogConf.h in Headers */,
+				FA4A979C2238AA6B009D6142 /* RhoRubySingletone.h in Headers */,
 				5C7162890F8B7E330096B6AA /* RhoLogSink.h in Headers */,
 				C08098B818059C88008FE912 /* RubyResultConvertor.h in Headers */,
+				FA4A97992238AA6B009D6142 /* INil.h in Headers */,
+				FA4A97C42238AA86009D6142 /* NilImpl.h in Headers */,
 				5C6B448D0F946589003CB43A /* RhoConf.h in Headers */,
 				5C6B452D0F9468E2003CB43A /* RhoProfiler.h in Headers */,
 				5C98174C0FBC4FCE002597A5 /* AutoPointer.h in Headers */,
+				FA4A979D2238AA6B009D6142 /* IArray.h in Headers */,
 				5C98174D0FBC4FCE002597A5 /* InputStream.h in Headers */,
 				5C98174E0FBC4FCE002597A5 /* irhoclassfactory.h in Headers */,
+				FA67F3472263A01000482671 /* RhoRubyFabrique.h in Headers */,
+				FAE78C92225848C9001A1150 /* IRhoRubyObject.h in Headers */,
+				FA4A97A22238AA6C009D6142 /* IMutableFloat.h in Headers */,
 				5C5335530FC2977600F268F0 /* IRhoThreadImpl.h in Headers */,
 				5C5335550FC2977600F268F0 /* RhoThread.h in Headers */,
+				FA4A97A42238AA6C009D6142 /* IMutableHash.h in Headers */,
+				FA4A97C52238AA86009D6142 /* MutableBooleanImpl.h in Headers */,
 				5C7405931064AF1600163569 /* Tokenizer.h in Headers */,
 				5CBD462B1087399700107D0D /* URI.h in Headers */,
 				5C6855EA10A02EAA008DA047 /* RhodesApp.h in Headers */,
 				BD2CEFCF10ADF10D002356D9 /* CURLNetRequest.h in Headers */,
 				BD2CEFD010ADF10D002356D9 /* INetRequest.h in Headers */,
+				FA4A97D82238AA86009D6142 /* MutableHashImpl.h in Headers */,
 				BD2C950910AE0D4B008D4692 /* PosixThreadImpl.h in Headers */,
 				BD4FC54C10BFE4D100D280D0 /* HttpServer.h in Headers */,
 				BDFCB13E112EE2B500AE3724 /* ssl.h in Headers */,
 				BDD11ECE113664E700349BE3 /* rhoparams.h in Headers */,
+				FAE78C8F225848C9001A1150 /* IRhoRubyRunnable.h in Headers */,
+				FA4A97A72238AA6C009D6142 /* RhoRuby.h in Headers */,
 				5C798935113BD148005F8736 /* GeoLocation.h in Headers */,
+				FAE78C8E225848C9001A1150 /* IRhoRubyMutableArray.h in Headers */,
 				BD8DF8891147C8090041A968 /* SplashScreen.h in Headers */,
 				FAA714A91DDE5B6F00E5E7AD /* RhoNativeViewManager.h in Headers */,
+				FA4A980D223F5A48009D6142 /* SmartPointer.h in Headers */,
+				FA4A97A82238AA6C009D6142 /* IMutableBoolean.h in Headers */,
+				FAE78C9A225848C9001A1150 /* IRhoRubyString.h in Headers */,
 				5C59BF4E115B4BC300E96ADE /* unzip.h in Headers */,
+				FAE78CDC22597590001A1150 /* RhoRubyMutableHashImpl.h in Headers */,
+				FA4A97AA2238AA6C009D6142 /* IMutableArray.h in Headers */,
 				5CCD7EBD116CE2D5005E6CA3 /* AppMenu.h in Headers */,
+				FAE78C8C225848C9001A1150 /* IRhoRubyMutableString.h in Headers */,
+				FAE78CD9225972C8001A1150 /* RhoRubyImpl.h in Headers */,
+				FAE78CDA22597409001A1150 /* RhoRubyMutableStringImpl.h in Headers */,
 				5CA2DE9111B01EF000B868D5 /* ThreadQueue.h in Headers */,
+				FAE78C9C225848C9001A1150 /* IRhoRubyFloat.h in Headers */,
 				C51463721A9258F500607F50 /* http_parser.h in Headers */,
+				FAE78CD7225972A6001A1150 /* RhoRubyNilImpl.h in Headers */,
 				5C663BEB11F3712C005F60AF /* RhodesAppBase.h in Headers */,
 				5C2CE255122AEC87005EDBC4 /* RhoAppAdapter.h in Headers */,
+				FAE78C94225848C9001A1150 /* IRhoRubyBoolean.h in Headers */,
+				FAE78C89225848C9001A1150 /* RhoRubySingletone.h in Headers */,
+				FAE78C99225848C9001A1150 /* IRhoRubyHash.h in Headers */,
+				FA4A979A2238AA6B009D6142 /* IHash.h in Headers */,
 				FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */,
 				5CE03CCD12DB7E990058B474 /* sqlite3.h in Headers */,
 				FAC6EE5C143B1FC800B8E352 /* BaseMapEngine.h in Headers */,
 				FAC6EE5E143B1FC800B8E352 /* ESRIMapEngine.h in Headers */,
 				FAC6EE60143B1FC800B8E352 /* GeocodingMapEngine.h in Headers */,
+				FAE78CDF22597B4F001A1150 /* IRhoRubyNativeCallback.h in Headers */,
 				FAC6EE62143B1FC800B8E352 /* GoogleMapEngine.h in Headers */,
+				FAE78C96225848C9001A1150 /* IRhoRubyNil.h in Headers */,
 				FAC6EE64143B1FC800B8E352 /* MapEngine.h in Headers */,
+				FAE78C98225848C9001A1150 /* IRhoRubyMutableFloat.h in Headers */,
 				FAC6EE66143B1FC800B8E352 /* OSMMapEngine.h in Headers */,
+				FA4A97A52238AA6C009D6142 /* IRefCountedObject.h in Headers */,
 				FAC6EE6A143B20B600B8E352 /* RhoMath.h in Headers */,
+				FA4A97CA2238AA86009D6142 /* MutableStringImpl.h in Headers */,
 				A22F9EFB14605D09006D8F1A /* PhonebookParams.h in Headers */,
 				C5D47763156A4ED000943A2D /* zip.h in Headers */,
+				FA4A97D52238AA86009D6142 /* ObjectImpl.h in Headers */,
+				FA4A979E2238AA6B009D6142 /* IString.h in Headers */,
+				FAE78C9B225848C9001A1150 /* IRefCountedObject.h in Headers */,
+				FAE78C95225848C9001A1150 /* IRhoRubyMutableBoolean.h in Headers */,
+				FA4A97AB2238AA6C009D6142 /* IMutableString.h in Headers */,
+				FA4A97C62238AA86009D6142 /* RubyServerResponceImpl.h in Headers */,
+				FA4A97A02238AA6B009D6142 /* IMutableInteger.h in Headers */,
+				FAE78C93225848C9001A1150 /* RhoRuby.h in Headers */,
+				FAE78C91225848C9001A1150 /* IRhoRubyMutableHash.h in Headers */,
+				FAE78C97225848C9001A1150 /* IRhoRubyArray.h in Headers */,
 				A2D0557D15A7500A002376EE /* IRhoPushClient.h in Headers */,
 				A2D0557F15A7500A002376EE /* RhoPushManager.h in Headers */,
 				FAEF1DCA16AED9D200E22B05 /* BaseClasses.h in Headers */,
+				FA4A97D92238AA86009D6142 /* RhoRubyImpl.h in Headers */,
+				FAE78CD6225972A1001A1150 /* RhoRubyMutableIntegerImpl.h in Headers */,
 				FAEF1DCB16AED9D200E22B05 /* GeneratorQueue.h in Headers */,
+				FA4A97A62238AA6C009D6142 /* IRhoRuby.h in Headers */,
 				FAEF1DCC16AED9D200E22B05 /* CJSConverter.h in Headers */,
+				FAE78CD522597285001A1150 /* RhoRubyMutableFloatImpl.h in Headers */,
 				FAEF1DCE16AED9D200E22B05 /* CMethodResult.h in Headers */,
+				FA4A97C92238AA86009D6142 /* MutableIntegerImpl.h in Headers */,
 				FAEF1DD016AED9D200E22B05 /* CRubyConverter.h in Headers */,
 				FAEF1DD216AED9D200E22B05 /* IMethodResult.h in Headers */,
 				FAEF1DD316AED9D200E22B05 /* RubyCallbackHelper.h in Headers */,
+				FA4A97A32238AA6C009D6142 /* IRunnable.h in Headers */,
 				FAEF1DD616AED9D200E22B05 /* js_helpers.h in Headers */,
 				FAEF1DD816AED9D200E22B05 /* MethodResult.h in Headers */,
+				FAE78C8D225848C9001A1150 /* IRhoRubyInteger.h in Headers */,
 				C08098B718059C88008FE912 /* JSONResultConvertor.h in Headers */,
 				FA6B222617026477009D1398 /* MethodResultConvertor.h in Headers */,
+				FAE78C8B225848C9001A1150 /* IRhoRuby.h in Headers */,
 				C084B09217394D4D00C1DCC0 /* StringifyHelper.h in Headers */,
 				FAD0471E1757A81700000F15 /* CJSEntryPoint.h in Headers */,
+				FA4A97A92238AA6C009D6142 /* IFloat.h in Headers */,
+				FA4A979F2238AA6B009D6142 /* IBoolean.h in Headers */,
+				FA4A97A12238AA6C009D6142 /* IInteger.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -651,6 +1027,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0500;
+				TargetAttributes = {
+					FAD356F72264229A00419673 = {
+						CreatedOnToolsVersion = 10.1;
+						DevelopmentTeam = PNQRMU2LPM;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = 1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "RhoLib" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -667,24 +1050,53 @@
 			projectRoot = "";
 			targets = (
 				D2AAC045055464E500DB518D /* RhoLib */,
+				FAD356F72264229A00419673 /* RhoLibAggregated */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		FAD356FC226422A000419673 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "LIB_NAME=\"RhoLib\"\n\n#MY_BUILD_DIR = \"${BUILD_DIR}\"\nMY_BUILD_DIR=\"./build\"\n\nSIMULATOR_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${LIB_NAME}.a\"\n\nDEVICE_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${LIB_NAME}.a\"\n\nOUTPUT_DIR=\"./${LIB_NAME}-Aggregated\"\n\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator\"\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos\"\n\n\nARCHS=\"i386 x86_64\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator ARCHS=\"i386 x86_64\"\n\nARCHS=\"arm64 armv7 armv7s\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphoneos -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos ARCHS=\"arm64 armv7 armv7s\"\n\nrm -rf \"${OUTPUT_DIR}\"\n\nmkdir \"${OUTPUT_DIR}\"\n\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${OUTPUT_DIR}/lib${LIB_NAME}.a\"\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D2AAC044055464E500DB518D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA4A97D42238AA86009D6142 /* RubyServerResponceImpl.cpp in Sources */,
+				FA4A97CD2238AA86009D6142 /* ObjectImpl.cpp in Sources */,
+				FA4A97CC2238AA86009D6142 /* MutableIntegerImpl.cpp in Sources */,
+				FAE78CCC2259054F001A1150 /* RhoRubyNilImpl.mm in Sources */,
 				5C7162710F8B7E170096B6AA /* RhoFile.cpp in Sources */,
 				5C7162830F8B7E330096B6AA /* RhoLog.cpp in Sources */,
+				FA4A97CF2238AA86009D6142 /* MutableArrayImpl.cpp in Sources */,
 				5C7162860F8B7E330096B6AA /* RhoLogConf.cpp in Sources */,
 				5C7162880F8B7E330096B6AA /* RhoLogSink.cpp in Sources */,
+				FAE78CDD22597593001A1150 /* RhoRubyMutableHashImpl.mm in Sources */,
 				C51A570D19D1E2020064CE87 /* gunzip.cpp in Sources */,
 				5C71628A0F8B7E330096B6AA /* RhoPlainLog.cpp in Sources */,
 				5C6B448C0F946589003CB43A /* RhoConf.cpp in Sources */,
 				5C6B452C0F9468E2003CB43A /* RhoProfiler.cpp in Sources */,
+				FAE78CCF22590F3E001A1150 /* RhoRubyImpl.mm in Sources */,
 				5C5335540FC2977600F268F0 /* RhoThread.cpp in Sources */,
+				FAE78CD122597116001A1150 /* RhoRubyMutableFloatImpl.mm in Sources */,
 				5C7405921064AF1600163569 /* Tokenizer.cpp in Sources */,
 				5CBD462A1087399700107D0D /* URI.cpp in Sources */,
 				BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */,
@@ -694,12 +1106,17 @@
 				BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */,
 				5C798934113BD148005F8736 /* GeoLocation.cpp in Sources */,
 				5CECDBB3113FE3620084A75B /* System.cpp in Sources */,
+				FA4A97D72238AA86009D6142 /* RhoRubySingletone.cpp in Sources */,
 				C51A571319D1F32A0064CE87 /* gzclose.cpp in Sources */,
+				FAE78CCB225850C5001A1150 /* RhoRubyObjectImpl.mm in Sources */,
 				C51A571D19D1FE240064CE87 /* inffast.cpp in Sources */,
+				FA4A97CE2238AA86009D6142 /* RhoRubyImpl.cpp in Sources */,
 				C51A571919D1F9770064CE87 /* inflate.cpp in Sources */,
 				BD8DF8881147C8090041A968 /* SplashScreen.cpp in Sources */,
+				FA4A97D62238AA86009D6142 /* MutableBooleanImpl.cpp in Sources */,
 				C51A570F19D1EA200064CE87 /* gzlib.cpp in Sources */,
 				C51A572319D1FFBA0064CE87 /* crc32.cpp in Sources */,
+				FAE78CDB22597413001A1150 /* RhoRubyMutableStringImpl.mm in Sources */,
 				5C59BF4D115B4BC300E96ADE /* unzip.cpp in Sources */,
 				5CCD7EBC116CE2D5005E6CA3 /* AppMenu.cpp in Sources */,
 				5CA2DE9011B01EF000B868D5 /* ThreadQueue.cpp in Sources */,
@@ -717,22 +1134,31 @@
 				C51A571F19D1FE900064CE87 /* infback.cpp in Sources */,
 				FAC6EE61143B1FC800B8E352 /* GoogleMapEngine.cpp in Sources */,
 				C51A571719D1F5570064CE87 /* deflate.cpp in Sources */,
+				FAE78CD022595A8B001A1150 /* RhoRubyMutableBooleanImpl.mm in Sources */,
 				C51A571B19D1FC480064CE87 /* trees.cpp in Sources */,
 				FAC6EE63143B1FC800B8E352 /* MapEngine.cpp in Sources */,
+				FA4A97D22238AA86009D6142 /* RefCountedObjectImpl.cpp in Sources */,
 				FAC6EE65143B1FC800B8E352 /* OSMMapEngine.cpp in Sources */,
 				FAC6EE69143B20B600B8E352 /* RhoMath.cpp in Sources */,
+				FAE78CCE22590EA7001A1150 /* RhoRubySingletone.m in Sources */,
+				FA4A97C82238AA86009D6142 /* MutableStringImpl.cpp in Sources */,
+				FAE78CD222597164001A1150 /* RhoRubyMutableIntegerImpl.mm in Sources */,
 				A22F9EFF14605D82006D8F1A /* PhonebookParams.cpp in Sources */,
 				656E39321497A64300288105 /* BundleManager.cpp in Sources */,
 				C5D47762156A4ED000943A2D /* zip.cpp in Sources */,
+				FA4A97CB2238AA86009D6142 /* NilImpl.cpp in Sources */,
 				A2D0557E15A7500A002376EE /* RhoPushManager.cpp in Sources */,
+				FA4A97C32238AA86009D6142 /* MutableFloatImpl.cpp in Sources */,
 				C56918CE168B9AB800F6013A /* RhodesApp.cpp in Sources */,
 				C51463711A9258F500607F50 /* http_parser.c in Sources */,
+				FAE78CCD22590B58001A1150 /* RhoRubyMutableArrayImpl.mm in Sources */,
 				FAEF1DCF16AED9D200E22B05 /* CMethodResult.m in Sources */,
 				FAEF1DD116AED9D200E22B05 /* CRubyConverter.m in Sources */,
 				FAEF1DD416AED9D200E22B05 /* RubyCallbackHelper.mm in Sources */,
 				FAEF1DD516AED9D200E22B05 /* js_helpers.cpp in Sources */,
 				C51A571519D1F38F0064CE87 /* gzwrite.cpp in Sources */,
 				FAEF1DD716AED9D200E22B05 /* MethodResult.cpp in Sources */,
+				FA4A97D02238AA86009D6142 /* MutableHashImpl.cpp in Sources */,
 				FA0E908D16B7FE000094CCDE /* CJSConverter.mm in Sources */,
 				C084B09117394D4D00C1DCC0 /* StringifyHelper.cpp in Sources */,
 				C51A571119D1F0C10064CE87 /* gzread.cpp in Sources */,
@@ -749,6 +1175,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -784,6 +1211,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LIBRARY = "libc++";
+				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = (
@@ -815,6 +1243,7 @@
 		1DEB91F008733DB70010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -822,13 +1251,14 @@
 				HEADER_SEARCH_PATHS = ../../shared;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator3.2;
+				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
 		1DEB91F108733DB70010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -841,6 +1271,7 @@
 		46B0042B10332DC400D0C2F4 /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -855,6 +1286,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LIBRARY = "libc++";
+				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = (
@@ -883,6 +1315,42 @@
 			};
 			name = Distribution;
 		};
+		FAD356F82264229A00419673 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
+			};
+			name = Debug;
+		};
+		FAD356F92264229A00419673 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
+			};
+			name = Release;
+		};
+		FAD356FA2264229A00419673 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
+			};
+			name = Distribution;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -902,6 +1370,16 @@
 				1DEB91F008733DB70010E9CD /* Debug */,
 				1DEB91F108733DB70010E9CD /* Release */,
 				46B0042B10332DC400D0C2F4 /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAD356FB2264229A00419673 /* Build configuration list for PBXAggregateTarget "RhoLibAggregated" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAD356F82264229A00419673 /* Debug */,
+				FAD356F92264229A00419673 /* Release */,
+				FAD356FA2264229A00419673 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
