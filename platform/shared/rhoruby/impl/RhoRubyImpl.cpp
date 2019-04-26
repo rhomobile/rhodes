@@ -25,6 +25,10 @@
 
 #include "common/RhodesApp.h"
 
+
+#include "../../../../lib/commonAPI/coreapi/ext/shared/generated/cpp/NetworkBase.h"
+
+
 #define RHOLIB_LOCAL_SERVER_URL "/system/rholib_callback"
 
 
@@ -66,11 +70,45 @@ static void rholib_local_server_callback_func(void *arg, rho::String const &strQ
 
 
 
+
+
+
+
+
 typedef VALUE (*ruby_method_func_type)(...);
 
 namespace rho {
 namespace ruby {
 
+    
+    class CRhoLocalServerRequestTask
+    {
+        rho::String m_strUrl;
+        IRubyLocalServerRequestCallback* m_Callback;
+    public:
+        CRhoLocalServerRequestTask(const rho::String& strUrl, IRubyLocalServerRequestCallback* callback)
+        : m_strUrl(strUrl), m_Callback(callback)
+        {}
+        
+        void run(common::CRhoThread &)
+        {
+            rho::net::CNetRequestWrapper wrap_req = rho::net::CNetRequestWrapper( rho_get_RhoClassFactory()->createNetRequestImpl(), NULL );
+            NetResponse resp = wrap_req.pullData( m_strUrl.c_str(), NULL );
+            IMutableString* str_resp = NULL;
+            if (resp.isOK()) {
+                const char* body = resp.getCharData();
+                if (body != NULL) {
+                    str_resp = (IMutableString*)rho::ruby::RhoRubySingletone::getRhoRuby()->makeBaseTypeObject(BASIC_TYPES::MutableString);
+                    str_resp->setUTF8(body);
+                }
+            }
+            if (m_Callback != NULL) {
+                m_Callback->onLocalServerResponce(str_resp);
+            }
+        }
+    };
+
+    
 
 
     RhoRubyImpl::~RhoRubyImpl() {
@@ -126,10 +164,11 @@ namespace ruby {
         rho::common::CRhodesApp::getInstance()->callCallbackWithData(RHOLIB_LOCAL_SERVER_URL, "", "", false);
     }
 
-    // call ruby server url (net request) and receive responce in callabck
-    void RhoRubyImpl::executeRubyServerURL(const char* url, const char* body, IRubyServerCallback* callback) {
-        
+    void RhoRubyImpl::executeGetRequestToRubyServer(const char* url, IRubyLocalServerRequestCallback* callback) {
+        rho::String s_url = RHODESAPP().canonicalizeRhoUrl(url);
+        rho::common::rho_rhodesapp_call_in_thread(new CRhoLocalServerRequestTask(s_url, callback ) );
     }
+
 
     // execute ruby code in current thread. parameters can be simple object (string, integer etc. - in this case one parameters will be passed to method.)
     // also parameters can be IArray - in this case list of parameters will be passed to method (parameters from array)
@@ -283,6 +322,9 @@ namespace ruby {
 
 
     IObject* RhoRubyImpl::convertJSON_to_Object(json::CJSONEntry* jsonEntry) {
+        if (jsonEntry == NULL) {
+            return NULL;
+        }
         if (jsonEntry->isString()) {
             rho::String str = jsonEntry->getStringObject();
             IMutableString* ms = (IMutableString*)makeBaseTypeObject(BASIC_TYPES::MutableString);
@@ -345,6 +387,12 @@ namespace ruby {
 
     // util methods (used for parse responce from server etc.)
     IObject* RhoRubyImpl::convertJSON_to_Objects(const char* json) {
+        if (json == NULL) {
+            return NULL;
+        }
+        if (strlen(json) <= 0) {
+            return NULL;
+        }
         json::CJSONEntry oEntry(json);
         return convertJSON_to_Object(&oEntry);
     }
