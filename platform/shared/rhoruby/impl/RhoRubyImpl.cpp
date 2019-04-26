@@ -322,6 +322,9 @@ namespace ruby {
 
 
     IObject* RhoRubyImpl::convertJSON_to_Object(json::CJSONEntry* jsonEntry) {
+        if (jsonEntry == NULL) {
+            return NULL;
+        }
         if (jsonEntry->isString()) {
             rho::String str = jsonEntry->getStringObject();
             IMutableString* ms = (IMutableString*)makeBaseTypeObject(BASIC_TYPES::MutableString);
@@ -384,6 +387,12 @@ namespace ruby {
 
     // util methods (used for parse responce from server etc.)
     IObject* RhoRubyImpl::convertJSON_to_Objects(const char* json) {
+        if (json == NULL) {
+            return NULL;
+        }
+        if (strlen(json) <= 0) {
+            return NULL;
+        }
         json::CJSONEntry oEntry(json);
         return convertJSON_to_Object(&oEntry);
     }
