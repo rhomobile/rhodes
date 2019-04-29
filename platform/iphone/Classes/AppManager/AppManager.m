@@ -268,6 +268,11 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
 	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
+    
+#ifdef RHO_STANDALONE_LIB
+    bundleRoot = [bundleRoot stringByAppendingPathComponent:@"RhoBundle"];
+#endif
+    
 	NSString *rhoRoot = [NSString stringWithUTF8String:rho_native_rhopath()];
 	NSString *rhoUserRoot = [NSString stringWithUTF8String:rho_native_rhouserpath()];
     NSString *rhoDBRoot = [NSString stringWithUTF8String:rho_native_rhodbpath()]; 

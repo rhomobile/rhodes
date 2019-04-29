@@ -7,102 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FA2A0E9D183C415A00C11E7F /* RhodesBaseDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA2A0E9C183C415A00C11E7F /* RhodesBaseDelegate.m */; };
-		FAED7868183C3A8100BC7028 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED7867183C3A8100BC7028 /* Foundation.framework */; };
-		FAED78C6183C3C5800BC7028 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78AA183C3B2100BC7028 /* libcurl.a */; };
-		FAED78C7183C3C5800BC7028 /* librhoappbaselib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78AD183C3B2100BC7028 /* librhoappbaselib.a */; };
-		FAED78C8183C3C5800BC7028 /* librhoextlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78B0183C3B2100BC7028 /* librhoextlib.a */; };
-		FAED78C9183C3C5800BC7028 /* librholib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78B3183C3B2100BC7028 /* librholib.a */; };
-		FAED78CA183C3C5800BC7028 /* librhorubylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78B6183C3B2100BC7028 /* librhorubylib.a */; };
-		FAED78CB183C3C5800BC7028 /* librhosynclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED78B9183C3B2100BC7028 /* librhosynclib.a */; };
+		FAE78B5C225452D4001A1150 /* RhodesBaseDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA2A0E9C183C415A00C11E7F /* RhodesBaseDelegate.m */; };
+		FAE78BA922545F5F001A1150 /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FAE78BA722545F5F001A1150 /* app_build_configs.c */; };
+		FAE78BAB22545F8B001A1150 /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = FAE78BAA22545F8B001A1150 /* extensions.c */; };
+		FAE78BB72254622A001A1150 /* rhodes_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAE78BB62254622A001A1150 /* rhodes_stub.cpp */; };
+		FAE78C7122584854001A1150 /* RhodesLib.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE78C7022584854001A1150 /* RhodesLib.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		FAED78A9183C3B2100BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED78A5183C3B2100BC7028 /* curl.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC046055464E500DB518D;
-			remoteInfo = curl;
-		};
-		FAED78AC183C3B2100BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC046055464E500DB518D;
-			remoteInfo = RhoAppBaseLib;
-		};
-		FAED78AF183C3B2100BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC07E0554694100DB518D;
-			remoteInfo = rhoextlib;
-		};
-		FAED78B2183C3B2100BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC046055464E500DB518D;
-			remoteInfo = RhoLib;
-		};
-		FAED78B5183C3B2100BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC046055464E500DB518D;
-			remoteInfo = rhorubylib;
-		};
-		FAED78B8183C3B2100BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = D2AAC046055464E500DB518D;
-			remoteInfo = rhosynclib;
-		};
-		FAED78BA183C3C3900BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D;
-			remoteInfo = rhoextlib;
-		};
-		FAED78BC183C3C3C00BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = rhosynclib;
-		};
-		FAED78BE183C3C3F00BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = rhorubylib;
-		};
-		FAED78C0183C3C4200BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = RhoLib;
-		};
-		FAED78C2183C3C4500BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = RhoAppBaseLib;
-		};
-		FAED78C4183C3C4800BC7028 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAED78A5183C3B2100BC7028 /* curl.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = curl;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		FAED7862183C3A8100BC7028 /* CopyFiles */ = {
@@ -119,15 +29,14 @@
 /* Begin PBXFileReference section */
 		FA2A0E9B183C415A00C11E7F /* RhodesBaseDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhodesBaseDelegate.h; sourceTree = SOURCE_ROOT; };
 		FA2A0E9C183C415A00C11E7F /* RhodesBaseDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhodesBaseDelegate.m; sourceTree = SOURCE_ROOT; };
+		FAE78B5E22545537001A1150 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		FAE78BA722545F5F001A1150 /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = ../shared/common/app_build_configs.c; sourceTree = "<group>"; };
+		FAE78BAA22545F8B001A1150 /* extensions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extensions.c; path = ../shared/ruby/ext/rho/extensions.c; sourceTree = "<group>"; };
+		FAE78BB62254622A001A1150 /* rhodes_stub.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rhodes_stub.cpp; sourceTree = "<group>"; };
+		FAE78C6F2258484B001A1150 /* RhodesLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhodesLib.h; path = rhodeslib/api/RhodesLib.h; sourceTree = "<group>"; };
+		FAE78C7022584854001A1150 /* RhodesLib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhodesLib.m; path = rhodeslib/impl/RhodesLib.m; sourceTree = "<group>"; };
 		FAED7864183C3A8100BC7028 /* libRhodes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRhodes.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAED7867183C3A8100BC7028 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		FAED7878183C3A8100BC7028 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhoextlib.xcodeproj; path = rhoextlib/rhoextlib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhosynclib.xcodeproj; path = rhosynclib/rhosynclib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rhorubylib.xcodeproj; path = rhorubylib/rhorubylib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoAppBaseLib.xcodeproj; path = RhoAppBaseLib/RhoAppBaseLib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		FAED78A5183C3B2100BC7028 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,29 +44,62 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAED78C6183C3C5800BC7028 /* libcurl.a in Frameworks */,
-				FAED78C7183C3C5800BC7028 /* librhoappbaselib.a in Frameworks */,
-				FAED78C8183C3C5800BC7028 /* librhoextlib.a in Frameworks */,
-				FAED78C9183C3C5800BC7028 /* librholib.a in Frameworks */,
-				FAED78CA183C3C5800BC7028 /* librhorubylib.a in Frameworks */,
-				FAED78CB183C3C5800BC7028 /* librhosynclib.a in Frameworks */,
-				FAED7868183C3A8100BC7028 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FAE78BB422546044001A1150 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAE78C6C22584815001A1150 /* rhodeslib */,
+				FAE78C642258478E001A1150 /* application */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		FAE78C642258478E001A1150 /* application */ = {
+			isa = PBXGroup;
+			children = (
+				FAE78BAA22545F8B001A1150 /* extensions.c */,
+				FAE78BA722545F5F001A1150 /* app_build_configs.c */,
+				FA2A0E9B183C415A00C11E7F /* RhodesBaseDelegate.h */,
+				FA2A0E9C183C415A00C11E7F /* RhodesBaseDelegate.m */,
+				FAE78BB62254622A001A1150 /* rhodes_stub.cpp */,
+			);
+			name = application;
+			sourceTree = "<group>";
+		};
+		FAE78C6C22584815001A1150 /* rhodeslib */ = {
+			isa = PBXGroup;
+			children = (
+				FAE78C6D22584822001A1150 /* api */,
+				FAE78C6E22584827001A1150 /* impl */,
+			);
+			name = rhodeslib;
+			sourceTree = "<group>";
+		};
+		FAE78C6D22584822001A1150 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FAE78C6F2258484B001A1150 /* RhodesLib.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
+		FAE78C6E22584827001A1150 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAE78C7022584854001A1150 /* RhodesLib.m */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
 		FAED785B183C3A8100BC7028 = {
 			isa = PBXGroup;
 			children = (
-				FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */,
-				FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */,
-				FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */,
-				FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */,
-				FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */,
-				FAED78A5183C3B2100BC7028 /* curl.xcodeproj */,
-				FAED7869183C3A8100BC7028 /* Rhodes */,
+				FAE78BB422546044001A1150 /* Sources */,
 				FAED7866183C3A8100BC7028 /* Frameworks */,
 				FAED7865183C3A8100BC7028 /* Products */,
 			);
@@ -174,67 +116,10 @@
 		FAED7866183C3A8100BC7028 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FAE78B5E22545537001A1150 /* UIKit.framework */,
 				FAED7867183C3A8100BC7028 /* Foundation.framework */,
-				FAED7878183C3A8100BC7028 /* UIKit.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		FAED7869183C3A8100BC7028 /* Rhodes */ = {
-			isa = PBXGroup;
-			children = (
-				FA2A0E9B183C415A00C11E7F /* RhodesBaseDelegate.h */,
-				FA2A0E9C183C415A00C11E7F /* RhodesBaseDelegate.m */,
-			);
-			path = Rhodes;
-			sourceTree = "<group>";
-		};
-		FAED7897183C3B2100BC7028 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAED78B0183C3B2100BC7028 /* librhoextlib.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		FAED789A183C3B2100BC7028 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAED78B9183C3B2100BC7028 /* librhosynclib.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		FAED789D183C3B2100BC7028 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAED78B6183C3B2100BC7028 /* librhorubylib.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		FAED78A0183C3B2100BC7028 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAED78B3183C3B2100BC7028 /* librholib.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		FAED78A3183C3B2100BC7028 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAED78AD183C3B2100BC7028 /* librhoappbaselib.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		FAED78A6183C3B2100BC7028 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAED78AA183C3B2100BC7028 /* libcurl.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -251,12 +136,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				FAED78C5183C3C4800BC7028 /* PBXTargetDependency */,
-				FAED78C3183C3C4500BC7028 /* PBXTargetDependency */,
-				FAED78C1183C3C4200BC7028 /* PBXTargetDependency */,
-				FAED78BF183C3C3F00BC7028 /* PBXTargetDependency */,
-				FAED78BD183C3C3C00BC7028 /* PBXTargetDependency */,
-				FAED78BB183C3C3900BC7028 /* PBXTargetDependency */,
 			);
 			name = Rhodes;
 			productName = Rhodes;
@@ -282,32 +161,6 @@
 			mainGroup = FAED785B183C3A8100BC7028;
 			productRefGroup = FAED7865183C3A8100BC7028 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = FAED78A6183C3B2100BC7028 /* Products */;
-					ProjectRef = FAED78A5183C3B2100BC7028 /* curl.xcodeproj */;
-				},
-				{
-					ProductGroup = FAED78A3183C3B2100BC7028 /* Products */;
-					ProjectRef = FAED78A2183C3B2100BC7028 /* RhoAppBaseLib.xcodeproj */;
-				},
-				{
-					ProductGroup = FAED7897183C3B2100BC7028 /* Products */;
-					ProjectRef = FAED7896183C3B2100BC7028 /* rhoextlib.xcodeproj */;
-				},
-				{
-					ProductGroup = FAED78A0183C3B2100BC7028 /* Products */;
-					ProjectRef = FAED789F183C3B2100BC7028 /* RhoLib.xcodeproj */;
-				},
-				{
-					ProductGroup = FAED789D183C3B2100BC7028 /* Products */;
-					ProjectRef = FAED789C183C3B2100BC7028 /* rhorubylib.xcodeproj */;
-				},
-				{
-					ProductGroup = FAED789A183C3B2100BC7028 /* Products */;
-					ProjectRef = FAED7899183C3B2100BC7028 /* rhosynclib.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				FAED7863183C3A8100BC7028 /* Rhodes */,
@@ -315,100 +168,27 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXReferenceProxy section */
-		FAED78AA183C3B2100BC7028 /* libcurl.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libcurl.a;
-			remoteRef = FAED78A9183C3B2100BC7028 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAED78AD183C3B2100BC7028 /* librhoappbaselib.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = librhoappbaselib.a;
-			remoteRef = FAED78AC183C3B2100BC7028 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAED78B0183C3B2100BC7028 /* librhoextlib.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = librhoextlib.a;
-			remoteRef = FAED78AF183C3B2100BC7028 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAED78B3183C3B2100BC7028 /* librholib.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = librholib.a;
-			remoteRef = FAED78B2183C3B2100BC7028 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAED78B6183C3B2100BC7028 /* librhorubylib.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = librhorubylib.a;
-			remoteRef = FAED78B5183C3B2100BC7028 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAED78B9183C3B2100BC7028 /* librhosynclib.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = librhosynclib.a;
-			remoteRef = FAED78B8183C3B2100BC7028 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
-
 /* Begin PBXSourcesBuildPhase section */
 		FAED7860183C3A8100BC7028 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA2A0E9D183C415A00C11E7F /* RhodesBaseDelegate.m in Sources */,
+				FAE78BA922545F5F001A1150 /* app_build_configs.c in Sources */,
+				FAE78C7122584854001A1150 /* RhodesLib.m in Sources */,
+				FAE78BAB22545F8B001A1150 /* extensions.c in Sources */,
+				FAE78BB72254622A001A1150 /* rhodes_stub.cpp in Sources */,
+				FAE78B5C225452D4001A1150 /* RhodesBaseDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		FAED78BB183C3C3900BC7028 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = rhoextlib;
-			targetProxy = FAED78BA183C3C3900BC7028 /* PBXContainerItemProxy */;
-		};
-		FAED78BD183C3C3C00BC7028 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = rhosynclib;
-			targetProxy = FAED78BC183C3C3C00BC7028 /* PBXContainerItemProxy */;
-		};
-		FAED78BF183C3C3F00BC7028 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = rhorubylib;
-			targetProxy = FAED78BE183C3C3F00BC7028 /* PBXContainerItemProxy */;
-		};
-		FAED78C1183C3C4200BC7028 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RhoLib;
-			targetProxy = FAED78C0183C3C4200BC7028 /* PBXContainerItemProxy */;
-		};
-		FAED78C3183C3C4500BC7028 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RhoAppBaseLib;
-			targetProxy = FAED78C2183C3C4500BC7028 /* PBXContainerItemProxy */;
-		};
-		FAED78C5183C3C4800BC7028 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = curl;
-			targetProxy = FAED78C4183C3C4800BC7028 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		FAED7885183C3A8100BC7028 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -446,6 +226,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -480,14 +261,12 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "../../platform/shared/ruby/iphone ../../platform/shared/ruby/include ../../platform/shared/curl/include ../../platform/shared/ ../../platform/shared/syncengine ../../platform/shared/logging ../../platform/shared/common ../../platform/iphone/Classes/** rhoextlib rhoappbaselib/**";
+				USER_HEADER_SEARCH_PATHS = "../../platform/shared/ruby/iphone ../../platform/shared/ruby/include ../../platform/shared/curl/include ../../platform/shared/** ../../platform/shared/syncengine ../../platform/shared/logging ../../platform/shared/common ../../platform/iphone/Classes/** rhoextlib rhoappbaselib/**";
 			};
 			name = Debug;
 		};
@@ -498,14 +277,12 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = rhorunner_Prefix.pch;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "../../platform/shared/ruby/iphone ../../platform/shared/ruby/include ../../platform/shared/curl/include ../../platform/shared/ ../../platform/shared/syncengine ../../platform/shared/logging ../../platform/shared/common ../../platform/iphone/Classes/** rhoextlib rhoappbaselib/**";
+				USER_HEADER_SEARCH_PATHS = "../../platform/shared/ruby/iphone ../../platform/shared/ruby/include ../../platform/shared/curl/include ../../platform/shared/** ../../platform/shared/syncengine ../../platform/shared/logging ../../platform/shared/common ../../platform/iphone/Classes/** rhoextlib rhoappbaselib/**";
 			};
 			name = Release;
 		};

@@ -90,6 +90,9 @@ extern void Init_nonblock(void);
 extern void Init_date_core(void);
 
 
+extern void Init_RubyNative_extension(void);
+
+
 //RhoSupport extension
 extern void Init_RhoSupport(void);
 extern VALUE require_compiled(VALUE fname, VALUE* result);
@@ -283,6 +286,11 @@ void RhoRubyStart()
 
 	Init_Extensions();
 #endif //OS_WP8
+        
+        
+    //MOHUS
+    //Init_RubyNative_extension();
+        
  
 	extensions_loaded = 1;
 
