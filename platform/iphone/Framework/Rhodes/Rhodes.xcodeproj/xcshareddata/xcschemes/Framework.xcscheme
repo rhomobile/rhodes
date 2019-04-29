@@ -17,7 +17,7 @@
                BlueprintIdentifier = "FA7A09D82260564500B95E07"
                BuildableName = "Framework"
                BlueprintName = "Framework"
-               ReferencedContainer = "container:RhodesLib.xcodeproj">
+               ReferencedContainer = "container:Rhodes.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -48,7 +48,7 @@
             BlueprintIdentifier = "FA7A09D82260564500B95E07"
             BuildableName = "Framework"
             BlueprintName = "Framework"
-            ReferencedContainer = "container:RhodesLib.xcodeproj">
+            ReferencedContainer = "container:Rhodes.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -66,7 +66,7 @@
             BlueprintIdentifier = "FA7A09D82260564500B95E07"
             BuildableName = "Framework"
             BlueprintName = "Framework"
-            ReferencedContainer = "container:RhodesLib.xcodeproj">
+            ReferencedContainer = "container:Rhodes.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
