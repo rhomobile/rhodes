@@ -30,7 +30,7 @@ class CRhoRubyNativeCallbackHolder : public  rho::ruby::IRubyNativeCallback {
 public:
     
     CRhoRubyNativeCallbackHolder(id<IRhoRubyNativeCallback> callback) {
-        mCallback = callback;
+        mCallback = [callback retain];
     }
     
     virtual ~CRhoRubyNativeCallbackHolder() {}
@@ -52,13 +52,14 @@ class CRhoRubyRunnableHolder : public  rho::ruby::IRunnable {
 public:
     
     CRhoRubyRunnableHolder(id<IRhoRubyRunnable> command) {
-        mCommand = command;
+        mCommand = [command retain];
     }
     
     virtual ~CRhoRubyRunnableHolder() {}
     
     virtual void run() {
         [mCommand rhoRubyRunnableRun];
+        [mCommand release];
         delete this;
     }
 
@@ -72,7 +73,7 @@ class CRhoRubyLocalServerRequestCallbackHolder : public  rho::ruby::IRubyLocalSe
 public:
     
     CRhoRubyLocalServerRequestCallbackHolder(id<IRubyLocalServerRequestCallback> callback) {
-        mCallback = callback;
+        mCallback = [callback retain];
     }
     
     virtual ~CRhoRubyLocalServerRequestCallbackHolder() {}
@@ -83,6 +84,7 @@ public:
             resp = [NSString stringWithUTF8String:responce->getUTF8()];
         }
         [mCallback onLocalServerResponce:resp];
+        [mCallback release];
         //delete this;
     }
     
