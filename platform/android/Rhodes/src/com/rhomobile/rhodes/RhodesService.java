@@ -185,6 +185,8 @@ public class RhodesService extends Service {
 	public static String               m_Text                      = "";
 	private static String				ExitPasswordEnabled         = "";
 	private static String				ExitPasswordValue           = "";
+
+	private static RhoMain rhoMain = null;
 	
 	public static  void setExitPasswordEnabled(String exitPasswordEnabled)
 	{ 
@@ -200,6 +202,8 @@ public class RhodesService extends Service {
 	{
 		return ExitPasswordEnabled;
 	}
+
+	public static void setRhoMain(RhoMain main) { rhoMain = main; }
 	
 	public static  String getExitPasswordValue()
 	{
@@ -406,7 +410,9 @@ public class RhodesService extends Service {
 
 	public static void handleAppStarted()
 	{
-	    RhodesApplication.handleAppStarted();
+		RhodesApplication.handleAppStarted();
+		if(rhoMain != null)		
+		   rhoMain.onAppStart();
 	}
 	
 	private void initForegroundServiceApi() {

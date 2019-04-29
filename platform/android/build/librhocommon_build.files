@@ -48,3 +48,15 @@ platform/shared/api_generator/js_helpers.cpp
 platform/shared/api_generator/MethodResult.cpp
 platform/shared/api_generator/StringifyHelper.cpp
 platform/shared/tinyxml2/tinyxml2.cpp
+platform/shared/rhoruby/impl/MutableArrayImpl.cpp
+platform/shared/rhoruby/impl/MutableBooleanImpl.cpp
+platform/shared/rhoruby/impl/MutableFloatImpl.cpp
+platform/shared/rhoruby/impl/MutableHashImpl.cpp
+platform/shared/rhoruby/impl/MutableIntegerImpl.cpp
+platform/shared/rhoruby/impl/MutableStringImpl.cpp
+platform/shared/rhoruby/impl/NilImpl.cpp
+platform/shared/rhoruby/impl/ObjectImpl.cpp
+platform/shared/rhoruby/impl/RefCountedObjectImpl.cpp
+platform/shared/rhoruby/impl/RhoRubyImpl.cpp
+platform/shared/rhoruby/impl/RhoRubySingletone.cpp
+platform/shared/rhoruby/impl/RubyServerResponceImpl.cpp
