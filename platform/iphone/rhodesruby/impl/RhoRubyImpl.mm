@@ -207,7 +207,47 @@ private:
 }
 
 -(NSString*) executeRubyMethodWithJSON:(NSString*)full_class_name  method_name:(NSString*)method_name paramaters_in_json:(NSString*)paramaters_in_json {
-    return nil;
+    /*rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rho::ruby::IObject* cpp_param = NULL;
+    if (paramaters_in_json != nil) {
+        cpp_param = rr->convertJSON_to_Objects([paramaters_in_json UTF8String]);
+    }
+    rho::ruby::IObject* cpp_object = rr->executeRubyMethod([full_class_name UTF8String], [method_name UTF8String], cpp_param);
+    rho::ruby::IString* res_str= NULL;
+    if (cpp_object != NULL) {
+        res_str = rr->convertObject_to_JSON(cpp_object);
+    }
+    NSString* res_ns_str = nil;
+    if (res_str != NULL) {
+        res_ns_str = [NSString stringWithUTF8String:res_str->getUTF8()];
+    }
+    if (cpp_param != NULL) {
+        cpp_param->release();
+    }
+    if (cpp_object != NULL) {
+        cpp_object->release();
+    }
+    if (res_str != NULL) {
+        res_str->release();
+    }
+    return res_ns_str;
+     */
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    const char* params_in_j = NULL;
+    if (paramaters_in_json != nil) {
+        params_in_j =[paramaters_in_json UTF8String];
+    }
+    rho::ruby::IString* res_str = rr->executeRubyMethodWithJSON([full_class_name UTF8String], [method_name UTF8String], params_in_j);
+    
+    NSString* str_ns_result = nil;
+    if (res_str != NULL) {
+        const char* res_str_cstr = res_str->getUTF8();
+        if (res_str_cstr != NULL) {
+            str_ns_result = [NSString stringWithUTF8String:res_str_cstr];
+        }
+        res_str->release();
+    }
+    return str_ns_result;
 }
 
 
