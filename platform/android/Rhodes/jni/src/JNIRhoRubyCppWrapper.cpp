@@ -5,12 +5,12 @@
 #include <cassert>
 #include <memory>
 
-#define AAR_DEBUG
+//#define AAR_DEBUG
 
 #ifdef AAR_DEBUG
-#define RHO_RUBY_JAVA_PACKAGE "com.example.n0men.myapplication"
+#define RHO_RUBY_JAVA_PACKAGE "com/example/n0men/myapplication/"
 #else
-#define RHO_RUBY_JAVA_PACKAGE "com.rhomobile.rhodes"
+#define RHO_RUBY_JAVA_PACKAGE "com/rhomobile/rhodes/"
 #endif
 
 class RhoRubyWrapper
@@ -45,21 +45,21 @@ RhoRubyWrapper::RhoRubyWrapper(JNIEnv* e)
     }
 
     env = e;
-    jRhoObject = env->FindClass("com/example/n0men/myapplication/RhoRubyObject");
+    jRhoObject = env->FindClass(RHO_RUBY_JAVA_PACKAGE "RhoRubyObject");
     if(!jRhoObject)
     {
         RAWLOG_ERROR("Class RhoRubyObject not found!");
         return;
     }
 
-    jIRhoRubyObject = env->FindClass("com/example/n0men/myapplication/IRhoRubyObject");
+    jIRhoRubyObject = env->FindClass(RHO_RUBY_JAVA_PACKAGE "IRhoRubyObject");
     if(!jIRhoRubyObject)
     {
         RAWLOG_ERROR("Class IRhoRubyObject not found!");
         return;
     }
 
-    jRhoRubyArrayObjects = env->FindClass("com/example/n0men/myapplication/RhoRubyArrayObjects");
+    jRhoRubyArrayObjects = env->FindClass(RHO_RUBY_JAVA_PACKAGE "RhoRubyArrayObjects");
     if(!jRhoRubyArrayObjects)
     {
         RAWLOG_ERROR("Class RhoRubyArrayObjects not found!");
@@ -89,7 +89,8 @@ rho::String RhoRubyWrapper::executeRubyMethodWithJSON(const char* full_class_nam
 {
     rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
     rho::ruby::IString* ruby_string = rr->executeRubyMethodWithJSON(full_class_name, method_name, parameters);
-    RAWLOG_INFO("line:86");
+    if(!ruby_string) return "(null)";
+    
     std::string result = ruby_string->getUTF8();
     RAWLOG_INFO1("result: %s", result.c_str());
     ruby_string->release();

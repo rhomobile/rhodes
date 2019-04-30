@@ -59,4 +59,3 @@ platform/shared/rhoruby/impl/ObjectImpl.cpp
 platform/shared/rhoruby/impl/RefCountedObjectImpl.cpp
 platform/shared/rhoruby/impl/RhoRubyImpl.cpp
 platform/shared/rhoruby/impl/RhoRubySingletone.cpp
-platform/shared/rhoruby/impl/RubyServerResponceImpl.cpp

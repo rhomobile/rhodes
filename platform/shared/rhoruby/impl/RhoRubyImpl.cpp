@@ -205,7 +205,7 @@ namespace ruby {
             }
         }
         
-        
+
         if (param_count == 0) {
             result = rb_funcall(obj_impl->getValue(), rb_intern(method_name), 0, NULL);
         }
@@ -414,6 +414,7 @@ namespace ruby {
                 for (i = 0; i < count; i++) {
                     IObject* r_obj = ar->getItem(i);
                     IString* r_str = convertObject_to_JSON(r_obj);
+                    if(!r_str) continue;
                     str.append(r_str->getUTF8());
                     if (i < (count-1)) {
                         str.append(",");
@@ -464,6 +465,7 @@ namespace ruby {
                     IString* r_key = (IString*)keys->getItem(i);
                     IObject* r_value = ha->getItem(r_key->getUTF8());
                     IString* r_str = convertObject_to_JSON(r_value);
+                    if(!r_str) continue;
                     str.append(rho::json::CJSONEntry::quoteValue(r_key->getUTF8()));
                     str.append(":");
                     str.append(r_str->getUTF8());
@@ -507,6 +509,7 @@ namespace ruby {
                 break;
             default:
             {
+                RAWLOG_ERROR1("Not supported type for json converting : %d", o_type);
                 return NULL;
             }
         }
@@ -530,7 +533,10 @@ namespace ruby {
     }
     
     IString* RhoRubyImpl::executeRubyMethodWithJSON(const char* full_class_name, const char* method_name, const char* parameters_in_json) {
-        IObject* result = executeRubyMethod(full_class_name, method_name, convertJSON_to_Objects(parameters_in_json));
+        IObject* parameters = convertJSON_to_Objects(parameters_in_json);
+        if(!parameters && parameters_in_json)
+            return nullptr;
+        IObject* result = executeRubyMethod(full_class_name, method_name, parameters);
         IString* str = convertObject_to_JSON(result);
         result->release();
         return str;
