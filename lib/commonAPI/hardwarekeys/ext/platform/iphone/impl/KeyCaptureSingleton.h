@@ -7,13 +7,14 @@ typedef void (^SomeFunction)();
 
 @interface KeyCaptureSingleton : KeyCaptureSingletonBase<IKeyCaptureSingleton> {
     float launchVolume;
+    float savedLaunchVolume;
     BOOL hadToLowerVolume;
     BOOL hadToRaiseVolume;
-    
+
     BOOL _isCapturingVolumeButtons;
     BOOL _suspended;
     UIView *_volumeView;
-    
+
     id<IMethodResult> callbackHolder;
     NSMutableDictionary *keyCaptureCallbacks;
 }
@@ -29,5 +30,6 @@ typedef void (^SomeFunction)();
 -(void) captureKey:(BOOL)dispatch keyValue:(NSString*)keyValue methodResult:(id<IMethodResult>)methodResult;
 -(void) remapKey:(NSString*)keyValue remapTo:(NSString*)remapTo methodResult:(id<IMethodResult>)methodResult;
 -(void) captureTrigger:(id<IMethodResult>)methodResult;
+
 
 @end
