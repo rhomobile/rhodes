@@ -19,6 +19,8 @@ class ManifestGenerator
   attr_accessor :rhodesActivityIntentFilters
   attr_accessor :hardwareAcceleration
   attr_accessor :apikey
+  attr_accessor :buildSdkVer
+  attr_accessor :buildToolsVer
   
   attr_accessor :manifestManifestAdds
   attr_accessor :applicationManifestAdds
@@ -89,8 +91,11 @@ class ManifestGenerator
   end
   
   def render(erbPath)
-    puts "<<<<<<<<<<<<< render #{erbPath}"  
-  
+    puts "Rendering final AndroidManifest.xml: #{erbPath}"  
+
+    buildToolsVerMajor = self.buildToolsVer.split('.')[0].to_i
+    canRenderNetworkSecurityConfig = ((self.buildSdkVer.to_i >= 24) && (buildToolsVerMajor>=24))
+
     tpl = File.read erbPath
     erb = ERB.new tpl
     erb.result binding
