@@ -77,9 +77,11 @@ CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserP
 #endif
 
     const char* nodejs_app = get_app_build_config_item("nodejs_application");
-    
     m_bNodeJSApplication = nodejs_app && (strcmp(nodejs_app,"true") == 0);
-    
+
+    const char* rubynodejs_app = get_app_build_config_item("rubynodejs_application");
+    m_bRubyNodeJSApplication = rubynodejs_app && (strcmp(rubynodejs_app,"true") == 0);
+
     initAppUrls();
 }
 	

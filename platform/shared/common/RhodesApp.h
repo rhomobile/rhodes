@@ -421,7 +421,8 @@ void rho_sys_set_network_status_notify(const char* url, int poll_interval);
 void rho_sys_clear_network_status_notify();
 int rho_rhodesapp_is_application_active();
 int rho_rhodesapp_is_nodejs_app();
-    
+int rho_rhodesapp_is_rubynodejs_app();
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus

@@ -65,6 +65,7 @@ protected:
     PushManager m_appPushMgr;
     bool m_bJSApplication;
     bool m_bNodeJSApplication;
+    bool m_bRubyNodeJSApplication;
 
     CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
 public:
@@ -99,6 +100,10 @@ public:
     void setNodeJSApplication(bool bJSApp){ m_bNodeJSApplication = bJSApp; }
     bool isNodeJSApplication()const{ return m_bNodeJSApplication; }
 
+    void setRubyNodeJSApplication(bool bJSApp){ m_bRubyNodeJSApplication = bJSApp; }
+    bool isRubyNodeJSApplication()const{ return m_bRubyNodeJSApplication; }
+
+    
     // Deprecated
     boolean callPushCallback(const String& strData) const;
 
