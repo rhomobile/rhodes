@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/RubyServer.cpp
+ext/platform/android/generated/jni/rubyserver_ruby_wrap.cpp
+ext/platform/android/generated/jni/rubyserver_js_wrap.cpp
+ext/platform/android/jni/RubyServer_impl.cpp
+ext/shared/generated/rubyserver_api_init.cpp
+ext/shared/generated/rubyserver_js_api.cpp
+ext/shared/generated/rubyserver_ruby_api.c

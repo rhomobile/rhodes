@@ -1759,6 +1759,9 @@ void CRhodesApp::initAppUrls()
         m_strHomeUrl = "http://127.0.0.1:";
     }
     
+    m_strRubyServerHomeURL = m_strHomeUrl+getFreeListeningPort();
+    m_strNodeServerHomeURL = m_strHomeUrl+getNodeJSListeningPort();
+
     if (isNodeJSApplication() || isRubyNodeJSApplication()) {
         m_strHomeUrl += getNodeJSListeningPort();
     }

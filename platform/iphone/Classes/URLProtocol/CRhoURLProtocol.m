@@ -511,7 +511,9 @@ int on_http_cb(http_parser* parser) { return 0; }
     int rhoNodeJSPort = rho_nodejs_get_port();
     NSString* path = [url path];
     if (![@"/system/js_api_entrypoint" isEqualToString:path]) {
-        rhoNodeJSPort= -521;
+        if (![@"/system/rholib_callback" isEqualToString:path]) {
+            rhoNodeJSPort= -521;
+        }
     }
     
     

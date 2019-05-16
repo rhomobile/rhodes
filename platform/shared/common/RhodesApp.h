@@ -149,6 +149,9 @@ private:
     String m_strListeningPorts;
     String m_strNodeJSListeningPorts;
     int m_nNodeJSListeningPorts;
+    
+    String m_strRubyServerHomeURL;
+    String m_strNodeServerHomeURL;
 
     common::CAutoPtr<net::CHttpServer> m_httpServer;
     CSplashScreen m_oSplashScreen;
@@ -288,6 +291,10 @@ public:
   
     unsigned int getLocalServerPort() { return (m_httpServer!=0)?(m_httpServer->getPort()):0; }
     unsigned int getNodeJSServerPort() { return m_nNodeJSListeningPorts; }
+    
+    String getRubyHomeURL() {return m_strRubyServerHomeURL;}
+    String getNodeHomeURL() {return m_strNodeServerHomeURL;}
+
 #ifdef OS_MACOSX
     String directHttpRequest( const String& method, const String& uri, const String& query, const rho::net::HttpHeaderList& headers, const String& body ) {  return m_httpServer->directRequest(method, uri, query, headers, body ); }
 #endif
