@@ -54,6 +54,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import android.net.http.X509TrustManagerExtensions;
 
 import android.util.Base64;
 
@@ -108,11 +109,15 @@ public class SSLImpl {
 	
 	private static class MySecureTrustManager implements X509TrustManager {
 		private X509TrustManager mSysTrustManager;
-		private X509TrustManager mCustomTrustManager;
+        private X509TrustManager mCustomTrustManager;
+        private X509TrustManagerExtensions mSysTrustManagerEx;
+		private X509TrustManagerExtensions mCustomTrustManagerEx;
 		
 		public MySecureTrustManager( X509TrustManager sysTrustManager, X509TrustManager customTrustManager ) {
-			mSysTrustManager = sysTrustManager;
-			mCustomTrustManager = customTrustManager;
+			mSysTrustManager =  sysTrustManager;
+            mCustomTrustManager = customTrustManager;
+            mSysTrustManagerEx =  new X509TrustManagerExtensions(sysTrustManager);
+            mCustomTrustManagerEx = new X509TrustManagerExtensions(customTrustManager);
 		}
 
 		@Override
@@ -140,7 +145,22 @@ public class SSLImpl {
 				}
 			}
 			
-		}
+        }
+        
+        public List<X509Certificate> checkServerTrusted(X509Certificate[] chain, String authType, String host) throws CertificateException
+        {
+            try {
+				if ( mCustomTrustManager != null ) {
+					return mCustomTrustManagerEx.checkServerTrusted(chain, authType, host);
+				}
+			} catch ( CertificateException e ) {
+				if ( mSysTrustManager != null ) {
+					return mSysTrustManagerEx.checkServerTrusted(chain, authType, host);
+				}
+			}
+                
+            return null;
+        }
 
 		@Override
 		public X509Certificate[] getAcceptedIssuers() {
