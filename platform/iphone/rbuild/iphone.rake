@@ -2160,7 +2160,8 @@ namespace "build" do
           "sdk" => sdk,
           "xcode_version" => xcode_version,
           "is_jsapp" => $js_application.to_s,
-          "is_nodejsapp" => $nodejs_application.to_s
+          "is_nodejsapp" => $nodejs_application.to_s,
+          "is_rubynodejsapp" => $rubynodejs_application.to_s
       }
 
       is_opt_c = is_options_was_changed( check_configuration, File.join(result_lib_folder, "lastbuildoptions.yml"))

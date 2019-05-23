@@ -390,7 +390,7 @@ void CAppCallbacksQueue::processUiCreated()
     // at this point JS app is unlikely to set its own handler, just navigate to overriden start path
     RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated);
 
-        if ( rho_ruby_is_started() )
+        if ( rho_ruby_is_started() && (!RHODESAPP().isRubyNodeJSApplication()))
             callCallback("/system/uicreated");
 #if !defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME) || !defined(OS_ANDROID)
         else
@@ -1759,7 +1759,10 @@ void CRhodesApp::initAppUrls()
         m_strHomeUrl = "http://127.0.0.1:";
     }
     
-    if (isNodeJSApplication()) {
+    m_strRubyServerHomeURL = m_strHomeUrl+getFreeListeningPort();
+    m_strNodeServerHomeURL = m_strHomeUrl+getNodeJSListeningPort();
+
+    if (isNodeJSApplication() || isRubyNodeJSApplication()) {
         m_strHomeUrl += getNodeJSListeningPort();
     }
     else {
@@ -3023,6 +3026,11 @@ int rho_rhodesapp_is_application_active() {
 int rho_rhodesapp_is_nodejs_app() {
     return RHODESAPP().isNodeJSApplication() ? 1 : 0;
 }
+
+int rho_rhodesapp_is_rubynodejs_app() {
+    return RHODESAPP().isRubyNodeJSApplication() ? 1 : 0;
+}
+
     
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 {

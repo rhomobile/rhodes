@@ -1,0 +1,21 @@
+entry: Init_RubyServer_extension
+javaentry: com.rubyserver.RubyServer
+libraries: ["RubyServer"]
+
+iphone:
+  xcodeproject: ext/platform/iphone/RubyServer.xcodeproj
+  xcodetarget: RubyServer
+  rebuild_deplist: ext/platform/iphone/deplist.txt
+
+android:
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+wp8:
+  csharp_impl: yes
+  root_namespace: rho
+
+project_paths:
+  wp8: ext/platform/wp8/RubyServerLib.vcxproj
+  wm: ext/platform/wm/RubyServer.vcproj
+
+xml_api_paths: ext/RubyServer.xml

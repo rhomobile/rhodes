@@ -946,7 +946,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
         //else {
 
         NSString *redirect = nil;
-        if ([cleared_url hasPrefix:@"file:"] || rho_rhodesapp_is_nodejs_app()) {
+        if ([cleared_url hasPrefix:@"file:"] || rho_rhodesapp_is_nodejs_app() || rho_rhodesapp_is_rubynodejs_app()) {
             redirect = cleared_url;
         }
         else {
