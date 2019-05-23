@@ -74,14 +74,10 @@ QMenuBar* QtMainWindow::createMenu() {
 
     QMenuBar * menuBar = new QMenuBar(this);
 
-
     QMenu *mMain = new QMenu("Main", this);
-    //mMain->addAction("Exit", this, SLOT(on_actionExit_triggered()));
     mMain->addAction("Exlt", this, SLOT(on_actionExit_triggered()));
     menuBar->addMenu(mMain);
-    //if (menuMain == NULL) {
-        menuMain = mMain;
-    //}
+    menuMain = mMain;
 
     #ifndef OS_WINDOWS_DESKTOP
     QMenu * menuSimulate = new QMenu("Simulate", this);
@@ -97,7 +93,6 @@ QMenuBar* QtMainWindow::createMenu() {
     menuSimulate->addAction("Back", this, SLOT(on_actionBack_triggered()));
     menuBar->addMenu(menuSimulate);
     #endif
-
 
     QMenu * menuHelp = new QMenu("Help", this);
     //menuHelp->addAction("About", this, SLOT(on_actionAbout_triggered()));
@@ -117,9 +112,8 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     if (RHOCONF().getBool("start_maximized")){
         setWindowState(windowState() | Qt::WindowMaximized);
     }
-    createMenu();
 
-currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId();
+    currentThreadId = QThread::currentThreadId();
 
 #if !defined(RHODES_EMULATOR)
     QPixmap icon(QCoreApplication::applicationDirPath().append(QDir::separator()).append("icon.png"));
@@ -173,8 +167,6 @@ currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId()
     QObject::connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(on_webView_loadFinished(bool)));
     QObject::connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(on_webView_urlChanged(QUrl)));
     verticalLayout->addWidget(webView);
-
-
 
     connect(this, SIGNAL(navigate(QString,int)), this,
             SLOT(slotNavigate(QString,int)), Qt::QueuedConnection);
@@ -246,6 +238,9 @@ currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId()
     }
 
     setMenuBar(createMenu());
+    if (RHOCONF().getInt("w32_hide_menu_bar")){
+        this->menuBar()->hide();
+    }
 }
 
 QtMainWindow::~QtMainWindow()

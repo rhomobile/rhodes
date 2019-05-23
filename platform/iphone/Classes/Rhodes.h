@@ -56,7 +56,8 @@
 #define NSFoundationVersionNumber_iOS_9_x_Max 1299
 #endif
 
-NSString *const kGCMMessageIDKey = @"gcm.message_id";
+//NSString *const kGCMMessageIDKey = @"gcm.message_id";
+//#define kGCMMessageIDKey @"gcm.message_id"
 
 @interface Rhodes : NSObject <UIApplicationDelegate,
     UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate, UNUserNotificationCenterDelegate>
@@ -106,6 +107,8 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 
 + (Rhodes*)sharedInstance;
 
++(void) makeSharedInstance;
+
 + (UIApplication*)application;
 
 + (CGRect)applicationFrame;
@@ -125,6 +128,8 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
 + (void)performOnUiThread:(id)runnable arg:(id)arg1 arg:(id)arg2 wait:(BOOL)wait;
 
 +(void)restart_app;
+
+- (BOOL)didFinishLaunchingWithOptionsInternal:(NSDictionary *)launchOptions application:(UIApplication *)application;
 
 - (UIWindow*)rootWindow;
 

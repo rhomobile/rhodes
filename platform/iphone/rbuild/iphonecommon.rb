@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2014 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ class IPhoneBuild
           # reduce clang trace, leave only file compilation flags
           elsif data =~ /clang/
             m = /(.*?)clang(.*?) -c (.*?) -o (.*?)\.o/.match(data)
-            if m 
+            if m
               result << "#{m[1]}clang ... -c #{m[3]} -o #{m[4]}.o"
               data = ""
             end
@@ -117,6 +117,15 @@ class IPhoneBuild
         end
 
         output_traces = []
+
+        if ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] != nil
+            if ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] != ''
+                ascl = ""
+                if options[:string_for_add_to_command_line] == nil
+                    options[:string_for_add_to_command_line] = ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"]
+                end
+            end
+        end
 
         Jake.run2(cmd,args,options) do |line|
           output_traces << line

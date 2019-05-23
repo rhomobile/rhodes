@@ -515,11 +515,12 @@
 					"$(RHO_ROOT)/platform/shared",
 					ZBarSDK/Headers/ZBarSDK,
 					ZBarSDK/Headers/ZBarSDK/zbar,
-					/Users/MOHUS/rhodes/platform/shared/common,
-					/Users/MOHUS/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/common,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
 					"./ZXingObjC/ZXingObjC/**",
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -563,11 +564,12 @@
 					"$(RHO_ROOT)/platform/shared",
 					ZBarSDK/Headers/ZBarSDK,
 					ZBarSDK/Headers/ZBarSDK/zbar,
-					/Users/MOHUS/rhodes/platform/shared/common,
-					/Users/MOHUS/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/common,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
 					"./ZXingObjC/ZXingObjC/**",
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -603,11 +605,12 @@
 					"$(RHO_ROOT)/platform/shared",
 					ZBarSDK/Headers/ZBarSDK,
 					ZBarSDK/Headers/ZBarSDK/zbar,
-					/Users/MOHUS/rhodes/platform/shared/common,
-					/Users/MOHUS/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/common,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -632,11 +635,12 @@
 					"$(RHO_ROOT)/platform/shared",
 					ZBarSDK/Headers/ZBarSDK,
 					ZBarSDK/Headers/ZBarSDK/zbar,
-					/Users/MOHUS/rhodes/platform/shared/common,
-					/Users/MOHUS/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/common,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/tauplatform/rhodes/platform/shared,
+					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;

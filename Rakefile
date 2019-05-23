@@ -138,7 +138,7 @@ end
 Jake.set_logger( $logger )
 
 
-def print_timestamp(msg = 'just for info')  
+def print_timestamp(msg = 'just for info')
   if $timestamp_start_milliseconds == 0
     $timestamp_start_milliseconds = (Time.now.to_f*1000.0).to_i
   end
@@ -198,7 +198,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'security_token', 'encrypt_database', 'use_deprecated_encryption','android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
+$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'rubynodejs_application', 'security_token', 'encrypt_database', 'use_deprecated_encryption','android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
 
 $winxpe_build = false
 
@@ -208,7 +208,7 @@ def make_application_build_config_header_file
   #f.puts "// Generated #{Time.now.to_s}"
   f.puts ""
   f.puts "#include <string.h>"
-  f.puts "#include <common/RhoConf.h>"
+  f.puts "#include \"common/RhoConf.h\""
   f.puts ""
   f.puts '//#include "app_build_configs.h"'
   if $rhosimulator_build
@@ -2255,9 +2255,11 @@ namespace "config" do
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $js_application    = Jake.getBuildBoolProp("javascript_application")
     $nodejs_application    = Jake.getBuildBoolProp("nodejs_application")
+    $rubynodejs_application    = Jake.getBuildBoolProp("rubynodejs_application")
 
     $logger.debug '%%%_%%% $js_application = '+$js_application.to_s
     $logger.debug '%%%_%%% $nodejs_application = '+$nodejs_application.to_s
+    $logger.debug '%%%_%%% $rubynodejs_application = '+$rubynodejs_application.to_s
 
     if !$js_application && !$nodejs_application && !Dir.exists?(File.join($app_path, "app"))
       BuildOutput.error([
@@ -2564,14 +2566,14 @@ def init_extensions(dest, mode = "")
   rhoapi_js_folder = nil
   rhoapi_nodejs_folder = nil
   if !dest.nil?
-    if $nodejs_application
+    if $nodejs_application || $rubynodejs_application
         rhoapi_js_folder = File.join( File.dirname(dest), "apps/nodejs/server/public/api" )
     else
         rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
     end
     rhoapi_nodejs_folder = File.join( File.dirname(dest), "apps/nodejs/rhoapi" )
   elsif mode == "update_rho_modules_js"
-      if $nodejs_application
+      if $nodejs_application || $rubynodejs_application
           rhoapi_js_folder = File.join( $app_path, "nodejs/server/public/api" )
       else
           rhoapi_js_folder = File.join( $app_path, "public/api" )
@@ -3416,7 +3418,7 @@ namespace "build" do
           end
         else
           puts `#{cmd_str}`
-        end        
+        end
         unless $? == 0
           puts "Error interpreting erb code"
           exit 1
@@ -3962,12 +3964,12 @@ namespace "build" do
     msbuild = "msbuild" if msbuild.nil?
 
     rho_ruby_project = File.join($startdir, "platform/win32/RubyWin/RubyWin.2015.sln")
-    argsClean = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32", 
-      '/p:VisualStudioVersion=14.0', '/t:Clean'] 
+    argsClean = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32",
+      '/p:VisualStudioVersion=14.0', '/t:Clean']
     Jake.run(msbuild, argsClean)
 
-    argsBuild = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32", 
-      '/p:VisualStudioVersion=14.0', '/t:Build'] 
+    argsBuild = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32",
+      '/p:VisualStudioVersion=14.0', '/t:Build']
     Jake.run(msbuild, argsBuild)
     puts "RhoRuby rebuilded"
   end

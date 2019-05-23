@@ -440,7 +440,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         synchronized( mExtensions ) {
             boolean res = false;
             for (Map.Entry<String, IRhoExtension> extEntry : mExtensions.entrySet()) {
-                Logger.T(TAG, "onBeforeNavigate: " + extEntry.getKey());
+                Logger.T(TAG, "onLoadResource: " + extEntry.getKey());
                 res = extEntry.getValue().onLoadResource(this, url, rhoWebView, res);
             }
         }

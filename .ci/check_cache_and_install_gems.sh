@@ -23,7 +23,7 @@ gem install rubyzip -v 1.2.2 --no-document
 gem install ffi -v 1.9.24 --no-document
 gem install rdoc -v 4.2.2 --no-document
 gem install deep_merge -v 1.1.1 --no-document
-gem install nokogiri -v 1.8.2 --no-document
+gem install nokogiri -v 1.8.5 --no-document
 gem install net-scp -v 1.2.1 --no-document
 gem install net-ssh -v 4.2.0 --no-document
 fi

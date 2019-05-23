@@ -1,5 +1,6 @@
 #include "rhodes/SecurityTokenGenerator.h"
 #include "rhodes/JNIRhodes.h"
+#include <unistd.h>
 
 
 namespace rho
@@ -14,8 +15,15 @@ namespace common
             return;    
         }
 
-       cls = env->FindClass("com/rhomobile/rhodes/SecurityTokenGenerator");
-       if (!cls) return;
+        size_t tryCount = 5;
+        do
+        {
+            cls = env->FindClass("com/rhomobile/rhodes/SecurityTokenGenerator");
+            if(cls) break;
+            usleep(1000);
+        }while(--tryCount);
+
+        if (!cls) return;
 
         jmethodID midGetInstance = getJNIClassStaticMethod(env, cls, "getInstance", "()Lcom/rhomobile/rhodes/SecurityTokenGenerator;");
         jobject obj = env->CallStaticObjectMethod(cls, midGetInstance);

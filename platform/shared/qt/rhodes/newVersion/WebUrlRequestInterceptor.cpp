@@ -4,6 +4,7 @@
 #if defined(OS_WINDOWS_DESKTOP)
 #include "impl/SecurityTokenGeneratorImpl.h"
 #include "common/IRhoClassFactory.h"
+#include "common/RhoConf.h"
 #endif
 
 #include <QDebug>
@@ -14,7 +15,8 @@ WebUrlRequestInterceptor::WebUrlRequestInterceptor(QObject *p):QWebEngineUrlRequ
 void WebUrlRequestInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info) {
 
 #if defined(OS_WINDOWS_DESKTOP)
-    const rho::common::ISecurityTokenGenerator* generator = rho_get_RhoClassFactory()->createSecurityTokenGenerator();
+    const rho::common::ISecurityTokenGenerator* generator = rho_conf_getInt("disable_external_access") ? 
+        rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
     if(generator)
     {
         info.setHttpHeader("RHO-SECURE-TOKEN", QByteArray::fromStdString(generator->getSecurityToken()));

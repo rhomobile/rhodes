@@ -227,8 +227,14 @@ def cc_run(command, args, chdir = nil, coloring = true, env = nil, verbose = tru
 
   isWinXP = false
   if RUBY_PLATFORM =~ /(win|w)32$/
-    winName = `WMIC OS get Name`
-    isWinXP = true if winName =~ /Windows XP/
+    begin
+      winName = `WMIC OS get Name`
+      #fix for invalid UTF
+      winName.encode('UTF-8', 'UTF-8', invalid: :replace, undef: :replace, replace: '?')
+      isWinXP = true if winName =~ /Windows XP/
+    rescue ArgumentError
+      isWinXP = false
+    end
   end
 
   env = ENV unless env
