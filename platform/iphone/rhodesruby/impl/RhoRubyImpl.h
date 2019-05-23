@@ -5,6 +5,8 @@
 @interface RhoRubyImpl : NSObject<IRhoRuby> {
 }
 
+-(NSString*) getRubyServerURL;
+
 // call command in ruby thread
 -(void) executeInRubyThread:(id<IRhoRubyRunnable>)command;
 

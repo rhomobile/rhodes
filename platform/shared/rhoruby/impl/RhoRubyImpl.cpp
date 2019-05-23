@@ -154,6 +154,12 @@ namespace ruby {
         
     }
 
+    // get local Ruby server URL
+    IString* RhoRubyImpl::getRubyServerURL() {
+        IMutableString* ms = (IMutableString*)makeBaseTypeObject(BASIC_TYPES::MutableString);
+        ms->setUTF8(RHODESAPP().getRubyHomeURL().c_str());
+        return ms;
+    }
 
     // call command in ruby thread
     void RhoRubyImpl::executeInRubyThread(IRunnable* command) {

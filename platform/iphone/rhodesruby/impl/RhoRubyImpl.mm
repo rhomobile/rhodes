@@ -98,6 +98,15 @@ private:
 
 @implementation RhoRubyImpl
 
+
+-(NSString*) getRubyServerURL {
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rho::ruby::IString* s = rr->getRubyServerURL();
+    NSString* r = [NSString stringWithUTF8String:s->getUTF8()];
+    s->release();
+    return r;
+}
+
 // call command in ruby thread
 -(void) executeInRubyThread:(id<IRhoRubyRunnable>)command {
     rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();

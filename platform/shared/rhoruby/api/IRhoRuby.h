@@ -31,6 +31,9 @@ class IRhoRuby {
 
 public:
     virtual ~IRhoRuby() {}
+    
+    // get local Ruby server URL
+    virtual IString* getRubyServerURL() = 0;
 
     // call command in ruby thread
     virtual void executeInRubyThread(IRunnable* command) = 0;

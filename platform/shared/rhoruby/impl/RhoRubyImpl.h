@@ -20,6 +20,9 @@ public:
     virtual ~RhoRubyImpl();
     RhoRubyImpl();
 
+    // get local Ruby server URL
+    virtual IString* getRubyServerURL();
+    
     // call command in ruby thread
     virtual void executeInRubyThread(IRunnable* command);
 
