@@ -22,6 +22,9 @@
 
 @protocol IRhoRuby <NSObject>
 
+// get local Ruby server URL
+-(NSString*) getRubyServerURL;
+
 // call command in ruby thread
 -(void) executeInRubyThread:(id<IRhoRubyRunnable>)command;
 

@@ -198,7 +198,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'security_token', 'encrypt_database', 'use_deprecated_encryption','android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
+$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'rubynodejs_application', 'security_token', 'encrypt_database', 'use_deprecated_encryption','android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
 
 $winxpe_build = false
 
@@ -2255,9 +2255,11 @@ namespace "config" do
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $js_application    = Jake.getBuildBoolProp("javascript_application")
     $nodejs_application    = Jake.getBuildBoolProp("nodejs_application")
+    $rubynodejs_application    = Jake.getBuildBoolProp("rubynodejs_application")
 
     $logger.debug '%%%_%%% $js_application = '+$js_application.to_s
     $logger.debug '%%%_%%% $nodejs_application = '+$nodejs_application.to_s
+    $logger.debug '%%%_%%% $rubynodejs_application = '+$rubynodejs_application.to_s
 
     if !$js_application && !$nodejs_application && !Dir.exists?(File.join($app_path, "app"))
       BuildOutput.error([
@@ -2564,14 +2566,14 @@ def init_extensions(dest, mode = "")
   rhoapi_js_folder = nil
   rhoapi_nodejs_folder = nil
   if !dest.nil?
-    if $nodejs_application
+    if $nodejs_application || $rubynodejs_application
         rhoapi_js_folder = File.join( File.dirname(dest), "apps/nodejs/server/public/api" )
     else
         rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
     end
     rhoapi_nodejs_folder = File.join( File.dirname(dest), "apps/nodejs/rhoapi" )
   elsif mode == "update_rho_modules_js"
-      if $nodejs_application
+      if $nodejs_application || $rubynodejs_application
           rhoapi_js_folder = File.join( $app_path, "nodejs/server/public/api" )
       else
           rhoapi_js_folder = File.join( $app_path, "public/api" )

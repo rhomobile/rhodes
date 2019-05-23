@@ -1,0 +1,9 @@
+ext/platform/android/generated/src/com/rho/rubyserver/RubyServerBase.java
+ext/platform/android/generated/src/com/rho/rubyserver/RubyServerFactorySingleton.java
+ext/platform/android/generated/src/com/rho/rubyserver/RubyServerSingletonBase.java
+ext/platform/android/generated/src/com/rho/rubyserver/IRubyServer.java
+ext/platform/android/generated/src/com/rho/rubyserver/IRubyServerFactory.java
+ext/platform/android/generated/src/com/rho/rubyserver/IRubyServerSingleton.java
+ext/platform/android/src/com/rho/rubyserver/RubyServer.java
+ext/platform/android/src/com/rho/rubyserver/RubyServerFactory.java
+ext/platform/android/src/com/rho/rubyserver/RubyServerSingleton.java
