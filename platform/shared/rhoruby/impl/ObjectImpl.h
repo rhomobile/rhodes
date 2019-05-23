@@ -3,6 +3,7 @@
 
 #include "../api/IObject.h"
 #include "RefCountedObjectImpl.h"
+#include <time.h>
 #import "ruby/ext/rho/rhoruby.h"
 
 //#include "common/RhoStd.h"

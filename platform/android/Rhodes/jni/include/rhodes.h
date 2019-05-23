@@ -226,6 +226,12 @@ struct rho_cast_helper<jint, int>
 };
 
 template <>
+struct rho_cast_helper<jfloat, float>
+{
+    jfloat operator()(JNIEnv *env, int arg) { return static_cast<jfloat>(arg); }
+};
+
+template <>
 struct rho_cast_helper<jdouble, double>
 {
     jdouble operator()(JNIEnv *env, double arg) { return static_cast<jdouble>(arg); }

@@ -50,7 +50,7 @@ public class LocalFileProvider extends ContentProvider
     private static final String TAG = LocalFileProvider.class.getSimpleName();
     private static String fullPathPrefix;
     private static String contentAuthority;
-  
+
     private static String getPathPrefix() {
         if (fullPathPrefix == null) {
             fullPathPrefix = ContextFactory.getAppContext().getApplicationInfo().dataDir;

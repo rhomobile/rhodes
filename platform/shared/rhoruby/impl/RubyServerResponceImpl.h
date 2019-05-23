@@ -4,8 +4,8 @@
 namespace rho {
 namespace ruby {
 
-    class RubyServerResponceImpl : public IRubyServerResponce {
-
+class RubyServerResponceImpl : public IRubyServerResponce 
+{
 public:
     virtual ~RubyServerResponceImpl();
     RubyServerResponceImpl(const char* body);

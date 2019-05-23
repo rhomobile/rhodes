@@ -947,3 +947,36 @@ def stop_emulator
     Jake.run3_dont_fail('killall -9 emulator 2> /dev/null')
   end
 end
+
+def isWindows?
+  if /cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM
+      return true
+  else
+      return false
+  end
+end
+
+def PathToWindowsWay(path)
+  if isWindows?
+    return path.gsub("/", "\\")
+  else
+    return path
+  end
+end
+
+def FormatManifestToAapt2Compat(path)
+  f = File.open(path, "r")
+  text = ''
+  users_permissions = ''
+  f.each_line do |line|
+    if (line.include?('<uses-permission'))
+      users_permissions += line
+    else
+      text = text + line
+    end
+  end
+  f.close
+
+  text.gsub! '<!-- Permission declarations -->', users_permissions
+  f = File.open(path, "w") {|file| file << text }
+end
