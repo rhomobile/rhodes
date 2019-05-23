@@ -12,4 +12,5 @@ public class RhoRubySingleton
     }
 
     public native String executeRubyMethodWithJSON(String full_class_name, String method_name, String parameters);
+    public native String getRubyServerURL();
 }

@@ -6,7 +6,7 @@
 #include <cassert>
 #include <memory>
 
-#define AAR_DEBUG
+//#define AAR_DEBUG
 
 #ifdef AAR_DEBUG
 #define RHO_RUBY_JAVA_PACKAGE "com/example/n0men/myapplication/"
