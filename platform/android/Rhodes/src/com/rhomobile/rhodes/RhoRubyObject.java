@@ -42,6 +42,23 @@ abstract class IRhoRubyObject
     }
 
     public Object getValue() { return value; }
+    public int getType()
+    {
+        switch (type) {
+            case None: return 0;
+            case RubyNil: return 1;
+            case Class: return 2;
+            case Object: return 3;
+            case Boolean: return 4;
+            case Integer: return 5;
+            case Float: return 6;
+            case String: return 7;
+            case Array: return 8;
+            case Hash: return 9;
+            default: throw new RuntimeException("Unknown type!");
+        }
+
+    }
 }
 
 
@@ -63,7 +80,7 @@ public class RhoRubyObject extends IRhoRubyObject {
         //if(t == 2) throw new IllegalArgumentException("Cannot directly create an Class. Use RhoRubyClassObject");
     }
 
-    public Integer getIntValue() throws ClassCastException
+    public int getIntValue() throws ClassCastException
     {
         if(super.getValue() instanceof Integer)
             return (Integer)super.getValue();
@@ -79,18 +96,18 @@ public class RhoRubyObject extends IRhoRubyObject {
             throw new ClassCastException("This value is not string");
     }
 
-    public Boolean getBooleanValue() throws ClassCastException
+    public boolean getBooleanValue() throws ClassCastException
     {
         if(super.getValue() instanceof Boolean)
-            return (Boolean)super.getValue();
+            return (Boolean) super.getValue();
         else
             throw new ClassCastException("This value is not boolean");
     }
 
-    public Float getFloatValue() throws ClassCastException
+    public float getFloatValue() throws ClassCastException
     {
         if(super.getValue() instanceof Float)
-            return (Float)super.getValue();
+            return (Float) super.getValue();
         else
             throw new ClassCastException("This value is not float");
     }

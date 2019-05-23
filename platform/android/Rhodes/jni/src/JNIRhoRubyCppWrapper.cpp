@@ -29,6 +29,7 @@ public:
     rho::String executeRubyMethodWithJSON(const char* full_class_name, const char* method_name, const char* parameters);
     rho::ruby::IObject* executeRubyMethod(const char* full_class_name, const char* method_name, jobject params);
     rho::ruby::IObject* convertFromJToR(jobject param);
+    rho::String getRubyServerURL();
 private:
     RhoRubyWrapper(JNIEnv* e);
 
@@ -117,6 +118,18 @@ rho::String RhoRubyWrapper::executeRubyMethodWithJSON(const char* full_class_nam
     return result;
 }
 
+rho::String RhoRubyWrapper::getRubyServerURL()
+{
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rho::ruby::IString* ruby_string = rr->getRubyServerURL();
+    if(!ruby_string) return "(null)";
+
+    std::string result = ruby_string->getUTF8();
+    RAWLOG_INFO1("getRubyServerURL: %s", result.c_str());
+    ruby_string->release();
+    return result;
+}
+
 rho::ruby::IObject* RhoRubyWrapper::convertFromJToR(jobject param)
 {
     jint result = env->CallIntMethod(param, midgetType);
@@ -171,8 +184,8 @@ rho::ruby::IObject* RhoRubyWrapper::convertFromJToR(jobject param)
         
         case rho::ruby::BASIC_TYPES::RubyNil:
         {
-            RAWLOG_INFO1("rhoruby nil value!");
-            rho::ruby::CNil* o_nill = (rho::ruby::CNil*)rr->makeBaseTypeObject(rho::ruby::BASIC_TYPES::RubyNil);
+            RAWLOG_INFO("rhoruby nil value!");
+            rho::ruby::INil* o_nill = (rho::ruby::INil*)rr->makeBaseTypeObject(rho::ruby::BASIC_TYPES::RubyNil);
             return o_nill;
         }
 
@@ -258,6 +271,18 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhoRubyClassObject_NativeM
       }
       return rho_cast<jboolean>(env, true);
   }
+
+#ifdef AAR_DEBUG
+ RHO_GLOBAL jstring JNICALL Java_com_example_n0men_myapplication_RhoRubySingleton_getRubyServerURL
+#else
+ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoRubySingleton_getRubyServerURL
+#endif
+(JNIEnv* env, jclass)
+{
+    RhoRubyWrapper* pwrapper = RhoRubyWrapper::instance(env);
+    rho::String result = pwrapper->getRubyServerURL();
+    return rho_cast<jstring>(env, result);
+}
 
 #ifdef AAR_DEBUG
  RHO_GLOBAL jstring JNICALL Java_com_example_n0men_myapplication_RhoRubySingleton_executeRubyMethodWithJSON

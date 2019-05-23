@@ -14,6 +14,7 @@
 #include "IHash.h"
 #include "IInteger.h"
 #include "IString.h"
+#include "INil.h"
 
 #include "IMutableArray.h"
 #include "IMutableBoolean.h"
