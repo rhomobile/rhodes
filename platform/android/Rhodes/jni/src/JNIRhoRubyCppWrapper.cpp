@@ -109,6 +109,7 @@ bool RhoRubyWrapper::makeRubyClassObject(rho::String name)
 rho::String RhoRubyWrapper::executeRubyMethodWithJSON(const char* full_class_name, const char* method_name, const char* parameters)
 {
     rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rr->loadModel(full_class_name);
     rho::ruby::IString* ruby_string = rr->executeRubyMethodWithJSON(full_class_name, method_name, parameters);
     if(!ruby_string) return "(null)";
     

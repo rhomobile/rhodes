@@ -2646,7 +2646,7 @@ def prepare_aar_package
     end
   end
 
-  rm_rf File.join($allclasses, 'com', 'rhomobile', 'kitchensinkruby')
+  rm_rf File.join($allclasses, 'com', 'rhomobile', $appname)
 
   Jake.run($jarbin, args, $allclasses)
 
