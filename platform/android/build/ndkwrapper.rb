@@ -48,7 +48,16 @@ class NDKWrapper
   end
 
   def link_sysroot( api, abi )
-    File.join( @root_path, 'platforms', "android-#{api}", "arch-#{abi}" )
+
+    #locate closest available NDK platform for target API
+    n_api = api.to_i
+    n_api.downto(1) { |i|
+      path = File.join( @root_path, 'platforms', "android-#{i.to_s}", "arch-#{abi}" )
+
+      return path if File.directory?(path)
+    }
+
+    raise "Unable to detect NDK link root for API: #{api}, ABI: #{abi}"    
   end
 
   def sysroot( api, abi )
