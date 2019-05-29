@@ -228,6 +228,7 @@ typedef int (*func_flock_t)(int fd, int operation);
 typedef int (*func_fstat_t)(int filedes, struct stat *buf);
 typedef int (*func_fsync_t)(int fd);
 typedef int (*func_ftruncate_t)(int fd, off_t offset);
+typedef int (*func_ftruncate64_t)(int fd, off64_t offset);
 typedef int (*func_lstat_t)(const char *path, struct stat *buf);
 typedef int (*func_open_t)(const char *path, int oflag, ...);
 typedef int (*func_select_t)(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct timeval *tv);
@@ -296,6 +297,7 @@ static func_flock_t real_flock;
 static func_fstat_t real_fstat;
 static func_fsync_t real_fsync;
 static func_ftruncate_t real_ftruncate;
+static func_ftruncate64_t real_ftruncate64;
 static func_lseek64_t real_lseek64;
 static func_lseek_t real_lseek;
 static func_lstat_t real_lstat;
@@ -303,7 +305,9 @@ static func_open_t real_open;
 static func_read_t real_read;
 
 static func_pread_t real_pread;
+static func_pread_t real_pread64;
 static func_pwrite_t real_pwrite;
+static func_pwrite_t real_pwrite64;
 
 static func_sendfile_t real_sendfile;
 
@@ -659,6 +663,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_flock = (func_flock_t)dlsym(pc, "flock");
     real_fstat = (func_fstat_t)dlsym(pc, "fstat");
     real_ftruncate = (func_ftruncate_t)dlsym(pc, "ftruncate");
+    real_ftruncate64 = (func_ftruncate64_t)dlsym(pc, "ftruncate64");
     real_lseek = (func_lseek_t)dlsym(pc, "lseek");
     real_lseek64 = (func_lseek64_t)dlsym(pc, "lseek64");
     real_lstat = (func_lstat_t)dlsym(pc, "lstat");
@@ -666,7 +671,9 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_read = (func_read_t)dlsym(pc, "read");
 
     real_pread = (func_pread_t)dlsym(pc, "pread");
+    real_pread64 = (func_pread_t)dlsym(pc, "pread64");
     real_pwrite = (func_pwrite_t)dlsym(pc, "pwrite");
+    real_pwrite64 = (func_pwrite_t)dlsym(pc, "pwrite");
     real_sendfile = (func_sendfile_t)dlsym(pc, "sendfile");
 
     real_utime = (func_utime_t)dlsym(pc, "utime");
@@ -1112,6 +1119,7 @@ RHO_GLOBAL int fcntl(int fd, int command, ...)
             rho_fd_map_t::iterator it = rho_fd_map.find(fd);
             if (it == rho_fd_map.end())
             {
+                RAWLOG_ERROR("fcntl: EBADF");
                 errno = EBADF;
                 return -1;
             }
@@ -1159,7 +1167,7 @@ RHO_GLOBAL int close(int fd)
         if (it == rho_fd_map.end())
         {
             errno = EBADF;
-            RHO_LOG("close: ERROR 2 fd %d", fd);
+            RAWLOG_ERROR1("close: ERROR 2 fd %d", fd);
             return -1;
         }
 
@@ -1180,6 +1188,27 @@ RHO_GLOBAL int close(int fd)
     return 0;
 }
 
+RHO_GLOBAL ssize_t pread64(int fd, void* buf, size_t count, off64_t offset)
+{
+     RHO_LOG("pread: BEGIN fd %d: offset: %ld: count: %ld", fd, (long)offset, (long)count);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+    {
+        ssize_t ret = real_pread64(fd, buf, count, offset);
+        RHO_LOG("pread: fd %d: offset: %ld: count: %ld: return %ld bytes (native)", fd, (long)offset, (long)count, (long)ret);
+        return ret;
+    }
+
+    off_t saved_offset = lseek(fd, 0, SEEK_CUR);
+    lseek(fd, offset, SEEK_SET);
+
+    ssize_t result = read(fd, buf, count);
+
+    lseek(fd, saved_offset, SEEK_SET);
+
+    RHO_LOG("pread: fd %d: offset: %ld: count: %ld: return %ld bytes (rho): errno: %d", fd, (long)offset, (long)count, (long)result, (int)errno);
+
+    return result;
+}
 
 RHO_GLOBAL ssize_t pread(int fd, void *buf, size_t count, off_t offset)
 {
@@ -1201,6 +1230,27 @@ RHO_GLOBAL ssize_t pread(int fd, void *buf, size_t count, off_t offset)
 
     RHO_LOG("pread: fd %d: offset: %ld: count: %ld: return %ld bytes (rho): errno: %d", fd, (long)offset, (long)count, (long)result, (int)errno);
 
+    return result;
+}
+
+RHO_GLOBAL ssize_t pwrite64(int fd, const void* buf, size_t count, off64_t offset)
+{
+    RHO_LOG("pwrite: BEGIN fd %d: offset: %ld: count: %ld", fd, (long)offset, (long)count);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+    {
+        ssize_t ret = real_pwrite64(fd, buf, count, offset);
+        RHO_LOG("pwrite: fd %d: offset: %ld: count: %ld: return %ld bytes (native)", fd, (long)offset, (long)count, (long)ret);
+        return ret;
+    }
+
+    off_t saved_offset = lseek(fd, 0, SEEK_CUR);
+    lseek(fd, offset, SEEK_SET);
+
+    ssize_t result = write(fd, buf, count);
+
+    lseek(fd, saved_offset, SEEK_SET);
+
+    RHO_LOG("pwrite: fd %d: offset: %ld: count: %ld: return %ld bytes (rho)", fd, (long)offset, (long)count, (long)result);
     return result;
 }
 
@@ -1394,6 +1444,7 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
         if (it == rho_fd_map.end())
         {
             errno = EBADF;
+            RAWLOG_ERROR1("read: ERROR 2 fd %d", fd);
             return (ssize_t)-1;
         }
 
@@ -1444,7 +1495,7 @@ RHO_GLOBAL ssize_t write(int fd, const void *buf, size_t count)
 
     errno = EBADF;
 
-    RHO_LOG("write: fd %d: count: %ld UNIMPLEMENTED !!!", fd, (long)count);
+    RAWLOG_ERROR2("write: fd %d: count: %ld UNIMPLEMENTED !!!", fd, (long)count);
 
     return -1;
 }
@@ -1530,6 +1581,7 @@ RHO_GLOBAL int fchown(int fd, uid_t uid, gid_t gid)
         rho_fd_map_t::iterator it = rho_fd_map.find(fd);
         if (it == rho_fd_map.end())
         {
+            RAWLOG_ERROR("fchown: EBADF");
             errno = EBADF;
             return -1;
         }
@@ -1642,6 +1694,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
         rho_fd_map_t::iterator it = rho_fd_map.find(fd);
         if (it == rho_fd_map.end())
         {
+            RAWLOG_ERROR("lseek64: EBADF");
             errno = EBADF;
             return -1;
         }
@@ -1649,6 +1702,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
         rho_stat_t *st = rho_stat(make_rel_path(it->second.fpath));
         if (!st || st->type != rho_type_file)
         {
+            RAWLOG_ERROR("lseek64: EBADF");
             errno = EBADF;
             return -1;
         }
@@ -1696,7 +1750,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
 
     if (is == NULL)
     {
-        RHO_LOG("lseek64: fd %d: return EBADF", fd);
+        RAWLOG_ERROR1("lseek64: fd %d: return EBADF", fd);
         errno = EBADF;
         return -1;
     }
@@ -1775,6 +1829,37 @@ RHO_GLOBAL int fdatasync(int fd)
     RHO_NOT_IMPLEMENTED;
 }
 
+RHO_GLOBAL int ftruncate64(int fd, off64_t offset)
+{
+    RHO_LOG("ftruncate64: fd %d", fd);
+    if (offset < 0)
+    {
+        errno = EINVAL;
+        return -1;
+    }
+
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE) {
+        int res = real_ftruncate64(fd, offset);
+        return res;
+    }
+
+    errno = EINVAL;
+    return -1;
+}
+
+RHO_GLOBAL FILE* fdopen(int __fd, const char* __mode)
+{
+    RAWLOG_ERROR("fdopen stub");
+    return NULL;
+}
+
+int dup3(int __old_fd, int __new_fd, int __flags)
+{
+    RAWLOG_ERROR("dup3 stub");
+    return -1;
+}
+
+
 RHO_GLOBAL int ftruncate(int fd, off_t offset)
 {
     RHO_LOG("ftruncate: fd %d", fd);
@@ -1821,6 +1906,7 @@ static int stat_impl(std::string const &fpath, struct stat *buf)
         buf->st_mode |= S_IFDIR|S_IXUSR;
         break;
     default:
+        RAWLOG_ERROR("stat_impl: EBADF");
         errno = EBADF;
         return -1;
     }
@@ -1871,6 +1957,7 @@ RHO_GLOBAL int fstat(int fd, struct stat *buf)
         rho_fd_map_t::iterator it = rho_fd_map.find(fd);
         if (it == rho_fd_map.end())
         {
+            RAWLOG_ERROR("fstat: EBADF");
             errno = EBADF;
             return -1;
         }
@@ -2256,6 +2343,7 @@ RHO_GLOBAL DIR *fdopendir(int fd)
     }
 
     errno = EBADF;
+    RAWLOG_ERROR("fdopendir: EBADF");
     return NULL;
 }
 
@@ -2352,6 +2440,7 @@ RHO_GLOBAL int closedir(DIR *dirp)
     rho_fd_map_t::iterator itt = rho_fd_map.find(it->second.fd);
     if (itt == rho_fd_map.end())
     {
+        RAWLOG_ERROR("closedir: EBADF");
         errno = EBADF;
         return -1;
     }
