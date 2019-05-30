@@ -167,10 +167,12 @@ namespace ruby {
             common::CMutexLock lock(m_mxSyncMutex);
             mRubyCommands.push_back(command);
         }
-        
+
         rho::String rurl(RHODESAPP().getRubyHomeURL().c_str());
         rurl += RHOLIB_LOCAL_SERVER_URL;
-        rho::common::CRhodesApp::getInstance()->callCallbackWithData(rurl, "", "", false);
+        //rho::common::CRhodesApp::getInstance()->callCallbackWithData(rurl, "", "", false);
+        rho::common::CRhodesApp::getInstance()->runCallbackInThread(rurl, "");
+
     }
 
     void RhoRubyImpl::executeGetRequestToRubyServer(const char* url, IRubyLocalServerRequestCallback* callback) {

@@ -14,6 +14,49 @@
 #define RHO_RUBY_JAVA_PACKAGE "com/rhomobile/rhodes/"
 #endif
 
+
+class CRhoRubyJavaRunnableHolder : public  rho::ruby::IRunnable {
+public:
+
+    CRhoRubyJavaRunnableHolder(int command_id) {
+        mCommandID = command_id;
+    }
+
+    virtual ~CRhoRubyJavaRunnableHolder() {}
+
+    virtual void run() {
+        JNIEnv *env = jnienv();
+        if (!env) {
+            RAWLOG_ERROR("CRhoRubyJavaRunnableHolder::run() JNI init failed: jnienv is null");
+            return;
+        }
+        #ifdef AAR_DEBUG
+        jclass cls = rho_find_class(env, "com/example/n0men/myapplication/RhoRubySingleton");
+        #else
+        jclass cls = rho_find_class(env, "com/rhomobile/rhodes/RhoRubySingleton");
+        #endif
+        if (!cls) {
+            RAWLOG_ERROR("CRhoRubyJavaRunnableHolder::run() JNI cannot found class");
+            delete this;
+            return;
+        }
+        jmethodID mid = env->GetStaticMethodID( cls, "executeRunnableByID", "(I)V");
+        if (!mid) {
+            RAWLOG_ERROR("CRhoRubyJavaRunnableHolder::run() JNI cannot found method");
+            delete this;
+            return;
+        }
+        env->CallStaticVoidMethod(cls, mid, mCommandID);
+        delete this;
+    }
+
+private:
+    int mCommandID;
+
+};
+
+
+
 class RhoRubyWrapper
 {
 public:
@@ -26,6 +69,7 @@ public:
     int getCount(jobject array) const;
 
     bool makeRubyClassObject(rho::String name);
+    void executeInRubyThreadCommandByID(int param_id);
     rho::String executeRubyMethodWithJSON(const char* full_class_name, const char* method_name, const char* parameters);
     rho::ruby::IObject* executeRubyMethod(const char* full_class_name, const char* method_name, jobject params);
     rho::ruby::IObject* convertFromJToR(jobject param);
@@ -104,6 +148,13 @@ bool RhoRubyWrapper::makeRubyClassObject(rho::String name)
     if(!class_object) return false;
     //class_object->release();
     return true;
+}
+
+
+void RhoRubyWrapper::executeInRubyThreadCommandByID(int param_id) {
+    CRhoRubyJavaRunnableHolder* command_holder = new CRhoRubyJavaRunnableHolder(param_id);
+    rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+    rr->executeInRubyThread(command_holder);
 }
 
 rho::String RhoRubyWrapper::executeRubyMethodWithJSON(const char* full_class_name, const char* method_name, const char* parameters)
@@ -284,6 +335,21 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhoRubyClassObject_NativeM
     rho::String result = pwrapper->getRubyServerURL();
     return rho_cast<jstring>(env, result);
 }
+
+
+#ifdef AAR_DEBUG
+ RHO_GLOBAL void JNICALL Java_com_example_n0men_myapplication_RhoRubySingleton_executeInRubyThreadNative
+#else
+ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoRubySingleton_executeInRubyThreadNative
+#endif
+  (JNIEnv* env, jclass, jint param_id)
+  {
+      RhoRubyWrapper* pwrapper = RhoRubyWrapper::instance(env);
+      pwrapper->executeInRubyThreadCommandByID((int)param_id);
+  }
+
+
+
 
 #ifdef AAR_DEBUG
  RHO_GLOBAL jstring JNICALL Java_com_example_n0men_myapplication_RhoRubySingleton_executeRubyMethodWithJSON
