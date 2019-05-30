@@ -81,9 +81,14 @@ ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
 
 def set_app_icon_android
 
+  if $rhodes_as_lib 
+    puts "Skip building copy resources (not needed for aar library)"
+    return
+  end
+
   res_path = File.join($app_path, 'resources', 'android', 'res')
   if File.exists? res_path
-    # NEW resource - just copy it to res folder
+    # NEW resource - just copy it to res folder -->>
     puts "add resources from application'sresource folder [#{res_path}] to [#{$tmpdir}]"
     cp_r res_path, $tmpdir
 
@@ -1197,19 +1202,50 @@ end
 namespace "build" do
   namespace "android" do
 
-    task :rhodeslib_bundle => ["config:android"] do
+    task :rhodeslib_bundle, [:target_path]  => ["config:set_android_platform", "config:common"] do |t, args|
       print_timestamp('build:android:rhodeslib_bundle START')
+        target_path = args[:target_path]
 
+        $skip_build_rhodes_main = true
+        $skip_build_extensions = true
+        $skip_build_xmls = true
+        $use_prebuild_data = true
+
+        Rake::Task['config:android'].invoke
+
+        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+        Rake::Task['build:android:rhobundle'].invoke
+
+        mkdir_p target_path if not File.exists? target_path
+
+        source_RhoBundle = $appassets
+
+        rm_rf File.join(target_path, "apps") if File.exists? File.join(target_path, "apps")
+        rm_rf File.join(target_path, "db") if File.exists? File.join(target_path, "db")
+        rm_rf File.join(target_path, "lib") if File.exists? File.join(target_path, "lib")
+        rm_rf File.join(target_path, "hash") if File.exists? File.join(target_path, "hash")
+        rm_rf File.join(target_path, "name") if File.exists? File.join(target_path, "name")
+        rm_rf File.join(target_path, "rho.dat") if File.exists? File.join(target_path, "rho.dat")
+
+        cp_r File.join(source_RhoBundle, "apps"), target_path
+        cp_r File.join(source_RhoBundle, "db"), target_path
+        cp_r File.join(source_RhoBundle, "lib"), target_path
+        cp_r File.join(source_RhoBundle, "hash"), target_path
+        cp_r File.join(source_RhoBundle, "name"), target_path
+        cp_r File.join(source_RhoBundle, "rho.dat"), target_path
 
       print_timestamp('build:android:rhodeslib_bundle FINISH')
     end
 
-    task :rhodeslib_lib => [:rhobundle] do
+    task :rhodeslib_lib, [:target_path] => [:rhobundle] do |t, args|
       print_timestamp('build:android:rhodeslib_lib START')
       $rhodes_as_lib = true
       Rake::Task["package:android"].invoke
       #Rake::Task["build:android:extensions_java"].invoke
-
+      target_path = args[:target_path]
+      cp_r File.join($bindir, "#{$appname}-#{$app_config["version"]}.aar"), target_path
       print_timestamp('build:android:rhodeslib_lib FINISH')
     end
 
@@ -2257,6 +2293,8 @@ namespace "build" do
       args << '-v' if USE_TRACES
 
       if ($rhodes_as_lib)
+        require 'nokogiri'
+        FormatManifestToAarCompat($appmanifest)
         Jake.run($aapt2, args)
         cp_r File.join($app_rjava_dir, 'com', 'rhomobile', $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
         rm_rf File.join($app_rjava_dir, 'com', 'rhomobile', $appname, 'R.java')
@@ -2662,11 +2700,11 @@ def prepare_aar_package
     raise "Error packaging classes.jar file"
   end
 
-  args = ["uf", resourcepkg, '-C', '.', 'assets']
-  Jake.run($jarbin, args, $tmpdir)
-  unless $?.success?
-    raise "Error packaging classes.jar file"
-  end
+  #args = ["uf", resourcepkg, '-C', '.', 'assets']
+  #Jake.run($jarbin, args, $tmpdir)
+  #unless $?.success?
+  #  raise "Error packaging classes.jar file"
+  #end
 
   mkdir_p File.join($tmpdir, 'jni')
 
