@@ -692,7 +692,9 @@ public class SimpleMainView implements MainView {
     public void back(int index) {
         restoreWebView();
         
-        String startUrl = RhoConf.getString("start_path");
+		String startUrl = RhoConf.getString("start_path");
+		
+		if(webView == null) return;
 
         boolean bStartPage = startUrl.equals(webView.getUrl());
 
