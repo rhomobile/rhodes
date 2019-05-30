@@ -177,7 +177,7 @@
 		FAC6EE6A143B20B600B8E352 /* RhoMath.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE68143B20B600B8E352 /* RhoMath.h */; };
 		FAD0471E1757A81700000F15 /* CJSEntryPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = FAD0471C1757A81700000F15 /* CJSEntryPoint.h */; };
 		FAD0471F1757A81700000F15 /* CJSEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAD0471D1757A81700000F15 /* CJSEntryPoint.mm */; };
-		FAE78C89225848C9001A1150 /* RhoRubySingletone.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C75225848C7001A1150 /* RhoRubySingletone.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FAE78C89225848C9001A1150 /* RhoRubySingletone.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C75225848C7001A1150 /* RhoRubySingletone.h */; };
 		FAE78C8A225848C9001A1150 /* IRhoRubyMutableInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C76225848C7001A1150 /* IRhoRubyMutableInteger.h */; };
 		FAE78C8B225848C9001A1150 /* IRhoRuby.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C77225848C7001A1150 /* IRhoRuby.h */; };
 		FAE78C8C225848C9001A1150 /* IRhoRubyMutableString.h in Headers */ = {isa = PBXBuildFile; fileRef = FAE78C78225848C7001A1150 /* IRhoRubyMutableString.h */; };
