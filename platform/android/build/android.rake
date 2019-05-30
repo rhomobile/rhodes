@@ -1243,7 +1243,6 @@ namespace "build" do
       print_timestamp('build:android:rhodeslib_lib START')
       $rhodes_as_lib = true
       Rake::Task["package:android"].invoke
-      #Rake::Task["build:android:extensions_java"].invoke
       target_path = args[:target_path]
       cp_r File.join($bindir, "#{$appname}-#{$app_config["version"]}.aar"), target_path
       print_timestamp('build:android:rhodeslib_lib FINISH')
@@ -2296,8 +2295,8 @@ namespace "build" do
         require 'nokogiri'
         FormatManifestToAarCompat($appmanifest)
         Jake.run($aapt2, args)
-        cp_r File.join($app_rjava_dir, 'com', 'rhomobile', $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
-        rm_rf File.join($app_rjava_dir, 'com', 'rhomobile', $appname, 'R.java')
+        cp_r File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
+        rm_rf File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')
       else
         Jake.run($aapt, args)
       end
@@ -2684,7 +2683,7 @@ def prepare_aar_package
     end
   end
 
-  rm_rf File.join($allclasses, 'com', 'rhomobile', $appname)
+  rm_rf File.join($allclasses, 'com', $vendor , $appname)
 
   Jake.run($jarbin, args, $allclasses)
 
