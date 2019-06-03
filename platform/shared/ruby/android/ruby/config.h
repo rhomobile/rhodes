@@ -277,11 +277,23 @@
 #define HAVE_UINT64_T 1
 #define SIZEOF_UINT64_T 8
 #define HAVE_INTPTR_T 1
+#if defined(__aarch64__)
+#define SIZEOF_INTPTR_T 8
+#else
 #define SIZEOF_INTPTR_T 4
+#endif
 #define HAVE_UINTPTR_T 1
+#if defined(__aarch64__)
+#define SIZEOF_UINTPTR_T 8
+#else
 #define SIZEOF_UINTPTR_T 4
+#endif
 #define HAVE_SSIZE_T 1
+#if defined(__aarch64__)
+#define SIZEOF_SSIZE_T 8
+#else
 #define SIZEOF_SSIZE_T 4
+#endif
 #define GETGROUPS_T gid_t
 #define RETSIGTYPE void
 #define HAVE_ALLOCA_H 1

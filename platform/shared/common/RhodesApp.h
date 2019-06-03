@@ -247,7 +247,10 @@ public:
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
     CRhoTimer&     getTimer(){ return m_oTimer; }
 
-    CExtManager&  getExtManager(){ return m_oExtManager; }
+    CExtManager&  getExtManager()
+    {
+        return m_oExtManager;
+    }
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
     unsigned long getCallbackObject(int nIndex);

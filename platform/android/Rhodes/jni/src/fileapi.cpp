@@ -283,6 +283,7 @@ static func_fseek_t real_fseek;
 static func_ftell_t real_ftell;
 static func_fclose_t real_fclose;
 static func_fopen_t real_fopen;
+static func_fopen_t real_fopen64;
 
 static func_access_t real_access;
 static func_close_t real_close;
@@ -307,6 +308,7 @@ static func_lseek64_t real_lseek64;
 static func_lseek_t real_lseek;
 static func_lstat_t real_lstat;
 static func_open_t real_open;
+static func_open_t real_open64;
 static func_read_t real_read;
 
 static func_pread_t real_pread;
@@ -668,6 +670,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_ftell = (func_ftell_t)dlsym(pc,"ftell");
     real_fclose = (func_fclose_t)dlsym(pc,"fclose");
     real_fopen = (func_fopen_t)dlsym(pc,"fopen");
+    real_fopen64 = (func_fopen_t)dlsym(pc,"fopen64");
     if (real_fdatasync == NULL) {
         //Android 2.1 have no fdatasync call. Use fsync instead
         RHO_LOG("No fdatasync implementation, using fsync instead");
@@ -681,6 +684,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_lseek64 = (func_lseek64_t)dlsym(pc, "lseek64");
     real_lstat = (func_lstat_t)dlsym(pc, "lstat");
     real_open = (func_open_t)dlsym(pc, "open");
+    real_open64 = (func_open_t)dlsym(pc, "open64");
     real_read = (func_read_t)dlsym(pc, "read");
 
     real_pread = (func_pread_t)dlsym(pc, "pread");
@@ -995,6 +999,110 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_needEmulat
     bool need = need_emulate(path);
     //RHO_LOG("Java_com_rhomobile_rhodes_file_RhoFileApi_needEmulate: need: %d", (int)need);
     return need;
+}
+
+RHO_GLOBAL int j_open(const char *path, int oflag, ...)
+{
+    RAWLOG_INFO("j_open is stub!!!");
+    return -1;
+}
+
+RHO_GLOBAL int open64(const char *path, int oflag, ...)
+{
+    std::string fpath;
+    if (path)
+        fpath = path;
+
+    if (fpath.empty())
+    {
+        RHO_LOG("open: path is empty");
+        errno = EFAULT;
+        return -1;
+    }
+
+    RHO_LOG("open: %s...", path);
+
+    //scoped_lock_t guard(rho_file_mtx);
+
+    fpath = make_full_path(fpath);
+    RHO_LOG("open: %s: fpath: %s", path, fpath.c_str());
+
+    // try to found from opened
+
+
+    bool emulate = need_emulate(fpath);
+    RHO_LOG("open: %s: emulate: %d", path, (int)emulate);
+    if (emulate && has_pending_exception())
+    {
+        RHO_LOG("open: %s: has_pending_exception, return -1", path);
+        errno = EFAULT;
+        return -1;
+    }
+    if (emulate && (oflag & (O_WRONLY | O_RDWR)))
+    //if (emulate)
+    {
+        RHO_LOG("open: %s: copy from Android package", path);
+        JNIEnv *env = jnienv_fileapi();
+        jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath));
+        env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
+        if (has_pending_exception())
+        {
+            RHO_LOG("open: %s: has_pending_exception, return -1", path);
+            errno = EFAULT;
+            return -1;
+        }
+
+        emulate = false;
+    }
+    RHO_LOG("open2: %s: emulate: %d", path, (int)emulate);
+
+    int fd = -1;
+    if (emulate)
+    {
+        RHO_LOG("open3: %s: emulate", path);
+        JNIEnv *env = jnienv_fileapi();
+        jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath));
+        jhobject is = env->CallStaticObjectMethod(clsFileApi, midOpen, relPathObj.get());
+
+        if (!is)
+        {
+            errno = EFAULT;
+            fd = -1;
+        }
+        else
+        {
+            scoped_lock_t guard(rho_file_mtx);
+            if (!rho_fd_free.empty())
+            {
+                fd = rho_fd_free[0];
+                rho_fd_free.erase(rho_fd_free.begin());
+            }
+            else
+                fd = rho_fd_counter++;
+            rho_fd_data_t d;
+            d.type = rho_type_file;
+            d.is = env->NewGlobalRef(is.get());
+            d.dirp = NULL;
+            d.fpath = fpath;
+            d.pos = 0;
+            d.refCount = 1;
+            rho_fd_map[fd] = d;
+        }
+    }
+    else
+    {
+        RHO_LOG("open64: %s: native", path);
+        mode_t mode = 0;
+        if (oflag & O_CREAT)
+        {
+            va_list vl;
+            va_start(vl, oflag);
+            mode = va_arg(vl, int);
+            va_end(vl);
+        }
+        fd = real_open64(path, oflag, mode);
+    }
+    RHO_LOG("openRESULT: %s => %d", path, fd);
 }
 
 RHO_GLOBAL int open(const char *path, int oflag, ...)
@@ -2061,6 +2169,35 @@ __sflags(const char *mode, int *optr)
     return (ret);
 }
 #endif
+
+RHO_GLOBAL FILE *fopen64(const char *path, const char *mode)
+{
+    int flags, oflags;
+    FILE *fp = 0;
+
+    RHO_LOG("fopen: %s (%s)", path, mode);
+
+    if ((flags = __sflags(mode, &oflags)) == 0) return NULL;
+    rho::String relpath = make_rel_path(make_full_path(path));
+    fp = real_fopen64(path, mode);
+
+    if (fp == NULL) {
+        fp = real_fopen64(relpath.c_str(), mode);
+    }
+
+    if (fp == NULL){
+        fp = android_fopen(path, mode);
+        if (fp == NULL){
+            fp = android_fopen(relpath.c_str(), mode);
+        }
+    }
+    // Do seek at our level as well even though oflags passed to open
+    if (oflags & O_APPEND)
+        fseek(fp, (fpos_t)0, SEEK_END);
+
+
+    return fp;
+}
 
 RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 {
