@@ -189,10 +189,10 @@ class NDKWrapper
         $toolchain = 'mipsel-linux-android'
       end
     elsif abi == 'aarch64'
-      if @rev_major >= 18
+      if @rev_major >= 15
         $toolchain = 'aarch64-linux-android'
       else
-        raise "Aarch64 not supported for this ndk version!"
+        raise "Rhodes not supported Aarch64 for this ndk version!"
       end
     else
       raise "Unknown ABI: {abi}";
