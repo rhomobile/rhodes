@@ -1524,6 +1524,7 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
+      #args << "-I\"#{$startdir}/platform/android/Rhodes/jni/include\""
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'libruby_build.files')
@@ -2134,7 +2135,7 @@ namespace "build" do
       Dir.glob($app_builddir + "/**/lib*.so").each do |lib|
         arch = File.basename(File.dirname(lib))
         file = File.basename(lib)
-        arch = 'arm64-v8a'
+        arch = 'arm64-v8a' if arch == "aarch64"
         cp_r lib, File.join($applibs,arch,file)
       end
       $ext_android_additional_lib.each do |lib|
@@ -2253,7 +2254,7 @@ namespace "build" do
 
       puts "Generate initial R.java at #{$app_rjava_dir}"
 
-      if ($rhodes_as_lib)
+     if ($rhodes_as_lib)
         puts $appres.to_s
         puts $app_rjava_dir.to_s
 
@@ -2750,7 +2751,7 @@ namespace "package" do
       prepare_aar_package()
       next
     end
-
+    
     puts "Running dx utility"
     args = []
     args << "-Xmx1024m"

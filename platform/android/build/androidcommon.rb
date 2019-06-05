@@ -371,12 +371,25 @@ def cc_link(outname, objects, additional = nil, deps = nil)
     args << "-fuse-ld=gold"
   end
 
-  if $ndkabi == "arm-eabi"
+  localabi = "unknown"
+  if $target_toolchain == "aarch64-linux-android"    
+    localabi = "arm64-v8a"
+  elsif $target_toolchain == "arm-linux-androideabi"
+    localabi = "armeabi"
+  elsif $target_toolchain == "i686-linux-android"
+    localabi = "x86"
+  else
+    localabi = "x86_64"
+  end
+
+  if localabi == "armeabi"
     args << "-nostdlib"
-    args << "-Wl,-shared,-Bsymbolic"
   else
     args << "-shared"
   end
+
+  args << "-Wl,-shared,-Bsymbolic" if localabi == "armeabi" or localabi == "arm64-v8a"
+
   #args << "-static-libstdc++"
   args << "-Wl,--no-whole-archive"
   args << "-Wl,--no-undefined"
@@ -401,19 +414,8 @@ def cc_link(outname, objects, additional = nil, deps = nil)
     args << "-Wl,-rpath-link=#{$link_sysroot}/usr/lib"
   end
 
-  
-  args << "#{$link_sysroot}/usr/lib/libc.so"
-  args << "#{$link_sysroot}/usr/lib/libm.so"
-  #args << "#{$link_sysroot}/usr/lib/libstdc++.so"
-
-  localabi = "armeabi"
-  if $gccbin.include? "toolchains/x86"
-    localabi = "x86"
-  end
-  if $gccbin.include? "toolchains\\x86"
-    localabi = "x86"
-  end
-  
+  args << "-lc"
+  args << "-lm"
 
   if($ndk_rev_major < 18)
     libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
@@ -422,7 +424,6 @@ def cc_link(outname, objects, additional = nil, deps = nil)
       args << "-lgnustl_static"
       puts "libgnustl_static exists"
     else
-      localabi = "armeabi-v7a"
       libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
       if File.exists? libgnustl_static
         args << "-L\"#{libgnustl_static}\""
