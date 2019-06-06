@@ -382,13 +382,17 @@ def cc_link(outname, objects, additional = nil, deps = nil)
     localabi = "x86_64"
   end
 
-  if localabi == "armeabi"
+  if $ndkabi == "arm-eabi"
     args << "-nostdlib"
+    args << "-Wl,-shared,-Bsymbolic"
+  elsif localabi == "arm64-v8a" or localabi = "armeabi"
+    args << "-shared"
+    args << "-Wl,-shared,-Bsymbolic"
   else
     args << "-shared"
   end
 
-  args << "-Wl,-shared,-Bsymbolic" if localabi == "armeabi" or localabi == "arm64-v8a"
+  #args << "-Wl,-shared,-Bsymbolic" if localabi == "armeabi" or localabi == "arm64-v8a"
 
   #args << "-static-libstdc++"
   args << "-Wl,--no-whole-archive"
@@ -424,6 +428,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
       args << "-lgnustl_static"
       puts "libgnustl_static exists"
     else
+      localabi = "armeabi-v7a" if localabi == "armeabi"
       libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
       if File.exists? libgnustl_static
         args << "-L\"#{libgnustl_static}\""
