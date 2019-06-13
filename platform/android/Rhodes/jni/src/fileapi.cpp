@@ -519,7 +519,7 @@ void processStatTable(const char* statTablePath, RhoFsSetupMode setupMode, bool 
         strTime.assign(pos, ptr-pos);
 
         int type;
-        unsigned long filesize;
+        size_t filesize = 0;
         unsigned long mtime;
 
         if(strType.compare("file") == 0)
@@ -544,7 +544,7 @@ void processStatTable(const char* statTablePath, RhoFsSetupMode setupMode, bool 
             return;
         }
 
-        sscanf(strSize.c_str(), "%u", &filesize);
+        sscanf(strSize.c_str(), "%zu", &filesize);
         sscanf(strTime.c_str(), "%u", &mtime);
 
         updateStatTable(strPath, static_cast<rho_fileapi_type_t>(type), filesize, mtime);
