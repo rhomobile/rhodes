@@ -507,7 +507,11 @@ rb_zlib_crc_table(VALUE obj)
 {
 #if !defined(HAVE_TYPE_Z_CRC_T)
     /* z_crc_t is defined since zlib-1.2.7. */
+#ifdef __aarch64__
+    typedef uint32_t z_crc_t;
+#else
     typedef unsigned long z_crc_t;
+#endif
 #endif
     const z_crc_t *crctbl;
     VALUE dst;
@@ -517,7 +521,7 @@ rb_zlib_crc_table(VALUE obj)
     dst = rb_ary_new2(256);
 
     for (i = 0; i < 256; i++) {
-	rb_ary_push(dst, rb_uint2inum(crctbl[i]));
+ 	rb_ary_push(dst, rb_uint2inum(crctbl[i]));
     }
     return dst;
 }

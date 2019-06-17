@@ -2131,12 +2131,20 @@ namespace "build" do
       mkdir_p File.join($applibs,'armeabi-v7a')
       mkdir_p File.join($applibs,'x86')
       mkdir_p File.join($applibs,'arm64-v8a')
+
       # Add .so libraries
       Dir.glob($app_builddir + "/**/lib*.so").each do |lib|
         arch = File.basename(File.dirname(lib))
         file = File.basename(lib)
         arch = 'arm64-v8a' if arch == "aarch64"
         cp_r lib, File.join($applibs,arch,file)
+        
+        localabi = arch
+        localabi = "armeabi-v7a" if arch == "armeabi"
+        llvm_stl = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi, "libc++_shared.so")
+        if File.exists? llvm_stl
+          cp_r llvm_stl, File.join($applibs,arch)
+        end
       end
       $ext_android_additional_lib.each do |lib|
         arch = File.basename(File.dirname(lib))

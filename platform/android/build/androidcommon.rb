@@ -438,6 +438,17 @@ def cc_link(outname, objects, additional = nil, deps = nil)
         puts "libgnustl_static does not exists"
       end
     end
+  else
+    localabi = "armeabi-v7a" if localabi == "armeabi"
+    llvm_stl_static = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
+    if File.exists? llvm_stl_static
+      args << "-L\"#{llvm_stl_static}\""
+      args << "-lc++_static"
+      puts "llvm stl static library exists"
+    else
+      puts "llvm stl static library does not exists"
+    end
+
   end
 
   cc_run($gccbin, args)
