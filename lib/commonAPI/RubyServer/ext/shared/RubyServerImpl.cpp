@@ -134,8 +134,8 @@ namespace rho {
             // RAWLOGC_INFO("executeRubyMethodWithJSON","RubyServer");
             rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
             CRhoRubyServerRunMethodHolder* rr_holder = new CRhoRubyServerRunMethodHolder(classFullName, methodName, parameters_in_JSON, oResult);
-            rr_holder->run();
-            //rr->executeInRubyThread(rr_holder);
+            //rr_holder->run();
+            rr->executeInRubyThread(rr_holder);
         }
 
         // executeGetRequestToRubyServer Async make GET request to Ruby local server and return responce in callback

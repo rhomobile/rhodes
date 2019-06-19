@@ -3031,6 +3031,10 @@ int rho_rhodesapp_is_rubynodejs_app() {
     return RHODESAPP().isRubyNodeJSApplication() ? 1 : 0;
 }
 
+const char* rho_rhodesapp_rubyhomeurl() {
+    return RHODESAPP().getRubyHomeURL().c_str();
+}
+
     
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 {
