@@ -13,7 +13,7 @@
 
 class CRhoRubyServerRunMethodHolder : public  rho::ruby::IRunnable {
 public:
-    
+
     CRhoRubyServerRunMethodHolder(   const rho::String& classFullName,
                                     const rho::String& methodName,
                                     const rho::String& parameters_in_JSON,
@@ -23,9 +23,9 @@ public:
         mParameters = parameters_in_JSON;
         mMethodResult = mresult;
     }
-    
+
     virtual ~CRhoRubyServerRunMethodHolder() {}
-    
+
     virtual void run() {
         rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
         rho::ruby::IString* rr_str = rr->executeRubyMethodWithJSON(mClassName.c_str(), mMethodName.c_str(), mParameters.c_str());
@@ -36,24 +36,65 @@ public:
         mMethodResult.set(res_str);
         delete this;
     }
-    
+
 private:
     rho::String mClassName;
     rho::String mMethodName;
     rho::String mParameters;
     rho::apiGenerator::CMethodResult mMethodResult;
+
+};
+
+class CRhoRubyServerLoadRubyHolder : public  rho::ruby::IRunnable {
+public:
+    
+    CRhoRubyServerLoadRubyHolder(   const rho::String& filename) {
+        mFileName = filename;
+    }
+    
+    virtual ~CRhoRubyServerLoadRubyHolder() {}
+    
+    virtual void run() {
+        rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+        rr->loadRubyFile(mFileName.c_str());
+        delete this;
+    }
+    
+private:
+    rho::String mFileName;
     
 };
 
-class CRhoRubyServerNativeCallbackHolder : public  rho::ruby::IRubyNativeCallback {
+class CRhoRubyServerLoadModelHolder : public  rho::ruby::IRunnable {
 public:
     
+    CRhoRubyServerLoadModelHolder(   const rho::String& filename) {
+        mFileName = filename;
+    }
+    
+    virtual ~CRhoRubyServerLoadModelHolder() {}
+    
+    virtual void run() {
+        rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+        rr->loadModel(mFileName.c_str());
+        delete this;
+    }
+    
+private:
+    rho::String mFileName;
+    
+};
+
+
+class CRhoRubyServerNativeCallbackHolder : public  rho::ruby::IRubyNativeCallback {
+public:
+
     CRhoRubyServerNativeCallbackHolder(rho::apiGenerator::CMethodResult& mresult) {
         mMethodResult = mresult;
     }
-    
+
     virtual ~CRhoRubyServerNativeCallbackHolder() {}
-    
+
     virtual void onRubyNative(rho::ruby::IObject* param) {
         rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
         rho::String res_str;
@@ -120,13 +161,17 @@ namespace rho {
         // loadRubyFile Load ruby file into Ruby VM
         virtual void loadRubyFile( const rho::String& filepath, rho::apiGenerator::CMethodResult& oResult) {
             // RAWLOGC_INFO("loadRubyFile","RubyServer");
-            rho::ruby::RhoRubySingletone::getRhoRuby()->loadRubyFile(filepath.c_str());
+            rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+            CRhoRubyServerLoadRubyHolder* rr_holder = new CRhoRubyServerLoadRubyHolder(filepath);
+            rr->executeInRubyThread(rr_holder);
         }
 
         // loadModel Load ruby model file into Ruby VM
         virtual void loadModel( const rho::String& filepath, rho::apiGenerator::CMethodResult& oResult) {
             // RAWLOGC_INFO("loadModel","RubyServer");
-            rho::ruby::RhoRubySingletone::getRhoRuby()->loadModel(filepath.c_str());
+            rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+            CRhoRubyServerLoadModelHolder* rr_holder = new CRhoRubyServerLoadModelHolder(filepath);
+            rr->executeInRubyThread(rr_holder);
         }
 
         // executeRubyMethodWithJSON Async call ruby code in Ruby thread and return result in callback

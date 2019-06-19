@@ -448,7 +448,7 @@ module Rhogen
     template :config do |template|
       zip_url ||= ''
       syncserver ||= ''
-      template.source = 'nodejs_rhoconfig.txt'
+      template.source = 'rhoconfig_rubynode.txt'
       template.destination = "#{name}/rhoconfig.txt"
     end
 
