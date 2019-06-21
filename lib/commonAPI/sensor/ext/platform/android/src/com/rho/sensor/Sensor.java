@@ -212,10 +212,7 @@ public class Sensor extends SensorBase implements ISensor {
 	 */
 	private void sensorChanged(SensorEvent event) {
 
-		Map<String, Object> props = new HashMap<String, Object>();
-		double accel_x = event.values[0];
-		double accel_y = event.values[1];
-		double accel_z = event.values[2];	
+		Map<String, Object> props = new HashMap<String, Object>();			
 
 		int sensorType = event.sensor.getType();
 		long currentTimeMillis = System.currentTimeMillis();
@@ -224,6 +221,9 @@ public class Sensor extends SensorBase implements ISensor {
 		switch (sensorType)
 		{
 			case android.hardware.Sensor.TYPE_ACCELEROMETER:
+				double accel_x = event.values[0];
+				double accel_y = event.values[1];
+				double accel_z = event.values[2];
 
 				//Logger.D(TAG,  ISensorSingleton.SENSOR_TYPE_ACCELEROMETER + ">>>" + mType + " [" + accel_x + ", " + accel_y + ", " + accel_z + "]");
 	
