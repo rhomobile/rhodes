@@ -315,7 +315,7 @@ String CJSONEntry::getStringObject( const char* name, const char* szDefValue )
         }
         else {
             const char* str = json_object_get_string(obj);
-            return String(str);
+            return String((0==str)?szDefValue:str);
         }
     }
     else if (szDefValue != 0 )
@@ -336,7 +336,7 @@ String CJSONEntry::getStringObject()
     }
     else {
         const char* str = json_object_get_string(m_object);
-        return String(str);
+        return String((0==str)?"":str);
     }
 }
 
