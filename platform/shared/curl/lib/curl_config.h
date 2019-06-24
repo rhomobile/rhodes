@@ -873,7 +873,11 @@
 #define RECV_TYPE_ARG4 unsigned int
 
 /* Define to the function return type for recv. */
+#ifdef __aarch64__
+#define RECV_TYPE_RETV ssize_t
+#else
 #define RECV_TYPE_RETV int
+#endif
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #define RETSIGTYPE void
@@ -909,31 +913,55 @@
 #define SEND_TYPE_ARG4 unsigned int
 
 /* Define to the function return type for send. */
+#ifdef __aarch64__
+#define SEND_TYPE_RETV size_t
+#else
 #define SEND_TYPE_RETV int
+#endif
 
 /* The size of `int', as computed by sizeof. */
 #define SIZEOF_INT 4
 
 /* The size of `long', as computed by sizeof. */
+#ifdef __aarch64__
+#define SIZEOF_LONG 8
+#else
 #define SIZEOF_LONG 4
+#endif
 
 /* The size of `long long', as computed by sizeof. */
 /* #undef SIZEOF_LONG_LONG */
 
 /* The size of `off_t', as computed by sizeof. */
+#ifdef __aarch64__
+#define SIZEOF_OFF_T 8
+#else
 #define SIZEOF_OFF_T 4
+#endif
 
 /* The size of `short', as computed by sizeof. */
 #define SIZEOF_SHORT 2
 
 /* The size of `size_t', as computed by sizeof. */
+#ifdef __aarch64__
+#define SIZEOF_SIZE_T 8
+#else
 #define SIZEOF_SIZE_T 4
+#endif
 
 /* The size of `time_t', as computed by sizeof. */
+#ifdef __aarch64__
+#define SIZEOF_TIME_T 8
+#else
 #define SIZEOF_TIME_T 4
+#endif
 
 /* The size of `void*', as computed by sizeof. */
+#ifdef __aarch64__
+#define SIZEOF_VOIDP 8
+#else
 #define SIZEOF_VOIDP 4
+#endif
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
