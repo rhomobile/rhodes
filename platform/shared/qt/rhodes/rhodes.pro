@@ -1,3 +1,8 @@
+DEFINES += RHODES_VERSION_LIBRARY
+CONFIG += console debug c++14
+CONFIG -= qt
+
+!contains(DEFINES, RHODES_VERSION_LIBRARY)  {
 QT += core gui network
 message(Qt version: $$[QT_VERSION])
 isEqual(QT_MAJOR_VERSION, 5):{
@@ -34,6 +39,7 @@ isEqual(QT_MAJOR_VERSION, 5):{
         DEFINES += RHODES_VERSION_2
         INCLUDEPATH += newVersion
     }
+}
 }
 
 #DEFINES += RHODES_EMULATOR
@@ -165,7 +171,11 @@ contains(DEFINES, OS_SAILFISH) {
   DEFINES += QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB OS_LINUX
 }
 
-DEFINES += RHODES_QT_PLATFORM
+
+#!contains(DEFINES, RHODES_VERSION_LIBRARY)  {
+  DEFINES += RHODES_QT_PLATFORM
+#}
+
 
 !isEmpty(RHOSIMULATOR_BUILD) {
   DEFINES += RHODES_EMULATOR
@@ -188,6 +198,7 @@ win32 {
     QMAKE_CFLAGS_DEBUG += /Zi /MDd
 }
 
+!contains(DEFINES, RHODES_VERSION_LIBRARY)  {
 HEADERS += impl/RhoClassFactoryImpl.h\
 impl/MainWindowImpl.h\
 impl/NativeToolbarImpl.h\
@@ -229,6 +240,7 @@ impl/SecurityTokenGeneratorImpl.cpp\
 impl/notificationsound.cpp \
 ../../../../lib/commonAPI/coreapi/ext/shared/SystemImplBase.cpp
 #TODO: make this like normal developer do
+}
 
 contains(DEFINES, OS_SAILFISH)  {
 SOURCES += \
@@ -313,10 +325,46 @@ newVersion/ExternalWebView.cpp\
 newVersion/DateTimeDialog.cpp\
 newVersion/main.cpp\
 newVersion/WebUrlRequestInterceptor.cpp
-
 }
-RESOURCES += resources/common.qrc
 
+contains(DEFINES, RHODES_VERSION_LIBRARY) {
+HEADERS +=  impl/MainWindowImpl.h\
+            impl/NativeToolbarImpl.h\
+            impl/NativeTabbarImpl.h\
+            ../../rubyext/NativeToolbarExt.h\
+            impl/DateTimePickerImpl.h\
+            impl/AlertImpl.h \
+            MainWindowCallback.h\
+            impl/RhoClassFactoryImpl.h
+
+SOURCES += rhorubyVersion/main.cpp\
+           impl/RhoThreadImpl.cpp\
+           impl/GeoLocationImpl.cpp\
+           impl/PhonebookImpl.cpp\
+           impl/BluetoothImpl.cpp\
+           impl/CameraImpl.cpp\
+           impl/RhoNativeViewManagerImpl.cpp\
+           impl/DateTimePickerImpl.cpp\
+           impl/RingtoneManagerImpl.cpp\
+           impl/RhodesImpl.cpp\
+           impl/MapViewImpl.cpp\
+           impl/WebViewImpl.cpp\
+           impl/CalendarImpl.cpp\
+           impl/QtSystemImpl.cpp\
+           impl/SignatureImpl.cpp\
+           impl/AlertImpl.cpp\
+           impl/MainWindowImpl.cpp\
+           impl/NativeTabbarImpl.cpp\
+           impl/RhoClassFactoryImpl.cpp\
+           ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp \
+           ../../../../lib/commonAPI/coreapi/ext/shared/SystemImplBase.cpp\
+           impl/NativeToolbarImpl.cpp\
+           impl/notificationsound.cpp
+}
+
+!contains(DEFINES, RHODES_VERSION_LIBRARY) {
+RESOURCES += resources/common.qrc
+}
 
 contains(DEFINES, OS_SAILFISH)  {
 unix:!macx:

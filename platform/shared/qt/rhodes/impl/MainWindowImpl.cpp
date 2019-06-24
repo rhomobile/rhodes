@@ -33,6 +33,7 @@
 #include "json/JSONIterator.h"
 #include "MainWindowImpl.h"
 //#undef null
+#ifndef RHODES_VERSION_LIBRARY
 #include <QString>
 #ifndef OS_SAILFISH
 #if QT_VERSION >= 0x050000
@@ -44,7 +45,9 @@
 #include <QHash>
 #include "../mainwindowinterface.h"
 
+
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
+#endif
 
 using namespace rho;
 using namespace rho::common;
@@ -52,13 +55,19 @@ using namespace rho::json;
 
 extern "C" void rho_geoimpl_turngpsoff();
 
+#ifndef RHODES_VERSION_LIBRARY
 int CMainWindow::m_screenWidth;
 int CMainWindow::m_screenHeight;
 
 bool CMainWindow::mainWindowClosed = false;
+#endif
 
-CMainWindow::CMainWindow(): QObject(), m_started(true), qtMainWindow(NULL)
+CMainWindow::CMainWindow()
+#ifndef RHODES_VERSION_LIBRARY
+    : QObject(), m_started(true), qtMainWindow(NULL)
+#endif
 {
+#ifndef RHODES_VERSION_LIBRARY
     //int argc = 0;
     QCoreApplication::setOrganizationName("Rhomobile");
 #ifndef RHODES_EMULATOR
@@ -66,13 +75,16 @@ CMainWindow::CMainWindow(): QObject(), m_started(true), qtMainWindow(NULL)
 #else
     QCoreApplication::setApplicationName("RhoSimulator");
 #endif
+#endif //RHODES_VERSION_LIBRARY
     //qtApplication = (void*)new QApplication(argc, 0);
 }
 
 CMainWindow::~CMainWindow()
 {
+#ifndef RHODES_VERSION_LIBRARY
     if (qtMainWindow) delete (QtMainWindow*)qtMainWindow;
     //if (qtApplication) delete (QApplication*)qtApplication;
+#endif
 }
 
 CMainWindow* CMainWindow::getInstance(void)
@@ -83,8 +95,10 @@ CMainWindow* CMainWindow::getInstance(void)
 
 void CMainWindow::updateSizeProperties(int width, int height)
 {
+#ifndef RHODES_VERSION_LIBRARY
     m_screenWidth = width;
     m_screenHeight = height;
+#endif
 }
 
 void CMainWindow::logEvent(const ::std::string& message)
@@ -97,6 +111,7 @@ void CMainWindow::onWebViewUrlChanged(const ::std::string& url)
     RHODESAPP().keepLastVisitedUrl(url);
 }
 
+#ifndef RHODES_VERSION_LIBRARY
 bool CMainWindow::Initialize(const wchar_t* title)
 {
     bool ok = init(this, title);
@@ -105,9 +120,11 @@ bool CMainWindow::Initialize(const wchar_t* title)
 #endif
     return ok;
 }
+#endif
 
 void CMainWindow::createCustomMenu(void)
 {
+#ifndef RHODES_VERSION_LIBRARY
     RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
     String strIndexPage = CFilePath::join(RHODESAPP().getStartUrl(),"index"RHO_ERB_EXT);
@@ -128,10 +145,12 @@ void CMainWindow::createCustomMenu(void)
 #endif
         }
     }
+#endif//RHODES_VERSION_LIBRARY
 }
 
 void CMainWindow::onCustomMenuItemCommand(int nItemPos)
 {    
+#ifndef RHODES_VERSION_LIBRARY
     if ( nItemPos < 0 || nItemPos >= (int)m_arAppMenuItems.size() )
         return;
 
@@ -149,8 +168,17 @@ void CMainWindow::onCustomMenuItemCommand(int nItemPos)
     }
 
     oMenuItem.processCommand();
+#endif
 }
 
+void CMainWindow::onWindowClose(void)
+{
+#ifndef RHODES_VERSION_LIBRARY
+    mainWindowClosed = true;
+#endif
+}
+
+#ifndef RHODES_VERSION_LIBRARY
 void CMainWindow::minimizeWindow(void)
 {
 #ifndef OS_SAILFISH //TODO: FIX
@@ -178,11 +206,6 @@ void CMainWindow::setProxy(const char* host, const char* port, const char* login
 void CMainWindow::DestroyUi(void)
 {
     rho_rhodesapp_callUiDestroyedCallback();
-}
-
-void CMainWindow::onWindowClose(void)
-{
-    mainWindowClosed = true;
 }
 
 
@@ -666,7 +689,7 @@ void CMainWindow::menuAddAction(const char* label, int item, bool enabled)
 {
     ((QtMainWindow*)qtMainWindow)->menuAddAction(QString(label), item, enabled);
 }
-
+#endif
 // Handlers
 void CMainWindow::onActivate(int active)
 {
@@ -675,6 +698,7 @@ void CMainWindow::onActivate(int active)
         rho_geoimpl_turngpsoff();
 }
 
+#ifndef RHODES_VERSION_LIBRARY
 // Commands
 void CMainWindow::exitCommand()
 {
@@ -825,10 +849,15 @@ void CMainWindow::createCustomMenuSlot(void)
 {
     createCustomMenu();
 }
+#endif
 
 extern "C" void rho_os_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->executeRunnable(pTask);
+#else
+    pTask->runObject();
+#endif
 }
 
 #if defined(RHODES_QT_PLATFORM) && defined(OS_MACOSX)

@@ -82,7 +82,11 @@ CRhoExtData CExtManager::makeExtData()
     oData.m_hWnd = 0;
     oData.m_hInstance = 0;
 #endif
+#ifndef RHODES_VERSION_LIBRARY
     oData.m_iTabIndex = rho_webview_active_tab();
+#else
+    oData.m_iTabIndex = -1;
+#endif
 #if !defined(OS_WINDOWS_DESKTOP)
 	if(getAppWindow().getWebKitEngine())
 		oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND(oData.m_iTabIndex);
@@ -169,7 +173,9 @@ unsigned long CExtManager::parseJsonToRubyHash(const char* szJson)
 
 void CExtManager::navigate(const wchar_t* szUrl)
 {
+#ifndef RHODES_VERSION_LIBRARY
     rho_webview_navigate( convertToStringA(szUrl).c_str(), -1 );
+#endif
 }
 
 bool CExtManager::existsJavascript(const wchar_t* szJSFunction)
@@ -240,6 +246,7 @@ bool CExtManager::DeRegisterForPrimaryBrowserMessage(unsigned int iMsgId)
 
 void CExtManager::executeJavascript(const wchar_t* szJSFunction)
 {
+#ifndef RHODES_VERSION_LIBRARY
     TNavigateData* nd = new TNavigateData();
     nd->index = rho_webview_active_tab();
 #ifndef RHODES_QT_PLATFORM
@@ -249,31 +256,46 @@ void CExtManager::executeJavascript(const wchar_t* szJSFunction)
     nd->url = wcsdup(szJSFunction);
     CMainWindow::getInstance()->executeJavaScriptCommand(nd);
 #endif
+#endif
 }
 
 StringW CExtManager::getCurrentUrl()
 {
+#ifndef RHODES_VERSION_LIBRARY
     return convertToStringW(RHODESAPP().getCurrentUrl(rho_webview_active_tab()));
+#else
+    return convertToStringW(RHODESAPP().getCurrentUrl(-1));
+#endif
 }
 
 void CExtManager::historyForward()
 {
+#ifndef RHODES_VERSION_LIBRARY
     rho_webview_navigate_forward();
+#endif
 }
 
 void CExtManager::historyBack()
 {
+#ifndef RHODES_VERSION_LIBRARY
     rho_webview_navigate_back();
+#endif
 }
 
 int CExtManager::getCurrentTabID()
 {
+#ifndef RHODES_VERSION_LIBRARY
     return rho_webview_active_tab();    
+#else
+    return -1;
+#endif
 }
 
 void CExtManager::refreshPage(bool bFromCache)
 {
+#ifndef RHODES_VERSION_LIBRARY
     rho_webview_refresh(rho_webview_active_tab());
+#endif
 }
 
 void CExtManager::stopNavigate()
@@ -285,7 +307,9 @@ void CExtManager::stopNavigate()
 
 void CExtManager::quitApp()
 {
+#ifndef RHODES_VERSION_LIBRARY
     rho_sys_app_exit();
+#endif
 }
 
 #ifndef RHODES_QT_PLATFORM
@@ -305,7 +329,9 @@ void CExtManager::minimizeApp()
     ::PostMessage( getMainWnd(), WM_WINDOW_MINIMIZE, 0, 0 );
 #endif
 #else
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->minimizeWindowCommand();
+#endif
 #endif
 }
 
@@ -318,7 +344,9 @@ void CExtManager::restoreApp()
     rho_callInUIThread(__minimize_restoreApp, SW_SHOW);
 #endif
 #else
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->restoreWindowCommand();
+#endif
 #endif
 }
 
@@ -327,7 +355,9 @@ void CExtManager::resizeBrowserWindow(RECT rc)
 #ifndef RHODES_QT_PLATFORM
     //::MoveWindow( getMainWnd(), rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, TRUE );
 #else
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->setFrame(rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top);
+#endif
 #endif
 }
 

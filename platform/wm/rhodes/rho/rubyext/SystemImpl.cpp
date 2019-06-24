@@ -37,6 +37,8 @@
 #include "common/RhoDefs.h"
 #include "common/RhoStd.h"
 #undef null
+
+#ifndef RHODES_VERSION_LIBRARY
 #include <qglobal.h>
 #ifndef OS_SAILFISH
 #if QT_VERSION > QT_VERSION_CHECK(5,7,0)
@@ -48,6 +50,7 @@
 #endif
 #endif
 #include "../../qt/rhodes/impl/MainWindowImpl.h"
+#endif// RHODES_VERSION_LIBRARY
 
 #else // RHODES_QT_PLATFORM
 

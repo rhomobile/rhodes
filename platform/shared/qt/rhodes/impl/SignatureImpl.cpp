@@ -27,7 +27,9 @@
 #include "common/RhoPort.h"
 #include "ext/rho/rhoruby.h"
 #include "common/RhodesApp.h"
+#ifndef RHODES_VERSION_LIBRARY
 #include "MainWindowImpl.h"
+#endif
 
 extern "C" {
 

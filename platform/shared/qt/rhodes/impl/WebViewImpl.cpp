@@ -29,7 +29,10 @@
 #include "rubyext/WebView.h"
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
+
+#ifndef RHODES_VERSION_LIBRARY
 #include "MainWindowImpl.h"
+#endif
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "WebView"
@@ -49,11 +52,14 @@ extern "C" {
 
 void rho_webview_refresh(int index) 
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->refreshCommand(index);
+#endif
 }
 
 void rho_webview_navigate(const char* url, int index) 
 {
+#ifndef RHODES_VERSION_LIBRARY
     if ( !url )
     {
         RAWLOG_ERROR("WebView.navigate failed: url is nil");
@@ -66,28 +72,37 @@ void rho_webview_navigate(const char* url, int index)
     nd->index = index;
     nd->url = dup_wcs(convertToStringW(strUrl).c_str());
     CMainWindow::getInstance()->navigateCommand(nd);
+#endif
 }
 
 void rho_webview_navigate_back()
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->webviewNavigateBackCommand(-1);
+#endif
 }
 
 void rho_webview_navigate_back_with_tab(int index)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->webviewNavigateBackCommand(index);
+#endif
 }
 
 void rho_webview_navigate_forward()
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->navigateForwardCommand();
+#endif
 }
 
 const char* rho_webview_execute_js(const char* js, int index) 
 {
+#ifndef RHODES_VERSION_LIBRARY
     String strJS = "javascript:";
     strJS += js;
     rho_webview_navigate(strJS.c_str(), index);
+#endif
     return "";
 }
 
@@ -105,22 +120,34 @@ const char* rho_webview_current_location(int index)
 
 int rho_webview_active_tab() 
 {
+ #ifndef RHODES_VERSION_LIBRARY
     return CMainWindow::getInstance()->tabbarGetCurrent();
+#else
+    return -1;
+#endif
 }
 
 void rho_webview_full_screen_mode(int enable)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->fullscreenCommand(enable);
+#endif
 }
 
 int rho_webview_get_full_screen()
 {
+#ifndef RHODES_VERSION_LIBRARY
     return CMainWindow::getInstance()->getFullScreen() ? 1 : 0;
+#else
+    return -1;
+#endif
 }
 
 void rho_webview_set_cookie(const char *url, const char *cookie)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->setCookie(url, cookie);
+#endif
 }
 
 void rho_webview_save(const char* format, const char* path, int tab_index)

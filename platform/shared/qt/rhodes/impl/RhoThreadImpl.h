@@ -27,13 +27,21 @@
 #ifndef RHOTHREADIMPL_H
 #define RHOTHREADIMPL_H
 
-#include <QThread>
 #include "common/IRhoThreadImpl.h"
 #include "logging/RhoLog.h"
+
+#ifndef RHODES_VERSION_LIBRARY
+#include <QThread>
 #include <QSharedPointer>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QTimer>
+#else
+#include <thread>
+#include <mutex>
+#include <memory>
+#include <sstream>
+#endif
 
 namespace rho{
 namespace common{
@@ -54,6 +62,9 @@ private:
     void setThreadPriority(IRhoRunnable::EPriority ePriority);
     rho::String threadId;
 private:
+
+
+#ifndef RHODES_VERSION_LIBRARY
     class QtThread: public QThread
     {
     public:
@@ -67,7 +78,6 @@ private:
             }
         }
     };
-
 
     class QRhoThread: public QtThread
     {
@@ -83,10 +93,73 @@ private:
     QSharedPointer<QtThread> m_waitThread;
     QSharedPointer<QMutex> mutex;
     QSharedPointer<QMutex> mutexWaiter;
+#else
 
+    class QRhoThread
+    {
+        bool runnig = false;
+    public:
+        QRhoThread(IRhoRunnable* pRunnable): runnig(false), m_Runnable(pRunnable) {}
+
+        ~QRhoThread()
+        {
+            if (isRunning()){
+                TerminateThread(_thr.native_handle(), 0);
+            }
+        }
+
+        void run() {
+            runnig = true;
+            m_Runnable->runObject();
+            runnig = false;
+        }
+
+        bool wait(unsigned int nTimeout)
+        {
+            std::chrono::duration<uint64_t, std::milli> _timeout (static_cast<uint64_t>(10000));
+            std::this_thread::sleep_for(_timeout);
+            return false;
+            DWORD code = WaitForSingleObject(_thr.native_handle(), nTimeout);
+            switch (code)
+            {
+            case WAIT_TIMEOUT:
+                return false;
+            case WAIT_FAILED:
+                return false;
+            case WAIT_OBJECT_0:
+                return true;
+            case WAIT_ABANDONED:
+                return false;
+            default:
+                return false;
+            }
+        }
+
+        void start()
+        {
+            _thr = std::thread(&QRhoThread::run, this);
+        }
+
+        static void sleep(unsigned long timeout) {
+            std::chrono::duration<uint64_t, std::milli> _timeout (static_cast<uint64_t>(timeout));
+            std::this_thread::sleep_for(_timeout);
+        }
+        bool isRunning()
+        {
+            return runnig;
+        }
+    private:
+        IRhoRunnable* m_Runnable;
+        std::thread _thr;
+    };
+    std::shared_ptr<QRhoThread> m_Thread;
+    std::mutex mutex;
+
+#endif
 };
 
 }
 }
+
 
 #endif // RHOTHREADIMPL_H

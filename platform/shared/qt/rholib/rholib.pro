@@ -19,6 +19,7 @@ TARGET = rholib
 TEMPLATE = lib
 
 CONFIG += staticlib warn_on
+CONFIG += debug
 
 INCLUDEPATH += ../..\
 ../../ruby\
