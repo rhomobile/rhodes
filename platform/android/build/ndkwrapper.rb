@@ -48,20 +48,39 @@ class NDKWrapper
   end
 
   def link_sysroot( api, abi )
-
+    linkabi = abi == "aarch64" ? "arm64" : abi
     #locate closest available NDK platform for target API
     n_api = api.to_i
     n_api.downto(1) { |i|
-      path = File.join( @root_path, 'platforms', "android-#{i.to_s}", "arch-#{abi}" )
+      path = File.join( @root_path, 'platforms', "android-#{i.to_s}", "arch-#{linkabi}" )
 
       return path if File.directory?(path)
     }
 
-    raise "Unable to detect NDK link root for API: #{api}, ABI: #{abi}"    
+    raise "Unable to detect NDK link root for API: #{api}, ABI: #{abi}"      
+  end
+
+  def link_sysroot_level_ext( api, abi )
+
+    if @rev_major >= 18
+      triple = {
+        'arm'   => 'arm-linux-androideabi',
+        'aarch64' => 'aarch64-linux-android',
+        'mips'  => 'mipsel-linux-android',
+        'mips64'=> 'mips64el-linux-android',
+        'x86'   => 'i686-linux-android',
+        'x86_64'=> 'x86_64-linux-android'
+      }
+      File.join( sysroot_18, 'usr', 'lib', triple[abi], api.to_s)
+    else
+      nil
+    end
   end
 
   def sysroot( api, abi )
-    if @rev_major >= 16
+    if @rev_major >= 18
+      sysroot_18
+    elsif @rev_major >= 16
       sysroot_16 api,abi
     else
       sysroot_pre_16 api,abi
@@ -70,6 +89,21 @@ class NDKWrapper
 
   def sysroot_16( api, abi )
     File.join( @root_path, 'sysroot' )
+  end
+
+  def toolchain
+    $toolchain
+  end
+
+  def sysroot_18
+    ndkhostvariant = ''
+    if HostPlatform.windows?
+      ndkhostvariant = 'windows-x86_64' if $bufcheck64 and $bufcheck64.include?('64')
+    else
+      ndkhostvariant = `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!
+    end
+
+    return File.join( @root_path, 'toolchains', 'llvm', 'prebuilt', ndkhostvariant, 'sysroot')
   end
 
   def sysroot_pre_16( api, abi )
@@ -121,8 +155,8 @@ class NDKWrapper
     ndkabi = "unknown"
     ndkhostvariants = []
     if HostPlatform.windows?
-        bufcheck64 = `WMIC OS get OSArchitecture`.split[1]
-        ndkhostvariants << 'windows-x86_64' if bufcheck64 and bufcheck64.include?('64')
+        $bufcheck64 = `WMIC OS get OSArchitecture`.split[1]
+        ndkhostvariants << 'windows-x86_64' if $bufcheck64 and $bufcheck64.include?('64')
         ndkhostvariants << 'windows'
     else
         ndkhostvariants = [
@@ -131,17 +165,43 @@ class NDKWrapper
         ]
     end
 
-    toolchainversions = ['4.8','4.9']
+    if(@rev_major >= 18)
+      toolchainversions = ['8.0.0']
+    else
+      toolchainversions = ['4.8','4.9']
+    end
 
-    toolchain = 'unknown-toolchain'
+    $toolchain = 'unknown-toolchain'
     if abi == 'arm'
-      toolchain = 'arm-linux-androideabi'
+      if @rev_major >= 18
+        $toolchain = 'armv7a-linux-androideabi'
+      else
+        $toolchain = 'arm-linux-androideabi'
+      end
     elsif abi == 'x86'
-      toolchain = 'x86'
+      if @rev_major >= 18
+        $toolchain = 'i686-linux-android'
+      else
+        $toolchain = 'x86'
+      end
     elsif abi == 'x86_64'
-      toolchain = 'x86_64'
+      if @rev_major >= 18
+        $toolchain = 'x86_64-linux-android'
+      else
+        $toolchain = 'x86_64'
+      end
     elsif abi == 'mips'
-      toolchain = 'mipsel-linux-android'
+      if @rev_major >= 18
+        raise "Mips not supported!"
+      else
+        $toolchain = 'mipsel-linux-android'
+      end
+    elsif abi == 'aarch64'
+      if @rev_major >= 18
+        $toolchain = 'aarch64-linux-android'
+      else
+        raise "Aarch64 not supported for this ndk version!"
+      end
     else
       raise "Unknown ABI: {abi}";
     end
@@ -151,15 +211,21 @@ class NDKWrapper
 
       toolchainversions.each do |version|
         variants = []
-        variants << File.join(@root_path,'build','prebuilt',ndkhost,"#{toolchain}-#{version}")
-        variants << File.join(@root_path,'toolchains',"#{toolchain}-#{version}",'prebuilt',ndkhost)
+
+        if(@rev_major >= 18)
+          variants << File.join(@root_path,'toolchains','llvm','prebuilt',ndkhost)
+        else
+          variants << File.join(@root_path,'build','prebuilt',ndkhost,"#{$toolchain}-#{version}")
+          variants << File.join(@root_path,'toolchains',"#{$toolchain}-#{version}",'prebuilt',ndkhost)
+        end
+
 
         variants.each do |variant|
           puts "Check toolchain path: #{variant}" if USE_TRACES    
           next unless File.directory? variant
 
           ndktools = variant
-          ndkabi = toolchain
+          ndkabi = $toolchain
           @gccver = version
           
           ndkabi = 'i686-linux-android' if ndkabi == 'x86'
@@ -169,7 +235,7 @@ class NDKWrapper
 
           tools = {}
           
-          ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
+          [ 'gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
               name = tool.gsub('+', 'p')
               tools[name] = check_tool( tool, ndktools, ndkabi)
           end
@@ -188,8 +254,24 @@ class NDKWrapper
     @gccver
   end
 
+  def rev_major
+    @rev_major
+  end
+
   def check_tool( tool, ndktoolsdir, abi )
+    if(@rev_major >= 18)
+      abi = 'arm-linux-androideabi' if abi == 'armv7a-linux-androideabi'
+    end
+
     toolpath = File.join(ndktoolsdir,'bin',"#{abi}-#{tool}#{HostPlatform.exe_ext}")
+    if(@rev_major >= 18)
+      if (tool == 'gcc')
+        toolpath = File.join(ndktoolsdir,'bin',"clang#{HostPlatform.exe_ext}")
+      end
+      if (tool == 'g++')
+        toolpath = File.join(ndktoolsdir,'bin',"clang++#{HostPlatform.exe_ext}")
+      end
+    end
     puts "Checking tool path #{toolpath} for tool #{tool}" if USE_TRACES
     
     if File.file? toolpath
@@ -204,13 +286,17 @@ class NDKWrapper
       #https://android.googlesource.com/platform/ndk/+/ndk-release-r16/docs/UnifiedHeaders.md
       triple = {
         'arm'   => 'arm-linux-androideabi',
-        'arm64' => 'aarch64-linux-android',
+        'aarch64' => 'aarch64-linux-android',
         'mips'  => 'mipsel-linux-android',
         'mips64'=> 'mips64el-linux-android',
         'x86'   => 'i686-linux-android',
         'x86_64'=> 'x86_64-linux-android'
       }
-      File.join( sysroot_16(api,abi), 'usr', 'include', triple[abi])
+      if  @rev_major >= 18
+        File.join( sysroot_18, 'usr', 'include', triple[abi])
+      else
+        File.join( sysroot_16(api,abi), 'usr', 'include', triple[abi])
+      end
     else
       nil
     end

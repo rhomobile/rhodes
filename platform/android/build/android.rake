@@ -1352,6 +1352,8 @@ namespace "build" do
               args << '--trace' if USE_TRACES
             end
 
+            #puts "builddata: " + builddata[1] + " args: " + args.to_s + " builddata0: " + builddata[0].to_s
+            #puts ENV.to_s
             cc_run(builddata[1], args, builddata[0], false, nil, USE_TRACES) or raise "Extension build failed: #{builddata[0]}"
           else
             currentdir = Dir.pwd()
@@ -1522,6 +1524,7 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
+      #args << "-I\"#{$startdir}/platform/android/Rhodes/jni/include\""
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'libruby_build.files')
@@ -2127,11 +2130,21 @@ namespace "build" do
       mkdir_p File.join($applibs,'armeabi')
       mkdir_p File.join($applibs,'armeabi-v7a')
       mkdir_p File.join($applibs,'x86')
+      mkdir_p File.join($applibs,'arm64-v8a')
+
       # Add .so libraries
       Dir.glob($app_builddir + "/**/lib*.so").each do |lib|
         arch = File.basename(File.dirname(lib))
         file = File.basename(lib)
+        arch = 'arm64-v8a' if arch == "aarch64"
         cp_r lib, File.join($applibs,arch,file)
+        
+        localabi = arch
+        localabi = "armeabi-v7a" if arch == "armeabi"
+        llvm_stl = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi, "libc++_shared.so")
+        if File.exists? llvm_stl
+          cp_r llvm_stl, File.join($applibs,arch)
+        end
       end
       $ext_android_additional_lib.each do |lib|
         arch = File.basename(File.dirname(lib))
@@ -2249,7 +2262,7 @@ namespace "build" do
 
       puts "Generate initial R.java at #{$app_rjava_dir}"
 
-      if ($rhodes_as_lib)
+     if ($rhodes_as_lib)
         puts $appres.to_s
         puts $app_rjava_dir.to_s
 
@@ -2746,7 +2759,7 @@ namespace "package" do
       prepare_aar_package()
       next
     end
-
+    
     puts "Running dx utility"
     args = []
     args << "-Xmx1024m"

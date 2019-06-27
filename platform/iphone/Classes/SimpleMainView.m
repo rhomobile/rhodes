@@ -1220,9 +1220,18 @@ static BOOL makeHiddenUntilLoadContent = YES;
     self.url_after_set_background = nil;
     
     
+    if (rho_rhodesapp_is_rubynodejs_app()) {
+        const char* ruby_url_c = rho_rhodesapp_rubyhomeurl();
+        NSString* ruby_url = [NSString stringWithUTF8String:ruby_url_c];
+        NSString* jscode = [NSString stringWithFormat:@"window['__rho_apiAjaxURL']='%@/system/js_api_entrypoint'", ruby_url];
+        [self executeJs:jscode tab:self.thisTabIndex];
+    }
+
+
     NSString* jscode = [NSString stringWithFormat:@"window['__rhoJsVmID']='%@'", [NSNumber numberWithInt:self.thisTabIndex]];
     //[self executeJs:@"alert('hello')" tab:self.thisTabIndex];
     [self executeJs:jscode tab:self.thisTabIndex];
+    
     //[self executeJs:@"alert(window['__rhoJsVmID'])" tab:self.thisTabIndex];
     
     

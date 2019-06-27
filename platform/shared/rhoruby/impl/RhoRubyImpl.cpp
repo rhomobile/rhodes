@@ -203,10 +203,11 @@ namespace ruby {
             mRubyCommands.push_back(command);
         }
 
-        rho::String rurl(RHODESAPP().getRubyHomeURL().c_str());
+        rho::String rurl = RHODESAPP().getRubyHomeURL();
         rurl += RHOLIB_LOCAL_SERVER_URL;
         //rho::common::CRhodesApp::getInstance()->callCallbackWithData(rurl, "", "", false);
-        rho::common::CRhodesApp::getInstance()->runCallbackInThread(rurl, "");
+        //rho::common::CRhodesApp::getInstance()->runCallbackInThread(rurl, "");
+        rho::common::rho_rhodesapp_call_in_thread(new CRhoLocalServerRequestTask(rurl, NULL ) );
 
     }
 

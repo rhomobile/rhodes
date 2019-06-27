@@ -54,25 +54,29 @@ ARGS = ['-Iext/platform/android/generated/jni',
 OBJDIR_ARM = File.join(OBJDIR,'arm')
 OBJDIR_x86 = File.join(OBJDIR,'x86')
 OBJDIR_MIPS = File.join(OBJDIR,'mips')
-
+OBJDIR_AARCH64 = File.join(OBJDIR,'aarch64')
     
 SRC = get_sources File.join(SOURCELIST)
 
 OBJ_ARM = FileList.new(get_objects(SRC, OBJDIR_ARM))
 OBJ_x86 = FileList.new(get_objects(SRC, OBJDIR_x86))
 OBJ_MIPS = FileList.new(get_objects(SRC, OBJDIR_MIPS))
+OBJ_AARCH64 = FileList.new(get_objects(SRC, OBJDIR_AARCH64))
 
 TARGETDIR_ARM = File.join(TARGETDIR,'armeabi')
 TARGETDIR_x86 = File.join(TARGETDIR,'x86')
 TARGETDIR_MIPS = File.join(TARGETDIR,'mips')
+TARGETDIR_AARCH64 = File.join(TARGETDIR,'aarch64')
 
 TARGETLIB_ARM = File.join(TARGETDIR_ARM,TARGETLIB)
 TARGETLIB_x86 = File.join(TARGETDIR_x86,TARGETLIB)
 TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,TARGETLIB)
+TARGETLIB_AARCH64 = File.join(TARGETDIR_AARCH64,TARGETLIB)
 
 SHAREDLIB_ARM = File.join(TARGETDIR_ARM,SHAREDLIB)
 SHAREDLIB_x86 = File.join(TARGETDIR_x86,SHAREDLIB)
 SHAREDLIB_MIPS = File.join(TARGETDIR_MIPS,SHAREDLIB)
+SHAREDLIB_AARCH64 = File.join(TARGETDIR_AARCH64,SHAREDLIB)
 
 namespace 'config' do
   task :arm do
@@ -86,14 +90,20 @@ namespace 'config' do
   task :mips do
       setup_ndk(ANDROID_NDK, ANDROID_API_LEVEL,'mips')
   end
+
+  task :aarch64 do
+    setup_ndk(ANDROID_NDK, ANDROID_API_LEVEL,'aarch64')
+  end
 end
 
 directory TARGETDIR_ARM
 directory TARGETDIR_x86
 directory TARGETDIR_MIPS
+directory TARGETDIR_AARCH64
 directory OBJDIR_ARM
 directory OBJDIR_x86
 directory OBJDIR_MIPS
+directory OBJDIR_AARCH64
 
 rule '.o' => lambda {|obj| find_source(obj) } do |t|
   abi = File.basename(File.dirname(t.name))
@@ -104,6 +114,7 @@ end
 task OBJ_ARM => OBJDIR_ARM
 task OBJ_x86 => OBJDIR_x86
 task OBJ_MIPS => OBJDIR_MIPS
+task OBJ_AARCH64 => OBJDIR_AARCH64
 
 def find_source(objfile)
   base = File.basename(objfile, '.o')
@@ -128,6 +139,12 @@ file TARGETLIB_MIPS => TARGETDIR_MIPS do |t|
     cc_ar t.name, OBJ_MIPS or raise "\e[31mCreating library failed: #{t.name}\e[0m"
 end
 multitask TARGETLIB_MIPS => OBJ_MIPS
+
+file TARGETLIB_AARCH64 => TARGETDIR_AARCH64 do |t|
+    Rake::Task["config:aarch64"].invoke
+    cc_ar t.name, OBJ_AARCH64 or raise "\e[31mCreating library failed: #{t.name}\e[0m"
+end
+multitask TARGETLIB_AARCH64 => OBJ_AARCH64
 
 file SHAREDLIB_ARM => [TARGETDIR_ARM, FileList.new(LINKDEPS)].flatten do |t|
     Rake::Task["config:arm"].invoke
@@ -155,24 +172,36 @@ file SHAREDLIB_MIPS => [TARGETDIR_MIPS, FileList.new(LINKDEPS)].flatten do |t|
     end
 end
 multitask SHAREDLIB_MIPS => OBJ_MIPS
+
+file SHAREDLIB_AARCH64 => [TARGETDIR_AARCH64, FileList.new(LINKDEPS)].flatten do |t|
+    Rake::Task["config:aarch64"].invoke
+    cc_link(t.name, OBJ_AARCH64, LINKARGS + get_stl_link_args('aarch64'), LINKDEPS) or raise "\e[31mLinking library failed: #{t.name}\e[0m"
+    unless $debug
+    cc_run($stripbin, [t.name])
+    end
+end
+multitask SHAREDLIB_AARCH64 => OBJ_AARCH64
   
   
 namespace 'build' do
   task :arm => OBJ_ARM
   task :x86 => OBJ_x86
   task :mips => OBJ_MIPS
+  task :aarch64 => OBJ_AARCH64
 end
 
 namespace 'arch' do
   task :arm => TARGETLIB_ARM
   task :x86 => TARGETLIB_x86
   task :mips => TARGETLIB_MIPS
+  task :aarch64 => TARGETLIB_AARCH64
 end
   
 namespace 'link' do
   task :arm => SHAREDLIB_ARM
   task :x86 => SHAREDLIB_x86
   task :mips => SHAREDLIB_MIPS
+  task :aarch64 => SHAREDLIB_AARCH64
 end
 
 task :default => ["build:arm", "build:x86"]

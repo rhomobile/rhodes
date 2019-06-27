@@ -8,7 +8,7 @@ iphone:
   rebuild_deplist: ext/platform/iphone/deplist.txt
 
 android:
-  source_list: ext/platform/android/ext_java.files
+  #source_list: ext/platform/android/ext_java.files
   exttype: rakefile
 wp8:
   csharp_impl: yes

@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency('templater', '1.0.0')
   s.add_dependency('rake', '12.0.0')
   s.add_dependency('uuid', '2.3.7')
-  s.add_dependency('systemu', '2.6.4')
+  s.add_dependency('systemu', '2.6.5')
   s.add_dependency('json', '1.8.6')
   s.add_dependency('rest-client', '2.0.2')
   s.add_dependency('net-scp','1.2.1')

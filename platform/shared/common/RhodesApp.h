@@ -254,7 +254,10 @@ public:
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
     CRhoTimer&     getTimer(){ return m_oTimer; }
 
-    CExtManager&  getExtManager(){ return m_oExtManager; }
+    CExtManager&  getExtManager()
+    {
+        return m_oExtManager;
+    }
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
     unsigned long getCallbackObject(int nIndex);
@@ -299,8 +302,8 @@ public:
     unsigned int getLocalServerPort() { return (m_httpServer!=0)?(m_httpServer->getPort()):0; }
     unsigned int getNodeJSServerPort() { return m_nNodeJSListeningPorts; }
     
-    String getRubyHomeURL() {return m_strRubyServerHomeURL;}
-    String getNodeHomeURL() {return m_strNodeServerHomeURL;}
+    String& getRubyHomeURL() {return m_strRubyServerHomeURL;}
+    String& getNodeHomeURL() {return m_strNodeServerHomeURL;}
 
 #ifdef OS_MACOSX
     String directHttpRequest( const String& method, const String& uri, const String& query, const rho::net::HttpHeaderList& headers, const String& body ) {  return m_httpServer->directRequest(method, uri, query, headers, body ); }
@@ -440,6 +443,8 @@ void rho_sys_clear_network_status_notify();
 int rho_rhodesapp_is_application_active();
 int rho_rhodesapp_is_nodejs_app();
 int rho_rhodesapp_is_rubynodejs_app();
+    
+const char* rho_rhodesapp_rubyhomeurl();
 
 #ifdef __cplusplus
 };

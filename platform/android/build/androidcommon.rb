@@ -65,12 +65,22 @@ def setup_ndk(ndkpath,apilevel,abi)
   $ndksysroot = ndk.sysroot apilevel, abi 
 
   $ndkgccver = ndk.gccver
+  $ndk_rev_major = ndk.rev_major
+  $target_toolchain = ndk.toolchain
   $androidndkpath = ndkpath unless $androidndkpath
 
   $sysincludes = ndk.sysincludes apilevel, abi
   $link_sysroot = ndk.link_sysroot apilevel, abi
 
-  puts "NDK sysroot: #{$ndksysroot}, linker sysroot: #{$link_sysroot}, GCC v#{$ndkgccver}, sysincludes: #{$sysincludes}"
+  if ($ndk_rev_major >= 18)
+    $link_sysroot_ext = ndk.link_sysroot_level_ext apilevel, abi
+  end
+
+  if($ndk_rev_major >= 18)
+    puts "NDK sysroot: #{$ndksysroot}, linker sysroot: #{$link_sysroot}, CLANG v#{$ndkgccver}, sysincludes: #{$sysincludes}"
+  else
+    puts "NDK sysroot: #{$ndksysroot}, linker sysroot: #{$link_sysroot}, GCC v#{$ndkgccver}, sysincludes: #{$sysincludes}"
+  end
 
   # Detect rlim_t
   if $have_rlim_t.nil?
@@ -87,10 +97,19 @@ def setup_ndk(ndkpath,apilevel,abi)
       end
     end
   end
+
+  puts "setup success!" if USE_TRACES
 end
 
 def cc_def_args
     args = []
+    if($ndk_rev_major >= 18)
+      args << "--target=#{$target_toolchain}#{$apilevel}"
+      args << "-fno-addrsig"
+      if ($target_toolchain == 'i686-linux-android' && $apilevel.to_i <= 23)
+        args << '-mstackrealign'
+      end
+    end
     args << "--sysroot"
     args << $ndksysroot
     args << "-isystem #{$sysincludes}" if $sysincludes    
@@ -100,7 +119,9 @@ def cc_def_args
     args << "-Wno-sign-compare"
     args << "-Wno-unused"
     args << '-Wno-unused-parameter'
-    args << "-mandroid"
+    if($ndk_rev_major < 18)
+      args << "-mandroid"
+    end
     args << "-DANDROID"
     args << "-DOS_ANDROID"
     args << "-DRHO_DEBUG"
@@ -128,7 +149,13 @@ def cpp_def_args
     args << "-fvisibility-inlines-hidden"
     args << "-fno-exceptions"
     args << "-fno-rtti"
-    args << "-std=c++11"
+
+    if($ndk_rev_major < 18)
+      args << "-std=c++11"
+    else
+      args << "-stdlib=libc++"
+    end
+
     args << "-Wno-reorder"
     #args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
@@ -338,12 +365,35 @@ def cc_link(outname, objects, additional = nil, deps = nil)
 
   args = []
 
+  if($ndk_rev_major >= 18)
+    args << "-v"  
+    args << "--target=#{$target_toolchain}#{$apilevel}"
+    args << "-fuse-ld=gold"
+  end
+
+  localabi = "unknown"
+  if $target_toolchain == "aarch64-linux-android"    
+    localabi = "arm64-v8a"
+  elsif $target_toolchain == "arm-linux-androideabi"
+    localabi = "armeabi"
+  elsif $target_toolchain == "i686-linux-android"
+    localabi = "x86"
+  else
+    localabi = "x86_64"
+  end
+
   if $ndkabi == "arm-eabi"
     args << "-nostdlib"
+    args << "-Wl,-shared,-Bsymbolic"
+  elsif localabi == "arm64-v8a" or localabi = "armeabi"
+    args << "-shared"
     args << "-Wl,-shared,-Bsymbolic"
   else
     args << "-shared"
   end
+
+  #args << "-Wl,-shared,-Bsymbolic" if localabi == "armeabi" or localabi == "arm64-v8a"
+
   #args << "-static-libstdc++"
   args << "-Wl,--no-whole-archive"
   args << "-Wl,--no-undefined"
@@ -356,52 +406,49 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "\"#{outname}\""
   args += objects.collect { |x| "\"#{x}\""}
   args += additional if additional.is_a? Array and not additional.empty?
-  args << "-L#{$link_sysroot}/usr/lib"
-  args << "-Wl,-rpath-link=#{$link_sysroot}/usr/lib"
-  args << "#{$link_sysroot}/usr/lib/libc.so"
-  args << "#{$link_sysroot}/usr/lib/libm.so"
-  #args << "#{$link_sysroot}/usr/lib/libstdc++.so"
-
-  localabi = "armeabi"
-  if $gccbin.include? "toolchains/x86"
-    localabi = "x86"
-  end
-  if $gccbin.include? "toolchains\\x86"
-    localabi = "x86"
-  end
-  
-  #libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
-  #if File.exists? libandroid_support
-  #  args << "-L\"#{libandroid_support}\""
-  #  args << "-landroid_support"
-  #  puts "libandroid_support exists"
-  #else
-  #  localabi = "armeabi-v7a"
-  #  libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
-  #  if File.exists? libandroid_support
-  #    args << "-L\"#{libandroid_support}\""
-  #    args << "-landroid_support"
-  #    puts "libandroid_support exists"
-  #  else
-  #    puts "libandroid_support does not exists"
-  #  end
-  #end
-
-  libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
-  if File.exists? libgnustl_static
-    args << "-L\"#{libgnustl_static}\""
-    args << "-lgnustl_static"
-    puts "libgnustl_static exists"
+  if($ndk_rev_major >= 18)
+    args << "-L#{$link_sysroot}"
+    args << "-Wl,-rpath-link=#{$link_sysroot}"
+    args << "-L#{$link_sysroot_ext}"
+    args << "-Wl,-rpath-link=#{$link_sysroot_ext}"
+    args << "-L#{$link_sysroot_ext}/../"
+    args << "-Wl,-rpath-link=#{$link_sysroot_ext}/../"
   else
-    localabi = "armeabi-v7a"
+    args << "-L#{$link_sysroot}/usr/lib"
+    args << "-Wl,-rpath-link=#{$link_sysroot}/usr/lib"
+  end
+
+  args << "-lc"
+  args << "-lm"
+
+  if($ndk_rev_major < 18)
     libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
     if File.exists? libgnustl_static
       args << "-L\"#{libgnustl_static}\""
       args << "-lgnustl_static"
       puts "libgnustl_static exists"
     else
-      puts "libgnustl_static does not exists"
+      localabi = "armeabi-v7a" if localabi == "armeabi"
+      libgnustl_static = File.join($androidndkpath, "sources", "cxx-stl", "gnu-libstdc++", "4.9", "libs", localabi)
+      if File.exists? libgnustl_static
+        args << "-L\"#{libgnustl_static}\""
+        args << "-lgnustl_static"
+        puts "libgnustl_static exists"
+      else
+        puts "libgnustl_static does not exists"
+      end
     end
+  else
+    localabi = "armeabi-v7a" if localabi == "armeabi"
+    llvm_stl_static = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
+    if File.exists? llvm_stl_static
+      args << "-L\"#{llvm_stl_static}\""
+      args << "-lc++_static"
+      puts "llvm stl static library exists"
+    else
+      puts "llvm stl static library does not exists"
+    end
+
   end
 
   cc_run($gccbin, args)

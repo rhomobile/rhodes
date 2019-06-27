@@ -7,6 +7,8 @@
 #warning ">>>>> Building for x86 <<<<<"
 #elif defined(__arm__)
 #warning ">>>>> Building for ARM <<<<<"
+#elif defined(__aarch64__)
+#warning ">>>>> Building for AARCH64 <<<<<"
 #else
 #error ">>>>> UNKNOWN ARCH! <<<<<"
 #endif
@@ -120,15 +122,29 @@
 #define HAVE_OFF_T 1
 #define SIZEOF_INT 4
 #define SIZEOF_SHORT 2
+#if defined(__aarch64__)
+#define SIZEOF_LONG 8
+#else
 #define SIZEOF_LONG 4
+#endif
 #define SIZEOF_LONG_LONG 8
 #define SIZEOF___INT64 0
+
+#if defined(__aarch64__)
+#define SIZEOF_OFF_T 8
+#define SIZEOF_VOIDP 8
+#define SIZEOF_TIME_T 8
+#define SIZEOF_CLOCK_T 8
+#else
 #define SIZEOF_OFF_T 4
 #define SIZEOF_VOIDP 4
-#define SIZEOF_FLOAT 4
-#define SIZEOF_DOUBLE 8
 #define SIZEOF_TIME_T 4
 #define SIZEOF_CLOCK_T 4
+#endif
+
+#define SIZEOF_FLOAT 4
+#define SIZEOF_DOUBLE 8
+
 #define PACKED_STRUCT(x) x __attribute__((packed))
 #define PACKED_STRUCT_UNALIGNED(x) x
 #define PRI_LL_PREFIX "ll"
@@ -209,8 +225,14 @@
 #define ENUM_OVER_INT 1
 #define HAVE_DECL_SYS_NERR 1
 #define HAVE_DECL_GETENV 1
+#if defined(__aarch64__)
+#define SIZEOF_SIZE_T 8
+#define SIZEOF_PTRDIFF_T 8
+#else
 #define SIZEOF_SIZE_T 4
 #define SIZEOF_PTRDIFF_T 4
+#endif
+
 #define PRI_SIZE_PREFIX "z"
 #define PRI_PTRDIFF_PREFIX "t"
 #define HAVE_STRUCT_STAT_ST_BLKSIZE 1
@@ -219,9 +241,17 @@
 #define HAVE_ST_BLOCKS 1
 #define HAVE_STRUCT_STAT_ST_RDEV 1
 #define HAVE_ST_RDEV 1
+
+#if defined(__aarch64__)
+#define SIZEOF_STRUCT_STAT_ST_SIZE SIZEOF_OFF_T
+#define SIZEOF_STRUCT_STAT_ST_BLOCKS SIZEOF_OFF_T
+#define SIZEOF_STRUCT_STAT_ST_INO SIZEOF_LONG
+#else
 #define SIZEOF_STRUCT_STAT_ST_SIZE SIZEOF_LONG_LONG
 #define SIZEOF_STRUCT_STAT_ST_BLOCKS SIZEOF_LONG_LONG
 #define SIZEOF_STRUCT_STAT_ST_INO SIZEOF_LONG_LONG
+#endif
+
 #define HAVE_STRUCT_STAT_ST_ATIMENSEC 1
 #define HAVE_STRUCT_STAT_ST_MTIMENSEC 1
 #define HAVE_STRUCT_STAT_ST_CTIMENSEC 1
@@ -247,11 +277,23 @@
 #define HAVE_UINT64_T 1
 #define SIZEOF_UINT64_T 8
 #define HAVE_INTPTR_T 1
+#if defined(__aarch64__)
+#define SIZEOF_INTPTR_T 8
+#else
 #define SIZEOF_INTPTR_T 4
+#endif
 #define HAVE_UINTPTR_T 1
+#if defined(__aarch64__)
+#define SIZEOF_UINTPTR_T 8
+#else
 #define SIZEOF_UINTPTR_T 4
+#endif
 #define HAVE_SSIZE_T 1
+#if defined(__aarch64__)
+#define SIZEOF_SSIZE_T 8
+#else
 #define SIZEOF_SSIZE_T 4
+#endif
 #define GETGROUPS_T gid_t
 #define RETSIGTYPE void
 #define HAVE_ALLOCA_H 1
@@ -399,7 +441,7 @@
 //RHO
 #if defined(__i386__) || defined(__x86_64__)
 #define STACK_GROW_DIRECTION -1
-#elif defined (__arm__)
+#elif defined(__arm__) || defined(__aarch64__)
 #define STACK_GROW_DIRECTION 0
 #else
 #error "Unknown arch!"
@@ -423,15 +465,25 @@
 #define HAVE_ELF_H 1
 #define DLEXT_MAXLEN 3
 #define DLEXT ".so"
+
+#if defined(__aarch64__)
+#define RUBY_SETJMP(env) sigsetjmp((env),0)
+#define RUBY_LONGJMP(env,val) siglongjmp((env),val)
+#define RUBY_JMP_BUF sigjmp_buf
+#else
 #define RUBY_SETJMP(env) __builtin_setjmp((env))
 #define RUBY_LONGJMP(env,val) __builtin_longjmp((env),val)
 #define RUBY_JMP_BUF jmp_buf
+#endif
+
 #define HAVE_PTHREAD_H 1
 //RHO
 #if defined(__i386__) || defined(__x86_64__)
 #define RUBY_PLATFORM "android-x86"
 #elif defined (__arm__)
 #define RUBY_PLATFORM "arm-linux-androideabi"
+#elif defined (__aarch64__)
+#define RUBY_PLATFORM "aarch64-linux"
 #else
 #error "Unknown arch!"
 #endif
