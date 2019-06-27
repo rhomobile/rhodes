@@ -1,6 +1,5 @@
 DEFINES += RHODES_VERSION_LIBRARY
-CONFIG += console debug c++14
-CONFIG -= qt
+
 
 !contains(DEFINES, RHODES_VERSION_LIBRARY)  {
 QT += core gui network
@@ -42,8 +41,6 @@ isEqual(QT_MAJOR_VERSION, 5):{
 }
 }
 
-#DEFINES += RHODES_EMULATOR
-
 !contains(DEFINES, OS_SAILFISH)  {
     TARGET = RhoSimulator
     TEMPLATE = app
@@ -51,6 +48,14 @@ isEqual(QT_MAJOR_VERSION, 5):{
 contains(DEFINES, OS_SAILFISH)  {
     TARGET = harbour-sailfishrhodes
     TEMPLATE = app
+}
+
+contains(DEFINES, RHODES_VERSION_LIBRARY)  {
+    CONFIG += c++14
+    CONFIG -= qt
+    TEMPLATE = lib
+    TARGET = rhodeslib
+    CONFIG += debug
 }
 
 CONFIG += warn_on
@@ -124,14 +129,14 @@ win32 {
     LIBS += comsuppw.lib
   }
   LIBS += ../../../win32/bin/rubylib/rubylib.lib\
-../../../win32/bin/rholib/rholib.lib\
-../../../win32/bin/sqlite3/sqlite3.lib\
-../../../win32/bin/syncengine/syncengine.lib\
-oldnames.lib wininet.lib Iphlpapi.lib Dbghelp.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+         ../../../win32/bin/rholib/rholib.lib\
+         ../../../win32/bin/sqlite3/sqlite3.lib\
+         ../../../win32/bin/syncengine/syncengine.lib\
+         oldnames.lib wininet.lib Iphlpapi.lib Dbghelp.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
   PRE_TARGETDEPS += ../../../win32/bin/rubylib/rubylib.lib\
-../../../win32/bin/rholib/rholib.lib\
-../../../win32/bin/sqlite3/sqlite3.lib\
-../../../win32/bin/syncengine/syncengine.lib
+                    ../../../win32/bin/rholib/rholib.lib\
+                    ../../../win32/bin/sqlite3/sqlite3.lib\
+                    ../../../win32/bin/syncengine/syncengine.lib
   exists("../../../win32/bin/extensions/extensions.pri") {
     include("../../../win32/bin/extensions/extensions.pri")
   }
@@ -171,10 +176,7 @@ contains(DEFINES, OS_SAILFISH) {
   DEFINES += QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB OS_LINUX
 }
 
-
-#!contains(DEFINES, RHODES_VERSION_LIBRARY)  {
   DEFINES += RHODES_QT_PLATFORM
-#}
 
 
 !isEmpty(RHOSIMULATOR_BUILD) {
@@ -337,7 +339,7 @@ HEADERS +=  impl/MainWindowImpl.h\
             MainWindowCallback.h\
             impl/RhoClassFactoryImpl.h
 
-SOURCES += rhorubyVersion/main.cpp\
+SOURCES +=\
            impl/RhoThreadImpl.cpp\
            impl/GeoLocationImpl.cpp\
            impl/PhonebookImpl.cpp\
@@ -359,7 +361,8 @@ SOURCES += rhorubyVersion/main.cpp\
            ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CWebViewImpl.cpp \
            ../../../../lib/commonAPI/coreapi/ext/shared/SystemImplBase.cpp\
            impl/NativeToolbarImpl.cpp\
-           impl/notificationsound.cpp
+           impl/notificationsound.cpp\
+           rhorubyVersion/rhodeslib.cpp
 }
 
 !contains(DEFINES, RHODES_VERSION_LIBRARY) {

@@ -25,6 +25,7 @@
 #------------------------------------------------------------------------
 require 'rubygems'
 $zippath = "res/build-tools/7za.exe"
+$rhodes_as_lib = false
 
  VS_FIXEDFILEINFO = Struct.new("VS_FIXEDFILEINFO", :Signature, :StrucVersion, :FileVersionMS, :FileVersionLS, :ProductVersionMS, :ProductVersionLS, :FileFlagsMask, :FileFlags, :FileOS, :FileType, :FileSubtype, :FileDateMS, :FileDateLS)
  
@@ -1197,6 +1198,51 @@ namespace "build" do
   end #wm
   
   namespace "win32" do
+
+    task :rhodeslib_lib, [:target_path] => ["build:win32:set_release_config"] do |t, args|
+      print_timestamp('build:win32:rhodeslib_lib START')
+      $rhodes_as_lib = true
+      Rake::Task['build:win32'].invoke
+      createWin32Production(false, true)
+      target_path = args[:target_path]
+      #cp_r File.join($bindir, "#{$appname}-#{$app_config["version"]}.aar"), target_path
+
+      Dir.glob(File.join($tmpdir,'**','*.dll')) do |p|
+          Jake.copyIfNeeded p, target_path
+      end
+      Jake.copyIfNeeded File.join($tmpdir, "rhodeslib.dll"), target_path
+      Jake.copyIfNeeded File.join($tmpdir, "rhodeslib.lib"), target_path
+
+      rhoruby_dir = File.join($startdir, 'platform', 'shared', 'rhoruby', 'api')
+      rhodeslib_h = File.join($startdir, 'platform', 'shared', 'qt', 'rhodes', 'rhorubyVersion', 'rhodeslib.h')
+      mkdir_p File.join(target_path, 'rhoruby') if not File.exists?  File.join(target_path, 'rhoruby')
+      cp_r rhoruby_dir, File.join(target_path, 'rhoruby')
+      cp_r rhodeslib_h, File.join(target_path, 'rhoruby')
+
+      print_timestamp('build:win32:rhodeslib_lib FINISH')
+    end
+
+    task :rhodeslib_bundle, [:target_path]  => ["build:win32:set_release_config", "config:common"] do |t, args|
+      print_timestamp('build:win32:rhodeslib_bundle START')
+
+      target_path = args[:target_path]
+      $skip_build_rhodes_main = true
+      $skip_build_extensions = true
+      $skip_build_xmls = true
+      $use_prebuild_data = true
+
+      Rake::Task['config:win32:qt'].invoke
+
+      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+      Rake::Task['build:win32:rhobundle'].invoke
+
+      mkdir_p target_path if not File.exists? target_path
+      cp_r File.join($bindir, "RhoBundle"), target_path
+    end
+
+
     task :deployqt => "config:win32:qt" do
 
       FileUtils.rm_rf(Dir.glob(File.join($target_path, 'msvc*0.dll')), {:secure => true})
@@ -1593,7 +1639,11 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
       ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
       ENV['RHO_VSCMNTOOLS'] = $vscommontools
-      Jake.run3('rhosimulator_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+      if $rhodes_as_lib
+        Jake.run3('rhoruby_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+      else
+        Jake.run3('rhosimulator_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+      end
 
       chdir $startdir
 
@@ -1626,12 +1676,21 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
     ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
     ENV['RHO_VSCMNTOOLS'] = $vscommontools
-    Jake.run3('rhosimulator_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+    if ($rhodes_as_lib)
+      Jake.run3('rhoruby_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+    else
+      Jake.run3('rhosimulator_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+    end
     $target_path = File.join( $startdir, $vcbindir, $sdk, 'rhodes', $buildcfg)
     if not File.directory?($target_path)
       Dir.mkdir($target_path)
     end
-    cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), File.join($target_path, 'rhodes.exe')
+    if ($rhodes_as_lib)
+      cp File.join($startdir, "platform/win32/bin/RhoSimulator/rhodeslib.dll"), File.join($target_path)
+      cp File.join($startdir, "platform/win32/bin/RhoSimulator/rhodeslib.lib"), File.join($target_path)
+    else
+      cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), File.join($target_path, 'rhodes.exe')
+    end
 
     chdir $startdir
   end
@@ -1757,7 +1816,12 @@ namespace "device" do
     mkdir_p $tmpdir unless skip_deployqt
     mkdir_p out_dir
 
-    cp out_dir + "rhodes.exe", $tmpdir + "/" + $appname + ".exe"
+    if($rhodes_as_lib)
+      cp_r out_dir + "rhodeslib.dll", $tmpdir
+      cp_r out_dir + "rhodeslib.lib", $tmpdir
+    else
+      cp out_dir + "rhodes.exe", $tmpdir + "/" + $appname + ".exe"
+    end
 
     script_name = File.join($startdir, "platform", "wm", "build", "rhodes.nsi")
     app_script_name = File.join($tmpdir, $appname + ".nsi")

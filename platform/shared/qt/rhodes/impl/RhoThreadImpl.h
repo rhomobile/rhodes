@@ -118,7 +118,7 @@ private:
         {
             std::chrono::duration<uint64_t, std::milli> _timeout (static_cast<uint64_t>(10000));
             std::this_thread::sleep_for(_timeout);
-            return false;
+            return true;
             DWORD code = WaitForSingleObject(_thr.native_handle(), nTimeout);
             switch (code)
             {

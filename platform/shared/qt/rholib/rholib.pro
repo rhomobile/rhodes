@@ -23,7 +23,8 @@ CONFIG += debug
 
 INCLUDEPATH += ../..\
 ../../ruby\
-../../../../lib/commonAPI
+../../../../lib/commonAPI\
+../../ruby/include
 
 macx {
   greaterThan(QT_MINOR_VERSION, 6): {
@@ -47,13 +48,16 @@ win32 {
   DESTDIR = ../../../win32/bin/rholib
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
   DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS _UNICODE UNICODE WIN32_LEAN_AND_MEAN
+  DEFINES += _XKEYCHECK_H
+
   Debug {
     DEFINES += _DEBUG DEBUG
   }
   Release {
     DEFINES += _NDEBUG NDEBUG
   }
-  INCLUDEPATH += ../../../win32/include
+  INCLUDEPATH += ../../../win32/include\
+                 ../../ruby/win32
   HEADERS += ../../rubyext/WebView.h
 
     QMAKE_CXXFLAGS_RELEASE += /MP9 /O2
@@ -147,7 +151,18 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../api_generator/GeneratorQueue.h\
 ../../api_generator/MethodResult.h\
 ../../api_generator/js_helpers.h\
-../../api_generator/StringifyHelper.h
+../../api_generator/StringifyHelper.h\
+../../api_generator/StringifyHelper.cpp\
+../../rhoruby/impl/MutableArrayImpl.h\
+../../rhoruby/impl/MutableBooleanImpl.h\
+../../rhoruby/impl/MutableFloatImpl.h\
+../../rhoruby/impl/MutableHashImpl.h\
+../../rhoruby/impl/MutableIntegerImpl.h\
+../../rhoruby/impl/MutableStringImpl.h\
+../../rhoruby/impl/NilImpl.h\
+../../rhoruby/impl/ObjectImpl.h\
+../../rhoruby/impl/RefCountedObjectImpl.h\
+../../rhoruby/impl/RhoRubyImpl.h
 
 SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/RhoAppAdapter.cpp\
@@ -184,7 +199,18 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/push/RhoPushManager.cpp\
 ../../api_generator/js_helpers.cpp\
 ../../api_generator/MethodResult.cpp\
-../../api_generator/StringifyHelper.cpp
+../../api_generator/StringifyHelper.cpp\
+../../rhoruby/impl/MutableArrayImpl.cpp\
+../../rhoruby/impl/MutableBooleanImpl.cpp\
+../../rhoruby/impl/MutableFloatImpl.cpp\
+../../rhoruby/impl/MutableHashImpl.cpp\
+../../rhoruby/impl/MutableIntegerImpl.cpp\
+../../rhoruby/impl/MutableStringImpl.cpp\
+../../rhoruby/impl/NilImpl.cpp\
+../../rhoruby/impl/ObjectImpl.cpp\
+../../rhoruby/impl/RefCountedObjectImpl.cpp\
+../../rhoruby/impl/RhoRubyImpl.cpp\
+../../rhoruby/impl/RhoRubySingletone.cpp
 
 HEADERS += ../../unzip/zip.h\
 ../../unzip/unzip.h\

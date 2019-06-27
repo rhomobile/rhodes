@@ -8,7 +8,7 @@ class RhoRubySingletone {
 
 public:
 
-    static IRhoRuby* getRhoRuby();
+    static IRhoRuby* getRhoRuby(bool lateInit = false);
 
 private:
 
