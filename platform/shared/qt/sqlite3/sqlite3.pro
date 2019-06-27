@@ -18,7 +18,7 @@ TARGET = sqlite3
 TEMPLATE = lib
 
 CONFIG += staticlib warn_on
-CONFIG += debug
+#CONFIG += debug
 
 INCLUDEPATH += ../..
 

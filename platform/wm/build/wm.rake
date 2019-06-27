@@ -1049,6 +1049,10 @@ namespace "build" do
               ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
               ENV['RHO_VSCMNTOOLS'] = $vscommontools
 
+              if($debug)
+                ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release"
+              end
+
               if File.exists? File.join(extpath, 'build.bat')
                 clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
                 Jake.run3('build.bat', extpath)
@@ -1210,8 +1214,14 @@ namespace "build" do
       Dir.glob(File.join($tmpdir,'**','*.dll')) do |p|
           Jake.copyIfNeeded p, target_path
       end
-      Jake.copyIfNeeded File.join($tmpdir, "rhodeslib.dll"), target_path
-      Jake.copyIfNeeded File.join($tmpdir, "rhodeslib.lib"), target_path
+
+      if($debug)
+        Jake.copyIfNeeded File.join($tmpdir, "rhodeslibd.dll"), target_path
+        Jake.copyIfNeeded File.join($tmpdir, "rhodeslibd.lib"), target_path
+      else
+        Jake.copyIfNeeded File.join($tmpdir, "rhodeslib.dll"), target_path
+        Jake.copyIfNeeded File.join($tmpdir, "rhodeslib.lib"), target_path
+      end
 
       rhoruby_dir = File.join($startdir, 'platform', 'shared', 'rhoruby', 'api')
       rhodeslib_h = File.join($startdir, 'platform', 'shared', 'qt', 'rhodes', 'rhorubyVersion', 'rhodeslib.h')
@@ -1550,9 +1560,13 @@ namespace "build" do
               ENV['VCBUILD'] = $vcbuild
               ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
               ENV['RHO_QMAKE'] = $qmake
-              ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
+              ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ""
               ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
               ENV['RHO_VSCMNTOOLS'] = $vscommontools
+
+              if($debug)
+                ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release" 
+              end
 
               clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
               Jake.run3('build.bat', extpath)
@@ -1640,9 +1654,17 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
       ENV['RHO_VSCMNTOOLS'] = $vscommontools
       if $rhodes_as_lib
-        Jake.run3('rhoruby_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+        if($debug)
+          Jake.run3('rhoruby_win32_build_debug.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+        else
+          Jake.run3('rhoruby_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+        end
       else
-        Jake.run3('rhosimulator_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+        if($debug)
+          Jake.run3('rhosimulator_win32_build_debug.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+        else
+          Jake.run3('rhosimulator_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+        end
       end
 
       chdir $startdir
@@ -1677,7 +1699,11 @@ PRE_TARGETDEPS += #{pre_targetdeps}
     ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
     ENV['RHO_VSCMNTOOLS'] = $vscommontools
     if ($rhodes_as_lib)
-      Jake.run3('rhoruby_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+      if($debug)
+        Jake.run3('rhoruby_win32_build_debug.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+      else
+        Jake.run3('rhoruby_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+      end
     else
       Jake.run3('rhosimulator_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
     end
@@ -1686,8 +1712,14 @@ PRE_TARGETDEPS += #{pre_targetdeps}
       Dir.mkdir($target_path)
     end
     if ($rhodes_as_lib)
-      cp File.join($startdir, "platform/win32/bin/RhoSimulator/rhodeslib.dll"), File.join($target_path)
-      cp File.join($startdir, "platform/win32/bin/RhoSimulator/rhodeslib.lib"), File.join($target_path)
+
+      if($debug)
+        cp File.join($startdir, "platform/win32/bin/RhoSimulator/rhodeslibd.dll"), File.join($target_path)
+        cp File.join($startdir, "platform/win32/bin/RhoSimulator/rhodeslibd.lib"), File.join($target_path)
+      else
+        cp File.join($startdir, "platform/win32/bin/RhoSimulator/rhodeslib.dll"), File.join($target_path)
+        cp File.join($startdir, "platform/win32/bin/RhoSimulator/rhodeslib.lib"), File.join($target_path)
+      end
     else
       cp File.join($startdir, "platform/win32/bin/RhoSimulator/RhoSimulator.exe"), File.join($target_path, 'rhodes.exe')
     end
@@ -1817,8 +1849,13 @@ namespace "device" do
     mkdir_p out_dir
 
     if($rhodes_as_lib)
-      cp_r out_dir + "rhodeslib.dll", $tmpdir
-      cp_r out_dir + "rhodeslib.lib", $tmpdir
+      if($debug)
+        cp_r out_dir + "rhodeslibd.dll", $tmpdir
+        cp_r out_dir + "rhodeslibd.lib", $tmpdir
+      else
+        cp_r out_dir + "rhodeslib.dll", $tmpdir
+        cp_r out_dir + "rhodeslib.lib", $tmpdir
+      end
     else
       cp out_dir + "rhodes.exe", $tmpdir + "/" + $appname + ".exe"
     end

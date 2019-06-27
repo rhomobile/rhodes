@@ -1,6 +1,3 @@
-DEFINES += RHODES_VERSION_LIBRARY
-
-
 !contains(DEFINES, RHODES_VERSION_LIBRARY)  {
 QT += core gui network
 message(Qt version: $$[QT_VERSION])
@@ -55,7 +52,7 @@ contains(DEFINES, RHODES_VERSION_LIBRARY)  {
     CONFIG -= qt
     TEMPLATE = lib
     TARGET = rhodeslib
-    CONFIG += debug
+    #CONFIG += debug
 }
 
 CONFIG += warn_on
@@ -123,6 +120,10 @@ win32 {
   Debug {
     DEFINES += _DEBUG DEBUG
     LIBS += comsuppwd.lib
+
+    contains(DEFINES, RHODES_VERSION_LIBRARY)  {
+       TARGET = rhodeslibd
+    }
   }
   Release {
     DEFINES += _NDEBUG NDEBUG QT_NO_DEBUG

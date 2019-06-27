@@ -18,7 +18,7 @@ TARGET = coreapi
 TEMPLATE = lib
 
 CONFIG += staticlib warn_on
-CONFIG += debug
+#CONFIG += debug
 
 INCLUDEPATH += ../../shared\
 ../../shared/generated\

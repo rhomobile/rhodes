@@ -1,5 +1,4 @@
 CONFIG += c++14
-DEFINES += RHODES_VERSION_LIBRARY
 
 TEMPLATE = subdirs
 SUBDIRS = rubylib rholib sqlite3 syncengine
