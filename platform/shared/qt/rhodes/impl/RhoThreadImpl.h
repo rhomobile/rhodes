@@ -41,6 +41,7 @@
 #include <mutex>
 #include <memory>
 #include <sstream>
+#include <condition_variable>
 #endif
 
 namespace rho{
@@ -97,7 +98,10 @@ private:
 
     class QRhoThread
     {
+        friend CRhoThreadImpl;
         bool runnig = false;
+        std::mutex waiter;
+        std::condition_variable wait_cond;
     public:
         QRhoThread(IRhoRunnable* pRunnable): runnig(false), m_Runnable(pRunnable) {}
 
@@ -116,23 +120,23 @@ private:
 
         bool wait(unsigned int nTimeout)
         {
-            std::chrono::duration<uint64_t, std::milli> _timeout (static_cast<uint64_t>(10000));
-            std::this_thread::sleep_for(_timeout);
-            return true;
-            DWORD code = WaitForSingleObject(_thr.native_handle(), nTimeout);
-            switch (code)
+            try
             {
-            case WAIT_TIMEOUT:
-                return false;
-            case WAIT_FAILED:
-                return false;
-            case WAIT_OBJECT_0:
+                std::unique_lock<std::mutex> lock(waiter);
+                std::chrono::duration<uint64_t, std::milli> _timeout (static_cast<uint64_t>(nTimeout));
+                wait_cond.wait_for(lock, _timeout);
                 return true;
-            case WAIT_ABANDONED:
-                return false;
-            default:
+            }
+            catch(std::system_error& err)
+            {
+                LOG(ERROR) + err.what();
                 return false;
             }
+        }
+
+        void stopWait()
+        {
+            wait_cond.notify_one();
         }
 
         void start()

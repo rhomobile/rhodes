@@ -111,6 +111,7 @@ void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePri
 #else
     m_Thread = std::make_shared<QRhoThread>(pRunnable);
     m_Thread->start();
+    setThreadPriority(ePriority);
     LOG(TRACE) + RHOQTPREFIX + "start - after thread start";
 #endif
 }
@@ -122,6 +123,16 @@ void CRhoThreadImpl::setThreadPriority(IRhoRunnable::EPriority ePriority)
     if ( ePriority == IRhoRunnable::epHigh ) nPriority = QThread::HighestPriority;
     else if (ePriority == IRhoRunnable::epLow) nPriority = QThread::LowestPriority;
     m_Thread.data()->setPriority(nPriority);
+#else
+    int nPriority = THREAD_PRIORITY_NORMAL;
+    if ( ePriority == IRhoRunnable::epHigh )
+        nPriority = THREAD_PRIORITY_HIGHEST;
+    else if (ePriority == IRhoRunnable::epLow)
+        nPriority = THREAD_PRIORITY_LOWEST;
+    else if (ePriority == IRhoRunnable::epCritical)
+        nPriority = THREAD_PRIORITY_TIME_CRITICAL;
+
+    SetThreadPriority(m_Thread->_thr.native_handle(), nPriority);
 #endif
 }
 
@@ -161,7 +172,13 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
 
     LOG(TRACE) + "RHOQT stop - finish";
 #else
-    m_Thread.reset();
+    if(m_Thread)
+    {
+        stopWait();
+        if(nTimeoutToKill && static_cast<int>(nTimeoutToKill) > 0)
+            m_Thread->wait(nTimeoutToKill);
+        m_Thread.reset();
+    }
 #endif
 }
 
@@ -199,22 +216,8 @@ int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
     LOG(TRACE) + RHOQTPREFIX + "wait - finish before return";
     return result;
 #else
-    LOG(TRACE) + RHOQTPREFIX + "wait";
-    bool isVeyBigTimeoutvalue = false;
-    if ((nTimeoutMs == 4294966296)||(nTimeoutMs == 4294967295)){isVeyBigTimeoutvalue = true;}
-
-    bool result = false;
-    if(isVeyBigTimeoutvalue)
-    {
-        LOG(TRACE) + RHOQTPREFIX + "wait - before wait for a long time nTimeoutMs:-  "+nTimeoutMs;
-        result = m_Thread->wait(1000UL*nTimeoutMs);
-        LOG(TRACE) + RHOQTPREFIX + "wait - after wait for a long time Result:-  " + result;
-    }else{
-        LOG(TRACE) + RHOQTPREFIX + "wait - before wait for a short time nTimeoutMs:-  "+nTimeoutMs;
-        result = m_Thread->wait(1UL*nTimeoutMs);
-        LOG(TRACE) + RHOQTPREFIX + "wait - after wait for a short time Result:-  " + result;
-    }
-    return result;
+    LOG(TRACE) + RHOQTPREFIX + "wait - before wait for a long time nTimeoutMs:-  "+nTimeoutMs;
+    return m_Thread->wait(nTimeoutMs);
 #endif
 }
 
@@ -230,12 +233,7 @@ void CRhoThreadImpl::stopWait()
     m_waitThread.data()->quit();
     LOG(TRACE) + RHOQTPREFIX + "stopWait - after quit()";
 #else
-    LOG(TRACE) + RHOQTPREFIX + "stopWait - before mutex";
-    LOG(TRACE) + RHOQTPREFIX + "stopWait - after mutex and before msleep";
-    LOG(TRACE) + RHOQTPREFIX + "stopWait - before quit()";
-    QRhoThread::sleep(2);
-
-    LOG(TRACE) + RHOQTPREFIX + "stopWait - after quit()";
+    m_Thread->stopWait();
 #endif
 }
 
