@@ -280,8 +280,9 @@ def update_plist_procedure
       ext_name, changed_value = get_ext_plist_changes($app_extension_cfg)
 
       set_app_plist_options($app_path + "/project/iphone/Info.plist", appname, bundle_identifier, $app_config["version"], $app_config["iphone"]["BundleURLScheme"]) do |hash|
-         hash['UIApplicationExitsOnSuspend'] = on_suspend_value
-
+         if !(on_suspend.nil?)
+             hash['UIApplicationExitsOnSuspend'] = on_suspend_value
+         end
         changed_value.each do |k, v|
           puts "Info.plist: Setting key #{k} = #{v} from #{File.basename(ext_name[k])}"
           hash[k] = v
@@ -2960,7 +2961,9 @@ namespace "build" do
       end
 
       update_plist_block($app_path + "/project/iphone/Info.plist") do |hash|
-        hash['UIApplicationExitsOnSuspend'] = on_suspend_value
+        if !(on_suspend.nil?)
+            hash['UIApplicationExitsOnSuspend'] = on_suspend_value
+        end
       end
 
       #icon_has_gloss_effect = $app_config["iphone"]["IconHasGlossEffect"] unless $app_config["iphone"]["IconHasGlossEffect"].nil?

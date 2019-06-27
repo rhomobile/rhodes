@@ -61,8 +61,6 @@
 	<string>5.3.3</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>UIApplicationExitsOnSuspend</key>
-	<false/>
 	<key>UILaunchImageFile</key>
 	<string>Default</string>
 	<key>UILaunchImages~ipad</key>
