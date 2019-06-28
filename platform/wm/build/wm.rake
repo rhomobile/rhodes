@@ -1705,7 +1705,11 @@ PRE_TARGETDEPS += #{pre_targetdeps}
         Jake.run3('rhoruby_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
       end
     else
-      Jake.run3('rhosimulator_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+      if($debug)
+        Jake.run3('rhosimulator_win32_build_debug.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+      else
+        Jake.run3('rhosimulator_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+      end
     end
     $target_path = File.join( $startdir, $vcbindir, $sdk, 'rhodes', $buildcfg)
     if not File.directory?($target_path)

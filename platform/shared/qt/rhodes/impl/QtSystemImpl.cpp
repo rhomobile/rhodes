@@ -252,7 +252,7 @@ void rho_sys_app_exit()
 {
 #ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->exitCommand();
-#els
+#else
     exit(0);
 #endif
 }

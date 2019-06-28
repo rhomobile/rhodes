@@ -30,6 +30,7 @@
 #include "logging/RhoLog.h"
 #include "common/IRhoThreadImpl.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include "api_generator/MethodResult.h"
 
 /*class CNativeTabbar
 {
