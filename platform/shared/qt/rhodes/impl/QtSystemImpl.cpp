@@ -284,7 +284,9 @@ void rho_sys_report_app_started()
 {
     // TODO: rho_sys_report_app_started
     //RAWLOGC_INFO("SystemImpl", "rho_sys_report_app_started() has no implementation " RHO_PLATFORM_NAME_AT ".");
+#if defined(WINDOWS_PLATFORM)
     RHODESAPP().notifyAppStared();
+#endif
 
 }
 
