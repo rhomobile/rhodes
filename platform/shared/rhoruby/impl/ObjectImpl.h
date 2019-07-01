@@ -4,13 +4,16 @@
 #include "../api/IObject.h"
 #include "RefCountedObjectImpl.h"
 #include <time.h>
+#ifdef WIN32
+#include "ruby/ext/rho/rhoruby.h"
+#else
 #import "ruby/ext/rho/rhoruby.h"
+#endif
 
 //#include "common/RhoStd.h"
 
 namespace rho {
 namespace ruby {
-
 
 
 class ObjectImpl : public RefCountedObjectImpl   {

@@ -34,6 +34,7 @@ public:
     
     // get local Ruby server URL
     virtual IString* getRubyServerURL() = 0;
+    virtual void init() = 0;
 
     // call command in ruby thread
     virtual void executeInRubyThread(IRunnable* command) = 0;

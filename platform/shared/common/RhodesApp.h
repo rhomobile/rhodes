@@ -40,6 +40,9 @@
 #include "ExtManager.h"
 #include "api_generator/MethodResult.h"
 
+#include <condition_variable>
+#include <mutex>
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
 
@@ -171,6 +174,10 @@ private:
     Vector<String> m_arAppBackUrl, m_arAppBackUrlOrig;
     Vector<ICallbackObject*> m_arCallbackObjects;
     mutable common::CMutex m_mxCallbackObjects;
+#if defined(WINDOWS_PLATFORM)
+    std::mutex wait_mutex;
+    std::condition_variable activated_cond;
+#endif
 	
     common::CMutex m_mxScreenRotationCallback;
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
@@ -308,6 +315,10 @@ public:
     #endif
 
     virtual bool isApplicationActive() { return getApplicationEventReceiver()->isApplicationActive(); }
+#if defined(WINDOWS_PLATFORM)
+    void waitAppStarted();
+    void notifyAppStared();
+#endif
 
 protected:
     virtual void run();

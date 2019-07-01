@@ -1,5 +1,6 @@
 #include "notificationsound.h"
 
+#ifndef RHODES_VERSION_LIBRARY
 #include <QAudioOutput>
 #include <QPointer>
 #include <QBuffer>
@@ -7,9 +8,11 @@
 #include <QSound>
 #include <QEventLoop>
 #include <QTimer>
+#endif
 
 void NotificationSound::playSound()
 {
+#ifndef RHODES_VERSION_LIBRARY
     //QSound::play(":/sound/notification_sound.wav");
     //return;
     qreal frequency = ((sFrequency <= 0)?2000:sFrequency);
@@ -43,24 +46,33 @@ void NotificationSound::playSound()
     QEventLoop loop;
     QTimer::singleShot(mseconds*2, &loop, SLOT(quit()));
     loop.exec();
+#endif
 }
 
 void NotificationSound::beep()
 {
+#ifndef RHODES_VERSION_LIBRARY
     rho::Hashtable<rho::String, rho::String> propertyMap;
     beep(propertyMap);
+#endif
 }
 
-NotificationSound::NotificationSound(int frequency, int duration, int volume) : IExecutable(getMainWindow())
+NotificationSound::NotificationSound(int frequency, int duration, int volume)
+#ifndef RHODES_VERSION_LIBRARY
+    : IExecutable(getMainWindow())
+#endif
 {
+#ifndef RHODES_VERSION_LIBRARY
     sFrequency = frequency;
     sDuration = duration;
     sVolume = volume;
+#endif
 }
 
 
 void NotificationSound::beep(const rho::Hashtable<rho::String, rho::String> &propertyMap)
 {
+#ifndef RHODES_VERSION_LIBRARY
     int mseconds = 1000;
     if (propertyMap.containsKey("duration")){
         QString propDur(propertyMap.get("duration").c_str());
@@ -84,9 +96,11 @@ void NotificationSound::beep(const rho::Hashtable<rho::String, rho::String> &pro
 
     NotificationSound * sound = new NotificationSound(frequency,mseconds,volume);
     sound->run();
-
+#endif
 }
 
 extern "C" void notification_beep(const rho::Hashtable<rho::String, rho::String>& propertyMap){
+#ifndef RHODES_VERSION_LIBRARY
     NotificationSound::beep(propertyMap);
+#endif
 }

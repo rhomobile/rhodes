@@ -23,6 +23,7 @@ TARGET = rubylib
 TEMPLATE = lib
 
 CONFIG += staticlib warn_on
+#CONFIG += debug
 
 INCLUDEPATH += ../../ruby/include\
 ../../ruby\

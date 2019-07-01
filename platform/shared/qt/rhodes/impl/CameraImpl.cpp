@@ -27,18 +27,24 @@
 #include "common/RhoPort.h"
 #include "ext/rho/rhoruby.h"
 #include "common/RhodesApp.h"
+#ifndef RHODES_VERSION_LIBRARY
 #include "MainWindowImpl.h"
+#endif
 
 extern "C" {
 
 void choose_picture(char* callback_url)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->selectPicture(strdup(callback_url));
+#endif
 }
 
 void take_picture(char* callback_url, rho_param* options_hash)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->takePicture(strdup(callback_url));
+#endif
 }
 
 VALUE get_camera_info(const char* camera_type)

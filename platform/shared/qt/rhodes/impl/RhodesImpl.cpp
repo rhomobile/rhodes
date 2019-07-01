@@ -29,7 +29,9 @@
 #include "rubyext/WebView.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
+#ifndef RHODES_VERSION_LIBRARY
 #include "MainWindowImpl.h"
+#endif
 #include "../RhoSimulator.h"
 
 using namespace std;
@@ -43,12 +45,16 @@ extern "C" {
 
 void rho_conf_show_log()
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->logCommand();
+#endif
 }
 
 void rho_title_change(const int, const char* strTitle)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->setTitle(strTitle);
+#endif
 }
 
 void rho_net_impl_network_indicator(int active)
@@ -79,16 +85,20 @@ int rho_net_ping_network(const char* szHost)
 
 void rho_qt_unset_window_proxy()
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow* m_appWindow = CMainWindow::getInstance();
     if (m_appWindow)
         m_appWindow->unsetProxyCommand();
+#endif
 }
 
 void rho_qt_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow* m_appWindow = CMainWindow::getInstance();
     if (m_appWindow)
         m_appWindow->setProxyCommand(host, port, login, password);
+#endif
 }
 
 } //extern "C"

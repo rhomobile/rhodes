@@ -8,9 +8,9 @@ namespace ruby {
 
 IRhoRuby* RhoRubySingletone::mRhoRuby = NULL;
 
-IRhoRuby* RhoRubySingletone::getRhoRuby() {
+IRhoRuby* RhoRubySingletone::getRhoRuby(bool lateInit) {
     if (mRhoRuby == NULL) {
-        mRhoRuby = new RhoRubyImpl();
+        mRhoRuby = new RhoRubyImpl(lateInit);
     }
     return mRhoRuby;
 }

@@ -18,7 +18,9 @@ class RhoRubyImpl : public IRhoRuby {
 
 public:
     virtual ~RhoRubyImpl();
-    RhoRubyImpl();
+    RhoRubyImpl(bool _lateInit = false);
+
+    virtual void init() override;
 
     // get local Ruby server URL
     virtual IString* getRubyServerURL();
@@ -71,6 +73,7 @@ private:
     
     std::vector<IRunnable*> mRubyCommands;
     common::CMutex m_mxSyncMutex;
+    bool lateInit = false;
 
 };
 

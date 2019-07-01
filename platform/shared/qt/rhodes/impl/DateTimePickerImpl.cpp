@@ -25,7 +25,9 @@
 *------------------------------------------------------------------------*/
 
 #include "logging/RhoLog.h"
+#ifndef RHODES_VERSION_LIBRARY
 #include "MainWindowImpl.h"
+#endif
 #include "DateTimePickerImpl.h"
 
 static char ourTitle[1024];
@@ -43,7 +45,9 @@ void  choose_datetime_with_range(char* callback, char* title,
     else
         strcpy(ourTitle, "");
     CDateTimeMessage *msg = new CDateTimeMessage(callback, ourTitle, initial_time, format, data, min_time, max_time);
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->dateTimePicker(msg);
+#endif
 }
 
 

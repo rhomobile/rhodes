@@ -417,6 +417,19 @@ void CAppCallbacksQueue::processUiCreated()
     m_pInstance = 0;
 }
 
+#if defined(WINDOWS_PLATFORM)
+void CRhodesApp::waitAppStarted()
+{
+    std::unique_lock<std::mutex> lock(wait_mutex);
+    activated_cond.wait(lock);
+}
+
+void CRhodesApp::notifyAppStared()
+{
+    activated_cond.notify_one();
+}
+#endif
+
 CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
     :CRhodesAppBase(strRootPath, strUserPath, strRuntimePath), 
 	m_networkStatusReceiver(m_mxNetworkStatus)

@@ -36,6 +36,7 @@
 #include "NativeToolbarImpl.h"
 #include "rubyext/NativeToolbarExt.h"
 #undef null
+#ifndef RHODES_VERSION_LIBRARY
 #include <QString>
 #ifndef OS_SAILFISH
 #if QT_VERSION >= 0x050000
@@ -44,6 +45,7 @@
 #include <QtGui/QAction>
 #endif
 #endif
+#endif //RHODES_VERSION_LIBRARY
 
 //IMPLEMENT_LOGCLASS(CNativeToolbar,"NativeToolbar");
 
@@ -55,15 +57,23 @@ using namespace rho::common;
 
 bool rho_osximpl_toolbar_isStarted()
 {
+#ifndef RHODES_VERSION_LIBRARY
     return CMainWindow::getInstance()->isStarted();
+#else
+    return false;
+#endif
 }
 
 void rho_osximpl_toolbar_create( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->createToolbarEx(toolbarElements, toolBarProperties);
+#endif
 }
 
 void rho_osximpl_toolbar_remove()
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->removeToolbar();
+#endif
 }

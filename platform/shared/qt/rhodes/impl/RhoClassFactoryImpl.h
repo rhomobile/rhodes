@@ -73,7 +73,7 @@ public:
 
     const rho::common::ISecurityTokenGenerator* createSecurityTokenGenerator()
     {
-#ifdef OS_WINDOWS_DESKTOP
+#if defined (OS_WINDOWS_DESKTOP) && !defined(RHODES_VERSION_LIBRARY)
         static SecurityTokenGenerator global_generator;
         return &global_generator;
 #else

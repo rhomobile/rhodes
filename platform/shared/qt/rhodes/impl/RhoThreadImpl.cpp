@@ -30,23 +30,38 @@
 
 #include "common/RhoPort.h"
 #include "RhoThreadImpl.h"
+#ifndef RHODES_VERSION_LIBRARY
 #include <QApplication>
+#endif
 using namespace rho::common;
 
+
+#ifndef RHODES_VERSION_LIBRARY
 IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThreadQT");
 #define RHOQTPREFIX ("RHOQT " + threadId + " ")
+#else
+IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThreadSTD");
+#define RHOQTPREFIX ("RHOSTD " + threadId + " ")
+#endif
 
-CRhoThreadImpl::CRhoThreadImpl(): m_waitThread(new QtThread())
+CRhoThreadImpl::CRhoThreadImpl()
+#ifndef RHODES_VERSION_LIBRARY
+    : m_waitThread(new QtThread())
+#endif
 {
+#ifndef RHODES_VERSION_LIBRARY
     mutex = QSharedPointer<QMutex>(new QMutex());
     mutexWaiter = QSharedPointer<QMutex>(new QMutex());
     threadId = QString::number((quint64)this, 16).prepend("0x").toStdString();
     QObject::connect(qApp, SIGNAL(destroyed(QObject*)), m_waitThread.data(), SLOT(quit()));
+#else
+    threadId = std::to_string(GetThreadId(GetCurrentThread()));
+#endif
 }
 
 CRhoThreadImpl::~CRhoThreadImpl()
 {
-
+#ifndef RHODES_VERSION_LIBRARY
     LOG(TRACE) + RHOQTPREFIX + "CRhoThreadImpl destructor";
     stopWait();
     stop(0);
@@ -62,13 +77,20 @@ CRhoThreadImpl::~CRhoThreadImpl()
         m_Thread = QSharedPointer<QRhoThread>();
         LOG(TRACE) + RHOQTPREFIX + "CRhoThreadImpl destructor after delete m_Thread";
 	}  
-
+#endif
 }
 
 void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority)
 {
     LOG(TRACE) + RHOQTPREFIX + "start";
-    if (!m_Thread.isNull())
+    LOG(TRACE) + RHOQTPREFIX + "start";
+    if (
+        #ifndef RHODES_VERSION_LIBRARY
+            !m_Thread.isNull()
+        #else
+            m_Thread
+        #endif
+       )
 	{
         LOG(TRACE) + RHOQTPREFIX + "start - m_Thread exists before calling stop";
 		stop(0);
@@ -76,7 +98,8 @@ void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePri
     }else{
         LOG(TRACE) + RHOQTPREFIX + "start - m_Thread does not exist do not call stop";
 	}
-    LOG(TRACE) + RHOQTPREFIX + "start - before Qthread start";
+    LOG(TRACE) + RHOQTPREFIX + "start - before thread start";
+#ifndef RHODES_VERSION_LIBRARY
     m_Thread = QSharedPointer<QRhoThread>(new QRhoThread(pRunnable));
 
     QObject::connect(qApp, SIGNAL(destroyed(QObject*)), m_Thread.data(), SLOT(terminate()));
@@ -85,19 +108,37 @@ void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePri
     LOG(TRACE) + RHOQTPREFIX + "start - after Qthread start";
     setThreadPriority(ePriority);
     LOG(TRACE) + RHOQTPREFIX + "start - finish aftersetThreadPriority";
-
+#else
+    m_Thread = std::make_shared<QRhoThread>(pRunnable);
+    m_Thread->start();
+    setThreadPriority(ePriority);
+    LOG(TRACE) + RHOQTPREFIX + "start - after thread start";
+#endif
 }
 
 void CRhoThreadImpl::setThreadPriority(IRhoRunnable::EPriority ePriority)
 {
+#ifndef RHODES_VERSION_LIBRARY
     QThread::Priority nPriority = QThread::NormalPriority;
     if ( ePriority == IRhoRunnable::epHigh ) nPriority = QThread::HighestPriority;
     else if (ePriority == IRhoRunnable::epLow) nPriority = QThread::LowestPriority;
     m_Thread.data()->setPriority(nPriority);
+#else
+    int nPriority = THREAD_PRIORITY_NORMAL;
+    if ( ePriority == IRhoRunnable::epHigh )
+        nPriority = THREAD_PRIORITY_HIGHEST;
+    else if (ePriority == IRhoRunnable::epLow)
+        nPriority = THREAD_PRIORITY_LOWEST;
+    else if (ePriority == IRhoRunnable::epCritical)
+        nPriority = THREAD_PRIORITY_TIME_CRITICAL;
+
+    SetThreadPriority(m_Thread->_thr.native_handle(), nPriority);
+#endif
 }
 
 void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
 {
+#ifndef RHODES_VERSION_LIBRARY
     LOG(TRACE) + RHOQTPREFIX + "stop";
 
     LOG(TRACE) + RHOQTPREFIX + "stop - before enter entering mutex locker";
@@ -130,10 +171,20 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
     }
 
     LOG(TRACE) + "RHOQT stop - finish";
+#else
+    if(m_Thread)
+    {
+        stopWait();
+        if(nTimeoutToKill && static_cast<int>(nTimeoutToKill) > 0)
+            m_Thread->wait(nTimeoutToKill);
+        m_Thread.reset();
+    }
+#endif
 }
 
 int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 {
+#ifndef RHODES_VERSION_LIBRARY
     LOG(TRACE) + RHOQTPREFIX + "wait";
 	bool isVeyBigTimeoutvalue = false; 
     if ((nTimeoutMs == 4294966296)||(nTimeoutMs == 4294967295)){isVeyBigTimeoutvalue = true;}
@@ -164,10 +215,15 @@ int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 	}
     LOG(TRACE) + RHOQTPREFIX + "wait - finish before return";
     return result;
+#else
+    LOG(TRACE) + RHOQTPREFIX + "wait - before wait for a long time nTimeoutMs:-  "+nTimeoutMs;
+    return m_Thread->wait(nTimeoutMs);
+#endif
 }
 
 void CRhoThreadImpl::stopWait()
 {
+#ifndef RHODES_VERSION_LIBRARY
     LOG(TRACE) + RHOQTPREFIX + "stopWait - before mutex";
     QSharedPointer<QMutex> l_mutexWaiter = mutexWaiter;
     QMutexLocker waitLocker(l_mutexWaiter.data());
@@ -176,11 +232,19 @@ void CRhoThreadImpl::stopWait()
     LOG(TRACE) + RHOQTPREFIX + "stopWait - before quit()";
     m_waitThread.data()->quit();
     LOG(TRACE) + RHOQTPREFIX + "stopWait - after quit()";
+#else
+    m_Thread->stopWait();
+#endif
 }
 
 void CRhoThreadImpl::sleep(unsigned int nTimeout)
 {
+#ifndef RHODES_VERSION_LIBRARY
     QRhoThread::sleep(nTimeout);
+#else
+    std::chrono::duration<uint64_t, std::milli> _timeout (static_cast<uint64_t>(nTimeout));
+    std::this_thread::sleep_for(_timeout);
+#endif
 }
 
 #endif // OS_WINDOWS_DESKTOP

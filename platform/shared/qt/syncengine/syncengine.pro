@@ -19,6 +19,7 @@ TARGET = syncengine
 TEMPLATE = lib
 
 CONFIG += staticlib warn_on
+#CONFIG += debug
 
 
 INCLUDEPATH += $$PWD/../..\
