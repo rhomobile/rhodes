@@ -32,7 +32,8 @@ macx {
   }
   DESTDIR = ../../../osx/bin/rholib
   OBJECTS_DIR = ../../../osx/bin/rholib/tmp
-  INCLUDEPATH += ../../curl/include
+  INCLUDEPATH += ../../curl/include\
+                 ../../ruby/osx
   HEADERS += ../../common/PosixThreadImpl.h\
 ../../net/CURLNetRequest.h\
 ../../net/ssl.h
