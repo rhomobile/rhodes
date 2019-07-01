@@ -137,12 +137,11 @@ namespace ruby {
                     rb_define_singleton_method(rb_api_mRubyNative, "callNativeCallback", (ruby_method_func_type)c_rb_Rho_Ruby_callNativeCallback, -1);
                     lateWaiter.notify_one();
                 }
-            };
+            } late_init;
 
-            std::unique_ptr<LateInit> late_init = std::make_unique<LateInit>();
-            std::unique_lock<std::mutex> lock(late_init->mutexWaiter);
-            executeInRubyThread(late_init.get());
-            late_init->lateWaiter.wait(lock);
+            std::unique_lock<std::mutex> lock(late_init.mutexWaiter);
+            executeInRubyThread(&late_init);
+            late_init.lateWaiter.wait(lock);
         }
     }
 
