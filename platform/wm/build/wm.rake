@@ -1049,7 +1049,7 @@ namespace "build" do
               ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
               ENV['RHO_VSCMNTOOLS'] = $vscommontools
 
-              if($debug)
+              if($debug and !$rhosimulator_build)
                 ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release"
               end
 
@@ -1564,7 +1564,7 @@ namespace "build" do
               ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
               ENV['RHO_VSCMNTOOLS'] = $vscommontools
 
-              if($debug)
+              if($debug and !$rhosimulator_build)
                 ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release" 
               end
 
@@ -1660,7 +1660,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
           Jake.run3('rhoruby_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
         end
       else
-        if($debug)
+        if($debug && !$rhosimulator_build)
           Jake.run3('rhosimulator_win32_build_debug.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
         else
           Jake.run3('rhosimulator_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
