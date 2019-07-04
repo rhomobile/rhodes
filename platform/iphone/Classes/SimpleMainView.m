@@ -264,27 +264,27 @@ static BOOL makeHiddenUntilLoadContent = YES;
         }
 #endif
 	}
-	
-	
-    
+
+
+
     [tb sizeToFit];
-    
+
     CGFloat tbHeight = [tb frame].size.height;
 	// hack for do not reduce height of toolbar in Landscape mode
 	if (tbHeight < 44) {
 		tbHeight = 44;
 	}
-	
+
     CGRect tbFrame = CGRectMake(CGRectGetMinX(mainFrame),
                                 CGRectGetHeight(mainFrame) - tbHeight,
                                 CGRectGetWidth(mainFrame),
                                 tbHeight);
     [tb setFrame:tbFrame];
-    
+
     UIBarButtonItem *fixed = [[UIBarButtonItem alloc]
                               initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                               target:nil action:nil];
-    
+
 	NSArray* items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
 	if (items == nil) {
 		RAWLOG_ERROR("Illegal arguments for createNewToolbar - array of items not found");
@@ -294,42 +294,42 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	}
 
     NSMutableArray *btns = [NSMutableArray arrayWithCapacity:[items count]];
-	
+
     for(int i = 0, lim = (int)[items count]; i < lim; i++) {
 		NSDictionary* item = (NSDictionary*)[items objectAtIndex:i];
-        
-		
+
+
 		NSString *label = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_LABEL];
         NSString *url = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ACTION];
         NSString *icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ICON];
-		NSString *colored_icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_COLORED_ICON];  
-        
+		NSString *colored_icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_COLORED_ICON];
+
         if ([url length] == 0) {
             RAWLOG_ERROR("Illegal arguments for createNewToolbar");
             [tb release];
             [fixed release];
             return nil;
         }
-        
+
         UIBarButtonItem *btn = [self newButton:url label:label icon:icon colored_icon:[colored_icon isEqualToString:@"true"]];
-        
+
         if (btn) {
             [btns addObject:fixed];
             [btns addObject:btn];
             [btn release];
         }
     }
-    
+
     [tb setItems:btns];
-    
+
     [fixed release];
-    
+
     tb.hidden = NO;
     tb.userInteractionEnabled = YES;
     tb.autoresizesSubviews = YES;
     tb.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
  	
-	assert([tb retainCount] == 1);
+	//assert([tb retainCount] == 1);
     return tb;
 }
 
@@ -340,7 +340,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
         wFrame.size.height += tbFrame.size.height;
         [self setContentRect:wFrame];
     }
-    
+
     [toolbar removeFromSuperview];
     //assert(!toolbar || [toolbar retainCount] == 1);
     self.toolbar = nil;
@@ -348,22 +348,22 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void)addToolbar:(NSDictionary*)bar_info {
     [self removeToolbar];
-    assert(!toolbar);
-    
+    //assert(!toolbar);
+
     if (!bar_info)
         return;
-    
+
     CGRect wFrame = [self getContentRect];
 	wFrame.size.height += wFrame.origin.y;
 	wFrame.origin.y = 0;
-    
+
     toolbar = [self newToolbar:bar_info frame:wFrame];
     //assert([toolbar retainCount] == 1);
     toolbar.tag = RHO_TAG_TOOLBAR;
     UIView* root = self.view;
     [root addSubview:toolbar];
     //assert([toolbar retainCount] == 2);
-    
+
     CGRect tbFrame = toolbar.frame;
 	wFrame = [self getContentRect];
     wFrame.size.height -= tbFrame.size.height;
@@ -653,18 +653,18 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	//assert(!webView || [webView retainCount] == 2);
     if (toolbar)
         [root addSubview:toolbar];
-    assert(!toolbar || [toolbar retainCount] == 2);
+    //assert(!toolbar || [toolbar retainCount] == 2);
     if (navbar)
         [root addSubview:navbar];
-    assert(!navbar || [navbar retainCount] == 2);
+    //assert(!navbar || [navbar retainCount] == 2);
 }
 
 - (void)viewDidUnload {
     [super viewDidUnload];
     //assert(!nativeView || [nativeView retainCount] == 1);
     //assert(!webView || [webView retainCount] == 1);
-    assert(!toolbar || [toolbar retainCount] == 1);
-    assert(!navbar || [navbar retainCount] == 1);
+    //assert(!toolbar || [toolbar retainCount] == 1);
+    //assert(!navbar || [navbar retainCount] == 1);
 }
 
 - (void)dealloc {
@@ -1021,15 +1021,15 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void)addNavBar:(UINavigationBar*)navb {
     [self removeNavBar];
-    
+
     navbar = navb;
-    assert([navbar retainCount] == 1);
+    //assert([navbar retainCount] == 1);
     RAWLOG_INFO1("navbar retain count: %d", (int)[navbar retainCount]);
 	navbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	navbar.autoresizesSubviews = YES;
-	
+
 	UIView* root = self.view;
-    
+
     CGRect nFrame = navbar.frame;
 
 	CGFloat nvHeight = nFrame.size.height;
@@ -1045,13 +1045,13 @@ static BOOL makeHiddenUntilLoadContent = YES;
 #endif
     nFrame.size.width = [rhoWebView view].bounds.size.width;
 	navbar.frame = nFrame;
-	
+
     wFrame.origin.y += nFrame.size.height;
     wFrame.size.height -= nFrame.size.height;
 
     [root addSubview:navbar];
-    assert([navbar retainCount] > 1);
-    
+    //assert([navbar retainCount] > 1);
+
     [self setContentRect:wFrame];
 }
 
@@ -1061,9 +1061,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	nb.autoresizesSubviews = YES;
     nb.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [nb sizeToFit];
-    
+
     UINavigationItem *ni = [[UINavigationItem alloc] initWithTitle:title];
-    
+
     NSArray *btns[] = {left, right};
     for (int i = 0, lim = sizeof(btns)/sizeof(btns[0]); i < lim; ++i) {
         NSArray *btn = btns[i];
@@ -1073,17 +1073,17 @@ static BOOL makeHiddenUntilLoadContent = YES;
         NSString *label = [btn objectAtIndex:1];
         NSString *icon = [btn objectAtIndex:2];
         NSString *colored_icon = [btn objectAtIndex:3];
-       
+
         UIBarButtonItem *button = [self newButton:action label:label icon:icon colored_icon:[colored_icon isEqualToString:@"true"]];
-        
+
         if (btn == left)
             [ni setLeftBarButtonItem:button];
         else
             [ni setRightBarButtonItem:button];
     }
-    
+
     [nb pushNavigationItem:ni animated:NO];
-	
+
 	[self addNavBar:nb];
 }
 

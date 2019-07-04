@@ -43,7 +43,11 @@ public:
     static unsigned int getThreadID();
 };
 
-inline unsigned int CSystem::getThreadID(){ 
+inline unsigned int CSystem::getThreadID(){
+
+       return (pid_t)(int64)pthread_self();
+
+/*
   // On Linux and FreeBSD, we try to use gettid().
 #if defined OS_LINUX || defined OS_FREEBSD || defined OS_MACOSX
 #ifndef __NR_gettid
@@ -78,6 +82,7 @@ inline unsigned int CSystem::getThreadID(){
   // If none of the techniques above worked, we use pthread_self().
     return (pid_t)(int64)pthread_self();
 #endif
+*/
     }
 
 }
