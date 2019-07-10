@@ -110,7 +110,10 @@ uwp:
 
 android:
   #manifest_template: 'AndroidManifest.erb'
-  version: 4.4.2
+  version: 7.0
+  abis:
+  - arm
+  - aarch64
   ## Note: in order to simplify debugging only app messages and system channels with priority informative and higher, and any errors are enabled by default
   logcatFilter: APP:I StrictMode:I DEBUG:I *:E
 
