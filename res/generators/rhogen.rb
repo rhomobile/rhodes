@@ -1243,12 +1243,12 @@ module Rhogen
     #end
 
     template :extension_wm_vcsol do |template|
-      template.source = 'extensions/montana/ext/platform/wm/Montana.sln'
+      template.source = 'extensions/montana/ext/platform/wm/montana.sln'
       template.destination = "extensions/#{name}/ext/platform/wm/#{namecamelcase}.sln"
     end
 
     template :extension_wm_vcproject do |template|
-      template.source = 'extensions/montana/ext/platform/wm/Montana.vcproj'
+      template.source = 'extensions/montana/ext/platform/wm/montana.vcproj'
       template.destination = "extensions/#{name}/ext/platform/wm/#{namecamelcase}.vcproj"
     end
 
@@ -1263,7 +1263,7 @@ module Rhogen
     end
 
     template :extension_uwp_vcproject do |template|
-      template.source = 'extensions/montana/ext/platform/uwp/Montana.vcxproj'
+      template.source = 'extensions/montana/ext/platform/uwp/montana.vcxproj'
       template.destination = "extensions/#{name}/ext/platform/uwp/#{namecamelcase}.vcxproj"
     end
 
