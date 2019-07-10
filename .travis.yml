@@ -33,6 +33,7 @@ script:
 
 - cd $HOME
 - rhodes app vanilla_rhodes_app
+- cd vanilla_rhodes_app && rhodes extension testext && cd ..
 - rhodes jsapp vanilla_rhodes_jsapp
 - rhodes nodejsapp vanilla_rhodes_nodejsapp
 - cd $TRAVIS_BUILD_DIR
