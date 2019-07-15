@@ -482,6 +482,14 @@ def get_android_major_minor(version)
   $major_version = version.to_i
 end
 
+def get_case_insensetive_property(property)
+  $app_config["android"].each do |x|
+    if (x[0].downcase == property.downcase)
+      return x[1]
+    end
+  end
+end
+
 namespace "config" do
   task :set_android_platform do
     $current_platform = "android"
@@ -527,8 +535,9 @@ namespace "config" do
     $min_sdk_level = ANDROID_MIN_SDK_LEVEL if $min_sdk_level.nil?
 
 
-    $target_sdk_level = $app_config["android"]["targetSDK"] unless $app_config["android"].nil?
-    $target_sdk_level = $config["android"]["targetSDK"] if $target_sdk_level.nil? and not $config["android"].nil?
+    
+    $target_sdk_level = get_case_insensetive_property("targetSdk") unless $app_config["android"].nil?
+    $target_sdk_level = get_case_insensetive_property("targetSdk") if $target_sdk_level.nil? and not $config["android"].nil?
     $target_sdk_level = $target_sdk_level.to_i unless $target_sdk_level.nil?
     $target_sdk_level = ANDROID_SDK_LEVEL if $target_sdk_level.nil?
 
@@ -556,6 +565,13 @@ namespace "config" do
         $major_version = 0
         $minor_version = 0
         get_android_major_minor(version)
+
+        market_version = AndroidTools.get_market_version($target_sdk_level)
+        if market_version.nil? && $app_config["android"]["version"].nil?
+          raise "Current version ndk not supporting this sdk level!"
+        else
+          apilevel = $target_sdk_level
+        end
 
         if(!apilevel)
           apilevel = AndroidTools.get_api_level ($app_config["android"]["version"] + ".0")
