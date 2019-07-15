@@ -194,6 +194,10 @@ namespace "config" do
       $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
     end
 
+    if !File.exists?($current_build_sdk_dir)
+      puts "No such target (" + $current_target + ") exists"
+      exit 1
+    end
 
     if $current_build_sdk_dir == ""
       raise "Build arch sdk not found!"

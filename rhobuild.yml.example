@@ -8,6 +8,8 @@ env:
     msbuild: C:/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe
     vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcpackages/vcbuild.exe
     nsis:    C:/Program Files (x86)/NSIS/makensis.exe
+	sailfish: C:/SailfishOS
+    vbox: C:/Program Files/Oracle/VirtualBox
     
 build:
   wmpath: platform/wm
