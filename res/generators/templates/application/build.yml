@@ -110,7 +110,12 @@ uwp:
 
 android:
   #manifest_template: 'AndroidManifest.erb'
-  version: 4.4.2
+  
+  #specifies compile SDK version ( 9 corresponds to API 28). If not specified then latest available API level will be used.  
+  #version: 9 
+
+  #targetSDK: 28
+
   ## Note: in order to simplify debugging only app messages and system channels with priority informative and higher, and any errors are enabled by default
   logcatFilter: APP:I StrictMode:I DEBUG:I *:E
 
