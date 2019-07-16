@@ -541,6 +541,7 @@ namespace "config" do
     $target_sdk_level = get_case_insensetive_property("targetSdk") if $target_sdk_level.nil? and not $config["android"].nil?
     $target_sdk_level = get_case_insensetive_property("targetSdkVer") if $target_sdk_level.nil?
     $target_sdk_level = $target_sdk_level.to_i unless $target_sdk_level.nil?
+
     $target_sdk_level = ANDROID_SDK_LEVEL if $target_sdk_level.nil?
 
     $max_sdk_level = $app_config["android"]["maxSDK"] unless $app_config["android"].nil?
@@ -569,8 +570,8 @@ namespace "config" do
         get_android_major_minor(version)
 
         market_version = AndroidTools.get_market_version($target_sdk_level)
-        if market_version.nil? && $app_config["android"]["version"].nil?
-          raise "Current version ndk not supporting this sdk level!"
+        if market_version.nil?
+          apilevel = android_api_levels.last
         else
           apilevel = $target_sdk_level
         end
