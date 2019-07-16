@@ -488,6 +488,7 @@ def get_case_insensetive_property(property)
       return x[1]
     end
   end
+  return nil
 end
 
 namespace "config" do
@@ -538,6 +539,7 @@ namespace "config" do
     
     $target_sdk_level = get_case_insensetive_property("targetSdk") unless $app_config["android"].nil?
     $target_sdk_level = get_case_insensetive_property("targetSdk") if $target_sdk_level.nil? and not $config["android"].nil?
+    $target_sdk_level = get_case_insensetive_property("targetSdkVer") if $target_sdk_level.nil?
     $target_sdk_level = $target_sdk_level.to_i unless $target_sdk_level.nil?
     $target_sdk_level = ANDROID_SDK_LEVEL if $target_sdk_level.nil?
 
