@@ -110,6 +110,10 @@ uwp:
 
 android:
   #manifest_template: 'AndroidManifest.erb'
+
+abis:
+  - arm
+  - aarch64
   
   #specifies compile SDK version ( 9 corresponds to API 28). If not specified then latest available API level will be used.  
   #version: 9 
