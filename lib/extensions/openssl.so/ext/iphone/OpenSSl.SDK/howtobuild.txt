@@ -1,0 +1,2 @@
+use https://github.com/tauplatform/openssl/tree/OpenSSL_1_1_0-stable repo
+run tau_build_universal_ios_libs.sh script
