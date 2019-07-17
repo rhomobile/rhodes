@@ -2437,7 +2437,13 @@ namespace "build" do
 
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
+
+      print_timestamp('build extension libs START')
+
       $app_extensions_list.each do |ext, commin_ext_path |
+
+        puts " ±±± extension ["+ext.to_s+"],["+commin_ext_path.to_s+"]"
+
         if commin_ext_path != nil
 
           extpath = File.join( commin_ext_path, 'ext')
@@ -2446,6 +2452,9 @@ namespace "build" do
           xcodeproject = nil  #xcodeproject
           xcodetarget = nil   #xcodetarget
           depfile = nil       #rebuild_deplist
+
+          puts " ±±± extension ext.yml ["+extyml.to_s+"]"
+
 
           if File.file? extyml
             extconf = Jake.config(File.open(extyml))
@@ -2458,10 +2467,24 @@ namespace "build" do
             xcodetarget = extconf_iphone['xcodetarget'] if extconf_iphone and extconf_iphone['xcodetarget']
             depfile = extconf_iphone['rebuild_deplist'] if extconf_iphone and extconf_iphone['rebuild_deplist']
 
+
             libes = extconf["libraries"]
+            if extconf_iphone
+                if extconf_iphone["libraries"] != nil
+                    libes = extconf_iphone["libraries"]
+                end
+            end
+
+            puts " ±±± extension libes ["+libes.to_s+"] exttype ["+exttype.to_s+"]"
+
+
             if (libes != nil) && (exttype != 'prebuilt')
               libname = libes.first
               prebuiltpath = Dir.glob(File.join(extpath, '**', 'iphone'))
+
+              puts " ±±± extension prebuiltpath ["+prebuiltpath.to_s+"]"
+
+
               if prebuiltpath != nil && prebuiltpath.count > 0
 
                 print_timestamp('build extension "'+ext+'" START')
@@ -2515,6 +2538,8 @@ namespace "build" do
           end
         end
       end
+      print_timestamp('build extension libs FINISH')
+
 
 
     end
