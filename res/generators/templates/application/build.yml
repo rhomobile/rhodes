@@ -111,7 +111,7 @@ uwp:
 android:
   #manifest_template: 'AndroidManifest.erb'
 
-abis:
+  abis:
   - arm
   - aarch64
   
