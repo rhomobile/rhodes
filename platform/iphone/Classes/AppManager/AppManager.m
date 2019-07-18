@@ -179,7 +179,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 
 + (NSString *) getApplicationsRosterUrl {
-	return @"http://tau-technologies.com/";
+	return @"https://tau-technologies.com/";
 }
 
 + (bool) installApplication:(NSString*)appName data:(NSData*)appData {
