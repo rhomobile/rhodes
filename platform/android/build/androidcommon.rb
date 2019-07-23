@@ -385,7 +385,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   if $ndkabi == "arm-eabi"
     args << "-nostdlib"
     args << "-Wl,-shared,-Bsymbolic"
-  elsif localabi == "arm64-v8a" or localabi = "armeabi"
+  elsif localabi == "arm64-v8a" or localabi == "armeabi"
     args << "-shared"
     args << "-Wl,-shared,-Bsymbolic"
   else
