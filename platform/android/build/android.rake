@@ -288,6 +288,16 @@ namespace 'project' do
 
     end
 
+    def get_source_files_string(path, rhodes_path)
+      str = ""
+      File.open(path) do |f|
+        f.each_line do |line|
+          str += File.join(rhodes_path, line)
+        end
+      end
+      return str
+    end
+
     task :studio => ['config:android', 'config:android:extensions','build:android:manifest'] do
 
       project_template_path = File.join 'res','generators','templates','project','android_studio_project'
@@ -343,7 +353,6 @@ namespace 'project' do
       ext_libs += 'coreapi'
 
 
-
       cpp_stub_path = File.join( project_template_path, 'app', 'stub.cpp' )
 
       rhodes_path = File.absolute_path '.'
@@ -388,14 +397,33 @@ namespace 'project' do
 
       File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
       File.open( cmake_path_main, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_path ) }
+
+      generator.srcList = get_source_files_string(File.join('platform', 'android', 'build', 'libruby_build.files'), rhodes_path)
       File.open( cmake_path_ruby, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_ruby ) }
+
+      generator.srcList = get_source_files_string(File.join('platform', 'android', 'build', 'libcurl_build.files'), rhodes_path)
       File.open( cmake_path_curl, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_curl ) }
+
+      generator.srcList = get_source_files_string(File.join('platform', 'android', 'build', 'librhodb_build.files'), rhodes_path)
       File.open( cmake_path_rhodb, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_db ) }
+
+      generator.srcList = get_source_files_string(File.join('platform', 'android', 'build', 'librhocommon_build.files'), rhodes_path) + ' ' +
+                          get_source_files_string(File.join('platform', 'android', 'build', 'librhomain_build.files'), rhodes_path)
       File.open( cmake_path_rhocommon, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_common ) }
+
+      generator.srcList = get_source_files_string(File.join('platform', 'android', 'build', 'librhosync_build.files'), rhodes_path)
       File.open( cmake_path_rhosync, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_sync ) }
+
+      generator.srcList = get_source_files_string(File.join('platform', 'android', 'build', 'libsqlite_build.files'), rhodes_path)
       File.open( cmake_path_sqlite, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_sqlite ) }
+
+      generator.srcList = get_source_files_string(File.join('platform', 'android', 'build', 'libjson_build.files'), rhodes_path)
       File.open( cmake_path_json, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_json ) }
+
+      generator.srcList = get_source_files_string(File.join('platform', 'android', 'build', 'librholog_build.files'), rhodes_path)
       File.open( cmake_path_rholog, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_logging ) }
+
+      generator.srcList = get_source_files_string(File.join('platform', 'android', 'build', 'librhodes_build.files'), rhodes_path)
       File.open( cmake_path_rhodes, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_rhodes ) }
 
       cp main_gradle_script,  project_path

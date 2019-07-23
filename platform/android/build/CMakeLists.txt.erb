@@ -5,36 +5,7 @@ PROJECT(rhodes)
 add_library(
              rhodes
              SHARED
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/RhoClassFactory.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/JNIRhoRuby.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/JNIRhoJS.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/callbacks.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/datetimepicker.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/event.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/fileapi.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/geolocation.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/logconf.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/logger.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/mapview.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/nativebar.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/nativeview.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/navbar.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/phonebook.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/rhoconf.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/rhodes.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/rhodesapp.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/rhodessystem.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/ringtones.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/socketimpl.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/splashscreen.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/sslimpl.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/webview.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/rhocryptimpl.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/extmanager.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/MethodExecutorJni.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/MethodResultJni.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/SecurityTokenGenerator.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/JNIRhoRubyCppWrapper.cpp
+             <%= @srcList %>
              )
 
 include_directories(<%= @appincdir %>)

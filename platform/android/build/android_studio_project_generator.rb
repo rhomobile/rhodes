@@ -14,6 +14,7 @@ class AndroidStudioProjectGenerator
   attr_accessor :targetSdkVersion
   attr_accessor :versionCode
   attr_accessor :versionName
+  attr_accessor :srcList
 
   def render_app_gradle(erbPath)
     @versionCode = @versionName.to_i

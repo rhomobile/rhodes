@@ -5,21 +5,7 @@ project(json)
 add_definitions(-DOS_ANDROID)   
 
 set(SOURCE_LIB
-<%= @rhoRoot %>/platform/shared/json.new/JSONIterator.cpp
-<%= @rhoRoot %>/platform/shared/json.new/RJSONTokener.c
-<%= @rhoRoot %>/platform/shared/json.new/arraylist.c
-<%= @rhoRoot %>/platform/shared/json.new/json_object.c
-<%= @rhoRoot %>/platform/shared/json.new/json_tokener.c
-<%= @rhoRoot %>/platform/shared/json.new/json_util.c
-<%= @rhoRoot %>/platform/shared/json.new/linkhash.c
-<%= @rhoRoot %>/platform/shared/json.new/printbuf.c
-<%= @rhoRoot %>/platform/shared/json.new/debug.c
-<%= @rhoRoot %>/platform/shared/json.new/json_c_version.c
-<%= @rhoRoot %>/platform/shared/json.new/json_object_iterator.c
-<%= @rhoRoot %>/platform/shared/json.new/json_pointer.c
-<%= @rhoRoot %>/platform/shared/json.new/json_visit.c
-<%= @rhoRoot %>/platform/shared/json.new/random_seed.c
-<%= @rhoRoot %>/platform/shared/json.new/strerror_override.c
+<%= @srcList %>
 )
 
 include_directories(<%= @rhoRoot %>/platform/shared)

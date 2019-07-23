@@ -5,11 +5,7 @@ project(rholog)
 add_definitions(-DOS_ANDROID)
 
 set(SOURCE_LIB
-<%= @rhoRoot %>/platform/shared/logging/RhoLogConf.cpp
-<%= @rhoRoot %>/platform/shared/logging/RhoLogConf.cpp
-<%= @rhoRoot %>/platform/shared/logging/RhoLog.cpp
-<%= @rhoRoot %>/platform/shared/logging/RhoLogSink.cpp
-<%= @rhoRoot %>/platform/shared/logging/RhoPlainLog.cpp
+<%= @srcList %>
 )
 
 include_directories(<%= @rhoRoot %>/platform/shared)
