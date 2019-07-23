@@ -468,18 +468,14 @@ def setup_ext_env( extpath, extname )
 end
 
 def get_android_major_minor(version)
-  puts version
-  if version.include? '.' then
-     array_ver = []
-     array_ver = version.split('.')
-     if array_ver.length >= 2 then 
-       $major_version = array_ver[0].to_i
-       $minor_version = array_ver[1].to_i
-     end
-     return
-  end
+  major, minor, patch = version.split('.').map { |z| z.to_i }
+  major = 0 if major.nil?
+  minor = 0 if minor.nil?
+  patch = 0 if patch.nil?
 
-  $major_version = version.to_i
+  $logger.debug( "Splitting version #{version}, result is: #{major}.#{minor}.#{patch}" )
+
+  return major,minor,patch
 end
 
 def get_case_insensetive_property(property)
@@ -560,14 +556,15 @@ namespace "config" do
       puts AndroidTools.get_installed_market_versions
       
       $found_api_level = android_api_levels.last
+      $major_version = 0
+      $minor_version = 0
+      $patch_version = 0
 
       #If user has mentioned version under android, then select that particular api level.
       if $app_config["android"]["version"]
         apilevel = AndroidTools.get_api_level $app_config["android"]["version"]
         version = $app_config["android"]["version"]
-        $major_version = 0
-        $minor_version = 0
-        get_android_major_minor(version)
+        $major_version, $minor_version, $patch_version = get_android_major_minor(version)
 
         market_version = AndroidTools.get_market_version($target_sdk_level)
         if market_version.nil?
@@ -589,9 +586,13 @@ namespace "config" do
         else
           puts "No Android platform found of version #{$app_config['android']['version']}. Picking the latest one Android #{AndroidTools.get_market_version $found_api_level} available in machine"
         end
-      end
+      else
+        $major_version, $minor_version, $patch_version = 
+          get_android_major_minor( AndroidTools.get_market_version($found_api_level) )
+      end    
     end
 
+    $logger.info("Set up build API Level: #{$found_api_level}, version: #{$major_version}.#{$minor_version}")
 
     $gapikey = $app_config["android"]["apikey"] unless $app_config["android"].nil?
     $gapikey = $config["android"]["apikey"] if $gapikey.nil? and not $config["android"].nil?
