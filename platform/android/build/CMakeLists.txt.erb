@@ -8,7 +8,6 @@ add_library(
              <%= @rhoRoot %>/platform/android/Rhodes/jni/src/RhoClassFactory.cpp
              <%= @rhoRoot %>/platform/android/Rhodes/jni/src/JNIRhoRuby.cpp
              <%= @rhoRoot %>/platform/android/Rhodes/jni/src/JNIRhoJS.cpp
-             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/bluetooth.cpp
              <%= @rhoRoot %>/platform/android/Rhodes/jni/src/callbacks.cpp
              <%= @rhoRoot %>/platform/android/Rhodes/jni/src/datetimepicker.cpp
              <%= @rhoRoot %>/platform/android/Rhodes/jni/src/event.cpp
@@ -34,6 +33,8 @@ add_library(
              <%= @rhoRoot %>/platform/android/Rhodes/jni/src/extmanager.cpp
              <%= @rhoRoot %>/platform/android/Rhodes/jni/src/MethodExecutorJni.cpp
              <%= @rhoRoot %>/platform/android/Rhodes/jni/src/MethodResultJni.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/SecurityTokenGenerator.cpp
+             <%= @rhoRoot %>/platform/android/Rhodes/jni/src/JNIRhoRubyCppWrapper.cpp
              )
 
 include_directories(<%= @appincdir %>)

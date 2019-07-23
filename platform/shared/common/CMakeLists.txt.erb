@@ -57,6 +57,17 @@ set(SOURCE_LIB
 <%= @rhoRoot %>/platform/shared/tinyxml2/tinyxml2.cpp
 <%= @rhoRoot %>/platform/shared/common/RhodesApp.cpp
 <%= @rhoRoot %>/platform/shared/common/RhodesAppBase.cpp
+<%= @rhoRoot %>/platform/shared/rhoruby/impl/MutableArrayImpl.cpp
+<%= @rhoRoot %>/platform/shared/rhoruby/impl/MutableBooleanImpl.cpp
+<%= @rhoRoot %>/platform/shared/rhoruby/impl/MutableFloatImpl.cpp
+<%= @rhoRoot %>/platform/shared/rhoruby/impl/MutableHashImpl.cpp
+<%= @rhoRoot %>/platform/shared/rhoruby/impl/MutableIntegerImpl.cpp
+<%= @rhoRoot %>/platform/shared/rhoruby/impl/MutableStringImpl.cpp
+<%= @rhoRoot %>/platform/shared/rhoruby/impl/NilImpl.cpp
+<%= @rhoRoot %>/platform/shared/rhoruby/impl/ObjectImpl.cpp
+<%= @rhoRoot %>/platform/shared/rhoruby/impl/RefCountedObjectImpl.cpp
+<%= @rhoRoot %>/platform/shared/rhoruby/impl/RhoRubyImpl.cpp
+<%= @rhoRoot %>/platform/shared/rhoruby/impl/RhoRubySingletone.cpp
 )
 
 include_directories(<%= @rhoRoot %>/platform/shared/curl/include)

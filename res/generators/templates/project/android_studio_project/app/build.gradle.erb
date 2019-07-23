@@ -49,7 +49,7 @@ android {
     }
 	
 	buildTypes {
-        release {
+        <%= @buildMode %> {
             minifyEnabled false
             //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -61,7 +61,7 @@ android {
         }
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=gcc', '-DANDROID_ARM_MODE=<%= @targetArch.include?('arm') ? 'arm' : @targetArch %>'
+                arguments '-DANDROID_TOOLCHAIN=clang'
             }
         }
     }

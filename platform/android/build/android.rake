@@ -319,6 +319,9 @@ namespace 'project' do
       if abi == 'arm'
         realabi = 'armeabi'
         studio_realabi = 'armeabi-v7a'
+      elsif abi == 'aarch64'
+        realabi = abi
+        studio_realabi = 'arm64-v8a'
       else
         realabi = abi
         studio_realabi = abi
@@ -352,7 +355,7 @@ namespace 'project' do
       generator.targetSdkVersion = $found_api_level
       generator.minSdkVersion = $found_api_level
       generator.appincdir = $appincdir
-      generator.buildMode = $debug ? 'Debug' : 'Release'
+      generator.buildMode = $debug ? 'debug' : 'release'
       generator.externalDeps = external_string
       generator.extLibs = ext_libs
       generator.targetArch = studio_realabi
@@ -3005,11 +3008,11 @@ namespace "device" do
 
       if abi == 'arm'
         realabi = 'armeabi-v7a'
+      elsif abi == 'aarch64'
+        realabi = 'arm64-v8a'
       else
         realabi = abi
       end
-
-
 
       project_app_path = File.join $app_path,'project','android_studio', 'app'
       librhodes_path = File.join project_app_path, 'build', 'intermediates',
