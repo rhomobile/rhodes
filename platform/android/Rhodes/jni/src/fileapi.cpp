@@ -1220,13 +1220,30 @@ RHO_GLOBAL int creat(const char* path, mode_t mode)
 RHO_GLOBAL int fcntl(int fd, int command, ...)
 {
     RHO_LOG("fcntl: fd %d, command: %d", fd, command);
+
+    int r = -1;
+
     if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
     {
-        va_list vl;
-        va_start(vl, command);
-        int arg = va_arg(vl, int);
-        va_end(vl);
-        return real_fcntl(fd, command, arg);
+        if ( ( command == F_SETLK ) || ( command == F_GETLK ) || ( command == F_SETLKW ) ) {
+            va_list vl1;
+            va_start(vl1,command);
+            flock* pLock = va_arg(vl1, flock*);
+            va_end(vl1);
+            r = real_fcntl(fd, command, pLock);
+        } else { 
+            va_list vl;
+            va_start(vl, command);
+            int arg = va_arg(vl, int);
+            va_end(vl);
+            r = real_fcntl(fd, command, arg);
+        }
+
+        if ( r < 0 ) {
+            RHO_LOG("fcntl: errno %d", errno);
+        }
+
+        return r;
     }
 
     if (has_pending_exception())
