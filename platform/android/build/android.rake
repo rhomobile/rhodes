@@ -526,11 +526,11 @@ namespace "config" do
       end
     end
 
-    $min_sdk_level = $app_config["android"]["minSDK"] unless $app_config["android"].nil?
-    $min_sdk_level = $config["android"]["minSDK"] if $min_sdk_level.nil? and not $config["android"].nil?
+    $min_sdk_level = get_case_insensetive_property("minSDK") unless $app_config["android"].nil?
+    $min_sdk_level = get_case_insensetive_property("minSDK") if $min_sdk_level.nil? and not $config["android"].nil?
+    $min_sdk_level = get_case_insensetive_property("minSdkVer") if $min_sdk_level.nil?
     $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
     $min_sdk_level = ANDROID_MIN_SDK_LEVEL if $min_sdk_level.nil?
-
 
     
     $target_sdk_level = get_case_insensetive_property("targetSdk") unless $app_config["android"].nil?
@@ -566,11 +566,11 @@ namespace "config" do
         version = $app_config["android"]["version"]
         $major_version, $minor_version, $patch_version = get_android_major_minor(version)
 
-        market_version = AndroidTools.get_market_version($target_sdk_level)
+        market_version = AndroidTools.get_market_version($min_sdk_level)
         if market_version.nil?
           apilevel = android_api_levels.last
         else
-          apilevel = $target_sdk_level
+          apilevel = $min_sdk_level
         end
 
         if(!apilevel)
