@@ -158,7 +158,7 @@ contains(DEFINES, OS_SAILFISH) {
   SOURCES += $$PWD/../../net/linux/SSLImpl.cpp\
   ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
   INCLUDEPATH += ../../curl/include\
-  #../../ruby/linux\
+  ../../ruby/linux
   LIBS += -lpthread
   LIBS += -ldl -lz
   #LIBS += -L../../../linux/bin/extensions -lcoreapi

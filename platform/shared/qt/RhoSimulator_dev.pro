@@ -32,7 +32,16 @@ SUBDIRS = rubylib rholib sqlite3 syncengine \
 #../../../lib/commonAPI/barcode/ext/platform/qt/Barcode.pro
 
 unix:!macx {
- # SUBDIRS += curl
+    DEFINES += CPP_ELEVEN
+    DEFINES += OS_LINUX
+    QMAKE_CXXFLAGS_RELEASE += -MP9
+    QMAKE_CXXFLAGS_DEBUG += -MP9
+
+    QMAKE_CFLAGS_DEBUG -= -O2
+    QMAKE_CXXFLAGS_DEBUG -= -O2
+
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 macx {
  SUBDIRS += curl
@@ -42,3 +51,5 @@ SUBDIRS += rhodes
 
 QMAKE_CXXFLAGS_RELEASE += -MP9
 QMAKE_CXXFLAGS_DEBUG += -MP9
+
+

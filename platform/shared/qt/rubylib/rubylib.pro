@@ -104,10 +104,11 @@ win32 {
 }
 
 unix:!macx {
+  DEFINES += OS_LINUX
   DESTDIR = $$PWD/../../../linux/bin/rubylib
   OBJECTS_DIR = $$PWD/../../../linux/bin/rubylib/tmp
-  INCLUDEPATH += $$PWD/../../ruby/sailfish
-  HEADERS += $$PWD/../../ruby/sailfish/ruby/config.h
+  INCLUDEPATH += $$PWD/../../ruby/linux
+  HEADERS += $$PWD/../../ruby/linux/ruby/config.h
   SOURCES += \
 #../../ruby/miniprelude.c\
 ../../ruby/missing/acosh.c\
