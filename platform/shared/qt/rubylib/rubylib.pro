@@ -104,29 +104,29 @@ win32 {
 }
 
 unix:!macx {
-  DEFINES += OS_LINUX
-  DESTDIR = $$PWD/../../../linux/bin/rubylib
-  OBJECTS_DIR = $$PWD/../../../linux/bin/rubylib/tmp
-  INCLUDEPATH += $$PWD/../../ruby/linux
-  HEADERS += $$PWD/../../ruby/linux/ruby/config.h
-  SOURCES += \
-#../../ruby/miniprelude.c\
-../../ruby/missing/acosh.c\
-../../ruby/missing/cbrt.c\
-../../ruby/missing/crypt.c\
-../../ruby/missing/dup2.c\
-../../ruby/missing/erf.c\
-../../ruby/missing/hypot.c\
-../../ruby/missing/stdlib.c\
-../../ruby/missing/strlcat.c\
-../../ruby/missing/strlcpy.c\
-../../ruby/missing/tgamma.c\
-../../ruby/newline.c\
-../../ruby/missing/explicit_bzero.c\
-../../ruby/missing/setproctitle.c
+    DEFINES += OS_LINUX
+    DESTDIR = $$PWD/../../../linux/bin/rubylib
+    OBJECTS_DIR = $$PWD/../../../linux/bin/rubylib/tmp
+    INCLUDEPATH += $$PWD/../../ruby/linux
+    HEADERS += $$PWD/../../ruby/linux/ruby/config.h
+    SOURCES += \
+        #../../ruby/miniprelude.c\
+        ../../ruby/missing/acosh.c\
+        ../../ruby/missing/cbrt.c\
+        ../../ruby/missing/crypt.c\
+        ../../ruby/missing/dup2.c\
+        ../../ruby/missing/erf.c\
+        ../../ruby/missing/hypot.c\
+        ../../ruby/missing/stdlib.c\
+        ../../ruby/missing/strlcat.c\
+        ../../ruby/missing/strlcpy.c\
+        ../../ruby/missing/tgamma.c\
+        ../../ruby/newline.c\
+        ../../ruby/missing/explicit_bzero.c\
+        ../../ruby/missing/setproctitle.c
 
-  QMAKE_CFLAGS += -fvisibility=hidden
-  QMAKE_CXXFLAGS += -fvisibility=hidden
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM

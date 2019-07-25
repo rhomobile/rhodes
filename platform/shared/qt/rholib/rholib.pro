@@ -70,20 +70,22 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = $$PWD/../../../linux/bin/rholib
-  OBJECTS_DIR = $$PWD/../../../linux/bin/rholib/tmp
-  INCLUDEPATH += $$PWD/../../curl/include
-  DEFINES += _GNU_SOURCE
-  HEADERS += $$PWD/../../common/PosixThreadImpl.h\
-  $$PWD/../../net/CURLNetRequest.h\
-  $$PWD/../../net/ssl.h
-  SOURCES += $$PWD/../../common/PosixThreadImpl.cpp\
-  $$PWD/../../net/CURLNetRequest.cpp\
-  $$PWD/../../net/ssl.cpp
-  DEFINES += OS_SAILFISH OS_LINUX
+    INCLUDEPATH += $$PWD/../../ruby/linux
+    HEADERS += $$PWD/../../ruby/linux/ruby/config.h
+    DESTDIR = $$PWD/../../../linux/bin/rholib
+    OBJECTS_DIR = $$PWD/../../../linux/bin/rholib/tmp
+    INCLUDEPATH += $$PWD/../../curl/include
+    DEFINES += _GNU_SOURCE
+    HEADERS += $$PWD/../../common/PosixThreadImpl.h\
+    $$PWD/../../net/CURLNetRequest.h\
+    $$PWD/../../net/ssl.h
+    SOURCES += $$PWD/../../common/PosixThreadImpl.cpp\
+    $$PWD/../../net/CURLNetRequest.cpp\
+    $$PWD/../../net/ssl.cpp
+    DEFINES += OS_LINUX
 
-  QMAKE_CFLAGS += -fvisibility=hidden
-  QMAKE_CXXFLAGS += -fvisibility=hidden
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM

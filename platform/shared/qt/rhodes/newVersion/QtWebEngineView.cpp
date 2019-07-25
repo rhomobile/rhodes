@@ -1,4 +1,4 @@
-#include "qtwebengineview.h"
+#include "QtWebEngineView.h"
 
 
 QtWebEngineView::QtWebEngineView(QWidget *parent) : QWebEngineView(parent)

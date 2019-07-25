@@ -1,4 +1,4 @@
-#include "qtwebenginepage.h"
+#include "QtWebEnginePage.h"
 
 QtWebEnginePage::QtWebEnginePage(QObject *parent) : QWebEnginePage(parent){
 

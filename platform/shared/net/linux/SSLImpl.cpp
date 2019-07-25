@@ -28,7 +28,7 @@
 //#include <CFNetwork/CFNetwork.h>
 //#include <Security/Security.h>
 
-#include "sslimpl.h"
+#include "SSLImpl.h"
 
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY

@@ -52,6 +52,7 @@
 #include <QScroller>
 #include <QScrollArea>
 #include <QWebEngineSettings>
+#include <QApplication>
 #include "../guithreadfunchelper.h"
 #include "WebUrlRequestInterceptor.h"
 
@@ -151,8 +152,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     }
     QWebEngineProfile::defaultProfile()->setRequestInterceptor(wuri);
 
+#ifndef OS_LINUX
     QApplication::setStyle(new QtCustomStyle());
-
+#endif
     setCentralWidget(new QWidget(this));
     verticalLayout = new QVBoxLayout(centralWidget());
 

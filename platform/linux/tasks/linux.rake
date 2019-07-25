@@ -31,7 +31,7 @@
 
 
 namespace "config" do
-  task :linux => ["switch_app"] do
+  task :linux => ["switch_app", "config:qt"] do
 
     $rubypath = "platform/linux/target/compiler/rubylinux" #path to RubyMac
     $bindir = $app_path + "/bin"
@@ -50,6 +50,7 @@ namespace "config" do
 
     $homedir = `echo ~`.to_s.strip   
     $current_platform = "linux"
+    $qmake_makespec = "linux-g++-32"
     Rake::Task["config:common"].invoke()
 
     if !$app_config.nil? && !$app_config["linux"].nil?
@@ -81,9 +82,16 @@ namespace "config" do
   end
 end
 
-def add_extension_to_pri_file(ext)
-  puts "extention " + ext
-end
+def generate_extensions_pri(extensions_lib, pre_targetdeps)
+      ext_dir = File.join($startdir, 'platform/linux/bin/extensions')
+      mkdir_p ext_dir if not File.exists? ext_dir
+      File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
+        fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
+        LIBS += /LIBPATH:../../../linux/bin/extensions#{extensions_lib}
+        PRE_TARGETDEPS += #{pre_targetdeps}
+        })
+      end
+    end
 
 namespace "build" do
   namespace "linux" do
@@ -94,34 +102,86 @@ namespace "build" do
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
     end
 
-    task :extensions => ['config:linux'] do
+    task :extensions => "config:linux" do
+      next if $prebuild_win32
+
+      extensions_lib = ''
+      pre_targetdeps = ''
+
       puts "$app_extensions_list : #{$app_extensions_list}"
 
-      ext_link = "unix:!macx: PRE_TARGETDEPS += $$PWD/../extensions"
-      $app_extensions_list.each do |ext, ext_path |
-        next unless (ext_path)
-        print_timestamp('process extension "' + ext + '" START')
-
-        extpath = File.join( ext_path, 'ext')
-        ext_config_path = File.join( ext_path, "ext.yml")
-        ext_config = nil
+      $app_extensions_list.each do |ext, commin_ext_path |      
+          puts "extension #{ext} [#{commin_ext_path}]"
+          next unless commin_ext_path
           
-        if File.exist? ext_config_path
-          ext_config = Jake.config(File.open(ext_config_path))
-        end
+          extpath = File.join(commin_ext_path, 'ext')
+          ext_config_path = File.join(commin_ext_path, "ext.yml")
+          ext_config = nil
+          if File.exist? ext_config_path
+            ext_config = Jake.config(File.open(ext_config_path))
+          end
+          
+          project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
+          next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
 
-        mkdir_p File.join($project_path, ext.downcase)
+          if ext != 'openssl.so'
+            if ext_config.has_key?('libraries')
+              ext_config["libraries"].each { |name_lib|
+                extensions_lib << " #{name_lib}.lib"
+                pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
+              }
+            else
+              extensions_lib << " #{ext}.lib"
+              pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            end
+          end
 
-        add_extension_to_pri_file(ext)
-        if ext.downcase == "coreapi"
-          next
-        end
-        add_extension_to_pri_file(ext)
-      end
-      add_extension_to_pri_file("coreapi")
+          if (project_path)
+          
+              ENV['RHO_PLATFORM'] = 'linux'
+              ENV['PWD'] = $startdir
+              ENV['RHO_ROOT'] = $startdir
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
+              if ext.downcase() == "coreapi" && $rhosimulator_build
+                  ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
+              else    
+                  ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+                  ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, "platform", 'linux', "bin", $sdk, "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
+              end
+                    
+              ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", "linux", "bin", "extensions", ext)
+              ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
+              ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", "linux", "bin", "extensions")
+                
+              ENV['RHO_EXT_NAME']=ext                
+              Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
+          else
+              ENV['RHO_PLATFORM'] = 'linux'
+              ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+              ENV['PWD'] = $startdir
+              ENV['RHO_ROOT'] = ENV['PWD']
+              ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "linux", "bin", "extensions")
+              ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "linux", "bin", "extensions", ext)
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
+              ENV['RHO_QMAKE'] = $qmake
+              ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ""
+              ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
+              ENV['RHO_VSCMNTOOLS'] = $vscommontools
+
+              if($debug and !$rhosimulator_build)
+                ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release" 
+              end
+              puts ENV['QTDIR']
+              Jake.run3('./build', extpath, {}, true)
+          end
+      end 
+      generate_extensions_pri(extensions_lib, pre_targetdeps)
     end
   end
 end
+
+
+
 
 namespace "run" do
   task :linux do
