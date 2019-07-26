@@ -449,7 +449,7 @@ def setup_ext_env( extpath, extname )
   env["RHO_APP_DIR"] = $app_path
   env["ANDROID_SDK"] = $androidsdkpath
   env["ANDROID_NDK"] = $androidndkpath
-  env["ANDROID_API_LEVEL"] = $found_api_level.to_s
+  env["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
   env["RHO_ROOT"] = $startdir
   env["BUILD_DIR"] ||= $startdir + "/platform/android/build"
   env["RHO_INC"] = $appincdir
@@ -573,7 +573,7 @@ namespace "config" do
         if market_version.nil?
           apilevel = android_api_levels.last
         else
-          apilevel = $min_sdk_level
+          apilevel = $target_sdk_level
         end
 
         if(!apilevel)
@@ -1314,7 +1314,7 @@ namespace "build" do
       ENV["RHO_APP_DIR"] = $app_path
       ENV["ANDROID_SDK"] = $androidsdkpath
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
       ENV["RHO_INC"] = $appincdir
@@ -1461,7 +1461,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'libsqlite_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname["sqlite"])
@@ -1505,7 +1505,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'libcurl_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname["curl"])
@@ -1548,7 +1548,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'libruby_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname["ruby"])
@@ -1582,7 +1582,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'libjson_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname["json"])
@@ -1615,7 +1615,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librholog_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname['rholog'])
@@ -1649,7 +1649,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhomain_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname['rhomain'])
@@ -1684,7 +1684,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhocommon_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname['rhocommon'])
@@ -1721,7 +1721,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhodb_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname['rhodb'])
@@ -1756,7 +1756,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhosync_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname['rhosync'])
@@ -1867,7 +1867,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhodes_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.join $app_builddir, 'librhodes', 'lib'
