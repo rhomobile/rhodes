@@ -440,15 +440,14 @@ def cc_link(outname, objects, additional = nil, deps = nil)
     end
   else
     localabi = "armeabi-v7a" if localabi == "armeabi"
-    llvm_stl_static = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
-    if File.exists? llvm_stl_static
-      args << "-L\"#{llvm_stl_static}\""
-      args << "-lc++_static"
-      puts "llvm stl static library exists"
+    llvm_stl_shared = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi)
+    if File.exists? llvm_stl_shared
+      args << "-L\"#{llvm_stl_shared}\""
+      args << "-lc++_shared"
+      puts "llvm stl shared library exists"
     else
-      puts "llvm stl static library does not exists"
+      puts "llvm stl shared library does not exists"
     end
-
   end
 
   cc_run($gccbin, args)
