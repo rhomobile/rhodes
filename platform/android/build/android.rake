@@ -569,7 +569,7 @@ namespace "config" do
         $minor_version = 0
         get_android_major_minor(version)
 
-        market_version = AndroidTools.get_market_version($min_sdk_level)
+        market_version = AndroidTools.get_market_version($target_sdk_level)
         if market_version.nil?
           apilevel = android_api_levels.last
         else
