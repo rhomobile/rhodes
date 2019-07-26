@@ -566,7 +566,7 @@ namespace "config" do
         version = $app_config["android"]["version"]
         $major_version, $minor_version, $patch_version = get_android_major_minor(version)
 
-        market_version = AndroidTools.get_market_version($min_sdk_level)
+        market_version = AndroidTools.get_market_version($target_sdk_level)
         if market_version.nil?
           apilevel = android_api_levels.last
         else
