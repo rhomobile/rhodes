@@ -80,8 +80,8 @@ unix:!macx {
     $$PWD/../../net/CURLNetRequest.h\
     $$PWD/../../net/ssl.h
     SOURCES += $$PWD/../../common/PosixThreadImpl.cpp\
-    $$PWD/../../net/CURLNetRequest.cpp\
-    $$PWD/../../net/ssl.cpp
+    $$PWD/../../net/CURLNetRequest.cpp#\
+    #$$PWD/../../net/ssl.cpp
     DEFINES += OS_LINUX
 
     HEADERS += $$PWD/../../net/linux/SSLImpl.h

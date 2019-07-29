@@ -320,6 +320,7 @@ newVersion/ExternalWebView.cpp\
 newVersion/DateTimeDialog.cpp\
 newVersion/main.cpp\
 newVersion/WebUrlRequestInterceptor.cpp
+
 }
 
 contains(DEFINES, RHODES_VERSION_LIBRARY) {
@@ -363,6 +364,7 @@ RESOURCES += resources/common.qrc
 }
 
 contains(DEFINES, OS_LINUX)  {
+    SOURCES +=  $$PWD/../../net/ssl.cpp
 
     LIBS += -lz
     LIBS += -L$$PWD/../../../linux/bin/sqlite3/ -lsqlite3
@@ -372,7 +374,7 @@ contains(DEFINES, OS_LINUX)  {
     LIBS += -L$$PWD/../../../linux/bin/curl/ -lcurl
     INCLUDEPATH += $$PWD/../../curl/include
     DEPENDPATH += $$PWD/../../curl/include
-    PRE_TARGETDEPS += $$PWD/../../../linux/bin/curl/libcurl.a\
+    PRE_TARGETDEPS += $$PWD/../../../linux/bin/curl/libcurl.a
 
     LIBS += -L$$PWD/../../../linux/bin/rubylib/ -lrubylib
     INCLUDEPATH += $$PWD/../../ruby/include
@@ -391,7 +393,7 @@ contains(DEFINES, OS_LINUX)  {
     LIBS += -L$$PWD/../../../linux/bin/extensions/ -lzlib
     PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libzlib.a
 
-    #unix:!macx: LIBS += -lstatic-libgcc
+    #LIBS += -lstatic-libgcc
 
     #unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lMediacapture
     #unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libMediacapture.a
@@ -411,5 +413,6 @@ contains(DEFINES, OS_LINUX)  {
     #unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lbluetooth
     #unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libbluetooth.a
 
-    LIBS += -ldl -lgmp -lc -lpthread
+    LIBS += -ldl -lgmp -lc -lpthread -lz
+
 }
