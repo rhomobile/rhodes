@@ -124,7 +124,6 @@ unix:!macx {
         ../../ruby/newline.c\
         ../../ruby/missing/explicit_bzero.c\
         ../../ruby/missing/setproctitle.c
-
     QMAKE_CFLAGS += -fvisibility=hidden
     QMAKE_CXXFLAGS += -fvisibility=hidden
 }

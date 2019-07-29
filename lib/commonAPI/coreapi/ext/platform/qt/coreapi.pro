@@ -37,6 +37,7 @@ macx {
 }
 
 unix:!macx {
+    DEFINES += OS_LINUX
     DESTDIR = $$PWD/../../../../../../platform/linux/bin/extensions
     OBJECTS_DIR = $$PWD/../../../../../../platform/linux/bin/extensions/coreapi
     INCLUDEPATH += $$PWD/../../../../../../platform/shared/ruby/linux

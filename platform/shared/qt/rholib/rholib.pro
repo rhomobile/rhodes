@@ -84,6 +84,9 @@ unix:!macx {
     $$PWD/../../net/ssl.cpp
     DEFINES += OS_LINUX
 
+    HEADERS += $$PWD/../../net/linux/SSLImpl.h
+    SOURCES += $$PWD/../../net/linux/SSLImpl.cpp
+
     QMAKE_CFLAGS += -fvisibility=hidden
     QMAKE_CXXFLAGS += -fvisibility=hidden
 }

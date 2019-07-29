@@ -50,7 +50,7 @@ namespace "config" do
 
     $homedir = `echo ~`.to_s.strip   
     $current_platform = "linux"
-    $qmake_makespec = "linux-g++-32"
+    $qmake_makespec = "linux-g++"
     Rake::Task["config:common"].invoke()
 
     if !$app_config.nil? && !$app_config["linux"].nil?
@@ -103,7 +103,13 @@ namespace "build" do
     end
 
     task :extensions => "config:linux" do
-      next if $prebuild_win32
+      require $startdir + "/lib/rhodes.rb"
+      fversion = StringIO.new("", "w+")          
+      fversion.write( "#define RHOSIMULATOR_NAME \"RhoSimulator\"\n" )
+      fversion.write( "#define RHOSIMULATOR_VERSION \"#{Rhodes::VERSION}\"\n" )
+      fversion.write( "#define APPLICATION_NAME \"#{$appname}\"\n" )
+      fversion.write( "#define APPLICATION_VERSION \"#{$app_version}\"\n" )
+      Jake.modify_file_if_content_changed( File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), fversion )
 
       extensions_lib = ''
       pre_targetdeps = ''
@@ -180,7 +186,23 @@ namespace "build" do
   end
 end
 
+namespace "clean" do
+  namespace "linux" do
+    task :rhosimulator do
+      rhoSimDir = File.join( $startdir, "platform/linux/RhoSimulator" )
+      FileUtils.rm_rf("#{rhoSimDir}/.", secure: true)
+    end
+  end
 
+  task :linux => ["config:linux", "clean:common"]do
+    rm_rf $tmpdir
+    #rm_rf $targetdir
+    rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
+    rm_rf File.join($startdir, 'platform/linux/bin')
+    rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
+    rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+  end
+end
 
 
 namespace "run" do
