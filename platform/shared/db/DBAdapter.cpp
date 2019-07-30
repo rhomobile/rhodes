@@ -445,17 +445,18 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
 		//	bDbFormatChanged = true;
 	}
 	
-	if ( bDbFormatChanged )
+    if ( bDbFormatChanged ) {
 		LOG(INFO) + "Reset Database( format changed ):" + m_strDbPath;
-	
-    if ( bRhoReset && !bAppReset && !bDbFormatChanged )
+    }
+    if ( bRhoReset && !bAppReset && !bDbFormatChanged ) {
         bRhoReset = !migrateDB(dbVer, dbNewVer);
+    }
 
-        LOG(INFO) + "bRhoReset: " + bRhoReset;
-        LOG(INFO) + "bAppReset: " + bAppReset;
-        LOG(INFO) + "bDbFormatChanged: " + bDbFormatChanged;
+    LOG(INFO) + "bRhoReset: " + bRhoReset;
+    LOG(INFO) + "bAppReset: " + bAppReset;
+    LOG(INFO) + "bDbFormatChanged: " + bDbFormatChanged;
 
-        LOG(INFO) + "Reset Database( format changed ):" + m_strDbPath;
+    //LOG(INFO) + "Reset Database( format changed ):" + m_strDbPath;
 
     if ( bRhoReset || bAppReset || bDbFormatChanged )
 	{
