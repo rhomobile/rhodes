@@ -230,6 +230,7 @@ class MavenDepsExtractor
     argv << "-DremoteRepositories=#{repos}"
     argv << "-Dpackaging=pom"
     argv << "-Ddest=./"
+    argv << "-Dtransitive=false"
 
     argv << '-e' if USE_TRACES
     argv << '-X' if USE_TRACES
