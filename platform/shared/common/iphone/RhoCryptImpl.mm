@@ -53,6 +53,8 @@ namespace common{
 IMPLEMENT_LOGCLASS(CRhoCryptImpl,"RhoCrypt");
 #define checkError(func) _checkError(func, #func)
 
+static NSMutableDictionary* ourKeys = [NSMutableDictionary dictionaryWithCapacity:16];
+
 CRhoCryptImpl::CRhoCryptImpl(void) : m_dbKeyData(NULL)
 {
 	m_dwLastError = 0;
@@ -61,8 +63,9 @@ CRhoCryptImpl::CRhoCryptImpl(void) : m_dbKeyData(NULL)
 
 CRhoCryptImpl::~CRhoCryptImpl(void)
 {
-    if ( m_dbKeyData ) 
-        free(m_dbKeyData);
+    // keys now stored into ourKeys hash. For restore in case of DB was reset and reopen - new CRhoCryptImpl created during this process and new CRhoCryptImpl forget about key - so we store keys in hash partition -> key
+    //if ( m_dbKeyData )
+    //    free(m_dbKeyData);
 }
 	
 bool CRhoCryptImpl::_checkError( int32_t status, const char* szFunc )
@@ -607,6 +610,15 @@ void CRhoCryptImpl::initContext(const char* szPartition)
 
     RAWLOG_INFO1("CRhoCryptImpl::initContext() Partition = [%s]", szPartition);
     m_strDBPartition = szPartition;
+    
+    if (!m_dbKeyData) {
+        // if DB was reopen again we restore stored key from hash by partition for avoid regenerate key in case of isNewInstallation
+        NSObject* obj = [ourKeys objectForKey:[NSString stringWithUTF8String:szPartition]];
+        if (obj != nil) {
+            NSNumber* nsn = (NSNumber*)obj;
+            m_dbKeyData = (unsigned char*)[nsn unsignedLongLongValue];
+        }
+    }
 
     RAWLOG_INFO1("CRhoCryptImpl::initContext() START m_strDBPartition = [%s]", m_strDBPartition.c_str());
 	if(isNewInstallation && !m_dbKeyData)
@@ -633,6 +645,13 @@ void CRhoCryptImpl::initContext(const char* szPartition)
     }
 
 	generateNewKey();
+    
+    {
+        // store key for partition - key will be restored in future in case of DB will reopened
+        NSNumber* nsn = [NSNumber numberWithUnsignedLongLong:(unsigned long long)m_dbKeyData];
+        [ourKeys setObject:nsn forKey:[NSString stringWithUTF8String:szPartition]];
+    }
+    
     writeKeyToStorageOld();
 	writeKeyToStorageNew();
     RAWLOG_INFO("CRhoCryptImpl::initContext() FINISH");
