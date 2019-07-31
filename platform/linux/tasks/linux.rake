@@ -241,8 +241,8 @@ namespace "build" do
     Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', $qt_project_dir)
     Jake.run3('make clean', $qt_project_dir)
     Jake.run3('make all', $qt_project_dir)
+    puts "Copying to dir" + $target_path
 
-    $target_path = File.join( $startdir, $vcbindir, $sdk, 'rhodes', $buildcfg)
     if not File.directory?($target_path)
       Dir.mkdir($target_path)
     end

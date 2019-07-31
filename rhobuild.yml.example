@@ -13,6 +13,7 @@ env:
   app: "/home/hramovnik/tau/kitchensinkRuby"
 build:
   wmpath: platform/wm
+  linuxpath: platform/linux
   wp8path: platform/wp8
   uwppath: platform/uwp
   androidpath: platform/android

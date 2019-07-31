@@ -21,7 +21,7 @@ TEMPLATE = subdirs
 SUBDIRS = rubylib rholib sqlite3 syncengine
 
 unix:!macx {
- # SUBDIRS += curl
+ SUBDIRS += curl
 }
 macx {
  SUBDIRS += curl

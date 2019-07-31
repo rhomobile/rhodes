@@ -390,8 +390,8 @@ contains(DEFINES, OS_LINUX)  {
     LIBS += -L$$PWD/../../../linux/bin/extensions/ -lcoreapi
     PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libcoreapi.a
 
-    LIBS += -L$$PWD/../../../linux/bin/extensions/ -lzlib
-    PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libzlib.a
+    #LIBS += -L$$PWD/../../../linux/bin/extensions/ -lzlib
+    #PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libzlib.a
 
     #LIBS += -lstatic-libgcc
 
