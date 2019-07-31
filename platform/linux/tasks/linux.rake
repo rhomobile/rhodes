@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------
 # (The MIT License)
 # 
-# Copyright (c) 2008-2011 Rhomobile, Inc.
+# Copyright (c) 2008-2019 Tau Technologies, Inc.
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,6 @@
 #------------------------------------------------------------------------
 
 
-
-
-
-
-
 namespace "config" do
   task :linux => ["switch_app", "config:qt"] do
 
@@ -47,6 +42,7 @@ namespace "config" do
     $buildcfg = "Release" unless $buildcfg
     $detoolappflag = $js_application == true ? "js" : "ruby"
     $tmpdir = File.join($bindir, "tmp")
+    $qt_project_dir = File.join( $startdir, 'platform/shared/qt/' )
 
     $homedir = `echo ~`.to_s.strip   
     $current_platform = "linux"
@@ -80,18 +76,43 @@ namespace "config" do
     $target_path = File.join($app_path, "bin", "target", "linux")
     mkdir_p $target_path
   end
+
+  namespace "linux" do
+    task :application do
+      $app_version = '1.0'
+      $app_version = $app_config["version"] unless $app_config["version"].nil?
+      
+      require $startdir + "/lib/rhodes.rb"
+      fversion = StringIO.new("", "w+")          
+      fversion.write( "#define RHOSIMULATOR_NAME \"RhoSimulator\"\n" )
+      fversion.write( "#define RHOSIMULATOR_VERSION \"#{Rhodes::VERSION}\"\n" )
+      fversion.write( "#define APPLICATION_NAME \"#{$appname}\"\n" )
+      fversion.write( "#define APPLICATION_VERSION \"#{$app_version}\"\n" )
+      Jake.modify_file_if_content_changed( File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), fversion )  
+
+      $app_icon_path = $app_path + "/icon/icon.ico"
+      $app_icon_path = $startdir + "/res/icons/rhodes.ico" unless File.exists? $app_icon_path
+      cp $app_icon_path, $startdir + "/platform/shared/qt/rhodes/resources/rho.ico"
+
+      $qt_icon_path = $app_path + "/icon/icon.png"
+      $qt_icon_path = $startdir + "/res/icons/rhodes.png" unless File.exists? $qt_icon_path
+      cp $qt_icon_path, $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
+      qrcfile = $startdir + "/platform/shared/qt/rhodes/GeneratedFiles/" + $buildcfg + "/qrc_simulator.cpp"
+      rm qrcfile if File.exists? qrcfile
+    end
+  end
 end
 
 def generate_extensions_pri(extensions_lib, pre_targetdeps)
-      ext_dir = File.join($startdir, 'platform/linux/bin/extensions')
-      mkdir_p ext_dir if not File.exists? ext_dir
-      File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
-        fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
-        LIBS += /LIBPATH:../../../linux/bin/extensions#{extensions_lib}
-        PRE_TARGETDEPS += #{pre_targetdeps}
-        })
-      end
-    end
+  ext_dir = File.join($startdir, 'platform/linux/bin/extensions')
+  mkdir_p ext_dir if not File.exists? ext_dir
+  File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
+    fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
+    LIBS += /LIBPATH:../../../linux/bin/extensions#{extensions_lib}
+    PRE_TARGETDEPS += #{pre_targetdeps}
+    })
+  end
+end
 
 namespace "build" do
   namespace "linux" do
@@ -128,17 +149,17 @@ namespace "build" do
           end
           
           project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
-          next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
+          next unless (File.exists?( File.join(extpath, "build") ) || project_path)
 
           if ext != 'openssl.so'
             if ext_config.has_key?('libraries')
               ext_config["libraries"].each { |name_lib|
-                extensions_lib << " #{name_lib}.lib"
-                pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
+                extensions_lib << " #{name_lib}.so"
+                pre_targetdeps << " ../../../linux/bin/extensions/#{name_lib}.so"
               }
             else
-              extensions_lib << " #{ext}.lib"
-              pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+              extensions_lib << " #{ext}.so"
+              pre_targetdeps << " ../../../linux/bin/extensions/#{ext}.so"
             end
           end
 
@@ -183,8 +204,65 @@ namespace "build" do
       end 
       generate_extensions_pri(extensions_lib, pre_targetdeps)
     end
+  
+
+    task :after_bundle do
+      linux_rhopath = $tmpdir + '/rho'
+      mkdir_p linux_rhopath
+      namepath = File.join(linux_rhopath,"name.txt")
+      old_appname = File.read(namepath) if File.exists?(namepath)
+
+      confpath = File.join(linux_rhopath,"apps/rhoconfig.txt.changes")
+      confpath_content = File.read(confpath) if File.exists?(confpath)
+
+      linux_rhopath = linux_rhopath + '/'
+      rm_rf linux_rhopath + 'lib'
+      rm_rf linux_rhopath + 'apps'
+      rm_rf linux_rhopath + 'db' if old_appname != $appname
+
+      cp_r $srcdir + '/lib', linux_rhopath
+      cp_r $srcdir + '/apps', linux_rhopath
+      cp_r $srcdir + '/db', linux_rhopath
+
+      File.open(namepath, "w") { |f| f.write($appname) }
+      File.open(confpath, "w") { |f| f.write(confpath_content) }  if old_appname == $appname && confpath_content && confpath_content.length()>0
+    end
+  end
+
+  task :linux => ["build:linux:rhobundle", "config:linux:application"] do
+    puts "Starting to build linux application in " + $qt_project_dir
+    chdir $config["build"]["linuxpath"]
+
+    ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
+    ENV['RHO_VSCMNTOOLS'] = $vscommontools
+
+    #Jake.run3('rhosimulator_linux_build', $qt_project_dir)
+    
+    Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', $qt_project_dir)
+    Jake.run3('make clean', $qt_project_dir)
+    Jake.run3('make all', $qt_project_dir)
+
+    $target_path = File.join( $startdir, $vcbindir, $sdk, 'rhodes', $buildcfg)
+    if not File.directory?($target_path)
+      Dir.mkdir($target_path)
+    end
+
+    cp File.join($startdir, "platform/linux/bin/RhoSimulator/RhoSimulator"), 
+    File.join($target_path, 'rhodes')
+
+    chdir $startdir
+  end
+
+end
+
+namespace "device" do
+  namespace "linux" do
+    task :production => ["build:linux:rhobundle"] do
+
+    end
   end
 end
+
 
 namespace "clean" do
   namespace "linux" do
