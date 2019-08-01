@@ -374,7 +374,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   localabi = "unknown"
   if $target_toolchain == "aarch64-linux-android"    
     localabi = "arm64-v8a"
-  elsif $target_toolchain == "arm-linux-androideabi"
+  elsif ($target_toolchain == "arm-linux-androideabi" || $target_toolchain == "armv7a-linux-androideabi")
     localabi = "armeabi"
   elsif $target_toolchain == "i686-linux-android"
     localabi = "x86"
