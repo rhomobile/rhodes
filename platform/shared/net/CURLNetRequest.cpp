@@ -841,7 +841,6 @@ CURLcode CURLNetRequest::CURLHolder::perform()
     int const CHUNK = 1;
     
     long noactivity = 0;
-    
     CURLcode result;
     for(;;)
     {
@@ -907,11 +906,11 @@ CURLcode CURLNetRequest::CURLHolder::perform()
         result = CURLE_OK;
         if (msg && msg->msg == CURLMSG_DONE)
             result = msg->data.result;
-        if (result == CURLE_OK && noactivity >= timeout)
-            result = CURLE_OPERATION_TIMEDOUT;
-        if (result == CURLE_OK || result == CURLE_PARTIAL_FILE) {
-            RAWTRACE2("Operation completed successfully with result %d: %s", (int)result, curl_easy_strerror(result));
-        }
+            if (result == CURLE_OK && noactivity >= timeout)
+                result = CURLE_OPERATION_TIMEDOUT;
+            if (result == CURLE_OK || result == CURLE_PARTIAL_FILE) {
+                RAWTRACE2("Operation completed successfully with result %d: %s", (int)result, curl_easy_strerror(result));
+            }
         else {
             RAWLOG_ERROR2("Operation finished with error %d: %s", (int)result, curl_easy_strerror(result));
 

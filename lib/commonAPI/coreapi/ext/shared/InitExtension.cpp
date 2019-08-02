@@ -32,13 +32,13 @@ extern "C" void Init_CoreAPI_Extension()
     Init_NewORM_extension();
 //#endif
     Init_Log();
-#if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_ANDROID) || defined(OS_SAILFISH)
+#if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_ANDROID) || defined(OS_SAILFISH) || defined(OS_LINUX)
     Init_WebView();
 #elif  defined(OS_UWP)
     Init_WebView_extension(); 
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || (defined(OS_MACOSX) && defined(RHODES_EMULATOR)) || defined(OS_ANDROID) || defined(OS_MACOSX)
+#if defined(OS_WINDOWS_DESKTOP)  || defined(OS_LINUX) || defined(OS_WINCE) || (defined(OS_MACOSX) && defined(RHODES_EMULATOR)) || defined(OS_ANDROID) || defined(OS_MACOSX)
     Init_NativeToolbar();
     Init_NativeTabbar();
 #elif defined(OS_UWP)
@@ -46,19 +46,19 @@ extern "C" void Init_CoreAPI_Extension()
     Init_NativeTabbar_extension();
 #endif
 
-#if defined(OS_MACOSX) || defined(RHODES_EMULATOR)
+#if defined(OS_MACOSX) || defined(RHODES_EMULATOR) || defined (OS_LINUX)
     Init_Navbar();
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR) || defined(OS_WINCE) || defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_WINDOWS_DESKTOP)  || defined(OS_LINUX) || defined(RHODES_EMULATOR) || defined(OS_WINCE) || defined(OS_MACOSX) || defined(OS_ANDROID)
     Init_Notification();
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(WINDOWS_PLATFORM) || defined(OS_SAILFISH)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(WINDOWS_PLATFORM)  || defined(OS_LINUX) || defined(OS_SAILFISH)
     Init_RhoFile();
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(RHODES_EMULATOR)
+#if defined(OS_WINDOWS_DESKTOP)  || defined(OS_LINUX) || defined(OS_WINCE) || defined(RHODES_EMULATOR)
     Init_NativeMenuBar();
 #endif
 
@@ -74,7 +74,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Intent();
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_WINCE) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR)) || defined(OS_UWP)|| defined(OS_WINDOWS_DESKTOP) || defined(OS_SAILFISH) || defined(RHODES_EMULATOR)
+#if defined(OS_ANDROID) || defined(OS_WINCE) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR)) || defined(OS_UWP)|| defined(OS_WINDOWS_DESKTOP) || defined(OS_SAILFISH) || defined(RHODES_EMULATOR)  || defined(OS_LINUX)
     Init_Timer_extension();
 #endif
 

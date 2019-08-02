@@ -519,6 +519,9 @@
 #  undef USE_THREADS_WIN32
 #endif
 
+#if defined (OS_LINUX)
+#define USE_THREADS_POSIX
+#endif
 /*
  * MSVC threads support requires a multi-threaded runtime library.
  * _beginthreadex() is not available in single-threaded ones.

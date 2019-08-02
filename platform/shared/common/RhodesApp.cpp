@@ -1553,12 +1553,7 @@ void CRhodesApp::initHttpServer()
     strAppRootPath += "apps";
 #endif
 
-#ifdef OS_SAILFISH
-    //m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath, true, false); This thing doesn't work
     m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath);
-#else
-    m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath);
-#endif
     m_httpServer->register_uri("/system/geolocation", rubyext::CGeoLocation::callback_geolocation);
     m_httpServer->register_uri("/system/syncdb", callback_syncdb);
     m_httpServer->register_uri("/system/redirect_to", callback_redirect_to);
