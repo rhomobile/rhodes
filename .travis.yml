@@ -52,9 +52,9 @@ script:
     travis_wait 30 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/run_app_on_simulator.sh;
   fi
 
-#cache:
-#  directories:
-#    - $HOME/.rvm
+cache:
+  directories:
+    - $HOME/.rvm
 
 before_cache:
   - echo Y | gem uninstall rhodes -a -I
