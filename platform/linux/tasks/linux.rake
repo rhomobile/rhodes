@@ -23,7 +23,7 @@
 # 
 # http://rhomobile.com
 #------------------------------------------------------------------------
-
+require 'erb'
 
 namespace "config" do
   task :linux => ["switch_app", "config:qt"] do
@@ -33,9 +33,9 @@ namespace "config" do
     $srcdir =  $bindir + "/RhoBundle"
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
 
-    #$builddir = $config["build"]["linuxpath"] + "/build"
-    #$vcbindir = $config["build"]["linuxpath"] + "/bin"
     $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
+    $vendor = $app_config['vendor']
+    $vendor = "Tau Technologies" if $vendor.nil?
     $rhobundledir =  $app_path + "/RhoBundle"
     $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"]
     $buildcfg = $app_config["buildcfg"] unless $buildcfg
@@ -248,7 +248,8 @@ namespace "build" do
     end
 
     cp File.join($startdir, "platform/linux/bin/RhoSimulator/RhoSimulator"), 
-    File.join($target_path, 'rhodes')
+    File.join($target_path, $appname)
+    cp_r File.join($app_path, "bin/RhoBundle"), File.join($target_path, "rho")
 
     chdir $startdir
   end
@@ -257,7 +258,50 @@ end
 
 namespace "device" do
   namespace "linux" do
-    task :production => ["build:linux:rhobundle"] do
+    task :production => ["build:linux"] do
+      ldd_out = Jake.run("ldd", [File.join($target_path, $appname)])
+
+      opt_path = File.join($target_path, "opt", "#{$appname}")
+      if not File.directory?(opt_path)
+        FileUtils.mkdir_p opt_path
+      end
+      cp File.join($app_path, "icon/icon.ico"), opt_path
+      FileUtils.mv(File.join($target_path, "rho"), opt_path, :verbose => true, :force => true)
+      FileUtils.mv(File.join($target_path, $appname), opt_path, :verbose => true, :force => true)
+      
+      desktop_path = File.join($target_path, "usr", "share", "applications")
+      if not File.directory?(desktop_path)
+        FileUtils.mkdir_p desktop_path
+      end
+
+      File.open(File.join(desktop_path, "#{$appname}.desktop"), 'w') { |file| 
+        file.write("[Desktop Entry]\n") 
+        file.write("Type=Application\n") 
+        file.write("Version=#{$version_app}\n") 
+        file.write("Name=#{$appname}\n") 
+        file.write("GenericName=\"Web Browser\"\n") 
+        file.write("Exec=/opt/#{$appname}/#{$appname}\n") 
+        file.write("Icon=/opt/#{$appname}/icon.ico\n") 
+      }
+      
+      depsarray = ldd_out.scan( /([\w\-\+]{3,}).so/)
+      $appdepends = ""
+      depsarray.uniq.each{ |dep| $appdepends += " " + dep[0] + ","}
+      $appdepends = $appdepends[1, $appdepends.length - 2]
+      control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "debian_package", "control.erb")
+      erb = ERB.new control_template
+   
+      debian_dir = File.join($target_path, "DEBIAN")
+      if not File.directory?(debian_dir)
+        FileUtils.mkdir_p debian_dir
+      end
+      File.open(File.join(debian_dir, "control"), 'w' ) { |f| f.write erb.result binding }
+
+      Jake.run3('fakeroot dpkg-deb --build linux', File.join($app_path, "bin", "target"))
+      rm_rf $target_path
+      FileUtils.mkdir_p $target_path
+      FileUtils.mv(File.join($app_path, "bin", "target", "linux.deb"), File.join($target_path, "#{$appname}_#{$version_app}_amd64.deb"))
+
 
     end
   end
@@ -277,6 +321,7 @@ namespace "clean" do
     #rm_rf $targetdir
     rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
     rm_rf File.join($startdir, 'platform/linux/bin')
+    rm_rf $target_path if File.exists? $target_path
     rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
     rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
   end

@@ -144,8 +144,10 @@ win32 {
 }
 
 unix:!macx {
-!contains(DEFINES, OS_SAILFISH) {
-  DESTDIR = $$PWD/../../../linux/bin/RhoSimulator
+    TEMPLATE = app
+    QMAKE_LFLAGS += -no-pie
+    !contains(DEFINES, OS_SAILFISH) {
+    DESTDIR = $$PWD/../../../linux/bin/RhoSimulator
 }
 contains(DEFINES, OS_SAILFISH) {
   #DESTDIR = $$PWD/../Build_Sailfish_Application
