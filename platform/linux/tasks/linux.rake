@@ -259,8 +259,8 @@ end
 namespace "device" do
   namespace "linux" do
     task :production => ["build:linux"] do
-      ldd_out = Jake.run("ldd", [File.join($target_path, $appname)])
-
+      #ldd_out = Jake.run("ldd", [File.join($target_path, $appname)])
+      
       opt_path = File.join($target_path, "opt", "#{$appname}")
       if not File.directory?(opt_path)
         FileUtils.mkdir_p opt_path
@@ -284,10 +284,22 @@ namespace "device" do
         file.write("Icon=/opt/#{$appname}/icon.ico\n") 
       }
       
-      depsarray = ldd_out.scan( /([\w\-\+]{3,}).so/)
-      $appdepends = ""
-      depsarray.uniq.each{ |dep| $appdepends += " " + dep[0] + ","}
-      $appdepends = $appdepends[1, $appdepends.length - 2]
+      app_libs = File.join($target_path, "opt", "#{$appname}", "app_libs")
+      if not File.directory?(app_libs)
+        FileUtils.mkdir_p app_libs
+      end
+
+      #depsarray = ldd_out.scan( /(\/[\/\.\w\-\+]*\.so[\.\d]*)/)
+      #depsarray.uniq.each{ 
+      #  |dep| appdep = dep[0]
+
+      #  target_dep_name = appdep.scan(/\/(libQ[\/\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name.uniq.each{ 
+      #    |deplibname| cp appdep, File.join(app_libs, deplibname[0])
+      #    puts "Adding lib #{appdep}" 
+      #  }
+      #}
+      
       control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "debian_package", "control.erb")
       erb = ERB.new control_template
    
@@ -301,12 +313,15 @@ namespace "device" do
       rm_rf $target_path
       FileUtils.mkdir_p $target_path
       FileUtils.mv(File.join($app_path, "bin", "target", "linux.deb"), File.join($target_path, "#{$appname}_#{$version_app}_amd64.deb"))
-
-
     end
   end
 end
 
+namespace "run" do
+  task :linux => ["build:linux"] do
+    Jake.run3(File.join($target_path, $appname))
+  end
+end
 
 namespace "clean" do
   namespace "linux" do
