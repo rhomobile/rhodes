@@ -5,12 +5,7 @@ project(rhodb)
 add_definitions(-DOS_ANDROID)
 
 set(SOURCE_LIB
-<%= @rhoRoot %>/platform/shared/db/DBAdapter.cpp
-<%= @rhoRoot %>/platform/shared/db/DBAttrManager.cpp
-<%= @rhoRoot %>/platform/shared/db/DBResult.cpp
-<%= @rhoRoot %>/platform/shared/db/DBImportTransaction.cpp
-<%= @rhoRoot %>/platform/shared/db/DBRequestHelper.cpp
-<%= @rhoRoot %>/platform/shared/db/DBLock.cpp
+<%= @srcList %>
 )
 
 include_directories(<%= @rhoRoot %>/platform/shared/db)
