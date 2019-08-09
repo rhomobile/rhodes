@@ -103,17 +103,6 @@ namespace "config" do
   end
 end
 
-def generate_extensions_pri(extensions_lib, pre_targetdeps)
-  ext_dir = File.join($startdir, 'platform/linux/bin/extensions')
-  mkdir_p ext_dir if not File.exists? ext_dir
-  File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
-    fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
-    LIBS += /LIBPATH:../../../linux/bin/extensions#{extensions_lib}
-    PRE_TARGETDEPS += #{pre_targetdeps}
-    })
-  end
-end
-
 namespace "build" do
   namespace "linux" do
     task :rhobundle => ["config:linux", "build:bundle:noxruby"] do     
@@ -202,7 +191,15 @@ namespace "build" do
               Jake.run3('./build', extpath, {}, true)
           end
       end 
-      generate_extensions_pri(extensions_lib, pre_targetdeps)
+
+      ext_dir = File.join($startdir, 'platform/linux/bin/extensions')
+      mkdir_p ext_dir if not File.exists? ext_dir
+      File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
+        fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
+        LIBS += /LIBPATH:../../../linux/bin/extensions#{extensions_lib}
+        PRE_TARGETDEPS += #{pre_targetdeps}
+        })
+      end
     end
   
 
