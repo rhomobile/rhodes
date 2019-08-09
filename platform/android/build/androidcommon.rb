@@ -56,6 +56,7 @@ end
 
 def setup_ndk(ndkpath,apilevel,abi)
   puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})" if USE_TRACES
+  apilevel = 21 if apilevel.to_i < 21 && abi == 'aarch64'
   $apilevel = apilevel
   ndk = NDKWrapper.new( ndkpath )
   
