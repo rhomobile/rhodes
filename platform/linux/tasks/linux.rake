@@ -262,7 +262,12 @@ namespace "device" do
       if not File.directory?(opt_path)
         FileUtils.mkdir_p opt_path
       end
-      cp File.join($app_path, "icon/icon.ico"), opt_path
+      icon = File.join($app_path, "icon/icon.ico")
+      if !File.exist? icon
+        icon = File.join($startdir, "platform" , "wm", "rhodes", "resources", "icon.ico")
+      end
+      
+      cp icon, opt_path
       FileUtils.mv(File.join($target_path, "rho"), opt_path, :verbose => true, :force => true)
       FileUtils.mv(File.join($target_path, $appname), opt_path, :verbose => true, :force => true)
       
