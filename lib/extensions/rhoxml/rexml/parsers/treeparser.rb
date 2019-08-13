@@ -23,7 +23,7 @@ module REXML
             #STDERR.puts "TREEPARSER GOT #{event.inspect}"
             case event[0]
             when :end_document
-              unless tag_stack.empty?
+              if tag_stack.length > 0
                 #raise ParseException.new("No close tag for #{tag_stack.inspect}")
                 raise ParseException.new("No close tag for #{@build_context.xpath}")
               end
