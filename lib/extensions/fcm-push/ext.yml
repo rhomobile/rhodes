@@ -9,7 +9,7 @@ android:
   library_deps: [extras/google/google_play_services/libproject/google-play-services_lib]
   source_list: ext/android/ext_java.files
   maven_deps:
-  - 'com.google.firebase:firebase-messaging:19.0.1'
+  - 'com.google.firebase:firebase-messaging:15.0.0'
   adds: ext/android/res
 libraries: ['fcm-push']
 xml_api_paths: ext/fcm.xml
