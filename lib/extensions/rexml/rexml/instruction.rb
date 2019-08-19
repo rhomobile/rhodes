@@ -1,3 +1,4 @@
+# frozen_string_literal: false
 require "rexml/child"
 require "rexml/source"
 
@@ -13,7 +14,7 @@ module REXML
     attr_accessor :target, :content
 
     # Constructs a new Instruction
-    # @param target can be one of a number of things.  If String, then 
+    # @param target can be one of a number of things.  If String, then
     # the target of this instruction is set to this.  If an Instruction,
     # then the Instruction is shallowly cloned (target and content are
     # copied).  If a Source, then the source is scanned and parsed for
@@ -37,7 +38,7 @@ module REXML
     def clone
       Instruction.new self
     end
-    
+
     # == DEPRECATED
     # See the rexml/formatters package
     #
@@ -54,7 +55,7 @@ module REXML
     # @return true if other is an Instruction, and the content and target
     # of the other matches the target and content of this object.
     def ==( other )
-      other.kind_of?( Instruction ) and
+      other.kind_of? Instruction and
       other.target == @target and
       other.content == @content
     end

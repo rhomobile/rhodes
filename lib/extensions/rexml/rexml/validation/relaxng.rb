@@ -1,3 +1,4 @@
+# frozen_string_literal: false
 require "rexml/validation/validation"
 require "rexml/parsers/baseparser"
 
@@ -79,7 +80,7 @@ module REXML
             when "mixed"
               states << Interleave.new( self )
               states[-2] << states[-1]
-              states[-1] << TEXT 
+              states[-1] << TEXT
             when "define"
               states << [ event[2]["name"] ]
             when "ref"
@@ -102,7 +103,7 @@ module REXML
             case event[1]
             when "element", "attribute"
               states[-1] << event
-            when "zeroOrMore", "oneOrMore", "choice", "optional", 
+            when "zeroOrMore", "oneOrMore", "choice", "optional",
               "interleave", "group", "mixed"
               states.pop
             when "define"
@@ -139,13 +140,12 @@ module REXML
         @events.each {|s| s.reset if s.kind_of? State }
       end
 
-      def previous=( previous ) 
+      def previous=( previous )
         @previous << previous
       end
 
       def next( event )
         #print "In next with #{event.inspect}.  "
-        #puts "Next (#@current) is #{@events[@current]}"
         #p @previous
         return @previous.pop.next( event ) if @events[@current].nil?
         expand_ref_in( @events, @current ) if @events[@current].class == Ref
@@ -154,19 +154,15 @@ module REXML
           @events[@current-1].previous = self
           return @events[@current-1].next( event )
         end
-        #puts "Current isn't a state"
         if ( @events[@current].matches?(event) )
           @current += 1
           if @events[@current].nil?
-            #puts "#{inspect[0,5]} 1RETURNING #{@previous.inspect[0,5]}"
             return @previous.pop
           elsif @events[@current].kind_of? State
             @current += 1
-            #puts "#{inspect[0,5]} 2RETURNING (#{@current-1}) #{@events[@current-1].inspect[0,5]}; on return, next is #{@events[@current]}"
             @events[@current-1].previous = self
             return @events[@current-1]
           else
-            #puts "#{inspect[0,5]} RETURNING self w/ next(#@current) = #{@events[@current]}"
             return self
           end
         else
@@ -183,7 +179,7 @@ module REXML
       end
 
       def inspect
-        "< #{to_s} #{@events.collect{|e| 
+        "< #{to_s} #{@events.collect{|e|
           pre = e == @events[@current] ? '#' : ''
           pre + e.inspect unless self == e
         }.join(', ')} >"
@@ -201,15 +197,15 @@ module REXML
       protected
       def expand_ref_in( arry, ind )
         new_events = []
-        @references[ arry[ind].to_s ].each{ |evt| 
+        @references[ arry[ind].to_s ].each{ |evt|
           add_event_to_arry(new_events,evt)
         }
         arry[ind,1] = new_events
       end
 
-      def add_event_to_arry( arry, evt ) 
+      def add_event_to_arry( arry, evt )
         evt = generate_event( evt )
-        if evt.kind_of? String 
+        if evt.kind_of? String
           arry[-1].event_arg = evt if arry[-1].kind_of? Event and @value
           @value = false
         else
@@ -218,7 +214,7 @@ module REXML
       end
 
       def generate_event( event )
-        return event if event.kind_of?( State ) or event.class == Ref
+        return event if event.kind_of? State or event.class == Ref
         evt = nil
         arg = nil
         case event[0]
@@ -272,7 +268,7 @@ module REXML
       end
 
       def matches?(event)
-        @events[@current].matches?(event) || 
+        @events[@current].matches?(event) ||
         (@current == 0 and @previous[-1].matches?(event))
       end
 
@@ -319,7 +315,7 @@ module REXML
       end
 
       def reset
-        super 
+        super
         @ord = 0
       end
 
@@ -345,7 +341,7 @@ module REXML
       end
 
       def matches?( event )
-        @events[@current].matches?(event) || 
+        @events[@current].matches?(event) ||
         (@current == 0 and @ord > 0 and @previous[-1].matches?(event))
       end
 
@@ -393,13 +389,10 @@ module REXML
           # Remove the references
           # Find the events
         end
-        #puts "In next with #{event.inspect}."
-        #puts "events is #{@events.inspect}"
         unless @events
           @events = []
           return nil
         end
-        #puts "current = #@current"
         super
       end
 
@@ -409,10 +402,8 @@ module REXML
       end
 
       def expected
-        #puts "IN CHOICE EXPECTED"
-        #puts "EVENTS = #{@events.inspect}"
         return [@events[@current]] if @events.size > 0
-        return @choices.collect do |x| 
+        return @choices.collect do |x|
           if x[0].kind_of? State
             x[0].expected
           else
@@ -426,12 +417,12 @@ module REXML
       end
 
       protected
-      def add_event_to_arry( arry, evt ) 
-        if evt.kind_of?( State ) or evt.class == Ref
+      def add_event_to_arry( arry, evt )
+        if evt.kind_of? State or evt.class == Ref
           arry << [evt]
-        elsif evt[0] == :text 
+        elsif evt[0] == :text
          if arry[-1] and
-            arry[-1][-1].kind_of?( Event ) and 
+            arry[-1][-1].kind_of?( Event ) and
             arry[-1][-1].event_type == :text and @value
 
             arry[-1][-1].event_arg = evt[1]
@@ -478,9 +469,7 @@ module REXML
           @choices[idx] = old
           @choice += 1
         end
-        
-       #puts "In next with #{event.inspect}."
-       #puts "events is #{@events.inspect}"
+
         @events = [] unless @events
       end
 
@@ -490,30 +479,23 @@ module REXML
         next_current(event) unless @events[@current]
         return nil unless @events[@current]
 
-        expand_ref_in( @events, @current ) if @events[@current].class == Ref 
-       #puts "In next with #{event.inspect}."
-       #puts "Next (#@current) is #{@events[@current]}"
+        expand_ref_in( @events, @current ) if @events[@current].class == Ref
         if ( @events[@current].kind_of? State )
           @current += 1
           @events[@current-1].previous = self
           return @events[@current-1].next( event )
         end
-       #puts "Current isn't a state"
         return @previous.pop.next( event ) if @events[@current].nil?
         if ( @events[@current].matches?(event) )
           @current += 1
           if @events[@current].nil?
-           #puts "#{inspect[0,5]} 1RETURNING self" unless @choices[@choice].nil?
             return self unless @choices[@choice].nil?
-           #puts "#{inspect[0,5]} 1RETURNING #{@previous[-1].inspect[0,5]}"
             return @previous.pop
           elsif @events[@current].kind_of? State
             @current += 1
-           #puts "#{inspect[0,5]} 2RETURNING (#{@current-1}) #{@events[@current-1].inspect[0,5]}; on return, next is #{@events[@current]}"
             @events[@current-1].previous = self
             return @events[@current-1]
           else
-           #puts "#{inspect[0,5]} RETURNING self w/ next(#@current) = #{@events[@current]}"
             return self
           end
         else
@@ -527,10 +509,8 @@ module REXML
       end
 
       def expected
-        #puts "IN CHOICE EXPECTED"
-        #puts "EVENTS = #{@events.inspect}"
         return [@events[@current]] if @events[@current]
-        return @choices[@choice..-1].collect do |x| 
+        return @choices[@choice..-1].collect do |x|
           if x[0].kind_of? State
             x[0].expected
           else

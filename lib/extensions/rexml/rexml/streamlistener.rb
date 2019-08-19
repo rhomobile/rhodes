@@ -1,19 +1,20 @@
+# frozen_string_literal: false
 module REXML
   # A template for stream parser listeners.
   # Note that the declarations (attlistdecl, elementdecl, etc) are trivially
-  # processed; REXML doesn't yet handle doctype entity declarations, so you 
+  # processed; REXML doesn't yet handle doctype entity declarations, so you
   # have to parse them out yourself.
   module StreamListener
     # Called when a tag is encountered.
     # @p name the tag name
     # @p attrs an array of arrays of attribute/value pairs, suitable for
     # use with assoc or rassoc.  IE, <tag attr1="value1" attr2="value2">
-    # will result in 
+    # will result in
     # tag_start( "tag", # [["attr1","value1"],["attr2","value2"]])
     def tag_start name, attrs
     end
     # Called when the end tag is reached.  In the case of <tag/>, tag_end
-    # will be called immidiately after tag_start
+    # will be called immediately after tag_start
     # @p the name of the tag
     def tag_end name
     end
@@ -56,18 +57,18 @@ module REXML
     # The argument passed to this method is an array of the entity
     # declaration.  It can be in a number of formats, but in general it
     # returns (example, result):
-    #  <!ENTITY % YN '"Yes"'>  
-    #  ["%", "YN", "'\"Yes\"'", "\""]
+    #  <!ENTITY % YN '"Yes"'>
+    #  ["YN", "\"Yes\"", "%"]
     #  <!ENTITY % YN 'Yes'>
-    #  ["%", "YN", "'Yes'", "s"]
+    #  ["YN", "Yes", "%"]
     #  <!ENTITY WhatHeSaid "He said %YN;">
-    #  ["WhatHeSaid", "\"He said %YN;\"", "YN"]
+    #  ["WhatHeSaid", "He said %YN;"]
     #  <!ENTITY open-hatch SYSTEM "http://www.textuality.com/boilerplate/OpenHatch.xml">
-    #  ["open-hatch", "SYSTEM", "\"http://www.textuality.com/boilerplate/OpenHatch.xml\""]
+    #  ["open-hatch", "SYSTEM", "http://www.textuality.com/boilerplate/OpenHatch.xml"]
     #  <!ENTITY open-hatch PUBLIC "-//Textuality//TEXT Standard open-hatch boilerplate//EN" "http://www.textuality.com/boilerplate/OpenHatch.xml">
-    #  ["open-hatch", "PUBLIC", "\"-//Textuality//TEXT Standard open-hatch boilerplate//EN\"", "\"http://www.textuality.com/boilerplate/OpenHatch.xml\""]
+    #  ["open-hatch", "PUBLIC", "-//Textuality//TEXT Standard open-hatch boilerplate//EN", "http://www.textuality.com/boilerplate/OpenHatch.xml"]
     #  <!ENTITY hatch-pic SYSTEM "../grafix/OpenHatch.gif" NDATA gif>
-    #  ["hatch-pic", "SYSTEM", "\"../grafix/OpenHatch.gif\"", "\n\t\t\t\t\t\t\tNDATA gif", "gif"]
+    #  ["hatch-pic", "SYSTEM", "../grafix/OpenHatch.gif", "gif"]
     def entitydecl content
     end
     # <!NOTATION ...>

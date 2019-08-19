@@ -1,11 +1,12 @@
+# frozen_string_literal: false
 module REXML
   # A template for stream parser listeners.
   # Note that the declarations (attlistdecl, elementdecl, etc) are trivially
-  # processed; REXML doesn't yet handle doctype entity declarations, so you 
+  # processed; REXML doesn't yet handle doctype entity declarations, so you
   # have to parse them out yourself.
   # === Missing methods from SAX2
   #  ignorable_whitespace
-  # === Methods extending SAX2 
+  # === Methods extending SAX2
   # +WARNING+
   # These methods are certainly going to change, until DTDs are fully
   # supported.  Be aware of this.
@@ -58,22 +59,22 @@ module REXML
     # The argument passed to this method is an array of the entity
     # declaration.  It can be in a number of formats, but in general it
     # returns (example, result):
-    #  <!ENTITY % YN '"Yes"'>  
-    #  ["%", "YN", "'\"Yes\"'", "\""]
+    #  <!ENTITY % YN '"Yes"'>
+    #  ["%", "YN", "\"Yes\""]
     #  <!ENTITY % YN 'Yes'>
-    #  ["%", "YN", "'Yes'", "s"]
+    #  ["%", "YN", "Yes"]
     #  <!ENTITY WhatHeSaid "He said %YN;">
-    #  ["WhatHeSaid", "\"He said %YN;\"", "YN"]
+    #  ["WhatHeSaid", "He said %YN;"]
     #  <!ENTITY open-hatch SYSTEM "http://www.textuality.com/boilerplate/OpenHatch.xml">
-    #  ["open-hatch", "SYSTEM", "\"http://www.textuality.com/boilerplate/OpenHatch.xml\""]
+    #  ["open-hatch", "SYSTEM", "http://www.textuality.com/boilerplate/OpenHatch.xml"]
     #  <!ENTITY open-hatch PUBLIC "-//Textuality//TEXT Standard open-hatch boilerplate//EN" "http://www.textuality.com/boilerplate/OpenHatch.xml">
-    #  ["open-hatch", "PUBLIC", "\"-//Textuality//TEXT Standard open-hatch boilerplate//EN\"", "\"http://www.textuality.com/boilerplate/OpenHatch.xml\""]
+    # ["open-hatch", "PUBLIC", "-//Textuality//TEXT Standard open-hatch boilerplate//EN", "http://www.textuality.com/boilerplate/OpenHatch.xml"]
     #  <!ENTITY hatch-pic SYSTEM "../grafix/OpenHatch.gif" NDATA gif>
-    #  ["hatch-pic", "SYSTEM", "\"../grafix/OpenHatch.gif\"", "\n\t\t\t\t\t\t\tNDATA gif", "gif"]
-    def entitydecl name, decl
+    #  ["hatch-pic", "SYSTEM", "../grafix/OpenHatch.gif", "NDATA", "gif"]
+    def entitydecl declaration
     end
     # <!NOTATION ...>
-    def notationdecl content
+    def notationdecl name, public_or_system, public_id, system_id
     end
     # Called when <![CDATA[ ... ]]> is encountered in a document.
     # @p content "..."
@@ -93,5 +94,5 @@ module REXML
     end
     def progress position
     end
-  end	
+  end
 end

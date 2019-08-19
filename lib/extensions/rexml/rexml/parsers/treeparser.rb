@@ -1,3 +1,4 @@
+# frozen_string_literal: false
 require 'rexml/validation/validationexception'
 require 'rexml/undefinednamespaceexception'
 
@@ -24,8 +25,8 @@ module REXML
             case event[0]
             when :end_document
               unless tag_stack.empty?
-                #raise ParseException.new("No close tag for #{tag_stack.inspect}")
-                raise ParseException.new("No close tag for #{@build_context.xpath}")
+                raise ParseException.new("No close tag for #{@build_context.xpath}",
+                                         @parser.source, @parser)
               end
               return
             when :start_element
@@ -42,8 +43,8 @@ module REXML
                 if @build_context[-1].instance_of? Text
                   @build_context[-1] << event[1]
                 else
-                  @build_context.add( 
-                    Text.new(event[1], @build_context.whitespace, nil, true) 
+                  @build_context.add(
+                    Text.new(event[1], @build_context.whitespace, nil, true)
                   ) unless (
                     @build_context.ignore_whitespace_nodes and
                     event[1].strip.size==0
@@ -89,7 +90,7 @@ module REXML
           end
         rescue REXML::Validation::ValidationException
           raise
-        rescue REXML::UndefinedNamespaceException
+        rescue REXML::ParseException
           raise
         rescue
           raise ParseException.new( $!.message, @parser.source, @parser, $! )

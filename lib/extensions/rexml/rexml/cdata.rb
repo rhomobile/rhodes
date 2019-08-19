@@ -1,3 +1,4 @@
+# frozen_string_literal: false
 require "rexml/text"
 
 module REXML
@@ -6,7 +7,7 @@ module REXML
     STOP = ']]>'
     ILLEGAL = /(\]\]>)/
 
-    #	Constructor.  CData is data between <![CDATA[ ... ]]>
+    #   Constructor.  CData is data between <![CDATA[ ... ]]>
     #
     # _Examples_
     #  CData.new( source )
@@ -17,7 +18,7 @@ module REXML
     end
 
     # Make a copy of this object
-    # 
+    #
     # _Examples_
     #  c = CData.new( "Some text" )
     #  d = c.clone

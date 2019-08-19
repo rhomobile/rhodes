@@ -1,3 +1,4 @@
+# frozen_string_literal: false
 require "rexml/child"
 
 module REXML
@@ -14,14 +15,13 @@ module REXML
 
     ##
     # Constructor.  The first argument can be one of three types:
-    # @param first If String, the contents of this comment are set to the 
+    # @param first If String, the contents of this comment are set to the
     # argument.  If Comment, the argument is duplicated.  If
     # Source, the argument is scanned for a comment.
-    # @param second If the first argument is a Source, this argument 
-    # should be nil, not supplied, or a Parent to be set as the parent 
+    # @param second If the first argument is a Source, this argument
+    # should be nil, not supplied, or a Parent to be set as the parent
     # of this object
     def initialize( first, second = nil )
-      #puts "IN COMMENT CONSTRUCTOR; SECOND IS #{second.type}"
       super(second)
       if first.kind_of? String
         @string = first
@@ -38,15 +38,15 @@ module REXML
     # See REXML::Formatters
     #
     # output::
-    #	 Where to write the string
+    #    Where to write the string
     # indent::
-    #	 An integer.	If -1, no indenting will be used; otherwise, the
-    #	 indentation will be this number of spaces, and children will be
-    #	 indented an additional amount.
+    #    An integer.    If -1, no indenting will be used; otherwise, the
+    #    indentation will be this number of spaces, and children will be
+    #    indented an additional amount.
     # transitive::
-    #	 Ignored by this class.	The contents of comments are never modified.
+    #    Ignored by this class. The contents of comments are never modified.
     # ie_hack::
-    #	 Needed for conformity to the child API, but not used by this class.
+    #    Needed for conformity to the child API, but not used by this class.
     def write( output, indent=-1, transitive=false, ie_hack=false )
       Kernel.warn("Comment.write is deprecated.  See REXML::Formatters")
       indent( output, indent )
@@ -68,7 +68,7 @@ module REXML
     # Compares this Comment to another; the contents of the comment are used
     # in the comparison.
     def ==( other )
-      other.kind_of?( Comment ) and
+      other.kind_of? Comment and
       (other <=> self) == 0
     end
 

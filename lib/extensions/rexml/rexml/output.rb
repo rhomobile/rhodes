@@ -1,16 +1,22 @@
+# frozen_string_literal: false
 require 'rexml/encoding'
 
 module REXML
   class Output
     include Encoding
-    
+
     attr_reader :encoding
 
     def initialize real_IO, encd="iso-8859-1"
       @output = real_IO
       self.encoding = encd
 
-      @to_utf = encd == UTF_8 ? false : true
+      @to_utf = encoding != 'UTF-8'
+
+      if encoding == "UTF-16"
+        @output << "\ufeff".encode("UTF-16BE")
+        self.encoding = "UTF-16BE"
+      end
     end
 
     def <<( content )

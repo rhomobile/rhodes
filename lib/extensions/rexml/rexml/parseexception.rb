@@ -1,3 +1,4 @@
+# frozen_string_literal: false
 module REXML
   class ParseException < RuntimeError
     attr_accessor :source, :parser, :continued_exception
@@ -28,24 +29,24 @@ module REXML
         err << "\nLine: #{line}\n"
         err << "Position: #{position}\n"
         err << "Last 80 unconsumed characters:\n"
-        err << @source.buffer[0..80].gsub(/\n/, ' ')
+        err << @source.buffer[0..80].force_encoding("ASCII-8BIT").gsub(/\n/, ' ')
       end
-      
+
       err
     end
 
     def position
-      @source.current_line[0] if @source and defined?( @source.current_line ) and
+      @source.current_line[0] if @source and defined? @source.current_line and
       @source.current_line
     end
 
     def line
-      @source.current_line[2] if @source and defined?( @source.current_line ) and 
+      @source.current_line[2] if @source and defined? @source.current_line and
       @source.current_line
     end
 
     def context
       @source.current_line
     end
-  end  
+  end
 end

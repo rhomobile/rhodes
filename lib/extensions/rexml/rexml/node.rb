@@ -1,3 +1,4 @@
+# frozen_string_literal: false
 require "rexml/parseexception"
 require "rexml/formatters/pretty"
 require "rexml/formatters/default"
@@ -36,12 +37,12 @@ module REXML
     end
 
     def indent to, ind
- 			if @parent and @parent.context and not @parent.context[:indentstyle].nil? then
- 				indentstyle = @parent.context[:indentstyle]
- 			else
- 				indentstyle = '  '
- 			end
- 			to << indentstyle*ind unless ind<1
+                        if @parent and @parent.context and not @parent.context[:indentstyle].nil? then
+                                indentstyle = @parent.context[:indentstyle]
+                        else
+                                indentstyle = '  '
+                        end
+                        to << indentstyle*ind unless ind<1
     end
 
     def parent?
@@ -57,7 +58,7 @@ module REXML
       }
     end
 
-    # Find (and return) first subnode (recursively) for which the block 
+    # Find (and return) first subnode (recursively) for which the block
     # evaluates to true. Returns +nil+ if none was found.
     def find_first_recursive(&block) # :yields: node
       each_recursive {|node|

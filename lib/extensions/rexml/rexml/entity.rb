@@ -1,3 +1,4 @@
+# frozen_string_literal: false
 require 'rexml/child'
 require 'rexml/source'
 require 'rexml/xmltokens'
@@ -30,7 +31,7 @@ module REXML
     # is read from a stream.  If you start poking around with the accessors,
     # you can easily create a non-conformant Entity.  The best thing to do is
     # dump the stupid DTDs and use XMLSchema instead.
-    # 
+    #
     #  e = Entity.new( 'amp', '&' )
     def initialize stream, value=nil, parent=nil, reference=false
       super(parent)
@@ -38,7 +39,7 @@ module REXML
       if stream.kind_of? Array
         @name = stream[1]
         if stream[-1] == '%'
-          @reference = true 
+          @reference = true
           stream.pop
         else
           @reference = false
@@ -63,7 +64,7 @@ module REXML
       end
     end
 
-    # Evaluates whether the given string matchs an entity definition,
+    # Evaluates whether the given string matches an entity definition,
     # returning true if so, and false otherwise.
     def Entity::matches? string
       (ENTITYDECL =~ string) == 0
@@ -138,8 +139,14 @@ module REXML
         matches = @value.scan(PEREFERENCE_RE)
         rv = @value.clone
         if @parent
+          sum = 0
           matches.each do |entity_reference|
             entity_value = @parent.entity( entity_reference[0] )
+            if sum + entity_value.bytesize > Security.entity_expansion_text_limit
+              raise "entity expansion has grown too large"
+            else
+              sum += entity_value.bytesize
+            end
             rv.gsub!( /%#{entity_reference.join};/um, entity_value )
           end
         end
@@ -151,6 +158,7 @@ module REXML
 
   # This is a set of entity constants -- the ones defined in the XML
   # specification.  These are +gt+, +lt+, +amp+, +quot+ and +apos+.
+  # CAUTION: these entities does not have parent and document
   module EntityConst
     # +>+
     GT = Entity.new( 'gt', '>' )

@@ -1,3 +1,4 @@
+# frozen_string_literal: false
 module REXML
   module Formatters
     class Default
@@ -21,8 +22,8 @@ module REXML
       def write( node, output )
         case node
 
-        when Document 
-          if node.xml_decl.encoding != "UTF-8" && !output.kind_of?(Output)
+        when Document
+          if node.xml_decl.encoding != 'UTF-8' && !output.kind_of?(Output)
             output = Output.new( output, node.xml_decl.encoding )
           end
           write_document( node, output )
@@ -72,7 +73,7 @@ module REXML
 
         if node.children.empty?
           output << " " if @ie_hack
-          output << "/" 
+          output << "/"
         else
           output << ">"
           node.children.each { |child|

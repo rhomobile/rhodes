@@ -1,3 +1,4 @@
+# frozen_string_literal: false
 require 'rexml/formatters/pretty'
 
 module REXML
@@ -31,13 +32,12 @@ module REXML
         output << ' '*@level
         if node.children.empty?
           output << " " if @ie_hack
-          output << "/" 
+          output << "/"
         else
           output << ">"
           # If compact and all children are text, and if the formatted output
           # is less than the specified width, then try to print everything on
           # one line
-          skip = false
           @level += @indentation
           node.children.each { |child|
             write( child, output )
