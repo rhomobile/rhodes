@@ -835,7 +835,7 @@ namespace "config" do
         $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
       end
 
-      AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:25.2.0')
+      AndroidTools::MavenDepsExtractor.instance.add_dependency('androidx.core:core:1.0.0')
 
       #setup_ndk($androidndkpath, $found_api_level, 'arm')
       $abis = $app_config['android']['abis'] if $app_config["android"]
@@ -1175,11 +1175,11 @@ namespace "config" do
 
       AndroidTools::MavenDepsExtractor.instance.extract_all
 
-      if !AndroidTools::MavenDepsExtractor.instance.have_v4_support_lib?
-        v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
-        raise "Support-v4 library was not found neither in SDK extras nor in m2 repository" if v4jar.size !=1
-        $v4support_classpath = v4jar.first
-      end
+      #if !AndroidTools::MavenDepsExtractor.instance.have_v4_support_lib?
+      #  v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
+      #  raise "Support-v4 library was not found neither in SDK extras nor in m2 repository" if v4jar.size !=1
+      #  $v4support_classpath = v4jar.first
+      #end
 
 
       print_timestamp('android:extensions FINISH')

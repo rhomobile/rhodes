@@ -268,6 +268,7 @@ class MavenDepsExtractor
     #dependencies = @dependencies.values.flatten.map { |d| Hash[ ["grp_id","art_id","ver"].zip(split_dependency(d)) ] }
     dependencies = []
 
+    #exit 1
     require 'nokogiri'
     Dir.glob(File.join(current_path, "*.pom")).each do |pom|
       doc = File.open(File.join(pom)) { |f| Nokogiri::XML(f) }
