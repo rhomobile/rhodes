@@ -32,7 +32,12 @@ import android.app.NotificationManager;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
+
+import android.app.NotificationChannel;
+import android.app.PendingIntent;
+import android.net.Uri;
+import android.util.Log;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.rhomobile.rhodes.util.ContextFactory;
@@ -50,6 +55,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import android.os.Handler;
+import com.rhomobile.rhodes.fcm.FCMFacade;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 
 public class FCMIntentService extends FirebaseMessagingService {
@@ -60,6 +67,26 @@ public class FCMIntentService extends FirebaseMessagingService {
     
     private static FirebaseMessagingService savedService = null;
     private static Map<String, Intent> savedIntents = new HashMap<String, Intent>();
+
+    /*public FCMIntentService(){
+        super();
+        
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if (!task.isSuccessful()) {
+                    Logger.I(TAG, "FCM: getInstanceId failed" + task.getException());
+                    return;
+                }
+                FCMFacade.refreshToken();
+            }
+        });
+    }*/
+
+    @Override
+    public void onNewToken(String s) {
+        Log.e("NEW_TOKEN", s);
+    }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -116,7 +143,7 @@ public class FCMIntentService extends FirebaseMessagingService {
         Logger.W(TAG, "FCM: onDeletedMessages()");
         
     }
-
+/*
     @Override
     synchronized public void handleIntent(Intent intent) {
         Logger.W(TAG, "FCM: onHandleIntent()");
@@ -134,13 +161,13 @@ public class FCMIntentService extends FirebaseMessagingService {
         }
         super.handleIntent(intent);        
     }
-
+*/
     public static void tryToHandleIntent(String value){
         try{
             if (savedService != null){
                 Logger.W(TAG, "FCM: tryToHandleIntent() - trying to handle intent");
                 if (savedIntents.containsKey(value)){
-                    savedService.handleIntent(savedIntents.get(value));
+                    //savedService.handleIntent(savedIntents.get(value));
                     Logger.W(TAG, "FCM: tryToHandleIntent() - intent handled");
                 }
             }
