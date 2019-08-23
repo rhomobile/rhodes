@@ -9,11 +9,12 @@ android:
   library_deps: [extras/google/google_play_services/libproject/google-play-services_lib]
   source_list: ext/android/ext_java.files
   maven_deps:
-  #- 'com.google.firebase:firebase-core:17.1.0'
+  - 'com.google.firebase:firebase-core:16.0.0'
   - 'com.google.firebase:firebase-messaging:18.0.0'
   - 'com.google.firebase:firebase-auth:17.0.0'
-  #- 'com.google.firebase:firebase-analytics:17.1.0'
-  #- 'com.google.android.gms:play-services-auth:16.0.0'
+  - 'com.google.android.gms:play-services-auth:16.0.0'
+  - 'com.google.gms:google-services:4.2.0'
+  - 'com.google.firebase:firebase-crash:12.0.0'
   adds: ext/android/res
 libraries: ['fcm-push']
 xml_api_paths: ext/fcm.xml
