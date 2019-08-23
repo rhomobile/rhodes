@@ -154,6 +154,7 @@ def createXmlFromJson()
   add_data_to_string("google_api_key", "current_key") if $jsonfile
   
   if ENV["CUSTOM_FCM_APPLICATION_ID"].nil?
+    ENV["CUSTOM_FCM_APPLICATION_ID"] = $jsonfile.scan(/"mobilesdk_app_id".*\".*\"/).last.scan(/:.*\".*\"/).last.scan(/\".*\"/).last.gsub("\"","")
     add_data_to_string("google_app_id", "mobilesdk_app_id") if $jsonfile
   else
     $xmlFileWithDataFromJson << "\n\t<string name=\"google_app_id\" translatable=\"false\">" <<  

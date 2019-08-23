@@ -102,7 +102,6 @@ public final class FCMFacade {
                 Logger.E(TAG, "FCM: poblems on building options: " + e);
                 e.printStackTrace();
             }
-
             try{
                 FirebaseApp.initializeApp(ContextFactory.getContext(), options);
                 Logger.T(TAG, "FCM: initialization of application");
@@ -111,7 +110,9 @@ public final class FCMFacade {
                 e.printStackTrace();
             }
             try{
-                FirebaseApp.getInstance();
+                if (FirebaseApp.getInstance()==null){
+                    Logger.T(TAG, "FCM: firebase app is null"); 
+                }
                 Logger.T(TAG, "FCM: Firebase Inited");                
             }catch(Exception e){
                 Logger.E(TAG, "FCM: poblems on getting instance: " + e);
@@ -129,15 +130,15 @@ public final class FCMFacade {
 
             new Thread(new Runnable() {
                 public void run() {
-                    while (FirebaseInstanceId.getInstance() == null){
+                    while (FirebaseInstanceId.getInstance(FirebaseApp.getInstance()) == null){
                         try{
                             Thread.sleep(1000);
                         }catch(Exception e){
-                            
+
                         }
                         Logger.T(TAG, "FCM: FirebaseInstanceId is null");
                     }
-                    FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    FirebaseInstanceId.getInstance(FirebaseApp.getInstance()).getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
                     public void onComplete(Task<InstanceIdResult> task) {
                             if (task == null || !task.isSuccessful()) {
