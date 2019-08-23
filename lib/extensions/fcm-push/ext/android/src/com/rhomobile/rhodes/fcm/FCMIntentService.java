@@ -68,10 +68,10 @@ public class FCMIntentService extends FirebaseMessagingService {
     private static FirebaseMessagingService savedService = null;
     private static Map<String, Intent> savedIntents = new HashMap<String, Intent>();
 
-    /*public FCMIntentService(){
+    public FCMIntentService(){
         super();
         
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+        /*FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
             @Override
             public void onComplete(@NonNull Task<InstanceIdResult> task) {
                 if (!task.isSuccessful()) {
@@ -80,12 +80,15 @@ public class FCMIntentService extends FirebaseMessagingService {
                 }
                 FCMFacade.refreshToken();
             }
-        });
-    }*/
+        });*/
+        Logger.I(TAG, "FCM service started");
+    }
 
     @Override
-    public void onNewToken(String s) {
-        Log.e("NEW_TOKEN", s);
+    public void onNewToken(String token) {
+       Logger.I(TAG, "FCM: on new token: " + token);
+       super.onNewToken(token);
+       FCMFacade.refreshToken();
     }
 
     @Override

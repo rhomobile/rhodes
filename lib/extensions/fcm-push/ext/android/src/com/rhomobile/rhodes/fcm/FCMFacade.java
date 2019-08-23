@@ -46,6 +46,9 @@ import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.extmanager.RhoExtManagerImpl;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 public final class FCMFacade {
     private static final String TAG = FCMFacade.class.getSimpleName();
@@ -118,25 +121,43 @@ public final class FCMFacade {
   
         refreshToken();  
 
-        
-
     }
     public static void refreshToken(){
         try{
             Logger.T(TAG, "FCM: registation of application");
             clientToken = "";
-            clientToken = FirebaseInstanceId.getInstance().getToken();
-            if ((clientToken != "")&&(clientToken != null)){
-                PushContract.handleRegistration(ContextFactory.getContext(), clientToken, FCMFacade.FCM_PUSH_CLIENT);
-                Logger.T(TAG, "FCM: registation successfully");
-            }else{
-                clientToken = "";
-                Logger.T(TAG, "FCM: can't get token, try to refresh later");
-            }
+
+            new Thread(new Runnable() {
+                public void run() {
+                    while (FirebaseInstanceId.getInstance() == null){
+                        try{
+                            Thread.sleep(1000);
+                        }catch(Exception e){
+                            
+                        }
+                        Logger.T(TAG, "FCM: FirebaseInstanceId is null");
+                    }
+                    FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(Task<InstanceIdResult> task) {
+                            if (task == null || !task.isSuccessful()) {
+                                Logger.T(TAG, "FCM: can't get token, try to refresh later: " + task.getException());
+                                return;
+                            }
+                            clientToken = task.getResult().getToken();
+                            PushContract.handleRegistration(ContextFactory.getContext(), clientToken, FCMFacade.FCM_PUSH_CLIENT);
+                            Logger.T(TAG, "FCM: registation successfully, token = " + clientToken);
+                        }
+                    });
+                }
+            }).start();
+
+
+            
         }catch(Exception exc){
-            Logger.T(TAG, "FCM: can't handle registation");
+            Logger.T(TAG, "FCM: can't handle registation: " + exc);
         }
-        Logger.T(TAG, "FCM: token = " + clientToken);
+        
     }
 
 }
