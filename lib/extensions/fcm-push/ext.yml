@@ -10,8 +10,8 @@ android:
   source_list: ext/android/ext_java.files
   maven_deps:
   #- 'com.google.firebase:firebase-core:17.1.0'
-  - 'com.google.firebase:firebase-messaging:20.0.0'
-  - 'com.google.firebase:firebase-auth:19.0.0'
+  - 'com.google.firebase:firebase-messaging:18.0.0'
+  - 'com.google.firebase:firebase-auth:17.0.0'
   #- 'com.google.firebase:firebase-analytics:17.1.0'
   #- 'com.google.android.gms:play-services-auth:16.0.0'
   adds: ext/android/res
