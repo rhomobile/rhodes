@@ -10,8 +10,8 @@ import android.os.Environment;
 import com.rhomobile.rhodes.Logger;
 
 
-import android.support.v4.content.PermissionChecker;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.PermissionChecker;
+import androidx.core.content.ContextCompat;
 import android.content.pm.PackageManager;
 import com.rhomobile.rhodes.RhodesActivity;
 import android.Manifest;
