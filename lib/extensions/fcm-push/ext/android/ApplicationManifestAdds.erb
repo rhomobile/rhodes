@@ -1,28 +1,24 @@
+<meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
+
 <service android:exported="false" android:name="com.rhomobile.rhodes.fcm.FCMIntentService">
 	<intent-filter android:priority="900">
 	    <action android:name="com.google.firebase.MESSAGING_EVENT"/>
 	</intent-filter>
 </service>
 
-<service android:name="com.google.android.gms.measurement.AppMeasurementService"
-         android:enabled="true"
-         android:exported="false"/>
+<provider
+    android:name="com.google.firebase.provider.FirebaseInitProvider"
+    android:authorities="com.rhomobile.firebasepushtest.firebaseinitprovider"
+    android:exported="false"
+    android:initOrder="100" />
 
-<receiver android:exported="false" android:name="com.google.firebase.iid.FirebaseInstanceIdInternalReceiver"/>
-<service android:exported="true" android:name="com.google.firebase.iid.FirebaseInstanceIdService">
-    <intent-filter android:priority="900">
-        <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-    </intent-filter>
+<service
+    android:name="com.google.firebase.components.ComponentDiscoveryService"
+    android:exported="false" >
+    <meta-data
+        android:name="com.google.firebase.components:com.google.firebase.iid.Registrar"
+        android:value="com.google.firebase.components.ComponentRegistrar" />
 </service>
-
-<receiver android:exported="true" android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver" android:permission="com.google.android.c2dm.permission.SEND">
-    <intent-filter android:priority="1000">
-        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-        <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
-        <category android:name="<%=@appPackageName%>"/>
-    </intent-filter>
-</receiver>
-
 
 <receiver
     android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
@@ -33,51 +29,6 @@
     </intent-filter>
 </receiver>
 
-<meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
-
-<receiver
-    android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
-    android:enabled="true"
-    android:exported="false" >
-</receiver>
-
-<receiver
-    android:name="com.google.android.gms.measurement.AppMeasurementInstallReferrerReceiver"
-    android:enabled="true"
-    android:exported="true"
-    android:permission="android.permission.INSTALL_PACKAGES" >
-    <intent-filter>
-        <action android:name="com.android.vending.INSTALL_REFERRER" />
-    </intent-filter>
-</receiver>
-   
-<service
-    android:name="com.google.android.gms.measurement.AppMeasurementJobService"
-    android:enabled="true"
-    android:exported="false"
-    android:permission="android.permission.BIND_JOB_SERVICE" />
-
-<service
-    android:name="com.google.firebase.components.ComponentDiscoveryService"
-    android:exported="false" >
-    <meta-data
-        android:name="com.google.firebase.components:com.google.firebase.auth.FirebaseAuthRegistrar"
-        android:value="com.google.firebase.components.ComponentRegistrar" />
-</service>
-
-
-<provider
-    android:name="com.google.firebase.provider.FirebaseInitProvider"
-    android:authorities="<%=ENV["CUSTOM_FCM_APPLICATION_ID"]%>.firebaseinitprovider"
-    android:exported="false"
-    android:initOrder="100" />
-
-<service android:name="com.google.firebase.components.ComponentDiscoveryService" >
-    <meta-data
-        android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
-        android:value="com.google.firebase.components.ComponentRegistrar" />
-</service>
-
 <service
     android:name="com.google.firebase.messaging.FirebaseMessagingService"
     android:exported="false" >
@@ -86,7 +37,3 @@
     </intent-filter>
 </service>
 
-<service
-    android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
-    android:exported="true"
-    android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION" />

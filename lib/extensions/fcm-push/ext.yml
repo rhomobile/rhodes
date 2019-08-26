@@ -11,10 +11,9 @@ android:
   maven_deps:
   - 'com.google.firebase:firebase-core:16.0.0'
   - 'com.google.firebase:firebase-messaging:18.0.0'
-  - 'com.google.firebase:firebase-auth:17.0.0'
   - 'com.google.android.gms:play-services-auth:16.0.0'
   - 'com.google.gms:google-services:4.2.0'
-  - 'com.google.firebase:firebase-crash:12.0.0'
+  - 'com.android.support:support-v4:27.0.0'
   adds: ext/android/res
 libraries: ['fcm-push']
 xml_api_paths: ext/fcm.xml
