@@ -69,10 +69,32 @@ public class FCMListener extends AbstractRhoListener{
     public void onResume(RhodesActivity activity) { 
          Logger.W("fcm", "FCM: onResume");
          FCMIntentService.resume();
+         
+    }
+    @Override
+    public void onNewIntent(RhodesActivity activity, Intent intent) { 
+        Logger.W("fcm", "FCM: onNewIntent");
+        if ((intent != null)&&(intent.getExtras() != null)) {
+        	try{
+	            for (String key : intent.getExtras().keySet()) {
+	                Object value = intent.getExtras().get(key);
+	                Logger.W(TAG, "Key: " + key + " Value: " + value);
+	                if (key.equals("google.message_id")){
+	                    FCMIntentService.tryToHandleIntent((String)value);
+	                }
+	            }
+	        }catch(Exception e){
+
+	        }
+        }else{
+            Logger.W(TAG, "New intent is null");
+        }
+        
     }
 
     @Override
     public void onCreateApplication(IRhoExtManager extManager) {
         Logger.W("fcm", "FCM: onCreateApplication");
+		//extManager.addRhoListener(this);
     }
 }
