@@ -2036,10 +2036,12 @@ namespace "config" do
 
     if $app_config["build"] and $app_config["build"].casecmp("release") == 0
       $debug = false
-    else
+    elsif $app_config["build"] and $app_config["build"].casecmp("debug") == 0
       $debug = true
+    else
+      puts "\n\n\n\n\nYou must choose configuration manually in build.yml file. Type 'build: release' or 'build: debug' in root section!\n\n\n\n"
+      exit 1
     end
-
     # merge extensions from platform list to global one
     $app_config['extensions'] = [] unless $app_config['extensions'] and $app_config['extensions'].is_a? Array
     if $app_config[$config['platform']] and $app_config[$config['platform']]['extensions'] and $app_config[$config['platform']]['extensions'].is_a? Array
