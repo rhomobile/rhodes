@@ -129,7 +129,7 @@ def cc_def_args
     args << "-D__ANDROID_API__=#{$apilevel}" if $apilevel
     args << "-DHAVE_RLIM_T" if $have_rlim_t
     unless $debug
-      args << "-O2"
+      args << "-O1"
       args << "-DNDEBUG"
     else
       args << "-O0"

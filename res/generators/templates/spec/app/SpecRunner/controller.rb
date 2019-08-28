@@ -5,7 +5,7 @@ class SpecRunnerController < Rho::RhoController
 
   #GET /SpecRunner
   def index
-    GC.enable() unless Rho::System.getProperty('platform') == 'Blackberry'
+    GC.enable
   
     puts 'before render'
   
