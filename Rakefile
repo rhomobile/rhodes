@@ -2040,7 +2040,7 @@ namespace "config" do
       $debug = true
     else
       puts "\n\n\n\n\nYou must choose configuration manually in build.yml file. Type 'build: release' or 'build: debug' in root section!\n\n\n\n"
-      exit 1
+      $debug = true
     end
     # merge extensions from platform list to global one
     $app_config['extensions'] = [] unless $app_config['extensions'] and $app_config['extensions'].is_a? Array
