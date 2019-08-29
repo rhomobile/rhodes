@@ -1049,7 +1049,7 @@ namespace "build" do
               ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
               ENV['RHO_VSCMNTOOLS'] = $vscommontools
 
-              if($debug and !$rhosimulator_build)
+              if($debug and !$rhosimulator_build and $rhodes_as_lib)
                 ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release"
               end
 
@@ -1564,7 +1564,7 @@ namespace "build" do
               ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
               ENV['RHO_VSCMNTOOLS'] = $vscommontools
 
-              if($debug and !$rhosimulator_build)
+              if($debug and !$rhosimulator_build and $rhodes_as_lib)
                 ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release" 
               end
 
@@ -1846,8 +1846,7 @@ namespace "device" do
 
   def createWin32Production(skip_deployqt = false, skip_nsis = false)
     if $debug
-      puts "\n\n\n\n\nYou can't build production in debug mode. Type 'build: release' instead of 'build: debug' in root section of your build.yml.\n\n\n\n"
-      exit 1
+      puts "\n\n\nYou shouldn't build a production in debug mode. Type 'build: release' instead of 'build: debug' in root section of your build.yml.\n\n"
     end
     out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
     puts "out_dir - "  + out_dir
