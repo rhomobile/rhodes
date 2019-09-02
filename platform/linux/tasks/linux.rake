@@ -263,7 +263,7 @@ namespace "device" do
         puts "The current system is Ubuntu"
         $deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
       elsif name_out.downcase().include? "arch"
-        $deps = "qt5-base-5.13.0-7, qt5-connectivity-5.13.0-1, qt5-declarative-5.13.0-1, qt5-imageformats-5.13.0-2, qt5-multimedia-5.13.0-1, qt5-networkauth-5.13.0-1, qt5-quickcontrols2-5.13.0-1, qt5-tools-5.13.0-2, qt5-translations-5.13.0-1, qt5-webchannel-5.13.0-1, qt5-webengine-5.13.0-4, qt5-webglplugin-5.13.0-1, qt5-websockets-5.13.0-1"
+        $deps = "qt5-base-5.13.0, qt5-connectivity-5.13.0, qt5-declarative-5.13.0, qt5-imageformats-5.13.0, qt5-multimedia-5.13.0, qt5-networkauth-5.13.0, qt5-quickcontrols2-5.13.0, qt5-tools-5.13.0, qt5-translations-5.13.0, qt5-webchannel-5.13.0, qt5-webengine-5.13.0, qt5-webglplugin-5.13.0, qt5-websockets-5.13.0"
         puts "The current system is Archlinux"
       else
         puts "Fail! The current system has not been recognized."
