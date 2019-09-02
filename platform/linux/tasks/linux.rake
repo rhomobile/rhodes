@@ -256,7 +256,19 @@ end
 namespace "device" do
   namespace "linux" do
     task :production => ["build:linux"] do
-      ldd_out = Jake.run("ldd", [File.join($target_path, $appname)])
+      #ldd_out = Jake.run("ldd", [File.join($target_path, $appname)])
+      name_out = Jake.run('uname', ["-a"])
+
+      if name_out.downcase().include? "ubuntu"
+        puts "The current system is Ubuntu"
+        $deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
+      elsif name_out.downcase().include? "arch"
+        $deps = "qt5"
+        puts "The current system is Archlinux"
+      else
+        puts "Fail! The current system has not been recognized."
+        exit 1
+      end          
       
       opt_path = File.join($target_path, "opt", "#{$appname}")
       if not File.directory?(opt_path)
@@ -282,41 +294,42 @@ namespace "device" do
         file.write("Version=#{$version_app}\n") 
         file.write("Name=#{$appname}\n") 
         file.write("GenericName=\"Web Browser\"\n") 
-        file.write("Exec=env LD_LIBRARY_PATH=\"/opt/#{$appname}/app_libs\" ./opt/#{$appname}/#{$appname}\n") 
+        #file.write("Exec=env LD_LIBRARY_PATH=\"/opt/#{$appname}/app_libs\" /opt/#{$appname}/#{$appname}\n") 
+        file.write("Exec=/opt/#{$appname}/#{$appname}\n") 
         file.write("Icon=/opt/#{$appname}/icon.ico\n") 
       }
       
-      app_libs = File.join($target_path, "opt", "#{$appname}", "app_libs")
-      if not File.directory?(app_libs)
-        FileUtils.mkdir_p app_libs
-      end
+      #app_libs = File.join($target_path, "opt", "#{$appname}", "app_libs")
+      #if not File.directory?(app_libs)
+      #  FileUtils.mkdir_p app_libs
+      #end
 
-      depsarray = ldd_out.scan( /(\/[\/\.\w\-\+]*\.so[\.\d]*)/)
-      depsarray.uniq.each{ 
-        |dep| appdep = dep[0]
+      #depsarray = ldd_out.scan( /(\/[\/\.\w\-\+]*\.so[\.\d]*)/)
+      #depsarray.uniq.each{ 
+      #  |dep| appdep = dep[0]
 
-        target_dep_name = appdep.scan(/\/(libQ[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libicu[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libav[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libwebp[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libre[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libva[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libopenmp[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libopenj[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libvpx[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libx26[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libswresampl[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libevent[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libbluray[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libchrom[\.\w\-\+]*\.so[\.\d]*)/)
-        target_dep_name += appdep.scan(/\/(libmpg[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name = appdep.scan(/\/(libQ[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libicu[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libav[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libwebp[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libre[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libva[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libopenmp[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libopenj[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libvpx[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libx26[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libswresampl[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libevent[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libbluray[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libchrom[\.\w\-\+]*\.so[\.\d]*)/)
+      #  target_dep_name += appdep.scan(/\/(libmpg[\.\w\-\+]*\.so[\.\d]*)/)
 
-        target_dep_name.uniq.each{ 
-          |deplibname| 
-          cp appdep, File.join(app_libs, deplibname[0])
-          puts "Adding lib #{appdep}" 
-        }
-      }
+      #  target_dep_name.uniq.each{ 
+      #    |deplibname| 
+      #    cp appdep, File.join(app_libs, deplibname[0])
+      #    puts "Adding lib #{appdep}" 
+      #  }
+      #}
       
       control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "debian_package", "control.erb")
       erb = ERB.new control_template
