@@ -2294,6 +2294,15 @@ namespace "build" do
           Jake.run($aapt2, args)
         end
 
+        res_dirs = AndroidTools::MavenDepsExtractor.instance.aapt2_res_dirs
+        res_dirs.each do |dir|
+          Dir.glob(File.join(dir,'**','*.*')) do |filepath|
+            args = ["compile", PathToWindowsWay(filepath), "-o", PathToWindowsWay($appres_flats)]
+            args << '-v' if USE_TRACES
+            Jake.run($aapt2, args)
+          end
+        end
+
         flat_args = []
         Dir.glob(File.join($appres_flats,'**','*.flat')) do |filepath|
           flat_args << PathToWindowsWay(filepath)
@@ -2315,7 +2324,6 @@ namespace "build" do
           "--java", PathToWindowsWay($app_rjava_dir), 
           "--output-text-symbols", PathToWindowsWay(File.join($app_rjava_dir, 'R.txt'))
         ]
-        #args += AndroidTools::MavenDepsExtractor.instance.aapt_args
       else
 
         args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
@@ -2328,8 +2336,15 @@ namespace "build" do
         require 'nokogiri'
         FormatManifestToAarCompat($appmanifest)
         Jake.run($aapt2, args)
-        cp_r File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
-        rm_rf File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')
+
+        if(File.exists?(File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')))
+          cp_r File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
+          rm_rf File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')
+        elsif (File.exists?(File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java')))
+          cp_r File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java'), File.join($app_rjava_dir, 'R.java')
+          rm_rf File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java')
+        end
+        
       else
         Jake.run($aapt, args)
       end
@@ -2669,7 +2684,7 @@ def FormatManifestToAarCompat(path)
   end
 
   application.each do |node|
-    node["tools:node"] = "merge"
+    node["tools:node"] = "merge" if node["tools:node"] != "replace"
     if node["android:name"] == 'com.rhomobile.rhodes.RhodesActivity'
       intent_filters = node.xpath(".//*/*")
       intent_filters.each do |child|
@@ -2704,6 +2719,12 @@ def prepare_aar_package
     rm_rf File.join($allclasses, 'classes.jar')
   end
 
+  if(File.exists?(File.join($allclasses, 'com', $vendor , $appname)))  
+    rm_rf File.join($allclasses, 'com', $vendor , $appname)
+  elsif(File.exists?(File.join($allclasses, $app_package_name.split('.'))))  
+    rm_rf File.join($allclasses, $app_package_name.split('.'))
+  end
+
   alljars.each do |jar|
     Zip::File.open(jar) do |archive|
       archive.glob("**/*.*").each do |pfile|
@@ -2716,7 +2737,13 @@ def prepare_aar_package
     end
   end
 
-  rm_rf File.join($allclasses, 'com', $vendor , $appname)
+  #res_dirs = AndroidTools::MavenDepsExtractor.instance.aapt2_res_dirs
+  #res_dirs.each do |dir|
+  #  Dir.glob(File.join(dir,'**')) do |filepath|
+  #    #cp_r filepath, File.join($tmpdir, 'res', File.basename(filepath) + '-' + File.basename(File.expand_path("..", dir)))
+  #    cp_r filepath, File.join($tmpdir, 'res', File.basename(filepath))
+  #  end
+  #end
 
   Jake.run($jarbin, args, $allclasses)
 
@@ -2731,12 +2758,6 @@ def prepare_aar_package
   unless $?.success?
     raise "Error packaging classes.jar file"
   end
-
-  #args = ["uf", resourcepkg, '-C', '.', 'assets']
-  #Jake.run($jarbin, args, $tmpdir)
-  #unless $?.success?
-  #  raise "Error packaging classes.jar file"
-  #end
 
   mkdir_p File.join($tmpdir, 'jni')
 
@@ -2766,8 +2787,6 @@ def prepare_aar_package
   FormatManifestToAarCompat($appmanifest)
   args = ["uf", resourcepkg, 'AndroidManifest.xml']
   Jake.run($jarbin, args, File.dirname($appmanifest))
-
-  #$appmanifest
 
 end
 
