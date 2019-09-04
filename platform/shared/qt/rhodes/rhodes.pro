@@ -145,7 +145,7 @@ win32 {
 
 unix:!macx {
     TEMPLATE = app
-    QMAKE_LFLAGS += -no-pie
+    #QMAKE_LFLAGS += -no-pie
     !contains(DEFINES, OS_SAILFISH) {
     DESTDIR = $$PWD/../../../linux/bin/RhoSimulator
 }

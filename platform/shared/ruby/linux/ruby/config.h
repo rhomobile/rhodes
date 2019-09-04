@@ -213,7 +213,8 @@
 #define HAVE_CRYPT 1
 #define HAVE_DUP2 1
 #define HAVE_ERF 1
-#define HAVE_EXPLICIT_BZERO 1
+//RHO alt linux
+//#define HAVE_EXPLICIT_BZERO 1
 #define HAVE_FFS 1
 #define HAVE_FINITE 1
 #define HAVE_FLOCK 1
@@ -240,7 +241,8 @@
 #define HAVE__LONGJMP 1
 #define HAVE_ATAN2L 1
 #define HAVE_ATAN2F 1
-#define HAVE_CHROOT 1
+//RHO alt linux
+//#define HAVE_CHROOT 1
 #define HAVE_CLOCK_GETTIME 1
 #define HAVE_COSH 1
 #define HAVE_CRYPT_R 1
