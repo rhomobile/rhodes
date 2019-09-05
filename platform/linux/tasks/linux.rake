@@ -333,12 +333,18 @@ namespace "device" do
 				$buildroot = File.join($app_path, "bin", "target", "linux")
 
 
-				#$bin_file = "linux.tar"
-				#$bin_archive = File.join($buildroot, $bin_file)
+				$bin_file = "linux.tar"
+				$bin_archive = File.join($buildroot, $bin_file)
 				#rm $bin_archive if File.exists? $bin_archive
 				#Jake.run3("tar -cvf linux.tar *", $buildroot)
-				#FileUtils.mv($bin_archive, File.join($buildroot, "#{$appname}.tar"))
-				$bin_archive = File.join($buildroot, "#{$appname}.tar")
+				FileUtils.mkdir_p File.join($buildroot, "SOURCES")
+				FileUtils.mkdir_p File.join($buildroot, "BUILD")
+				FileUtils.mkdir_p File.join($buildroot, "BUILDROOT")			
+				FileUtils.mkdir_p File.join($buildroot, "RPMS")
+				FileUtils.mkdir_p File.join($buildroot, "SPECS")
+				FileUtils.mkdir_p File.join($buildroot, "SRPMS")
+				FileUtils.mv($bin_archive, File.join($buildroot, "SOURCES", "#{$appname}.tar"))
+				$bin_archive = File.join($buildroot, "SOURCES", "#{$appname}.tar")
 
 
 				FileUtils.rm_r File.join($buildroot, "opt") if File.exists? File.join($buildroot, "opt")
@@ -350,7 +356,7 @@ namespace "device" do
 				erb = ERB.new control_template
 				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
 
-				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" -ba rpm.spec", $buildroot)
+				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" -bb rpm.spec", $buildroot)
 			end
 		end
 		task :production => ["device:linux:production:deb"] do

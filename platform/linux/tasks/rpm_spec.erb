@@ -13,15 +13,16 @@ BuildArch:  <%= $architecture %>
 %description
 Rhodes application.
 
-%mk_path
-
 %prep
-cp <%= $bin_archive %> %{_sourcedir}
+
+%setup 
 
 %install
+cp -rfa * %{_builddir}
 
 %post
  
 %postun
 
 %files
+#/*
