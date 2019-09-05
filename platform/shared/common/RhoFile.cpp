@@ -82,6 +82,10 @@ extern "C"{
     extern "C" int  rename(const char *, const char *);
 #endif
 
+#ifdef OS_MACOSX
+extern "C" int rhodes_ios_delete_file_via_platform_api(const char* filePath);
+#endif
+
 namespace rho{
 namespace common{
 
@@ -486,9 +490,16 @@ unsigned int CRhoFile::deleteFile( const char* szFilePath ){
 #if defined(WINDOWS_PLATFORM)
     return (unsigned int)_unlink(szFilePath);
 #else
+#ifdef OS_MACOSX
+    // For support Citrix on iOS
+    return rhodes_ios_delete_file_via_platform_api(szFilePath);
+#else
     return (unsigned int)remove(szFilePath);
 #endif
+#endif
 }
+
+
 
 unsigned int CRhoFile::deleteEmptyFolder( const char* szFilePath ){
 #if defined(WINDOWS_PLATFORM)
