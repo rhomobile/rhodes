@@ -333,19 +333,24 @@ namespace "device" do
 				$buildroot = File.join($app_path, "bin", "target", "linux")
 
 
-				$bin_file = "linux.tar.gz"
-				$bin_archive = File.join($buildroot, $bin_file)
+				#$bin_file = "linux.tar"
+				#$bin_archive = File.join($buildroot, $bin_file)
 				#rm $bin_archive if File.exists? $bin_archive
-				#Jake.run3("tar -czvf linux.tar.gz *", $buildroot)
-				
-				rm File.join($buildroot, "opt") if File.exists? File.join($buildroot, "opt")
-				rm File.join($buildroot, "usr") if File.exists? File.join($buildroot, "usr")
+				#Jake.run3("tar -cvf linux.tar *", $buildroot)
+				#FileUtils.mv($bin_archive, File.join($buildroot, "#{$appname}.tar"))
+				$bin_archive = File.join($buildroot, "#{$appname}.tar")
+
+
+				FileUtils.rm_r File.join($buildroot, "opt") if File.exists? File.join($buildroot, "opt")
+				FileUtils.rm_r File.join($buildroot, "usr") if File.exists? File.join($buildroot, "usr")
 
 				$architecture = Jake.run("uname", ["-i"])
 
 				control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "rpm_spec.erb")
 				erb = ERB.new control_template
 				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
+
+				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" -ba rpm.spec", $buildroot)
 			end
 		end
 		task :production => ["device:linux:production:deb"] do

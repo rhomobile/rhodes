@@ -1,24 +1,22 @@
 %define appname <%= $appname %>
-%define _builddir <%= $buildroot %>
 
 Summary:    Fast and secure web browser
 Name:       %{appname}
 Version:    <%= $version_app %>
 Release:    1
 Group:      Applications/Internet
-License:    Proprietary
-Source0:    <%= $bin_archive %>
+License:    Proprietary  
+Source0:	<%= $appname %>.tar
 Vendor:     <%= $vendor %>
 BuildArch:  <%= $architecture %>
 
 %description
 Rhodes application.
 
+%mk_path
+
 %prep
-%setup -q -n <%= $bin_file %>
-
-
-%build
+cp <%= $bin_archive %> %{_sourcedir}
 
 %install
 
