@@ -255,104 +255,100 @@ end
 
 namespace "device" do
 	namespace "linux" do
-		task :production => ["build:linux"] do
-			#ldd_out = Jake.run("ldd", [File.join($target_path, $appname)])
-			name_out = Jake.run('uname', ["-a"])
-			isUbuntu = false
-			isArchlinux = false
-			isAltLinux = false
-			if name_out.downcase().include? "ubuntu"
-				puts "The current system is Ubuntu"
-				isUbuntu = true
-				$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
-			elsif name_out.downcase().include? "alt"
-				puts "The current system is Alt Linux"
-				isAltLinux = true
-				$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
-			elsif name_out.downcase().include? "arch"
-				puts "The current system is Archlinux not supported as production"
-				isArchlinux = true
-			  $deps = "qt5-multimedia-5.13.0-1, qt5-networkauth-5.13.0-1, qt5-quickcontrols2-5.13.0-1, qt5-tools-5.13.0-2  qt5-translations-5.13.0-1, qt5-webchannel-5.13.0-1, qt5-webengine-5.13.0-4, qt5-webglplugin-5.13.0-1, qt5-websockets-5.13.0-1"
-				exit 0
-			else
-				puts "Fail! The current system has not been recognized."
-				exit 0
-			end          
-			
-			opt_path = File.join($target_path, "opt", "#{$appname}")
-			if not File.directory?(opt_path)
-				FileUtils.mkdir_p opt_path
-			end
-			icon = File.join($app_path, "icon/icon.ico")
-			if !File.exist? icon
-				icon = File.join($startdir, "platform" , "wm", "rhodes", "resources", "icon.ico")
-			end
-			
-			cp icon, opt_path
-			FileUtils.mv(File.join($target_path, "rho"), opt_path, :verbose => true, :force => true)
-			FileUtils.mv(File.join($target_path, $appname), opt_path, :verbose => true, :force => true)
-			
-			desktop_path = File.join($target_path, "usr", "share", "applications")
-			if not File.directory?(desktop_path)
-				FileUtils.mkdir_p desktop_path
+		namespace "production" do
+			def createFolders()
+				opt_path = File.join($target_path, "opt", "#{$appname}")
+
+				if not File.directory?(opt_path)
+					FileUtils.mkdir_p opt_path
+				end
+				
+				icon = File.join($app_path, "icon/icon.ico")
+				if !File.exist? icon
+					icon = File.join($startdir, "platform" , "wm", "rhodes", "resources", "icon.ico")
+				end
+				
+				cp icon, opt_path
+				FileUtils.mv(File.join($target_path, "rho"), opt_path, :verbose => true, :force => true)
+				FileUtils.mv(File.join($target_path, $appname), opt_path, :verbose => true, :force => true)
+				
+				desktop_path = File.join($target_path, "usr", "share", "applications")
+				if not File.directory?(desktop_path)
+					FileUtils.mkdir_p desktop_path
+				end
+
+				File.open(File.join(desktop_path, "#{$appname}.desktop"), 'w') { |file| 
+					file.write("[Desktop Entry]\n") 
+					file.write("Type=Application\n") 
+					file.write("Version=#{$version_app}\n") 
+					file.write("Name=#{$appname}\n") 
+					file.write("GenericName=\"Web Browser\"\n") 
+					#file.write("Exec=env LD_LIBRARY_PATH=\"/opt/#{$appname}/app_libs\" /opt/#{$appname}/#{$appname}\n") 
+					file.write("Exec=/opt/#{$appname}/#{$appname}\n") 
+					file.write("Icon=/opt/#{$appname}/icon.ico\n") 
+				}
 			end
 
-			File.open(File.join(desktop_path, "#{$appname}.desktop"), 'w') { |file| 
-				file.write("[Desktop Entry]\n") 
-				file.write("Type=Application\n") 
-				file.write("Version=#{$version_app}\n") 
-				file.write("Name=#{$appname}\n") 
-				file.write("GenericName=\"Web Browser\"\n") 
-				#file.write("Exec=env LD_LIBRARY_PATH=\"/opt/#{$appname}/app_libs\" /opt/#{$appname}/#{$appname}\n") 
-				file.write("Exec=/opt/#{$appname}/#{$appname}\n") 
-				file.write("Icon=/opt/#{$appname}/icon.ico\n") 
-			}
-			
-			#app_libs = File.join($target_path, "opt", "#{$appname}", "app_libs")
-			#if not File.directory?(app_libs)
-			#  FileUtils.mkdir_p app_libs
-			#end
+			def addDepLibs()
+				ldd_out = Jake.run("ldd", [File.join($target_path, $appname)])
+				app_libs = File.join($target_path, "opt", "#{$appname}", "app_libs")
+				if not File.directory?(app_libs)
+				  FileUtils.mkdir_p app_libs
+				end
 
-			#depsarray = ldd_out.scan( /(\/[\/\.\w\-\+]*\.so[\.\d]*)/)
-			#depsarray.uniq.each{ 
-			#  |dep| appdep = dep[0]
+				depsarray = ldd_out.scan( /(\/[\/\.\w\-\+]*\.so[\.\d]*)/)
+				depsarray.uniq.each{ 
+				  |dep| appdep = dep[0]
 
-			#  target_dep_name = appdep.scan(/\/(libQ[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libicu[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libav[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libwebp[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libre[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libva[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libopenmp[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libopenj[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libvpx[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libx26[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libswresampl[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libevent[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libbluray[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libchrom[\.\w\-\+]*\.so[\.\d]*)/)
-			#  target_dep_name += appdep.scan(/\/(libmpg[\.\w\-\+]*\.so[\.\d]*)/)
-
-			#  target_dep_name.uniq.each{ 
-			#    |deplibname| 
-			#    cp appdep, File.join(app_libs, deplibname[0])
-			#    puts "Adding lib #{appdep}" 
-			#  }
-			#}
-			
-			control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "debian_package", "control.erb")
-			erb = ERB.new control_template
-	 
-			debian_dir = File.join($target_path, "DEBIAN")
-			if not File.directory?(debian_dir)
-				FileUtils.mkdir_p debian_dir
+				  target_dep_name = appdep.scan(/\/(libQ[\.\w\-\+]*\.so[\.\d]*)/)
+				  target_dep_name.uniq.each{ 
+				    |deplibname| 
+				    cp appdep, File.join(app_libs, deplibname[0])
+				    puts "Adding lib #{appdep}" 
+				  }
+				}
 			end
-			File.open(File.join(debian_dir, "control"), 'w' ) { |f| f.write erb.result binding }
 
-			Jake.run3('fakeroot dpkg-deb --build linux', File.join($app_path, "bin", "target"))
-			rm_rf $target_path
-			FileUtils.mkdir_p $target_path
-			FileUtils.mv(File.join($app_path, "bin", "target", "linux.deb"), File.join($target_path, "#{$appname}_#{$version_app}_amd64.deb"))
+			task :deb => ["build:linux"] do
+				createFolders()
+				$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"	
+
+				control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "control.erb")
+				erb = ERB.new control_template
+		 
+				debian_dir = File.join($target_path, "DEBIAN")
+				if not File.directory?(debian_dir)
+					FileUtils.mkdir_p debian_dir
+				end
+				File.open(File.join(debian_dir, "control"), 'w' ) { |f| f.write erb.result binding }
+
+				Jake.run3('fakeroot dpkg-deb --build linux', File.join($app_path, "bin", "target"))
+				rm_rf $target_path
+				FileUtils.mkdir_p $target_path
+				FileUtils.mv(File.join($app_path, "bin", "target", "linux.deb"), File.join($target_path, "#{$appname}_#{$version_app}_amd64.deb"))
+			end
+
+			task :rpm => ["config:linux"] do
+				#createFolders()
+				$buildroot = File.join($app_path, "bin", "target", "linux")
+
+
+				$bin_file = "linux.tar.gz"
+				$bin_archive = File.join($buildroot, $bin_file)
+				#rm $bin_archive if File.exists? $bin_archive
+				#Jake.run3("tar -czvf linux.tar.gz *", $buildroot)
+				
+				rm File.join($buildroot, "opt") if File.exists? File.join($buildroot, "opt")
+				rm File.join($buildroot, "usr") if File.exists? File.join($buildroot, "usr")
+
+				$architecture = Jake.run("uname", ["-i"])
+
+				control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "rpm_spec.erb")
+				erb = ERB.new control_template
+				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
+			end
+		end
+		task :production => ["device:linux:production:deb"] do
 		end
 	end
 end
