@@ -82,6 +82,10 @@ extern "C"{
     extern "C" int  rename(const char *, const char *);
 #endif
 
+#ifdef OS_MACOSX
+extern "C" int citrix_temporary_delete_file(const char* filePath);
+#endif
+
 namespace rho{
 namespace common{
 
@@ -482,11 +486,18 @@ bool CRhoFile::loadTextFile(const char* szFilePath, String& strFile)
     return result;
 }
 
+
 unsigned int CRhoFile::deleteFile( const char* szFilePath ){
 #if defined(WINDOWS_PLATFORM)
     return (unsigned int)_unlink(szFilePath);
 #else
+    
+    
+#ifdef OS_MACOSX
+    return citrix_temporary_delete_file(szFilePath);
+#else
     return (unsigned int)remove(szFilePath);
+#endif
 #endif
 }
 

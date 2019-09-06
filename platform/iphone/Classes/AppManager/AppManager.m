@@ -1575,3 +1575,72 @@ int ExecuteAppManager(HttpContextRef context, RouteRef route) {
 	HttpSendErrorToTheServer(context, 404, err);
 	return -1;
 }*/
+
+
+
+
+
+
+// return 0 if OK
+// return -1 if error
+int citrix_temporary_delete_file(const char* filePath) {
+    // NSLog(@"RhoAppManager: copy dst: %@", dst);
+    NSLog(@"$$$ citrix_temporary_delete_file() START");
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString* sPath = [NSString stringWithUTF8String:filePath];
+    NSLog(@"$$$ citrix_temporary_delete_file() path: %@", sPath);
+
+    // check exists
+    BOOL isExists = [fileManager fileExistsAtPath:sPath isDirectory:nil];
+    if (isExists) {
+        NSLog(@"$$$ citrix_temporary_delete_file() file is EXISTS");
+    }
+    else {
+        NSLog(@"$$$ citrix_temporary_delete_file() file NOT EXISTS");
+        return -1;
+    }
+    
+    // check is deletable
+    BOOL isDeletable = [fileManager isDeletableFileAtPath:sPath];
+    if (isDeletable) {
+        NSLog(@"$$$ citrix_temporary_delete_file() file is DELETABLE");
+    }
+    else {
+        NSLog(@"$$$ citrix_temporary_delete_file() file NOT DELETABLE");
+        return -1;
+    }
+
+    //attributes
+    NSError *error = nil;
+    NSDictionary* attribs = [fileManager attributesOfItemAtPath:sPath error:&error];
+
+    if (attribs == nil) {
+        NSLog(@"$$$ citrix_temporary_delete_file() error during get attribs, ERROR = %@", [error localizedDescription]);
+    }
+    else {
+        NSLog(@"$$$ citrix_temporary_delete_file() attribs = %@", attribs);
+    }
+    
+    
+    // delete
+    if (![fileManager removeItemAtPath:sPath error:&error]) {
+        NSLog(@"$$$ citrix_temporary_delete_file() error during delete file, ERROR = %@", [error localizedDescription]);
+        return -1;
+    }
+    else {
+        NSLog(@"$$$ citrix_temporary_delete_file() file was deleted");
+    }
+    
+    // check exists again
+    isExists = [fileManager fileExistsAtPath:sPath isDirectory:nil];
+    if (isExists) {
+        NSLog(@"$$$ citrix_temporary_delete_file() file after delete is EXISTS");
+    }
+    else {
+        NSLog(@"$$$ citrix_temporary_delete_file() file after delete NOT EXISTS");
+    }
+    
+    NSLog(@"$$$ citrix_temporary_delete_file() FINISH");
+    return 0;
+}
+

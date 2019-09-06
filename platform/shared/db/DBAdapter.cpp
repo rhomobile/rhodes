@@ -100,12 +100,28 @@ void SyncBlob_DeleteSchemaCallback(sqlite3_context* dbContext, int nArgs, sqlite
 {
     //LOG(INFO) + "SyncBlob_DeleteSchemaCallback";
 
+    LOG(ERROR)+"$$$ SyncBlob_DeleteSchemaCallback START";
+    
     const char* szValue = (char*)sqlite3_value_text(*ppArgs);
+    
+    if (szValue != NULL) {
+        LOG(ERROR)+"$$$ SyncBlob_DeleteSchemaCallback      szValue = " + szValue;
+    }
+    else {
+        LOG(ERROR)+"$$$ SyncBlob_DeleteSchemaCallback      szValue = NULL";
+    }
     if ( szValue && *szValue )
     {
+        LOG(ERROR)+"$$$ SyncBlob_DeleteSchemaCallback      (szValue && *szValue) = TRUE";
         String strFilePath = RHODESAPPBASE().resolveDBFilesPath(szValue);
+        LOG(ERROR)+"$$$ SyncBlob_DeleteSchemaCallback      strFilePath = " + strFilePath.c_str();
         CRhoFile::deleteFile(strFilePath.c_str());
+        LOG(ERROR)+"$$$ SyncBlob_DeleteSchemaCallback      CRhoFile::deleteFile() complete";
     }
+    else {
+        LOG(ERROR)+"$$$ SyncBlob_DeleteSchemaCallback      (szValue && *szValue) = FALSE";
+    }
+    LOG(ERROR)+"$$$ SyncBlob_DeleteSchemaCallback FINISH";
 }
 
 void SyncBlob_UpdateSchemaCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
