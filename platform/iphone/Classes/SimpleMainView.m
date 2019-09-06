@@ -329,7 +329,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     tb.autoresizesSubviews = YES;
     tb.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
  	
-	assert([tb retainCount] == 1);
+	//assert([tb retainCount] == 1);
     return tb;
 }
 
@@ -348,7 +348,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void)addToolbar:(NSDictionary*)bar_info {
     [self removeToolbar];
-    assert(!toolbar);
+    //assert(!toolbar);
     
     if (!bar_info)
         return;
@@ -637,11 +637,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void)viewDidLoad {
     UIView *root = self.view;
-    
+
     root.userInteractionEnabled = YES;
  	root.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	root.autoresizesSubviews = YES;
-    
+
 	if (nativeView) {
           [root addSubview:[nativeView getView]];
 	}
@@ -649,22 +649,22 @@ static BOOL makeHiddenUntilLoadContent = YES;
         [root addSubview:[rhoWebView view]];
         [rhoWebView setupDelegate:self];
 	}
-	assert(!nativeView || [nativeView retainCount] == 2);
+	//assert(!nativeView || [nativeView retainCount] == 2);
 	//assert(!webView || [webView retainCount] == 2);
     if (toolbar)
         [root addSubview:toolbar];
-    assert(!toolbar || [toolbar retainCount] == 2);
+    //assert(!toolbar || [toolbar retainCount] == 2);
     if (navbar)
         [root addSubview:navbar];
-    assert(!navbar || [navbar retainCount] == 2);
+    //assert(!navbar || [navbar retainCount] == 2);
 }
 
 - (void)viewDidUnload {
     [super viewDidUnload];
     //assert(!nativeView || [nativeView retainCount] == 1);
     //assert(!webView || [webView retainCount] == 1);
-    assert(!toolbar || [toolbar retainCount] == 1);
-    assert(!navbar || [navbar retainCount] == 1);
+    //assert(!toolbar || [toolbar retainCount] == 1);
+    //assert(!navbar || [navbar retainCount] == 1);
 }
 
 - (void)dealloc {
@@ -1023,7 +1023,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     [self removeNavBar];
     
     navbar = navb;
-    assert([navbar retainCount] == 1);
+    //assert([navbar retainCount] == 1);
     RAWLOG_INFO1("navbar retain count: %d", (int)[navbar retainCount]);
 	navbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	navbar.autoresizesSubviews = YES;
@@ -1050,7 +1050,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     wFrame.size.height -= nFrame.size.height;
 
     [root addSubview:navbar];
-    assert([navbar retainCount] > 1);
+    //assert([navbar retainCount] > 1);
     
     [self setContentRect:wFrame];
 }
