@@ -1536,7 +1536,9 @@ int rhodes_ios_delete_file_via_platform_api(const char* filePath) {
     NSString* sPath = [NSString stringWithUTF8String:filePath];
     NSError *error = nil;
     if (![fileManager removeItemAtPath:sPath error:&error]) {
-        NSLog(@"$$$ rhodes_ios_delete_file_via_platform_api() error during delete file, ERROR = %@", [error localizedDescription]);
+        NSString *msg = [NSString stringWithFormat:@"$$$ rhodes_ios_delete_file_via_platform_api() error during delete file, ERROR = %@", [error localizedDescription]];
+        NSLog(msg);
+        RAWLOG_ERROR([msg UTF8String]);
         return -1;
     }
     return 0;
