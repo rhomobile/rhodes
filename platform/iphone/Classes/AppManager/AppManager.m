@@ -1532,8 +1532,14 @@ void rho_startup_logging(const char* message) {
 // return -1 if error
 // for Citrix support
 int rhodes_ios_delete_file_via_platform_api(const char* filePath) {
+    if (filePath == NULL) {
+        return -1;
+    }
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString* sPath = [NSString stringWithUTF8String:filePath];
+    if ([sPath length] <= 0) {
+        return -1;
+    }
     NSError *error = nil;
     if (![fileManager removeItemAtPath:sPath error:&error]) {
         NSString *msg = [NSString stringWithFormat:@"$$$ rhodes_ios_delete_file_via_platform_api() error during delete file, ERROR = %@", [error localizedDescription]];
