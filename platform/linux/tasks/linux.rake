@@ -331,20 +331,22 @@ namespace "device" do
 			task :rpm => ["build:linux"] do
 				createFolders()
 				target_folder = File.join($app_path, "bin", "target")
-				$buildroot = File.join(target_folder, "linux")
+				$linuxroot = File.join(target_folder, "linux")
+				$buildroot = File.join($linuxroot, "rpmbuildroot")
 
 
 				$bin_file = "linux.tar"
 				$bin_archive = File.join(target_folder, $bin_file)
 
 				rm $bin_archive if File.exists? $bin_archive
-				FileUtils.mv($buildroot, File.join(target_folder, "#{$appname}-#{$version_app}"))
+				FileUtils.mv($linuxroot, File.join(target_folder, "#{$appname}-#{$version_app}"))
 				Jake.run3("tar -cvf #{$bin_file} #{$appname}-#{$version_app}", target_folder)
 				FileUtils.rm_r File.join(target_folder, "#{$appname}-#{$version_app}") if File.exists? File.join(target_folder, "#{$appname}-#{$version_app}")
 
+				FileUtils.mkdir_p $buildroot
 				FileUtils.mkdir_p File.join($buildroot, "SOURCES")
 				FileUtils.mkdir_p File.join($buildroot, "BUILD")
-				FileUtils.mkdir_p File.join($buildroot, "BUILDROOT")			
+			  FileUtils.mkdir_p File.join($buildroot, "BUILDROOT")			
 				FileUtils.mkdir_p File.join($buildroot, "RPMS")
 				FileUtils.mkdir_p File.join($buildroot, "SPECS")
 				FileUtils.mkdir_p File.join($buildroot, "SRPMS")
@@ -361,9 +363,10 @@ namespace "device" do
 				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" -bb rpm.spec", $buildroot)
 
 				Dir.glob(File.join($buildroot, "**", "*.rpm")).each do | filename | 
-					FileUtils.mv(filename, File.join($buildroot, File.basename(filename)))
+					FileUtils.mv(filename, File.join($linuxroot, File.basename(filename)))
 					puts filename
 				end
+				FileUtils.rm_r $buildroot
 
 			end
 		end
