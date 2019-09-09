@@ -14,15 +14,13 @@ BuildArch:  <%= $architecture %>
 Rhodes application.
 
 %prep
+%setup -q 
 
-%setup 
+%build
 
 %install
-cp -rfa * %{_builddir}
-
-%post
- 
-%postun
+mkdir %{buildroot}
+cp -rfa * %{buildroot}
 
 %files
-#/*
+/*

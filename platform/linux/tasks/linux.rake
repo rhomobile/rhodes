@@ -328,27 +328,29 @@ namespace "device" do
 				FileUtils.mv(File.join($app_path, "bin", "target", "linux.deb"), File.join($target_path, "#{$appname}_#{$version_app}_amd64.deb"))
 			end
 
-			task :rpm => ["config:linux"] do
-				#createFolders()
-				$buildroot = File.join($app_path, "bin", "target", "linux")
+			task :rpm => ["build:linux"] do
+				createFolders()
+				target_folder = File.join($app_path, "bin", "target")
+				$buildroot = File.join(target_folder, "linux")
 
 
 				$bin_file = "linux.tar"
-				$bin_archive = File.join($buildroot, $bin_file)
-				#rm $bin_archive if File.exists? $bin_archive
-				#Jake.run3("tar -cvf linux.tar *", $buildroot)
+				$bin_archive = File.join(target_folder, $bin_file)
+
+				rm $bin_archive if File.exists? $bin_archive
+				FileUtils.mv($buildroot, File.join(target_folder, "#{$appname}-#{$version_app}"))
+				Jake.run3("tar -cvf #{$bin_file} #{$appname}-#{$version_app}", target_folder)
+				FileUtils.rm_r File.join(target_folder, "#{$appname}-#{$version_app}") if File.exists? File.join(target_folder, "#{$appname}-#{$version_app}")
+
 				FileUtils.mkdir_p File.join($buildroot, "SOURCES")
 				FileUtils.mkdir_p File.join($buildroot, "BUILD")
 				FileUtils.mkdir_p File.join($buildroot, "BUILDROOT")			
 				FileUtils.mkdir_p File.join($buildroot, "RPMS")
 				FileUtils.mkdir_p File.join($buildroot, "SPECS")
 				FileUtils.mkdir_p File.join($buildroot, "SRPMS")
+
 				FileUtils.mv($bin_archive, File.join($buildroot, "SOURCES", "#{$appname}.tar"))
 				$bin_archive = File.join($buildroot, "SOURCES", "#{$appname}.tar")
-
-
-				FileUtils.rm_r File.join($buildroot, "opt") if File.exists? File.join($buildroot, "opt")
-				FileUtils.rm_r File.join($buildroot, "usr") if File.exists? File.join($buildroot, "usr")
 
 				$architecture = Jake.run("uname", ["-i"])
 
@@ -357,6 +359,12 @@ namespace "device" do
 				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
 
 				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" -bb rpm.spec", $buildroot)
+
+				Dir.glob(File.join($buildroot, "**", "*.rpm")).each do | filename | 
+					FileUtils.mv(filename, File.join($buildroot, File.basename(filename)))
+					puts filename
+				end
+
 			end
 		end
 		task :production => ["device:linux:production:deb"] do
