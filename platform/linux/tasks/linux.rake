@@ -354,7 +354,7 @@ namespace "device" do
 				FileUtils.mv($bin_archive, File.join($buildroot, "SOURCES", "#{$appname}.tar"))
 				$bin_archive = File.join($buildroot, "SOURCES", "#{$appname}.tar")
 
-				$architecture = Jake.run("uname", ["-i"])
+				$architecture = Jake.run("uname", ["-m"])
 
 				control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "rpm_spec.erb")
 				erb = ERB.new control_template
