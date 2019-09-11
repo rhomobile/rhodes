@@ -1,0 +1,8 @@
+android:
+  #exttype: rakefile
+  maven_deps:
+  - 'com.android.support:appcompat-v7:25.2.0'
+  - 'com.android.support:animated-vector-drawable:25.2.0'
+  #adds: ext/android/res
+libraries: ['svgsplash']
+#will work with newer SDKs
