@@ -2140,6 +2140,12 @@ namespace "build" do
       #copy icon after extension resources in case it overwrites them (like rhoelementsext...)
       set_app_icon_android
 
+      svg_loading = File.join($app_path, 'resources', 'android', 'vector_loading.xml')
+      if File.exists? svg_loading
+        mkdir_p File.join($tmpdir, 'res', 'drawable')
+        cp_r svg_loading, File.join($tmpdir, 'res', 'drawable')
+      end
+
       if $config_xml
         puts "Copying custom config.xml"
         rawres_path = File.join($tmpdir, 'res', 'raw')

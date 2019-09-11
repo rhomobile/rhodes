@@ -44,6 +44,8 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.support.v4.content.res.ResourcesCompat;
+import android.graphics.drawable.Drawable;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
@@ -173,6 +175,21 @@ public class SplashScreen implements MainView{
             if (loading_bitmap != null) {
                 type = 55;
             }
+            
+        }
+        catch (Throwable e) {
+            Logger.E(TAG, e);
+        }
+
+        try {
+
+            if (loading_bitmap == null)
+            {
+               Logger.I(TAG, "Loading image try to open from resources (svg) !!!");
+               int loading_id = RhoExtManager.getResourceId("drawable.vector_loading");
+               type = 66;
+            }
+            
         }
         catch (Throwable e) {
             Logger.E(TAG, e);
@@ -221,15 +238,15 @@ public class SplashScreen implements MainView{
 	                
 	                if(!isDefaultSplashScreenLoading){ 
 	                	File file = new File(appendSDCardPathToActualSplashScreenPathValue.toString());	                 
-	                	boolean featureDemoFileExists = file.exists();	                 
+                        boolean featureDemoFileExists = file.exists();	  
 		                if (featureDemoFileExists)              
 		                {
 		                 	InputStream fileInputStream = new FileInputStream(file);                 
 		                 	imageView.setImageBitmap(BitmapFactory.decodeStream(fileInputStream));	                 
 		                }
 		                else
-		                {
-					isDefaultSplashScreenLoading = true;
+		                {					
+                            isDefaultSplashScreenLoading = true;
 		                }
 	                }
                 }                 
@@ -276,7 +293,25 @@ public class SplashScreen implements MainView{
                     Logger.E(TAG, e);
                 }
             }
+        case 66:
+        {
+            try
+            {
+               int svg_loading_id = RhoExtManager.getResourceId("drawable.vector_loading");
+               Drawable drawable = ResourcesCompat.getDrawable(activity.getResources(), svg_loading_id, null);
+               ImageView imageView = new ImageView(activity);
+               imageView.setBackgroundColor(mBackgroundColor);
+               imageView.setImageDrawable(drawable);
+               imageView.setAdjustViewBounds(true);
+               imageView.setScaleType(mScaleType);
+               mView = imageView;
+               RhoExtManager.getInstance().registerExtension("SplashScreen", mDocCompleteListener = new SplashScreenExtension());
+            }
+            catch (Throwable e) {
+                Logger.E(TAG, e);
+            }
             break;
+        }
         default:
             {
                 mSplashScreenListener.onSplashScreenGone(this);
