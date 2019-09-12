@@ -122,88 +122,78 @@ namespace "build" do
 			Jake.modify_file_if_content_changed( File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), fversion )
 
 			extensions_lib = ''
-			pre_targetdeps = ''
 
 			puts "$app_extensions_list : #{$app_extensions_list}"
 
 			$app_extensions_list.each do |ext, commin_ext_path |      
-					puts "extension #{ext} [#{commin_ext_path}]"
-					next unless commin_ext_path
-					
-					extpath = File.join(commin_ext_path, 'ext')
-					ext_config_path = File.join(commin_ext_path, "ext.yml")
-					ext_config = nil
-					if File.exist? ext_config_path
-						ext_config = Jake.config(File.open(ext_config_path))
-					end
-					
-					project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
-					next unless (File.exists?( File.join(extpath, "build") ) || project_path)
+				puts "extension #{ext} [#{commin_ext_path}]"
+				next unless commin_ext_path
+				
+				extpath = File.join(commin_ext_path, 'ext')
+				ext_config_path = File.join(commin_ext_path, "ext.yml")
+				ext_config = nil
+				if File.exist? ext_config_path
+					ext_config = Jake.config(File.open(ext_config_path))
+				end
+				
+				project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
+				next unless (File.exists?( File.join(extpath, "build") ) || project_path)
 
-					if ext != 'openssl.so'
-						if ext_config.has_key?('libraries')
-							ext_config["libraries"].each { |name_lib|
-								extensions_lib << " #{name_lib}.so"
-								pre_targetdeps << " ../../../linux/bin/extensions/#{name_lib}.so"
-							}
-						else
-							extensions_lib << " #{ext}.so"
-							pre_targetdeps << " ../../../linux/bin/extensions/#{ext}.so"
-						end
-					end
-
-					if (project_path)
-					
-							ENV['RHO_PLATFORM'] = 'linux'
-							ENV['PWD'] = $startdir
-							ENV['RHO_ROOT'] = $startdir
-							ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
-							if ext.downcase() == "coreapi" && $rhosimulator_build
-									ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
-							else    
-									ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
-									ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, "platform", 'linux', "bin", $sdk, "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
-							end
-										
-							ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", "linux", "bin", "extensions", ext)
-							ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
-							ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", "linux", "bin", "extensions")
-								
-							ENV['RHO_EXT_NAME']=ext                
-							Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
-					else
-							ENV['RHO_PLATFORM'] = 'linux'
+				if (ext != 'openssl.so')
+					extensions_lib << "LIBS += -L$$PWD/../../../linux/bin/extensions/ -l#{ext.downcase}\n"
+					extensions_lib << "PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/lib#{ext.downcase}.a\n\n"
+				end
+				
+				if (project_path)
+				
+					ENV['RHO_PLATFORM'] = 'linux'
+					ENV['PWD'] = $startdir
+					ENV['RHO_ROOT'] = $startdir
+					ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
+					if ext.downcase() == "coreapi" && $rhosimulator_build
+							ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
+					else    
 							ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
-							ENV['PWD'] = $startdir
-							ENV['RHO_ROOT'] = ENV['PWD']
-							ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "linux", "bin", "extensions")
-							ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "linux", "bin", "extensions", ext)
-							ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
-							ENV['RHO_QMAKE'] = $qmake
-							ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ""
-							ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
-							ENV['RHO_VSCMNTOOLS'] = $vscommontools
-
-							if($debug and !$rhosimulator_build)
-								ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release" 
-							end
-							puts ENV['QTDIR']
-							Jake.run3('./build', extpath, {}, true)
+							ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, "platform", 'linux', "bin", $sdk, "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
 					end
+								
+					ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", "linux", "bin", "extensions", ext)
+					ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
+					ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", "linux", "bin", "extensions")
+						
+					ENV['RHO_EXT_NAME']=ext                
+					Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
+				else
+					ENV['RHO_PLATFORM'] = 'linux'
+					ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+					ENV['PWD'] = $startdir
+					ENV['RHO_ROOT'] = ENV['PWD']
+					ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "linux", "bin", "extensions")
+					ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "linux", "bin", "extensions", ext)
+					ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
+					ENV['RHO_QMAKE'] = $qmake
+					ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ""
+					ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
+					ENV['RHO_VSCMNTOOLS'] = $vscommontools
+
+					if($debug and !$rhosimulator_build)
+						ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release" 
+					end
+					puts ENV['QTDIR']
+					Jake.run3('./build', extpath, {}, true)
+				end
 			end 
 
 			ext_dir = File.join($startdir, 'platform/linux/bin/extensions')
 			mkdir_p ext_dir if not File.exists? ext_dir
 			File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
-				fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
-				LIBS += /LIBPATH:../../../linux/bin/extensions#{extensions_lib}
-				PRE_TARGETDEPS += #{pre_targetdeps}
-				})
+				fextensions.puts "SOURCES += ../../ruby/ext/rho/extensions.c"
+				fextensions.puts extensions_lib
 			end
 		end
 	
 
-		task :after_bundle do
+		task :after_bundled do
 			linux_rhopath = $tmpdir + '/rho'
 			mkdir_p linux_rhopath
 			namepath = File.join(linux_rhopath,"name.txt")
@@ -372,6 +362,11 @@ namespace "device" do
 		end
 		task :production => ["device:linux:production:deb"] do
 		end
+
+
+		
+
+
 	end
 end
 
@@ -379,6 +374,55 @@ namespace "run" do
 	task :linux => ["build:linux"] do
 		Jake.run3(File.join($target_path, $appname))
 	end
+
+	namespace "linux" do
+		task :spec do
+			Jake.decorate_spec do
+			  	#Rake::Task['config:linux'].invoke
+			    Rake::Task['build:linux'].invoke
+
+			    linuxrhopath = File.join($target_path, 'rho')
+
+			    dbpath = File.join(linuxrhopath, 'db')
+			  	rm_rf dbpath if File.exists?(dbpath)
+
+			    linuxlogpath = File.join(linuxrhopath,"rholog.txt")
+			    linuxlogpospath = File.join(linuxrhopath, "rholog.txt_pos")
+			    linuxconfigpath = File.join(linuxrhopath, "apps", "rhoconfig.txt.changes")
+			    rm_rf linuxlogpath if File.exists?(linuxlogpath)
+			    rm_rf linuxlogpospath if File.exists?(linuxlogpospath)
+			    rm_rf linuxconfigpath if File.exists?(linuxconfigpath)
+
+			    Jake.before_run_spec
+			    start = Time.now
+			    args = [' ']
+
+			    targetFile = File.join("..", $appname)
+			    start = Time.now
+			    counter = 0
+			    Jake.run2(targetFile, args, {:directory => linuxrhopath, :nowait => false}) do |line|
+			      counter += 1
+			    end
+			    counter = 0
+			    sleep(5)
+			    File.open(linuxlogpath, 'r:UTF-8').each do |line|
+			      counter += 1
+			      Jake.process_spec_output(line)
+			    end
+			    puts "Checked lines: " + counter.to_s
+			    Jake.process_spec_results(start)
+
+			    $stdout.flush
+			    chdir $startdir
+			    
+			    if ($failed > 0) 
+			      puts "Specs failed with " + $failed.to_s + " failes"
+			      exit 1
+			    end
+			end
+	    end
+	end
+
 end
 
 namespace "clean" do

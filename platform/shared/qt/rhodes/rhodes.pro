@@ -148,6 +148,17 @@ unix:!macx {
     #QMAKE_LFLAGS += -no-pie
     !contains(DEFINES, OS_SAILFISH) {
     DESTDIR = $$PWD/../../../linux/bin/RhoSimulator
+    LIBS += ../../../linux/bin/rubylib/librubylib.a\
+         ../../../linux/bin/rholib/librholib.a\
+         ../../../linux/bin/sqlite3/libsqlite3.a\
+         ../../../linux/bin/syncengine/libsyncengine.a\
+         ../../../linux/bin/curl/libcurl.a
+
+    PRE_TARGETDEPS += ../../../linux/bin/rubylib/librubylib.a\
+                    ../../../linux/bin/rholib/librholib.a\
+                    ../../../linux/bin/sqlite3/libsqlite3.a\
+                    ../../../linux/bin/syncengine/libsyncengine.a\
+                    ../../../linux/bin/curl/libcurl.a
 }
 contains(DEFINES, OS_SAILFISH) {
   #DESTDIR = $$PWD/../Build_Sailfish_Application
@@ -389,8 +400,12 @@ contains(DEFINES, OS_LINUX)  {
     LIBS += -L$$PWD/../../../linux/bin/syncengine/ -lsyncengine -lsqlite3
     PRE_TARGETDEPS += $$PWD/../../../linux/bin/syncengine/libsyncengine.a
 
-    LIBS += -L$$PWD/../../../linux/bin/extensions/ -lcoreapi
-    PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libcoreapi.a
+    #LIBS += -L$$PWD/../../../linux/bin/extensions/ -lcoreapi
+    #PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libcoreapi.a
+
+    exists("../../../linux/bin/extensions/extensions.pri") {
+        include("../../../linux/bin/extensions/extensions.pri")
+    }
 
     #LIBS += -L$$PWD/../../../linux/bin/extensions/ -lzlib
     #PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libzlib.a
