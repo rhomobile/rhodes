@@ -316,7 +316,10 @@ void QtMainWindow::closeEvent(QCloseEvent *ce)
     tabbarRemoveAllTabs(false);
     if (m_logView)
         m_logView->close();
-    QMainWindow::closeEvent(ce);
+
+    QTimer::singleShot(1, this, [&]{rho_rhodesapp_callUiDestroyedCallback();});
+    QTimer::singleShot(1000, this, [&]{rho::common::CRhodesApp::Destroy();});
+    QTimer::singleShot(2000, this, [&]{QMainWindow::closeEvent(ce);});
 
 }
 

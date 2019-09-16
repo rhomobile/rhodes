@@ -405,10 +405,26 @@ namespace "run" do
 			    end
 			    counter = 0
 			    sleep(5)
+
+			    current_spec_name = ''
+			    failed_specs = []
 			    File.open(linuxlogpath, 'r:UTF-8').each do |line|
 			      counter += 1
 			      Jake.process_spec_output(line)
+			      currentSpecArray = line.scan( /.*\[([\w\\\/\_]{5,})\].*/)
+			      currentSpecArray.uniq.each{ 
+				    |specname| current_spec_name = specname
+				  }
+
+				  failCheckArray = line.scan(/^.*(FAIL:).*[^(RHO: not supported)]$/)
+				  if (failCheckArray.length > 0)
+				  	failed_specs += current_spec_name
+				  	puts "Fail on line #{counter}"
+				  end
 			    end
+
+			    puts failed_specs.uniq
+
 			    puts "Checked lines: " + counter.to_s
 			    Jake.process_spec_results(start)
 

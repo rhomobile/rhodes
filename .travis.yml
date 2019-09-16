@@ -111,6 +111,10 @@ matrix:
     os: osx
     env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"
 
+  - language: ruby
+    os: linux
+    env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"
+
   - language: android
     os: linux
     env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17c"
