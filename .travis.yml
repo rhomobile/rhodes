@@ -95,7 +95,7 @@ env:
   - QTDIR="$HOME/Qt5.9.5/5.9.5/clang_64"
 
 #osx_image: xcode9.1
-
+dist: bionic
 matrix:
   include:
 
@@ -111,7 +111,7 @@ matrix:
     os: osx
     env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"
 
-  - language: ruby
+  - language: c++
     os: linux
     env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"
 
