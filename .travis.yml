@@ -18,7 +18,7 @@ install:
 script:
 - ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
 - rvm list
-- rvm use 2.3.4
+- rvm use 2.5.3
 - rvm gemset list
 - rvm gemset use rhodes
 - gem list
