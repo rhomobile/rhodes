@@ -96,7 +96,7 @@ env:
   - QTDIR="$HOME/Qt5.9.5/5.9.5/clang_64"
 
 #osx_image: xcode9.1
-dist: bionic
+#dist: bionic
 matrix:
   include:
 
