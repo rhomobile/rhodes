@@ -5,7 +5,7 @@ before_install:
 install:
 - ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_ruby.sh
-- rvm use 2.3.4
+- rvm use 2.5.3
 - |
   if [[ -z $(rvm gemset list | grep rhodes) ]]; then
     rvm gemset create rhodes;
