@@ -119,6 +119,11 @@ matrix:
     env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
     dist: bionic
 
+  - language: c++
+    os: linux
+    env: RHO_TARGET="linux"    RHO_APP="framework_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+    dist: bionic
+
   - language: android
     os: linux
     env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17c"
