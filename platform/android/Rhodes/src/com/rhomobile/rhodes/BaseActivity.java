@@ -220,6 +220,15 @@ public class BaseActivity extends Activity implements ServiceConnection {
                 setRequestedOrientation(getScreenProperties().getOrientation());
             }
         }
+
+        if (RhoConf.getInt("WebView.replaceContentBySplashWhenSnapshotBySystem") == 1) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        }
+        else
+        {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        }
+
     }
 
 	@Override
