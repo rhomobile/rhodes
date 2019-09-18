@@ -122,7 +122,7 @@ matrix:
   - language: c++
     os: linux
     env: RHO_TARGET="linux"    RHO_APP="framework_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
-    #dist: bionic
+    dist: bionic
 
   - language: android
     os: linux

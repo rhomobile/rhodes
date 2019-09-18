@@ -4,4 +4,5 @@ set -x
 export QTDIR=/usr/lib/x86_64-linux-gnu/qt5/
 export QT_QPA_PLATFORM=offscreen
 
-rake run:linux:spec
+#rake run:linux:spec
+rake device:linux:production:deb
