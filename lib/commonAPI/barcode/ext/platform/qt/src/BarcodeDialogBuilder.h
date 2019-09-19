@@ -20,7 +20,9 @@ public:
         this->oResult = oResult;
         parentWidget = parent;
     }
+    virtual ~BarcodeDialogBuilder(){
 
+    }
 public slots:
     void execute(){
         if (!BarcodeDialogView::dialogExists(info)){
