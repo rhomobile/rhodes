@@ -162,7 +162,7 @@ rho::net::CNetResponseWrapper CNetRequestWrapper::pullCookies(const String& strU
 
 rho::net::CNetResponseWrapper CNetRequestWrapper::doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders )
 {
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)  || defined(OS_LINUX)
     const rho::common::ISecurityTokenGenerator* generator = rho_conf_getInt("disable_external_access") ?
         rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
 
@@ -173,7 +173,7 @@ rho::net::CNetResponseWrapper CNetRequestWrapper::doRequest( const char* method,
             pHeaders = &headers;
 #if defined(OS_ANDROID)
         pHeaders->insert(std::make_pair(SECURITY_HEADER, "RhodesAgent RHO-SECURE-TOKEN=" + generator->getSecurityToken()));
-#elif defined(OS_WINDOWS_DESKTOP)
+#elif defined(OS_WINDOWS_DESKTOP) || defined(OS_LINUX)
         pHeaders->insert(std::make_pair(SECURITY_HEADER, generator->getSecurityToken()));
 #endif
     }

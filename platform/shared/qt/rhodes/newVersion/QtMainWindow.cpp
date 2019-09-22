@@ -1194,7 +1194,7 @@ void QtMainWindow::takeSignature(void*) //TODO: Signature::Params*
 
 void QtMainWindow::fullscreenCommand(int enable)
 {
-#if defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
+#if (defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR))  || defined(OS_LINUX)
     if ((enable && !isFullScreen()) || (!enable && isFullScreen())) {
         this->menuBar()->setVisible(RHOCONF().getBool("w32_fullscreen_menu") || (!enable));
 
