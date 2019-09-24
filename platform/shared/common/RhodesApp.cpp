@@ -758,7 +758,7 @@ static void callback_loadserversources(void *arg, String const &strQuery)
 static void callback_loadallsyncsources(void *arg, String const &strQuery)
 {
     RhoAppAdapter.loadAllSyncSources();
-    String strMsg;
+    String strMsg = "";
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 

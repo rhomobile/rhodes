@@ -319,7 +319,10 @@ void QtMainWindow::closeEvent(QCloseEvent *ce)
 
     QTimer::singleShot(1, this, [&]{rho_rhodesapp_callUiDestroyedCallback();});
     QTimer::singleShot(1000, this, [&]{rho::common::CRhodesApp::Destroy();});
-    QTimer::singleShot(2000, this, [&]{QMainWindow::closeEvent(ce);});
+    QTimer::singleShot(3000, this, [this, ce]{
+        ce->accept();
+        QMainWindow::closeEvent(ce);
+    });
 
 }
 

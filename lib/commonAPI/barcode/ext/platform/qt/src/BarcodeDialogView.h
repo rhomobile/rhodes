@@ -47,7 +47,7 @@ private:
     QCamera * camera;
     QCameraImageCapture * imageCapture;
     QTimer * timer;
-    DecoderThread * decThread;
+    static DecoderThread * decThread;
     QLabel * laDecodeResult;
     QCameraInfo localInfo;
     static QSet<QString> keeper;

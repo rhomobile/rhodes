@@ -319,5 +319,6 @@ generated/
 platform/shared/common/app_build_capabilities.h
 platform/shared/common/app_build_configs.c
 platform/shared/ruby/ext/rho/extensions.c
+platform/shared/qt/**/rhosimulator_plugin_import.cpp
 
 res/build-tools/maven/m2

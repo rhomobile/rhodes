@@ -71,9 +71,10 @@ unix:!macx {
     HEADERS += $$PWD/../../ruby/linux/ruby/config.h
     DESTDIR = $$PWD/../../../linux/bin/curl
     OBJECTS_DIR = $$PWD/../../../linux/bin/curl/tmp
-    DEFINES += HAVE_CONFIG_H USE_RHOSSL OS_LINUX
+    DEFINES += HAVE_CONFIG_H USE_RHOSSL OS_LINUX __INTERIX
     QMAKE_CFLAGS += -fvisibility=hidden
     QMAKE_CXXFLAGS += -fvisibility=hidden
+
       Debug {
         DEFINES += _DEBUG DEBUG
       }

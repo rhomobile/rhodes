@@ -109,8 +109,26 @@ CURLcode Curl_fillreadbuffer(struct connectdata *conn, int bytes, int *nreadp)
 
   /* this function returns a size_t, so we typecast to int to prevent warnings
      with picky compilers */
-  nread = (int)data->state.fread_func(data->req.upload_fromhere, 1,
-                                      buffersize, data->state.in);
+#ifndef OS_LINUX
+  nread = (int)data->state.fread_func(data->req.upload_fromhere, 1, buffersize, data->state.in);
+#else
+  nread = 0;
+//#define READ_FROM_SOCK
+#ifdef READ_FROM_SOCK
+  int i = 0;
+  for(; i < buffersize;){
+      nread = read(conn->sockfd, data->req.upload_fromhere + i, 1);
+      if (nread < 0) {
+          printf("socket error");
+      }else if (nread == 0) {
+        printf("socket closed");
+        break;
+      }else{
+          i++;
+      }
+  }
+#endif
+#endif
 
   if(nread == CURL_READFUNC_ABORT) {
     failf(data, "operation aborted by callback");

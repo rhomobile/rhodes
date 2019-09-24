@@ -112,6 +112,10 @@ namespace "build" do
 			Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
 		end
 
+		task :appbundle => ["config:linux", "build:bundle:noxruby"] do     
+			Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
+		end
+
 		task :extensions => "config:linux" do
 			require $startdir + "/lib/rhodes.rb"
 			fversion = StringIO.new("", "w+")          
