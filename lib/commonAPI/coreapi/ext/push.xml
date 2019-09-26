@@ -18,6 +18,8 @@ For FCM:
     fcmSenderID: 'your_fcm_sender_id'
     fcmAppID: 'your_fcm_app_id'
 
+**Supporting FCM Push on iOS** Download GoogleService-Info.plist and put it into the root of your application. Please read guide [Add Firebase to your iOS project](https://firebase.google.com/docs/ios/setup) for more details.
+
 For GCM ( NB: GCM is deprecated, we recommend using FCM push ):
     :::ruby
     capabilities: ["push"]
@@ -32,9 +34,9 @@ For RhoConnect Push Service:
 
 **For Win32(XPE)**, Microsoft Message Queue (MSMQ) and .Net Framework 3.5 also must be installed on the device.
 
-**GCM is no longer supported as a standalone jar file** since being moved to Google Play services. If you have trouble building an Android app with RhoElements 4.0.0 and Push capability, try these steps: 
+**GCM is no longer supported as a standalone jar file** since being moved to Google Play services. If you have trouble building an Android app with RhoElements 4.0.0 and Push capability, try these steps:
 
-1. [Download the GCM r03 sip file](http://dl-ssl.google.com/android/repository/gcm_r03.zip) from Google's repository. 
+1. [Download the GCM r03 sip file](http://dl-ssl.google.com/android/repository/gcm_r03.zip) from Google's repository.
 2. Copy it to sdk/extras and extract it.
 3. Rename the folder to 'gcm'
 

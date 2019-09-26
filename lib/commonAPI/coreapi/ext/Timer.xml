@@ -18,7 +18,7 @@
         Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
       </MORE_HELP>
         <PLATFORM>WM, CE, Android, UWP, iOS, Win32</PLATFORM>
-        
+
         <METHODS>
             <METHOD name="create" access="STATIC">
                 <RETURN type="SELF_INSTANCE" />
@@ -29,7 +29,7 @@
               <PARAMS>
               	<PARAM name="interval" type="INTEGER">
                   <DESC>timer interval in ms</DESC>
-                </PARAM>                               
+                </PARAM>
               </PARAMS>
               <CALLBACK type="STRING">
               </CALLBACK>
@@ -61,20 +61,20 @@
                     <SECTION>
                       <DESC>Implementation of the timer API.</DESC>
                         <CODE>
-                        <JAVASCRIPT> 
+                        <JAVASCRIPT>
            // Create a timer and catch callback after the specified interval:
-           
+
             var timerCallback = function() {
                 alert("callback called");
-            }                                              
+            }
 
             var timer = Rho.Timer.create();
             timer.start(5000, timerCallback);
-            
+
             Create a timer, start and stop:
             var timerCallback = function() {
                 alert("callback called");
-            }                                              
+            }
 
             var timer = Rho.Timer.create();
             timer.start(5000, timerCallback);
