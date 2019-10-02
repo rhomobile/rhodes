@@ -19,6 +19,13 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesService.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/PasswordDialog.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/WebView.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/SecurityTokenGenerator.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhoMain.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhoRubyArrayObjects.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhoRubyClassObject.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhoRubyObject.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhoRubySingleton.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhoRubyTypes.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/IMethodResult.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/IRhoApiDefaultId.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/IRhoApiFactory.java
@@ -31,13 +38,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/api/RhoApiDefaultId.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/RhoApiFactory.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/RhoApiObject.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/api/RhoApiPropertyBag.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/IRhoBluetoothManager.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothDeviceListActivity.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManager.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManagerNew.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManagerOld.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothSession.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/UUIDHelper.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePicker.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePickerScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/event/Event.java
@@ -127,5 +127,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunction
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality09.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality10.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality11.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality26.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionalityManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/OsVersionManager.java

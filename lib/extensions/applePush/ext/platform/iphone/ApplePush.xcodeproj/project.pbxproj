@@ -192,7 +192,7 @@
 					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
 					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -219,7 +219,7 @@
 					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
 					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -253,7 +253,7 @@
 					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = applePush;
 				SDKROOT = iphoneos;
@@ -282,7 +282,7 @@
 					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = applePush;
 				SDKROOT = iphoneos;

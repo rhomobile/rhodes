@@ -30,12 +30,17 @@
 #include "common/RhoAppAdapter.h"
 #include "json/JSONIterator.h"
 #include "MainWindowImpl.h"
+
+#ifndef RHODES_VERSION_LIBRARY
 #undef null
 #if QT_VERSION >= 0x050000
+#ifndef OS_SAILFISH
 #include <QtMultimedia/QMediaPlayer>
+#endif
 #else
 #include <QSound>
 #endif
+#endif //RHODES_VERSION_LIBRARY
 
 using namespace rho;
 using namespace rho::json;
@@ -44,12 +49,14 @@ extern "C" {
 
 void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
 {
+#ifndef RHODES_VERSION_LIBRARY
     rho::String message = szMessage ? szMessage : "";
     rho::String title = szTitle ? szTitle : "";
     rho::String callback = "";
     rho::String icon = "";
     Vector<CAlertParams::CAlertButton> buttons;
     CMainWindow::getInstance()->alertShowPopup(new CAlertParams(title, message, callback, icon, buttons, CAlertParams::DLG_STATUS ));
+#endif
 }
 /*
 void alert_show_popup(rho_param *p)
@@ -139,16 +146,19 @@ void alert_show_popup(rho_param *p)
 
 extern "C" void alert_show_status_ex(const char* szTitle, const char* szMessage, const char* szHide, rho::apiGenerator::CMethodResult& oResult)
 {
+#ifndef RHODES_VERSION_LIBRARY
     String message = szMessage ? szMessage : "";
     String title = szTitle ? szTitle : "";
     String icon = "";
     Vector<CAlertParams::CAlertButton> buttons;
     //buttons.addElement( CAlertParams::CAlertButton(szHide, "") );
     CMainWindow::getInstance()->alertShowPopup(new CAlertParams(title, message, icon, oResult, buttons, CAlertParams::DLG_STATUS ));
+#endif
 }
 
 extern "C" void alert_show_popup_ex(const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
+#ifndef RHODES_VERSION_LIBRARY
     String title, message, icon;
     Vector<CAlertParams::CAlertButton> buttons;
     if (propertyMap.containsKey("message"))
@@ -182,6 +192,7 @@ extern "C" void alert_show_popup_ex(const rho::Hashtable<rho::String, rho::Strin
         }
     }
     CMainWindow::getInstance()->alertShowPopup(new CAlertParams(title, message, icon, oResult, buttons, CAlertParams::DLG_CUSTOM));
+#endif
 }
 
 void alert_vibrate(int duration_ms) {
@@ -190,6 +201,8 @@ void alert_vibrate(int duration_ms) {
 
 void alert_play_file(char* file_name, char *media_type)
 {
+#ifndef RHODES_VERSION_LIBRARY
+#ifndef OS_SAILFISH
     RAWLOGC_INFO("AlertImpl", "OnAlertPlayFile: trying to play file");
     String path = file_name;
 #if QT_VERSION >= 0x050000
@@ -210,11 +223,15 @@ void alert_play_file(char* file_name, char *media_type)
          RAWLOGC_INFO("AlertImpl", "OnAlertPlayFile: failed to play file");
     }
 #endif
+#endif
+#endif //RHODES_VERSION_LIBRARY
 }
 
 void alert_hide_popup()
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->alertHidePopup();
+#endif
 }
 
 } //extern "C"

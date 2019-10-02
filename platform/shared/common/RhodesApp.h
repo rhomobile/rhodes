@@ -40,6 +40,9 @@
 #include "ExtManager.h"
 #include "api_generator/MethodResult.h"
 
+#include <condition_variable>
+#include <mutex>
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
 
@@ -149,6 +152,9 @@ private:
     String m_strListeningPorts;
     String m_strNodeJSListeningPorts;
     int m_nNodeJSListeningPorts;
+    
+    String m_strRubyServerHomeURL;
+    String m_strNodeServerHomeURL;
 
     common::CAutoPtr<net::CHttpServer> m_httpServer;
     CSplashScreen m_oSplashScreen;
@@ -168,6 +174,10 @@ private:
     Vector<String> m_arAppBackUrl, m_arAppBackUrlOrig;
     Vector<ICallbackObject*> m_arCallbackObjects;
     mutable common::CMutex m_mxCallbackObjects;
+#if defined(WINDOWS_PLATFORM)
+    std::mutex wait_mutex;
+    std::condition_variable activated_cond;
+#endif
 	
     common::CMutex m_mxScreenRotationCallback;
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
@@ -244,7 +254,10 @@ public:
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
     CRhoTimer&     getTimer(){ return m_oTimer; }
 
-    CExtManager&  getExtManager(){ return m_oExtManager; }
+    CExtManager&  getExtManager()
+    {
+        return m_oExtManager;
+    }
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
     unsigned long getCallbackObject(int nIndex);
@@ -288,6 +301,10 @@ public:
   
     unsigned int getLocalServerPort() { return (m_httpServer!=0)?(m_httpServer->getPort()):0; }
     unsigned int getNodeJSServerPort() { return m_nNodeJSListeningPorts; }
+    
+    String& getRubyHomeURL() {return m_strRubyServerHomeURL;}
+    String& getNodeHomeURL() {return m_strNodeServerHomeURL;}
+
 #ifdef OS_MACOSX
     String directHttpRequest( const String& method, const String& uri, const String& query, const rho::net::HttpHeaderList& headers, const String& body ) {  return m_httpServer->directRequest(method, uri, query, headers, body ); }
 #endif
@@ -298,6 +315,10 @@ public:
     #endif
 
     virtual bool isApplicationActive() { return getApplicationEventReceiver()->isApplicationActive(); }
+#if defined(WINDOWS_PLATFORM)
+    void waitAppStarted();
+    void notifyAppStared();
+#endif
 
 protected:
     virtual void run();
@@ -421,7 +442,10 @@ void rho_sys_set_network_status_notify(const char* url, int poll_interval);
 void rho_sys_clear_network_status_notify();
 int rho_rhodesapp_is_application_active();
 int rho_rhodesapp_is_nodejs_app();
+int rho_rhodesapp_is_rubynodejs_app();
     
+const char* rho_rhodesapp_rubyhomeurl();
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus

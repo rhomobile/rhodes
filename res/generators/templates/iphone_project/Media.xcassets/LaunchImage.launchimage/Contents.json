@@ -1,5 +1,41 @@
 {
   "images" : [
+      {
+        "extent" : "full-screen",
+        "idiom" : "iphone",
+        "subtype" : "2688h",
+        "filename" : "Default-896h@3x.png",
+        "minimum-system-version" : "12.0",
+        "orientation" : "portrait",
+        "scale" : "3x"
+      },
+      {
+        "extent" : "full-screen",
+        "idiom" : "iphone",
+        "subtype" : "2688h",
+        "filename" : "Default-Landscape-896h@3x.png",
+        "minimum-system-version" : "12.0",
+        "orientation" : "landscape",
+        "scale" : "3x"
+      },
+      {
+        "extent" : "full-screen",
+        "idiom" : "iphone",
+        "subtype" : "1792h",
+        "filename" : "Default-896h@2x.png",
+        "minimum-system-version" : "12.0",
+        "orientation" : "portrait",
+        "scale" : "2x"
+      },
+      {
+        "extent" : "full-screen",
+        "idiom" : "iphone",
+        "subtype" : "1792h",
+        "filename" : "Default-Landscape-896h@2x.png",
+        "minimum-system-version" : "12.0",
+        "orientation" : "landscape",
+        "scale" : "2x"
+      },
     {
       "extent" : "full-screen",
       "idiom" : "iphone",

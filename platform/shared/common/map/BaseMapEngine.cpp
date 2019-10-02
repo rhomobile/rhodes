@@ -796,12 +796,12 @@ BaseMapView::BaseMapView(IDrawingDevice *device, const char* name)
 {
     String url = RHOCONF().getString("ESRI_map_url_roadmap");
     if (url.empty())
-        url = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/";
+        url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/";
     m_map_urls.put("roadmap", url);
 
     url = RHOCONF().getString("ESRI_map_url_satellite");
     if (url.empty())
-        url = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/";
+        url = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/";
     m_map_urls.put("satellite", url);
 }
 

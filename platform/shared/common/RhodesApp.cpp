@@ -194,6 +194,14 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
 
     String strUrl = RHODESAPP().getBaseUrl();
     strUrl += strCallback;
+    
+    boolean force_https = false;
+#ifdef OS_MACOSX
+    if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
+        force_https = rho_conf_getBool("ios_https_local_server")!=0;
+    }
+#endif
+    
     NetResponse resp = getNetRequest().pullData( strUrl, NULL );
     if ( !resp.isOK() )
     {
@@ -205,9 +213,21 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
             bTryAgain = true;
         }
 #else
-        if ( String_startsWith( strUrl, "http://127.0.0.1:" ) )
+        String addr_number;
+        String addr_local;
+        if (force_https) {
+            addr_number = "https";
+            addr_local = "https";
+        }
+        else {
+            addr_number = "http";
+            addr_local = "http";
+        }
+        addr_number = addr_number + "://127.0.0.1:";
+        addr_local = addr_local + "://localhost:";
+        if ( String_startsWith( strUrl, addr_number ) )
         {
-            RHODESAPP().setBaseUrl("http://localhost:");
+            RHODESAPP().setBaseUrl(addr_local);
             bTryAgain = true;
         }
 #endif
@@ -390,7 +410,7 @@ void CAppCallbacksQueue::processUiCreated()
     // at this point JS app is unlikely to set its own handler, just navigate to overriden start path
     RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated);
 
-        if ( rho_ruby_is_started() )
+        if ( rho_ruby_is_started() && (!RHODESAPP().isRubyNodeJSApplication()))
             callCallback("/system/uicreated");
 #if !defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME) || !defined(OS_ANDROID)
         else
@@ -416,6 +436,19 @@ void CAppCallbacksQueue::processUiCreated()
 
     m_pInstance = 0;
 }
+
+#if defined(WINDOWS_PLATFORM)
+void CRhodesApp::waitAppStarted()
+{
+    std::unique_lock<std::mutex> lock(wait_mutex);
+    activated_cond.wait(lock);
+}
+
+void CRhodesApp::notifyAppStared()
+{
+    activated_cond.notify_one();
+}
+#endif
 
 CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
     :CRhodesAppBase(strRootPath, strUserPath, strRuntimePath), 
@@ -1520,7 +1553,12 @@ void CRhodesApp::initHttpServer()
     strAppRootPath += "apps";
 #endif
 
+#ifdef OS_SAILFISH
+    //m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath, true, false); This thing doesn't work
     m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath);
+#else
+    m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath);
+#endif
     m_httpServer->register_uri("/system/geolocation", rubyext::CGeoLocation::callback_geolocation);
     m_httpServer->register_uri("/system/syncdb", callback_syncdb);
     m_httpServer->register_uri("/system/redirect_to", callback_redirect_to);
@@ -1751,10 +1789,14 @@ void CRhodesApp::initAppUrls()
         m_strHomeUrl = "https://127.0.0.1:";
     }
     else {
-        m_strHomeUrl = "http://127.0.0.1:";
+        m_strHomeUrl = "http";
+        m_strHomeUrl = m_strHomeUrl + "://127.0.0.1:";
     }
     
-    if (isNodeJSApplication()) {
+    m_strRubyServerHomeURL = m_strHomeUrl+getFreeListeningPort();
+    m_strNodeServerHomeURL = m_strHomeUrl+getNodeJSListeningPort();
+
+    if (isNodeJSApplication() || isRubyNodeJSApplication()) {
         m_strHomeUrl += getNodeJSListeningPort();
     }
     else {
@@ -1762,7 +1804,11 @@ void CRhodesApp::initAppUrls()
     }
 
 #ifndef RHODES_EMULATOR
+    #ifndef OS_SAILFISH
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/app/loading.html";
+    #else
+    m_strLoadingPagePath = getRhoRootPath() + "apps/app/loading.html";
+    #endif
 	m_strLoadingPngPath = getRhoRootPath() + "apps/app/loading.png";
 #else
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "app/loading.html";
@@ -2950,6 +2996,7 @@ void rho_net_request(const char *url)
     getNetRequest().pullData(strCallbackUrl.c_str(), NULL);
 }
     
+//TODO: this function can crash application if you use it many times (it creates threads and probably don't delete them)
 void rho_net_request_with_data_in_separated_thread(const char *url, const char *str_body) {
     String strCallbackUrl = RHODESAPP().canonicalizeRhoUrl(url);
     String strBody = str_body;
@@ -3013,6 +3060,15 @@ int rho_rhodesapp_is_application_active() {
 int rho_rhodesapp_is_nodejs_app() {
     return RHODESAPP().isNodeJSApplication() ? 1 : 0;
 }
+
+int rho_rhodesapp_is_rubynodejs_app() {
+    return RHODESAPP().isRubyNodeJSApplication() ? 1 : 0;
+}
+
+const char* rho_rhodesapp_rubyhomeurl() {
+    return RHODESAPP().getRubyHomeURL().c_str();
+}
+
     
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 {

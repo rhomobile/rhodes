@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------
 # (The MIT License)
 #
-# Copyright (c) 2008-2014 Rhomobile, Inc.
+# Copyright (c) 2008-2018 Rhomobile, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -84,6 +84,7 @@ chdir File.dirname(__FILE__), :verbose => (Rake.application.options.trace == tru
 
 
 require File.join(pwd, 'lib/build/jake.rb')
+require File.join(pwd, 'lib/build/RhoLogger.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 require File.join(pwd, 'lib/build/GeneralTimeChecker.rb')
 require File.join(pwd, 'lib/build/CheckSumCalculator.rb')
@@ -106,47 +107,23 @@ module Rake
     attr_accessor :current_task
   end
   class Task
-    alias :old_execute :execute 
+    alias :old_execute :execute
     def execute(args=nil)
-      Rake.application.current_task = @name  
+      Rake.application.current_task = @name
       old_execute(args)
     end
   end #class Task
 end #module Rake
 
-class Logger
-  alias :original_add :add
 
-  def add(severity, message = nil, progname = nil)
-    if (self.level == Logger::DEBUG)
-      begin
-        #try to get rake task name
-        taskName = Rake.application.current_task
-      rescue Exception => e
-      end
-      
-      if message
-        message = "#{taskName}|\t#{message}"
-      else
-        progname = "#{taskName}|\t#{progname}"
-      end
-    end
-    original_add( severity, message, progname )
-  end
-end
 
-def puts( s )
-  if $logger
-    $logger.info( s )
-  else
-    Kernel::puts( s )
-  end
-end
 
 $logger = Logger.new(STDOUT)
 if Rake.application.options.trace
+  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "DEBUG"
   $logger.level = Logger::DEBUG
 else
+  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "INFO"
   $logger.level = Logger::INFO
 end
 
@@ -161,7 +138,7 @@ end
 Jake.set_logger( $logger )
 
 
-def print_timestamp(msg = 'just for info')  
+def print_timestamp(msg = 'just for info')
   if $timestamp_start_milliseconds == 0
     $timestamp_start_milliseconds = (Time.now.to_f*1000.0).to_i
   end
@@ -182,6 +159,7 @@ load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp8/build/wp.rake')
 load File.join(pwd, 'platform/uwp/build/uwp.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
+load File.join(pwd, 'platform/sailfish/build/sailfish.rake')
 
 
 #------------------------------------------------------------------------
@@ -220,7 +198,7 @@ namespace "framework" do
   end
 end
 
-$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
+$application_build_configs_keys = ['encrypt_files_key', 'nodejs_application', 'rubynodejs_application', 'security_token', 'encrypt_database', 'use_deprecated_encryption','android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "iphone_use_new_ios7_status_bar_style", "iphone_full_screen", "webkit_outprocess", "webengine", "iphone_enable_startup_logging"]
 
 $winxpe_build = false
 
@@ -230,7 +208,7 @@ def make_application_build_config_header_file
   #f.puts "// Generated #{Time.now.to_s}"
   f.puts ""
   f.puts "#include <string.h>"
-  f.puts "#include <common/RhoConf.h>"
+  f.puts "#include \"common/RhoConf.h\""
   f.puts ""
   f.puts '//#include "app_build_configs.h"'
   if $rhosimulator_build
@@ -2058,10 +2036,12 @@ namespace "config" do
 
     if $app_config["build"] and $app_config["build"].casecmp("release") == 0
       $debug = false
+    elsif $app_config["build"] and $app_config["build"].casecmp("debug") == 0
+      $debug = true
     else
+      puts "\n\n\n\n\nYou must choose configuration manually in build.yml file. Type 'build: release' or 'build: debug' in root section!\n\n\n\n"
       $debug = true
     end
-
     # merge extensions from platform list to global one
     $app_config['extensions'] = [] unless $app_config['extensions'] and $app_config['extensions'].is_a? Array
     if $app_config[$config['platform']] and $app_config[$config['platform']]['extensions'] and $app_config[$config['platform']]['extensions'].is_a? Array
@@ -2277,9 +2257,11 @@ namespace "config" do
     $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
     $js_application    = Jake.getBuildBoolProp("javascript_application")
     $nodejs_application    = Jake.getBuildBoolProp("nodejs_application")
+    $rubynodejs_application    = Jake.getBuildBoolProp("rubynodejs_application")
 
     $logger.debug '%%%_%%% $js_application = '+$js_application.to_s
     $logger.debug '%%%_%%% $nodejs_application = '+$nodejs_application.to_s
+    $logger.debug '%%%_%%% $rubynodejs_application = '+$rubynodejs_application.to_s
 
     if !$js_application && !$nodejs_application && !Dir.exists?(File.join($app_path, "app"))
       BuildOutput.error([
@@ -2586,14 +2568,14 @@ def init_extensions(dest, mode = "")
   rhoapi_js_folder = nil
   rhoapi_nodejs_folder = nil
   if !dest.nil?
-    if $nodejs_application
+    if $nodejs_application || $rubynodejs_application
         rhoapi_js_folder = File.join( File.dirname(dest), "apps/nodejs/server/public/api" )
     else
         rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
     end
     rhoapi_nodejs_folder = File.join( File.dirname(dest), "apps/nodejs/rhoapi" )
   elsif mode == "update_rho_modules_js"
-      if $nodejs_application
+      if $nodejs_application || $rubynodejs_application
           rhoapi_js_folder = File.join( $app_path, "nodejs/server/public/api" )
       else
           rhoapi_js_folder = File.join( $app_path, "public/api" )
@@ -3438,7 +3420,7 @@ namespace "build" do
           end
         else
           puts `#{cmd_str}`
-        end        
+        end
         unless $? == 0
           puts "Error interpreting erb code"
           exit 1
@@ -3491,14 +3473,15 @@ namespace "build" do
         end
       end
 
+      chdir startdir
+      cp_r "platform/shared/db/res/db", File.join($srcdir, "db")
+
       #encrypt files
       if $encrypt_aes_key != nil
           Jake.encrypt_files_by_AES($srcdir, $encrypt_aes_key, $app_config["encrypt_file_extensions"])
       end
 
-
       chdir startdir
-      cp_r "platform/shared/db/res/db", File.join($srcdir, "db")
 
       # create bundle map file with the final information
       Jake.build_file_map($srcdir, $file_map_name)
@@ -3551,11 +3534,7 @@ namespace "build" do
       error = nil
 
       begin
-        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-          output = stdout.read
-          error = stderr.read
-          status = wait_thr.value
-        end
+        output, error, status = Open3.capture3(cmd)
       rescue Exception => e
         puts "Minify error: #{e.inspect}"
         error = e.inspect
@@ -3981,6 +3960,22 @@ end
 
 namespace "build" do
   #    desc "Build rhoconnect-client package"
+
+  task :rhoruby => ["config:load"] do
+    msbuild = $config["env"]["paths"]["msbuild"]
+    msbuild = "msbuild" if msbuild.nil?
+
+    rho_ruby_project = File.join($startdir, "platform/win32/RubyWin/RubyWin.2015.sln")
+    argsClean = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32",
+      '/p:VisualStudioVersion=14.0', '/t:Clean']
+    Jake.run(msbuild, argsClean)
+
+    argsBuild = [rho_ruby_project, "/p:Configuration=Release_RubyCompiler", "/p:Platform=Win32",
+      '/p:VisualStudioVersion=14.0', '/t:Build']
+    Jake.run(msbuild, argsBuild)
+    puts "RhoRuby rebuilded"
+  end
+
   task :rhoconnect_client do
 
     ver = File.read("rhoconnect-client/version").chomp #.gsub(".", "_")
@@ -4053,6 +4048,8 @@ namespace "run" do
       sim_conf = "rhodes_path='#{$startdir}'\r\n"
       sim_conf += "app_version='#{$app_config["version"]}'\r\n"
       sim_conf += "app_name='#{$appname}'\r\n"
+      sim_conf += "rhodes_gem_version='#{ENV['rhodes_version']}'\r\n"
+
       if ( ENV['rho_reload_app_changes'] )
         sim_conf += "reload_app_changes=#{ENV['rho_reload_app_changes']}\r\n"
       else

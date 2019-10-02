@@ -1,0 +1,20 @@
+entry: Init_Bluetooth_extension
+javaentry: com.bluetooth.Bluetooth
+libraries: ["Bluetooth"]
+android:
+  manifest_changes: ext/platform/android/AndroidManifest.xml
+  adds: ext/platform/android/additional_files
+  source_list: ext/platform/android/ext_java.files
+  exttype: rakefile
+uwp:
+  csharp_impl: yes
+  root_namespace: rho
+
+sailfish:
+  proerb: ext/platform/qt/Bluetooth.pro.erb
+
+project_paths:
+  uwp: ext/platform/uwp/BluetoothLib.vcxproj
+  wm: ext/platform/wm/Bluetooth.vcproj
+  
+xml_api_paths: ext/BluetoothConnection.xml

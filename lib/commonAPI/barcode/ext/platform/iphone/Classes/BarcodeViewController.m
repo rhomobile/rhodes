@@ -58,7 +58,7 @@
 
 //#import "AppManager.h"
 //#import "Rhodes.h"
-#import "common/RhodesApp.h"
+#include "common/RhodesApp.h"
 
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
@@ -594,6 +594,16 @@ void destroyView()
 }
 #endif
 
+#ifdef APPLE_BARCODE_ENGINE
+void destroyView()
+{
+    [bv release];
+    bv = nil;
+}
+#endif
+
+
+
 @interface RhoCreateBarcodeViewTask : NSObject {}
 
 + (void)run:(NSString*)value;
@@ -743,7 +753,15 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
     resultText.font = [resultText.font fontWithSize:22];
     resultText.editable = NO;
     
-#ifndef ZXING
+    
+    
+#ifdef APPLE_BARCODE_ENGINE
+
+    
+    
+#endif
+#ifdef ZBAR
+    //ZBAR
     readerView = [ZBarReaderView new];
     readerView = [readerView initWithImageScanner:[[ZBarImageScanner alloc] init]];//initWithFrame:srect];//CGRectZero];
 
@@ -756,23 +774,21 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
     // the delegate receives decode results
     readerView.readerDelegate = self;
 #endif
-    
-    
-	//signatureView = [[SignatureView alloc] initWithFrame:CGRectZero];
-	//signatureView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	//signatureView.autoresizesSubviews = YES;
-	//signatureView.frame = srect;
+   
     
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
     self.view.autoresizesSubviews = YES;
-#ifndef ZXING
-	[self.view addSubview:readerView];
+#ifdef ZBAR
+    //ZBAR
+    [self.view addSubview:readerView];
 #endif
-	[self.view addSubview:resultText];
+    
+    [self.view addSubview:resultText];
 	[self.view addSubview:toolbar];
 
 	//[readerView start];
-#ifndef ZXING
+#ifdef ZBAR
+    //ZBAR
     [readerView start];
     
     // the delegate receives decode results
@@ -812,6 +828,13 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
+#ifdef APPLE_BARCODE_ENGINE
+    UIView* content = [[UIView alloc] initWithFrame:CGRectZero];
+    content.autoresizesSubviews = YES;
+    
+    self.view = content;
+    [content release];
+#else
 #ifndef ZXING
 	UIView* content = [[UIView alloc] initWithFrame:CGRectZero];
 	content.autoresizesSubviews = YES;
@@ -824,6 +847,7 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 
 	self.view = content;
 	[content release];
+#endif
 #endif
 }
 
@@ -900,8 +924,216 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 
   [self.view.layer addSublayer:self.capture.layer];
 #endif
+    
+#ifdef APPLE_BARCODE_ENGINE
+    
+    _highlightView = [[UIView alloc] init];
+    _highlightView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleBottomMargin;
+    _highlightView.layer.borderColor = [UIColor greenColor].CGColor;
+    _highlightView.layer.borderWidth = 3;
+    [self.view addSubview:_highlightView];
+    
+    _session = [[AVCaptureSession alloc] init];
+    _device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    NSError *error = nil;
+    
+    _input = [AVCaptureDeviceInput deviceInputWithDevice:_device error:&error];
+    if (_input) {
+        [_session addInput:_input];
+    } else {
+        NSLog(@"Error: %@", error);
+    }
+    
+    _output = [[AVCaptureMetadataOutput alloc] init];
+    [_output setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
+    [_session addOutput:_output];
+    
+    _output.metadataObjectTypes = [_output availableMetadataObjectTypes];
+    
+    _prevLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];
 
+    //AVCaptureConnection* connection = [AVCaptureConnection connectionWithInputPort:_input videoPreviewLayer:_prevLayer];
+    //[_session addConnection:connection];
+
+
+    _prevLayer.frame = self.view.bounds;
+    //_prevLayer.autoresizingMask = kCALayerWidthSizable | kCALayerHeightSizable;
+    _prevLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+    [self.view.layer addSublayer:_prevLayer];
+    
+    [_session startRunning];
+    
+    [self.view bringSubviewToFront:_highlightView];
+
+    
+#endif
 }
+
+
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+#ifdef APPLE_BARCODE_ENGINE
+    _prevLayer.frame = self.view.bounds;
+#endif
+}
+
+#ifdef APPLE_BARCODE_ENGINE
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
+{
+    CGRect highlightViewRect = CGRectZero;
+    AVMetadataMachineReadableCodeObject *barCodeObject;
+    NSString *detectionString = nil;
+    NSArray *barCodeTypes = @[AVMetadataObjectTypeUPCECode, AVMetadataObjectTypeCode39Code, AVMetadataObjectTypeCode39Mod43Code,
+                              AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypeEAN8Code, AVMetadataObjectTypeCode93Code, AVMetadataObjectTypeCode128Code,
+                              AVMetadataObjectTypePDF417Code, AVMetadataObjectTypeQRCode, AVMetadataObjectTypeAztecCode,
+                              AVMetadataObjectTypeITF14Code, AVMetadataObjectTypeDataMatrixCode, AVMetadataObjectTypeInterleaved2of5Code];
+    
+    for (AVMetadataObject *metadata in metadataObjects) {
+        for (NSString *type in barCodeTypes) {
+            if ([metadata.type isEqualToString:type])
+            {
+                barCodeObject = (AVMetadataMachineReadableCodeObject *)[_prevLayer transformedMetadataObjectForMetadataObject:(AVMetadataMachineReadableCodeObject *)metadata];
+                highlightViewRect = barCodeObject.bounds;
+                detectionString = [(AVMetadataMachineReadableCodeObject *)metadata stringValue];
+                break;
+            }
+        }
+        
+        if (detectionString != nil)
+        {
+            //_label.text = detectionString;
+            
+            if(![detectionString isEqualToString:resultText.text])
+            {
+                if (mBeep != 0)
+                    AudioServicesPlaySystemSound(mBeep);
+            }
+            
+            resultText.text = detectionString;
+            
+            {
+                UIBarButtonItem *btn_fixed = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+                UIBarButtonItem* btn_cancel = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(doCancel:)];
+                UIBarButtonItem* btn_space = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+                UIBarButtonItem* btn_done = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doDone:)];
+                
+                NSMutableArray *btns = [NSMutableArray arrayWithCapacity:6];
+                [btns addObject:btn_fixed];
+                [btns addObject:btn_cancel];
+                [btns addObject:btn_fixed];
+                [btns addObject:btn_space];
+                [btns addObject:btn_done];
+                
+                [btn_fixed release];
+                [btn_cancel release];
+                [btn_space release];
+                [btn_done release];
+                
+                [toolbar setItems:btns];
+                
+            }
+            
+            
+            break;
+        }
+        else{
+            //_label.text = @"(none)";
+
+        }
+    }
+    CGAffineTransform transform = [self makeHighlightTransformFromCurrentOrientation];
+    highlightViewRect = CGRectApplyAffineTransform(highlightViewRect, transform);
+    _highlightView.frame = highlightViewRect;
+}
+
+
+
+
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self applyOrientation];
+}
+
+- (CGAffineTransform) makeTransformFromCurrentOrientation {
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    float scanRectRotation;
+    float captureRotation;
+    
+    switch (orientation) {
+        case UIInterfaceOrientationPortrait:
+            captureRotation = 0;
+            scanRectRotation = 90;
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            captureRotation = 90;
+            scanRectRotation = 180;
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            captureRotation = 270;
+            scanRectRotation = 0;
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            captureRotation = 180;
+            scanRectRotation = 270;
+            break;
+        default:
+            captureRotation = 0;
+            scanRectRotation = 90;
+            break;
+    }
+    CGAffineTransform transform = CGAffineTransformMakeRotation((CGFloat) (captureRotation / 180 * M_PI));
+    return transform;
+}
+
+- (CGAffineTransform) makeHighlightTransformFromCurrentOrientation {
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    CGRect rect = _prevLayer.frame;
+    
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    
+    switch (orientation) {
+        case UIInterfaceOrientationPortrait:
+
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            transform = CGAffineTransformTranslate(transform, rect.size.width, 0);
+            transform = CGAffineTransformRotate(transform, M_PI_2);
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            transform = CGAffineTransformTranslate(transform, 0, rect.size.height);
+            transform = CGAffineTransformRotate(transform, -M_PI_2);
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            transform = CGAffineTransformTranslate(transform, rect.size.width, rect.size.height);
+            transform = CGAffineTransformRotate(transform, M_PI);
+            break;
+        default:
+            break;
+    }
+    //CGAffineTransform transform = CGAffineTransformMakeRotation((CGFloat) (captureRotation / 180 * M_PI));
+    return transform;
+}
+
+
+
+- (void)applyOrientation {
+    CGAffineTransform transform = [self makeTransformFromCurrentOrientation];
+    [_prevLayer setAffineTransform:transform];
+    //[_prevLayer setRotation:scanRectRotation];
+    //self.capture.layer.frame = self.view.frame;
+    _prevLayer.frame = self.view.frame;
+}
+
+#endif
+
+
+
+
+
+
 //*/
 #ifdef ZXING
 - (void)viewWillAppear:(BOOL)animated {
@@ -990,12 +1222,25 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     //[readerView willRotateToInterfaceOrientation:self.interfaceOrientation duration:0];
-#ifdef ZXING
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+#ifdef ZXING
 	[self applyOrientation];
+#endif
+#ifdef APPLE_BARCODE_ENGINE
+    [self applyOrientation];
 #endif
 }
 
+#ifdef APPLE_BARCODE_ENGINE
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext> context)
+     {
+         [self applyOrientation];
+     }];
+}
+#endif
 #ifdef ZXING
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator {
 	[super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
@@ -1007,7 +1252,7 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 }
 #endif
 
-#ifndef ZXING
+#ifdef ZBAR
 - (void) willRotateToInterfaceOrientation: (UIInterfaceOrientation) orientation
                                  duration: (NSTimeInterval) duration
 {
@@ -1020,24 +1265,32 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 - (void) viewDidAppear: (BOOL) animated
 {
     // run the reader when the view is visible
-#ifndef ZXING
+#ifdef ZBAR
     [readerView start];
-#else
+#endif
+#ifdef ZXING
     [self.capture start];
+#endif
+#ifdef APPLE_BARCODE_ENGINE
+    [_session startRunning];
 #endif
 }
 
 - (void) viewWillDisappear: (BOOL) animated
 {
-#ifndef ZXING
+#ifdef ZBAR
     [readerView stop];
-#else
+#endif
+#ifdef ZXING
     [self.capture stop];
+#endif
+#ifdef APPLE_BARCODE_ENGINE
+    [_session stopRunning];
 #endif
 }
 
 
-#ifndef ZXING
+#ifdef ZBAR
 - (void) readerView: (ZBarReaderView*) view
      didReadSymbols: (ZBarSymbolSet*) syms
           fromImage: (UIImage*) img
@@ -1101,12 +1354,12 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 
 
 - (void)dealloc {
-#ifndef ZXING
+#ifdef ZBAR
 	[readerView removeFromSuperview];
 #endif
 	[toolbar removeFromSuperview];
     [resultText removeFromSuperview];
-#ifndef ZXING
+#ifdef ZBAR
 	[readerView release];
     readerView = nil;
 #endif
@@ -1120,6 +1373,27 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
     if(timer_)
         [timer_ release];
 #endif
+#ifdef APPLE_BARCODE_ENGINE
+    if (_session) {
+        [_session stopRunning];
+        [_session release];
+        _session = nil;
+    }
+    if (_input) {
+        //[_input release];
+        _input = nil;
+    }
+    if (_output) {
+        //[_output release];
+        _output = nil;
+    }
+     if (_prevLayer) {
+        _prevLayer = nil;
+    }
+    if (_highlightView) {
+        _highlightView = nil;
+    }
+#endif
 
     if (mBeep != 0) {
         AudioServicesDisposeSystemSoundID(mBeep);
@@ -1129,7 +1403,7 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 
 - (void)orientationChanged:(NSNotification *)note
 {
-#ifndef ZXING
+#ifdef ZBAR
     UIInterfaceOrientation app_io = [[UIApplication sharedApplication] statusBarOrientation];
     switch (app_io) {
         case UIInterfaceOrientationPortrait:
@@ -1148,7 +1422,11 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
         default:
             break;
     }
-#else
+#endif
+#ifdef ZXING
+    [self applyOrientation];
+#endif
+#ifdef APPLE_BARCODE_ENGINE
     [self applyOrientation];
 #endif
 }

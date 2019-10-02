@@ -4,8 +4,7 @@
 #include <QObject>
 #include <QThread>
 #include <QDebug>
-#include <QMainWindow>
-#include <QApplication>
+#include "mainwindowinterface.h"
 
 class IExecutable : public QObject
 {
@@ -22,11 +21,9 @@ public:
         qDebug() << "Creating Executable in thred ID 0x" + QString::number((quint32)QThread::currentThreadId(), 16);
 #endif
     }
-    static QMainWindow * getMainWindow(){
-        foreach (QWidget * widget, qApp->topLevelWidgets()) {
-            if (widget->inherits("QMainWindow")) return qobject_cast<QMainWindow *>(widget);
-        }
-        return nullptr;
+
+    static QtMainWindow * getMainWindow(){
+        return QtMainWindow::getLastInstance();
     }
 
     virtual ~IExecutable(){}

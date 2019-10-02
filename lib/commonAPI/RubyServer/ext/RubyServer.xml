@@ -1,0 +1,101 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="RubyServer" parent="Rho">
+        <HELP_OVERVIEW>Example extension api</HELP_OVERVIEW>
+        <MORE_HELP>This is example of API. Implementation contain in extension.</MORE_HELP>
+
+        <TEMPLATES>
+        </TEMPLATES>
+
+         <PROPERTIES >
+            <DESC>list of properties supported by instance of object</DESC>
+            <PROPERTY name="serverURL" type="STRING" readOnly="true" access="STATIC" >
+                <DESC>return Ruby server URL</DESC>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS>
+
+            <METHOD name="loadRubyFile" access="STATIC">
+                <DESC>Load ruby file into Ruby VM</DESC>
+                <PARAMS>
+                    <PARAM name="filepath" type="STRING">
+                        <DESC>ruby file path</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="loadModel" access="STATIC">
+                <DESC>Load ruby model file into Ruby VM</DESC>
+                <PARAMS>
+                    <PARAM name="filepath" type="STRING">
+                        <DESC>ruby modelfile path</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="executeRubyMethodWithJSON" access="STATIC"  hasCallback="mandatory">
+                <DESC>Async call ruby code in Ruby thread and return result in callback</DESC>
+                <PARAMS>
+                    <PARAM name="classFullName" type="STRING">
+                        <DESC>full Ruby class name with all parents. "::" is delimiter.</DESC>
+                    </PARAM>
+                    <PARAM name="methodName" type="STRING">
+                        <DESC>static method name</DESC>
+                    </PARAM>
+                    <PARAM name="parameters_in_JSON" type="STRING">
+                        <DESC>Parameters in JSON format. Simple JSON for single parameter and JSON array with parameters in case of set of parameters</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING">
+                    <DESC>return result converted to JSON</DESC>
+                </RETURN>
+            </METHOD>
+
+
+
+            <METHOD name="executeGetRequestToRubyServer" access="STATIC"  hasCallback="mandatory">
+                <DESC>Async make GET request to Ruby local server and return responce in callback</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL for Ruby server request</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING">
+                    <DESC>received responce from Ruby server</DESC>
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="addRubyNativeCallback" access="STATIC"  hasCallback="mandatory">
+                <DESC>add Ruby callback for call your code from Ruby. In Ruby : Rho::Ruby.callNativeCallback(callbackID, param)</DESC>
+                <PARAMS>
+                    <PARAM name="callbackID" type="STRING">
+                        <DESC>callback ID</DESC>
+                    </PARAM>
+                </PARAMS>
+                <RETURN type="STRING">
+                    <DESC>Ruby param converted to JSON</DESC>
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="removeRubyNativeCallback" access="STATIC">
+                <DESC>remove previously added Ruby callback for call your code from Ruby. In Ruby : Rho::Ruby.callNativeCallback(callbackID, param)</DESC>
+                <PARAMS>
+                    <PARAM name="callbackID" type="STRING">
+                        <DESC>callback ID</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+
+        </METHODS>
+
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+         </PLATFORM>
+    </MODULE>
+</API>

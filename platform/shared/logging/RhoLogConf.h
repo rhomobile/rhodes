@@ -66,7 +66,7 @@ class LogSettings : public common::IRhoSettingsListener {
         IMemoryInfoCollector*   m_pCollector;
         LogSettings&            m_logSettings;
 #ifdef mutexSmartPointer
-        mutable mutexSmartPointer m_accessLock;
+        mutable mutexSmartPointer m_accessLock = mutexSmartPointer(new common::CMutex());
 #else
         mutable common::CMutex m_accessLock;
 #endif

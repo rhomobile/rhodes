@@ -85,7 +85,7 @@ For instance if you only want your app to be installed from Google Play Store, a
 
             <METHOD name="isRunOnSimulator" access="STATIC" >
                 <DESC>return true if application run on simulator</DESC>
-                <PLATFORM>Android</PLATFORM>
+                <PLATFORM>Android, iOS</PLATFORM>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
 
@@ -136,7 +136,7 @@ For instance if you only want your app to be installed from Google Play Store, a
         <USER_OVERVIEW>
         </USER_OVERVIEW>
 
-       
+
         <VER_INTRODUCED>6.0.0</VER_INTRODUCED>
         <PLATFORM>
          </PLATFORM>

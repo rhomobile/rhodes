@@ -18,6 +18,10 @@ kitchenSinkRuby:
   repo: 'https://github.com/tauplatform/kitchensinkRuby.git'
   build_root: '.'
 
+inventory_demo:
+  repo: 'https://github.com/tauplatform/inventoryDemo-mobileApp.git'
+  build_root: '.'
+
 push_spec:
   repo: ''
   build_root: '.'

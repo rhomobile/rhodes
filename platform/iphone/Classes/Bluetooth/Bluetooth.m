@@ -344,7 +344,7 @@ static RhoBluetoothManager *instance = NULL;
 	while ((readed_size < length) && (readed_size < packets_size) && ([self.packets count] > 0)) {
 		NSData* data = [self.packets objectAtIndex:0];
 		if ([data length] <= (length-readed_size)) {
-			int to_read = [data length];
+			int to_read = (int)[data length];
 			// read data and remove packet
 			[data getBytes:dst length:to_read];
 			dst+= to_read;
@@ -401,7 +401,7 @@ static RhoBluetoothManager *instance = NULL;
 		return;
 	}
 	const char* sbuf = [string UTF8String];
-	int length = strlen(sbuf);
+	int length = (int)strlen(sbuf);
 	
 	char* buf = malloc(length+5);
 	char* dst = buf;

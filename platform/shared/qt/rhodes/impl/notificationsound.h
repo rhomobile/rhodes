@@ -1,11 +1,19 @@
 #ifndef NOTIFICATIONSOUND_H
 #define NOTIFICATIONSOUND_H
 #include "../../platform/shared/common/RhoStd.h"
-#include "../iexecutable.h"
 
-class NotificationSound : public IExecutable
+#ifndef RHODES_VERSION_LIBRARY
+#include "../iexecutable.h"
+#endif
+
+class NotificationSound
+#ifndef RHODES_VERSION_LIBRARY
+        : public IExecutable
+#endif
 {
+#ifndef RHODES_VERSION_LIBRARY
     Q_OBJECT
+#endif
 private:
     int sFrequency = 0;
     int sDuration = 0;
@@ -15,11 +23,13 @@ public:
     void playSound();
     static void beep();
     static void beep(const rho::Hashtable<rho::String, rho::String>& propertyMap);
+#ifndef RHODES_VERSION_LIBRARY
 public slots:
     virtual void execute(){
         playSound();
         deleteLater();
     }
+#endif
 };
 
 #endif // NOTIFICATIONSOUND_H

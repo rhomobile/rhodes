@@ -209,7 +209,7 @@ If you open your page in WebView, and after it makes a few jumps by linking (for
                 </RETURN>
             </METHOD>
 
-            <METHOD name="currentURL">
+            <METHOD name="currentURL" runInThread="ui">
                 <DESC>Returns the actual URL in WebView. This works the same as the JavaScript window.location.href.</DESC>
                 <PLATFORM>iOS, Android</PLATFORM>
                 <APPLIES rubyOnly="true"/>

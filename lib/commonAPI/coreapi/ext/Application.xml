@@ -101,8 +101,9 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                 <PLATFORM>WM, CE, Win32, Android, iOS</PLATFORM>
             </PROPERTY>
 
-            <PROPERTY name="rhoPlatformVersion" type="STRING" readOnly="true" generateDoc="false">
+            <PROPERTY name="rhoPlatformVersion" type="STRING" readOnly="true">
                 <DESC>The version of RhoMobile platform, which was used to build the application.</DESC>
+                <PLATFORM>WM, CE, Win32, Android, iOS, Sailfish, UWP</PLATFORM>
             </PROPERTY>
 
             <PROPERTY name="badLinkURI" type="STRING" readOnly="true">

@@ -1,0 +1,36 @@
+QT -= core
+
+TARGET = serialport
+TEMPLATE = lib
+
+CONFIG += staticlib warn_on
+CONFIG += <%= @buildMode %>
+DEFINES += OS_SAILFISH OS_LINUX
+
+DESTDIR = $$PWD/../extensions
+OBJECTS_DIR = $$PWD/bin/tmp
+
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/include\
+<%= @rhoRoot %>/platform/shared \
+<%= @rhoRoot %>/platform/shared/ruby/sailfish
+
+QMAKE_CFLAGS_DEBUG -= -O2
+QMAKE_CXXFLAGS_DEBUG -= -O2
+
+DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
+
+!isEmpty(RHOSIMULATOR_BUILD) {
+  DEFINES += RHODES_EMULATOR
+}
+
+QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+QMAKE_CFLAGS += -fvisibility=hidden
+QMAKE_CXXFLAGS += -fvisibility=hidden
+
+HEADERS += \
+<%= @rhoRoot %>/lib/extensions/serialport/ext/serialport.h
+
+SOURCES += \
+<%= @rhoRoot %>/lib/extensions/serialport/ext/serialport.c \
+<%= @rhoRoot %>/lib/extensions/serialport/ext/posix_serialport_impl.c 

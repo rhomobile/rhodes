@@ -30,7 +30,7 @@
 #include <string>
 #include "common/RhoDefs.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MACOSX) || defined(OS_LINUX)
 typedef struct _TNavigateData {
     int index;
     wchar_t* url;

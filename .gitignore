@@ -35,6 +35,7 @@ platform/shared/*/iphone/*/build/*
 platform/shared/*/iphone/build/*
 platform/shared/*/win32/bin/*
 platform/shared/qt/*/*/Debug
+platform/shared/common/barcode_engine.h
 platform/symbian/bld.inf
 platform/symbian/curl/bld.inf
 platform/symbian/curl/curl_lib.mmp
@@ -315,3 +316,5 @@ generated/
 platform/shared/common/app_build_capabilities.h
 platform/shared/common/app_build_configs.c
 platform/shared/ruby/ext/rho/extensions.c
+
+res/build-tools/maven/m2

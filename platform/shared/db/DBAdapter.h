@@ -32,6 +32,8 @@
 #include "common/IRhoCrypt.h"
 #include "DBLock.h"
 
+extern "C" void rhoInitSQLitePageSize(unsigned int);
+
 namespace rho{
 
 namespace db{
@@ -90,8 +92,18 @@ public:
     DEFINE_LOGCLASS;
 
     CDBAdapter(const char* szDBPartition, boolean bNoRubyLock) : m_dbHandle(0), m_strDbPath(""), m_strDbPartition(szDBPartition),
-        m_mxRuby(bNoRubyLock), m_bUIWaitDB(false), m_nTransactionCounter(0) {}
+        m_mxRuby(bNoRubyLock), m_bUIWaitDB(false), m_nTransactionCounter(0) {
+            rhoInitSQLitePageSize(4096);
+            if (usingDeprecatedPageSize()){
+                rhoInitSQLitePageSize(1024);
+            }
+            
+        }
     ~CDBAdapter(void){}
+    bool usingDeprecatedPageSize(){
+        const char* depEncrypt = get_app_build_config_item("use_deprecated_encryption");
+        return (depEncrypt && strcmp(depEncrypt, "1") == 0);
+    }
 
     void open (String strDbPath, String strVer, boolean bTemp, boolean checkImportState);
     void close(boolean bCloseRubyMutex = true);
@@ -357,6 +369,7 @@ private:
 
     void checkDBVersion(String& strVer);
     void createSchema();
+    String tauDecryptTextFile(const String fullPath);
     void createTriggers();
     boolean checkDbError(int rc);
     boolean checkDbErrorEx(int rc, rho::db::CDBResult& res);

@@ -30,6 +30,7 @@
 #include "rhodes/RhoClassFactory.h"
 #include "rhodes/sslimpl.h"
 #include "rhodes/rhocryptimpl.h"
+#include "rhodes/SecurityTokenGenerator.h"
 
 static rho::common::CRhoClassFactory g_rhoClassFactory;
 rho::common::IRhoClassFactory* rho_get_RhoClassFactory()
@@ -55,6 +56,12 @@ IRhoThreadImpl *CRhoClassFactory::createThreadImpl()
 IRhoCrypt *CRhoClassFactory::createRhoCrypt()
 {
     return new CRhoCryptImpl;
+}
+
+const ISecurityTokenGenerator* CRhoClassFactory::createSecurityTokenGenerator()
+{
+    static SecurityTokenGenerator global_generator;
+    return &global_generator;
 }
 
 } // namespace common

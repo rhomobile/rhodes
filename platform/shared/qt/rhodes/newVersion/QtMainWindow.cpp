@@ -74,14 +74,10 @@ QMenuBar* QtMainWindow::createMenu() {
 
     QMenuBar * menuBar = new QMenuBar(this);
 
-
     QMenu *mMain = new QMenu("Main", this);
-    //mMain->addAction("Exit", this, SLOT(on_actionExit_triggered()));
     mMain->addAction("Exlt", this, SLOT(on_actionExit_triggered()));
     menuBar->addMenu(mMain);
-    //if (menuMain == NULL) {
-        menuMain = mMain;
-    //}
+    menuMain = mMain;
 
     #ifndef OS_WINDOWS_DESKTOP
     QMenu * menuSimulate = new QMenu("Simulate", this);
@@ -98,7 +94,6 @@ QMenuBar* QtMainWindow::createMenu() {
     menuBar->addMenu(menuSimulate);
     #endif
 
-
     QMenu * menuHelp = new QMenu("Help", this);
     //menuHelp->addAction("About", this, SLOT(on_actionAbout_triggered()));
     menuHelp->addAction("Info", this, SLOT(on_actionAbout_triggered()));
@@ -114,9 +109,11 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
 {
     lastInstance = this;
     menuMain = NULL;
-    createMenu();
+    if (RHOCONF().getBool("start_maximized")){
+        setWindowState(windowState() | Qt::WindowMaximized);
+    }
 
-currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId();
+    currentThreadId = QThread::currentThreadId();
 
 #if !defined(RHODES_EMULATOR)
     QPixmap icon(QCoreApplication::applicationDirPath().append(QDir::separator()).append("icon.png"));
@@ -171,8 +168,6 @@ currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId()
     QObject::connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(on_webView_urlChanged(QUrl)));
     verticalLayout->addWidget(webView);
 
-
-
     connect(this, SIGNAL(navigate(QString,int)), this,
             SLOT(slotNavigate(QString,int)), Qt::QueuedConnection);
 
@@ -193,7 +188,7 @@ currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId()
     } else {
         unsetProxy();
     }
-
+    lastInstance = this;
     QWebEngineProfile * profile = QWebEngineProfile::defaultProfile();
     #ifdef RHODES_EMULATOR
     profile->setHttpUserAgent("RhoSimulator");
@@ -243,6 +238,9 @@ currentThreadId = QThread::currentThreadId();//this->thread()->currentThreadId()
     }
 
     setMenuBar(createMenu());
+    if (RHOCONF().getInt("w32_hide_menu_bar")){
+        this->menuBar()->hide();
+    }
 }
 
 QtMainWindow::~QtMainWindow()
@@ -436,10 +434,15 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
 
 void QtMainWindow::on_webView_loadStarted()
 {
-	if (firstShow && RHOCONF().getBool("full_screen")) {
-		firstShow = false;
-		fullscreenCommand(1);
-	}
+    if (firstShow){
+        firstShow = false;
+
+        if (RHOCONF().getBool("full_screen") && !RHOCONF().getBool("start_maximized")){
+            fullscreenCommand(1);
+        }
+    }
+
+
     LOG(INFO) + "WebView: loading...";
     PROF_START("BROWSER_PAGE");
 }
@@ -923,10 +926,14 @@ void QtMainWindow::on_actionAbout_triggered()
 {
     QString OSDetails= QString("\nOS  : %1  \nApp Compiled with QT Version :  %2 \nRunning with QT Version %3")
     .arg(QtLogView::getOsDetails().toStdString().c_str(),QT_VERSION_STR,qVersion());
-#ifndef RHO_SYMBIAN
+
 #ifdef RHODES_EMULATOR
-    QMessageBox::about(this, RHOSIMULATOR_NAME, QString(RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebEngine v" QTWEBENGINECORE_VERSION_STR ")\n(WebKit v%1) \nPlatform : %2 %3").arg(QTWEBENGINECORE_VERSION_STR)
-       .arg(RHOSIMCONF().getString( "platform").c_str())
+    QMessageBox::about(this,
+       RHOSIMULATOR_NAME,
+       QString(QString(RHOSIMULATOR_NAME) + " v" +
+               QString(RHOSIMULATOR_VERSION) + "\n(QtWebEngine v" + QString(QTWEBENGINECORE_VERSION_STR) + ")\n(WebKit v%1) \nPlatform : %2 %3")
+       .arg(QTWEBENGINECORE_VERSION_STR)
+       .arg(RHOSIMCONF().getString("platform").c_str())
        .arg(OSDetails)
        );
 #else
@@ -935,8 +942,6 @@ void QtMainWindow::on_actionAbout_triggered()
         .arg(QString::fromStdString(RHOCONF().getString("app_version")))
         .arg(OSDetails)
         );
-#endif
-
 #endif
 }
 
@@ -1189,6 +1194,11 @@ void QtMainWindow::fullscreenCommand(int enable)
 #if defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
     if ((enable && !isFullScreen()) || (!enable && isFullScreen())) {
         this->menuBar()->setVisible(RHOCONF().getBool("w32_fullscreen_menu") || (!enable));
+
+#ifdef OS_WINDOWS_DESKTOP
+        QWindowsWindowFunctions::setHasBorderInFullScreen( windowHandle(), true );
+#endif
+
         setWindowModality(enable ? Qt::ApplicationModal : Qt::NonModal);
         setWindowState(windowState() ^ Qt::WindowFullScreen);
     }

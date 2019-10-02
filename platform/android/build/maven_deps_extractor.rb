@@ -7,9 +7,16 @@ class MavenDepsExtractor
   include Singleton
 
   @logger = nil
+  @api_level = nil
+
+  @repos_ = nil
 
   def set_logger( logger )
     @logger = logger
+  end
+
+  def set_api_level( level )
+    @api_level = level
   end
 
   def initialize
@@ -21,8 +28,16 @@ class MavenDepsExtractor
     @mvnbin = File.join( @m2home, 'bin', 'mvn' )
 
     if RUBY_PLATFORM =~ /(win|w)32$/
-      @mvnbin += '.bat'
+      @mvnbin += '.cmd'
     end
+
+    @repos_ = 
+    [
+      "file://#{File.join($androidsdkpath,'extras','google','m2repository')}",
+      "file://#{File.join($androidsdkpath,'extras','android','m2repository')}",
+      "https://jcenter.bintray.com",
+      "https://maven.google.com"
+    ]
 
     @jars = []
     @res_dirs = []
@@ -111,18 +126,16 @@ class MavenDepsExtractor
   def extract_all
     @logger.info 'Extracting maven dependencies'
 
-    @logger.info 'Removing maven cache for android packages - just in case'
-    com_cache_dir = File.join(@m2home,'m2','com')
-    rm_r com_cache_dir if File.directory?(com_cache_dir)
+    #@logger.info 'Removing maven cache for android packages - just in case'
+    #com_cache_dir = File.join(@m2home,'m2','com')
+    #rm_rf com_cache_dir if File.directory?(com_cache_dir)
 
     copy_dir = File.join( @temp_dir, '.tmp')
     mkdir_p copy_dir    
+    get_art_poms(copy_dir)
     copy_dependencies copy_dir
-
-    @logger.info "Extracting dependencies"
     extract copy_dir, @temp_dir
-
-    rm_r copy_dir   
+    rm_r copy_dir
   end
 
   def extract( src, dst )
@@ -184,14 +197,56 @@ class MavenDepsExtractor
     argv.join(' ')
   end
 
+  def get_art_poms(path)
+    dependencies = @dependencies.values.flatten.map { |d| Hash[ ["grp_id","art_id","ver"].zip(split_dependency(d)) ] }
+    
+    remoteRepositories = ""
+
+    @repos_.each_with_index do |repo, i|
+      remoteRepositories += "repo#{i}::::#{repo},"
+    end
+
+    dependencies.each do |dep|
+      cmd = dep_get_cmd(dep["grp_id"], dep["art_id"], dep["ver"], remoteRepositories)
+      env = maven_env
+      pwd = path
+
+      @logger.info "Running Maven dependency get plugin"
+      puts cmd.to_s
+      Jake.run3( cmd, pwd, env )
+    end
+
+  end
+
+  def dep_get_cmd(grp_id, art_id, ver, repos)
+    argv = []
+    argv << @mvnbin
+    argv << 'dependency:get'
+    argv << "-Dmaven.repo.local=#{File.join(@m2home,'m2')}"
+
+    argv << "-DgroupId=#{grp_id}"
+    argv << "-DartifactId=#{art_id}"
+    argv << "-Dversion=#{ver}"
+    argv << "-DremoteRepositories=#{repos}"
+    argv << "-Dpackaging=pom"
+    argv << "-Ddest=./"
+    argv << "-Dtransitive=false"
+
+    argv << '-e' if USE_TRACES
+    argv << '-X' if USE_TRACES
+
+    argv.join(' ')
+  end
+
   def copy_dependencies( path )    
     pom = File.join( path, 'pom.xml')
-    generate_pom(pom)
+    generate_pom(pom, path)
 
     cmd = dep_copy_cmd
     env = maven_env
     pwd = path
 
+    puts "current pwd: #{pwd}"
     @logger.info "Running Maven dependency copy plugin"
     Jake.run3( cmd, pwd, env )
     rm pom
@@ -205,17 +260,43 @@ class MavenDepsExtractor
     dep.split(':')
   end
 
-  def generate_pom(path)
+  def generate_pom(path, current_path)
     require 'erb'
 
     @logger.info "Generating pom.xml for dependencies at #{path}"
 
-    dependencies = @dependencies.values.flatten.map { |d| Hash[ ["grp_id","art_id","ver"].zip(split_dependency(d)) ] }
+    #dependencies = @dependencies.values.flatten.map { |d| Hash[ ["grp_id","art_id","ver"].zip(split_dependency(d)) ] }
+    dependencies = []
 
-    repos = [
-      File.join($androidsdkpath,'extras','google','m2repository'),
-      File.join($androidsdkpath,'extras','android','m2repository')
-    ]
+    require 'nokogiri'
+    Dir.glob(File.join(current_path, "*.pom")).each do |pom|
+      doc = File.open(File.join(pom)) { |f| Nokogiri::XML(f) }
+      root = doc.search("project")
+      packaging = root.search("packaging")
+
+      artifactId = root.search("artifactId")[0].content
+      groupId = root.search("groupId")[0].content
+      version = root.search("version")[0].content
+      type = ''
+
+      if packaging[0] == nil
+        type = 'jar'
+      else
+        puts packaging.to_s
+        type = packaging[0].content
+      end
+
+      hash = Hash.new
+      hash["grp_id"] = groupId
+      hash["art_id"] = artifactId
+      hash["ver"] = version
+      hash["packaging"] = type
+      dependencies << hash
+
+      rm_r pom
+    end
+
+    repos = @repos_
 
     tpl = File.read(File.join(@rhoroot,'platform','android','build','pom.erb'))
     erb = ERB.new tpl
@@ -223,6 +304,16 @@ class MavenDepsExtractor
     f.write(erb.result binding)
     f.close
   end
+
+  def aapt2_res_dirs
+    args = []
+    @res_dirs.each do |d|
+      args << d
+    end
+
+    return args
+  end
+
 
   def aapt_args
     args = []

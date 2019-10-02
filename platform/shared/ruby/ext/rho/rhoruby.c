@@ -87,6 +87,10 @@ extern void Init_transcode(void);
 extern void Init_IO(void);
 extern void Init_wait(void);
 extern void Init_nonblock(void);
+extern void Init_date_core(void);
+
+
+extern void Init_RubyNative_extension(void);
 
 
 //RhoSupport extension
@@ -119,6 +123,14 @@ static char* rb_type_to_s(VALUE obj);
 extern int rho_conf_getBool(const char* szName);
 
 static int extensions_loaded = 0;
+
+#ifndef RHO_RUBY_COMPILER
+extern void* rho_mutex_create();
+extern void rho_mutex_lock(void*);
+extern void rho_mutex_release(void*);
+static void* s_ruby_gc_lock;
+#endif
+
 
 #if defined(WIN32)
 extern void rb_w32_sysinit(int *argc, char ***argv);
@@ -179,6 +191,9 @@ void Init_transcoders() {
 
 void RhoRubyStart()
 {
+#ifndef RHO_RUBY_COMPILER
+    s_ruby_gc_lock = rho_mutex_create();
+#endif
     const char* szRoot = rho_native_rhopath();
 //RHO
 #if defined(_WIN32)
@@ -236,9 +251,9 @@ void RhoRubyStart()
     Init_RhoConf(); //+
 #endif
 
-    Init_RhoBluetooth();
 	Init_RhodesNativeViewManager();
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)
+    Init_RhoBluetooth();
     Init_Camera();
 #endif
     Init_stringio(); //+
@@ -250,6 +265,8 @@ void RhoRubyStart()
     Init_socket(); //+
     Init_RhoEvent();
     Init_Calendar();
+        
+    Init_date_core();
 
     Init_Extensions();
 
@@ -264,9 +281,16 @@ void RhoRubyStart()
 
 	Init_socket();
 	Init_stringio();
+        
+    Init_date_core();
 
 	Init_Extensions();
 #endif //OS_WP8
+        
+        
+    //MOHUS
+    //Init_RubyNative_extension();
+        
  
 	extensions_loaded = 1;
 
@@ -987,21 +1011,55 @@ void  rho_ruby_enable_gc(VALUE val)
         rb_gc_disable();
 }
 
+void rho_ruby_gc_lock() {
+    #ifndef RHO_RUBY_COMPILER
+    rho_mutex_lock( s_ruby_gc_lock );
+    #endif
+}
+
+void rho_ruby_gc_release() {
+    #ifndef RHO_RUBY_COMPILER
+    rho_mutex_release( s_ruby_gc_lock );
+    #endif
+}
+
 void rho_ruby_holdValue(VALUE val)
-{
+{    
+    rho_ruby_gc_lock();
+
     rb_gc_register_mark_object(val);
+
+    rho_ruby_gc_release();
 }
 
 void rho_ruby_releaseValue(VALUE val)
 {
-    VALUE ary = GET_THREAD()->vm->mark_object_ary;
-    int i = RARRAY_LEN(ary)-1;
-    for ( ; i >= 0; i-- ) {
-        if ( RARRAY_PTR(ary)[i]== val )
+    rho_ruby_gc_lock();
+
+    VALUE ary_ary = GET_VM()->mark_object_ary;
+
+    int bucket = RARRAY_LEN(ary_ary)-1;
+    int done = 0;
+    for ( ; bucket >= 0; bucket-- ) {
+        VALUE ary = rb_ary_at( ary_ary, INT2NUM(bucket) );
+
+         int i = RARRAY_LEN(ary)-1;
+         for ( ; i >= 0; i-- ) {
+             if ( RARRAY_PTR(ary)[i]== val )
+                 break;
+         }
+
+        if ( i >= 0 ) {
+            rb_ary_delete_at(ary,i);
+            done = 1;
+        }
+
+        if ( done != 0 ) {
             break;
+        }
     }
-    if ( i >= 0 )
-        rb_ary_delete_at(ary,i);
+
+    rho_ruby_gc_release();
 }
 
 extern VALUE rb_cMutex;
@@ -1228,7 +1286,7 @@ int rho_ruby_is_string(VALUE val)
 
 int rho_ruby_is_integer(VALUE val)
 {
-    return (TYPE(val) == T_FIXNUM) ? 1 : 0;
+    return (TYPE(val) == T_FIXNUM) || (TYPE(val) == T_BIGNUM) ? 1 : 0;
 }
 
 int rho_ruby_is_boolean(VALUE val)

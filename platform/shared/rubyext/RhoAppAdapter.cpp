@@ -94,7 +94,7 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 	    return rho_ruby_getRhoDBVersion();
     else
 #endif
-        return "2.2.0";
+        return "3.22.0";
 }
 
 /*static*/ void  _CRhoAppAdapter::resetDBOnSyncUserChanged()

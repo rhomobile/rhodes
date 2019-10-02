@@ -28,6 +28,13 @@ rake --trace
 
 )
 
+if "%RHO_PLATFORM%" == "sailfish" (
+
+cd platform\qt
+rake --trace
+
+)
+
 if "%RHO_PLATFORM%" == "bb" (
 
 cd platform\bb

@@ -45,7 +45,7 @@ public:
 
 inline unsigned int CSystem::getThreadID(){ 
   // On Linux and FreeBSD, we try to use gettid().
-#if defined OS_LINUX || defined OS_FREEBSD || defined OS_MACOSX
+#if defined OS_LINUX || defined OS_FREEBSD
 #ifndef __NR_gettid
 #ifdef OS_MACOSX
 #define __NR_gettid SYS_gettid

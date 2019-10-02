@@ -1,0 +1,52 @@
+QT += core gui widgets multimedia network webkit widgets
+DEFINES += OS_SAILFISH OS_LINUX
+CONFIG += sailfishapp c++14 sailfishapp_i18n
+
+
+TARGET = Signature
+TEMPLATE = lib
+CONFIG += staticlib warn_on
+
+INCLUDEPATH += \
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared\
+<%= @rhoRoot %>/platform/shared/common\
+<%= @rhoRoot %>/platform/shared/rubyext\
+<%= @rhoRoot %>/platform/shared/ruby/include\
+<%= @rhoRoot %>/platform/shared\
+<%= @rhoRoot %>/lib/commonAPI/signature/ext/shared
+
+unix:!macx {
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/sailfish
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/qt/sailfish/src
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/qt/sailfish
+
+  contains(DEFINES, OS_LINUX)  {
+    DESTDIR = $$PWD/../extensions
+    OBJECTS_DIR = $$PWD/bin/tmp
+  }
+  contains(DEFINES, OS_SAILFISH)  {
+    HEADERS += <%= @rhoRoot %>/lib/commonAPI/signature/ext/platform/qt/src/signatureqmlmodel.h
+    SOURCES += <%= @rhoRoot %>/lib/commonAPI/signature/ext/platform/qt/src/signatureqmlmodel.cpp
+  }
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
+}
+DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
+
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+}
+
+HEADERS += \
+<%= @rhoRoot %>/lib/commonAPI/signature/ext/shared/generated/cpp/ISignature.h\
+<%= @rhoRoot %>/lib/commonAPI/signature/ext/shared/generated/cpp/SignatureBase.h
+
+SOURCES += \
+<%= @rhoRoot %>/lib/commonAPI/signature/ext/shared/generated/cpp/Signature_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/signature/ext/shared/generated/cpp/Signature_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/signature/ext/shared/generated/cpp/SignatureBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/signature/ext/shared/generated/Signature_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/signature/ext/shared/generated/Signature_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/signature/ext/shared/generated/Signature_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/signature/ext/platform/qt/src/Signature_impl.cpp

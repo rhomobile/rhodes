@@ -45,9 +45,17 @@
 #import "CRhoURLProtocol.h"
 #import "RhoExtManager/RhoExtManagerSingletone.h"
 
+
+#ifdef RHO_STANDALONE_LIB
+#import "RhoMainViewStubImpl.h"
+#endif
+
+
 int rho_rhodesapp_check_mode();
 void rho_splash_screen_start();
 
+
+//NSString* kGCMMessageIDKey = @"gcm.message_id";
 
 /*
 use this non-public code for see level of memory warning 
@@ -141,6 +149,11 @@ static Rhodes *instance = NULL;
 + (Rhodes*)sharedInstance {
     return instance;
 }
+
++(void) makeSharedInstance {
+    instance = [[Rhodes alloc] init];
+}
+
 
 + (UIApplication*)application {
     return [Rhodes sharedInstance]->application;
@@ -278,7 +291,7 @@ static Rhodes *instance = NULL;
 
 - (void)openMapLocation:(NSString*)query {
 	[self hideSplash];
-    NSURL* url = [NSURL URLWithString:[@"http://maps.google.com/?" stringByAppendingString:query]];
+    NSURL* url = [NSURL URLWithString:[@"https://maps.google.com/?" stringByAppendingString:query]];
     [[UIApplication sharedApplication] openURL:url];
 }
 
@@ -820,8 +833,9 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     
+#ifndef RHO_STANDALONE_LIB
+
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
-    
     
     const char* fs = get_app_build_config_item("iphone_full_screen");
     if (fs == NULL) {
@@ -856,7 +870,13 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 	}
 	
     [window makeKeyAndVisible];
-
+#else
+    
+    // standalone lib mode - no own UI
+    mainView = nil;
+    mainView = [[RhoMainViewStubImpl alloc] init];
+    
+#endif
  
 	CGRect rrr = [application statusBarFrame];
 	
@@ -1126,7 +1146,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 
 #ifdef __IPHONE_3_0
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+- (BOOL)didFinishLaunchingWithOptionsInternal:(NSDictionary *)launchOptions application:(UIApplication *)application {
     
     self.mBlockExit = NO;
 
@@ -1246,6 +1267,11 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 	return NO;
 }
 
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    return [self didFinishLaunchingWithOptionsInternal:launchOptions application:application];
+}
+
+
 #ifdef APP_BUILD_CAPABILITY_PUSH
 #if 0
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
@@ -1270,9 +1296,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 withCompletionHandler:(void(^)())completionHandler {
 #endif
     NSDictionary *userInfo = response.notification.request.content.userInfo;
-    if (userInfo[kGCMMessageIDKey]) {
-        NSLog(@"Message ID: %@", userInfo[kGCMMessageIDKey]);
-    }
+    //if (userInfo[kGCMMessageIDKey]) {
+    //    NSLog(@"Message ID: %@", userInfo[kGCMMessageIDKey]);
+    //}
     
     // Print full message.
     NSLog(@"%@", userInfo);
@@ -1410,13 +1436,15 @@ withCompletionHandler:(void(^)())completionHandler {
 #ifdef __IPHONE_4_0
 - (void)applicationDidEnterBackground:(UIApplication *)app {
     
+    
+#ifndef RHO_STANDALONE_LIB
     if ([SplashViewController isReplaceContentWhenSnapshot]) {
         if (splashViewControllerSnapShot == nil) {
             splashViewControllerSnapShot = [[SplashViewController alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
         }
         [self.window.rootViewController presentViewController:[splashViewControllerSnapShot retain] animated:NO completion:NULL];
     }
-    
+#endif
 
     RAWLOG_INFO("Application go to background");
     rho_rhodesapp_callUiDestroyedCallback();
@@ -1463,9 +1491,11 @@ withCompletionHandler:(void(^)())completionHandler {
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+#ifndef RHO_STANDALONE_LIB
     if ([SplashViewController isReplaceContentWhenSnapshot]) {
         [self.window.rootViewController dismissViewControllerAnimated:NO completion:NO];
     }
+#endif
     [self registerForNotifications];
 }
 #endif
@@ -1588,3 +1618,11 @@ BOOL rho_main_is_rotation_locked() {
 void rho_main_set_rotation_locked(BOOL locked) {
     [[Rhodes sharedInstance] setRotationLocked:locked];
 }
+
+
+
+//void rhomobile_lib_start_app() {
+ //   [Rhodes makeSharedInstance];
+//    [[Rhodes sharedInstance] didFinishLaunchingWithOptionsInternal:[NSMutableDictionary dictionaryWithCapacity:5] application:[UIApplication sharedApplication]];
+    
+//}

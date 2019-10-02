@@ -1,0 +1,223 @@
+QT -= core
+QT += webkit
+
+DEFINES += OS_SAILFISH OS_LINUX
+CONFIG += c++14
+
+TARGET = coreapi
+TEMPLATE = lib
+
+CONFIG += staticlib warn_on
+CONFIG += <%= @buildMode %>
+
+INCLUDEPATH += <%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp\
+<%= @rhoRoot %>/platform/shared/common\
+<%= @rhoRoot %>/platform/shared/rubyext\
+<%= @rhoRoot %>/platform/shared/ruby/include\
+<%= @rhoRoot %>/platform/shared
+
+
+unix:!macx {
+  DESTDIR = $$PWD/bin
+  OBJECTS_DIR = $$PWD/bin/tmp
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/sailfish
+  SOURCES += <%= @rhoRoot %>/lib/commonAPI/coreapi/ext/platform/qt/src/CNetworkDetect.cpp
+}
+
+DEFINES += RHODES_QT_PLATFORM
+
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  # QMAKE_CFLAGS += -fvisibility=hidden
+  # QMAKE_CXXFLAGS += -fvisibility=hidden
+}
+
+
+HEADERS += \
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/Application.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/INetworkDetect.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/Network.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/NetworkDetectBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/Push.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/System.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/SystemImplBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/IntentImplBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/ApplicationBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/DatabaseBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/IApplication.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/IDatabase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/ILog.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/INativeMenubar.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/INativeTabbar.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/INativeToolbar.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/INavbar.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/INetwork.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/INewORM.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/INewORMModel.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/INotification.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/IProcess.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/IPush.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/IRhoFile.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/ISQLite3.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/ISystem.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/IWebView.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/LogBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeMenubarBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeTabbarBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeToolbarBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NavbarBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NetworkBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NewORMBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NewORMModelBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NotificationBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/ProcessBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/PushBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/RhoFileBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/SQLite3Base.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/SystemBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/WebViewBase.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/ITimer.h\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/TimerBase.h
+
+SOURCES += \
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/SQLite3ImplRuby.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/ApplicationImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/ConfigImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/FileImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/InitExtension.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/LogImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/MenubarImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/NetworkDetectBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/NetworkImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/NewORMImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/NewORMModelImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/PushImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/SQLite3Impl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/SystemImplBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/IntentImplBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/TimerImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/application_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/application_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/application_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/database_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/database_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/database_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/config_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/config_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/config_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/log_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/log_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/log_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/nativemenubar_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/nativemenubar_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/nativemenubar_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/nativetabbar_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/nativetabbar_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/nativetabbar_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/nativetoolbar_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/nativetoolbar_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/nativetoolbar_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/navbar_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/navbar_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/navbar_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/network_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/network_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/network_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/neworm_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/neworm_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/neworm_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/newormmodel_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/newormmodel_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/newormmodel_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/notification_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/notification_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/notification_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/process_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/process_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/process_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/push_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/push_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/push_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/rhofile_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/rhofile_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/rhofile_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/sqlite3_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/sqlite3_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/sqlite3_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/system_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/system_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/system_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/webview_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/webview_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/webview_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/timer_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/timer_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/timer_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/ApplicationBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Application_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Application_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/ConfigBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Config_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Config_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/DatabaseBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Database_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Database_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/LogBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Log_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Log_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeMenubarBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeMenubar_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeMenubar_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeTabbarBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeTabbar_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeTabbar_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeToolbarBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeToolbar_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NativeToolbar_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NavbarBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Navbar_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Navbar_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NetworkBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Network_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Network_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NewORMBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NewORMModelBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NewORMModel_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NewORMModel_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NewORM_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NewORM_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/NotificationBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Notification_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Notification_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/ProcessBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Process_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Process_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/PushBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Push_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Push_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/RhoFileBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/RhoFile_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/RhoFile_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/SQLite3Base.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/SQLite3_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/SQLite3_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/SystemBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/System_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/System_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/WebViewBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/WebView_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/WebView_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Timer_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/Timer_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/generated/cpp/TimerBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared/qt/NavbarImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/platform/qt/src/CNativeTabbarImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/platform/qt/src/CNativeToolbarImpl.cpp\
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/platform/qt/src/CNotificationImpl.cpp
+
+# CSystemImpl.cpp & CWebViewImpl.cpp must be compiled in Qt environment (see /platform/shared/qt/rhodes/rhodes.pro)
+#src/CSystemImpl.cpp
+#src/CWebViewImpl.cpp

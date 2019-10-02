@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -29,7 +29,9 @@
 #include "rubyext/WebView.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
+#ifndef RHODES_VERSION_LIBRARY
 #include "MainWindowImpl.h"
+#endif
 #include "../RhoSimulator.h"
 
 using namespace std;
@@ -43,12 +45,16 @@ extern "C" {
 
 void rho_conf_show_log()
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->logCommand();
+#endif
 }
 
 void rho_title_change(const int, const char* strTitle)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->setTitle(strTitle);
+#endif
 }
 
 void rho_net_impl_network_indicator(int active)
@@ -59,7 +65,7 @@ void rho_net_impl_network_indicator(int active)
 
 void rho_map_location(char* query)
 {
-    String url = "http://maps.google.com/?";
+    String url = "https://maps.google.com/?";
     url += query;
     rho_webview_navigate(url.c_str(), 0);
 }
@@ -79,16 +85,20 @@ int rho_net_ping_network(const char* szHost)
 
 void rho_qt_unset_window_proxy()
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow* m_appWindow = CMainWindow::getInstance();
     if (m_appWindow)
         m_appWindow->unsetProxyCommand();
+#endif
 }
 
 void rho_qt_set_window_proxy(const char* host, const char* port, const char* login, const char* password)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow* m_appWindow = CMainWindow::getInstance();
     if (m_appWindow)
         m_appWindow->setProxyCommand(host, port, login, password);
+#endif
 }
 
 } //extern "C"

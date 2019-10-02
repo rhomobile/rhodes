@@ -1,22 +1,30 @@
-QT -= core
-    greaterThan(QT_MINOR_VERSION, 6): {
-        CONFIG += c++14
-        DEFINES += RHODES_VERSION_2
-        DEFINES += AJAXSERVER
-    }
+greaterThan(QT_MINOR_VERSION, 6): {
+    CONFIG += c++14
+    DEFINES += RHODES_VERSION_2
+    DEFINES += AJAXSERVER
+}
 
-    lessThan(QT_MINOR_VERSION, 6): {
-        DEFINES += RHODES_VERSION_1
+equals(QT_MAJOR_VERSION, 5) {
+    equals(QT_MINOR_VERSION, 6) {
+        DEFINES += OS_SAILFISH
+        QT += core
     }
+}
+
+lessThan(QT_MINOR_VERSION, 6): {
+    DEFINES += RHODES_VERSION_1
+}
 
 TARGET = rholib
 TEMPLATE = lib
 
 CONFIG += staticlib warn_on
+#CONFIG += debug
 
 INCLUDEPATH += ../..\
 ../../ruby\
-../../../../lib/commonAPI
+../../../../lib/commonAPI\
+../../ruby/include
 
 macx {
   greaterThan(QT_MINOR_VERSION, 6): {
@@ -24,7 +32,8 @@ macx {
   }
   DESTDIR = ../../../osx/bin/rholib
   OBJECTS_DIR = ../../../osx/bin/rholib/tmp
-  INCLUDEPATH += ../../curl/include
+  INCLUDEPATH += ../../curl/include\
+                 ../../ruby/osx
   HEADERS += ../../common/PosixThreadImpl.h\
 ../../net/CURLNetRequest.h\
 ../../net/ssl.h
@@ -40,13 +49,16 @@ win32 {
   DESTDIR = ../../../win32/bin/rholib
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
   DEFINES += WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS _UNICODE UNICODE WIN32_LEAN_AND_MEAN
+  DEFINES += _XKEYCHECK_H
+
   Debug {
     DEFINES += _DEBUG DEBUG
   }
   Release {
     DEFINES += _NDEBUG NDEBUG
   }
-  INCLUDEPATH += ../../../win32/include
+  INCLUDEPATH += ../../../win32/include\
+                 ../../ruby/win32
   HEADERS += ../../rubyext/WebView.h
 
     QMAKE_CXXFLAGS_RELEASE += /MP9 /O2
@@ -58,16 +70,20 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/rholib
-  OBJECTS_DIR = ../../../linux/bin/rholib/tmp
-  INCLUDEPATH += ../../curl/include
+  DESTDIR = $$PWD/../../../linux/bin/rholib
+  OBJECTS_DIR = $$PWD/../../../linux/bin/rholib/tmp
+  INCLUDEPATH += $$PWD/../../curl/include
   DEFINES += _GNU_SOURCE
-  HEADERS += ../../common/PosixThreadImpl.h\
-../../net/CURLNetRequest.h\
-../../net/ssl.h
-  SOURCES += ../../common/PosixThreadImpl.cpp\
-../../net/CURLNetRequest.cpp\
-../../net/ssl.cpp
+  HEADERS += $$PWD/../../common/PosixThreadImpl.h\
+  $$PWD/../../net/CURLNetRequest.h\
+  $$PWD/../../net/ssl.h
+  SOURCES += $$PWD/../../common/PosixThreadImpl.cpp\
+  $$PWD/../../net/CURLNetRequest.cpp\
+  $$PWD/../../net/ssl.cpp
+  DEFINES += OS_SAILFISH OS_LINUX
+
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM
@@ -81,6 +97,8 @@ DEFINES += RHODES_QT_PLATFORM
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   # QMAKE_CFLAGS += -fvisibility=hidden
   # QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
 }
 win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4189 /wd4018 /wd4189 /wd4996
@@ -134,7 +152,18 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../api_generator/GeneratorQueue.h\
 ../../api_generator/MethodResult.h\
 ../../api_generator/js_helpers.h\
-../../api_generator/StringifyHelper.h
+../../api_generator/StringifyHelper.h\
+../../api_generator/StringifyHelper.cpp\
+../../rhoruby/impl/MutableArrayImpl.h\
+../../rhoruby/impl/MutableBooleanImpl.h\
+../../rhoruby/impl/MutableFloatImpl.h\
+../../rhoruby/impl/MutableHashImpl.h\
+../../rhoruby/impl/MutableIntegerImpl.h\
+../../rhoruby/impl/MutableStringImpl.h\
+../../rhoruby/impl/NilImpl.h\
+../../rhoruby/impl/ObjectImpl.h\
+../../rhoruby/impl/RefCountedObjectImpl.h\
+../../rhoruby/impl/RhoRubyImpl.h
 
 SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/RhoAppAdapter.cpp\
@@ -171,7 +200,18 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/push/RhoPushManager.cpp\
 ../../api_generator/js_helpers.cpp\
 ../../api_generator/MethodResult.cpp\
-../../api_generator/StringifyHelper.cpp
+../../api_generator/StringifyHelper.cpp\
+../../rhoruby/impl/MutableArrayImpl.cpp\
+../../rhoruby/impl/MutableBooleanImpl.cpp\
+../../rhoruby/impl/MutableFloatImpl.cpp\
+../../rhoruby/impl/MutableHashImpl.cpp\
+../../rhoruby/impl/MutableIntegerImpl.cpp\
+../../rhoruby/impl/MutableStringImpl.cpp\
+../../rhoruby/impl/NilImpl.cpp\
+../../rhoruby/impl/ObjectImpl.cpp\
+../../rhoruby/impl/RefCountedObjectImpl.cpp\
+../../rhoruby/impl/RhoRubyImpl.cpp\
+../../rhoruby/impl/RhoRubySingletone.cpp
 
 HEADERS += ../../unzip/zip.h\
 ../../unzip/unzip.h\

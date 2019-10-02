@@ -5,9 +5,9 @@
 #
  
 module Rhodes
-  VERSION = "3.5.0"
+  VERSION = "7.1.0"
 
-  DBVERSION = "2.2.0"
+  DBVERSION = "3.22.0"
 
 end
 

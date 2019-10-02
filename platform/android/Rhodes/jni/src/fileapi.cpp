@@ -32,9 +32,11 @@
 #include <android/log.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
+#include <jni.h>
 
 #include <cstring>
 #include <algorithm>
+#include <cassert>
 
 #if __cplusplus == 201103L
 #include <unordered_map>
@@ -44,6 +46,43 @@
 
 #include "rhodes/fileapi.h"
 #include "rhodes/jni/com_rhomobile_rhodes_file_RhoFileApi.h"
+
+/*#undef stdin;   
+#undef stdout;   
+#undef stderr; 
+extern FILE __sF[] __REMOVED_IN(23);
+FILE * stdin = (&__sF[0]);
+FILE * stdout = (&__sF[1]);
+FILE * stderr = (&__sF[2]);*/
+
+#if (__ANDROID_API__ > 19)
+#include <android/api-level.h>
+#include <android/log.h>
+#include <signal.h>
+#include <dlfcn.h>
+
+extern "C" {
+  typedef __sighandler_t (*bsd_signal_func_t)(int, __sighandler_t);
+  bsd_signal_func_t bsd_signal_func = NULL;
+
+  __sighandler_t bsd_signal(int s, __sighandler_t f) {
+    if (bsd_signal_func == NULL) {
+      // For now (up to Android 7.0) this is always available 
+      bsd_signal_func = (bsd_signal_func_t) dlsym(RTLD_DEFAULT, "bsd_signal");
+
+      if (bsd_signal_func == NULL) {
+        // You may try dlsym(RTLD_DEFAULT, "signal") or dlsym(RTLD_NEXT, "signal") here
+        // Make sure you add a comment here in StackOverflow
+        // if you find a device that doesn't have "bsd_signal" in its libc.so!!!
+
+        __android_log_assert("", "bsd_signal_wrapper", "bsd_signal symbol not found!");
+      }
+    }
+
+    return bsd_signal_func(s, f);
+  }
+}
+#endif
 
 #ifdef RHO_NOT_IMPLEMENTED
 #undef RHO_NOT_IMPLEMENTED
@@ -154,7 +193,9 @@ typedef int (*func_sflags_t)(const char *mode, int *optr);
 #define DEFFILEMODE  (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)
 #endif
 
+#ifndef __aarch64__
 static func_sflags_t __sflags;
+#endif
 static func_sfp_t __sfp;
 
 // ssize_t pread(int fd, void *buf, size_t count, off_t offset);
@@ -171,12 +212,6 @@ static func_sfp_t __sfp;
 // int pipe(int pipefd[2]);
 
 
-
-
-
-
-
-
 typedef int (*func_access_t)(const char *path, int mode);
 typedef int (*func_close_t)(int fd);
 typedef int (*func_dup2_t)(int fd, int fd2);
@@ -186,7 +221,11 @@ typedef int (*func_fchown_t)(int fd, uid_t uid, gid_t gid);
 typedef int (*func_lchown_t)(const char *path, uid_t uid, gid_t gid);
 typedef int (*func_link_t)(const char *src, const char *dst);
 typedef int (*func_symlink_t)(const char *src, const char *dst);
+#if defined(__aarch64__)
+typedef ssize_t (*func_readlink_t)(const char *path, char *buf, size_t bufsize);
+#else
 typedef int (*func_readlink_t)(const char *path, char *buf, size_t bufsize);
+#endif
 typedef int (*func_mkdir_t)(const char *path, mode_t mode);
 typedef int (*func_fchdir_t)(int fd);
 typedef int (*func_fcntl_t)(int fd, int command, ...);
@@ -196,6 +235,7 @@ typedef int (*func_flock_t)(int fd, int operation);
 typedef int (*func_fstat_t)(int filedes, struct stat *buf);
 typedef int (*func_fsync_t)(int fd);
 typedef int (*func_ftruncate_t)(int fd, off_t offset);
+typedef int (*func_ftruncate64_t)(int fd, off64_t offset);
 typedef int (*func_lstat_t)(const char *path, struct stat *buf);
 typedef int (*func_open_t)(const char *path, int oflag, ...);
 typedef int (*func_select_t)(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct timeval *tv);
@@ -231,6 +271,21 @@ typedef int (*func_scandir_t)(const char *dir, struct dirent ***namelist,
     int (*filter)(const struct dirent *),
     int (*compar)(const struct dirent **, const struct dirent **));
 
+typedef size_t (*func_fread_t)(void* __buf, size_t __size, size_t __count, FILE* __fp);
+typedef size_t (*func_fwrite_t)(const void* __buf, size_t __size, size_t __count, FILE* __fp);
+typedef int (*func_fseek_t)(FILE* __fp, long __offset, int __whence);
+typedef long (*func_ftell_t)(FILE* __fp);
+typedef int (*func_fclose_t)(FILE* __fp);
+typedef FILE * (*func_fopen_t)(const char* fname, const char* mode);
+
+static func_fread_t real_fread;
+static func_fwrite_t real_fwrite;
+static func_fseek_t real_fseek;
+static func_ftell_t real_ftell;
+static func_fclose_t real_fclose;
+static func_fopen_t real_fopen;
+static func_fopen_t real_fopen64;
+
 static func_access_t real_access;
 static func_close_t real_close;
 static func_dup2_t real_dup2;
@@ -250,14 +305,18 @@ static func_flock_t real_flock;
 static func_fstat_t real_fstat;
 static func_fsync_t real_fsync;
 static func_ftruncate_t real_ftruncate;
+static func_ftruncate64_t real_ftruncate64;
 static func_lseek64_t real_lseek64;
 static func_lseek_t real_lseek;
 static func_lstat_t real_lstat;
 static func_open_t real_open;
+static func_open_t real_open64;
 static func_read_t real_read;
 
 static func_pread_t real_pread;
+static func_pread_t real_pread64;
 static func_pwrite_t real_pwrite;
+static func_pwrite_t real_pwrite64;
 
 static func_sendfile_t real_sendfile;
 
@@ -464,7 +523,7 @@ void processStatTable(const char* statTablePath, RhoFsSetupMode setupMode, bool 
         strTime.assign(pos, ptr-pos);
 
         int type;
-        unsigned long filesize;
+        size_t filesize = 0;
         unsigned long mtime;
 
         if(strType.compare("file") == 0)
@@ -489,7 +548,7 @@ void processStatTable(const char* statTablePath, RhoFsSetupMode setupMode, bool 
             return;
         }
 
-        sscanf(strSize.c_str(), "%u", &filesize);
+        sscanf(strSize.c_str(), "%zu", &filesize);
         sscanf(strTime.c_str(), "%u", &mtime);
 
         updateStatTable(strPath, static_cast<rho_fileapi_type_t>(type), filesize, mtime);
@@ -552,6 +611,8 @@ void forceStatMapElement(const rho_stat_map_t::value_type& element)
     }
 }
 
+ 
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
   (JNIEnv *env, jclass)
 {
@@ -576,9 +637,20 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     midDeleteRecursively = getJNIClassStaticMethod(env, clsFileApi, "deleteRecursively", "(Ljava/lang/String;)I");
     if (!midDeleteRecursively) return;
 
+#if  defined(__aarch64__)
+    const char *libc = "/system/lib64/libc.so";
+#else
     const char *libc = "/system/lib/libc.so";
+#endif
     void *pc = dlopen(libc, RTLD_LAZY);
+    if(!pc) {
+        RHO_LOG("dlopen return: %s", dlerror());
+        assert(false);
+    }
+    assert(pc != nullptr);
+#ifndef __aarch64__
     __sflags = (func_sflags_t)dlsym(pc, "__sflags");
+#endif
     __sfp = (func_sfp_t)dlsym(pc, "__sfp");
     real_access = (func_access_t)dlsym(pc, "access");
     real_close = (func_close_t)dlsym(pc, "close");
@@ -596,7 +668,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_ioctl = (func_ioctl_t)dlsym(pc, "ioctl");
     real_fsync = (func_fsync_t)dlsym(pc, "fsync");
     real_fdatasync = (func_fdatasync_t)dlsym(pc, "fdatasync");
-
+    real_fread = (func_fread_t)dlsym(pc,"fread");
+    real_fwrite = (func_fwrite_t)dlsym(pc,"fwrite");
+    real_fseek = (func_fseek_t)dlsym(pc,"fseek");
+    real_ftell = (func_ftell_t)dlsym(pc,"ftell");
+    real_fclose = (func_fclose_t)dlsym(pc,"fclose");
+    real_fopen = (func_fopen_t)dlsym(pc,"fopen");
+    real_fopen64 = (func_fopen_t)dlsym(pc,"fopen64");
     if (real_fdatasync == NULL) {
         //Android 2.1 have no fdatasync call. Use fsync instead
         RHO_LOG("No fdatasync implementation, using fsync instead");
@@ -606,14 +684,18 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_flock = (func_flock_t)dlsym(pc, "flock");
     real_fstat = (func_fstat_t)dlsym(pc, "fstat");
     real_ftruncate = (func_ftruncate_t)dlsym(pc, "ftruncate");
+    real_ftruncate64 = (func_ftruncate64_t)dlsym(pc, "ftruncate64");
     real_lseek = (func_lseek_t)dlsym(pc, "lseek");
     real_lseek64 = (func_lseek64_t)dlsym(pc, "lseek64");
     real_lstat = (func_lstat_t)dlsym(pc, "lstat");
     real_open = (func_open_t)dlsym(pc, "open");
+    real_open64 = (func_open_t)dlsym(pc, "open64");
     real_read = (func_read_t)dlsym(pc, "read");
 
     real_pread = (func_pread_t)dlsym(pc, "pread");
+    real_pread64 = (func_pread_t)dlsym(pc, "pread64");
     real_pwrite = (func_pwrite_t)dlsym(pc, "pwrite");
+    real_pwrite64 = (func_pwrite_t)dlsym(pc, "pwrite");
     real_sendfile = (func_sendfile_t)dlsym(pc, "sendfile");
 
     real_utime = (func_utime_t)dlsym(pc, "utime");
@@ -926,6 +1008,110 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_needEmulat
     return need;
 }
 
+RHO_GLOBAL int j_open(const char *path, int oflag, ...)
+{
+    RAWLOG_INFO("j_open is stub!!!");
+    return -1;
+}
+
+RHO_GLOBAL int open64(const char *path, int oflag, ...)
+{
+    std::string fpath;
+    if (path)
+        fpath = path;
+
+    if (fpath.empty())
+    {
+        RHO_LOG("open: path is empty");
+        errno = EFAULT;
+        return -1;
+    }
+
+    RHO_LOG("open: %s...", path);
+
+    //scoped_lock_t guard(rho_file_mtx);
+
+    fpath = make_full_path(fpath);
+    RHO_LOG("open: %s: fpath: %s", path, fpath.c_str());
+
+    // try to found from opened
+
+
+    bool emulate = need_emulate(fpath);
+    RHO_LOG("open: %s: emulate: %d", path, (int)emulate);
+    if (emulate && has_pending_exception())
+    {
+        RHO_LOG("open: %s: has_pending_exception, return -1", path);
+        errno = EFAULT;
+        return -1;
+    }
+    if (emulate && (oflag & (O_WRONLY | O_RDWR)))
+    //if (emulate)
+    {
+        RHO_LOG("open: %s: copy from Android package", path);
+        JNIEnv *env = jnienv_fileapi();
+        jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath));
+        env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
+        if (has_pending_exception())
+        {
+            RHO_LOG("open: %s: has_pending_exception, return -1", path);
+            errno = EFAULT;
+            return -1;
+        }
+
+        emulate = false;
+    }
+    RHO_LOG("open2: %s: emulate: %d", path, (int)emulate);
+
+    int fd = -1;
+    if (emulate)
+    {
+        RHO_LOG("open3: %s: emulate", path);
+        JNIEnv *env = jnienv_fileapi();
+        jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath));
+        jhobject is = env->CallStaticObjectMethod(clsFileApi, midOpen, relPathObj.get());
+
+        if (!is)
+        {
+            errno = EFAULT;
+            fd = -1;
+        }
+        else
+        {
+            scoped_lock_t guard(rho_file_mtx);
+            if (!rho_fd_free.empty())
+            {
+                fd = rho_fd_free[0];
+                rho_fd_free.erase(rho_fd_free.begin());
+            }
+            else
+                fd = rho_fd_counter++;
+            rho_fd_data_t d;
+            d.type = rho_type_file;
+            d.is = env->NewGlobalRef(is.get());
+            d.dirp = NULL;
+            d.fpath = fpath;
+            d.pos = 0;
+            d.refCount = 1;
+            rho_fd_map[fd] = d;
+        }
+    }
+    else
+    {
+        RHO_LOG("open64: %s: native", path);
+        mode_t mode = 0;
+        if (oflag & O_CREAT)
+        {
+            va_list vl;
+            va_start(vl, oflag);
+            mode = va_arg(vl, int);
+            va_end(vl);
+        }
+        fd = real_open64(path, oflag, mode);
+    }
+    RHO_LOG("openRESULT: %s => %d", path, fd);
+}
+
 RHO_GLOBAL int open(const char *path, int oflag, ...)
 {
     std::string fpath;
@@ -1022,6 +1208,7 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
         fd = real_open(path, oflag, mode);
     }
     RHO_LOG("openRESULT: %s => %d", path, fd);
+    
     return fd;
 }
 
@@ -1033,13 +1220,30 @@ RHO_GLOBAL int creat(const char* path, mode_t mode)
 RHO_GLOBAL int fcntl(int fd, int command, ...)
 {
     RHO_LOG("fcntl: fd %d, command: %d", fd, command);
+
+    int r = -1;
+
     if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
     {
-        va_list vl;
-        va_start(vl, command);
-        int arg = va_arg(vl, int);
-        va_end(vl);
-        return real_fcntl(fd, command, arg);
+        if ( ( command == F_SETLK ) || ( command == F_GETLK ) || ( command == F_SETLKW ) ) {
+            va_list vl1;
+            va_start(vl1,command);
+            flock* pLock = va_arg(vl1, flock*);
+            va_end(vl1);
+            r = real_fcntl(fd, command, pLock);
+        } else { 
+            va_list vl;
+            va_start(vl, command);
+            int arg = va_arg(vl, int);
+            va_end(vl);
+            r = real_fcntl(fd, command, arg);
+        }
+
+        if ( r < 0 ) {
+            RHO_LOG("fcntl: errno %d", errno);
+        }
+
+        return r;
     }
 
     if (has_pending_exception())
@@ -1058,6 +1262,7 @@ RHO_GLOBAL int fcntl(int fd, int command, ...)
             rho_fd_map_t::iterator it = rho_fd_map.find(fd);
             if (it == rho_fd_map.end())
             {
+                RAWLOG_ERROR("fcntl: EBADF");
                 errno = EBADF;
                 return -1;
             }
@@ -1105,7 +1310,7 @@ RHO_GLOBAL int close(int fd)
         if (it == rho_fd_map.end())
         {
             errno = EBADF;
-            RHO_LOG("close: ERROR 2 fd %d", fd);
+            RAWLOG_ERROR1("close: ERROR 2 fd %d", fd);
             return -1;
         }
 
@@ -1126,7 +1331,27 @@ RHO_GLOBAL int close(int fd)
     return 0;
 }
 
+RHO_GLOBAL ssize_t pread64(int fd, void* buf, size_t count, off64_t offset)
+{
+     RHO_LOG("pread: BEGIN fd %d: offset: %ld: count: %ld", fd, (long)offset, (long)count);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+    {
+        ssize_t ret = real_pread64(fd, buf, count, offset);
+        RHO_LOG("pread: fd %d: offset: %ld: count: %ld: return %ld bytes (native)", fd, (long)offset, (long)count, (long)ret);
+        return ret;
+    }
 
+    off_t saved_offset = lseek(fd, 0, SEEK_CUR);
+    lseek(fd, offset, SEEK_SET);
+
+    ssize_t result = read(fd, buf, count);
+
+    lseek(fd, saved_offset, SEEK_SET);
+
+    RHO_LOG("pread: fd %d: offset: %ld: count: %ld: return %ld bytes (rho): errno: %d", fd, (long)offset, (long)count, (long)result, (int)errno);
+
+    return result;
+}
 
 RHO_GLOBAL ssize_t pread(int fd, void *buf, size_t count, off_t offset)
 {
@@ -1148,6 +1373,27 @@ RHO_GLOBAL ssize_t pread(int fd, void *buf, size_t count, off_t offset)
 
     RHO_LOG("pread: fd %d: offset: %ld: count: %ld: return %ld bytes (rho): errno: %d", fd, (long)offset, (long)count, (long)result, (int)errno);
 
+    return result;
+}
+
+RHO_GLOBAL ssize_t pwrite64(int fd, const void* buf, size_t count, off64_t offset)
+{
+    RHO_LOG("pwrite: BEGIN fd %d: offset: %ld: count: %ld", fd, (long)offset, (long)count);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+    {
+        ssize_t ret = real_pwrite64(fd, buf, count, offset);
+        RHO_LOG("pwrite: fd %d: offset: %ld: count: %ld: return %ld bytes (native)", fd, (long)offset, (long)count, (long)ret);
+        return ret;
+    }
+
+    off_t saved_offset = lseek(fd, 0, SEEK_CUR);
+    lseek(fd, offset, SEEK_SET);
+
+    ssize_t result = write(fd, buf, count);
+
+    lseek(fd, saved_offset, SEEK_SET);
+
+    RHO_LOG("pwrite: fd %d: offset: %ld: count: %ld: return %ld bytes (rho)", fd, (long)offset, (long)count, (long)result);
     return result;
 }
 
@@ -1341,6 +1587,7 @@ RHO_GLOBAL ssize_t read(int fd, void *buf, size_t count)
         if (it == rho_fd_map.end())
         {
             errno = EBADF;
+            RAWLOG_ERROR1("read: ERROR 2 fd %d", fd);
             return (ssize_t)-1;
         }
 
@@ -1391,7 +1638,7 @@ RHO_GLOBAL ssize_t write(int fd, const void *buf, size_t count)
 
     errno = EBADF;
 
-    RHO_LOG("write: fd %d: count: %ld UNIMPLEMENTED !!!", fd, (long)count);
+    RAWLOG_ERROR2("write: fd %d: count: %ld UNIMPLEMENTED !!!", fd, (long)count);
 
     return -1;
 }
@@ -1477,6 +1724,7 @@ RHO_GLOBAL int fchown(int fd, uid_t uid, gid_t gid)
         rho_fd_map_t::iterator it = rho_fd_map.find(fd);
         if (it == rho_fd_map.end())
         {
+            RAWLOG_ERROR("fchown: EBADF");
             errno = EBADF;
             return -1;
         }
@@ -1551,7 +1799,11 @@ RHO_GLOBAL int symlink(const char *src, const char *dst)
     return real_symlink(src, dst);
 }
 
+#if defined(__aarch64__)
+RHO_GLOBAL ssize_t readlink(const char *path, char *buf, size_t bufsize)
+#else
 RHO_GLOBAL int readlink(const char *path, char *buf, size_t bufsize)
+#endif
 {
     RHO_LOG("readlink: path=%s", path);
     if (!need_emulate(path))
@@ -1589,6 +1841,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
         rho_fd_map_t::iterator it = rho_fd_map.find(fd);
         if (it == rho_fd_map.end())
         {
+            RAWLOG_ERROR("lseek64: EBADF");
             errno = EBADF;
             return -1;
         }
@@ -1596,6 +1849,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
         rho_stat_t *st = rho_stat(make_rel_path(it->second.fpath));
         if (!st || st->type != rho_type_file)
         {
+            RAWLOG_ERROR("lseek64: EBADF");
             errno = EBADF;
             return -1;
         }
@@ -1643,7 +1897,7 @@ RHO_GLOBAL loff_t lseek64(int fd, loff_t offset, int whence)
 
     if (is == NULL)
     {
-        RHO_LOG("lseek64: fd %d: return EBADF", fd);
+        RAWLOG_ERROR1("lseek64: fd %d: return EBADF", fd);
         errno = EBADF;
         return -1;
     }
@@ -1722,6 +1976,37 @@ RHO_GLOBAL int fdatasync(int fd)
     RHO_NOT_IMPLEMENTED;
 }
 
+RHO_GLOBAL int ftruncate64(int fd, off64_t offset)
+{
+    RHO_LOG("ftruncate64: fd %d", fd);
+    if (offset < 0)
+    {
+        errno = EINVAL;
+        return -1;
+    }
+
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE) {
+        int res = real_ftruncate64(fd, offset);
+        return res;
+    }
+
+    errno = EINVAL;
+    return -1;
+}
+
+RHO_GLOBAL FILE* fdopen(int __fd, const char* __mode)
+{
+    RAWLOG_ERROR("fdopen stub");
+    return NULL;
+}
+
+int dup3(int __old_fd, int __new_fd, int __flags)
+{
+    RAWLOG_ERROR("dup3 stub");
+    return -1;
+}
+
+
 RHO_GLOBAL int ftruncate(int fd, off_t offset)
 {
     RHO_LOG("ftruncate: fd %d", fd);
@@ -1731,8 +2016,10 @@ RHO_GLOBAL int ftruncate(int fd, off_t offset)
         return -1;
     }
 
-    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
-        return real_ftruncate(fd, offset);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE) {
+        int res = real_ftruncate(fd, offset);
+        return res;
+    }
 
     errno = EINVAL;
     return -1;
@@ -1766,6 +2053,7 @@ static int stat_impl(std::string const &fpath, struct stat *buf)
         buf->st_mode |= S_IFDIR|S_IXUSR;
         break;
     default:
+        RAWLOG_ERROR("stat_impl: EBADF");
         errno = EBADF;
         return -1;
     }
@@ -1816,6 +2104,7 @@ RHO_GLOBAL int fstat(int fd, struct stat *buf)
         rho_fd_map_t::iterator it = rho_fd_map.find(fd);
         if (it == rho_fd_map.end())
         {
+            RAWLOG_ERROR("fstat: EBADF");
             errno = EBADF;
             return -1;
         }
@@ -1862,7 +2151,7 @@ RHO_GLOBAL int unlink(const char *path)
     errno = EPERM;
     return -1;
 }
-
+/*
 static int __sread(void *cookie, char *buf, int n)
 {
     RHO_LOG("__sread: %p", cookie);
@@ -1917,6 +2206,102 @@ static int __sclose(void *cookie)
     RHO_LOG("__sclose: %p", cookie);
     return close(((FILE *)cookie)->_file);
 }
+*/
+
+
+static int android_read(void* cookie, char* buf, int size) {
+    return AAsset_read((AAsset*)cookie, buf, size);
+}
+
+static int android_write(void* cookie, const char* buf, int size) {
+    return EACCES; // can't provide write access to the apk
+}
+
+static fpos_t android_seek(void* cookie, fpos_t offset, int whence) {
+    return AAsset_seek((AAsset*)cookie, offset, whence);
+}
+
+static int android_close(void* cookie) {
+    AAsset_close((AAsset*)cookie);
+    return 0;
+}
+
+FILE* android_fopen(const char* fname, const char* mode) {
+    if(mode[0] == 'w') return NULL;
+
+    AAsset* asset = AAssetManager_open(pAssetManager, fname, 0);
+    if(!asset) return NULL;
+
+    return funopen(asset, android_read, android_write, android_seek, android_close);
+}
+
+#ifdef __aarch64__
+int
+__sflags(const char *mode, int *optr)
+{
+    int ret, m, o;
+    switch (*mode++) {
+        case 'r':	/* open for reading */
+            //ret = __SRD;
+            ret = 1;
+            m = O_RDONLY;
+            o = 0;
+            break;
+        case 'w':	/* open for writing */
+            //ret = __SWR;
+            ret = 1;
+            m = O_WRONLY;
+            o = O_CREAT | O_TRUNC;
+            break;
+        case 'a':	/* open for appending */
+            //ret = __SWR;
+            ret = 1;
+            m = O_WRONLY;
+            o = O_CREAT | O_APPEND;
+            break;
+        default:	/* illegal mode */
+            errno = EINVAL;
+            return (0);
+    }
+    /* [rwa]\+ or [rwa]b\+ means read and write */
+    if (*mode == '+' || (*mode == 'b' && mode[1] == '+')) {
+        //ret = __SRW;
+        ret = 1;
+        m = O_RDWR;
+    }
+    *optr = m | o;
+    return (ret);
+}
+#endif
+
+RHO_GLOBAL FILE *fopen64(const char *path, const char *mode)
+{
+    int flags, oflags;
+    FILE *fp = 0;
+
+    RHO_LOG("fopen: %s (%s)", path, mode);
+
+    if ((flags = __sflags(mode, &oflags)) == 0) return NULL;
+    rho::String relpath = make_rel_path(make_full_path(path));
+    fp = real_fopen64(path, mode);
+
+    if (fp == NULL) {
+        fp = real_fopen64(relpath.c_str(), mode);
+    }
+
+    if (fp == NULL){
+        fp = android_fopen(path, mode);
+        if (fp == NULL){
+            fp = android_fopen(relpath.c_str(), mode);
+        }
+    }
+    // Do seek at our level as well even though oflags passed to open
+    if (oflags & O_APPEND)
+        fseek(fp, (fpos_t)0, SEEK_END);
+
+
+    return fp;
+}
 
 RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 {
@@ -1925,31 +2310,65 @@ RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 
     RHO_LOG("fopen: %s (%s)", path, mode);
 
-    if ((flags = __sflags(mode, &oflags)) == 0)
-        return NULL;
-    if((fp = __sfp()) == 0)
-        return NULL;
+    if ((flags = __sflags(mode, &oflags)) == 0) return NULL;
+    rho::String relpath = make_rel_path(make_full_path(path));
+    fp = real_fopen(path, mode);
 
-    int fd = open(path, oflags, DEFFILEMODE);
-    RHO_LOG("fopen: %s (%s): fd: %d", path, mode, fd);
-    if (fd < 0)
-        return NULL;
+    if (fp == NULL) {
+        fp = real_fopen(relpath.c_str(), mode);
+    }
 
-
-    fp->_flags = flags;
-    fp->_file = fd;
-    fp->_cookie = fp;
-    fp->_read = __sread;
-    fp->_write = __swrite;
-    fp->_seek = __sseek;
-    fp->_close = __sclose;
-
+    if (fp == NULL){
+        fp = android_fopen(path, mode);
+        if (fp == NULL){
+            fp = android_fopen(relpath.c_str(), mode);
+        }
+    }
     // Do seek at our level as well even though oflags passed to open
     if (oflags & O_APPEND)
-        (void) __sseek((void *)fp, (fpos_t)0, SEEK_END);
+        fseek(fp, (fpos_t)0, SEEK_END);
 
-    RHO_LOG("fopen: %s (%s): fp: %p", path, mode, fp);
+
     return fp;
+}
+
+size_t fread(void* __buf, size_t __size, size_t __count, FILE* __fp)
+{
+    int fd = fileno(__fp);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+        return real_fread(__buf, __size, __count, __fp);
+    return read(fd,__buf,__size*__count);
+}
+
+size_t fwrite(const void* __buf, size_t __size, size_t __count, FILE* __fp)
+{
+    int fd = fileno(__fp);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+        return real_fwrite(__buf, __size, __count, __fp);
+    return write(fd,__buf,__size*__count);
+}
+
+int fseek(FILE* __fp, long __offset, int __whence)
+{
+    int fd = fileno(__fp);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+        return real_fseek(__fp, __offset, __whence);
+    return lseek(fd, __offset, __whence);
+}
+
+long ftell(FILE* __fp)
+{
+    //if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+    return real_ftell(__fp);
+   // return tell(fd);
+}
+
+int fclose(FILE* __fp)
+{
+    int fd = fileno(__fp);
+    if (rho_fs_mode == RHO_FS_DISK_ONLY || fd < RHO_FD_BASE)
+        return real_fclose(__fp);
+    return close(fd);
 }
 
 RHO_GLOBAL int select(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct timeval *tv)
@@ -1990,7 +2409,7 @@ RHO_GLOBAL int select(int maxfd, fd_set *rfd, fd_set *wfd, fd_set *efd, struct t
     }
 
     count = real_select(maxfd, rfd, wfd, efd, tv);
-   RHO_LOG("select: return %d (native)", count);
+    RHO_LOG("select: return %d (native)", count);
     return count;
 }
 RHO_GLOBAL int getdents(unsigned int fd, struct dirent *dirp, unsigned int count)
@@ -2139,6 +2558,7 @@ RHO_GLOBAL DIR *fdopendir(int fd)
     }
 
     errno = EBADF;
+    RAWLOG_ERROR("fdopendir: EBADF");
     return NULL;
 }
 
@@ -2235,6 +2655,7 @@ RHO_GLOBAL int closedir(DIR *dirp)
     rho_fd_map_t::iterator itt = rho_fd_map.find(it->second.fd);
     if (itt == rho_fd_map.end())
     {
+        RAWLOG_ERROR("closedir: EBADF");
         errno = EBADF;
         return -1;
     }

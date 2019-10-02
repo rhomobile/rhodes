@@ -37,6 +37,7 @@
 #include <common/AutoPointer.h>
 
 #include "rhodes/sslimpl.h"
+#include "common/ISecurityTokenGenerator.h"
 
 
 namespace rho
@@ -50,6 +51,8 @@ public:
     net::INetRequestImpl* createNetRequestImpl();
     IRhoThreadImpl *createThreadImpl();
     IRhoCrypt* createRhoCrypt();
+    const ISecurityTokenGenerator* createSecurityTokenGenerator() override;
+
 
     net::ISSL* createSSLEngine()
     {

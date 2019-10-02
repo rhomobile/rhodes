@@ -36,7 +36,11 @@
 
 #include <algorithm>
 #include <iterator>
-
+#ifdef OS_SAILFISH
+#include <pthread.h>
+#include <sched.h>
+#include <errno.h>
+#endif
 //#include <errno.h>
 
 
@@ -46,8 +50,13 @@
 
 #if !defined(OS_WINCE)
 #include <common/stat.h>
+#ifndef OS_SAILFISH
 #define HTTP_EAGAIN_TIMEOUT 10
 #define HTTP_EAGAIN_TIMEOUT_STR "10"
+#else
+#define HTTP_EAGAIN_TIMEOUT 60
+#define HTTP_EAGAIN_TIMEOUT_STR "60"
+#endif
 #else
 #include "CompatWince.h"
 #define HTTP_EAGAIN_TIMEOUT 60
@@ -312,6 +321,7 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     , m_pQueue(0)    
 #endif
 {
+    //generator = rho_get_RhoClassFactory()->createNetRequestImpl();
     m_enable_external_access = enable_external_access;
     m_started_as_separated_simple_server = started_as_separated_simple_server;
     CHttpServer(port, root, user_root, runtime_root);
@@ -343,6 +353,11 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     m_strRhoUserRoot = m_userroot;
 	m_listener = INVALID_SOCKET;
 	m_sock = INVALID_SOCKET;
+
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
+    m_generator = rho_conf_getInt("disable_external_access") ? rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
+    secureTokenExists = false;
+#endif
 }
     
 CHttpServer::CHttpServer(int port, String const &root)
@@ -366,6 +381,11 @@ CHttpServer::CHttpServer(int port, String const &root)
     m_strRhoUserRoot = m_root.substr(0, m_root.length()-5);
     m_listener = INVALID_SOCKET;
 	m_sock = INVALID_SOCKET;
+
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
+    m_generator = rho_conf_getInt("disable_external_access") ? rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
+    secureTokenExists = false;
+#endif
 }
 
 CHttpServer::~CHttpServer()
@@ -580,6 +600,14 @@ int CHttpServer::select_internal( SOCKET listener, fd_set& readfds )
 
 bool CHttpServer::run()
 {
+    #ifdef OS_SAILFISH
+    pthread_t current_thread = pthread_self();
+    struct sched_param params = { 0 };
+    params.sched_priority = 9;
+    pthread_setschedparam(current_thread, SCHED_FIFO, &params);
+    #endif
+
+
     if (verbose) LOG(INFO) + "Start HTTP server";
 
     if (!init())
@@ -662,7 +690,9 @@ bool CHttpServer::run()
                 if (verbose) {
                     LOG(INFO) + "GC Start.";
                 }
+                rho_ruby_gc_lock();
                 rb_gc();
+                rho_ruby_gc_release();
                 if (verbose) {
                     LOG(INFO) + "GC End.";
                 }
@@ -942,6 +972,17 @@ bool CHttpServer::process(SOCKET sock)
         return false;
     }
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
+    if(m_generator && !secureTokenExists)
+    {
+        if (verbose) RAWLOG_ERROR("Rhodes service is only accessible via Rhodes application.");
+        send_response(create_response("403 Forbidden: Rhodes service is only accessible via Rhodes application."));
+        return false;
+    }
+
+    secureTokenExists = false;
+#endif
+
     if ( !String_endsWith( uri, "js_api_entrypoint" ) )
         if (verbose) RAWLOG_INFO1("Process URI: '%s'", uri.c_str());
 
@@ -995,6 +1036,12 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
                 Header hdr;
                 if (!parse_header(line, hdr) || hdr.name.empty())
                     return false;
+
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
+                if (m_generator && hdr.name == SECURITY_HEADER)
+                    secureTokenExists = hdr.value.find(m_generator->getSecurityToken()) != std::string::npos;
+#endif
+                
                 headers.push_back(hdr);
                 
                 String low;
@@ -1237,7 +1284,11 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 
     if (String_startsWith(fullPath,"/app/db/db-files") )
         fullPath = CFilePath::join( rho_native_rhodbpath(), path.substr(4) );
-    else if (fullPath.find(m_root) != 0 && fullPath.find(m_strRhoRoot) != 0 && fullPath.find(m_strRuntimeRoot) != 0 && fullPath.find(m_userroot) != 0 && fullPath.find(m_strRhoUserRoot) != 0)
+    else if (fullPath.find(m_root) != 0 && 
+            fullPath.find(m_strRhoRoot) != 0 && 
+            fullPath.find(m_strRuntimeRoot) != 0 && 
+            fullPath.find(m_userroot) != 0 && 
+            fullPath.find(m_strRhoUserRoot) != 0)
         fullPath = CFilePath::join( m_root, path );
 	
     struct stat st;
@@ -1834,7 +1885,9 @@ bool CDirectHttpRequestQueue::run( )
         if ( bProcessed )
         {
           LOG(INFO) + "GC Start.";
+          rho_ruby_gc_lock();
           rb_gc();
+          rho_ruby_gc_release();
           LOG(INFO) + "GC End.";
         }
       }

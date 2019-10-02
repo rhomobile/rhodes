@@ -6,7 +6,26 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		FAD356F12264225800419673 /* rhorubylibAggregated */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = FAD356F52264225800419673 /* Build configuration list for PBXAggregateTarget "rhorubylibAggregated" */;
+			buildPhases = (
+				FAD356F62264226100419673 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = rhorubylibAggregated;
+			productName = rhorubylibAggregated;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
+		A80083E220FFA1100051E96E /* date_parse.c in Sources */ = {isa = PBXBuildFile; fileRef = A80083DE20FFA10F0051E96E /* date_parse.c */; };
+		A80083E320FFA1100051E96E /* date_strptime.c in Sources */ = {isa = PBXBuildFile; fileRef = A80083DF20FFA10F0051E96E /* date_strptime.c */; };
+		A80083E420FFA1100051E96E /* date_core.c in Sources */ = {isa = PBXBuildFile; fileRef = A80083E020FFA10F0051E96E /* date_core.c */; };
+		A80083E520FFA1100051E96E /* date_strftime.c in Sources */ = {isa = PBXBuildFile; fileRef = A80083E120FFA1100051E96E /* date_strftime.c */; };
+		A80083E720FFA1250051E96E /* date_tmx.h in Headers */ = {isa = PBXBuildFile; fileRef = A80083E620FFA1250051E96E /* date_tmx.h */; };
 		A80AFD321E2413C60006FF68 /* ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFC5B1E2413C60006FF68 /* ascii.c */; };
 		A80AFD641E2413C70006FF68 /* unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFD241E2413C60006FF68 /* unicode.c */; };
 		A80AFD651E2413C70006FF68 /* us_ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = A80AFD251E2413C60006FF68 /* us_ascii.c */; };
@@ -121,7 +140,6 @@
 		A88C80751E243EBC0090E7E6 /* rhosupport.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80711E243EBC0090E7E6 /* rhosupport.c */; };
 		A88C807D1E243F140090E7E6 /* geolocation_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80781E243F140090E7E6 /* geolocation_wrap.c */; };
 		A88C807F1E243F140090E7E6 /* rhoconf_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C807B1E243F140090E7E6 /* rhoconf_wrap.c */; };
-		A88C80A01E243FF80090E7E6 /* bluetooth_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80921E243FF80090E7E6 /* bluetooth_wrap.c */; };
 		A88C80A21E243FF80090E7E6 /* calendar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80951E243FF80090E7E6 /* calendar_wrap.c */; };
 		A88C80A31E243FF80090E7E6 /* event.h in Headers */ = {isa = PBXBuildFile; fileRef = A88C80961E243FF80090E7E6 /* event.h */; };
 		A88C80A51E243FF80090E7E6 /* event_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = A88C80981E243FF80090E7E6 /* event_wrap.c */; };
@@ -267,9 +285,15 @@
 		FA6B3F831FD21E05008BFF0D /* single_byte.c in Sources */ = {isa = PBXBuildFile; fileRef = FA6B3F801FD21DFE008BFF0D /* single_byte.c */; };
 		FA6B3F841FD21E07008BFF0D /* utf_16_32.c in Sources */ = {isa = PBXBuildFile; fileRef = FA6B3F7F1FD21DFE008BFF0D /* utf_16_32.c */; };
 		FAA66D031EEDE070003E0B1D /* nonblock.c in Sources */ = {isa = PBXBuildFile; fileRef = FAA66D021EEDE070003E0B1D /* nonblock.c */; };
+		FAE78BBA2254654B001A1150 /* rhoinit.c in Sources */ = {isa = PBXBuildFile; fileRef = A8CAD3DA1E67419C00ED8E7E /* rhoinit.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A80083DE20FFA10F0051E96E /* date_parse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = date_parse.c; path = ../../shared/ruby/ext/date/date_parse.c; sourceTree = "<group>"; };
+		A80083DF20FFA10F0051E96E /* date_strptime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = date_strptime.c; path = ../../shared/ruby/ext/date/date_strptime.c; sourceTree = "<group>"; };
+		A80083E020FFA10F0051E96E /* date_core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = date_core.c; path = ../../shared/ruby/ext/date/date_core.c; sourceTree = "<group>"; };
+		A80083E120FFA1100051E96E /* date_strftime.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = date_strftime.c; path = ../../shared/ruby/ext/date/date_strftime.c; sourceTree = "<group>"; };
+		A80083E620FFA1250051E96E /* date_tmx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = date_tmx.h; path = ../../shared/ruby/ext/date/date_tmx.h; sourceTree = "<group>"; };
 		A80AFC5B1E2413C60006FF68 /* ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ascii.c; sourceTree = "<group>"; };
 		A80AFD241E2413C60006FF68 /* unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unicode.c; sourceTree = "<group>"; };
 		A80AFD251E2413C60006FF68 /* us_ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = us_ascii.c; sourceTree = "<group>"; };
@@ -484,6 +508,7 @@
 		08FB7794FE84155DC02AAC07 /* rhorubylib */ = {
 			isa = PBXGroup;
 			children = (
+				A80083DD20FFA0E60051E96E /* date */,
 				FA6B3F7D1FD21B6F008BFF0D /* encoding */,
 				FAA66D041EEDE07E003E0B1D /* wait.c */,
 				FAA66D021EEDE070003E0B1D /* nonblock.c */,
@@ -616,6 +641,18 @@
 				A8A6D30E1E24AADD00016427 /* librubymac.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A80083DD20FFA0E60051E96E /* date */ = {
+			isa = PBXGroup;
+			children = (
+				A80083E620FFA1250051E96E /* date_tmx.h */,
+				A80083E020FFA10F0051E96E /* date_core.c */,
+				A80083DE20FFA10F0051E96E /* date_parse.c */,
+				A80083E120FFA1100051E96E /* date_strftime.c */,
+				A80083DF20FFA10F0051E96E /* date_strptime.c */,
+			);
+			name = date;
 			sourceTree = "<group>";
 		};
 		A80AFC5A1E2413C60006FF68 /* enc */ = {
@@ -998,6 +1035,7 @@
 				A88C80A31E243FF80090E7E6 /* event.h in Headers */,
 				A80AFEA71E2415390006FF68 /* transdb.h in Headers */,
 				A80AFE8E1E2415390006FF68 /* revision.h in Headers */,
+				A80083E720FFA1250051E96E /* date_tmx.h in Headers */,
 				A80AFE8F1E2415390006FF68 /* ruby_atomic.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1052,6 +1090,11 @@
 						DevelopmentTeam = 7SESST377N;
 						ProvisioningStyle = Automatic;
 					};
+					FAD356F12264225800419673 = {
+						CreatedOnToolsVersion = 10.1;
+						DevelopmentTeam = PNQRMU2LPM;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "rhorubylib" */;
@@ -1070,9 +1113,30 @@
 			targets = (
 				D2AAC045055464E500DB518D /* rhorubylib */,
 				A8A6D30D1E24AADD00016427 /* rubymac */,
+				FAD356F12264225800419673 /* rhorubylibAggregated */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		FAD356F62264226100419673 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "LIB_NAME=\"rhorubylib\"\n\n#MY_BUILD_DIR = \"${BUILD_DIR}\"\nMY_BUILD_DIR=\"./build\"\n\nSIMULATOR_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${LIB_NAME}.a\"\n\nDEVICE_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${LIB_NAME}.a\"\n\nOUTPUT_DIR=\"./${LIB_NAME}-Aggregated\"\n\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator\"\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos\"\n\n\nARCHS=\"i386 x86_64\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator ARCHS=\"i386 x86_64\"\n\nARCHS=\"arm64 armv7 armv7s\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphoneos -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos ARCHS=\"arm64 armv7 armv7s\"\n\nrm -rf \"${OUTPUT_DIR}\"\n\nmkdir \"${OUTPUT_DIR}\"\n\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${OUTPUT_DIR}/lib${LIB_NAME}.a\"\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A8A6D30A1E24AADD00016427 /* Sources */ = {
@@ -1181,6 +1245,7 @@
 				A80AFE851E2415390006FF68 /* regcomp.c in Sources */,
 				A80AFE741E2415390006FF68 /* node.c in Sources */,
 				A88C80A91E243FF80090E7E6 /* ringtones_wrap.c in Sources */,
+				A80083E320FFA1100051E96E /* date_strptime.c in Sources */,
 				A80AFE9A1E2415390006FF68 /* struct.c in Sources */,
 				A80AFE3D1E2415390006FF68 /* array.c in Sources */,
 				A80AFE4D1E2415390006FF68 /* dmyext.c in Sources */,
@@ -1203,13 +1268,14 @@
 				A80AFD641E2413C70006FF68 /* unicode.c in Sources */,
 				A80AFE481E2415390006FF68 /* dln.c in Sources */,
 				FA4CE2951ECB316100DBA581 /* socket.c in Sources */,
-				A88C80A01E243FF80090E7E6 /* bluetooth_wrap.c in Sources */,
 				A88C80731E243EBC0090E7E6 /* rhoruby.c in Sources */,
 				FA4CE29B1ECB316100DBA581 /* ifaddr.c in Sources */,
 				A80AFE541E2415390006FF68 /* error.c in Sources */,
 				FA4CE2941ECB316100DBA581 /* raddrinfo.c in Sources */,
 				A80AFEB91E2415390006FF68 /* vm_trace.c in Sources */,
+				FAE78BBA2254654B001A1150 /* rhoinit.c in Sources */,
 				FA4CE2961ECB316100DBA581 /* udpsocket.c in Sources */,
+				A80083E520FFA1100051E96E /* date_strftime.c in Sources */,
 				A80AFE6E1E2415390006FF68 /* marshal.c in Sources */,
 				A80AFE401E2415390006FF68 /* compar.c in Sources */,
 				A80AFEB11E2415390006FF68 /* vm_dump.c in Sources */,
@@ -1234,6 +1300,7 @@
 				A88C807D1E243F140090E7E6 /* geolocation_wrap.c in Sources */,
 				A80AFD651E2413C70006FF68 /* us_ascii.c in Sources */,
 				A80AFD731E2414360006FF68 /* encdb.c in Sources */,
+				A80083E420FFA1100051E96E /* date_core.c in Sources */,
 				A80AFEBA1E2415390006FF68 /* vm.c in Sources */,
 				A88C80A21E243FF80090E7E6 /* calendar_wrap.c in Sources */,
 				A8A6D2E61E2498AC00016427 /* loadpath.c in Sources */,
@@ -1272,6 +1339,7 @@
 				A80AFE3E1E2415390006FF68 /* bignum.c in Sources */,
 				A8A6D2E81E24998400016427 /* localeinit.c in Sources */,
 				A80AFE831E2415390006FF68 /* rational.c in Sources */,
+				A80083E220FFA1100051E96E /* date_parse.c in Sources */,
 				A80AFE451E2415390006FF68 /* debug.c in Sources */,
 				A80AFE901E2415390006FF68 /* ruby.c in Sources */,
 				A80AFE861E2415390006FF68 /* regenc.c in Sources */,
@@ -1301,7 +1369,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
-				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1317,7 +1385,7 @@
 					../../shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhorubylib;
@@ -1332,7 +1400,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
-				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_CXX_LIBRARY = "libc++";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 1;
@@ -1345,7 +1413,7 @@
 					../../shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhorubylib;
@@ -1358,6 +1426,7 @@
 		1DEB91F008733DB70010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1372,6 +1441,7 @@
 		1DEB91F108733DB70010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -1384,6 +1454,7 @@
 		46B0043910332DDD00D0C2F4 /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -1398,7 +1469,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
-				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_CXX_LIBRARY = "libc++";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 1;
@@ -1411,7 +1482,7 @@
 					../../shared,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = rhorubylib;
@@ -1425,10 +1496,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -1476,6 +1547,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
@@ -1483,10 +1555,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -1531,6 +1603,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
@@ -1538,10 +1611,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -1586,6 +1659,43 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = x86_64;
+			};
+			name = Distribution;
+		};
+		FAD356F22264225800419673 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
+			};
+			name = Debug;
+		};
+		FAD356F32264225800419673 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
+			};
+			name = Release;
+		};
+		FAD356F42264225800419673 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PNQRMU2LPM;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
 			};
 			name = Distribution;
 		};
@@ -1618,6 +1728,16 @@
 				A8A6D3151E24AADD00016427 /* Debug */,
 				A8A6D3161E24AADD00016427 /* Release */,
 				A8A6D3171E24AADD00016427 /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAD356F52264225800419673 /* Build configuration list for PBXAggregateTarget "rhorubylibAggregated" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAD356F22264225800419673 /* Debug */,
+				FAD356F32264225800419673 /* Release */,
+				FAD356F42264225800419673 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

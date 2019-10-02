@@ -7,6 +7,7 @@
 
 #ifdef RHODES_EMULATOR
 #define RHO_APPS_DIR ""
+#include "common/RhoSimConf.h"
 #else
 #define RHO_APPS_DIR "apps/"
 #endif
@@ -217,7 +218,7 @@ public:
 
     virtual void getInvalidSecurityTokenStartPath(rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set( RHOCONF().getString("invalid_security_token_start_path") );
+        oResult.set(RHOCONF().getString("invalid_security_token_start_path"));
     }
 
     virtual void setInvalidSecurityTokenStartPath( const rho::String& invalidSecurityTokenStartPath, rho::apiGenerator::CMethodResult& oResult)
@@ -232,7 +233,11 @@ public:
 
     virtual void getRhoPlatformVersion(rho::apiGenerator::CMethodResult& oResult)
     {
-        //TODO: getRhoPlatformVersion
+#ifndef RHODES_EMULATOR
+        oResult.set(RHOCONF().getString("rhodes_gem_version"));
+#else
+        oResult.set(RHOSIMCONF().getString("rhodes_gem_version"));
+#endif
     }
 };
 

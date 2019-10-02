@@ -28,6 +28,7 @@
 #define _NATIVETOOLBAREXT_H_
 
 #include "common/RhoStd.h"
+#include "api_generator/MethodResult.h"
 
 #if defined(OS_WP8) || defined(OS_UWP)
 #define TOOLBAR_TYPE		0

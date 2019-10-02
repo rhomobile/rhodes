@@ -65,6 +65,7 @@ protected:
     PushManager m_appPushMgr;
     bool m_bJSApplication;
     bool m_bNodeJSApplication;
+    bool m_bRubyNodeJSApplication;
 
     CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
 public:
@@ -99,6 +100,10 @@ public:
     void setNodeJSApplication(bool bJSApp){ m_bNodeJSApplication = bJSApp; }
     bool isNodeJSApplication()const{ return m_bNodeJSApplication; }
 
+    void setRubyNodeJSApplication(bool bJSApp){ m_bRubyNodeJSApplication = bJSApp; }
+    bool isRubyNodeJSApplication()const{ return m_bRubyNodeJSApplication; }
+
+    
     // Deprecated
     boolean callPushCallback(const String& strData) const;
 
@@ -173,7 +178,7 @@ int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
 	
 void rho_net_request_with_data(const char *url, const char *str_body);
     
-const char* rho_app_canonicalize_rho_url(const char* url);
+int rho_app_canonicalize_rho_url(const char* url, char* result, int max_len);
 
 int rho_decrypt_file(const char* filebuf, int filebuf_len, char* decrypted_buf, int maxlen);
 	

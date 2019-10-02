@@ -33,17 +33,21 @@
 #include "json/JSONIterator.h"
 #include "MainWindowImpl.h"
 //#undef null
+#ifndef RHODES_VERSION_LIBRARY
 #include <QString>
-#include <QApplication>
+#ifndef OS_SAILFISH
 #if QT_VERSION >= 0x050000
 #include <QtWidgets/QAction>
 #else
 #include <QtGui/QAction>
 #endif
+#endif
 #include <QHash>
 #include "../mainwindowinterface.h"
 
+
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
+#endif
 
 using namespace rho;
 using namespace rho::common;
@@ -51,13 +55,19 @@ using namespace rho::json;
 
 extern "C" void rho_geoimpl_turngpsoff();
 
+#ifndef RHODES_VERSION_LIBRARY
 int CMainWindow::m_screenWidth;
 int CMainWindow::m_screenHeight;
 
 bool CMainWindow::mainWindowClosed = false;
+#endif
 
-CMainWindow::CMainWindow(): QObject(), m_started(true), qtMainWindow(NULL)
+CMainWindow::CMainWindow()
+#ifndef RHODES_VERSION_LIBRARY
+    : QObject(), m_started(true), qtMainWindow(NULL)
+#endif
 {
+#ifndef RHODES_VERSION_LIBRARY
     //int argc = 0;
     QCoreApplication::setOrganizationName("Rhomobile");
 #ifndef RHODES_EMULATOR
@@ -65,13 +75,16 @@ CMainWindow::CMainWindow(): QObject(), m_started(true), qtMainWindow(NULL)
 #else
     QCoreApplication::setApplicationName("RhoSimulator");
 #endif
+#endif //RHODES_VERSION_LIBRARY
     //qtApplication = (void*)new QApplication(argc, 0);
 }
 
 CMainWindow::~CMainWindow()
 {
+#ifndef RHODES_VERSION_LIBRARY
     if (qtMainWindow) delete (QtMainWindow*)qtMainWindow;
     //if (qtApplication) delete (QApplication*)qtApplication;
+#endif
 }
 
 CMainWindow* CMainWindow::getInstance(void)
@@ -82,8 +95,10 @@ CMainWindow* CMainWindow::getInstance(void)
 
 void CMainWindow::updateSizeProperties(int width, int height)
 {
+#ifndef RHODES_VERSION_LIBRARY
     m_screenWidth = width;
     m_screenHeight = height;
+#endif
 }
 
 void CMainWindow::logEvent(const ::std::string& message)
@@ -96,15 +111,20 @@ void CMainWindow::onWebViewUrlChanged(const ::std::string& url)
     RHODESAPP().keepLastVisitedUrl(url);
 }
 
+#ifndef RHODES_VERSION_LIBRARY
 bool CMainWindow::Initialize(const wchar_t* title)
 {
     bool ok = init(this, title);
+#ifndef OS_SAILFISH
     rho_rhodesapp_callUiCreatedCallback();
+#endif
     return ok;
 }
+#endif
 
 void CMainWindow::createCustomMenu(void)
 {
+#ifndef RHODES_VERSION_LIBRARY
     RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
     String strIndexPage = CFilePath::join(RHODESAPP().getStartUrl(),"index"RHO_ERB_EXT);
@@ -125,10 +145,12 @@ void CMainWindow::createCustomMenu(void)
 #endif
         }
     }
+#endif//RHODES_VERSION_LIBRARY
 }
 
 void CMainWindow::onCustomMenuItemCommand(int nItemPos)
 {    
+#ifndef RHODES_VERSION_LIBRARY
     if ( nItemPos < 0 || nItemPos >= (int)m_arAppMenuItems.size() )
         return;
 
@@ -146,16 +168,29 @@ void CMainWindow::onCustomMenuItemCommand(int nItemPos)
     }
 
     oMenuItem.processCommand();
+#endif
 }
 
+void CMainWindow::onWindowClose(void)
+{
+#ifndef RHODES_VERSION_LIBRARY
+    mainWindowClosed = true;
+#endif
+}
+
+#ifndef RHODES_VERSION_LIBRARY
 void CMainWindow::minimizeWindow(void)
 {
+#ifndef OS_SAILFISH //TODO: FIX
     ((QtMainWindow*)qtMainWindow)->showMinimized();
+#endif
 }
 
 void CMainWindow::restoreWindow(void)
 {
+#ifndef OS_SAILFISH //TODO: FIX
     ((QtMainWindow*)qtMainWindow)->showNormal();
+#endif
 }
 
 void CMainWindow::unsetProxy()
@@ -171,11 +206,6 @@ void CMainWindow::setProxy(const char* host, const char* port, const char* login
 void CMainWindow::DestroyUi(void)
 {
     rho_rhodesapp_callUiDestroyedCallback();
-}
-
-void CMainWindow::onWindowClose(void)
-{
-    mainWindowClosed = true;
 }
 
 
@@ -199,9 +229,13 @@ void CMainWindow::setCallback(IMainWindowCallback* callback)
 bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
 {
     qtMainWindow = (void*)new QtMainWindow();
+#ifndef OS_SAILFISH //TODO: FIX
     ((QtMainWindow*)qtMainWindow)->setWindowTitle(QString::fromWCharArray(title));
+#endif
     ((QtMainWindow*)qtMainWindow)->setCallback(callback);
+#ifndef OS_SAILFISH //TODO: FIX
     ((QtMainWindow*)qtMainWindow)->show();
+#endif
 
     QObject::connect(this, SIGNAL(doExitCommand(void)),
         ((QtMainWindow*)qtMainWindow), SLOT(exitCommand(void)) );
@@ -260,6 +294,66 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
     QObject::connect(this, SIGNAL(doSetProxy(const char*, const char*, const char*, const char*)),
         this, SLOT(setProxy(const char*, const char*, const char*, const char*)) );
     return true;
+}
+
+void CMainWindow::diconnectFromUI()
+{
+    QObject::disconnect(this, SIGNAL(doExitCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(exitCommand(void)) );
+    QObject::disconnect(this, SIGNAL(doNavigateBackCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(navigateBackCommand(void)) );
+    QObject::disconnect(this, SIGNAL(doNavigateForwardCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(navigateForwardCommand(void)) );
+    QObject::disconnect(this, SIGNAL(doWebviewNavigateBackCommand(int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(webviewNavigateBackCommand(int)) );
+    QObject::disconnect(this, SIGNAL(doLogCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(logCommand(void)) );
+    QObject::disconnect(this, SIGNAL(doRefreshCommand(int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(refreshCommand(int)) );
+    QObject::disconnect(this, SIGNAL(doNavigateCommand(TNavigateData*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(navigateCommand(TNavigateData*)) );
+    QObject::disconnect(this, SIGNAL(doExecuteJavaScriptCommand(TNavigateData*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(executeJavaScriptCommand(TNavigateData*)) );
+    QObject::disconnect(this, SIGNAL(doTakePicture(char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(takePicture(char*)) );
+    QObject::disconnect(this, SIGNAL(doSelectPicture(char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(selectPicture(char*)) );
+    QObject::disconnect(this, SIGNAL(doAlertShowPopup(CAlertParams*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(alertShowPopup(CAlertParams*)) );
+    QObject::disconnect(this, SIGNAL(doAlertHidePopup(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(alertHidePopup(void)) );
+    QObject::disconnect(this, SIGNAL(doDateTimePicker(CDateTimeMessage*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(dateTimePicker(CDateTimeMessage*)) );
+    QObject::disconnect(this, SIGNAL(doExecuteCommand(RhoNativeViewRunnable*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(executeCommand(RhoNativeViewRunnable*)) );
+    QObject::disconnect(this, SIGNAL(doExecuteRunnable(rho::common::IRhoRunnable*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(executeRunnable(rho::common::IRhoRunnable*)) );
+    QObject::disconnect(this, SIGNAL(doTakeSignature(void*)), //TODO: Signature::Params*
+        ((QtMainWindow*)qtMainWindow), SLOT(takeSignature(void*)) );
+    QObject::disconnect(this, SIGNAL(doFullscreenCommand(int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(fullscreenCommand(int)) );
+    QObject::disconnect(this, SIGNAL(doSetCookie(const char*, const char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setCookie(const char*, const char*)) );
+    QObject::disconnect(this, SIGNAL(doSetFrame(int,int,int,int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setFrame(int,int,int,int)) );
+    QObject::disconnect(this, SIGNAL(doSetPosition(int,int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setPosition(int,int)) );
+    QObject::disconnect(this, SIGNAL(doSetSize(int,int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setSize(int,int)) );
+    QObject::disconnect(this, SIGNAL(doLockSize(int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(lockSize(int)) );
+    QObject::disconnect(this, SIGNAL(doSetTitle(const char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setTitle(const char*)) );
+    QObject::disconnect(this, SIGNAL(doMinimizeWindow(void)),
+        this, SLOT(minimizeWindow(void)) );
+    QObject::disconnect(this, SIGNAL(doRestoreWindow(void)),
+        this, SLOT(restoreWindow(void)) );
+    QObject::disconnect(this, SIGNAL(doCreateCustomMenu(void)),
+        this, SLOT(createCustomMenuSlot(void)) );
+    QObject::disconnect(this, SIGNAL(doUnsetProxy()),
+        this, SLOT(unsetProxy()) );
+    QObject::disconnect(this, SIGNAL(doSetProxy(const char*, const char*, const char*, const char*)),
+        this, SLOT(setProxy(const char*, const char*, const char*, const char*)) );
 }
 
 void CMainWindow::messageLoop(void)
@@ -567,7 +661,7 @@ void CMainWindow::tabbarSwitch(int index)
 
 void CMainWindow::tabbarBadge(int index, const char* badge)
 {
-    ((QtMainWindow*)qtMainWindow)->tabbarSetBadge(index, badge);
+    //((QtMainWindow*)qtMainWindow)->tabbarSetBadge(index, badge); TODO: fix it
 }
 
 int CMainWindow::tabbarGetCurrent()
@@ -595,7 +689,7 @@ void CMainWindow::menuAddAction(const char* label, int item, bool enabled)
 {
     ((QtMainWindow*)qtMainWindow)->menuAddAction(QString(label), item, enabled);
 }
-
+#endif
 // Handlers
 void CMainWindow::onActivate(int active)
 {
@@ -604,6 +698,7 @@ void CMainWindow::onActivate(int active)
         rho_geoimpl_turngpsoff();
 }
 
+#ifndef RHODES_VERSION_LIBRARY
 // Commands
 void CMainWindow::exitCommand()
 {
@@ -754,10 +849,15 @@ void CMainWindow::createCustomMenuSlot(void)
 {
     createCustomMenu();
 }
+#endif
 
 extern "C" void rho_os_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
+#ifndef RHODES_VERSION_LIBRARY
     CMainWindow::getInstance()->executeRunnable(pTask);
+#else
+    pTask->runObject();
+#endif
 }
 
 #if defined(RHODES_QT_PLATFORM) && defined(OS_MACOSX)

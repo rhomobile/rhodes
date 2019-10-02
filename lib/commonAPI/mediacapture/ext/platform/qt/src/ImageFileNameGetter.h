@@ -3,13 +3,14 @@
 
 #include <QString>
 #include <QList>
-#include <QFileDialog>
 #include <QStandardPaths>
 #include <QImage>
 #include <QTimer>
 #include "ImageFilenameGetterResult.h"
+#ifndef OS_SAILFISH
+#include <QFileDialog>
 #include "CameraDialogView.h"
-
+#endif
 class ImageFileNameGetter : public IExecutable
 {
     Q_OBJECT
@@ -26,10 +27,13 @@ signals:
 
 public slots:
     void execute(){
+#ifndef OS_SAILFISH
         QString fileNameToOpen = QFileDialog::getOpenFileName(0, "Open Image",
-                                                              //QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).last()
                                                               CameraDialogView::getImageDir().absolutePath()
                                                               , "Image Files (*.JPG *.PNG *.BMP *.GIF)");
+#else
+        QString fileNameToOpen;
+#endif
         ImageFileNameGetterResult * getterResult = new ImageFileNameGetterResult(result, fileNameToOpen, threadOwner);
         getterResult->execute();
         deleteLater();

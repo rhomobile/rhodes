@@ -7,7 +7,11 @@ def build_extension(name, arch)
   fail "[qmake #{name}.pro]" unless $? == 0
   #puts Jake.run($make, ['clean'])
   fail "[make clean]" unless $? == 0
-  puts Jake.run($make, ['all'])
+  if (ENV['RHO_PLATFORM'] == 'win32')
+    puts Jake.run($make, ['release'])
+  else
+    puts Jake.run($make, ['all'])
+  end
   fail "[make all]" unless $? == 0
 end
 

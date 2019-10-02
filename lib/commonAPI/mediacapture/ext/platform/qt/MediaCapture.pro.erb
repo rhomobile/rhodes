@@ -1,0 +1,65 @@
+QT += core gui widgets multimedia network webkit widgets quick
+DEFINES += OS_SAILFISH OS_LINUX
+CONFIG += sailfishapp c++14 sailfishapp_i18n
+
+
+TARGET = mediacapture
+TEMPLATE = lib
+CONFIG += staticlib warn_on
+CONFIG += <%= @buildMode %>
+
+INCLUDEPATH += \
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared\
+<%= @rhoRoot %>/platform/shared/common\
+<%= @rhoRoot %>/platform/shared/rubyext\
+<%= @rhoRoot %>/platform/shared/ruby/include\
+<%= @rhoRoot %>/platform/shared\
+<%= @rhoRoot %>/lib/commonAPI/mediacapture/ext/shared
+
+unix:!macx {
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/sailfish
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/qt/sailfish/src
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/qt/sailfish
+
+  contains(DEFINES, OS_LINUX)  {
+    DESTDIR = $$PWD/../extensions
+    OBJECTS_DIR = $$PWD/bin/tmp
+  }
+  contains(DEFINES, OS_SAILFISH)  {
+  }
+QMAKE_CFLAGS += -fvisibility=hidden
+QMAKE_CXXFLAGS += -fvisibility=hidden
+QMAKE_CFLAGS_DEBUG -= -O2
+QMAKE_CXXFLAGS_DEBUG -= -O2
+}
+
+DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
+
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+}
+
+HEADERS += \
+    <%= @rhoRoot %>/lib/commonapi/mediacapture/ext/shared/generated/cpp/ICamera.h\
+    <%= @rhoRoot %>/lib/commonapi/mediacapture/ext/shared/generated/cpp/CameraBase.h \
+    <%= @rhoRoot %>/lib/commonapi/mediacapture/ext/platform/qt/src/CCameraData.h \
+    <%= @rhoRoot %>/lib/commonapi/mediacapture/ext/platform/qt/src/ImageFileNameGetter.h \
+    <%= @rhoRoot %>/lib/commonapi/mediacapture/ext/platform/qt/src/ImageFilenameGetterResult.h \
+    <%= @rhoRoot %>/lib/commonapi/mediacapture/ext/platform/qt/src/CameraDialogController.h \
+    <%= @rhoRoot %>/lib/commonapi/mediacapture/ext/platform/qt/src/CameraRefresher.h\
+    <%= @rhoRoot %>/platform/shared/qt/rhodes/iexecutable.h \
+    <%= @rhoRoot %>/platform/shared/qt/rhodes/guithreadfunchelper.h
+
+SOURCES += \
+    <%= @rhoRoot %>/lib/commonAPI/mediacapture/ext/shared/MediacaptureInit.cpp\
+    <%= @rhoRoot %>/lib/commonAPI/mediacapture/ext/shared/generated/cpp/Camera_js_wrap.cpp\
+    <%= @rhoRoot %>/lib/commonAPI/mediacapture/ext/shared/generated/cpp/Camera_ruby_wrap.cpp\
+    <%= @rhoRoot %>/lib/commonAPI/mediacapture/ext/shared/generated/cpp/CameraBase.cpp\
+    <%= @rhoRoot %>/lib/commonAPI/mediacapture/ext/shared/generated/Camera_api_init.cpp\
+    <%= @rhoRoot %>/lib/commonAPI/mediacapture/ext/shared/generated/Camera_js_api.cpp\
+    <%= @rhoRoot %>/lib/commonAPI/mediacapture/ext/shared/generated/Camera_ruby_api.c\
+    <%= @rhoRoot %>/lib/commonAPI/mediacapture/ext/platform/qt/src/Camera_impl.cpp \
+    <%= @rhoRoot %>/lib/commonAPI/mediacapture/ext/platform/qt/src/CCameraData.cpp
+
+RESOURCES += <%= @rhoRoot %>/lib/commonAPI/mediacapture/ext/platform/qt/resources/mediacapture.qrc

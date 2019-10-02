@@ -1,0 +1,322 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FAA32266228B1C90007B09AA /* RubyServerImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAA32265228B1C90007B09AA /* RubyServerImpl.cpp */; };
+		FAA3226F228B1CB6007B09AA /* RubyServer_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAA32267228B1CB5007B09AA /* RubyServer_ruby_wrap.cpp */; };
+		FAA32270228B1CB6007B09AA /* rubyserver_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAA32268228B1CB5007B09AA /* rubyserver_js_api.cpp */; };
+		FAA32271228B1CB6007B09AA /* rubyserver_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAA32269228B1CB5007B09AA /* rubyserver_api_init.cpp */; };
+		FAA32272228B1CB6007B09AA /* rubyserver_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FAA3226A228B1CB5007B09AA /* rubyserver_ruby_api.c */; };
+		FAA32273228B1CB6007B09AA /* RubyServer_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAA3226B228B1CB5007B09AA /* RubyServer_js_wrap.cpp */; };
+		FAA32274228B1CB6007B09AA /* IRubyServer.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA3226C228B1CB6007B09AA /* IRubyServer.h */; };
+		FAA32275228B1CB6007B09AA /* RubyServerBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAA3226D228B1CB6007B09AA /* RubyServerBase.cpp */; };
+		FAA32276228B1CB6007B09AA /* RubyServerBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA3226E228B1CB6007B09AA /* RubyServerBase.h */; };
+		FAC155E7145855CF0016F3BD /* RubyServer_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* RubyServer_Prefix.pch */; };
+		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FAA32265228B1C90007B09AA /* RubyServerImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RubyServerImpl.cpp; path = ../../shared/RubyServerImpl.cpp; sourceTree = "<group>"; };
+		FAA32267228B1CB5007B09AA /* RubyServer_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RubyServer_ruby_wrap.cpp; path = ../../shared/generated/cpp/RubyServer_ruby_wrap.cpp; sourceTree = "<group>"; };
+		FAA32268228B1CB5007B09AA /* rubyserver_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rubyserver_js_api.cpp; path = ../../shared/generated/rubyserver_js_api.cpp; sourceTree = "<group>"; };
+		FAA32269228B1CB5007B09AA /* rubyserver_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rubyserver_api_init.cpp; path = ../../shared/generated/rubyserver_api_init.cpp; sourceTree = "<group>"; };
+		FAA3226A228B1CB5007B09AA /* rubyserver_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rubyserver_ruby_api.c; path = ../../shared/generated/rubyserver_ruby_api.c; sourceTree = "<group>"; };
+		FAA3226B228B1CB5007B09AA /* RubyServer_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RubyServer_js_wrap.cpp; path = ../../shared/generated/cpp/RubyServer_js_wrap.cpp; sourceTree = "<group>"; };
+		FAA3226C228B1CB6007B09AA /* IRubyServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRubyServer.h; path = ../../shared/generated/cpp/IRubyServer.h; sourceTree = "<group>"; };
+		FAA3226D228B1CB6007B09AA /* RubyServerBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RubyServerBase.cpp; path = ../../shared/generated/cpp/RubyServerBase.cpp; sourceTree = "<group>"; };
+		FAA3226E228B1CB6007B09AA /* RubyServerBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RubyServerBase.h; path = ../../shared/generated/cpp/RubyServerBase.h; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libRubyServer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRubyServer.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD45FD51225FED600141873 /* RubyServer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RubyServer_Prefix.pch; sourceTree = "<group>"; };
+		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
+				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libRubyServer.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* RubyServer */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = RubyServer;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FAD4602C12260A8500141873 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FAA32262228B1AA3007B09AA /* cpp_impl */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* RubyServer_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		FAA32262228B1AA3007B09AA /* cpp_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAA32264228B1AB5007B09AA /* impl */,
+				FAA32263228B1AAE007B09AA /* generated */,
+			);
+			name = cpp_impl;
+			sourceTree = "<group>";
+		};
+		FAA32263228B1AAE007B09AA /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FAA3226C228B1CB6007B09AA /* IRubyServer.h */,
+				FAA32269228B1CB5007B09AA /* rubyserver_api_init.cpp */,
+				FAA32268228B1CB5007B09AA /* rubyserver_js_api.cpp */,
+				FAA3226B228B1CB5007B09AA /* RubyServer_js_wrap.cpp */,
+				FAA3226A228B1CB5007B09AA /* rubyserver_ruby_api.c */,
+				FAA32267228B1CB5007B09AA /* RubyServer_ruby_wrap.cpp */,
+				FAA3226D228B1CB6007B09AA /* RubyServerBase.cpp */,
+				FAA3226E228B1CB6007B09AA /* RubyServerBase.h */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FAA32264228B1AB5007B09AA /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAA32265228B1C90007B09AA /* RubyServerImpl.cpp */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155E7145855CF0016F3BD /* RubyServer_Prefix.pch in Headers */,
+				FAA32276228B1CB6007B09AA /* RubyServerBase.h in Headers */,
+				FAA32274228B1CB6007B09AA /* IRubyServer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* RubyServer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "RubyServer" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RubyServer;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libRubyServer.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "RubyServer" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* RubyServer */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* RubyServer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAA3226F228B1CB6007B09AA /* RubyServer_ruby_wrap.cpp in Sources */,
+				FAA32275228B1CB6007B09AA /* RubyServerBase.cpp in Sources */,
+				FAA32273228B1CB6007B09AA /* RubyServer_js_wrap.cpp in Sources */,
+				FAA32272228B1CB6007B09AA /* rubyserver_ruby_api.c in Sources */,
+				FAA32271228B1CB6007B09AA /* rubyserver_api_init.cpp in Sources */,
+				FAA32270228B1CB6007B09AA /* rubyserver_js_api.cpp in Sources */,
+				FAA32266228B1C90007B09AA /* RubyServerImpl.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					../../../../../../platform/shared/common,
+					../../../../../../platform/shared/rubyext,
+					../../../../../../platform/shared/ruby/include,
+					../../../../../../platform/shared/ruby/iphone,
+					../../../../../../platform/shared,
+					../../../../../../platform/iphone/Classes,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					../../../../../../platform/shared/common,
+					../../../../../../platform/shared/rubyext,
+					../../../../../../platform/shared/ruby/include,
+					../../../../../../platform/shared/ruby/iphone,
+					../../../../../../platform/shared,
+					../../../../../../platform/iphone/Classes,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/RubyServer.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = RubyServer_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = RubyServer;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/RubyServer.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = RubyServer_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = RubyServer;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "RubyServer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "RubyServer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

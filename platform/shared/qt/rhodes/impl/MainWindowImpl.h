@@ -39,17 +39,26 @@
 #include "AlertImpl.h"
 #include "DateTimePickerImpl.h"
 #undef null
+
+#ifndef RHODES_VERSION_LIBRARY
 #include <QObject>
+#endif
 
 #ifdef OS_MACOSX
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 #endif
 
-class CMainWindow : public QObject, IMainWindowCallback
+class CMainWindow : public
+#ifndef RHODES_VERSION_LIBRARY
+        QObject,
+#endif
+        IMainWindowCallback
 {
+#ifndef RHODES_VERSION_LIBRARY
     Q_OBJECT
     DEFINE_LOGCLASS
+#endif
 private:
     explicit CMainWindow();
 public:
@@ -64,6 +73,7 @@ public:
     virtual void onWindowClose(void);
     virtual void onWebViewUrlChanged(const ::std::string& url);
     // public methods:
+#ifndef RHODES_VERSION_LIBRARY
     bool Initialize(const wchar_t* title);
     void DestroyUi(void);
     // for 'main_window_closed' System property
@@ -71,6 +81,7 @@ public:
 
     // proxy methods:
     bool init(IMainWindowCallback* callback, const wchar_t* title);
+    void diconnectFromUI();
     void setCallback(IMainWindowCallback* callback);
     void messageLoop(void);
     void navigate(const wchar_t* url, int index);
@@ -189,4 +200,5 @@ private slots:
     void createCustomMenuSlot(void);
     void unsetProxy();
     void setProxy(const char* host, const char* port, const char* login, const char* password);
+#endif
 };

@@ -39,6 +39,7 @@ require 'tempfile'
 include FileUtils
 
 USE_OWN_STLPORT = false
+$rhodes_as_lib = false
 #USE_TRACES = # see androidcommon.rb
 
 def get_market_version(apilevel)
@@ -55,7 +56,8 @@ JAVA_PACKAGE_NAME = 'com.rhomobile.rhodes'
 # For complete list of android API levels and its mapping to
 # market names (such as "Android-1.5" etc) see output of
 # command "android list targets"
-ANDROID_SDK_LEVEL = 9
+ANDROID_MIN_SDK_LEVEL = 21 #21 is the minimum API that supports arm64
+ANDROID_SDK_LEVEL = 29
 
 ANDROID_PERMISSIONS = {
     'audio' => ['RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS'],
@@ -79,9 +81,14 @@ ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
 
 def set_app_icon_android
 
+  if $rhodes_as_lib 
+    puts "Skip building copy resources (not needed for aar library)"
+    return
+  end
+
   res_path = File.join($app_path, 'resources', 'android', 'res')
   if File.exists? res_path
-    # NEW resource - just copy it to res folder
+    # NEW resource - just copy it to res folder -->>
     puts "add resources from application'sresource folder [#{res_path}] to [#{$tmpdir}]"
     cp_r res_path, $tmpdir
 
@@ -442,7 +449,7 @@ def setup_ext_env( extpath, extname )
   env["RHO_APP_DIR"] = $app_path
   env["ANDROID_SDK"] = $androidsdkpath
   env["ANDROID_NDK"] = $androidndkpath
-  env["ANDROID_API_LEVEL"] = $found_api_level.to_s
+  env["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
   env["RHO_ROOT"] = $startdir
   env["BUILD_DIR"] ||= $startdir + "/platform/android/build"
   env["RHO_INC"] = $appincdir
@@ -458,6 +465,26 @@ def setup_ext_env( extpath, extname )
   env['TEMP_FILES_DIR'] = File.join($tmpdir, extname)
 
   env
+end
+
+def get_android_major_minor(version)
+  major, minor, patch = version.split('.').map { |z| z.to_i }
+  major = 0 if major.nil?
+  minor = 0 if minor.nil?
+  patch = 0 if patch.nil?
+
+  $logger.debug( "Splitting version #{version}, result is: #{major}.#{minor}.#{patch}" )
+
+  return major,minor,patch
+end
+
+def get_case_insensetive_property(property)
+  $app_config["android"].each do |x|
+    if (x[0].downcase == property.downcase)
+      return x[1]
+    end
+  end
+  return nil
 end
 
 namespace "config" do
@@ -499,16 +526,19 @@ namespace "config" do
       end
     end
 
-    $min_sdk_level = $app_config["android"]["minSDK"] unless $app_config["android"].nil?
-    $min_sdk_level = $config["android"]["minSDK"] if $min_sdk_level.nil? and not $config["android"].nil?
+    $min_sdk_level = get_case_insensetive_property("minSDK") unless $app_config["android"].nil?
+    $min_sdk_level = get_case_insensetive_property("minSDK") if $min_sdk_level.nil? and not $config["android"].nil?
+    $min_sdk_level = get_case_insensetive_property("minSdkVer") if $min_sdk_level.nil?
     $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
-    $min_sdk_level = ANDROID_SDK_LEVEL if $min_sdk_level.nil?
+    $min_sdk_level = ANDROID_MIN_SDK_LEVEL if $min_sdk_level.nil?
 
-
-    $target_sdk_level = $app_config["android"]["targetSDK"] unless $app_config["android"].nil?
-    $target_sdk_level = $config["android"]["targetSDK"] if $target_sdk_level.nil? and not $config["android"].nil?
+    
+    $target_sdk_level = get_case_insensetive_property("targetSdk") unless $app_config["android"].nil?
+    $target_sdk_level = get_case_insensetive_property("targetSdk") if $target_sdk_level.nil? and not $config["android"].nil?
+    $target_sdk_level = get_case_insensetive_property("targetSdkVer") if $target_sdk_level.nil?
     $target_sdk_level = $target_sdk_level.to_i unless $target_sdk_level.nil?
-    $target_sdk_level = (($min_sdk_level > 14) ? $min_sdk_level : 14) if $target_sdk_level.nil?
+
+    $target_sdk_level = ANDROID_SDK_LEVEL if $target_sdk_level.nil?
 
     $max_sdk_level = $app_config["android"]["maxSDK"] unless $app_config["android"].nil?
 
@@ -521,20 +551,48 @@ namespace "config" do
 
       android_api_levels = AndroidTools.get_installed_api_levels
       android_api_levels.sort!
+
+      puts "Installed versions: "
+      puts AndroidTools.get_installed_market_versions
+      
       $found_api_level = android_api_levels.last
+      $major_version = 0
+      $minor_version = 0
+      $patch_version = 0
 
       #If user has mentioned version under android, then select that particular api level.
       if $app_config["android"]["version"]
         apilevel = AndroidTools.get_api_level $app_config["android"]["version"]
+        version = $app_config["android"]["version"]
+        $major_version, $minor_version, $patch_version = get_android_major_minor(version)
+
+        market_version = AndroidTools.get_market_version($target_sdk_level)
+        if market_version.nil?
+          apilevel = android_api_levels.last
+        else
+          apilevel = $target_sdk_level
+        end
+
+        if(!apilevel)
+          apilevel = AndroidTools.get_api_level ($app_config["android"]["version"] + ".0")
+        end
+        if(!apilevel)
+          apilevel = AndroidTools.get_api_level ($app_config["android"]["version"][0...-2])
+        end
         if(apilevel)
           $androidplatform = AndroidTools.get_platform apilevel
           $found_api_level = apilevel
+          puts "Found api level #{apilevel}"
         else
           puts "No Android platform found of version #{$app_config['android']['version']}. Picking the latest one Android #{AndroidTools.get_market_version $found_api_level} available in machine"
         end
-      end
+      else
+        $major_version, $minor_version, $patch_version = 
+          get_android_major_minor( AndroidTools.get_market_version($found_api_level) )
+      end    
     end
 
+    $logger.info("Set up build API Level: #{$found_api_level}, version: #{$major_version}.#{$minor_version}")
 
     $gapikey = $app_config["android"]["apikey"] unless $app_config["android"].nil?
     $gapikey = $config["android"]["apikey"] if $gapikey.nil? and not $config["android"].nil?
@@ -586,6 +644,7 @@ namespace "config" do
 
     $rhores = File.join $androidpath, 'Rhodes','res'
     $appres = File.join $tmpdir,'res'
+    $appres_flats = File.join $tmpdir,'flats'
     $appassets = $srcdir
     $applibs = File.join $tmpdir,'lib'
 
@@ -665,11 +724,13 @@ namespace "config" do
         end
       end
 
+      $aapt2 = nil
       if build_tools_path
         puts "Using Android SDK build-tools: #{build_tools_path}"
         build_tools_path = File.join $androidsdkpath,'build-tools',build_tools_path
         $dxjar = File.join(build_tools_path,'lib','dx.jar')
         $aapt = File.join(build_tools_path, "aapt#{$exe_ext}")
+        $aapt2 = File.join(build_tools_path, "aapt2#{$exe_ext}")
       else
         $dxjar = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "lib", "dx.jar")
         $dxjar = File.join($androidsdkpath, "platform-tools", "lib", "dx.jar") unless File.exists? $dxjar
@@ -1161,6 +1222,53 @@ end
 namespace "build" do
   namespace "android" do
 
+    task :rhodeslib_bundle, [:target_path]  => ["config:set_android_platform", "config:common"] do |t, args|
+      print_timestamp('build:android:rhodeslib_bundle START')
+        target_path = args[:target_path]
+
+        $skip_build_rhodes_main = true
+        $skip_build_extensions = true
+        $skip_build_xmls = true
+        $use_prebuild_data = true
+
+        Rake::Task['config:android'].invoke
+
+        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+        Rake::Task['build:android:rhobundle'].invoke
+
+        mkdir_p target_path if not File.exists? target_path
+
+        source_RhoBundle = $appassets
+
+        rm_rf File.join(target_path, "apps") if File.exists? File.join(target_path, "apps")
+        rm_rf File.join(target_path, "db") if File.exists? File.join(target_path, "db")
+        rm_rf File.join(target_path, "lib") if File.exists? File.join(target_path, "lib")
+        rm_rf File.join(target_path, "hash") if File.exists? File.join(target_path, "hash")
+        rm_rf File.join(target_path, "name") if File.exists? File.join(target_path, "name")
+        rm_rf File.join(target_path, "rho.dat") if File.exists? File.join(target_path, "rho.dat")
+
+        cp_r File.join(source_RhoBundle, "apps"), target_path
+        cp_r File.join(source_RhoBundle, "db"), target_path
+        cp_r File.join(source_RhoBundle, "lib"), target_path
+        cp_r File.join(source_RhoBundle, "hash"), target_path
+        cp_r File.join(source_RhoBundle, "name"), target_path
+        cp_r File.join(source_RhoBundle, "rho.dat"), target_path
+
+      print_timestamp('build:android:rhodeslib_bundle FINISH')
+    end
+
+    task :rhodeslib_lib, [:target_path] => [:rhobundle] do |t, args|
+      print_timestamp('build:android:rhodeslib_lib START')
+      $rhodes_as_lib = true
+      Rake::Task["package:android"].invoke
+      target_path = args[:target_path]
+      cp_r File.join($bindir, "#{$appname}-#{$app_config["version"]}.aar"), target_path
+      print_timestamp('build:android:rhodeslib_lib FINISH')
+    end
+
+
     desc "Build RhoBundle for android"
     task :rhobundle => ["config:android"] do
       print_timestamp('build:android:rhobundle START')
@@ -1207,7 +1315,7 @@ namespace "build" do
       ENV["RHO_APP_DIR"] = $app_path
       ENV["ANDROID_SDK"] = $androidsdkpath
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
       ENV["RHO_INC"] = $appincdir
@@ -1264,6 +1372,8 @@ namespace "build" do
               args << '--trace' if USE_TRACES
             end
 
+            #puts "builddata: " + builddata[1] + " args: " + args.to_s + " builddata0: " + builddata[0].to_s
+            #puts ENV.to_s
             cc_run(builddata[1], args, builddata[0], false, nil, USE_TRACES) or raise "Extension build failed: #{builddata[0]}"
           else
             currentdir = Dir.pwd()
@@ -1352,7 +1462,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'libsqlite_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname["sqlite"])
@@ -1396,7 +1506,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'libcurl_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname["curl"])
@@ -1434,11 +1544,12 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{srcdir}/..\""
       args << "-I\"#{srcdir}/../sqlite\""
+      #args << "-I\"#{$startdir}/platform/android/Rhodes/jni/include\""
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'libruby_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname["ruby"])
@@ -1472,7 +1583,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'libjson_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname["json"])
@@ -1505,7 +1616,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librholog_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname['rholog'])
@@ -1539,7 +1650,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhomain_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname['rhomain'])
@@ -1574,7 +1685,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhocommon_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname['rhocommon'])
@@ -1611,7 +1722,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhodb_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname['rhodb'])
@@ -1646,7 +1757,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhosync_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.dirname($libname['rhosync'])
@@ -1757,7 +1868,7 @@ namespace "build" do
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhodes_build.files')
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["RHO_ROOT"] = $startdir
       ENV["RHO_INC"] = $appincdir
       ENV["TARGETPATH"] = File.join $app_builddir, 'librhodes', 'lib'
@@ -1774,18 +1885,29 @@ namespace "build" do
         rlibs << "log"
         rlibs << "dl"
         rlibs << "z"
+        rlibs << "stdc++"
 
         rlibs.map! { |x| "-l#{x}" }
 
         realabi = abi
         realabi = 'armeabi' if abi == 'arm'
 
-        extlibs = Dir.glob(File.join($app_builddir,'extensions','**',realabi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")
+        extlibs = Dir.glob(File.join($app_builddir,'extensions','**',realabi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")       
 
         extlibs.each do |lib|
           args << "-L\"#{File.dirname(lib)}\""
         end
 
+        libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", realabi)
+        
+        if File.exists? libandroid_support
+          args << "-L\"#{libandroid_support}\""
+          args << "-landroid_support"
+          puts "libandroid_support exists"
+        end
+
+
+        
         deps = []
         libs = []
 
@@ -1830,8 +1952,8 @@ namespace "build" do
         ENV['LINKDEPS'] = (deps+extlibs).join(' ')
 
         args = ['-f', "\"#{File.join($builddir,'Rakefile')}\"", "link:#{abi}"]
-        args << '--trace' if USE_TRACES
-        cc_run('rake', args, nil, false, nil, USE_TRACES) or raise "Build failed: rhodes"
+        args << '--trace' #if USE_TRACES
+        cc_run('rake', args, nil, false, nil, true) or raise "Build failed: rhodes"
         #Jake.run3("rake #{args.join(' ')}")
       end
       print_timestamp('build:android:librhodes FINISH')
@@ -1862,7 +1984,7 @@ namespace "build" do
 
       version = version["major"]*1000000 + version["minor"]*10000 + version["patch"]*100 + version["build"]
 
-      usesPermissions = ['android.permission.INTERNET', 'android.permission.PERSISTENT_ACTIVITY', 'android.permission.WAKE_LOCK']
+      usesPermissions = ['android.permission.RECEIVE_BOOT_COMPLETED', 'android.permission.INTERNET', 'android.permission.PERSISTENT_ACTIVITY', 'android.permission.WAKE_LOCK']
       $app_config["capabilities"].each do |cap|
         cap = ANDROID_PERMISSIONS[cap]
         next if cap.nil?
@@ -1897,6 +2019,10 @@ namespace "build" do
       generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
       generator.apikey = $gapikey if $gapikey
       generator.debuggable = $debug
+      generator.buildSdkVer = $found_api_level
+      generator.buildToolsVer = $build_tools_ver
+      generator.androidVerMaj = $major_version
+      generator.androidVerMin = $minor_version
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
 
@@ -2024,11 +2150,21 @@ namespace "build" do
       mkdir_p File.join($applibs,'armeabi')
       mkdir_p File.join($applibs,'armeabi-v7a')
       mkdir_p File.join($applibs,'x86')
+      mkdir_p File.join($applibs,'arm64-v8a')
+
       # Add .so libraries
       Dir.glob($app_builddir + "/**/lib*.so").each do |lib|
         arch = File.basename(File.dirname(lib))
         file = File.basename(lib)
+        arch = 'arm64-v8a' if arch == "aarch64"
         cp_r lib, File.join($applibs,arch,file)
+        
+        localabi = arch
+        localabi = "armeabi-v7a" if arch == "armeabi"
+        llvm_stl = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi, "libc++_shared.so")
+        if File.exists? llvm_stl
+          cp_r llvm_stl, File.join($applibs,arch)
+        end
       end
       $ext_android_additional_lib.each do |lib|
         arch = File.basename(File.dirname(lib))
@@ -2146,12 +2282,72 @@ namespace "build" do
 
       puts "Generate initial R.java at #{$app_rjava_dir}"
 
-      args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
-      args += AndroidTools::MavenDepsExtractor.instance.aapt_args
+     if ($rhodes_as_lib)
+        puts $appres.to_s
+        puts $app_rjava_dir.to_s
+
+        mkdir_p $appres_flats
+
+        Dir.glob(File.join($appres,'**','*.*')) do |filepath|
+          args = ["compile", PathToWindowsWay(filepath), "-o", PathToWindowsWay($appres_flats)]
+          args << '-v' if USE_TRACES
+          Jake.run($aapt2, args)
+        end
+
+        res_dirs = AndroidTools::MavenDepsExtractor.instance.aapt2_res_dirs
+        res_dirs.each do |dir|
+          Dir.glob(File.join(dir,'**','*.*')) do |filepath|
+            args = ["compile", PathToWindowsWay(filepath), "-o", PathToWindowsWay($appres_flats)]
+            args << '-v' if USE_TRACES
+            Jake.run($aapt2, args)
+          end
+        end
+
+        flat_args = []
+        Dir.glob(File.join($appres_flats,'**','*.flat')) do |filepath|
+          flat_args << PathToWindowsWay(filepath)
+        end
+
+        FormatManifestToAapt2Compat($appmanifest)
+        
+        args = 
+        [
+          "link", 
+          "-o", PathToWindowsWay(File.join($bindir, "_tmp.aar")), 
+          "-I", PathToWindowsWay($androidjar)
+        ]
+        args += flat_args
+        args +=
+        [
+          "--manifest", PathToWindowsWay($appmanifest), 
+          "-A", PathToWindowsWay($appassets), 
+          "--java", PathToWindowsWay($app_rjava_dir), 
+          "--output-text-symbols", PathToWindowsWay(File.join($app_rjava_dir, 'R.txt'))
+        ]
+      else
+
+        args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
+        args += AndroidTools::MavenDepsExtractor.instance.aapt_args
+      end
 
       args << '-v' if USE_TRACES
 
-      Jake.run($aapt, args)
+      if ($rhodes_as_lib)
+        require 'nokogiri'
+        FormatManifestToAarCompat($appmanifest)
+        Jake.run($aapt2, args)
+
+        if(File.exists?(File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')))
+          cp_r File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
+          rm_rf File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')
+        elsif (File.exists?(File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java')))
+          cp_r File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java'), File.join($app_rjava_dir, 'R.java')
+          rm_rf File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java')
+        end
+        
+      else
+        Jake.run($aapt, args)
+      end
 
       raise 'Error in AAPT: R.java' unless $?.success?
 
@@ -2466,9 +2662,143 @@ namespace "build" do
   end
 end
 
+def FormatManifestToAarCompat(path)
+  doc = File.open(path) { |f| Nokogiri::XML(f) }
+  root = doc.xpath("//manifest/*")
+  application = root.xpath("//application/*")
+
+  doc2 = doc.xpath("//manifest")
+  doc2[0].remove_attribute("versionCode")
+  doc2[0].remove_attribute("installLocation")
+  doc2[0]["xmlns:tools"] = "http://schemas.android.com/tools"
+
+  root.each do |node|
+    node["tools:node"] = "merge" if node.name.to_s == 'uses-permission'
+    node["tools:node"] = "merge" if node.name.to_s == 'uses-feature'
+    if node.name.to_s == 'application'
+      node["tools:node"] = "merge"
+      node.remove_attribute("name")
+      node.remove_attribute("label")
+      node.remove_attribute("icon")
+    end
+  end
+
+  application.each do |node|
+    node["tools:node"] = "merge" if node["tools:node"] != "replace"
+    if node["android:name"] == 'com.rhomobile.rhodes.RhodesActivity'
+      intent_filters = node.xpath(".//*/*")
+      intent_filters.each do |child|
+        if child["android:name"] == 'android.intent.action.MAIN'
+          child.parent.remove
+        end
+      end
+    end
+  end
+
+  new_doc = Nokogiri::XML::Document.parse(doc.to_s, nil, "UTF-8")
+  File.open(path, "w") {|file| file << new_doc.to_xml }
+end
+
+
+def prepare_aar_package
+  alljars = Dir.glob(File.join($app_builddir, '**', '*.jar'))
+  #alljars += AndroidTools::MavenDepsExtractor.instance.jars
+
+  require 'set'
+  unique_jars = Set.new
+
+  args = ['cvf', 'classes.jar', '-C', '.', '.']
+  jarNamesCounter = 0
+  
+  $allclasses = File.join($tmpdir, 'allclasses')
+  mkdir_p $allclasses
+
+  puts "Creating classes.jar for aar package"
+  
+  if File.exist?(File.join($allclasses, 'classes.jar'))
+    rm_rf File.join($allclasses, 'classes.jar')
+  end
+
+  if(File.exists?(File.join($allclasses, 'com', $vendor , $appname)))  
+    rm_rf File.join($allclasses, 'com', $vendor , $appname)
+  elsif(File.exists?(File.join($allclasses, $app_package_name.split('.'))))  
+    rm_rf File.join($allclasses, $app_package_name.split('.'))
+  end
+
+  alljars.each do |jar|
+    Zip::File.open(jar) do |archive|
+      archive.glob("**/*.*").each do |pfile|
+        next if !(pfile.name =~ /.*\.class$/)
+        target = File.join($allclasses, pfile.name)
+        mkdir_p File.dirname(target)
+        rm target if File.file?(target)
+        archive.extract( pfile, File.join(target) )
+      end
+    end
+  end
+
+  #res_dirs = AndroidTools::MavenDepsExtractor.instance.aapt2_res_dirs
+  #res_dirs.each do |dir|
+  #  Dir.glob(File.join(dir,'**')) do |filepath|
+  #    #cp_r filepath, File.join($tmpdir, 'res', File.basename(filepath) + '-' + File.basename(File.expand_path("..", dir)))
+  #    cp_r filepath, File.join($tmpdir, 'res', File.basename(filepath))
+  #  end
+  #end
+
+  Jake.run($jarbin, args, $allclasses)
+
+  unless $?.success?
+    raise "Error while creating classes.jar"
+  end
+
+  resourcepkg = File.join($bindir, "#{$appname}-#{$app_config["version"]}.aar")
+
+  args = ["cvf", resourcepkg, 'classes.jar']
+  Jake.run($jarbin, args, $allclasses)
+  unless $?.success?
+    raise "Error packaging classes.jar file"
+  end
+
+  mkdir_p File.join($tmpdir, 'jni')
+
+  Dir.glob(File.join($tmpdir, 'lib', '*')).each do |lib|
+    cp_r lib, File.join($tmpdir, 'jni')
+  end
+
+  args = ["uf", resourcepkg]
+  Dir.glob(File.join(File.join($tmpdir, 'jni'),'**','lib*.so')).each do |jni|
+    arch = File.basename(File.dirname(jni))
+    args << "jni/#{arch}/#{File.basename(jni)}"
+  end
+  Jake.run($jarbin, args, $tmpdir)
+  unless $?.success?
+    raise "Error packaging native libraries"
+  end
+
+  args = ["uf", resourcepkg, 'R.txt']
+  Jake.run($jarbin, args, $app_rjava_dir)
+  unless $?.success?
+    raise "Error packaging R.txt file"
+  end
+
+  args = ["uf", resourcepkg, '-C', '.', 'res']
+  Jake.run($jarbin, args, $tmpdir)
+
+  FormatManifestToAarCompat($appmanifest)
+  args = ["uf", resourcepkg, 'AndroidManifest.xml']
+  Jake.run($jarbin, args, File.dirname($appmanifest))
+
+end
+
 namespace "package" do
   task :android => "build:android:all" do
     print_timestamp('package:android START')
+
+    if $rhodes_as_lib
+      prepare_aar_package()
+      next
+    end
+    
     puts "Running dx utility"
     args = []
     args << "-Xmx1024m"

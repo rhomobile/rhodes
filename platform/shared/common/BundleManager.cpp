@@ -62,7 +62,7 @@ extern "C" int rho_file_get_fs_mode();
 #endif
 
 
-#if !defined(OS_WINDOWS_DESKTOP) && !defined(OS_WINCE) && !defined(OS_MACOSX)
+#if !defined(OS_WINDOWS_DESKTOP) && !defined(OS_WINCE) && !defined(OS_MACOSX) && !defined(OS_LINUX)
 void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 {
 }

@@ -3,14 +3,22 @@
 <API>
     <MODULE name="Timer" parent="Rho" productException="">
         <HELP_OVERVIEW>The Timer API is used to create, start, stop and check the existence of timers.</HELP_OVERVIEW>
-        <MORE_HELP>
-## Enabling the API
-This API is part of the `coreapi` extension that is included automatically.
-    :::ruby
-    extensions: ["coreapi"]
-        </MORE_HELP>
+      <MORE_HELP>
+        ## Enabling the API
+        This API is part of the `coreapi` extension that is included automatically.
+
+        :::ruby
+        extensions: ["coreapi"]
+
+
+        ## JavaScript Usage
+        Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important information about using this API in JavaScript.
+
+        ## Ruby Usage
+        Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby.
+      </MORE_HELP>
         <PLATFORM>WM, CE, Android, UWP, iOS, Win32</PLATFORM>
-        
+
         <METHODS>
             <METHOD name="create" access="STATIC">
                 <RETURN type="SELF_INSTANCE" />
@@ -21,7 +29,7 @@ This API is part of the `coreapi` extension that is included automatically.
               <PARAMS>
               	<PARAM name="interval" type="INTEGER">
                   <DESC>timer interval in ms</DESC>
-                </PARAM>                               
+                </PARAM>
               </PARAMS>
               <CALLBACK type="STRING">
               </CALLBACK>
@@ -53,20 +61,20 @@ This API is part of the `coreapi` extension that is included automatically.
                     <SECTION>
                       <DESC>Implementation of the timer API.</DESC>
                         <CODE>
-                        <JAVASCRIPT> 
+                        <JAVASCRIPT>
            // Create a timer and catch callback after the specified interval:
-           
+
             var timerCallback = function() {
                 alert("callback called");
-            }                                              
+            }
 
             var timer = Rho.Timer.create();
             timer.start(5000, timerCallback);
-            
+
             Create a timer, start and stop:
             var timerCallback = function() {
                 alert("callback called");
-            }                                              
+            }
 
             var timer = Rho.Timer.create();
             timer.start(5000, timerCallback);

@@ -179,7 +179,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 
 + (NSString *) getApplicationsRosterUrl {
-	return @"http://tau-technologies.com/";
+	return @"https://tau-technologies.com/";
 }
 
 + (bool) installApplication:(NSString*)appName data:(NSData*)appData {
@@ -262,9 +262,17 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 	
 //#define RHO_DONT_COPY_ON_START
     
+    if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() START");
+
+    
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
 	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
+    
+#ifdef RHO_STANDALONE_LIB
+    bundleRoot = [bundleRoot stringByAppendingPathComponent:@"RhoBundle"];
+#endif
+    
 	NSString *rhoRoot = [NSString stringWithUTF8String:rho_native_rhopath()];
 	NSString *rhoUserRoot = [NSString stringWithUTF8String:rho_native_rhouserpath()];
     NSString *rhoDBRoot = [NSString stringWithUTF8String:rho_native_rhodbpath()]; 
@@ -281,26 +289,48 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     BOOL contentChanged = force_update_content;
 
     isNewInstallation = !(bool)([fileManager fileExistsAtPath:filePathOld]);
+    if (isNewInstallation) {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() isNewInstallation == true");
+    }
+    else {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() isNewInstallation == false");
+    }
+    
+    
+    // additional check for backup restore
+    NSString *db_folder = [rhoDBRoot stringByAppendingPathComponent:@"db"];
+    if ([fileManager fileExistsAtPath:db_folder]) {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() DB folder is exist => SET isNewInstallation = false");
+        isNewInstallation = false;
+    }
 
-    if (nameChanged)
+    if (nameChanged) {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() nameChanged == true");
         contentChanged = YES;
+    }
 	else {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() nameChanged == false");
 		filePathNew = [bundleRoot stringByAppendingPathComponent:@"hash"];
 		filePathOld = [rhoRoot stringByAppendingPathComponent:@"hash"];
 
         contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];        
         // check for lost sym-links (upgrade OS or reinstall application without change version)
         if (!contentChanged) {
+            if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() old hash == new hash");
+
             // check exist of sym-link
             NSString* testName = [rhoRoot stringByAppendingPathComponent:@"lib"];
             if (![fileManager fileExistsAtPath:testName]) {
-                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Can not found main Sym-Link - we should restore all sym-links !");
+                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  Can not found main Sym-Link - we should restore all sym-links !");
                 contentChanged = YES;
                 restoreSymLinks_only = YES;
             }
             else {
-                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Main Sym-Link founded - disable restoring !");
+                if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  Main Sym-Link founded - disable restoring !");
             }
+        }
+        else {
+            if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure() old hash != new hash");
         }
         
 	}
@@ -308,15 +338,17 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     NSString* testName = [rhoRoot stringByAppendingPathComponent:@"lib"];
     BOOL libExist = [fileManager fileExistsAtPath:testName];
     if (libExist) {
-        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Lib File is Exist: %@", testName);
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  Lib File is Exist: %@", testName);
     }
     else {
-        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager:  Lib File is NOT Exist: %@", testName);
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  Lib File is NOT Exist: %@", testName);
     }
 	
     
     if (contentChanged) {
+        if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  contentChanged == true");
         if (make_sym_links) {
+            if (ENABLE_STARTUP_TRACES) NSLog(@"RhoAppManager.configure()  make_sym_links == true");
 //#ifdef RHO_DONT_COPY_ON_START
             // we have next situations when we should remove old content:
             // 1. we upgrade old version (where we copy all files)
@@ -825,6 +857,183 @@ static float get_scale() {
 
 
 
+/*
+ "iPod5,1"                                  = "iPod Touch 5"
+ "iPod7,1"                                  = "iPod Touch 6"
+ "iPhone3,1", "iPhone3,2", "iPhone3,3"      = "iPhone 4"
+ "iPhone4,1"                                = "iPhone 4s"
+ "iPhone5,1", "iPhone5,2"                   = "iPhone 5"
+ "iPhone5,3", "iPhone5,4"                   = "iPhone 5c"
+ "iPhone6,1", "iPhone6,2"                   = "iPhone 5s"
+ "iPhone7,2"                                = "iPhone 6"
+ "iPhone7,1"                                = "iPhone 6 Plus"
+ "iPhone8,1"                                = "iPhone 6s"
+ "iPhone8,2"                                = "iPhone 6s Plus"
+ "iPhone9,1", "iPhone9,3"                   = "iPhone 7"
+ "iPhone9,2", "iPhone9,4"                   = "iPhone 7 Plus"
+ "iPhone8,4"                                = "iPhone SE"
+ "iPhone10,1", "iPhone10,4"                 = "iPhone 8"
+ "iPhone10,2", "iPhone10,5"                 = "iPhone 8 Plus"
+ "iPhone10,3", "iPhone10,6"                 = "iPhone X"
+ "iPhone11,2"                               = "iPhone XS"
+ "iPhone11,4", "iPhone11,6"                 = "iPhone XS MAX"
+ "iPhone11,8"                               = "iPhone XR"
+ "iPad2,1", "iPad2,2", "iPad2,3", "iPad2,4" = "iPad 2"
+ "iPad3,1", "iPad3,2", "iPad3,3"            = "iPad 3"
+ "iPad3,4", "iPad3,5", "iPad3,6"            = "iPad 4"
+ "iPad4,1", "iPad4,2", "iPad4,3"            = "iPad Air"
+ "iPad5,3", "iPad5,4"                       = "iPad Air 2"
+ "iPad6,11", "iPad6,12"                     = "iPad 5"
+ "iPad7,5", "iPad7,6"                       = "iPad 6"
+ "iPad2,5", "iPad2,6", "iPad2,7"            = "iPad Mini"
+ "iPad4,4", "iPad4,5", "iPad4,6"            = "iPad Mini 2"
+ "iPad4,7", "iPad4,8", "iPad4,9"            = "iPad Mini 3"
+ "iPad5,1", "iPad5,2"                       = "iPad Mini 4"
+ "iPad6,3", "iPad6,4"                       = "iPad Pro 9.7 Inch"
+ "iPad6,7", "iPad6,8"                       = "iPad Pro 12.9 Inch"
+ "iPad7,1", "iPad7,2"                       = "iPad Pro 12.9 Inch 2. Generation"
+ "iPad7,3", "iPad7,4"                       = "iPad Pro 10.5 Inch"
+ "AppleTV5,3"                               = "Apple TV"
+ "AppleTV6,2"                               = "Apple TV 4K"
+ "AudioAccessory1,1"                        = "HomePod"
+ "AppleTV5,3"  return "Apple TV 4"
+ "AppleTV6,2"  = "Apple TV 4K"
+ */
+
+NSString* getDeviceIdentifier() {
+#if TARGET_IPHONE_SIMULATOR
+    NSString* simmodel = [[[NSProcessInfo processInfo] environment] objectForKey:@"SIMULATOR_MODEL_IDENTIFIER"];
+    if (simmodel != nil) {
+        return simmodel;
+    }
+#endif
+    size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *machine = malloc(size);
+    sysctlbyname("hw.machine", machine, &size, NULL, 0);
+    NSString *platform = [NSString stringWithUTF8String:machine];
+    free(machine);
+    return platform;
+}
+
+
+
+
+
+float getPPI() {
+    NSString* model = getDeviceIdentifier();
+    
+    
+    if (
+        [model isEqualToString:@"iPad2,1"] ||
+        [model isEqualToString:@"iPad2,2"] ||
+        [model isEqualToString:@"iPad2,3"] ||
+        [model isEqualToString:@"iPad2,4"]
+        ) {
+        return 132.0;
+    }
+    if (
+        [model isEqualToString:@"iPad2,5"] ||
+        [model isEqualToString:@"iPad2,6"] ||
+        [model isEqualToString:@"iPad2,7"]
+        ) {
+        return 163.0;
+    }
+    if (
+        [model isEqualToString:@"iPad3,1"] ||
+        [model isEqualToString:@"iPad3,2"] ||
+        [model isEqualToString:@"iPad3,3"] ||
+        [model isEqualToString:@"iPad3,4"] ||
+        [model isEqualToString:@"iPad3,5"] ||
+        [model isEqualToString:@"iPad3,6"] ||
+        [model isEqualToString:@"iPad4,1"] ||
+        [model isEqualToString:@"iPad4,2"] ||
+        [model isEqualToString:@"iPad4,3"] ||
+        [model isEqualToString:@"iPad5,3"] ||
+        [model isEqualToString:@"iPad5,4"] ||
+        [model isEqualToString:@"iPad6,3"] ||
+        [model isEqualToString:@"iPad6,4"] ||
+        [model isEqualToString:@"iPad6,7"] ||
+        [model isEqualToString:@"iPad6,8"] ||
+        [model isEqualToString:@"iPad6,11"] ||
+        [model isEqualToString:@"iPad6,12"] ||
+        [model isEqualToString:@"iPad7,1"] ||
+        [model isEqualToString:@"iPad7,2"] ||
+        [model isEqualToString:@"iPad7,3"] ||
+        [model isEqualToString:@"iPad7,4"] ||
+        [model isEqualToString:@"iPad7,5"] ||
+        [model isEqualToString:@"iPad7,6"]
+        ) {
+        return 264.0;
+    }
+    if (
+        [model isEqualToString:@"iPhone4,1"] ||
+        [model isEqualToString:@"iPhone5,1"] ||
+        [model isEqualToString:@"iPhone5,2"] ||
+        [model isEqualToString:@"iPhone5,3"] ||
+        [model isEqualToString:@"iPhone5,4"] ||
+        [model isEqualToString:@"iPhone6,1"] ||
+        [model isEqualToString:@"iPhone6,2"] ||
+        [model isEqualToString:@"iPhone7,2"] ||
+        [model isEqualToString:@"iPhone8,1"] ||
+        [model isEqualToString:@"iPhone8,4"] ||
+        [model isEqualToString:@"iPhone9,1"] ||
+        [model isEqualToString:@"iPhone9,3"] ||
+        [model isEqualToString:@"iPhone10,1"] ||
+        [model isEqualToString:@"iPhone10,4"] ||
+        [model isEqualToString:@"iPhone11,8"] ||
+        [model isEqualToString:@"iPad4,4"] ||
+        [model isEqualToString:@"iPad4,5"] ||
+        [model isEqualToString:@"iPad4,6"] ||
+        [model isEqualToString:@"iPad4,7"] ||
+        [model isEqualToString:@"iPad4,8"] ||
+        [model isEqualToString:@"iPad4,9"] ||
+        [model isEqualToString:@"iPad5,1"] ||
+        [model isEqualToString:@"iPad5,2"] ||
+        [model isEqualToString:@"iPod5,1"] ||
+        [model isEqualToString:@"iPod7,1"]
+        ) {
+        return 326.0;
+    }
+    if (
+        [model isEqualToString:@"iPhone7,1"] ||
+        [model isEqualToString:@"iPhone8,2"] ||
+        [model isEqualToString:@"iPhone9,2"] ||
+        [model isEqualToString:@"iPhone9,4"] ||
+        [model isEqualToString:@"iPhone10,2"] ||
+        [model isEqualToString:@"iPhone10,5"]
+        ) {
+        return 401.0;
+    }
+    if (
+        [model isEqualToString:@"iPhone10,3"] ||
+        [model isEqualToString:@"iPhone10,6"] ||
+        [model isEqualToString:@"iPhone11,2"] ||
+        [model isEqualToString:@"iPhone11,4"] ||
+        [model isEqualToString:@"iPhone11,6"]
+        ) {
+        return 458.0;
+    }
+    // unknown device !
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (get_scale() > 1.2) {
+            return 264.0;
+        }
+        else {
+            return 132.0;
+        }
+    }
+    if (get_scale() > 2.2) {
+        return 458.0;
+    }
+    return 326.0;
+}
+
+
+
+
+
+
 extern BOOL rho_sys_has_wifi_network_iphone();
 extern BOOL rho_sys_has_cell_network_iphone();
 extern BOOL rho_sys_has_network_iphone();
@@ -898,41 +1107,7 @@ int rho_sysimpl_get_property_iphone(char* szPropName, NSObject** resValue)
     }
     else if (strcasecmp("ppi_x", szPropName) == 0 ||
              strcasecmp("ppi_y", szPropName) == 0) {
-#ifdef __IPHONE_3_2
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-			
-			//Fix DPI issue on Ipad Mini
-			//get the device model name
-			size_t size;
-			sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-			char *machine = malloc(size);
-			sysctlbyname("hw.machine", machine, &size, NULL, 0);
-			NSString *platform = [NSString stringWithUTF8String:machine];
-			free(machine);
-				
-			// IPad Mini
-			if([platform isEqualToString:@"iPad2,5"] || [platform isEqualToString:@"iPad2,6"] || [platform isEqualToString:@"iPad2,7"]){
-				*resValue = [NSNumber numberWithDouble:RHO_IPAD_MINI_PPI];
-			}
-            // IPad Mini Retina
-            else if ([platform isEqualToString:@"iPad4,4"] || [platform isEqualToString:@"iPad4,5"] || [platform isEqualToString:@"iPad4,6"] || [platform isEqualToString:@"iPad4,7"] || [platform isEqualToString:@"iPad4,8"] || [platform isEqualToString:@"iPad4,9"] || [platform isEqualToString:@"iPad5,1"] || [platform isEqualToString:@"iPad5,2"]) {
-                *resValue = [NSNumber numberWithDouble:RHO_IPAD_MINI_RETINA_PPI];
-            }
-		    else if (get_scale() > 1.2) {
-		        *resValue = [NSNumber numberWithDouble:RHO_NEW_IPAD_PPI];
-            }
-            else {
-                *resValue = [NSNumber numberWithDouble:RHO_IPAD_PPI];
-            }
-            return 1;
-        }
-#endif
-        if (get_scale() > 1.2) {
-            *resValue = [NSNumber numberWithDouble:RHO_IPHONE4_PPI];
-        }
-        else {
-            *resValue = [NSNumber numberWithDouble:RHO_IPHONE_PPI];
-        }
+        *resValue = [NSNumber numberWithDouble:getPPI()];
         return 1;
     }
     else if (strcasecmp("device_name", szPropName) == 0) {
@@ -1351,6 +1526,31 @@ void rho_ios_log_console_output(const char* message) {
 void rho_startup_logging(const char* message) {
     [AppManager startupLogging:[NSString stringWithUTF8String:message]];
 }
+
+
+// return 0 if OK
+// return -1 if error
+// for Citrix support
+int rhodes_ios_delete_file_via_platform_api(const char* filePath) {
+    if (filePath == NULL) {
+        return -1;
+    }
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString* sPath = [NSString stringWithUTF8String:filePath];
+    if ([sPath length] <= 0) {
+        return -1;
+    }
+    NSError *error = nil;
+    if (![fileManager removeItemAtPath:sPath error:&error]) {
+        NSString *msg = [NSString stringWithFormat:@"$$$ rhodes_ios_delete_file_via_platform_api() error during delete file, ERROR = %@", [error localizedDescription]];
+        NSLog(msg);
+        RAWLOG_ERROR([msg UTF8String]);
+        return -1;
+    }
+    return 0;
+}
+
+
 
 /*
 #define MAX_ACTIONS 4

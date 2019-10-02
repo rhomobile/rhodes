@@ -81,7 +81,9 @@ public:
 
 void CSystemImpl::getOsVersion(CMethodResult& oResult)
 {
+    #ifndef OS_LINUX
     oResult.set(String(RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION));
+    #endif
 }
 
 void CSystemImpl::getIsEmulator(CMethodResult& oResult)

@@ -77,9 +77,11 @@ CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserP
 #endif
 
     const char* nodejs_app = get_app_build_config_item("nodejs_application");
-    
     m_bNodeJSApplication = nodejs_app && (strcmp(nodejs_app,"true") == 0);
-    
+
+    const char* rubynodejs_app = get_app_build_config_item("rubynodejs_application");
+    m_bRubyNodeJSApplication = rubynodejs_app && (strcmp(rubynodejs_app,"true") == 0);
+
     initAppUrls();
 }
 	
@@ -580,11 +582,12 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 	}
     
     
-    const char* rho_app_canonicalize_rho_url(const char* url) {
-        static char res[FILENAME_MAX];
+    int rho_app_canonicalize_rho_url(const char* url, char* result, int max_len) {
         rho::String s_res = RHODESAPPBASE().canonicalizeRhoUrl(url);
-        strncpy(res, s_res.c_str(), sizeof(res)-1);
-        return res;
+        if (result != NULL) {
+            strncpy(result, s_res.c_str(), max_len);
+        }
+        return (int)s_res.length();
     }
 
 } //extern "C"

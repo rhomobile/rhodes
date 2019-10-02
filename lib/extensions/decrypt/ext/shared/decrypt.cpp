@@ -186,8 +186,29 @@ extern "C" int tau_decrypt_file(const char* filebuf, int filebuf_len, char* decr
 
 }
 
+/*extern "C" void tau_encrypt_file_simple(unsigned char *indata, int size, char * outputFileName, const char * ckey)
+{
+    int outLen1 = 0; 
+    int outLen2 = 0;
 
+    unsigned char *outdata = new unsigned char[size*2];
+    //unsigned char ivec[] = "dontusethisinput";
 
+    FILE * output = fopen(outputFileName, "wb");;
+
+    //Set up encryption
+    EVP_CIPHER_CTX *ctx = NULL;
+    if(!(ctx = EVP_CIPHER_CTX_new())) handleOpenSSLErrors();
+
+    EVP_EncryptInit(ctx, EVP_aes_256_cbc(), ckey, NULL);
+    EVP_EncryptUpdate(ctx, outdata, &outLen1, indata, size);
+    EVP_EncryptFinal(ctx, outdata + outLen1, &outLen2);
+
+    fwrite(outdata, sizeof(char), outLen1 + outLen2, output);
+    fclose(output);
+    delete [] outdata;
+}
+*/
 
 
 //extern "C" void Init_Decrypt_extension() {

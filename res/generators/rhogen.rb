@@ -415,6 +415,155 @@ module Rhogen
     end
   end
 
+  class RubyNodeJSAppGenerator < BaseGenerator
+
+    def self.source_root
+      File.join(File.dirname(__FILE__), 'templates', 'application')
+    end
+
+    desc <<-DESC
+      Generates a new Ruby local server with Node.js local server both rhodes application (Node.js server is main and Node.js should open URL etc.).
+
+      Options:
+        --rhoconnect - include rhoconnect-client in application
+
+      Required:
+        name        - application name
+
+      Optional:
+        syncserver  - url to the rhosync application (i.e. "http://localhost:9292")
+        zip_url     - optional url to zipfile download of bundle (this can be your RhoHub Bundle URL)
+    DESC
+
+    #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
+
+    option :rhoconnect, :desc => '', :as => :boolean, :default => false
+
+    first_argument :name, :required => true, :desc => 'application name'
+    second_argument :syncserver, :required => false, :desc => 'url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/")'
+    third_argument :zip_url, :required => false, :desc => 'optional url to zipfile download of bundle'
+
+    invoke :appResources
+
+    template :config do |template|
+      zip_url ||= ''
+      syncserver ||= ''
+      template.source = 'rhoconfig_rubynode.txt'
+      template.destination = "#{name}/rhoconfig.txt"
+    end
+
+    template :buildyml do |template|
+      @sdk_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+      @sdk_path.gsub!('\\', '/')
+      @app_name = name
+      @app_name_cleared = name.downcase.split(/[^a-zA-Z0-9\.\-]/).map { |w| w.downcase }.join("")
+      puuid = UUID.new
+      generated_uuid = puuid.generate
+      @productid = generated_uuid
+      @uid = '0x'+(0xE0000000 + rand(0xFFFFFFF)).to_s(16)
+      @rhoconnectclient_ext = '"rhoconnect-client"' if rhoconnect
+      template.source = 'rubynodejs_build.yml'
+      template.destination = "#{name}/build.yml"
+    end
+
+    template :gitignore do |template|
+      template.source = 'gitignore'
+      template.destination = "#{name}/.gitignore"
+    end
+
+    directory :resources do |directory|
+      directory.source = 'resources'
+      directory.destination = "#{name}/resources"
+    end
+
+    file :androidmanifesterb do |file|
+      file.source = 'AndroidManifest.erb'
+      file.destination = "#{name}/AndroidManifest.erb"
+    end
+
+    directory :public do |directory|
+      directory.source = 'nodejs'
+      directory.destination = "#{name}/nodejs/"
+    end
+
+    template :rakefile do |template|
+      template.source = 'Rakefile'
+      template.destination = "#{name}/Rakefile"
+    end
+
+    template :application do |template|
+      template.source = 'app/application.rb'
+      template.destination = "#{name}/app/application.rb"
+    end
+
+    template :index do |template|
+      template.source = 'app/index.erb'
+      template.destination = "#{name}/app/index.erb"
+    end
+
+    template :layout do |template|
+      template.source = 'app/layout.erb'
+      template.destination = "#{name}/app/layout.erb"
+    end
+
+    template :loading do |template|
+      template.source = 'app/loading.html'
+      template.destination = "#{name}/app/loading.html"
+    end
+
+    file :loadingpng do |file|
+      file.source = 'app/loading.png'
+      file.destination = "#{name}/app/loading.png"
+    end
+
+    directory :helpers do |directory|
+      directory.source = 'app/helpers'
+      directory.destination = "#{name}/app/helpers"
+    end
+
+    directory :icon do |directory|
+      directory.source = 'icon'
+      directory.destination = "#{name}/icon"
+    end
+
+    template :settings1 do |template|
+      template.source = 'app/Settings/controller.rb'
+      template.destination = "#{name}/app/Settings/controller.rb"
+    end
+    template :settings2 do |template|
+      template.source = 'app/Settings/err_sync.erb'
+      template.destination = "#{name}/app/Settings/err_sync.erb"
+    end
+    template :settings3 do |template|
+      template.source = 'app/Settings/home.erb'
+      template.destination = "#{name}/app/Settings/home.erb"
+    end
+    template :settings4 do |template|
+      template.source = 'app/Settings/index.erb'
+      template.destination = "#{name}/app/Settings/index.erb"
+    end
+    template :settings5 do |template|
+      template.source = 'app/Settings/login.erb'
+      template.destination = "#{name}/app/Settings/login.erb"
+    end
+    template :settings6 do |template|
+      template.source = 'app/Settings/reset.erb'
+      template.destination = "#{name}/app/Settings/reset.erb"
+    end
+    template :settings7 do |template|
+      template.source = 'app/Settings/wait.erb'
+      template.destination = "#{name}/app/Settings/wait.erb"
+    end
+
+    directory :public do |directory|
+      directory.source = 'public'
+      directory.destination = "#{name}/public/"
+    end
+
+
+  end
+
+
   class RubyModelGenerator < BaseGenerator
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'model')
@@ -684,15 +833,17 @@ module Rhogen
 
 	def get_xcode_version
   		info_path = '/Applications/XCode.app/Contents/version.plist'
-  		ret_value = '0.0'
+  		version = '0.0'
   		if File.exists? info_path
     		hash = load_plist(info_path)
-    		ret_value = hash['CFBundleShortVersionString'] if hash.has_key?('CFBundleShortVersionString')
+    		version = hash['CFBundleShortVersionString'] if hash.has_key?('CFBundleShortVersionString')
   		else
     		puts '$$$ can not find XCode version file ['+info_path+']'
   		end
-  		puts '$$$ XCode version is '+ret_value
-  		return ret_value
+  		puts '$$$ XCode version is '+version
+		major_version = version[0..(version.index('.')-1)]
+		puts '$$$ XCode major version is '+major_version
+  		return major_version
 	end
 
 
@@ -746,12 +897,13 @@ module Rhogen
       #@options[:skip] = true
       template.source = 'Bremen.xcodeproj/project.pbxproj'
       xcode_version = get_xcode_version
-	  if xcode_version[0].to_i >= 7
+	  if xcode_version.to_i >= 7
         template.source = 'Bremen7.xcodeproj/project.pbxproj'
       end
-      if xcode_version[0].to_i >= 8
+      if xcode_version.to_i >= 8
         template.source = 'Bremen8.xcodeproj/project.pbxproj'
       end
+      puts "$$$ template.source = "+template.source.to_s
       template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
       if File.exists?(template.destination)
         #puts '$$$$$$$$$$$$$$$$ EXIST'+template.destination
@@ -879,7 +1031,7 @@ module Rhogen
       #@options[:skip] = true
       template.source = 'Bremen7_prebuild.xcodeproj/project.pbxproj'
       xcode_version = get_xcode_version
-      if xcode_version[0].to_i >= 7
+      if xcode_version.to_i >= 7
         template.source = 'Bremen7_prebuild.xcodeproj/project.pbxproj'
       end
       template.destination = "project/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
@@ -1091,12 +1243,12 @@ module Rhogen
     #end
 
     template :extension_wm_vcsol do |template|
-      template.source = 'extensions/montana/ext/platform/wm/Montana.sln'
+      template.source = 'extensions/montana/ext/platform/wm/montana.sln'
       template.destination = "extensions/#{name}/ext/platform/wm/#{namecamelcase}.sln"
     end
 
     template :extension_wm_vcproject do |template|
-      template.source = 'extensions/montana/ext/platform/wm/Montana.vcproj'
+      template.source = 'extensions/montana/ext/platform/wm/montana.vcproj'
       template.destination = "extensions/#{name}/ext/platform/wm/#{namecamelcase}.vcproj"
     end
 
@@ -1111,7 +1263,7 @@ module Rhogen
     end
 
     template :extension_uwp_vcproject do |template|
-      template.source = 'extensions/montana/ext/platform/uwp/Montana.vcxproj'
+      template.source = 'extensions/montana/ext/platform/uwp/montana.vcxproj'
       template.destination = "extensions/#{name}/ext/platform/uwp/#{namecamelcase}.vcxproj"
     end
 
@@ -1588,6 +1740,7 @@ module Rhogen
   add :app, RubyAppGenerator
   add :jsapp, JavascriptAppGenerator
   add :nodejsapp, NodeJSAppGenerator
+  add :rubynodejsapp, RubyNodeJSAppGenerator
   add :model, RubyModelGenerator
   add :jsmodel, JavascriptModelGenerator
   add :spec, SpecGenerator
@@ -1599,6 +1752,14 @@ module Rhogen
 
 end
 
+# fix issue with Templater and Ruby >= 2.5
+# issue produced by extlib gem required by templater
+# extlib add to_hash method to Array class
+# Ruby >= 2.5 use it by unrecognized cause and destroy parameter when  OptionParser.parse!() called
+# so, solution is remove to_hash from Array because no code from Templater use this method
+class Array
+      remove_method :to_hash
+end
 
 =begin
 # Stub this method to force 1.8 compatibility (come on templater!)

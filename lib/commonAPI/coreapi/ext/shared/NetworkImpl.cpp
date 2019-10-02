@@ -100,6 +100,8 @@ public:
 	virtual void stopDetectingConnection(rho::apiGenerator::CMethodResult& oResult);
     virtual void connectWan( const rho::String& connectionDestination, rho::apiGenerator::CMethodResult& oResult);
     virtual void disconnectWan(rho::apiGenerator::CMethodResult& oResult);
+    virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<CMethodResult>* pFunctor);
+    common::CMutex addingToQueueMutex;
 #if (defined OS_WINCE)// && !defined(OS_PLATFORM_MOTCE)
     virtual bool onWndMsg(MSG& oMsg)
 	{
@@ -278,6 +280,14 @@ void CNetworkImpl::downloadFile( const rho::Hashtable<rho::String, rho::String>&
     }
 }
 
+void CNetworkImpl::addCommandToQueue(
+        rho::common::CInstanceClassFunctorBase<CMethodResult>* pFunctor){
+        synchronized(addingToQueueMutex);
+        CModuleSingletonBase<INetworkSingleton>::addCommandToQueue(pFunctor);
+}
+
+
+
 void CNetworkImpl::post( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
     Hashtable<String,String> mapHeaders;                                          
@@ -292,7 +302,7 @@ void CNetworkImpl::post( const rho::Hashtable<rho::String, rho::String>& propert
     NetResponse resp = reqWrapper.doRequest( getStringProp(propertyMap, "httpVerb", "POST").c_str(),
         propertyMap.get("url"), body, NULL, &mapHeaders);
 
-    prepareResult( resp, oNetRequest, mapHeaders, oResult );    
+    prepareResult( resp, oNetRequest, mapHeaders, oResult );
 }
 
 void CNetworkImpl::uploadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)

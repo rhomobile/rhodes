@@ -1,0 +1,72 @@
+QT -= core
+    
+DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN	
+
+TARGET = syncengine
+TEMPLATE = lib
+
+CONFIG += staticlib warn_on
+CONFIG += <%= @buildMode %>
+
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared\
+<%= @rhoRoot %>/platform/shared/json\
+<%= @rhoRoot %>/platform/shared/ruby/include\
+<%= @rhoRoot %>/platform/shared/ruby/sailfish
+
+
+unix:!macx {
+  DESTDIR = $$PWD/bin
+  OBJECTS_DIR = $$PWD/bin/tmp
+  DEFINES += _GNU_SOURCE OS_LINUX OS_SAILFISH
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
+}
+
+DEFINES += RHODES_QT_PLATFORM
+
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  # QMAKE_CFLAGS += -fvisibility=hidden
+  # QMAKE_CXXFLAGS += -fvisibility=hidden
+}
+
+HEADERS += <%= @rhoRoot %>/platform/shared/json/arraylist.h\
+<%= @rhoRoot %>/platform/shared/json/bits.h\
+<%= @rhoRoot %>/platform/shared/json/config.h\
+<%= @rhoRoot %>/platform/shared/json/json_debug.h\
+<%= @rhoRoot %>/platform/shared/json/json.h\
+<%= @rhoRoot %>/platform/shared/json/json_object.h\
+<%= @rhoRoot %>/platform/shared/json/json_object_private.h\
+<%= @rhoRoot %>/platform/shared/json/json_tokener.h\
+<%= @rhoRoot %>/platform/shared/json/json_util.h\
+<%= @rhoRoot %>/platform/shared/json/linkhash.h\
+<%= @rhoRoot %>/platform/shared/json/printbuf.h\
+<%= @rhoRoot %>/platform/shared/sync/RhoconnectClientManager.h\
+<%= @rhoRoot %>/platform/shared/sync/ILoginListener.h\
+<%= @rhoRoot %>/platform/shared/json/JSONIterator.h\
+<%= @rhoRoot %>/platform/shared/db/DBAdapter.h\
+<%= @rhoRoot %>/platform/shared/db/DBAttrManager.h\
+<%= @rhoRoot %>/platform/shared/db/DBImportTransaction.h\
+<%= @rhoRoot %>/platform/shared/db/DBRequestHelper.h\
+<%= @rhoRoot %>/platform/shared/db/DBResult.h\
+<%= @rhoRoot %>/platform/shared/db/DBLock.h
+
+SOURCES += <%= @rhoRoot %>/platform/shared/json/arraylist.c\
+<%= @rhoRoot %>/platform/shared/json/json_debug.c\
+<%= @rhoRoot %>/platform/shared/json/json_object.c\
+<%= @rhoRoot %>/platform/shared/json/json_tokener.c\
+<%= @rhoRoot %>/platform/shared/json/json_util.c\
+<%= @rhoRoot %>/platform/shared/json/linkhash.c\
+<%= @rhoRoot %>/platform/shared/json/printbuf.c\
+<%= @rhoRoot %>/platform/shared/json/RJSONTokener.c\
+<%= @rhoRoot %>/platform/shared/sync/RhoconnectClientManager.cpp\
+<%= @rhoRoot %>/platform/shared/json/JSONIterator.cpp\
+<%= @rhoRoot %>/platform/shared/db/DBAdapter.cpp\
+<%= @rhoRoot %>/platform/shared/db/DBAttrManager.cpp\
+<%= @rhoRoot %>/platform/shared/db/DBImportTransaction.cpp\
+<%= @rhoRoot %>/platform/shared/db/DBRequestHelper.cpp\
+<%= @rhoRoot %>/platform/shared/db/DBResult.cpp\
+<%= @rhoRoot %>/platform/shared/db/DBLock.cpp

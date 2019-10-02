@@ -116,6 +116,9 @@ sync_poll_interval=0
 # disable close app when pressing back on home screen on blackberry
 #bb_disable_closebyback = 0
 
+# disable back button on Android
+disable_back_button = 0
+
 # load images in background, this improve reaction speed on user actions, 0 by default
 #bb_loadimages_async = 0
 
@@ -149,3 +152,6 @@ use_kinetic_scroll_on_windows = 1
 # Related to iOS applications's multitasking switcher. If you can have any private info on screen you can prevent system to use snapshot in task list UI.
 # by enable this option screenshot will be replaced by splash loading screen.
 #WebView.replaceContentBySplashWhenSnapshotBySystem = 1
+
+#disable_external_access = 1
+# disable external access to rhodes http server

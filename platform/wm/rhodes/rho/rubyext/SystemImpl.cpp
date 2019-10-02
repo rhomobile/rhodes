@@ -37,15 +37,20 @@
 #include "common/RhoDefs.h"
 #include "common/RhoStd.h"
 #undef null
+
+#ifndef RHODES_VERSION_LIBRARY
 #include <qglobal.h>
-#if QT_VERSION > QT_VERSION_CHECK(5,6,0)
+#ifndef OS_SAILFISH
+#if QT_VERSION > QT_VERSION_CHECK(5,7,0)
 #include <QtWebEngine/qtwebengineversion.h>
 #elif  QT_VERSION >= QT_VERSION_CHECK(5,0,0)
 #include <QtWebKit/qtwebkitversion.h>
 #else
 #include <QtWebKit/qwebkitversion.h>
 #endif
+#endif
 #include "../../qt/rhodes/impl/MainWindowImpl.h"
+#endif// RHODES_VERSION_LIBRARY
 
 #else // RHODES_QT_PLATFORM
 

@@ -273,6 +273,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\rho\rhoruby.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\io\wait\wait.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\io\nonblock\nonblock.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\date\date_core.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\date\date_parse.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\date\date_strftime.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\date\date_strptime.c" />
     <ClCompile Include="..\..\shared\ruby\ext\rho\rhosupport.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_RubyCompiler|Win32'">false</ExcludedFromBuild>
     </ClCompile>

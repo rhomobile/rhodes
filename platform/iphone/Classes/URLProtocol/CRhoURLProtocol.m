@@ -27,6 +27,7 @@ static bool is_net_trace() {
 
 extern int rho_http_started();
 extern int rho_http_get_port();
+extern int rho_nodejs_get_port();
 
 const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int bodylen, int* responseLength );
 void rho_http_free_response( const char* data );
@@ -228,10 +229,10 @@ int on_http_cb(http_parser* parser) { return 0; }
 
               
             if (force_https) {
-                 s = [NSMutableString stringWithFormat:@"https://127.0.0.1:%d%@",rho_http_get_port(),spath];
+                 s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"https",rho_http_get_port(),spath];
             }
             else {
-                s = [NSMutableString stringWithFormat:@"http://127.0.0.1:%d%@",rho_http_get_port(),spath];
+                s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"http", rho_http_get_port(),spath];
             }
   
               
@@ -505,9 +506,19 @@ int on_http_cb(http_parser* parser) { return 0; }
     int port = (nil==p)?80:[[url port] intValue];
   
     int rhoPort = rho_http_get_port();
-
+    
+    // path for Rhodes JS API from WebView in case of Node.js application
+    int rhoNodeJSPort = rho_nodejs_get_port();
+    NSString* path = [url path];
+    if (![@"/system/js_api_entrypoint" isEqualToString:path]) {
+        if (![@"/system/rholib_callback" isEqualToString:path]) {
+            rhoNodeJSPort= -521;
+        }
+    }
+    
+    
     BOOL ret = (
-      ((port == rhoPort))
+      ((port == rhoPort) || (port == rhoNodeJSPort))
       && ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
     );
     if (is_net_trace()) {

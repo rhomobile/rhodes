@@ -32,7 +32,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_NewORM_extension();
 //#endif
     Init_Log();
-#if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_ANDROID)
+#if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_ANDROID) || defined(OS_SAILFISH)
     Init_WebView();
 #elif  defined(OS_UWP)
     Init_WebView_extension(); 
@@ -54,7 +54,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Notification();
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(WINDOWS_PLATFORM)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(WINDOWS_PLATFORM) || defined(OS_SAILFISH)
     Init_RhoFile();
 #endif
 
@@ -74,11 +74,11 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Intent();
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_WINCE) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR)) || defined(OS_UWP)|| defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+#if defined(OS_ANDROID) || defined(OS_WINCE) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR)) || defined(OS_UWP)|| defined(OS_WINDOWS_DESKTOP) || defined(OS_SAILFISH) || defined(RHODES_EMULATOR)
     Init_Timer_extension();
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_UWP) || defined(OS_WINCE) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
+#if defined(OS_ANDROID) || defined(OS_UWP) || defined(OS_WINCE) || defined(OS_SAILFISH) || defined(OS_LINUX) || (defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
     Init_Config_extension();
 #endif
 }

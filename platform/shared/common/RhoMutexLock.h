@@ -153,4 +153,17 @@ CRITICAL_SECTION __g_cs_##name;
 
 #endif //__cplusplus
 
+# ifdef __cplusplus
+extern "C" {
+# endif
+
+void* rho_mutex_create();
+void rho_mutex_destroy(void*);
+void rho_mutex_lock(void*);
+void rho_mutex_release(void*);
+
+# ifdef __cplusplus
+}
+#endif //__cplusplus
+
 #endif //_RHOMUTEXLOCK_H_

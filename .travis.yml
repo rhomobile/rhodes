@@ -3,28 +3,37 @@ before_install:
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
 
 install:
-- rvm install 2.3.4
+- ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_ruby.sh
 - rvm use 2.3.4
-
+- |
+  if [[ -z $(rvm gemset list | grep rhodes) ]]; then
+    rvm gemset create rhodes;
+  fi
+- rvm gemset use rhodes
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_gems.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
-- gem install rest-client --no-document
-- gem install listen --no-document
-- gem install zip --no-document
 
 script:
+- ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
+- rvm list
+- rvm use 2.3.4
+- rvm gemset list
+- rvm gemset use rhodes
+- gem list
+
 - cd $TRAVIS_BUILD_DIR
 #- .ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/pre_gem.sh
 - rake gem
-- rvm gemset create rhodes
-- rvm gemset use rhodes
-- travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document
+- travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document --ignore-dependencies -f
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
 - .ci/install_rhoconnect-client.sh
 
 - cd $HOME
 - rhodes app vanilla_rhodes_app
+- cd vanilla_rhodes_app && rhodes extension testext && cd ..
 - rhodes jsapp vanilla_rhodes_jsapp
 - rhodes nodejsapp vanilla_rhodes_nodejsapp
 - cd $TRAVIS_BUILD_DIR
@@ -38,7 +47,17 @@ script:
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh
 
 #TODO: change this to run specs in auto mode and collect results
-- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/run_app_on_simulator.sh
+- |
+  if [[ -z $SKIP_TESTS ]]; then
+    travis_wait 30 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/run_app_on_simulator.sh;
+  fi
+
+#cache:
+#  directories:
+#    - $HOME/.rvm
+
+before_cache:
+  - echo Y | gem uninstall rhodes -a -I
 
 before_deploy:
 - mkdir $BUILD_ARTEFACTS_DIR
@@ -55,7 +74,7 @@ deploy:
   region: eu-central-1
   on:
     all_branches: true
-  
+
 android:
   components:
   - tools
@@ -63,94 +82,51 @@ android:
   - sdkmanager tools
   - extra-google-google_play_services
   - extra-google-m2repository
-  - extra-android-m2repository    
+  - extra-android-m2repository
+  - build-tools-26.0.1
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
-
+  - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
 env:
   global:
-  - ANDROID_NDK_HOME=$HOME/android-ndk-r12b
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
   - S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
   - QTDIR="$HOME/Qt5.9.5/5.9.5/clang_64"
 
-osx_image: xcode9.1
+#osx_image: xcode9.1
 
 matrix:
   include:
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"
+    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"
-
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"
-
-  #- language: android
-  #  os: linux
-  #  env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24"
-
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec"
-
-  #- language: android
-  #  os: linux
-  #  env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="24"
-
-  #- language: android
-  #  os: linux
-  #  env: RHO_TARGET="android"    RHO_APP="sas"
-
-  #- language: android
-  #  os: linux
-  #  env: RHO_TARGET="android"    RHO_APP="kitchenSinkJS"
-
-  #- language: android
-  #  os: linux
-  #  env: RHO_TARGET="android"    RHO_APP="kitchenSinkRuby"
-
-  #- language: objective-c
-  #  os: osx
-  #  env: RHO_TARGET="iphone"    RHO_APP="framework_spec"
-
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="iphone"    RHO_APP="sas"
-
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkJS"
-
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="iphone"    RHO_APP="kitchenSinkRuby"
+    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX"
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="rhosimulator_osx"
+    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"
 
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="rhosimulator"    RHO_APP="framework_spec"
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17c"
 
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="rhosimulator"    RHO_APP="sas"
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17c"
 
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkJS"
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="20"
 
-  # - language: objective-c
-  #   os: osx
-  #   env: RHO_TARGET="rhosimulator"    RHO_APP="kitchenSinkRuby"
+  # - language: android
+  #   os: linux
+  #   env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="24" NDK_NUMBER="17c"
 
-  #  - RHO_TARGET="rhosimulator"    RHO_APP="push_spec"
-  #  - RHO_TARGET="rhosimulator"    RHO_APP="rhoconnect-client_spec"  
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="inventory_demo" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="24" NDK_NUMBER="20" SKIP_TESTS=1

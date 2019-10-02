@@ -13,7 +13,7 @@
       <groupId><%=dep['grp_id']%></groupId>
       <artifactId><%=dep['art_id']%></artifactId>
       <version><%=dep['ver']%></version>
-      <type>aar</type>
+      <type><%=dep['packaging']%></type>
     </dependency>
 <% end %>    
   </dependencies>
@@ -22,7 +22,7 @@
     <repository>
       <id><%="repo#{i}"%></id>
       <name><%="android-maven-repo-#{i}"%></name>
-      <url><%="file://#{repo}"%></url>
+      <url><%="#{repo}"%></url>
     </repository>
 <% end %>
   </repositories>

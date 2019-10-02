@@ -1,0 +1,61 @@
+QT += core gui widgets multimedia network webkit widgets
+DEFINES += OS_SAILFISH OS_LINUX
+CONFIG += sailfishapp c++14 sailfishapp_i18n
+
+
+include(<%= @rhoRoot %>/lib/commonAPI/barcode/ext/platform/qt/src/qzxing/QZXing.pri)
+
+TARGET = barcode
+TEMPLATE = lib
+CONFIG += staticlib warn_on
+CONFIG += <%= @buildMode %>
+
+INCLUDEPATH += \
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared\
+<%= @rhoRoot %>/platform/shared/common\
+<%= @rhoRoot %>/platform/shared/rubyext\
+<%= @rhoRoot %>/platform/shared/ruby/include\
+<%= @rhoRoot %>/platform/shared\
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/shared
+
+unix:!macx {
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/sailfish
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/qt/sailfish/src
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/qt/sailfish
+
+  contains(DEFINES, OS_LINUX)  {
+    DESTDIR = $$PWD/../extensions
+    OBJECTS_DIR = $$PWD/bin/tmp
+  }
+  contains(DEFINES, OS_SAILFISH)  {
+    HEADERS += <%= @rhoRoot %>/lib/commonAPI/barcode/ext/platform/qt/src/barcodeqmlmodel.h
+  }
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
+}
+DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
+
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+}
+
+HEADERS += \
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/shared/generated/cpp/IBarcode.h\
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/shared/generated/cpp/BarcodeBase.h \
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/platform/qt/src/BarcodeController.h \
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/platform/qt/src/decoderthread.h
+
+SOURCES += \
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/shared/generated/cpp/Barcode_js_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/shared/generated/cpp/Barcode_ruby_wrap.cpp\
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/shared/generated/cpp/BarcodeBase.cpp\
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/shared/generated/Barcode_api_init.cpp\
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/shared/generated/Barcode_js_api.cpp\
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/shared/generated/Barcode_ruby_api.c\
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/platform/qt/src/Barcode_impl.cpp \
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/platform/qt/src/BarcodeController.cpp\
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/platform/qt/src/decoderthread.cpp\
+<%= @rhoRoot %>/lib/commonAPI/barcode/ext/platform/qt/src/barcodeqmlmodel.cpp
+
+RESOURCES += <%= @rhoRoot %>/lib/commonAPI/barcode/ext/platform/qt/resources/barcode.qrc

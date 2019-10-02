@@ -82,6 +82,10 @@ extern "C"{
     extern "C" int  rename(const char *, const char *);
 #endif
 
+#if defined(OS_MACOSX) && defined(TARGET_OS_IOS) && (TARGET_OS_IOS==1)
+extern "C" int rhodes_ios_delete_file_via_platform_api(const char* filePath);
+#endif
+
 namespace rho{
 namespace common{
 
@@ -367,10 +371,15 @@ int CRhoFile::getPos() const {
     if ( !isOpened() )
         return -1;
 
+    #ifdef OS_LINUX
+    off_t pos;
+    if((pos = ftello(m_file))!= -1)
+    #else
     fpos_t pos;
     if(fgetpos(m_file, &pos) == 0)
+    #endif
     {
-        return pos;
+        return (int)pos;
     } else
     {
         return -1;
@@ -481,9 +490,16 @@ unsigned int CRhoFile::deleteFile( const char* szFilePath ){
 #if defined(WINDOWS_PLATFORM)
     return (unsigned int)_unlink(szFilePath);
 #else
+#if defined(OS_MACOSX) && defined(TARGET_OS_IOS) && (TARGET_OS_IOS==1)
+    // For support Citrix on iOS
+    return rhodes_ios_delete_file_via_platform_api(szFilePath);
+#else
     return (unsigned int)remove(szFilePath);
 #endif
+#endif
 }
+
+
 
 unsigned int CRhoFile::deleteEmptyFolder( const char* szFilePath ){
 #if defined(WINDOWS_PLATFORM)
@@ -798,7 +814,7 @@ extern "C" void rho_file_set_fs_mode(int mode) {
 }
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_LINUX)
     void rho_file_impl_move_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
         
     }

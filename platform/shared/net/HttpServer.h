@@ -32,6 +32,10 @@
 
 #include "common/RhoThread.h"
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
+#include "common/ISecurityTokenGenerator.h"
+#endif
+
 #if !defined(WINDOWS_PLATFORM)
 typedef int SOCKET;
 #  define INVALID_SOCKET -1
@@ -45,6 +49,12 @@ typedef int SOCKET;
 #    include <WinSock2.h>
 #  endif
 #  define RHO_NET_ERROR_CODE ::WSAGetLastError()
+#endif
+
+#if defined(OS_WINDOWS_DESKTOP)
+#define SECURITY_HEADER "RHO-SECURE-TOKEN"
+#elif defined(OS_ANDROID)
+#define SECURITY_HEADER "User-Agent"
 #endif
 
 namespace rho
@@ -147,6 +157,7 @@ public:
 #endif
   
 private:
+    CHttpServer(){}
     bool init();
     void close_listener();
     bool process(SOCKET sock);
@@ -182,6 +193,11 @@ private:
     bool verbose;
     bool m_enable_external_access;
     bool m_started_as_separated_simple_server;
+
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
+    const rho::common::ISecurityTokenGenerator* m_generator;
+    bool secureTokenExists;
+#endif
 
 #ifdef OS_MACOSX
     common::CMutex m_mxSyncRequest;

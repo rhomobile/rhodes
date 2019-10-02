@@ -1,0 +1,186 @@
+QT -= core 
+QT += webkit
+	
+TARGET = rubylib
+TEMPLATE = lib
+DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
+
+CONFIG += staticlib warn_on
+CONFIG += <%= @buildMode %>
+
+
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/include\
+<%= @rhoRoot %>/platform/shared/ruby\
+<%= @rhoRoot %>/platform/shared/ruby/generated\
+<%= @rhoRoot %>/platform/shared
+
+
+unix:!macx {
+  DESTDIR = $$PWD/bin
+  OBJECTS_DIR = $$PWD/bin/tmp
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/sailfish
+  HEADERS += <%= @rhoRoot %>/platform/shared/ruby/sailfish/ruby/config.h
+  SOURCES += \
+  <%= @rhoRoot %>/platform/shared/ruby/missing/acosh.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/cbrt.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/crypt.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/dup2.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/erf.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/hypot.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/stdlib.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/strlcat.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/strlcpy.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/tgamma.c\
+  <%= @rhoRoot %>/platform/shared/ruby/newline.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/explicit_bzero.c\
+  <%= @rhoRoot %>/platform/shared/ruby/missing/setproctitle.c
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS_DEBUG -= -O2
+  QMAKE_CXXFLAGS_DEBUG -= -O2
+  
+}
+
+DEFINES += RHODES_QT_PLATFORM
+
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  # incompatible with gcc 4.2 / Xcode 4: -Wself-assign
+}
+
+HEADERS += <%= @rhoRoot %>/platform/shared/ruby/ext/rho/rhoruby.h\
+<%= @rhoRoot %>/platform/shared/ruby/ext/calendar/event.h\
+<%= @rhoRoot %>/platform/shared/ruby/dln.h\
+<%= @rhoRoot %>/platform/shared/ruby/eval_intern.h\
+<%= @rhoRoot %>/platform/shared/ruby/gc.h\
+<%= @rhoRoot %>/platform/shared/ruby/id.h\
+<%= @rhoRoot %>/platform/shared/ruby/node.h\
+<%= @rhoRoot %>/platform/shared/ruby/regenc.h\
+<%= @rhoRoot %>/platform/shared/ruby/regint.h\
+<%= @rhoRoot %>/platform/shared/ruby/regparse.h\
+<%= @rhoRoot %>/platform/shared/ruby/revision.h\
+<%= @rhoRoot %>/platform/shared/ruby/transcode_data.h\
+<%= @rhoRoot %>/platform/shared/ruby/version.h\
+<%= @rhoRoot %>/platform/shared/ruby/vm_core.h\
+<%= @rhoRoot %>/platform/shared/ruby/vm_opts.h
+
+SOURCES += \
+<%= @rhoRoot %>/platform/shared/ruby/array.c \
+<%= @rhoRoot %>/platform/shared/ruby/bignum.c \
+<%= @rhoRoot %>/platform/shared/ruby/class.c \
+<%= @rhoRoot %>/platform/shared/ruby/compar.c \
+<%= @rhoRoot %>/platform/shared/ruby/compile.c \
+<%= @rhoRoot %>/platform/shared/ruby/complex.c \
+<%= @rhoRoot %>/platform/shared/ruby/cont.c \
+<%= @rhoRoot %>/platform/shared/ruby/debug.c \
+<%= @rhoRoot %>/platform/shared/ruby/dir.c \
+<%= @rhoRoot %>/platform/shared/ruby/dln.c \
+<%= @rhoRoot %>/platform/shared/ruby/dln_find.c \
+<%= @rhoRoot %>/platform/shared/ruby/dmyencoding.c \
+<%= @rhoRoot %>/platform/shared/ruby/dmyext.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/ascii.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/unicode.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/us_ascii.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/utf_8.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/encdb.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/iso_8859_1.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/iso_8859_9.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/utf_16be.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/utf_16le.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/utf_32be.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/utf_32le.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/euc_jp.c \
+<%= @rhoRoot %>/platform/shared/ruby/enc/windows_31j.c \
+<%= @rhoRoot %>/platform/shared/ruby/enum.c \
+<%= @rhoRoot %>/platform/shared/ruby/enumerator.c \
+<%= @rhoRoot %>/platform/shared/ruby/error.c \
+<%= @rhoRoot %>/platform/shared/ruby/eval.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/bluetooth/bluetooth_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/calendar/calendar_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/camera/camera_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/calendar/event_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/datetimepicker/datetimepicker_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/geolocation/geolocation_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/mapview/mapview_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/nativebar/nativebar_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/navbar/navbar_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/phonebook/phonebook_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/rho/extensions.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/rho/rhoruby.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/rho/rhosupport.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/rhoconf/rhoconf_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/ringtones/ringtones_wrap.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/date/date_parse.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/date/date_strptime.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/date/date_core.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/date/date_strftime.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/ancdata.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/basicsocket.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/constants.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/constdefs.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/ifaddr.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/init.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/ipsocket.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/option.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/raddrinfo.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/socket.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/sockssocket.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/tcpserver.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/tcpsocket.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/udpsocket.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/unixserver.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/socket/unixsocket.c \
+<%= @rhoRoot %>/platform/shared/ruby/file.c \
+<%= @rhoRoot %>/platform/shared/ruby/gc.c \
+<%= @rhoRoot %>/platform/shared/ruby/parse.c \
+<%= @rhoRoot %>/platform/shared/ruby/hash.c \
+<%= @rhoRoot %>/platform/shared/ruby/inits.c \
+<%= @rhoRoot %>/platform/shared/ruby/io.c \
+<%= @rhoRoot %>/platform/shared/ruby/iseq.c \
+<%= @rhoRoot %>/platform/shared/ruby/load.c \
+<%= @rhoRoot %>/platform/shared/ruby/loadpath.c \
+<%= @rhoRoot %>/platform/shared/ruby/localeinit.c \
+<%= @rhoRoot %>/platform/shared/ruby/marshal.c \
+<%= @rhoRoot %>/platform/shared/ruby/math.c \
+<%= @rhoRoot %>/platform/shared/ruby/prelude.c \
+<%= @rhoRoot %>/platform/shared/ruby/node.c \
+<%= @rhoRoot %>/platform/shared/ruby/numeric.c \
+<%= @rhoRoot %>/platform/shared/ruby/object.c \
+<%= @rhoRoot %>/platform/shared/ruby/pack.c \
+<%= @rhoRoot %>/platform/shared/ruby/proc.c \
+<%= @rhoRoot %>/platform/shared/ruby/process.c \
+<%= @rhoRoot %>/platform/shared/ruby/random.c \
+<%= @rhoRoot %>/platform/shared/ruby/range.c \
+<%= @rhoRoot %>/platform/shared/ruby/rational.c \
+<%= @rhoRoot %>/platform/shared/ruby/re.c \
+<%= @rhoRoot %>/platform/shared/ruby/regcomp.c \
+<%= @rhoRoot %>/platform/shared/ruby/regenc.c \
+<%= @rhoRoot %>/platform/shared/ruby/regerror.c \
+<%= @rhoRoot %>/platform/shared/ruby/regexec.c \
+<%= @rhoRoot %>/platform/shared/ruby/regparse.c \
+<%= @rhoRoot %>/platform/shared/ruby/regsyntax.c \
+<%= @rhoRoot %>/platform/shared/ruby/ruby.c \
+<%= @rhoRoot %>/platform/shared/ruby/safe.c \
+<%= @rhoRoot %>/platform/shared/ruby/signal.c \
+<%= @rhoRoot %>/platform/shared/ruby/sprintf.c \
+<%= @rhoRoot %>/platform/shared/ruby/st.c \
+<%= @rhoRoot %>/platform/shared/ruby/strftime.c \
+<%= @rhoRoot %>/platform/shared/ruby/string.c \
+<%= @rhoRoot %>/platform/shared/ruby/struct.c \
+<%= @rhoRoot %>/platform/shared/ruby/symbol.c \
+<%= @rhoRoot %>/platform/shared/ruby/thread.c \
+<%= @rhoRoot %>/platform/shared/ruby/time.c \
+<%= @rhoRoot %>/platform/shared/ruby/transcode.c \
+<%= @rhoRoot %>/platform/shared/ruby/util.c \
+<%= @rhoRoot %>/platform/shared/ruby/variable.c \
+<%= @rhoRoot %>/platform/shared/ruby/version.c \
+<%= @rhoRoot %>/platform/shared/ruby/vm.c \
+<%= @rhoRoot %>/platform/shared/ruby/vm_backtrace.c \
+<%= @rhoRoot %>/platform/shared/ruby/vm_dump.c \
+<%= @rhoRoot %>/platform/shared/ruby/vm_trace.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/strscan/strscan.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/stringio/stringio.c \
+<%= @rhoRoot %>/platform/shared/ruby/rhoinit.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/io/nonblock/nonblock.c \
+<%= @rhoRoot %>/platform/shared/ruby/ext/io/wait/wait.c

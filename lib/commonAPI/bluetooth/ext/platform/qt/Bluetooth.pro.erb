@@ -1,0 +1,64 @@
+QT += core bluetooth gui quick dbus
+DEFINES += OS_SAILFISH OS_LINUX
+CONFIG += sailfishapp c++14 sailfishapp_i18n
+
+TARGET = bluetooth
+TEMPLATE = lib
+CONFIG += staticlib warn_on
+CONFIG += <%= @buildMode %>
+
+INCLUDEPATH += \
+<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared\
+<%= @rhoRoot %>/platform/shared/common\
+<%= @rhoRoot %>/platform/shared/rubyext\
+<%= @rhoRoot %>/platform/shared/ruby/include\
+<%= @rhoRoot %>/platform/shared\
+<%= @rhoRoot %>/platform/shared/qt/rhodes\
+<%= @rhoRoot %>/lib/commonAPI/bluetooth/ext/shared
+
+unix:!macx {
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/sailfish
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/qt/sailfish/src
+  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/qt/sailfish
+
+  contains(DEFINES, OS_LINUX)  {
+    DESTDIR = $$PWD/../extensions
+    OBJECTS_DIR = $$PWD/bin/tmp
+  }
+  contains(DEFINES, OS_SAILFISH)  {
+  }
+QMAKE_CFLAGS += -fvisibility=hidden
+QMAKE_CXXFLAGS += -fvisibility=hidden
+QMAKE_CFLAGS_DEBUG -= -O2
+QMAKE_CXXFLAGS_DEBUG -= -O2
+}
+
+DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
+
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+}
+
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/qt/rhodes
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby
+
+HEADERS += \
+    <%= @rhoRoot %>/lib/commonapi/bluetooth/ext/shared/generated/cpp/IBluetoothConnection.h\
+    <%= @rhoRoot %>/lib/commonapi/bluetooth/ext/shared/generated/cpp/BluetoothConnectionBase.h\
+    <%= @rhoRoot %>/lib/commonapi/bluetooth/ext/platform/qt/src/bluetooth/bluetoothclient.h \
+    <%= @rhoRoot %>/lib/commonapi/bluetooth/ext/platform/qt/src/bluetooth/bluetoothdevicelabel.h \
+    <%= @rhoRoot %>/lib/commonapi/bluetooth/ext/platform/qt/src/bluetooth/bluetoothhelper.h \
+    <%= @rhoRoot %>/lib/commonapi/bluetooth/ext/platform/qt/src/bluetooth/bluetoothsender.h \
+    <%= @rhoRoot %>/lib/commonapi/bluetooth/ext/platform/qt/src/bluetooth/bluetoothserver.h \
+    <%= @rhoRoot %>/lib/commonapi/bluetooth/ext/platform/qt/src/bluetooth/bluetooththread.h
+
+SOURCES += \
+    <%= @rhoRoot %>/lib/commonAPI/bluetooth/ext/shared/generated/cpp/BluetoothConnection_js_wrap.cpp\
+    <%= @rhoRoot %>/lib/commonAPI/bluetooth/ext/shared/generated/cpp/BluetoothConnection_ruby_wrap.cpp\
+    <%= @rhoRoot %>/lib/commonAPI/bluetooth/ext/shared/generated/cpp/BluetoothConnectionBase.cpp\
+    <%= @rhoRoot %>/lib/commonAPI/bluetooth/ext/shared/generated/BluetoothConnection_api_init.cpp\
+    <%= @rhoRoot %>/lib/commonAPI/bluetooth/ext/shared/generated/BluetoothConnection_js_api.cpp\
+    <%= @rhoRoot %>/lib/commonAPI/bluetooth/ext/shared/generated/BluetoothConnection_ruby_api.c\
+    <%= @rhoRoot %>/lib/commonAPI/bluetooth/ext/platform/qt/src/BluetoothConnection_impl.cpp

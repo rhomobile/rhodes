@@ -10819,7 +10819,9 @@ struct fts5_api {
 *************************************************************************/
 
 //RHO
-extern const unsigned int RHO_DEFAULT_CRYPTO_PAGE_SIZE;
+void rhoInitSQLitePageSize(unsigned int size);
+extern unsigned int RHO_DEFAULT_CRYPTO_PAGE_SIZE;
+extern unsigned int SQLITE_DEFAULT_PAGE_SIZE;
 //RHO
 #ifdef __cplusplus
 }  /* end of the 'extern "C"' block */

@@ -1685,6 +1685,8 @@
 		1DEB922308733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
+				ENABLE_BITCODE = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1696,13 +1698,13 @@
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
 					"$(RHO_ROOT)/platform/iphone/Classes/**",
-					/Users/MOHUS/rhodes/platform/shared/common,
-					/Users/MOHUS/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/rhodes/platform/shared,
+					/Users/MOHUS/rhodes.extract_ruby_to_lib/platform/shared/common,
+					/Users/MOHUS/rhodes.extract_ruby_to_lib/platform/shared/rubyext,
+					/Users/MOHUS/rhodes.extract_ruby_to_lib/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes.extract_ruby_to_lib/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes.extract_ruby_to_lib/platform/shared,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -1713,6 +1715,8 @@
 		1DEB922408733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
+				ENABLE_BITCODE = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -1729,7 +1733,7 @@
 					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
 					/Users/MOHUS/tauplatform/rhodes/platform/shared,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -1741,6 +1745,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/CoreAPI.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1756,15 +1761,15 @@
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
 					"$(RHO_ROOT)/platform/iphone/Classes/**",
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/common,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared,
-					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
+					../../../../../../platform/shared/common,
+					../../../../../../platform/shared/rubyext,
+					../../../../../../platform/shared/ruby/include,
+					../../../../../../platform/shared/ruby/iphone,
+					../../../../../../platform/shared,
+					../../../../../../platform/iphone/Classes,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = CoreAPI;
 				SDKROOT = iphoneos;
@@ -1775,6 +1780,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LIBRARY = "libc++";
 				DSTROOT = /tmp/CoreAPI.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1786,15 +1792,15 @@
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
 					"$(RHO_ROOT)/platform/iphone/Classes/**",
-					/Users/MOHUS/rhodes/platform/shared/common,
-					/Users/MOHUS/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/rhodes/platform/shared,
-					/Users/MOHUS/rhodes/platform/iphone/Classes,
+					../../../../../../platform/shared/common,
+					../../../../../../platform/shared/rubyext,
+					../../../../../../platform/shared/ruby/include,
+					../../../../../../platform/shared/ruby/iphone,
+					../../../../../../platform/shared,
+					../../../../../../platform/iphone/Classes,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = CoreAPI;
 				SDKROOT = iphoneos;

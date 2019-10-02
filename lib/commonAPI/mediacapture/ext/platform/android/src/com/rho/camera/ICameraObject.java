@@ -16,4 +16,5 @@ public interface ICameraObject extends ICamera {
     void doTakePicture(Activity previewActivity, int rotation);
     void setFocus(Activity mPreview);
 
+    boolean hasPermission();
 }
