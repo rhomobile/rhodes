@@ -98,24 +98,32 @@ app_home_dir = execute_command(cmd_get_home_dir)
 
 puts "iphonesim_8 App home dir: "+app_home_dir
 
-apps_files_folders_root_pn = Pathname.new(app_home_dir)
-apps_files_folders_root_pn = apps_files_folders_root_pn + '../../../../Data/Application'
-apps_files_folders_root = apps_files_folders_root_pn.realpath
+app_files_root = nil
 
 app_files_root = nil
 
-Dir.entries(apps_files_folders_root).select do |entry|
-    path = File.join(apps_files_folders_root,entry)
-    if File.directory? path and !(entry =='.' || entry == '..')
-        #puts "iphonesim_8      check app files folder ["+path+"]"
-        plist_path = File.join(path, '.com.apple.mobile_container_manager.metadata.plist')
-        plist_obj = CFPropertyList::List.new(:file => plist_path)
-        app_files_info_plist_hash = CFPropertyList.native_types(plist_obj.value)
+if app_files_root == nil
+    apps_files_folders_root_pn = Pathname.new(app_home_dir)
+    apps_files_folders_root_pn = apps_files_folders_root_pn + '../../../../Data/Application'
+    apps_files_folders_root = apps_files_folders_root_pn.realpath
 
-        app_files_bundle_id = app_files_info_plist_hash['MCMMetadataIdentifier']
+    app_files_root = nil
 
-        if app_files_bundle_id == app_bundle_id
-            app_files_root = path
+    Dir.entries(apps_files_folders_root).select do |entry|
+        path = File.join(apps_files_folders_root,entry)
+        if File.directory? path and !(entry =='.' || entry == '..')
+            #puts "iphonesim_8      check app files folder ["+path+"]"
+            plist_path = File.join(path, '.com.apple.mobile_container_manager.metadata.plist')
+            if File.exists? plist_path
+                plist_obj = CFPropertyList::List.new(:file => plist_path)
+                app_files_info_plist_hash = CFPropertyList.native_types(plist_obj.value)
+
+                app_files_bundle_id = app_files_info_plist_hash['MCMMetadataIdentifier']
+
+                if app_files_bundle_id == app_bundle_id
+                    app_files_root = path
+                end
+            end
         end
     end
 end

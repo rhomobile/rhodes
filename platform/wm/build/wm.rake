@@ -1845,6 +1845,9 @@ namespace "device" do
   end
 
   def createWin32Production(skip_deployqt = false, skip_nsis = false)
+    if $debug
+      puts "\n\n\nYou can't build a production in debug mode. Type 'build: release' instead of 'build: debug' in root section of your build.yml.\n\n"
+    end
     out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
     puts "out_dir - "  + out_dir
 

@@ -18,10 +18,6 @@ In order to use this API you must include the following extension in your `build
     :::ruby
     extensions: ["barcode"]
 
-The `barcode` extension is also included automatically if you specify the following in your `build.yml`
-    :::ruby
-    app_type: "rhoelements"
-
 NOTE: If you are building a Windows Mobile or Windows CE app with this API, you must set your app_type as "rhoelements" in your build.yml as shown [here](../guide/build_config#other-build-time-settings).
 
 ## JavaScript Usage
@@ -29,7 +25,7 @@ Be sure to review the [JavaScript API Usage](/guide/api_js) guide for important 
 
 ## Ruby Usage
 Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important information about using this API in Ruby
-        </MORE_HELP>       
+        </MORE_HELP>
         <TEMPLATES>
             <!-- <SINGLETON_INSTANCES/>    produce enumerate() fabric method, all instances is singletons by ID, add ID property -->
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
@@ -1853,7 +1849,7 @@ On Symbol Technologies' scanners the scanner viewfinder window is not infinitely
         <REMARK title="Android Camera Barcode limitation">
                 <DESC>As google barcode scanning library(Zxing library) supported only in Landscape mode. Barcode scanning window only appears at centre of screen in Landscape mode.</DESC>
             </REMARK>
-            
+
             <REMARK title="DataWedge Interaction With Native Apps" productException="eb">
                 <DESC>In order to use the scanner with RhoElements Native Apps you will need to either disable DataWedge or create a DataWedge profile for your app.
 **Disabling Datawedge**

@@ -305,6 +305,16 @@ class MavenDepsExtractor
     f.close
   end
 
+  def aapt2_res_dirs
+    args = []
+    @res_dirs.each do |d|
+      args << d
+    end
+
+    return args
+  end
+
+
   def aapt_args
     args = []
 =begin    

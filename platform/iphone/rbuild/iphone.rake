@@ -1047,6 +1047,8 @@ def kill_iphone_simulator
   `killall -9 iphonesim_6`
   `killall -9 iphonesim_7`
   `killall -9 iphonesim_8`
+  `killall -9 com.apple.CoreSimulator.CoreSimulatorService`
+  `killall -9 Simulator`
 end
 
 namespace "config" do
