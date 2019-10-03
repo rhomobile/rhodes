@@ -98,13 +98,6 @@ env:
 #osx_image: xcode9.1
 #
 
-os: linux
-  addons:
-    apt:
-      packages:
-        - debhelper
-        - fakeroot
-
 matrix:
   include:
 
@@ -124,11 +117,21 @@ matrix:
     os: linux
     env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
     dist: bionic
+    addons:
+      apt:
+        packages:
+          - debhelper
+          - fakeroot
 
   - language: c++
     os: linux
     env: RHO_TARGET="linux"    RHO_APP="framework_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
     dist: bionic
+    addons:
+      apt:
+        packages:
+          - debhelper
+          - fakeroot
 
   - language: android
     os: linux
