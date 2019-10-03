@@ -235,6 +235,7 @@ module Rhom
         database_full_reset(true)
         if defined?(RHOCONNECT_CLIENT_PRESENT)
             Rho::RhoConnectClient.logout
+            Rho::RhoConfig.rho_sync_user='' # Safe to reset user after db client reset and logout
         end
       end
 
