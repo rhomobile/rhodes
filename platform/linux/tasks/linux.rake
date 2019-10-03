@@ -34,6 +34,7 @@ namespace "config" do
 		$excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
 
 		$appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
+		$appname = $appname.gsub(/[^0-9a-zA-Z\-\+\.]/,'')
 		$vendor = $app_config['vendor']
 		$vendor = "Tau Technologies" if $vendor.nil?
 		$rhobundledir =  $app_path + "/RhoBundle"
@@ -55,12 +56,6 @@ namespace "config" do
 		else
 			raise "Linux section is not found!"
 		end
-		if !$app_config["name"].nil?    
-			$appname = $app_config["name"]
-			$final_name_app = "#{$appname.downcase}"
-		else
-			raise "Name application is not found in build.yaml!"
-		end
 
 		if !$app_config["version"].nil?
 			$version_app = $app_config["version"]
@@ -71,7 +66,7 @@ namespace "config" do
 		$excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
 		$rho_path =  File.join($app_path, "data", "rho")
 		$project_path = File.join($app_path, "project", "qt")
-		$app_project_path = File.join($project_path, $final_name_app)
+		$app_project_path = File.join($project_path, $appname.downcase)
 
 		$target_path = File.join($app_path, "bin", "target", "linux")
 		mkdir_p $target_path
@@ -342,7 +337,7 @@ namespace "device" do
 				FileUtils.mkdir_p $buildroot
 				FileUtils.mkdir_p File.join($buildroot, "SOURCES")
 				FileUtils.mkdir_p File.join($buildroot, "BUILD")
-			  FileUtils.mkdir_p File.join($buildroot, "BUILDROOT")			
+			    FileUtils.mkdir_p File.join($buildroot, "BUILDROOT")			
 				FileUtils.mkdir_p File.join($buildroot, "RPMS")
 				FileUtils.mkdir_p File.join($buildroot, "SPECS")
 				FileUtils.mkdir_p File.join($buildroot, "SRPMS")
