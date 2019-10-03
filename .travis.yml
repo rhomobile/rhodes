@@ -98,6 +98,12 @@ env:
 #osx_image: xcode9.1
 #
 
+os: linux
+  addons:
+    apt:
+      packages:
+        - debhelper
+        - fakeroot
 
 matrix:
   include:
