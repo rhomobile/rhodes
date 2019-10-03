@@ -78,7 +78,13 @@ public class GeoLocationImpl {
 			if (this.provider != null) {
 				this.manager.removeUpdates(this);
 			} else {
-				this.provider = this.manager.getProvider(this.providerName);
+				try {
+				    this.provider = this.manager.getProvider(this.providerName);
+				}
+				catch (Exception e) {
+				    Logger.E(TAG, e);
+				    this.provider = null;
+				}
 			}
 			if(this.provider != null) {
 				if (exMode) {

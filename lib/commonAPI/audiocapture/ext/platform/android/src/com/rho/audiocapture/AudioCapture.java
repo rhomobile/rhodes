@@ -627,6 +627,8 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
             {
             //	System.out.println("AudioSource error="+e.getMessage());
             	Logger.E(TAG, "AudioSource error="+e.getMessage());
+		sendException(e);
+                return;
             }
             
            // System.out.println("Start->10");
@@ -657,8 +659,9 @@ public class AudioCapture extends AudioCaptureBase implements IAudioCapture {
         }
         catch(Exception e)
 		{
-			sendException(e);
 			System.out.println("GOTCHA!!!!=="+e.getMessage());
+		        Logger.E(TAG, e.getMessage());
+			sendException(e);
 		}
        
     }
