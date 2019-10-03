@@ -109,6 +109,7 @@ CURLcode Curl_fillreadbuffer(struct connectdata *conn, int bytes, int *nreadp)
 
   /* this function returns a size_t, so we typecast to int to prevent warnings
      with picky compilers */
+  //RHO: fixing curl problems on std input instead of socket input
 #ifndef OS_LINUX
   nread = (int)data->state.fread_func(data->req.upload_fromhere, 1, buffersize, data->state.in);
 #else

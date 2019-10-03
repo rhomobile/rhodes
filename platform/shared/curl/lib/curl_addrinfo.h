@@ -71,6 +71,8 @@ struct Curl_addrinfo {
 typedef struct Curl_addrinfo Curl_addrinfo;
 
 #ifdef OS_LINUX
+//RHO: this defines and struct addrinfo
+
 #define	EAI_ADDRFAMILY	 1	/* address family for hostname not supported */
 #define	EAI_AGAIN	 2	/* temporary failure in name resolution */
 #define	EAI_BADFLAGS	 3	/* invalid value for ai_flags */

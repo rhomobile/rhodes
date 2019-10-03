@@ -427,7 +427,7 @@ void LogSettings::internalSinkLogMessage( String& strMsg ){
 
 	if (m_bLogToSocket && m_pSocketSink)
         m_pSocketSink->writeLogMessage(strMsg);
-    
+
     if (m_pAuxSinks.size() > 0)
     {
         for (Hashtable<ILogSink*, bool>::const_iterator it = m_pAuxSinks.begin(); it != m_pAuxSinks.end(); it++) {

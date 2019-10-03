@@ -227,20 +227,22 @@ namespace "build" do
 		ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
 		ENV['RHO_VSCMNTOOLS'] = $vscommontools
 
-		#Jake.run3('rhosimulator_linux_build', $qt_project_dir)
-		
-		Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', $qt_project_dir)
-		Jake.run3('make clean', $qt_project_dir)
-		Jake.run3('make all', $qt_project_dir)
-		puts "Copying to dir" + $target_path
+		target_app_name = File.join($target_path, $appname)
+		if !File.exists?(target_app_name)
+			Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', $qt_project_dir)
+			Jake.run3('make clean', $qt_project_dir)
+			Jake.run3('make all', $qt_project_dir)
+			puts "Copying to dir" + $target_path
 
-		if not File.directory?($target_path)
-			Dir.mkdir($target_path)
-		end
+			if not File.directory?($target_path)
+				Dir.mkdir($target_path)
+			end
 
-		cp File.join($startdir, "platform/linux/bin/RhoSimulator/RhoSimulator"), 
-		File.join($target_path, $appname)
-		cp_r File.join($app_path, "bin/RhoBundle"), File.join($target_path, "rho")
+			cp File.join($startdir, "platform/linux/bin/RhoSimulator/RhoSimulator"), target_app_name
+		end 
+		rho_path = File.join($target_path, "rho")
+		#rm_rf rho_path if File.exists?(rho_path)
+		cp_r File.join($app_path, "bin/RhoBundle"), rho_path
 
 		chdir $startdir
 	end
@@ -364,13 +366,20 @@ namespace "device" do
 
 			end
 		end
-		task :production => ["device:linux:production:deb"] do
+		task :production do
+			name_out = Jake.run('uname', ["-a"])
+
+			if name_out.downcase().include? "ubuntu"
+				puts "The current system is Ubuntu"
+				Rake::Task['device:linux:production:deb'].invoke
+			elsif name_out.downcase().include? "alt"
+				puts "The current system is Alt Linux"
+				Rake::Task['device:linux:production:rpm'].invoke
+			else
+				puts "Fail! The current system has not been recognized."
+				exit 1
+			end
 		end
-
-
-		
-
-
 	end
 end
 

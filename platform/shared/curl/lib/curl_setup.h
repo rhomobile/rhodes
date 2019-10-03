@@ -550,6 +550,7 @@
 #  define CURLRES_SYNCH
 #endif
 
+
 #ifdef ENABLE_IPV6
 #  define CURLRES_IPV6
 #else
