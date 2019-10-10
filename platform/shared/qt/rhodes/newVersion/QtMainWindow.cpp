@@ -172,11 +172,12 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
             SLOT(slotNavigate(QString,int)), Qt::QueuedConnection);
 
     toolBar = new QToolBar(this);
-    //toolBar->setFixedSize(160,12);
+    toolBar->setMovable(false);
     this->addToolBar(Qt::BottomToolBarArea, toolBar);
 
     toolBarRight = new QToolBar(this);
-    //toolBarRight->setFixedSize(160,12);
+    toolBarRight->setMovable(false);
+    toolBarRight->setLayoutDirection(Qt::RightToLeft);
     this->addToolBar(Qt::BottomToolBarArea, toolBarRight);
 
     if (RHOCONF().isExist("http_proxy_host"))
