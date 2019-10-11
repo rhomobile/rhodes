@@ -28,6 +28,7 @@ static bool is_net_trace() {
 extern int rho_http_started();
 extern int rho_http_get_port();
 extern int rho_nodejs_get_port();
+extern const char* rho_native_rhopath();
 
 const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int bodylen, int* responseLength );
 void rho_http_free_response( const char* data );
@@ -49,17 +50,16 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 
 
-@interface CRhoURLResponse : NSHTTPURLResponse {
-    
-}
-
-@property NSInteger statusCode;
-
-@end
 
 
 @implementation CRhoURLProtocol
 
+- (void) freeAllResources {
+    self.isStopped = false;
+    self.httpBody = nil;
+    self.httpHeaderName = nil;
+    self.httpHeaders = nil;
+}
 
 -(const char*)selfIDstring {
     return [[NSString stringWithFormat:@"<%p>", self] UTF8String];
@@ -69,12 +69,56 @@ int on_http_cb(http_parser* parser) { return 0; }
     return [[NSString stringWithFormat:@"<NSURLRequest:<%p>, URL:[ %@ ], Headers:[ %@ ]", req, req.URL, req.allHTTPHeaderFields] UTF8String];
 }
 
++ (const char*)responseHttpInfo:(NSURLResponse*)res {
+    if ([res isKindOfClass:[NSHTTPURLResponse class]]) {
+        return [[NSString stringWithFormat:@"<NSHTTPURLResponse:<%p>, URL:[ %@ ], Headers:[ %@ ]", res, [res URL], [[(NSHTTPURLResponse*)res allHeaderFields] description]] UTF8String];
+    }
+    else {
+        return [[NSString stringWithFormat:@"<NSHTTPURLResponse:<%p>, URL:[ %@ ], Responce isnot HTTP !", res, [res URL]] UTF8String];
+    }
+}
+
+
+- (void) informAboutRedirect:(NSHTTPURLResponse*)response redirectRequest:(NSURLRequest*)redirectRequest {
+    if (is_net_trace()) {
+      RAWTRACE2("$NetRequestProcess$ CRhoURLProtocol %s :: informAboutRedirect { %s }", [self selfIDstring], [CRhoURLProtocol responseHttpInfo:response]);
+    }
+    [[self client] URLProtocol:self wasRedirectedToRequest:redirectRequest redirectResponse:response];
+    [self freeAllResources];
+}
+
+- (void) informAboutResponse:(NSURLResponse*)response data:(NSData*)data {
+    if (is_net_trace()) {
+            RAWTRACE2("$NetRequestProcess$ CRhoURLProtocol %s :: informAboutResponse { %s }", [self selfIDstring], [CRhoURLProtocol responseHttpInfo:(NSHTTPURLResponse*)response]);
+    }
+
+    if (!self.isStopped) {
+        [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+    }
+    if (data != nil) {
+        if (!self.isStopped) {
+            [[self client] URLProtocol:self didLoadData:data];
+        }
+    }
+    if (!self.isStopped) {
+        [[self client] URLProtocolDidFinishLoading:self];
+    }
+
+    [self freeAllResources];
+}
+
+- (void) informAboutError:(NSError*)error {
+    if (is_net_trace()) {
+      RAWLOG_ERROR2("$NetRequestProcess$ CRhoURLProtocol %s :: informAboutERROR { %@ }", [self selfIDstring], [error localizedDescription]);
+    }
+    // nothing
+    [self freeAllResources];
+}
+
 
 - (void)dealloc
 {
-  [httpBody release];
-  [httpHeaderName release];
-  [httpHeaders release];
+    [self freeAllResources];
   
   [super dealloc];
 }
@@ -173,14 +217,7 @@ int on_http_cb(http_parser* parser) { return 0; }
                                 textEncodingName:@"UTF-8"];
             response.statusCode = 200;
             
-            if (!self.isStopped) {
-                [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
-                if (data != nil) {
-                    [[self client] URLProtocol:self didLoadData:data];
-                }
-                [[self client] URLProtocolDidFinishLoading:self];
-            }
-            
+            [self informAboutResponse:response data:data];
             return;
         }
     }
@@ -267,7 +304,7 @@ int on_http_cb(http_parser* parser) { return 0; }
           }
             if (!self.isStopped) {
   
-                [[self client] URLProtocol:self wasRedirectedToRequest:redirReq redirectResponse:resp];
+                [self informAboutRedirect:resp redirectRequest:redirReq];
             }
             if (is_net_trace()) {
               RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
@@ -283,18 +320,7 @@ int on_http_cb(http_parser* parser) { return 0; }
         if (is_net_trace()) {
             RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading just request - no redirection", [self selfIDstring]);
         }
-          if (!self.isStopped) {
-  
-              [[self client] URLProtocol:self didReceiveResponse:resp cacheStoragePolicy:NSURLCacheStorageNotAllowed];
-          }
-          if (self.httpBody != nil) {
-              if (!self.isStopped) {
-                  [[self client] URLProtocol:self didLoadData:self.httpBody];
-              }
-          }
-          if (!self.isStopped) {
-              [[self client] URLProtocolDidFinishLoading:self];
-          }
+          [self informAboutResponse:resp data:self.httpBody];
 
         if (is_net_trace()) {
             RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading END", [self selfIDstring]);
@@ -434,10 +460,10 @@ int on_http_cb(http_parser* parser) { return 0; }
 
 }
 
-+ (BOOL)requestIsCacheEquivalent:(NSURLRequest*)requestA toRequest:(NSURLRequest*)requestB
-{
-    return NO;
-}
+//+ (BOOL)requestIsCacheEquivalent:(NSURLRequest*)requestA toRequest:(NSURLRequest*)requestB
+//{
+//    return NO;
+//}
 
 - (void)sendResponseWithResponseCode:(NSInteger)statusCode data:(NSData*)data
 {
@@ -455,18 +481,9 @@ int on_http_cb(http_parser* parser) { return 0; }
                            textEncodingName:@"UTF-8"];
     response.statusCode = statusCode;
     
-    if (!self.isStopped) {
-        [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
-    }
-    if (data != nil) {
-        if (!self.isStopped) {
-            [[self client] URLProtocol:self didLoadData:data];
-        }
-    }
-    if (!self.isStopped) {
-        [[self client] URLProtocolDidFinishLoading:self];
-    }
+    [self informAboutResponse:response data:data];
     [response release];
+
 }
 
 + (BOOL) isLocalURL:(NSURL*)url

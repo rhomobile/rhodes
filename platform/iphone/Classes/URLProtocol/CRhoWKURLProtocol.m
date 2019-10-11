@@ -24,83 +24,26 @@ static bool is_net_trace() {
     return res == 1;
 }
 
-
-
-
-
-
-
-extern int rho_http_started();
 extern int rho_http_get_port();
 extern int rho_nodejs_get_port();
-extern const char* rho_native_rhopath();
-
-const char* rho_http_direct_request( const char* method, const char* uri, const char* query, const void* headers, const char* body, int bodylen, int* responseLength );
-void rho_http_free_response( const char* data );
-
-void* rho_http_init_headers_list();
-void rho_http_add_header( void* list, const char* name, const char* value );
-void rho_http_free_headers_list( void* list );
-
-
-
-static int on_http_header(http_parser* parser, const char *at, size_t length);
-static int on_http_header_value(http_parser* parser, const char *at, size_t length);
-static int on_http_body(http_parser* parser, const char *at, size_t length);
-static int on_http_status(http_parser* parser, const char *at, size_t length);
-
-static int on_http_data_cb(http_parser* parser, const char *at, size_t length) { return 0; }
-static int on_http_cb(http_parser* parser) { return 0; }
-
-
-
-@interface CRhoWKURLResponse : NSHTTPURLResponse {
-
-}
-
-@property NSInteger statusCode;
-
-@end
 
 
 @implementation CRhoWKURLProtocol
 
 
--(const char*)selfIDstring {
-    return [[NSString stringWithFormat:@"<%p>", self] UTF8String];
-}
 
-+ (const char*)requestInfo:(NSURLRequest*)req {
-    return [[NSString stringWithFormat:@"<NSURLRequest:<%p>, URL:[ %@ ], Headers:[ %@ ]", req, req.URL, req.allHTTPHeaderFields] UTF8String];
-}
-
-+ (const char*)responseHttpInfo:(NSURLResponse*)res {
-    if ([res isKindOfClass:[NSHTTPURLResponse class]]) {
-        return [[NSString stringWithFormat:@"<NSHTTPURLResponse:<%p>, URL:[ %@ ], Headers:[ %@ ]", res, [res URL], [[(NSHTTPURLResponse*)res allHeaderFields] description]] UTF8String];
-    }
-    else {
-        return [[NSString stringWithFormat:@"<NSHTTPURLResponse:<%p>, URL:[ %@ ], Responce isnot HTTP !", res, [res URL]] UTF8String];
-    }
-}
 
 
 - (void)dealloc
 {
-  self.httpBody = nil;
-  self.httpHeaderName = nil;
-  self.httpHeaders = nil;
-
   [super dealloc];
 }
 
 
 - (void) freeAllResources {
     mUrlTask = nil;
-    self.isStopped = false;
-    self.httpBody = nil;
-    self.httpHeaderName = nil;
-    self.httpHeaders = nil;
     self.mRedirectRequest = nil;
+    [super freeAllResources];
 }
 
 - (void) informAboutRedirect:(NSHTTPURLResponse*)response redirectRequest:(NSURLRequest*)redirectRequest {
@@ -151,119 +94,7 @@ static int on_http_cb(http_parser* parser) { return 0; }
 }
 
 
-+ (BOOL) isLocalURL:(NSURL*)url
-{
-    if (is_net_trace()) {
-        RAWTRACE1("$NetWKRequestProcess$ isLocalURL BEGIN : URL: [ %s ] ", [[url absoluteString] UTF8String]);
-    }
-    if ( [[url absoluteString] isEqualToString:@""] )
-    {
-      if (is_net_trace()) {
-          RAWTRACE("isLocalURL END : return NO");
-      }
-      return NO;
-    }
 
-    const char* scheme = [[url scheme] UTF8String];
-    if (scheme != 0) {
-        if ((strcmp(scheme, "http") !=0 ) && (strcmp(scheme, "https") !=0 )) {
-            if (is_net_trace()) {
-                RAWTRACE("$NetWKRequestProcess$ isLocalURL END : return NO");
-            }
-            return NO;
-        }
-    }
-
-    const char* host = [[url host] UTF8String];
-
-    if ( 0 == host )
-    {
-      if (is_net_trace()) {
-          RAWTRACE("$NetWKRequestProcess$ isLocalURL END : return YES");
-      }
-        return YES;
-    }
-
-    NSNumber* p = [url port];
-    int port = (nil==p)?80:[[url port] intValue];
-
-    int rhoPort = rho_http_get_port();
-
-    // path for Rhodes JS API from WebView in case of Node.js application
-    int rhoNodeJSPort = rho_nodejs_get_port();
-    NSString* path = [url path];
-    if (![@"/system/js_api_entrypoint" isEqualToString:path]) {
-        if (![@"/system/rholib_callback" isEqualToString:path]) {
-            rhoNodeJSPort= -521;
-        }
-    }
-
-
-    BOOL ret = (
-      ((port == rhoPort) || (port == rhoNodeJSPort))
-      && ( (strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)  )
-    );
-    if (is_net_trace()) {
-        RAWTRACE1("$NetWKRequestProcess$ isLocalURL END : return [%s]", [[[NSNumber numberWithBool:ret] stringValue] UTF8String]);
-    }
-
-    return ret;
-}
-
-
-+ (BOOL)canInitWithRequest:(NSURLRequest*)theRequest
-{
-    if (is_net_trace()) {
-        RAWTRACE1("$NetWKRequestProcess$ canInitWithRequest BEGIN: { %s }", [CRhoWKURLProtocol requestInfo:theRequest]);
-    }
-
-    NSURL* theUrl = [theRequest URL];
-    if ([[theUrl path] isEqualToString:@"/!__rhoNativeApi"]) {
-
-        NSString* jsonRequestTest = [theRequest valueForHTTPHeaderField:@"__rhoNativeApiCall"];
-        if (jsonRequestTest != nil) {
-            if (is_net_trace()) {
-                RAWTRACE("$NetRequestProcess$ canInitWithRequest END: return YES by !__rhoNativeApi prefix");
-            }
-            return YES;
-        }
-    }
-#if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
-    if ([theRequest.URL.scheme isEqualToString:@"file"]) {
-        if (is_net_trace()) {
-            RAWTRACE("$NetRequestProcess$ canInitWithRequest END: return YES by file scheme when no Ruby API server");
-        }
-        return YES;
-    }
-#endif
-
-    bool canHandle = true;
-    if (rho_conf_is_property_exists("ios_direct_local_requests")!=0) {
-        canHandle = rho_conf_getBool("ios_direct_local_requests")!=0;
-    }
-
-    if ( canHandle ) {
-        if (is_net_trace()) {
-            RAWTRACE("$NetWKRequestProcess$ canInitWithRequest: ios_direct_local_requests = true !");
-        }
-        if ([CRhoWKURLProtocol isLocalURL:theUrl]) {
-            if (is_net_trace()) {
-                RAWTRACE("$NetWKRequestProcess$ canInitWithRequest END: return YES URL is local !");
-            }
-            return YES;
-        }
-    }
-
-    if (is_net_trace()) {
-        RAWTRACE("$NetWKRequestProcess$ canInitWithRequest END: return NO");
-    }
-    return NO;
-}
-
-+ (NSURLRequest*)canonicalRequestForRequest:(NSURLRequest*)request
-{
-    return request;
-}
 
 - (void)startLoadingInThread
 {
@@ -309,7 +140,7 @@ static int on_http_cb(http_parser* parser) { return 0; }
         RAWTRACE1("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: URL is local !", [self selfIDstring]);
     }
     NSURL* url = theUrl;
-    CRhoWKURLResponse* resp = nil;
+    CRhoURLResponse* resp = nil;
 
     resp = [self makeDirectHttpRequest:url];
 
@@ -383,9 +214,8 @@ static int on_http_cb(http_parser* parser) { return 0; }
               RAWTRACE2("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoading wasRedirectedToRequest with Request { %s }", [self selfIDstring], [CRhoWKURLProtocol requestInfo:redirReq]);
             }
             if (!self.isStopped) {
-                CRhoWKURLResponse* redir_resp = nil;
+                CRhoURLResponse* redir_resp = nil;
                 redir_resp = [self makeDirectHttpRequest:url];
-                NSHTTPURLResponse* respo = [[NSHTTPURLResponse alloc] initWithURL:theUrl statusCode:self.httpStatusCode HTTPVersion:@"HTTP/1.1" headerFields:@{@"Location":[[redirReq URL] absoluteString]}];
 
                 [self informAboutRedirect:resp redirectRequest:redirReq];
 
@@ -547,84 +377,6 @@ static int on_http_cb(http_parser* parser) { return 0; }
  }
 
 
-- (CRhoWKURLResponse*) makeDirectHttpRequest:(NSURL*)theUrl
-{
-
-    if (is_net_trace()) {
-        RAWTRACE2("$NetЦЛRequestProcess$ CRhoWKURLProtocol %s :: makeDirectHttpRequest : URL [ %s ]", [self selfIDstring], [[theUrl absoluteString] UTF8String]);
-    }
-
-
-  const char* uri = [[theUrl path] UTF8String];
-  const char* method = [[[self request] HTTPMethod] UTF8String];
-  const char* body = [[[self request] HTTPBody] bytes];
-  int bodylen = (int)[[self request] HTTPBody].length;
-  const char* query = [[theUrl query] UTF8String];
-
-  NSDictionary* headers = [[self request] allHTTPHeaderFields];
-
-  void* cHeaders = rho_http_init_headers_list();
-
-  for (NSString* key in headers) {
-    NSString* value = [headers objectForKey:key];
-
-    rho_http_add_header(cHeaders, [key UTF8String], [value UTF8String]);
-
-  }
-
-  int len = 0;
-
-  const char* response = rho_http_direct_request(method, uri, query, cHeaders, body, bodylen, &len);
-
-  rho_http_free_headers_list(cHeaders);
-
-  CRhoWKURLResponse* resp = nil;
-
-  if ( response != 0 ) {
-
-    self.httpStatusCode = 0;
-    self.httpBody = nil;
-    self.httpHeaderName = nil;
-    self.httpHeaders = nil;
-
-    http_parser_settings settings;
-    settings.on_header_field = on_http_header;
-    settings.on_header_value = on_http_header_value;
-    settings.on_body = on_http_body;
-    settings.on_status = on_http_status;
-
-    settings.on_headers_complete = on_http_cb;
-    settings.on_message_begin = on_http_cb;
-    settings.on_message_complete = on_http_cb;
-    settings.on_url = on_http_data_cb;
-
-    http_parser *parser = malloc(sizeof(http_parser));
-    parser->data = self;
-    http_parser_init(parser, HTTP_RESPONSE);
-    http_parser_execute(parser, &settings, response, len);
-
-    NSString* strHttpVer = [NSString stringWithFormat:@"%d.%d",parser->http_major,parser->http_minor];
-
-    self.httpStatusCode = parser->status_code;
-
-    free(parser);
-
-    rho_http_free_response(response);
-
-    resp =
-    [[CRhoWKURLResponse alloc] initWithURL:
-     [[self request] URL]
-                              statusCode:self.httpStatusCode
-                             HTTPVersion:strHttpVer
-                            headerFields:self.httpHeaders
-     ];
-
-    resp.statusCode = self.httpStatusCode;
-  }
-
-  return resp;
-}
-
 - (void)stopLoading
 {
     mUrlTask = nil;
@@ -660,91 +412,9 @@ static int on_http_cb(http_parser* parser) { return 0; }
     return NO;
 }
 
-- (void)sendResponseWithResponseCode:(NSInteger)statusCode data:(NSData*)data
-{
-    if (is_net_trace()) {
-        RAWTRACE2("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: sendResponseWithResponseCode : code: [ %d ] ", [self selfIDstring], (int)statusCode);
-    }
-
-    if (self.isStopped) {
-        return;
-    }
-    CRhoWKURLResponse* response =
-    [[CRhoWKURLResponse alloc] initWithURL:[[self request] URL]
-                                   MIMEType:@"text/plain"
-                      expectedContentLength:[data length]
-                           textEncodingName:@"UTF-8"];
-    response.statusCode = statusCode;
-
-    [self informAboutResponse:response data:data];
-    [response release];
-
-
-}
-
-
-@synthesize httpStatusCode;
-@synthesize httpHeaderName;
-@synthesize httpHeaders;
-@synthesize httpBody;
-@synthesize isStopped;
 @synthesize mRedirectRequest;
 
 
 @end
 
-@implementation CRhoWKURLResponse
-@synthesize statusCode;
 
-- (NSDictionary*)allHeaderFields
-{
-    return nil;
-}
-
-@end
-
-
-int on_http_header(http_parser* parser, const char *at, size_t length)
-{
-  CRhoWKURLProtocol* urlProtocol = (CRhoWKURLProtocol*)parser->data;
-  NSData* data = [NSData dataWithBytes:at length:length];
-  urlProtocol.httpHeaderName = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] lowercaseString];
-
-  return 0;
-}
-
-int on_http_header_value(http_parser* parser, const char *at, size_t length)
-{
-  CRhoWKURLProtocol* urlProtocol = (CRhoWKURLProtocol*)parser->data;
-  if ( urlProtocol.httpHeaders == nil ) {
-    urlProtocol.httpHeaders = [[NSMutableDictionary alloc]init];
-  }
-
-  NSData* data = [NSData dataWithBytes:at length:length];
-  NSString* val = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-  NSString* key = urlProtocol.httpHeaderName;
-
-  NSMutableDictionary* headers = urlProtocol.httpHeaders;
-
-  [headers setValue:val forKey:key];
-
-  return 0;
-}
-
-int on_http_body(http_parser* parser, const char *at, size_t length)
-{
-  CRhoWKURLProtocol* urlProtocol = (CRhoWKURLProtocol*)parser->data;
-  urlProtocol.httpBody = [NSData dataWithBytes:at length:length];
-
-  return 0;
-}
-
-int on_http_status(http_parser* parser, const char *at, size_t length)
-{
-  CRhoWKURLProtocol* urlProtocol = (CRhoWKURLProtocol*)parser->data;
-  NSData* data = [NSData dataWithBytes:at length:length];
-  NSString* str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-  urlProtocol.httpStatusCode = [str integerValue];
-
-  return 0;
-}
