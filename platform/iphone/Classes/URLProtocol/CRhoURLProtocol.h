@@ -7,6 +7,7 @@
 
 
 + (void) initAndRegister;
++ (BOOL) isLocalURL:(NSURL*)url;
 
 - (void)sendResponseWithResponseCode:(NSInteger)statusCode data:(NSData*)data;
 

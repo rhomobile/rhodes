@@ -62,10 +62,11 @@
     
     if (shouldMakeWkWebView) {
         RAWLOG_INFO("Try to create WKWebView ...");
-        if (isDirectRequestActivated) {
-            RAWLOG_ERROR("can not make WKWebView because ios_direct_local_requests is ACTIVATED !!!");
-        }
-        else {
+        //if (isDirectRequestActivated) {
+        //    RAWLOG_ERROR("can not make WKWebView because ios_direct_local_requests is ACTIVATED !!!");
+        //}
+        //else
+        {
             if (isWKWebViewCLassExist) {
                 webView = [[RhoWKWebView alloc] initWithFrame:frame];
                 RAWLOG_INFO("WKWebView was created OK !");

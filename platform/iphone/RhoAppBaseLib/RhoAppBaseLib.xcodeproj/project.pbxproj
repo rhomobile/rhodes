@@ -121,6 +121,10 @@
 		FA20C311182B08080036D304 /* SplashViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C298182B04140036D304 /* SplashViewController.h */; };
 		FA20C312182B08080036D304 /* SplashViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C299182B04140036D304 /* SplashViewController.m */; };
 		FA20C313182B08080036D304 /* IPushNotificationsReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C29A182B04140036D304 /* IPushNotificationsReceiver.h */; };
+		FA62ACF823425F4A005E552C /* CRhoWKURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = FA935DB0233D2CA30001AB5C /* CRhoWKURLProtocol.m */; };
+		FA62ACF923425F4D005E552C /* CRhoWKURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = FA935DB0233D2CA30001AB5C /* CRhoWKURLProtocol.m */; };
+		FA62ACFA23425F50005E552C /* CRhoWKURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = FA935DAF233D2CA30001AB5C /* CRhoWKURLProtocol.h */; };
+		FA62ACFB23425F51005E552C /* CRhoWKURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = FA935DAF233D2CA30001AB5C /* CRhoWKURLProtocol.h */; };
 		FA87B5DC1A82A1AD0073EE44 /* PickImageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C22E182B04140036D304 /* PickImageDelegate.h */; };
 		FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C22F182B04140036D304 /* PickImageDelegate.m */; };
 		FA89817818917EA900AF5E39 /* SignatureView.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C281182B04140036D304 /* SignatureView.h */; };
@@ -135,7 +139,7 @@
 		FAA714961DDCAB6D00E5E7AD /* RhoUIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA714921DDCAB6D00E5E7AD /* RhoUIWebView.h */; };
 		FAA714971DDCAB6D00E5E7AD /* RhoUIWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAA714931DDCAB6D00E5E7AD /* RhoUIWebView.m */; };
 		FAA714981DDCAB6D00E5E7AD /* RhoWKWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA714941DDCAB6D00E5E7AD /* RhoWKWebView.h */; };
-		FAA714991DDCAB6D00E5E7AD /* RhoWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.m */; };
+		FAA714991DDCAB6D00E5E7AD /* RhoWKWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.mm */; };
 		FAA7149F1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA7149D1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h */; };
 		FAA714A01DDCAE2B00E5E7AD /* RhoWebViewFabrique.m in Sources */ = {isa = PBXBuildFile; fileRef = FAA7149E1DDCAE2B00E5E7AD /* RhoWebViewFabrique.m */; };
 		FAE78BE122583F6C001A1150 /* RightViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C248182B04140036D304 /* RightViewController.h */; };
@@ -200,7 +204,7 @@
 		FAE78C1C22583F6C001A1150 /* RingtoneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FA20C27E182B04140036D304 /* RingtoneManager.h */; };
 		FAE78C1E22583F6C001A1150 /* DateTimePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C237182B04140036D304 /* DateTimePickerViewController.m */; };
 		FAE78C1F22583F6C001A1150 /* RhoExtManagerSingletone.m in Sources */ = {isa = PBXBuildFile; fileRef = FA11F2511921224400FB1301 /* RhoExtManagerSingletone.m */; };
-		FAE78C2022583F6C001A1150 /* RhoWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.m */; };
+		FAE78C2022583F6C001A1150 /* RhoWKWebView.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.mm */; };
 		FAE78C2122583F6C001A1150 /* RhoExtManagerImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = FA11F24D1921221E00FB1301 /* RhoExtManagerImpl.m */; };
 		FAE78C2222583F6C001A1150 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C22F182B04140036D304 /* PickImageDelegate.m */; };
 		FAE78C2322583F6C001A1150 /* RingtoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FA20C27F182B04140036D304 /* RingtoneManager.m */; };
@@ -381,12 +385,14 @@
 		FA20C298182B04140036D304 /* SplashViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplashViewController.h; sourceTree = "<group>"; };
 		FA20C299182B04140036D304 /* SplashViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplashViewController.m; sourceTree = "<group>"; };
 		FA20C29A182B04140036D304 /* IPushNotificationsReceiver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IPushNotificationsReceiver.h; sourceTree = "<group>"; };
+		FA935DAF233D2CA30001AB5C /* CRhoWKURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRhoWKURLProtocol.h; path = URLProtocol/CRhoWKURLProtocol.h; sourceTree = "<group>"; };
+		FA935DB0233D2CA30001AB5C /* CRhoWKURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRhoWKURLProtocol.m; path = URLProtocol/CRhoWKURLProtocol.m; sourceTree = "<group>"; };
 		FAA5A5AD182B0E9B00590B1F /* rhorunner_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhorunner_Prefix.pch; path = ../rhorunner_Prefix.pch; sourceTree = "<group>"; };
 		FAA714901DDCA89E00E5E7AD /* RhoWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoWebView.h; sourceTree = "<group>"; };
 		FAA714921DDCAB6D00E5E7AD /* RhoUIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoUIWebView.h; sourceTree = "<group>"; };
 		FAA714931DDCAB6D00E5E7AD /* RhoUIWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoUIWebView.m; sourceTree = "<group>"; };
 		FAA714941DDCAB6D00E5E7AD /* RhoWKWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoWKWebView.h; sourceTree = "<group>"; };
-		FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoWKWebView.m; sourceTree = "<group>"; };
+		FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RhoWKWebView.mm; sourceTree = "<group>"; };
 		FAA7149B1DDCADC100E5E7AD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.1.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		FAA7149D1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoWebViewFabrique.h; sourceTree = "<group>"; };
 		FAA7149E1DDCAE2B00E5E7AD /* RhoWebViewFabrique.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoWebViewFabrique.m; sourceTree = "<group>"; };
@@ -487,6 +493,8 @@
 		FA20C221182B04140036D304 /* URLProtocol */ = {
 			isa = PBXGroup;
 			children = (
+				FA935DAF233D2CA30001AB5C /* CRhoWKURLProtocol.h */,
+				FA935DB0233D2CA30001AB5C /* CRhoWKURLProtocol.m */,
 				FA20C21F182B04140036D304 /* CRhoURLProtocol.h */,
 				FA20C220182B04140036D304 /* CRhoURLProtocol.m */,
 			);
@@ -602,7 +610,7 @@
 				FAA714921DDCAB6D00E5E7AD /* RhoUIWebView.h */,
 				FAA714931DDCAB6D00E5E7AD /* RhoUIWebView.m */,
 				FAA714941DDCAB6D00E5E7AD /* RhoWKWebView.h */,
-				FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.m */,
+				FAA714951DDCAB6D00E5E7AD /* RhoWKWebView.mm */,
 				FAA714901DDCA89E00E5E7AD /* RhoWebView.h */,
 				FA20C24E182B04140036D304 /* SplitView */,
 				FA20C24F182B04140036D304 /* RhoMainView.h */,
@@ -836,6 +844,7 @@
 				FA20C2DF182B07CB0036D304 /* TabbedMainView.h in Headers */,
 				FAA7149F1DDCAE2B00E5E7AD /* RhoWebViewFabrique.h in Headers */,
 				FA20C2FD182B07EB0036D304 /* SplashScreenImpl.h in Headers */,
+				FA62ACFA23425F50005E552C /* CRhoWKURLProtocol.h in Headers */,
 				FA20C311182B08080036D304 /* SplashViewController.h in Headers */,
 				FA20C30F182B08080036D304 /* RhoViewController.h in Headers */,
 				FA20C2C5182B07B60036D304 /* DateTime.h in Headers */,
@@ -906,6 +915,7 @@
 				FAE78BFB22583F6C001A1150 /* SplashScreenImpl.h in Headers */,
 				FAE78BFC22583F6C001A1150 /* SplashViewController.h in Headers */,
 				FAE78BFD22583F6C001A1150 /* RhoViewController.h in Headers */,
+				FA62ACFB23425F51005E552C /* CRhoWKURLProtocol.h in Headers */,
 				FAE78BFE22583F6C001A1150 /* DateTime.h in Headers */,
 				FAE78BFF22583F6C001A1150 /* MapAnnotation.h in Headers */,
 				FAE78C0022583F6C001A1150 /* SignatureView.h in Headers */,
@@ -1040,7 +1050,7 @@
 			files = (
 				FA20C2C9182B07B60036D304 /* DateTimePickerViewController.m in Sources */,
 				FA11F2531921224400FB1301 /* RhoExtManagerSingletone.m in Sources */,
-				FAA714991DDCAB6D00E5E7AD /* RhoWKWebView.m in Sources */,
+				FAA714991DDCAB6D00E5E7AD /* RhoWKWebView.mm in Sources */,
 				FA11F24F1921221E00FB1301 /* RhoExtManagerImpl.m in Sources */,
 				FA87B5DD1A82A1B00073EE44 /* PickImageDelegate.m in Sources */,
 				FA20C303182B07F20036D304 /* RingtoneManager.m in Sources */,
@@ -1061,6 +1071,7 @@
 				FA89817918917EAD00AF5E39 /* SignatureView.m in Sources */,
 				FA20C2D7182B07CB0036D304 /* RightViewController.m in Sources */,
 				FA89817D18917EB700AF5E39 /* SignatureViewController.m in Sources */,
+				FA62ACF823425F4A005E552C /* CRhoWKURLProtocol.m in Sources */,
 				FA20C2FF182B07EE0036D304 /* sslimpl.cpp in Sources */,
 				FA20C2F6182B07E20036D304 /* phonebook.m in Sources */,
 				FA20C2D0182B07C50036D304 /* LogViewController.m in Sources */,
@@ -1104,7 +1115,7 @@
 			files = (
 				FAE78C1E22583F6C001A1150 /* DateTimePickerViewController.m in Sources */,
 				FAE78C1F22583F6C001A1150 /* RhoExtManagerSingletone.m in Sources */,
-				FAE78C2022583F6C001A1150 /* RhoWKWebView.m in Sources */,
+				FAE78C2022583F6C001A1150 /* RhoWKWebView.mm in Sources */,
 				FAE78C2122583F6C001A1150 /* RhoExtManagerImpl.m in Sources */,
 				FAE78C2222583F6C001A1150 /* PickImageDelegate.m in Sources */,
 				FAE78C2322583F6C001A1150 /* RingtoneManager.m in Sources */,
@@ -1122,6 +1133,7 @@
 				FAE78C2E22583F6C001A1150 /* RhoCryptImpl.mm in Sources */,
 				FAE78C2F22583F6C001A1150 /* DateTimePicker.m in Sources */,
 				FAE78C3022583F6C001A1150 /* RhoWebViewFabrique.m in Sources */,
+				FA62ACF923425F4D005E552C /* CRhoWKURLProtocol.m in Sources */,
 				FAE78C3122583F6C001A1150 /* SplashScreenImpl.cpp in Sources */,
 				FAE78C3222583F6C001A1150 /* SignatureView.m in Sources */,
 				FAE78C3322583F6C001A1150 /* RightViewController.m in Sources */,
