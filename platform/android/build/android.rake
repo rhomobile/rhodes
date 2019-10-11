@@ -155,6 +155,10 @@ def set_app_name_android(newname)
   rm_rf $appres
   cp_r $rhores, $appres
 
+  buildToolsVerMajor = $build_tools_ver.split('.')[0].to_i
+  canRenderNetworkSecurityConfig = (($found_api_level.to_i >= 24) && (buildToolsVerMajor>=24))
+  rm_rf File.join($appres, 'xml', 'network_security_config.xml') if(!canRenderNetworkSecurityConfig)
+
   rhostrings = File.join($rhores, "values", "strings.xml")
   appstrings = File.join($appres, "values", "strings.xml")
   doc = REXML::Document.new(File.new(rhostrings))
