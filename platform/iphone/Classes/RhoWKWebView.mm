@@ -37,58 +37,10 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoWKWebView"
 
-
-
-/*
-@interface CRhoWKURLHandler : NSObject<WKURLSchemeHandler> {
-}
-
-- (void)webView:(WKWebView *)webView startURLSchemeTask:(id <WKURLSchemeTask>)urlSchemeTask;
-- (void)webView:(WKWebView *)webView stopURLSchemeTask:(id <WKURLSchemeTask>)urlSchemeTask;
-
-@end
-
-@implementation CRhoWKURLHandler
-
-- (void)webView:(WKWebView *)webView startURLSchemeTask:(id <WKURLSchemeTask>)urlSchemeTask {
-    
-}
-
-- (void)webView:(WKWebView *)webView stopURLSchemeTask:(id <WKURLSchemeTask>)urlSchemeTask {
-    
-}
-
-@end
-*/
-
+#import "common/app_build_capabilities.h"
 
 #import <objc/runtime.h>
 
-void MethodSwizzle(Class aClass, SEL orig_sel, SEL alt_sel)
-{
-    Method orig_method = nil, alt_method = nil;
-
-    // First, look for the methods
-    orig_method = class_getInstanceMethod(aClass, orig_sel);
-    alt_method = class_getInstanceMethod(aClass, alt_sel);
-
-    // If both are found, swizzle them
-    if ((orig_method != nil) && (alt_method != nil))
-        {
-        char *temp1;
-        IMP temp2;
-
-        /*
-         temp1 = orig_method->method_types;
-        orig_method->method_types = alt_method->method_types;
-        alt_method->method_types = temp1;
-
-        temp2 = orig_method->method_imp;
-        orig_method->method_imp = alt_method->method_imp;
-        alt_method->method_imp = temp2;
-         */
-        }
-}
 
 
 @interface WKWebView (RhoAltMethod)
@@ -144,51 +96,6 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 
 
 
-@interface RhoWKWebViewConfiguration : WKWebViewConfiguration {}
-
-- (id<WKURLSchemeHandler>)urlSchemeHandlerForURLScheme:(NSString *)urlScheme;
-
-@end
-
-
-@implementation RhoWKWebViewConfiguration
-
-- (id<WKURLSchemeHandler>)urlSchemeHandlerForURLScheme:(NSString *)urlScheme {
-    if ([@"http" isEqualToString:urlScheme]) {
-        return [super urlSchemeHandlerForURLScheme:@"nevercallscheme"];
-    }
-    if ([@"https" isEqualToString:urlScheme]) {
-        return [super urlSchemeHandlerForURLScheme:@"nevercallscheme"];
-    }
-    return [super urlSchemeHandlerForURLScheme:urlScheme];
-}
-
-@end
-
-
-
-@interface RhoCustomWKWebView : WKWebView {}
-
-- (id<WKURLSchemeHandler>)urlSchemeHandlerForURLScheme:(NSString *)urlScheme;
-
-@end
-
-
-@implementation RhoCustomWKWebView
-
-- (id<WKURLSchemeHandler>)urlSchemeHandlerForURLScheme:(NSString *)urlScheme {
-    /*
-     if ([@"http" isEqualToString:urlScheme]) {
-        return [super urlSchemeHandlerForURLScheme:@"nevercallscheme"];
-    }
-    if ([@"https" isEqualToString:urlScheme]) {
-        return [super urlSchemeHandlerForURLScheme:@"nevercallscheme"];
-    }
-     */
-    return [super urlSchemeHandlerForURLScheme:urlScheme];
-}
-
-@end
 
 
 
@@ -199,66 +106,38 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 - (id)initWithFrame:(CGRect)frame {
     [self init];
     
-    RhoWKWebViewConfiguration *configuration = [[RhoWKWebViewConfiguration alloc] init];
-    if ( rho_conf_getBool("enable_media_playback_without_gesture") == 1 )
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    if ( rho_conf_getBool("enable_media_playback_without_gesture") == 1 ) {
         configuration.mediaPlaybackRequiresUserAction = NO;
+    }
 
-    ///* MOHUS
-    CRhoWKURLProtocol *schemeHandler = [[CRhoWKURLProtocol alloc] init];
-    //[configuration setURLSchemeHandler:schemeHandler forURLScheme:@"nevercallscheme"];
-    
-    
-    /*
-     MethodSwizzle([WKWebView class],
-                  @selector(handlesURLScheme:),
-                  @selector(handlesURLSchemeAlt:));
-    */
-    
-    
-    
-    
-    // replace original static method to our bogus method
-    Method bogusHandle = class_getClassMethod([WKWebView class], @selector(bogushandlesURLScheme:));
-    Method handleOriginal = class_getClassMethod([WKWebView class], @selector(handlesURLScheme:));
-    method_exchangeImplementations(bogusHandle, handleOriginal);
-    
-    
-    [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"http"];
-    [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"https"];
-
-    // return original static method
-    method_exchangeImplementations(bogusHandle, handleOriginal);
-
-    
-    //NSMutableDictionary *handlers = [configuration valueForKey:@"_urlSchemeHandlers"];
-    //NSMutableDictionary *handlers = [configuration _urlSchemeHandlers];
-    //handlers[@"http"] = schemeHandler;
-    //handlers[@"https"] = schemeHandler;
-    //*/
-     
-     
-    RhoCustomWKWebView* w = [[RhoCustomWKWebView alloc] initWithFrame:frame configuration:configuration];
-    
-    
-    /*
-    Class c =  object_getClass(w);
-    dumpClassInfo(c, 0);
-    
-    unsigned int outCount, i;
-
-    objc_property_t *properties = class_copyPropertyList([WKWebView class], &outCount);
-    for(i = 0; i < outCount; i++) {
-        objc_property_t property = properties[i];
-        const char *propName = property_getName(property);
-        if(propName) {
-                //const char *propType = getPropertyType(property);
-                NSString *propertyName = [NSString stringWithUTF8String:propName];
-                NSLog(@"$$$$$   %@", propertyName);
-                //NSString *propertyType = [NSString stringWithUTF8String:propType];
+    BOOL isDirectRequestActivated = NO;
+    if (rho_conf_is_property_exists("ios_direct_local_requests")!=0) {
+        if (rho_conf_getBool("ios_direct_local_requests")!=0 ) {
+            isDirectRequestActivated = YES;
         }
     }
-    free(properties);
-    //*/
+    if (isDirectRequestActivated) {
+#ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING
+
+        CRhoWKURLProtocol *schemeHandler = [[CRhoWKURLProtocol alloc] init];
+
+        // replace original static method to our bogus method
+        Method bogusHandle = class_getClassMethod([WKWebView class], @selector(bogushandlesURLScheme:));
+        Method handleOriginal = class_getClassMethod([WKWebView class], @selector(handlesURLScheme:));
+        method_exchangeImplementations(bogusHandle, handleOriginal);
+    
+    
+        [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"http"];
+        [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"https"];
+
+        // return original static method
+        method_exchangeImplementations(bogusHandle, handleOriginal);
+#else
+        RAWLOG_ERROR("You can not enable ios_direct_local_requests if you not added IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING capability to build.yml !!!");
+#endif
+    }
+    WKWebView* w = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     
     //w.scalesPageToFit = YES;
     if ( !rho_conf_getBool("WebView.enableBounce") )
@@ -272,9 +151,6 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
     //w.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
-    
-    
-    
     
     //assert([w retainCount] == 1);
     self.webview = w;
@@ -364,7 +240,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     
-    NSLog(@"$$$$$ NavigationAction with URL = %@", [[navigationAction request] URL]);
+    //NSLog(@"$$$$$ NavigationAction with URL = %@", [[navigationAction request] URL]);
     
     UIWebViewNavigationType navType = UIWebViewNavigationTypeOther;
     if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
