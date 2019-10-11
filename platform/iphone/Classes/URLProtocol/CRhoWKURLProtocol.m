@@ -59,6 +59,9 @@ extern int rho_nodejs_get_port();
 
     NSObject* obj = (NSObject*)mUrlTask;
     [obj performSelector:selector withObject:response withObject:redirectRequest];
+    
+    self.mRedirectRequest = [redirectRequest retain];
+    [self startLoading];
 }
 
 - (void) informAboutResponse:(NSURLResponse*)response data:(NSData*)data {
@@ -96,165 +99,7 @@ extern int rho_nodejs_get_port();
 
 
 
-- (void)startLoadingInThread
-{
-    if (is_net_trace()) {
-        RAWTRACE2("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoadingInThread BEGIN: { %s }", [self selfIDstring], [CRhoWKURLProtocol requestInfo:[self request]]);
-    }
-    NSURL* theUrl = [[self request] URL];
 
-#if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
-    if ([theUrl.scheme isEqualToString:@"file"]) {
-        NSString* rho_path = [NSString stringWithUTF8String:rho_native_rhopath()];
-        NSString* str_url = [theUrl path];
-        NSString* final_path = [rho_path stringByAppendingString:@"apps/"];
-
-        if ([str_url hasPrefix:final_path]) {
-            final_path = str_url;
-        }
-        else {
-            final_path = [final_path stringByAppendingString:str_url];
-        }
-
-        if ([[NSFileManager defaultManager] isReadableFileAtPath:final_path]) {
-
-            NSData* data = [NSData dataWithContentsOfFile:final_path];
-
-            CRhoWKURLResponse* response =
-            [[CRhoWKURLResponse alloc] initWithURL:[[self request] URL]
-                                        MIMEType:@"text/plain"
-                           expectedContentLength:[data length]
-                                textEncodingName:@"UTF-8"];
-            response.statusCode = 200;
-
-            [self informAboutResponse:response data:data];
-
-            return;
-        }
-    }
-#endif
-
-  if ( [CRhoWKURLProtocol isLocalURL:theUrl] )
-  {
-    if (is_net_trace()) {
-        RAWTRACE1("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: URL is local !", [self selfIDstring]);
-    }
-    NSURL* url = theUrl;
-    CRhoURLResponse* resp = nil;
-
-    resp = [self makeDirectHttpRequest:url];
-
-    if ( resp != nil )
-    {
-      if (is_net_trace()) {
-          RAWTRACE1("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoading has Responce from local server", [self selfIDstring]);
-      }
-      if ( ((self.httpStatusCode==301)||(self.httpStatusCode==302)) && ( [self.httpHeaders objectForKey:@"location"] != nil ) ) {
-
-        if (is_net_trace()) {
-            RAWTRACE1("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoading we have REDIRECT from local server !", [self selfIDstring]);
-        }
-        NSString* loc = [self.httpHeaders objectForKey:@"location"];
-
-        NSString* escaped = [loc stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
-        url = [NSURL URLWithString:escaped];
-
-        if ( url != nil )
-        {
-            //our URL;
-            if ( ([url host] == nil) && ([url port] == nil ) && ( [url scheme]==nil) && ( [url path] != nil ) )
-            {
-                NSMutableString* s = nil;//[NSMutableString stringWithFormat:@"https://127.0.0.1:%d%@",rho_http_get_port(),[url path]];
-
-                bool force_https = false;
-                if (rho_conf_is_property_exists("ios_https_local_server")!=0) {
-                    force_https = rho_conf_getBool("ios_https_local_server")!=0;
-                }
-
-                NSString* spath = [url path];
-                spath = [spath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
-
-                if (force_https) {
-                    s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"https",rho_http_get_port(),spath];
-                }
-                else {
-                    s = [NSMutableString stringWithFormat:@"%@://127.0.0.1:%d%@",@"http", rho_http_get_port(),spath];
-                }
-
-
-                NSString* squery = [url query];
-                if ( squery != nil )
-                {
-                    // decode query back to original state
-                    squery = [squery stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-                    [s appendFormat:@"?%@", squery];
-                }
-
-                if ( [url fragment] != nil )
-                {
-                    [s appendFormat:@"#%@",[url fragment]];
-                }
-
-                url = [NSURL URLWithString:s];
-            }
-
-
-            NSMutableURLRequest* redirReq = [NSMutableURLRequest requestWithURL:url];
-
-            // clone headers from original request to redirect request
-            NSDictionary* headers = [[self request] allHTTPHeaderFields];
-            for (NSString* key in headers) {
-              NSString* value = [headers objectForKey:key];
-              [redirReq setValue:value forHTTPHeaderField:key];
-            }
-
-            if (is_net_trace()) {
-              RAWTRACE2("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoading wasRedirectedToRequest with Request { %s }", [self selfIDstring], [CRhoWKURLProtocol requestInfo:redirReq]);
-            }
-            if (!self.isStopped) {
-                CRhoURLResponse* redir_resp = nil;
-                redir_resp = [self makeDirectHttpRequest:url];
-
-                [self informAboutRedirect:resp redirectRequest:redirReq];
-
-                self.mRedirectRequest = [redirReq retain];
-                [self startLoading];
-            }
-            if (is_net_trace()) {
-              RAWTRACE1("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoading END", [self selfIDstring]);
-          }
-          return;
-        }
-        else {
-            RAWLOG_ERROR2("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoading Redirect response has no URL ! Initial request: { %s }", [self selfIDstring], [CRhoWKURLProtocol requestInfo:[self request]]);
-        }
-      }
-      else
-      {
-        if (is_net_trace()) {
-            RAWTRACE1("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoading just request - no redirection", [self selfIDstring]);
-        }
-          [self informAboutResponse:resp data:self.httpBody];
-
-        if (is_net_trace()) {
-            RAWTRACE1("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoading END", [self selfIDstring]);
-        }
-        return;
-      }
-    }
-    else {
-        RAWLOG_ERROR2("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoading has NO Responce from local server !!! Initial request: { %s }", [self selfIDstring], [CRhoWKURLProtocol requestInfo:[self request]]);
-    }
-  }
-
-    NSString* body = @"error";
-    [self sendResponseWithResponseCode:401 data:[body dataUsingEncoding:NSUTF8StringEncoding]];
-    if (is_net_trace()) {
-        RAWTRACE1("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoadingInThread END", [self selfIDstring]);
-    }
-}
 
 - (void)startLoading
 {
@@ -335,8 +180,7 @@ extern int rho_nodejs_get_port();
 
                 [self informAboutRedirect:_httpResponse redirectRequest:_redirReq];
 
-                self.mRedirectRequest = [_redirReq retain];
-                [self startLoading];
+
 
                 return;
             }
@@ -353,27 +197,9 @@ extern int rho_nodejs_get_port();
     }
 
 
-    if ([[theUrl path] isEqualToString:@"/!__rhoNativeApi"]) {
-        if (is_net_trace()) {
-            RAWTRACE1("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoading URL has !__rhoNativeApi", [self selfIDstring]);
-        }
-        NSString* jsonRequestTest = [[self request] valueForHTTPHeaderField:@"__rhoNativeApiCall"];
-        if (jsonRequestTest != nil) {
-            NSString* responseStr = [CJSEntryPoint js_entry_point:jsonRequestTest];
-            if (responseStr != nil) {
-                [self sendResponseWithResponseCode:200 data:[responseStr dataUsingEncoding:NSUTF8StringEncoding]];
-                if (is_net_trace()) {
-                    RAWTRACE1("$NetWKRequestProcess$ CRhoWKURLProtocol %s :: startLoading END", [self selfIDstring]);
-                }
-                return;
-            }
-        }
+    [self processCommonAPIrequest:theUrl];
 
-    }
-
-    //dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 ), ^{
-        [self startLoadingInThread];
-    //});
+    [self startLoadingInThread];
  }
 
 

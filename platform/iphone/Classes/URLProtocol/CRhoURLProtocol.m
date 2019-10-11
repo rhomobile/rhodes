@@ -340,16 +340,8 @@ int on_http_cb(http_parser* parser) { return 0; }
     }
 }
 
-- (void)startLoading
-{
-    self.isStopped = NO;
-    if (is_net_trace()) {
-        RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading()", [self selfIDstring]);
-    }
-    
-    NSURL* theUrl = [[self request] URL];
-    
-    if ([[theUrl path] isEqualToString:@"/!__rhoNativeApi"]) {
+- (void) processCommonAPIrequest:(NSURL*)url {
+    if ([[url path] isEqualToString:@"/!__rhoNativeApi"]) {
         if (is_net_trace()) {
             RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading URL has !__rhoNativeApi", [self selfIDstring]);
         }
@@ -366,6 +358,18 @@ int on_http_cb(http_parser* parser) { return 0; }
         }
         
     }
+}
+
+- (void)startLoading
+{
+    self.isStopped = NO;
+    if (is_net_trace()) {
+        RAWTRACE1("$NetRequestProcess$ CRhoURLProtocol %s :: startLoading()", [self selfIDstring]);
+    }
+    
+    NSURL* theUrl = [[self request] URL];
+    
+    [self processCommonAPIrequest:theUrl];
     
     dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0 ), ^{
         [self startLoadingInThread];

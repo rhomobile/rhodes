@@ -36,6 +36,8 @@
 + (BOOL)canInitWithRequest:(NSURLRequest*)theRequest;
 + (NSURLRequest*)canonicalRequestForRequest:(NSURLRequest*)request;
 - (CRhoURLResponse*) makeDirectHttpRequest:(NSURL*)theUrl;
+- (void) processCommonAPIrequest:(NSURL*)url;
+- (void)startLoadingInThread;
 
 // should be override !
 - (void) freeAllResources;

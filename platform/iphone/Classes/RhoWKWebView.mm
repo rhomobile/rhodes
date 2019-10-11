@@ -39,6 +39,8 @@
 
 #import "common/app_build_capabilities.h"
 
+#ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING
+
 #import <objc/runtime.h>
 
 
@@ -93,7 +95,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
     }
 }
 
-
+#endif //APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING
 
 
 

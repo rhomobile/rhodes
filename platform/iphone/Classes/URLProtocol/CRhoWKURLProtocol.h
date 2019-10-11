@@ -12,7 +12,7 @@
 }
 
 
-@property (nonatomic, retain) NSMutableURLRequest* mRedirectRequest;
+@property (nonatomic, retain) NSURLRequest* mRedirectRequest;
 
 
 - (NSURLRequest*) request;
