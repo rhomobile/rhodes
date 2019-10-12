@@ -158,7 +158,7 @@ int on_http_cb(http_parser* parser) { return 0; }
     }
 #endif
 
-    bool canHandle = true;
+    bool canHandle = false;
     if (rho_conf_is_property_exists("ios_direct_local_requests")!=0) {
         canHandle = rho_conf_getBool("ios_direct_local_requests")!=0;
     }
