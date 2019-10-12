@@ -24,6 +24,9 @@
  * http://tau-technologies.com
  *------------------------------------------------------------------------*/
 
+#import "common/app_build_capabilities.h"
+#ifdef APP_BUILD_CAPABILITY_IOS_UIWEBVIEW
+
 #import "RhoUIWebView.h"
 #import "RhoMainView.h"
 
@@ -159,3 +162,6 @@
 }
 
 @end
+
+
+#endif //APP_BUILD_CAPABILITY_IOS_UIWEBVIEW

@@ -31,9 +31,74 @@
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
 
+#import "URLProtocol/CRhoWKURLProtocol.h"
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoWKWebView"
+
+#import "common/app_build_capabilities.h"
+
+#ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING
+
+#import <objc/runtime.h>
+
+
+
+@interface WKWebView (RhoAltMethod)
++ (BOOL)bogushandlesURLScheme:(NSString *)urlScheme;
+@end
+
+@implementation WKWebView (RhoAltMethod)
+
++ (BOOL)bogushandlesURLScheme:(NSString *)urlScheme {
+    return false;
+}
+
+@end
+
+
+static void dumpClassInfo(Class c, int inheritanceDepth)
+{
+    Class superClass = class_getSuperclass(c);
+    if (superClass != Nil)
+    {
+        dumpClassInfo(superClass, (inheritanceDepth + 1));
+    }
+    
+    int i = 0;
+    unsigned int mc = 0;
+    
+    const char* className = class_getName(c);
+    
+    Method* mlist = class_copyMethodList(c, &mc);
+    for (i = 0; i < mc; i++)
+    {
+        Method method = mlist[i];
+        SEL methodSelector = method_getName(method);
+        const char* methodName = sel_getName(methodSelector);
+        
+        const char *typeEncodings = method_getTypeEncoding(method);
+        
+        char returnType[80];
+        method_getReturnType(method, returnType, 80);
+        
+        NSLog(@"%2.2d %s ==> %s (%s)", inheritanceDepth, className, methodName, (typeEncodings == Nil) ? "" : typeEncodings);
+        
+        int ac = method_getNumberOfArguments(method);
+        int a = 0;
+        for (a = 0; a < ac; a++) {
+            char argumentType[80];
+            method_getArgumentType(method, a, argumentType, 80);
+            NSLog(@"   Argument no #%d: %s", a, argumentType);
+        }
+    }
+}
+
+#endif //APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING
+
+
+
 
 
 @implementation RhoWKWebView
@@ -44,10 +109,38 @@
     [self init];
     
     WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-    if ( rho_conf_getBool("enable_media_playback_without_gesture") == 1 )
+    if ( rho_conf_getBool("enable_media_playback_without_gesture") == 1 ) {
         configuration.mediaPlaybackRequiresUserAction = NO;
+    }
+
+    BOOL isDirectRequestActivated = NO;
+    if (rho_conf_is_property_exists("ios_direct_local_requests")!=0) {
+        if (rho_conf_getBool("ios_direct_local_requests")!=0 ) {
+            isDirectRequestActivated = YES;
+        }
+    }
+    if (isDirectRequestActivated) {
+#ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING
+
+        CRhoWKURLProtocol *schemeHandler = [[CRhoWKURLProtocol alloc] init];
+
+        // replace original static method to our bogus method
+        Method bogusHandle = class_getClassMethod([WKWebView class], @selector(bogushandlesURLScheme:));
+        Method handleOriginal = class_getClassMethod([WKWebView class], @selector(handlesURLScheme:));
+        method_exchangeImplementations(bogusHandle, handleOriginal);
     
+    
+        [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"http"];
+        [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"https"];
+
+        // return original static method
+        method_exchangeImplementations(bogusHandle, handleOriginal);
+#else
+        RAWLOG_ERROR("You can not enable ios_direct_local_requests if you not added IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING capability to build.yml !!!");
+#endif
+    }
     WKWebView* w = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    
     //w.scalesPageToFit = YES;
     if ( !rho_conf_getBool("WebView.enableBounce") )
         [[w scrollView] setBounces:NO];
@@ -60,6 +153,7 @@
     //w.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
+    
     //assert([w retainCount] == 1);
     self.webview = w;
     
@@ -147,6 +241,8 @@
 //     shouldStartLoadWithRequest => decidePolicyForNavigationAction
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    
+    //NSLog(@"$$$$$ NavigationAction with URL = %@", [[navigationAction request] URL]);
     
     UIWebViewNavigationType navType = UIWebViewNavigationTypeOther;
     if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
