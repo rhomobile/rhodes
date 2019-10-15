@@ -58,7 +58,6 @@
 		FA7A094022603B3F00B95E07 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A093F22603B3F00B95E07 /* ImageIO.framework */; };
 		FA7A094222603B4500B95E07 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A094122603B4500B95E07 /* UIKit.framework */; };
 		FA7A094422603B4C00B95E07 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7A094322603B4C00B95E07 /* Foundation.framework */; };
-		FA7A096C22603D0300B95E07 /* IRhoRubyNativeCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A095922603D0200B95E07 /* IRhoRubyNativeCallback.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FA7A096D22603D0300B95E07 /* IRhoRubyBoolean.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A095A22603D0200B95E07 /* IRhoRubyBoolean.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FA7A096E22603D0300B95E07 /* IRhoRubyMutableInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A095B22603D0200B95E07 /* IRhoRubyMutableInteger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FA7A096F22603D0300B95E07 /* IRhoRubyMutableFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7A095C22603D0200B95E07 /* IRhoRubyMutableFloat.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -305,7 +304,6 @@
 		FA7A093F22603B3F00B95E07 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		FA7A094122603B4500B95E07 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FA7A094322603B4C00B95E07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		FA7A095922603D0200B95E07 /* IRhoRubyNativeCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyNativeCallback.h; path = ../../../../rhodesruby/api/IRhoRubyNativeCallback.h; sourceTree = "<group>"; };
 		FA7A095A22603D0200B95E07 /* IRhoRubyBoolean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyBoolean.h; path = ../../../../rhodesruby/api/IRhoRubyBoolean.h; sourceTree = "<group>"; };
 		FA7A095B22603D0200B95E07 /* IRhoRubyMutableInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableInteger.h; path = ../../../../rhodesruby/api/IRhoRubyMutableInteger.h; sourceTree = "<group>"; };
 		FA7A095C22603D0200B95E07 /* IRhoRubyMutableFloat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoRubyMutableFloat.h; path = ../../../../rhodesruby/api/IRhoRubyMutableFloat.h; sourceTree = "<group>"; };
@@ -486,7 +484,6 @@
 				FA7A096422603D0200B95E07 /* IRhoRubyMutableHash.h */,
 				FA7A095B22603D0200B95E07 /* IRhoRubyMutableInteger.h */,
 				FA7A095E22603D0200B95E07 /* IRhoRubyMutableString.h */,
-				FA7A095922603D0200B95E07 /* IRhoRubyNativeCallback.h */,
 				FA7A096222603D0200B95E07 /* IRhoRubyNil.h */,
 				FA7A096822603D0200B95E07 /* IRhoRubyObject.h */,
 				FA7A096322603D0200B95E07 /* IRhoRubyRunnable.h */,
@@ -623,7 +620,6 @@
 				FA7A097E22603D0300B95E07 /* IRhoRubyMutableBoolean.h in Headers */,
 				FA7A097122603D0300B95E07 /* IRhoRubyMutableString.h in Headers */,
 				FA7A096E22603D0300B95E07 /* IRhoRubyMutableInteger.h in Headers */,
-				FA7A096C22603D0300B95E07 /* IRhoRubyNativeCallback.h in Headers */,
 				FA7A096F22603D0300B95E07 /* IRhoRubyMutableFloat.h in Headers */,
 				FA7A097922603D0300B95E07 /* RhoRuby.h in Headers */,
 				FA7A096D22603D0300B95E07 /* IRhoRubyBoolean.h in Headers */,
