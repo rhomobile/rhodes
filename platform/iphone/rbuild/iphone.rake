@@ -1632,7 +1632,10 @@ namespace "build" do
         framework_dir = File.join($startdir, "platform/iphone/Framework/Rhodes")
         File.open(File.join(framework_dir,"rhodeslibs.txt"),"w") { |f| f.write lib_list }
 
-        args = ['clean', 'install', '-scheme', "Framework", '-project', "Rhodes.xcodeproj"]
+        framework_build_dir = File.join(framework_dir, "build")
+        rm_rf framework_build_dir
+
+        args = ['clean', 'install', '-target', "Framework",'-project', "Rhodes.xcodeproj"]
         Dir.chdir framework_dir
         ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
 
