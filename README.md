@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rhomobile/rhodes.svg?branch=master)](https://travis-ci.org/rhomobile/rhodes)
+
 # Current state of Rhomobile solution
 
 Currently Rhomobile solution supported and improved by TAU Technologies (partner of Zebra Technologies).
