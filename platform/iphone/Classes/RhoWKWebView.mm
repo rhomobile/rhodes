@@ -244,25 +244,9 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
     
     //NSLog(@"$$$$$ NavigationAction with URL = %@", [[navigationAction request] URL]);
     
-    UIWebViewNavigationType navType = UIWebViewNavigationTypeOther;
-    if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
-        navType = UIWebViewNavigationTypeLinkClicked;
-    }
-    if (navigationAction.navigationType == WKNavigationTypeFormSubmitted) {
-        navType = UIWebViewNavigationTypeFormSubmitted;
-    }
-    if (navigationAction.navigationType == WKNavigationTypeBackForward) {
-        navType = UIWebViewNavigationTypeBackForward;
-    }
-    if (navigationAction.navigationType == WKNavigationTypeReload) {
-        navType = UIWebViewNavigationTypeReload;
-    }
-    if (navigationAction.navigationType == WKNavigationTypeFormResubmitted) {
-        navType = UIWebViewNavigationTypeFormResubmitted;
-    }
     BOOL result = YES;
     if (delegate != nil) {
-        result = [delegate shouldStartLoadWithRequest:self request:navigationAction.request navigationType:navType];
+        result = [delegate shouldStartLoadWithRequest:self request:navigationAction.request];
     }
     if (result) {
         decisionHandler(WKNavigationActionPolicyAllow);
