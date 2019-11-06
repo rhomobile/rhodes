@@ -38,6 +38,8 @@
 #define DEFAULT_LOGCATEGORY "RhoUIWebView"
 
 
+foobar
+
 @implementation RhoUIWebView
 
 @synthesize webview, delegate;
@@ -144,7 +146,7 @@
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     if (delegate != nil) {
-        return [delegate shouldStartLoadWithRequest:self request:request navigationType:navigationType];
+        return [delegate shouldStartLoadWithRequest:self request:request];
     }
     return YES;
 }

@@ -1109,7 +1109,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 
 
-- (BOOL)shouldStartLoadWithRequest:(id<RhoWebView,NSObject>)webView  request:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+- (BOOL)shouldStartLoadWithRequest:(id<RhoWebView,NSObject>)webView  request:(NSURLRequest *)request {
 
     NSURL *url = [request URL];
     if (!url)
