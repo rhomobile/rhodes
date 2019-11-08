@@ -38,7 +38,7 @@
 #define DEFAULT_LOGCATEGORY "RhoUIWebView"
 
 
-foobar
+
 
 @implementation RhoUIWebView
 
@@ -58,7 +58,7 @@ foobar
         int v = rho_conf_getBool("WebView.keyboardDisplayRequiresUserAction");
         w.keyboardDisplayRequiresUserAction = (v != 0);
     }
-    
+
     if (rho_conf_is_property_exists("WebView.enableDragAndDrop")) {
         int v = rho_conf_getBool("WebView.enableDragAndDrop");
         if (!v) {
@@ -69,7 +69,7 @@ foobar
 #endif
         }
     }
-    
+
     w.userInteractionEnabled = YES;
     w.multipleTouchEnabled = YES;
     w.clipsToBounds = NO;
@@ -81,9 +81,9 @@ foobar
     w.tag = RHO_TAG_WEBVIEW;
     //assert([w retainCount] == 1);
     self.webview = w;
-    
-    
-    
+
+
+
     return self;
 }
 
