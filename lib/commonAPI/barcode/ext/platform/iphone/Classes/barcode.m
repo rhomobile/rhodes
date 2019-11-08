@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "zbar.h"
+//#include "zbar.h"
 #include "BarcodeViewController.h"
 
 #include "ruby/ext/rho/rhoruby.h"
@@ -32,7 +32,10 @@ const char* rho_barcode_barcode_recognize(const char* filename) {
     int img_width;
     int img_height;	
     
-  	
+    strcpy(strbuf, "");
+
+    //TODO: reimplement with ZXing
+    /* Now ZBar lib removed from extension
     rho_platform_image_load_grayscale(filename, &img_buf, &img_width, &img_height);
     
     if (img_buf != 0)
@@ -78,6 +81,7 @@ const char* rho_barcode_barcode_recognize(const char* filename) {
     if (img_buf) {
         rho_platform_image_free(img_buf);
     }
+     */
     
     
     return strbuf;
