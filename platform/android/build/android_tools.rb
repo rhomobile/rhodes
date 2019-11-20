@@ -46,7 +46,7 @@ def fill_api_levels(sdkpath)
     Dir.glob(File.join(sdkpath, "platforms", "*")).each do |platform|
       props = File.join(platform, "source.properties")
       unless File.file? props
-        puts "+++ WARNING! No source.properties found in #{platform}"
+        $logger.warn "+++ WARNING! No source.properties found in #{platform}"
         next
       end
 
@@ -59,7 +59,7 @@ def fill_api_levels(sdkpath)
         end
       end
 
-      puts "+++ API LEVEL of #{platform}: #{apilevel}" if USE_TRACES
+      $logger.debug "+++ API LEVEL of #{platform}: #{apilevel}"
 
       if apilevel != 0
         $api_levels[marketversion] = apilevel
@@ -105,10 +105,8 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
 
 #libnames
 
-    if USE_TRACES
-      puts "Looking for name pattern: #{addon_pattern}"
-      puts "Looking for API level: #{apilevel}" if apilevel
-    end
+    $logger.debug "Looking for name pattern: #{addon_pattern}"
+    $logger.debug "Looking for API level: #{apilevel}" if apilevel
 
     found_name = nil
     found_libpatterns = nil
@@ -134,20 +132,20 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
         File.open(props, 'r') do |f|
           while line = f.gets
             line.strip!
-            
+
             if namepattern =~ line
-              puts "Parsing add-on: #{$1}" if USE_TRACES
+              $logger.debug "Parsing add-on: #{$1}"
               cur_name = $1
               break unless addonnamepattern =~ $1
               next
             end
-            
+
             next unless cur_name
-            
+
             if line =~ /^api=([0-9]+)$/
               cur_apilevel = $1.to_i
 
-              puts "API level of #{dir}: #{cur_apilevel}" if USE_TRACES
+              $logger.debug "API level of #{dir}: #{cur_apilevel}"
 
               break if apilevel and apilevel != cur_apilevel
               break if found_apilevel and found_apilevel > cur_apilevel
@@ -155,26 +153,26 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
               found_name = cur_name
               found_apilevel = cur_apilevel
               found_libpatterns = nil
-              
+
               next
             end
 
-            if found_libpatterns.nil? 
+            if found_libpatterns.nil?
               if libspattern =~ line
                 found_libpatterns = []
                 libnames = $1.split(';')
                 libnames.each do |name|
 
-                  
+
                   found_libpatterns << Regexp.new("^(#{name})=(.+);.*$")
                 end
-                
-                puts "Library patterns: #{found_libpatterns.inspect}" if USE_TRACES
-                
+
+                $logger.debug "Library patterns: #{found_libpatterns.inspect}"
+
               end
               next
             end
-            
+
             found_libpatterns.each do |pat|
               if(pat =~ line)
                 libs[$1] = $2
@@ -201,7 +199,7 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
         next unless classpath
 
         found_classpath = classpath
-        puts "classpath: #{found_classpath}, API level: #{found_apilevel}" if USE_TRACES
+        $logger.debug "classpath: #{found_classpath}, API level: #{found_apilevel}"
 
     end
 
@@ -212,11 +210,9 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
       @@logger.warn msg
     end
 
-    if USE_TRACES
-      puts "Add-on name: #{found_name}"
-      puts "Add-on API level: #{found_apilevel}"
-      puts "Add-on classpath: #{found_classpath}"
-    end
+    $logger.debug "Add-on name: #{found_name}"
+    $logger.debug "Add-on API level: #{found_apilevel}"
+    $logger.debug "Add-on classpath: #{found_classpath}"
 
     found_classpath
 end
@@ -255,7 +251,7 @@ end
 module_function :avd_path
 
 def patch_avd_config( avdname )
-  config_path = File.join( avd_path( avdname ), 'config.ini' ) 
+  config_path = File.join( avd_path( avdname ), 'config.ini' )
 
   patch = ["disk.dataPartition.size=200M",
           "hw.accelerometer=yes",
@@ -297,7 +293,7 @@ def create_avd( avdname, apilevel, abi, use_google_apis )
 
   target = $androidtargets[apilevel]
   targetid = target[:id] if target
-  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{s_apis}/#{abi} --sdcard 512M"    
+  createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{s_apis}/#{abi} --sdcard 512M"
   @@logger.info "Creating AVD image old style: #{createavd}"
 
   out, err, wait_thr = Jake.run_with_output(createavd)
@@ -317,7 +313,7 @@ module_function :create_avd
 
 def get_installed_images_apilevels
   levels = []
-  Dir.glob( File.join( $androidsdkpath, 'system-images', '*' ) ) { |d| 
+  Dir.glob( File.join( $androidsdkpath, 'system-images', '*' ) ) { |d|
     l = File.basename(d).match(/android-(\d+)/)[1].to_i
     levels << l
   }
@@ -347,7 +343,7 @@ def get_avd_image( apilevel, abis, use_google_apis )
     return realabi, use_google_apis if realabi
     realabi = get_avd_image_real_abi(apilevel,abi,true) unless use_google_apis
     return realabi, true if realabi
-  end  
+  end
   nil
 end
 module_function :get_avd_image
@@ -415,7 +411,7 @@ def prepare_avd(avdname, emuversion, abis, use_google_apis)
     unless File.directory?( avd_path(avdname) )
       create_avd(avdname,apilevel,abi,use_google_apis)
     end
-  end      
+  end
 
   avdname
 end
@@ -425,7 +421,7 @@ def run_emulator(options = {})
   system("\"#{$adb}\" start-server")
 
   unless is_emulator_running
-    puts "Need to start emulator" if USE_TRACES
+    $logger.debug "Need to start emulator"
 
     avdname = prepare_avd( $appavdname, $emuversion, $abis, $use_google_addon_api )
 
@@ -588,7 +584,7 @@ def load_app_and_run(device_flag, apkfile, pkgname)
       done = true
       break
     end
-    
+
     @@logger.error "Failed to load (possibly because emulator/device is still offline) - retrying"
     $stdout.flush
     sleep 1
@@ -801,7 +797,7 @@ module_function :read_manifest_package
     args << outputApk
     args << inputApk
     args << storealias if storealias
-    
+
     Jake.run2(@@jarsigner, args, :hide_output => !USE_TRACES )
     unless $?.success?
       @@logger.error "Error running jarsigner"
@@ -833,7 +829,7 @@ module_function :read_manifest_package
     args << inputApk
     args << outputApk
     out = Jake.run2(@@zipalign, args, :hide_output => !USE_TRACES )
-    puts out if USE_TRACES
+    $logger.debug out
     unless $?.success?
       @@logger.error "Error running zipalign"
       exit 1
@@ -843,7 +839,7 @@ module_function :read_manifest_package
 
   def generateKeystore( keystore, storealias, storepass, keypass )
     @@logger.info "Generating private keystore..."
-    
+
     mkdir_p File.dirname($keystore) unless File.directory? File.dirname($keystore)
 
     args = []
@@ -883,7 +879,7 @@ module_function :read_manifest_package
 
       m = fname.match(/^.*-(\d+)\.(\d+).(\d+)/)
       next unless m
-      
+
       version = m.captures
 
       $logger.debug "Parsed version for #{lib}: #{version[0]}.#{version[1]}.#{version[2]}"

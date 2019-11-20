@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -51,19 +51,19 @@ def get_sources(sourcelist)
 end
 
 def get_objects(sources, objdir)
-    sources.map { |src| File.join(objdir, File.basename(src) + ".o") }    
+    sources.map { |src| File.join(objdir, File.basename(src) + ".o") }
 end
 
 def setup_ndk(ndkpath,apilevel,abi)
-  puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})" if USE_TRACES
+  $logger.debug "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})"
   apilevel = 21 if apilevel.to_i < 21 && abi == 'aarch64'
   $apilevel = apilevel
   ndk = NDKWrapper.new( ndkpath )
-  
-  tools = ndk.detect_toolchain abi
-  tools.each { |name, path| eval "$#{name}bin = path" }  
 
-  $ndksysroot = ndk.sysroot apilevel, abi 
+  tools = ndk.detect_toolchain abi
+  tools.each { |name, path| eval "$#{name}bin = path" }
+
+  $ndksysroot = ndk.sysroot apilevel, abi
 
   $ndkgccver = ndk.gccver
   $ndk_rev_major = ndk.rev_major
@@ -99,7 +99,7 @@ def setup_ndk(ndkpath,apilevel,abi)
     end
   end
 
-  puts "setup success!" if USE_TRACES
+  $logger.debug "setup success!"
 end
 
 def cc_def_args
@@ -113,7 +113,7 @@ def cc_def_args
     end
     args << "--sysroot"
     args << $ndksysroot
-    args << "-isystem #{$sysincludes}" if $sysincludes    
+    args << "-isystem #{$sysincludes}" if $sysincludes
     args << "-fPIC"
     args << "-Wall"
     args << "-Wextra"
@@ -161,7 +161,7 @@ def cpp_def_args
     #args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','stlport','stlport')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include')}\""
     args << "-I\"#{File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'include','backward')}\""
-    
+
     dirArmeabi = File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi','include')
     if !File.directory?(dirArmeabi)
       dirArmeabi = File.join($androidndkpath,'sources','cxx-stl','gnu-libstdc++',$ndkgccver,'libs','armeabi-v7a','include')
@@ -239,7 +239,7 @@ def cc_run(command, args, chdir = nil, coloring = true, env = nil, verbose = tru
   end
 
   env = ENV unless env
-  
+
   if isWinXP
     puts '-' * 80
     %{#{cmdstr}}
@@ -279,7 +279,7 @@ def cc_run(command, args, chdir = nil, coloring = true, env = nil, verbose = tru
     }
     out.close
   end
-  
+
   FileUtils.cd save_cwd unless chdir.nil?
   ret.success?
 end
@@ -305,7 +305,7 @@ def cc_compile(filename, objdir, additional = nil)
 end
 
 def cc_build(sources, objdir, additional = nil)
-  
+
   # Ruby 1.8 has problems with Thread.join on Windows
   if RUBY_PLATFORM =~ /w(in)?32/ and RUBY_VERSION =~ /^1\.8\./
     sources.each do |f|
@@ -367,13 +367,13 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args = []
 
   if($ndk_rev_major >= 18)
-    args << "-v"  
+    args << "-v"
     args << "--target=#{$target_toolchain}#{$apilevel}"
     args << "-fuse-ld=gold"
   end
 
   localabi = "unknown"
-  if $target_toolchain == "aarch64-linux-android"    
+  if $target_toolchain == "aarch64-linux-android"
     localabi = "arm64-v8a"
   elsif ($target_toolchain == "arm-linux-androideabi" || $target_toolchain == "armv7a-linux-androideabi")
     localabi = "armeabi"
@@ -511,7 +511,7 @@ def java_build(jarpath, buildpath, classpath, srclists)
       fullsrclist.close
       fullsrclist = fullsrclist.path
     end
-    
+
     if FileUtils.uptodate?(jarpath, deps)
       puts "#{jarpath} is uptodate: true"
       return
@@ -537,7 +537,7 @@ def java_build(jarpath, buildpath, classpath, srclists)
     args << '.'
 
     $logger.debug "java_build args: #{args}"
-    
+
     Jake.run($jarbin, args, buildpath)
     unless $?.success?
         raise "Error creating #{jarpath}"

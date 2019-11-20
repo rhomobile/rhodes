@@ -10,7 +10,7 @@ class NDKWrapper
   @rev_minor = nil
   @rev_tiny  = nil
 
-  @gccver = "unknown"  
+  @gccver = "unknown"
 
   def self.create( ndk_path )
   end
@@ -57,7 +57,7 @@ class NDKWrapper
       return path if File.directory?(path)
     }
 
-    raise "Unable to detect NDK link root for API: #{api}, ABI: #{abi}"      
+    raise "Unable to detect NDK link root for API: #{api}, ABI: #{abi}"
   end
 
   def link_sysroot_level_ext( api, abi )
@@ -116,23 +116,23 @@ class NDKWrapper
     max_ndk_api_level = 19 #we use some functions missing from API 20 and forth
 
     variants.each do |variant|
-      puts "Check NDK folder: #{variant}" if USE_TRACES
+      $logger.debug "Check NDK folder: #{variant}"
       Dir.glob(File.join(@root_path, variant, "*")).each do |platform|
         sys_root = File.join platform, "arch-arm"
-        puts "Checking #{sys_root} for NDK nsysroot"  if USE_TRACES
+        $logger.debug "Checking #{sys_root} for NDK nsysroot"
         next unless File.directory? sys_root
         next unless platform =~ /android-([0-9]+)$/
-        api_level = $1.to_i 
+        api_level = $1.to_i
         api_levels.push api_level if (api_level<=max_ndk_api_level)
-        puts "NDK API level: #{api_level}" if USE_TRACES
+        $logger.debug "NDK API level: #{api_level}"
       end
     end
-    
+
     api_levels.sort!
 
     last_api_level = 0
     api_levels.each do |cur_api_level|
-      puts "Checking is API level enough: #{cur_api_level}"  if USE_TRACES
+      $logger.debug "Checking is API level enough: #{cur_api_level}"
       break if cur_api_level > max_ndk_api_level
       last_api_level = cur_api_level
     end
@@ -140,7 +140,7 @@ class NDKWrapper
     sys_abi_root = nil
     variants.each do |variant|
       sys_abi_root = File.join(@root_path, variant, "android-#{last_api_level}/arch-#{abi}")
-      next unless File.directory? sys_abi_root      
+      next unless File.directory? sys_abi_root
       break
     end
     if sys_abi_root.nil?
@@ -160,7 +160,7 @@ class NDKWrapper
         ndkhostvariants << 'windows'
     else
         ndkhostvariants = [
-          `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, 
+          `uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!,
           `uname -s`.downcase!.chomp! + '-x86'
         ]
     end
@@ -207,7 +207,7 @@ class NDKWrapper
     end
 
     ndkhostvariants.each do |ndkhost|
-      puts "Checking toolchain for host: #{ndkhost}" if USE_TRACES
+      $logger.debug "Checking toolchain for host: #{ndkhost}"
 
       toolchainversions.each do |version|
         variants = []
@@ -221,20 +221,20 @@ class NDKWrapper
 
 
         variants.each do |variant|
-          puts "Check toolchain path: #{variant}" if USE_TRACES    
+          $logger.debug "Check toolchain path: #{variant}"
           next unless File.directory? variant
 
           ndktools = variant
           ndkabi = $toolchain
           @gccver = version
-          
+
           ndkabi = 'i686-linux-android' if ndkabi == 'x86'
           ndkabi = 'x86_64-linux-android' if ndkabi == 'x86_64'
 
-          puts "Toolchain is detected: #{ndktools}, abi: #{ndkabi}, version: #{@gccver}" if USE_TRACES
+          $logger.debug "Toolchain is detected: #{ndktools}, abi: #{ndkabi}, version: #{@gccver}"
 
           tools = {}
-          
+
           [ 'gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
               name = tool.gsub('+', 'p')
               tools[name] = check_tool( tool, ndktools, ndkabi)
@@ -247,7 +247,7 @@ class NDKWrapper
 
     if ndktools.nil?
       raise "Can't detect NDK toolchain path (corrupted NDK installation?)"
-    end 
+    end
   end
 
   def gccver
@@ -272,8 +272,8 @@ class NDKWrapper
         toolpath = File.join(ndktoolsdir,'bin',"clang++#{HostPlatform.exe_ext}")
       end
     end
-    puts "Checking tool path #{toolpath} for tool #{tool}" if USE_TRACES
-    
+    $logger.debug "Checking tool path #{toolpath} for tool #{tool}"
+
     if File.file? toolpath
       return toolpath
     else

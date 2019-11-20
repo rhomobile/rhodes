@@ -81,7 +81,7 @@ ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
 
 def set_app_icon_android
 
-  if $rhodes_as_lib 
+  if $rhodes_as_lib
     puts "Skip building copy resources (not needed for aar library)"
     return
   end
@@ -536,7 +536,7 @@ namespace "config" do
     $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
     $min_sdk_level = ANDROID_MIN_SDK_LEVEL if $min_sdk_level.nil?
 
-    
+
     $target_sdk_level = get_case_insensetive_property("targetSdk") unless $app_config["android"].nil?
     $target_sdk_level = get_case_insensetive_property("targetSdk") if $target_sdk_level.nil? and not $config["android"].nil?
     $target_sdk_level = get_case_insensetive_property("targetSdkVer") if $target_sdk_level.nil?
@@ -558,7 +558,7 @@ namespace "config" do
 
       puts "Installed versions: "
       puts AndroidTools.get_installed_market_versions
-      
+
       $found_api_level = android_api_levels.last
       $major_version = 0
       $minor_version = 0
@@ -591,9 +591,9 @@ namespace "config" do
           puts "No Android platform found of version #{$app_config['android']['version']}. Picking the latest one Android #{AndroidTools.get_market_version $found_api_level} available in machine"
         end
       else
-        $major_version, $minor_version, $patch_version = 
+        $major_version, $minor_version, $patch_version =
           get_android_major_minor( AndroidTools.get_market_version($found_api_level) )
-      end    
+      end
     end
 
     $logger.info("Set up build API Level: #{$found_api_level}, version: #{$major_version}.#{$minor_version}")
@@ -621,7 +621,7 @@ namespace "config" do
       puts "Custom config.xml path: #{$config_xml}"
     end
 
-    puts "Use Google addon API (1): #{$use_google_addon_api}" if USE_TRACES
+    $logger.debug "Use Google addon API (1): #{$use_google_addon_api}"
 
     $uri_scheme = $app_config["android"]["URIScheme"] unless $app_config["android"].nil?
     $uri_scheme = "http" if $uri_scheme.nil?
@@ -795,7 +795,7 @@ namespace "config" do
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
 
-    puts "Use Google addon API (2): #{$use_google_addon_api}" if USE_TRACES
+    $logger.debug "Use Google addon API (2): #{$use_google_addon_api}"
 
     $appname = $app_config["name"]
     $appname = "Rhodes" if $appname.nil?
@@ -834,7 +834,7 @@ namespace "config" do
     if !$skip_checking_Android_SDK
       # Detect Google API add-on path
       if $use_google_addon_api
-        puts "Looking for Google API SDK add-on..." if USE_TRACES
+        $logger.debug "Looking for Google API SDK add-on..."
         #google_jars = ['com.google.android.maps']
         $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
       end
@@ -995,7 +995,7 @@ namespace "config" do
               raise "android:exttype is 'prebuilt' but prebuilt path is not found #{prebuiltpath.inspect}"
             end
           elsif extconf_android['prebuilts']
-            prebuiltpath = File.join( extpath, extconf_android['prebuilts'] )            
+            prebuiltpath = File.join( extpath, extconf_android['prebuilts'] )
           end
 
           android_listener = extconf["android_rhodes_activity_listener"]
@@ -1896,14 +1896,14 @@ namespace "build" do
         realabi = abi
         realabi = 'armeabi' if abi == 'arm'
 
-        extlibs = Dir.glob(File.join($app_builddir,'extensions','**',realabi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")       
+        extlibs = Dir.glob(File.join($app_builddir,'extensions','**',realabi,'lib*.a')) # + Dir.glob($app_builddir + "/**/lib*.so")
 
         extlibs.each do |lib|
           args << "-L\"#{File.dirname(lib)}\""
         end
 
         libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", realabi)
-        
+
         if File.exists? libandroid_support
           args << "-L\"#{libandroid_support}\""
           args << "-landroid_support"
@@ -1911,7 +1911,7 @@ namespace "build" do
         end
 
 
-        
+
         deps = []
         libs = []
 
@@ -2162,7 +2162,7 @@ namespace "build" do
         file = File.basename(lib)
         arch = 'arm64-v8a' if arch == "aarch64"
         cp_r lib, File.join($applibs,arch,file)
-        
+
         localabi = arch
         localabi = "armeabi-v7a" if arch == "armeabi"
         llvm_stl = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", localabi, "libc++_shared.so")
@@ -2313,19 +2313,19 @@ namespace "build" do
         end
 
         FormatManifestToAapt2Compat($appmanifest)
-        
-        args = 
+
+        args =
         [
-          "link", 
-          "-o", PathToWindowsWay(File.join($bindir, "_tmp.aar")), 
+          "link",
+          "-o", PathToWindowsWay(File.join($bindir, "_tmp.aar")),
           "-I", PathToWindowsWay($androidjar)
         ]
         args += flat_args
         args +=
         [
-          "--manifest", PathToWindowsWay($appmanifest), 
-          "-A", PathToWindowsWay($appassets), 
-          "--java", PathToWindowsWay($app_rjava_dir), 
+          "--manifest", PathToWindowsWay($appmanifest),
+          "-A", PathToWindowsWay($appassets),
+          "--java", PathToWindowsWay($app_rjava_dir),
           "--output-text-symbols", PathToWindowsWay(File.join($app_rjava_dir, 'R.txt'))
         ]
       else
@@ -2348,7 +2348,7 @@ namespace "build" do
           cp_r File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java'), File.join($app_rjava_dir, 'R.java')
           rm_rf File.join($app_rjava_dir, $app_package_name.split('.'), 'R.java')
         end
-        
+
       else
         Jake.run($aapt, args)
       end
@@ -2713,19 +2713,19 @@ def prepare_aar_package
 
   args = ['cvf', 'classes.jar', '-C', '.', '.']
   jarNamesCounter = 0
-  
+
   $allclasses = File.join($tmpdir, 'allclasses')
   mkdir_p $allclasses
 
   puts "Creating classes.jar for aar package"
-  
+
   if File.exist?(File.join($allclasses, 'classes.jar'))
     rm_rf File.join($allclasses, 'classes.jar')
   end
 
-  if(File.exists?(File.join($allclasses, 'com', $vendor , $appname)))  
+  if(File.exists?(File.join($allclasses, 'com', $vendor , $appname)))
     rm_rf File.join($allclasses, 'com', $vendor , $appname)
-  elsif(File.exists?(File.join($allclasses, $app_package_name.split('.'))))  
+  elsif(File.exists?(File.join($allclasses, $app_package_name.split('.'))))
     rm_rf File.join($allclasses, $app_package_name.split('.'))
   end
 
@@ -2802,7 +2802,7 @@ namespace "package" do
       prepare_aar_package()
       next
     end
-    
+
     puts "Running dx utility"
     args = []
     args << "-Xmx1024m"
