@@ -21,7 +21,7 @@ end
 
 def puts( s )
   if $logger
-    $logger.info( s )
+    $logger.debug( s )
   else
     Kernel::puts( s )
   end

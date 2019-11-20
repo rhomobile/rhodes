@@ -58,11 +58,11 @@ namespace 'config' do
   task :arm do
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'arm')
   end
-  
+
   task :x86 do
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'x86')
   end
-  
+
   task :mips do
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'],'mips')
   end
@@ -83,7 +83,7 @@ directory OBJDIR_AARCH64
 
 rule '.o' => lambda {|obj| find_source(obj) } do |t|
   abi = File.basename(File.dirname(t.name))
-  puts "debug out: #{abi}"
+  puts "#{abi}"
   Rake::Task["config:#{abi}"].invoke
   cc_compile find_source(t.name), File.dirname(t.name), ARGS or raise "\e[31mCompilation failed: #{find_source(t.name)}\e[0m"
 end

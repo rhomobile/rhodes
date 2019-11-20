@@ -46,7 +46,7 @@ def fill_api_levels(sdkpath)
     Dir.glob(File.join(sdkpath, "platforms", "*")).each do |platform|
       props = File.join(platform, "source.properties")
       unless File.file? props
-        $logger.warn "+++ WARNING! No source.properties found in #{platform}"
+        $logger.warn "No source.properties found in #{platform}"
         next
       end
 
@@ -207,7 +207,7 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
       msg = "No Android SDK add-on found: #{addon_pattern}"
       msg += "; API level: #{apilevel}" if apilevel
 
-      @@logger.warn msg
+      $logger.warn msg
     end
 
     $logger.debug "Add-on name: #{found_name}"
@@ -285,8 +285,8 @@ end
 module_function :patch_avd_config
 
 def create_avd( avdname, apilevel, abi, use_google_apis )
-  @@logger.info "Creating new AVD. Name: #{avdname}; API level: #{apilevel}; ABI: #{abi}"
-  @@logger.info "Emulator params: #{$androidtargets[apilevel].inspect}"
+  $logger.info "Creating new AVD. Name: #{avdname}; API level: #{apilevel}; ABI: #{abi}"
+  $logger.info "Emulator params: #{$androidtargets[apilevel].inspect}"
 
   s_apis = use_google_apis ? "google_apis" : "default"
   avdmanager = File.join($androidsdkpath,'tools','bin','avdmanager')
@@ -294,16 +294,16 @@ def create_avd( avdname, apilevel, abi, use_google_apis )
   target = $androidtargets[apilevel]
   targetid = target[:id] if target
   createavd = "echo no | \"#{$androidbin}\" create avd --name #{avdname} --target #{targetid} --abi #{s_apis}/#{abi} --sdcard 512M"
-  @@logger.info "Creating AVD image old style: #{createavd}"
+  $logger.info "Creating AVD image old style: #{createavd}"
 
   out, err, wait_thr = Jake.run_with_output(createavd)
 
-  @@logger.info "AVD create output:\n#{out}"
-  @@logger.warn "AVD create errors:\n#{err}" unless err.strip.empty?
+  $logger.info "AVD create output:\n#{out}"
+  $logger.warn "AVD create errors:\n#{err}" unless err.strip.empty?
 
   unless ( err.strip.empty? and wait_thr.value.success? )
     createavd = "echo no | \"#{avdmanager}\" --verbose create avd --name #{avdname} --package \"system-images;android-#{apilevel};#{s_apis};#{abi}\" --sdcard 512M"
-    @@logger.warn "Creating AVD failed. Will try new style: #{createavd}"
+    $logger.warn "Creating AVD failed. Will try new style: #{createavd}"
     %x[#{createavd}]
     raise "Can't create AVD" unless $?.success?
   end
@@ -322,11 +322,11 @@ end
 module_function :get_installed_images_apilevels
 
 def get_avd_image_real_abi( apilevel, abi, use_google_apis)
-  @@logger.debug "get_avd_image_real_abi: #{apilevel}, #{abi}, #{use_google_apis}"
+  $logger.debug "get_avd_image_real_abi: #{apilevel}, #{abi}, #{use_google_apis}"
 
   s_apis = use_google_apis ? "google_apis" : "default"
   Dir.glob( File.join( $androidsdkpath, 'system-images', "android-#{apilevel}", s_apis, '*' ) ) { |dir|
-    @@logger.debug "looking at: #{dir}"
+    $logger.debug "looking at: #{dir}"
     targetabi = File.basename(dir)
     return targetabi if targetabi =~ /#{abi}/
   }
@@ -335,7 +335,7 @@ end
 module_function :get_avd_image_real_abi
 
 def get_avd_image( apilevel, abis, use_google_apis )
-  @@logger.debug "get_avd_image: #{apilevel}, #{abis.inspect}, #{use_google_apis}"
+  $logger.debug "get_avd_image: #{apilevel}, #{abis.inspect}, #{use_google_apis}"
   i = abis.index('x86')
   (abis[0],abis[i] = abis[i],abis[0]) if i #will look for x86 first
   abis.each do |abi|
@@ -349,27 +349,27 @@ end
 module_function :get_avd_image
 
 def find_suitable_avd_image( apilevel, abis, use_google_apis )
-  @@logger.debug "Android targets:\n#{pp $androidtargets}"
+  $logger.debug "Android targets:\n#{pp $androidtargets}"
 
   if apilevel
     realabi = get_avd_image( apilevel, abis, use_google_apis )
     return apilevel, realabi if realabi
   end
 
-  @@logger.info "Can't find exact AVD image for requested API: #{apilevel}, ABIs: #{abis}, Google APIs: #{use_google_apis}. Will try something else."
+  $logger.info "Can't find exact AVD image for requested API: #{apilevel}, ABIs: #{abis}, Google APIs: #{use_google_apis}. Will try something else."
 
   $androidtargets.keys().reverse_each do |apilevel|
     realabi, use_google = get_avd_image(apilevel,abis,use_google_apis)
     return apilevel, realabi, use_google if realabi
   end
 
-  @@logger.info "Can't find AVD image with installed platforms; will scan actual images available"
+  $logger.info "Can't find AVD image with installed platforms; will scan actual images available"
 
   platforms = get_installed_images_apilevels
   i = platforms.index(apilevel)
   (platforms[0],platforms[i] = platforms[i],platforms[0]) if i
 
-  @@logger.debug "will iterate through platforms: #{pp platforms}"
+  $logger.debug "will iterate through platforms: #{pp platforms}"
 
   platforms.each do |apilevel|
     realabi, use_google = get_avd_image(apilevel,abis,use_google_apis)
@@ -383,9 +383,9 @@ module_function :find_suitable_avd_image
 #return path to effective AVD - existion or newly created
 def prepare_avd(avdname, emuversion, abis, use_google_apis)
 
-  @@logger.debug "prepare_avd: #{avdname}, v#{emuversion}, #{abis.inspect}, g:#{use_google_apis}"
-  @@logger.debug "versions: #{pp $market_versions}"
-  @@logger.debug "targets: #{pp $androidtargets}"
+  $logger.debug "prepare_avd: #{avdname}, v#{emuversion}, #{abis.inspect}, g:#{use_google_apis}"
+  $logger.debug "versions: #{pp $market_versions}"
+  $logger.debug "targets: #{pp $androidtargets}"
 
   unless avdname
     avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
@@ -395,11 +395,11 @@ def prepare_avd(avdname, emuversion, abis, use_google_apis)
   #replace whitespaces in AVD name with underscores
   avdname.tr!(' ', '_');
 
-  @@logger.debug "Will try to find AVD: #{avdname}"
+  $logger.debug "Will try to find AVD: #{avdname}"
 
   unless File.directory?( avd_path(avdname) )
 
-    @@logger.debug "AVD #{avdname} is not found, will try to find image and create a new one"
+    $logger.debug "AVD #{avdname} is not found, will try to find image and create a new one"
 
     apilevel, abi, use_google_apis = find_suitable_avd_image( apilevel, abis, use_google_apis)
 
@@ -527,7 +527,7 @@ def load_app_and_run(device_flag, apkfile, pkgname)
     device_id = device_flag
   end
 
-  @@logger.info "Loading package..."
+  $logger.info "Loading package..."
 
   argv = [$adb] + device_options(device_flag)
   argv << 'install'
@@ -544,48 +544,48 @@ def load_app_and_run(device_flag, apkfile, pkgname)
     perrres = ""
     begin
       status = Timeout::timeout(600) do
-        @@logger.debug "CMD: #{cmd}"
+        $logger.debug "CMD: #{cmd}"
 
         Open3.popen3(cmd) do |pin,pout,perr,wait_thr|
           child = pout.pid
           while line = pout.gets
             poutres << line
-            @@logger.debug "POUT RET: #{line}"
+            $logger.debug "POUT RET: #{line}"
           end
 
           while line = perr.gets
             perrres << line
-            @@logger.debug "PERR RET: #{line}"
+            $logger.debug "PERR RET: #{line}"
           end
 
         end
       end
     rescue Timeout::Error
-      @@logger.error "Timeout error, killing #{child}"
+      $logger.error "Timeout error, killing #{child}"
 
       Process.kill 9, child if child
       if (poutres == "") and (perrres == "")
-        @@logger.error "Timeout reached while empty output: killing adb server and retrying..."
+        $logger.error "Timeout reached while empty output: killing adb server and retrying..."
         `#{$adb} kill-server`
         count += 1
         sleep 1
         next
       else
-        @@logger.error "Timeout reached: try to run application"
+        $logger.error "Timeout reached: try to run application"
         done = true
         break
       end
     end
 
-    @@logger.info( "Upload output: #{poutres.to_s}")
-    @@logger.info( "Upload error output: #{perrres.to_s}")
+    $logger.info( "Upload output: #{poutres.to_s}")
+    $logger.info( "Upload error output: #{perrres.to_s}")
 
     if poutres.to_s.match(/Success/) or perrres.to_s.match(/Success/)
       done = true
       break
     end
 
-    @@logger.error "Failed to load (possibly because emulator/device is still offline) - retrying"
+    $logger.error "Failed to load (possibly because emulator/device is still offline) - retrying"
     $stdout.flush
     sleep 1
     count += 1
@@ -777,11 +777,11 @@ module_function :read_manifest_package
   end
 
   def self.logger= v
-    @@logger=v
+    $logger=v
   end
 
   def signApk( inputApk, outputApk, keystore, keypass, storepass, storealias  )
-    @@logger.info "Signing APK file"
+    $logger.info "Signing APK file"
 
     args = []
     args << "-sigalg"
@@ -800,14 +800,14 @@ module_function :read_manifest_package
 
     Jake.run2(@@jarsigner, args, :hide_output => !USE_TRACES )
     unless $?.success?
-      @@logger.error "Error running jarsigner"
+      $logger.error "Error running jarsigner"
       exit 1
     end
   end
   module_function :signApk
 
   def signApkDebug( inputApk, outputApk )
-    @@logger.info "Align Debug APK file"
+    $logger.info "Align Debug APK file"
 
     keystore = File.join(Dir.home,'/.android/debug.keystore')
     #Try to find debug keystore in another location
@@ -831,14 +831,14 @@ module_function :read_manifest_package
     out = Jake.run2(@@zipalign, args, :hide_output => !USE_TRACES )
     $logger.debug out
     unless $?.success?
-      @@logger.error "Error running zipalign"
+      $logger.error "Error running zipalign"
       exit 1
     end
   end
   module_function :alignApk
 
   def generateKeystore( keystore, storealias, storepass, keypass )
-    @@logger.info "Generating private keystore..."
+    $logger.info "Generating private keystore..."
 
     mkdir_p File.dirname($keystore) unless File.directory? File.dirname($keystore)
 
@@ -858,7 +858,7 @@ module_function :read_manifest_package
     args << keypass
     Jake.run(@@keytool, args)
     unless $?.success?
-      @@logger.error "Error generating keystore file"
+      $logger.error "Error generating keystore file"
       exit 1
     end
   end
@@ -875,7 +875,7 @@ module_function :read_manifest_package
 
       fname = File.basename( lib, '.jar' )
 
-      @@logger.debug("Parsing version for: #{fname}")
+      $logger.debug("Parsing version for: #{fname}")
 
       m = fname.match(/^.*-(\d+)\.(\d+).(\d+)/)
       next unless m
@@ -895,7 +895,7 @@ module_function :read_manifest_package
 
     raise "Could not find sdklib*.jar: #{sdklibjar}" unless File.file?(sdklibjar)
 
-    @@logger.info "Using SDK library: #{sdklibjar}"
+    $logger.info "Using SDK library: #{sdklibjar}"
 
     sdklibjar
   end

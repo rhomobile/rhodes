@@ -55,7 +55,7 @@ def get_objects(sources, objdir)
 end
 
 def setup_ndk(ndkpath,apilevel,abi)
-  $logger.debug "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})"
+  puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})"
   apilevel = 21 if apilevel.to_i < 21 && abi == 'aarch64'
   $apilevel = apilevel
   ndk = NDKWrapper.new( ndkpath )
@@ -99,7 +99,7 @@ def setup_ndk(ndkpath,apilevel,abi)
     end
   end
 
-  $logger.debug "setup success!"
+  puts "setup success!"
 end
 
 def cc_def_args
@@ -536,7 +536,7 @@ def java_build(jarpath, buildpath, classpath, srclists)
     args << jarpath
     args << '.'
 
-    $logger.debug "java_build args: #{args}"
+    puts "java_build args: #{args}"
 
     Jake.run($jarbin, args, buildpath)
     unless $?.success?
