@@ -1541,6 +1541,18 @@ int rhodes_ios_delete_file_via_platform_api(const char* filePath) {
         return -1;
     }
     NSError *error = nil;
+    if (![fileManager fileExistsAtPath:sPath]) {
+        NSString *msg = [NSString stringWithFormat:@"rhodes_ios_delete_file_via_platform_api() error during delete file, ERROR = object not exists \"%@\"", sPath];
+        NSLog(msg);
+        RAWLOG_ERROR([msg UTF8String]);
+        return -1;
+    }
+    if (![fileManager isDeletableFileAtPath:sPath]) {
+        NSString *msg = [NSString stringWithFormat:@"rhodes_ios_delete_file_via_platform_api() error during delete file, ERROR = object is not deletable \"%@\"", sPath];
+        NSLog(msg);
+        RAWLOG_ERROR([msg UTF8String]);
+        return -1;
+    }
     if (![fileManager removeItemAtPath:sPath error:&error]) {
         NSString *msg = [NSString stringWithFormat:@"$$$ rhodes_ios_delete_file_via_platform_api() error during delete file, ERROR = %@", [error localizedDescription]];
         NSLog(msg);

@@ -24,6 +24,9 @@
  * http://tau-technologies.com
  *------------------------------------------------------------------------*/
 
+#import "common/app_build_capabilities.h"
+#ifdef APP_BUILD_CAPABILITY_IOS_UIWEBVIEW
+
 #import "RhoUIWebView.h"
 #import "RhoMainView.h"
 
@@ -33,6 +36,8 @@
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoUIWebView"
+
+
 
 
 @implementation RhoUIWebView
@@ -53,7 +58,7 @@
         int v = rho_conf_getBool("WebView.keyboardDisplayRequiresUserAction");
         w.keyboardDisplayRequiresUserAction = (v != 0);
     }
-    
+
     if (rho_conf_is_property_exists("WebView.enableDragAndDrop")) {
         int v = rho_conf_getBool("WebView.enableDragAndDrop");
         if (!v) {
@@ -64,7 +69,7 @@
 #endif
         }
     }
-    
+
     w.userInteractionEnabled = YES;
     w.multipleTouchEnabled = YES;
     w.clipsToBounds = NO;
@@ -76,9 +81,9 @@
     w.tag = RHO_TAG_WEBVIEW;
     //assert([w retainCount] == 1);
     self.webview = w;
-    
-    
-    
+
+
+
     return self;
 }
 
@@ -141,7 +146,7 @@
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     if (delegate != nil) {
-        return [delegate shouldStartLoadWithRequest:self request:request navigationType:navigationType];
+        return [delegate shouldStartLoadWithRequest:self request:request];
     }
     return YES;
 }
@@ -159,3 +164,6 @@
 }
 
 @end
+
+
+#endif //APP_BUILD_CAPABILITY_IOS_UIWEBVIEW

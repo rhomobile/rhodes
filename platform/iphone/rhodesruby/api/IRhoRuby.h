@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "IRhoRubyObject.h"
 #import "IRhoRubyRunnable.h"
-#import "IRhoRubyNativeCallback.h"
+
 
 
 @protocol IRhoRubyNativeCallback <NSObject>

@@ -23,4 +23,4 @@
 #import "IRhoRubyMutableString.h"
 
 #import "IRhoRubyRunnable.h"
-#import "IRhoRubyNativeCallback.h"
+
