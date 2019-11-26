@@ -166,6 +166,17 @@ def set_app_name_android(newname)
   File.open(appstrings, "w") { |f| doc.write f }
 end
 
+def set_app_name_android_post(newname)
+  puts "set_app_name_post"
+
+  Dir.glob(File.join($appres, '**', 'strings.xml')).each do |res|
+    doc = REXML::Document.new(File.new(res))
+    doc.elements["resources/string[@name='app_name']"].text = newname
+    rm_rf res
+    File.open(res, "w") { |f| doc.write f }
+  end
+end
+
 
 def get_boolean(arg)
   arg == 'true' or arg == 'yes' or arg == 'enabled' or arg == 'enable' or arg == '1'
@@ -2139,6 +2150,8 @@ namespace "build" do
           cp_r res, $tmpdir
         end
       end
+
+      set_app_name_android_post($appname)
 
       #copy icon after extension resources in case it overwrites them (like rhoelementsext...)
       set_app_icon_android
