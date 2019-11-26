@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		AA747D9F0F9514B9006C5449 /* Barcode_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Barcode_Prefix.pch */; };
-		AC3113DB2090484500B94E0D /* libzbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F0B136AF9BD009D6E63 /* libzbar.a */; };
 		ACC8390A20890CB000677617 /* libZXingObjC-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ACC838DA2087838100677617 /* libZXingObjC-iOS.a */; };
 		FA21F9FA170658EE0061F9DC /* barcode_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA21F9F7170658EE0061F9DC /* barcode_api_init.cpp */; };
 		FA21F9FB170658EE0061F9DC /* barcode_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA21F9F8170658EE0061F9DC /* barcode_js_api.cpp */; };
@@ -66,26 +65,12 @@
 			remoteGlobalIDString = 25403CB3166A96FA00E13304;
 			remoteInfo = "ZXingObjC-iOS";
 		};
-		ACC838DB2087838100677617 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = ACC838D02087838000677617 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25403CC4166A96FA00E13304;
-			remoteInfo = "Unit Tests iOS";
-		};
 		ACC838DD2087838100677617 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = ACC838D02087838000677617 /* ZXingObjC.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 25404166166AADAC00E13304;
 			remoteInfo = "ZXingObjC-osx";
-		};
-		ACC838DF2087838100677617 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = ACC838D02087838000677617 /* ZXingObjC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25404178166AADAC00E13304;
-			remoteInfo = "Unit Tests OS X";
 		};
 		ACC838E12087838100677617 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -157,7 +142,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC3113DB2090484500B94E0D /* libzbar.a in Frameworks */,
 				ACC8390A20890CB000677617 /* libZXingObjC-iOS.a in Frameworks */,
 				FA4D3F50136B07BB009D6E63 /* CoreVideo.framework in Frameworks */,
 				FA4D3F4E136B07B2009D6E63 /* CoreMedia.framework in Frameworks */,
@@ -242,9 +226,7 @@
 			isa = PBXGroup;
 			children = (
 				ACC838DA2087838100677617 /* libZXingObjC-iOS.a */,
-				ACC838DC2087838100677617 /* Unit Tests iOS.xctest */,
 				ACC838DE2087838100677617 /* libZXingObjC-osx.a */,
-				ACC838E02087838100677617 /* Unit Tests OS X.xctest */,
 				ACC838E22087838100677617 /* ZXingObjC.framework */,
 				ACC838E42087838100677617 /* ZXingObjC.framework */,
 			);
@@ -412,25 +394,11 @@
 			remoteRef = ACC838D92087838100677617 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		ACC838DC2087838100677617 /* Unit Tests iOS.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "Unit Tests iOS.xctest";
-			remoteRef = ACC838DB2087838100677617 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		ACC838DE2087838100677617 /* libZXingObjC-osx.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = "libZXingObjC-osx.a";
 			remoteRef = ACC838DD2087838100677617 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		ACC838E02087838100677617 /* Unit Tests OS X.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "Unit Tests OS X.xctest";
-			remoteRef = ACC838DF2087838100677617 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		ACC838E22087838100677617 /* ZXingObjC.framework */ = {

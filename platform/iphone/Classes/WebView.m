@@ -25,6 +25,12 @@
 *------------------------------------------------------------------------*/
 
 //#import "RhoMainView.h"
+#import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
+#import <WebKit/WKWebViewConfiguration.h>
+
+#import "common/app_build_capabilities.h"
+
 #import "Rhodes.h"
 #include "common/RhodesApp.h"
 #include "ruby/ext/rho/rhoruby.h"
@@ -219,30 +225,34 @@ BOOL rho_webview_get_full_screen_mode() {
 BOOL rho_webview_get_KeyboardDisplayRequiresUserAction() {
     if (!rho_rhodesapp_check_mode())
         return YES;
+#ifdef APP_BUILD_CAPABILITY_IOS_UIWEBVIEW
     UIView *webv_v = [[[[Rhodes sharedInstance] mainView] getRhoWebView:-1] view];
     UIWebView* webv = (UIWebView*)webv_v;
 
     if (webv != nil) {
         return webv.keyboardDisplayRequiresUserAction;
     }
-
+#endif
     return YES;
 }
 
 void rho_webview_set_KeyboardDisplayRequiresUserAction(BOOL value) {
     if (!rho_rhodesapp_check_mode())
         return;
+#ifdef APP_BUILD_CAPABILITY_IOS_UIWEBVIEW
     UIView *webv_v = [[[[Rhodes sharedInstance] mainView] getRhoWebView:-1] view];
     UIWebView* webv = (UIWebView*)webv_v;
 
     if (webv != nil) {
         webv.keyboardDisplayRequiresUserAction = value;
     }
+#endif
 }
 
 BOOL rho_webview_get_EnableDragAndDrop() {
     if (!rho_rhodesapp_check_mode())
         return YES;
+#ifdef APP_BUILD_CAPABILITY_IOS_UIWEBVIEW
     UIView *webv_v = [[[[Rhodes sharedInstance] mainView] getRhoWebView:-1] view];
     UIWebView* webv = (UIWebView*)webv_v;
 
@@ -250,13 +260,14 @@ BOOL rho_webview_get_EnableDragAndDrop() {
         // TODO: detect current state
         return YES;
     }
-
+#endif
     return YES;
 }
 
 void rho_webview_set_EnableDragAndDrop(BOOL value) {
     if (!rho_rhodesapp_check_mode())
         return;
+#ifdef APP_BUILD_CAPABILITY_IOS_UIWEBVIEW
     UIView *webv_v = [[[[Rhodes sharedInstance] mainView] getRhoWebView:-1] view];
     UIWebView* webv = (UIWebView*)webv_v;
 
@@ -274,6 +285,7 @@ void rho_webview_set_EnableDragAndDrop(BOOL value) {
 #endif
         }
     }
+#endif
 }
 
 

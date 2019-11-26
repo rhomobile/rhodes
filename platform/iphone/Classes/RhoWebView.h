@@ -32,7 +32,7 @@
 @protocol RhoWebViewDelegate <NSObject>
 
 @optional
-- (BOOL)shouldStartLoadWithRequest:(id<RhoWebView,NSObject>)webView request:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
+- (BOOL)shouldStartLoadWithRequest:(id<RhoWebView,NSObject>)webView request:(NSURLRequest *)request;
 - (void)webViewDidStartLoad:(id<RhoWebView,NSObject>)webView;
 - (void)webViewDidFinishLoad:(id<RhoWebView,NSObject>)webView;
 - (void)didFailLoadWithError:(id<RhoWebView,NSObject>)webView error:(NSError *)error;
