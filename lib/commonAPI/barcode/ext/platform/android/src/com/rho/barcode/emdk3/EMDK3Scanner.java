@@ -251,7 +251,14 @@ public class EMDK3Scanner extends Barcode implements DataListener, StatusListene
 		int scanOrNot = 1;
 				try{
 				IRhoConfig rhoelementsGetConfig= null;
-				IRhoWebView vi=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
+				IRhoWebView vi=null;
+				try {
+				   vi=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
+				}
+				catch (Exception e) {
+					Logger.E(TAG, e);
+					return false;
+				}
 				GoogleWebView web=(GoogleWebView)vi;
 				rhoelementsGetConfig=web.getConfig();
 				batPercent = BarcodeFactory.batPercent;

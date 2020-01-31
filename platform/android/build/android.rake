@@ -2732,7 +2732,19 @@ def prepare_aar_package
     end
   end
 
-  rm_rf File.join($allclasses, 'com', $vendor , $appname)
+  if(Dir.exists?(File.join($allclasses, 'com', $vendor , $appname.downcase)))  
+    FileUtils.remove_dir File.join($allclasses, 'com', $vendor , $appname.downcase)
+  elsif(Dir.exists?(File.join($allclasses, $app_package_name.split('.'))))  
+    FileUtils.remove_dir File.join($allclasses, $app_package_name.split('.'))
+  end
+
+  #res_dirs = AndroidTools::MavenDepsExtractor.instance.aapt2_res_dirs
+  #res_dirs.each do |dir|
+  #  Dir.glob(File.join(dir,'**')) do |filepath|
+  #    #cp_r filepath, File.join($tmpdir, 'res', File.basename(filepath) + '-' + File.basename(File.expand_path("..", dir)))
+  #    cp_r filepath, File.join($tmpdir, 'res', File.basename(filepath))
+  #  end
+  #end
 
   Jake.run($jarbin, args, $allclasses)
 
