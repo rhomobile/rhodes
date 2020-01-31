@@ -47,7 +47,9 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
     public Videocapture(String id) {
     	super(id);
         mId = id; 
-        mActivity = RhodesActivity.getInstance();
+		mActivity = RhodesActivity.getInstance();
+		if (mActivity == null)
+			throw new IllegalStateException("No rhodes activity instance at this moment");
         Logger.T(TAG, "Videocapture() -- END of constructor. Id: " + mId);
     }
 

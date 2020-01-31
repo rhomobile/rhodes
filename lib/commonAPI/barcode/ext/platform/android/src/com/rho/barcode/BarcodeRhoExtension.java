@@ -18,7 +18,15 @@ public class BarcodeRhoExtension extends AbstractRhoExtension{
 	public boolean onBeforeNavigate(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
 		int disable_scanner_val = 0;
 		IRhoConfig rhoelementsGetConfig= null;
-        IRhoWebView vi=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
+		IRhoWebView vi=null;
+
+		try {
+		    vi=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+			return false;
+        }
         
         GoogleWebView web=null;
 

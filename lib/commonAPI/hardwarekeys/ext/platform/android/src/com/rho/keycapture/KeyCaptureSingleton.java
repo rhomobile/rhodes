@@ -342,7 +342,14 @@ public class KeyCaptureSingleton implements IKeyCaptureSingleton
 		Logger.D(TAG, "onKey+: " + keyCode);
 		int disAppCallKey = 1000;
 		IRhoConfig rhoelementsGetConfig= null; //RhoExtManager.getInstance().getConfig("rhoelementsext");
-		IRhoWebView vi=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
+		IRhoWebView vi = null;
+		try{
+		    vi=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+		}
+		
 		
 		GoogleWebView web=null;
 
@@ -492,6 +499,9 @@ public class KeyCaptureSingleton implements IKeyCaptureSingleton
 		catch(NumberFormatException e){
 			e.printStackTrace();
 		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+		}
 					
 		return appKeyCode;
 	}
@@ -572,6 +582,9 @@ public class KeyCaptureSingleton implements IKeyCaptureSingleton
 		}
 		catch(NumberFormatException e){
 			e.printStackTrace();
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
 		}
 		
 		return andKeyCode;

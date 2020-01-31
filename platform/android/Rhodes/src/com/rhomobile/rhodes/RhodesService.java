@@ -1592,12 +1592,18 @@ public class RhodesService extends Service {
     }
 
     public static String getNativeMenu() {
-        List<Object> menuItems = RhodesActivity.safeGetInstance().getMenu().getMenuDescription();
-        String menuJson = new JSONGenerator(menuItems).toString();
 
-        Logger.T(TAG, "Menu: " + menuJson);
+		try {
+            List<Object> menuItems = RhodesActivity.safeGetInstance().getMenu().getMenuDescription();
+            String menuJson = new JSONGenerator(menuItems).toString();
+			Logger.T(TAG, "Menu: " + menuJson);
+			return menuJson;
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+		}
 
-        return menuJson;
+        return "";
     }
 
     public static void setNativeMenu(List<String> jsonMenu) {
@@ -1623,7 +1629,8 @@ public class RhodesService extends Service {
             } catch (JSONException e) {
                 Logger.E(TAG, e);
             }
-        }
+		}
+		try {
         RhodesActivity.safeGetInstance().getMenu().setMenu(nativeMenu);
         if (Build.VERSION.SDK_INT >= 11) {
         	PerformOnUiThread.exec(new Runnable() {
@@ -1631,7 +1638,11 @@ public class RhodesService extends Service {
         			RhodesActivity.safeGetInstance().invalidateOptionsMenu();
         		}
         	});
-        }
+		}
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+		}
     }
 
    public static String getLocalIpAddress()
