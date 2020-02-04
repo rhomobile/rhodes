@@ -1427,7 +1427,10 @@ void setApplicationBadgeNumber(NSInteger badgeNumber)
 }
 
 void rho_sys_set_application_icon_badge(int badge_number) {
-    setApplicationBadgeNumber(badge_number);
+    int badge_number_value = badge_number;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      setApplicationBadgeNumber(badge_number_value);
+    });
 }
 
 void rho_platform_restart_application() {
