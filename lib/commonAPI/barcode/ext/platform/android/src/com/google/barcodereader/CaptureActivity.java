@@ -83,7 +83,6 @@ public class CaptureActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View v) {
         if (v.getId() == R.id.read_barcode) {
             Intent intent = new Intent(this, BarcodeCaptureActivity.class);
-            intent.putExtra(BarcodeCaptureActivity.AutoFocus, autoFocus.isChecked());
             intent.putExtra(BarcodeCaptureActivity.UseFlash, useFlash.isChecked());
             
             startActivityForResult(intent, RC_BARCODE_CAPTURE);

@@ -38,7 +38,7 @@
     <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/auto_focus"
+        android:text=""
         android:id="@+id/auto_focus"
         android:layout_above="@+id/read_barcode"
         android:layout_alignParentStart="true"

@@ -40,7 +40,7 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/auto_focus"
+        android:text=""
         android:id="@+id/auto_focus"
         android:layout_below="@+id/barcode_value"
         android:layout_alignParentLeft="true"
