@@ -17,6 +17,24 @@
       </intent-filter>
     </activity>
 	  <uses-library android:name="com.symbol.emdk" android:required="false"/>
+    <activity android:name="com.google.barcodereader.CaptureActivity"
+      android:screenOrientation="landscape"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+      android:windowSoftInputMode="stateAlwaysHidden">
+    </activity>
+
+
+    <meta-data
+      android:name="com.google.android.gms.version"
+      android:value="@integer/google_play_services_version" />
+            
+    <activity android:name="com.google.barcodereader.BarcodeCaptureActivity"
+      android:screenOrientation="landscape"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:theme="@style/AppTheme.FullScreen"
+      android:windowSoftInputMode="stateAlwaysHidden">
+    </activity>
   </application >
 
   <uses-permission android:name="android.permission.FLASHLIGHT"/>

@@ -11,36 +11,41 @@ import android.content.Intent;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 
-import com.google.zxing.Result;
 import com.rho.barcode.IBarcode;
+import com.rho.barcode.BarcodeBase;
+
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.api.MethodResult;
 
-/**
- * A class to control the ZXing based camera scanner
- * @author Ben Kennedy NCVT73
- */
-public class ZXingScanner extends Barcode implements IBarcode
-{
-	private int cameraNumber;
-	/** The URL to call when the deprecated method take_barcode finishes */
-	private String takeBarcodeURL;
-	/** Flag to detect whether the ZXing is active */
-	private boolean isScanning;
-	private MethodResult takeResult;
-	
-	private String friendlyName;
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
+import android.util.SparseArray;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-	public ZXingScanner(String id)
+
+import com.google.android.gms.vision.Frame;
+import android.content.Context;
+import com.google.android.gms.vision.MultiProcessor;
+import com.google.android.gms.vision.Tracker;
+
+
+public class InternalAndroidBarcodeScanner extends Barcode implements IBarcode{
+
+	public InternalAndroidBarcodeScanner(String id)
 	{
 		super(id);
-		Logger.I(LOGTAG, "ZXingScanner Constructor");
+		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner Constructor");
 		this.cameraNumber = Integer.parseInt(id.substring(5));
 	}
-
-	@Override
+		@Override
 	public void getProperty(String propertyName, IMethodResult result)
 	{
 		if(propertyName.equals("scannerType"))
@@ -62,7 +67,7 @@ public class ZXingScanner extends Barcode implements IBarcode
 				return;
 			}
 		}
-		Logger.I(LOGTAG, "ZXingScanner getProperties");
+		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner getProperties");
 		result.set(new HashMap<String, Object>());
 	}
 
@@ -72,93 +77,93 @@ public class ZXingScanner extends Barcode implements IBarcode
 		Map<String, Object> resultMap = new HashMap<String, Object>(2);
 		setFriendlyName();
 		resultMap.put("scannerType", "Camera");
-		//resultMap.put("friendlyName", friendlyName);
 		result.set(resultMap);
 	}
 
 	@Override
 	public void enable(Map<String, String> propertyMap, IMethodResult result)
 	{
-		Logger.I(LOGTAG, "ZXingScanner enable");
-		result.setError("enable is not supported on Zebra Crossing Scanner Engines. Use 'take' instead.");
+		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner enable");
+		result.setError("enable is not supported on Internal Android Barcode Scanner. Use 'take' instead.");
 	}
 	
 	@Override
 	public void start(IMethodResult result)
 	{
-		Logger.I(LOGTAG, "ZXingScanner start");
-		if(result != null) result.setError("start is not supported on Zebra Crossing Scanner Engines. Use 'take' instead.");
-		//TODO, we can change this.
+		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner start");
+		if(result != null) result.setError("start is not supported on Internal Android Barcode Scanner. Use 'take' instead.");
 	}
 
 	@Override
 	public void stop(IMethodResult result)
 	{
-		Logger.I(LOGTAG, "ZXingScanner stop");
-		if(result != null) result.setError("stop is not supported on Zebra Crossing Scanner Engines. Use 'take' instead.");
-		//TODO, we can change this.
+		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner stop");
+		if(result != null) result.setError("stop is not supported on ZInternal Android Barcode Scanner. Use 'take' instead.");
 	}
 
 	@Override
 	public void disable(IMethodResult result)
 	{
-		Logger.I(LOGTAG, "ZXingScanner disable");
-		
-		// Do nothing
-	}
-
-	@Override
-	public void getSupportedProperties(IMethodResult result)
-	{
-		Logger.I(LOGTAG, "ZXingScanner getSupportedProperties");
-		ArrayList<Object> resultList = new ArrayList<Object>();
-		resultList.add("scannerType");
-		result.set(resultList);
+		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner disable");
 	}
 
 	@Override
 	public void take(Map<String, String> propertyMap, IMethodResult result)
 	{
-		Logger.I(LOGTAG, "ZXingScanner take");
+		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner take");
 		BarcodeFactory.setEnabledState(scannerId);
 		takeBarcodeURL = null;
-		//TODO See if it has been started previously
-		//Save the result for later
+
+
 		((MethodResult) result).keepAlive();
 		takeResult = (MethodResult) result;
 
-		//TODO Analyse property map and set settings
-		//Start the ZXing Activity
         RhodesActivity ra = RhodesActivity.safeGetInstance();
-        Intent intent = new Intent(ra, com.google.zxing.client.android.CaptureActivity.class);
-        intent.putExtra(com.google.zxing.client.android.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
-        intent.putExtra(com.google.zxing.client.android.CaptureActivity.RHO_BARCODE_ID, this.getId());
+        Intent intent = new Intent(ra, com.google.barcodereader.CaptureActivity.class);
+        intent.putExtra(com.google.barcodereader.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
+        intent.putExtra(com.google.barcodereader.CaptureActivity.RHO_BARCODE_ID, this.getId());
         
         ra.startActivity(intent);
 	}
+
+	private int cameraNumber;
+	private String takeBarcodeURL;
+	private boolean isScanning;
+	private MethodResult takeResult;
+	private String friendlyName;
+	private int camera_index;
+
+	private static String LOGTAG = "InternalAndroidBarcodeScanner";
+
+
+
+
+
+	@Override
+	public void getSupportedProperties(IMethodResult result)
+	{
+		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner getSupportedProperties");
+		ArrayList<Object> resultList = new ArrayList<Object>();
+		resultList.add("scannerType");
+		result.set(resultList);
+	}
+
 
 	@Override
 	public void take_barcode(String rubyCallbackURL, Map<String, String> propertyMap, IMethodResult result)
 	{
-		Logger.I(LOGTAG, "ZXingScanner take_barcode");
+		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner take_barcode");
 		BarcodeFactory.setEnabledState(scannerId);
 		takeBarcodeURL = rubyCallbackURL;
-		//TODO See if it has been started previously
-		//TODO Analyse property map and set settings
-		//Start the ZXing Activity
+
         RhodesActivity ra = RhodesActivity.safeGetInstance();
-        Intent intent = new Intent(ra, com.google.zxing.client.android.CaptureActivity.class);
-        intent.putExtra(com.google.zxing.client.android.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
-        intent.putExtra(com.google.zxing.client.android.CaptureActivity.RHO_BARCODE_ID, this.getId());
+        Intent intent = new Intent(ra, com.google.barcodereader.CaptureActivity.class);
+        intent.putExtra(com.google.barcodereader.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
+        intent.putExtra(com.google.barcodereader.CaptureActivity.RHO_BARCODE_ID, this.getId());
         
         ra.startActivity(intent);
 	}
 
-	/**
-	 * Called when the ZXing Activity exists with an error
-	 * @param errorMessage The reason for exiting
-	 * @author Ben Kennedy NCVT73
-	 */
 	public void error(String errorMessage)
 	{
 		if(takeResult != null)
@@ -177,10 +182,6 @@ public class ZXingScanner extends Barcode implements IBarcode
 		
 	}
 
-	/**
-	 * Called when the ZXing Activity is cancelled
-	 * @author Ben Kennedy NCVT73
-	 */
 	public void cancel()
 	{
 		if(takeBarcodeURL == null)
@@ -207,18 +208,12 @@ public class ZXingScanner extends Barcode implements IBarcode
 	        body.append("&status=cancel");
 	        RhodesActivity.safeGetInstance().getMainView().navigate(takeBarcodeURL + body, -1);
 	        takeBarcodeURL = null;
-	        //TODO needs testing
 		}
 		isScanning = false;
 		BarcodeFactory.setDisabledState(scannerId);
 	}
 
-	/**
-	 * Called when the ZXing Activity successfully decodes a barcode
-	 * @param barcodeData A ZXing structure of data of the decoded barcode
-	 * @author Ben Kennedy NCVT73
-	 */
-	public void decodeEvent(Result barcodeData)
+	public void decodeEvent(String barcode)
 	{
 		Logger.I(LOGTAG, "decodeEvent, URL: " + takeBarcodeURL);
 		if(takeResult != null)
@@ -229,7 +224,7 @@ public class ZXingScanner extends Barcode implements IBarcode
 				Logger.I(LOGTAG, "decodeEvent, takeBarcodeURL == null");
 				HashMap<String, Object> resultsMap = new HashMap<String, Object>();
 				//	This is where to add extra meta data if required
-				resultsMap.put("barcode", barcodeData.getText());
+				resultsMap.put("barcode", barcode);
 				resultsMap.put("status", "ok");
 				takeResult.set(resultsMap);
 				takeResult.release();
@@ -237,13 +232,10 @@ public class ZXingScanner extends Barcode implements IBarcode
 			}
 			else
 			{
-				callBackToUrl(barcodeData);
+				callBackToUrl(barcode);
 			}
 		}
-		else if(takeBarcodeURL != null){
-			Logger.I(LOGTAG, "decodeEvent, takeResult == null");
-			callBackToUrl(barcodeData);
-		}else{
+		else{
 			Logger.I(LOGTAG, "decodeEvent failed to fire callback: result missing");
 		}
 			
@@ -252,22 +244,22 @@ public class ZXingScanner extends Barcode implements IBarcode
 		Logger.I(LOGTAG, "decodeEvent, function end");
 	}
 
-	void callBackToUrl(Result barcodeData){
+	void callBackToUrl(String barcodeData){
 		Logger.I(LOGTAG, "decodeEvent, takeBarcodeURL != null");
         StringBuffer body = new StringBuffer();
         body.append("&rho_callback=1");
         body.append("&status=ok");
-        if (barcodeData.getText() != null)
+        if (barcodeData != null)
         {
             try
             {
-                String b = URLEncoder.encode(barcodeData.getText(), "utf-8");
+                String b = URLEncoder.encode(barcodeData, "utf-8");
                 body.append("&barcode=");
                 body.append(b);
             }
             catch (UnsupportedEncodingException e)
             {
-        		Logger.I(LOGTAG, "Could not encode take_barcode return data in URL");
+        Logger.I(LOGTAG, "Could not encode take_barcode return data in URL");
             }
         }
 		Logger.I(LOGTAG, "decodeEvent, URL: " + takeBarcodeURL + body);
@@ -277,21 +269,12 @@ public class ZXingScanner extends Barcode implements IBarcode
 		//TODO needs testing
 	}
 
-//	@Override
-//	public void getFriendlyName(IMethodResult result)
-//	{
-//		setFriendlyName();
-//		result.set(friendlyName);
-//	}
-	
-	/**
-	 * Sets the friendlyName parameter
-	 */
+
 	private void setFriendlyName()
 	{
 		if(friendlyName == null)
 		{
-			friendlyName = "ZXing ";
+			friendlyName = "Google ";
 			CameraInfo cameraInfo = new CameraInfo();
 			Camera.getCameraInfo(cameraNumber, cameraInfo);
 			if(cameraInfo.facing == CameraInfo.CAMERA_FACING_BACK)
@@ -315,28 +298,22 @@ public class ZXingScanner extends Barcode implements IBarcode
 	@Override
 	public void onResume()
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onPause()
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onStop()
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onDestroy()
-	{
-		// TODO Auto-generated method stub
-		
+	{	
 	}
+
+
 }

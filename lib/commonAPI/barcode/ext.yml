@@ -9,7 +9,11 @@ android:
   rhodes_listener: com.rho.barcode.BarcodeFactoryRhoListener
   exttype: rakefile
   sdk_addons: ['EMDK']
-  
+  maven_deps:
+    - 'com.google.android.gms:play-services-vision:9.4.0'
+    - 'com.android.support:support-v4:24.2.0'
+    - 'com.android.support:design:24.2.0'
+
 sailfish:
   proerb: ext/platform/qt/Barcode.pro.erb
 

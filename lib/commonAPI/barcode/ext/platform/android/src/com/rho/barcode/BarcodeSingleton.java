@@ -20,7 +20,7 @@ import com.rho.barcode.IBarcodeSingleton;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.file.RhoFileApi;
-
+import com.rho.barcode.InternalAndroidBarcodeScanner;
 /**
  * Barcode Singleton class
  * @author Ben Kennedy NCVT73
