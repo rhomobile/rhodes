@@ -13,6 +13,7 @@ import android.hardware.Camera.CameraInfo;
 
 import com.rho.barcode.IBarcode;
 import com.rho.barcode.BarcodeBase;
+import com.rho.barcode.BarcodeCommon;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -37,7 +38,7 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 
 
-public class InternalAndroidBarcodeScanner extends Barcode implements IBarcode{
+public class InternalAndroidBarcodeScanner extends BarcodeCommon{
 
 	public InternalAndroidBarcodeScanner(String id)
 	{
@@ -45,67 +46,9 @@ public class InternalAndroidBarcodeScanner extends Barcode implements IBarcode{
 		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner Constructor");
 		this.cameraNumber = Integer.parseInt(id.substring(5));
 	}
-		@Override
-	public void getProperty(String propertyName, IMethodResult result)
-	{
-		if(propertyName.equals("scannerType"))
-		{
-			result.set("Camera");
-		}
-	}
-
-	@Override
-	public void getProperties(List<String> arrayofNames, IMethodResult result)
-	{
-		for(String property: arrayofNames)
-		{
-			if(property.equals("scannerType"))
-			{
-				Map<String, Object> resultMap = new HashMap<String, Object>(2);
-				resultMap.put("scannerType", "Camera");
-				result.set(resultMap);
-				return;
-			}
-		}
-		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner getProperties");
-		result.set(new HashMap<String, Object>());
-	}
-
-	@Override
-	public void getAllProperties(IMethodResult result)
-	{
-		Map<String, Object> resultMap = new HashMap<String, Object>(2);
-		setFriendlyName();
-		resultMap.put("scannerType", "Camera");
-		result.set(resultMap);
-	}
-
-	@Override
-	public void enable(Map<String, String> propertyMap, IMethodResult result)
-	{
-		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner enable");
-		result.setError("enable is not supported on Internal Android Barcode Scanner. Use 'take' instead.");
-	}
 	
-	@Override
-	public void start(IMethodResult result)
-	{
-		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner start");
-		if(result != null) result.setError("start is not supported on Internal Android Barcode Scanner. Use 'take' instead.");
-	}
+	private static String LOGTAG = "InternalAndroidBarcodeScanner";
 
-	@Override
-	public void stop(IMethodResult result)
-	{
-		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner stop");
-		if(result != null) result.setError("stop is not supported on ZInternal Android Barcode Scanner. Use 'take' instead.");
-	}
-
-	@Override
-	public void disable(IMethodResult result)
-	{
-		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner disable");
-	}
 
 	@Override
 	public void take(Map<String, String> propertyMap, IMethodResult result)
@@ -126,29 +69,6 @@ public class InternalAndroidBarcodeScanner extends Barcode implements IBarcode{
         ra.startActivity(intent);
 	}
 
-	private int cameraNumber;
-	private String takeBarcodeURL;
-	private boolean isScanning;
-	private MethodResult takeResult;
-	private String friendlyName;
-	private int camera_index;
-
-	private static String LOGTAG = "InternalAndroidBarcodeScanner";
-
-
-
-
-
-	@Override
-	public void getSupportedProperties(IMethodResult result)
-	{
-		Logger.I(LOGTAG, "InternalAndroidBarcodeScanner getSupportedProperties");
-		ArrayList<Object> resultList = new ArrayList<Object>();
-		resultList.add("scannerType");
-		result.set(resultList);
-	}
-
-
 	@Override
 	public void take_barcode(String rubyCallbackURL, Map<String, String> propertyMap, IMethodResult result)
 	{
@@ -164,54 +84,6 @@ public class InternalAndroidBarcodeScanner extends Barcode implements IBarcode{
         ra.startActivity(intent);
 	}
 
-	public void error(String errorMessage)
-	{
-		if(takeResult != null)
-		{
-			takeResult.setError(errorMessage);
-			takeResult.release();
-			takeResult = null;
-			takeBarcodeURL = null;
-		}
-		else
-		{
-			Logger.D(LOGTAG, "Error failed to fire callback: result missing");
-		}
-		isScanning = false;
-		BarcodeFactory.setDisabledState(scannerId);
-		
-	}
-
-	public void cancel()
-	{
-		if(takeBarcodeURL == null)
-		{
-			if(takeResult != null)
-			{
-				HashMap<String, Object> resultsMap = new HashMap<String, Object>();
-				//	This is where to add extra meta data if required
-				resultsMap.put("barcode", "");
-				resultsMap.put("status", "cancel");
-				takeResult.set(resultsMap); //Does this return the object/ fire the callback?
-				takeResult.release();
-				takeResult = null;
-			}
-			else
-			{
-				Logger.D(LOGTAG, "Cancel failed to fire callback: result missing");
-			}
-		}
-		else
-		{
-	        StringBuffer body = new StringBuffer();
-	        body.append("&rho_callback=1");
-	        body.append("&status=cancel");
-	        RhodesActivity.safeGetInstance().getMainView().navigate(takeBarcodeURL + body, -1);
-	        takeBarcodeURL = null;
-		}
-		isScanning = false;
-		BarcodeFactory.setDisabledState(scannerId);
-	}
 
 	public void decodeEvent(String barcode)
 	{
@@ -269,8 +141,8 @@ public class InternalAndroidBarcodeScanner extends Barcode implements IBarcode{
 		//TODO needs testing
 	}
 
-
-	private void setFriendlyName()
+	@Override
+	protected void setFriendlyName()
 	{
 		if(friendlyName == null)
 		{
@@ -289,31 +161,7 @@ public class InternalAndroidBarcodeScanner extends Barcode implements IBarcode{
 		}
 	}
 
-	@Override
-	public void getScannerType(IMethodResult result)
-	{
-		result.set("Camera");
-	}
 
-	@Override
-	public void onResume()
-	{
-	}
-
-	@Override
-	public void onPause()
-	{
-	}
-
-	@Override
-	public void onStop()
-	{
-	}
-
-	@Override
-	public void onDestroy()
-	{	
-	}
 
 
 }

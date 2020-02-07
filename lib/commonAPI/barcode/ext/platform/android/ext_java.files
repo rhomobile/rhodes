@@ -9,6 +9,7 @@ ext/platform/android/src/com/rho/barcode/emdk3/EMDK3ScannerInfo.java
 ext/platform/android/src/com/rho/barcode/emdk3/EMDK3ScannerSettings.java
 ext/platform/android/src/com/rho/barcode/emdk3/EMDK3ExtensionListener.java
 ext/platform/android/src/com/rho/barcode/Barcode.java
+ext/platform/android/src/com/rho/barcode/BarcodeCommon.java
 ext/platform/android/src/com/rho/barcode/BarcodeFactory.java
 ext/platform/android/src/com/rho/barcode/BarcodeFactoryRhoListener.java
 ext/platform/android/src/com/rho/barcode/BarcodeSingleton.java

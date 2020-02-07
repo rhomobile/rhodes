@@ -22,6 +22,8 @@ import android.view.KeyEvent;
 import com.google.zxing.Result;
 import com.rho.barcode.emdk3.EMDK3ExtensionListener;
 import com.rho.barcode.emdk3.EMDK3Scanner;
+import com.rho.barcode.BarcodeCommon;
+import com.rho.barcode.InternalAndroidBarcodeScanner;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.RhoApiFactory;
@@ -325,8 +327,8 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 		{
 
 			Logger.D(TAG, "callOKCallback: passed");
-			ZXingScanner zxingScanner = ((ZXingScanner)factoryInstance.getScanner(barcodeObjectId));
-			if(zxingScanner != null) zxingScanner.decodeEvent(barcodeData);
+			ZXingScanner scanner = ((ZXingScanner)factoryInstance.getScanner(barcodeObjectId));
+			if(scanner != null) scanner.decodeEvent(barcodeData);
 			else Logger.E(TAG, "Zebra Crossing Object could not be found");		
 		}
 		else
@@ -361,9 +363,9 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	public static void callCancelCallback(String barcodeObjectId)
 	{
 		Logger.D(TAG, "callCancelCallback");
-		ZXingScanner zxingScanner = ((ZXingScanner)factoryInstance.getScanner(barcodeObjectId));
-		if(zxingScanner != null) zxingScanner.cancel();
-		else Logger.E(TAG, "Zebra Crossing Object could not be found");
+		BarcodeCommon scanner = ((BarcodeCommon)factoryInstance.getScanner(barcodeObjectId));
+		if(scanner != null) scanner.cancel();
+		else Logger.E(TAG, "Crossing Object could not be found");
 	}
 
 	/**
@@ -375,9 +377,9 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	public static void callErrorCallback(String errorMessage, String barcodeObjectId)
 	{
 		Logger.D(TAG, "callErrorCallback");
-		ZXingScanner zxingScanner = ((ZXingScanner)factoryInstance.getScanner(barcodeObjectId));
-		if(zxingScanner != null) zxingScanner.error(errorMessage);
-		else Logger.E(TAG, "Zebra Crossing Object could not be found");
+		BarcodeCommon scanner = ((BarcodeCommon)factoryInstance.getScanner(barcodeObjectId));
+		if(scanner != null) scanner.error(errorMessage);
+		else Logger.E(TAG, "Crossing Object could not be found");
 	}
 	
 	/**

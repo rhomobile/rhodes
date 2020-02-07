@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Button;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -38,7 +39,7 @@ import com.rho.barcode.BarcodeFactory;
 public class CaptureActivity extends BaseActivity implements View.OnClickListener {
 
     // use a compound button so either checkbox or switch widgets work.
-    private CompoundButton autoFocus;
+    private Button buttonOk;
     private CompoundButton useFlash;
     private TextView statusMessage;
     private TextView barcodeValue;
@@ -68,50 +69,48 @@ public class CaptureActivity extends BaseActivity implements View.OnClickListene
         statusMessage = (TextView)findViewById(R.id.status_message);
         barcodeValue = (TextView)findViewById(R.id.barcode_value);
 
-        autoFocus = (CompoundButton) findViewById(R.id.auto_focus);
         useFlash = (CompoundButton) findViewById(R.id.use_flash);
+        buttonOk = (Button) findViewById(R.id.barcode_ok);
 
         findViewById(R.id.read_barcode).setOnClickListener(this);
+        buttonOk.setOnClickListener(this);
     }
 
-    /**
-     * Called when a view has been clicked.
-     *
-     * @param v The view that was clicked.
-     */
     @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.read_barcode) {
-            Intent intent = new Intent(this, BarcodeCaptureActivity.class);
-            intent.putExtra(BarcodeCaptureActivity.UseFlash, useFlash.isChecked());
-            
-            startActivityForResult(intent, RC_BARCODE_CAPTURE);
-        }
+    protected void onResume() {
+        super.onResume();
+        refresh();
         
     }
 
-    /**
-     * Called when an activity you launched exits, giving you the requestCode
-     * you started it with, the resultCode it returned, and any additional
-     * data from it.  The <var>resultCode</var> will be
-     * {@link #RESULT_CANCELED} if the activity explicitly returned that,
-     * didn't return any result, or crashed during its operation.
-     * <p/>
-     * <p>You will receive this call immediately before onResume() when your
-     * activity is re-starting.
-     * <p/>
-     *
-     * @param requestCode The integer request code originally supplied to
-     *                    startActivityForResult(), allowing you to identify who this
-     *                    result came from.
-     * @param resultCode  The integer result code returned by the child activity
-     *                    through its setResult().
-     * @param data        An Intent, which can return result data to the caller
-     *                    (various data can be attached to Intent "extras").
-     * @see #startActivityForResult
-     * @see #createPendingResult
-     * @see #setResult(int)
-     */
+    void refresh(){
+        if (lastResult == ""){
+            buttonOk.setVisibility(View.INVISIBLE);
+        }else{
+            buttonOk.setVisibility(View.VISIBLE);
+        }
+        barcodeValue.setText(lastResult);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.read_barcode:
+                lastResult = "";
+                refresh();
+                Intent intent = new Intent(this, BarcodeCaptureActivity.class);
+                intent.putExtra(BarcodeCaptureActivity.UseFlash, useFlash.isChecked());
+                startActivityForResult(intent, RC_BARCODE_CAPTURE);
+                break;
+            case R.id.barcode_ok:
+                onOK();
+                break;
+            default:
+                break;
+        }
+
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_BARCODE_CAPTURE) {
@@ -120,9 +119,7 @@ public class CaptureActivity extends BaseActivity implements View.OnClickListene
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     statusMessage.setText(R.string.barcode_success);
                     lastResult = barcode.displayValue;
-
                     barcodeValue.setText(lastResult);
-                    BarcodeFactory.callOKCallback(lastResult, rhoBarcodeId);
                     Log.d(TAG, "Barcode read: " + barcode.displayValue);
                 } else {
                     statusMessage.setText(R.string.barcode_failure);
@@ -136,6 +133,7 @@ public class CaptureActivity extends BaseActivity implements View.OnClickListene
         else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+        refresh();
 
     }
 
@@ -143,12 +141,21 @@ public class CaptureActivity extends BaseActivity implements View.OnClickListene
         BarcodeFactory.callCancelCallback(rhoBarcodeId);
     }
 
-    public void onRetake() {
-        
-    }
-
     public void onOK() {
-        BarcodeFactory.callOKCallback(lastResult, rhoBarcodeId);
+        if (lastResult != ""){
+            buttonOkClicked = true;
+            BarcodeFactory.callOKCallback(lastResult, rhoBarcodeId);
+            finish();
+        }
+    }
+    boolean buttonOkClicked = false;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (!buttonOkClicked){
+            onCancel();
+        }
     }
 
 }
