@@ -22,6 +22,7 @@ public abstract class BarcodeCommon extends Barcode implements IBarcode {
 
 	public BarcodeCommon(String id){
 		super(id);
+		cameraNumber = Integer.parseInt(id.substring(5));
 	}
 
 	protected int cameraNumber;
@@ -30,6 +31,15 @@ public abstract class BarcodeCommon extends Barcode implements IBarcode {
 	protected MethodResult takeResult;
 	protected String friendlyName;
 	protected int camera_index;
+
+
+    private static HashMap<String, CameraInfo> camerasIds = new HashMap<String, CameraInfo>();
+    public static void addId(String id, CameraInfo info){
+        camerasIds.put(id, info);
+    }
+    public static CameraInfo getCameraInfoByID(String id){
+    	return camerasIds.get(id);
+    }
 
 
 	@Override

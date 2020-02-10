@@ -32,6 +32,8 @@ import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rho.barcode.BarcodeFactory;
+import com.rho.barcode.BarcodeCommon;
+import com.google.barcodereader.ui.camera.CameraSource;
 /**
  * Main activity demonstrating how to pass extra parameters to an activity that
  * reads barcodes.
@@ -62,8 +64,11 @@ public class CaptureActivity extends BaseActivity implements View.OnClickListene
         if (intent != null) {
             camera_index = intent.getIntExtra(CAMERA_INDEX_EXTRA, 0);
             Logger.D(TAG, "Intent Camera index: " + camera_index);
-            this.camera_index = camera_index;
             rhoBarcodeId = intent.getStringExtra(RHO_BARCODE_ID);
+
+            CameraSource.targetCameraInfo = BarcodeCommon.getCameraInfoByID(rhoBarcodeId);
+        }else{
+            CameraSource.targetCameraInfo = null;
         }
 
         statusMessage = (TextView)findViewById(R.id.status_message);

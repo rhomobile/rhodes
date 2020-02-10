@@ -159,7 +159,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 		if(!isZxingOnMotoAllowed && devicesEmdkVersion > 0) return;
 		
 		int noOfCameras=Camera.getNumberOfCameras();
-		Camera.CameraInfo info =new Camera.CameraInfo();
+		Camera.CameraInfo info = new Camera.CameraInfo();
 		for(int i = 0; i < noOfCameras; i++)
 		{
 			Camera.getCameraInfo(i, info);
@@ -173,6 +173,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 						androidIds = Arrays.copyOf(androidIds, androidIds.length+1);
 					
 					androidIds[androidIds.length-1] = "GCODE" + i;
+					BarcodeCommon.addId("GCODE" + i, info);
 					System.out.println("new one= "+androidIds[androidIds.length-1]);
 				}else{
 					if (zxingIds==null)
@@ -181,6 +182,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 						zxingIds = Arrays.copyOf(zxingIds, zxingIds.length+1);
 					
 					zxingIds[zxingIds.length-1] = "ZXING" + i;
+					BarcodeCommon.addId("ZXING" + i, info);
 					System.out.println("new one= "+zxingIds[zxingIds.length-1]);
 				}
 			}

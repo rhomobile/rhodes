@@ -99,10 +99,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
 
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
-
-        Snackbar.make(mGraphicOverlay, "Tap to capture. Pinch/Stretch to zoom",
-                Snackbar.LENGTH_LONG)
-                .show();
     }
 
     /**
@@ -140,9 +136,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-
         boolean c = gestureDetector.onTouchEvent(e);
-
         return  c || super.onTouchEvent(e);
     }
 
@@ -274,13 +268,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                 .show();
     }
 
-    /**
-     * Starts or restarts the camera source, if it exists.  If the camera source doesn't exist yet
-     * (e.g., because onResume was called before the camera source was created), this will be called
-     * again when the camera source is created.
-     */
     private void startCameraSource() throws SecurityException {
-        // check that the device has play services available.
         int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
                 getApplicationContext());
         if (code != ConnectionResult.SUCCESS) {
@@ -300,13 +288,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
     }
 
-    /**
-     * onTap returns the tapped barcode result to the calling Activity.
-     *
-     * @param rawX - the raw position of the tap
-     * @param rawY - the raw position of the tap.
-     * @return true if the activity is ending.
-     */
     private boolean onTap(float rawX, float rawY) {
         // Find tap point in preview frame coordinates.
         int[] location = new int[2];

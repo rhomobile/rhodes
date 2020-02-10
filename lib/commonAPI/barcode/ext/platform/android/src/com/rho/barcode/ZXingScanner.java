@@ -29,7 +29,7 @@ public class ZXingScanner extends BarcodeCommon
 	{
 		super(id);
 		Logger.I(LOGTAG, "ZXingScanner Constructor");
-		this.cameraNumber = Integer.parseInt(id.substring(5));
+		
 	}
 
 
