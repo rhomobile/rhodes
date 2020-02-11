@@ -21,6 +21,14 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rho.barcode.InternalAndroidBarcodeScanner;
+
+import com.google.android.gms.vision.MultiProcessor;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.android.gms.vision.Frame;
+import android.util.SparseArray;
+import com.rhomobile.rhodes.util.ContextFactory;
+
 /**
  * Barcode Singleton class
  * @author Ben Kennedy NCVT73
@@ -94,38 +102,80 @@ public class BarcodeSingleton extends BarcodeSingletonBase implements IBarcodeSi
 			RhoFileApi.close(istream);
 			if (image != null)
 			{
+
 				// we have image
-				LuminanceSource source = new RhoLuminanceSource(image);
-				BinaryBitmap bitmap = new BinaryBitmap(new GlobalHistogramBinarizer(source));
-				Result decodeResult;
-				try
-				{
-					Reader reader = new MultiFormatReader();
-					Hashtable<DecodeHintType, Object> hints = new Hashtable<DecodeHintType, Object>(1);
-					hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
-					decodeResult = reader.decode(bitmap, hints);
-					if (decodeResult != null)
-					{
-						String resultText = decodeResult.getText();
-						Logger.I(LOGTAG, "Barcode is successfully recognized: " + resultText + ", file: " + imageFilePath);
-						result.set(resultText);
+				if (EngineChooser.usingGoogleEngine){
+
+
+
+					BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(ContextFactory.getAppContext())
+					.setBarcodeFormats(Barcode.ALL_FORMATS).build();
+					if (barcodeDetector.isOperational())
+		            {
+		                Frame frame = new Frame.Builder().setBitmap(image).build();
+		                SparseArray<Barcode> barcodes = barcodeDetector.detect(frame);
+		                barcodeDetector.release();
+
+		                if (barcodes.size() > 0) {
+   							String resultText = barcodes.valueAt(0).toString();
+							Logger.I(LOGTAG, "Barcode is successfully recognized: " + resultText + ", file: " + imageFilePath);
+							result.set(resultText);
+							return;
+		                }
+		                else
+		                {
+							Logger.E(LOGTAG, "Error decoding image file: " + imageFilePath);
+							result.setError("Could not find a barcode within the specified file");
+							return;
+		                }
+		            }
+		            else
+		            {
+		                Logger.E(LOGTAG, "Error decoding image file: " + imageFilePath);
+						result.setError("Native barcode detector is not operational");
 						return;
-					}
-					else
+		            }
+		            
+
+				}else{
+				
+					LuminanceSource source = new RhoLuminanceSource(image);
+					BinaryBitmap bitmap = new BinaryBitmap(new GlobalHistogramBinarizer(source));
+					Result decodeResult;
+					try
 					{
-						//Unknown error. This shouldnt happen as the decode call should Exception or return a string.
+						Reader reader = new MultiFormatReader();
+						Hashtable<DecodeHintType, Object> hints = new Hashtable<DecodeHintType, Object>(1);
+						hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+						decodeResult = reader.decode(bitmap, hints);
+						if (decodeResult != null)
+						{
+							String resultText = decodeResult.getText();
+							Logger.I(LOGTAG, "Barcode is successfully recognized: " + resultText + ", file: " + imageFilePath);
+							result.set(resultText);
+							return;
+						}
+						else
+						{
+							//Unknown error. This shouldnt happen as the decode call should Exception or return a string.
+							Logger.E(LOGTAG, "Error decoding image file: " + imageFilePath);
+							result.setError("Could not find a barcode within the specified file");
+							return;
+						}
+					}
+					catch (ReaderException e)
+					{
+						// image not decoded - not found any barcodes
 						Logger.E(LOGTAG, "Error decoding image file: " + imageFilePath);
 						result.setError("Could not find a barcode within the specified file");
 						return;
 					}
 				}
-				catch (ReaderException e)
-				{
-					// image not decoded - not found any barcodes
-					Logger.E(LOGTAG, "Error decoding image file: " + imageFilePath);
-					result.setError("Could not find a barcode within the specified file");
-					return;
-				}
+
+
+
+
+
 			}
 			else
 			{
