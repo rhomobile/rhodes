@@ -33,12 +33,16 @@ public abstract class BarcodeCommon extends Barcode implements IBarcode {
 	protected int camera_index;
 
 
-    private static HashMap<String, CameraInfo> camerasIds = new HashMap<String, CameraInfo>();
-    public static void addId(String id, CameraInfo info){
-        camerasIds.put(id, info);
+    private static HashMap<String, Integer> camerasIds = new HashMap<String, Integer>();
+    public static void addId(String cameraName, int id){
+        camerasIds.put(cameraName, id);
     }
-    public static CameraInfo getCameraInfoByID(String id){
-    	return camerasIds.get(id);
+    public static int getCameraIdByName(String cameraName){
+    	try{
+    		return camerasIds.get(cameraName);
+    	}catch(Exception e){
+    		return -1;
+    	}
     }
 
 

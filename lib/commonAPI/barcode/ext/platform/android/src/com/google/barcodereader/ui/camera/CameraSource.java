@@ -161,7 +161,12 @@ public class CameraSource {
      * native code later (avoids a potential copy).
      */
     private Map<byte[], ByteBuffer> mBytesToByteBuffer = new HashMap<byte[], ByteBuffer>();
-    public static CameraInfo targetCameraInfo = null;
+
+    private static int targetCameraIndex = -1;
+    public static void setTargetCameraIndex(int index){
+        targetCameraIndex = index;
+    }
+
     //==============================================================================================
     // Builder
     //==============================================================================================
@@ -824,6 +829,9 @@ public class CameraSource {
      */
     private static int getIdForRequestedCamera(int facing) {
         CameraInfo cameraInfo = new CameraInfo();
+
+        if (Camera.getNumberOfCameras() > targetCameraIndex && targetCameraIndex > -1) return targetCameraIndex;
+
         for (int i = 0; i < Camera.getNumberOfCameras(); ++i) {
             Camera.getCameraInfo(i, cameraInfo);
             if (cameraInfo.facing == facing) {

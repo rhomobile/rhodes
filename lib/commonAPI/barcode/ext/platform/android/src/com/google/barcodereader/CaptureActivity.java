@@ -66,9 +66,9 @@ public class CaptureActivity extends BaseActivity implements View.OnClickListene
             Logger.D(TAG, "Intent Camera index: " + camera_index);
             rhoBarcodeId = intent.getStringExtra(RHO_BARCODE_ID);
 
-            CameraSource.targetCameraInfo = BarcodeCommon.getCameraInfoByID(rhoBarcodeId);
+            CameraSource.setTargetCameraIndex(BarcodeCommon.getCameraIdByName(rhoBarcodeId));
         }else{
-            CameraSource.targetCameraInfo = null;
+            CameraSource.setTargetCameraIndex(-1);
         }
 
         statusMessage = (TextView)findViewById(R.id.status_message);
