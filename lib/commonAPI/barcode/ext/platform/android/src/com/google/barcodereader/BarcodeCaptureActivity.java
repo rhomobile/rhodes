@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -357,10 +358,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
 
         if (best != null) {
-            Intent data = new Intent();
-            data.putExtra(BarcodeObject, best);
-            setResult(CommonStatusCodes.SUCCESS, data);
-            finish();
+            lastResult = best.displayValue;
+            refresh();
             return true;
         }
         return false;
@@ -377,31 +376,57 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     public void onBarcodeDetected(Barcode barcode) {
         if (lastResult == ""){
             lastResult = barcode.displayValue;
-            barcodeValue.setText(lastResult);
             Log.d(TAG, "Barcode read: " + barcode.displayValue);
+            refresh();
         }
     }
 
 
     void refresh(){
-        if (lastResult == ""){
-            buttonOk.setVisibility(View.INVISIBLE);
-        }else{
-            buttonOk.setVisibility(View.VISIBLE);
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                barcodeValue.setText(lastResult);
+                if (lastResult == ""){
+                    buttonOk.setVisibility(View.INVISIBLE);
+                    buttonRetake.setVisibility(View.INVISIBLE);
+                }else{
+                    buttonOk.setVisibility(View.VISIBLE);
+                    buttonRetake.setVisibility(View.VISIBLE);
+                }
+
+            }
+        });
+
     }
+
+
 
     @Override
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.button_flash:
+                final boolean isOff = mCameraSource.switchFlashMode();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isOff){
+                            buttonFlash.setImageResource(R.drawable.barcode_flash_off);
+                        }else{
+                            buttonFlash.setImageResource(R.drawable.barcode_flash_on);
+                        }
 
+                    }
+                });
                 break;
             case R.id.button_retake:
-
+                lastResult = "";
+                refresh();
                 break;
-            case R.id.button_retake:
-
+            case R.id.button_back:
+                onCancel();
+                finish();
                 break;
             case R.id.barcode_ok:
                 onOK();
@@ -411,31 +436,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_BARCODE_CAPTURE) {
-            if (resultCode == CommonStatusCodes.SUCCESS) {
-                if (data != null) {
-                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
-                    lastResult = barcode.displayValue;
-                    barcodeValue.setText(lastResult);
-                    Log.d(TAG, "Barcode read: " + barcode.displayValue);
-                } else {
-                    Log.d(TAG, "No barcode captured, intent data is null");
-                }
-            } else {
-                barcodeValue.setText(String.format(getString(R.string.barcode_error),
-                        CommonStatusCodes.getStatusCodeString(resultCode)));
-            }
-        }
-        else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-        refresh();
-
-    }
 
     public void onCancel() {
+        buttonOkClicked = false;
         BarcodeFactory.callCancelCallback(rhoBarcodeId);
     }
 

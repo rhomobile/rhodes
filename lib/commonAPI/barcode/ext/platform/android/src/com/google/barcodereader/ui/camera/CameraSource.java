@@ -115,6 +115,20 @@ public class CameraSource {
     @Retention(RetentionPolicy.SOURCE)
     private @interface FlashMode {}
 
+    boolean isOff = true;
+    public boolean switchFlashMode(){
+        Camera.Parameters p = mCamera.getParameters();
+        if (isOff){
+            p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            isOff = false;
+        }else{
+            p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            isOff = true;
+        }
+        mCamera.setParameters(p);
+        return isOff;
+    }
+
     private Context mContext;
 
     private final Object mCameraLock = new Object();
@@ -283,49 +297,12 @@ public class CameraSource {
          */
         void onPictureTaken(byte[] data);
     }
-
-    /**
-     * Callback interface used to notify on completion of camera auto focus.
-     */
     public interface AutoFocusCallback {
-        /**
-         * Called when the camera auto focus completes.  If the camera
-         * does not support auto-focus and autoFocus is called,
-         * onAutoFocus will be called immediately with a fake value of
-         * <code>success</code> set to <code>true</code>.
-         * <p/>
-         * The auto-focus routine does not lock auto-exposure and auto-white
-         * balance after it completes.
-         *
-         * @param success true if focus was successful, false if otherwise
-         */
         void onAutoFocus(boolean success);
     }
-
-    /**
-     * Callback interface used to notify on auto focus start and stop.
-     * <p/>
-     * <p>This is only supported in continuous autofocus modes -- {@link
-     * Camera.Parameters#FOCUS_MODE_CONTINUOUS_VIDEO} and {@link
-     * Camera.Parameters#FOCUS_MODE_CONTINUOUS_PICTURE}. Applications can show
-     * autofocus animation based on this.</p>
-     */
     public interface AutoFocusMoveCallback {
-        /**
-         * Called when the camera auto focus starts or stops.
-         *
-         * @param start true if focus starts to move, false if focus stops to move
-         */
         void onAutoFocusMoving(boolean start);
     }
-
-    //==============================================================================================
-    // Public
-    //==============================================================================================
-
-    /**
-     * Stops the camera and releases the resources of the camera and underlying detector.
-     */
     public void release() {
         synchronized (mCameraLock) {
             stop();
@@ -333,12 +310,6 @@ public class CameraSource {
         }
     }
 
-    /**
-     * Opens the camera and starts sending preview frames to the underlying detector.  The preview
-     * frames are not displayed.
-     *
-     * @throws IOException if the camera's preview texture or display could not be initialized
-     */
     @RequiresPermission(Manifest.permission.CAMERA)
     public CameraSource start() throws IOException {
         synchronized (mCameraLock) {
@@ -593,25 +564,6 @@ public class CameraSource {
             return false;
         }
     }
-
-    /**
-     * Starts camera auto-focus and registers a callback function to run when
-     * the camera is focused.  This method is only valid when preview is active
-     * (between {@link #start()} or {@link #start(SurfaceHolder)} and before {@link #stop()} or {@link #release()}).
-     * <p/>
-     * <p>Callers should check
-     * {@link #getFocusMode()} to determine if
-     * this method should be called. If the camera does not support auto-focus,
-     * it is a no-op and {@link AutoFocusCallback#onAutoFocus(boolean)}
-     * callback will be called immediately.
-     * <p/>
-     * <p>If the current flash mode is not
-     * {@link Camera.Parameters#FLASH_MODE_OFF}, flash may be
-     * fired during auto-focus, depending on the driver and camera hardware.<p>
-     *
-     * @param cb the callback to run
-     * @see #cancelAutoFocus()
-     */
     public void autoFocus(@Nullable AutoFocusCallback cb) {
         synchronized (mCameraLock) {
             if (mCamera != null) {
@@ -624,15 +576,6 @@ public class CameraSource {
             }
         }
     }
-
-    /**
-     * Cancels any auto-focus function in progress.
-     * Whether or not auto-focus is currently in progress,
-     * this function will return the focus position to the default.
-     * If the camera does not support auto-focus, this is a no-op.
-     *
-     * @see #autoFocus(AutoFocusCallback)
-     */
     public void cancelAutoFocus() {
         synchronized (mCameraLock) {
             if (mCamera != null) {

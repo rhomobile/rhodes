@@ -47,7 +47,7 @@
           android:layout_width="fill_parent"
           android:layout_height="wrap_content"
           android:id="@+id/barcode_value"
-          android:text="Test text"
+          android:text=""
           android:textColor="#ffffff"
           android:gravity="center"
           android:layout_marginBottom="12dp"
@@ -86,7 +86,7 @@
             android:layout_weight="1.0"/>
           <ImageButton 
             android:id="@+id/button_flash"
-            android:src="@drawable/barcode_flash_on"
+            android:src="@drawable/barcode_flash_off"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|left"
