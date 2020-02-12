@@ -105,9 +105,6 @@ public class BarcodeSingleton extends BarcodeSingletonBase implements IBarcodeSi
 
 				// we have image
 				if (EngineChooser.usingGoogleEngine){
-
-
-
 					BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(ContextFactory.getAppContext())
 					.setBarcodeFormats(Barcode.ALL_FORMATS).build();
 					if (barcodeDetector.isOperational())
@@ -191,4 +188,9 @@ public class BarcodeSingleton extends BarcodeSingletonBase implements IBarcodeSi
 		Logger.E(LOGTAG, "Error during processing file: " + imageFilePath);
 		return;
 	}
+
+
+
+
+	
 }

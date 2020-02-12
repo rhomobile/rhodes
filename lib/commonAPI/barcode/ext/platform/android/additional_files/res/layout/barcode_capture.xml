@@ -1,24 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/topLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
     android:background="@android:color/black"
+    android:layout_gravity="bottom"
     android:keepScreenOn="true">
 
-  <com.google.barcodereader.ui.camera.CameraSourcePreview
-      android:id="@+id/preview"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent">
-
-    <com.google.barcodereader.ui.camera.GraphicOverlay
-        android:id="@+id/graphicOverlay"
+  <RelativeLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
+    >
+    <com.google.barcodereader.ui.camera.CameraSourcePreview
+        android:id="@+id/preview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        >
 
-  </com.google.barcodereader.ui.camera.CameraSourcePreview>
+      <com.google.barcodereader.ui.camera.GraphicOverlay
+          android:id="@+id/graphicOverlay"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" />
+      
+    </com.google.barcodereader.ui.camera.CameraSourcePreview>
+  </RelativeLayout>
 
-</LinearLayout>
+  <RelativeLayout
+        android:id="@+id/control_layout"
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        >
+    <LinearLayout 
+      android:layout_width="fill_parent"
+      android:orientation="vertical"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true">
+      <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/barcode_value"
+          android:text="Test text"
+          android:textColor="#ffffff"
+          android:gravity="center"
+          android:layout_marginBottom="12dp"
+          android:textSize="32dp"
+          />
+      <LinearLayout
+          android:id="@+id/buttons_layout"
+          android:layout_width="fill_parent"
+          android:orientation="horizontal"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="4dp"
+          android:gravity="bottom">
+          <ImageButton 
+            android:id="@+id/button_back"
+            android:src="@drawable/barcode_arrow_back"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:background="@null"
+            android:layout_weight="1.0"/>
+          <ImageButton 
+            android:id="@+id/barcode_ok"
+            android:src="@drawable/barcode_done"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:background="@null"
+            android:layout_weight="1.0"/>
+          <ImageButton 
+            android:id="@+id/button_retake"
+            android:src="@drawable/barcode_replay"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:background="@null"
+            android:layout_weight="1.0"/>
+          <ImageButton 
+            android:id="@+id/button_flash"
+            android:src="@drawable/barcode_flash_on"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:background="@null"
+            android:layout_weight="1.0"/>
+
+      </LinearLayout>
+    </LinearLayout>
+  </RelativeLayout>
+
+</RelativeLayout>

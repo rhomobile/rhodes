@@ -51,12 +51,27 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 import com.rhomobile.rhodes.R;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.util.Log;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.TextView;
+import android.widget.Button;
+
+import com.rhomobile.rhodes.BaseActivity;
+import com.rhomobile.rhodes.Logger;
+import com.rho.barcode.BarcodeFactory;
+import com.rho.barcode.BarcodeCommon;
+import android.content.pm.ActivityInfo;
+import android.support.v7.widget.AppCompatImageButton;
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
  * rear facing camera. During detection overlay graphics are drawn to indicate the position,
  * size, and ID of each barcode.
  */
-public final class BarcodeCaptureActivity extends AppCompatActivity implements BarcodeGraphicTracker.BarcodeUpdateListener {
+public final class BarcodeCaptureActivity extends AppCompatActivity implements BarcodeGraphicTracker.BarcodeUpdateListener, View.OnClickListener {
     private static final String TAG = "Barcode-reader";
 
     // intent request code to handle updating play services if needed.
@@ -66,7 +81,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
     // constants used to pass extra data in the intent
-    public static final String UseFlash = "UseFlash";
     public static final String BarcodeObject = "Barcode";
 
     private CameraSource mCameraSource;
@@ -75,6 +89,24 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     private GestureDetector gestureDetector;
 
+    private AppCompatImageButton buttonOk;
+    private AppCompatImageButton buttonFlash;
+    private AppCompatImageButton buttonRetake;
+    private AppCompatImageButton buttonCancel;
+
+
+    private TextView barcodeValue;
+
+    private String rhoBarcodeId;
+    private boolean isUsingFlash = false;
+    private static final int RC_BARCODE_CAPTURE = 9001;
+    
+    public static final String CAMERA_INDEX_EXTRA = "camera_index"; 
+    public static final String RHO_BARCODE_ID = "barcode_obj_id";
+    public String lastResult = "";
+    int camera_index = 0;
+
+
     /**
      * Initializes the UI and creates the detector pipeline.
      */
@@ -82,18 +114,42 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.barcode_capture);
+        
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            camera_index = intent.getIntExtra(CAMERA_INDEX_EXTRA, 0);
+            Logger.D(TAG, "Intent Camera index: " + camera_index);
+            rhoBarcodeId = intent.getStringExtra(RHO_BARCODE_ID);
+
+            CameraSource.setTargetCameraIndex(BarcodeCommon.getCameraIdByName(rhoBarcodeId));
+        }else{
+            CameraSource.setTargetCameraIndex(-1);
+        }
+
+        barcodeValue = (TextView)findViewById(R.id.barcode_value);
+
+        buttonFlash = (AppCompatImageButton) findViewById(R.id.button_flash);
+        buttonFlash.setOnClickListener(this);
+        buttonOk = (AppCompatImageButton) findViewById(R.id.barcode_ok);
+        buttonOk.setOnClickListener(this);
+        buttonRetake = (AppCompatImageButton) findViewById(R.id.button_retake);
+        buttonRetake.setOnClickListener(this);
+        buttonCancel = (AppCompatImageButton) findViewById(R.id.button_back);
+        buttonCancel.setOnClickListener(this);
+
+
+        
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(R.id.graphicOverlay);
 
         // read parameters from the intent used to launch the activity.
-        boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
-
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
-            createCameraSource(useFlash);
+            createCameraSource(isUsingFlash);
         } else {
             requestCameraPermission();
         }
@@ -140,22 +196,10 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         return  c || super.onTouchEvent(e);
     }
 
-    /**
-     * Creates and starts the camera.  Note that this uses a higher resolution in comparison
-     * to other detection examples to enable the barcode detector to detect small barcodes
-     * at long distances.
-     *
-     * Suppressing InlinedApi since there is a check that the minimum version is met before using
-     * the constant.
-     */
     @SuppressLint("InlinedApi")
     private void createCameraSource(boolean useFlash) {
         Context context = getApplicationContext();
 
-        // A barcode detector is created to track barcodes.  An associated multi-processor instance
-        // is set to receive the barcode detection results, track the barcodes, and maintain
-        // graphics for each barcode on screen.  The factory is used by the multi-processor to
-        // create a separate tracker instance for each barcode.
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).build();
         BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, this);
         barcodeDetector.setProcessor(
@@ -192,7 +236,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                 .setRequestedPreviewSize(1600, 1024)
                 .setRequestedFps(15.0f);
 
-        // make sure that auto focus is an available option
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             builder = builder.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         }
@@ -209,6 +252,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     protected void onResume() {
         super.onResume();
         startCameraSource();
+        refresh();
     }
 
     /**
@@ -222,15 +266,14 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
     }
 
-    /**
-     * Releases the resources associated with the camera source, the associated detectors, and the
-     * rest of the processing pipeline.
-     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mPreview != null) {
             mPreview.release();
+        }
+        if (!buttonOkClicked){
+            onCancel();
         }
     }
 
@@ -247,8 +290,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Camera permission granted - initialize the camera source");
             // we have permission, so create the camerasource
-            boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
-            createCameraSource( useFlash);
+            createCameraSource( isUsingFlash);
             return;
         }
 
@@ -333,6 +375,78 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     @Override
     public void onBarcodeDetected(Barcode barcode) {
-        //do something with barcode data returned
+        if (lastResult == ""){
+            lastResult = barcode.displayValue;
+            barcodeValue.setText(lastResult);
+            Log.d(TAG, "Barcode read: " + barcode.displayValue);
+        }
     }
+
+
+    void refresh(){
+        if (lastResult == ""){
+            buttonOk.setVisibility(View.INVISIBLE);
+        }else{
+            buttonOk.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.button_flash:
+
+                break;
+            case R.id.button_retake:
+
+                break;
+            case R.id.button_retake:
+
+                break;
+            case R.id.barcode_ok:
+                onOK();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RC_BARCODE_CAPTURE) {
+            if (resultCode == CommonStatusCodes.SUCCESS) {
+                if (data != null) {
+                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
+                    lastResult = barcode.displayValue;
+                    barcodeValue.setText(lastResult);
+                    Log.d(TAG, "Barcode read: " + barcode.displayValue);
+                } else {
+                    Log.d(TAG, "No barcode captured, intent data is null");
+                }
+            } else {
+                barcodeValue.setText(String.format(getString(R.string.barcode_error),
+                        CommonStatusCodes.getStatusCodeString(resultCode)));
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        refresh();
+
+    }
+
+    public void onCancel() {
+        BarcodeFactory.callCancelCallback(rhoBarcodeId);
+    }
+
+    public void onOK() {
+        if (lastResult != ""){
+            buttonOkClicked = true;
+            BarcodeFactory.callOKCallback(lastResult, rhoBarcodeId);
+            finish();
+        }
+    }
+    boolean buttonOkClicked = false;
+
+
 }

@@ -62,9 +62,9 @@ public class InternalAndroidBarcodeScanner extends BarcodeCommon{
 		takeResult = (MethodResult) result;
 
         RhodesActivity ra = RhodesActivity.safeGetInstance();
-        Intent intent = new Intent(ra, com.google.barcodereader.CaptureActivity.class);
-        intent.putExtra(com.google.barcodereader.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
-        intent.putExtra(com.google.barcodereader.CaptureActivity.RHO_BARCODE_ID, this.getId());
+        Intent intent = new Intent(ra, com.google.barcodereader.BarcodeCaptureActivity.class);
+        intent.putExtra(com.google.barcodereader.BarcodeCaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
+        intent.putExtra(com.google.barcodereader.BarcodeCaptureActivity.RHO_BARCODE_ID, this.getId());
         
         ra.startActivity(intent);
 	}
@@ -77,9 +77,9 @@ public class InternalAndroidBarcodeScanner extends BarcodeCommon{
 		takeBarcodeURL = rubyCallbackURL;
 
         RhodesActivity ra = RhodesActivity.safeGetInstance();
-        Intent intent = new Intent(ra, com.google.barcodereader.CaptureActivity.class);
-        intent.putExtra(com.google.barcodereader.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
-        intent.putExtra(com.google.barcodereader.CaptureActivity.RHO_BARCODE_ID, this.getId());
+        Intent intent = new Intent(ra, com.google.barcodereader.BarcodeCaptureActivity.class);
+        intent.putExtra(com.google.barcodereader.BarcodeCaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
+        intent.putExtra(com.google.barcodereader.BarcodeCaptureActivity.RHO_BARCODE_ID, this.getId());
         
         ra.startActivity(intent);
 	}
