@@ -163,6 +163,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
 
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
+        initBeeper();
     }
 
     /**
@@ -381,20 +382,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
 
     private MediaPlayer mediaPlayer = null;
-
-    void beep(){
-        boolean playBeep = true;
-        if (playBeep) {
-            AudioManager audioService = (AudioManager) getSystemService(AUDIO_SERVICE);
-            if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
-                playBeep = false;
-            }
-        }
-        if (playBeep && mediaPlayer == null) {
+    void initBeeper(){
             setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
             mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
                 public void onCompletion(MediaPlayer mediaPlayer) {
                     mediaPlayer.seekTo(0);
@@ -412,13 +404,23 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             } catch (IOException e) {
                 mediaPlayer = null;
             }
+    }
+
+    void beep(){
+        boolean playBeep = true;
+        if (playBeep) {
+            AudioManager audioService = (AudioManager) getSystemService(AUDIO_SERVICE);
+            if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+                playBeep = false;
+            }
+        }
+        if (playBeep && mediaPlayer == null) {
+            initBeeper();
         }
         if (playBeep && mediaPlayer != null) {
             mediaPlayer.start();
         }
     }
-
-
 
     @Override
     public void onBarcodeDetected(Barcode barcode) {
@@ -488,14 +490,23 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     public void onCancel() {
         buttonOkClicked = false;
-        BarcodeFactory.callCancelCallback(rhoBarcodeId);
+        runOnUiThread(new Runnable() {
+                @Override
+                public void run() {BarcodeFactory.callCancelCallback(rhoBarcodeId);}
+            }
+        );
+        
     }
 
     public void onOK() {
         if (lastResult != ""){
             buttonOkClicked = true;
-            BarcodeFactory.callOKCallback(lastResult, rhoBarcodeId);
             finish();
+            runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {BarcodeFactory.callOKCallback(lastResult, rhoBarcodeId);}
+                }
+            );
         }
     }
     boolean buttonOkClicked = false;

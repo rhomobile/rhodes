@@ -19,6 +19,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Point;
 
 import com.google.barcodereader.ui.camera.GraphicOverlay;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -89,7 +90,7 @@ public class BarcodeGraphic extends GraphicOverlay.Graphic {
         if (barcode == null) {
             return;
         }
-
+/*
         // Draws the bounding box around the barcode.
         RectF rect = new RectF(barcode.getBoundingBox());
         rect.left = translateX(rect.left);
@@ -100,5 +101,11 @@ public class BarcodeGraphic extends GraphicOverlay.Graphic {
 
         // Draws a label at the bottom of the barcode indicate the barcode value that was detected.
         canvas.drawText(barcode.rawValue, rect.left, rect.bottom, mTextPaint);
+        */
+        Point[] points = barcode.cornerPoints;
+        for(int i = 0; i < 4; i++){
+            canvas.drawLine(translateX(points[i].x), translateY(points[i].y), 
+                translateX(points[(i+1)%4].x),  translateY(points[(i+1)%4].y), mRectPaint);
+        }
     }
 }
