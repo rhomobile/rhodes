@@ -29,7 +29,6 @@ public class ZXingScanner extends BarcodeCommon
 	{
 		super(id);
 		Logger.I(LOGTAG, "ZXingScanner Constructor");
-		
 	}
 
 

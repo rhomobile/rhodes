@@ -1393,6 +1393,7 @@ namespace "build" do
               args << '--trace' if USE_TRACES
             end
 
+            
             #puts "builddata: " + builddata[1] + " args: " + args.to_s + " builddata0: " + builddata[0].to_s
             #puts ENV.to_s
             cc_run(builddata[1], args, builddata[0], false, nil, USE_TRACES) or raise "Extension build failed: #{builddata[0]}"
@@ -2917,6 +2918,8 @@ namespace "package" do
       end
     end
 
+    args << "--no-version-vectors"
+
     Jake.run($aapt, args)
     unless $?.success?
       raise "Error running AAPT (1)"
@@ -2995,7 +2998,6 @@ namespace "package" do
     end
 
     Jake.run($jarbin, args, respath) if File.directory?(respath)
-
     rm_rf proguardTempJarDir if File.exists? proguardTempJarDir
     puts "Finish packaging"
     print_timestamp('package:android FINISH')

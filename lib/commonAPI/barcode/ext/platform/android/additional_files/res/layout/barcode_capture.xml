@@ -3,7 +3,6 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/topLayout"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_centerHorizontal="true"
@@ -12,7 +11,7 @@
     android:keepScreenOn="true">
 
   <RelativeLayout
-    android:orientation="vertical"
+    
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_centerHorizontal="true"
@@ -64,33 +63,41 @@
             android:id="@+id/button_back"
             android:src="@drawable/barcode_arrow_back"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
             android:layout_gravity="bottom|left"
             android:background="@null"
+            android:layout_height="40dp" 
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
             android:layout_weight="1.0"/>
           <ImageButton 
             android:id="@+id/barcode_ok"
             android:src="@drawable/barcode_done"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
             android:layout_gravity="bottom|left"
             android:background="@null"
+            android:layout_height="40dp" 
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
             android:layout_weight="1.0"/>
           <ImageButton 
             android:id="@+id/button_retake"
             android:src="@drawable/barcode_replay"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
             android:layout_gravity="bottom|left"
             android:background="@null"
+            android:layout_height="40dp" 
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
             android:layout_weight="1.0"/>
           <ImageButton 
             android:id="@+id/button_flash"
             android:src="@drawable/barcode_flash_off"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
             android:layout_gravity="bottom|left"
             android:background="@null"
+            android:layout_height="40dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" 
             android:layout_weight="1.0"/>
 
       </LinearLayout>

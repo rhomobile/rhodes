@@ -67,6 +67,13 @@ import com.rho.barcode.BarcodeFactory;
 import com.rho.barcode.BarcodeCommon;
 import android.content.pm.ActivityInfo;
 import android.support.v7.widget.AppCompatImageButton;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.Configuration;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
+
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
  * rear facing camera. During detection overlay graphics are drawn to indicate the position,
@@ -203,8 +210,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).build();
         BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, this);
-        barcodeDetector.setProcessor(
-                new MultiProcessor.Builder<Barcode>(barcodeFactory).build());
+        barcodeDetector.setProcessor(new MultiProcessor.Builder<Barcode>(barcodeFactory).build());
 
         if (!barcodeDetector.isOperational()) {
             // Note: The first time that an app using the barcode or face API is installed on a
@@ -235,7 +241,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedPreviewSize(1600, 1024)
-                .setRequestedFps(15.0f);
+                .setRequestedFps(60.0f);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             builder = builder.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
@@ -360,6 +366,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         if (best != null) {
             lastResult = best.displayValue;
             refresh();
+            beep();
             return true;
         }
         return false;
@@ -372,12 +379,54 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
     }
 
+
+    private MediaPlayer mediaPlayer = null;
+
+    void beep(){
+        boolean playBeep = true;
+        if (playBeep) {
+            AudioManager audioService = (AudioManager) getSystemService(AUDIO_SERVICE);
+            if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+                playBeep = false;
+            }
+        }
+        if (playBeep && mediaPlayer == null) {
+            setVolumeControlStream(AudioManager.STREAM_MUSIC);
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+            mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mediaPlayer.seekTo(0);
+                }
+            });
+
+            AssetFileDescriptor file = getResources().openRawResourceFd(RhoExtManager.getResourceId("raw", "beep"));
+            try {
+                mediaPlayer.setDataSource(file.getFileDescriptor(), file.getStartOffset(),
+                file.getLength());
+                file.close();
+                final float BEEP_VOLUME = 0.10f;
+                mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+                mediaPlayer = null;
+            }
+        }
+        if (playBeep && mediaPlayer != null) {
+            mediaPlayer.start();
+        }
+    }
+
+
+
     @Override
     public void onBarcodeDetected(Barcode barcode) {
         if (lastResult == ""){
             lastResult = barcode.displayValue;
             Log.d(TAG, "Barcode read: " + barcode.displayValue);
             refresh();
+            beep();
         }
     }
 
