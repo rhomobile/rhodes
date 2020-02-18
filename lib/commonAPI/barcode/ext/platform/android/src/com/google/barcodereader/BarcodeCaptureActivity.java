@@ -383,27 +383,27 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
     private MediaPlayer mediaPlayer = null;
     void initBeeper(){
-            setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    mediaPlayer.seekTo(0);
-                }
-            });
-
-            AssetFileDescriptor file = getResources().openRawResourceFd(RhoExtManager.getResourceId("raw", "beep"));
-            try {
-                mediaPlayer.setDataSource(file.getFileDescriptor(), file.getStartOffset(),
-                file.getLength());
-                file.close();
-                final float BEEP_VOLUME = 0.10f;
-                mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
-                mediaPlayer.prepare();
-            } catch (IOException e) {
-                mediaPlayer = null;
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mediaPlayer.seekTo(0);
             }
+        });
+
+        AssetFileDescriptor file = getResources().openRawResourceFd(RhoExtManager.getResourceId("raw", "beep"));
+        try {
+            mediaPlayer.setDataSource(file.getFileDescriptor(), file.getStartOffset(),
+            file.getLength());
+            file.close();
+            final float BEEP_VOLUME = 0.10f;
+            mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            mediaPlayer = null;
+        }
     }
 
     void beep(){
@@ -451,8 +451,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         });
 
     }
-
-
 
     @Override
     public void onClick(View v) {

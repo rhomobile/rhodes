@@ -26,6 +26,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.lang.Math;
+
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Point;
+
 
 /**
  * A view which renders a series of custom graphics to be overlayed on top of an associated preview
@@ -122,6 +129,9 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
 
     public GraphicOverlay(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mRectPaint = new Paint();
+        mRectPaint.setStyle(Paint.Style.FILL);
+        mRectPaint.setARGB(192, 0, 0, 0);
     }
 
     /**
@@ -194,6 +204,20 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     /**
      * Draws the overlay with its associated graphic objects.
      */
+
+    Paint mRectPaint = null;
+    public final int BorderKoeff = 4;
+
+    void drawBorder(Canvas canvas){
+        final int borderWidth = Math.min(canvas.getWidth()/BorderKoeff, canvas.getHeight()/BorderKoeff);
+        canvas.drawRect(new Rect(0, 0, borderWidth, canvas.getHeight()), mRectPaint);
+        canvas.drawRect(new Rect(canvas.getWidth() - borderWidth, 0, canvas.getWidth(), canvas.getHeight()), mRectPaint);
+        canvas.drawRect(new Rect(borderWidth, 0, canvas.getWidth() - borderWidth, borderWidth), mRectPaint);
+        canvas.drawRect(new Rect(borderWidth, canvas.getHeight() - borderWidth, 
+            canvas.getWidth() - borderWidth, canvas.getHeight()), mRectPaint);
+    }
+
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -203,6 +227,8 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
                 mWidthScaleFactor = (float) canvas.getWidth() / (float) mPreviewWidth;
                 mHeightScaleFactor = (float) canvas.getHeight() / (float) mPreviewHeight;
             }
+
+            drawBorder(canvas);            
 
             for (Graphic graphic : mGraphics) {
                 graphic.draw(canvas);

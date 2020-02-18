@@ -49,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.rho.barcode.BarcodeCommon;
+import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 
 // Note: This requires Google Play Services 8.1 or higher, due to using indirect byte buffers for
 // storing images.
@@ -1131,13 +1133,28 @@ public class CameraSource {
                         return;
                     }
 
-                    outputFrame = new Frame.Builder()
-                            .setImageData(mPendingFrameData, mPreviewSize.getWidth(),
-                                    mPreviewSize.getHeight(), ImageFormat.NV21)
+
+                    byte[] imageBytes = mPendingFrameData.array();
+                    final Bitmap bmp = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                    if (bmp != null){
+                        final int borderWidth = Math.min(bmp.getWidth()/4, bmp.getHeight()/4);
+                        Bitmap bitmap = Bitmap.createBitmap(bmp, borderWidth, borderWidth, 
+                            bmp.getWidth() - 2 * borderWidth, bmp.getHeight() - 2 * borderWidth);
+
+                        outputFrame = new Frame.Builder()
+                            .setBitmap(bitmap)
                             .setId(mPendingFrameId)
                             .setTimestampMillis(mPendingTimeMillis)
                             .setRotation(mRotation)
                             .build();
+                    }else{
+                        outputFrame = new Frame.Builder()
+                            .setImageData(mPendingFrameData, mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.NV21)
+                            .setId(mPendingFrameId)
+                            .setTimestampMillis(mPendingTimeMillis)
+                            .setRotation(mRotation)
+                            .build();
+                    }
 
                     // Hold onto the frame data locally, so that we can use this for detection
                     // below.  We need to clear mPendingFrameData to ensure that this buffer isn't
