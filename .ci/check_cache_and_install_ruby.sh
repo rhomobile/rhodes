@@ -6,7 +6,8 @@ RUBY_INSTALLED=$(rvm list | grep ruby-2.3.4)
 echo $RUBY_INSTALLED
 if [[ -z $RUBY_INSTALLED ]]; then
 rvm install 2.3.4 --with-openssl-dir=$rvm_path/usr
-cat /Users/travis/.rvm/log/1582040753_ruby-2.3.4/rubygems.install.log
+DEBUG_LOG=$(ls /Users/travis/.rvm/log/*_ruby-2.3.4/rubygems.install.log | sort -V | tail -n 1)
+cat $DEBUG_LOG
 fi
 
 
