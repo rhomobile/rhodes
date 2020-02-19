@@ -73,6 +73,10 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
+import android.hardware.SensorManager;
+import android.hardware.SensorEventListener;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
@@ -115,12 +119,44 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     int camera_index = 0;
 
 
+    void rotateView(final int degrees){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                buttonOk.setRotation(degrees);
+                buttonFlash.setRotation(degrees);
+                buttonRetake.setRotation(degrees);
+                buttonCancel.setRotation(degrees);
+                barcodeValue.setRotation(degrees);
+            }
+        });
+    }
+
+
+    SensorEventListener sensorEventListener;
+    int currentOrientation = Configuration.ORIENTATION_PORTRAIT;
+    public void refreshRotation(int orientation){
+        if (orientation != currentOrientation){
+            currentOrientation = orientation;
+            if(currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+                Log.i(TAG, "Orientation : PORTRAIT");
+                rotateView(0);
+            }
+            else {
+                Log.i(TAG, "Orientation : LANDSCAPE");
+                rotateView(90);
+            }
+        }
+        
+    }
     /**
      * Initializes the UI and creates the detector pipeline.
      */
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+
+        
         setContentView(R.layout.barcode_capture);
         
 
@@ -147,8 +183,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         buttonCancel.setOnClickListener(this);
 
 
-        
-
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(R.id.graphicOverlay);
 
@@ -164,13 +198,34 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         initBeeper();
+
+
+        sensorEventListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                if (event.values[1]<6.5 && event.values[1]>-6.5) {
+                    refreshRotation(Configuration.ORIENTATION_LANDSCAPE );
+                } else {
+                    refreshRotation(Configuration.ORIENTATION_PORTRAIT );
+                }
+            }
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+        };
+
+        SensorManager sm = (SensorManager)getSystemService(SENSOR_SERVICE);
+        sm.registerListener(sensorEventListener, sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        refreshRotation(Configuration.ORIENTATION_PORTRAIT);
+
     }
 
-    /**
-     * Handles the requesting of the camera permission.  This includes
-     * showing a "Snackbar" message of why the permission is needed then
-     * sending the request.
-     */
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.w(TAG, "Changing configuration");
+    }
+
     private void requestCameraPermission() {
         Log.w(TAG, "Camera permission is not granted. Requesting permission");
 
@@ -486,11 +541,16 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     }
 
 
+    enum State{OK, CANCEL, EXECUTET};
+    State currentState = CANCEL;
+
     public void onCancel() {
         buttonOkClicked = false;
         runOnUiThread(new Runnable() {
                 @Override
-                public void run() {BarcodeFactory.callCancelCallback(rhoBarcodeId);}
+                public void run() {
+                    BarcodeFactory.callCancelCallback(rhoBarcodeId);
+                }
             }
         );
         
@@ -502,7 +562,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             finish();
             runOnUiThread(new Runnable() {
                     @Override
-                    public void run() {BarcodeFactory.callOKCallback(lastResult, rhoBarcodeId);}
+                    public void run() {
+                        BarcodeFactory.callOKCallback(lastResult, rhoBarcodeId);
+                    }
                 }
             );
         }
