@@ -164,6 +164,12 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
         postInvalidate();
     }
 
+    public boolean contains(T graphic){
+        synchronized (mLock) {
+            return mGraphics.contains(graphic);
+        }
+    }
+
     /**
      * Returns a copy (as a list) of the set of all active graphics.
      * @return list of all active graphics.
@@ -188,6 +194,14 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
         return mHeightScaleFactor;
     }
 
+
+    public float getPreviewWidth(){
+        return mPreviewWidth;
+    }
+
+    public float getPreviewHeight(){
+        return mPreviewHeight;
+    }
     /**
      * Sets the camera attributes for size and facing direction, which informs how to transform
      * image coordinates later.

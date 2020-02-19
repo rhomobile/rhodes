@@ -23,6 +23,9 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.barcode.Barcode;
 
+import android.graphics.Rect;
+import android.graphics.Point;
+
 /**
  * Generic tracker which is used for tracking or reading a barcode (and can really be used for
  * any type of item).  This is used to receive newly detected items, add a graphical representation
@@ -43,10 +46,35 @@ public class BarcodeGraphicTracker extends Tracker<Barcode> {
         void onBarcodeDetected(Barcode barcode);
     }
 
+
+    boolean isBarcodeBetweenBorders(Barcode barcode){
+        float width = mOverlay.getPreviewWidth();
+        float height = mOverlay.getPreviewHeight();
+        int borderKoeff = mOverlay.BorderKoeff;
+        float topBorder = height / borderKoeff;
+        float bottomBorder = height - topBorder;
+        float leftBorder = width / borderKoeff;
+        float rightBorder = width - leftBorder;
+
+        Point[] points = barcode.cornerPoints;
+        for(int i = 0; i < 4; i++){
+            if (points[i].x < leftBorder || 
+                points[i].x > rightBorder || 
+                points[i].y < topBorder || 
+                points[i].y > bottomBorder) return false;
+        }
+        return true;
+    }
+
+
+
     BarcodeGraphicTracker(GraphicOverlay<BarcodeGraphic> mOverlay, BarcodeGraphic mGraphic,
                           Context context) {
         this.mOverlay = mOverlay;
         this.mGraphic = mGraphic;
+
+
+
         if (context instanceof BarcodeUpdateListener) {
             this.mBarcodeUpdateListener = (BarcodeUpdateListener) context;
         } else {
@@ -57,10 +85,16 @@ public class BarcodeGraphicTracker extends Tracker<Barcode> {
     /**
      * Start tracking the detected item instance within the item overlay.
      */
+
+    boolean detected = false;
+
     @Override
     public void onNewItem(int id, Barcode item) {
         mGraphic.setId(id);
-        mBarcodeUpdateListener.onBarcodeDetected(item);
+        if (isBarcodeBetweenBorders(item) && !detected){
+            mBarcodeUpdateListener.onBarcodeDetected(item);
+            detected = true;
+        }
     }
 
     /**
@@ -68,8 +102,18 @@ public class BarcodeGraphicTracker extends Tracker<Barcode> {
      */
     @Override
     public void onUpdate(Detector.Detections<Barcode> detectionResults, Barcode item) {
-        mOverlay.add(mGraphic);
-        mGraphic.updateItem(item);
+        boolean betweenBorders = isBarcodeBetweenBorders(item);
+        if (betweenBorders && !detected){
+            mBarcodeUpdateListener.onBarcodeDetected(item);
+            detected = true;
+        }
+        if (betweenBorders){
+            mOverlay.add(mGraphic);
+            mGraphic.updateItem(item);
+        }else{
+            mOverlay.remove(mGraphic);
+        }
+       
     }
 
     /**
