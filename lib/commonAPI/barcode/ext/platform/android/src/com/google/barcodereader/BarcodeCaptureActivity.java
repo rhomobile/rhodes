@@ -329,16 +329,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mPreview != null) {
-            mPreview.release();
-        }
-        if (!buttonOkClicked){
-            onCancel();
-        }
-    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -530,7 +521,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                 break;
             case R.id.button_back:
                 onCancel();
-                finish();
                 break;
             case R.id.barcode_ok:
                 onOK();
@@ -541,25 +531,13 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     }
 
 
-    enum State{OK, CANCEL, EXECUTET};
-    State currentState = CANCEL;
-
-    public void onCancel() {
-        buttonOkClicked = false;
-        runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    BarcodeFactory.callCancelCallback(rhoBarcodeId);
-                }
-            }
-        );
-        
-    }
-
-    public void onOK() {
-        if (lastResult != ""){
-            buttonOkClicked = true;
-            finish();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mPreview != null) {
+            mPreview.release();
+        }
+        if (currentState == State.OK){
             runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -567,9 +545,33 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                     }
                 }
             );
+        }else if (currentState == State.CANCEL){
+            runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        BarcodeFactory.callCancelCallback(rhoBarcodeId);
+                    }
+                }
+            );
         }
+        currentState = State.EXECUTET;
     }
-    boolean buttonOkClicked = false;
+
+    enum State{OK, CANCEL, EXECUTET};
+    State currentState = State.CANCEL;
+
+    public void onCancel() {
+        currentState = State.CANCEL;
+        finish();
+    }
+
+    public void onOK() {
+        if (lastResult != ""){
+            currentState = State.OK;
+        }
+        finish();
+    }
+
 
 
 }
