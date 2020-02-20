@@ -77,6 +77,7 @@ import android.hardware.SensorManager;
 import android.hardware.SensorEventListener;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import java.util.ArrayList;
 
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
@@ -119,15 +120,16 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     int camera_index = 0;
 
 
-    void rotateView(final int degrees){
+    void rotateView(final boolean vertical){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                final int degrees = vertical ? 0 : 90;
                 buttonOk.setRotation(degrees);
                 buttonFlash.setRotation(degrees);
                 buttonRetake.setRotation(degrees);
                 buttonCancel.setRotation(degrees);
-                barcodeValue.setRotation(degrees);
+                //barcodeValue.setRotation(degrees);
             }
         });
     }
@@ -140,11 +142,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             currentOrientation = orientation;
             if(currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
                 Log.i(TAG, "Orientation : PORTRAIT");
-                rotateView(0);
+                rotateView(true);
             }
             else {
                 Log.i(TAG, "Orientation : LANDSCAPE");
-                rotateView(90);
+                rotateView(false);
             }
         }
         
@@ -201,12 +203,27 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
 
         sensorEventListener = new SensorEventListener() {
+            ArrayList<Integer> list = new ArrayList<Integer>();
             @Override
             public void onSensorChanged(SensorEvent event) {
                 if (event.values[1]<6.5 && event.values[1]>-6.5) {
-                    refreshRotation(Configuration.ORIENTATION_LANDSCAPE );
+                    list.add(0);
                 } else {
-                    refreshRotation(Configuration.ORIENTATION_PORTRAIT );
+                    list.add(1);
+                }
+
+                if (list.size() >= 6){
+                    float summ = 0;
+                    for(int i = 0; i < list.size(); i++){
+                        summ += list.get(i);
+                    }
+                    summ = summ / list.size();
+                    list.clear();
+                    if (summ < 0.5){
+                        refreshRotation(Configuration.ORIENTATION_LANDSCAPE );
+                    }else{
+                        refreshRotation(Configuration.ORIENTATION_PORTRAIT ); 
+                    }
                 }
             }
             @Override
