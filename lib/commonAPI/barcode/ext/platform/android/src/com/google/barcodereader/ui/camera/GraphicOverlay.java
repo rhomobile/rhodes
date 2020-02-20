@@ -30,8 +30,11 @@ import java.lang.Math;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.text.TextPaint;
+import android.graphics.RectF;
 import android.graphics.Rect;
 import android.graphics.Point;
+import android.text.TextUtils;
 
 
 /**
@@ -60,6 +63,7 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     private float mHeightScaleFactor = 1.0f;
     private int mFacing = CameraSource.CAMERA_FACING_BACK;
     private Set<T> mGraphics = new HashSet<T>();
+    TextPaint mTextPaint = null;
 
     /**
      * Base class for a custom graphics object to be rendered within the graphic overlay.  Subclass
@@ -129,9 +133,19 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
 
     public GraphicOverlay(Context context, AttributeSet attrs) {
         super(context, attrs);
+
         mRectPaint = new Paint();
         mRectPaint.setStyle(Paint.Style.FILL);
         mRectPaint.setARGB(192, 0, 0, 0);
+
+
+        mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint.setColor(Color.WHITE);
+        mTextPaint.setStyle(Paint.Style.FILL);
+        mTextPaint.setAntiAlias(true);
+        mTextPaint.setTextSize(64);
+        mTextPaint.setTextAlign(Paint.Align.LEFT);
+        mTextPaint.setLinearText(true);
     }
 
     /**
@@ -220,15 +234,87 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
      */
 
     Paint mRectPaint = null;
-    public final int BorderKoeff = 4;
+    final float BorderKoeff = 1.5f;
+
+    public float getTopBorder(float width, float height){
+        float sqareHeight = Math.min(width, height) / BorderKoeff;
+        return (height - sqareHeight) / 2;
+    }
+
+    public float getBottomBorder(float width, float height){
+        float sqareHeight = Math.min(width, height) / BorderKoeff;
+        return (height + sqareHeight) / 2;
+    }
+
+    public float getLeftBorder(float width, float height){
+        float sqareWidth = Math.min(width, height) / BorderKoeff;
+        return (width - sqareWidth) / 2;
+    }
+
+    public float getRightBorder(float width, float height){
+        float sqareWidth = Math.min(width, height) / BorderKoeff;
+        return (width + sqareWidth) / 2;
+    }
 
     void drawBorder(Canvas canvas){
-        final int borderWidth = Math.min(canvas.getWidth()/BorderKoeff, canvas.getHeight()/BorderKoeff);
-        canvas.drawRect(new Rect(0, 0, borderWidth, canvas.getHeight()), mRectPaint);
-        canvas.drawRect(new Rect(canvas.getWidth() - borderWidth, 0, canvas.getWidth(), canvas.getHeight()), mRectPaint);
-        canvas.drawRect(new Rect(borderWidth, 0, canvas.getWidth() - borderWidth, borderWidth), mRectPaint);
-        canvas.drawRect(new Rect(borderWidth, canvas.getHeight() - borderWidth, 
-            canvas.getWidth() - borderWidth, canvas.getHeight()), mRectPaint);
+        float width     = canvas.getWidth();
+        float height    = canvas.getHeight();
+
+        float topBorder     = getTopBorder(width, height);
+        float bottomBorder  = getBottomBorder(width, height);
+        float leftBorder    = getLeftBorder(width, height);
+        float rightBorder   = getRightBorder(width, height);
+
+
+        canvas.drawRect(new RectF(0,             0,              leftBorder,     height),    mRectPaint);
+        canvas.drawRect(new RectF(rightBorder,   0,              width,          height),    mRectPaint);
+        canvas.drawRect(new RectF(leftBorder,    0,              rightBorder,    topBorder), mRectPaint);
+        canvas.drawRect(new RectF(leftBorder,    bottomBorder,   rightBorder,    height),    mRectPaint);
+    }
+
+
+    
+    String barcodeResult = "";
+
+    private boolean isVertical = true;
+    public void setVertical(boolean b){
+        isVertical = b;
+    }
+    public void setResult(String barcodeResult){
+        this.barcodeResult = barcodeResult;
+    }
+
+    void drawResult(Canvas canvas){
+        if (barcodeResult.isEmpty()) return;
+
+        float width     = canvas.getWidth();
+        float height    = canvas.getHeight();
+
+        
+        if(isVertical){
+            float bottomBorder  = getBottomBorder(width, height);
+
+            float x = width * 0.1f;           
+            float y = (height + bottomBorder) / 2f;          
+            int textWidth = (int)(width * 0.8f);
+            CharSequence txt = TextUtils.ellipsize(barcodeResult, mTextPaint, textWidth, TextUtils.TruncateAt.END);
+            canvas.drawText(txt, 0, txt.length(), x, y, mTextPaint);
+        }else{
+            float leftBorder    = getLeftBorder(width, height);
+            canvas.save(); 
+ 
+            float x = height * 0.1f;           
+            float y = -leftBorder / 2;          
+            int textWidth = (int)(height - x);
+            CharSequence txt = TextUtils.ellipsize(barcodeResult, mTextPaint, textWidth, TextUtils.TruncateAt.END);
+
+            canvas.rotate(90.0f);
+            canvas.drawText(txt, 0, txt.length(), x, y, mTextPaint);
+            canvas.restore();
+        }
+
+
+
     }
 
 
@@ -242,7 +328,8 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
                 mHeightScaleFactor = (float) canvas.getHeight() / (float) mPreviewHeight;
             }
 
-            drawBorder(canvas);            
+            drawBorder(canvas);  
+            drawResult(canvas);          
 
             for (Graphic graphic : mGraphics) {
                 graphic.draw(canvas);

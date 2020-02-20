@@ -43,20 +43,6 @@
       android:orientation="vertical"
       android:layout_height="wrap_content"
       android:layout_alignParentBottom="true">
-
-      <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/barcode_value"
-        android:text=""
-        android:textColor="#ffffff"
-        android:gravity="center"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="12dp"
-        android:textSize="32dp"
-        android:singleLine="true"
-      />
       <LinearLayout
           android:id="@+id/buttons_layout"
           android:layout_width="match_parent"

@@ -107,9 +107,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     private AppCompatImageButton buttonRetake;
     private AppCompatImageButton buttonCancel;
 
-
-    private TextView barcodeValue;
-
     private String rhoBarcodeId;
     private boolean isUsingFlash = false;
     private static final int RC_BARCODE_CAPTURE = 9001;
@@ -121,6 +118,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
 
     void rotateView(final boolean vertical){
+        mGraphicOverlay.setVertical(vertical);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -129,7 +127,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                 buttonFlash.setRotation(degrees);
                 buttonRetake.setRotation(degrees);
                 buttonCancel.setRotation(degrees);
-                //barcodeValue.setRotation(degrees);
+                
             }
         });
     }
@@ -172,8 +170,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }else{
             CameraSource.setTargetCameraIndex(-1);
         }
-
-        barcodeValue = (TextView)findViewById(R.id.barcode_value);
 
         buttonFlash = (AppCompatImageButton) findViewById(R.id.button_flash);
         buttonFlash.setOnClickListener(this);
@@ -500,8 +496,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                barcodeValue.setText(lastResult);
+                mGraphicOverlay.setResult(lastResult);
                 if (lastResult == ""){
                     buttonOk.setVisibility(View.INVISIBLE);
                     buttonRetake.setVisibility(View.INVISIBLE);

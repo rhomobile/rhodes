@@ -50,11 +50,11 @@ public class BarcodeGraphicTracker extends Tracker<Barcode> {
     boolean isBarcodeBetweenBorders(Barcode barcode){
         float width = mOverlay.getPreviewWidth();
         float height = mOverlay.getPreviewHeight();
-        int borderKoeff = mOverlay.BorderKoeff;
-        float topBorder = height / borderKoeff;
-        float bottomBorder = height - topBorder;
-        float leftBorder = width / borderKoeff;
-        float rightBorder = width - leftBorder;
+
+        float topBorder     = mOverlay.getTopBorder(width, height);
+        float bottomBorder  = mOverlay.getBottomBorder(width, height);
+        float leftBorder    = mOverlay.getLeftBorder(width, height);
+        float rightBorder   = mOverlay.getRightBorder(width, height);
 
         Point[] points = barcode.cornerPoints;
         for(int i = 0; i < 4; i++){

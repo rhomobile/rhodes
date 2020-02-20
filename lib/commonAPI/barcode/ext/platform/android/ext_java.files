@@ -27,7 +27,6 @@ ext/platform/android/src/com/google/barcodereader/BarcodeCaptureActivity.java
 ext/platform/android/src/com/google/barcodereader/BarcodeGraphic.java
 ext/platform/android/src/com/google/barcodereader/BarcodeGraphicTracker.java
 ext/platform/android/src/com/google/barcodereader/BarcodeTrackerFactory.java
-ext/platform/android/src/com/google/barcodereader/VerticalTextView.java
 ext/platform/android/src/com/google/zxing/BarcodeFormat.java
 ext/platform/android/src/com/google/zxing/Binarizer.java
 ext/platform/android/src/com/google/zxing/BinaryBitmap.java
