@@ -42,8 +42,8 @@ public class BarcodeGraphicTracker extends Tracker<Barcode> {
      * BarcodeUpdateListener interface method onBarcodeDetected.
      */
     public interface BarcodeUpdateListener {
-        @UiThread
         void onBarcodeDetected(Barcode barcode);
+        void onBarcodeInCenter(Barcode barcode);
     }
 
 
@@ -66,6 +66,29 @@ public class BarcodeGraphicTracker extends Tracker<Barcode> {
         return true;
     }
 
+    boolean isBarcodeAtCenter(Barcode barcode){
+        float width = mOverlay.getPreviewWidth();
+        float height = mOverlay.getPreviewHeight();
+        
+        float verticalCenter = width / 2;
+        float horizontalCenter = height / 2;
+        Point[] points = barcode.cornerPoints;
+
+        float barcodeVecticalCenter = 0;
+        float barcodeHorizontalCanter = 0;
+        for(int i = 0; i < 4; i++){
+            barcodeHorizontalCanter += points[i].x;
+            barcodeVecticalCenter   += points[i].y;
+        }
+        barcodeHorizontalCanter/=4;
+        barcodeVecticalCenter/=4;
+
+        float delta = Math.min(width, height) * 0.25f;
+
+        return Math.pow(verticalCenter - barcodeVecticalCenter, 2) + Math.pow(horizontalCenter - barcodeHorizontalCanter, 2) < delta*delta;
+
+
+    }
 
 
     BarcodeGraphicTracker(GraphicOverlay<BarcodeGraphic> mOverlay, BarcodeGraphic mGraphic,
@@ -107,7 +130,12 @@ public class BarcodeGraphicTracker extends Tracker<Barcode> {
             mBarcodeUpdateListener.onBarcodeDetected(item);
             detected = true;
         }
+
+
         if (betweenBorders){
+            if (isBarcodeAtCenter(item)){
+                mBarcodeUpdateListener.onBarcodeInCenter(item);
+            }
             mOverlay.add(mGraphic);
             mGraphic.updateItem(item);
         }else{

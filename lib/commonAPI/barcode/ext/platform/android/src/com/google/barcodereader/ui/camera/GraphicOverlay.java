@@ -37,24 +37,6 @@ import android.graphics.Point;
 import android.text.TextUtils;
 
 
-/**
- * A view which renders a series of custom graphics to be overlayed on top of an associated preview
- * (i.e., the camera preview).  The creator can add graphics objects, update the objects, and remove
- * them, triggering the appropriate drawing and invalidation within the view.<p>
- *
- * Supports scaling and mirroring of the graphics relative the camera's preview properties.  The
- * idea is that detection items are expressed in terms of a preview size, but need to be scaled up
- * to the full view size, and also mirrored in the case of the front-facing camera.<p>
- *
- * Associated {@link Graphic} items should use the following methods to convert to view coordinates
- * for the graphics that are drawn:
- * <ol>
- * <li>{@link Graphic#scaleX(float)} and {@link Graphic#scaleY(float)} adjust the size of the
- * supplied value from the preview scale to the view scale.</li>
- * <li>{@link Graphic#translateX(float)} and {@link Graphic#translateY(float)} adjust the coordinate
- * from the preview's coordinate system to the view coordinate system.</li>
- * </ol>
- */
 public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     private final Object mLock = new Object();
     private int mPreviewWidth;
@@ -64,52 +46,24 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     private int mFacing = CameraSource.CAMERA_FACING_BACK;
     private Set<T> mGraphics = new HashSet<T>();
     TextPaint mTextPaint = null;
+    private float textHeigh = 64;
 
-    /**
-     * Base class for a custom graphics object to be rendered within the graphic overlay.  Subclass
-     * this and implement the {@link Graphic#draw(Canvas)} method to define the
-     * graphics element.  Add instances to the overlay using {@link GraphicOverlay#add(Graphic)}.
-     */
     public static abstract class Graphic {
         private GraphicOverlay mOverlay;
 
         public Graphic(GraphicOverlay overlay) {
             mOverlay = overlay;
         }
-
-        /**
-         * Draw the graphic on the supplied canvas.  Drawing should use the following methods to
-         * convert to view coordinates for the graphics that are drawn:
-         * <ol>
-         * <li>{@link Graphic#scaleX(float)} and {@link Graphic#scaleY(float)} adjust the size of
-         * the supplied value from the preview scale to the view scale.</li>
-         * <li>{@link Graphic#translateX(float)} and {@link Graphic#translateY(float)} adjust the
-         * coordinate from the preview's coordinate system to the view coordinate system.</li>
-         * </ol>
-         *
-         * @param canvas drawing canvas
-         */
         public abstract void draw(Canvas canvas);
 
-        /**
-         * Adjusts a horizontal value of the supplied value from the preview scale to the view
-         * scale.
-         */
         public float scaleX(float horizontal) {
             return horizontal * mOverlay.mWidthScaleFactor;
         }
 
-        /**
-         * Adjusts a vertical value of the supplied value from the preview scale to the view scale.
-         */
         public float scaleY(float vertical) {
             return vertical * mOverlay.mHeightScaleFactor;
         }
 
-        /**
-         * Adjusts the x coordinate from the preview's coordinate system to the view coordinate
-         * system.
-         */
         public float translateX(float x) {
             if (mOverlay.mFacing == CameraSource.CAMERA_FACING_FRONT) {
                 return mOverlay.getWidth() - scaleX(x);
@@ -118,10 +72,6 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
             }
         }
 
-        /**
-         * Adjusts the y coordinate from the preview's coordinate system to the view coordinate
-         * system.
-         */
         public float translateY(float y) {
             return scaleY(y);
         }
@@ -143,7 +93,7 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setAntiAlias(true);
-        mTextPaint.setTextSize(64);
+        mTextPaint.setTextSize(textHeigh);
         mTextPaint.setTextAlign(Paint.Align.LEFT);
         mTextPaint.setLinearText(true);
     }
@@ -279,9 +229,11 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     private boolean isVertical = true;
     public void setVertical(boolean b){
         isVertical = b;
+        postInvalidate();
     }
     public void setResult(String barcodeResult){
         this.barcodeResult = barcodeResult;
+        postInvalidate();
     }
 
     void drawResult(Canvas canvas){
@@ -290,30 +242,48 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
         float width     = canvas.getWidth();
         float height    = canvas.getHeight();
 
-        
-        if(isVertical){
-            float bottomBorder  = getBottomBorder(width, height);
+        float bottomBorder  = getBottomBorder(width, height);
+        float leftBorder    = getLeftBorder(width, height);
 
+        textHeigh = Math.min(bottomBorder, leftBorder) / 3 ;
+        mTextPaint.setTextSize(textHeigh);
+        
+        float measuredWidth = mTextPaint.measureText(barcodeResult);
+
+        if(isVertical){
             float x = width * 0.1f;           
-            float y = (height + bottomBorder) / 2f;          
+            float y = (height + bottomBorder + textHeigh) / 2f ;   
+
             int textWidth = (int)(width * 0.8f);
-            CharSequence txt = TextUtils.ellipsize(barcodeResult, mTextPaint, textWidth, TextUtils.TruncateAt.END);
-            canvas.drawText(txt, 0, txt.length(), x, y, mTextPaint);
+            
+            if (measuredWidth < textWidth){
+                x += (textWidth - measuredWidth) / 2f;
+                canvas.drawText(barcodeResult, x, y, mTextPaint); 
+            }else{
+                CharSequence txt = TextUtils.ellipsize(barcodeResult, mTextPaint, textWidth, TextUtils.TruncateAt.END);
+                canvas.drawText(txt, 0, txt.length(), x, y, mTextPaint);
+            }
+            
         }else{
-            float leftBorder    = getLeftBorder(width, height);
             canvas.save(); 
  
             float x = height * 0.1f;           
-            float y = -leftBorder / 2;          
-            int textWidth = (int)(height - x);
-            CharSequence txt = TextUtils.ellipsize(barcodeResult, mTextPaint, textWidth, TextUtils.TruncateAt.END);
+            float y = (-leftBorder + textHeigh) / 2;          
+            int textWidth = (int)(height*0.8f);
+            
 
             canvas.rotate(90.0f);
-            canvas.drawText(txt, 0, txt.length(), x, y, mTextPaint);
+
+            if (measuredWidth < textWidth){
+                x += (textWidth - measuredWidth) / 2f;
+                canvas.drawText(barcodeResult, x, y, mTextPaint); 
+            }else{
+                CharSequence txt = TextUtils.ellipsize(barcodeResult, mTextPaint, textWidth, TextUtils.TruncateAt.END);
+                canvas.drawText(txt, 0, txt.length(), x, y, mTextPaint);
+            }
+
             canvas.restore();
         }
-
-
 
     }
 

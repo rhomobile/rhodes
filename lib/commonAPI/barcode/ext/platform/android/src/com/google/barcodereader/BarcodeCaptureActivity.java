@@ -78,6 +78,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.Date;
 
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
@@ -127,7 +130,6 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                 buttonFlash.setRotation(degrees);
                 buttonRetake.setRotation(degrees);
                 buttonCancel.setRotation(degrees);
-                
             }
         });
     }
@@ -154,12 +156,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
      */
     @Override
     public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-
-        
+        super.onCreate(icicle);      
         setContentView(R.layout.barcode_capture);
         
-
         Intent intent = getIntent();
         if (intent != null) {
             camera_index = intent.getIntExtra(CAMERA_INDEX_EXTRA, 0);
@@ -397,6 +396,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
     }
 
+
     private boolean onTap(float rawX, float rawY) {
         // Find tap point in preview frame coordinates.
         int[] location = new int[2];
@@ -431,6 +431,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         }
         return false;
     }
+
+
 
     private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
@@ -488,6 +490,59 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             Log.d(TAG, "Barcode read: " + barcode.displayValue);
             refresh();
             beep();
+        }
+    }
+
+
+
+    private class TimeAndBarcode {
+        public TimeAndBarcode(Barcode b){
+            barcode = b;
+            Date date = new Date();
+            time = date.getTime();
+        }
+        public Barcode barcode = null;
+        public long time = 0;
+    }
+
+    LinkedList<TimeAndBarcode> barcodesInCenter = new LinkedList<TimeAndBarcode>();
+    final int barcodesInCenterMaxSize = 20;
+    final int barcodesInCenterMaxTime = 2000;
+
+
+    @Override
+    public void onBarcodeInCenter(Barcode barcode){
+        Log.d(TAG, "Barcode detected in center");
+        String tempResult = null;
+
+        synchronized (barcodesInCenter) {
+            barcodesInCenter.add(new TimeAndBarcode(barcode));
+
+            if (barcodesInCenter.size() < 2) return;
+            while(barcodesInCenter.size() > barcodesInCenterMaxSize || 
+                (barcodesInCenter.getLast().time - barcodesInCenter.getFirst().time > barcodesInCenterMaxTime)){
+                barcodesInCenter.removeFirst();
+            }
+            if (barcodesInCenter.size() < 3) return;
+
+            if (barcodesInCenter.getLast().time - barcodesInCenter.getFirst().time < 500) return;
+
+            Iterator<TimeAndBarcode> iterator = barcodesInCenter.iterator();
+            while (iterator.hasNext()) {
+                if (tempResult == null){
+                    tempResult = iterator.next().barcode.displayValue;
+                }else if (!iterator.next().barcode.displayValue.equals(tempResult)) {
+                    Log.d(TAG, "Barcode detected in center: found dublicates");
+                    return;
+                }
+            }
+        }
+
+        if (!lastResult.equals(tempResult)){
+            lastResult = tempResult;
+            refresh();
+            beep();
+            barcodesInCenter.clear();
         }
     }
 
