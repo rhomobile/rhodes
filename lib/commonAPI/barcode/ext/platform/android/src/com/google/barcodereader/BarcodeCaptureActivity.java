@@ -198,7 +198,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
 
         sensorEventListener = new SensorEventListener() {
-            ArrayList<Integer> list = new ArrayList<Integer>();
+            LinkedList<Integer> list = new LinkedList<Integer>();
             @Override
             public void onSensorChanged(SensorEvent event) {
                 if (event.values[1]<6.5 && event.values[1]>-6.5) {
@@ -207,16 +207,21 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                     list.add(1);
                 }
 
-                if (list.size() >= 6){
-                    float summ = 0;
-                    for(int i = 0; i < list.size(); i++){
-                        summ += list.get(i);
+                if (list.size() >= 8){
+                    while (list.size() > 8){
+                        list.removeFirst();
                     }
-                    summ = summ / list.size();
-                    list.clear();
-                    if (summ < 0.5){
+
+                    float summ = 0;
+
+                    Iterator<Integer> iterator = list.iterator();
+                    while (iterator.hasNext()) {
+                        summ += iterator.next();
+                    }
+
+                    if (summ == 0){
                         refreshRotation(Configuration.ORIENTATION_LANDSCAPE );
-                    }else{
+                    }else if (summ == list.size()){
                         refreshRotation(Configuration.ORIENTATION_PORTRAIT ); 
                     }
                 }

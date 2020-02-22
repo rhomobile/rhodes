@@ -247,12 +247,12 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
 
         textHeigh = Math.min(bottomBorder, leftBorder) / 3 ;
         mTextPaint.setTextSize(textHeigh);
-        
+
         float measuredWidth = mTextPaint.measureText(barcodeResult);
 
         if(isVertical){
             float x = width * 0.1f;           
-            float y = (height + bottomBorder + textHeigh) / 2f ;   
+            float y = (height + bottomBorder + textHeigh) / 2f;   
 
             int textWidth = (int)(width * 0.8f);
             
