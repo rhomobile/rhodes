@@ -81,6 +81,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
@@ -99,6 +100,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     // constants used to pass extra data in the intent
     public static final String BarcodeObject = "Barcode";
 
+
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
     private GraphicOverlay<BarcodeGraphic> mGraphicOverlay;
@@ -116,9 +118,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     
     public static final String CAMERA_INDEX_EXTRA = "camera_index"; 
     public static final String RHO_BARCODE_ID = "barcode_obj_id";
+    public static final String PROPERTY_MAP = "property_map";
+
     public String lastResult = "";
     int camera_index = 0;
-
+    HashMap<String, String> propertyMap = null;
 
     void rotateView(final boolean vertical){
         mGraphicOverlay.setVertical(vertical);
@@ -164,7 +168,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             camera_index = intent.getIntExtra(CAMERA_INDEX_EXTRA, 0);
             Logger.D(TAG, "Intent Camera index: " + camera_index);
             rhoBarcodeId = intent.getStringExtra(RHO_BARCODE_ID);
-
+            propertyMap = (HashMap<String, String>)intent.getSerializableExtra(PROPERTY_MAP);
             CameraSource.setTargetCameraIndex(BarcodeCommon.getCameraIdByName(rhoBarcodeId));
         }else{
             CameraSource.setTargetCameraIndex(-1);
@@ -281,7 +285,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     private void createCameraSource(boolean useFlash) {
         Context context = getApplicationContext();
 
-        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).build();
+        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).
+        setBarcodeFormats(Barcode.ALL_FORMATS).build();
         BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, this);
         barcodeDetector.setProcessor(new MultiProcessor.Builder<Barcode>(barcodeFactory).build());
 

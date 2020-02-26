@@ -63,6 +63,9 @@ public class InternalAndroidBarcodeScanner extends BarcodeCommon{
 
         RhodesActivity ra = RhodesActivity.safeGetInstance();
         Intent intent = new Intent(ra, com.google.barcodereader.BarcodeCaptureActivity.class);
+
+        HashMap<String, String> hashMap = new HashMap<String, String>(propertyMap);
+        intent.putExtra(com.google.barcodereader.BarcodeCaptureActivity.PROPERTY_MAP, hashMap);
         intent.putExtra(com.google.barcodereader.BarcodeCaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
         intent.putExtra(com.google.barcodereader.BarcodeCaptureActivity.RHO_BARCODE_ID, this.getId());
         
@@ -78,6 +81,9 @@ public class InternalAndroidBarcodeScanner extends BarcodeCommon{
 
         RhodesActivity ra = RhodesActivity.safeGetInstance();
         Intent intent = new Intent(ra, com.google.barcodereader.BarcodeCaptureActivity.class);
+        		
+        HashMap<String, String> hashMap = new HashMap<String, String>(propertyMap);
+        intent.putExtra(com.google.barcodereader.BarcodeCaptureActivity.PROPERTY_MAP, hashMap);
         intent.putExtra(com.google.barcodereader.BarcodeCaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
         intent.putExtra(com.google.barcodereader.BarcodeCaptureActivity.RHO_BARCODE_ID, this.getId());
         
