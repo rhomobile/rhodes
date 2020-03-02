@@ -406,6 +406,15 @@ public class RhodesService extends Service {
 
 		if (BaseActivity.getActivitiesCount() > 0)
 			handleAppActivation();
+
+
+		Builder builder = AndroidFunctionalityManager.getAndroidFunctionality().getNotificationBuilder(RhodesActivity.safeGetInstance(), "", "");
+		builder.setSmallIcon(R.mipmap.icon);
+		builder.setPriority(Notification.PRIORITY_HIGH);
+		builder.setOngoing(true);
+
+        RhodesService.getInstance().startServiceForeground(1, builder.build());
+		Logger.I(TAG, "ForegroundService: service started");
 	}
 
 	public static void handleAppStarted()

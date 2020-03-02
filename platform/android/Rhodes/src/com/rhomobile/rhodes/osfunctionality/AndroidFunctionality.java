@@ -28,6 +28,9 @@ package com.rhomobile.rhodes.osfunctionality;
 
 import android.content.Context;
 import android.webkit.WebView;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.ComponentName;
 
 import android.app.Notification.Builder;
 
@@ -51,4 +54,6 @@ public interface AndroidFunctionality {
     void pauseWebView( WebView view, boolean doPause );
 
     Builder getNotificationBuilder( Context ctx, String channelID, String channelName );
+    ComponentName startForegroundService(Activity activity, Intent service);
+
 }

@@ -33,6 +33,10 @@ import android.app.NotificationManager;
 import com.rhomobile.rhodes.Logger;
 import android.os.Build.VERSION;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.ComponentName;
+
 
 @RequiresApi(26)
 class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFunctionality {
@@ -101,5 +105,12 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
         }
 
         return builder;
-    }    
+    }
+
+    @Override
+	public ComponentName startForegroundService(Activity activity, Intent service) {
+		return activity.startForegroundService(service);
+	}
+
+
 }
