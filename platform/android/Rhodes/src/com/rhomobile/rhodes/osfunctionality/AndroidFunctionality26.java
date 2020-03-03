@@ -109,7 +109,20 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
 
     @Override
 	public ComponentName startForegroundService(Activity activity, Intent service) {
-		return activity.startForegroundService(service);
+        java.lang.reflect.Method methodStartForegroundService = null;
+        try {
+            java.lang.reflect.Method methodStartForegroundService = activity.getClass().getMethod("startForegroundService", Intent.class);
+        }
+        } catch( Exception e ) {
+            Logger.E( TAG, "Error: Activity class do not has startForegroundService() method !" );
+            Logger.E( TAG, e.toString() );
+        }
+        if (methodStartForegroundService!= null) {
+            return (ComponentName)methodStartForegroundService.invoke(activity, service);
+        }
+        else {
+		          return activity.startService(service);
+        }
 	}
 
 
