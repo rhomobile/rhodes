@@ -110,6 +110,7 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
     @Override
 	public ComponentName startForegroundService(Activity activity, Intent service) {
         java.lang.reflect.Method methodStartForegroundService = null;
+        ComponentName resultOfInvoke = null;
         try {
             methodStartForegroundService = activity.getClass().getMethod("startForegroundService", Intent.class);
         } catch( Exception e ) {
@@ -117,11 +118,17 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
             Logger.E( TAG, e.toString() );
         }
         if (methodStartForegroundService!= null) {
-            return (ComponentName)methodStartForegroundService.invoke(activity, service);
+            try {
+                resultOfInvoke = (ComponentName)methodStartForegroundService.invoke(activity, service);
+            } catch( Exception e ) {
+                Logger.E( TAG, "Error: some error during invoke startForegroundService() method !" );
+                Logger.E( TAG, e.toString() );
+            }
         }
         else {
-		          return activity.startService(service);
+            resultOfInvoke = activity.startService(service);
         }
+        return resultOfInvoke;
 	}
 
 
