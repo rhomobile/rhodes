@@ -7,7 +7,4 @@ if [[ -z $RUBY_INSTALLED ]]; then
 rvm install 2.3.4
 fi
 
-
-
-
-
+exit 0
