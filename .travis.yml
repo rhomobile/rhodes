@@ -63,6 +63,7 @@ before_deploy:
 - "$TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_deploy.sh"
 deploy:
   provider: s3
+  edge: true
   bucket: tau-autobuilds
   access_key_id: "$AWS_ACCESS_KEY"
   secret_access_key: "$AWS_SECRET_KEY"
