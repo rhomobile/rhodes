@@ -5,7 +5,7 @@ before_install:
 install:
 - ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_ruby.sh
-- rvm use 2.3.4
+- rvm use 2.5.1
 - |
   if [[ -z $(rvm gemset list | grep rhodes) ]]; then
     rvm gemset create rhodes;
@@ -18,7 +18,7 @@ install:
 script:
 - ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
 - rvm list
-- rvm use 2.3.4
+- rvm use 2.5.1
 - rvm gemset list
 - rvm gemset use rhodes
 - gem list
@@ -63,6 +63,7 @@ before_deploy:
 - "$TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_deploy.sh"
 deploy:
   provider: s3
+  edge: true
   bucket: tau-autobuilds
   access_key_id: "$AWS_ACCESS_KEY"
   secret_access_key: "$AWS_SECRET_KEY"
