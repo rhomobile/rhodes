@@ -1,9 +1,9 @@
 version: '{branch}.{build}'
-image: Visual Studio 2019
+image: Visual Studio 2017
 platform: x86
 clone_folder: C:\TAU\rhodes
 environment:
-  QTDIR: C:\Qt\5.14\msvc2017
+  QTDIR: C:\Qt\5.13\msvc2017
   matrix:
     - win32_rhosimulator:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
