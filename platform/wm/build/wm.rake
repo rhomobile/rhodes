@@ -102,10 +102,16 @@ def QTInfo(qtcurrentversion)
           value = 6 # 5.11
       end
 
+      eqstatus = is_equal("5.13",qtcurrentversion)
+      puts "Checking for 5.13 - #{eqstatus}"
+      if(eqstatus)
+          value = 7 # 5.13
+      end
+
       eqstatus = is_equal("5.14",qtcurrentversion)
       puts "Checking for 5.14 - #{eqstatus}"
       if(eqstatus)
-          value = 7 # 5.14
+          value = 8 # 5.14
       end
 
       return value
@@ -847,7 +853,7 @@ namespace "config" do
         puts "\n Visual Studio #{$vs_version} is not currently supported for this QT version "
         exit 1
       end
-      if $vs_version != 2017 &&  ($qtversionindex == 7)
+      if $vs_version != 2017 &&  ($qtversionindex == 7 || $qtversionindex == 8)
         puts "\n Visual Studio #{$vs_version} is not currently supported for this QT version "
         exit 1
       end
@@ -1502,22 +1508,7 @@ namespace "build" do
                         end
                       end
                     end
-               when 4, 5, 6
-                  possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
-                  format ="Found QT Version : #{$QVersion}" 
-                  begin
-                    possible_targets.each do |target|
-                    targetFile = File.join($target_path, target + ".exe")
-                    break if File.file?(targetFile)
-                  end
-                  $logger.debug "Looking for app executable: #{targetFile}"                  
-                  raise "#{targetFile} not found" unless File.file?(targetFile)
-                  Jake.run3("#{File.join($qtdir, 'bin/windeployqt --release --no-quick-import --force')} #{targetFile}")
-                  #cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
-                  rescue Exception => e
-                    $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
-                  end
-                when 7
+               when 4, 5, 6, 7, 8
                   possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
                   format ="Found QT Version : #{$QVersion}" 
                   begin
