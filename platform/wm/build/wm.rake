@@ -759,10 +759,10 @@ namespace "config" do
       $msvc_version = $app_config["win32"]["msvc"] if $app_config && $app_config["win32"] && $app_config["win32"]["msvc"]
 
       # use Visual Studio 2015 by default
-      $vs_version = 2015
+      $vs_version = 2017
       $vscommontools = ENV['VS140COMNTOOLS']
 
-      if $qtversionindex == 5 || $qtversionindex == 6
+      if $qtversionindex == 5 || $qtversionindex == 6 || $qtversionindex == 7
           $qmake_makespec = 'win32-msvc'
       else
           $qmake_makespec = 'win32-msvc2015'
@@ -842,7 +842,7 @@ namespace "config" do
       end
 
       puts "Visual Studio Found/Default for build.yml is #{$vs_version} , Code will be Compiled against Visual Studio #{$vs_version}"
-      
+
       if $vs_version == 2008 &&  $qtversionindex == 3
         puts "\n Visual Studio 2008 is not currently supported for this QT version "
         exit 1

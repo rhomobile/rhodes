@@ -1,24 +1,23 @@
-greaterThan(QT_MINOR_VERSION, 6): {
-    CONFIG += c++14
-    DEFINES += RHODES_VERSION_2
-    QMAKE_CXXFLAGS += -nologo -DNT=1 -ML -Zi -O2b2x -G5
-    LIBS += -lmsvcrt.lib
-    LIBS += -lvcruntime.lib
-    LIBS += -lucrt.lib
-}
-
-
 equals(QT_MAJOR_VERSION, 5) {
+    lessThan(QT_MINOR_VERSION, 6): {
+        DEFINES += RHODES_VERSION_1
+    }
     equals(QT_MINOR_VERSION, 6) {
         QT += core
         DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
         CONFIG += c++14
     }
+    greaterThan(QT_MINOR_VERSION, 6): {
+      CONFIG += c++14
+      DEFINES += RHODES_VERSION_2
+      QMAKE_CXXFLAGS += -nologo -DNT=1 -ML -Zi -O2b2x -G5
+      LIBS += -lmsvcrt.lib
+      LIBS += -lvcruntime.lib
+      LIBS += -lucrt.lib
+  }
 }
 
-lessThan(QT_MINOR_VERSION, 6): {
-    DEFINES += RHODES_VERSION_1
-}
+
 TARGET = rubylib
 TEMPLATE = lib
 

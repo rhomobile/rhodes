@@ -318,3 +318,5 @@ platform/shared/common/app_build_configs.c
 platform/shared/ruby/ext/rho/extensions.c
 
 res/build-tools/maven/m2
+platform/win32/RhoSimulator/*
+platform/shared/qt/rhodes/resources/rho.png
