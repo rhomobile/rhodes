@@ -766,7 +766,7 @@ namespace "config" do
       if $msvc_version.nil?
         puts "msvc_version not found in environment"
       else
-        puts "msvc_version is " + msvc_version
+        puts "msvc_version is " + $msvc_version
       end
       # if win32:msvc is not defined in build.yml, then automatically detect installed Visual Studio
       if $msvc_version.nil?
