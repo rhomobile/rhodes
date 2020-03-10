@@ -102,6 +102,12 @@ def QTInfo(qtcurrentversion)
           value = 6 # 5.11
       end
 
+      eqstatus = is_equal("5.14",qtcurrentversion)
+      puts "Checking for 5.14 - #{eqstatus}"
+      if(eqstatus)
+          value = 7 # 5.14
+      end
+
       return value
 end
 
@@ -756,7 +762,7 @@ namespace "config" do
       $vs_version = 2015
       $vscommontools = ENV['VS140COMNTOOLS']
 
-      if $qtversionindex == 5 || $qtversionindex == 6 
+      if $qtversionindex == 5 || $qtversionindex == 6
           $qmake_makespec = 'win32-msvc'
       else
           $qmake_makespec = 'win32-msvc2015'
@@ -803,13 +809,21 @@ namespace "config" do
         else
           $qmake_makespec = 'win32-msvc2015'
         end
+      elsif $msvc_version == "2017"
+          $vs_version = 2017
+          $vscommontools = ENV['VS140COMNTOOLS']
+        if $qtversionindex == 7
+          $qmake_makespec = 'win32-msvc'
+        else
+          $qmake_makespec = 'win32-msvc2017'
+        end
         
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
           puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2015"
           exit 1
         end
       else
-        puts "\nPlease, specify Visual Studio version as either 2008 or 2012 or 2015 in win32:msvc section of build.yml"
+        puts "\nPlease, specify Visual Studio version as either 2008 or 2012 or 2015 or 2017 in win32:msvc section of build.yml"
         exit 1
       end
 
@@ -834,7 +848,11 @@ namespace "config" do
         exit 1
       end
       if $vs_version != 2015 &&  ($qtversionindex == 4 || $qtversionindex == 5 || $qtversionindex == 6)
-        puts "\n Visual Studio  #{$vs_version} is not currently supported for this QT version "
+        puts "\n Visual Studio #{$vs_version} is not currently supported for this QT version "
+        exit 1
+      end
+      if $vs_version != 2017 &&  ($qtversionindex == 7)
+        puts "\n Visual Studio #{$vs_version} is not currently supported for this QT version "
         exit 1
       end
        
@@ -1316,8 +1334,25 @@ namespace "build" do
         end
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
+      elsif ($vs_version == 2017)
+        # Visual Studio 2017
+        puts "Deploy libs from msvc #{$vs_version}"
+        vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.CRT")
+        vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.OPENMP")
+        if deploymsvc
+          cp File.join(vsredistdir, "msvcp140.dll"), $target_path if !File.exists?(File.join($target_path, "msvcp140.dll"))
+          cp File.join(vsredistdir, "concrt140.dll"), $target_path if !File.exists?(File.join($target_path, "concrt140.dll"))
+          cp File.join(vsredistdir, "vccorlib140.dll"), $target_path if !File.exists?(File.join($target_path, "vccorlib140.dll"))
+          cp File.join(vsredistdir, "vcruntime140.dll"), $target_path if !File.exists?(File.join($target_path, "vcruntime140.dll"))
+          cp File.join(vsredistdir2, "vcomp140.dll"), $target_path if !File.exists?(File.join($target_path, "vcomp140.dll"))
+          #cp File.join($vscommontools, "../../VC/bin/d3dcompiler_47.dll"), $target_path
+          puts "Joining msvc140 libs"
+        end
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
       else
         puts "Libs version not correct"
+        exit 1
       end
 
       FileUtils.rm_rf(File.join($target_path, 'phonon4.dll'), {:secure => true})
@@ -1472,6 +1507,21 @@ namespace "build" do
                       end
                     end
                when 4, 5, 6
+                  possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
+                  format ="Found QT Version : #{$QVersion}" 
+                  begin
+                    possible_targets.each do |target|
+                    targetFile = File.join($target_path, target + ".exe")
+                    break if File.file?(targetFile)
+                  end
+                  $logger.debug "Looking for app executable: #{targetFile}"                  
+                  raise "#{targetFile} not found" unless File.file?(targetFile)
+                  Jake.run3("#{File.join($qtdir, 'bin/windeployqt --release --no-quick-import --force')} #{targetFile}")
+                  #cp File.join($qtdir, "bin/Qt5Core.dll"), $target_path
+                  rescue Exception => e
+                    $logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
+                  end
+                when 7
                   possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
                   format ="Found QT Version : #{$QVersion}" 
                   begin
