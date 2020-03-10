@@ -26,15 +26,15 @@ environment:
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\win32\
       target_artefact_file_name: auto_common_spec-setup.exe
 
-    - uwp_auto_common_spec:
-      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-      test_app_folder: C:\TAU\RMS-Testing\
-      test_app_subfolder: auto\feature_def\auto_common_spec\
-      build_command: "device:uwp:production"
-      app_name: auto_common_spec
-      target_os: uwp
-      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\uwp\
-      target_artefact_file_name: auto_common_spec.appx
+    #- uwp_auto_common_spec:
+    #  testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #  test_app_folder: C:\TAU\RMS-Testing\
+    #  test_app_subfolder: auto\feature_def\auto_common_spec\
+    #  build_command: "device:uwp:production"
+    #  app_name: auto_common_spec
+    #  target_os: uwp
+    #  target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\auto_common_spec\bin\target\uwp\
+    #  target_artefact_file_name: auto_common_spec.appx
       
     - win32_framework_spec:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
@@ -47,15 +47,15 @@ environment:
       target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\win32\
       #target_artefact_file_name: framework_spec-setup.exe
 
-    - uwp_framework_spec:
-      testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
-      test_app_folder: C:\TAU\RMS-Testing\
-      test_app_subfolder: auto\feature_def\framework_spec\
-      build_command: "device:uwp:production"
-      app_name: framework_spec
-      target_os: uwp
-      target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\uwp\
-      target_artefact_file_name: framework_spec.appx
+    #- uwp_framework_spec:
+    #  testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
+    #  test_app_folder: C:\TAU\RMS-Testing\
+    #  test_app_subfolder: auto\feature_def\framework_spec\
+    #  build_command: "device:uwp:production"
+    #  app_name: framework_spec
+    #  target_os: uwp
+    #  target_artefact_path: C:\TAU\RMS-Testing\auto\feature_def\framework_spec\bin\target\uwp\
+    #  target_artefact_file_name: framework_spec.appx
 
     - win32_kitchensinkJS:
       testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
@@ -66,14 +66,14 @@ environment:
       target_artefact_path: C:\TAU\kitchensinkJS\bin\target\win32\
       target_artefact_file_name: kitchensinkJS-setup.exe
 
-    - uwp_kitchensinkJS:
-      testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
-      test_app_folder: C:\TAU\kitchensinkJS\
-      build_command: "device:uwp:production"
-      app_name: KitchensinkJS
-      target_os: uwp
-      target_artefact_path: C:\TAU\kitchensinkJS\bin\target\uwp\
-      target_artefact_file_name: kitchensinkJS.appx
+    #- uwp_kitchensinkJS:
+    #  testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
+    #  test_app_folder: C:\TAU\kitchensinkJS\
+    #  build_command: "device:uwp:production"
+    #  app_name: KitchensinkJS
+    #  target_os: uwp
+    #  target_artefact_path: C:\TAU\kitchensinkJS\bin\target\uwp\
+    #  target_artefact_file_name: kitchensinkJS.appx
 
     - win32_kitchensinkRuby:
       testable_application_repository: https://github.com/tauplatform/kitchensinkRuby.git
@@ -84,14 +84,14 @@ environment:
       target_artefact_path: C:\TAU\kitchensinkRuby\bin\target\win32\
       target_artefact_file_name: kitchensinkRuby-setup.exe
 
-    - uwp_kitchensinkRuby:
-      testable_application_repository: https://github.com/tauplatform/kitchensinkRuby.git
-      test_app_folder: C:\TAU\kitchensinkRuby\
-      build_command: "device:uwp:production"
-      app_name: KitchensinkRuby
-      target_os: uwp
-      target_artefact_path: C:\TAU\kitchensinkRuby\bin\target\uwp\
-      target_artefact_file_name: kitchensinkRuby.appx
+    #- uwp_kitchensinkRuby:
+    #  testable_application_repository: https://github.com/tauplatform/kitchensinkRuby.git
+    #  test_app_folder: C:\TAU\kitchensinkRuby\
+    #  build_command: "device:uwp:production"
+    #  app_name: KitchensinkRuby
+    #  target_os: uwp
+    #  target_artefact_path: C:\TAU\kitchensinkRuby\bin\target\uwp\
+    #  target_artefact_file_name: kitchensinkRuby.appx
 
     - win32_rho_ruby:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
@@ -131,8 +131,8 @@ before_test:
   - set /P BUILD_VERSION_RHOCONNECT=<version
   - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
  
-  - appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-  - nuget restore C:\TAU\rhodes\platform\uwp\rhodes_dev.sln
+  #- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+  #- nuget restore C:\TAU\rhodes\platform\uwp\rhodes_dev.sln
 
   - cd C:\TAU\
   - rmdir /Q /S rhodes
@@ -143,7 +143,7 @@ test_script:
   - cd %test_app_folder%
   - IF DEFINED test_app_subfolder cd %test_app_subfolder%
   - rake clean:win32
-  - rake clean:uwp
+  #- rake clean:uwp
   - IF DEFINED pre_build_command rake %pre_build_command% --trace
   - rake %build_command% --trace
   - IF DEFINED after_build_command rake %after_build_command%
