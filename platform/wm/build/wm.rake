@@ -758,16 +758,16 @@ namespace "config" do
       puts "QT Version Found and Index for further checking is #{$qtversionindex}"
       $msvc_version = $app_config["win32"]["msvc"] if $app_config && $app_config["win32"] && $app_config["win32"]["msvc"]
 
-      # use Visual Studio 2015 by default
+      # use Visual Studio 2017 by default
       $vs_version = 2017
       $vscommontools = ENV['VS140COMNTOOLS']
+      $qmake_makespec = 'win32-msvc'
 
-      if $qtversionindex == 5 || $qtversionindex == 6 || $qtversionindex == 7
-          $qmake_makespec = 'win32-msvc'
+      if $msvc_version.nil?
+        puts "msvc_version not found in environment"
       else
-          $qmake_makespec = 'win32-msvc2015'
+        puts "msvc_version is " + msvc_version
       end
-      
       # if win32:msvc is not defined in build.yml, then automatically detect installed Visual Studio
       if $msvc_version.nil?
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
@@ -804,7 +804,7 @@ namespace "config" do
       elsif $msvc_version == "2015"
           $vs_version = 2015
           $vscommontools = ENV['VS140COMNTOOLS']
-        if $qtversionindex == 5 || $qtversionindex == 6 
+        if $qtversionindex == 5 || $qtversionindex == 6 || $qtversionindex == 7 
           $qmake_makespec = 'win32-msvc'
         else
           $qmake_makespec = 'win32-msvc2015'
@@ -812,14 +812,10 @@ namespace "config" do
       elsif $msvc_version == "2017"
           $vs_version = 2017
           $vscommontools = ENV['VS140COMNTOOLS']
-        if $qtversionindex == 7
           $qmake_makespec = 'win32-msvc'
-        else
-          $qmake_makespec = 'win32-msvc2017'
-        end
         
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
-          puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio 2015"
+          puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio"
           exit 1
         end
       else
