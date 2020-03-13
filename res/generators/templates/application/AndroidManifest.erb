@@ -63,10 +63,10 @@
     <activity android:name='com.rhomobile.rhodes.ui.LogViewDialog'  android:windowSoftInputMode='stateAlwaysHidden' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
     <service android:name='com.rhomobile.rhodes.RhodesService' android:exported='false'/>
 
-    <provider android:name='com.rhomobile.rhodes.LocalFileProvider' android:authorities='<%=@appPackageName%>' android:grantUriPermissions='false'>
+    <provider android:name='com.rhomobile.rhodes.LocalFileProvider' android:authorities='<%=@appPackageName%>' android:grantUriPermissions='false' <%= @androidVerMaj >= 7 ? "android:exported='true'" : "android:exported='false'" %> >
       <grant-uri-permission android:pathPrefix='/rhodes/apps/'/>
     </provider>
-	
+
 	<receiver android:name='com.rho.notification.AlarmReceiver' android:enabled="false">
      <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -77,7 +77,7 @@
     <% @applicationManifestAdds.each do |extAdd| %>
       <%=render extAdd%>
     <% end %>
-    
+
   </application>
 
   <!-- manifest tag addon templates from extensions-->
