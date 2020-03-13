@@ -8,23 +8,23 @@ CONFIG += staticlib warn_on
 INCLUDEPATH += ../../../../platform/shared/ruby/include\
 ../../../../platform/shared
 
-lessThan(QT_VERSION, 5.6.0): {
-    QT += webkit widgets webkitwidgets multimediawidgets
-    DEFINES += RHODES_VERSION_1
-}
+
 
 equals(QT_MAJOR_VERSION, 5) {
-    equals(QT_MINOR_VERSION, 6) {
+    lessThan(QT_MINOR_VERSION, 6): {
+        QT += webkit widgets webkitwidgets multimediawidgets
+        DEFINES += RHODES_VERSION_1
+    }
+    equals(QT_MINOR_VERSION, 6): {
         QT += webkit widgets
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += sailfishapp c++14 sailfishapp_i18n
     }
-}
-
-greaterThan(QT_VERSION, 5.7.0): {
-    QT += webengine webenginecore webenginewidgets multimediawidgets
-    CONFIG += c++14
-    DEFINES += CPP_ELEVEN RHODES_VERSION_2
+    greaterThan(QT_MINOR_VERSION, 7): {
+        QT += webengine webenginecore webenginewidgets multimediawidgets
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+    }
 }
 
 
