@@ -1,22 +1,19 @@
 QT += core bluetooth
 
-lessThan(QT_MINOR_VERSION, 6): {
-    DEFINES += RHODES_VERSION_1
-}
-
 equals(QT_MAJOR_VERSION, 5) {
-    equals(QT_MINOR_VERSION, 6) {
+    lessThan(QT_MINOR_VERSION, 6): {
+        DEFINES += RHODES_VERSION_1
+    }
+    equals(QT_MINOR_VERSION, 6): {
         QT += dbus
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += sailfishapp c++14 sailfishapp_i18n
     }
+    greaterThan(QT_MINOR_VERSION, 7): {
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+    }
 }
-
-greaterThan(QT_MINOR_VERSION, 6): {
-    CONFIG += c++14
-    DEFINES += CPP_ELEVEN RHODES_VERSION_2
-}
-
 
 TARGET = Bluetooth
 TEMPLATE = lib

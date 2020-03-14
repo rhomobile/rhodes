@@ -1,22 +1,20 @@
 QT += core gui multimedia network
 
-lessThan(QT_MINOR_VERSION, 6): {
-    QT += webkit widgets webkitwidgets widgets multimediawidgets
-    DEFINES += RHODES_VERSION_1
-}
-
 equals(QT_MAJOR_VERSION, 5) {
-    equals(QT_MINOR_VERSION, 6) {
+    lessThan(QT_MINOR_VERSION, 6): {
+        QT += webkit widgets webkitwidgets multimediawidgets widgets
+        DEFINES += RHODES_VERSION_1
+    }
+    equals(QT_MINOR_VERSION, 6): {
         QT += webkit quick
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += sailfishapp c++14 sailfishapp_i18n
     }
-}
-
-greaterThan(QT_MINOR_VERSION, 6): {
-    QT += webengine webenginecore webenginewidgets widgets multimediawidgets
-    CONFIG += c++14
-    DEFINES += CPP_ELEVEN RHODES_VERSION_2
+    greaterThan(QT_MINOR_VERSION, 7): {
+        QT += webengine webenginecore webenginewidgets multimediawidgets widgets
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+    }
 }
 
 TARGET = Mediacapture

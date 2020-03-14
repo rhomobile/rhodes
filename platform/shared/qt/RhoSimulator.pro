@@ -1,20 +1,19 @@
-greaterThan(QT_MINOR_VERSION, 6): {
-    CONFIG += c++14
-    DEFINES += CPP_ELEVEN
-    DEFINES += RHODES_VERSION_2
-}
-
 equals(QT_MAJOR_VERSION, 5) {
-    equals(QT_MINOR_VERSION, 6) {
-        QT += webkit widgets
+    lessThan(QT_MINOR_VERSION, 6): {
+        DEFINES += RHODES_VERSION_1
+    }
+    equals(QT_MINOR_VERSION, 6): {
+        QQT += webkit widgets
         DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
+        CONFIG +=  c++14
+    }
+    greaterThan(QT_MINOR_VERSION, 7): {
         CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
     }
 }
 
-lessThan(QT_MINOR_VERSION, 6): {
-    DEFINES += RHODES_VERSION_1
-}
+
 #DEFINES += RHODES_EMULATOR
 
 TEMPLATE = subdirs
