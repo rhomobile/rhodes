@@ -143,7 +143,7 @@ wm:
 win32:
   deployqt: 1
   deploymsvc: 1
-  msvc: 2015
+  msvc: 2017
 
 sailfish:
   configuration: Release
