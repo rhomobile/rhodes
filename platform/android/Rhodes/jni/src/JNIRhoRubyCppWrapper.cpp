@@ -56,6 +56,67 @@ private:
 };
 
 
+class CRhoRubyRubyNativeCallbackHolder : public rho::ruby::IRubyNativeCallback {
+
+public:
+    CRhoRubyRubyNativeCallbackHolder(const char* callback_id) {
+        mCallbackID = callback_id;
+    }
+
+    virtual ~CRhoRubyRubyNativeCallbackHolder() {}
+
+    virtual void onRubyNative(rho::ruby::IObject* param) {
+        RAWLOG_INFO1("jni CRhoRubyRubyNativeCallbackHolder::onRubyNative() START id:[%s]", mCallbackID.c_str());
+
+        JNIEnv *env = jnienv();
+        if (!env) {
+            RAWLOG_ERROR("CRhoRubyRubyNativeCallbackHolder::onRubyNative() JNI init failed: jnienv is null");
+            return;
+        }
+        #ifdef AAR_DEBUG
+        jclass cls = rho_find_class(env, "com/example/n0men/myapplication/RhoRubySingleton");
+        #else
+        jclass cls = rho_find_class(env, "com/rhomobile/rhodes/RhoRubySingleton");
+        #endif
+        if (!cls) {
+            RAWLOG_ERROR("CRhoRubyRubyNativeCallbackHolder::onRubyNative() JNI cannot found class");
+            delete this;
+            return;
+        }
+        jmethodID mid = env->GetStaticMethodID( cls, "callRubyNativeCallback", "(Ljava/lang/String;Ljava/lang/String;)V");
+        if (!mid) {
+            RAWLOG_ERROR("CRhoRubyRubyNativeCallbackHolder::onRubyNative() JNI cannot found method");
+            delete this;
+            return;
+        }
+
+        jhstring jhCallbackID = rho_cast<jstring>(env, mCallbackID.c_str());
+
+        rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+
+        rho::ruby::IString* rrJSON = rr->convertObject_to_JSON(param);
+        jhstring jhJSON = NULL;
+        if (rrJSON != NULL) {
+            RAWLOG_INFO1("jni CRhoRubyRubyNativeCallbackHolder::onRubyNative() param[%s]", rrJSON->getUTF8());
+            jhJSON = rho_cast<jstring>(env, rrJSON->getUTF8());
+        }
+        else {
+            RAWLOG_INFO("jni CRhoRubyRubyNativeCallbackHolder::onRubyNative() param[null]");
+            jhJSON = rho_cast<jstring>(env, "");
+        }
+
+        env->CallStaticVoidMethod(cls, mid, jhCallbackID.get(), jhJSON.get());
+
+        rrJSON->release();
+        RAWLOG_INFO("jni CRhoRubyRubyNativeCallbackHolder::onRubyNative() FINISH");
+    }
+
+private:
+    rho::String mCallbackID;
+};
+
+
+
 
 class RhoRubyWrapper
 {
@@ -396,7 +457,7 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhoRubyClassObject_NativeM
 #endif
   (JNIEnv* env, jclass, jstring class_name, jstring method_name, jobject parameters)
   {
-      
+
       rho::String _class_name = rho_cast<rho::String>(env, class_name);
       rho::String _method_name = rho_cast<rho::String>(env, method_name);
 
@@ -406,3 +467,44 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhoRubyClassObject_NativeM
       return nullptr;
 
   }
+
+
+
+  #ifdef AAR_DEBUG
+   RHO_GLOBAL jobject JNICALL Java_com_example_n0men_myapplication_RhoRubySingleton_addRubyNativeCallbackNative
+  #else
+   RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_RhoRubySingleton_addRubyNativeCallbackNative
+  #endif
+    (JNIEnv* env, jclass, jstring callback_id)
+    {
+        rho::String _callback_id = rho_cast<rho::String>(env, callback_id);
+
+        RAWLOG_INFO1("jni addRubyNativeCallbackNative: [%s]", _callback_id.c_str());
+
+        rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+        CRhoRubyRubyNativeCallbackHolder* callback_holder = new CRhoRubyRubyNativeCallbackHolder(_callback_id.c_str());
+
+        rr->addRubyNativeCallback(_callback_id.c_str(), callback_holder);
+
+        return nullptr;
+    }
+
+
+
+  #ifdef AAR_DEBUG
+   RHO_GLOBAL jobject JNICALL Java_com_example_n0men_myapplication_RhoRubySingleton_removeRubyNativeCallbackNative
+  #else
+   RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_RhoRubySingleton_removeRubyNativeCallbackNative
+  #endif
+    (JNIEnv* env, jclass, jstring callback_id)
+    {
+        rho::String _callback_id = rho_cast<rho::String>(env, callback_id);
+
+        RAWLOG_INFO1("jni removeRubyNativeCallbackNative: [%s]", _callback_id.c_str());
+
+        rho::ruby::IRhoRuby* rr = rho::ruby::RhoRubySingletone::getRhoRuby();
+
+        rr->removeRubyNativeCallback(_callback_id.c_str());
+
+        return nullptr;
+    }
