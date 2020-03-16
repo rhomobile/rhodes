@@ -2736,12 +2736,6 @@ def prepare_aar_package
     rm_rf File.join($allclasses, 'classes.jar')
   end
 
-  if(File.exists?(File.join($allclasses, 'com', $vendor , $appname)))  
-    rm_rf File.join($allclasses, 'com', $vendor , $appname)
-  elsif(File.exists?(File.join($allclasses, $app_package_name.split('.'))))  
-    rm_rf File.join($allclasses, $app_package_name.split('.'))
-  end
-
   alljars.each do |jar|
     Zip::File.open(jar) do |archive|
       archive.glob("**/*.*").each do |pfile|
@@ -2752,6 +2746,12 @@ def prepare_aar_package
         archive.extract( pfile, File.join(target) )
       end
     end
+  end
+
+  if(Dir.exists?(File.join($allclasses, 'com', $vendor , $appname.downcase)))  
+    FileUtils.remove_dir File.join($allclasses, 'com', $vendor , $appname.downcase)
+  elsif(Dir.exists?(File.join($allclasses, $app_package_name.split('.'))))  
+    FileUtils.remove_dir File.join($allclasses, $app_package_name.split('.'))
   end
 
   #res_dirs = AndroidTools::MavenDepsExtractor.instance.aapt2_res_dirs

@@ -96,6 +96,8 @@ public class RhoBluetoothManagerNew extends AbstractRhoListener implements IRhoB
 		RhoBluetoothManager.logi(TAG, "init()");
 		// constructor
 		mActivity = RhodesActivity.getInstance();
+		if (mActivity == null)
+			throw new IllegalStateException("No rhodes activity instance at this moment");
 		mDeviceName = "NONAME";
 
 		mInputBuffer = new byte[1024];

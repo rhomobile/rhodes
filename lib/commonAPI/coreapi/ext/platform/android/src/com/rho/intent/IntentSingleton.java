@@ -336,8 +336,15 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                     };
                     localMethodResults.add(entry);
                 }
-                RhodesActivity.safeGetInstance().startActivityForResult(intent, request);
-                Logger.T(TAG, "Start activity for result: " + intent);
+
+                try{
+                    RhodesActivity.safeGetInstance().startActivityForResult(intent, request);
+                    Logger.T(TAG, "Start activity for result: " + intent);
+                }
+                catch (Exception e) {
+                    Logger.E(TAG, e);
+                    return;
+                }
             }
             else {
                 Logger.T(TAG, "Start activity: " + intent);
