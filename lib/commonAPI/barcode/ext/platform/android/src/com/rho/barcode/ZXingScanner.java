@@ -134,11 +134,11 @@ public class ZXingScanner extends Barcode implements IBarcode
            Intent intent = new Intent(ra, com.google.zxing.client.android.CaptureActivity.class);
            intent.putExtra(com.google.zxing.client.android.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
            intent.putExtra(com.google.zxing.client.android.CaptureActivity.RHO_BARCODE_ID, this.getId());
-        
+
 		   ra.startActivity(intent);
 		}
 		catch (Exception e) {
-			Logger.E(TAG, e);
+			Logger.E(LOGTAG, e);
 			return;
 		}
 	}
@@ -157,11 +157,11 @@ public class ZXingScanner extends Barcode implements IBarcode
            Intent intent = new Intent(ra, com.google.zxing.client.android.CaptureActivity.class);
            intent.putExtra(com.google.zxing.client.android.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
            intent.putExtra(com.google.zxing.client.android.CaptureActivity.RHO_BARCODE_ID, this.getId());
-        
+
 		   ra.startActivity(intent);
 		}
 		catch (Exception e) {
-			Logger.E(TAG, e);
+			Logger.E(LOGTAG, e);
 			return;
 		}
 	}
