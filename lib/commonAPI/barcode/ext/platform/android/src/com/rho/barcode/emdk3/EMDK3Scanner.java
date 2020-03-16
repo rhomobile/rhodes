@@ -257,7 +257,7 @@ public class EMDK3Scanner extends Barcode implements DataListener, StatusListene
 				}
 				catch (Exception e) {
 					Logger.E(TAG, e);
-					return false;
+					return;
 				}
 				GoogleWebView web=(GoogleWebView)vi;
 				rhoelementsGetConfig=web.getConfig();
