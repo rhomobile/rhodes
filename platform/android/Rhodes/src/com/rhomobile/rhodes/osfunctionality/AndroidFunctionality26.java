@@ -37,7 +37,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.ComponentName;
 
-
+//Android 8.0
 @RequiresApi(26)
 class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFunctionality {
 
@@ -47,51 +47,78 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
 
     @Override
     public Builder getNotificationBuilder( Context ctx, String channelID, String channelName ) {
-
+        Logger.D( TAG, "getNotificationBuilder() START" );
         Builder builder = null;
 
-        try { 
+        try {
             NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 
+            Logger.D( TAG, "getNotificationBuilder() 1" );
+
             Class ncClass = Class.forName("android.app.NotificationChannel");
+            Logger.D( TAG, "getNotificationBuilder() 2" );
             java.lang.reflect.Constructor ncCtor = ncClass.getConstructor( String.class, CharSequence.class, int.class );
+            Logger.D( TAG, "getNotificationBuilder() 3" );
 
             java.lang.reflect.Method getNCMethod = notificationManager.getClass().getMethod("getNotificationChannel", String.class);
+            Logger.D( TAG, "getNotificationBuilder() 4" );
             java.lang.reflect.Method createNCMethod = notificationManager.getClass().getMethod("createNotificationChannel", ncClass);
+            Logger.D( TAG, "getNotificationBuilder() 5" );
 
             java.lang.reflect.Method enableVibrationMethod = ncClass.getMethod("enableVibration", boolean.class);
+            Logger.D( TAG, "getNotificationBuilder() 6" );
             java.lang.reflect.Method setVibrationMethod = ncClass.getMethod("setVibrationPattern", long[].class);
+            Logger.D( TAG, "getNotificationBuilder() 7" );
 
             Object channel = getNCMethod.invoke(notificationManager,channelID);
+            Logger.D( TAG, "getNotificationBuilder() 8" );
 
             if (channel == null) {
+                Logger.D( TAG, "getNotificationBuilder() chanell==null" );
                 channel = ncCtor.newInstance( channelID, channelName, 4 );
+                Logger.D( TAG, "getNotificationBuilder() 9" );
 
-                enableVibrationMethod.invoke(channel,true);
-                setVibrationMethod.invoke(channel,new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-              
+                //enableVibrationMethod.invoke(channel,true);
+                Logger.D( TAG, "getNotificationBuilder() 10" );
+                //setVibrationMethod.invoke(channel,new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                Logger.D( TAG, "getNotificationBuilder() 11" );
+
                 createNCMethod.invoke(notificationManager,channel);
+                Logger.D( TAG, "getNotificationBuilder() 12" );
             }
 
-            java.lang.reflect.Constructor nbCtor = android.os.Build.VERSION.SDK_INT >= 26 ? 
+            //Class nbClass = Class.forName("android.app.Notification.Builder");
+            java.lang.reflect.Constructor nbCtor = android.os.Build.VERSION.SDK_INT >= 26 ?
                 Builder.class.getConstructor( Context.class, String.class ) :
                 Builder.class.getConstructor( Context.class );
+            Logger.D( TAG, "getNotificationBuilder() 13" );
 
-            builder = android.os.Build.VERSION.SDK_INT >= 26 ? 
-                 (Builder)nbCtor.newInstance( ctx, channelID ) : 
+            builder = android.os.Build.VERSION.SDK_INT >= 26 ?
+                 (Builder)nbCtor.newInstance( ctx, channelID ) :
                  (Builder)nbCtor.newInstance( ctx );
+            Logger.D( TAG, "getNotificationBuilder() 14" );
 
-            java.lang.reflect.Method setPriorityMethod = ncClass.getMethod("setPriority", Integer.class);
+            Logger.D( TAG, "getNotificationBuilder() 15" );
 
             if(android.os.Build.VERSION.SDK_INT >= 26)
             {
+                Logger.D( TAG, "getNotificationBuilder() 16" );
                 java.lang.reflect.Method setShowBadgeMethod = ncClass.getMethod("setShowBadge", boolean.class);
+                Logger.D( TAG, "getNotificationBuilder() 17" );
                 setShowBadgeMethod.invoke(channel, true);
-                setPriorityMethod.invoke(builder, IMPORTANCE_HIGH);
+                Logger.D( TAG, "getNotificationBuilder() 18" );
+                java.lang.reflect.Method setPriorityMethod = ncClass.getMethod("setImportance", int.class);
+                //channel.setImportance(IMPORTANCE_HIGH);
+                setPriorityMethod.invoke(channel, IMPORTANCE_HIGH);
+                Logger.D( TAG, "getNotificationBuilder() 19" );
             }
             else
             {
+                Logger.D( TAG, "getNotificationBuilder() 20" );
+                java.lang.reflect.Method setPriorityMethod = Builder.class.getMethod("setPriority", int.class);
                 setPriorityMethod.invoke(builder, PRIORITY_HIGH);
+                //builder.setPriority(PRIORITY_HIGH);
+                Logger.D( TAG, "getNotificationBuilder() 21" );
                 //builder.setVisibility(android.app.Notification.VISIBILITY_PUBLIC);
             }
 
@@ -99,16 +126,20 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
             Logger.E( TAG, "Error initializing notification channel. Will create default builder" );
             Logger.E( TAG, e.toString() );
         }
+        Logger.D( TAG, "getNotificationBuilder() 22" );
 
         if ( null == builder ) {
+            Logger.D( TAG, "getNotificationBuilder() builder == null" );
             builder = super.getNotificationBuilder( ctx, channelID, channelName );
         }
+        Logger.D( TAG, "getNotificationBuilder() FINISH" );
 
         return builder;
     }
 
     @Override
 	public ComponentName startForegroundService(Activity activity, Intent service) {
+        Logger.D( TAG, "startForegroundService() START" );
         java.lang.reflect.Method methodStartForegroundService = null;
         ComponentName resultOfInvoke = null;
         try {
@@ -119,6 +150,7 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
         }
         if (methodStartForegroundService!= null) {
             try {
+                Logger.D( TAG, "invoke startForegroundService()" );
                 resultOfInvoke = (ComponentName)methodStartForegroundService.invoke(activity, service);
             } catch( Exception e ) {
                 Logger.E( TAG, "Error: some error during invoke startForegroundService() method !" );
@@ -126,8 +158,10 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
             }
         }
         else {
+            Logger.D( TAG, "use old startService()" );
             resultOfInvoke = activity.startService(service);
         }
+        Logger.D( TAG, "startForegroundService() FINISH" );
         return resultOfInvoke;
 	}
 

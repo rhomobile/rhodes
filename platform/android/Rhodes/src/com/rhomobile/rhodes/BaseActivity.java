@@ -199,8 +199,10 @@ public class BaseActivity extends Activity implements ServiceConnection {
 
 		Intent intent = new Intent(this, RhodesService.class);
 		intent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
+
+		Logger.D(TAG, "onCreate() startForegroundService PRE");
 		ComponentName serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
-		Logger.I(TAG, "ForegroundService: service invoked");
+		Logger.D(TAG, "onCreate() startForegroundService POST");
 		//ComponentName serviceName = startService(intent);
 		if (serviceName == null)
 			throw new RuntimeException("Can not start Rhodes service");
