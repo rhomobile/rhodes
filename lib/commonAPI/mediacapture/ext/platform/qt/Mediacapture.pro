@@ -1,24 +1,23 @@
 QT += core gui multimedia network
 
-lessThan(QT_MINOR_VERSION, 6): {
-    QT += webkit widgets webkitwidgets widgets multimediawidgets
-    DEFINES += RHODES_VERSION_1
-}
-
 equals(QT_MAJOR_VERSION, 5) {
-    equals(QT_MINOR_VERSION, 6) {
+    lessThan(QT_MINOR_VERSION, 6): {
+        QT += webkit widgets webkitwidgets multimediawidgets widgets
+        DEFINES += RHODES_VERSION_1
+    }
+    equals(QT_MINOR_VERSION, 6): {
         QT += webkit quick
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += sailfishapp c++14 sailfishapp_i18n
     }
+    greaterThan(QT_MINOR_VERSION, 7): {
+        QT += webengine webenginecore webenginewidgets multimediawidgets widgets
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+    }
 }
 
-greaterThan(QT_MINOR_VERSION, 6): {
-    QT += webengine webenginecore webenginewidgets widgets multimediawidgets
-    CONFIG += c++14
-    DEFINES += CPP_ELEVEN RHODES_VERSION_2
-}
-
+TARGET = Mediacapture
 TEMPLATE = lib
 CONFIG += staticlib warn_on
 
@@ -35,13 +34,11 @@ $$RHODES_ROOT/platform/shared\
 ../../shared
 
 macx {
-  TARGET = Mediacapture
   DESTDIR = $$RHODES_ROOT/platform/osx/bin/extensions
   OBJECTS_DIR = $$RHODES_ROOT/platform/osx/bin/extensions/mediacapture
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/iphone
 }
 win32 {
-  TARGET = Mediacapture
   DESTDIR = $$RHODES_ROOT/platform/win32/bin/extensions
 
   OBJECTS_DIR = $$RHODES_ROOT/platform/win32/bin/extensions/mediacapture 
@@ -55,11 +52,9 @@ win32 {
   }
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/win32
   RCC_DIR = $$RHODES_ROOT/lib/commonAPI/mediacapture/ext/platform/qt/resources
-
 }
 
 unix:!macx {
-TARGET = mediacapture
 DEFINES += OS_LINUX
 DESTDIR = $$RHODES_ROOT/platform/linux/bin/extensions
 OBJECTS_DIR = $$RHODES_ROOT/platform/linux/bin/extensions/mediacapture
@@ -105,7 +100,6 @@ HEADERS += \
     $$RHODES_ROOT\platform\shared\qt\rhodes\iexecutable.h \
     $$RHODES_ROOT\platform\shared\qt\rhodes\guithreadfunchelper.h
 
-
 SOURCES += \
     ..\..\shared\MediacaptureInit.cpp\
     ..\..\shared\generated\cpp\Camera_js_wrap.cpp\
@@ -117,8 +111,5 @@ SOURCES += \
     src\Camera_impl.cpp \
     src\CameraDialogView.cpp \
     src\CCameraData.cpp
-
-
-
 
 RESOURCES += $$RHODES_ROOT/lib/commonAPI/mediacapture/ext/platform/qt/resources/mediacapture.qrc

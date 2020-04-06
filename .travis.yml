@@ -5,7 +5,7 @@ before_install:
 install:
 - ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_ruby.sh
-- rvm use 2.5.3
+- rvm use 2.5.1
 - |
   if [[ -z $(rvm gemset list | grep rhodes) ]]; then
     rvm gemset create rhodes;
@@ -18,7 +18,7 @@ install:
 script:
 - ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
 - rvm list
-- rvm use 2.5.3
+- rvm use 2.5.1
 - rvm gemset list
 - rvm gemset use rhodes
 - gem list
@@ -83,7 +83,7 @@ android:
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
-  - build-tools-26.0.2
+  - build-tools-26.0.1
   - android-26
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
@@ -96,7 +96,6 @@ env:
   - QTDIR="$HOME/Qt5.9.5/5.9.5/clang_64"
 
 #osx_image: xcode9.1
-#
 
 matrix:
   include:
