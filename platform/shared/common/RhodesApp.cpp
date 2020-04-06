@@ -556,7 +556,7 @@ void CRhodesApp::run()
 		RHODESAPP().notifyLocalServerStarted();
 
 #ifdef OS_MACOSX
-  bool shouldRunDirectQueue = true;
+  bool shouldRunDirectQueue = false;
   net::CDirectHttpRequestQueue directQueue(*m_httpServer, *this );
 
     if (RHOCONF().isExist("ios_direct_local_requests")) {

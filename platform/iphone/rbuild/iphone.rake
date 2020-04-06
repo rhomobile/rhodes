@@ -788,8 +788,8 @@ def update_xcode_project_files_by_capabilities
         if $app_config['iphone'] != nil
             if $app_config['iphone']['barcode_engine'] != nil
                 $barcode_engine = $app_config['iphone']['barcode_engine'].upcase
-                if $barcode_engine != 'ZXING' &&  $barcode_engine != 'ZBAR' &&  $barcode_engine != 'APPLE_BARCODE_ENGINE' then
-                    raise 'ERROR: Unknown barcode engine, select Apples or ZBar or ZXing please in build.yml [iphone][barcode_engine] setup to APPLE_BARCODE_ENGINE or ZXING or ZBAR !'
+                if $barcode_engine != 'ZXING' &&  $barcode_engine != 'APPLE_BARCODE_ENGINE' then
+                    raise 'ERROR: Unknown barcode engine, select Apples or ZXing please in build.yml [iphone][barcode_engine] setup to APPLE_BARCODE_ENGINE or ZXING ! ZBAR is unsupported now by UIWebView issue!!!'
                 end
             else
                 $barcode_engine = 'APPLE_BARCODE_ENGINE'
@@ -1632,7 +1632,10 @@ namespace "build" do
         framework_dir = File.join($startdir, "platform/iphone/Framework/Rhodes")
         File.open(File.join(framework_dir,"rhodeslibs.txt"),"w") { |f| f.write lib_list }
 
-        args = ['clean', 'install', '-scheme', "Framework", '-project', "Rhodes.xcodeproj"]
+        framework_build_dir = File.join(framework_dir, "build")
+        rm_rf framework_build_dir
+
+        args = ['clean', 'install', '-target', "Framework",'-project', "Rhodes.xcodeproj"]
         Dir.chdir framework_dir
         ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir})
 

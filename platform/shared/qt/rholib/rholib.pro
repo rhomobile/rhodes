@@ -1,19 +1,19 @@
-greaterThan(QT_MINOR_VERSION, 6): {
-    CONFIG += c++14
-    DEFINES += RHODES_VERSION_2
-    DEFINES += AJAXSERVER
-}
-
 equals(QT_MAJOR_VERSION, 5) {
-    equals(QT_MINOR_VERSION, 6) {
-        DEFINES += OS_SAILFISH
+    lessThan(QT_MINOR_VERSION, 6): {
+        DEFINES += RHODES_VERSION_1
+    }
+    equals(QT_MINOR_VERSION, 6): {
+        DEFINES += OS_SAILFISH OS_LINUX
+        CONFIG +=  c++14
         QT += core
+    }
+    greaterThan(QT_MINOR_VERSION, 7): {
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2 AJAXSERVER
     }
 }
 
-lessThan(QT_MINOR_VERSION, 6): {
-    DEFINES += RHODES_VERSION_1
-}
+
 
 TARGET = rholib
 TEMPLATE = lib

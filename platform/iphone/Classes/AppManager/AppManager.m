@@ -1427,7 +1427,10 @@ void setApplicationBadgeNumber(NSInteger badgeNumber)
 }
 
 void rho_sys_set_application_icon_badge(int badge_number) {
-    setApplicationBadgeNumber(badge_number);
+    int badge_number_value = badge_number;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      setApplicationBadgeNumber(badge_number_value);
+    });
 }
 
 void rho_platform_restart_application() {
@@ -1541,6 +1544,18 @@ int rhodes_ios_delete_file_via_platform_api(const char* filePath) {
         return -1;
     }
     NSError *error = nil;
+    if (![fileManager fileExistsAtPath:sPath]) {
+        NSString *msg = [NSString stringWithFormat:@"rhodes_ios_delete_file_via_platform_api() error during delete file, ERROR = object not exists \"%@\"", sPath];
+        NSLog(msg);
+        RAWLOG_ERROR([msg UTF8String]);
+        return -1;
+    }
+    if (![fileManager isDeletableFileAtPath:sPath]) {
+        NSString *msg = [NSString stringWithFormat:@"rhodes_ios_delete_file_via_platform_api() error during delete file, ERROR = object is not deletable \"%@\"", sPath];
+        NSLog(msg);
+        RAWLOG_ERROR([msg UTF8String]);
+        return -1;
+    }
     if (![fileManager removeItemAtPath:sPath error:&error]) {
         NSString *msg = [NSString stringWithFormat:@"$$$ rhodes_ios_delete_file_via_platform_api() error during delete file, ERROR = %@", [error localizedDescription]];
         NSLog(msg);

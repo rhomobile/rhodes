@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -137,23 +137,23 @@ import java.net.Inet4Address;
 import java.net.SocketException;
 
 public class RhodesService extends Service {
-	
+
 	private static final String TAG = RhodesService.class.getSimpleName();
-	
+
 	private static final boolean DEBUG = false;
-	
+
 	public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes";
-	
+
 	public static final String INTENT_SOURCE = INTENT_EXTRA_PREFIX + ".intent_source";
-	
+
 	public static final String INTENT_EXTRA_MESSAGE = INTENT_EXTRA_PREFIX + ".message";
- 	
+
 	public static int WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	public static int WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
 	public static boolean ANDROID_TITLE = true;
-	
+
 	private static final int DOWNLOAD_PACKAGE_ID = 1;
-	
+
 	private static final String ACTION_ASK_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_ASK_CANCEL_DOWNLOAD";
 	private static final String ACTION_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_CANCEL_DOWNLOAD";
 
@@ -162,49 +162,49 @@ public class RhodesService extends Service {
     private static final String NOTIFICATION_ALWAYS = "always";
 
 	private static RhodesService sInstance = null;
-	
+
 	private final IBinder mBinder = new LocalBinder();
-	
+
 	private BroadcastReceiver mConnectionChangeReceiver;
-	
+
 	@SuppressWarnings("rawtypes")
 	private static final Class[] mStartForegroundSignature = new Class[] {int.class, Notification.class};
 	@SuppressWarnings("rawtypes")
 	private static final Class[] mStopForegroundSignature = new Class[] {boolean.class};
 	@SuppressWarnings("rawtypes")
 	private static final Class[] mSetForegroundSignature = new Class[] {boolean.class};
-	
+
 	private Method mStartForeground;
 	private Method mStopForeground;
 	private Method mSetForeground;
-	
+
 	private NotificationManager mNM;
-	
+
 	private boolean mNeedGeoLocationRestart = false;
-	
+
 	public static String               m_Text                      = "";
 	private static String				ExitPasswordEnabled         = "";
 	private static String				ExitPasswordValue           = "";
 
 	private static RhoMain rhoMain = null;
-	
+
 	public static  void setExitPasswordEnabled(String exitPasswordEnabled)
-	{ 
+	{
 	  ExitPasswordEnabled=exitPasswordEnabled;
 	}
-	
+
 	public static  void setExitPasswordValue(String exitPasswordValue)
 	{
 		ExitPasswordValue=exitPasswordValue;
 	}
-	
+
 	public static  String getExitPasswordEnabled()
 	{
 		return ExitPasswordEnabled;
 	}
 
 	public static void setRhoMain(RhoMain main) { rhoMain = main; }
-	
+
 	public static  String getExitPasswordValue()
 	{
 		return ExitPasswordValue;
@@ -214,7 +214,7 @@ public class RhodesService extends Service {
 	    private boolean wakeLockEnabled = false;
 
         synchronized boolean isHeld() {
-            return (wakeLockObject != null) && wakeLockObject.isHeld(); 
+            return (wakeLockObject != null) && wakeLockObject.isHeld();
         }
         synchronized boolean acquire(boolean enable) {
             if (enable) {
@@ -250,7 +250,7 @@ public class RhodesService extends Service {
             }
             return false;
 	    }
-	    
+
 	    synchronized boolean reset() {
             if (wakeLockObject != null) {
                 Logger.I(TAG, "Reset WakeLock");
@@ -262,11 +262,11 @@ public class RhodesService extends Service {
             return false;
 	    }
 	}
-	
+
 	private PowerWakeLock wakeLock = new PowerWakeLock();
-	
+
 	private Vector<UriHandler> mUriHandlers = new Vector<UriHandler>();
-	
+
 	public boolean handleUrlLoading(String url) {
 		Enumeration<UriHandler> e = mUriHandlers.elements();
 		while (e.hasMoreElements()) {
@@ -280,49 +280,49 @@ public class RhodesService extends Service {
 				continue;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	Handler mHandler = null;
-	
+
 	public native void doSyncAllSources(boolean v);
 	public native void doSyncSource(String source);
-	
+
 	public native String normalizeUrl(String url);
-	
+
 	public static native void doRequest(String url);
 	public static native void doRequestAsync(String url);
 	public static native void doRequestEx(String url, String body, String data, boolean waitForResponse);
     public static native void doRequestJson(String url, String body, String data, boolean waitForResponse);
-    
+
     public static native void loadUrl(String url);
     public static native String currentLocation(int tab);
-	
+
 	public static native void navigateBack();
-	
+
 	public static native void onScreenOrientationChanged(int width, int height, int angle);
-	
+
 	public static native void callUiCreatedCallback();
 	public static native void callUiDestroyedCallback();
 	public static native void callActivationCallback(boolean active);
-	
+
 	public static native String getBuildConfig(String key);
-	
+
 	public static native String getInvalidSecurityTokenMessage();
-	
+
 	public static native void resetHttpLogging(String http_log_url);
 	public static native void resetFileLogging(String log_path);
-		
+
 	public native void notifyNetworkStatusChanged( int status );
-	
-	
+
+
 	public static RhodesService getInstance() {
 		return sInstance;
 	}
-	
+
 	public static native boolean isTitleEnabled();
-	
+
 	private static final String CONF_PHONE_ID = "phone_id";
 	private PhoneId getPhoneId() {
 	    String strPhoneId = RhoConf.getString(CONF_PHONE_ID);
@@ -345,7 +345,7 @@ public class RhodesService extends Service {
 		 if(startPath != null)
           		RhoConf.setString(startPathName, str.toString());
 	}
-	
+
 	public class LocalBinder extends Binder {
 		RhodesService getService() {
 			return RhodesService.this;
@@ -385,7 +385,7 @@ public class RhodesService extends Service {
                 splashScreen.start();
             }
         } catch (NullPointerException ex) {
-            
+
         }
 
 		initForegroundServiceApi();
@@ -411,10 +411,10 @@ public class RhodesService extends Service {
 	public static void handleAppStarted()
 	{
 		RhodesApplication.handleAppStarted();
-		if(rhoMain != null)		
+		if(rhoMain != null)
 		   rhoMain.onAppStart();
 	}
-	
+
 	private void initForegroundServiceApi() {
 		try {
 			mStartForeground = getClass().getMethod("startForeground", mStartForegroundSignature);
@@ -427,16 +427,16 @@ public class RhodesService extends Service {
 			mSetForeground = null;
 		}
 	}
-	
+
 	@Override
 	public void onDestroy() {
-	
+
 		if(DEBUG)
 			Log.d(TAG, "+++ onDestroy");
 		sInstance = null;
 		RhodesApplication.stop();
 	}
-	
+
 	@Override
 	public void onStart(Intent intent, int startId) {
 		Log.d(TAG, "onStart");
@@ -448,7 +448,7 @@ public class RhodesService extends Service {
 			Logger.E(TAG, e);
 		}
 	}
-	
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Logger.D(TAG, "onStartCommand");
@@ -463,7 +463,7 @@ public class RhodesService extends Service {
 		//by the BaseActivity so to maintain the same state it is better if OS does NOT restart.SR EMBPD00183300
 		return Service.START_NOT_STICKY;
 	}
-	
+
 	private void handleCommand(Intent intent, int startId) {
 		if (intent == null) {
 			return;
@@ -478,7 +478,7 @@ public class RhodesService extends Service {
 		else if (PushContract.INTENT_SOURCE.equals(source)) {
 			int type = intent.getIntExtra(PushContract.INTENT_TYPE, PushContract.INTENT_TYPE_UNKNOWN);
 			switch (type) {
-			case PushContract.INTENT_TYPE_REGISTRATION_ID: 
+			case PushContract.INTENT_TYPE_REGISTRATION_ID:
 			{
 				String id = intent.getStringExtra(PushContract.INTENT_REGISTRATION_ID);
                 String pushType = intent.getStringExtra(PushContract.INTENT_PUSH_CLIENT);
@@ -528,7 +528,7 @@ public class RhodesService extends Service {
             RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
         }
 	}
-	
+
 	public void startServiceForeground(int id, Notification notification) {
 		if (mStartForeground != null) {
 			try {
@@ -542,7 +542,7 @@ public class RhodesService extends Service {
 			}
 			return;
 		}
-		
+
 		if (mSetForeground != null) {
 			try {
 				mSetForeground.invoke(this, new Object[] {Boolean.valueOf(true)});
@@ -556,7 +556,7 @@ public class RhodesService extends Service {
 		}
 		mNM.notify(id, notification);
 	}
-	
+
 	public void stopServiceForeground(int id) {
 		if (mStopForeground != null) {
 			try {
@@ -570,7 +570,7 @@ public class RhodesService extends Service {
 			}
 			return;
 		}
-		
+
 		mNM.cancel(id);
 		if (mSetForeground != null) {
 			try {
@@ -584,11 +584,11 @@ public class RhodesService extends Service {
 			}
 		}
 	}
-	
+
 	public void setMainView(MainView v) throws NullPointerException {
 		RhodesActivity.safeGetInstance().setMainView(v);
 	}
-	
+
 	public MainView getMainView() {
 		RhodesActivity ra = RhodesActivity.getInstance();
 		if (ra == null)
@@ -603,12 +603,12 @@ public class RhodesService extends Service {
 	private static void displayAlertForPassword()
 	{
 		PerformOnUiThread.exec(new Runnable(){
-			
+
 			@Override
 			public void run() {
-				PasswordDialog.createpopup();						
-				
-				
+				PasswordDialog.createpopup();
+
+
 			}
 		});
 	}
@@ -621,7 +621,7 @@ public class RhodesService extends Service {
 	                try {
 	                    // Do this fake state change in order to make processing before server is stopped
 	                    RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
-	        
+
 	                    RhodesService service = RhodesService.getInstance();
 	                    if (service != null)
 	                    {
@@ -629,7 +629,7 @@ public class RhodesService extends Service {
 	                        service.wakeLock.reset();
 	                        service.stopSelf();
 	                    }
-	                    
+
 	                    Logger.I(TAG, "stop RhodesApplication");
 	                    RhodesApplication.stop();
 	                }
@@ -641,16 +641,16 @@ public class RhodesService extends Service {
 	}
 	public static void exit() {
 		if(getExitPasswordEnabled().equals("1"))
-		{      
+		{
 	                if(getExitPasswordValue().equals(""))
-                 	PerformRealExit();		
+                 	PerformRealExit();
 			else
 			displayAlertForPassword();
 		}
 		else
 			PerformRealExit();
 	}
-	
+
 	public static void showAboutDialog() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
@@ -662,11 +662,11 @@ public class RhodesService extends Service {
 			}
 		});
 	}
-	
+
 	public static void showLogView() {
 	    getInstance().startActivity(new Intent().setClass(getContext(), LogViewDialog.class));
 	}
-	
+
 	public static void showLogOptions() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
@@ -677,7 +677,7 @@ public class RhodesService extends Service {
 			}
 		});
 	}
-	
+
 	// Called from native code
 	public static void deleteFilesInFolder(String folder) {
 		try {
@@ -689,7 +689,7 @@ public class RhodesService extends Service {
 			Logger.E(TAG, e);
 		}
 	}
-	
+
 	public static boolean pingHost(String host) {
 		HttpURLConnection conn = null;
 		boolean hostExists = false;
@@ -715,29 +715,29 @@ public class RhodesService extends Service {
 		catch (Exception e) {
 			Logger.E(TAG, e);
 		}
-		finally {            
-		    if (conn != null) 
+		finally {
+		    if (conn != null)
 		    {
 		    	try
 		    	{
-		    		conn.disconnect(); 
+		    		conn.disconnect();
 		    	}
-		    	catch(Exception e) 
+		    	catch(Exception e)
 		    	{
 		    		Logger.E(TAG, e);
 		    	}
 		    }
 		}
-		
+
 		return hostExists;
 	}
-	
+
 	private static boolean hasNetworkEx( boolean checkCell, boolean checkWifi, boolean checkEthernet, boolean checkWimax, boolean checkBluetooth, boolean checkAny) {
 		if (!Capabilities.NETWORK_STATE_ENABLED) {
 			Logger.E(TAG, "HAS_NETWORK: Capability NETWORK_STATE disabled");
 			return false;
 		}
-		
+
 		Context ctx = RhodesService.getContext();
 		ConnectivityManager conn = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (conn == null)
@@ -745,7 +745,7 @@ public class RhodesService extends Service {
 			Logger.E(TAG, "HAS_NETWORK: cannot create ConnectivityManager");
 			return false;
 		}
-		 
+
 		NetworkInfo[] info = conn.getAllNetworkInfo();
 		if (info == null)
 		{
@@ -755,7 +755,7 @@ public class RhodesService extends Service {
 
 		//{
 		//	Utils.platformLog("NETWORK", "$$$$$$$$$$$$$$$$$$$   Networks ; $$$$$$$$$$$$$$$$$$$$$$");
-		//	for (int i = 0, lim = info.length; i < lim; ++i) 
+		//	for (int i = 0, lim = info.length; i < lim; ++i)
 		//	{
 		//		int type = info[i].getType();
 		//		String name = info[i].getTypeName();
@@ -763,8 +763,8 @@ public class RhodesService extends Service {
 		//		Utils.platformLog("NETWORK", "        - Name ["+name+"],  type ["+String.valueOf(type)+"], connected ["+String.valueOf(is_connected)+"]");
 		//	}
 		//}
-		
-		for (int i = 0, lim = info.length; i < lim; ++i) 
+
+		for (int i = 0, lim = info.length; i < lim; ++i)
 		{
 			boolean is_connected = info[i].getState() == NetworkInfo.State.CONNECTED;
 			int type = info[i].getType();
@@ -774,34 +774,34 @@ public class RhodesService extends Service {
 				if ((type == 6) && (checkWimax)) return true;
 				if ((type == 9) && (checkEthernet)) return true;
 				if ((type == 7) && (checkBluetooth)) return true;
-				if (checkAny) return true; 
+				if (checkAny) return true;
 			}
 		}
 
     	Logger.I(TAG, "HAS_NETWORK: all networks are disconnected");
-		
+
 		return false;
 	}
-	
+
 	private static boolean hasWiFiNetwork() {
 		return hasNetworkEx(false, true, true, true, false, false);
 	}
-	
+
 	private static boolean hasCellNetwork() {
 		return hasNetworkEx(true, false, false, false, false, false);
 	}
-	
+
 	private static boolean hasNetwork() {
 		return hasNetworkEx(true, true, true, true, false, true);
 	}
-	
+
 	private static String getCurrentLocale() {
 		String locale = Locale.getDefault().getLanguage();
 		if (locale.length() == 0)
 			locale = "en";
 		return locale;
 	}
-	
+
 	private static String getCurrentCountry() {
 		String cl = Locale.getDefault().getCountry();
 		return cl;
@@ -813,21 +813,21 @@ public class RhodesService extends Service {
         else
             return 0;
     }
-	
+
     public static int getScreenHeight() {
         if (BaseActivity.getScreenProperties() != null)
             return BaseActivity.getScreenProperties().getHeight();
         else
             return 0;
     }
-    
+
     public static int getRealScreenWidth() {
         if (BaseActivity.getScreenProperties() != null)
             return BaseActivity.getScreenProperties().getRealWidth();
         else
             return 0;
     }
-	
+
     public static int getRealScreenHeight() {
         if (BaseActivity.getScreenProperties() != null)
             return BaseActivity.getScreenProperties().getRealHeight();
@@ -841,7 +841,7 @@ public class RhodesService extends Service {
         else
             return 0;
     }
-    
+
     public static float getScreenPpiY() {
         if (BaseActivity.getScreenProperties() != null)
             return BaseActivity.getScreenProperties().getPpiY();
@@ -910,7 +910,7 @@ public class RhodesService extends Service {
 			} else if (name.equalsIgnoreCase("is_emulator")) {
 				String strDevice = Build.DEVICE;
 				return Boolean.valueOf(strDevice != null
-						&& strDevice.equalsIgnoreCase("generic"));
+						&& strDevice.toLowerCase().startsWith("generic"));
 			} else if (name.equalsIgnoreCase("os_version")) {
 				return Build.VERSION.RELEASE;
 			} else if (name.equalsIgnoreCase("has_calendar")) {
@@ -958,7 +958,7 @@ public class RhodesService extends Service {
 
 		return null;
     }
-    
+
     public static Boolean isSymbolDevice() {
         Boolean res = false;
        /* try
@@ -966,28 +966,28 @@ public class RhodesService extends Service {
             Class<?> commonClass = Class.forName("com.rho.rhoelements.Common");
             Method isEmdkDeviceMethod = commonClass.getDeclaredMethod("isEmdkDevice");
             res = (Boolean)isEmdkDeviceMethod.invoke(null);
-        } 
+        }
         catch (Throwable e) { }
         return Boolean.valueOf(Capabilities.SYMBOL_ENABLED && res);*/
-        
+
       //   There is a loading issue if app_type=rhodes. SR EMBPD00111897
-        
+
       return isAppInstalled("com.symbol.emdk.proxyframework") ||
              isAppInstalled("com.symbol.emdk.datawedge") ||
             isAppInstalled("com.symbol.datawedge") || symbolSupportedDeviceID();
     }
-    
+
     private static Boolean symbolSupportedDeviceID(){
     	boolean flag = false;
     	if((Build.MODEL.compareToIgnoreCase("MC18N0") == 0) || (Build.MODEL.compareToIgnoreCase("MC32N0") == 0)
-    			|| (Build.MODEL.compareToIgnoreCase("MC40N0") == 0) || (Build.MODEL.compareToIgnoreCase("TC55") == 0) 
+    			|| (Build.MODEL.compareToIgnoreCase("MC40N0") == 0) || (Build.MODEL.compareToIgnoreCase("TC55") == 0)
     			|| (Build.MODEL.compareToIgnoreCase("TC700H") == 0) || (Build.MODEL.compareToIgnoreCase("TC75") == 0) ){
     		flag = true;
-    		
+
     	}
 		return flag;
     }
-	
+
 	public static String getTimezoneStr() {
 		Calendar cal = Calendar.getInstance();
 		TimeZone tz = cal.getTimeZone();
@@ -1010,13 +1010,13 @@ public class RhodesService extends Service {
             Intent main_intent = new Intent(Intent.ACTION_MAIN);
             //main_intent.addCategory(Intent.CATEGORY_DEFAULT);
             //main_intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            
+
             List<ResolveInfo> activities = mgr.queryIntentActivities(main_intent, 0/*PackageManager.MATCH_DEFAULT_ONLY*/);
-            
+
             Iterator<ResolveInfo> activities_iterator = activities.iterator();
             while (activities_iterator.hasNext()) {
                 ResolveInfo resolve_info = activities_iterator.next();
-                //Utils.platformLog("$$$", "     ACTIVITY NAME["+resolve_info.activityInfo.name+"] TARGET["+resolve_info.activityInfo.targetActivity+"]");                  
+                //Utils.platformLog("$$$", "     ACTIVITY NAME["+resolve_info.activityInfo.name+"] TARGET["+resolve_info.activityInfo.targetActivity+"]");
                 if (appName.equals(resolve_info.activityInfo.packageName)) {
                     // we found our activity !
                     className = resolve_info.activityInfo.name;
@@ -1082,7 +1082,7 @@ public class RhodesService extends Service {
             Logger.E(TAG, e);
         }
     }
-	
+
 	public static boolean isAppInstalled(String appName) {
 		try {
 			RhodesService.getContext().getPackageManager().getPackageInfo(appName, 0);
@@ -1096,13 +1096,13 @@ public class RhodesService extends Service {
 			return false;
 		}
 	}
-	
+
 	private void updateDownloadNotification(String url, int totalBytes, int currentBytes) {
 		Context context = RhodesActivity.getContext();
-		
+
 		RemoteViews expandedView = new RemoteViews(context.getPackageName(),
 				R.layout.status_bar_ongoing_event_progress_bar);
-		
+
 		StringBuilder newUrl = new StringBuilder();
 		if (url.length() < 17)
 			newUrl.append(url);
@@ -1112,7 +1112,7 @@ public class RhodesService extends Service {
 			newUrl.append(url.substring(url.length() - 7, url.length()));
 		}
 		expandedView.setTextViewText(R.id.title, newUrl.toString());
-		
+
 		StringBuffer downloadingText = new StringBuffer();
 		if (totalBytes > 0) {
 			long progress = currentBytes*100/totalBytes;
@@ -1126,9 +1126,9 @@ public class RhodesService extends Service {
 				totalBytes < 0);
 
 		Builder builder = AndroidFunctionalityManager.getAndroidFunctionality().getNotificationBuilder(context,String.valueOf(DOWNLOAD_PACKAGE_ID),url);
-		
+
 		builder.setSmallIcon(android.R.drawable.stat_sys_download);
-		builder.setDefaults(Notification.FLAG_ONGOING_EVENT);		
+		builder.setDefaults(Notification.FLAG_ONGOING_EVENT);
 		//min API = 24
 		//builder.setCustomContentView(expandedView);
 		Intent intent = new Intent(ACTION_ASK_CANCEL_DOWNLOAD);
@@ -1138,18 +1138,18 @@ public class RhodesService extends Service {
 
 		mNM.notify(DOWNLOAD_PACKAGE_ID, builder.build() );
 	}
-	
+
 	private File downloadPackage(String url) throws IOException {
 		final Context ctx = RhodesActivity.getContext();
-		
+
 		final Thread thisThread = Thread.currentThread();
-		
+
 		final Runnable cancelAction = new Runnable() {
 			public void run() {
 				thisThread.interrupt();
 			}
 		};
-		
+
 		BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -1181,13 +1181,13 @@ public class RhodesService extends Service {
 		filter.addAction(ACTION_ASK_CANCEL_DOWNLOAD);
 		filter.addAction(ACTION_CANCEL_DOWNLOAD);
 		ctx.registerReceiver(downloadReceiver, filter);
-		
+
 		File tmpFile = null;
 		InputStream is = null;
 		OutputStream os = null;
 		try {
 			updateDownloadNotification(url, -1, 0);
-			
+
 			/*
 			List<File> folders = new ArrayList<File>();
 			folders.add(Environment.getDownloadCacheDirectory());
@@ -1200,7 +1200,7 @@ public class RhodesService extends Service {
 				// Ignore
 			}
 			folders.add(Environment.getExternalStorageDirectory());
-			
+
 			for (File folder : folders) {
 				File tmpRootFolder = new File(folder, "rhodownload");
 				File tmpFolder = new File(tmpRootFolder, ctx.getPackageName());
@@ -1208,7 +1208,7 @@ public class RhodesService extends Service {
 					deleteFilesInFolder(tmpFolder.getAbsolutePath());
 				else
 					tmpFolder.mkdirs();
-				
+
 				File of = new File(tmpFolder, UUID.randomUUID().toString() + ".apk");
 				Logger.D(TAG, "Check path " + of.getAbsolutePath() + "...");
 				try {
@@ -1219,17 +1219,17 @@ public class RhodesService extends Service {
 					continue;
 				}
 				Logger.D(TAG, "File " + of.getAbsolutePath() + " succesfully opened for write, start download app");
-				
+
 				tmpFile = of;
 				break;
 			}
 			*/
-		
+
 			tmpFile = new File( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), UUID.randomUUID().toString() + ".apk" );
 			os = ctx.openFileOutput(tmpFile.getName(), Context.MODE_PRIVATE);
-			
+
 			Logger.D(TAG, "Download " + url + " to " + tmpFile.getAbsolutePath() + "...");
-			
+
 			URL u = new URL(url);
 			URLConnection conn = u.openConnection();
 			int totalBytes = -1;
@@ -1238,10 +1238,10 @@ public class RhodesService extends Service {
 				totalBytes = httpConn.getContentLength();
 			}
 			is = conn.getInputStream();
-			
+
 			int downloaded = 0;
 			updateDownloadNotification(url, totalBytes, downloaded);
-			
+
 			long prevProgress = 0;
 			byte[] buf = new byte[65536];
 			for (;;) {
@@ -1253,10 +1253,10 @@ public class RhodesService extends Service {
 				int nread = is.read(buf);
 				if (nread == -1)
 					break;
-				
+
 				//Logger.D(TAG, "Downloading " + url + ": got " + nread + " bytes...");
 				os.write(buf, 0, nread);
-				
+
 				downloaded += nread;
 				if (totalBytes > 0) {
 					// Update progress view only if current progress is greater than
@@ -1269,9 +1269,9 @@ public class RhodesService extends Service {
 					}
 				}
 			}
-			
+
 			Logger.D(TAG, "File stored to " + tmpFile.getAbsolutePath());
-			
+
 			return tmpFile;
 		}
 		catch (IOException e) {
@@ -1292,12 +1292,12 @@ public class RhodesService extends Service {
 				if (os != null)
 					os.close();
 			} catch (IOException e) {}
-			
+
 			mNM.cancel(DOWNLOAD_PACKAGE_ID);
 			ctx.unregisterReceiver(downloadReceiver);
 		}
 	}
-	
+
 	public static void installApplication(final String url) {
 		Thread bgThread = new Thread(new Runnable() {
 			public void run() {
@@ -1331,7 +1331,7 @@ public class RhodesService extends Service {
 		bgThread.setPriority(Thread.MIN_PRIORITY);
 		bgThread.start();
 	}
-	
+
 	public static void uninstallApplication(String appName) {
 		try {
 			Uri packageUri = Uri.parse("package:" + appName);
@@ -1358,7 +1358,7 @@ public class RhodesService extends Service {
                 Logger.D(TAG, "Handling URI: " + url);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
-                ctx.startActivity(intent);                
+                ctx.startActivity(intent);
             }
     }
 
@@ -1368,7 +1368,7 @@ public class RhodesService extends Service {
 
 	private void handlePushMessage(String pushType, Bundle extras) {
 		Logger.D(TAG, "Handle PUSH message");
-		
+
 		if (extras == null) {
 			Logger.W(TAG, "Empty PUSH message received");
 			return;
@@ -1390,40 +1390,40 @@ public class RhodesService extends Service {
 
     private void handlePushMessage(String type, String json) {
         Logger.T(TAG, "Handle push message");
-        
+
         Logger.D(TAG, "Push message JSON: " + json);
-        
+
         callPushCallback(type, json);
     }
-    
+
 	private void restartGeoLocationIfNeeded() {
 		if (mNeedGeoLocationRestart) {
 			//GeoLocation.restart();
 			mNeedGeoLocationRestart = false;
 		}
 	}
-	
+
 	private void stopGeoLocation() {
 		mNeedGeoLocationRestart = GeoLocation.isAvailable();
 		//GeoLocation.stop();
 	}
-	
+
 	private void restoreWakeLockIfNeeded() {
 		 wakeLock.acquire(false);
 	}
-	
+
 	private void stopWakeLock() {
 		Logger.I(TAG, "activityStopped() temporary release wakeLock object");
 		wakeLock.release();
 	}
-	
+
 	public static int rho_sys_set_sleeping(int enable) {
 		Logger.I(TAG, "rho_sys_set_sleeping("+enable+")");
 		RhodesService rs = RhodesService.getInstance();
         int wasEnabled = rs.wakeLock.isHeld() ? 1 : 0;
 		if(rs != null)
 		{
-		
+
 	        if (enable != 0) {
 	            // disable lock device
 				wasEnabled = rs.wakeLock.reset() ? 1 : 0;
@@ -1440,7 +1440,7 @@ public class RhodesService extends Service {
 		}
 		return wasEnabled;
 	}
-	
+
 	private static String fetchUUID()
 	{
 		String uuid = "";
@@ -1469,7 +1469,7 @@ public class RhodesService extends Service {
 		}
 		return uuid;
 	}
-	
+
 	/**
 	 * This method is used only for non-Symbol devices as the UUID needs to be computed by other parameters.
 	 * @return 32-byte long UUID
@@ -1489,7 +1489,7 @@ public class RhodesService extends Service {
 	    res = localUuid.toString().replaceAll("-", "");
 	    return res.toUpperCase();
 	}
-	
+
 	void handleAppActivation() {
 		if (DEBUG)
 			Log.d(TAG, "handle app activation");
@@ -1498,7 +1498,7 @@ public class RhodesService extends Service {
 		callActivationCallback(true);
         RhodesApplication.stateChanged(RhodesApplication.AppState.AppActivated);
 	}
-	
+
 	void handleAppDeactivation() {
 		if (DEBUG)
 			Log.d(TAG, "handle app deactivation");
@@ -1542,7 +1542,7 @@ public class RhodesService extends Service {
 			throw new IllegalStateException("No rhodes service instance at this moment");
 		return r;
 	}
-	
+
 	public static boolean isJQTouch_mode() {
 		return RhoConf.getBool("jqtouch_mode");
 	}
@@ -1562,16 +1562,16 @@ public class RhodesService extends Service {
         Intent intent = new Intent();
         intent.setClassName(srv.getPackageName(), RhodesActivity.class.getCanonicalName());
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        
+
         srv.startActivity(intent);
     }
-    
+
     public static void minimize() {
         if (!RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated)) {
             Logger.T(TAG, "Application is already deactivated, do nothing");
             return;
         }
-        
+
         try {
             RhodesActivity.safeGetInstance().moveTaskToBack(true);
         } catch (RuntimeException ex) {
@@ -1592,12 +1592,18 @@ public class RhodesService extends Service {
     }
 
     public static String getNativeMenu() {
-        List<Object> menuItems = RhodesActivity.safeGetInstance().getMenu().getMenuDescription();
-        String menuJson = new JSONGenerator(menuItems).toString();
 
-        Logger.T(TAG, "Menu: " + menuJson);
+		try {
+            List<Object> menuItems = RhodesActivity.safeGetInstance().getMenu().getMenuDescription();
+            String menuJson = new JSONGenerator(menuItems).toString();
+			Logger.T(TAG, "Menu: " + menuJson);
+			return menuJson;
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+		}
 
-        return menuJson;
+        return "";
     }
 
     public static void setNativeMenu(List<String> jsonMenu) {
@@ -1623,7 +1629,8 @@ public class RhodesService extends Service {
             } catch (JSONException e) {
                 Logger.E(TAG, e);
             }
-        }
+		}
+		try {
         RhodesActivity.safeGetInstance().getMenu().setMenu(nativeMenu);
         if (Build.VERSION.SDK_INT >= 11) {
         	PerformOnUiThread.exec(new Runnable() {
@@ -1631,7 +1638,11 @@ public class RhodesService extends Service {
         			RhodesActivity.safeGetInstance().invalidateOptionsMenu();
         		}
         	});
-        }
+		}
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+		}
     }
 
    public static String getLocalIpAddress()
@@ -1675,10 +1686,10 @@ public class RhodesService extends Service {
     		ret.put( "build.host", 					Build.HOST );
     		ret.put( "build.fingerprint", 			Build.FINGERPRINT );
     		ret.put( "build.version.release",		Build.VERSION.RELEASE );
-    		ret.put( "build.version.incremental", 	Build.VERSION.INCREMENTAL );    		
+    		ret.put( "build.version.incremental", 	Build.VERSION.INCREMENTAL );
     		ret.put( "build.version.codename",		Build.VERSION.CODENAME );
     		ret.put( "build.version.sdk",			String.valueOf(Build.VERSION.SDK_INT) );
-    		ret.put( "build.bootloader",			Build.BOOTLOADER );    		
+    		ret.put( "build.bootloader",			Build.BOOTLOADER );
     		ret.put( "build.device",				Build.DEVICE );
     		ret.put( "build.display",				Build.DISPLAY );
     		ret.put( "build.hardware",				Build.HARDWARE );
@@ -1778,5 +1789,5 @@ public class RhodesService extends Service {
 
     	return ret;
     }
-    
+
 }

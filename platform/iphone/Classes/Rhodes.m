@@ -829,8 +829,8 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
     RAWLOG_INFO("Create new detached thread for initialization stuff");
     [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];
     
-    RAWLOG_INFO(@"Init all windows");
-    
+    RAWLOG_INFO("Init all windows");
+
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     
 #ifndef RHO_STANDALONE_LIB

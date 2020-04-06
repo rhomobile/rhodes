@@ -155,11 +155,26 @@ def set_app_name_android(newname)
   rm_rf $appres
   cp_r $rhores, $appres
 
+  buildToolsVerMajor = $build_tools_ver.split('.')[0].to_i
+  canRenderNetworkSecurityConfig = (($found_api_level.to_i >= 24) && (buildToolsVerMajor>=24))
+  rm_rf File.join($appres, 'xml', 'network_security_config.xml') if(!canRenderNetworkSecurityConfig)
+
   rhostrings = File.join($rhores, "values", "strings.xml")
   appstrings = File.join($appres, "values", "strings.xml")
   doc = REXML::Document.new(File.new(rhostrings))
   doc.elements["resources/string[@name='app_name']"].text = newname
   File.open(appstrings, "w") { |f| doc.write f }
+end
+
+def set_app_name_android_post(newname)
+  puts "set_app_name_post"
+
+  Dir.glob(File.join($appres, '**', 'strings.xml')).each do |res|
+    doc = REXML::Document.new(File.new(res))
+    doc.elements["resources/string[@name='app_name']"].text = newname
+    rm_rf res
+    File.open(res, "w") { |f| doc.write f }
+  end
 end
 
 
@@ -2137,6 +2152,8 @@ namespace "build" do
         end
       end
 
+      set_app_name_android_post($appname)
+
       #copy icon after extension resources in case it overwrites them (like rhoelementsext...)
       set_app_icon_android
 
@@ -2719,12 +2736,6 @@ def prepare_aar_package
     rm_rf File.join($allclasses, 'classes.jar')
   end
 
-  if(File.exists?(File.join($allclasses, 'com', $vendor , $appname)))  
-    rm_rf File.join($allclasses, 'com', $vendor , $appname)
-  elsif(File.exists?(File.join($allclasses, $app_package_name.split('.'))))  
-    rm_rf File.join($allclasses, $app_package_name.split('.'))
-  end
-
   alljars.each do |jar|
     Zip::File.open(jar) do |archive|
       archive.glob("**/*.*").each do |pfile|
@@ -2735,6 +2746,12 @@ def prepare_aar_package
         archive.extract( pfile, File.join(target) )
       end
     end
+  end
+
+  if(Dir.exists?(File.join($allclasses, 'com', $vendor , $appname.downcase)))  
+    FileUtils.remove_dir File.join($allclasses, 'com', $vendor , $appname.downcase)
+  elsif(Dir.exists?(File.join($allclasses, $app_package_name.split('.'))))  
+    FileUtils.remove_dir File.join($allclasses, $app_package_name.split('.'))
   end
 
   #res_dirs = AndroidTools::MavenDepsExtractor.instance.aapt2_res_dirs

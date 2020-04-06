@@ -27,11 +27,17 @@
 #import "RhoWebViewFabrique.h"
 #import <WebKit/WebKit.h>
 
+#import "common/app_build_capabilities.h"
+
+#ifdef APP_BUILD_CAPABILITY_IOS_UIWEBVIEW
 #import "RhoUIWebView.h"
+#endif
+
 #import "RhoWKWebView.h"
 
 #import "common/RhoConf.h"
 #include "logging/RhoLog.h"
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoWebViewFabrique"
@@ -41,7 +47,7 @@
 
 + (id<RhoWebView,NSObject>)createRhoWebViewWithFrame:(CGRect)frame {
     
-    BOOL shouldMakeWkWebView = NO;
+    BOOL shouldMakeWkWebView = YES;
     BOOL isDirectRequestActivated = NO;
     BOOL isWKWebViewCLassExist = NO;
     if (rho_conf_is_property_exists("ios_direct_local_requests")!=0) {
@@ -50,8 +56,12 @@
         }
     }
     if (rho_conf_is_property_exists("ios_use_WKWebView")!=0) {
-        if (rho_conf_getBool("ios_use_WKWebView")!=0 ) {
-            shouldMakeWkWebView = YES;
+        if (rho_conf_getBool("ios_use_WKWebView")==0 ) {
+#ifdef APP_BUILD_CAPABILITY_IOS_UIWEBVIEW
+            shouldMakeWkWebView = NO;
+#else
+            RAWLOG_ERROR("You can not use UIWebView without capability IOS_UIWEBVIEW in build.yml !!!");
+#endif
         }
     }
     if (NSClassFromString(@"WKWebView")) {
@@ -63,24 +73,26 @@
     if (shouldMakeWkWebView) {
         RAWLOG_INFO("Try to create WKWebView ...");
         if (isDirectRequestActivated) {
-            RAWLOG_ERROR("can not make WKWebView because ios_direct_local_requests is ACTIVATED !!!");
+#ifdef APP_BUILD_CAPABILITY_IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING
+#else
+            RAWLOG_ERROR("You can not enable ios_direct_local_requests if you not added IOS_WKWEBVIEW_HTTP_DIRECT_PROCESSING capability to build.yml !!!");
+#endif
+        }
+        if (isWKWebViewCLassExist) {
+            webView = [[RhoWKWebView alloc] initWithFrame:frame];
+            RAWLOG_INFO("WKWebView was created OK !");
         }
         else {
-            if (isWKWebViewCLassExist) {
-                webView = [[RhoWKWebView alloc] initWithFrame:frame];
-                RAWLOG_INFO("WKWebView was created OK !");
-            }
-            else {
-                RAWLOG_ERROR("can not make WKWebView because iOS version < 8.0 - can not find WKWebView class !!!");
-            }
+            RAWLOG_ERROR("can not make WKWebView  - can not find WKWebView class !!!");
         }
     }
+#ifdef APP_BUILD_CAPABILITY_IOS_UIWEBVIEW
     if (webView == nil) {
         RAWLOG_INFO("Try to create UIWebView ...");
         webView = [[RhoUIWebView alloc] initWithFrame:frame];
         RAWLOG_INFO("UIWebView was created OK !");
     }
-
+#endif
     return webView;
 }
 

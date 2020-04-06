@@ -1,17 +1,15 @@
-greaterThan(QT_MINOR_VERSION, 6): {
-    CONFIG += c++14
-    DEFINES += CPP_ELEVEN
-    DEFINES += RHODES_VERSION_2
-}
-
 equals(QT_MAJOR_VERSION, 5) {
-    equals(QT_MINOR_VERSION, 6) {
-        DEFINES += OS_SAILFISH OS_LINUX
+    lessThan(QT_MINOR_VERSION, 6): {
+        DEFINES += RHODES_VERSION_1
     }
-}
-
-lessThan(QT_MINOR_VERSION, 6): {
-    DEFINES += RHODES_VERSION_1
+    equals(QT_MINOR_VERSION, 6): {
+        DEFINES += OS_SAILFISH OS_LINUX
+        CONFIG +=  c++14
+    }
+    greaterThan(QT_MINOR_VERSION, 7): {
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+    }
 }
 
 TARGET = zlib

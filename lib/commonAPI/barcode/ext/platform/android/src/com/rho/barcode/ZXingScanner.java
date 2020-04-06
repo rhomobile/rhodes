@@ -129,12 +129,18 @@ public class ZXingScanner extends Barcode implements IBarcode
 
 		//TODO Analyse property map and set settings
 		//Start the ZXing Activity
-        RhodesActivity ra = RhodesActivity.safeGetInstance();
-        Intent intent = new Intent(ra, com.google.zxing.client.android.CaptureActivity.class);
-        intent.putExtra(com.google.zxing.client.android.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
-        intent.putExtra(com.google.zxing.client.android.CaptureActivity.RHO_BARCODE_ID, this.getId());
-        
-        ra.startActivity(intent);
+		try {
+           RhodesActivity ra = RhodesActivity.safeGetInstance();
+           Intent intent = new Intent(ra, com.google.zxing.client.android.CaptureActivity.class);
+           intent.putExtra(com.google.zxing.client.android.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
+           intent.putExtra(com.google.zxing.client.android.CaptureActivity.RHO_BARCODE_ID, this.getId());
+
+		   ra.startActivity(intent);
+		}
+		catch (Exception e) {
+			Logger.E(LOGTAG, e);
+			return;
+		}
 	}
 
 	@Override
@@ -146,12 +152,18 @@ public class ZXingScanner extends Barcode implements IBarcode
 		//TODO See if it has been started previously
 		//TODO Analyse property map and set settings
 		//Start the ZXing Activity
-        RhodesActivity ra = RhodesActivity.safeGetInstance();
-        Intent intent = new Intent(ra, com.google.zxing.client.android.CaptureActivity.class);
-        intent.putExtra(com.google.zxing.client.android.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
-        intent.putExtra(com.google.zxing.client.android.CaptureActivity.RHO_BARCODE_ID, this.getId());
-        
-        ra.startActivity(intent);
+		try {
+           RhodesActivity ra = RhodesActivity.safeGetInstance();
+           Intent intent = new Intent(ra, com.google.zxing.client.android.CaptureActivity.class);
+           intent.putExtra(com.google.zxing.client.android.CaptureActivity.CAMERA_INDEX_EXTRA, cameraNumber);
+           intent.putExtra(com.google.zxing.client.android.CaptureActivity.RHO_BARCODE_ID, this.getId());
+
+		   ra.startActivity(intent);
+		}
+		catch (Exception e) {
+			Logger.E(LOGTAG, e);
+			return;
+		}
 	}
 
 	/**
@@ -204,8 +216,9 @@ public class ZXingScanner extends Barcode implements IBarcode
 		{
 	        StringBuffer body = new StringBuffer();
 	        body.append("&rho_callback=1");
-	        body.append("&status=cancel");
-	        RhodesActivity.safeGetInstance().getMainView().navigate(takeBarcodeURL + body, -1);
+			body.append("&status=cancel");
+			if(RhodesActivity.safeGetInstance() != null)
+	            RhodesActivity.safeGetInstance().getMainView().navigate(takeBarcodeURL + body, -1);
 	        takeBarcodeURL = null;
 	        //TODO needs testing
 		}
@@ -272,7 +285,8 @@ public class ZXingScanner extends Barcode implements IBarcode
 		        }
 		Logger.I(LOGTAG, "decodeEvent, URL: " + takeBarcodeURL + body);
 
-				RhodesActivity.safeGetInstance().getMainView().navigate(takeBarcodeURL + body, -1);
+				if(RhodesActivity.safeGetInstance() != null)				
+				    RhodesActivity.safeGetInstance().getMainView().navigate(takeBarcodeURL + body, -1);
 				takeBarcodeURL = null;
 				//TODO needs testing
 			}

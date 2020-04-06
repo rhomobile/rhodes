@@ -9,25 +9,22 @@ isEqual(QT_MAJOR_VERSION, 5):{
         INCLUDEPATH += oldVersion
     }
 
-    equals(QT_MAJOR_VERSION, 5) {
-        equals(QT_MINOR_VERSION, 6) {
-            DEFINES += ENABLE_Q_WEB_ENGINE
+    equals(QT_MINOR_VERSION, 6) {
+        DEFINES += ENABLE_Q_WEB_ENGINE
 
-            !contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
-                QT += webkit
-                message(Deprecated sailfish webkit enabled)
-            }
-            contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
-                QT += webengine
-            }
-
-            QT += quick multimedia dbus bluetooth
-            DEFINES += OS_SAILFISH OS_LINUX
-            CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
+        !contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+            QT += webkit
+            message(Deprecated sailfish webkit enabled)
         }
+        contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+            QT += webengine
+        }
+
+        QT += quick multimedia dbus bluetooth
+        DEFINES += OS_SAILFISH OS_LINUX
+        CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
     }
-
-
+    
     greaterThan(QT_MINOR_VERSION, 6): {
         QT += webengine webenginecore webenginewidgets multimedia multimediawidgets
         message(Webengine enabled)

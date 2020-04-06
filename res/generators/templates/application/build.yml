@@ -57,6 +57,13 @@ applog: rholog.txt
   #- calendar
   ## allows writing to the SD card on Android devices
   #- sdcard
+  ## add UIWebView code to project - now UIWebView deprecated by Apple - You can not submit application with UIWebView to AppStore !
+  ## You can select type of WebView in rhoconfig.txt - see ios_use_WKWebView option
+  #- ios_uiwebview
+  ## iOS do not support direct(intercept by application's code) http/https request processing in WKWebView
+  ## add this capability for add some code with support this feature by some "unofficial" method.
+  ## set ios_direct_local_requests = 1 in rhoconfig.txt for use this code 
+  #- ios_wkwebview_http_direct_processing
 
 iphone:
   configuration: Release
@@ -138,7 +145,7 @@ wm:
 win32:
   deployqt: 1
   deploymsvc: 1
-  msvc: 2015
+  msvc: 2017
 
 sailfish:
   configuration: Release

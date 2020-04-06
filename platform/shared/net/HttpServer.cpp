@@ -638,6 +638,10 @@ bool CHttpServer::run()
                 //RAWTRACE("After accept...");
                 if (!m_active) {
                     if (verbose) RAWTRACE("Stop HTTP server");
+                    if (conn != INVALID_SOCKET) {
+                        closesocket(conn);
+                        conn = INVALID_SOCKET;
+                    }
                     return true;
                 }
                 if (conn == INVALID_SOCKET) {

@@ -188,10 +188,10 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                 intent.setType(mime);
             }
         }
-        
+
         if (extras != null) {
             for (Map.Entry<String, Object> entry: extras.entrySet()) {
-                
+
                 if (String.class.isInstance(entry.getValue())) {
                     if (entry.getKey().equals("output") && intent.toString().contains("VIDEO_CAPTURE")){
                         Logger.T(TAG, "Action is VIDEO_CAPTURE");
@@ -199,10 +199,17 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                             intent.putExtra(constant(entry.getKey()), Uri.parse((String)entry.getValue()));
                         }catch(Exception e){Logger.T(TAG, "Error on building intent: " + e.getMessage());}
                     }else{
-                        intent.putExtra(constant(entry.getKey()), (String)entry.getValue());
-                        Logger.T(TAG, "Putting extra to intent: key - " + entry.getKey() + ", type - String");
+                        if (entry.getKey().equals("android.intent.extra.STREAM")){
+                            Logger.T(TAG, "key is android.intent.extra.STREAM - value hould be convert to Uri");
+                            try{
+                                intent.putExtra(constant(entry.getKey()), Uri.parse(Uri.decode((String)entry.getValue())));
+                            }catch(Exception e){Logger.T(TAG, "Error on building intent: " + e.getMessage());}
+                        }else{
+                            intent.putExtra(constant(entry.getKey()), (String)entry.getValue());
+                            Logger.T(TAG, "Putting extra to intent: key - " + entry.getKey() + ", type - String");
+                        }
                     }
-                    
+
                 }
                 else if (Boolean.class.isInstance(entry.getValue())) {
                     intent.putExtra(constant(entry.getKey()), ((Boolean)entry.getValue()).booleanValue());
@@ -336,8 +343,15 @@ public class IntentSingleton extends AbstractRhoListener implements IIntentSingl
                     };
                     localMethodResults.add(entry);
                 }
-                RhodesActivity.safeGetInstance().startActivityForResult(intent, request);
-                Logger.T(TAG, "Start activity for result: " + intent);
+
+                try{
+                    RhodesActivity.safeGetInstance().startActivityForResult(intent, request);
+                    Logger.T(TAG, "Start activity for result: " + intent);
+                }
+                catch (Exception e) {
+                    Logger.E(TAG, e);
+                    return;
+                }
             }
             else {
                 Logger.T(TAG, "Start activity: " + intent);
