@@ -37,9 +37,6 @@ macx {
   DESTDIR = $$RHODES_ROOT/platform/osx/bin/extensions
   OBJECTS_DIR = $$RHODES_ROOT/platform/osx/bin/extensions/mediacapture
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/iphone
-    HEADERS += src/CameraDialogBuilder.h \
-                src/CameraDialogView.h
-    SOURCES += src/CameraDialogView.cpp
 }
 win32 {
   DESTDIR = $$RHODES_ROOT/platform/win32/bin/extensions
@@ -55,29 +52,17 @@ win32 {
   }
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/win32
   RCC_DIR = $$RHODES_ROOT/lib/commonAPI/mediacapture/ext/platform/qt/resources
-    HEADERS += src/CameraDialogBuilder.h \
-                src/CameraDialogView.h
-    SOURCES += src/CameraDialogView.cpp
-
 }
 
 unix:!macx {
-  INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/sailfish
-  INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish/src
-  INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish
-
-  contains(DEFINES, OS_LINUX)  {
-    DESTDIR = $$RHODES_ROOT/platform/linux/bin/extensions
-    OBJECTS_DIR = $$RHODES_ROOT/platform/linux/bin/extensions/mediacapture
-  }
-  contains(DEFINES, OS_SAILFISH)  {
-
-
-  }
+DEFINES += OS_LINUX
+DESTDIR = $$RHODES_ROOT/platform/linux/bin/extensions
+OBJECTS_DIR = $$RHODES_ROOT/platform/linux/bin/extensions/mediacapture
+INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/linux
+INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/rhodes
 
 QMAKE_CFLAGS += -fvisibility=hidden
 QMAKE_CXXFLAGS += -fvisibility=hidden
-
 }
 
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
@@ -110,6 +95,8 @@ HEADERS += \
     src/ImageFilenameGetterResult.h \
     src/CameraDialogController.h \
     src/CameraRefresher.h\
+    src/CameraDialogBuilder.h \
+    src/CameraDialogView.h \
     $$RHODES_ROOT\platform\shared\qt\rhodes\iexecutable.h \
     $$RHODES_ROOT\platform\shared\qt\rhodes\guithreadfunchelper.h
 
@@ -122,6 +109,7 @@ SOURCES += \
     ..\..\shared\generated\Camera_js_api.cpp\
     ..\..\shared\generated\Camera_ruby_api.c\
     src\Camera_impl.cpp \
+    src\CameraDialogView.cpp \
     src\CCameraData.cpp
 
 RESOURCES += $$RHODES_ROOT/lib/commonAPI/mediacapture/ext/platform/qt/resources/mediacapture.qrc
