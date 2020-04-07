@@ -6,8 +6,9 @@ cp ./rhobuild.yml.example ./rhobuild.yml
 set -e
 
 echo Downloading Qt
-wget -q https://s3.amazonaws.com/files.tau-technologies.com/buildenv/Qt5.9.5.tar.gz -O $HOME/Qt5.9.5.tar.gz
-tar -xzf $HOME/Qt5.9.5.tar.gz -C $HOME/
+
+wget -q https://s3.amazonaws.com/files.tau-technologies.com/buildenv/Qt5.13.2_mini.tar.gz -O $HOME/Qt5.13.2.tar.gz
+tar -xzf $HOME/Qt5.13.2.tar.gz -C $HOME/
 echo Qt installed
 
 echo "Installing Rhoconnect client"	
