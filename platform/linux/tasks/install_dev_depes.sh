@@ -15,4 +15,4 @@ sudo apt-get install qtdeclarative5-dev qtmultimedia5-dev libqt5multimediawidget
 libqt5multimedia5-plugins libqt5multimedia5 qtwebengine5-dev libx11-xcb-dev \
 libglu1-mesa-dev libxrender-dev libfontconfig1-dev
 
-# Add export QTDIR=/usr/lib/x86_64-linux-gnu/qt5/ to ~/.profile and reboot the system
+# Add "export QTDIR=/usr/lib/x86_64-linux-gnu/qt5/" to ~/.profile and reboot the system
