@@ -16,3 +16,4 @@ libqt5multimedia5-plugins libqt5multimedia5 qtwebengine5-dev libx11-xcb-dev \
 libglu1-mesa-dev libxrender-dev libfontconfig1-dev
 
 # Add "export QTDIR=/usr/lib/x86_64-linux-gnu/qt5/" to ~/.profile and reboot the system
+# grep -qxF 'export QTDIR=/usr/lib/x86_64-linux-gnu/qt5' ~/.profile || echo 'export QTDIR=/usr/lib/x86_64-linux-gnu/qt5' >> ~/.profile
