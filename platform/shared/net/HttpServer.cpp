@@ -600,7 +600,7 @@ int CHttpServer::select_internal( SOCKET listener, fd_set& readfds )
 
 bool CHttpServer::run()
 {
-    #ifdef OS_SAILFISH
+    #ifdef OS_LINUX
     pthread_t current_thread = pthread_self();
     struct sched_param params = { 0 };
     params.sched_priority = 9;

@@ -51,7 +51,7 @@ typedef int SOCKET;
 #  define RHO_NET_ERROR_CODE ::WSAGetLastError()
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_LINUX)
 #define SECURITY_HEADER "RHO-SECURE-TOKEN"
 #elif defined(OS_ANDROID)
 #define SECURITY_HEADER "User-Agent"

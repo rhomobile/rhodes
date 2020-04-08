@@ -30,11 +30,12 @@ macx {
 }
 
 unix:!macx {
-  DESTDIR = ../../../../platform/linux/bin/extensions
-  OBJECTS_DIR = ../../../../platform/linux/bin/extensions/zlib
-  INCLUDEPATH += ../../../../platform/shared/ruby/sailfish
-  QMAKE_CFLAGS += -fvisibility=hidden
-  QMAKE_CXXFLAGS += -fvisibility=hidden
+    DEFINES += OS_LINUX
+    DESTDIR = ../../../../platform/linux/bin/extensions
+    OBJECTS_DIR = ../../../../platform/linux/bin/extensions/zlib
+    INCLUDEPATH += ../../../../platform/shared/ruby/linux
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 win32 {
@@ -48,6 +49,15 @@ win32 {
     DEFINES += _NDEBUG NDEBUG
   }
   INCLUDEPATH += ../../../../platform/shared/ruby/win32
+}
+
+unix:!macx {
+    DEFINES += OS_LINUX
+    DESTDIR = $$PWD/../../../../platform/linux/bin/extensions
+    OBJECTS_DIR = $$PWD/../../../../platform/linux/bin/extensions/zlib
+    INCLUDEPATH += $$PWD/../../../../platform/shared/ruby/linux
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE

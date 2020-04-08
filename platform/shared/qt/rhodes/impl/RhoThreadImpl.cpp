@@ -26,7 +26,7 @@
 
 #include "common/RhoDefs.h"
 
-#ifdef OS_WINDOWS_DESKTOP
+#if defined(OS_WINDOWS_DESKTOP)// || defined(OS_LINUX)
 
 #include "common/RhoPort.h"
 #include "RhoThreadImpl.h"

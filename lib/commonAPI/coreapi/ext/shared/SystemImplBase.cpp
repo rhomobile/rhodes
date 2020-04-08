@@ -73,6 +73,8 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
         oResult.set( L"WINDOWS" );
     else if ( strPlatform.compare("win32") == 0 )
         oResult.set( L"WINDOWS_DESKTOP" );
+    else if ( strPlatform.compare("linux") == 0 )
+        oResult.set( L"LINUX" );
     else if ( strPlatform.compare("wp") == 0 )
         oResult.set( L"WP7" );
     else if ( strPlatform.compare("wp8") == 0 )

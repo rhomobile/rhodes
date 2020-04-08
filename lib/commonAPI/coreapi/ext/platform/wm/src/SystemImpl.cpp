@@ -102,9 +102,7 @@ void CSystemImpl::getIsEmulator(CMethodResult& oResult)
     oResult.set(true);
 #else
 
-#ifdef OS_WINDOWS_DESKTOP
-    oResult.set(false);
-#elif OS_SAILFISH
+#if defined(OS_WINDOWS_DESKTOP) || defined (OS_LINUX) || defined (OS_SAILFISH)
     oResult.set(false);
 #else
 

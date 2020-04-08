@@ -48,11 +48,15 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = ../../../linux/bin/sqlite3
-  OBJECTS_DIR = ../../../linux/bin/sqlite3/tmp
+    DEFINES += OS_LINUX
+    INCLUDEPATH += $$PWD/../../ruby/linux
+    HEADERS += $$PWD/../../ruby/linux/ruby/config.h
 
-  QMAKE_CFLAGS += -fvisibility=hidden
-  QMAKE_CXXFLAGS += -fvisibility=hidden
+    DESTDIR = ../../../linux/bin/sqlite3
+    OBJECTS_DIR = ../../../linux/bin/sqlite3/tmp
+
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 
 DEFINES += RHODES_QT_PLATFORM

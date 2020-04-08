@@ -30,6 +30,15 @@ win32 {
 ../../openssl.so/ext/win32/include
 }
 
+unix:!macx {
+    DEFINES += OS_LINUX
+    DESTDIR = $$PWD/../../../../platform/linux/bin/extensions
+    OBJECTS_DIR = $$PWD/../../../../platform/linux/bin/extensions/digest-sha2
+    INCLUDEPATH += $$PWD/../../../../platform/shared/ruby/linux
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
+}
+
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 
 !isEmpty(RHOSIMULATOR_BUILD) {

@@ -287,12 +287,11 @@ int main(int argc, char *argv[])
     app.exec();
 
     // stopping Rhodes application
-    rho_ringtone_manager_stop();
-
-    m_appWindow->DestroyUi();
-
-    rho::common::CRhodesApp::Destroy();
-
+    //rho_ringtone_manager_stop(); not implemented.
+    #ifdef OS_SAILFISH
+        m_appWindow->DestroyUi();
+        rho::common::CRhodesApp::Destroy();
+    #endif
     return 0;
 }
 

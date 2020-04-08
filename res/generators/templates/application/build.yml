@@ -133,6 +133,8 @@ android:
 ## Note: setup android_title to 0 for remove default window titlebar in Android application
 #android_title: 0
 
+#linux build section
+linux:
 
 wm:
   #sdk: "MC3000c50b (ARMV4I)"

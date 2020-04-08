@@ -34,8 +34,7 @@
 #define HAVE_LANGINFO_H 1
 #define HAVE_LIMITS_H 1
 #define HAVE_LOCALE_H 1
-
-//#define HAVE_MALLOC_MALLOC_H 1
+#define HAVE_MALLOC_H 1
 #define HAVE_PWD_H 1
 #define HAVE_SYS_FCNTL_H 1
 #define HAVE_SYS_FILE_H 1
@@ -58,7 +57,6 @@
 #define HAVE_GMP_H 1
 #define HAVE_LIBGMP 1
 #define HAVE_TYPEOF 1
-#define typeof __typeof__
 #define HAVE_LONG_LONG 1
 #define HAVE_OFF_T 1
 #define SIZEOF_INT 4
@@ -213,8 +211,7 @@
 #define HAVE_CRYPT 1
 #define HAVE_DUP2 1
 #define HAVE_ERF 1
-//RHO alt linux
-//#define HAVE_EXPLICIT_BZERO 1
+#define HAVE_EXPLICIT_BZERO 1
 #define HAVE_FFS 1
 #define HAVE_FINITE 1
 #define HAVE_FLOCK 1
@@ -226,8 +223,6 @@
 #define HAVE_NEXTAFTER 1
 #define HAVE_STRCHR 1
 #define HAVE_STRERROR 1
-#define HAVE_STRLCAT 1
-#define HAVE_STRLCPY 1
 #define HAVE_STRSTR 1
 #define HAVE_TGAMMA 1
 #define SPT_TYPE SPT_REUSEARGV
@@ -236,24 +231,17 @@
 #define HAVE_VFORK 1
 #define HAVE_WORKING_VFORK 1
 #define HAVE_WORKING_FORK 1
-//RHO
-//#define HAVE___SYSCALL 1
-#define HAVE_LABS 1
-#define HAVE_RB_RATIONAL_DEN 1
-
 #define HAVE__LONGJMP 1
 #define HAVE_ATAN2L 1
 #define HAVE_ATAN2F 1
-//RHO alt linux
-//#define HAVE_CHROOT 1
+#define HAVE_CHROOT 1
 #define HAVE_CLOCK_GETTIME 1
 #define HAVE_COSH 1
 #define HAVE_CRYPT_R 1
 #define HAVE_DIRFD 1
 #define HAVE_DL_ITERATE_PHDR 1
 #define HAVE_DLOPEN 1
-//RHO
-//#define HAVE_DLADDR 1
+#define HAVE_DLADDR 1
 #define HAVE_DUP 1
 #define HAVE_DUP3 1
 #define HAVE_EACCESS 1
@@ -262,7 +250,7 @@
 #define HAVE_FCHOWN 1
 #define HAVE_FCNTL 1
 #define HAVE_FDATASYNC 1
-#define HAVE_FGETATTRLIST 1
+#define HAVE_FDOPENDIR 1
 #define HAVE_FMOD 1
 #define HAVE_FSTATAT 1
 #define HAVE_FSYNC 1
@@ -284,19 +272,17 @@
 #define HAVE_GMTIME_R 1
 #define HAVE_INITGROUPS 1
 #define HAVE_IOCTL 1
-//#define HAVE_ISSETUGID 1
 #define HAVE_KILLPG 1
-#define HAVE_LCHMOD 1
 #define HAVE_LCHOWN 1
 #define HAVE_LINK 1
 #define HAVE_LLABS 1
 #define HAVE_LOCKF 1
 #define HAVE_LOG2 1
 #define HAVE_LSTAT 1
-//#define HAVE_MALLOC_SIZE 1
-//#define HAVE_MALLOC_USABLE_SIZE 1
+#define HAVE_LUTIMES 1
+#define HAVE_MALLOC_USABLE_SIZE 1
 #define HAVE_MBLEN 1
-//#define HAVE_MEMSET_S 1
+#define HAVE_MEMALIGN 1
 #define HAVE_WRITEV 1
 #define HAVE_MEMRCHR 1
 #define HAVE_MEMMEM 1
@@ -325,10 +311,10 @@
 #define HAVE_SETPGID 1
 #define HAVE_SETPGRP 1
 #define HAVE_SETREGID 1
+#define HAVE_SETRESGID 1
+#define HAVE_SETRESUID 1
 #define HAVE_SETREUID 1
-//#define HAVE_SETRGID 1
 #define HAVE_SETRLIMIT 1
-//#define HAVE_SETRUID 1
 #define HAVE_SETSID 1
 #define HAVE_SETUID 1
 #define HAVE_SHUTDOWN 1
@@ -368,23 +354,16 @@
 #define HAVE_BUILTIN___BUILTIN_MUL_OVERFLOW_P 1
 #define HAVE_BUILTIN___BUILTIN_CONSTANT_P 1
 #define HAVE_BUILTIN___BUILTIN_CHOOSE_EXPR 1
-//RHO
-//#define HAVE_BUILTIN___BUILTIN_CHOOSE_EXPR_CONSTANT_P 1
-//#define HAVE_BUILTIN___BUILTIN_TYPES_COMPATIBLE_P 1
-//RHO
-//#define HAVE_BSD_QSORT_R 1
+#define HAVE_BUILTIN___BUILTIN_CHOOSE_EXPR_CONSTANT_P 1
+#define HAVE_BUILTIN___BUILTIN_TYPES_COMPATIBLE_P 1
+#define HAVE_GNU_QSORT_R 1
 #define ATAN2_INF_C99 1
 #define HAVE_CLOCK_GETRES 1
 #define HAVE_STRUCT_TM_TM_ZONE 1
 #define HAVE_TM_ZONE 1
 #define HAVE_STRUCT_TM_TM_GMTOFF 1
 #define HAVE_DAYLIGHT 1
-#define HAVE_VAR_TIMEZONE 1
-#define TYPEOF_VAR_TIMEZONE long
-#define HAVE_TIMEZONE 1
-#define TIMEZONE_VOID 1
 #define NEGATIVE_TIME_T 1
-#define LOCALTIME_OVERFLOW_PROBLEM 1
 #define POSIX_SIGNAL 1
 #define HAVE_SIG_T 1
 #define RSHIFT(x,y) ((x)>>(int)(y))
@@ -421,39 +400,4 @@
 #define RUBY_JMP_BUF jmp_buf
 #define HAVE_PTHREAD_H 1
 #define RUBY_PLATFORM "x86_64-linux-gnu"
-
-
-//RHO
-#define RUBY_EXPORT 1
-#define LOAD_RELATIVE 1
-#define DTRACE_PROBES_DISABLED 1
-
-
-
-#ifndef TRUE
-#define TRUE    1
-#endif
-
-#ifndef FALSE
-#define FALSE   0
-#endif
-
-//#define NO_INITIAL_LOAD_PATH
-//#define NO_RUBY_SITE_LIB
-//#define NO_RUBY_VENDOR_LIB
-//RHO
-
-#define HAVE_GETADDRINFO 1
-#define HAVE_TYPE_SOCKLEN_T 1
-#define HAVE_TYPE_STRUCT_ADDRINFO 1
-#define HAVE_TYPE_STRUCT_SOCKADDR_STORAGE 1
-#define HAVE_GAI_STRERROR 1
-#define GAI_STRERROR_CONST 1
-#define HAVE_INET_PTON 1
-#define HAVE_TYPE_STRUCT_IP_MREQ 1
-#define HAVE_TYPE_STRUCT_IPV6_MREQ 1
-
-//RHO for encoding & convertors
-#define EXTSTATIC 1
-
-#endif 
+#endif /* INCLUDE_RUBY_CONFIG_H */

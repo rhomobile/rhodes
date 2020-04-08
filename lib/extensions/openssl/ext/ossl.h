@@ -29,6 +29,9 @@
 #elif defined(ANDROID)
 #include "android/extconf.h"
 #endif
+#ifdef OS_LINUX
+#include "linux/extconf.h"
+#endif
 //RHO
 
 #include <assert.h>

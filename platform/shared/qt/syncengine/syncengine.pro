@@ -45,14 +45,16 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = $$PWD/../../../linux/bin/syncengine
-  OBJECTS_DIR = $$PWD/../../../linux/bin/syncengine/tmp
-  DEFINES += _GNU_SOURCE OS_LINUX OS_SAILFISH
-  QMAKE_CFLAGS += -fvisibility=hidden
-  QMAKE_CXXFLAGS += -fvisibility=hidden
+    INCLUDEPATH += $$PWD/../../ruby/linux
+    HEADERS += $$PWD/../../ruby/linux/ruby/config.h
+    DESTDIR = $$PWD/../../../linux/bin/syncengine
+    OBJECTS_DIR = $$PWD/../../../linux/bin/syncengine/tmp
+    DEFINES += _GNU_SOURCE OS_LINUX
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
 
-  INCLUDEPATH += $$PWD/../../ruby/include\
-                 $$PWD/../../ruby/sailfish
+    INCLUDEPATH += $$PWD/../../ruby/include\
+                 $$PWD/../../ruby/linux
 }
 
 DEFINES += RHODES_QT_PLATFORM

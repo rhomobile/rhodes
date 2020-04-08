@@ -15,6 +15,10 @@ elif [ "$RHO_PLATFORM" = "uwp" ]; then
 cd uwp
 rake --trace
 
+elif [ "$RHO_PLATFORM" = "linux" ]; then
+
+rake --trace
+
 else
 
 rake --trace

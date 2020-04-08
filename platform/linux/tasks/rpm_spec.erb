@@ -1,0 +1,38 @@
+%define appname <%= $appname %>
+
+Summary:    Fast and secure web browser
+Name:       %{appname}
+Version:    <%= $version_app %>
+Release:    1
+Group:      Applications/Internet
+License:    Proprietary  
+Source0:	<%= $appname %>.tar
+Vendor:     <%= $vendor %>
+BuildArch:  <%= $architecture %>
+Autoreq: 0
+Requires: libqt5-qml
+Requires: libqt5-quickwidgets
+Requires: libqt5-webenginecore
+Requires: libqt5-webengine
+Requires: libqt5-core
+Requires: libqt5-gui
+Requires: libqt5-network
+Requires: libqt5-multimedia
+Requires: libgmp
+Requires: libstdc++
+
+%description
+Rhodes application.
+
+%prep
+%setup -q 
+
+%build
+
+%install
+mkdir %{buildroot}
+cp -rfa * %{buildroot}
+
+%files
+/*
+%attr(0777, root, root) /opt/%{appname}

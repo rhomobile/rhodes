@@ -137,7 +137,7 @@ void CNetworkDetectionBase::run()
   
   if ( m_deleteSelf )
   {
-#if defined(OS_WINDOWS_DESKTOP)// || defined(OS_UWP)
+#if defined(OS_WINDOWS_DESKTOP) // || defined(OS_UWP)
     LOG(INFO) + "Stopping Network Detection Thread - do not delete ";
  #else
      LOG(INFO) + "Stopping Network Detection Thread - delete this";

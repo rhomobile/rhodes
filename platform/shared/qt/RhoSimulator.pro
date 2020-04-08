@@ -15,12 +15,14 @@ equals(QT_MAJOR_VERSION, 5) {
 
 
 #DEFINES += RHODES_EMULATOR
+CONFIG -= qml
+
 
 TEMPLATE = subdirs
 SUBDIRS = rubylib rholib sqlite3 syncengine
 
 unix:!macx {
- # SUBDIRS += curl
+ SUBDIRS += curl
 }
 macx {
  SUBDIRS += curl

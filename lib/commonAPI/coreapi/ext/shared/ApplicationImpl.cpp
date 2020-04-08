@@ -49,7 +49,7 @@ public:
 
     virtual void getUserFolder(rho::apiGenerator::CMethodResult& oResult)
     {
-#ifdef OS_MACOSX
+#if defined(OS_MACOSX) || defined (OS_LINUX)
         oResult.set( CFilePath::join( rho_native_rhouserpath(), RHO_APPS_DIR) );
 #else
         oResult.set( CFilePath::join( rho_native_rhopath(), RHO_APPS_DIR) );
@@ -115,7 +115,7 @@ public:
     {
         RHOCONF().setString("title_text", title, false);
 
-#if defined(OS_WINCE) || defined (OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+#if defined(OS_WINCE) || defined (OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR) || defined(OS_LINUX)
         rho_title_change(0, title.c_str());
 #endif
     }

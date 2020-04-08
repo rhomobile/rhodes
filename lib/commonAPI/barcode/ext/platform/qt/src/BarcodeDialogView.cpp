@@ -1,5 +1,6 @@
 #include "BarcodeDialogView.h"
 QSet<QString> BarcodeDialogView::keeper;
+DecoderThread * BarcodeDialogView::decThread = nullptr;
 
 BarcodeDialogView::BarcodeDialogView(QCameraInfo &info, QWidget *parent) : QDialog(parent){
 
@@ -9,8 +10,7 @@ BarcodeDialogView::BarcodeDialogView(QCameraInfo &info, QWidget *parent) : QDial
     camera = nullptr;
     imageCapture = nullptr;
     localInfo = info;
-
-    decThread = new DecoderThread(this);
+    if (decThread == nullptr) decThread = new DecoderThread(qApp);
     connect(decThread, SIGNAL(encoded(QString, QString)), this, SLOT(encoded(QString, QString)));
     connect(decThread, SIGNAL(scanningProcessMsg()), this, SLOT(scanningProcessMsg()));
 
@@ -90,6 +90,9 @@ bool BarcodeDialogView::dialogExists(QCameraInfo &info)
 
 void BarcodeDialogView::createCamera(QCameraInfo &info)
 {
+    qDebug() << "Initiation of camera";
+    qDebug() << info.description();
+    qDebug() << info.deviceName();
     if (imageCapture != nullptr){
         imageCapture->deleteLater();
     }
@@ -106,7 +109,7 @@ void BarcodeDialogView::createCamera(QCameraInfo &info)
     camera->setViewfinder(videoWidget);
 
     imageCapture = new QCameraImageCapture(camera, this);
-    imageCapture->setBufferFormat(QVideoFrame::Format_RGB32);
+    imageCapture->setBufferFormat(QVideoFrame::Format_RGB32); //QVideoFrame::Format_YUYV
 
     imageCapture->setCaptureDestination(QCameraImageCapture::CaptureToBuffer);
     QImageEncoderSettings settings = imageCapture->encodingSettings();
