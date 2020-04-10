@@ -427,6 +427,6 @@ contains(DEFINES, OS_LINUX)  {
     #unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lbluetooth
     #unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libbluetooth.a
 
-    LIBS += -ldl -lgmp -lc -lpthread -lz
+    LIBS += -ldl -lgmp -lc -lpthread -lz -lGL
 
 }
