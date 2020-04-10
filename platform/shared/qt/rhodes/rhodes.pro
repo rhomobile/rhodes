@@ -374,6 +374,7 @@ RESOURCES += resources/common.qrc
 }
 
 contains(DEFINES, OS_LINUX)  {
+    LIBS += -lGL
     SOURCES +=  $$PWD/../../net/ssl.cpp
 
     LIBS += -lz
@@ -427,6 +428,6 @@ contains(DEFINES, OS_LINUX)  {
     #unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lbluetooth
     #unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libbluetooth.a
 
-    LIBS += -ldl -lgmp -lc -lpthread -lz -lGL
+    LIBS += -ldl -lgmp -lc -lpthread -lz
 
 }
