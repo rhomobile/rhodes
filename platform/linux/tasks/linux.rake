@@ -47,7 +47,7 @@ namespace "config" do
 
 		$homedir = `echo ~`.to_s.strip
 		$current_platform = "linux"
-		$qmake_makespec = "linux-g++-64"
+		$qmake_makespec = "linux-g++"
 		Rake::Task["config:common"].invoke()
 
 		if !$app_config.nil? && !$app_config["linux"].nil?
