@@ -74,6 +74,8 @@ unix:!macx {
     QMAKE_CFLAGS += -fvisibility=hidden
     QMAKE_CXXFLAGS += -fvisibility=hidden
     
+    QMAKE_CFLAGS_RELEASE -= -O2
+    QMAKE_CXXFLAGS_RELEASE -= -O2    
 
     Debug {
       DEFINES += _DEBUG DEBUG
