@@ -56,8 +56,8 @@ unix:!macx {
     INCLUDEPATH += $$PWD/../../ruby/include\
                  $$PWD/../../ruby/linux
 
-    QMAKE_CFLAGS_RELEASE -= -O2
-    QMAKE_CXXFLAGS_RELEASE -= -O2
+    #QMAKE_CFLAGS_RELEASE -= -O2
+    #QMAKE_CXXFLAGS_RELEASE -= -O2
 }
 
 DEFINES += RHODES_QT_PLATFORM
