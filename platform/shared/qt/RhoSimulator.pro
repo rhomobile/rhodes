@@ -22,7 +22,10 @@ TEMPLATE = subdirs
 SUBDIRS = rubylib rholib sqlite3 syncengine
 
 unix:!macx {
- SUBDIRS += curl
+    SUBDIRS += curl
+    QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO += /O0
+    QMAKE_CXXFLAGS_RELEASE += /MP9 /O0
+    QMAKE_CXXFLAGS_DEBUG += /MP9 /O0
 }
 macx {
  SUBDIRS += curl
