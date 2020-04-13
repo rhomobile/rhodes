@@ -23,6 +23,13 @@ SUBDIRS = rubylib rholib sqlite3 syncengine
 
 unix:!macx {
     SUBDIRS += curl
+    DEFINES += CPP_ELEVEN
+    DEFINES += OS_LINUX
+    QMAKE_CXXFLAGS_RELEASE += -MP9
+    QMAKE_CXXFLAGS_DEBUG += -MP9
+
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
 }
 macx {
  SUBDIRS += curl
