@@ -361,7 +361,7 @@ namespace "device" do
 			end
 		end
 		task :production do
-			name_out = Jake.run('hostnamectl')
+			name_out = Jake.run('hostnamectl', [])
 
 			if name_out.downcase().include? "ubuntu"
 				puts "The current system is Ubuntu"
