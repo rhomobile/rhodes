@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo yum install git gcc gcc-c++ ruby ruby-devel ruby-irb gmp-devel mesa-libGL-devel mesa-libGLU-devel
+sudo yum install git gcc gcc-c++ ruby ruby-devel ruby-irb gmp-devel mesa-libGL-devel mesa-libGLU-devel rpm-build
 
 sudo yum install qt5-qtbase qt5-devel qt5-qtwebengine-devel qt5-qtmultimedia-devel glfw glfw-devel
 

@@ -378,7 +378,7 @@ namespace "device" do
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif name_out.downcase().include? ":redos:"
 				puts "The current system is Red OS Linux"
-				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-webengine", 
+				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine", 
 					"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
