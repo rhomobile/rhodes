@@ -350,7 +350,7 @@ namespace "device" do
 				erb = ERB.new control_template
 				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
 
-				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" -bb rpm.spec", $buildroot)
+				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" --define '_build_id_links none' -bb rpm.spec", $buildroot)
 
 				Dir.glob(File.join($buildroot, "**", "*.rpm")).each do | filename |
 					FileUtils.mv(filename, File.join($linuxroot, File.basename(filename)))
