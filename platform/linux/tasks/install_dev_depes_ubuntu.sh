@@ -1,4 +1,4 @@
-#usr/bash
+#!/bin/bash
 
 sudo apt-get install gcc g++ make wget
 sudo apt-get install build-essential

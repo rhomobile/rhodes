@@ -1,4 +1,4 @@
-#usr/bash
+#!/bin/bash
 
 sudo apt update
 

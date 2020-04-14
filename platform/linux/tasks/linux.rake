@@ -336,7 +336,7 @@ namespace "device" do
 				FileUtils.mkdir_p $buildroot
 				FileUtils.mkdir_p File.join($buildroot, "SOURCES")
 				FileUtils.mkdir_p File.join($buildroot, "BUILD")
-			  FileUtils.mkdir_p File.join($buildroot, "BUILDROOT")
+			    FileUtils.mkdir_p File.join($buildroot, "BUILDROOT")
 				FileUtils.mkdir_p File.join($buildroot, "RPMS")
 				FileUtils.mkdir_p File.join($buildroot, "SPECS")
 				FileUtils.mkdir_p File.join($buildroot, "SRPMS")
@@ -361,18 +361,25 @@ namespace "device" do
 			end
 		end
 		task :production do
-			name_out = Jake.run('uname', ["-a"])
+			name_out = Jake.run('hostnamectl')
 
 			if name_out.downcase().include? "ubuntu"
 				puts "The current system is Ubuntu"
 				$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
 				Rake::Task['device:linux:production:deb'].invoke
 			elsif name_out.downcase().include? "astra"
-				puts "The current system is Astra"
-				$deps = "libqt5widgets5, libqt5gui5 ,libqt5network5, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
+				puts "The current system is Astra Linux"
+				$deps = "libqt5widgets5, libqt5gui5, libqt5network5, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
 				Rake::Task['device:linux:production:deb'].invoke
-			elsif name_out.downcase().include? "alt"
+			elsif name_out.downcase().include? ":alt:"
 				puts "The current system is Alt Linux"
+				$deps = ["libqt5-qml", "libqt5-quickwidgets", "libqt5-webenginecore", "libqt5-webengine", "libqt5-core", "libqt5-gui", 
+					"libqt5-network", "libqt5-multimedia", "libgmp", "libstdc++"]
+				Rake::Task['device:linux:production:rpm'].invoke
+			elsif name_out.downcase().include? ":redos:"
+				puts "The current system is Red OS Linux"
+				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-webengine", 
+					"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
 				puts "Fail! The current system has not been recognized."
