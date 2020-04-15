@@ -70,6 +70,35 @@ namespace "config" do
 
 		$target_path = File.join($app_path, "bin", "target", "linux")
 		mkdir_p $target_path
+
+
+		name_out = Jake.run('hostnamectl', [])
+		if name_out.downcase().include? "ubuntu"
+			$ubuntu = true
+			puts "Current system is Ubuntu"
+			$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
+		elsif name_out.downcase().include? "astra"
+			$astra = true
+			puts "Current system is Astra Linux"
+			$deps = "libqt5widgets5, libqt5gui5, libqt5network5, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
+		elsif name_out.downcase().include? ":alt:"
+			$altlinux = true
+			puts "Current system is Alt Linux"
+			$deps = ["libqt5-qml", "libqt5-quickwidgets", "libqt5-webenginecore", "libqt5-webengine", "libqt5-core", "libqt5-gui", 
+				"libqt5-network", "libqt5-multimedia", "libgmp", "libstdc++"]
+		elsif name_out.downcase().include? ":redos:"
+			$redos = true
+			puts "Current system is Red OS Linux"
+			$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine", 
+				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
+			$qmake_addition_args = '"LIBS += -L/usr/lib64/libglvnd/ -lGL"'
+		else
+			puts "Fail! Current system has not been recognized."
+			exit 1
+		end
+
+
+
 	end
 
 	namespace "linux" do
@@ -222,12 +251,15 @@ namespace "build" do
 		ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
 		ENV['RHO_VSCMNTOOLS'] = $vscommontools
 
+
 		target_app_name = File.join($target_path, $appname)
 		if !File.exists?(target_app_name)
 			if $qmake_addition_args != nil and $qmake_addition_args != ''
-				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" ' + $qmake_addition_args + ' RhoSimulator.pro', $qt_project_dir)
+				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" ' + 
+					$qmake_addition_args + ' RhoSimulator.pro', $qt_project_dir)
 			else
-				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', $qt_project_dir)
+				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', 
+					$qt_project_dir)
 			end
 			Jake.run3('make clean', $qt_project_dir)
 			Jake.run3('make all', $qt_project_dir)
@@ -364,27 +396,15 @@ namespace "device" do
 
 			end
 		end
-		task :production do
-			name_out = Jake.run('hostnamectl', [])
 
-			if name_out.downcase().include? "ubuntu"
-				puts "The current system is Ubuntu"
-				$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
+		task :production do
+			if $ubuntu
 				Rake::Task['device:linux:production:deb'].invoke
-			elsif name_out.downcase().include? "astra"
-				puts "The current system is Astra Linux"
-				$deps = "libqt5widgets5, libqt5gui5, libqt5network5, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
+			elsif $astra
 				Rake::Task['device:linux:production:deb'].invoke
-			elsif name_out.downcase().include? ":alt:"
-				puts "The current system is Alt Linux"
-				$deps = ["libqt5-qml", "libqt5-quickwidgets", "libqt5-webenginecore", "libqt5-webengine", "libqt5-core", "libqt5-gui", 
-					"libqt5-network", "libqt5-multimedia", "libgmp", "libstdc++"]
+			elsif $altlinux
 				Rake::Task['device:linux:production:rpm'].invoke
-			elsif name_out.downcase().include? ":redos:"
-				puts "The current system is Red OS Linux"
-				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine", 
-					"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
-				$qmake_addition_args = '"LIBS += -L/usr/lib64/libglvnd/ -lGL"'
+			elsif $redos
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
 				puts "Fail! The current system has not been recognized."
