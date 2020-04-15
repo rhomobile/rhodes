@@ -1,0 +1,8 @@
+﻿su -
+
+sudo vi /etc/sudoers
+(maybe you need to change chmod, but don't forget to change it back)
+
+add "user ALL=(ALL) ALL"
+
+esc :wq
