@@ -87,6 +87,9 @@ namespace "config" do
 			$redos = true
 			puts "Current system is Red OS Linux"
 			$qmake_addition_args = '"LIBS += -L/usr/lib64/libglvnd/ -lGL"'
+		elsif name_out.downcase().include? ":rosa:"
+			$rosalinux = true
+			puts "Current system is Rosa Linux"
 		else
 			puts "Fail! Current system has not been recognized while cunfiguration."
 			exit 1
@@ -405,6 +408,10 @@ namespace "device" do
 			elsif $redos
 				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine", 
 				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
+				Rake::Task['device:linux:production:rpm'].invoke
+			elsif $rosalinux
+				$create_buildroot = true
+				$deps = ["lib64qt5webenginecore", "lib64qt5webenginewidgets" , "lib64qt5webengine" , "lib64qt5-core5", "lib64qt5gui5", 
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
 				puts "Fail! The current system has not been recognized whild production."
