@@ -58,6 +58,7 @@ namespace net
 void * SSLImpl::createStorage()
 {
     //return calloc(1, sizeof(ssl_data_t));
+    return NULL;
 }
 
 void SSLImpl::freeStorage(void *ptr)
