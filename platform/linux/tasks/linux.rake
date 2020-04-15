@@ -26,7 +26,7 @@
 require 'erb'
 
 namespace "config" do
-	task :linux => ["switch_app", "config:qt"] do
+	task :linux => ["switch_app", "config:qt", "config:sys_recognize"] do
 
 		$rubypath = "platform/linux/target/compiler/rubylinux" #path to RubyMac
 		$bindir = $app_path + "/bin"
@@ -70,8 +70,9 @@ namespace "config" do
 
 		$target_path = File.join($app_path, "bin", "target", "linux")
 		mkdir_p $target_path
+	end
 
-
+	task :sys_recognize do
 		name_out = Jake.run('hostnamectl', [])
 		if name_out.downcase().include? "ubuntu"
 			$ubuntu = true
@@ -93,13 +94,11 @@ namespace "config" do
 				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 			$qmake_addition_args = '"LIBS += -L/usr/lib64/libglvnd/ -lGL"'
 		else
-			puts "Fail! Current system has not been recognized."
+			puts "Fail! Current system has not been recognized while cunfiguration."
 			exit 1
 		end
-
-
-
 	end
+
 
 	namespace "linux" do
 		task :application do
@@ -397,7 +396,7 @@ namespace "device" do
 			end
 		end
 
-		task :production do
+		task :production => ["config:sys_recognize"] do
 			if $ubuntu
 				Rake::Task['device:linux:production:deb'].invoke
 			elsif $astra
@@ -407,7 +406,7 @@ namespace "device" do
 			elsif $redos
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
-				puts "Fail! The current system has not been recognized."
+				puts "Fail! The current system has not been recognized whild production."
 				exit 1
 			end
 			puts "Finished"
