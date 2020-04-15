@@ -44,7 +44,6 @@ namespace "config" do
 		$detoolappflag = $js_application == true ? "js" : "ruby"
 		$tmpdir = File.join($bindir, "tmp")
 		$qt_project_dir = File.join( $startdir, 'platform/shared/qt/' )
-		$qmake_addition_args = nil
 
 		$homedir = `echo ~`.to_s.strip
 		$current_platform = "linux"
