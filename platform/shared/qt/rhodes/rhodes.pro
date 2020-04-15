@@ -376,8 +376,6 @@ RESOURCES += resources/common.qrc
 }
 
 contains(DEFINES, OS_LINUX)  {
-    LIBS += -L/usr/lib64/libglvnd/ -lGL
-
     SOURCES +=  $$PWD/../../net/ssl.cpp
 
     LIBS += -lz

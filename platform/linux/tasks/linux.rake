@@ -44,6 +44,7 @@ namespace "config" do
 		$detoolappflag = $js_application == true ? "js" : "ruby"
 		$tmpdir = File.join($bindir, "tmp")
 		$qt_project_dir = File.join( $startdir, 'platform/shared/qt/' )
+		$qmake_addition_args = nil
 
 		$homedir = `echo ~`.to_s.strip
 		$current_platform = "linux"
@@ -224,7 +225,11 @@ namespace "build" do
 
 		target_app_name = File.join($target_path, $appname)
 		if !File.exists?(target_app_name)
-			Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', $qt_project_dir)
+			if $qmake_addition_args != nil and $qmake_addition_args != ''
+				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" ' + $qmake_addition_args + ' RhoSimulator.pro', $qt_project_dir)
+			else
+				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', $qt_project_dir)
+			end
 			Jake.run3('make clean', $qt_project_dir)
 			Jake.run3('make all', $qt_project_dir)
 			puts "Copying to dir" + $target_path
@@ -380,6 +385,7 @@ namespace "device" do
 				puts "The current system is Red OS Linux"
 				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine", 
 					"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
+				$qmake_addition_args = '"LIBS += -L/usr/lib64/libglvnd/ -lGL"'
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
 				puts "Fail! The current system has not been recognized."
