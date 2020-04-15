@@ -77,21 +77,15 @@ namespace "config" do
 		if name_out.downcase().include? "ubuntu"
 			$ubuntu = true
 			puts "Current system is Ubuntu"
-			$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
 		elsif name_out.downcase().include? "astra"
 			$astra = true
 			puts "Current system is Astra Linux"
-			$deps = "libqt5widgets5, libqt5gui5, libqt5network5, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
 		elsif name_out.downcase().include? ":alt:"
 			$altlinux = true
 			puts "Current system is Alt Linux"
-			$deps = ["libqt5-qml", "libqt5-quickwidgets", "libqt5-webenginecore", "libqt5-webengine", "libqt5-core", "libqt5-gui", 
-				"libqt5-network", "libqt5-multimedia", "libgmp", "libstdc++"]
 		elsif name_out.downcase().include? ":redos:"
 			$redos = true
 			puts "Current system is Red OS Linux"
-			$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine", 
-				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 			$qmake_addition_args = '"LIBS += -L/usr/lib64/libglvnd/ -lGL"'
 		else
 			puts "Fail! Current system has not been recognized while cunfiguration."
@@ -398,12 +392,19 @@ namespace "device" do
 
 		task :production => ["config:sys_recognize"] do
 			if $ubuntu
+				$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
 				Rake::Task['device:linux:production:deb'].invoke
 			elsif $astra
+				$deps = "libqt5widgets5, libqt5gui5, libqt5network5, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
 				Rake::Task['device:linux:production:deb'].invoke
 			elsif $altlinux
+				$create_buildroot = true
+				$deps = ["libqt5-qml", "libqt5-quickwidgets", "libqt5-webenginecore", "libqt5-webengine", "libqt5-core", "libqt5-gui", 
+				"libqt5-network", "libqt5-multimedia", "libgmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $redos
+				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine", 
+				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
 				puts "Fail! The current system has not been recognized whild production."

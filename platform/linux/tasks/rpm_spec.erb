@@ -23,6 +23,8 @@ Rhodes application.
 %build
 
 %install
+<% if $create_buildroot %>
+mkdir %{buildroot}<%end%>
 cp -rfa * %{buildroot}
 
 %files
