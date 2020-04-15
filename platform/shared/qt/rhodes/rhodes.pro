@@ -141,25 +141,24 @@ win32 {
 }
 
 unix:!macx {
-    TEMPLATE = app
-    #QMAKE_LFLAGS += -no-pie
-    !contains(DEFINES, OS_SAILFISH) {
-    DESTDIR = $$PWD/../../../linux/bin/RhoSimulator
-    LIBS += ../../../linux/bin/rubylib/librubylib.a\
-         ../../../linux/bin/rholib/librholib.a\
-         ../../../linux/bin/sqlite3/libsqlite3.a\
-         ../../../linux/bin/syncengine/libsyncengine.a\
-         ../../../linux/bin/curl/libcurl.a
+  TEMPLATE = app
+  #QMAKE_LFLAGS += -no-pie
+  !contains(DEFINES, OS_SAILFISH) {
+  DESTDIR = $$PWD/../../../linux/bin/RhoSimulator
+      LIBS += ../../../linux/bin/rubylib/librubylib.a\
+           ../../../linux/bin/rholib/librholib.a\
+           ../../../linux/bin/sqlite3/libsqlite3.a\
+           ../../../linux/bin/syncengine/libsyncengine.a\
+           ../../../linux/bin/curl/libcurl.a
 
-    PRE_TARGETDEPS += ../../../linux/bin/rubylib/librubylib.a\
-                    ../../../linux/bin/rholib/librholib.a\
-                    ../../../linux/bin/sqlite3/libsqlite3.a\
-                    ../../../linux/bin/syncengine/libsyncengine.a\
-                    ../../../linux/bin/curl/libcurl.a
-}
-contains(DEFINES, OS_SAILFISH) {
-  #DESTDIR = $$PWD/../Build_Sailfish_Application
-}
+      PRE_TARGETDEPS += ../../../linux/bin/rubylib/librubylib.a\
+                      ../../../linux/bin/rholib/librholib.a\
+                      ../../../linux/bin/sqlite3/libsqlite3.a\
+                      ../../../linux/bin/syncengine/libsyncengine.a\
+                      ../../../linux/bin/curl/libcurl.a
+      #DESTDIR = $$PWD/../Build_Sailfish_Application
+  }
+
   MOC_DIR = $$PWD/../../../linux/bin/RhoSimulator/generated_files
   UI_DIR = $$PWD/../../../linux/bin/RhoSimulator/generated_files
   OBJECTS_DIR = $$PWD/../../../linux/bin/RhoSimulator/tmp
@@ -175,8 +174,11 @@ contains(DEFINES, OS_SAILFISH) {
 
   DEFINES += QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB OS_LINUX
 
-    QMAKE_CFLAGS += -fvisibility=hidden
-    QMAKE_CXXFLAGS += -fvisibility=hidden
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
+
+  #QMAKE_CFLAGS_RELEASE -= -O2
+  #QMAKE_CXXFLAGS_RELEASE -= -O2
 }
 
   DEFINES += RHODES_QT_PLATFORM

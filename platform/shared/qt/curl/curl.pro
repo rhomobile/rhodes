@@ -73,13 +73,16 @@ unix:!macx {
     DEFINES += HAVE_CONFIG_H USE_RHOSSL OS_LINUX __INTERIX
     QMAKE_CFLAGS += -fvisibility=hidden
     QMAKE_CXXFLAGS += -fvisibility=hidden
+    
+    #QMAKE_CFLAGS_RELEASE -= -O2
+    #QMAKE_CXXFLAGS_RELEASE -= -O2    
 
-      Debug {
-        DEFINES += _DEBUG DEBUG
-      }
-      Release {
-        DEFINES += _NDEBUG NDEBUG
-      }
+    Debug {
+      DEFINES += _DEBUG DEBUG
+    }
+    Release {
+      DEFINES += _NDEBUG NDEBUG
+    }
 
 }
 

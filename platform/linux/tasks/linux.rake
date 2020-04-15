@@ -26,7 +26,7 @@
 require 'erb'
 
 namespace "config" do
-	task :linux => ["switch_app", "config:qt"] do
+	task :linux => ["switch_app", "config:qt", "config:sys_recognize"] do
 
 		$rubypath = "platform/linux/target/compiler/rubylinux" #path to RubyMac
 		$bindir = $app_path + "/bin"
@@ -71,6 +71,28 @@ namespace "config" do
 		$target_path = File.join($app_path, "bin", "target", "linux")
 		mkdir_p $target_path
 	end
+
+	task :sys_recognize do
+		name_out = Jake.run('hostnamectl', [])
+		if name_out.downcase().include? "ubuntu"
+			$ubuntu = true
+			puts "Current system is Ubuntu"
+		elsif name_out.downcase().include? "astra"
+			$astra = true
+			puts "Current system is Astra Linux"
+		elsif name_out.downcase().include? ":alt:"
+			$altlinux = true
+			puts "Current system is Alt Linux"
+		elsif name_out.downcase().include? ":redos:"
+			$redos = true
+			puts "Current system is Red OS Linux"
+			$qmake_addition_args = '"LIBS += -L/usr/lib64/libglvnd/ -lGL"'
+		else
+			puts "Fail! Current system has not been recognized while cunfiguration."
+			exit 1
+		end
+	end
+
 
 	namespace "linux" do
 		task :application do
@@ -222,9 +244,16 @@ namespace "build" do
 		ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
 		ENV['RHO_VSCMNTOOLS'] = $vscommontools
 
+
 		target_app_name = File.join($target_path, $appname)
 		if !File.exists?(target_app_name)
-			Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', $qt_project_dir)
+			if $qmake_addition_args != nil and $qmake_addition_args != ''
+				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" ' + 
+					$qmake_addition_args + ' RhoSimulator.pro', $qt_project_dir)
+			else
+				Jake.run3('"$QTDIR/bin/qmake" -o Makefile -r -spec $RHO_QMAKE_SPEC "CONFIG-=debug" "CONFIG+=release" RhoSimulator.pro', 
+					$qt_project_dir)
+			end
 			Jake.run3('make clean', $qt_project_dir)
 			Jake.run3('make all', $qt_project_dir)
 			puts "Copying to dir" + $target_path
@@ -336,7 +365,7 @@ namespace "device" do
 				FileUtils.mkdir_p $buildroot
 				FileUtils.mkdir_p File.join($buildroot, "SOURCES")
 				FileUtils.mkdir_p File.join($buildroot, "BUILD")
-			  FileUtils.mkdir_p File.join($buildroot, "BUILDROOT")
+			    FileUtils.mkdir_p File.join($buildroot, "BUILDROOT")
 				FileUtils.mkdir_p File.join($buildroot, "RPMS")
 				FileUtils.mkdir_p File.join($buildroot, "SPECS")
 				FileUtils.mkdir_p File.join($buildroot, "SRPMS")
@@ -350,7 +379,7 @@ namespace "device" do
 				erb = ERB.new control_template
 				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
 
-				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" -bb rpm.spec", $buildroot)
+				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" --define '_build_id_links none' --define 'debug_package %{nil}' -bb rpm.spec", $buildroot)
 
 				Dir.glob(File.join($buildroot, "**", "*.rpm")).each do | filename |
 					FileUtils.mv(filename, File.join($linuxroot, File.basename(filename)))
@@ -360,22 +389,25 @@ namespace "device" do
 
 			end
 		end
-		task :production do
-			name_out = Jake.run('uname', ["-a"])
 
-			if name_out.downcase().include? "ubuntu"
-				puts "The current system is Ubuntu"
+		task :production => ["config:sys_recognize"] do
+			if $ubuntu
 				$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
 				Rake::Task['device:linux:production:deb'].invoke
-			elsif name_out.downcase().include? "astra"
-				puts "The current system is Astra"
-				$deps = "libqt5widgets5, libqt5gui5 ,libqt5network5, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
+			elsif $astra
+				$deps = "libqt5widgets5, libqt5gui5, libqt5network5, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
 				Rake::Task['device:linux:production:deb'].invoke
-			elsif name_out.downcase().include? "alt"
-				puts "The current system is Alt Linux"
+			elsif $altlinux
+				$create_buildroot = true
+				$deps = ["libqt5-qml", "libqt5-quickwidgets", "libqt5-webenginecore", "libqt5-webengine", "libqt5-core", "libqt5-gui", 
+				"libqt5-network", "libqt5-multimedia", "libgmp", "libstdc++"]
+				Rake::Task['device:linux:production:rpm'].invoke
+			elsif $redos
+				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine", 
+				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
-				puts "Fail! The current system has not been recognized."
+				puts "Fail! The current system has not been recognized whild production."
 				exit 1
 			end
 			puts "Finished"
