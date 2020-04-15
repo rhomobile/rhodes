@@ -411,7 +411,7 @@ namespace "device" do
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $rosalinux
 				$create_buildroot = true
-				$deps = ["lib64qt5webenginecore", "lib64qt5webenginewidgets" , "lib64qt5webengine" , "lib64qt5-core5", "lib64qt5gui5", 
+				$deps = ["lib64qt5webenginecore", "lib64qt5webenginewidgets" , "lib64qt5webengine" , "lib64qt5-core5", "lib64qt5gui5"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
 				puts "Fail! The current system has not been recognized whild production."
