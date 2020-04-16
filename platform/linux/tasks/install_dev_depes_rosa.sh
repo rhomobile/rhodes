@@ -6,6 +6,8 @@ sudo urpmi qt5-devel lib64qt5webenginecore-devel lib64qt5webenginewidgets-devel 
 
 grep -qxF 'export QTDIR=/usr/lib64/qt5' ~/.bashrc || echo 'export QTDIR=/usr/lib64/qt5' >> ~/.bashrc
 
+sudo ln -s /bin/tar /usr/bin/tar
+
 #After that you should install manualy rvm (Ruby Version Manager) and set version >= 2.2 (for example 2.5.8).
 #\curl -sSL https://get.rvm.io | bash
 #source /home/user/.rvm/scripts/rvm 
