@@ -290,6 +290,7 @@ namespace "device" do
 
 				cp icon, opt_path
 				FileUtils.mv(File.join($target_path, "rho"), opt_path, :verbose => true, :force => true)
+				FileUtils.chmod_R(0777, File.join(opt_path, "rho"))
 				FileUtils.mv(File.join($target_path, $appname), opt_path, :verbose => true, :force => true)
 
 				desktop_path = File.join($target_path, "usr", "share", "applications")
