@@ -73,6 +73,7 @@ namespace "config" do
 	end
 
 	task :sys_recognize do
+		$architecture = Jake.run("uname", ["-m"])
 		name_out = Jake.run('hostnamectl', [])
 		if name_out.downcase().include? "ubuntu"
 			$ubuntu = true
@@ -376,8 +377,6 @@ namespace "device" do
 				FileUtils.mv($bin_archive, File.join($buildroot, "SOURCES", "#{$appname}.tar"))
 				$bin_archive = File.join($buildroot, "SOURCES", "#{$appname}.tar")
 
-				$architecture = Jake.run("uname", ["-m"])
-
 				control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "rpm_spec.erb")
 				erb = ERB.new control_template
 				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
@@ -411,7 +410,9 @@ namespace "device" do
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $rosalinux
 				$create_buildroot = true
-				$deps = ["lib64qt5webenginecore", "lib64qt5webenginewidgets" , "lib64qt5webengine" , "lib64qt5-core5", "lib64qt5gui5"]
+				$architecture = "noarch"
+				$deps = ["lib64qt5webenginecore", "lib64qt5webenginewidgets" , "lib64qt5webengine" , "lib64qt5-core5", "lib64qt5gui5", 
+					"lib64gmp10"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
 				puts "Fail! The current system has not been recognized whild production."
