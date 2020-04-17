@@ -1785,6 +1785,13 @@ void CRhodesApp::initAppUrls()
         force_https = rho_conf_getBool("ios_https_local_server")!=0;
     }
 #endif
+
+#ifdef OS_ANDROID
+       if (rho_conf_is_property_exists("android_https_local_server") != 0) {
+        force_https = rho_conf_getBool("android_https_local_server") != 0;
+    }
+#endif
+
     if (force_https) {
         m_strHomeUrl = "https://127.0.0.1:";
     }

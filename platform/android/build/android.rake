@@ -1696,6 +1696,7 @@ namespace "build" do
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
+      args << "-I\"#{$shareddir}/../../lib/extensions/openssl.so/ext/sources/include\""
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhocommon_build.files')
@@ -1878,6 +1879,7 @@ namespace "build" do
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
+      args << "-I\"#{$shareddir}/../../lib/extensions/openssl.so/ext/sources/include\""
       args << "-I\"#{$coreapidir}\""
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')

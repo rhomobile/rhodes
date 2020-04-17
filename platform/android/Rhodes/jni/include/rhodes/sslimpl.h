@@ -33,6 +33,55 @@
 namespace rho {
 namespace net {
 
+class CertificateStorage
+{
+public:
+    static CertificateStorage* instance();
+    ~CertificateStorage();
+
+private:
+    const char* raw_cert = nullptr;
+    const X509* cert = nullptr;
+    const X509* client_cert = nullptr;
+    const EVP_PKEY* private_key = nullptr;
+
+    std::string pwd;
+    std::vector<char> raw_p12;
+
+public:
+    CertificateStorage();
+
+    const EVP_PKEY* getPrivateKey() const
+    {
+        return private_key;
+    }
+
+    const X509* getCertificate() const
+    {
+        return cert;
+    }
+
+    const X509* getClientCertificate() const
+    {
+        return client_cert;
+    }
+
+    const char* getRawCertificate() const
+    {
+        return raw_cert;
+    }
+
+    const std::vector<char>& getRawP12() const
+    {
+        return raw_p12;
+    }
+
+    const std::string& getPasswordForP12() const
+    {
+        return pwd;
+    }
+};
+
 class SSLImpl : public ISSL
 {
 public:
@@ -47,14 +96,31 @@ public:
     ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage);
     bool rand(unsigned char *entropy, size_t length);
 
+    const EVP_PKEY* getPrivateKey() const override
+    {
+        return CertificateStorage::instance()->getPrivateKey();
+    }
+
+    const X509* getCertificate() const override
+    {
+        return CertificateStorage::instance()->getCertificate();
+    }
+
+    const X509* getClientCertificate() const override
+    {
+        return CertificateStorage::instance()->getClientCertificate();
+    }
+
 private:
     jclass cls;
-    jmethodID midConstructor;
-    jmethodID midConnect;
-    jmethodID midShutdown;
-    jmethodID midSend;
-    jmethodID midRecv;
-    jmethodID midRand;
+    jmethodID midConstructor = nullptr;
+    jmethodID midConnect = nullptr;
+    jmethodID midShutdown = nullptr;
+    jmethodID midSend = nullptr;
+    jmethodID midRecv = nullptr;
+    jmethodID midRand = nullptr;
+    jmethodID midSetRawCertificate = nullptr;
+    jmethodID midSetP12 = nullptr;
 };
 
 }

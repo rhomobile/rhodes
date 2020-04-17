@@ -40,10 +40,13 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
+import java.security.PrivateKey;
+import java.security.KeyStore.PasswordProtection;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.UnrecoverableEntryException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +85,14 @@ public class SSLImpl {
     private int sockfd;
 
 	private InputStream is;
-	private OutputStream os;
+    private OutputStream os;
+
+    private static byte[] raw_cert = null;
+    private static byte[] raw_p12 = null;
+    private static String pwd = null;
+    private static PrivateKey client_private_key = null;
+    private static Certificate[] client_cert_chain = null;
+
 	
 	public native RhoSockAddr getRemoteSockAddr(int sockfd);
 	
@@ -298,7 +308,57 @@ public class SSLImpl {
 
         return certs;
     }
-    
+
+    private static Certificate loadLocalServerCert() throws IOException, CertificateException
+    {
+        InputStream certStream = new ByteArrayInputStream(raw_cert);
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+
+        Certificate cert = null;
+        try {
+            cert = cf.generateCertificate(certStream);
+        } finally {
+            certStream.close();
+        }
+
+        return cert;
+    }
+
+    public static PrivateKey getClientPrivateKey()
+    {
+        return client_private_key;
+    }
+
+    public static Certificate[] getClientCertChain()
+    {
+        return client_cert_chain;
+    }
+
+    public static void loadLocalCientP12Bundle() throws NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException, CertificateException
+    {
+        if(raw_p12 != null)
+        {
+            if (client_private_key == null && client_cert_chain == null) {
+                KeyStore clientKeystore = KeyStore.getInstance("pkcs12");
+                InputStream p12Stream = new ByteArrayInputStream(raw_p12);
+                clientKeystore.load(p12Stream, pwd.toCharArray());
+
+                try {
+                    KeyStore.ProtectionParameter protParam = new KeyStore.PasswordProtection(pwd.toCharArray());
+                    KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) clientKeystore.getEntry("taup12", protParam);
+                    client_private_key = pkEntry.getPrivateKey();
+                    client_cert_chain = pkEntry.getCertificateChain();
+                } catch (UnrecoverableEntryException e) {
+                    Logger.I(TAG, "Unable access to loaded private key!");
+                    client_private_key = null;
+                    client_cert_chain = null;
+                }
+
+                p12Stream.close();
+            }
+        }
+    }
+
     private static SSLSocketFactory getSecureFactory() throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException {
         Logger.I(TAG, "Creating secure SSL factory");
         
@@ -323,6 +383,12 @@ public class SSLImpl {
             }
         }
         
+        Certificate local_server_cert = null;
+        if(raw_cert != null)
+        {
+            local_server_cert = loadLocalServerCert();
+            keystore.setCertificateEntry("cert-alias-local", local_server_cert);
+        }
                
         Logger.I(TAG, "Creating TrustManager for custom certificates");        
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -330,6 +396,15 @@ public class SSLImpl {
         X509TrustManager customTrustManager = (X509TrustManager)tmf.getTrustManagers()[0];
                 
         KeyManagerFactory kmf = null;
+
+        if(raw_p12 != null)
+        {
+            KeyStore clientKeystore = KeyStore.getInstance( "pkcs12" );
+            InputStream p12Stream = new ByteArrayInputStream(raw_p12);
+            clientKeystore.load(p12Stream, pwd.toCharArray());
+            kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
+            kmf.init(clientKeystore, pwd.toCharArray());
+        }
         
         if ( RhoConf.isExist("clientSSLCertificate")) {        	
         	String clientCertPath = RhoConf.getString("clientSSLCertificate");
@@ -397,6 +472,17 @@ public class SSLImpl {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static void setRawCertificate(byte[] data)
+    {
+        raw_cert = data;
+    }
+
+    public static void setP12(byte[] data, String p)
+    {
+        raw_p12 = data;
+        pwd = p;
     }
 	
 	public boolean connect(int fd, boolean sslVerifyPeer, String hostname ) {

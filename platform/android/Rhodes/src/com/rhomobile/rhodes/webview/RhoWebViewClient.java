@@ -43,6 +43,7 @@ import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.mainview.TabbedMainView;
 import com.rhomobile.rhodes.webview.WebViewConfig;
+import com.rhomobile.rhodes.socket.SSLImpl;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -55,6 +56,11 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.CookieSyncManager;
+import android.webkit.ClientCertRequest;
+import java.security.PrivateKey;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+
 
 public class RhoWebViewClient extends WebViewClient
 {
@@ -225,6 +231,26 @@ public class RhoWebViewClient extends WebViewClient
         Logger.E(TAG, msg.toString());
 
         RhoExtManager.getImplementationInstance().onLoadError(view, IRhoExtension.LoadErrorReason.INTERNAL_ERROR);
+    }
+
+    @Override 
+    public void onReceivedClientCertRequest(WebView view, ClientCertRequest request)
+    {
+        try {
+            SSLImpl.loadLocalCientP12Bundle();
+            PrivateKey pkey = SSLImpl.getClientPrivateKey();
+            Certificate[] cert_chain = SSLImpl.getClientCertChain();
+            if(pkey != null && cert_chain != null)
+            {
+                request.proceed(pkey, (X509Certificate[])cert_chain);
+            }
+            else
+                request.cancel();
+
+        } catch (Throwable  e) {
+            request.cancel();
+        }
+        
     }
 
     @Override
