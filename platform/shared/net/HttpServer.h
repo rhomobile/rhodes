@@ -206,10 +206,12 @@ private:
     bool secureTokenExists; 
 #endif
 
+    int internal_recv(char* buff, size_t size, int flags);
+    int internal_send(const char* buff, size_t size, int flags);
 #if defined(OS_ANDROID)
 #define SSL_TAG "SSL: "
-    SSL_CTX* ssl_ctx;
-    SSL* m_ssl_sock;
+    SSL_CTX* ssl_ctx = nullptr;
+    SSL* m_ssl_sock = nullptr;
     std::map<int, SSL*> m_ssl_map;
 
     void init_ssl();

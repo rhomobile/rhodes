@@ -322,6 +322,8 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 #endif
 
+#ifdef OS_ANDROID
+
 void openss_trace_proc(int write_p, int version, int content_type, const void *buf, size_t len, SSL *ssl, void *arg)
 {
     std::string err_str;
@@ -398,6 +400,8 @@ void CHttpServer::init_ssl()
     //SSL_CTX_set_msg_callback(ssl_ctx, openss_trace_proc);
     
 }
+
+#endif
 
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root, bool enable_external_access, bool started_as_separated_simple_server)
     :m_active(false), m_port(port), verbose(true), m_IP_adress("")
@@ -697,6 +701,7 @@ int CHttpServer::select_internal( SOCKET listener, fd_set& readfds )
     return ret;
 }
 
+#ifdef OS_ANDROID
 bool CHttpServer::accept_ssl_factory()
 {
     if(SSL_in_init(m_ssl_sock) == 1)
@@ -718,6 +723,7 @@ bool CHttpServer::accept_ssl_factory()
     
     return false;
 }
+#endif
 
 bool CHttpServer::run()
 {
@@ -784,7 +790,7 @@ bool CHttpServer::run()
                 }
 #endif
                 m_sock = conn;
-
+#ifdef OS_ANDROID
                 if (ssl_ctx)
                 {
                     ERR_clear_error();
@@ -801,7 +807,7 @@ bool CHttpServer::run()
 
                 if(accept_ssl_factory())
                    continue;
-                
+#endif
 
                 bProcessed = process(m_sock);
 #ifndef RHO_NO_RUBY_API
@@ -812,13 +818,14 @@ bool CHttpServer::run()
                 }
 #endif
                 if (verbose) RAWTRACE("Close connected socket");
-
+#ifdef OS_ANDROID
                 if(ssl_ctx)
                 {
                     close_ssl_socket(m_ssl_sock, m_sock);
                 }
-
-                //closesocket(m_sock);
+                else 
+#endif
+                   closesocket(m_sock);
                 m_sock = INVALID_SOCKET;
             }
         }
@@ -891,6 +898,15 @@ bool receive_request_test(ByteVector &request, int attempt)
 	return true;
 }
 
+int CHttpServer::internal_recv(char* buff, size_t size, int flags)
+{
+#ifdef OS_ANDROID
+    return ssl_ctx ? SSL_read(m_ssl_sock, buff, size) : recv(m_sock, buff, size, flags);
+#else
+    return recv(m_sock, buff, size, flags);
+#endif
+}
+
 bool CHttpServer::receive_request(ByteVector &request)
 {
 	if (verbose) RAWTRACE("Receiving request...");
@@ -900,11 +916,10 @@ bool CHttpServer::receive_request(ByteVector &request)
     int attempts = 0;
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
-        //int n = recv(m_sock, &buf[0], sizeof(buf), 0);//int n = recv(m_sock, &buf[0], sizeof(buf), 0);
 
-        RAWLOG_ERROR2(SSL_TAG "state socket: %d - %d", m_sock, SSL_get_state(m_ssl_sock)); 
-        int n = SSL_read(m_ssl_sock, &buf[0], sizeof(buf));
-        if(n < 0)
+        int n = internal_recv(&buf[0], sizeof(buf), 0);
+#ifdef OS_ANDROID
+        if(ssl_ctx && n < 0)
         {
             int err = SSL_get_error(m_ssl_sock, n);
             if (verbose) RAWLOG_ERROR2(SSL_TAG "SSL_read return error code: %d, sock=%d", err, m_sock);
@@ -918,6 +933,7 @@ bool CHttpServer::receive_request(ByteVector &request)
                 break;
             }
         }
+#endif
 
 
         //RAWTRACE1("RECV: %d", n);
@@ -983,6 +999,15 @@ bool CHttpServer::receive_request(ByteVector &request)
     return true;
 }
 
+int CHttpServer::internal_send(const char* buff, size_t size, int flags)
+{
+#ifdef OS_ANDROID
+    return ssl_ctx ? SSL_write(m_ssl_sock, buff, size) : send(m_sock, buff, size, flags);
+#else
+    return send(m_sock, buff, size, flags);
+#endif
+}
+
 bool CHttpServer::send_response_impl(String const &data, bool continuation)
 {
 #ifdef OS_MACOSX
@@ -1020,13 +1045,13 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
     
     size_t pos = 0;
     for(; pos < data.size();) {
-        //int n = send(m_sock, data.c_str() + pos, data.size() - pos, 0);
-        RAWLOG_ERROR2(SSL_TAG "state socket: %d - %d", m_sock, SSL_get_state(m_ssl_sock)); 
-        int n = SSL_write(m_ssl_sock, data.c_str() + pos, data.size() - pos);
-        if(n < 0)
+
+        int n = internal_send(data.c_str() + pos, data.size() - pos, 0);
+#ifdef OS_ANDROID
+        if(ssl_ctx && n < 0)
         {
             int err = SSL_get_error(m_ssl_sock, n);
-            RAWLOG_ERROR2(SSL_TAG "SSL_write return error code: %d, sock=%d", err, m_sock);
+            if(verbose) RAWLOG_ERROR2(SSL_TAG "SSL_write return error code: %d, sock=%d", err, m_sock);
             switch (err)
             {
             case SSL_ERROR_SSL:
@@ -1035,6 +1060,7 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
                 break;
             }
         }
+#endif
 
 
         if (n == -1) {
@@ -1151,7 +1177,7 @@ bool CHttpServer::process(SOCKET sock)
     String method, uri, query;
     HeaderList headers;
     String body;
-
+#ifdef OS_ANDROID
     if(ssl_ctx)
     {
         if(SSL_get_verify_result(m_ssl_sock) != X509_V_OK)
@@ -1160,6 +1186,7 @@ bool CHttpServer::process(SOCKET sock)
            return false;
         }
     }
+#endif
 
     if (!parse_request(method, uri, query, headers, body)) {
         if (verbose) RAWLOG_ERROR("Parsing error");
