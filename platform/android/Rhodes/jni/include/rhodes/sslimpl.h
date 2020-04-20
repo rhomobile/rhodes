@@ -44,6 +44,7 @@ private:
     const X509* cert = nullptr;
     const X509* client_cert = nullptr;
     const EVP_PKEY* private_key = nullptr;
+    DH* dh_params = nullptr;
 
     std::string pwd;
     std::vector<char> raw_p12;
@@ -80,6 +81,11 @@ public:
     {
         return pwd;
     }
+
+    DH* getDHparams() const
+    {
+        return dh_params;
+    }
 };
 
 class SSLImpl : public ISSL
@@ -109,6 +115,11 @@ public:
     const X509* getClientCertificate() const override
     {
         return CertificateStorage::instance()->getClientCertificate();
+    }
+
+    DH* getDHparams() const override
+    {
+        return CertificateStorage::instance()->getDHparams();
     }
 
 private:

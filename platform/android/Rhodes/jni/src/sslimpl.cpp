@@ -176,6 +176,32 @@ const char* extract_raw_data(X509* cert)
     return (const char*)data;
 }
 
+DH* get_safe_dh_params()
+{
+    static const char* dh_param = 
+        "-----BEGIN DH PARAMETERS-----\n"
+        "MIIBCAKCAQEApXLjKj+Xoh+mgTKVbA750GEpDvDRxdzCQGfp7YAVTrCFPCD/KFBT\n"
+        "n3jAfYJ2cpSg6300tsHDNwoS9SEiqSVTtJe7Y6BDU8NsLimDJyHV4f85SBsKEltx\n"
+        "34H3CXzih/wIpMkkjpgX92MuJgMqpM6cg/t4dNda7fMP/9jEWnZ1tZkg2RpEqiHA\n"
+        "yTlfB7dT+YaKThbq8oq1EyZxaS31Ud7tU73FHdAz+beSr6NGc4NJB0GSdjtI7eSX\n"
+        "Gm5NggSN2lsbKpLMPtISkXGz/veF/ArYoLPAjGcvYy3xul4ND+BzVW63ySbmqUWW\n"
+        "YPebgsdPcragYyE9F6c7YSf8sxBS+d2/kwIBAg==\n"
+        "-----END DH PARAMETERS-----";
+
+    BIO* bio = BIO_new_mem_buf(dh_param, (int)strlen(dh_param));
+    DH* dh = PEM_read_bio_DHparams(bio, nullptr, nullptr, nullptr);
+    if (!dh)
+    {
+        print_last_openssl_error();
+        BIO_free(bio);
+        return nullptr;
+    }
+
+    BIO_free(bio);
+
+    return dh;
+}
+
 const char* create_p12(EVP_PKEY* private_key, X509* cert, size_t* outLen, std::string& outPwd)
 {
     unsigned char symbols[8] = {};
@@ -257,11 +283,7 @@ rho::net::CertificateStorage::CertificateStorage()
     }
 
     raw_cert = extract_raw_data((X509*)cert);
-    if(raw_cert)    
-    {      
-        RAWLOG_INFO1("Generated certificate: %s", raw_cert);
-    }
-    else 
+    if(!raw_cert)    
     {
         RAWLOG_INFO("Failed to generate certificate!!!");
         X509_free((X509*)cert);
@@ -281,6 +303,8 @@ rho::net::CertificateStorage::CertificateStorage()
 
     size_t outLen = 0;
     const char* p12 = create_p12(private_key_client, (X509*)client_cert, &outLen, pwd);
+
+    dh_params = get_safe_dh_params();
         
     //X509_free(cert_client);
     EVP_PKEY_free(private_key_client);

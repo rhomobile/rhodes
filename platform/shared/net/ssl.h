@@ -36,6 +36,7 @@
 
 typedef struct evp_pkey_st EVP_PKEY;
 typedef struct x509_st X509;
+typedef struct dh_st DH;
 
 namespace rho {
 namespace net {
@@ -65,6 +66,11 @@ struct ISSL
     }
 
     virtual const X509* getClientCertificate() const
+    {
+        return nullptr;
+    }
+
+    virtual DH* getDHparams() const
     {
         return nullptr;
     }

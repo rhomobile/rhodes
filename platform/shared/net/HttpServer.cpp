@@ -341,8 +341,7 @@ void CHttpServer::close_ssl_socket(SSL* ssl_sock, int fd)
     int code = SSL_shutdown(ssl_sock);
     int err = SSL_get_error(m_ssl_sock, code);
 
-    RAWLOG_ERROR2(SSL_TAG "state socket: %d - %d", m_sock, SSL_get_state(m_ssl_sock)); 
-    RAWLOG_ERROR3(SSL_TAG "Close ssl socket: %d, code=%d, err=%d", fd, code, err);
+    if (verbose) RAWLOG_ERROR3(SSL_TAG "Close ssl socket: %d, code=%d, err=%d", fd, code, err);
 
     if (code >= 0)
     {
@@ -362,7 +361,7 @@ void CHttpServer::init_ssl()
     SSL_load_error_strings();	
     OpenSSL_add_ssl_algorithms();
 
-    ssl_ctx = SSL_CTX_new(TLSv1_server_method());
+    ssl_ctx = SSL_CTX_new(TLSv1_2_server_method());
     if (!ssl_ctx) 
     {
         ssl_ctx = nullptr;
@@ -371,7 +370,13 @@ void CHttpServer::init_ssl()
         return;
     }
 
-    if (SSL_CTX_use_certificate(ssl_ctx, (X509*)rho_get_RhoClassFactory()->createSSLEngine()->getCertificate()) <= 0) 
+    //const char* allowedCiphers = "AES256-SHA256:AES256-GCM-SHA384:AES128-GCM-SHA256:AES128-SHA256";
+    //SSL_CTX_set_cipher_list(ssl_ctx, allowedCiphers);
+    SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_TICKET);
+
+    SSL_CTX_set_tmp_dh(ssl_ctx, rho_get_RhoClassFactory()->createSSLEngine()->getDHparams());
+
+    if (SSL_CTX_use_certificate(ssl_ctx, (X509 *)rho_get_RhoClassFactory()->createSSLEngine()->getCertificate()) <= 0)
     {
         RAWLOG_ERROR("Unable set certificate!");
         return;
@@ -383,7 +388,7 @@ void CHttpServer::init_ssl()
         return;
     }
 
-    SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_PEER | SSL_VERIFY_CLIENT_ONCE, openssl_verify_callback);
+    SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, openssl_verify_callback);
 
     X509_STORE* ssl_store = X509_STORE_new();
     X509_STORE_add_cert(ssl_store, (X509*)rho_get_RhoClassFactory()->createSSLEngine()->getClientCertificate());
@@ -698,12 +703,14 @@ bool CHttpServer::accept_ssl_factory()
     {
         int code = SSL_accept(m_ssl_sock);
         int syscall_err = errno;
-        RAWLOG_ERROR2(SSL_TAG "SSL_accept return : %d, socket: %d", code, SSL_get_fd(m_ssl_sock));
+        if (verbose) RAWLOG_ERROR2(SSL_TAG "SSL_accept return : %d, socket: %d", code, SSL_get_fd(m_ssl_sock));
         if (code < 0)
         {
+            char err_buff[255] = {};
             int err = SSL_get_error(m_ssl_sock, code);
-            RAWLOG_ERROR3(SSL_TAG "SSL_accept error code: %d, socket: %d, errno: %d", err, SSL_get_fd(m_ssl_sock), syscall_err);
-            RAWLOG_ERROR2(SSL_TAG "state socket: %d - %d", m_sock, SSL_get_state(m_ssl_sock));           
+            ERR_error_string(err, err_buff);
+            if (verbose) RAWLOG_ERROR3(SSL_TAG "SSL_accept error code: %d, socket: %d, errno: %d", err, SSL_get_fd(m_ssl_sock), syscall_err);
+            if (verbose) RAWLOG_ERROR1(SSL_TAG "SSL_accept error string: %s",  err_buff);
             close_ssl_socket(m_ssl_sock, SSL_get_fd(m_ssl_sock));
             return true;
         }
@@ -893,14 +900,14 @@ bool CHttpServer::receive_request(ByteVector &request)
     int attempts = 0;
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
-        //int n = recv(m_sock, &buf[0], sizeof(buf), 0);
+        //int n = recv(m_sock, &buf[0], sizeof(buf), 0);//int n = recv(m_sock, &buf[0], sizeof(buf), 0);
 
         RAWLOG_ERROR2(SSL_TAG "state socket: %d - %d", m_sock, SSL_get_state(m_ssl_sock)); 
         int n = SSL_read(m_ssl_sock, &buf[0], sizeof(buf));
         if(n < 0)
         {
             int err = SSL_get_error(m_ssl_sock, n);
-            RAWLOG_ERROR2(SSL_TAG "SSL_read return error code: %d, sock=%d", err, m_sock);
+            if (verbose) RAWLOG_ERROR2(SSL_TAG "SSL_read return error code: %d, sock=%d", err, m_sock);
             switch (err)
             {
             case SSL_ERROR_SSL:
@@ -1144,6 +1151,16 @@ bool CHttpServer::process(SOCKET sock)
     String method, uri, query;
     HeaderList headers;
     String body;
+
+    if(ssl_ctx)
+    {
+        if(SSL_get_verify_result(m_ssl_sock) != X509_V_OK)
+        {
+           send_response(create_response("500 Internal Error"));        
+           return false;
+        }
+    }
+
     if (!parse_request(method, uri, query, headers, body)) {
         if (verbose) RAWLOG_ERROR("Parsing error");
         send_response(create_response("500 Internal Error"));
