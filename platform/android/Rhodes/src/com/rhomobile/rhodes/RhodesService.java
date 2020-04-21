@@ -315,6 +315,7 @@ public class RhodesService extends Service {
 	public static native void resetFileLogging(String log_path);
 
 	public native void notifyNetworkStatusChanged( int status );
+	public static native String getBaseUrl();
 
 
 	public static RhodesService getInstance() {

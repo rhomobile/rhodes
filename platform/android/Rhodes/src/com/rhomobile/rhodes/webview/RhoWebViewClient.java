@@ -255,7 +255,27 @@ public class RhoWebViewClient extends WebViewClient
 
     @Override
     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-        
+
+        if (RhoConf.getBool("android_https_local_server")) {
+            String url = error.getUrl();
+            Uri uri = Uri.parse(url);
+            String protocol = uri.getScheme();
+            String server = uri.getAuthority();
+
+            String baseUrl = RhodesService.getBaseUrl();
+            Uri baseUri = Uri.parse(baseUrl);
+            String base_server = baseUri.getAuthority();
+            String base_protocol = baseUri.getScheme();
+            if(base_server.equalsIgnoreCase(server) && protocol.equalsIgnoreCase(base_protocol))
+            {
+                if(error.getPrimaryError() == SslError.SSL_UNTRUSTED)
+                {
+                    handler.proceed();
+                    return;
+                }
+            }
+        }
+
         if(RhoConf.getBool("no_ssl_verify_peer")) {
             Logger.D(TAG, "Skip SSL error.");
             handler.proceed();

@@ -207,6 +207,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequest
     rho_net_request(url.c_str());
 }
 
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBaseUrl
+  (JNIEnv *env, jclass)
+{
+    const char *s = RHODESAPP().getBaseUrl().c_str();
+    return rho_cast<jstring>(env, s);
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestAsync
   (JNIEnv *env, jclass, jstring strUrl)
 {
