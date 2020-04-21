@@ -4271,6 +4271,12 @@ namespace "run" do
       path = ''
       cmd = ''
       if RUBY_PLATFORM =~ /(win|w)32$/
+
+        path = File.join( $startdir, "platform/win32/RhoSimulator" )
+        unless File.directory?( path )
+          downloadRhosim( path )
+        end
+
         if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
           path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe" )
         else
@@ -4279,21 +4285,18 @@ namespace "run" do
 
         oldDir = File.join( $startdir, "platform/win32/RhoSimulator" )
         newDir = oldDir
-        #newDir = File.join( $startdir, "platform/win32/RhoSimulatorRunnable" )
-
-        #rm_rf newDir if Dir.exist?(newDir)
-        #FileUtils.mkpath newDir
-
-        #cp_r File.join(oldDir, "."), newDir
 
         qtdir = ENV['QTDIR']
-        #if !qtdir.nil?
-          #cp File.join(qtdir, "bin/Qt5Core.dll"), newDir
-          args << "-remote-debugging-port=9090"
-        #end
-        #Jake.run "taskkill /f /im RhoSimulator.exe"
+        args << "-remote-debugging-port=9090"
+
         cmd = File.join(newDir, 'rhosimulator.exe')
       elsif RUBY_PLATFORM =~ /darwin/
+
+        path = File.join( $startdir, "platform/osx/bin/RhoSimulator" )
+        unless File.directory?( path )
+          downloadRhosim( path )
+        end
+
         if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
           path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.app" )
         else
@@ -4428,6 +4431,63 @@ namespace "build" do
       fversion.write( "#define RHOSIMULATOR_VERSION \"#{$rhodes_version}\"\n" )
     end
   end
+end
+
+def downloadRhosim( targetPath )
+  require 'tempfile'
+
+  commit = `git rev-parse HEAD`.strip
+  branch = `git rev-parse --abbrev-ref HEAD`.strip
+
+  if RUBY_PLATFORM =~ /(win|w)32$/
+    url = "https://tau-autobuilds.s3.eu-central-1.amazonaws.com/rhomobile/rhodes/#{branch}/#{commit}/win32-RhoSimulator/RhoSimulator.zip"
+  elsif RUBY_PLATFORM =~ /darwin/
+    url = "https://tau-autobuilds.s3.eu-central-1.amazonaws.com/rhomobile/rhodes/#{branch}/#{commit}/osx-rhosimulator_osx-/RhoSimulator.app.zip"    
+  else
+    return
+  end
+
+  $logger.info "Downloading rhosim from #{url}"
+
+  file = Tempfile.new('rhosim.zip')
+  file.binmode
+
+  uri = URI.parse(url)
+
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+
+  http.request_get(uri.path) do |response|
+    length = response['Content-Length'].to_i
+    x = 0
+
+    response.read_body do |fragment|
+      x += fragment.length
+      file.write(fragment)
+    end
+  end
+
+  file.flush
+  file.close
+
+  $logger.info "Unzipping #{file.path} to #{targetPath}"
+
+  mkdir_p( targetPath )
+
+  require 'zip'
+
+  zipfile = file.path
+  file.close
+
+  Zip::File.open(zipfile) do |zip_file|
+    zip_file.each do |f|
+      fpath = File.join(targetPath, f.name)
+      zip_file.extract(f, fpath)
+    end
+  end
+
+  file.delete
+
 end
 
 #------------------------------------------------------------------------
