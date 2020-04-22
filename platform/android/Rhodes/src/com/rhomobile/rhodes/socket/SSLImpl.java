@@ -67,6 +67,7 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 
 import java.util.StringTokenizer;
 import java.security.SecureRandom;
+import android.os.Looper;
 
 
 public class SSLImpl {
@@ -484,6 +485,62 @@ public class SSLImpl {
         raw_p12 = data;
         pwd = p;
     }
+
+    private class SSLThreadIn extends Thread
+    {
+        private int n = 0;
+        private InputStream is = null;
+        private byte[] data = null;
+        private int size = 0;
+
+        public SSLThreadIn(InputStream i, byte[] d, int s)
+        {
+            this.is = i;
+            size = s;
+            data = d;
+        }
+
+        public void run() {
+            if(is != null)
+            {
+                try {
+                    n = is.read(data, 0, size);
+                } catch (IOException e) {
+
+                }
+            }
+        }
+
+        public int getReadenBytes()
+        {
+            return n;
+        }
+
+    }
+
+    private class SSLThreadOut extends Thread
+    {
+        private OutputStream os = null;
+        private byte[] data = null;
+
+        public SSLThreadOut(OutputStream o, byte[] d)
+        {
+            this.os = o;
+            data = d;
+        }
+
+        public void run() {
+            if(os != null)
+            {
+                try {
+                    os.write(data);
+                } catch (IOException e) {
+
+                }
+            }
+        }
+
+    } 
 	
 	public boolean connect(int fd, boolean sslVerifyPeer, String hostname ) {
 		try {
@@ -544,7 +601,14 @@ public class SSLImpl {
                         aOs = os;
                 }
                 if (aOs != null) {
-                    aOs.write(data);
+                    
+                    if (Looper.myLooper() == Looper.getMainLooper()) {
+                        SSLThreadOut ssl_out = new SSLThreadOut(os, data);
+                        ssl_out.start();
+                        ssl_out.join();
+                    } else
+                        aOs.write(data);
+
                     return true;
                 }
 			}
@@ -565,7 +629,16 @@ public class SSLImpl {
                 }
                 if (aIs != null) {
                     int size = data.length;
-                    int n = is.read(data, 0, size);
+                    int n = 0;
+
+                    if (Looper.myLooper() == Looper.getMainLooper()) {
+                        SSLThreadIn ssl_in = new SSLThreadIn(is, data, size);
+                        ssl_in.start();
+                        ssl_in.join();
+                        n = ssl_in.getReadenBytes();
+                    } else
+                        n = is.read(data, 0, size);
+
                     return n;
                 }
 			}

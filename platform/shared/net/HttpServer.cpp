@@ -803,10 +803,11 @@ bool CHttpServer::run()
                         m_ssl_map.emplace(m_sock, m_ssl_sock);
                         SSL_set_fd(m_ssl_sock, m_sock);
                     }
+
+                    if(accept_ssl_factory())                   
+                        continue;
                 }
 
-                if(accept_ssl_factory())
-                   continue;
 #endif
 
                 bProcessed = process(m_sock);
