@@ -31,6 +31,8 @@
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
 
+#import "Rhodes.h"
+
 #import "URLProtocol/CRhoWKURLProtocol.h"
 
 
@@ -149,6 +151,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
     w.clipsToBounds = NO;
     //w.dataDetectorTypes = UIDataDetectorTypeNone;
     w.navigationDelegate = self;
+    w.UIDelegate= self;
     w.autoresizesSubviews = YES;
     //w.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -271,6 +274,62 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 - (void)webView:(WKWebView *)webView didFailNavigation:(null_unspecified WKNavigation *)navigation withError:(NSError *)error {
     [delegate didFailLoadWithError:self error:error];
 }
+
+
+
+- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)())completionHandler
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:message
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        completionHandler();
+    }]];
+    
+    [[[[Rhodes sharedInstance] mainView] getMainViewController] presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL result))completionHandler
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:message
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        completionHandler(NO);
+    }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        completionHandler(YES);
+    }]];
+    
+    [[[[Rhodes sharedInstance] mainView] getMainViewController] presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *result))completionHandler
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:prompt
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = prompt;
+        textField.secureTextEntry = NO;
+        textField.text = defaultText;
+    }];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        completionHandler(nil);
+    }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        completionHandler([alert.textFields.firstObject text]);
+    }]];
+    
+    [[[[Rhodes sharedInstance] mainView] getMainViewController] presentViewController:alert animated:YES completion:nil];
+}
+
 
 @end
 

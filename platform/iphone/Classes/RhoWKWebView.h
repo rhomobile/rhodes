@@ -30,7 +30,7 @@
 #import <WebKit/WKWebViewConfiguration.h>
 #import "RhoWebView.h"
 
-@interface RhoWKWebView : NSObject<RhoWebView, WKNavigationDelegate> {
+@interface RhoWKWebView : NSObject<RhoWebView, WKNavigationDelegate, WKUIDelegate> {
     WKWebView *webview;
     id<RhoWebViewDelegate,NSObject> delegate;
 }
@@ -83,6 +83,10 @@
 - (void)webView:(WKWebView *)webView didFailNavigation:(null_unspecified WKNavigation *)navigation withError:(NSError *)error;
 //- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * _Nullable credential))completionHandler;
 
+
+- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)())completionHandler;
+- (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL result))completionHandler;
+- (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *result))completionHandler;
 
 @end
 
