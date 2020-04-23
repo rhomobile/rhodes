@@ -449,7 +449,8 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 #endif
 
 #if defined(OS_ANDROID)
-    if(rho_conf_getInt("android_https_local_server"))
+    const char* value = get_app_build_config_item("local_https_server_with_client_checking");
+    if(!strcmp(value, "1"))
     {
         init_ssl();
     }
@@ -484,7 +485,8 @@ CHttpServer::CHttpServer(int port, String const &root)
 #endif
 
 #if defined(OS_ANDROID)
-    if(rho_conf_getInt("android_https_local_server"))
+    const char* value = get_app_build_config_item("local_https_server_with_client_checking");
+    if(!strcmp(value, "1"))
     {
         init_ssl();
     }

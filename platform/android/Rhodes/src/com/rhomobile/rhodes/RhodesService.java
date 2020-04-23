@@ -323,6 +323,7 @@ public class RhodesService extends Service {
 	}
 
 	public static native boolean isTitleEnabled();
+	public static native boolean isLocalHttpsServerEnable();
 
 	private static final String CONF_PHONE_ID = "phone_id";
 	private PhoneId getPhoneId() {

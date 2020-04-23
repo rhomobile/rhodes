@@ -256,7 +256,7 @@ public class RhoWebViewClient extends WebViewClient
     @Override
     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
 
-        if (RhoConf.getBool("android_https_local_server")) {
+        if (RhodesService.isLocalHttpsServerEnable()) {
             String url = error.getUrl();
             Uri uri = Uri.parse(url);
             String protocol = uri.getScheme();
