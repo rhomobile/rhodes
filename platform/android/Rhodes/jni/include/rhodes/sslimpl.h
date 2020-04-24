@@ -69,12 +69,22 @@ public:
 
     const char* getRawCertificate() const
     {
-        return raw_cert;
+        const char* ret = raw_cert;
+        return ret;
     }
 
     const std::vector<char>& getRawP12() const
     {
         return raw_p12;
+    }
+
+    void clearRaws()
+    {
+        raw_p12.clear();
+        pwd = "";      
+        memset((char*)raw_cert, 0, strlen(raw_cert));
+        OPENSSL_free((char*)raw_cert);
+        raw_cert = nullptr;
     }
 
     const std::string& getPasswordForP12() const

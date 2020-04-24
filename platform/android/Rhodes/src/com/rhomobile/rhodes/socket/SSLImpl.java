@@ -68,6 +68,7 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import java.util.StringTokenizer;
 import java.security.SecureRandom;
 import android.os.Looper;
+import com.rhomobile.rhodes.RhodesService;
 
 
 public class SSLImpl {
@@ -88,9 +89,7 @@ public class SSLImpl {
 	private InputStream is;
     private OutputStream os;
 
-    private static byte[] raw_cert = null;
-    private static byte[] raw_p12 = null;
-    private static String pwd = null;
+    private static Certificate local_server_cert = null;
     private static PrivateKey client_private_key = null;
     private static Certificate[] client_cert_chain = null;
 
@@ -310,16 +309,19 @@ public class SSLImpl {
         return certs;
     }
 
-    private static Certificate loadLocalServerCert() throws IOException, CertificateException
+    private static Certificate loadLocalServerCert(byte[] data)
     {
-        InputStream certStream = new ByteArrayInputStream(raw_cert);
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
-
+        InputStream certStream = new ByteArrayInputStream(data);
         Certificate cert = null;
+
         try {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
             cert = cf.generateCertificate(certStream);
-        } finally {
             certStream.close();
+        }
+        catch(Exception e)
+        {
+            Logger.E(TAG, e.getMessage());
         }
 
         return cert;
@@ -335,28 +337,28 @@ public class SSLImpl {
         return client_cert_chain;
     }
 
-    public static void loadLocalCientP12Bundle() throws NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException, CertificateException
+    private static void loadLocalCientP12Bundle(byte[] data, String pwd)
     {
-        if(raw_p12 != null)
-        {
-            if (client_private_key == null && client_cert_chain == null) {
+        if (client_private_key == null && client_cert_chain == null) {
+            try {
                 KeyStore clientKeystore = KeyStore.getInstance("pkcs12");
-                InputStream p12Stream = new ByteArrayInputStream(raw_p12);
+                InputStream p12Stream = new ByteArrayInputStream(data);
                 clientKeystore.load(p12Stream, pwd.toCharArray());
 
-                try {
-                    KeyStore.ProtectionParameter protParam = new KeyStore.PasswordProtection(pwd.toCharArray());
-                    KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) clientKeystore.getEntry("taup12", protParam);
-                    client_private_key = pkEntry.getPrivateKey();
-                    client_cert_chain = pkEntry.getCertificateChain();
-                } catch (UnrecoverableEntryException e) {
-                    Logger.I(TAG, "Unable access to loaded private key!");
-                    client_private_key = null;
-                    client_cert_chain = null;
-                }
+                KeyStore.ProtectionParameter protParam = new KeyStore.PasswordProtection(pwd.toCharArray());
+                KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) clientKeystore.getEntry("taup12", protParam);
+                client_private_key = pkEntry.getPrivateKey();
+                client_cert_chain = pkEntry.getCertificateChain();
 
                 p12Stream.close();
+            } 
+            catch (Exception e) 
+            {
+                Logger.I(TAG, e.getMessage());
+                client_private_key = null;
+                client_cert_chain = null;
             }
+
         }
     }
 
@@ -384,10 +386,8 @@ public class SSLImpl {
             }
         }
         
-        Certificate local_server_cert = null;
-        if(raw_cert != null)
+        if(local_server_cert != null)
         {
-            local_server_cert = loadLocalServerCert();
             keystore.setCertificateEntry("cert-alias-local", local_server_cert);
         }
                
@@ -397,22 +397,13 @@ public class SSLImpl {
         X509TrustManager customTrustManager = (X509TrustManager)tmf.getTrustManagers()[0];
                 
         KeyManagerFactory kmf = null;
+        KeyStore clientKeystore = null;
 
-        if(raw_p12 != null)
-        {
-            KeyStore clientKeystore = KeyStore.getInstance( "pkcs12" );
-            InputStream p12Stream = new ByteArrayInputStream(raw_p12);
-            clientKeystore.load(p12Stream, pwd.toCharArray());
-            kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
-            kmf.init(clientKeystore, pwd.toCharArray());
-        }
-        
         if ( RhoConf.isExist("clientSSLCertificate")) {        	
         	String clientCertPath = RhoConf.getString("clientSSLCertificate");
         	
         	Logger.I(TAG, "clientSSLCertificate is " + clientCertPath );
 
-        	
         	if ( clientCertPath.length() > 0 ) {
                 Logger.I(TAG, "Creating KeyManager for client certificates");
         		kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
@@ -421,11 +412,27 @@ public class SSLImpl {
         		if (RhoConf.isExist("clientSSLCertificatePassword")) {
         			password = RhoConf.getString("clientSSLCertificatePassword");
         		}
-        	
-        		KeyStore clientKeystore = KeyStore.getInstance( "pkcs12" );
-        		clientKeystore.load( RhoFileApi.open(clientCertPath), password.toCharArray() );
-        		kmf.init(clientKeystore, password.toCharArray());
+            
+                clientKeystore = KeyStore.getInstance("pkcs12");
+                clientKeystore.load(RhoFileApi.open(clientCertPath), password.toCharArray() );   		
         	}
+        }
+
+        if(client_private_key != null && client_cert_chain != null)
+        {
+            if (clientKeystore == null)
+            {
+                clientKeystore = KeyStore.getInstance("pkcs12");
+                clientKeystore.load(null);
+            }
+                
+            KeyStore.PrivateKeyEntry pkEntry = new KeyStore.PrivateKeyEntry(client_private_key, client_cert_chain);
+            clientKeystore.setEntry("taup12", pkEntry, null);
+        }
+
+        if (clientKeystore != null) {
+            kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            kmf.init(clientKeystore, null);
         }
        
         /* 
@@ -477,13 +484,13 @@ public class SSLImpl {
 
     public static void setRawCertificate(byte[] data)
     {
-        raw_cert = data;
+        local_server_cert = loadLocalServerCert(data);
     }
+
 
     public static void setP12(byte[] data, String p)
     {
-        raw_p12 = data;
-        pwd = p;
+        loadLocalCientP12Bundle(data, p);
     }
 
     private class SSLThreadIn extends Thread
@@ -602,7 +609,7 @@ public class SSLImpl {
                 }
                 if (aOs != null) {
                     
-                    if (Looper.myLooper() == Looper.getMainLooper()) {
+                    if (RhodesService.isLocalHttpsServerEnable() && Looper.myLooper() == Looper.getMainLooper()) {
                         SSLThreadOut ssl_out = new SSLThreadOut(os, data);
                         ssl_out.start();
                         ssl_out.join();
@@ -631,7 +638,7 @@ public class SSLImpl {
                     int size = data.length;
                     int n = 0;
 
-                    if (Looper.myLooper() == Looper.getMainLooper()) {
+                    if (RhodesService.isLocalHttpsServerEnable() && Looper.myLooper() == Looper.getMainLooper()) {
                         SSLThreadIn ssl_in = new SSLThreadIn(is, data, size);
                         ssl_in.start();
                         ssl_in.join();

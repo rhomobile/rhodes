@@ -237,7 +237,7 @@ public class RhoWebViewClient extends WebViewClient
     public void onReceivedClientCertRequest(WebView view, ClientCertRequest request)
     {
         try {
-            SSLImpl.loadLocalCientP12Bundle();
+            //SSLImpl.loadLocalCientP12Bundle();
             PrivateKey pkey = SSLImpl.getClientPrivateKey();
             Certificate[] cert_chain = SSLImpl.getClientCertChain();
             if(pkey != null && cert_chain != null)

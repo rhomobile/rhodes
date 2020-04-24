@@ -262,7 +262,8 @@ rho::net::CertificateStorage* rho::net::CertificateStorage::instance()
 
 rho::net::CertificateStorage::~CertificateStorage()
 {
-    OPENSSL_free((void*)raw_cert);
+    if(raw_cert)
+        OPENSSL_free((void*)raw_cert);
     X509_free((X509*)cert);
     EVP_PKEY_free((EVP_PKEY*)private_key);
 }
@@ -415,20 +416,25 @@ void* SSLImpl::createStorage()
     env->DeleteLocalRef(obj);
 
     const char* raw_cert = CertificateStorage::instance()->getRawCertificate();
-    size_t cert_len = strlen(raw_cert);
-    jholder<jbyteArray> cert = env->NewByteArray(cert_len);
-    env->SetByteArrayRegion(cert.get(), 0, cert_len, (jbyte const *)raw_cert);
-    env->CallStaticVoidMethod(cls, midSetRawCertificate, cert.get());
-
-    const auto& raw_p12 = CertificateStorage::instance()->getRawP12();
-    const std::string& pwd = CertificateStorage::instance()->getPasswordForP12();
-
-    if (!raw_p12.empty())
+    if (raw_cert)
     {
-        jholder<jbyteArray> p12 = env->NewByteArray(raw_p12.size());
-        env->SetByteArrayRegion(p12.get(), 0, raw_p12.size(), (jbyte const *)raw_p12.data());
-        jhstring _pwd = rho_cast<jstring>(env, pwd.c_str());
-        env->CallStaticVoidMethod(cls, midSetP12, p12.get(), (jstring)_pwd.get());
+        size_t cert_len = strlen(raw_cert);
+        jholder<jbyteArray> cert = env->NewByteArray(cert_len);
+        env->SetByteArrayRegion(cert.get(), 0, cert_len, (jbyte const *)raw_cert);
+        env->CallStaticVoidMethod(cls, midSetRawCertificate, cert.get());
+
+        auto &raw_p12 = CertificateStorage::instance()->getRawP12();
+        const std::string &pwd = CertificateStorage::instance()->getPasswordForP12();
+
+        if (!raw_p12.empty())
+        {
+            jholder<jbyteArray> p12 = env->NewByteArray(raw_p12.size());
+            env->SetByteArrayRegion(p12.get(), 0, raw_p12.size(), (jbyte const *)raw_p12.data());
+            jhstring _pwd = rho_cast<jstring>(env, pwd.c_str());
+            env->CallStaticVoidMethod(cls, midSetP12, p12.get(), (jstring)_pwd.get());
+
+            CertificateStorage::instance()->clearRaws();
+        }
     }
 
     return objG;
