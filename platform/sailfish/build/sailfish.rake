@@ -188,10 +188,10 @@ namespace "config" do
 
 
     if isWindows?
-      $current_build_sdk_dir = File.join($sailfishdir, "settings", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
+      $current_build_sdk_dir = File.join($sailfishdir, "settings", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
       $current_build_sdk_dir = $current_build_sdk_dir.gsub("\\", "/")
     else
-      $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
+      $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
     end
 
     if !File.exists?($current_build_sdk_dir)
@@ -234,7 +234,7 @@ namespace "config" do
         "Add device if required (sailfish:device:add_device) and set 'device_name' field in build.yml.\n" +
         "For list device use: sailfish:device:list\n"
       elsif $dev_type == "vbox"
-        $dev_name = "Sailfish OS Emulator"
+        $dev_name = "Aurora OS Emulator"
       end
 
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["host"].nil?
@@ -575,7 +575,7 @@ def vm_is_started?
     output = stdout.read
   end
 
-  return output.include?("Sailfish OS Build Engine")
+  return output.include?("Aurora OS Build Engine")
 end
 
 def deploy_bundle(session)
@@ -614,7 +614,7 @@ namespace "build"  do
       end
 
       if !vm_is_started?
-        system("\"" + $virtualbox_path + "\"" + " startvm \"Sailfish OS Build Engine\" --type headless") 
+        system("\"" + $virtualbox_path + "\"" + " startvm \"Aurora OS Build Engine\" --type headless") 
         puts "Waiting 40 seconds vm..."
         sleep 40.0
       end 
@@ -624,7 +624,7 @@ namespace "build"  do
       if $virtualbox_path.empty? 
         raise "Please, set VirtualBox variable environment..."
       end
-      system("\"" + $virtualbox_path + "\"" + " controlvm \"Sailfish OS Build Engine\" poweroff")
+      system("\"" + $virtualbox_path + "\"" + " controlvm \"Aurora OS Build Engine\" poweroff")
     end
     
     task :rhobundle => ["project:sailfish:qt"] do
