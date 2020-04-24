@@ -29,6 +29,7 @@
 
 #include <net/ssl.h>
 #include <jni.h>
+#include <openssl/crypto.h>
 
 namespace rho {
 namespace net {
