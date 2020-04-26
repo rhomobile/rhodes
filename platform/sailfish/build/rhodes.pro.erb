@@ -139,7 +139,7 @@ LIBS += -L$$PWD/../rholib/bin -lrholib -lunzip -lcurl -lunzip
 PRE_TARGETDEPS += $$PWD/../rholib/bin/librholib.a
 
 
-LIBS += -L$$PWD/../rubylib/bin -lrubylib
+LIBS += -L$$PWD/../rubylib/bin -lrubylib -lrholib -lunzip -lcurl -lunzip
 INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/include
 DEPENDPATH += <%= @rhoRoot %>/platform/shared/ruby/include
 PRE_TARGETDEPS += $$PWD/../rubylib/bin/librubylib.a
