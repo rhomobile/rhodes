@@ -525,6 +525,24 @@ public class SSLImpl {
 
     }
 
+    private class SSLThreadShutdown extends Thread
+    {
+        private SSLSocket sock;
+
+        public SSLThreadShutdown(SSLSocket s)
+        {
+            sock = s;
+        }
+
+        public void run() {
+            try {
+                sock.close();
+            } catch (IOException e) {
+
+            }
+        }
+    }
+
     private class SSLThreadOut extends Thread
     {
         private OutputStream os = null;
@@ -583,7 +601,14 @@ public class SSLImpl {
 			if (sock != null) {
                 synchronized (this) {
                     if (sock != null) {
-                        sock.close();
+
+                        if (RhodesService.isLocalHttpsServerEnable() && Looper.myLooper() == Looper.getMainLooper()) {
+                            SSLThreadShutdown shutdownThread = new SSLThreadShutdown(sock);                        
+                            shutdownThread.start();                     
+                            shutdownThread.join();
+                        } else
+                            sock.close();
+
                         sock = null;
                         os = null;
                         is = null;
