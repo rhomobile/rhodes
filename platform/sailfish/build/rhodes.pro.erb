@@ -135,11 +135,11 @@ DEPENDPATH += <%= @rhoRoot %>/platform/shared/curl/include
 PRE_TARGETDEPS += $$PWD/../curl/bin/libcurl.a
 
 
-LIBS += -L$$PWD/../rholib/bin -lrholib -lunzip -lcurl -lunzip
+LIBS += -L$$PWD/../rholib/bin -lrholib -lunzip -lcurl
 PRE_TARGETDEPS += $$PWD/../rholib/bin/librholib.a
 
 
-LIBS += -L$$PWD/../rubylib/bin -lrubylib -lrholib -lunzip -lcurl -lunzip
+LIBS += -L$$PWD/../rubylib/bin -lrubylib -lrholib -lunzip -lcurl
 INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/include
 DEPENDPATH += <%= @rhoRoot %>/platform/shared/ruby/include
 PRE_TARGETDEPS += $$PWD/../rubylib/bin/librubylib.a

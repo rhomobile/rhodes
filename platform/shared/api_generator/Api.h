@@ -6,11 +6,16 @@
 #include <string>
 #include <memory>
 
+#ifndef OS_SAILFISH
 #if __cplusplus == 201103L
 #  include <unordered_map>
 #  define MAP_TEMPLATE std::unordered_map
 #else
 #  define MAP_TEMPLATE rho::Hashtable
+#endif
+#else
+#  include <map>
+#  define MAP_TEMPLATE std::map
 #endif
 
 
