@@ -396,6 +396,7 @@ void CHttpServer::init_ssl()
     X509_STORE_add_cert(ssl_store, (X509*)rho_get_RhoClassFactory()->createSSLEngine()->getClientCertificate());
     SSL_CTX_set_cert_store(ssl_ctx, ssl_store);
     X509_STORE_set_trust(ssl_store, 1);
+    SSL_CTX_set_session_cache_mode(ssl_ctx, SSL_SESS_CACHE_OFF);
 
     //SSL_CTX_set_msg_callback(ssl_ctx, openss_trace_proc);
     
@@ -450,7 +451,7 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 
 #if defined(OS_ANDROID)
     const char* value = get_app_build_config_item("local_https_server_with_client_checking");
-    if(!strcmp(value, "1"))
+    if(value && !strcmp(value, "1"))
     {
         init_ssl();
     }
@@ -486,7 +487,7 @@ CHttpServer::CHttpServer(int port, String const &root)
 
 #if defined(OS_ANDROID)
     const char* value = get_app_build_config_item("local_https_server_with_client_checking");
-    if(!strcmp(value, "1"))
+    if(value && !strcmp(value, "1"))
     {
         init_ssl();
     }

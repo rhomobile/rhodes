@@ -1788,7 +1788,7 @@ void CRhodesApp::initAppUrls()
 
 #ifdef OS_ANDROID
        const char* value = get_app_build_config_item("local_https_server_with_client_checking");
-       force_https = strcmp(value, "1") == 0;
+       force_https = value && strcmp(value, "1") == 0;
 #endif
 
     if (force_https) {
