@@ -270,7 +270,7 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnabl
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isLocalHttpsServerEnable
   (JNIEnv *, jclass)
 {
-    bool value = true;
+    bool value = false;
     const char* svalue = get_app_build_config_item("local_https_server_with_client_checking");
     if (svalue != NULL) {
         value = svalue[0] != '0';
