@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency('json', '1.8.6')
   s.add_dependency('rest-client', '2.0.2')
   s.add_dependency('net-scp','1.2.1')
-  s.add_dependency('net-ssh','4.2.0')
+  s.add_dependency('net-ssh','6.0.2')
   s.add_dependency('CFPropertyList', '2.2.8')
   s.add_dependency('naturally', '1.3.2')
   s.add_dependency('simctl', '1.5.6')
@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
   s.add_dependency('rdoc', '4.2.2')
   s.add_dependency('deep_merge','1.1.1')
   s.add_dependency('nokogiri', '1.10.4')
+
   s.post_install_message = "Thanks for installing Rhodes ! Please visit our website: http://tau-technologies.com" if s.respond_to? :post_install_message=
   s.executables << 'rhogen'
   s.executables << 'rhodes'

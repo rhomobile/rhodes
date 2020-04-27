@@ -14,39 +14,34 @@ INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/include\
 <%= @rhoRoot %>/platform/shared/ruby/generated\
 <%= @rhoRoot %>/platform/shared
 
-
-unix:!macx {
-  DESTDIR = $$PWD/bin
-  OBJECTS_DIR = $$PWD/bin/tmp
-  INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/sailfish
-  HEADERS += <%= @rhoRoot %>/platform/shared/ruby/sailfish/ruby/config.h
-  SOURCES += \
-  <%= @rhoRoot %>/platform/shared/ruby/missing/acosh.c\
-  <%= @rhoRoot %>/platform/shared/ruby/missing/cbrt.c\
-  <%= @rhoRoot %>/platform/shared/ruby/missing/crypt.c\
-  <%= @rhoRoot %>/platform/shared/ruby/missing/dup2.c\
-  <%= @rhoRoot %>/platform/shared/ruby/missing/erf.c\
-  <%= @rhoRoot %>/platform/shared/ruby/missing/hypot.c\
-  <%= @rhoRoot %>/platform/shared/ruby/missing/stdlib.c\
-  <%= @rhoRoot %>/platform/shared/ruby/missing/strlcat.c\
-  <%= @rhoRoot %>/platform/shared/ruby/missing/strlcpy.c\
-  <%= @rhoRoot %>/platform/shared/ruby/missing/tgamma.c\
-  <%= @rhoRoot %>/platform/shared/ruby/newline.c\
-  <%= @rhoRoot %>/platform/shared/ruby/missing/explicit_bzero.c\
-  <%= @rhoRoot %>/platform/shared/ruby/missing/setproctitle.c
-  QMAKE_CFLAGS += -fvisibility=hidden
-  QMAKE_CXXFLAGS += -fvisibility=hidden
-  QMAKE_CFLAGS_DEBUG -= -O2
-  QMAKE_CXXFLAGS_DEBUG -= -O2
-  
-}
+DESTDIR = $$PWD/bin
+OBJECTS_DIR = $$PWD/bin/tmp
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/sailfish
+HEADERS += <%= @rhoRoot %>/platform/shared/ruby/sailfish/ruby/config.h
+SOURCES += \
+<%= @rhoRoot %>/platform/shared/ruby/missing/acosh.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/cbrt.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/crypt.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/dup2.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/erf.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/hypot.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/stdlib.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/strlcat.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/strlcpy.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/tgamma.c\
+<%= @rhoRoot %>/platform/shared/ruby/newline.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/explicit_bzero.c\
+<%= @rhoRoot %>/platform/shared/ruby/missing/setproctitle.c
+QMAKE_CFLAGS += -fvisibility=hidden
+QMAKE_CXXFLAGS += -fvisibility=hidden
+QMAKE_CFLAGS_DEBUG -= -O2
+QMAKE_CXXFLAGS_DEBUG -= -O2
 
 DEFINES += RHODES_QT_PLATFORM
 
-!win32 {
-  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-  # incompatible with gcc 4.2 / Xcode 4: -Wself-assign
-}
+QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  
+
 
 HEADERS += <%= @rhoRoot %>/platform/shared/ruby/ext/rho/rhoruby.h\
 <%= @rhoRoot %>/platform/shared/ruby/ext/calendar/event.h\

@@ -10,15 +10,15 @@ CONFIG += <%= @buildMode %>
 
 INCLUDEPATH += <%= @rhoRoot %>/platform/shared
 
-unix:!macx {
-  DESTDIR = $$PWD/bin
-  OBJECTS_DIR = $$PWD/bin/tmp
-  SOURCES += <%= @rhoRoot %>/platform/shared/sqlite/sqlite3.c
-  QMAKE_CFLAGS += -fvisibility=hidden
-  QMAKE_CXXFLAGS += -fvisibility=hidden
-  QMAKE_CFLAGS_DEBUG -= -O2
-  QMAKE_CXXFLAGS_DEBUG -= -O2
-}
+
+DESTDIR = $$PWD/bin
+OBJECTS_DIR = $$PWD/bin/tmp
+SOURCES += <%= @rhoRoot %>/platform/shared/sqlite/sqlite3.c
+QMAKE_CFLAGS += -fvisibility=hidden
+QMAKE_CXXFLAGS += -fvisibility=hidden
+QMAKE_CFLAGS_DEBUG -= -O2
+QMAKE_CXXFLAGS_DEBUG -= -O2
+
 
 DEFINES += RHODES_QT_PLATFORM
 

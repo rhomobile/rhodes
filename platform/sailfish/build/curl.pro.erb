@@ -1,6 +1,6 @@
 QT -= core
 
-DEFINES += OS_SAILFISH OS_LINUX
+DEFINES += OS_SAILFISH OS_LINUX __INTERIX
 
 TARGET = curl
 TEMPLATE = lib
@@ -12,22 +12,20 @@ INCLUDEPATH += <%= @rhoRoot %>/platform/shared\
 <%= @rhoRoot %>/platform/shared/curl/include\
 <%= @rhoRoot %>/platform/shared/curl/lib
 
-unix:!macx {
-  DESTDIR = $$PWD/bin
-  OBJECTS_DIR = $$PWD/bin/tmp
-  DEFINES += HAVE_CONFIG_H USE_RHOSSL
-  QMAKE_CFLAGS += -fvisibility=hidden
-  QMAKE_CXXFLAGS += -fvisibility=hidden
-}
+
+DESTDIR = $$PWD/bin
+OBJECTS_DIR = $$PWD/bin/tmp
+DEFINES += HAVE_CONFIG_H USE_RHOSSL
+QMAKE_CFLAGS += -fvisibility=hidden
+QMAKE_CXXFLAGS += -fvisibility=hidden
 
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 
-!win32 {
-  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-  QMAKE_CFLAGS_DEBUG -= -O2
-  QMAKE_CXXFLAGS_DEBUG -= -O2
-}
+QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+QMAKE_CFLAGS_DEBUG -= -O2
+QMAKE_CXXFLAGS_DEBUG -= -O2
+
 
 HEADERS += <%= @rhoRoot %>/platform/shared/curl/lib/arpa_telnet.h\
 <%= @rhoRoot %>/platform/shared/curl/lib/curl_setup.h \

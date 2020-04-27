@@ -29,7 +29,7 @@ DISTFILES += rpm/harbour-sailfishrhodes.changes.in \
     qml/pages/FirstPageWE.qml \
     qml/pages/FirstPageWK.qml
 
-SAILFISHAPP_ICONS = 86x86 108x108 128x128
+SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
 
 #INCLUDEPATH += $$PWD/../../../../wm/rhodes
 #INCLUDEPATH += $$PWD/../../curl/include
