@@ -24,6 +24,14 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
+#if defined(OS_ANDROID)
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/x509.h>
+#include <openssl/x509_vfy.h>
+#include <net/ssl.h>
+#endif
+
 #include "net/HttpServer.h"
 #include "common/RhodesApp.h"
 #include "common/RhoFilePath.h"
@@ -314,6 +322,88 @@ static VALUE create_request_hash(String const &application, String const &model,
 }
 #endif
 
+#ifdef OS_ANDROID
+
+void openss_trace_proc(int write_p, int version, int content_type, const void *buf, size_t len, SSL *ssl, void *arg)
+{
+    std::string err_str;
+    err_str.assign((const char*)buf, len);
+    RAWLOG_INFO2(SSL_TAG "Openssl trace message: %s, content_type=%d", err_str.c_str(), content_type);
+}
+
+int openssl_verify_callback(int preverify_ok, X509_STORE_CTX* x509_ctx)
+{
+    int err = X509_STORE_CTX_get_error(x509_ctx);
+    RAWLOG_ERROR1(SSL_TAG "X509_STORE_CTX_get_error return: %d", err);
+    return preverify_ok;
+}
+
+void CHttpServer::close_ssl_socket(SSL* ssl_sock, int fd)
+{
+    int code = SSL_shutdown(ssl_sock);
+    int err = SSL_get_error(m_ssl_sock, code);
+
+    if (verbose) RAWLOG_ERROR3(SSL_TAG "Close ssl socket: %d, code=%d, err=%d", fd, code, err);
+
+    if (code >= 0)
+    {
+        SSL_free(ssl_sock);
+        closesocket(fd);
+        auto it = m_ssl_map.find(fd);
+        if (it != m_ssl_map.end())
+            m_ssl_map.erase(it);
+        else
+            RAWLOG_ERROR1(SSL_TAG "Unable erase ssl socket, sockfd=%d", fd);
+    }
+   
+}
+
+void CHttpServer::init_ssl()
+{
+    SSL_load_error_strings();	
+    OpenSSL_add_ssl_algorithms();
+
+    ssl_ctx = SSL_CTX_new(TLSv1_2_server_method());
+    if (!ssl_ctx) 
+    {
+        ssl_ctx = nullptr;
+        m_ssl_sock = nullptr;
+        RAWLOG_ERROR("Unable to create SSL context!");
+        return;
+    }
+
+    //const char* allowedCiphers = "AES256-SHA256:AES256-GCM-SHA384:AES128-GCM-SHA256:AES128-SHA256";
+    //SSL_CTX_set_cipher_list(ssl_ctx, allowedCiphers);
+    SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_TICKET);
+
+    SSL_CTX_set_tmp_dh(ssl_ctx, rho_get_RhoClassFactory()->createSSLEngine()->getDHparams());
+
+    if (SSL_CTX_use_certificate(ssl_ctx, (X509 *)rho_get_RhoClassFactory()->createSSLEngine()->getCertificate()) <= 0)
+    {
+        RAWLOG_ERROR("Unable set certificate!");
+        return;
+    }
+
+    if (SSL_CTX_use_PrivateKey(ssl_ctx, (EVP_PKEY*)rho_get_RhoClassFactory()->createSSLEngine()->getPrivateKey()) <= 0 ) 
+    {
+        RAWLOG_ERROR("Unable set private key!");
+        return;
+    }
+
+    SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, openssl_verify_callback);
+
+    X509_STORE* ssl_store = X509_STORE_new();
+    X509_STORE_add_cert(ssl_store, (X509*)rho_get_RhoClassFactory()->createSSLEngine()->getClientCertificate());
+    SSL_CTX_set_cert_store(ssl_ctx, ssl_store);
+    X509_STORE_set_trust(ssl_store, 1);
+    SSL_CTX_set_session_cache_mode(ssl_ctx, SSL_SESS_CACHE_OFF);
+
+    //SSL_CTX_set_msg_callback(ssl_ctx, openss_trace_proc);
+    
+}
+
+#endif
+
 CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root, bool enable_external_access, bool started_as_separated_simple_server)
     :m_active(false), m_port(port), verbose(true), m_IP_adress("")
 #ifdef OS_MACOSX
@@ -358,6 +448,14 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
     m_generator = rho_conf_getInt("disable_external_access") ? rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
     secureTokenExists = false;
 #endif
+
+#if defined(OS_ANDROID)
+    const char* value = get_app_build_config_item("local_https_server_with_client_checking");
+    if(value && !strcmp(value, "1"))
+    {
+        init_ssl();
+    }
+#endif
 }
     
 CHttpServer::CHttpServer(int port, String const &root)
@@ -385,6 +483,14 @@ CHttpServer::CHttpServer(int port, String const &root)
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
     m_generator = rho_conf_getInt("disable_external_access") ? rho_get_RhoClassFactory()->createSecurityTokenGenerator() : nullptr;
     secureTokenExists = false;
+#endif
+
+#if defined(OS_ANDROID)
+    const char* value = get_app_build_config_item("local_https_server_with_client_checking");
+    if(value && !strcmp(value, "1"))
+    {
+        init_ssl();
+    }
 #endif
 }
 
@@ -598,6 +704,30 @@ int CHttpServer::select_internal( SOCKET listener, fd_set& readfds )
     return ret;
 }
 
+#ifdef OS_ANDROID
+bool CHttpServer::accept_ssl_factory()
+{
+    if(SSL_in_init(m_ssl_sock) == 1)
+    {
+        int code = SSL_accept(m_ssl_sock);
+        int syscall_err = errno;
+        if (verbose) RAWLOG_ERROR2(SSL_TAG "SSL_accept return : %d, socket: %d", code, SSL_get_fd(m_ssl_sock));
+        if (code < 0)
+        {
+            char err_buff[255] = {};
+            int err = SSL_get_error(m_ssl_sock, code);
+            ERR_error_string(err, err_buff);
+            if (verbose) RAWLOG_ERROR3(SSL_TAG "SSL_accept error code: %d, socket: %d, errno: %d", err, SSL_get_fd(m_ssl_sock), syscall_err);
+            if (verbose) RAWLOG_ERROR1(SSL_TAG "SSL_accept error string: %s",  err_buff);
+            close_ssl_socket(m_ssl_sock, SSL_get_fd(m_ssl_sock));
+            return true;
+        }
+    }
+    
+    return false;
+}
+#endif
+
 bool CHttpServer::run()
 {
     #ifdef OS_LINUX
@@ -663,6 +793,26 @@ bool CHttpServer::run()
                 }
 #endif
                 m_sock = conn;
+#ifdef OS_ANDROID
+                if (ssl_ctx)
+                {
+                    ERR_clear_error();
+                    auto it = m_ssl_map.find(m_sock);
+                    if (it != m_ssl_map.end())
+                        m_ssl_sock = it->second;
+                    else
+                    {
+                        m_ssl_sock = SSL_new(ssl_ctx);
+                        m_ssl_map.emplace(m_sock, m_ssl_sock);
+                        SSL_set_fd(m_ssl_sock, m_sock);
+                    }
+
+                    if(accept_ssl_factory())                   
+                        continue;
+                }
+
+#endif
+
                 bProcessed = process(m_sock);
 #ifndef RHO_NO_RUBY_API
                 if (rho_ruby_is_started() && (!m_started_as_separated_simple_server))
@@ -672,7 +822,14 @@ bool CHttpServer::run()
                 }
 #endif
                 if (verbose) RAWTRACE("Close connected socket");
-                closesocket(m_sock);
+#ifdef OS_ANDROID
+                if(ssl_ctx)
+                {
+                    close_ssl_socket(m_ssl_sock, m_sock);
+                }
+                else 
+#endif
+                   closesocket(m_sock);
                 m_sock = INVALID_SOCKET;
             }
         }
@@ -745,6 +902,15 @@ bool receive_request_test(ByteVector &request, int attempt)
 	return true;
 }
 
+int CHttpServer::internal_recv(char* buff, size_t size, int flags)
+{
+#ifdef OS_ANDROID
+    return ssl_ctx ? SSL_read(m_ssl_sock, buff, size) : recv(m_sock, buff, size, flags);
+#else
+    return recv(m_sock, buff, size, flags);
+#endif
+}
+
 bool CHttpServer::receive_request(ByteVector &request)
 {
 	if (verbose) RAWTRACE("Receiving request...");
@@ -754,7 +920,26 @@ bool CHttpServer::receive_request(ByteVector &request)
     int attempts = 0;
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
-        int n = recv(m_sock, &buf[0], sizeof(buf), 0);
+
+        int n = internal_recv(&buf[0], sizeof(buf), 0);
+#ifdef OS_ANDROID
+        if(ssl_ctx && n < 0)
+        {
+            int err = SSL_get_error(m_ssl_sock, n);
+            if (verbose) RAWLOG_ERROR2(SSL_TAG "SSL_read return error code: %d, sock=%d", err, m_sock);
+            switch (err)
+            {
+            case SSL_ERROR_SSL:
+                return false;
+            case SSL_ERROR_WANT_READ:
+                break;
+            default:
+                break;
+            }
+        }
+#endif
+
+
         //RAWTRACE1("RECV: %d", n);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
@@ -818,6 +1003,15 @@ bool CHttpServer::receive_request(ByteVector &request)
     return true;
 }
 
+int CHttpServer::internal_send(const char* buff, size_t size, int flags)
+{
+#ifdef OS_ANDROID
+    return ssl_ctx ? SSL_write(m_ssl_sock, buff, size) : send(m_sock, buff, size, flags);
+#else
+    return send(m_sock, buff, size, flags);
+#endif
+}
+
 bool CHttpServer::send_response_impl(String const &data, bool continuation)
 {
 #ifdef OS_MACOSX
@@ -855,7 +1049,24 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
     
     size_t pos = 0;
     for(; pos < data.size();) {
-        int n = send(m_sock, data.c_str() + pos, data.size() - pos, 0);
+
+        int n = internal_send(data.c_str() + pos, data.size() - pos, 0);
+#ifdef OS_ANDROID
+        if(ssl_ctx && n < 0)
+        {
+            int err = SSL_get_error(m_ssl_sock, n);
+            if(verbose) RAWLOG_ERROR2(SSL_TAG "SSL_write return error code: %d, sock=%d", err, m_sock);
+            switch (err)
+            {
+            case SSL_ERROR_SSL:
+                return false;
+            default:
+                break;
+            }
+        }
+#endif
+
+
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
 #if !defined(WINDOWS_PLATFORM)
@@ -970,6 +1181,17 @@ bool CHttpServer::process(SOCKET sock)
     String method, uri, query;
     HeaderList headers;
     String body;
+#ifdef OS_ANDROID
+    if(ssl_ctx)
+    {
+        if(SSL_get_verify_result(m_ssl_sock) != X509_V_OK)
+        {
+           send_response(create_response("500 Internal Error"));        
+           return false;
+        }
+    }
+#endif
+
     if (!parse_request(method, uri, query, headers, body)) {
         if (verbose) RAWLOG_ERROR("Parsing error");
         send_response(create_response("500 Internal Error"));

@@ -859,6 +859,11 @@ namespace "config" do
 
     $native_libs = ["sqlite", "curl", "ruby", "json", "rhocommon", "rhodb", "rholog", "rhosync", "rhomain"]
 
+    $openssl_skip = ($app_config['extensions'].index('openssl.so') || $app_config['extensions'].index('openssl'))
+    if (!$openssl_skip)
+      $native_libs << "openssl"
+    end
+
     unless $debug
       $confdir = "release"
     else
@@ -871,7 +876,6 @@ namespace "config" do
     $libname = {}
     $native_libs.each do |x|
       $objdir[x] = File.join($tmpdir, x)
-
       #TODO: path is actually incorrect since library build splits it to dirname and basename inserting ABI in between. Not touching it right now not wanting to break things, but need to review/fix it eventually.
       $libname[x] = File.join($app_builddir, x, "lib#{x}.a")
     end
@@ -1494,6 +1498,27 @@ namespace "build" do
       print_timestamp('build:android:libsqlite FINISH')
     end
 
+    task :libopenssl => "config:android" do
+      if($openssl_skip) 
+        next
+      end
+      print_timestamp('build:android:libopenssl START')
+
+      objdir = $objdir["openssl"]
+      libname = $libname["openssl"]
+      libdir = File.dirname(libname)
+      mkdir_p libdir unless File.directory? libdir
+
+      src_dir = "#{$shareddir}/../../lib/extensions/openssl.so/ext/android"
+
+      $abis.each do |abi|
+        realabi = abi
+        realabi = 'armeabi' if abi == 'arm'
+        mkdir_p File.join(libdir, realabi) unless File.directory? File.join(libdir, realabi)
+        cp_r File.join(src_dir, realabi, "libopenssl.so.a"), File.join(libdir, realabi, "libopenssl.a")
+      end
+    end
+
     task :libcurl => "config:android" do
       print_timestamp('build:android:libcurl START')
       # Steps to get curl_config.h from fresh libcurl sources:
@@ -1696,6 +1721,7 @@ namespace "build" do
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
+      args << "-I\"#{$shareddir}/../../lib/extensions/openssl.so/ext/sources/include\""
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
       ENV['SOURCELIST'] = File.join($builddir, 'librhocommon_build.files')
@@ -1789,7 +1815,7 @@ namespace "build" do
       print_timestamp('build:android:librhosync FINISH')
     end
 
-    task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
+    task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog, :libopenssl]
 
     task :genconfig => "config:android" do
       print_timestamp('build:android:genconfig START')
@@ -1878,6 +1904,7 @@ namespace "build" do
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
+      args << "-I\"#{$shareddir}/../../lib/extensions/openssl.so/ext/sources/include\""
       args << "-I\"#{$coreapidir}\""
 
       ENV['SOURCEPATH'] = File.join($androidpath,'..','..')

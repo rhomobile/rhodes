@@ -207,6 +207,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequest
     rho_net_request(url.c_str());
 }
 
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBaseUrl
+  (JNIEnv *env, jclass)
+{
+    const char *s = RHODESAPP().getBaseUrl().c_str();
+    return rho_cast<jstring>(env, s);
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestAsync
   (JNIEnv *env, jclass, jstring strUrl)
 {
@@ -254,6 +261,17 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnabl
 {
     bool value = true;
     const char* svalue = get_app_build_config_item("android_title");
+    if (svalue != NULL) {
+        value = svalue[0] != '0';
+    } 
+    return (jboolean)value;
+}
+
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isLocalHttpsServerEnable
+  (JNIEnv *, jclass)
+{
+    bool value = false;
+    const char* svalue = get_app_build_config_item("local_https_server_with_client_checking");
     if (svalue != NULL) {
         value = svalue[0] != '0';
     } 

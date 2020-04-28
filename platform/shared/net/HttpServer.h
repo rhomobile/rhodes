@@ -36,6 +36,13 @@
 #include "common/ISecurityTokenGenerator.h"
 #endif
 
+#if defined(OS_ANDROID)
+#include <map>
+
+typedef struct ssl_st SSL;
+typedef struct ssl_ctx_st SSL_CTX;
+#endif
+
 #if !defined(WINDOWS_PLATFORM)
 typedef int SOCKET;
 #  define INVALID_SOCKET -1
@@ -196,7 +203,20 @@ private:
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_ANDROID)
     const rho::common::ISecurityTokenGenerator* m_generator;
-    bool secureTokenExists;
+    bool secureTokenExists; 
+#endif
+
+    int internal_recv(char* buff, size_t size, int flags);
+    int internal_send(const char* buff, size_t size, int flags);
+#if defined(OS_ANDROID)
+#define SSL_TAG "SSL: "
+    SSL_CTX* ssl_ctx = nullptr;
+    SSL* m_ssl_sock = nullptr;
+    std::map<int, SSL*> m_ssl_map;
+
+    void init_ssl();
+    void close_ssl_socket(SSL* ssl_sock, int fd);
+    bool accept_ssl_factory();
 #endif
 
 #ifdef OS_MACOSX
