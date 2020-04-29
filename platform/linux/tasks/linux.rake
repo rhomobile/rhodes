@@ -409,7 +409,7 @@ namespace "device" do
 				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $rosalinux
-				#$create_buildroot = true
+				$create_buildroot = true
 				$architecture = "noarch"
 				$deps = ["lib64qt5webenginecore", "lib64qt5webenginewidgets" , "lib64qt5webengine" , "lib64qt5-core5", "lib64qt5gui5", 
 					"lib64gmp10"]
