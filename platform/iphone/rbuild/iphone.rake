@@ -144,6 +144,23 @@ def get_ext_plist_changes(ext_path_to_cfg_map)
   return extension_name, changed_value
 end
 
+def generate_appname
+    appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+    return appname
+end
+
+def generate_appname_fixed
+    appname = generate_appname
+    appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+    return appname_fixed
+end
+
+def generate_correct_xcode_project_path
+    appname_fixed = generate_appname_fixed
+    iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
+    return iphone_project
+end
+
 
 #
 # def set_ui_prerendered_icon(val)
@@ -255,8 +272,8 @@ end
 
 
 def update_plist_procedure
-      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+      appname = generate_appname
+      appname_fixed = generate_appname_fixed
 
       vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
       bundle_identifier = "com.#{vendor}.#{appname}"
@@ -384,11 +401,7 @@ end
 
 def set_signing_identity(identity,profile,entitlements,provisioning_style,development_team)
 
-  appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-  appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| (w.capitalize) }.join("")
-
-  #fname = $config["build"]["iphonepath"] + "/rhorunner.xcodeproj/project.pbxproj"
-  fname = $app_path + "/project/iphone" + "/" + appname_fixed + ".xcodeproj/project.pbxproj"
+  fname = File.join(generate_correct_xcode_project_path, "project.pbxproj")
   buf = ""
   File.new(fname,"r").read.each_line do |line|
     if entitlements != nil
@@ -634,10 +647,7 @@ LOADINGIMAGES = [
 ]
 
 def remove_lines_from_xcode_project(array_with_substrings)
-    appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-    appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| (w.capitalize) }.join("")
-
-    fname = $app_path + "/project/iphone" + "/" + appname_fixed + ".xcodeproj/project.pbxproj"
+    fname = File.join(generate_correct_xcode_project_path, "project.pbxproj")
     buf = ""
     File.new(fname,"r").read.each_line do |line|
         is_remove = false
@@ -724,6 +734,168 @@ def set_default_images(make_bak, plist_hash)
   end
 
 end
+
+
+
+def update_xcode_project_files_by_extensions
+    fname = File.join(generate_correct_xcode_project_path, "project.pbxproj")
+    buf = ""
+
+    replaces = {}
+
+    #$app_extension_cfg[extpath] = extconf
+    #$app_extensions_list[extname] = extpath
+
+    custom_frameworks_list = []
+    system_frameworks_list = []
+    resources_list = []
+
+    IPhoneBuild.log Logger::DEBUG,  "***** process extensions for iphone frameworks and resources START"
+
+    frameworks_target_path = File.join($app_path, 'project', 'iphone', "Frameworks")
+    FileUtils.mkdir_p frameworks_target_path
+    resources_target_path = File.join($app_path, 'project', 'iphone')
+
+
+    $app_extensions_list.each do |extname, extpath|
+        IPhoneBuild.log Logger::DEBUG,  "     ** extension ["+extname+"] path ["+extpath+"]"
+        extconf = $app_extension_cfg[extpath]
+        if extconf != nil
+            if extconf["iphone"] != nil
+                IPhoneBuild.log Logger::DEBUG, "          ** iphone section found"
+                frameworks_file = extconf["iphone"]["frameworks_list"]
+                frameworks_path = extconf["iphone"]["frameworks_path"]
+                if (frameworks_file != nil) && (frameworks_path != nil)
+                    IPhoneBuild.log Logger::DEBUG, "          ** frameworks_file = "+frameworks_file.to_s
+                    IPhoneBuild.log Logger::DEBUG, "          ** frameworks_path = "+frameworks_path.to_s
+                    File.new(File.join(extpath, frameworks_file),"r").read.each_line do |line|
+                       item = line.chomp
+                       if item.size > 0
+                           IPhoneBuild.log Logger::DEBUG, "               ** framework item = "+item.to_s
+                           framework_path = File.join(extpath, frameworks_path, item)
+                           IPhoneBuild.log Logger::DEBUG, "                 ** framework path = "+framework_path.to_s
+                           if File.exist?(framework_path)
+                               # custom framework
+                               IPhoneBuild.log Logger::DEBUG, "                 ** custom !"
+                               custom_frameworks_list << item
+                               # copy frameworks to project folder
+                               cp_r framework_path, frameworks_target_path
+                           else
+                               # system framework
+                               IPhoneBuild.log Logger::DEBUG, "                 ** system !"
+                               system_frameworks_list << item
+                           end
+                       end
+                    end
+                end
+
+                resources_file = extconf["iphone"]["resources_list"]
+                resources_path = extconf["iphone"]["resources_path"]
+                if (resources_file != nil) && (resources_path != nil)
+                    IPhoneBuild.log Logger::DEBUG, "          ** resources_file = "+resources_file.to_s
+                    IPhoneBuild.log Logger::DEBUG, "          ** resources_path = "+resources_path.to_s
+                    File.new(File.join(extpath, resources_file),"r").read.each_line do |line|
+                       item = line.chomp
+                       if item.size > 0
+                           IPhoneBuild.log Logger::DEBUG, "               ** resources item = "+item.to_s
+                           resources_path = File.join(resources_path, item)
+                           resources_list << item
+                           if File.exist?(resources_path)
+                               IPhoneBuild.log Logger::DEBUG, "                 ** copy resource !"
+                               cp_r File.join(extpath, resources_path, item), resources_target_path
+                           else
+                               IPhoneBuild.log Logger::DEBUG, "                 ** resource file not found !"
+                           end
+                       end
+                    end
+                end
+
+            end
+        end
+    end
+
+    IPhoneBuild.log Logger::DEBUG, "***** custom_frameworks_list = "+custom_frameworks_list.to_s
+    IPhoneBuild.log Logger::DEBUG, "***** system_frameworks_list = "+system_frameworks_list.to_s
+    IPhoneBuild.log Logger::DEBUG, "***** resources_list = "+resources_list.to_s
+
+    # prepare replaces{}
+    replaces["<PLACEHOLDER FOR FRAMEWORKS 01>"] = []
+    replaces["<PLACEHOLDER FOR RESOURCES 01>"] = []
+    replaces["<PLACEHOLDER FOR FRAMEWORKS 02>"] = []
+    replaces["<PLACEHOLDER FOR RESOURCES 02>"] = []
+    replaces["<PLACEHOLDER FOR FRAMEWORKS 03>"] = []
+    replaces["<PLACEHOLDER FOR RESOURCES 03>"] = []
+    replaces["<PLACEHOLDER FOR FRAMEWORKS 04>"] = []
+    replaces["<PLACEHOLDER FOR RESOURCES 04>"] = []
+
+    frameworks_index = 1
+    resources_index = 1
+
+    custom_frameworks_list.each do |item|
+        uid1 = "AC1"+( "%03d" % frameworks_index )+"5F20615B6C00B818B8"
+        uid2 = "BC1"+( "%03d" % frameworks_index )+"5F20615B6C00B818B8"
+        frameworks_index = frameworks_index + 1
+        wrapper = "wrapper.framework"
+        if item.end_with?(".xcframework")
+            wrapper = "wrapper.xcframework"
+        end
+        replaces["<PLACEHOLDER FOR FRAMEWORKS 01>"] << ("        "+uid1+" /* "+item+" in Frameworks */ = {isa = PBXBuildFile; fileRef = "+uid2+" /* "+item+" */; };")
+        replaces["<PLACEHOLDER FOR FRAMEWORKS 02>"] << ("        "+uid2+" /* "+item+" */ = {isa = PBXFileReference; lastKnownFileType = "+wrapper+"; name = "+item+"; path = Frameworks/"+item+"; sourceTree = \"<group>\"; };")
+        replaces["<PLACEHOLDER FOR FRAMEWORKS 03>"] << ("        "+uid1+" /* "+item+" */,")
+        replaces["<PLACEHOLDER FOR FRAMEWORKS 04>"] << ("            "+uid2+" /* "+item+" */,")
+    end
+
+    system_frameworks_list.each do |item|
+        uid1 = "AC1"+( "%03d" % frameworks_index )+"5F20615B6C00B818B8"
+        uid2 = "BC1"+( "%03d" % frameworks_index )+"5F20615B6C00B818B8"
+        frameworks_index = frameworks_index + 1
+        wrapper = "wrapper.framework"
+        if item.end_with?(".xcframework")
+            wrapper = "wrapper.xcframework"
+        end
+        replaces["<PLACEHOLDER FOR FRAMEWORKS 01>"] << ("        "+uid1+" /* "+item+" in Frameworks */ = {isa = PBXBuildFile; fileRef = "+uid2+" /* "+item+" */; };")
+        replaces["<PLACEHOLDER FOR FRAMEWORKS 02>"] << ("        "+uid2+" /* "+item+" */ = {isa = PBXFileReference; lastKnownFileType = "+wrapper+"; name = "+item+"; path = System/Library/Frameworks/Frameworks/"+item+"; sourceTree = SDKROOT; };")
+        replaces["<PLACEHOLDER FOR FRAMEWORKS 03>"] << ("        "+uid1+" /* "+item+"  in Frameworks */,")
+        replaces["<PLACEHOLDER FOR FRAMEWORKS 04>"] << ("            "+uid2+" /* "+item+" */,")
+    end
+
+    resources_list.each do |item|
+        uid1 = "CC1"+( "%03d" % resources_index )+"5F20615B6C00B818B8"
+        uid2 = "DC1"+( "%03d" % resources_index )+"5F20615B6C00B818B8"
+        resources_index = resources_index + 1
+        replaces["<PLACEHOLDER FOR RESOURCES 01>"] << ("        "+uid1+" /* "+item+" in Resources */ = {isa = PBXBuildFile; fileRef = "+uid2+" /* "+item+" */; };")
+        replaces["<PLACEHOLDER FOR RESOURCES 02>"] << ("        "+uid2+" /* "+item+" */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = \""+item+"\"; sourceTree = \"<group>\"; };")
+        replaces["<PLACEHOLDER FOR RESOURCES 03>"] << ("            "+uid2+" /* "+item+" */,")
+        replaces["<PLACEHOLDER FOR RESOURCES 04>"] << ("            "+uid1+" /* "+item+" in Resources */,")
+    end
+
+    IPhoneBuild.log Logger::DEBUG, "  ***** process XCode file START"
+    File.new(fname,"r").read.each_line do |line|
+       lines_instead_of_line = []
+       # check for replaces
+       is_replaced = false
+       replaces.each do |key, lines|
+          if line.include? key
+              is_replaced = true
+              IPhoneBuild.log Logger::DEBUG, "    ** found "+key
+              IPhoneBuild.log Logger::DEBUG, "    ** replaced to: "
+              lines.each do |item_line|
+                  IPhoneBuild.log Logger::DEBUG, "      ** "+item_line
+                  buf << (item_line + "\n")
+              end
+          end
+       end
+       if !is_replaced
+           buf << line
+       end
+    end
+    IPhoneBuild.log Logger::DEBUG, "  ***** process XCode file FINISH"
+    File.open(fname,"w") { |f| f.write(buf) }
+
+    IPhoneBuild.log Logger::DEBUG, "***** process extensions for iphone frameworks and resources FINISH"
+
+end
+
 
 def update_xcode_project_files_by_capabilities
     info_plist = $app_path + "/project/iphone/Info.plist"
@@ -862,61 +1034,6 @@ def update_xcode_project_files_by_capabilities
         hash_dev_ent.delete('aps-environment')
         hash_prd_ent.delete('aps-environment')
         remove_lines_from_xcode_project(['com.apple.Push = {enabled = 1;};'])
-    end
-
-    if $push_type == APPLE_PUSH || !$ios_push_capability
-      lines_to_delete = []
-      lines_to_delete << 'AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */; };'
-      lines_to_delete << 'AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */; };'
-      lines_to_delete << 'AC1F5D6120615B6C00B818B8 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */; };'
-      lines_to_delete << 'AC1F5D6220615B6C00B818B8 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */; };'
-      lines_to_delete << 'AC1F5D6320615B6C00B818B8 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */; };'
-      lines_to_delete << 'AC1F5D6420615B6C00B818B8 /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */; };'
-      lines_to_delete << 'AC1F5D6520615B6C00B818B8 /* FirebaseNanoPB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */; };'
-      lines_to_delete << 'AC1F5D6620615B6C00B818B8 /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */; };'
-      lines_to_delete << 'AC1F5D6720615B6C00B818B8 /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D5E20615B6C00B818B8 /* nanopb.framework */; };'
-      lines_to_delete << 'AC1F5D6920615B8E00B818B8 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1F5D6820615B8600B818B8 /* StoreKit.framework */; };'
-      lines_to_delete << 'ACB0C9CB2058111F00A7F5E0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */; };'
-
-      lines_to_delete << 'AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleToolboxForMac.framework; path = Frameworks/GoogleToolboxForMac.framework; sourceTree = "<group>"; };'
-      lines_to_delete << 'AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };'
-      lines_to_delete << 'AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };'
-      lines_to_delete << 'AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };'
-      lines_to_delete << 'AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };'
-      lines_to_delete << 'AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMessaging.framework; path = Frameworks/FirebaseMessaging.framework; sourceTree = "<group>"; };'
-      lines_to_delete << 'AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseNanoPB.framework; path = Frameworks/FirebaseNanoPB.framework; sourceTree = "<group>"; };'
-      lines_to_delete << 'AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Frameworks/Protobuf.framework; sourceTree = "<group>"; };'
-      lines_to_delete << 'AC1F5D5E20615B6C00B818B8 /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Frameworks/nanopb.framework; sourceTree = "<group>"; };'
-      lines_to_delete << 'AC1F5D6820615B8600B818B8 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };'
-      lines_to_delete << 'ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };'
-
-      lines_to_delete << 'AC1F5D6920615B8E00B818B8 /* StoreKit.framework */,'
-      lines_to_delete << 'AC1F5D6020615B6C00B818B8 /* FirebaseAnalytics.framework */,'
-      lines_to_delete << 'AC1F5D6120615B6C00B818B8 /* FirebaseCore.framework */,'
-      lines_to_delete << 'AC1F5D6220615B6C00B818B8 /* FirebaseCoreDiagnostics.framework */,'
-      lines_to_delete << 'AC1F5D6320615B6C00B818B8 /* FirebaseInstanceID.framework */,'
-      lines_to_delete << 'AC1F5D6420615B6C00B818B8 /* FirebaseMessaging.framework */,'
-      lines_to_delete << 'AC1F5D6520615B6C00B818B8 /* FirebaseNanoPB.framework */,'
-      lines_to_delete << 'AC1F5D5F20615B6C00B818B8 /* GoogleToolboxForMac.framework */,'
-      lines_to_delete << 'AC1F5D6720615B6C00B818B8 /* nanopb.framework */,'
-      lines_to_delete << 'AC1F5D6620615B6C00B818B8 /* Protobuf.framework */,'
-
-      lines_to_delete << 'ACB0C9CA2058111F00A7F5E0 /* GoogleService-Info.plist */,'
-
-      lines_to_delete << 'AC1F5D6820615B8600B818B8 /* StoreKit.framework */,'
-      lines_to_delete << 'AC1F5D5720615B6B00B818B8 /* FirebaseAnalytics.framework */,'
-      lines_to_delete << 'AC1F5D5820615B6B00B818B8 /* FirebaseCore.framework */,'
-      lines_to_delete << 'AC1F5D5920615B6B00B818B8 /* FirebaseCoreDiagnostics.framework */,'
-      lines_to_delete << 'AC1F5D5A20615B6B00B818B8 /* FirebaseInstanceID.framework */,'
-      lines_to_delete << 'AC1F5D5B20615B6C00B818B8 /* FirebaseMessaging.framework */,'
-      lines_to_delete << 'AC1F5D5C20615B6C00B818B8 /* FirebaseNanoPB.framework */,'
-      lines_to_delete << 'AC1F5D5620615B6B00B818B8 /* GoogleToolboxForMac.framework */,'
-      lines_to_delete << 'AC1F5D5E20615B6C00B818B8 /* nanopb.framework */,'
-      lines_to_delete << 'AC1F5D5D20615B6C00B818B8 /* Protobuf.framework */,'
-
-      lines_to_delete << 'ACB0C9CB2058111F00A7F5E0 /* GoogleService-Info.plist in Resources */,'
-
-      remove_lines_from_xcode_project(lines_to_delete)
     end
 
     #keychain access
@@ -1516,10 +1633,7 @@ namespace "build" do
 
         Rake::Task['config:iphone'].invoke
 
-        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
-
-        iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
+        iphone_project = generate_correct_xcode_project_path
 
         if !File.exist?(iphone_project)
 
@@ -1857,10 +1971,7 @@ namespace "build" do
 
         Rake::Task['config:iphone'].invoke
 
-        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
-
-        iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
+        iphone_project = generate_correct_xcode_project_filename
 
         if !File.exist?(iphone_project)
 
@@ -1900,10 +2011,7 @@ namespace "build" do
 
         Rake::Task['config:iphone'].invoke
 
-        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
-
-        iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
+        iphone_project = generate_correct_xcode_project_path
 
         if !File.exist?(iphone_project)
 
@@ -1947,10 +2055,7 @@ namespace "build" do
         #puts 'targetdir = '+$targetdir.to_s
         #puts 'bindir = '+$bindir.to_s
 
-        appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-        appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
-
-        iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
+        iphone_project = generate_correct_xcode_project_path
 
         if !File.exist?(iphone_project)
 
@@ -2825,10 +2930,10 @@ namespace "build" do
 
       Rake::Task['config:iphone'].invoke
 
-      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+      appname = generate_appname
+      appname_fixed = generate_appname_fixed
 
-      iphone_project = File.join($app_path, "project","iphone","#{appname_fixed}.xcodeproj")
+      iphone_project = generate_correct_xcode_project_path
 
       xcode_project_checker = GeneralTimeChecker.new
       xcode_project_checker.init($startdir, $app_path, "xcode_project")
@@ -2860,6 +2965,7 @@ namespace "build" do
             end
 
             update_xcode_project_files_by_capabilities
+            update_xcode_project_files_by_extensions
 
         else
             puts "$ build.yml not changed after last XCode project generation !"
@@ -2893,8 +2999,8 @@ namespace "build" do
     task :make_xcode_project => ["config:iphone"] do
 
       print_timestamp('build:iphone:make_xcode_project START')
-      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+      appname = generate_appname
+      appname_fixed = generate_appname_fixed
 
       chdir $app_path
 
@@ -2934,6 +3040,7 @@ namespace "build" do
       rm_rf File.join('project','iphone','toremovef')
 
       update_xcode_project_files_by_capabilities
+      update_xcode_project_files_by_extensions
 
       copy_generated_sources_and_binaries
 
@@ -2943,9 +3050,6 @@ namespace "build" do
 
     #[build:iphone:rhodes]
     task :rhodes => "config:iphone" do
-
-       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-       appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
 
        Rake::Task['build:iphone:setup_xcode_project'].invoke
 
@@ -2957,8 +3061,8 @@ namespace "build" do
 #    desc "Build rhodes"
     task :rhodes_old => ["config:iphone", "build:iphone:rhobundle"] do
       print_timestamp('build:iphone:rhodes START')
-      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+      appname = generate_appname
+      appname_fixed = generate_appname_fixed
       appname_project = appname_fixed.slice(0, 1).capitalize + appname_fixed.slice(1..-1) + ".xcodeproj"
 
       #saved_name = ''
@@ -3646,8 +3750,8 @@ namespace "clean" do
       iphone_build_folder = File.join(iphone_project_folder,"build")
       rm_rf iphone_build_folder if File.exists? iphone_build_folder
 
-      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+      appname = generate_appname
+      appname_fixed = generate_appname_fixed
       appname_project = appname_fixed.slice(0, 1).capitalize + appname_fixed.slice(1..-1) + ".xcodeproj"
 
 
