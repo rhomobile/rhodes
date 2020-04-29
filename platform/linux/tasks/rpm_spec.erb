@@ -1,6 +1,6 @@
 %define appname <%= $appname %>
 
-Summary:    Fast and secure web browser
+Summary:    Rhodes based application
 Name:       %{appname}
 Version:    <%= $version_app %>
 Release:    1
@@ -28,5 +28,4 @@ mkdir %{buildroot}<%end%>
 cp -rfa * %{buildroot}
 
 %files
-/*
 %attr(0777, root, root) /opt/%{appname}
