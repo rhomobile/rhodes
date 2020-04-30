@@ -4,7 +4,7 @@ Summary:    Rhodes based application
 Name:       %{appname}
 Version:    <%= $version_app %>
 Release:    1
-Group:      Applications/Internet
+Group:      Networking/Other
 License:    Proprietary  
 Source0:	<%= $appname %>.tar
 Vendor:     <%= $vendor %>
@@ -15,18 +15,19 @@ Autoreq: 0
 Requires: <%= dep %><% end %>
 
 %description
-Rhodes application.
+<%= $appname %>.<%= $version_app %>-1.<%= $architecture %> - Rhodes based application.
 
 %prep
 %setup -q 
 
 %build
 
-%install
-<% if $create_buildroot %>
+%install<% if $create_buildroot %>
 mkdir %{buildroot}<%end%>
 mv * %{buildroot}
 
 %files
-/*
-%attr(0777, root, root) /opt/%{appname}
+<%= $target_dir %>/%{appname}
+/usr/share/applications/%{appname}.desktop
+#%attr(0777, root, root) <%= $target_dir %>/%{appname}
+#%attr(0755, root, root) /usr/share/applications/%{appname}.desktop
