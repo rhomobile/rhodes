@@ -324,3 +324,5 @@ platform/shared/qt/**/rhosimulator_plugin_import.cpp
 res/build-tools/maven/m2
 platform/win32/RhoSimulator/*
 platform/shared/qt/rhodes/resources/rho.png
+
+lib/extensions/fcm-push/ext/iphone/Frameworks/*

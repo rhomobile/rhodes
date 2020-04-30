@@ -1261,6 +1261,19 @@ namespace "config" do
         end
     end
 
+    # unpack Google frameworks zip
+    if RUBY_PLATFORM =~ /darwin/
+        currentdir = Dir.pwd()
+        if File.exists?(File.dirname(__FILE__) + "/../../../lib/extensions/fcm-push/ext/iphone/Frameworks/Frameworks.zip")
+            chdir (File.dirname(__FILE__) + "/../../../lib/extensions/fcm-push/ext/iphone/Frameworks/")
+            system("unzip Frameworks.zip")
+            rm_rf "Frameworks.zip"
+        end
+        Dir.chdir currentdir
+    end
+
+
+
     $devroot = '/Applications/Xcode.app/Contents/Developer' if $devroot.nil?
     $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_51') if $iphonesim.nil?
 
