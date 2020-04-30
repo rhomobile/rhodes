@@ -362,6 +362,59 @@ public class SSLImpl {
         }
     }
 
+    public static SSLSocketFactory getSecureClientFactory() throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException
+    {
+        SSLContext context = SSLContext.getInstance("TLS");
+        
+        Logger.I(TAG, "Creating TrustManager for system certificates");        
+        TrustManagerFactory systemTmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        systemTmf.init((KeyStore)null);        
+        X509TrustManager systemTrustManager = (X509TrustManager)systemTmf.getTrustManagers()[0];
+
+        KeyStore keystore = KeyStore.getInstance( KeyStore.getDefaultType() );
+        keystore.load(null);
+
+        if(local_server_cert != null)
+        {
+            keystore.setCertificateEntry("cert-alias-local", local_server_cert);
+        }
+
+        Logger.I(TAG, "Creating TrustManager for custom certificates");        
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(keystore);        
+        X509TrustManager customTrustManager = (X509TrustManager)tmf.getTrustManagers()[0];
+                
+        KeyManagerFactory kmf = null;
+        KeyStore clientKeystore = null;
+
+        if(client_private_key != null && client_cert_chain != null)
+        {
+            if (clientKeystore == null)
+            {
+                clientKeystore = KeyStore.getInstance("pkcs12");
+                clientKeystore.load(null);
+            }
+                
+            KeyStore.PrivateKeyEntry pkEntry = new KeyStore.PrivateKeyEntry(client_private_key, client_cert_chain);
+            clientKeystore.setEntry("taup12", pkEntry, null);
+        }
+
+        if (clientKeystore != null) {
+            kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            kmf.init(clientKeystore, null);
+        }
+       
+        context.init( 
+        		(kmf==null)?null:kmf.getKeyManagers(), 
+        		new TrustManager[] { new MySecureTrustManager( systemTrustManager, customTrustManager ) }, 
+        		new SecureRandom()
+        );
+        
+        Logger.I(TAG, "Secure SSL factory initialization completed");
+        
+        return (SSLSocketFactory)context.getSocketFactory();
+    }
+
     private static SSLSocketFactory getSecureFactory() throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException {
         Logger.I(TAG, "Creating secure SSL factory");
         
