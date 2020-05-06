@@ -74,7 +74,6 @@ namespace "config" do
 
 	task :sys_recognize do
 		$architecture = Jake.run("uname", ["-m"])
-        $target_dir = "/opt"
 		name_out = Jake.run('hostnamectl', [])
 		if name_out.downcase().include? "ubuntu"
 			$ubuntu = true
@@ -92,7 +91,6 @@ namespace "config" do
 		elsif name_out.downcase().include? ":rosa:"
 			$rosalinux = true
 			puts "Current system is Rosa Linux"
-            $target_dir = "/usr/share"
 		else
 			puts "Fail! Current system has not been recognized while cunfiguration."
 			exit 1
@@ -283,10 +281,10 @@ namespace "device" do
 	namespace "linux" do
 		namespace "production" do
 			def createFolders()
-				path = File.join($target_path, $target_dir, "#{$appname}")
+				opt_path = File.join($target_path, "opt", "#{$appname}")
 
-				if not File.directory?(path)
-					FileUtils.mkdir_p path
+				if not File.directory?(opt_path)
+					FileUtils.mkdir_p opt_path
 				end
 
 				icon = File.join($app_path, "icon/icon.ico")
@@ -294,9 +292,9 @@ namespace "device" do
 					icon = File.join($startdir, "platform" , "wm", "rhodes", "resources", "icon.ico")
 				end
 
-				cp icon, path
-				FileUtils.mv(File.join($target_path, "rho"), path, :verbose => true, :force => true)
-				FileUtils.mv(File.join($target_path, $appname), path, :verbose => true, :force => true)
+				cp icon, opt_path
+				FileUtils.mv(File.join($target_path, "rho"), opt_path, :verbose => true, :force => true)
+				FileUtils.mv(File.join($target_path, $appname), opt_path, :verbose => true, :force => true)
 
 				desktop_path = File.join($target_path, "usr", "share", "applications")
 				if not File.directory?(desktop_path)
@@ -309,14 +307,15 @@ namespace "device" do
 					file.write("Version=#{$version_app}\n")
 					file.write("Name=#{$appname}\n")
 					file.write("GenericName=\"Web Browser\"\n")
-					file.write("Exec=#{$target_dir}/#{$appname}/#{$appname}\n")
-					file.write("Icon=#{$target_dir}/#{$appname}/icon.ico\n")
+					#file.write("Exec=env LD_LIBRARY_PATH=\"/opt/#{$appname}/app_libs\" /opt/#{$appname}/#{$appname}\n")
+					file.write("Exec=/opt/#{$appname}/#{$appname}\n")
+					file.write("Icon=/opt/#{$appname}/icon.ico\n")
 				}
 			end
 
 			def addDepLibs()
 				ldd_out = Jake.run("ldd", [File.join($target_path, $appname)])
-				app_libs = File.join($target_path, $target_dir, $appname, "app_libs")
+				app_libs = File.join($target_path, "opt", "#{$appname}", "app_libs")
 				if not File.directory?(app_libs)
 				  FileUtils.mkdir_p app_libs
 				end
@@ -382,7 +381,7 @@ namespace "device" do
 				erb = ERB.new control_template
 				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
 
-				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" --define '_build_id_links none' --define 'debug_package %{nil}' -bb --withoutcheck rpm.spec", $buildroot)
+				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" --define '_build_id_links none' --define 'debug_package %{nil}' -bb rpm.spec", $buildroot)
 
 				Dir.glob(File.join($buildroot, "**", "*.rpm")).each do | filename |
 					FileUtils.mv(filename, File.join($linuxroot, File.basename(filename)))
@@ -412,8 +411,8 @@ namespace "device" do
 			elsif $rosalinux
 				#$create_buildroot = true
 				$architecture = "noarch"
-                $deps = []
-				#$deps = ["libQt5WebEngineCore", "libQt5WebEngineWidgets" , "libQt5WebEngine" , "libQt5Core", "libQt5Gui", "libgmp"]
+				$deps = ["lib64qt5webenginecore", "lib64qt5webenginewidgets" , "lib64qt5webengine" , "lib64qt5-core5", "lib64qt5gui5", 
+					"lib64gmp10"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
 				puts "Fail! The current system has not been recognized whild production."
