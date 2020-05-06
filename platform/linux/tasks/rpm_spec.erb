@@ -15,7 +15,7 @@ Autoreq: 0
 Requires: <%= dep %><% end %>
 
 %description
-Rhodes application.
+Rhodes based application.
 
 %prep
 %setup -q 
@@ -23,8 +23,7 @@ Rhodes application.
 %build
 
 %install
-<% if $create_buildroot %>
-mkdir %{buildroot}<%end%>
+<% if $create_buildroot %>mkdir %{buildroot}<%end%>
 mv * %{buildroot}
 
 %files

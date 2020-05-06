@@ -307,7 +307,6 @@ namespace "device" do
 					file.write("Version=#{$version_app}\n")
 					file.write("Name=#{$appname}\n")
 					file.write("GenericName=\"Web Browser\"\n")
-					#file.write("Exec=env LD_LIBRARY_PATH=\"/opt/#{$appname}/app_libs\" /opt/#{$appname}/#{$appname}\n")
 					file.write("Exec=/opt/#{$appname}/#{$appname}\n")
 					file.write("Icon=/opt/#{$appname}/icon.ico\n")
 				}
@@ -409,6 +408,10 @@ namespace "device" do
 				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $rosalinux
+				Rake::Task['"build:linux"'].invoke
+				createFolders()
+				puts "Binary file cretated, but creating RPM package is not supported on Rosa Linux because of specific problems with rpm package."
+				exit 0
 				#$create_buildroot = true
 				$architecture = "noarch"
 				$deps = ["lib64qt5webenginecore", "lib64qt5webenginewidgets" , "lib64qt5webengine" , "lib64qt5-core5", "lib64qt5gui5", 
@@ -504,7 +507,6 @@ namespace "clean" do
 
 	task :linux => ["config:linux", "clean:common"]do
 		rm_rf $tmpdir
-		#rm_rf $targetdir
 		rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
 		rm_rf File.join($startdir, 'platform/linux/bin')
 		rm_rf $target_path if File.exists? $target_path
