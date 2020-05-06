@@ -391,7 +391,7 @@ namespace "device" do
 			end
 		end
 
-		task :production => ["config:sys_recognize"] do
+		task :production => ["config:sys_recognize", "clean:linux"] do
 			if $ubuntu
 				$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
 				Rake::Task['device:linux:production:deb'].invoke
@@ -421,7 +421,7 @@ namespace "device" do
 				Jake.run3("tar -cvf #{$bin_file} #{$appname}-#{$version_app}", target_folder)
 				FileUtils.rm_r File.join(target_folder, "#{$appname}-#{$version_app}") if File.exists? File.join(target_folder, "#{$appname}-#{$version_app}")
 				FileUtils.mv($bin_archive, File.join(target_folder, "#{$appname}.tar"))
-				
+
 				puts "A binary file created and compressed in a tar archive, but creating the RPM package is not supported on Rosa Linux."
 				exit 0
 				#$create_buildroot = true
@@ -521,8 +521,11 @@ namespace "clean" do
 		rm_rf $tmpdir
 		rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
 		rm_rf File.join($startdir, 'platform/linux/bin')
-		rm_rf $target_path if File.exists? $target_path
-		rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
-		rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+
+		common_target_path = File.join($app_path, "bin")
+		rm_rf common_target_path if File.exists? common_target_path
+
+		#rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
+		#rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
 	end
 end
