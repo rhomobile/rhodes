@@ -408,7 +408,7 @@ namespace "device" do
 				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $rosalinux
-				Rake::Task['"build:linux"'].invoke
+				Rake::Task["build:linux"].invoke
 				createFolders()
 				puts "Binary file cretated, but creating RPM package is not supported on Rosa Linux because of specific problems with rpm package."
 				exit 0
