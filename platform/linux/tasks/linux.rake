@@ -419,8 +419,10 @@ namespace "device" do
 
 				FileUtils.mv($linuxroot, File.join(target_folder, "#{$appname}-#{$version_app}"))
 				Jake.run3("tar -cvf #{$bin_file} #{$appname}-#{$version_app}", target_folder)
-
-				puts "Binary file cretated, but creating RPM package is not supported on Rosa Linux because of specific problems with rpm package."
+				FileUtils.rm_r File.join(target_folder, "#{$appname}-#{$version_app}") if File.exists? File.join(target_folder, "#{$appname}-#{$version_app}")
+				FileUtils.mv($bin_archive, File.join(target_folder, "#{$appname}.tar"))
+				
+				puts "A binary file created and compressed in a tar archive, but creating the RPM package is not supported on Rosa Linux."
 				exit 0
 				#$create_buildroot = true
 				$architecture = "noarch"
