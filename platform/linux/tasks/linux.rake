@@ -410,6 +410,16 @@ namespace "device" do
 			elsif $rosalinux
 				Rake::Task["build:linux"].invoke
 				createFolders()
+
+				target_folder = File.join($app_path, "bin", "target")
+				$linuxroot = File.join(target_folder, "linux")
+				$bin_file = "linux.tar"
+				$bin_archive = File.join(target_folder, $bin_file)
+				rm $bin_archive if File.exists? $bin_archive
+
+				FileUtils.mv($linuxroot, File.join(target_folder, "#{$appname}-#{$version_app}"))
+				Jake.run3("tar -cvf #{$bin_file} #{$appname}-#{$version_app}", target_folder)
+
 				puts "Binary file cretated, but creating RPM package is not supported on Rosa Linux because of specific problems with rpm package."
 				exit 0
 				#$create_buildroot = true
