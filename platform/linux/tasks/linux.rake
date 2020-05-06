@@ -263,7 +263,7 @@ namespace "build" do
 			puts "Copying to dir" + $target_path
 
 			if not File.directory?($target_path)
-				Dir.mkdir($target_path)
+				FileUtils.mkdir_p($target_path)
 			end
 
 			cp File.join($startdir, "platform/linux/bin/RhoSimulator/RhoSimulator"), target_app_name
@@ -522,10 +522,11 @@ namespace "clean" do
 		rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
 		rm_rf File.join($startdir, 'platform/linux/bin')
 
-		common_target_path = File.join($app_path, "bin")
-		rm_rf common_target_path if File.exists? common_target_path
+		#common_target_path = File.join($app_path, "bin")
+		#rm_rf common_target_path if File.exists? common_target_path
 
-		#rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
-		#rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+		rm_rf File.join($app_path, "bin", "tmp") if File.exists? File.join($app_path, "bin", "tmp")
+		rm_rf File.join($app_path, "bin", "RhoBundle") if File.exists? File.join($app_path, "bin", "RhoBundle")
+        rm_rf File.join($app_path, "bin", "target") if File.exists? File.join($app_path, "bin", "target")
 	end
 end
