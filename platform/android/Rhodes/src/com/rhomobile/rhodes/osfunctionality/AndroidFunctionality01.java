@@ -36,6 +36,9 @@ import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.ComponentName;
 import android.app.Notification.Builder;
 
 // Android 1.0
@@ -91,4 +94,9 @@ class AndroidFunctionality01 implements AndroidFunctionality {
     public Builder getNotificationBuilder( Context ctx, String channelID, String channelName ) {
         throw new UnsupportedOperationException();
     }
+
+	@Override
+	public ComponentName startForegroundService(Activity activity, Intent service) {
+		return activity.startService(service);
+	}
 }
