@@ -73,6 +73,7 @@ namespace "config" do
 	end
 
 	task :sys_recognize do
+		$architecture = Jake.run("uname", ["-m"])
 		name_out = Jake.run('hostnamectl', [])
 		if name_out.downcase().include? "ubuntu"
 			$ubuntu = true
@@ -87,6 +88,9 @@ namespace "config" do
 			$redos = true
 			puts "Current system is Red OS Linux"
 			$qmake_addition_args = '"LIBS += -L/usr/lib64/libglvnd/ -lGL"'
+		elsif name_out.downcase().include? ":rosa:"
+			$rosalinux = true
+			puts "Current system is Rosa Linux"
 		else
 			puts "Fail! Current system has not been recognized while cunfiguration."
 			exit 1
@@ -259,7 +263,7 @@ namespace "build" do
 			puts "Copying to dir" + $target_path
 
 			if not File.directory?($target_path)
-				Dir.mkdir($target_path)
+				FileUtils.mkdir_p($target_path)
 			end
 
 			cp File.join($startdir, "platform/linux/bin/RhoSimulator/RhoSimulator"), target_app_name
@@ -304,7 +308,6 @@ namespace "device" do
 					file.write("Version=#{$version_app}\n")
 					file.write("Name=#{$appname}\n")
 					file.write("GenericName=\"Web Browser\"\n")
-					#file.write("Exec=env LD_LIBRARY_PATH=\"/opt/#{$appname}/app_libs\" /opt/#{$appname}/#{$appname}\n")
 					file.write("Exec=/opt/#{$appname}/#{$appname}\n")
 					file.write("Icon=/opt/#{$appname}/icon.ico\n")
 				}
@@ -374,8 +377,6 @@ namespace "device" do
 				FileUtils.mv($bin_archive, File.join($buildroot, "SOURCES", "#{$appname}.tar"))
 				$bin_archive = File.join($buildroot, "SOURCES", "#{$appname}.tar")
 
-				$architecture = Jake.run("uname", ["-m"])
-
 				control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "rpm_spec.erb")
 				erb = ERB.new control_template
 				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
@@ -391,7 +392,7 @@ namespace "device" do
 			end
 		end
 
-		task :production => ["config:sys_recognize"] do
+		task :production => ["config:sys_recognize", "clean:linux"] do
 			if $ubuntu
 				$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
 				Rake::Task['device:linux:production:deb'].invoke
@@ -406,6 +407,28 @@ namespace "device" do
 			elsif $redos
 				$deps = ["qt5", "qt5-qtbase", "qt5-qtbase-common", "qt5-qtbase-gui", "qt5-qtwebengine", 
 				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
+				Rake::Task['device:linux:production:rpm'].invoke
+			elsif $rosalinux
+				Rake::Task["build:linux"].invoke
+				createFolders()
+
+				target_folder = File.join($app_path, "bin", "target")
+				$linuxroot = File.join(target_folder, "linux")
+				$bin_file = "linux.tar"
+				$bin_archive = File.join(target_folder, $bin_file)
+				rm $bin_archive if File.exists? $bin_archive
+
+				FileUtils.mv($linuxroot, File.join(target_folder, "#{$appname}-#{$version_app}"))
+				Jake.run3("tar -cvf #{$bin_file} #{$appname}-#{$version_app}", target_folder)
+				FileUtils.rm_r File.join(target_folder, "#{$appname}-#{$version_app}") if File.exists? File.join(target_folder, "#{$appname}-#{$version_app}")
+				FileUtils.mv($bin_archive, File.join(target_folder, "#{$appname}.tar"))
+
+				puts "A binary file created and compressed in a tar archive, but creating the RPM package is not supported on Rosa Linux."
+				exit 0
+				#$create_buildroot = true
+				$architecture = "noarch"
+				$deps = ["lib64qt5webenginecore", "lib64qt5webenginewidgets" , "lib64qt5webengine" , "lib64qt5-core5", "lib64qt5gui5", 
+					"lib64gmp10"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
 				puts "Fail! The current system has not been recognized whild production."
@@ -497,11 +520,14 @@ namespace "clean" do
 
 	task :linux => ["config:linux", "clean:common"]do
 		rm_rf $tmpdir
-		#rm_rf $targetdir
 		rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
 		rm_rf File.join($startdir, 'platform/linux/bin')
-		rm_rf $target_path if File.exists? $target_path
-		rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
-		rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+
+		#common_target_path = File.join($app_path, "bin")
+		#rm_rf common_target_path if File.exists? common_target_path
+
+		rm_rf File.join($app_path, "bin", "tmp") if File.exists? File.join($app_path, "bin", "tmp")
+		rm_rf File.join($app_path, "bin", "RhoBundle") if File.exists? File.join($app_path, "bin", "RhoBundle")
+        rm_rf File.join($app_path, "bin", "target") if File.exists? File.join($app_path, "bin", "target")
 	end
 end

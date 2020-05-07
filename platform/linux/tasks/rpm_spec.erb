@@ -1,6 +1,6 @@
 %define appname <%= $appname %>
 
-Summary:    Fast and secure web browser
+Summary:    Rhodes based application
 Name:       %{appname}
 Version:    <%= $version_app %>
 Release:    1
@@ -15,7 +15,7 @@ Autoreq: 0
 Requires: <%= dep %><% end %>
 
 %description
-Rhodes application.
+Rhodes based application.
 
 %prep
 %setup -q 
@@ -23,9 +23,8 @@ Rhodes application.
 %build
 
 %install
-<% if $create_buildroot %>
-mkdir %{buildroot}<%end%>
-cp -rfa * %{buildroot}
+<% if $create_buildroot %>mkdir %{buildroot}<%end%>
+mv * %{buildroot}
 
 %files
 /*
