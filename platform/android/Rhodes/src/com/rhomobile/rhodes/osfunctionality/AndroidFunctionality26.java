@@ -33,7 +33,11 @@ import android.app.NotificationManager;
 import com.rhomobile.rhodes.Logger;
 import android.os.Build.VERSION;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.ComponentName;
 
+//Android 8.0
 @RequiresApi(26)
 class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFunctionality {
 
@@ -43,7 +47,7 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
 
     @Override
     public Builder getNotificationBuilder( Context ctx, String channelID, String channelName ) {
-
+        Logger.D( TAG, "getNotificationBuilder() START" );
         Builder builder = null;
 
         try { 
@@ -61,10 +65,11 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
             Object channel = getNCMethod.invoke(notificationManager,channelID);
 
             if (channel == null) {
+                Logger.D( TAG, "getNotificationBuilder() chanell==null" );
                 channel = ncCtor.newInstance( channelID, channelName, 4 );
 
-                enableVibrationMethod.invoke(channel,true);
-                setVibrationMethod.invoke(channel,new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                //enableVibrationMethod.invoke(channel,true);
+                //setVibrationMethod.invoke(channel,new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
               
                 createNCMethod.invoke(notificationManager,channel);
             }
@@ -77,16 +82,18 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
                  (Builder)nbCtor.newInstance( ctx, channelID ) : 
                  (Builder)nbCtor.newInstance( ctx );
 
-            java.lang.reflect.Method setPriorityMethod = ncClass.getMethod("setPriority", Integer.class);
+            //java.lang.reflect.Method setPriorityMethod = ncClass.getMethod("setPriority", Integer.class);
 
             if(android.os.Build.VERSION.SDK_INT >= 26)
             {
                 java.lang.reflect.Method setShowBadgeMethod = ncClass.getMethod("setShowBadge", boolean.class);
                 setShowBadgeMethod.invoke(channel, true);
-                setPriorityMethod.invoke(builder, IMPORTANCE_HIGH);
+		java.lang.reflect.Method setPriorityMethod = ncClass.getMethod("setImportance", int.class);
+                setPriorityMethod.invoke(channel, IMPORTANCE_HIGH);
             }
             else
             {
+		java.lang.reflect.Method setPriorityMethod = Builder.class.getMethod("setPriority", int.class);
                 setPriorityMethod.invoke(builder, PRIORITY_HIGH);
                 //builder.setVisibility(android.app.Notification.VISIBILITY_PUBLIC);
             }
@@ -97,9 +104,41 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
         }
 
         if ( null == builder ) {
+            Logger.D( TAG, "getNotificationBuilder() builder == null" );
             builder = super.getNotificationBuilder( ctx, channelID, channelName );
         }
+        Logger.D( TAG, "getNotificationBuilder() FINISH" );
 
         return builder;
-    }    
+    }
+
+    @Override
+	public ComponentName startForegroundService(Activity activity, Intent service) {
+        Logger.D( TAG, "startForegroundService() START" );
+        java.lang.reflect.Method methodStartForegroundService = null;
+        ComponentName resultOfInvoke = null;
+        try {
+            methodStartForegroundService = activity.getClass().getMethod("startForegroundService", Intent.class);
+        } catch( Exception e ) {
+            Logger.E( TAG, "Error: Activity class do not has startForegroundService() method !" );
+            Logger.E( TAG, e.toString() );
+        }
+        if (methodStartForegroundService!= null) {
+            try {
+                Logger.D( TAG, "invoke startForegroundService()" );
+                resultOfInvoke = (ComponentName)methodStartForegroundService.invoke(activity, service);
+            } catch( Exception e ) {
+                Logger.E( TAG, "Error: some error during invoke startForegroundService() method !" );
+                Logger.E( TAG, e.toString() );
+            }
+        }
+        else {
+            Logger.D( TAG, "use old startService()" );
+            resultOfInvoke = activity.startService(service);
+        }
+        Logger.D( TAG, "startForegroundService() FINISH" );
+        return resultOfInvoke;
+	}
+
+
 }

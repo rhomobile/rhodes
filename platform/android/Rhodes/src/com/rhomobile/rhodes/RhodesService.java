@@ -360,9 +360,44 @@ public class RhodesService extends Service {
 		return mBinder;
 	}
 
+
+	private void innerStartForeground() {
+		Logger.D(TAG, "innerStartForeground() START");
+		if (Build.VERSION.SDK_INT >= 26) {
+            String CHANNEL_ID = "Rhodes_Service_Channel";
+            //NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+            //        "Rhomobile Platform Service",
+            //        NotificationManager.IMPORTANCE_DEFAULT);
+
+            //((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+
+            //Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+            //        .setContentTitle("")
+            //        .setContentText("").build();
+
+			Logger.D(TAG, "innerStartForeground() prepare builder PRE");
+			Builder builder = AndroidFunctionalityManager.getAndroidFunctionality().getNotificationBuilder(this, CHANNEL_ID, "Rhomobile Platform Service");
+			Logger.D(TAG, "innerStartForeground() prepare builder 1");
+			builder.setSmallIcon(R.mipmap.icon);
+			Logger.D(TAG, "innerStartForeground() prepare builder 2");
+			builder.setPriority(Notification.PRIORITY_HIGH);
+			Logger.D(TAG, "innerStartForeground() prepare builder 3");
+			builder.setOngoing(true);
+			Logger.D(TAG, "innerStartForeground() prepare builder POST");
+
+            startForeground(1, builder.build());
+        }
+		Logger.D(TAG, "innerStartForeground() FINISH");
+	}
+
 	@Override
 	public void onCreate() {
 		Logger.D(TAG, "onCreate");
+		super.onCreate();
+		// use new mechanism for foregorund service only for 9.0 and later
+		if (Build.VERSION.SDK_INT >= 28) {
+			innerStartForeground();
+		}
 
 		sInstance = this;
 
@@ -418,6 +453,8 @@ public class RhodesService extends Service {
 	}
 
 	private void initForegroundServiceApi() {
+		Logger.D(TAG, "initForegroundServiceApi() START");
+
 		try {
 			mStartForeground = getClass().getMethod("startForeground", mStartForegroundSignature);
 			mStopForeground = getClass().getMethod("stopForeground", mStopForegroundSignature);
@@ -427,7 +464,10 @@ public class RhodesService extends Service {
 			mStartForeground = null;
 			mStopForeground = null;
 			mSetForeground = null;
+			Logger.E(TAG, "Can't get startForeground() methods !");
+			Logger.E(TAG, e);
 		}
+		Logger.D(TAG, "initForegroundServiceApi() FINISH");
 	}
 
 	@Override
@@ -454,6 +494,10 @@ public class RhodesService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Logger.D(TAG, "onStartCommand");
+		// use new mechanism for foregorund service only for 9.0 and later
+		if (Build.VERSION.SDK_INT >= 28) {
+			innerStartForeground();
+		}
 		try {
 			handleCommand(intent, startId);
 		}
