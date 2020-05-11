@@ -24,6 +24,30 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+
+require File.join(pwd, 'lib/build/jake.rb')
+require 'logger'
+
+$logger = Logger.new(STDOUT)
+if Rake.application.options.trace
+  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "DEBUG"
+  $logger.level = Logger::DEBUG
+else
+  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "INFO"
+  $logger.level = Logger::INFO
+end
+
+
+$logger.formatter = proc do |severity,datetime,progname,msg|
+  "[#{severity}]\t#{msg}\n"
+end
+
+Jake.set_logger( $logger )
+
+task :gem do
+  load 'lib/build/buildgem.rb'
+end
+
 require_relative 'lib/build/rho_packages.rb'
 require File.join(File.dirname(__FILE__), 'lib/build/required_time.rb')
 
@@ -47,7 +71,6 @@ require 'pathname'
 require 'rexml/document'
 require 'securerandom'
 require 'uri'
-require 'logger'
 require 'rake'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
@@ -82,8 +105,6 @@ $push_type = -1
 
 chdir File.dirname(__FILE__), :verbose => (Rake.application.options.trace == true)
 
-
-require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/RhoLogger.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 require File.join(pwd, 'lib/build/GeneralTimeChecker.rb')
@@ -116,24 +137,7 @@ module Rake
 end #module Rake
 
 
-$logger = Logger.new(STDOUT)
-if Rake.application.options.trace
-  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "DEBUG"
-  $logger.level = Logger::DEBUG
-else
-  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "INFO"
-  $logger.level = Logger::INFO
-end
-
-
 Rake::FileUtilsExt.verbose(Rake.application.options.trace == true)
-
-
-$logger.formatter = proc do |severity,datetime,progname,msg|
-  "[#{severity}]\t#{msg}\n"
-end
-
-Jake.set_logger( $logger )
 
 
 def print_timestamp(msg = 'just for info')
@@ -3867,29 +3871,6 @@ namespace "buildall" do
 
     end
   end
-end
-
-task :gem do
-  puts "Removing old gem"
-  rm_rf Dir.glob("rhodes*.gem")
-  puts "Copying Rakefile"
-  cp "Rakefile", "rakefile.rb"
-
-  puts "Building manifest"
-  out = ""
-  Dir.glob("**/*") do |fname|
-    # TODO: create exclusion list
-    next unless File.file? fname
-    next if fname =~ /rhoconnect-client/
-    next if fname =~ /^spec\/api_generator_spec/
-    next if fname =~ /ruby-standalone/
-
-    out << fname + "\n"
-  end
-  File.open("Manifest.txt",'w') {|f| f.write(out)}
-
-  puts "Building gem"
-  Jake.run3('gem build rhodes.gemspec')
 end
 
 namespace "rhomobile-debug" do

@@ -109,10 +109,10 @@ build: off
 install:
   - set PATH=C:\Ruby23\bin;%PATH%
   - set RAKEOPT=-rdevkit
-  - gem install rest-client --no-document -f
-  - gem install listen --no-document -f
-  - gem install zip --no-document -f
-  - gem install net-scp --no-document -f
+#  - gem install rest-client --no-document -f
+#  - gem install listen --no-document -f
+#  - gem install zip --no-document -f
+#  - gem install net-scp --no-document -f
 #  - gem install bundler --quiet --no-ri --no-rdoc -f
 #  - bundler --version
   
@@ -121,7 +121,7 @@ before_test:
   - gem -v
   - bundle -v
   - cp rhobuild.yml.example rhobuild.yml
-  - rake gem
+  - ruby C:\TAU\rhodes\lib\build\buildgem.rb
   - set /P BUILD_VERSION=<version
   - gem install rhodes-%BUILD_VERSION%.gem --no-document -f
 
