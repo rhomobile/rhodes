@@ -1,7 +1,5 @@
 require_relative 'hostplatform'
 
-USE_TRACES = Rake.application.options.trace
-
 class NDKWrapper
 
   @root_path = nil
@@ -116,15 +114,15 @@ class NDKWrapper
     max_ndk_api_level = 19 #we use some functions missing from API 20 and forth
 
     variants.each do |variant|
-      puts "Check NDK folder: #{variant}" if USE_TRACES
+      puts "Check NDK folder: #{variant}" if Rake.application.options.trace
       Dir.glob(File.join(@root_path, variant, "*")).each do |platform|
         sys_root = File.join platform, "arch-arm"
-        puts "Checking #{sys_root} for NDK nsysroot"  if USE_TRACES
+        puts "Checking #{sys_root} for NDK nsysroot"  if Rake.application.options.trace
         next unless File.directory? sys_root
         next unless platform =~ /android-([0-9]+)$/
         api_level = $1.to_i 
         api_levels.push api_level if (api_level<=max_ndk_api_level)
-        puts "NDK API level: #{api_level}" if USE_TRACES
+        puts "NDK API level: #{api_level}" if Rake.application.options.trace
       end
     end
     
@@ -132,7 +130,7 @@ class NDKWrapper
 
     last_api_level = 0
     api_levels.each do |cur_api_level|
-      puts "Checking is API level enough: #{cur_api_level}"  if USE_TRACES
+      puts "Checking is API level enough: #{cur_api_level}"  if Rake.application.options.trace
       break if cur_api_level > max_ndk_api_level
       last_api_level = cur_api_level
     end
@@ -207,7 +205,7 @@ class NDKWrapper
     end
 
     ndkhostvariants.each do |ndkhost|
-      puts "Checking toolchain for host: #{ndkhost}" if USE_TRACES
+      puts "Checking toolchain for host: #{ndkhost}" if Rake.application.options.trace
 
       toolchainversions.each do |version|
         variants = []
@@ -221,7 +219,7 @@ class NDKWrapper
 
 
         variants.each do |variant|
-          puts "Check toolchain path: #{variant}" if USE_TRACES    
+          puts "Check toolchain path: #{variant}" if Rake.application.options.trace    
           next unless File.directory? variant
 
           ndktools = variant
@@ -231,7 +229,7 @@ class NDKWrapper
           ndkabi = 'i686-linux-android' if ndkabi == 'x86'
           ndkabi = 'x86_64-linux-android' if ndkabi == 'x86_64'
 
-          puts "Toolchain is detected: #{ndktools}, abi: #{ndkabi}, version: #{@gccver}" if USE_TRACES
+          puts "Toolchain is detected: #{ndktools}, abi: #{ndkabi}, version: #{@gccver}" if Rake.application.options.trace
 
           tools = {}
           
@@ -272,7 +270,7 @@ class NDKWrapper
         toolpath = File.join(ndktoolsdir,'bin',"clang++#{HostPlatform.exe_ext}")
       end
     end
-    puts "Checking tool path #{toolpath} for tool #{tool}" if USE_TRACES
+    puts "Checking tool path #{toolpath} for tool #{tool}" if Rake.application.options.trace
     
     if File.file? toolpath
       return toolpath

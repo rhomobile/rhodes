@@ -191,8 +191,8 @@ class MavenDepsExtractor
     argv << 'dependency:copy-dependencies'
 #    argv << '-o' #work offline
     argv << "-Dmaven.repo.local=#{File.join(@m2home,'m2')}"
-    argv << '-e' if USE_TRACES
-    argv << '-X' if USE_TRACES
+    argv << '-e' if Rake.application.options.trace
+    argv << '-X' if Rake.application.options.trace
   
     argv.join(' ')
   end
@@ -232,8 +232,8 @@ class MavenDepsExtractor
     argv << "-Ddest=./"
     argv << "-Dtransitive=false"
 
-    argv << '-e' if USE_TRACES
-    argv << '-X' if USE_TRACES
+    argv << '-e' if Rake.application.options.trace
+    argv << '-X' if Rake.application.options.trace
 
     argv.join(' ')
   end
