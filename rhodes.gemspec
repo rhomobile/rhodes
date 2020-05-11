@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.required_ruby_version = '>= 2.7'
   s.add_dependency('templater', '1.0.0')
-  #s.add_dependency('rake', '12.0.0')
+  s.add_dependency('rake', '12.3.3')
   s.add_dependency('uuid', '2.3.7')
   s.add_dependency('systemu', '2.6.5')
   s.add_dependency('json', '1.8.6')
@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency('naturally', '1.3.2')
   s.add_dependency('simctl', '1.5.6')
   s.add_dependency('listen', '3.0.6')
-  s.add_dependency('rubyzip', '1.2.2')
+  s.add_dependency('rubyzip', '1.3.0')
   s.add_dependency('ffi', '1.12.2')
   s.add_dependency('rdoc', '4.2.2')
   s.add_dependency('deep_merge','1.1.1')
