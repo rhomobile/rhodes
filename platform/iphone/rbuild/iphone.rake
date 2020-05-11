@@ -38,8 +38,8 @@ APPLE_PUSH = 0
 FCM_PUSH = 1
 UNKNOWN_PUSH = -1
 
-puts 'iphone.rake execute' if USE_TRACES
-puts 'ENV["RHO_BUNDLE_BUILD_LOG_FILE"] = '+ENV["RHO_BUNDLE_BUILD_LOG_FILE"].to_s if USE_TRACES
+puts 'iphone.rake execute' if Rake.application.options.trace
+puts 'ENV["RHO_BUNDLE_BUILD_LOG_FILE"] = '+ENV["RHO_BUNDLE_BUILD_LOG_FILE"].to_s if Rake.application.options.trace
 if (ENV["RHO_BUNDLE_BUILD_LOG_FILE"] != nil)
     $out_file_buf_path = ENV["RHO_BUNDLE_BUILD_LOG_FILE"]
     $out_file_buf_enable = true
