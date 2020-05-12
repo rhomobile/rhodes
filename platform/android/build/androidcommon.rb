@@ -273,7 +273,7 @@ def cc_run(command, args, chdir = nil, coloring = true, env = nil, verbose = tru
       puts '-' * 80
       puts "PWD: " + FileUtils.pwd
       puts cmdstr
-      puts out.string if verbose
+      puts out.string if verbose || ( ret && (!(ret.success?)) )
     }
     out.close
   end
