@@ -1448,9 +1448,26 @@ namespace "build" do
       print_timestamp('build:android:extensions FINISH')
     end #task :extensions
 
+    class BuildContext
+      attr_accessor :libname
+      attr_accessor :sourcelist
+      attr_accessor :srcdir
+      attr_accessor :extra_copmiler_args
+    end
+
     class LibBuilder     
 
       attr_accessor :context
+
+      @@results = {}
+
+      def self.results
+        @@results
+      end
+
+      def self.results=v
+        @@results = v
+      end
 
       def initialize
         @context = BuildContext.new
@@ -1460,27 +1477,24 @@ namespace "build" do
       def build
         srcdir = @context.srcdir
         objdir = File.join($tmpdir, @context.libname)
-        libname = File.join($app_builddir, @context.libname, "lib#{@context.libname}.a")
-        sourcelist = File.join($builddir, @context.sourcelist)
-
-        libdir = File.dirname(libname)
+        libdir = File.join($app_builddir, @context.libname)
         mkdir_p libdir unless File.directory? libdir
 
         args = [
-          "-I\"#{srcdir}\"",
-          "-I\"#{$shareddir}\""
+#          "-I\"#{srcdir}\"",
+#          "-I\"#{$shareddir}\""
         ]
 
         args.concat @context.extra_copmiler_args        
 
         ENV['SOURCEPATH'] = File.join($androidpath,'..','..')
-        ENV['SOURCELIST'] = File.join($builddir, @context.sourcelist)
+        ENV['SOURCELIST'] = @context.sourcelist
         ENV["ANDROID_NDK"] = $androidndkpath
         ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
         ENV["RHO_ROOT"] = $startdir
         ENV["RHO_INC"] = $appincdir
-        ENV["TARGETPATH"] = File.dirname(libname)
-        ENV['TARGETLIB'] = File.basename(libname)
+        ENV["TARGETPATH"] = libdir
+        ENV['TARGETLIB'] = "lib#{@context.libname}.a"
         ENV['TEMP_FILES_DIR'] = objdir
         ENV['BUILDARGS'] = args.join(' ')
 
@@ -1490,6 +1504,8 @@ namespace "build" do
           args << '--trace' if Rake.application.options.trace
           cc_run('rake', args, nil, false, nil, Rake.application.options.trace) or raise "Build failed: #{@context.libname}"
         }
+
+        LibBuilder.results[@context.libname] = libdir
       end
     end
 
@@ -1500,6 +1516,10 @@ namespace "build" do
       b.context.srcdir = File.join($shareddir, "sqlite")
       b.context.libname = 'sqlite'
       b.context.sourcelist = File.join($builddir, 'libsqlite_build.files')
+      b.context.extra_copmiler_args = [
+        "-I\"#{b.context.srcdir}\"",
+        "-I\"#{$shareddir}\""
+      ]
       b.build
 
       print_timestamp('build:android:libsqlite FINISH')
@@ -1509,14 +1529,11 @@ namespace "build" do
     task :libopenssl => "config:android" do
 
       skip = ($app_config['extensions'].index('openssl.so') || $app_config['extensions'].index('openssl'))    
-
       next if skip
 
       print_timestamp('build:android:libopenssl START')
 
-      objdir = $objdir["openssl"]
-      libname = $libname["openssl"]
-      libdir = File.dirname(libname)
+      libdir = File.join($app_builddir, 'openssl')
       mkdir_p libdir unless File.directory? libdir
 
       src_dir = "#{$shareddir}/../../lib/extensions/openssl.so/ext/android"
@@ -1527,6 +1544,8 @@ namespace "build" do
         mkdir_p File.join(libdir, realabi) unless File.directory? File.join(libdir, realabi)
         cp_r File.join(src_dir, realabi, "libopenssl.so.a"), File.join(libdir, realabi, "libopenssl.a")
       end
+
+      LibBuilder.results['openssl'] = libdir
     end
 
     task :libcurl => "config:android" do
@@ -1540,12 +1559,14 @@ namespace "build" do
       #./configure --without-ssl --without-ca-bundle --without-ca-path --without-libssh2 --without-libidn --disable-ldap --disable-ldaps --host=arm-eabi
 
       b = LibBuilder.new
-      b.context.srcdir = File.join($shareddir, "curl")
+      b.context.srcdir = File.join($shareddir, "curl", "lib")
       b.context.libname = 'curl'
       b.context.sourcelist = File.join($builddir, 'libcurl_build.files')
       b.context.extra_copmiler_args = [
         "-DHAVE_CONFIG_H",
-        "-I\"#{b.context.srcdir}/../include\""        
+        "-I\"#{b.context.srcdir}/../include\"",
+        "-I\"#{b.context.srcdir}\"",
+        "-I\"#{$shareddir}\""
       ]
       b.build
 
@@ -1567,6 +1588,7 @@ namespace "build" do
         "-I\"#{b.context.srcdir}/include\"",
         "-I\"#{b.context.srcdir}/android\"",
         "-I\"#{b.context.srcdir}/generated\"",
+        "-I\"#{b.context.srcdir}\"",
         "-I\"#{b.context.srcdir}/..\"",
         "-I\"#{b.context.srcdir}/../sqlite\""    
       ]
@@ -1583,6 +1605,7 @@ namespace "build" do
       b.context.libname = 'json'
       b.context.sourcelist = File.join($builddir, 'libjson_build.files')
       b.context.extra_copmiler_args = [   
+        "-I\"#{b.context.srcdir}\"",
         "-I\"#{b.context.srcdir}/..\""
       ]
       b.build
@@ -1613,6 +1636,7 @@ namespace "build" do
       b.context.libname = 'rhomain'
       b.context.sourcelist = File.join($builddir, 'librhomain_build.files')
       b.context.extra_copmiler_args = [   
+        "-I\"#{b.context.srcdir}/..\"",
         "-I\"#{$commonapidir}\""
       ]
       b.build
@@ -1628,6 +1652,7 @@ namespace "build" do
       b.context.libname = 'rhocommon'
       b.context.sourcelist = File.join($builddir, 'librhocommon_build.files')
       b.context.extra_copmiler_args = [   
+        "-I\"#{$shareddir}\"",
         "-I\"#{$shareddir}/curl/include\"",
         "-I\"#{$shareddir}/ruby/include\"",
         "-I\"#{$shareddir}/ruby/android\"",
@@ -1646,8 +1671,9 @@ namespace "build" do
       b.context.libname = 'rhodb'
       b.context.sourcelist = File.join($builddir, 'librhodb_build.files')
       b.context.extra_copmiler_args = [   
-        "-I\"#{srcdir}/..\"",
-        "-I\"#{srcdir}/../sqlite\"",
+        "-I\"#{b.context.srcdir}\"",
+        "-I\"#{b.context.srcdir}/..\"",
+        "-I\"#{b.context.srcdir}/../sqlite\"",
         "-I\"#{$shareddir}/ruby/include\"",
         "-I\"#{$shareddir}/ruby/android\""
       ]
@@ -1663,9 +1689,10 @@ namespace "build" do
       b.context.srcdir = File.join($shareddir, "sync")
       b.context.libname = 'rhosync'
       b.context.sourcelist = File.join($builddir, 'librhosync_build.files')
-      b.context.extra_copmiler_args = [   
-        "-I\"#{srcdir}/..\"",
-        "-I\"#{srcdir}/../sqlite\""
+      b.context.extra_copmiler_args = [
+        "-I\"#{b.context.srcdir}\"",   
+        "-I\"#{b.context.srcdir}/..\"",
+        "-I\"#{b.context.srcdir}/../sqlite\""
       ]
       b.build      
 
@@ -1684,13 +1711,6 @@ namespace "build" do
       :librholog, 
       :libopenssl
     ]
-
-    class BuildContext
-      attr_accessor :libname
-      attr_accessor :sourcelist
-      attr_accessor :srcdir
-      attr_accessor :extra_copmiler_args
-    end
 
     task :genconfig => "config:android" do
       print_timestamp('build:android:genconfig START')
@@ -1828,10 +1848,10 @@ namespace "build" do
         deps = []
         libs = []
 
-        $libname.each do |name, lib|
-          deps << File.join( File.dirname(lib), realabi, File.basename(lib) )
+        LibBuilder.results.each do |name, libdir|
+          deps << File.join( libdir, realabi, "lib#{name}.a" )
           libs << name
-          args << "-L\"#{File.dirname(lib)}/#{realabi}\""
+          args << "-L\"#{libdir}/#{realabi}\""
         end
         libs.map! { |x| "-l#{x}" }
 
