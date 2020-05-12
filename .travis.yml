@@ -31,6 +31,8 @@ script:
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
 - .ci/install_rhoconnect-client.sh
 
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/post_gem.sh
+
 - cd $HOME
 - rhodes app vanilla_rhodes_app
 - cd vanilla_rhodes_app && rhodes extension testext && cd ..
