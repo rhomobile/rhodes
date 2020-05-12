@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
 
-  require 'FileUtils'
+  require 'fileutils'
   FileUtils.cp "Rakefile", "rakefile.rb"
 
   s.name = %q{rhodes-core}
