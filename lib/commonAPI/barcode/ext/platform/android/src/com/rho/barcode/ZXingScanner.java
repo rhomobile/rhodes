@@ -17,104 +17,20 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.api.MethodResult;
+import com.rho.barcode.BarcodeCommon;
 
 /**
  * A class to control the ZXing based camera scanner
  * @author Ben Kennedy NCVT73
  */
-public class ZXingScanner extends Barcode implements IBarcode
+public class ZXingScanner extends BarcodeCommon
 {
-	private int cameraNumber;
-	/** The URL to call when the deprecated method take_barcode finishes */
-	private String takeBarcodeURL;
-	/** Flag to detect whether the ZXing is active */
-	private boolean isScanning;
-	private MethodResult takeResult;
-	
-	private String friendlyName;
-
 	public ZXingScanner(String id)
 	{
 		super(id);
 		Logger.I(LOGTAG, "ZXingScanner Constructor");
-		this.cameraNumber = Integer.parseInt(id.substring(5));
 	}
 
-	@Override
-	public void getProperty(String propertyName, IMethodResult result)
-	{
-		if(propertyName.equals("scannerType"))
-		{
-			result.set("Camera");
-		}
-	}
-
-	@Override
-	public void getProperties(List<String> arrayofNames, IMethodResult result)
-	{
-		for(String property: arrayofNames)
-		{
-			if(property.equals("scannerType"))
-			{
-				Map<String, Object> resultMap = new HashMap<String, Object>(2);
-				resultMap.put("scannerType", "Camera");
-				result.set(resultMap);
-				return;
-			}
-		}
-		Logger.I(LOGTAG, "ZXingScanner getProperties");
-		result.set(new HashMap<String, Object>());
-	}
-
-	@Override
-	public void getAllProperties(IMethodResult result)
-	{
-		Map<String, Object> resultMap = new HashMap<String, Object>(2);
-		setFriendlyName();
-		resultMap.put("scannerType", "Camera");
-		//resultMap.put("friendlyName", friendlyName);
-		result.set(resultMap);
-	}
-
-	@Override
-	public void enable(Map<String, String> propertyMap, IMethodResult result)
-	{
-		Logger.I(LOGTAG, "ZXingScanner enable");
-		result.setError("enable is not supported on Zebra Crossing Scanner Engines. Use 'take' instead.");
-	}
-	
-	@Override
-	public void start(IMethodResult result)
-	{
-		Logger.I(LOGTAG, "ZXingScanner start");
-		if(result != null) result.setError("start is not supported on Zebra Crossing Scanner Engines. Use 'take' instead.");
-		//TODO, we can change this.
-	}
-
-	@Override
-	public void stop(IMethodResult result)
-	{
-		Logger.I(LOGTAG, "ZXingScanner stop");
-		if(result != null) result.setError("stop is not supported on Zebra Crossing Scanner Engines. Use 'take' instead.");
-		//TODO, we can change this.
-	}
-
-	@Override
-	public void disable(IMethodResult result)
-	{
-		Logger.I(LOGTAG, "ZXingScanner disable");
-		
-		// Do nothing
-	}
-
-	@Override
-	public void getSupportedProperties(IMethodResult result)
-	{
-		Logger.I(LOGTAG, "ZXingScanner getSupportedProperties");
-		ArrayList<Object> resultList = new ArrayList<Object>();
-		resultList.add("scannerType");
-		result.set(resultList);
-	}
 
 	@Override
 	public void take(Map<String, String> propertyMap, IMethodResult result)
@@ -166,28 +82,6 @@ public class ZXingScanner extends Barcode implements IBarcode
 		}
 	}
 
-	/**
-	 * Called when the ZXing Activity exists with an error
-	 * @param errorMessage The reason for exiting
-	 * @author Ben Kennedy NCVT73
-	 */
-	public void error(String errorMessage)
-	{
-		if(takeResult != null)
-		{
-			takeResult.setError(errorMessage);
-			takeResult.release();
-			takeResult = null;
-			takeBarcodeURL = null;
-		}
-		else
-		{
-			Logger.D(LOGTAG, "Error failed to fire callback: result missing");
-		}
-		isScanning = false;
-		BarcodeFactory.setDisabledState(scannerId);
-		
-	}
 
 	/**
 	 * Called when the ZXing Activity is cancelled
@@ -267,23 +161,24 @@ public class ZXingScanner extends Barcode implements IBarcode
 
 	void callBackToUrl(Result barcodeData){
 		Logger.I(LOGTAG, "decodeEvent, takeBarcodeURL != null");
-		        StringBuffer body = new StringBuffer();
-		        body.append("&rho_callback=1");
-		        body.append("&status=ok");
-		        if (barcodeData.getText() != null)
-		        {
-		            try
-		            {
-		                String b = URLEncoder.encode(barcodeData.getText(), "utf-8");
-		                body.append("&barcode=");
-		                body.append(b);
-		            }
-		            catch (UnsupportedEncodingException e)
-		            {
-                Logger.I(LOGTAG, "Could not encode take_barcode return data in URL");
-		            }
-		        }
+        StringBuffer body = new StringBuffer();
+        body.append("&rho_callback=1");
+        body.append("&status=ok");
+        if (barcodeData.getText() != null)
+        {
+            try
+            {
+                String b = URLEncoder.encode(barcodeData.getText(), "utf-8");
+                body.append("&barcode=");
+                body.append(b);
+            }
+            catch (UnsupportedEncodingException e)
+            {
+        		Logger.I(LOGTAG, "Could not encode take_barcode return data in URL");
+            }
+        }
 		Logger.I(LOGTAG, "decodeEvent, URL: " + takeBarcodeURL + body);
+
 
 				if(RhodesActivity.safeGetInstance() != null)				
 				    RhodesActivity.safeGetInstance().getMainView().navigate(takeBarcodeURL + body, -1);
@@ -291,17 +186,8 @@ public class ZXingScanner extends Barcode implements IBarcode
 				//TODO needs testing
 			}
 
-//	@Override
-//	public void getFriendlyName(IMethodResult result)
-//	{
-//		setFriendlyName();
-//		result.set(friendlyName);
-//	}
-	
-	/**
-	 * Sets the friendlyName parameter
-	 */
-	private void setFriendlyName()
+	@Override
+	protected void setFriendlyName()
 	{
 		if(friendlyName == null)
 		{
@@ -320,37 +206,5 @@ public class ZXingScanner extends Barcode implements IBarcode
 		}
 	}
 
-	@Override
-	public void getScannerType(IMethodResult result)
-	{
-		result.set("Camera");
-	}
 
-	@Override
-	public void onResume()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onPause()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onStop()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onDestroy()
-	{
-		// TODO Auto-generated method stub
-		
-	}
 }

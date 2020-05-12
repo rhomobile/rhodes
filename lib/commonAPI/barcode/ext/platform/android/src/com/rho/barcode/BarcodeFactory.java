@@ -22,6 +22,8 @@ import android.view.KeyEvent;
 import com.google.zxing.Result;
 import com.rho.barcode.emdk3.EMDK3ExtensionListener;
 import com.rho.barcode.emdk3.EMDK3Scanner;
+import com.rho.barcode.BarcodeCommon;
+import com.rho.barcode.InternalAndroidBarcodeScanner;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.RhoApiFactory;
@@ -43,6 +45,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	private HashMap<String, Barcode> barcodeObjects;
 	private String[] emdkIds;
 	private String[] zxingIds;
+	private String[] androidIds;
 	private static String enabledScanner;
 	private static int lastDecodeVolume = -1;
 	private static int lastDecodeFrequency = -1;
@@ -77,7 +80,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 		BarcodeFactory.factoryInstance = this;
 		barcodeObjects = new HashMap<String, Barcode>();
 		
-		setupZxingScannerIds();
+		setupScannersIds();
 		
 		releaseEMDKOnPause = RhoConf.isExist(CFG_RELEASE_EMDK) && RhoConf.getBool(CFG_RELEASE_EMDK);
 			
@@ -147,57 +150,46 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 		}
 		Logger.D(TAG, "setupEmdkScannerIds-");
 	}
-	
-//	/**
-//	 * Sets up the ZXing barcode objects
-//	 * @author Ben Kennedy (NCVT73)
-//	 */
-//	private void setupZxingScannerIds()
-//	{
-//		Logger.D(LOGTAG, "setupZxingScannerIds");
-//	
-//		zxingIds = new String[Camera.getNumberOfCameras()];
-//		for(int i = 0; i < zxingIds.length; i++)
-//		{
-//			
-//			zxingIds[i] = "ZXING" + i;
-//		}
-//		Logger.D(LOGTAG, "setupZxingScannerIds cameras: " + zxingIds.length);
-//	}
-	
-	private void setupZxingScannerIds()
+
+	private void setupScannersIds()
 	{
-		Logger.D(TAG, "setupZxingScannerIds");
+		Logger.D(TAG, "setupScannersIds");
 		
 		//If it is a Zebra Device and ZXing is not allowed on these devices, then stop.
 		if(!isZxingOnMotoAllowed && devicesEmdkVersion > 0) return;
 		
 		int noOfCameras=Camera.getNumberOfCameras();
-		Camera.CameraInfo info =new Camera.CameraInfo();
-		for(int i=0;i<noOfCameras;i++)
+		Camera.CameraInfo info = new Camera.CameraInfo();
+		for(int i = 0; i < noOfCameras; i++)
 		{
 			Camera.getCameraInfo(i, info);
 			if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) 
 			{
-				if (zxingIds==null)
-					zxingIds=new String[1];
-				else
-					zxingIds=Arrays.copyOf(zxingIds,zxingIds.length+1);
-				zxingIds[zxingIds.length-1] = "ZXING" + i;
-				System.out.println("new one= "+zxingIds[zxingIds.length-1]);
+
+				if (EngineChooser.usingGoogleEngine){
+					if (androidIds==null)
+						androidIds = new String[1];
+					else
+						androidIds = Arrays.copyOf(androidIds, androidIds.length+1);
+					
+					androidIds[androidIds.length-1] = "GCODE" + i;
+					BarcodeCommon.addId("GCODE" + i, i);
+					System.out.println("new one= "+androidIds[androidIds.length-1]);
+				}else{
+					if (zxingIds==null)
+						zxingIds = new String[1];
+					else
+						zxingIds = Arrays.copyOf(zxingIds, zxingIds.length+1);
+					
+					zxingIds[zxingIds.length-1] = "ZXING" + i;
+					BarcodeCommon.addId("ZXING" + i, i);
+					System.out.println("new one= "+zxingIds[zxingIds.length-1]);
+				}
 			}
 		}
+
 		
-		
-		
-		/*if(noOfCameras>0)
-		{
-			//Allow only back camera for scanning and not front-facing camera for consumer device
-			zxingIds = new String[1];
-			zxingIds[0] = "ZXING" + 0;
-		}*/
-		
-		Logger.D(TAG, "setupZxingScannerIds cameras: " + ((zxingIds==null)?0:zxingIds.length));
+		Logger.D(TAG, "setupScannersIds cameras: " + ((zxingIds == null) ? 0 : zxingIds.length));
 	}
 	
 	
@@ -217,6 +209,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 		Barcode requestedBarcode = barcodeObjects.get(id);
 		if(requestedBarcode == null)
 		{
+
 			if(id.startsWith("EMDK") && devicesEmdkVersion == 3)
 			{
 				//XXX Shall we call the EMDK devices EMDK? How else will users detect the difference between the EMDK3 & Zxing scanners?
@@ -232,13 +225,17 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 				}
 				requestedBarcode = emdk3RequestedBarcode;
 			}
-
 			else if(id.startsWith("ZXING"))
 			{
 				Logger.D(TAG, "createApiObject creating ZXingScanner");
 				requestedBarcode = new ZXingScanner(id);
 				Logger.D(TAG, "createApiObject created ZXingScanner");
+			}else if (id.startsWith("GCODE")){
+				Logger.D(TAG, "createApiObject creating InternalAndroidBarcodeScanner");
+				requestedBarcode = new InternalAndroidBarcodeScanner(id);
+				Logger.D(TAG, "createApiObject created InternalAndroidBarcodeScanner");
 			}
+			
 
 			barcodeObjects.put(id, requestedBarcode);
 		}
@@ -313,6 +310,7 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 		List<String> barcodeIdStrings = new ArrayList<String>();
 		if(emdkIds != null && emdkIds.length > 0) barcodeIdStrings.addAll(Arrays.asList(emdkIds));
 		if(zxingIds != null && zxingIds.length > 0) barcodeIdStrings.addAll(Arrays.asList(zxingIds));
+		if(androidIds != null && androidIds.length > 0) barcodeIdStrings.addAll(Arrays.asList(androidIds));
 		//TODO add real time enumeration of scanners, if more get added at runtime
 		
 		return barcodeIdStrings;
@@ -329,10 +327,29 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 		Logger.D(TAG, "callOKCallback");
 		if(barcodeObjectId.equals(factoryInstance.getEnabledScanner()))
 		{
+
 			Logger.D(TAG, "callOKCallback: passed");
-			ZXingScanner zxingScanner = ((ZXingScanner)factoryInstance.getScanner(barcodeObjectId));
-			if(zxingScanner != null) zxingScanner.decodeEvent(barcodeData);
-			else Logger.E(TAG, "Zebra Crossing Object cuold not be found");
+			ZXingScanner scanner = ((ZXingScanner)factoryInstance.getScanner(barcodeObjectId));
+			if(scanner != null) scanner.decodeEvent(barcodeData);
+			else Logger.E(TAG, "Zebra Crossing Object could not be found");		
+		}
+		else
+		{
+			Logger.D(TAG, "callOKCallback: Failed: " + barcodeObjectId + " vs " + factoryInstance.getEnabledScanner());
+		}
+	}
+
+
+	public static void callOKCallback(String barcodeData, String barcodeObjectId)
+	{
+		Logger.D(TAG, "callOKCallback");
+		if(barcodeObjectId.equals(factoryInstance.getEnabledScanner()))
+		{
+
+			Logger.D(TAG, "callOKCallback: passed");
+			InternalAndroidBarcodeScanner scanner = ((InternalAndroidBarcodeScanner)factoryInstance.getScanner(barcodeObjectId));
+			if(scanner != null) scanner.decodeEvent(barcodeData);
+			else Logger.E(TAG, "Zebra Crossing Object could not be found");		
 		}
 		else
 		{
@@ -348,9 +365,9 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	public static void callCancelCallback(String barcodeObjectId)
 	{
 		Logger.D(TAG, "callCancelCallback");
-		ZXingScanner zxingScanner = ((ZXingScanner)factoryInstance.getScanner(barcodeObjectId));
-		if(zxingScanner != null) zxingScanner.cancel();
-		else Logger.E(TAG, "Zebra Crossing Object cuold not be found");
+		BarcodeCommon scanner = ((BarcodeCommon)factoryInstance.getScanner(barcodeObjectId));
+		if(scanner != null) scanner.cancel();
+		else Logger.E(TAG, "Crossing Object could not be found");
 	}
 
 	/**
@@ -362,9 +379,9 @@ public class BarcodeFactory extends RhoApiFactory<Barcode, BarcodeSingleton> imp
 	public static void callErrorCallback(String errorMessage, String barcodeObjectId)
 	{
 		Logger.D(TAG, "callErrorCallback");
-		ZXingScanner zxingScanner = ((ZXingScanner)factoryInstance.getScanner(barcodeObjectId));
-		if(zxingScanner != null) zxingScanner.error(errorMessage);
-		else Logger.E(TAG, "Zebra Crossing Object cuold not be found");
+		BarcodeCommon scanner = ((BarcodeCommon)factoryInstance.getScanner(barcodeObjectId));
+		if(scanner != null) scanner.error(errorMessage);
+		else Logger.E(TAG, "Crossing Object could not be found");
 	}
 	
 	/**
