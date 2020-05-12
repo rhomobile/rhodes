@@ -34,6 +34,10 @@
 #define ssize_t int
 #endif
 
+typedef struct evp_pkey_st EVP_PKEY;
+typedef struct x509_st X509;
+typedef struct dh_st DH;
+
 namespace rho {
 namespace net {
 
@@ -49,6 +53,28 @@ struct ISSL
     virtual ssize_t send(const void *mem, size_t len, void *storage) = 0;
     virtual ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage) = 0;
     virtual bool rand(unsigned char *entropy, size_t length) = 0;
+
+
+    virtual const EVP_PKEY* getPrivateKey() const
+    {
+        return nullptr;
+    }
+
+    virtual const X509* getCertificate() const
+    {
+        return nullptr;
+    }
+
+    virtual const X509* getClientCertificate() const
+    {
+        return nullptr;
+    }
+
+    virtual DH* getDHparams() const
+    {
+        return nullptr;
+    }
+
 };
 
 }

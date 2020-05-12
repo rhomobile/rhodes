@@ -1,19 +1,19 @@
-greaterThan(QT_MINOR_VERSION, 6): {
-    CONFIG += c++14
-    DEFINES += RHODES_VERSION_2
-    DEFINES += AJAXSERVER
-}
-
 equals(QT_MAJOR_VERSION, 5) {
-    equals(QT_MINOR_VERSION, 6) {
-        DEFINES += OS_SAILFISH
+    lessThan(QT_MINOR_VERSION, 6): {
+        DEFINES += RHODES_VERSION_1
+    }
+    equals(QT_MINOR_VERSION, 6): {
+        DEFINES += OS_SAILFISH OS_LINUX
+        CONFIG +=  c++14
         QT += core
+    }
+    greaterThan(QT_MINOR_VERSION, 7): {
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2 AJAXSERVER
     }
 }
 
-lessThan(QT_MINOR_VERSION, 6): {
-    DEFINES += RHODES_VERSION_1
-}
+
 
 TARGET = rholib
 TEMPLATE = lib
@@ -70,20 +70,28 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = $$PWD/../../../linux/bin/rholib
-  OBJECTS_DIR = $$PWD/../../../linux/bin/rholib/tmp
-  INCLUDEPATH += $$PWD/../../curl/include
-  DEFINES += _GNU_SOURCE
-  HEADERS += $$PWD/../../common/PosixThreadImpl.h\
-  $$PWD/../../net/CURLNetRequest.h\
-  $$PWD/../../net/ssl.h
-  SOURCES += $$PWD/../../common/PosixThreadImpl.cpp\
-  $$PWD/../../net/CURLNetRequest.cpp\
-  $$PWD/../../net/ssl.cpp
-  DEFINES += OS_SAILFISH OS_LINUX
+    INCLUDEPATH += $$PWD/../../ruby/linux
+    HEADERS += $$PWD/../../ruby/linux/ruby/config.h
+    DESTDIR = $$PWD/../../../linux/bin/rholib
+    OBJECTS_DIR = $$PWD/../../../linux/bin/rholib/tmp
+    INCLUDEPATH += $$PWD/../../curl/include
+    DEFINES += _GNU_SOURCE
+    HEADERS += $$PWD/../../common/PosixThreadImpl.h\
+    $$PWD/../../net/CURLNetRequest.h\
+    $$PWD/../../net/ssl.h
+    SOURCES += $$PWD/../../common/PosixThreadImpl.cpp\
+    $$PWD/../../net/CURLNetRequest.cpp#\
+    #$$PWD/../../net/ssl.cpp
+    DEFINES += OS_LINUX
 
-  QMAKE_CFLAGS += -fvisibility=hidden
-  QMAKE_CXXFLAGS += -fvisibility=hidden
+    HEADERS += $$PWD/../../net/linux/SSLImpl.h
+    SOURCES += $$PWD/../../net/linux/SSLImpl.cpp
+
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
+
+    #QMAKE_CFLAGS_RELEASE -= -O2
+    #QMAKE_CXXFLAGS_RELEASE -= -O2
 }
 
 DEFINES += RHODES_QT_PLATFORM

@@ -45,6 +45,7 @@ import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
 import android.provider.Settings;
+import android.os.Build;
 
 public class BaseActivity extends Activity implements ServiceConnection {
 	
@@ -199,7 +200,20 @@ public class BaseActivity extends Activity implements ServiceConnection {
 
 		Intent intent = new Intent(this, RhodesService.class);
 		intent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
-		ComponentName serviceName = startService(intent);
+
+		Logger.D(TAG, "onCreate() startForegroundService PRE");
+		ComponentName serviceName = null;
+		// use new mechanism for foregorund service only for 9.0 and later
+		int sdkVersion = Build.VERSION.SDK_INT;
+		if (sdkVersion >= 28) {
+			serviceName = AndroidFunctionalityManager.getAndroidFunctionality().startForegroundService(this, intent);
+		}
+		else {
+			serviceName = startService(intent);
+		}
+		Logger.D(TAG, "onCreate() startForegroundService POST");
+
+		//ComponentName serviceName = startService(intent);
 		if (serviceName == null)
 			throw new RuntimeException("Can not start Rhodes service");
 		bindService(intent, this, Context.BIND_AUTO_CREATE);

@@ -758,7 +758,7 @@ static void callback_loadserversources(void *arg, String const &strQuery)
 static void callback_loadallsyncsources(void *arg, String const &strQuery)
 {
     RhoAppAdapter.loadAllSyncSources();
-    String strMsg;
+    String strMsg = "";
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 
@@ -1553,12 +1553,7 @@ void CRhodesApp::initHttpServer()
     strAppRootPath += "apps";
 #endif
 
-#ifdef OS_SAILFISH
-    //m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath, true, false); This thing doesn't work
     m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath);
-#else
-    m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath);
-#endif
     m_httpServer->register_uri("/system/geolocation", rubyext::CGeoLocation::callback_geolocation);
     m_httpServer->register_uri("/system/syncdb", callback_syncdb);
     m_httpServer->register_uri("/system/redirect_to", callback_redirect_to);
@@ -1785,6 +1780,12 @@ void CRhodesApp::initAppUrls()
         force_https = rho_conf_getBool("ios_https_local_server")!=0;
     }
 #endif
+
+#ifdef OS_ANDROID
+       const char* value = get_app_build_config_item("local_https_server_with_client_checking");
+       force_https = value && strcmp(value, "1") == 0;
+#endif
+
     if (force_https) {
         m_strHomeUrl = "https://127.0.0.1:";
     }

@@ -1,7 +1,7 @@
 #ifndef _NETWORKDETECT_H_
 #define _NETWORKDETECT_H_
 #pragma once
-#ifndef _HOST_TRACKER
+#if !defined(_HOST_TRACKER) && !defined(OS_LINUX)
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #endif

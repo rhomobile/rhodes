@@ -365,9 +365,7 @@
 #define HAVE_IOCTL_FIONBIO 1
 
 /* Define to 1 if you have a working ioctl SIOCGIFADDR function. */
-#ifndef OS_LINUX
 #define HAVE_IOCTL_SIOCGIFADDR 1
-#endif
 
 /* Define to 1 if you have the <io.h> header file. */
 /* #undef HAVE_IO_H */
@@ -873,7 +871,7 @@
 #define RECV_TYPE_ARG4 unsigned int
 
 /* Define to the function return type for recv. */
-#ifdef __aarch64__
+#if defined(__aarch64__) || defined(__x86_64__) || defined(__amd64__)
 #define RECV_TYPE_RETV ssize_t
 #else
 #define RECV_TYPE_RETV int
@@ -913,7 +911,7 @@
 #define SEND_TYPE_ARG4 unsigned int
 
 /* Define to the function return type for send. */
-#ifdef __aarch64__
+#if defined(__aarch64__) || defined(__x86_64__) || defined(__amd64__)
 #define SEND_TYPE_RETV size_t
 #else
 #define SEND_TYPE_RETV int
@@ -923,7 +921,7 @@
 #define SIZEOF_INT 4
 
 /* The size of `long', as computed by sizeof. */
-#ifdef __aarch64__
+#if defined(__aarch64__) || defined(__x86_64__) || defined(__amd64__)
 #define SIZEOF_LONG 8
 #else
 #define SIZEOF_LONG 4
@@ -933,7 +931,7 @@
 /* #undef SIZEOF_LONG_LONG */
 
 /* The size of `off_t', as computed by sizeof. */
-#ifdef __aarch64__
+#if defined(__aarch64__) || defined(__x86_64__) || defined(__amd64__)
 #define SIZEOF_OFF_T 8
 #else
 #define SIZEOF_OFF_T 4
@@ -943,21 +941,21 @@
 #define SIZEOF_SHORT 2
 
 /* The size of `size_t', as computed by sizeof. */
-#ifdef __aarch64__
+#if defined(__aarch64__) || defined(__x86_64__) || defined(__amd64__)
 #define SIZEOF_SIZE_T 8
 #else
 #define SIZEOF_SIZE_T 4
 #endif
 
 /* The size of `time_t', as computed by sizeof. */
-#ifdef __aarch64__
+#if defined(__aarch64__) || defined(__x86_64__) || defined(__amd64__)
 #define SIZEOF_TIME_T 8
 #else
 #define SIZEOF_TIME_T 4
 #endif
 
 /* The size of `void*', as computed by sizeof. */
-#ifdef __aarch64__
+#if defined(__aarch64__) || defined(__x86_64__) || defined(__amd64__)
 #define SIZEOF_VOIDP 8
 #else
 #define SIZEOF_VOIDP 4
@@ -1097,7 +1095,7 @@
 
 /* RHO BEGIN */
 //#if defined(OS_IPHONE) || defined(OS_ANDROID) || defined(OS_WP8)
-#if defined(OS_IPHONE) || defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WP8) || defined(OS_UWP)
+#if defined(OS_IPHONE) || defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WP8) || defined(OS_UWP) || defined(OS_LINUX)
 #define USE_RHOSSL
 #endif
 /* RHO END */

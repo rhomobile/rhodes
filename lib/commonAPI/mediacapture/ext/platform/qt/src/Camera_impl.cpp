@@ -15,7 +15,7 @@
 #include "common/RhoConf.h"
 #include "generated/cpp/CameraBase.h"
 #include "logging/RhoLog.h"
-#include "camerarefresher.h"
+#include "CameraRefresher.h"
 
 namespace rho {
     

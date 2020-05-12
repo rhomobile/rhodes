@@ -43,6 +43,7 @@ import com.rhomobile.rhodes.extmanager.IRhoConfig;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.mainview.TabbedMainView;
 import com.rhomobile.rhodes.webview.WebViewConfig;
+import com.rhomobile.rhodes.socket.SSLImpl;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -55,6 +56,11 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.CookieSyncManager;
+import android.webkit.ClientCertRequest;
+import java.security.PrivateKey;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+
 
 public class RhoWebViewClient extends WebViewClient
 {
@@ -227,9 +233,49 @@ public class RhoWebViewClient extends WebViewClient
         RhoExtManager.getImplementationInstance().onLoadError(view, IRhoExtension.LoadErrorReason.INTERNAL_ERROR);
     }
 
+    @Override 
+    public void onReceivedClientCertRequest(WebView view, ClientCertRequest request)
+    {
+        try {
+            //SSLImpl.loadLocalCientP12Bundle();
+            PrivateKey pkey = SSLImpl.getClientPrivateKey();
+            Certificate[] cert_chain = SSLImpl.getClientCertChain();
+            if(pkey != null && cert_chain != null)
+            {
+                request.proceed(pkey, (X509Certificate[])cert_chain);
+            }
+            else
+                request.cancel();
+
+        } catch (Throwable  e) {
+            request.cancel();
+        }
+        
+    }
+
     @Override
     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-        
+
+        if (RhodesService.isLocalHttpsServerEnable()) {
+            String url = error.getUrl();
+            Uri uri = Uri.parse(url);
+            String protocol = uri.getScheme();
+            String server = uri.getAuthority();
+
+            String baseUrl = RhodesService.getBaseUrl();
+            Uri baseUri = Uri.parse(baseUrl);
+            String base_server = baseUri.getAuthority();
+            String base_protocol = baseUri.getScheme();
+            if(base_server.equalsIgnoreCase(server) && protocol.equalsIgnoreCase(base_protocol))
+            {
+                if(error.getPrimaryError() == SslError.SSL_UNTRUSTED)
+                {
+                    handler.proceed();
+                    return;
+                }
+            }
+        }
+
         if(RhoConf.getBool("no_ssl_verify_peer")) {
             Logger.D(TAG, "Skip SSL error.");
             handler.proceed();

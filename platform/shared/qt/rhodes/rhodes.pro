@@ -9,25 +9,22 @@ isEqual(QT_MAJOR_VERSION, 5):{
         INCLUDEPATH += oldVersion
     }
 
-    equals(QT_MAJOR_VERSION, 5) {
-        equals(QT_MINOR_VERSION, 6) {
-            DEFINES += ENABLE_Q_WEB_ENGINE
+    equals(QT_MINOR_VERSION, 6) {
+        DEFINES += ENABLE_Q_WEB_ENGINE
 
-            !contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
-                QT += webkit
-                message(Deprecated sailfish webkit enabled)
-            }
-            contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
-                QT += webengine
-            }
-
-            QT += quick multimedia dbus bluetooth
-            DEFINES += OS_SAILFISH OS_LINUX
-            CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
+        !contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+            QT += webkit
+            message(Deprecated sailfish webkit enabled)
         }
+        contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+            QT += webengine
+        }
+
+        QT += quick multimedia dbus bluetooth
+        DEFINES += OS_SAILFISH OS_LINUX
+        CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
     }
-
-
+    
     greaterThan(QT_MINOR_VERSION, 6): {
         QT += webengine webenginecore webenginewidgets multimedia multimediawidgets
         message(Webengine enabled)
@@ -144,12 +141,24 @@ win32 {
 }
 
 unix:!macx {
-!contains(DEFINES, OS_SAILFISH) {
+  TEMPLATE = app
+  #QMAKE_LFLAGS += -no-pie
+  !contains(DEFINES, OS_SAILFISH) {
   DESTDIR = $$PWD/../../../linux/bin/RhoSimulator
-}
-contains(DEFINES, OS_SAILFISH) {
-  #DESTDIR = $$PWD/../Build_Sailfish_Application
-}
+      LIBS += ../../../linux/bin/rubylib/librubylib.a\
+           ../../../linux/bin/rholib/librholib.a\
+           ../../../linux/bin/sqlite3/libsqlite3.a\
+           ../../../linux/bin/syncengine/libsyncengine.a\
+           ../../../linux/bin/curl/libcurl.a
+
+      PRE_TARGETDEPS += ../../../linux/bin/rubylib/librubylib.a\
+                      ../../../linux/bin/rholib/librholib.a\
+                      ../../../linux/bin/sqlite3/libsqlite3.a\
+                      ../../../linux/bin/syncengine/libsyncengine.a\
+                      ../../../linux/bin/curl/libcurl.a
+      #DESTDIR = $$PWD/../Build_Sailfish_Application
+  }
+
   MOC_DIR = $$PWD/../../../linux/bin/RhoSimulator/generated_files
   UI_DIR = $$PWD/../../../linux/bin/RhoSimulator/generated_files
   OBJECTS_DIR = $$PWD/../../../linux/bin/RhoSimulator/tmp
@@ -158,23 +167,18 @@ contains(DEFINES, OS_SAILFISH) {
   SOURCES += $$PWD/../../net/linux/SSLImpl.cpp\
   ../../../../lib/commonAPI/coreapi/ext/platform/qt/src/CSystemImpl.cpp
   INCLUDEPATH += ../../curl/include\
-  #../../ruby/linux\
-  LIBS += -lpthread
-  LIBS += -ldl -lz
-  #LIBS += -L../../../linux/bin/extensions -lcoreapi
+  ../../ruby/linux
+
+
   LIBS += -L../../../linux/bin/sqlite3 -lsqlite3
-  #LIBS += -L../../../linux/bin/curl -lcurl
-  #LIBS += -L../../../linux/bin/rubylib -lrubylib
-  #LIBS += -L../../../linux/bin/rholib -lrholib
-  #LIBS += -L../../../linux/bin/syncengine -lsyncengine
-  #PRE_TARGETDEPS += \
-  #../../../linux/bin/rubylib/librubylib.a\
-  #../../../linux/bin/curl/libcurl.a\
-  #../../../linux/bin/rholib/librholib.a\
-  #../../../linux/bin/sqlite3/libsqlite3.a\
-  #../../../linux/bin/extensions/libcoreapi.a\
-  #../../../linux/bin/syncengine/libsyncengine.a
+
   DEFINES += QT_LARGEFILE_SUPPORT QT_CORE_LIB QT_GUI_LIB QT_NETWORK_LIB QT_WEBKIT_LIB OS_LINUX
+
+  QMAKE_CFLAGS += -fvisibility=hidden
+  QMAKE_CXXFLAGS += -fvisibility=hidden
+
+  #QMAKE_CFLAGS_RELEASE -= -O2
+  #QMAKE_CXXFLAGS_RELEASE -= -O2
 }
 
   DEFINES += RHODES_QT_PLATFORM
@@ -328,6 +332,7 @@ newVersion/ExternalWebView.cpp\
 newVersion/DateTimeDialog.cpp\
 newVersion/main.cpp\
 newVersion/WebUrlRequestInterceptor.cpp
+
 }
 
 contains(DEFINES, RHODES_VERSION_LIBRARY) {
@@ -370,49 +375,60 @@ SOURCES +=\
 RESOURCES += resources/common.qrc
 }
 
-contains(DEFINES, OS_SAILFISH)  {
-unix:!macx:
-LIBS += -L$$PWD/../../../linux/bin/sqlite3/ -lsqlite3
-INCLUDEPATH += $$PWD/../../sqlite
-DEPENDPATH += $$PWD/../../sqlite
+contains(DEFINES, OS_LINUX)  {
+    SOURCES +=  $$PWD/../../net/ssl.cpp
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/curl/ -lcurl
-INCLUDEPATH += $$PWD/../../curl/include
-DEPENDPATH += $$PWD/../../curl/include
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/curl/libcurl.a\
+    LIBS += -lz
+    LIBS += -L$$PWD/../../../linux/bin/sqlite3/ -lsqlite3
+    INCLUDEPATH += $$PWD/../../sqlite
+    DEPENDPATH += $$PWD/../../sqlite
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/rubylib/ -lrubylib
-INCLUDEPATH += $$PWD/../../ruby/include
-DEPENDPATH += $$PWD/../../ruby/include
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/rubylib/librubylib.a
+    LIBS += -L$$PWD/../../../linux/bin/curl/ -lcurl
+    INCLUDEPATH += $$PWD/../../curl/include
+    DEPENDPATH += $$PWD/../../curl/include
+    PRE_TARGETDEPS += $$PWD/../../../linux/bin/curl/libcurl.a
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/rholib/ -lrholib -lcurl
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/rholib/librholib.a
+    LIBS += -L$$PWD/../../../linux/bin/rubylib/ -lrubylib
+    INCLUDEPATH += $$PWD/../../ruby/include
+    DEPENDPATH += $$PWD/../../ruby/include
+    PRE_TARGETDEPS += $$PWD/../../../linux/bin/rubylib/librubylib.a
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/syncengine/ -lsyncengine -lsqlite3
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/syncengine/libsyncengine.a
+    LIBS += -L$$PWD/../../../linux/bin/rholib/ -lrholib -lcurl
+    PRE_TARGETDEPS += $$PWD/../../../linux/bin/rholib/librholib.a
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lcoreapi
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libcoreapi.a
+    LIBS += -L$$PWD/../../../linux/bin/syncengine/ -lsyncengine -lsqlite3
+    PRE_TARGETDEPS += $$PWD/../../../linux/bin/syncengine/libsyncengine.a
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lzlib
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libzlib.a
+    #LIBS += -L$$PWD/../../../linux/bin/extensions/ -lcoreapi
+    #PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libcoreapi.a
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lMediacapture
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libMediacapture.a
+    exists("../../../linux/bin/extensions/extensions.pri") {
+        include("../../../linux/bin/extensions/extensions.pri")
+    }
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lBarcode
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libBarcode.a
+    #LIBS += -L$$PWD/../../../linux/bin/extensions/ -lzlib
+    #PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libzlib.a
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lSignature
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libSignature.a
+    #LIBS += -lstatic-libgcc
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lRhoconnect-client
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-client.a
+    #unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lMediacapture
+    #unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libMediacapture.a
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lserialport
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libserialport.a
+    #unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lBarcode
+    #unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libBarcode.a
 
-unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lbluetooth
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libbluetooth.a
+    #unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lSignature
+    #unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libSignature.a
+
+    #unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lRhoconnect-client
+    #unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libRhoconnect-client.a
+
+    #unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lserialport
+    #unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libserialport.a
+
+    #unix:!macx: LIBS += -L$$PWD/../../../linux/bin/extensions/ -lbluetooth
+    #unix:!macx: PRE_TARGETDEPS += $$PWD/../../../linux/bin/extensions/libbluetooth.a
+
+    LIBS += -ldl -lgmp -lc -lpthread -lz
+
 }

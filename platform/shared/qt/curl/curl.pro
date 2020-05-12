@@ -1,16 +1,15 @@
-greaterThan(QT_MINOR_VERSION, 6): {
-    CONFIG += c++14
-    DEFINES += RHODES_VERSION_2
-}
-
 equals(QT_MAJOR_VERSION, 5) {
-    equals(QT_MINOR_VERSION, 6) {
-        DEFINES += OS_SAILFISH OS_LINUX
+    lessThan(QT_MINOR_VERSION, 6): {
+        DEFINES += RHODES_VERSION_1
     }
-}
-
-lessThan(QT_MINOR_VERSION, 6): {
-    DEFINES += RHODES_VERSION_1
+    equals(QT_MINOR_VERSION, 6): {
+        DEFINES += OS_SAILFISH OS_LINUX
+        CONFIG +=  c++14
+    }
+    greaterThan(QT_MINOR_VERSION, 7): {
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+    }
 }
 
 TARGET = curl
@@ -67,11 +66,23 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = $$PWD/../../../linux/bin/curl
-  OBJECTS_DIR = $$PWD/../../../linux/bin/curl/tmp
-  DEFINES += HAVE_CONFIG_H USE_RHOSSL OS_LINUX OS_SAILFISH
-  QMAKE_CFLAGS += -fvisibility=hidden
-  QMAKE_CXXFLAGS += -fvisibility=hidden
+    INCLUDEPATH += $$PWD/../../ruby/linux
+    HEADERS += $$PWD/../../ruby/linux/ruby/config.h
+    DESTDIR = $$PWD/../../../linux/bin/curl
+    OBJECTS_DIR = $$PWD/../../../linux/bin/curl/tmp
+    DEFINES += HAVE_CONFIG_H USE_RHOSSL OS_LINUX __INTERIX
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
+    
+    #QMAKE_CFLAGS_RELEASE -= -O2
+    #QMAKE_CXXFLAGS_RELEASE -= -O2    
+
+    Debug {
+      DEFINES += _DEBUG DEBUG
+    }
+    Release {
+      DEFINES += _NDEBUG NDEBUG
+    }
 
 }
 

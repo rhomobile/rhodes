@@ -1,7 +1,7 @@
 #include "../../../shared/generated/cpp/NativeToolbarBase.h"
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
-#include "rubyext/NativeToolBarExt.h"
+#include "rubyext/NativeToolbarExt.h"
 #include "qt/rhodes/impl/NativeToolbarImpl.h"
 
 namespace rho {

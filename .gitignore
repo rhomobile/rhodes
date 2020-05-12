@@ -14,6 +14,9 @@ lib/commonAPI/*/*/*/generated/
 lib/commonAPI/*/*/*/*/generated/
 lib/commonAPI/*/*/*/*/*/debug/
 lib/commonAPI/*/ext/platform/iphone/build/
+lib/commonAPI/*/ext/platform/qt/moc_*.cpp
+lib/commonAPI/*/ext/platform/qt/moc_*.h
+lib/commonAPI/*/ext/platform/qt/qrc_*.cpp
 lib/extensions/*/*/*/generated/
 lib/extensions/*/*/*/*/generated/
 lib/extensions/*/ext/*/platform/iphone/build/
@@ -316,5 +319,10 @@ generated/
 platform/shared/common/app_build_capabilities.h
 platform/shared/common/app_build_configs.c
 platform/shared/ruby/ext/rho/extensions.c
+platform/shared/qt/**/rhosimulator_plugin_import.cpp
 
 res/build-tools/maven/m2
+platform/win32/RhoSimulator/*
+platform/shared/qt/rhodes/resources/rho.png
+
+lib/extensions/fcm-push/ext/iphone/Frameworks/*

@@ -52,6 +52,7 @@
 #include <QScroller>
 #include <QScrollArea>
 #include <QWebEngineSettings>
+#include <QApplication>
 #include "../guithreadfunchelper.h"
 #include "WebUrlRequestInterceptor.h"
 
@@ -152,7 +153,6 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     QWebEngineProfile::defaultProfile()->setRequestInterceptor(wuri);
 
     QApplication::setStyle(new QtCustomStyle());
-
     setCentralWidget(new QWidget(this));
     verticalLayout = new QVBoxLayout(centralWidget());
 
@@ -317,7 +317,13 @@ void QtMainWindow::closeEvent(QCloseEvent *ce)
     tabbarRemoveAllTabs(false);
     if (m_logView)
         m_logView->close();
-    QMainWindow::closeEvent(ce);
+
+    QTimer::singleShot(1, this, [&]{rho_rhodesapp_callUiDestroyedCallback();});
+    QTimer::singleShot(1000, this, [&]{rho::common::CRhodesApp::Destroy();});
+    QTimer::singleShot(3000, this, [this, ce]{
+        ce->accept();
+        QMainWindow::closeEvent(ce);
+    });
 
 }
 
@@ -1192,7 +1198,7 @@ void QtMainWindow::takeSignature(void*) //TODO: Signature::Params*
 
 void QtMainWindow::fullscreenCommand(int enable)
 {
-#if defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
+#if (defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR))  || defined(OS_LINUX)
     if ((enable && !isFullScreen()) || (!enable && isFullScreen())) {
         this->menuBar()->setVisible(RHOCONF().getBool("w32_fullscreen_menu") || (!enable));
 

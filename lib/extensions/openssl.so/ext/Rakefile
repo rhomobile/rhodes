@@ -104,7 +104,7 @@ namespace "build" do
       $sdk = ENV['SDK_NAME']	
       raise "SDK_NAME is not set" if $sdk.nil?
 
-    elsif $platform == 'osx'
+    elsif (ENV['RHO_PLATFORM'] == 'osx')
       $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
       raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
       $arch = ENV['ARCHS']

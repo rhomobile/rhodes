@@ -71,7 +71,14 @@ public class KeyCaptureRhoListener extends AbstractRhoListener
 	private void copyMappingXML()
 	{
 		boolean writeableStorage=true;
-		String rawResourceName=Environment.getExternalStorageDirectory()+"/Android/data/"+RhodesActivity.safeGetInstance().getPackageName()+ "/keycodemapping.xml";
+		String rawResourceName=null;
+		try {
+		    rawResourceName=Environment.getExternalStorageDirectory()+"/Android/data/"+RhodesActivity.safeGetInstance().getPackageName()+ "/keycodemapping.xml";
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+			return;
+		}
 		int resourceId= RhoExtManager.getResourceId("raw","keycodemapping");
 		File resourceFile = new File(rawResourceName);
 		boolean fileExists = resourceFile.exists();
@@ -102,6 +109,9 @@ public class KeyCaptureRhoListener extends AbstractRhoListener
 			{
 				
 				resourceFile.delete();
+			}
+			catch (Exception e) {
+				Logger.E(TAG, e);
 			}
 		}
 		else

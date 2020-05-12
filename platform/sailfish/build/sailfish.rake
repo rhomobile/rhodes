@@ -188,10 +188,10 @@ namespace "config" do
 
 
     if isWindows?
-      $current_build_sdk_dir = File.join($sailfishdir, "settings", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
+      $current_build_sdk_dir = File.join($sailfishdir, "settings", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
       $current_build_sdk_dir = $current_build_sdk_dir.gsub("\\", "/")
     else
-      $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
+      $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
     end
 
     if !File.exists?($current_build_sdk_dir)
@@ -234,7 +234,7 @@ namespace "config" do
         "Add device if required (sailfish:device:add_device) and set 'device_name' field in build.yml.\n" +
         "For list device use: sailfish:device:list\n"
       elsif $dev_type == "vbox"
-        $dev_name = "Sailfish OS Emulator"
+        $dev_name = "Aurora OS Emulator"
       end
 
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["host"].nil?
@@ -575,7 +575,7 @@ def vm_is_started?
     output = stdout.read
   end
 
-  return output.include?("Sailfish OS Build Engine")
+  return output.include?("Aurora OS Build Engine")
 end
 
 def deploy_bundle(session)
@@ -614,7 +614,7 @@ namespace "build"  do
       end
 
       if !vm_is_started?
-        system("\"" + $virtualbox_path + "\"" + " startvm \"Sailfish OS Build Engine\" --type headless") 
+        system("\"" + $virtualbox_path + "\"" + " startvm \"Aurora OS Build Engine\" --type headless") 
         puts "Waiting 40 seconds vm..."
         sleep 40.0
       end 
@@ -624,7 +624,7 @@ namespace "build"  do
       if $virtualbox_path.empty? 
         raise "Please, set VirtualBox variable environment..."
       end
-      system("\"" + $virtualbox_path + "\"" + " controlvm \"Sailfish OS Build Engine\" poweroff")
+      system("\"" + $virtualbox_path + "\"" + " controlvm \"Aurora OS Build Engine\" poweroff")
     end
     
     task :rhobundle => ["project:sailfish:qt"] do
@@ -780,6 +780,7 @@ namespace 'project' do
       curl_erb_path = $rhodes_path + "/platform/sailfish/build/curl.pro.erb"
       rubylib_erb_path = $rhodes_path + "/platform/sailfish/build/rubylib.pro.erb"
       rholib_erb_path = $rhodes_path + "/platform/sailfish/build/rholib.pro.erb"
+      unzip_erb_path = $rhodes_path + "/platform/sailfish/build/unzip.pro.erb"
       sqlite3_erb_path = $rhodes_path + "/platform/sailfish/build/sqlite3.pro.erb"
       syncengine_erb_path = $rhodes_path + "/platform/sailfish/build/syncengine.pro.erb"
       rhodes_erb_path = $rhodes_path + "/platform/sailfish/build/rhodes.pro.erb"
@@ -799,6 +800,7 @@ namespace 'project' do
       mkdir_p File.join($project_path, "curl")
       mkdir_p File.join($project_path, "rubylib")
       mkdir_p File.join($project_path, "rholib")
+      mkdir_p File.join($project_path, "unzip")
       mkdir_p File.join($project_path, "sqlite3")
       mkdir_p File.join($project_path, "syncengine")
       mkdir_p File.join($project_path, "rhodes")
@@ -834,6 +836,7 @@ namespace 'project' do
       File.open(File.join($project_path, "curl", "curl.pro"), 'w' ) { |f| f.write generator.render_profile( curl_erb_path ) }
       File.open(File.join($project_path, "rubylib", "rubylib.pro"), 'w' ) { |f| f.write generator.render_profile( rubylib_erb_path ) }
       File.open(File.join($project_path, "rholib", "rholib.pro"), 'w' ) { |f| f.write generator.render_profile( rholib_erb_path ) }
+      File.open(File.join($project_path, "unzip", "unzip.pro"), 'w' ) { |f| f.write generator.render_profile( unzip_erb_path ) }
       File.open(File.join($project_path, "sqlite3", "sqlite3.pro"), 'w' ) { |f| f.write generator.render_profile( sqlite3_erb_path ) }
       File.open(File.join($project_path, "syncengine", "syncengine.pro"), 'w' ) { |f| f.write generator.render_profile( syncengine_erb_path ) }
 
@@ -841,6 +844,7 @@ namespace 'project' do
         clrfTOlf(File.join($project_path, "curl", "curl.pro"))
         clrfTOlf(File.join($project_path, "rubylib", "rubylib.pro"))
         clrfTOlf(File.join($project_path, "rholib", "rholib.pro"))
+        clrfTOlf(File.join($project_path, "unzip", "unzip.pro"))
         clrfTOlf(File.join($project_path, "sqlite3", "sqlite3.pro"))
         clrfTOlf(File.join($project_path, "syncengine", "syncengine.pro"))
       end

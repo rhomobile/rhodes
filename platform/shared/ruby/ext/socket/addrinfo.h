@@ -128,7 +128,7 @@
 #define	NI_DGRAM	0x00000010
 
 #ifndef HAVE_TYPE_STRUCT_ADDRINFO
-struct addrinfo {
+struct addrinfo_backup {
 	int	ai_flags;	/* AI_PASSIVE, AI_CANONNAME */
 	int	ai_family;	/* PF_xxx */
 	int	ai_socktype;	/* SOCK_xxx */
@@ -138,6 +138,7 @@ struct addrinfo {
 	struct sockaddr *ai_addr;	/* binary address */
 	struct addrinfo *ai_next;	/* next structure in linked list */
 };
+
 #endif
 
 #ifndef HAVE_GETADDRINFO

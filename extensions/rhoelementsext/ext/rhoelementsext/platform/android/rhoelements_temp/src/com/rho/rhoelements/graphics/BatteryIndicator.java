@@ -375,7 +375,14 @@ public class BatteryIndicator extends Indicator
 	
 	public void screenResolutionCheck(){
 
-		Display display = ((WindowManager)RhodesActivity.safeGetInstance().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+		Display display = null;
+		try
+		{
+		    display = ((WindowManager)RhodesActivity.safeGetInstance().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+		}
+		catch (Exception e) {
+            Logger.E(TAG, e);
+        }
 		int width = display.getWidth();  // deprecated
 		int height = display.getHeight();  // deprecated
 		
@@ -387,6 +394,8 @@ public class BatteryIndicator extends Indicator
 		
 		
 		DisplayMetrics metrics = new DisplayMetrics();
+		try
+		{
 		((WindowManager)RhodesActivity.safeGetInstance().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
 		switch(metrics.densityDpi){
 		     case DisplayMetrics.DENSITY_LOW:
@@ -413,7 +422,11 @@ public class BatteryIndicator extends Indicator
 		    	 LONG_SIDE = (int) (LONG_SIDE * 8 * multipleVar);
 		    	 SHORT_SIDE =  (int) (SHORT_SIDE * 8 * multipleVar);
 		                 break;
+		  }
 		}
+		catch (Exception e) {
+            Logger.E(TAG, e);
+        }
 
 	}
 }

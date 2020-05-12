@@ -1,0 +1,31 @@
+%define appname <%= $appname %>
+
+Summary:    Rhodes based application
+Name:       %{appname}
+Version:    <%= $version_app %>
+Release:    1
+Group:      Applications/Internet
+License:    Proprietary  
+Source0:	<%= $appname %>.tar
+Vendor:     <%= $vendor %>
+BuildArch:  <%= $architecture %>
+Autoreq: 0
+
+<% $deps.each do | dep | %>
+Requires: <%= dep %><% end %>
+
+%description
+Rhodes based application.
+
+%prep
+%setup -q 
+
+%build
+
+%install
+<% if $create_buildroot %>mkdir %{buildroot}<%end%>
+mv * %{buildroot}
+
+%files
+/*
+%attr(0777, root, root) /opt/%{appname}

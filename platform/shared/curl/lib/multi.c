@@ -2155,7 +2155,6 @@ CURLMcode curl_multi_perform(struct Curl_multi *multi, int *running_handles)
   while(data) {
     CURLMcode result;
     SIGPIPE_VARIABLE(pipe_st);
-
     sigpipe_ignore(data, &pipe_st);
     result = multi_runsingle(multi, now, data);
     sigpipe_restore(&pipe_st);

@@ -16,14 +16,16 @@
 #include <TargetConditionals.h>
 
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-
 #include "iphone/extconf.h"
-
 #else
 #include "macosx/extconf.h"
 #endif
 #elif defined(ANDROID)
 #include "android/extconf.h"
+#endif
+
+#ifdef OS_LINUX
+#include "linux/extconf.h"
 #endif
 //RHO
 

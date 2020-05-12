@@ -358,11 +358,12 @@ class Jake
   end
 
   def self.print_statistic_in_progress
-      new_total = ($mspec_lines + $jasmine_lines) / 10
-      if new_total*10 > $total_lines_printed
-          $total_lines_printed = new_total*10
-          puts " "+$total_lines_printed.to_s+" tests / "+($passed_lines+$failed_lines).to_s+" checks prоcessed. Latest test is ["+$latest_test_line.to_s+"]"
-      end
+    dev = 10
+    new_total = ($mspec_lines + $jasmine_lines) / dev
+    if new_total*dev > $total_lines_printed
+        $total_lines_printed = new_total*dev
+        puts " "+$total_lines_printed.to_s+" tests / "+($passed_lines+$failed_lines).to_s+" checks prоcessed. Latest test is ["+$latest_test_line.to_s+"]"
+    end
   end
 
   def self.process_spec_output(line)

@@ -644,12 +644,13 @@ Curl_addrinfo *Curl_resolver_getaddrinfo(struct connectdata *conn,
 
   snprintf(sbuf, sizeof(sbuf), "%d", port);
 
+#ifndef OS_LINUX //TODO: understand why async does not work on linux
   /* fire up a new resolver thread! */
   if(init_resolve_thread(conn, hostname, port, &hints)) {
     *waitp = 1; /* expect asynchronous response */
     return NULL;
   }
-
+#endif
   /* fall-back to blocking version */
   infof(conn->data, "init_resolve_thread() failed for %s; %s\n",
         hostname, Curl_strerror(conn, errno));

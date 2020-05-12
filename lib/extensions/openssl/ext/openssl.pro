@@ -33,6 +33,16 @@ windows
   HEADERS += windows/extconf.h
 }
 
+unix:!macx {
+    DEFINES += OS_LINUX
+    DESTDIR = $$PWD/../../../../platform/linux/bin/extensions
+    OBJECTS_DIR = $$PWD/../../../../platform/linux/bin/extensions/openssl
+    INCLUDEPATH += $$PWD/../../../../platform/shared/ruby/linux
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
+    HEADERS += linux/extconf.h
+}
+
 DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE
 
 !isEmpty(RHOSIMULATOR_BUILD) {

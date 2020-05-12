@@ -28,7 +28,7 @@
 //#include <CFNetwork/CFNetwork.h>
 //#include <Security/Security.h>
 
-#include "sslimpl.h"
+#include "SSLImpl.h"
 
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -58,6 +58,7 @@ namespace net
 void * SSLImpl::createStorage()
 {
     //return calloc(1, sizeof(ssl_data_t));
+    return NULL;
 }
 
 void SSLImpl::freeStorage(void *ptr)

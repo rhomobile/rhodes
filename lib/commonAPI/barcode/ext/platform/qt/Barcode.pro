@@ -1,28 +1,25 @@
 QT += core gui multimedia network
 
-lessThan(QT_MINOR_VERSION, 6): {
-    QT += webkit widgets webkitwidgets widgets multimediawidgets
-    DEFINES += RHODES_VERSION_1
-}
-
 equals(QT_MAJOR_VERSION, 5) {
-    equals(QT_MINOR_VERSION, 6) {
-        QT += webkit widgets
+    lessThan(QT_MINOR_VERSION, 6): {
+        QT += webkit widgets webkitwidgets multimediawidgets widgets
+        DEFINES += RHODES_VERSION_1
+    }
+    equals(QT_MINOR_VERSION, 6): {
+        QT += webkit quick
         DEFINES += OS_SAILFISH OS_LINUX
         CONFIG += sailfishapp c++14 sailfishapp_i18n
-        message(Sailfish enabled)
+    }
+    greaterThan(QT_MINOR_VERSION, 7): {
+        QT += webengine webenginecore webenginewidgets multimediawidgets widgets
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2
     }
 }
 
-greaterThan(QT_MINOR_VERSION, 6): {
-    QT += webengine webenginecore webenginewidgets widgets multimediawidgets
-    CONFIG += c++14
-    DEFINES += CPP_ELEVEN RHODES_VERSION_2
-}
 
 include(src/qzxing/QZXing.pri)
 
-TARGET = Barcode
 TEMPLATE = lib
 CONFIG += staticlib warn_on
 
@@ -40,14 +37,13 @@ $$RHODES_ROOT/platform/shared\
 
 
 macx {
+  TARGET = Barcode
   DESTDIR = $$RHODES_ROOT/platform/osx/bin/extensions
   OBJECTS_DIR = $$RHODES_ROOT/platform/osx/bin/extensions/barcode
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/iphone
-HEADERS +=   src/BarcodeDialogBuilder.h \
-    src/BarcodeDialogView.h
-SOURCES += src/BarcodeDialogView.cpp
 }
 win32 {
+  TARGET = Barcode
   DESTDIR = $$RHODES_ROOT/platform/win32/bin/extensions
   OBJECTS_DIR = $$RHODES_ROOT/platform/win32/bin/extensions/barcode 
   DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE WIN32_LEAN_AND_MEAN
@@ -59,21 +55,25 @@ win32 {
     #DEFINES += _ITERATOR_DEBUG_LEVEL=2
   }
   INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/win32
-HEADERS +=   src/BarcodeDialogBuilder.h \
-    src/BarcodeDialogView.h
-SOURCES += src/BarcodeDialogView.cpp
+
 }
 
-unix:!macx {
-  INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/sailfish
-  INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish/src
-  INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish
 
-  contains(DEFINES, OS_LINUX)  {
-    DESTDIR = $$RHODES_ROOT/platform/linux/bin/extensions
-    OBJECTS_DIR = $$RHODES_ROOT/platform/linux/bin/extensions/barcode
-  }
+unix:!macx {
+TARGET = barcode
+DEFINES += OS_LINUX
+DESTDIR = $$RHODES_ROOT/platform/linux/bin/extensions
+OBJECTS_DIR = $$RHODES_ROOT/platform/linux/bin/extensions/barcode
+INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/linux
+INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/rhodes
+
+QMAKE_CFLAGS += -fvisibility=hidden
+QMAKE_CXXFLAGS += -fvisibility=hidden
+
   contains(DEFINES, OS_SAILFISH)  {
+    INCLUDEPATH += $$RHODES_ROOT/platform/shared/ruby/sailfish
+    INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish/src
+    INCLUDEPATH += $$RHODES_ROOT/platform/shared/qt/sailfish
     HEADERS += src/barcodeqmlmodel.h
     SOURCES += src/barcodeqmlmodel.cpp
   }
@@ -102,20 +102,24 @@ win32 {
 
 
 HEADERS += \
-..\..\shared\generated\cpp\IBarcode.h\
-..\..\shared\generated\cpp\BarcodeBase.h \
+    ..\..\shared\generated\cpp\IBarcode.h\
+    ..\..\shared\generated\cpp\BarcodeBase.h \
     src/BarcodeController.h \
+    src/BarcodeDialogBuilder.h \
+    src/BarcodeDialogView.h\
     src/decoderthread.h
 
 SOURCES += \
-..\..\shared\generated\cpp\Barcode_js_wrap.cpp\
-..\..\shared\generated\cpp\Barcode_ruby_wrap.cpp\
-..\..\shared\generated\cpp\BarcodeBase.cpp\
-..\..\shared\generated\Barcode_api_init.cpp\
-..\..\shared\generated\Barcode_js_api.cpp\
-..\..\shared\generated\Barcode_ruby_api.c\
-src\Barcode_impl.cpp \
+    ..\..\shared\generated\cpp\Barcode_js_wrap.cpp\
+    ..\..\shared\generated\cpp\Barcode_ruby_wrap.cpp\
+    ..\..\shared\generated\cpp\BarcodeBase.cpp\
+    ..\..\shared\generated\Barcode_api_init.cpp\
+    ..\..\shared\generated\Barcode_js_api.cpp\
+    ..\..\shared\generated\Barcode_ruby_api.c\
+    src\Barcode_impl.cpp \
     src/BarcodeController.cpp \
+    src/BarcodeDialogView.cpp \
     src/decoderthread.cpp
+
 
 RESOURCES += $$RHODES_ROOT/lib/commonAPI/barcode/ext/platform/qt/resources/barcode.qrc

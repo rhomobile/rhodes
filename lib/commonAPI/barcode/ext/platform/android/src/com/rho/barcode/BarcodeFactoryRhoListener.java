@@ -28,7 +28,15 @@ public class BarcodeFactoryRhoListener extends AbstractRhoListener
 		Logger.I(TAG, "BarcodeFactoryRhoListener onResume");
 		int myUseDWScanning = 0;
 		IRhoConfig myIRhoConfig= null;
-		IRhoWebView myIRhoWebView=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
+		IRhoWebView myIRhoWebView=null;
+
+		try {
+		    myIRhoWebView=RhodesActivity.safeGetInstance().getMainView().getWebView(0);
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+			return;
+        }
 		GoogleWebView myGoogleWebView=null;
 
 		try {

@@ -315,6 +315,7 @@ public class RhodesService extends Service {
 	public static native void resetFileLogging(String log_path);
 
 	public native void notifyNetworkStatusChanged( int status );
+	public static native String getBaseUrl();
 
 
 	public static RhodesService getInstance() {
@@ -322,6 +323,7 @@ public class RhodesService extends Service {
 	}
 
 	public static native boolean isTitleEnabled();
+	public static native boolean isLocalHttpsServerEnable();
 
 	private static final String CONF_PHONE_ID = "phone_id";
 	private PhoneId getPhoneId() {
@@ -358,9 +360,44 @@ public class RhodesService extends Service {
 		return mBinder;
 	}
 
+
+	private void innerStartForeground() {
+		Logger.D(TAG, "innerStartForeground() START");
+		if (Build.VERSION.SDK_INT >= 26) {
+            String CHANNEL_ID = "Rhodes_Service_Channel";
+            //NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+            //        "Rhomobile Platform Service",
+            //        NotificationManager.IMPORTANCE_DEFAULT);
+
+            //((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+
+            //Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+            //        .setContentTitle("")
+            //        .setContentText("").build();
+
+			Logger.D(TAG, "innerStartForeground() prepare builder PRE");
+			Builder builder = AndroidFunctionalityManager.getAndroidFunctionality().getNotificationBuilder(this, CHANNEL_ID, "Rhomobile Platform Service");
+			Logger.D(TAG, "innerStartForeground() prepare builder 1");
+			builder.setSmallIcon(R.mipmap.icon);
+			Logger.D(TAG, "innerStartForeground() prepare builder 2");
+			builder.setPriority(Notification.PRIORITY_HIGH);
+			Logger.D(TAG, "innerStartForeground() prepare builder 3");
+			builder.setOngoing(true);
+			Logger.D(TAG, "innerStartForeground() prepare builder POST");
+
+            startForeground(1, builder.build());
+        }
+		Logger.D(TAG, "innerStartForeground() FINISH");
+	}
+
 	@Override
 	public void onCreate() {
 		Logger.D(TAG, "onCreate");
+		super.onCreate();
+		// use new mechanism for foregorund service only for 9.0 and later
+		if (Build.VERSION.SDK_INT >= 28) {
+			innerStartForeground();
+		}
 
 		sInstance = this;
 
@@ -416,6 +453,8 @@ public class RhodesService extends Service {
 	}
 
 	private void initForegroundServiceApi() {
+		Logger.D(TAG, "initForegroundServiceApi() START");
+
 		try {
 			mStartForeground = getClass().getMethod("startForeground", mStartForegroundSignature);
 			mStopForeground = getClass().getMethod("stopForeground", mStopForegroundSignature);
@@ -425,7 +464,10 @@ public class RhodesService extends Service {
 			mStartForeground = null;
 			mStopForeground = null;
 			mSetForeground = null;
+			Logger.E(TAG, "Can't get startForeground() methods !");
+			Logger.E(TAG, e);
 		}
+		Logger.D(TAG, "initForegroundServiceApi() FINISH");
 	}
 
 	@Override
@@ -452,6 +494,10 @@ public class RhodesService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Logger.D(TAG, "onStartCommand");
+		// use new mechanism for foregorund service only for 9.0 and later
+		if (Build.VERSION.SDK_INT >= 28) {
+			innerStartForeground();
+		}
 		try {
 			handleCommand(intent, startId);
 		}
@@ -1592,12 +1638,18 @@ public class RhodesService extends Service {
     }
 
     public static String getNativeMenu() {
-        List<Object> menuItems = RhodesActivity.safeGetInstance().getMenu().getMenuDescription();
-        String menuJson = new JSONGenerator(menuItems).toString();
 
-        Logger.T(TAG, "Menu: " + menuJson);
+		try {
+            List<Object> menuItems = RhodesActivity.safeGetInstance().getMenu().getMenuDescription();
+            String menuJson = new JSONGenerator(menuItems).toString();
+			Logger.T(TAG, "Menu: " + menuJson);
+			return menuJson;
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+		}
 
-        return menuJson;
+        return "";
     }
 
     public static void setNativeMenu(List<String> jsonMenu) {
@@ -1623,7 +1675,8 @@ public class RhodesService extends Service {
             } catch (JSONException e) {
                 Logger.E(TAG, e);
             }
-        }
+		}
+		try {
         RhodesActivity.safeGetInstance().getMenu().setMenu(nativeMenu);
         if (Build.VERSION.SDK_INT >= 11) {
         	PerformOnUiThread.exec(new Runnable() {
@@ -1631,7 +1684,11 @@ public class RhodesService extends Service {
         			RhodesActivity.safeGetInstance().invalidateOptionsMenu();
         		}
         	});
-        }
+		}
+		}
+		catch (Exception e) {
+			Logger.E(TAG, e);
+		}
     }
 
    public static String getLocalIpAddress()

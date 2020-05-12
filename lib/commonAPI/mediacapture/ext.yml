@@ -38,7 +38,7 @@ project_paths:
   
 xml_api_paths: ext/camera.xml, ext/videocapture.xml
 
-platforms: ["wm", "iphone", "android", "wp8" , "uwp", "win32", "sailfish"]
+platforms: ["wm", "iphone", "android", "wp8" , "uwp", "win32", "sailfish", "linux"]
 
 wm:
   files:

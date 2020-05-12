@@ -5,7 +5,7 @@ before_install:
 install:
 - ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_ruby.sh
-- rvm use 2.3.4
+- rvm use 2.5.1
 - |
   if [[ -z $(rvm gemset list | grep rhodes) ]]; then
     rvm gemset create rhodes;
@@ -18,7 +18,7 @@ install:
 script:
 - ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
 - rvm list
-- rvm use 2.3.4
+- rvm use 2.5.1
 - rvm gemset list
 - rvm gemset use rhodes
 - gem list
@@ -64,6 +64,7 @@ before_deploy:
 - "$TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_deploy.sh"
 deploy:
   provider: s3
+  edge: true
   bucket: tau-autobuilds
   access_key_id: "$AWS_ACCESS_KEY"
   secret_access_key: "$AWS_SECRET_KEY"
@@ -84,6 +85,7 @@ android:
   - extra-google-m2repository
   - extra-android-m2repository
   - build-tools-26.0.1
+  - android-26
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
   - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
@@ -92,7 +94,7 @@ env:
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
   - S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
-  - QTDIR="$HOME/Qt5.9.5/5.9.5/clang_64"
+  - QTDIR="$HOME/Qt5.13.2/5.13.2/clang_64"
 
 #osx_image: xcode9.1
 
@@ -111,17 +113,37 @@ matrix:
     os: osx
     env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"
 
-  - language: android
+  - language: c++
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17c"
+    env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+    dist: bionic
+    addons:
+      apt:
+        packages:
+          - debhelper
+          - fakeroot
+
+  - language: c++
+    os: linux
+    env: RHO_TARGET="linux"    RHO_APP="framework_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
+    dist: bionic
+    addons:
+      apt:
+        packages:
+          - debhelper
+          - fakeroot
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="17c"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="19" NDK_NUMBER="20"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c"
+
+  - language: android
+    os: linux
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20"
 
   # - language: android
   #   os: linux

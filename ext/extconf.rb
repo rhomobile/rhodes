@@ -19,11 +19,24 @@ File.chmod 0755, File.dirname(__FILE__) + "/../bin/upgrade-rhodes-app"
 
 if RUBY_PLATFORM =~ /darwin/
     currentdir = Dir.pwd()
-    chdir (File.dirname(__FILE__) + "/../platform/osx/bin/RhoSimulator/")
-    system("unzip RhoSimulator.app.zip")
-    rm_rf "RhoSimulator.app.zip"
+    if File.exists?(File.dirname(__FILE__) + "/../platform/osx/bin/RhoSimulator/RhoSimulator.app.zip")
+        chdir (File.dirname(__FILE__) + "/../platform/osx/bin/RhoSimulator/")
+        system("unzip RhoSimulator.app.zip")
+        rm_rf "RhoSimulator.app.zip"
+    end
     Dir.chdir currentdir
 end
+
+if RUBY_PLATFORM =~ /darwin/
+    currentdir = Dir.pwd()
+    if File.exists?(File.dirname(__FILE__) + "/../lib/extensions/fcm-push/ext/iphone/Frameworks/Frameworks.zip")
+        chdir (File.dirname(__FILE__) + "/../lib/extensions/fcm-push/ext/iphone/Frameworks/")
+        system("unzip Frameworks.zip")
+        rm_rf "Frameworks.zip"
+    end
+    Dir.chdir currentdir
+end
+
 
 #This is the hack, we make all the things to make it look like an extension has compiled
 

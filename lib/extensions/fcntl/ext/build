@@ -5,6 +5,10 @@ if [ "$RHO_PLATFORM" = "iphone" ]; then
 cd iphone
 rake --trace
 
+elif [ "$RHO_PLATFORM" = "linux" ]; then
+
+rake --trace
+
 else
 
 rake --trace

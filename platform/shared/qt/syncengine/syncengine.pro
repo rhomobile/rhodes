@@ -1,14 +1,12 @@
-greaterThan(QT_MINOR_VERSION, 6): {
-    CONFIG += c++14
-    DEFINES += CPP_ELEVEN
-    DEFINES += RHODES_VERSION_2
-}
-
-
 equals(QT_MAJOR_VERSION, 5) {
     equals(QT_MINOR_VERSION, 6) {
         DEFINES += OS_SAILFISH OS_LINUX CPP_ELEVEN
         CONFIG += c++14
+    }
+    greaterThan(QT_MINOR_VERSION, 6): {
+        CONFIG += c++14
+        DEFINES += CPP_ELEVEN
+        DEFINES += RHODES_VERSION_2
     }
 }
 
@@ -47,14 +45,19 @@ win32 {
 }
 
 unix:!macx {
-  DESTDIR = $$PWD/../../../linux/bin/syncengine
-  OBJECTS_DIR = $$PWD/../../../linux/bin/syncengine/tmp
-  DEFINES += _GNU_SOURCE OS_LINUX OS_SAILFISH
-  QMAKE_CFLAGS += -fvisibility=hidden
-  QMAKE_CXXFLAGS += -fvisibility=hidden
+    INCLUDEPATH += $$PWD/../../ruby/linux
+    HEADERS += $$PWD/../../ruby/linux/ruby/config.h
+    DESTDIR = $$PWD/../../../linux/bin/syncengine
+    OBJECTS_DIR = $$PWD/../../../linux/bin/syncengine/tmp
+    DEFINES += _GNU_SOURCE OS_LINUX
+    QMAKE_CFLAGS += -fvisibility=hidden
+    QMAKE_CXXFLAGS += -fvisibility=hidden
 
-  INCLUDEPATH += $$PWD/../../ruby/include\
-                 $$PWD/../../ruby/sailfish
+    INCLUDEPATH += $$PWD/../../ruby/include\
+                 $$PWD/../../ruby/linux
+
+    #QMAKE_CFLAGS_RELEASE -= -O2
+    #QMAKE_CXXFLAGS_RELEASE -= -O2
 }
 
 DEFINES += RHODES_QT_PLATFORM
