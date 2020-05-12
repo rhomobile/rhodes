@@ -1451,7 +1451,6 @@ namespace "build" do
     class BuildContext
       attr_accessor :libname
       attr_accessor :sourcelist
-      attr_accessor :srcdir
       attr_accessor :extra_copmiler_args
     end
 
@@ -1475,15 +1474,11 @@ namespace "build" do
       end
 
       def build
-        srcdir = @context.srcdir
         objdir = File.join($tmpdir, @context.libname)
         libdir = File.join($app_builddir, @context.libname)
         mkdir_p libdir unless File.directory? libdir
 
-        args = [
-#          "-I\"#{srcdir}\"",
-#          "-I\"#{$shareddir}\""
-        ]
+        args = []
 
         args.concat @context.extra_copmiler_args        
 
@@ -1513,11 +1508,12 @@ namespace "build" do
       print_timestamp('build:android:libsqlite START')
 
       b = LibBuilder.new
-      b.context.srcdir = File.join($shareddir, "sqlite")
       b.context.libname = 'sqlite'
       b.context.sourcelist = File.join($builddir, 'libsqlite_build.files')
+
+      srcdir = File.join($shareddir, "sqlite")
       b.context.extra_copmiler_args = [
-        "-I\"#{b.context.srcdir}\"",
+        "-I\"#{srcdir}\"",
         "-I\"#{$shareddir}\""
       ]
       b.build
@@ -1558,14 +1554,15 @@ namespace "build" do
       #export CPPFLAGS="--sysroot <ndkroot>/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
       #./configure --without-ssl --without-ca-bundle --without-ca-path --without-libssh2 --without-libidn --disable-ldap --disable-ldaps --host=arm-eabi
 
-      b = LibBuilder.new
-      b.context.srcdir = File.join($shareddir, "curl", "lib")
+      b = LibBuilder.new      
       b.context.libname = 'curl'
       b.context.sourcelist = File.join($builddir, 'libcurl_build.files')
+
+      srcdir = File.join $shareddir, "curl", "lib"
       b.context.extra_copmiler_args = [
         "-DHAVE_CONFIG_H",
-        "-I\"#{b.context.srcdir}/../include\"",
-        "-I\"#{b.context.srcdir}\"",
+        "-I\"#{srcdir}/../include\"",
+        "-I\"#{srcdir}\"",
         "-I\"#{$shareddir}\""
       ]
       b.build
@@ -1576,21 +1573,22 @@ namespace "build" do
     task :libruby => "config:android" do
       print_timestamp('build:android:libruby START')
 
-      b = LibBuilder.new
-      b.context.srcdir = File.join($shareddir, "ruby")
+      b = LibBuilder.new      
       b.context.libname = 'ruby'
       b.context.sourcelist = File.join($builddir, 'libruby_build.files')
+
+      srcdir = File.join($shareddir, "ruby")
       b.context.extra_copmiler_args = [   
         "-DRUBY_EXPORT",
         "-Wno-uninitialized",
         "-Wno-missing-field-initializers",
         '-Wno-shadow',
-        "-I\"#{b.context.srcdir}/include\"",
-        "-I\"#{b.context.srcdir}/android\"",
-        "-I\"#{b.context.srcdir}/generated\"",
-        "-I\"#{b.context.srcdir}\"",
-        "-I\"#{b.context.srcdir}/..\"",
-        "-I\"#{b.context.srcdir}/../sqlite\""    
+        "-I\"#{srcdir}/include\"",
+        "-I\"#{srcdir}/android\"",
+        "-I\"#{srcdir}/generated\"",
+        "-I\"#{srcdir}\"",
+        "-I\"#{srcdir}/..\""
+#        "-I\"#{b.context.srcdir}/../sqlite\""    
       ]
       b.build
 
@@ -1600,13 +1598,14 @@ namespace "build" do
     task :libjson => "config:android" do
       print_timestamp('build:android:libjson START')
 
-      b = LibBuilder.new
-      b.context.srcdir = File.join($shareddir, "json")
+      b = LibBuilder.new      
       b.context.libname = 'json'
       b.context.sourcelist = File.join($builddir, 'libjson_build.files')
+
+      srcdir = File.join($shareddir, "json")
       b.context.extra_copmiler_args = [   
-        "-I\"#{b.context.srcdir}\"",
-        "-I\"#{b.context.srcdir}/..\""
+        "-I\"#{srcdir}\"",
+        "-I\"#{srcdir}/..\""
       ]
       b.build
 
@@ -1616,12 +1615,13 @@ namespace "build" do
     task :librholog => "config:android" do
       print_timestamp('build:android:librholog START')
 
-      b = LibBuilder.new
-      b.context.srcdir = File.join($shareddir, "logging")
+      b = LibBuilder.new      
       b.context.libname = 'rholog'
       b.context.sourcelist = File.join($builddir, 'librholog_build.files')
+
+      srcdir = File.join($shareddir, "logging")
       b.context.extra_copmiler_args = [   
-        "-I\"#{b.context.srcdir}/..\""
+        "-I\"#{srcdir}/..\""
       ]
       b.build
 
@@ -1632,11 +1632,10 @@ namespace "build" do
       print_timestamp('build:android:librhomain START')
 
       b = LibBuilder.new
-      b.context.srcdir = File.join($shareddir, "rhomain")
       b.context.libname = 'rhomain'
       b.context.sourcelist = File.join($builddir, 'librhomain_build.files')
       b.context.extra_copmiler_args = [   
-        "-I\"#{b.context.srcdir}/..\"",
+        "-I\"#{$shareddir}\"",
         "-I\"#{$commonapidir}\""
       ]
       b.build
@@ -1648,7 +1647,6 @@ namespace "build" do
       print_timestamp('build:android:librhocommon START')
 
       b = LibBuilder.new
-      b.context.srcdir = File.join($shareddir, "rhocommon")
       b.context.libname = 'rhocommon'
       b.context.sourcelist = File.join($builddir, 'librhocommon_build.files')
       b.context.extra_copmiler_args = [   
@@ -1666,14 +1664,15 @@ namespace "build" do
     task :librhodb => "config:android" do
       print_timestamp('build:android:librhodb START')
 
-      b = LibBuilder.new
-      b.context.srcdir = File.join($shareddir, "db")
+      b = LibBuilder.new      
       b.context.libname = 'rhodb'
       b.context.sourcelist = File.join($builddir, 'librhodb_build.files')
+
+      srcdir = File.join($shareddir, "db")
       b.context.extra_copmiler_args = [   
-        "-I\"#{b.context.srcdir}\"",
-        "-I\"#{b.context.srcdir}/..\"",
-        "-I\"#{b.context.srcdir}/../sqlite\"",
+        "-I\"#{srcdir}\"",
+        "-I\"#{srcdir}/..\"",
+        "-I\"#{srcdir}/../sqlite\"",
         "-I\"#{$shareddir}/ruby/include\"",
         "-I\"#{$shareddir}/ruby/android\""
       ]
@@ -1685,14 +1684,15 @@ namespace "build" do
     task :librhosync => "config:android" do
       print_timestamp('build:android:librhosync START')
 
-      b = LibBuilder.new
-      b.context.srcdir = File.join($shareddir, "sync")
+      b = LibBuilder.new      
       b.context.libname = 'rhosync'
       b.context.sourcelist = File.join($builddir, 'librhosync_build.files')
+
+      srcdir = File.join($shareddir, "sync")
       b.context.extra_copmiler_args = [
-        "-I\"#{b.context.srcdir}\"",   
-        "-I\"#{b.context.srcdir}/..\"",
-        "-I\"#{b.context.srcdir}/../sqlite\""
+        "-I\"#{srcdir}\"",   
+        "-I\"#{srcdir}/..\"",
+        "-I\"#{srcdir}/../sqlite\""
       ]
       b.build      
 
