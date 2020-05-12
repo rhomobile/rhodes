@@ -52,7 +52,6 @@ require 'rexml/document'
 require 'securerandom'
 require 'uri'
 require 'rake'
-require File.join(pwd, 'lib/build/jake.rb')
 require 'logger'
 
 $logger = Logger.new(STDOUT)
@@ -104,6 +103,7 @@ $push_type = -1
 
 chdir File.dirname(__FILE__), :verbose => (Rake.application.options.trace == true)
 
+require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/RhoLogger.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
 require File.join(pwd, 'lib/build/GeneralTimeChecker.rb')
