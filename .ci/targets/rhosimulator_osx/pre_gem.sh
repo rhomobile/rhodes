@@ -17,3 +17,25 @@ git clone -b master https://github.com/rhomobile/rhoconnect-client.git ../rhocon
 git clone -b OpenSSL_1_1_0-stable https://github.com/tauplatform/openssl.git ../openssl
 cd ../openssl
 ./tau_build_macos_lib.sh
+
+echo "Building rhosim"
+cd $TRAVIS_BUILD_DIR
+#rm $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app.zip
+rm -rf $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/*
+rake build:osx:rhosimulator
+cd $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/
+zip -r -y RhoSimulator.app.zip RhoSimulator.app
+# rm -rf $TRAVIS_BUILD_DIR/platform/osx/bin/RhoSimulator/RhoSimulator.app
+cd $TRAVIS_BUILD_DIR
+# > build.log
+
+OUT=$?
+
+if [ $OUT -eq 0 ];then
+   echo "RhoSimulator built successfully"
+else
+   echo "Error building RhoSimulator"
+   cat build.log
+fi
+
+exit $OUT
