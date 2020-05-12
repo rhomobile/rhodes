@@ -11,7 +11,8 @@ install:
     rvm gemset create rhodes;
   fi
 - rvm gemset use rhodes
-- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_gems.sh
+#- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_gems.sh
+- bundle install
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
 
