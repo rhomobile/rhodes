@@ -36,7 +36,7 @@ import com.google.android.gms.vision.Frame;
 import android.content.Context;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
-
+import com.google.barcodereader.BarcodeFormats;
 
 public class InternalAndroidBarcodeScanner extends BarcodeCommon{
 
@@ -167,6 +167,17 @@ public class InternalAndroidBarcodeScanner extends BarcodeCommon{
 		}
 	}
 
+	@Override
+	public void getSupportedProperties(IMethodResult result)
+	{
+		Logger.I(LOGTAG, "getSupportedProperties");
+		ArrayList<Object> resultList = new ArrayList<Object>();
+		resultList.add("scannerType");
+		for(String format : BarcodeFormats.getFormats()){
+			resultList.add(format);
+		}
+		result.set(resultList);
+	}
 
 
 

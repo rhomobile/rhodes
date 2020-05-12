@@ -82,6 +82,7 @@ import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Date;
 import java.util.HashMap;
+import com.google.barcodereader.BarcodeFormats;
 
 /**
  * Activity for the multi-tracker app.  This app detects barcodes and displays the value with the
@@ -119,6 +120,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     public static final String CAMERA_INDEX_EXTRA = "camera_index"; 
     public static final String RHO_BARCODE_ID = "barcode_obj_id";
     public static final String PROPERTY_MAP = "property_map";
+    public int barcodeFormats = 0;
 
     public String lastResult = "";
     int camera_index = 0;
@@ -169,6 +171,20 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             Logger.D(TAG, "Intent Camera index: " + camera_index);
             rhoBarcodeId = intent.getStringExtra(RHO_BARCODE_ID);
             propertyMap = (HashMap<String, String>)intent.getSerializableExtra(PROPERTY_MAP);
+
+            int enabledBarcodes = 0;
+            int disabledBarcodes = 0;
+
+            for (HashMap.Entry<String, String> entry : propertyMap.entrySet()) {
+                if (entry.getValue().equalsIgnoreCase("true")){
+                    enabledBarcodes |= BarcodeFormats.getBarcodeFormat(entry.getKey());
+                }else if(entry.getValue().equalsIgnoreCase("false")){
+                    disabledBarcodes |= BarcodeFormats.getBarcodeFormat(entry.getKey());
+                }
+                //System.out.println("Key: " + entry.getKey() + " Value: " + entry.getValue());
+            }
+            barcodeFormats = enabledBarcodes;
+
             CameraSource.setTargetCameraIndex(BarcodeCommon.getCameraIdByName(rhoBarcodeId));
         }else{
             CameraSource.setTargetCameraIndex(-1);
@@ -285,8 +301,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     private void createCameraSource(boolean useFlash) {
         Context context = getApplicationContext();
 
-        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).
-        setBarcodeFormats(Barcode.ALL_FORMATS).build();
+        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).setBarcodeFormats(barcodeFormats).build();
         BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, this);
         barcodeDetector.setProcessor(new MultiProcessor.Builder<Barcode>(barcodeFactory).build());
 
