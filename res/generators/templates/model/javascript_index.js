@@ -6,15 +6,17 @@ var App = {
             $("#homeBtn").attr({"href": Rho.Application.startURI});
 
             var items = <%= name.camelize %>Model.find("all");
-            var container = $("[data-role=item-list]");
+            var container = $(".list-group");
             items.forEach(function (each) {
-                var span = $("<span>", {"class": "glyphicon glyphicon-chevron-right pull-right", "aria-hidden": true});
-                var anchor = $("<a>", {"class": "list-group-item", "href": "show.html?" + each.object()});
+                var span = $("<i data-feather=\"chevron-right\"></i>");
+                var anchor = $("<a>", {"class": "list-group-item list-group-item-action d-flex justify-content-between", "href": "show.html?" + each.object()});
                 anchor.text(each.get("<%= attributes[0] %>"));
                 anchor.append(span);
                 container.append(anchor);
+                container.append(anchor);
             });
-        }
+        };
+        setTimeout(function(){feather.replace();}, 0);
     },
 
     ShowPage: function () {
@@ -32,7 +34,8 @@ var App = {
             <% attributes.each do |attribute| %>
             $("#<%= name.downcase %><%= attribute.capitalize %>").text(item.get("<%= attribute %>"));
             <% end %>
-        }
+        };
+        feather.replace();
     },
 
     NewPage: function () {
@@ -50,7 +53,8 @@ var App = {
                 <%= name.camelize %>Model.create(properties);
                 history.back();
              });
-        }
+        };
+        feather.replace();
     },
 
     EditPage: function () {
@@ -78,6 +82,7 @@ var App = {
                  item.updateAttributes(properties);
                  history.back();
                 });
+            feather.replace();
         }
     }
 }
