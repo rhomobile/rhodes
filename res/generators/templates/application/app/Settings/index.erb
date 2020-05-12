@@ -1,62 +1,59 @@
-<div class="container-fluid">
+<div class="border d-flex justify-content-between">
+  <a href="<%%= Rho::Application.startURI %>" class="m-1 btn btn-secondary btn-sm">Home</a>
 
-  <div class="row">
-    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-    </div>
-    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-      <h3 class="text-center">Settings</h3>
-    </div>
-    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-    </div>
-  </div>
+  <h3>Settings</h3>
 
-  <div class="row">
-    <div class="list-group">
+  <span></span>
+</div>
 
-      <%% if @msg %>
-      <div class="alert alert-danger"><%%= @msg %></div>
+<div class="container-fluid p-1">
+
+
+  <div class="list-group">
+
+    <%% if @msg %>
+    <div class="alert alert-danger"><%%= @msg %></div>
+    <%% end %>
+
+    <% if @rhoconnectclient_ext %>
+
+      <li class="list-group-item">
+        <div class="row">
+          <div class="col-6">
+            <span pull-right><strong>Client ID:</strong></span>
+          </div>
+          <div class="col-6">
+            <%%= Rhom::Rhom::client_id %>
+          </div>
+        </div>
+      </li>
+
+      <a href="<%%= url_for :action => :reset %>" class="list-group-item list-group-item-action d-flex justify-content-between">
+        <span>Reset Database</span>
+        <i data-feather="chevron-right"></i>
+      </a>
+
+      <a href="<%%= url_for :action => :do_sync %>" class="list-group-item list-group-item-action d-flex justify-content-between">
+        <span>Perform Sync</span>
+        <i data-feather="chevron-right"></i>
+      </a>
+
+      <%% if Rho::RhoConnectClient.isLoggedIn %>
+      <a href="<%%= url_for :action => :logout %>" class="list-group-item list-group-item-action d-flex justify-content-between">
+        <span>Logout</span>
+        <i data-feather="chevron-right"></i>
+      </a>
+
+      <%% else %>
+      <a href="<%%= url_for :action => :login %>" class="list-group-item list-group-item-action d-flex justify-content-between">
+        <span>Login</span>
+        <i data-feather="chevron-right"></i>
+      </a>
       <%% end %>
 
-      <% if @rhoconnectclient_ext %>
-
-          <li class="list-group-item">
-            <div class="row">
-              <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                <span pull-right><strong>Client ID:</strong></span>
-              </div>
-              <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-                <%%= Rhom::Rhom::client_id %>
-              </div>
-            </div>
-          </li>
-
-          <a href="<%%= url_for :action => :reset %>" class="list-group-item">
-            <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
-            Reset Database
-          </a>
-
-          <a href="<%%= url_for :action => :do_sync %>" class="list-group-item">
-            <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
-            Perform Sync
-          </a>
-
-          <%% if Rho::RhoConnectClient.isLoggedIn %>
-          <a href="<%%= url_for :action => :logout %>" class="list-group-item">
-            <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
-            Logout
-          </a>
-
-          <%% else %>
-          <a href="<%%= url_for :action => :login %>" class="list-group-item">
-            <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
-            Login
-          </a>
-          <%% end %>
-
-      <% end %>
-
-    </div>
+    <% end %>
 
   </div>
+
 
 </div>

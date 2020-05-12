@@ -1,16 +1,14 @@
-<div class="container-fluid">
 
-  <div class="row page-title">
-    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-      <a href="<%%= url_for :action => :show, :id => @<%= name.downcase %>.object %>" class="btn btn-default btn-sm pull-left">Cancel</a>
-    </div>
-    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-      <h3 class="text-center">Edit <%%= @<%= name.downcase %>.<%= attributes[0] %> %></h3>
-    </div>
-    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-      <a href="<%%= url_for :action => :delete, :id => @<%= name.downcase %>.object %>" class="btn btn-danger btn-sm pull-right">Delete</a>
-    </div>
-  </div>
+<div class="border d-flex justify-content-between">
+  <a href="<%%= url_for :action => :show, :id => @<%= name.downcase %>.object %>" class="m-1 btn btn-secondary btn-sm">Cancel</a>
+
+  <h3>Edit <%%= @<%= name.downcase %>.<%= attributes[0] %> %></h3>
+
+  <a href="<%%= url_for :action => :delete, :id => @<%= name.downcase %>.object %>" class="m-1 btn btn-danger btn-sm">Delete</a>
+
+</div>
+
+<div class="container-fluid">
 
   <form method="POST" action="<%%= url_for :action => :update %>">
     <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>

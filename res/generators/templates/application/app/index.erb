@@ -1,36 +1,32 @@
-<div class="container-fluid">
-
+<div class="border d-flex justify-content-between">
   <% if @rhoconnectclient_ext %>
-      <div class="row page-title">
-        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-          <%% if Rho::RhoConnectClient.isLoggedIn %>
-          <a href="<%%= url_for :controller => :Settings, :action => :do_sync %>" class="btn btn-default btn-sm pull-left">
-            Sync
-          </a>
-          <%% end %>
-        </div>
-        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-          <h3 class="text-center"><%= class_name %></h3>
-        </div>
-        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-            <%% if Rho::RhoConnectClient.isLoggedIn %>
-            <a href="<%%= url_for :controller => :Settings, :action => :logout %>" class="btn btn-default btn-sm pull-right">
-              Logout
-            </a>
-            <%% else %>
-            <a href="<%%= url_for :controller => :Settings, :action => :login %>" class="btn btn-primary btn-sm pull-right">Login</a>
-            <%% end %>
-        </div>
-      </div>
+    <a href="<%%= url_for :controller => :Settings, :action => :do_sync %>"
+       class="m-1 btn btn-default btn-sm <%% if Rho::RhoConnectClient.isLoggedIn %> visible <%% else %> invisible <%% end %>">
+    </a>
   <% end %>
 
-  <div class="row">
-    <div class="list-group">
-      <a href="#" class="list-group-item">
-        <span class="glyphicon glyphicon-chevron-right pull-right" aria-hidden="true"></span>
-        Add link here...
-      </a>
-    </div>
-  </div>
+  <h3><%= class_name %></h3>
 
+  <% if @rhoconnectclient_ext %>
+    <%% if Rho::RhoConnectClient.isLoggedIn %>
+    <a href="<%%= url_for :controller => :Settings, :action => :logout %>" class="m-1 btn btn-default btn-sm">
+      Logout
+    </a>
+    <%% else %>
+    <a href="<%%= url_for :controller => :Settings, :action => :login %>" class="m-1 btn btn-primary btn-sm">Login</a>
+    <%% end %>
+  <% end %>
+</div>
+
+
+
+<div class="container-fluid p-1">
+
+  <div class="list-group">
+    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between">
+      <span>Add link here...</span>
+      <i data-feather="chevron-right"></i>
+    </a>
+  </div>
+  
 </div>
