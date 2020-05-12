@@ -1485,7 +1485,7 @@ namespace "build" do
         ENV['BUILDARGS'] = args.join(' ')
 
         $abis.each { |abi|
-          args = ['-f', "\"#{File.join( @context.builddir,'Rakefile')}\"", "arch:#{abi}"]
+          args = ['-f', "\"#{File.join( $builddir,'Rakefile')}\"", "arch:#{abi}"]
           args << '-m'
           args << '--trace' if Rake.application.options.trace
           cc_run('rake', args, nil, false, nil, Rake.application.options.trace) or raise "Build failed: #{@context.libname}"
