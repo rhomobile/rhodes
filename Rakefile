@@ -24,10 +24,6 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-
-require File.join(pwd, 'lib/build/jake.rb')
-require 'logger'
-
 $logger = Logger.new(STDOUT)
 if Rake.application.options.trace
   ENV["RHODES_BUILD_LOGGER_LEVEL"]= "DEBUG"
@@ -72,6 +68,9 @@ require 'rexml/document'
 require 'securerandom'
 require 'uri'
 require 'rake'
+require File.join(pwd, 'lib/build/jake.rb')
+require 'logger'
+
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
