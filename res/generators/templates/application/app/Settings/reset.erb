@@ -1,19 +1,15 @@
+<div class="border d-flex justify-content-between">
+  <a href="<%%= url_for :action => :index %>" class="m-1 btn btn-secondary btn-sm">Cancel</a>
+
+  <h3>Settings</h3>
+
+  <a href="<%%= url_for :action => :do_reset %>" class="m-1 btn btn-danger btn-sm">Confirm</a>
+
+</div>
+
 <div class="container-fluid">
 
-  <div class="row">
-    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-      <h3><a href="<%%= url_for :action => :index %>" class="btn btn-default btn-sm pull-left">Cancel</a></h3>
-    </div>
-    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-      <h3 class="text-center">Reset Database</h3>
-    </div>
-    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-      <h3><a href="<%%= url_for :action => :do_reset %>" class="btn btn-danger btn-sm pull-right">Confirm</a></h3>
-    </div>
-  </div>
-
-
-  <div class="text-center alert alert-danger">
+  <div class="text-center alert alert-danger mt-5">
     <h4 class="text-center">Are you sure?</h4>
 
     <p>Resetting removes all objects from your device.</p>
