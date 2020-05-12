@@ -12,7 +12,7 @@ environment:
       build_command: "build:rhosimulator"
       app_name: RhoSimulator
       target_os: win32
-      target_artefact_path: C:\Ruby23\lib\ruby\gems\2.3.0\gems\rhodes-7.1.0\platform\win32\RhoSimulator\
+      target_artefact_path: C:\Ruby23\lib\ruby\gems\2.3.0\gems\rhodes-7.3.0\platform\win32\RhoSimulator\
       target_artefact_file_name: RhoSimulator.zip
 
     - win32_auto_common_spec:
