@@ -80,17 +80,21 @@ var App = {
             }, duration);
         };
         this.updateRhoClientControlButtons = function () {
+            console.log('updateRhoClientControlButtons');
+            console.log('Rho.RhoConnectClient', Rho.RhoConnectClient);
             if (Rho.RhoConnectClient == null) {
                 return;
             }
             var loggedIn = Rho.RhoConnectClient.isLoggedIn();
-            $("#logoutBtn").toggleClass("hidden", !loggedIn);
-            $("#syncBtn").toggleClass("hidden", !loggedIn);
-            $("#loginBtn").toggleClass("hidden", loggedIn);
+            console.log(loggedIn, loggedIn)
+            $("#logoutBtn").toggleClass("invisible", !loggedIn);
+            $("#syncBtn").toggleClass("invisible", !loggedIn);
+            $("#loginBtn").toggleClass("invisible", loggedIn);
 
         };
         this.init = function () {
 
+            console.log('index page init');
             Rho.NativeToolbar.create([
                 {action: "back"},
                 {action: "separator"},
@@ -114,6 +118,7 @@ var App = {
             });
 
             that.updateRhoClientControlButtons();
+            feather.replace();
         }
     },
 
@@ -171,6 +176,8 @@ var App = {
             $("#loginItem").toggleClass("hidden", loggedIn);
         };
         this.init = function () {
+            setTimeout(function(){feather.replace();}, 0);
+            
             if (Rho.RhoConnectClient != null) {
                 Rho.RhoConnectClient.setNotification("*", that.syncNotify);
             }
@@ -245,6 +252,8 @@ var App = {
                     }
                 });
             });
+
+            setTimeout(function(){feather.replace();}, 0);
         }
     }
 }
