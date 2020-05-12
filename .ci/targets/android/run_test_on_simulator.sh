@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -x
 
-rake run:android
+rake run:android:spec

@@ -44,12 +44,14 @@ script:
     cd $HOME/$RHO_APP/$(.ci/app_build_root.rb);
   fi
 
-- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh
-
+- |
+  if [[ -z $SKIP_BUILD ]]; then
+    $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh;
+  fi
 #TODO: change this to run specs in auto mode and collect results
 - |
   if [[ -z $SKIP_TESTS ]]; then
-    travis_wait 30 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/run_app_on_simulator.sh;
+    travis_wait 30 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/$RHO_RUNNER_SCRIPT;
   fi
 
 #cache:
@@ -103,19 +105,39 @@ matrix:
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"
+    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX"
+    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"
+    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="iphone"    RHO_APP="sas"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="iphone"    RHO_APP="universal_push_example"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="iphone"    RHO_APP="rhodes_fcm_test"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="iphone"    RHO_APP="todo-nodejs"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+
+  - language: objective-c
+    os: osx
+    env: RHO_TARGET="iphone_native_lib"    RHO_APP="rhodes_lib_examples"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
   - language: c++
     os: linux
-    env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+    env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
     dist: bionic
     addons:
       apt:
@@ -125,7 +147,7 @@ matrix:
 
   - language: c++
     os: linux
-    env: RHO_TARGET="linux"    RHO_APP="framework_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
+    env: RHO_TARGET="linux"    RHO_APP="framework_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
     dist: bionic
     addons:
       apt:
@@ -135,15 +157,15 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
 
   # - language: android
   #   os: linux
