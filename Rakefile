@@ -3912,7 +3912,7 @@ task :switch_app do
   if File.exists? rhobuildyml
     config = YAML::load_file(rhobuildyml)
   else
-    $logger.warning "Cant find rhobuild.yml"
+    $logger.warn "Cant find rhobuild.yml"
   end
   config["env"]["app"] = $app_path.gsub(/\\/,"/")
   File.open(  rhobuildyml, 'w' ) do |out|
