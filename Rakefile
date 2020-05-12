@@ -54,23 +54,6 @@ require 'uri'
 require 'rake'
 require 'logger'
 
-$logger = Logger.new(STDOUT)
-if Rake.application.options.trace
-  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "DEBUG"
-  $logger.level = Logger::DEBUG
-else
-  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "INFO"
-  $logger.level = Logger::INFO
-end
-
-
-$logger.formatter = proc do |severity,datetime,progname,msg|
-  "[#{severity}]\t#{msg}\n"
-end
-
-Jake.set_logger( $logger )
-
-
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
 =begin
@@ -116,6 +99,23 @@ require File.join(pwd, 'lib/build/BuildConfig.rb')
 require File.join(pwd, 'lib/build/RhoHubAccount.rb')
 
 require File.join(pwd, 'lib/build/rhoDevelopment.rb')
+
+$logger = Logger.new(STDOUT)
+if Rake.application.options.trace
+  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "DEBUG"
+  $logger.level = Logger::DEBUG
+else
+  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "INFO"
+  $logger.level = Logger::INFO
+end
+
+
+$logger.formatter = proc do |severity,datetime,progname,msg|
+  "[#{severity}]\t#{msg}\n"
+end
+
+Jake.set_logger( $logger )
+
 
 
 
