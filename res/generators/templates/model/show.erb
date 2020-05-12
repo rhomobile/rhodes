@@ -1,32 +1,26 @@
-<div class="container-fluid">
+<div class="border d-flex justify-content-between">
+  <a href="<%%= url_for :action => :index %>" class="m-1 btn btn-secondary btn-sm">Back</a>
 
-  <div class="row page-title">
-    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-      <a href="<%%= url_for :action => :index %>" class="btn btn-default btn-sm pull-left">Back</a>
-    </div>
-    <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-      <h3 class="text-center"><%%= @<%= name.downcase %>.<%= attributes[0] %> %></h3>
-    </div>
-    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-      <a href="<%%= url_for :action => :edit, :id => @<%= name.downcase %>.object %>" class="btn btn-primary btn-sm pull-right">Edit</a>
-    </div>
-  </div>
+  <h3><%%= @<%= name.downcase %>.<%= attributes[0] %> %></h3>
 
-  <div class="row">
-    <ul class="list-group">
-      <% attributes.each do |attribute| %>
-          <li class="list-group-item">
-            <div class="row">
-              <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                <span pull-right><strong><%= attribute.camelize %></strong></span>
-              </div>
-              <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-                <%%= @<%= name.downcase %>.<%= attribute %> %>
-              </div>
-            </div>
-          </li>
-      <% end %>
-    </ul>
-  </div>
+  <a href="<%%= url_for :action => :edit, :id => @<%= name.downcase %>.object %>" class="m-1 btn btn-primary btn-sm">Edit</a>
+
+</div>
+
+<div class="container-fluid p-1">
+
+  <ul class="list-group">
+    <% attributes.each do |attribute| %>
+      <li class="list-group-item">
+        <div class="row">
+          <div class="col-6">
+            <span><strong><%= attribute.camelize %></strong></span>
+          </div>
+          <div class="col-6"><%%= @<%= name.downcase %>.<%= attribute %> %></div>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+
 
 </div>
