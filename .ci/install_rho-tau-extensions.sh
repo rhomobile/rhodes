@@ -12,6 +12,6 @@ fi
 
 git clone https://$GITHUB_TRAVIS_TOKEN:x-oauth-basic@github.com/tauplatform/rho-tau-extensions.git $HOME/rho-tau-extensions
 cd $HOME/rho-tau-extensions
-rake gem:make_gem
+rake gem
 gem install ./rho-tau-extensions-$(cat ./version).gem --no-document
 cd $TRAVIS_BUILD_DIR

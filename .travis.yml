@@ -119,7 +119,7 @@ matrix:
 
   - language: objective-c
     os: osx
-    osx_image: xcode11.4
+    #osx_image: xcode11.4
     env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
 
   - language: objective-c
