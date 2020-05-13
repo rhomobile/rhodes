@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo "Installing Rhoconnect client"
+echo "Installing Rho-Tau-Extensions"
 
 set -e
 
