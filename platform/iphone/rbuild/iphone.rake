@@ -1986,7 +1986,7 @@ namespace "build" do
 
         Rake::Task['config:iphone'].invoke
 
-        iphone_project = generate_correct_xcode_project_filename
+        iphone_project = generate_correct_xcode_project_path
 
         if !File.exist?(iphone_project)
 
