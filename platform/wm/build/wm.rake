@@ -1716,15 +1716,28 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 
 
       directory = $target_path
-      zipfile_name = File.join($target_path, "RhoSimulator.zip")
+      $zipfile_name = File.join($target_path, "RhoSimulator.zip")
 
       args = []
       args << "a"
       args << "-tzip"
-      args << zipfile_name
+      args << $zipfile_name
       args << directory + "/*"
       puts Jake.run($zippath, args)
     end
+
+    task :rhosimulator_to  => ["build:win32:rhosimulator"] do
+      ARGV.each { |a| task a.to_sym do ; end }
+      targetfileName = ARGV[1]
+
+      dir = File.dirname(targetfileName)
+      if not File.directory?(dir)
+        FileUtils.mkdir_p(dir)
+      end
+      cp $zipfile_name, targetfileName
+      
+    end
+
   end
 
   #desc "Build rhodes for win32"
