@@ -133,7 +133,7 @@ matrix:
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="iphone_native_lib"    RHO_APP="rhodes_lib_examples"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+    env: RHO_TARGET="iphone_native_lib"    RHO_APP="rhodes_lib_examples"  CACHE_NAME="RVM_OSX2"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
   - language: c++
     os: linux
