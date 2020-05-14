@@ -8,4 +8,5 @@ export HOMEBREW_NO_INSTALL_CLEANUP=1
 #brew install openssl
 rvm get stable
 rvm install --autolibs=disable $RHO_RUBY
+rvm reload
 fi

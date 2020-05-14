@@ -98,7 +98,7 @@ env:
   - S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
   - QTDIR="$HOME/Qt5.13.2/5.13.2/clang_64"
-  - RHO_RUBY="${RHO_RUBY:=2.7}"
+  - RHO_RUBY="${RHO_RUBY:=2.7.0}"
 
 #osx_image: xcode9.1
 
@@ -107,19 +107,19 @@ matrix:
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.5"
+    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.5.7"
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.6"
+    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.6.5"
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.7"
+    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.7.0"
 
   - language: c++
     os: linux
-    env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-7 && CXX=g++-7" RHO_RUBY="2.5"
+    env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-7 && CXX=g++-7" RHO_RUBY="2.5.7"
     dist: bionic
     addons:
       apt:
@@ -139,15 +139,15 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c" RHO_RUBY="2.5"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c" RHO_RUBY="2.5.7"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c" RHO_RUBY="2.6"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c" RHO_RUBY="2.6.5"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20" RHO_RUBY="2.7"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20" RHO_RUBY="2.7.0"
 
   # - language: android
   #   os: linux
