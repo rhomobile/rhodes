@@ -199,7 +199,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"  RUBY_VERSION="2.7"
 
   - language: android
     os: linux
