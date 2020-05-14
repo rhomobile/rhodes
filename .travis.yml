@@ -55,7 +55,7 @@ script:
 #TODO: change this to run specs in auto mode and collect results
 - |
   if [[ -z $SKIP_TESTS ]]; then
-    travis_wait 30 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/$RHO_RUNNER_SCRIPT;
+    travis_wait 45 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/$RHO_RUNNER_SCRIPT;
   fi
 
 #cache:
