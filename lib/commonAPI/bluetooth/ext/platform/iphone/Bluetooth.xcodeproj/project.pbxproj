@@ -293,12 +293,7 @@
 					"$(RHO_ROOT)/platform/shared/ruby/include",
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/common,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared,
-					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
+					"$(RHO_ROOT)/platform/iphone/Classes",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -320,12 +315,7 @@
 					"$(RHO_ROOT)/platform/shared/ruby/include",
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/common,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/tauplatform/rhodes/platform/shared,
-					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
+					"$(RHO_ROOT)/platform/iphone/Classes",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = NO;

@@ -17,6 +17,19 @@
       </intent-filter>
     </activity>
 	  <uses-library android:name="com.symbol.emdk" android:required="false"/>
+
+
+    <meta-data
+      android:name="com.google.android.gms.version"
+      android:value="@integer/google_play_services_version" />
+
+    <activity android:name="com.google.barcodereader.BarcodeCaptureActivity"
+      android:screenOrientation="portrait"
+      android:configChanges="orientation|keyboardHidden|screenSize"
+      android:theme="@style/AppTheme.FullScreen"
+      android:windowSoftInputMode="stateAlwaysHidden">
+    </activity>
+    
   </application >
 
   <uses-permission android:name="android.permission.FLASHLIGHT"/>

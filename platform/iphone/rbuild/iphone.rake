@@ -1261,13 +1261,15 @@ namespace "config" do
         end
     end
 
-    # unpack Google frameworks zip
+    # unpack Google frameworks zip- only in case of sources of RHodes used - in case of GEM zip unpacked during installation
     if RUBY_PLATFORM =~ /darwin/
         currentdir = Dir.pwd()
         if File.exists?(File.dirname(__FILE__) + "/../../../lib/extensions/fcm-push/ext/iphone/Frameworks/Frameworks.zip")
-            chdir (File.dirname(__FILE__) + "/../../../lib/extensions/fcm-push/ext/iphone/Frameworks/")
-            system("unzip Frameworks.zip")
-            rm_rf "Frameworks.zip"
+            if !File.exists?(File.dirname(__FILE__)+ "/../../../lib/extensions/fcm-push/ext/iphone/Frameworks/FirebaseCore.xcframework")
+               chdir (File.dirname(__FILE__) + "/../../../lib/extensions/fcm-push/ext/iphone/Frameworks/")
+               system("unzip Frameworks.zip")
+               rm_rf "Frameworks.zip"
+            end
         end
         Dir.chdir currentdir
     end
@@ -1984,7 +1986,7 @@ namespace "build" do
 
         Rake::Task['config:iphone'].invoke
 
-        iphone_project = generate_correct_xcode_project_filename
+        iphone_project = generate_correct_xcode_project_path
 
         if !File.exist?(iphone_project)
 

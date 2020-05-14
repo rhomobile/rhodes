@@ -1328,7 +1328,13 @@ namespace "build" do
       ENV["RHO_DEBUG"] = $debug.to_s
       ENV["CUSTOM_FCM_SENDER_ID"] = $app_config["android"]["fcmSenderID"] unless $app_config["android"].nil?
       ENV["CUSTOM_FCM_APPLICATION_ID"] = $app_config["android"]["fcmAppID"] unless $app_config["android"].nil?
-
+      
+      if $app_config['android'] != nil && $app_config['android']['barcode_engine'] == "google"
+        ENV["BARCODE_ENGINE"] = 'google'
+      else
+        ENV["BARCODE_ENGINE"] = 'zxing'
+      end
+      
       $ext_android_build_scripts.each do |ext, builddata|
 
         puts "Building #{ext}: #{builddata.inspect}"
@@ -1374,6 +1380,7 @@ namespace "build" do
               args << '--trace' if Rake.application.options.trace
             end
 
+            
             #puts "builddata: " + builddata[1] + " args: " + args.to_s + " builddata0: " + builddata[0].to_s
             #puts ENV.to_s
             cc_run(builddata[1], args, builddata[0], false, nil, Rake.application.options.trace) or raise "Extension build failed: #{builddata[0]}"
@@ -2833,6 +2840,8 @@ namespace "package" do
       end
     end
 
+    args << "--no-version-vectors"
+
     Jake.run($aapt, args)
     unless $?.success?
       raise "Error running AAPT (1)"
@@ -2911,7 +2920,6 @@ namespace "package" do
     end
 
     Jake.run($jarbin, args, respath) if File.directory?(respath)
-
     rm_rf proguardTempJarDir if File.exists? proguardTempJarDir
     puts "Finish packaging"
     print_timestamp('package:android FINISH')
