@@ -22,6 +22,7 @@ script:
 - rvm use $RHO_RUBY
 - rvm gemset list
 - rvm gemset use rhodes
+- gem install bundler
 - gem list
 
 - cd $TRAVIS_BUILD_DIR
@@ -107,7 +108,7 @@ matrix:
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.5.7"
+    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.7"
 
   - language: objective-c
     os: osx
