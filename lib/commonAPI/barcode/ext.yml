@@ -9,6 +9,8 @@ android:
   rhodes_listener: com.rho.barcode.BarcodeFactoryRhoListener
   exttype: rakefile
   sdk_addons: ['EMDK']
+  maven_deps:
+  - 'aar:C:/Users/n0men/Desktop/tau/kitchensinkRuby/firebase-messaging-11.0.1.aar'
   
 sailfish:
   proerb: ext/platform/qt/Barcode.pro.erb
