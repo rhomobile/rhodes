@@ -108,7 +108,7 @@ matrix:
 
   - language: objective-c
     os: osx
-    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.7"
+    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.7.0"
 
   - language: objective-c
     os: osx
