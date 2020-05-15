@@ -81,10 +81,10 @@ ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
 
 def set_app_icon_android
 
-  if $rhodes_as_lib 
-    puts "Skip building copy resources (not needed for aar library)"
-    return
-  end
+  #if $rhodes_as_lib 
+  #  puts "Skip building copy resources (not needed for aar library)"
+  #  return
+  #end
 
   res_path = File.join($app_path, 'resources', 'android', 'res')
   if File.exists? res_path
