@@ -100,8 +100,18 @@ env:
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
   - QTDIR="$HOME/Qt5.13.2/5.13.2/clang_64"
   - RHO_RUBY="${RHO_RUBY:=2.7.0}"
+  - ANDROID_ABIS="#{ANDROID_ABIS:=arm,aarch64,x86}"
 
 #osx_image: xcode9.1
+addons:
+  apt:
+    packages:
+    - bridge-utils
+    - libpulse0
+    - libvirt-bin
+    - quemu-kvm
+    - virtinst
+    - ubuntu-vm-builder    
 
 matrix:
   include:

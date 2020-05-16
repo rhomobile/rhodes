@@ -3,10 +3,10 @@
 require 'yaml'
 
 file = ARGV[0]
-abi = ARGV[1]
+abis = ARGV[1].split(',')
 
 cfg = YAML::load_file(file)
 
-cfg['android']['abis'] = [ abi ]
+cfg['android']['abis'] = abis
 
 File.write( file, cfg.to_yaml )
