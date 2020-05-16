@@ -1,4 +1,5 @@
 before_install:
+  
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/before_install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
 
@@ -109,7 +110,7 @@ addons:
     - bridge-utils
     - libpulse0
     - libvirt-bin
-    - quemu-kvm
+    - qemu-kvm
     - virtinst
     - ubuntu-vm-builder    
 
@@ -150,14 +151,17 @@ matrix:
 
   - language: android
     os: linux
+    dist: bionic
     env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c" RHO_RUBY="2.5.7"
 
   - language: android
     os: linux
+    dist: bionic
     env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c" RHO_RUBY="2.6.5"
 
   - language: android
     os: linux
+    dist: bionic
     env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20" RHO_RUBY="2.7.0"
 
   # - language: android
@@ -166,4 +170,5 @@ matrix:
 
   - language: android
     os: linux
+    dist: bionic
     env: RHO_TARGET="android"    RHO_APP="inventory_demo" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="24" NDK_NUMBER="20" SKIP_TESTS=1
