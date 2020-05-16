@@ -93,7 +93,9 @@ android:
   - android-26
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
-  - sys-img-x86-android-${RHO_ANDROID_LEVEL:-19}
+#  - sys-img-x86-android-${RHO_ANDROID_LEVEL:-19}
+  - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
+
 env:
   global:
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
@@ -101,7 +103,7 @@ env:
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
   - QTDIR="$HOME/Qt5.13.2/5.13.2/clang_64"
   - RHO_RUBY="${RHO_RUBY:=2.7.0}"
-  - ANDROID_ABIS="#{ANDROID_ABIS:=arm,aarch64}"
+  - ANDROID_ABIS="${ANDROID_ABIS:=arm,aarch64}"
 
 #osx_image: xcode9.1
 
