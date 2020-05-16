@@ -118,7 +118,7 @@ addons:
     - bridge-utils
     - libpulse0
     - libvirt-bin
-    - quemu-kvm
+    - qemu-kvm
     - virtinst
     - ubuntu-vm-builder    
 
@@ -233,4 +233,5 @@ matrix:
 
   - language: android
     os: linux
+    dist: bionic
     env: RHO_TARGET="android"    RHO_APP="inventory_demo" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="24" NDK_NUMBER="20" SKIP_TESTS=1
