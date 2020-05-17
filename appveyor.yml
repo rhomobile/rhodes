@@ -9,7 +9,7 @@ environment:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\auto_common_spec\
-      build_command: "build:win32:rhosimulator_to C:\TAU\rhosim\RhoSimulator.zip"
+      build_command: build:win32:rhosimulator_to C:/TAU/rhosim/RhoSimulator.zip
       app_name: RhoSimulator
       target_os: win32
       target_artefact_path: C:\TAU\rhosim\
