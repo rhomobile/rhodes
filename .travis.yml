@@ -37,7 +37,6 @@ script:
   if [[ -n $RHO_TAU_EXTENSIONS ]]; then
     .ci/install_rho-tau-extensions.sh;
   fi
-
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/post_gem.sh
 
 - cd $HOME
@@ -167,10 +166,31 @@ matrix:
     osx_image: xcode11.4
     env: RHO_TARGET="iphone"    RHO_APP="rhodes_fcm_test"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
+
+  - language: objective-c
+    os: osx
+    osx_image: xcode11.4
+    env: RHO_TARGET="iphone"    RHO_APP="sas"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+
+  - language: objective-c
+    os: osx
+    osx_image: xcode11.4
+    env: RHO_TARGET="iphone"    RHO_APP="universal_push_example"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+
+  - language: objective-c
+    os: osx
+    osx_image: xcode11.4
+    env: RHO_TARGET="iphone"    RHO_APP="rhodes_fcm_test"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+
   - language: objective-c
     os: osx
     osx_image: xcode11.4
     env: RHO_TARGET="iphone"    RHO_APP="todo-nodejs"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh" RHO_TAU_EXTENSIONS="yes"
+
+  - language: objective-c
+    os: osx
+    osx_image: xcode11.4
+    env: RHO_TARGET="iphone_native_lib"    RHO_APP="rhodes_lib_examples"  CACHE_NAME="RVM_OSX2"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
   - language: objective-c
     os: osx
