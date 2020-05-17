@@ -29,8 +29,6 @@
 # uses following globals
 # $adb, $applog_path
 
-#USE_TRACES = Rake.application.options.trace
-
 require 'pp'
 require 'open3'
 
@@ -59,7 +57,7 @@ def fill_api_levels(sdkpath)
         end
       end
 
-      puts "+++ API LEVEL of #{platform}: #{apilevel}" if USE_TRACES
+      puts "+++ API LEVEL of #{platform}: #{apilevel}" if Rake.application.options.trace
 
       if apilevel != 0
         $api_levels[marketversion] = apilevel
@@ -105,7 +103,7 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
 
 #libnames
 
-    if USE_TRACES
+    if Rake.application.options.trace
       puts "Looking for name pattern: #{addon_pattern}"
       puts "Looking for API level: #{apilevel}" if apilevel
     end
@@ -136,7 +134,7 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
             line.strip!
             
             if namepattern =~ line
-              puts "Parsing add-on: #{$1}" if USE_TRACES
+              puts "Parsing add-on: #{$1}" if Rake.application.options.trace
               cur_name = $1
               break unless addonnamepattern =~ $1
               next
@@ -147,7 +145,7 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
             if line =~ /^api=([0-9]+)$/
               cur_apilevel = $1.to_i
 
-              puts "API level of #{dir}: #{cur_apilevel}" if USE_TRACES
+              puts "API level of #{dir}: #{cur_apilevel}" if Rake.application.options.trace
 
               break if apilevel and apilevel != cur_apilevel
               break if found_apilevel and found_apilevel > cur_apilevel
@@ -169,7 +167,7 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
                   found_libpatterns << Regexp.new("^(#{name})=(.+);.*$")
                 end
                 
-                puts "Library patterns: #{found_libpatterns.inspect}" if USE_TRACES
+                puts "Library patterns: #{found_libpatterns.inspect}" if Rake.application.options.trace
                 
               end
               next
@@ -201,7 +199,7 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
         next unless classpath
 
         found_classpath = classpath
-        puts "classpath: #{found_classpath}, API level: #{found_apilevel}" if USE_TRACES
+        puts "classpath: #{found_classpath}, API level: #{found_apilevel}" if Rake.application.options.trace
 
     end
 
@@ -212,7 +210,7 @@ def get_addon_classpath(addon_pattern, apilevel = nil)
       @@logger.warn msg
     end
 
-    if USE_TRACES
+    if Rake.application.options.trace
       puts "Add-on name: #{found_name}"
       puts "Add-on API level: #{found_apilevel}"
       puts "Add-on classpath: #{found_classpath}"
@@ -425,7 +423,7 @@ def run_emulator(options = {})
   system("\"#{$adb}\" start-server")
 
   unless is_emulator_running
-    puts "Need to start emulator" if USE_TRACES
+    puts "Need to start emulator" if Rake.application.options.trace
 
     avdname = prepare_avd( $appavdname, $emuversion, $abis, $use_google_addon_api )
 
@@ -802,7 +800,7 @@ module_function :read_manifest_package
     args << inputApk
     args << storealias if storealias
     
-    Jake.run2(@@jarsigner, args, :hide_output => !USE_TRACES )
+    Jake.run2(@@jarsigner, args, :hide_output => !Rake.application.options.trace )
     unless $?.success?
       @@logger.error "Error running jarsigner"
       exit 1
@@ -832,8 +830,8 @@ module_function :read_manifest_package
     args << "4"
     args << inputApk
     args << outputApk
-    out = Jake.run2(@@zipalign, args, :hide_output => !USE_TRACES )
-    puts out if USE_TRACES
+    out = Jake.run2(@@zipalign, args, :hide_output => !Rake.application.options.trace )
+    puts out if Rake.application.options.trace
     unless $?.success?
       @@logger.error "Error running zipalign"
       exit 1

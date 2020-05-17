@@ -24,6 +24,10 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+task :gem do
+  load 'lib/build/buildgem.rb'
+end
+
 require_relative 'lib/build/rho_packages.rb'
 require File.join(File.dirname(__FILE__), 'lib/build/required_time.rb')
 
@@ -47,8 +51,8 @@ require 'pathname'
 require 'rexml/document'
 require 'securerandom'
 require 'uri'
-require 'logger'
 require 'rake'
+require 'logger'
 
 # It does not work on Mac OS X. rake -T prints nothing. So I comment this hack out.
 # NB: server build scripts depend on proper rake -T functioning.
@@ -82,7 +86,6 @@ $push_type = -1
 
 chdir File.dirname(__FILE__), :verbose => (Rake.application.options.trace == true)
 
-
 require File.join(pwd, 'lib/build/jake.rb')
 require File.join(pwd, 'lib/build/RhoLogger.rb')
 require File.join(pwd, 'lib/build/GeneratorTimeChecker.rb')
@@ -96,6 +99,23 @@ require File.join(pwd, 'lib/build/BuildConfig.rb')
 require File.join(pwd, 'lib/build/RhoHubAccount.rb')
 
 require File.join(pwd, 'lib/build/rhoDevelopment.rb')
+
+$logger = Logger.new(STDOUT)
+if Rake.application.options.trace
+  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "DEBUG"
+  $logger.level = Logger::DEBUG
+else
+  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "INFO"
+  $logger.level = Logger::INFO
+end
+
+
+$logger.formatter = proc do |severity,datetime,progname,msg|
+  "[#{severity}]\t#{msg}\n"
+end
+
+Jake.set_logger( $logger )
+
 
 
 
@@ -116,26 +136,7 @@ module Rake
 end #module Rake
 
 
-
-
-$logger = Logger.new(STDOUT)
-if Rake.application.options.trace
-  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "DEBUG"
-  $logger.level = Logger::DEBUG
-else
-  ENV["RHODES_BUILD_LOGGER_LEVEL"]= "INFO"
-  $logger.level = Logger::INFO
-end
-
-
 Rake::FileUtilsExt.verbose(Rake.application.options.trace == true)
-
-
-$logger.formatter = proc do |severity,datetime,progname,msg|
-  "[#{severity}]\t#{msg}\n"
-end
-
-Jake.set_logger( $logger )
 
 
 def print_timestamp(msg = 'just for info')
@@ -287,7 +288,7 @@ def make_application_build_capabilities_header_file
   f.puts ''
 
   if $js_application || $nodejs_application
-    puts '#define RHO_NO_RUBY' if USE_TRACES
+    $logger.debug '#define RHO_NO_RUBY'
     f.puts '#define RHO_NO_RUBY'
     f.puts '#define RHO_NO_RUBY_API'
   else
@@ -2340,7 +2341,7 @@ def copy_assets(asset, file_map)
 
   dest = File.join($srcdir,'apps/public')
 
-  cp_r asset + "/.", dest, :preserve => true, :remove_destination => true, :verbose => USE_TRACES
+  cp_r asset + "/.", dest, :preserve => true, :remove_destination => true, :verbose => Rake.application.options.trace
 end
 
 def clear_linker_settings
@@ -2789,11 +2790,11 @@ def init_extensions(dest, mode = "")
             end
 
             Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
-              if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
-                puts "add #{f} to extjsmodulefiles_opt.." if USE_TRACES
+              if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())                
+                $logger.debug "add #{f} to extjsmodulefiles_opt.."
                 extjsmodulefiles_opt << f
               else
-                puts "add #{f} to extjsmodulefiles.." if USE_TRACES
+                $logger.debug "add #{f} to extjsmodulefiles.."
                 extjsmodulefiles << f
               end
             end
@@ -2866,7 +2867,7 @@ def init_extensions(dest, mode = "")
     #
     if !$skip_build_js_api_files
       if extjsmodulefiles.count > 0
-        puts 'extjsmodulefiles=' + extjsmodulefiles.to_s if USE_TRACES
+        $logger.debug "extjsmodulefiles=#{extjsmodulefiles.to_s}"
         write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
 
         $ebfiles_shared_rt_js_appliction = ($js_application and ($current_platform == "wm" or $current_platform == "android") and $app_config["capabilities"].index('shared_runtime'))
@@ -2890,7 +2891,7 @@ def init_extensions(dest, mode = "")
       # make rhoapi-modules-ORM.js only if not shared-runtime (for WM) build
       if !$shared_rt_js_appliction
         if extjsmodulefiles_opt.count > 0
-          puts 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s if USE_TRACES
+          $logger.debug 'extjsmodulefiles_opt=' + extjsmodulefiles_opt.to_s
           #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
           write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
         end
@@ -3001,7 +3002,7 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
 
   return if src_dir == dst_dir
 
-  mkdir_p dst_dir, :verbose => USE_TRACES if not File.exists? dst_dir
+  mkdir_p dst_dir, :verbose => Rake.application.options.trace if not File.exists? dst_dir
 
   Dir.foreach(src_dir) do |filename|
     next if filename.eql?('.') || filename.eql?('..')
@@ -3032,7 +3033,7 @@ def public_folder_cp_r(src_dir, dst_dir, level, file_map, start_path)
         puts "old_time=" + old_time.to_s if Rake.application.options.trace
       end
 
-      cp filepath, dst_path, :preserve => true, :verbose => USE_TRACES
+      cp filepath, dst_path, :preserve => true, :verbose => Rake.application.options.trace
     end
   end
 end
@@ -3522,7 +3523,7 @@ namespace "build" do
     end
 
     def minify_inplace_batch(files_to_minify)
-      puts "minifying file list: #{files_to_minify}" if USE_TRACES
+      $logger.debug "minifying file list: #{files_to_minify}"
 
       cmd = "java -jar #{$minifier} -o \"x$:x\""
 
@@ -3536,21 +3537,21 @@ namespace "build" do
       begin
         output, error, status = Open3.capture3(cmd)
       rescue Exception => e
-        puts "Minify error: #{e.inspect}"
+        $logger.debug "Minify error: #{e.inspect}"
         error = e.inspect
       end
 
-      puts "Minification done: #{status}" if USE_TRACES
+      $logger.debug "Minification done: #{status}"
 
       if !status || !status.exitstatus.zero?
-        puts "WARNING: Minification error!" if USE_TRACES
+        $logger.debug "WARNING: Minification error!"
         error = output if error.nil?
         BuildOutput.warning(["Minification errors occured. Minificator stderr output: \n" + error], 'Minification error')
       end
     end
 
     def minify_inplace(filename,type)
-      puts "minify file: #{filename}" if USE_TRACES
+      $logger.debug "minify file: #{filename}"
 
       f = StringIO.new("", "w+")
       f.write(File.read(filename))
@@ -3587,7 +3588,7 @@ namespace "build" do
       end
 
       if !status || !status.exitstatus.zero?
-        puts "WARNING: Minification error!" if USE_TRACES
+        $logger.debug "WARNING: Minification error!"
 
         error = output if error.nil?
 
@@ -3871,29 +3872,6 @@ namespace "buildall" do
   end
 end
 
-task :gem do
-  puts "Removing old gem"
-  rm_rf Dir.glob("rhodes*.gem")
-  puts "Copying Rakefile"
-  cp "Rakefile", "rakefile.rb"
-
-  puts "Building manifest"
-  out = ""
-  Dir.glob("**/*") do |fname|
-    # TODO: create exclusion list
-    next unless File.file? fname
-    next if fname =~ /rhoconnect-client/
-    next if fname =~ /^spec\/api_generator_spec/
-    next if fname =~ /ruby-standalone/
-
-    out << fname + "\n"
-  end
-  File.open("Manifest.txt",'w') {|f| f.write(out)}
-
-  puts "Building gem"
-  Jake.run3('gem build rhodes.gemspec')
-end
-
 namespace "rhomobile-debug" do
   task :gem do
     puts "Removing old gem"
@@ -3929,13 +3907,12 @@ task :tasks do
 end
 
 task :switch_app do
-  puts "Preparing rhobuild.yml"
+  $logger.info "Preparing rhobuild.yml"
   rhobuildyml = File.dirname(__FILE__) + "/rhobuild.yml"
   if File.exists? rhobuildyml
     config = YAML::load_file(rhobuildyml)
   else
-    puts "Cant find rhobuild.yml"
-    exit 1
+    $logger.warn "Cant find rhobuild.yml"
   end
   config["env"]["app"] = $app_path.gsub(/\\/,"/")
   File.open(  rhobuildyml, 'w' ) do |out|
@@ -4080,7 +4057,7 @@ namespace "run" do
       endJSModules = []
 
       rhoapi_js_folder = File.join( $app_path, "public/api" )
-      puts "rhoapi_js_folder: #{rhoapi_js_folder}" if USE_TRACES
+      $logger.debug "rhoapi_js_folder: #{rhoapi_js_folder}"
 
       do_separate_js_modules = Jake.getBuildBoolProp("separate_js_modules", $app_config, false)
 
@@ -4192,10 +4169,10 @@ namespace "run" do
             end
             Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
               if /(rho\.orm)|(rho\.ruby\.runtime)|(rho\.rhosim\.fix)/i.match(f.downcase())
-                puts "add #{f} to extjsmodulefiles_opt.." if USE_TRACES
+                $logger.debug "add #{f} to extjsmodulefiles_opt.."
                 extjsmodulefiles_opt << f
               else
-                puts "add #{f} to extjsmodulefiles.." if USE_TRACES
+                $logger.debug "add #{f} to extjsmodulefiles.."
                 extjsmodulefiles << f
               end
             end
@@ -4219,12 +4196,12 @@ namespace "run" do
       end
       #
       if extjsmodulefiles.count > 0
-        puts "extjsmodulefiles: #{extjsmodulefiles}" if USE_TRACES
+        $logger.debug "extjsmodulefiles: #{extjsmodulefiles}"
         write_modules_js(rhoapi_js_folder, "rhoapi-modules.js", extjsmodulefiles, do_separate_js_modules)
       end
       #
       if extjsmodulefiles_opt.count > 0
-        puts "extjsmodulefiles_opt: #{extjsmodulefiles_opt}" if USE_TRACES
+        $logger.debug "extjsmodulefiles_opt: #{extjsmodulefiles_opt}"
         #write_modules_js(rhoapi_js_folder, "rhoapi-modules-ORM.js", extjsmodulefiles_opt, do_separate_js_modules)
         write_orm_modules_js(rhoapi_js_folder, extjsmodulefiles_opt)
       end

@@ -9,6 +9,8 @@ rhobuild.yml
 rhobuild.*.yml
 lastbuildoptions.yml
 
+Gemfile.lock
+
 #platform/iphone/Info.plist
 lib/commonAPI/*/*/*/generated/
 lib/commonAPI/*/*/*/*/generated/

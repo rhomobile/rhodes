@@ -38,8 +38,6 @@ require_relative 'hostplatform'
 # $libname[]      list of paths to compiled library
 # $debug          set to true to enable debug binaries
 
-USE_TRACES = Rake.application.options.trace
-
 $output_lock = Mutex.new
 
 def num_cpus
@@ -55,7 +53,7 @@ def get_objects(sources, objdir)
 end
 
 def setup_ndk(ndkpath,apilevel,abi)
-  puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})" if USE_TRACES
+  puts "setup_ndk(#{ndkpath}, #{apilevel}, #{abi})" if Rake.application.options.trace
   apilevel = 21 if apilevel.to_i < 21 && abi == 'aarch64'
   $apilevel = apilevel
   ndk = NDKWrapper.new( ndkpath )
@@ -99,7 +97,7 @@ def setup_ndk(ndkpath,apilevel,abi)
     end
   end
 
-  puts "setup success!" if USE_TRACES
+  puts "setup success!" if Rake.application.options.trace
 end
 
 def cc_def_args
@@ -275,7 +273,7 @@ def cc_run(command, args, chdir = nil, coloring = true, env = nil, verbose = tru
       puts '-' * 80
       puts "PWD: " + FileUtils.pwd
       puts cmdstr
-      puts out.string if verbose
+      puts out.string if verbose || ( ret && (!(ret.success?)) )
     }
     out.close
   end
@@ -527,7 +525,7 @@ def java_build(jarpath, buildpath, classpath, srclists)
 
     args = []
 
-    if USE_TRACES
+    if Rake.application.options.trace
       args << "cfv"
     else
       args << "cf"

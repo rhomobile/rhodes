@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
 
-  require 'FileUtils'
+  require 'fileutils'
   FileUtils.cp "Rakefile", "rakefile.rb"
 
   s.name = %q{rhodes-core}
@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
     "./platform/android/build",
     "./platform/iphone/rbuild",
     "./platform/wm/build",
-    "./platform/wp7/build",
     "./platform/wp8/build",
     "./platform/uwp/build",
     "./platform/linux/tasks/linux.rake",

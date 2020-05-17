@@ -8,10 +8,10 @@ def prompt_for(question, suggestion, required, validation = "")
 
   if required
     while  not File.exists? newanswer + validation
-      print "JDK path (required) (#{suggestion}): "
+      print "#{question} (required) (#{suggestion}): "
       newanswer = STDIN.gets.chomp!
       newanswer = suggestion if newanswer == ""
-      STDOUT.puts "Invalid JDK path" unless File.exists? newanswer  + validation
+      STDOUT.puts "Invalid #{question}" unless File.exists? newanswer  + validation
     end
   else
     while newanswer != "" and not File.exists? newanswer + validation
@@ -45,9 +45,9 @@ end
 java = java.gsub(/\\/,"/")
 java = "" unless File.exists? java  + "/lib/dt.jar"
 
-java = prompt_for("JDK Path", java, true, "/lib/dt.jar")
+java = prompt_for("JDK Path", java, false, "/lib/dt.jar")
 
-java = java + "/bin"
+java = File.join( java, 'bin' ) if java
 
 #now try and find android
 android = ""

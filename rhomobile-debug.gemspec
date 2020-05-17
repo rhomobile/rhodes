@@ -10,7 +10,6 @@ Gem::Specification.new do |s|
   s.homepage    = %q{http://rhomobile.com}
   s.summary     = %q{Rhomobile debugger extension for RhoStudio}
 
-  s.rubyforge_project = nil
   s.rubygems_version = %q{1.5.0}
   s.require_paths = ["lib"]
 

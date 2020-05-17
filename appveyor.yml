@@ -9,10 +9,10 @@ environment:
       testable_application_repository: https://github.com/rhomobile/RMS-Testing.git
       test_app_folder: C:\TAU\RMS-Testing\
       test_app_subfolder: auto\feature_def\auto_common_spec\
-      build_command: "build:rhosimulator"
+      build_command: build:win32:rhosimulator_to C:/TAU/rhosim/RhoSimulator.zip
       app_name: RhoSimulator
       target_os: win32
-      target_artefact_path: C:\Ruby23\lib\ruby\gems\2.3.0\gems\rhodes-7.3.0\platform\win32\RhoSimulator\
+      target_artefact_path: C:\TAU\rhosim\
       target_artefact_file_name: RhoSimulator.zip
 
     - win32_auto_common_spec:
@@ -109,10 +109,10 @@ build: off
 install:
   - set PATH=C:\Ruby23\bin;%PATH%
   - set RAKEOPT=-rdevkit
-  - gem install rest-client --no-document -f
-  - gem install listen --no-document -f
-  - gem install zip --no-document -f
-  - gem install net-scp --no-document -f
+#  - gem install rest-client --no-document -f
+#  - gem install listen --no-document -f
+#  - gem install zip --no-document -f
+#  - gem install net-scp --no-document -f
 #  - gem install bundler --quiet --no-ri --no-rdoc -f
 #  - bundler --version
   
@@ -121,7 +121,7 @@ before_test:
   - gem -v
   - bundle -v
   - cp rhobuild.yml.example rhobuild.yml
-  - rake gem
+  - ruby C:\TAU\rhodes\lib\build\buildgem.rb
   - set /P BUILD_VERSION=<version
   - gem install rhodes-%BUILD_VERSION%.gem --no-document -f
 

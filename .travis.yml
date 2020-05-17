@@ -1,39 +1,43 @@
 before_install:
+  
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/before_install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
 
 install:
 - ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_ruby.sh
-- rvm use 2.5.1
+- rvm use $RHO_RUBY
 - |
   if [[ -z $(rvm gemset list | grep rhodes) ]]; then
     rvm gemset create rhodes;
   fi
 - rvm gemset use rhodes
-- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_gems.sh
+#- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/check_cache_and_install_gems.sh
+- bundle install
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
 
 script:
 - ANDROID_NDK_HOME="${HOME}/android-ndk-r${NDK_NUMBER}"
 - rvm list
-- rvm use 2.5.1
+- rvm use $RHO_RUBY
 - rvm gemset list
 - rvm gemset use rhodes
+- gem install bundler
 - gem list
 
 - cd $TRAVIS_BUILD_DIR
 #- .ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh #TODO
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/pre_gem.sh
-- rake gem
-- travis_wait 30 gem install ./rhodes-$(cat ./version).gem --no-document --ignore-dependencies -f
+- $TRAVIS_BUILD_DIR/lib/build/buildgem.rb
+- travis_wait 30 gem install ./rhodes-$(cat ./version).gem
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
 - .ci/install_rhoconnect-client.sh
 - |
   if [[ -n $RHO_TAU_EXTENSIONS ]]; then
     .ci/install_rho-tau-extensions.sh;
   fi
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/post_gem.sh
 
 - cd $HOME
 - rhodes app vanilla_rhodes_app
@@ -94,33 +98,74 @@ android:
   - android-26
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
+#  - sys-img-x86-android-${RHO_ANDROID_LEVEL:-19}
   - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
+
 env:
   global:
   - BUILD_ARTEFACTS_DIR=$HOME/build_artefacts
   - S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
   - QTDIR="$HOME/Qt5.13.2/5.13.2/clang_64"
+  - RHO_RUBY="${RHO_RUBY:=2.7.0}"
+  - ANDROID_ABIS="${ANDROID_ABIS:=arm,aarch64}"
 
 #osx_image: xcode9.1
+
+#addons:
+#  apt:
+#    packages:
+#    - bridge-utils
+#    - libpulse0
+#    - libvirt-bin
+#    - qemu-kvm
+#    - virtinst
+#    - ubuntu-vm-builder    
+
+#addons:
+#  apt:
+#    packages:
+#    - bridge-utils
+#    - libpulse0
+#    - libvirt-bin
+#    - qemu-kvm
+#    - virtinst
+#    - ubuntu-vm-builder    
 
 matrix:
   include:
 
+#ios targets  
   - language: objective-c
     os: osx
     #osx_image: xcode11.4
-    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+    env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh" RHO_RUBY="2.7.0"
 
   - language: objective-c
     os: osx
     #osx_image: xcode11.4
-    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
+    env: RHO_TARGET="iphone"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="2.6.5"
 
   - language: objective-c
     os: osx
     #osx_image: xcode11.4
-    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
+    env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="2.7.0"
+
+  - language: objective-c
+    os: osx
+    osx_image: xcode11.4
+    env: RHO_TARGET="iphone"    RHO_APP="sas"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+
+  - language: objective-c
+    os: osx
+    osx_image: xcode11.4
+    env: RHO_TARGET="iphone"    RHO_APP="universal_push_example"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+
+  - language: objective-c
+    os: osx
+    osx_image: xcode11.4
+    env: RHO_TARGET="iphone"    RHO_APP="rhodes_fcm_test"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+
 
   - language: objective-c
     os: osx
@@ -147,9 +192,15 @@ matrix:
     osx_image: xcode11.4
     env: RHO_TARGET="iphone_native_lib"    RHO_APP="rhodes_lib_examples"  CACHE_NAME="RVM_OSX2"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
+  - language: objective-c
+    os: osx
+    osx_image: xcode11.4
+    env: RHO_TARGET="iphone_native_lib"    RHO_APP="rhodes_lib_examples"  CACHE_NAME="RVM_OSX2"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+
+#linux targets 
   - language: c++
     os: linux
-    env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+    env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh" RHO_RUBY="2.5.7"
     dist: bionic
     addons:
       apt:
@@ -167,17 +218,18 @@ matrix:
           - debhelper
           - fakeroot
 
+#android targets
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="2.5.7" ANDROID_ABIS="arm,x86"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="2.6.5"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"  RUBY_VERSION="2.7.0"
 
   - language: android
     os: linux
