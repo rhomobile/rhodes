@@ -120,6 +120,7 @@ env:
 matrix:
   include:
 
+#ios targets  
   - language: objective-c
     os: osx
     env: RHO_TARGET="rhosimulator_osx"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.7.0"
@@ -132,6 +133,7 @@ matrix:
     os: osx
     env: RHO_TARGET="iphone"    RHO_APP="framework_spec"  CACHE_NAME="RVM_OSX" RHO_RUBY="2.7.0"
 
+#linux targets 
   - language: c++
     os: linux
     env: RHO_TARGET="linux"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX"  MATRIX_EVAL="CC=gcc-7 && CXX=g++-7" RHO_RUBY="2.5.7"
@@ -152,21 +154,14 @@ matrix:
           - debhelper
           - fakeroot
 
+#android targets
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c" RHO_RUBY="2.5.7"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20" RHO_RUBY="2.5.7" ANDROID_ABIS="arm,x86"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="17c" RHO_RUBY="2.6.5"
-
-  - language: android
-    os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20" RHO_RUBY="2.7.0"
-
-  # - language: android
-  #   os: linux
-  #   env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="24" NDK_NUMBER="17c"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" CACHE_NAME="RVM_LINUX" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20" RHO_RUBY="2.6.5"
 
   - language: android
     os: linux
