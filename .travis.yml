@@ -154,7 +154,7 @@ matrix:
   - language: objective-c
     os: osx
     osx_image: xcode11.4
-    env: RHO_TARGET="iphone"    RHO_APP="sas"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
+    env: RHO_TARGET="iphone"    RHO_APP="sas"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh" RHO_RUBY="2.5.7"
 
   - language: objective-c
     os: osx
