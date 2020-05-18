@@ -107,7 +107,7 @@ env:
   - S3_JOB_DIR="$TRAVIS_COMMIT"/"$TRAVIS_OS_NAME"
   - S3_DEPLOY_DIR="$TRAVIS_REPO_SLUG"/"$TRAVIS_BRANCH"
   - QTDIR="$HOME/Qt5.13.2/5.13.2/clang_64"
-  - RHO_RUBY="${RHO_RUBY:=RUBY_VERSION}"
+  - RHO_RUBY="${RHO_RUBY:=$RUBY_VERSION}"
   - ANDROID_ABIS="${ANDROID_ABIS:=arm,aarch64}"
 
 #osx_image: xcode9.1
@@ -154,7 +154,7 @@ matrix:
   - language: objective-c
     os: osx
     osx_image: xcode11.4
-    env: RHO_TARGET="iphone"    RHO_APP="sas"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh" RHO_RUBY="2.5.7"
+    env: RHO_TARGET="iphone"    RHO_APP="sas"  CACHE_NAME="RVM_OSX"  RHO_RUNNER_SCRIPT="run_app_on_simulator.sh"
 
   - language: objective-c
     os: osx
