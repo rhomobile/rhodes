@@ -22,6 +22,7 @@ class MavenDepsExtractor
   def initialize
 
     @dependencies = {}
+    @file_deps = []
 
     @rhoroot = File.join( File.dirname(__FILE__),'..','..','..')
     @m2home = File.join( @rhoroot, 'res', 'build-tools', 'maven' )
@@ -99,10 +100,16 @@ class MavenDepsExtractor
     @logger.info "Adding maven dependency for #{mod}: #{dep}"
     #return if remove_dependencies_with_lesser_versions(dep)
 
+    if dep.index("aar:") == 0
+      @file_deps << dep
+    else
+
     if !@dependencies[mod]
       @dependencies[mod] = [ dep ]
     else
       @dependencies[mod] << dep
+    end
+
     end
   end
 
@@ -123,6 +130,14 @@ class MavenDepsExtractor
     @java_home = File.dirname(d) #no /bin part
   end
 
+  def extract_from_files(path)
+    @file_deps.each do |dep|
+      path_to_aar = dep
+      path_to_aar = path_to_aar[4..dep.length - 1]
+      cp_r path_to_aar, path
+    end
+  end
+
   def extract_all
     @logger.info 'Extracting maven dependencies'
 
@@ -134,6 +149,7 @@ class MavenDepsExtractor
     mkdir_p copy_dir    
     get_art_poms(copy_dir)
     copy_dependencies copy_dir
+    extract_from_files(copy_dir)
     extract copy_dir, @temp_dir
     rm_r copy_dir
   end
@@ -156,7 +172,7 @@ class MavenDepsExtractor
 
           assets = File.join(target,'assets')
           manifest = File.join(target,'AndroidManifest.xml')
-		  r_txt = File.join(target,'R.txt')
+		      r_txt = File.join(target,'R.txt')
           res = File.join(target,'res')
           libs = File.join(target,'libs')
           jni = File.join(target,'jni')
