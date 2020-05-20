@@ -186,12 +186,35 @@ namespace "config" do
       $current_target = $app_config["sailfish"]["target_sdk"]
     end
 
-
     if isWindows?
-      $current_build_sdk_dir = File.join($sailfishdir, "settings", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
+      if Dir.exist?(File.join($sailfishdir, "settings", "AuroraOS-SDK"))
+        $auroraSDK = true
+        $current_build_sdk_dir = File.join($sailfishdir, "settings", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
+      elsif Dir.exist?(File.join($sailfishdir, "settings", "SailfishOS-SDK"))
+        $auroraSDK = false
+        $current_build_sdk_dir = File.join($sailfishdir, "settings", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
+      else
+        puts "Can't recognize build SDK"
+        exit 1
+      end
       $current_build_sdk_dir = $current_build_sdk_dir.gsub("\\", "/")
     else
-      $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
+      if Dir.exist?(File.join(File.expand_path('~'), ".config", "AuroraOS-SDK"))
+        $auroraSDK = true
+        $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
+      elsif Dir.exist?(File.join(File.expand_path('~'), ".config", "SailfishOS-SDK"))
+        $auroraSDK = false
+        $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
+      else
+        puts "Can't recognize build SDK"
+        exit 1
+      end
+    end
+
+    if $auroraSDK
+      $sysName = "Aurora OS"
+    else
+      $sysName = "Sailfish OS"
     end
 
     if !File.exists?($current_build_sdk_dir)
@@ -234,7 +257,7 @@ namespace "config" do
         "Add device if required (sailfish:device:add_device) and set 'device_name' field in build.yml.\n" +
         "For list device use: sailfish:device:list\n"
       elsif $dev_type == "vbox"
-        $dev_name = "Aurora OS Emulator"
+          $dev_name = "#{$sysName} Emulator"
       end
 
       if !$app_config["sailfish"]["device"].nil? && !$app_config["sailfish"]["device"]["host"].nil?
@@ -574,8 +597,7 @@ def vm_is_started?
     end
     output = stdout.read
   end
-
-  return output.include?("Aurora OS Build Engine")
+  return output.include?("#{$sysName} Build Engine")
 end
 
 def deploy_bundle(session)
@@ -614,7 +636,7 @@ namespace "build"  do
       end
 
       if !vm_is_started?
-        system("\"" + $virtualbox_path + "\"" + " startvm \"Aurora OS Build Engine\" --type headless") 
+        system("\"" + $virtualbox_path + "\"" + " startvm \"#{$sysName} Build Engine\" --type headless") 
         puts "Waiting 40 seconds vm..."
         sleep 40.0
       end 
@@ -624,7 +646,7 @@ namespace "build"  do
       if $virtualbox_path.empty? 
         raise "Please, set VirtualBox variable environment..."
       end
-      system("\"" + $virtualbox_path + "\"" + " controlvm \"Aurora OS Build Engine\" poweroff")
+      system("\"" + $virtualbox_path + "\"" + " controlvm \"#{$sysName} Build Engine\" poweroff")
     end
     
     task :rhobundle => ["project:sailfish:qt"] do
