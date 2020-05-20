@@ -376,7 +376,18 @@ public class RhodesService extends Service {
 			Logger.D(TAG, "innerStartForeground() prepare builder PRE");
 			Builder builder = AndroidFunctionalityManager.getAndroidFunctionality().getNotificationBuilder(this, CHANNEL_ID, "Rhomobile Platform Service");
 			Logger.D(TAG, "innerStartForeground() prepare builder 1");
-			builder.setSmallIcon(R.mipmap.icon);
+
+			try {
+				android.content.res.Resources res = getContext().getPackageManager()
+						.getResourcesForApplication(getApplicationContext().getPackageName());
+				int id_icon = res.getIdentifier("icon", "mipmap", getApplicationContext().getPackageName());
+				builder.setSmallIcon(id_icon);
+			} catch (Exception e) {
+				builder.setSmallIcon(R.mipmap.icon);
+				Logger.E(TAG, "Resources of icon not found!!!");
+			}
+
+
 			Logger.D(TAG, "innerStartForeground() prepare builder 2");
 			builder.setPriority(Notification.PRIORITY_HIGH);
 			Logger.D(TAG, "innerStartForeground() prepare builder 3");
