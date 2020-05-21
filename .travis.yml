@@ -250,7 +250,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="todo-nodejs" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20" RHO_TAU_EXTENSIONS="yes" SKIP_TESTS=1
+    env: RHO_TARGET="android"    RHO_APP="todo-nodejs" RHO_ANDROID_LEVEL="21" NDK_NUMBER="20" RHO_TAU_EXTENSIONS="yes" SKIP_TESTS=1 ANDROID_ABIS="arm"
 
   - language: android
     os: linux
