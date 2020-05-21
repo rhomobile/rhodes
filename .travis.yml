@@ -15,8 +15,11 @@ install:
 script:
 # start building of Rhodes gem in a separate gemset
 - cd $TRAVIS_BUILD_DIR
-- rvm gemset create rho_build_gem
-- rvm gemset use rho_build_gem
+#- rvm gemset create rho_build_gem
+#- rvm gemset use rho_build_gem
+- rvm gemset create rhodes
+- rvm gemset use rhodes
+
 - bundle install
 - gem list
 
@@ -31,8 +34,8 @@ script:
 - $TRAVIS_BUILD_DIR/lib/build/buildgem.rb
 
 # switch to clean gemset to run main tests in a separate environment
-- rvm gemset create rhodes
-- rvm gemset use rhodes
+#- rvm gemset create rhodes
+#- rvm gemset use rhodes
 
 # install Rhodes gem to clean gemset. All dependencies should be installed automatically
 - travis_wait 30 gem install --no-document ./rhodes-$(cat ./version).gem
@@ -107,6 +110,15 @@ deploy:
   region: eu-central-1
   on:
     all_branches: true
+
+cache:
+  directories:
+  - /home/travis/.rvm/    
+
+before_cache:
+  - gem uninstall rhodes -a -x --force
+  - gem uninstall rhoconnect-client -a -x --force
+  - gem uninstall rho-tau-extensions -a -x --force
 
 android:
   components:
