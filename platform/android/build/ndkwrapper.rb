@@ -153,7 +153,7 @@ class NDKWrapper
     ndkabi = "unknown"
     ndkhostvariants = []
     if HostPlatform.windows?
-        $bufcheck64 = `WMIC OS get OSArchitecture`.split[1]
+        $bufcheck64 = `WMIC OS get OSArchitecture`.encode('UTF-8', invalid: :replace, replace: "").split[1]
         ndkhostvariants << 'windows-x86_64' if $bufcheck64 and $bufcheck64.include?('64')
         ndkhostvariants << 'windows'
     else
