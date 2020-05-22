@@ -1,3 +1,3 @@
-source 'https://rubygems.org' do
+source 'http://rubygems.org' do
   gemspec :name => 'rhodes'
 end
