@@ -6,5 +6,5 @@ echo $RUBY_INSTALLED
 if [[ -z $RUBY_INSTALLED ]]; then
 export HOMEBREW_NO_INSTALL_CLEANUP=1
 #brew install openssl
-rvm install --autolibs=disable $RHO_RUBY
+rvm install --autolibs $RHO_RUBY
 fi
