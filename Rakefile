@@ -3906,7 +3906,12 @@ task :tasks do
   Rake::Task.tasks.each {|t| puts t.to_s.ljust(27) + "# " + t.comment.to_s}
 end
 
-task :switch_app do
+task :switch_app => [ 'config:load' ] do
+
+  $logger.info "Configuring app location: #{$app_path}"
+  $config["env"]["app"] = $app_path.gsub(/\\/,"/")
+
+=begin
   $logger.info "Preparing rhobuild.yml"
   rhobuildyml = File.dirname(__FILE__) + "/rhobuild.yml"
   if File.exists? rhobuildyml
@@ -3918,6 +3923,8 @@ task :switch_app do
   File.open(  rhobuildyml, 'w' ) do |out|
     YAML.dump( config, out )
   end
+=end    
+
 end
 
 #Rake::RDocTask.new do |rd|
