@@ -57,6 +57,7 @@ end
 
 class ScriptGenerator
   attr_accessor :isNixSystem
+  attr_accessor :merAddress
   attr_accessor :merPort
   attr_accessor :merPkey
   attr_accessor :projectPath
@@ -190,11 +191,14 @@ namespace "config" do
       if Dir.exist?(File.join($sailfishdir, "settings", "AuroraOS-SDK"))
         $auroraSDK = true
         $current_build_sdk_dir = File.join($sailfishdir, "settings", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
+      elsif Dir.exist?(File.join($sailfishdir, "settings", "SailfishSDK"))
+        $auroraSDK = false
+        $current_build_sdk_dir = File.join($sailfishdir, "settings", "SailfishSDK", "libsfdk", "build-target-tools", "Sailfish OS Build Engine", $current_target)
       elsif Dir.exist?(File.join($sailfishdir, "settings", "SailfishOS-SDK"))
         $auroraSDK = false
         $current_build_sdk_dir = File.join($sailfishdir, "settings", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
       else
-        puts "Can't recognize build SDK"
+        puts "Can't recognize build SDK!"
         exit 1
       end
       $current_build_sdk_dir = $current_build_sdk_dir.gsub("\\", "/")
@@ -202,11 +206,14 @@ namespace "config" do
       if Dir.exist?(File.join(File.expand_path('~'), ".config", "AuroraOS-SDK"))
         $auroraSDK = true
         $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "AuroraOS-SDK", "libsfdk", "build-target-tools", "Aurora OS Build Engine", $current_target)
+      elsif Dir.exist?(File.join(File.expand_path('~'), ".config", "SailfishSDK"))
+        $auroraSDK = false
+        $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishSDK", "libsfdk", "build-target-tools", "Sailfish OS Build Engine", $current_target)
       elsif Dir.exist?(File.join(File.expand_path('~'), ".config", "SailfishOS-SDK"))
         $auroraSDK = false
         $current_build_sdk_dir = File.join(File.expand_path('~'), ".config", "SailfishOS-SDK", "mer-sdk-tools", "Sailfish OS Build Engine", $current_target)
       else
-        puts "Can't recognize build SDK"
+        puts "Can't recognize build SDK!"
         exit 1
       end
     end
@@ -468,6 +475,7 @@ namespace "device" do
       end
 
       if(yes)
+        puts "Starting session"
         Net::SSH.start($host_name, $user_name, :password => $pwd_host) do |session|    
           exec_ssh_command(session, "[ -e ~/nemo ] && rm ~/nemo")
           exec_ssh_command(session, "[ -e ~/nemo.pub ] && rm ~/nemo.pub")       
@@ -727,7 +735,10 @@ namespace "build"  do
       print_timestamp('build:sailfish:rhodes START')
       build_path = File.join($app_path, "project", "qt", "build.cmd")
       rpm_path = File.join($app_path, "project", "qt", "rpm.cmd")
-      system(build_path)
+
+      if system(build_path) != true
+        raise "Error: build failed"
+      end
       system(rpm_path)
 
       $target_rpm = ""
@@ -897,6 +908,7 @@ namespace 'project' do
       #end
 
       build_script_generator.isNixSystem = !isWindows?
+      build_script_generator.merAddress = "127.0.0.1"
       build_script_generator.merPort = 2222
       build_script_generator.merPkey = File.join $sailfishdir, "vmshare/ssh/private_keys/engine/mersdk"
       build_script_generator.projectPath = QuotedStrNixWay(File.join($project_path, $final_name_app))
@@ -942,6 +954,7 @@ namespace 'project' do
   end
 end
 #http://doc.qt.io/qt-5/qmake-variable-reference.html#qmakespec
+#MER_SSH_HOST, 127.0.0.1
 #MER_SSH_PORT, 2222
 #MER_SSH_PRIVATE_KEY, C:/SailfishOS/vmshare/ssh/private_keys/engine/mersdk
 #MER_SSH_PROJECT_PATH, C:/Users/n0men/Desktop/tau/testapp/project/qt/curl
