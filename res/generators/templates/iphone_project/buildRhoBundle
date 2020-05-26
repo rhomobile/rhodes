@@ -6,7 +6,7 @@ if [ "$RHO_BUNDLE_ALREADY_BUILDED" = "YES" ]
 then
 
 RHO_BUNDLE_ALREADY_BUILDED="NO"
-echo "RhoBundle already builded !" 
+echo "RhoBundle already builded !"
 
 else
 
@@ -17,17 +17,9 @@ RHO_BUNDLE_ALREADY_BUILDED="NO"
 . ~/.profile
 cd ../..
 
-echo "START Prepare build bundle - switch app"
-
-ruby --version 
-
-rake switch_app
-
-echo "FINISH Prepare build bundle - switch app"
+ruby --version
 
 TARGET_RHODESLIBS_DIR=${SRCROOT}
-
-cd <%= rhodes_root_path %>
 
 echo "START build bundle ..."
 
