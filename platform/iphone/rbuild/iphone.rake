@@ -1268,7 +1268,7 @@ namespace "config" do
             if !File.exists?(File.dirname(__FILE__)+ "/../../../lib/extensions/fcm-push/ext/iphone/Frameworks/FirebaseCore.xcframework")
                chdir (File.dirname(__FILE__) + "/../../../lib/extensions/fcm-push/ext/iphone/Frameworks/")
                system("unzip Frameworks.zip")
-               rm_rf "Frameworks.zip"
+               #rm_rf "Frameworks.zip"
             end
         end
         Dir.chdir currentdir
