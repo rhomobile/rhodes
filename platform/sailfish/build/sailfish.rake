@@ -814,6 +814,7 @@ namespace 'project' do
       rubylib_erb_path = $rhodes_path + "/platform/sailfish/build/rubylib.pro.erb"
       rholib_erb_path = $rhodes_path + "/platform/sailfish/build/rholib.pro.erb"
       unzip_erb_path = $rhodes_path + "/platform/sailfish/build/unzip.pro.erb"
+      zlib_erb_path = $rhodes_path + "/platform/sailfish/build/zlib.pro.erb"
       sqlite3_erb_path = $rhodes_path + "/platform/sailfish/build/sqlite3.pro.erb"
       syncengine_erb_path = $rhodes_path + "/platform/sailfish/build/syncengine.pro.erb"
       rhodes_erb_path = $rhodes_path + "/platform/sailfish/build/rhodes.pro.erb"
@@ -834,6 +835,7 @@ namespace 'project' do
       mkdir_p File.join($project_path, "rubylib")
       mkdir_p File.join($project_path, "rholib")
       mkdir_p File.join($project_path, "unzip")
+      mkdir_p File.join($project_path, "zlib")
       mkdir_p File.join($project_path, "sqlite3")
       mkdir_p File.join($project_path, "syncengine")
       mkdir_p File.join($project_path, "rhodes")
@@ -870,6 +872,7 @@ namespace 'project' do
       File.open(File.join($project_path, "rubylib", "rubylib.pro"), 'w' ) { |f| f.write generator.render_profile( rubylib_erb_path ) }
       File.open(File.join($project_path, "rholib", "rholib.pro"), 'w' ) { |f| f.write generator.render_profile( rholib_erb_path ) }
       File.open(File.join($project_path, "unzip", "unzip.pro"), 'w' ) { |f| f.write generator.render_profile( unzip_erb_path ) }
+      File.open(File.join($project_path, "zlib", "zlib.pro"), 'w' ) { |f| f.write generator.render_profile( zlib_erb_path ) }
       File.open(File.join($project_path, "sqlite3", "sqlite3.pro"), 'w' ) { |f| f.write generator.render_profile( sqlite3_erb_path ) }
       File.open(File.join($project_path, "syncengine", "syncengine.pro"), 'w' ) { |f| f.write generator.render_profile( syncengine_erb_path ) }
 
@@ -878,6 +881,7 @@ namespace 'project' do
         clrfTOlf(File.join($project_path, "rubylib", "rubylib.pro"))
         clrfTOlf(File.join($project_path, "rholib", "rholib.pro"))
         clrfTOlf(File.join($project_path, "unzip", "unzip.pro"))
+        clrfTOlf(File.join($project_path, "zlib", "zlib.pro"))
         clrfTOlf(File.join($project_path, "sqlite3", "sqlite3.pro"))
         clrfTOlf(File.join($project_path, "syncengine", "syncengine.pro"))
       end

@@ -1,0 +1,72 @@
+QT -= core
+
+DEFINES += OS_SAILFISH OS_LINUX
+
+TARGET = zlib
+TEMPLATE = lib
+
+CONFIG += staticlib warn_on
+
+INCLUDEPATH += \
+<%= @rhoRoot %>/platform/shared/ruby/include\
+<%= @rhoRoot %>/platform/shared/ruby\
+<%= @rhoRoot %>/platform/shared\
+<%= @rhoRoot %>/platform/shared/ruby/sailfish
+
+
+DEFINES += OS_LINUX
+DESTDIR = <%= @rhoRoot %>/platform/linux/bin/extensions
+OBJECTS_DIR = <%= @rhoRoot %>/platform/linux/bin/extensions/zlib
+INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/linux
+
+DEFINES += RHODES_QT_PLATFORM _XOPEN_SOURCE _DARWIN_C_SOURCE _GNU_SOURCE
+
+CONFIG += staticlib warn_on
+CONFIG += <%= @buildMode %>
+
+DESTDIR = $$PWD/bin
+OBJECTS_DIR = $$PWD/bin/tmp
+
+
+QMAKE_CFLAGS += -fvisibility=hidden
+QMAKE_CXXFLAGS += -fvisibility=hidden
+QMAKE_CFLAGS_DEBUG -= -O2
+QMAKE_CXXFLAGS_DEBUG -= -O2
+QMAKE_CFLAGS -= -O2
+QMAKE_CXXFLAGS -= -O2
+
+
+QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+
+
+HEADERS += \
+<%= @rhoRoot %>/lib/extensions/zlib/ext/crc32.h\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/deflate.h\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/gzguts.h\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/inffast.h\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/inffixed.h\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/inflate.h\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/inftrees.h\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/trees.h\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/zconf.h\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/zlib.h\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/zutil.h
+
+SOURCES += \
+<%= @rhoRoot %>/lib/extensions/zlib/ext/adler32.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/compress.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/crc32.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/deflate.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/gzclose.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/gzlib.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/gzread.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/gzwrite.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/infback.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/inffast.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/inflate.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/inftrees.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/trees.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/uncompr.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/zlib.c\
+<%= @rhoRoot %>/lib/extensions/zlib/ext/zutil.c
