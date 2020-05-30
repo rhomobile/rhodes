@@ -1,5 +1,6 @@
 <%= @isNixSystem ? '#!/bin/sh' : 'ECHO OFF' %>
 cd <%= @projectPath %>
+<%= @isNixSystem ? 'export' : 'SET' %> MER_SSH_HOST=<%= @merAddress %>
 <%= @isNixSystem ? 'export' : 'SET' %> MER_SSH_PORT=<%= @merPort %>
 <%= @isNixSystem ? 'export' : 'SET' %> MER_SSH_PRIVATE_KEY=<%= @merPkey %>
 <%= @isNixSystem ? 'export' : 'SET' %> MER_SSH_PROJECT_PATH=<%= @projectPath %>

@@ -236,7 +236,7 @@
 #define HAVE_IOCTL 1
 //#define HAVE_ISSETUGID 1
 #define HAVE_KILLPG 1
-#define HAVE_LCHMOD 1
+//#define HAVE_LCHMOD 1
 #define HAVE_LCHOWN 1
 #define HAVE_LINK 1
 #define HAVE_LLABS 1

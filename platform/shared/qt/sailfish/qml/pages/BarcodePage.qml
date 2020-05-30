@@ -156,73 +156,43 @@ Page {
         }
 
 
-        Rectangle {
+        Button{
             id: okButton
-            width: 100
+            width: 200
             height: 100
-            x: parent.width - 2*width
+            x: parent.width - width - 50
             y: parent.height - 2*height
             z:1
-            color: (scale > 1)?"#00ff00":"#20ff20"
-            radius: 50
-            scale: captureMouseArea.pressed ? 1.5 : 1
-
-            Text {
-                anchors.centerIn: parent
-                font.pixelSize: 20
-                color: "black"
-                text: "Ok"
+            text: "OK"
+            onClicked: {
+                barcodeModel[0].done();
+                pageStack.pop();
             }
-
-            MouseArea {
-                id: captureMouseArea
-                anchors.fill: parent;
-                onClicked: {
-                    barcodeModel[0].done();
-                    pageStack.pop();
-                }
-
-            }
-
-         }
-
+        }
 
         Text {
             id: textResult
+            elide: Text.ElideRight
             //anchors.verticalCenter: parent.verticalCenter
             y: (parent.height / 8)
             x: (parent.width - width) / 2
             color: "white"
         }
 
-        Rectangle {
+
+        Button{
             id: repeakButton
-            width: 100
+            width: 200
             height: 100
-            x: width
+            x: 50
             y: parent.height - 2*height
-            z: 1
-            color: (scale > 1)?"#ff00ff":"#ff20ff"
-            radius: 50
-            scale: cancelMouseArea.pressed ? 1.5 : 1
-
-            Text {
-                anchors.centerIn: parent
-                font.pixelSize: 20
-                color: "black"
-                text: "Repeak"
+            z:1
+            text: "Retake"
+            onClicked: {
+                barcodeModel[0].restart();
             }
-
-            MouseArea {
-                id: cancelMouseArea
-                anchors.fill: parent;
-                onClicked: {
-                    barcodeModel[0].restart();
-                }
-            }
-
-
         }
+
     }
     on_NavigationChanged: {
         barcodeModel[0].cancel();

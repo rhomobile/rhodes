@@ -129,6 +129,9 @@ DEPENDPATH += <%= @rhoRoot %>/platform/shared/sqlite
 LIBS += -L$$PWD/../unzip/bin -lunzip
 PRE_TARGETDEPS += $$PWD/../unzip/bin/libunzip.a
 
+#LIBS += -L$$PWD/../zlib/bin -lzlib
+#PRE_TARGETDEPS += $$PWD/../zlib/bin/libzlib.a
+
 LIBS += -L$$PWD/../curl/bin -lcurl -lunzip
 INCLUDEPATH += <%= @rhoRoot %>/platform/shared/curl/include
 DEPENDPATH += <%= @rhoRoot %>/platform/shared/curl/include
@@ -139,7 +142,7 @@ LIBS += -L$$PWD/../rholib/bin -lrholib -lunzip -lcurl
 PRE_TARGETDEPS += $$PWD/../rholib/bin/librholib.a
 
 
-LIBS += -L$$PWD/../rubylib/bin -lrubylib -lrholib -lunzip -lcurl
+LIBS += -L$$PWD/../rubylib/bin -lrubylib -lrholib -lunzip -lcurl -ldl -lz
 INCLUDEPATH += <%= @rhoRoot %>/platform/shared/ruby/include
 DEPENDPATH += <%= @rhoRoot %>/platform/shared/ruby/include
 PRE_TARGETDEPS += $$PWD/../rubylib/bin/librubylib.a
