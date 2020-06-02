@@ -54,6 +54,7 @@ public interface AndroidFunctionality {
     void pauseWebView( WebView view, boolean doPause );
 
     Builder getNotificationBuilder( Context ctx, String channelID, String channelName );
+    Builder getNotificationBuilderForService( Context ctx, String channelID, String channelName );
     ComponentName startForegroundService(Activity activity, Intent service);
 
 }

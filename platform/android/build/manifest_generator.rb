@@ -97,7 +97,6 @@ class ManifestGenerator
 
     buildToolsVerMajor = self.buildToolsVer.split('.')[0].to_i
     canRenderNetworkSecurityConfig = ((self.buildSdkVer.to_i >= 24) && (buildToolsVerMajor>=24))
-    @usesPermissions << 'android.permission.FOREGROUND_SERVICE' if (self.buildSdkVer.to_i >= 28)
 
     tpl = File.read erbPath
     erb = ERB.new tpl
