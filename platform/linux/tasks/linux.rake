@@ -50,11 +50,11 @@ namespace "config" do
 		$qmake_makespec = "linux-g++"
 		Rake::Task["config:common"].invoke()
 
+		$connf_build = "Release"
 		if !$app_config.nil? && !$app_config["linux"].nil?
-			$connf_build = "Release"
 			puts "Target configuration: " + $connf_build
 		else
-			raise "Linux section is not found!"
+			puts "Linux section is not found!"
 		end
 
 		if !$app_config["version"].nil?
@@ -441,7 +441,7 @@ end
 
 namespace "run" do
 	task :linux => ["build:linux"] do
-		Jake.run3(File.join($target_path, $appname))
+		Jake.run3(File.join($target_path, $appname) + ' --remote-debugging-port=9090')
 	end
 
 	namespace "linux" do
