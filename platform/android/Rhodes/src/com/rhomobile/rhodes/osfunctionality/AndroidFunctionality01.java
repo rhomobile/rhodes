@@ -95,6 +95,11 @@ class AndroidFunctionality01 implements AndroidFunctionality {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public Builder getNotificationBuilderForService( Context ctx, String channelID, String channelName ) {
+        throw new UnsupportedOperationException();
+    }
+
 	@Override
 	public ComponentName startForegroundService(Activity activity, Intent service) {
 		return activity.startService(service);

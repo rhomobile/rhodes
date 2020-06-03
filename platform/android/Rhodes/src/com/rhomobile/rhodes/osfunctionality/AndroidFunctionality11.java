@@ -56,4 +56,13 @@ class AndroidFunctionality11 extends AndroidFunctionality10 implements AndroidFu
 		builder.setPriority(PRIORITY_HIGH);
 		return builder;
 	}
+
+	@Override
+	public Builder getNotificationBuilderForService( Context ctx, String channelID, String channelName ) {
+		Builder builder = new android.app.Notification.Builder(ctx);
+		builder.setPriority(PRIORITY_HIGH);
+		return builder;
+	}
+
+	
 }
