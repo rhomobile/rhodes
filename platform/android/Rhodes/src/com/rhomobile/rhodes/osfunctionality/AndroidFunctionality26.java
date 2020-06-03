@@ -43,11 +43,13 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
 
     private static final String TAG = AndroidFunctionality26.class.getSimpleName();
     private static final int IMPORTANCE_HIGH = 0x00000004;
+    private static final int IMPORTANCE_NONE = 0x00000000;
+    private static final int IMPORTANCE_UNSPECIFIED = 0xfffffc18;
     private static final int PRIORITY_HIGH = 0x00000001;
 
-    @Override
-    public Builder getNotificationBuilder( Context ctx, String channelID, String channelName ) {
-        Logger.D( TAG, "getNotificationBuilder() START" );
+    private Builder getNotificationBuilderEx( Context ctx, String channelID, String channelName, int priority, boolean showBadge )
+    {
+        Logger.D( TAG, "getNotificationBuilderEx() START" );
         Builder builder = null;
 
         try { 
@@ -65,11 +67,8 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
             Object channel = getNCMethod.invoke(notificationManager,channelID);
 
             if (channel == null) {
-                Logger.D( TAG, "getNotificationBuilder() chanell==null" );
+                Logger.D( TAG, "getNotificationBuilderEx() chanell==null" );
                 channel = ncCtor.newInstance( channelID, channelName, 4 );
-
-                //enableVibrationMethod.invoke(channel,true);
-                //setVibrationMethod.invoke(channel,new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
               
                 createNCMethod.invoke(notificationManager,channel);
             }
@@ -82,18 +81,18 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
                  (Builder)nbCtor.newInstance( ctx, channelID ) : 
                  (Builder)nbCtor.newInstance( ctx );
 
-            //java.lang.reflect.Method setPriorityMethod = ncClass.getMethod("setPriority", Integer.class);
-
             if(android.os.Build.VERSION.SDK_INT >= 26)
             {
                 java.lang.reflect.Method setShowBadgeMethod = ncClass.getMethod("setShowBadge", boolean.class);
-                setShowBadgeMethod.invoke(channel, true);
-		java.lang.reflect.Method setPriorityMethod = ncClass.getMethod("setImportance", int.class);
-                setPriorityMethod.invoke(channel, IMPORTANCE_HIGH);
+                setShowBadgeMethod.invoke(channel, showBadge);        
+                java.lang.reflect.Method setPriorityMethod = ncClass.getMethod("setImportance", int.class);
+                setPriorityMethod.invoke(channel, priority);
+                //setPriorityMethod.invoke(channel, IMPORTANCE_HIGH);
+                //setPriorityMethod.invoke(channel, IMPORTANCE_UNSPECIFIED);
             }
             else
-            {
-		java.lang.reflect.Method setPriorityMethod = Builder.class.getMethod("setPriority", int.class);
+            {		
+                java.lang.reflect.Method setPriorityMethod = Builder.class.getMethod("setPriority", int.class);
                 setPriorityMethod.invoke(builder, PRIORITY_HIGH);
                 //builder.setVisibility(android.app.Notification.VISIBILITY_PUBLIC);
             }
@@ -104,12 +103,22 @@ class AndroidFunctionality26 extends AndroidFunctionality11 implements AndroidFu
         }
 
         if ( null == builder ) {
-            Logger.D( TAG, "getNotificationBuilder() builder == null" );
+            Logger.D( TAG, "getNotificationBuilderEx() builder == null" );
             builder = super.getNotificationBuilder( ctx, channelID, channelName );
         }
-        Logger.D( TAG, "getNotificationBuilder() FINISH" );
+        Logger.D( TAG, "getNotificationBuilderEx() FINISH" );
 
         return builder;
+    }
+
+
+    @Override
+    public Builder getNotificationBuilder( Context ctx, String channelID, String channelName ) {
+        return getNotificationBuilderEx(ctx, channelID, channelName, IMPORTANCE_HIGH, true);
+    }
+
+    public Builder getNotificationBuilderForService( Context ctx, String channelID, String channelName ) {
+        return getNotificationBuilderEx(ctx, channelID, channelName, IMPORTANCE_UNSPECIFIED, false);
     }
 
     @Override

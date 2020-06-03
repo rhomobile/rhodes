@@ -2027,6 +2027,8 @@ namespace "build" do
       version = version["major"]*1000000 + version["minor"]*10000 + version["patch"]*100 + version["build"]
 
       usesPermissions = ['android.permission.RECEIVE_BOOT_COMPLETED', 'android.permission.INTERNET', 'android.permission.PERSISTENT_ACTIVITY', 'android.permission.WAKE_LOCK']
+      usesPermissions << 'android.permission.FOREGROUND_SERVICE' if ($target_sdk_level >= 28)
+
       $app_config["capabilities"].each do |cap|
         cap = ANDROID_PERMISSIONS[cap]
         next if cap.nil?
