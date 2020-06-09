@@ -64,6 +64,8 @@ public:
     VALUE rb_Rho_Ruby_callNativeCallback(int argc, VALUE *argv);
     void rholib_local_server_callback();
 
+    void initRhoRuby_fromRubyThread();
+
 private:
     IObject* convertJSON_to_Object(json::CJSONEntry* json_entry);
     
@@ -79,3 +81,6 @@ private:
 
 }
 }
+
+// function called from Rhodes code - after ruby and local server was created and initialized
+extern "C" void InitRhoRuby_fromRubyThread();
