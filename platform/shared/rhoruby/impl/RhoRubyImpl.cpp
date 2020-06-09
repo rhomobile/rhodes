@@ -117,7 +117,7 @@ namespace ruby {
 
     void RhoRubyImpl::init()
     {
-        rho::common::CRhodesApp::getInstance()->registerLocalServerUrl(RHOLIB_LOCAL_SERVER_URL, rholib_local_server_callback_func);
+        /*
         if(lateInit)
         {
 
@@ -131,10 +131,7 @@ namespace ruby {
                 LateInit() {}
                 void run() override
                 {
-                    rb_api_mParent = rb_define_module("Rho");
-                    rb_api_mRubyNative = rb_define_class_under(rb_api_mParent, "Ruby", rb_cObject);
-                    rb_define_alloc_func(rb_api_mRubyNative, _allocate_class_object);
-                    rb_define_singleton_method(rb_api_mRubyNative, "callNativeCallback", (ruby_method_func_type)c_rb_Rho_Ruby_callNativeCallback, -1);
+                    initRhoRuby_fromRubyThread();
                     lateWaiter.notify_one();
                 }
             } late_init;
@@ -143,27 +140,21 @@ namespace ruby {
             executeInRubyThread(&late_init);
             late_init.lateWaiter.wait(lock);
         }
+        */
     }
 
 
     RhoRubyImpl::RhoRubyImpl(bool _lateInit) : lateInit(_lateInit) {
         // register Rho::Ruby.callNativeCallback(callback_id, param)
 
+        /*
         if(!_lateInit)
         {
-            rb_api_mParent = rb_define_module("Rho");
+            initRhoRuby_fromRubyThread();
 
-            rb_api_mRubyNative = rb_define_class_under(rb_api_mParent, "Ruby", rb_cObject);
-
-            rb_define_alloc_func(rb_api_mRubyNative, _allocate_class_object);
-
-            rb_define_singleton_method(rb_api_mRubyNative, "callNativeCallback", (ruby_method_func_type)c_rb_Rho_Ruby_callNativeCallback, -1);
-
-
-            rho::common::CRhodesApp::getInstance()->registerLocalServerUrl(RHOLIB_LOCAL_SERVER_URL, rholib_local_server_callback_func);
         }
-        
-        
+        */
+
     }
     
     void RhoRubyImpl::rholib_local_server_callback() {
@@ -792,8 +783,22 @@ namespace ruby {
         return rho_ruby_get_NIL();
     }
 
-    
-    
-    
+    void RhoRubyImpl::initRhoRuby_fromRubyThread() {
+        rho::common::CRhodesApp::getInstance()->registerLocalServerUrl(RHOLIB_LOCAL_SERVER_URL, rholib_local_server_callback_func);
+
+        rb_api_mParent = rb_define_module("Rho");
+        rb_api_mRubyNative = rb_define_class_under(rb_api_mParent, "Ruby", rb_cObject);
+        rb_define_alloc_func(rb_api_mRubyNative, _allocate_class_object);
+        rb_define_singleton_method(rb_api_mRubyNative, "callNativeCallback", (ruby_method_func_type)c_rb_Rho_Ruby_callNativeCallback, -1);
+    }
+
+
+
 }
+}
+
+
+extern "C" void InitRhoRuby_fromRubyThread() {
+    rho::ruby::RhoRubyImpl* rr = (rho::ruby::RhoRubyImpl*)(rho::ruby::RhoRubySingletone::getRhoRuby());
+    rr->initRhoRuby_fromRubyThread();
 }

@@ -93,6 +93,8 @@ extern void Init_date_core(void);
 extern void Init_RubyNative_extension(void);
 
 
+extern void InitRhoRuby_fromRubyThread();
+
 //RhoSupport extension
 extern void Init_RhoSupport(void);
 extern VALUE require_compiled(VALUE fname, VALUE* result);
@@ -251,6 +253,10 @@ void RhoRubyStart()
     Init_RhoConf(); //+
 #endif
 
+// init rho ruby API
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
+    InitRhoRuby_fromRubyThread();
+#endif
 	Init_RhodesNativeViewManager();
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)
     Init_RhoBluetooth();
