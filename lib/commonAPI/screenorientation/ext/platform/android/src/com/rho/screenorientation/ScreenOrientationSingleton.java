@@ -220,10 +220,10 @@ class ScreenOrientationSingleton implements IScreenOrientationSingleton
 			if (lastDirection.compareToIgnoreCase(direction) != 0)
 			{
 				lastDirection = direction;
-				if(m_Paused==false)//
+				if(m_Paused==false)
 				{
 					Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
-					if (mScreenOrientationCallback != null)
+					if (mScreenOrientationCallback != null) {
 						mScreenOrientationCallback.set(direction);
 					}
 				}
@@ -244,7 +244,7 @@ class ScreenOrientationSingleton implements IScreenOrientationSingleton
 	public void processPausedCallback() {
 		if (savedWhenPauseDirection != null) {
 			Logger.D(TAG, "Setting saved on pause currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + savedWhenPauseDirection);
-			if (mScreenOrientationCallback != null)
+			if (mScreenOrientationCallback != null) {
 				mScreenOrientationCallback.set(savedWhenPauseDirection);
 			}
 			savedWhenPauseDirection = null;
