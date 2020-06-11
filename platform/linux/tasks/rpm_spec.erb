@@ -29,5 +29,5 @@ Rhodes based application.
 mv * %{buildroot}
 
 %files
-/*
+%attr(0755, root, root) /usr/share/applications/%{appname}.desktop
 %attr(0777, root, root) /opt/%{appname}
