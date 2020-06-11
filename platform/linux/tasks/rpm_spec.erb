@@ -1,4 +1,5 @@
 %define appname <%= $appname %>
+<%= $additional_args %>
 
 Summary:    Rhodes based application
 Name:       %{appname}
@@ -7,6 +8,7 @@ Release:    1
 Group:      Applications/Internet
 License:    Proprietary  
 Source0:	<%= $appname %>.tar
+Source1:	<%= $appname %>.rpmlintrc
 Vendor:     <%= $vendor %>
 BuildArch:  <%= $architecture %>
 Autoreq: 0
