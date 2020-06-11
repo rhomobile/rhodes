@@ -28,6 +28,7 @@ class ScreenOrientationSingleton implements IScreenOrientationSingleton
 	private SensorManager mSensorManager;
 	private static boolean isAutoRotate;
 	private static String direction;
+	private static String savedWhenPauseDirection = null;
 	private static String lastDirection = "";
 	public static boolean m_Paused=false;
 	/**
@@ -221,20 +222,32 @@ class ScreenOrientationSingleton implements IScreenOrientationSingleton
 				lastDirection = direction;
 				if(m_Paused==false)//
 				{
-				Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
-				if (mScreenOrientationCallback != null)
-					mScreenOrientationCallback.set(direction);
+					Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
+					if (mScreenOrientationCallback != null)
+						mScreenOrientationCallback.set(direction);
+					}
 				}
 				else
 				{
-				Logger.I(TAG, "Activiy is paused.Do not fire screenorientation event");	
+					savedWhenPauseDirection = direction;
+					Logger.I(TAG, "Activiy is paused.Do not fire screenorientation event");
 				}
-					
+
 			}
 		}
 		catch (NullPointerException e)
 		{
 			Logger.E(TAG, e.getMessage());
+		}
+	}
+
+	public void processPausedCallback() {
+		if (savedWhenPauseDirection != null) {
+			Logger.D(TAG, "Setting saved on pause currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + savedWhenPauseDirection);
+			if (mScreenOrientationCallback != null)
+				mScreenOrientationCallback.set(savedWhenPauseDirection);
+			}
+			savedWhenPauseDirection = null;
 		}
 	}
 

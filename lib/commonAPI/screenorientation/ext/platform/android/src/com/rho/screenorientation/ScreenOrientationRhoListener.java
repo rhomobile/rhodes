@@ -35,13 +35,14 @@ public class ScreenOrientationRhoListener extends AbstractRhoListener {
             screenOrientationInstance.m_Paused =true;
         }
     }
-	
+
 		@Override
     public void onResume(RhodesActivity activity) {
         Iterator<ScreenOrientationSingleton> iterator = mScreenOrientationInstances.iterator();
         while (iterator.hasNext()) {
             ScreenOrientationSingleton screenOrientationInstance = iterator.next();
             screenOrientationInstance.m_Paused =false;
+            screenOrientationInstance.processPausedCallback();
         }
     }
 
