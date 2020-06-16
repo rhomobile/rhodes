@@ -1,12 +1,14 @@
 %define appname <%= $appname %>
+<%= $additional_args %>
 
 Summary:    Rhodes based application
 Name:       %{appname}
 Version:    <%= $version_app %>
 Release:    1
-Group:      Applications/Internet
+Group:      Networking/WWW
 License:    Proprietary  
 Source0:	<%= $appname %>.tar
+Source1:	<%= $appname %>.rpmlintrc
 Vendor:     <%= $vendor %>
 BuildArch:  <%= $architecture %>
 Autoreq: 0
@@ -27,5 +29,5 @@ Rhodes based application.
 mv * %{buildroot}
 
 %files
-/*
+%attr(0755, root, root) /usr/share/applications/%{appname}.desktop
 %attr(0777, root, root) /opt/%{appname}
