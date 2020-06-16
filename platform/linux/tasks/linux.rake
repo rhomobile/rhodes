@@ -380,6 +380,11 @@ namespace "device" do
 				control_template = File.read File.join( $startdir, "platform", "linux", "tasks", "rpm_spec.erb")
 				erb = ERB.new control_template
 				File.open(File.join($buildroot, "rpm.spec"), 'w' ) { |f| f.write erb.result binding }
+                
+                lint_exceptions_template = File.read File.join( $startdir, "platform", "linux", "tasks", "linter_exceptions.erb")
+				erb = ERB.new lint_exceptions_template
+				File.open(File.join($buildroot, "SOURCES", "#{$appname}.rpmlintrc"), 'w' ) { |f| f.write erb.result binding }
+                
 
 				puts Jake.run3("rpmbuild --define \"_topdir #{$buildroot}\" --define '_build_id_links none' --define 'debug_package %{nil}' -bb rpm.spec", $buildroot)
 
@@ -393,6 +398,8 @@ namespace "device" do
 		end
 
 		task :production => ["config:sys_recognize", "clean:linux"] do
+            $linter_exceptions = []
+            $additional_args = ""
 			if $ubuntu
 				$deps = "qt5-default, libqt5webengine5, libqt5webenginecore5, libqt5webenginewidgets5, libqt5multimedia5"
 				Rake::Task['device:linux:production:deb'].invoke
@@ -409,26 +416,11 @@ namespace "device" do
 				"qt5-qtmultimedia", "qt5-qtwebchannel", "gmp", "libstdc++"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			elsif $rosalinux
-				Rake::Task["build:linux"].invoke
-				createFolders()
-
-				target_folder = File.join($app_path, "bin", "target")
-				$linuxroot = File.join(target_folder, "linux")
-				$bin_file = "linux.tar"
-				$bin_archive = File.join(target_folder, $bin_file)
-				rm $bin_archive if File.exists? $bin_archive
-
-				FileUtils.mv($linuxroot, File.join(target_folder, "#{$appname}-#{$version_app}"))
-				Jake.run3("tar -cvf #{$bin_file} #{$appname}-#{$version_app}", target_folder)
-				FileUtils.rm_r File.join(target_folder, "#{$appname}-#{$version_app}") if File.exists? File.join(target_folder, "#{$appname}-#{$version_app}")
-				FileUtils.mv($bin_archive, File.join(target_folder, "#{$appname}.tar"))
-
-				puts "A binary file created and compressed in a tar archive, but creating the RPM package is not supported on Rosa Linux."
-				exit 0
 				#$create_buildroot = true
 				$architecture = "noarch"
-				$deps = ["lib64qt5webenginecore", "lib64qt5webenginewidgets" , "lib64qt5webengine" , "lib64qt5-core5", "lib64qt5gui5", 
-					"lib64gmp10"]
+                #$additional_args = "%global _nonzero_exit_pkgcheck_terminate_build 0"
+                $linter_exceptions = ["W: no-binary", "E: arch-independent-package-contains-binary-or-object", "E: dir-or-file-in-opt", "E: non-standard-dir-perm", "W: desktopfile-without-binary", "W: dir-or-file-in-opt", "E: non-standard-executable-perm", "E: explicit-lib-dependency", "W: no-documentation", "E: invalid-desktopfile", "W: script-without-shebang", "E: non-standard-group", "W: no-url-tag","E: world-writable", "E: wrong-script-end-of-line-encoding"]
+				$deps = ["lib64qt5webenginecore5", "lib64qt5webenginewidgets5" , "lib64qt5webengine5" , "lib64qt5multimedia5", "lib64qt5gui5", "lib64gmp10"]
 				Rake::Task['device:linux:production:rpm'].invoke
 			else
 				puts "Fail! The current system has not been recognized whild production."
