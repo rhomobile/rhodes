@@ -514,7 +514,6 @@ namespace "config" do
     $java = $config["env"]["paths"]["java"]
 
     $skip_so_build = false
-    $build_bundle = true
     $neon_root = nil
     $neon_root = $config["env"]["paths"]["neon"] unless $config["env"]["paths"].nil?
     if !($app_config["paths"].nil? or $app_config["paths"]["neon"].nil?)
@@ -547,6 +546,8 @@ namespace "config" do
     $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
     $min_sdk_level = ANDROID_MIN_SDK_LEVEL if $min_sdk_level.nil?
 
+    $build_bundle = false
+    $build_bundle = get_case_insensetive_property("build_bundle").to_i == 1 unless $app_config["android"].nil?
     
     $target_sdk_level = get_case_insensetive_property("targetSdk") unless $app_config["android"].nil?
     $target_sdk_level = get_case_insensetive_property("targetSdk") if $target_sdk_level.nil? and not $config["android"].nil?
@@ -2237,7 +2238,7 @@ namespace "build" do
     task :genrjava => [:manifest, :resources] do
       mkdir_p $app_rjava_dir
 
-      puts "Generate initial R.java at #{$app_rjava_dir}"
+     puts "Generate initial R.java at #{$app_rjava_dir}"
 
      if ($rhodes_as_lib || $build_bundle)
         puts $appres.to_s
@@ -3021,7 +3022,9 @@ namespace "package" do
     Jake.run($jarbin, args, respath) if File.directory?(respath)
     rm_rf proguardTempJarDir if File.exists? proguardTempJarDir
 
-    create_bundle()
+    if $build_bundle
+      create_bundle()
+    end
 
     puts "Finish packaging"
     print_timestamp('package:android FINISH')
