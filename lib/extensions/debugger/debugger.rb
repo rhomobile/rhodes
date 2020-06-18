@@ -93,14 +93,36 @@ def get_variables(scope)
 end
 
 def debug_handle_cmd(inline)
+  #if ($_cmd.size != 0)
+    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "$_cmd: #{$_cmd}")
+    #end
+
   cmd = $_cmd.match(/^([^\n\r]*)([\n\r]+|$)/)[0]
   processed = false
   wait = inline
 
   if cmd != ""
+    
+    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "cmd: #{cmd}")
+    
     if cmd =~/^CONNECTED/
       log_command(cmd)
       debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Connected to debugger")
+      processed = true
+    elsif cmd =~/^BACKTRACE/
+      thread_id = cmd.split(':').last.to_i
+      
+      puts "request backtrace for thread id #{thread_id}" 
+      
+      thread = Thread.list.find { |each| each.object_id == thread_id }
+      $_s.write("BACKTRACE:START\n")
+      thread.backtrace.each {|each| $_s.write("#{each}\n")}
+      $_s.write("BACKTRACE:END\n")      
+      processed = true
+    elsif cmd =~/^THREADS/
+      $_s.write("THREADS:START\n")
+      Thread.list.each {|each| $_s.write("#{each.object_id}:#{each}\n")}
+      $_s.write("THREADS:END\n")
       processed = true
     elsif cmd =~/^(BP|RM):/
       log_command(cmd)
@@ -241,7 +263,8 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
-          $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}\n")
+          thread_id = Thread.current.object_id;
+          $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}:#{thread_id}\n")
           debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{ln}")
           $_step = 0
           $_step_level = -1
