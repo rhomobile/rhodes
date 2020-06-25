@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.add_dependency('net-ssh','6.0.2')
   s.add_dependency('CFPropertyList', '2.2.8')
   s.add_dependency('naturally', '1.3.2')
-  s.add_dependency('simctl', '1.6.8')
+  s.add_dependency('simctl', '1.5.6')
   s.add_dependency('listen', '3.0.6')
   s.add_dependency('rubyzip', '1.3.0')
   s.add_dependency('ffi', '1.12.2')
