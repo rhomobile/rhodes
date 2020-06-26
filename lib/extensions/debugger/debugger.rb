@@ -1,3 +1,4 @@
+require 'set'
 require 'uri'
 require 'timeout'
 
@@ -8,6 +9,79 @@ DEBUGGER_LOG_LEVEL_DEBUG  = 0
 DEBUGGER_LOG_LEVEL_INFO  = 1
 DEBUGGER_LOG_LEVEL_WARN  = 2
 DEBUGGER_LOG_LEVEL_ERROR = 3
+
+class BreakPoint
+  def initialize(a_file, a_line)
+    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "BreakPoint: create on file: #{a_file}, #{a_file.class},  line: #{a_line}, #{a_line.class}")
+    @file = a_file
+    @line = a_line
+    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "BreakPoint created with: #{@file}, #{@file.class}, #{@line}, #{@line.class}")
+  end
+  
+  def set_on?(file, line)
+    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "BreakPoint: #{@file}, #{@file.class}, #{@line}, #{@line.class} is set on file: #{file}, #{file.class}  line: #{line}, #{line.class}, #{@file == file && @line == line}")
+    @file == file && @line == line
+  end
+end
+
+class BreakPoints
+  
+  def initialize
+    #@break_points = Set.new
+    @break_points = Hash.new
+    @enabled = true
+  end
+  
+  def enabled?
+    @enabled
+  end
+  
+  def be_enabled
+    @enabled = true
+  end
+
+  def be_disabled
+    @enabled = false
+  end
+
+
+  def set_on?(file, line)
+    unless @break_points.has_key?(file)
+      return false
+    end
+    @break_points[file].include?(line)
+  end
+
+  def set_break_point_on(file, line)
+    unless @break_points.has_key?(file)
+      @break_points[file] = Set.new
+    end
+    @break_points[file].add(line)
+  end
+  
+  def delete_all_break_points
+    @break_points.clear
+  end
+  
+  def delete_break_point_on(file, line)
+    if @break_points.has_key?(file)
+      @break_points[file].delete(line)
+    end
+  end
+
+  def delete_all_break_points_on(file)
+    if @break_points.has_key?(file)
+      @break_points[file].clear
+    end
+  end
+  
+  def empty?
+    return @break_points.empty?
+  end
+  
+  
+
+end
 
 def debugger_log(level, msg)
   if (level >= DEBUGGER_LOG_LEVEL_INFO) #DEBUGGER_LOG_LEVEL_WARN)
@@ -93,40 +167,73 @@ def get_variables(scope)
 end
 
 def debug_handle_cmd(inline)
+  #if ($_cmd.size != 0)
+    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "$_cmd: #{$_cmd}")
+    #end
+
   cmd = $_cmd.match(/^([^\n\r]*)([\n\r]+|$)/)[0]
   processed = false
   wait = inline
 
   if cmd != ""
+    
+    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "cmd: #{cmd}")
+    
     if cmd =~/^CONNECTED/
       log_command(cmd)
       debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Connected to debugger")
       processed = true
+    elsif cmd =~/^BACKTRACE/
+      thread_id = cmd.split(':').last.to_i
+      
+      puts "request backtrace for thread id #{thread_id}" 
+      
+      thread = Thread.list.find { |each| each.object_id == thread_id }
+      $_s.write("BACKTRACE:START\n")
+      thread.backtrace.each {|each| $_s.write("#{each}\n")}
+      $_s.write("BACKTRACE:END\n")      
+      processed = true
+    elsif cmd =~/^THREADS/
+      $_s.write("THREADS:START\n")
+      Thread.list.each {|each| $_s.write("#{each.object_id}:#{each}\n")}
+      $_s.write("THREADS:END\n")
+      processed = true
     elsif cmd =~/^(BP|RM):/
       log_command(cmd)
       ary = cmd.split(":")
-      bp = ary[1].gsub(/\|/,':') + ':' + ary[2].chomp
+      file = ary[1][$_app_path.size, ary[1].size]
+      line = ary[2].to_i
+      #bp = ary[1].gsub(/\|/,':') + ':' + ary[2].chomp
       if (cmd =~/^RM:/)
-        $_breakpoint.delete(bp)
+        $_breakpoint.delete_break_point_on(file, line)
+        #$_breakpoint.delete(bp)
+        #debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint removed: #{file}:#{line}")
         debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint removed: #{bp}")
       else
-        $_breakpoint.store(bp,1)
-        debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint added: #{bp}")
+        $_breakpoint.set_break_point_on(file, line)        
+        #$_breakpoint.store(bp,1)
+        #debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint added: #{bp}")
+        debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint added: #{file}:#{line}")
       end
       processed = true
-    elsif cmd =~ /^RMALL/
+    elsif cmd =~ /^RMALL:/
       log_command(cmd)
-      $_breakpoint.clear
+      path = cmd.split(':')[1]
+      file = path[$_app_path.size, path.size]
+      $_breakpoint.delete_all_break_points_on(file)
+      #$_breakpoint.clear
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "All breakpoints removed")
       processed = true
     elsif cmd =~ /^ENABLE/
       log_command(cmd)
-      $_breakpoints_enabled = true
+      $_breakpoint.be_enabled
+      #$_breakpoints_enabled = true
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoints enabled")
       processed = true
     elsif cmd =~ /^DISABLE/
       log_command(cmd)
-      $_breakpoints_enabled = false
+      $_breakpoint.be_disabled
+      #$_breakpoints_enabled = false
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoints disabled")
       processed = true
     elsif inline && (cmd =~ /^STEPOVER/)
@@ -207,6 +314,15 @@ def debug_handle_cmd(inline)
 end
 
 $_tracefunc = lambda{|event, file, line, id, bind, classname|
+  
+  # puts "event: #{event}"
+  # puts "file: #{file}"
+  # puts "line: #{line}"
+  # puts "id: #{id}"
+  # puts "bind: #{bind}"
+  # puts "classname: #{classname}"
+  
+  
   return if eval('::Thread.current != ::Thread.main', bind)
   $_binding = bind;
   $_classname = classname;
@@ -219,7 +335,7 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
       unhandled = true
       step_stop = ($_step > 0) && (($_step_level < 0) || ($_call_stack <= $_step_level))
 
-      if (step_stop || ($_breakpoints_enabled && (!($_breakpoint.empty?))))
+      if (step_stop || ($_breakpoint.enabled? && (!($_breakpoint.empty?))))
         filename = ""
          
         if !(file.index("./").nil?)
@@ -227,22 +343,21 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
         elsif !(file.index("lib").nil?)
           filename = "framework/" + file[file.index("lib") + 3, file.length]
         elsif !(file.index("framework").nil?)
-            filename = file[file.index("framework"), file.length]
+          filename = file[file.index("framework"), file.length]
         elsif !(file.index("extensions").nil?)
           filename = file[file.index("extensions"), file.length]
         else
-          filename = file[$_app_path.length, file.length-$_app_path.length]
+          filename = file[$_app_path.length, file.length - $_app_path.length]
         end
 
-        ln = line.to_i.to_s
-
-        if step_stop || ($_breakpoints_enabled && ($_breakpoint.has_key?(filename + ':' + ln)))
-          $_s.write('[Debugger][3] stop on bp ' +  file.to_s + ':' + ln + "\n")
+        if step_stop || ($_breakpoint.enabled? && ($_breakpoint.set_on?(filename, line.to_i)))
+          $_s.write("[Debugger][3] stop on bp #{file}:#{line}\n")
 
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
-          $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}\n")
-          debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{ln}")
+          thread_id = Thread.current.object_id
+          $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{line}:#{cl}:#{id}:#{thread_id}\n")
+          debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{line}")
           $_step = 0
           $_step_level = -1
 
@@ -314,8 +429,9 @@ begin
   debugger_log(DEBUGGER_LOG_LEVEL_WARN, "Connected: " + $_s.to_s)
   $_s.write("CONNECT\nHOST=" + debug_host.to_s + "\nPORT=" + debug_port.to_s + "\n")
  
-  $_breakpoint = Hash.new
-  $_breakpoints_enabled = true
+  #$_breakpoint = Hash.new
+  $_breakpoint = BreakPoints.new()
+  #$_breakpoints_enabled = true
   $_step = 0
   $_step_level = -1
   $_call_stack = 0
