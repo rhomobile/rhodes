@@ -592,6 +592,10 @@ bool CHttpServer::init()
         close_listener();
         return false;
     }
+
+#if defined(OS_ANDROID)
+    signal(SIGPIPE, SIG_IGN);
+#endif
     
     struct sockaddr_in sa;
     memset(&sa, 0, sizeof(sa));
