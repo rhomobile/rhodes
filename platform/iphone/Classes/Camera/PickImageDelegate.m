@@ -314,6 +314,69 @@
         img = newImg;
          */
     }
+
+    
+    // normalize orientation
+    if ([theImage imageOrientation] != UIImageOrientationUp) {
+        
+        CGImageRef cgImage = [img CGImage];
+        CGColorSpaceRef rgb_space = CGColorSpaceCreateDeviceRGB();
+        
+        int curWidth = CGImageGetWidth(cgImage);
+        int curHeight = CGImageGetHeight(cgImage);
+        
+        int newWidth = curWidth;
+        int newHeight = curHeight;
+
+        if (([theImage imageOrientation] == UIImageOrientationLeft) || ([theImage imageOrientation] == UIImageOrientationRight)) {
+            newWidth = curHeight;
+            newHeight = curWidth;
+        }
+        
+        void * data = malloc(newWidth*newHeight*4);
+        
+        CGContextRef cgContext = CGBitmapContextCreate( data,
+                                                       newWidth,
+                                                       newHeight,
+                                                       8,
+                                                       newWidth*4,
+                                                       rgb_space,
+                                                       kCGImageAlphaNoneSkipLast);
+        
+        CGFloat rotation = 0.0;
+        
+        if ([theImage imageOrientation] == UIImageOrientationLeft) {
+            rotation = 90.0 * M_PI / 180.0;
+        }
+        if ([theImage imageOrientation] == UIImageOrientationRight) {
+            rotation = 270.0 * M_PI / 180.0;
+        }
+        if ([theImage imageOrientation] == UIImageOrientationDown) {
+            rotation = 180.0 * M_PI / 180.0;
+        }
+
+        
+        CGContextTranslateCTM(cgContext, ((double)newWidth) / 2.0f, ((double)newHeight) / 2.0f);
+        CGContextRotateCTM(cgContext, rotation);
+        
+        
+        CGContextDrawImage(cgContext, CGRectMake(-(((double)curWidth) / 2.0f), -(((double)curHeight) / 2.0f), curWidth, curHeight), cgImage);
+        
+        CGImageRef rgbImage = CGBitmapContextCreateImage(cgContext);
+        //[img release];
+        UIImage* newImg = [UIImage imageWithCGImage:rgbImage scale:1.0 orientation:UIImageOrientationUp];
+        if (img != theImage) {
+            //[img release];
+        }
+        img = newImg;
+        
+        CGColorSpaceRelease(rgb_space);
+        CGImageRelease(rgbImage);
+        CGContextRelease(cgContext);
+        free(data);
+        
+    }
+    
     
     int imageWidth = (int)img.size.width;
     int imageHeight = (int)img.size.height;
