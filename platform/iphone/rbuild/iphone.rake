@@ -2529,6 +2529,7 @@ namespace "build" do
 
 
     #[build:iphone:extension_libs]
+    desc "Build all extensions for all platforms and make one accumulated lib (*.a file) for each extension"
     task :extension_libs => ["config:iphone", "build:bundle:noxruby"] do
       #chdir 'platform/iphone'
       chdir File.join($app_path, 'project/iphone')
