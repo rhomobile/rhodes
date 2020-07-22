@@ -25,5 +25,5 @@ gem install rdoc -v 4.2.2 --no-document
 gem install deep_merge -v 1.1.1 --no-document
 gem install nokogiri -v 1.10.4 --no-document
 gem install net-scp -v 1.2.1 --no-document
-gem install net-ssh -v 4.2.0 --no-document
+gem install net-ssh -v 6.0.2 --no-document
 fi
