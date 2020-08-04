@@ -437,7 +437,7 @@ def run_emulator(options = {})
     puts cmd
     start_emulator(cmd)
 
-    cmd_start_emu = "#{$adb} -e wait-for-device shell getprop sys.boot_completed"
+    cmd_start_emu = "#{$adb} -e wait-for-device"
     puts cmd_start_emu
     raise "Android emulator failed to start." unless system(cmd_start_emu)
 
@@ -447,16 +447,11 @@ def run_emulator(options = {})
     while (Time.now - startedWaiting < 600 )
         sleep 5
         now = Time.now
-        started = false
-        booted = true
-        Jake.run2 $adb, ["-e", "shell", "ps"], :system => false, :hideerrors => false do |line|
-            #puts line
-            booted = false if line =~ /bootanimation/
-            started = true if line =~ /android\.process\.acore/
-            true
-        end
-        #puts "started: #{started}, booted: #{booted}"
-        unless started and booted
+        booted = false
+
+        booted = `#{$adb} -e shell getprop sys.boot_completed` =~ /1/
+
+        unless booted
             printf("%.2fs: ",(now - startedWaiting))
             if (now - startedWaiting) > (180 * adbRestarts)
               # Restart the adb server every 60 seconds to prevent eternal waiting
