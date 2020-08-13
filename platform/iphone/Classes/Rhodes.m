@@ -92,6 +92,9 @@ void rho_geoimpl_init();
 static BOOL app_created = NO;
 
 
+#define BLUR_VIEW_TAG 527196
+
+
 @interface RhoActivateTask : NSObject {}
 + (void)run;
 @end
@@ -158,6 +161,37 @@ static Rhodes *instance = NULL;
 + (UIApplication*)application {
     return [Rhodes sharedInstance]->application;
 }
+
+
+- (void)blurCurrentView
+{
+    UIView *captured = [[[[Rhodes sharedInstance] mainView] getMainViewController].view snapshotViewAfterScreenUpdates:NO];
+
+    UIView *blurView = nil;
+    if ([UIVisualEffectView class]){
+        blurView        = [[UIVisualEffectView alloc]initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular]];
+        blurView.frame  = captured.bounds;
+        [captured addSubview:blurView];
+    }
+    else {
+        UIToolbar *toolBar  = [[UIToolbar alloc] initWithFrame:captured.bounds];
+        toolBar.barStyle    = UIBarStyleBlackTranslucent;
+        [captured addSubview:toolBar];
+    }
+    captured.tag = BLUR_VIEW_TAG;
+    
+    if ([[[[Rhodes sharedInstance] mainView] getMainViewController].view viewWithTag:BLUR_VIEW_TAG]){
+        return;
+    }
+    [[[[Rhodes sharedInstance] mainView] getMainViewController].view addSubview:captured];
+}
+
+- (void)unblurCirrentView
+{
+    [[[[[Rhodes sharedInstance] mainView] getMainViewController].view viewWithTag:BLUR_VIEW_TAG] removeFromSuperview];
+}
+
+
 
 + (CGRect)applicationFrame {
     CGRect frame = [[UIScreen mainScreen] applicationFrame];
@@ -1417,6 +1451,13 @@ withCompletionHandler:(void(^)())completionHandler {
         
         [[RhoExtManagerSingletone getExtensionManager] applicationDidBecomeActive: application];
     }
+    
+#ifndef RHO_STANDALONE_LIB
+    if ([SplashViewController isReplaceContentWhenSnapshot]) {
+        [self unblurCirrentView];
+    }
+#endif
+
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -1430,6 +1471,13 @@ withCompletionHandler:(void(^)())completionHandler {
     }
     rho_rhodesapp_callAppActiveCallback(0);
     rho_rhodesapp_canstartapp("", ", ");
+    
+#ifndef RHO_STANDALONE_LIB
+    if ([SplashViewController isReplaceContentWhenSnapshot]) {
+        [self blurCurrentView];
+    }
+#endif
+    
     [self saveLastUsedTime];
 }
 
@@ -1438,12 +1486,12 @@ withCompletionHandler:(void(^)())completionHandler {
     
     
 #ifndef RHO_STANDALONE_LIB
-    if ([SplashViewController isReplaceContentWhenSnapshot]) {
-        if (splashViewControllerSnapShot == nil) {
-            splashViewControllerSnapShot = [[SplashViewController alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-        }
-        [self.window.rootViewController presentViewController:[splashViewControllerSnapShot retain] animated:NO completion:NULL];
-    }
+    //if ([SplashViewController isReplaceContentWhenSnapshot]) {
+    //    if (splashViewControllerSnapShot == nil) {
+    //        splashViewControllerSnapShot = [[SplashViewController alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    //    }
+    //    [self.window.rootViewController presentViewController:[splashViewControllerSnapShot retain] animated:NO completion:NULL];
+    //}
 #endif
 
     RAWLOG_INFO("Application go to background");
@@ -1492,9 +1540,9 @@ withCompletionHandler:(void(^)())completionHandler {
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
 #ifndef RHO_STANDALONE_LIB
-    if ([SplashViewController isReplaceContentWhenSnapshot]) {
-        [self.window.rootViewController dismissViewControllerAnimated:NO completion:NO];
-    }
+    //if ([SplashViewController isReplaceContentWhenSnapshot]) {
+    //    [self.window.rootViewController dismissViewControllerAnimated:NO completion:NO];
+    //}
 #endif
     [self registerForNotifications];
 }
