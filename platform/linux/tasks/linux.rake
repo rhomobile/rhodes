@@ -26,9 +26,12 @@
 require 'erb'
 
 namespace "config" do
-	task :linux => ["switch_app", "config:qt", "config:sys_recognize"] do
+	task :set_current_platform_linux do
+		$current_platform = "linux"
+	end
 
-		$rubypath = "platform/linux/target/compiler/rubylinux" #path to RubyMac
+	task :linux => ["config:set_current_platform_linux", "switch_app", "config:qt", "config:sys_recognize"] do
+		$rubypath = "platform/linux/target/compiler/rubylinux" #path to RubyLixux
 		$bindir = $app_path + "/bin"
 		$srcdir =  $bindir + "/RhoBundle"
 		$excludelib = ['**/builtinME.rb','**/ServeME.rb','**/TestServe.rb']
@@ -269,7 +272,7 @@ namespace "build" do
 			cp File.join($startdir, "platform/linux/bin/RhoSimulator/RhoSimulator"), target_app_name
 		end
 		rho_path = File.join($target_path, "rho")
-		#rm_rf rho_path if File.exists?(rho_path)
+		rm_rf rho_path if File.exists?(rho_path)
 		cp_r File.join($app_path, "bin/RhoBundle"), rho_path
 
 		chdir $startdir
