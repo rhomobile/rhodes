@@ -71,15 +71,15 @@ app_bundle_id = info_plist_hash['CFBundleIdentifier']
 puts "iphonesim_8 App bundle ID: "+app_bundle_id
 
 # Launch a new Simulator.app instance
-device.launch!
+device.launch
 
 # Wait for the device to be booted
-device.wait! {|d| d.state == :booted}
+device.wait {|d| d.state == :booted}
 
 
-device.install!(app_path)
+device.install(app_path)
 
-device.launch_app!(app_bundle_id)
+device.launch_app(app_bundle_id)
 
 # Kill the Simulator.app instance again
 #device.shutdown!
