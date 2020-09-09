@@ -17,7 +17,7 @@ class BreakPoint
     @line = a_line
     debugger_log(DEBUGGER_LOG_LEVEL_INFO, "BreakPoint created with: #{@file}, #{@file.class}, #{@line}, #{@line.class}")
   end
-  
+
   def set_on?(file, line)
     debugger_log(DEBUGGER_LOG_LEVEL_INFO, "BreakPoint: #{@file}, #{@file.class}, #{@line}, #{@line.class} is set on file: #{file}, #{file.class}  line: #{line}, #{line.class}, #{@file == file && @line == line}")
     @file == file && @line == line
@@ -25,17 +25,17 @@ class BreakPoint
 end
 
 class BreakPoints
-  
+
   def initialize
     #@break_points = Set.new
     @break_points = Hash.new
     @enabled = true
   end
-  
+
   def enabled?
     @enabled
   end
-  
+
   def be_enabled
     @enabled = true
   end
@@ -46,6 +46,7 @@ class BreakPoints
 
 
   def set_on?(file, line)
+    puts "@break_points: #{@break_points}"
     unless @break_points.has_key?(file)
       return false
     end
@@ -53,16 +54,17 @@ class BreakPoints
   end
 
   def set_break_point_on(file, line)
+    puts "set_break_point_on(#{file}, #{line})"
     unless @break_points.has_key?(file)
       @break_points[file] = Set.new
     end
     @break_points[file].add(line)
   end
-  
+
   def delete_all_break_points
     @break_points.clear
   end
-  
+
   def delete_break_point_on(file, line)
     if @break_points.has_key?(file)
       @break_points[file].delete(line)
@@ -74,23 +76,40 @@ class BreakPoints
       @break_points[file].clear
     end
   end
-  
+
   def empty?
     return @break_points.empty?
   end
-  
-  
+
+
 
 end
 
 def debugger_log(level, msg)
-  if (level >= DEBUGGER_LOG_LEVEL_INFO) #DEBUGGER_LOG_LEVEL_WARN)
+  if (level >= DEBUGGER_LOG_LEVEL_DEBUG) #DEBUGGER_LOG_LEVEL_WARN)
     puts "[Debugger] #{msg}"
   end
 end
 
 def log_command(cmd)
   debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Received command: #{cmd}")
+end
+
+def convert_to_relative_path(path, app_path)
+  puts "convert_to_relative_path #{path} #{app_path}"
+  if path.include?("./")
+    relative_path = "/" + path[path.index("./") + 2, path.length]
+  elsif path.include?("lib")
+    relative_path = "framework" + path[path.index("lib") + 3, path.length]
+  elsif path.include?("framework")
+    relative_path = path[path.index("framework"), path.length]
+  elsif path.include?("extensions")
+    relative_path = path[path.index("extensions"), path.length]
+  else
+    relative_path = path[app_path.length, path.length - app_path.length]
+  end
+  puts "relative_path #{relative_path}"
+  return relative_path
 end
 
 def debug_read_cmd(io,wait)
@@ -118,34 +137,34 @@ def execute_cmd(cmd, advanced)
     error = '1';
     result = "#{$!}".inspect
   end
-  
+
   cmd = URI.escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")) if advanced
   $_s.write("EV" + (advanced ? "L:#{error}:#{cmd}:" : ':'+(error.to_i != 0 ? 'ERROR: ':'')) + result + "\n")
 end
 
-def get_variables(scope)  
+def get_variables(scope)
   if (scope =~ /^GVARS/)
-   cmd = "global_variables"
-   prefix = ""
-   vartype = "G"
+    cmd = "global_variables"
+    prefix = ""
+    vartype = "G"
   elsif (scope =~ /^LVARS/)
-   cmd = "local_variables"
-   prefix = ""
-   vartype = "L"
+    cmd = "local_variables"
+    prefix = ""
+    vartype = "L"
   elsif (scope =~ /^CVARS/)
-   if $_classname =~ /^\s*$/
-     return
-   end
-   cmd = "class_variables"
-   prefix = "#{$_classname}."
-   vartype = "C"
+    if $_classname =~ /^\s*$/
+      return
+    end
+    cmd = "class_variables"
+    prefix = "#{$_classname}."
+    vartype = "C"
   elsif (scope =~ /^IVARS/)
-   if ($_classname =~ /^\s*$/) || ($_methodname =~ /^\s*$/)
-     return
-   end
-   cmd = "instance_variables"
-   prefix = "self."
-   vartype = "I"
+    if ($_classname =~ /^\s*$/) || ($_methodname =~ /^\s*$/)
+      return
+    end
+    cmd = "instance_variables"
+    prefix = "self."
+    vartype = "I"
   end
   begin
     vars = eval(prefix + cmd, $_binding)
@@ -167,31 +186,37 @@ def get_variables(scope)
 end
 
 def debug_handle_cmd(inline)
-  #if ($_cmd.size != 0)
+  if ($_cmd.size != 0)
     debugger_log(DEBUGGER_LOG_LEVEL_INFO, "$_cmd: #{$_cmd}")
-    #end
+  end
 
   cmd = $_cmd.match(/^([^\n\r]*)([\n\r]+|$)/)[0]
   processed = false
   wait = inline
 
   if cmd != ""
-    
+
     debugger_log(DEBUGGER_LOG_LEVEL_INFO, "cmd: #{cmd}")
-    
+
     if cmd =~/^CONNECTED/
       log_command(cmd)
       debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Connected to debugger")
       processed = true
     elsif cmd =~/^BACKTRACE/
       thread_id = cmd.split(':').last.to_i
-      
-      puts "request backtrace for thread id #{thread_id}" 
-      
+
+      puts "request backtrace for thread id #{thread_id}"
+
       thread = Thread.list.find { |each| each.object_id == thread_id }
       $_s.write("BACKTRACE:START\n")
-      thread.backtrace.each {|each| $_s.write("#{each}\n")}
-      $_s.write("BACKTRACE:END\n")      
+      backtrace = thread.backtrace
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, thread.backtrace)
+      backtrace.slice(2, backtrace.size - 1).each do |each|
+        parts = each.split(":")
+        parts[0] = convert_to_relative_path(parts[0], $_app_path)
+        $_s.write("#{parts.join(":")}\n")
+      end
+      $_s.write("BACKTRACE:END\n")
       processed = true
     elsif cmd =~/^THREADS/
       $_s.write("THREADS:START\n")
@@ -201,7 +226,7 @@ def debug_handle_cmd(inline)
     elsif cmd =~/^(BP|RM):/
       log_command(cmd)
       ary = cmd.split(":")
-      file = ary[1][$_app_path.size, ary[1].size]
+      file = ary[1]#[$_app_path.size, ary[1].size]
       line = ary[2].to_i
       #bp = ary[1].gsub(/\|/,':') + ':' + ary[2].chomp
       if (cmd =~/^RM:/)
@@ -210,7 +235,7 @@ def debug_handle_cmd(inline)
         #debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint removed: #{file}:#{line}")
         debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint removed: #{bp}")
       else
-        $_breakpoint.set_break_point_on(file, line)        
+        $_breakpoint.set_break_point_on(file, line)
         #$_breakpoint.store(bp,1)
         #debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint added: #{bp}")
         debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint added: #{file}:#{line}")
@@ -314,30 +339,32 @@ def debug_handle_cmd(inline)
 end
 
 $_tracefunc = lambda{|event, file, line, id, bind, classname|
-  
+
   # puts "event: #{event}"
   # puts "file: #{file}"
   # puts "line: #{line}"
   # puts "id: #{id}"
   # puts "bind: #{bind}"
   # puts "classname: #{classname}"
-  
-  
+
+
   return if eval('::Thread.current != ::Thread.main', bind)
   $_binding = bind;
   $_classname = classname;
   $_methodname = id;
   file = file.to_s.gsub('\\', '/')
-  
-  if (file[0, $_app_path.length] == $_app_path) || (!(file.index("./").nil?)) || (!(file.index("framework").nil?)) || (!(file.index("extensions").nil?))    
-  
+
+  if (file[0, $_app_path.length] == $_app_path) || (!(file.index("./").nil?)) || (!(file.index("framework").nil?)) || (!(file.index("extensions").nil?))
+
     if event =~ /^line/
       unhandled = true
       step_stop = ($_step > 0) && (($_step_level < 0) || ($_call_stack <= $_step_level))
 
       if (step_stop || ($_breakpoint.enabled? && (!($_breakpoint.empty?))))
         filename = ""
-         
+
+=begin
+        
         if !(file.index("./").nil?)
           filename = "/" + file[file.index("./") + 2, file.length]
         elsif !(file.index("lib").nil?)
@@ -349,6 +376,26 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
         else
           filename = file[$_app_path.length, file.length - $_app_path.length]
         end
+=end
+
+
+=begin
+        if file.include?("./")
+          filename = "/" + file[file.index("./") + 2, file.length]
+        elsif file.include?("lib")
+          filename = "framework/" + file[file.index("lib") + 3, file.length]
+        elsif file.include?("framework")
+          filename = file[file.index("framework"), file.length]
+        elsif file.include?("extensions")
+          filename = file[file.index("extensions"), file.length]
+        else
+          filename = file[$_app_path.length, file.length - $_app_path.length]
+        end
+=end
+
+        filename = convert_to_relative_path(file, $_app_path)
+
+        puts "step_stop: #{step_stop} || $_breakpoint.set_on?(#{filename}, #{line.to_i}): #{$_breakpoint.set_on?(filename, line.to_i)}"
 
         if step_stop || ($_breakpoint.enabled? && ($_breakpoint.set_on?(filename, line.to_i)))
           $_s.write("[Debugger][3] stop on bp #{file}:#{line}\n")
@@ -356,7 +403,7 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
           thread_id = Thread.current.object_id
-          $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{line}:#{cl}:#{id}:#{thread_id}\n")
+          $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{line - 1}:#{cl}:#{id}:#{thread_id}\n")
           debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{line}")
           $_step = 0
           $_step_level = -1
@@ -368,8 +415,8 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 
             if app_type.eql? "rhodes"
               if Rho::System.main_window_closed
-                 $_s.write("QUIT\n") if !($_s.nil?)
-                 $_wait = false
+                $_s.write("QUIT\n") if !($_s.nil?)
+                $_wait = false
               end
             end
 
@@ -408,10 +455,10 @@ begin
   debug_host = ((debug_host_env.nil?) || (debug_host_env == "")) ? '127.0.0.1' : debug_host_env
   debug_port = ((debug_port_env.nil?) || (debug_port_env == "")) ? 9000 : debug_port_env
   debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
-   
+
   $is_rhosim = false
-  
-  if defined?(RHOSTUDIO_REMOTE_DEBUG) && RHOSTUDIO_REMOTE_DEBUG == true 
+
+  if defined?(RHOSTUDIO_REMOTE_DEBUG) && RHOSTUDIO_REMOTE_DEBUG == true
     puts "[debugger] RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
     debug_host = ((RHOSTUDIO_REMOTE_HOST.to_s != nil) || (RHOSTUDIO_REMOTE_HOST.to_s != "")) ? RHOSTUDIO_REMOTE_HOST.to_s : ""
     debug_path = "apps/app/"
@@ -419,7 +466,7 @@ begin
     $is_rhosim = true
     debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
   end
-  
+
   debugger_log(DEBUGGER_LOG_LEVEL_INFO, "host=" + debug_host.to_s)
   debugger_log(DEBUGGER_LOG_LEVEL_INFO, "port=" + debug_port.to_s)
   debugger_log(DEBUGGER_LOG_LEVEL_INFO, "path=" + debug_path.to_s)
@@ -428,7 +475,7 @@ begin
 
   debugger_log(DEBUGGER_LOG_LEVEL_WARN, "Connected: " + $_s.to_s)
   $_s.write("CONNECT\nHOST=" + debug_host.to_s + "\nPORT=" + debug_port.to_s + "\n")
- 
+
   #$_breakpoint = Hash.new
   $_breakpoint = BreakPoints.new()
   #$_breakpoints_enabled = true
@@ -437,8 +484,6 @@ begin
   $_call_stack = 0
   $_resumed = false
   $_cmd = ""
-  $_app_path = ""
-
   $_app_path = debug_path
   $_s.write("DEBUG PATH=" + $_app_path.to_s + "\n")
 
