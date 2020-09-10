@@ -122,7 +122,7 @@ end
 
 namespace "build" do
 	namespace "win32" do
-	def call_vcvarsall()
+	def set_vcvarsall()
 		if $vcvarsall == nil
 			$vs_version = nil
 			Jake.run2(File.join($qtdir, 'bin', 'qtdiag'), [' '], {:directory => File.join($qtdir, 'bin'), :nowait => false}) do |line|
@@ -158,12 +158,12 @@ namespace "build" do
 				puts "Can't find vcvarsall.bat in standart locations"
 				exit 1
 			end
-			if File.exists? $vcvarsall
-				Jake.run2($vcvarsall, ['x86'], {:nowait => false})
-		    else
-		    	raise "Can't locate vcvarsall.bat"
-		    end
 		end
+		if File.exists? $vcvarsall
+			ENV["RHO_VSCMNTOOLS"] = "\"" + $vcvarsall + "\" x86"
+	    else
+	    	raise "Can't locate vcvarsall.bat"
+	    end
 	end
 
     task :extensions => "config:win32" do
@@ -269,13 +269,13 @@ namespace "build" do
 		      ENV['RHO_QMAKE'] = $qmake
 		      ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
 		      ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
-		      ENV['RHO_VSCMNTOOLS'] = $vscommontools
 
 		      if($debug and !$rhosimulator_build)
 		        ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release"
 		      end
 
 		      if File.exists? File.join(extpath, 'build.bat')
+		      	set_vcvarsall()
 		        Jake.run3('build.bat', extpath)
 		      elsif is_prebuilt
 		        file_mask = File.join(extpath, $current_platform, '*.lib' ) 
@@ -454,13 +454,12 @@ namespace "build" do
 	              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
 	              ENV['RHO_QMAKE'] = $qmake
 	              ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ""
-	              ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
-	              ENV['RHO_VSCMNTOOLS'] = $vscommontools
+	              ENV['RHO_QMAKE_SPEC'] = $qmake_makespec	              
 
 	              if($debug and !$rhosimulator_build)
 	                ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release" 
 	              end
-
+	              set_vcvarsall()
 	              Jake.run3('build.bat', extpath)
 	          end
 	      end 
@@ -541,7 +540,8 @@ namespace "build" do
 	      cp File.join($startdir,"res","icons","rhosim.png"), File.join($startdir,"platform","shared","qt","rhodes","resources","rho.png")
 
 	      ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
-	      ENV['RHO_VSCMNTOOLS'] = $vscommontools
+
+	      set_vcvarsall()
 	      if $rhodes_as_lib
 	        if($debug)
 	          Jake.run3('rhoruby_win32_build_debug.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
@@ -599,7 +599,7 @@ namespace "build" do
 	chdir $platformdir
 
 	ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
-	ENV['RHO_VSCMNTOOLS'] = $vscommontools
+	set_vcvarsall()
 	if ($rhodes_as_lib)
 	  if($debug)
 	    Jake.run3('rhoruby_win32_build_debug.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
