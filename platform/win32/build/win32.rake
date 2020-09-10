@@ -122,6 +122,49 @@ end
 
 namespace "build" do
 	namespace "win32" do
+	def call_vcvarsall()
+		if $vcvarsall == nil
+			$vs_version = nil
+			Jake.run2(File.join($qtdir, 'bin', 'qtdiag'), [' '], {:directory => File.join($qtdir, 'bin'), :nowait => false}) do |line|
+			  if line == nil
+		      elsif line.include? "MSVC 2015"
+		      	$vs_version = 2015
+		      	break
+		      elsif line.include? "MSVC 2017"
+		      	$vs_version = 2017
+		      	break
+		      elsif line.include? "MSVC 2019"
+		      	$vs_version = 2019
+		      	break
+		      end
+		    end
+		    puts $vs_version
+		    if ($vs_version == nil)
+		      	puts "Using QT with unsupported VS version!"
+		      	exit 1
+		    end
+
+			vcvars = Dir.glob(File.join("C:","Program Files*","Microsoft Visual Studio*","**","vcvarsall.bat"))
+			vcvars.each do |batfile|
+				if $vs_version == 2015 && batfile.include?("14.0")
+					$vcvarsall = batfile
+				elsif $vs_version == 2017 && batfile.include?("2017")
+					$vcvarsall = batfile
+				elsif $vs_version == 2019 && batfile.include?("2019")
+					$vcvarsall = batfile
+				end
+			end
+			if ($vcvarsall == nil)
+				puts "Can't find vcvarsall.bat in standart locations"
+				exit 1
+			end
+			if File.exists? $vcvarsall
+				Jake.run2($vcvarsall, ['x86'], {:nowait => false})
+		    else
+		    	raise "Can't locate vcvarsall.bat"
+		    end
+		end
+	end
 
     task :extensions => "config:win32" do
 		print_timestamp('build:win32:extensions START')
@@ -649,10 +692,6 @@ namespace "device" do
 		      #end
 		      vspec_files += "  File /r *.dll\n"
 		   end
-		  if Jake.getBuildBoolProp('deploymsvc', $app_config, true) && ($vs_version == 2008)
-		    vspec_files += "  File *.manifest\n"
-		  end
-
 		  # custumize install script for application
 		  $appdisplay_version=$app_version + '.0.0'
 		  if $app_config.has_key?('vendor')
