@@ -111,7 +111,10 @@ namespace "config" do
 
 			$qt_icon_path = $app_path + "/icon/icon.png"
 			$qt_icon_path = $startdir + "/res/icons/rhodes.png" unless File.exists? $qt_icon_path
-			cp $qt_icon_path, $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
+			target_icon_path = $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
+			if !FileUtils.compare_file($qt_icon_path, target_icon_path)
+				cp $qt_icon_path, target_icon_path
+			end
 			qrcfile = $startdir + "/platform/shared/qt/rhodes/GeneratedFiles/" + $buildcfg + "/qrc_simulator.cpp"
 			rm qrcfile if File.exists? qrcfile
 		end
@@ -164,6 +167,24 @@ namespace "build" do
 	    else
 	    	raise "Can't locate vcvarsall.bat"
 	    end
+	end
+
+	def runBuldBatFile(bat, extpath)
+		set_vcvarsall()
+
+		string = nil
+		bat_filepath = File.join(extpath, bat)
+		File.open(bat_filepath, "r") { |file| string = file.read}
+
+		if (string != nil)
+			old_vscmn = "call \"%RHO_VSCMNTOOLS%..\\..\\VC\\vcvarsall.bat\" x86"
+			if (string.include? old_vscmn)
+				string.gsub!(old_vscmn, "call %RHO_VSCMNTOOLS%")
+				File.open(bat_filepath, "w") { |file| file << string }
+			end
+		end
+		
+		Jake.run3(bat, extpath)
 	end
 
     task :extensions => "config:win32" do
@@ -275,8 +296,7 @@ namespace "build" do
 		      end
 
 		      if File.exists? File.join(extpath, 'build.bat')
-		      	set_vcvarsall()
-		        Jake.run3('build.bat', extpath)
+		        runBuldBatFile('build.bat', extpath)
 		      elsif is_prebuilt
 		        file_mask = File.join(extpath, $current_platform, '*.lib' ) 
 		        puts "PREBUILD: #{file_mask}"
@@ -458,8 +478,7 @@ namespace "build" do
 	              if($debug and !$rhosimulator_build)
 	                ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release" 
 	              end
-	              set_vcvarsall()
-	              Jake.run3('build.bat', extpath)
+	              runBuldBatFile('build.bat', extpath)
 	          end
 	      end 
 	      generate_extensions_pri(extensions_lib, pre_targetdeps)
@@ -894,7 +913,7 @@ namespace "run" do
 			Rake::Task['run:win32'].invoke()
 		end
 
-		task :delete_db do
+		task :delete_db => ["config:win32"] do
 		  $buildcfg = $app_config["buildcfg"]
 		  $buildcfg = "Release" unless $buildcfg
 
