@@ -19,7 +19,7 @@ TEMPLATE = subdirs
 SUBDIRS = rubylib rholib sqlite3 syncengine \
 ../../../lib/commonAPI/coreapi/ext/platform/qt/coreapi.pro \
 #../../../lib/commonAPI/logCapture/ext/platform/qt/logCapture.pro \
-../../../../rhoconnect-client/ext/rhoconnect-client/ext/platform/qt/rhoconnect-client.pro \
+#../../../../rhoconnect-client/ext/rhoconnect-client/ext/platform/qt/rhoconnect-client.pro \
 #../../../lib/extensions/digest/ext/digest.pro \
 #../../../lib/extensions/digest-md5/ext/digest-md5.pro \
 #../../../lib/extensions/digest-sha1/ext/digest-sha1.pro \
@@ -27,10 +27,10 @@ SUBDIRS = rubylib rholib sqlite3 syncengine \
 #../../../lib/extensions/fcntl/ext/fcntl.pro \
 #../../../lib/extensions/openssl/ext/openssl.pro \
 #../../../lib/extensions/bigdecimal/ext/bigdecimal.pro \
-../../../lib/extensions/zlib/ext/zlib.pro \
+../../../lib/extensions/zlib/ext/zlib.pro #\
 #../../../lib/extensions/serialport/ext/serialport.pro \
-../../../lib/commonAPI/mediacapture/ext/platform/qt/Mediacapture.pro \
-../../../lib/commonAPI/barcode/ext/platform/qt/Barcode.pro
+#../../../lib/commonAPI/mediacapture/ext/platform/qt/Mediacapture.pro \
+#../../../lib/commonAPI/barcode/ext/platform/qt/Barcode.pro
 
 unix:!macx {
     SUBDIRS += curl

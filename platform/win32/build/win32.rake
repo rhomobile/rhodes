@@ -403,7 +403,6 @@ namespace "build" do
 	      pre_targetdeps = ''
 
 	      puts "$app_extensions_list : #{$app_extensions_list}"
-
 	      $app_extensions_list.each do |ext, commin_ext_path |      
 	          puts "extension #{ext} [#{commin_ext_path}]"
 	          next unless commin_ext_path
