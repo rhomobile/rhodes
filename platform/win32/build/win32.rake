@@ -486,7 +486,7 @@ PRE_TARGETDEPS += #{pre_targetdeps}
 	task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
 		next if $prebuild_win32
 
-		chdir $platformdir
+		chdir File.join($startdir, $platformdir)
 
 		ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
 		set_vcvarsall()
@@ -722,6 +722,13 @@ end
 
 namespace "run" do
 
+	def copyBundleToExecutableDir()
+		app_rhodir = File.join($startdir, $vcbindir, "rhodes", 'rho')
+		rm_rf app_rhodir if File.exists?(app_rhodir)
+		bundleDir = File.join($bindir, 'RhoBundle')
+		FileUtils.cp_r bundleDir, app_rhodir
+	end	
+
 	desc "Run win32"
 	task :win32 => ["build:win32"] do
 		unless $prebuild_win32
@@ -736,10 +743,7 @@ namespace "run" do
 
 		Rake::Task["build:win32:deployqt"].invoke unless $prebuild_win32
 
-		app_rhodir = File.join($startdir, $vcbindir, "rhodes", 'rho')
-		rm_rf app_rhodir if File.exists?(app_rhodir)
-		bundleDir = File.join($bindir, 'RhoBundle')
-		FileUtils.cp_r bundleDir, app_rhodir
+		copyBundleToExecutableDir()
 
 		cp $qt_icon_path, $target_path + "/icon.png"
 		args = ['--remote-debugging-port=9090']
@@ -796,7 +800,7 @@ namespace "run" do
 		task :spec => [:delete_db] do
 			Jake.decorate_spec do
 			    Rake::Task['build:win32'].invoke
-
+			    copyBundleToExecutableDir()
 			    #remove log file
 			    win32rhopath = File.join($startdir, $vcbindir, "rhodes", 'rho')
 			    win32logpath = File.join(win32rhopath, "RhoLog.txt")
@@ -812,7 +816,7 @@ namespace "run" do
 			    args = [' ']
 
 			    targetFile = "../rhodes.exe"
-			    targetDirectory = File.join($vcbindir, "rhodes", "rho")
+			    targetDirectory = win32rhopath
 			    targetFileFullName = File.join(targetDirectory, targetFile)
 			    start = Time.now
 			    if File.exists? targetFileFullName
