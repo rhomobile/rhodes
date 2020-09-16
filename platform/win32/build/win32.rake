@@ -187,416 +187,288 @@ namespace "build" do
 		Jake.run3(bat, extpath)
 	end
 
+    task :rhobundle, ["config:set_win32_platform", "config:win32", "config:qt", "config:win32:qt", :after_bundle, :exclude_dirs] do
+		Rake::Task["config:win32"].invoke
+		rm_rf $srcdir
+		Rake::Task["build:bundle:noxruby"].invoke
+		Rake::Task["build:win32:extensions"].execute if !$skip_build_extensions
+		Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
+    end
+
+
+    task :rhodeslib_lib, [:target_path] => ["build:win32:set_release_config"] do |t, args|
+      print_timestamp('build:win32:rhodeslib_lib START')
+      $rhodes_as_lib = true
+      Rake::Task['build:win32'].invoke
+      createWin32Production(false, true)
+      target_path = args[:target_path]
+      #cp_r File.join($bindir, "#{$appname}-#{$app_config["version"]}.aar"), target_path
+
+      Dir.glob(File.join($tmpdir,'**','*.dll')) do |p|
+          Jake.copyIfNeeded p, target_path
+      end
+
+      if($debug)
+        Jake.copyIfNeeded File.join($tmpdir, "rhodeslibd.dll"), target_path
+        Jake.copyIfNeeded File.join($tmpdir, "rhodeslibd.lib"), target_path
+      else
+        Jake.copyIfNeeded File.join($tmpdir, "rhodeslib.dll"), target_path
+        Jake.copyIfNeeded File.join($tmpdir, "rhodeslib.lib"), target_path
+      end
+
+      rhoruby_dir = File.join($startdir, 'platform', 'shared', 'rhoruby', 'api')
+      rhodeslib_h = File.join($startdir, 'platform', 'shared', 'qt', 'rhodes', 'rhorubyVersion', 'rhodeslib.h')
+      mkdir_p File.join(target_path, 'rhoruby') if not File.exists?  File.join(target_path, 'rhoruby')
+      cp_r rhoruby_dir, File.join(target_path, 'rhoruby')
+      cp_r rhodeslib_h, File.join(target_path, 'rhoruby')
+
+      print_timestamp('build:win32:rhodeslib_lib FINISH')
+    end
+
+    task :rhodeslib_bundle, [:target_path]  => ["build:win32:set_release_config", "config:common"] do |t, args|
+      print_timestamp('build:win32:rhodeslib_bundle START')
+
+      target_path = args[:target_path]
+      $skip_build_rhodes_main = true
+      $skip_build_extensions = true
+      $skip_build_xmls = true
+      $use_prebuild_data = true
+
+      Rake::Task['config:win32:qt'].invoke
+
+      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
+
+      Rake::Task['build:win32:rhobundle'].invoke
+
+      mkdir_p target_path if not File.exists? target_path
+      cp_r File.join($bindir, "RhoBundle"), target_path
+    end
+
+
+    task :deployqt => "config:win32:qt" do
+
+        if (false)
+	        # Visual Studio 2017
+	        puts "Deploy libs from msvc #{$vs_version}"
+	        vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.CRT")
+	        vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.OPENMP")
+	        if deploymsvc
+	          cp File.join(vsredistdir, "msvcp140.dll"), $target_path if !File.exists?(File.join($target_path, "msvcp140.dll"))
+	          cp File.join(vsredistdir, "concrt140.dll"), $target_path if !File.exists?(File.join($target_path, "concrt140.dll"))
+	          cp File.join(vsredistdir, "vccorlib140.dll"), $target_path if !File.exists?(File.join($target_path, "vccorlib140.dll"))
+	          cp File.join(vsredistdir, "vcruntime140.dll"), $target_path if !File.exists?(File.join($target_path, "vcruntime140.dll"))
+	          cp File.join(vsredistdir2, "vcomp140.dll"), $target_path if !File.exists?(File.join($target_path, "vcomp140.dll"))
+	          #cp File.join($vscommontools, "../../VC/bin/d3dcompiler_47.dll"), $target_path
+	          puts "Joining msvc140 libs"
+	        end
+	    end
+
+        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
+	    cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
+
+		possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
+		format ="Found QT Version : #{$QVersion}" 
+		targetFile = File.join($target_path, "rhodes.exe")
+
+		begin
+		possible_targets.each do |target|
+			targetFile = File.join($target_path, target + ".exe")
+			puts "checking " + targetFile
+			break if File.file?(targetFile)
+		end
+		
+		$logger.debug "Looking for app executable: #{targetFile}"                  
+		raise "#{targetFile} not found" unless File.file?(targetFile)
+		Jake.run3("#{File.join($qtdir, 'bin/windeployqt --release --no-quick-import --force')} #{targetFile}")
+		
+		rescue Exception => e
+			$logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
+		end
+
+    end
+
     task :extensions => "config:win32" do
-		print_timestamp('build:win32:extensions START')
-		next if $use_shared_runtime || $prebuild_win32
-
-		extensions_lib = ''
-		pre_targetdeps = ''
-
-		$regkeys      = Array.new
-		$comdll_files = Array.new
-
-		puts "$app_extensions_list : #{$app_extensions_list}"
-
-		$app_extensions_list.each do |ext, commin_ext_path |
-		  next unless commin_ext_path
-		  print_timestamp('process extension "' + ext + '" START')
-		  
-		  extpath = File.join( commin_ext_path, 'ext')
-		  ext_config_path = File.join( commin_ext_path, "ext.yml")
-		  ext_config = nil
-		  
-		  if File.exist? ext_config_path
-		    ext_config = Jake.config(File.open(ext_config_path))
-		  end
-		  nlib = ext_config['nativelibs'] if ext_config
-		  nlib = [] unless nlib
-
-		  puts "#{ext_config}"
-		  is_prebuilt = ext_config && ext_config[$current_platform] && ext_config[$current_platform]['exttype'] && ext_config[$current_platform]['exttype'] == 'prebuilt'
-		  project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
-		  target_lib_name = Jake.getBuildProp('target_lib_name', ext_config) if ext_config
-		  
-		  next unless (File.exists?( File.join(extpath, "build.bat") ) || is_prebuilt || project_path)
-
-		  chdir commin_ext_path 
-		  
-		  if ext != 'openssl.so'
-		    if ext_config.has_key?('libraries')
-		      ext_config["libraries"].each { |name_lib|
-		        extensions_lib << " #{name_lib}.lib"
-		        pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
-		      }
-		    else
-		      extensions_lib << " #{ext}.lib"
-		      pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
-		    end
-		  end
-
-		  ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
-
-		  if (project_path)	  
-		      ENV['RHO_ROOT'] = $startdir
-		      ENV['RHO_BUILD_CONFIG'] = $buildcfg
-		      
-		      ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
-		      ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'],  $vcbindir, "extensions")
-		      ENV['TEMP_FILES_DIR'] = File.join(ENV['TARGET_TEMP_DIR'], ext)
-
-		      ENV['RHO_EXT_NAME']=ext
-		      ENV['RHO_EXT_LIB_NAME'] = target_lib_name
-		      
-		      if is_prebuilt
-		          file_mask = File.join(extpath, $current_platform, '*.lib' ) 
-		          puts "PREBUILD: #{file_mask}"
-		          mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
-		          Dir.glob( file_mask ).each do |lib|
-		              cp_r lib, ENV['TARGET_TEMP_DIR']
-		          end
-		      else    
-		          clean_ext_vsprops(commin_ext_path) if $wm_win32_ignore_vsprops
-		          Jake.run3('rake --trace', File.join($startdir, 'lib', 'build', 'extensions'))
-
-		          if ENV["TARGET_EXT_DIR"]
-		            nlib.each do |lib|
-		              lib_file = File.join(commin_ext_path, lib)
-
-		              cp(lib_file, File.join(ENV['TARGET_EXT_DIR'], ext)) if File.exists? lib_file
-		            end
-		          end
-		      end    
-		  
-		  else
-		      chdir $startdir
-		      ENV['RHO_BUILD_CONFIG'] = 'Release'
-		      ENV['PWD'] = $startdir
-		      ENV['RHO_ROOT'] = ENV['PWD']
-
-		      if ENV["TARGET_EXT_DIR"]
-		        ENV['TARGET_TEMP_DIR'] = File.join(ENV["TARGET_EXT_DIR"], ext)
-		      else
-		        ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], $vcbindir, "temp", "rhodes")
-		      end
-		      ENV['RHO_EXT_NAME']=ext                
-
-		      ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], $vcbindir, "extensions", ext)
-
-		      unless ENV["TARGET_EXT_DIR"]
-		          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], $vcbindir, "extensions")
-		          ENV['TEMP_FILES_DIR'] = File.join(ENV['TARGET_TEMP_DIR'], ext)
-		      end
-		      
-		      ENV['RHO_QMAKE'] = $qmake
-		      ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ''
-		      ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
-
-		      if($debug and !$rhosimulator_build)
-		        ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release"
-		      end
-
-		      if File.exists? File.join(extpath, 'build.bat')
-		        runBuldBatFile('build.bat', extpath)
-		      elsif is_prebuilt
-		        file_mask = File.join(extpath, $current_platform, '*.lib' ) 
-		        puts "PREBUILD: #{file_mask}"
-		        
-		        mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
-		        Dir.glob( file_mask ).each do |lib|
-		          cp_r lib, ENV['TARGET_TEMP_DIR']
-		        end
-		      end
-		  end
-		  
-		  chdir $startdir
-		  print_timestamp('process extension "'+ext+'" FINISH')
-		end      
-		generate_extensions_pri(extensions_lib, pre_targetdeps)
-		print_timestamp('build:win32:extensions FINISH')
-   		end
-
-	    task :rhobundle, ["config:set_win32_platform", "config:win32", "config:qt", "config:win32:qt", :after_bundle, :exclude_dirs] do
-			Rake::Task["config:win32"].invoke
-			rm_rf $srcdir
-			Rake::Task["build:bundle:noxruby"].invoke
-			Rake::Task["build:win32:extensions"].execute if !$skip_build_extensions
-			Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
-	    end
-
-
-	    task :rhodeslib_lib, [:target_path] => ["build:win32:set_release_config"] do |t, args|
-	      print_timestamp('build:win32:rhodeslib_lib START')
-	      $rhodes_as_lib = true
-	      Rake::Task['build:win32'].invoke
-	      createWin32Production(false, true)
-	      target_path = args[:target_path]
-	      #cp_r File.join($bindir, "#{$appname}-#{$app_config["version"]}.aar"), target_path
-
-	      Dir.glob(File.join($tmpdir,'**','*.dll')) do |p|
-	          Jake.copyIfNeeded p, target_path
-	      end
-
-	      if($debug)
-	        Jake.copyIfNeeded File.join($tmpdir, "rhodeslibd.dll"), target_path
-	        Jake.copyIfNeeded File.join($tmpdir, "rhodeslibd.lib"), target_path
-	      else
-	        Jake.copyIfNeeded File.join($tmpdir, "rhodeslib.dll"), target_path
-	        Jake.copyIfNeeded File.join($tmpdir, "rhodeslib.lib"), target_path
-	      end
-
-	      rhoruby_dir = File.join($startdir, 'platform', 'shared', 'rhoruby', 'api')
-	      rhodeslib_h = File.join($startdir, 'platform', 'shared', 'qt', 'rhodes', 'rhorubyVersion', 'rhodeslib.h')
-	      mkdir_p File.join(target_path, 'rhoruby') if not File.exists?  File.join(target_path, 'rhoruby')
-	      cp_r rhoruby_dir, File.join(target_path, 'rhoruby')
-	      cp_r rhodeslib_h, File.join(target_path, 'rhoruby')
-
-	      print_timestamp('build:win32:rhodeslib_lib FINISH')
-	    end
-
-	    task :rhodeslib_bundle, [:target_path]  => ["build:win32:set_release_config", "config:common"] do |t, args|
-	      print_timestamp('build:win32:rhodeslib_bundle START')
-
-	      target_path = args[:target_path]
-	      $skip_build_rhodes_main = true
-	      $skip_build_extensions = true
-	      $skip_build_xmls = true
-	      $use_prebuild_data = true
-
-	      Rake::Task['config:win32:qt'].invoke
-
-	      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
-	      appname_fixed = appname.split(/[^a-zA-Z0-9]/).map { |w| w }.join("")
-
-	      Rake::Task['build:win32:rhobundle'].invoke
-
-	      mkdir_p target_path if not File.exists? target_path
-	      cp_r File.join($bindir, "RhoBundle"), target_path
-	    end
-
-
-	    task :deployqt => "config:win32:qt" do
-
-	        if (false)
-		        # Visual Studio 2017
-		        puts "Deploy libs from msvc #{$vs_version}"
-		        vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.CRT")
-		        vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.OPENMP")
-		        if deploymsvc
-		          cp File.join(vsredistdir, "msvcp140.dll"), $target_path if !File.exists?(File.join($target_path, "msvcp140.dll"))
-		          cp File.join(vsredistdir, "concrt140.dll"), $target_path if !File.exists?(File.join($target_path, "concrt140.dll"))
-		          cp File.join(vsredistdir, "vccorlib140.dll"), $target_path if !File.exists?(File.join($target_path, "vccorlib140.dll"))
-		          cp File.join(vsredistdir, "vcruntime140.dll"), $target_path if !File.exists?(File.join($target_path, "vcruntime140.dll"))
-		          cp File.join(vsredistdir2, "vcomp140.dll"), $target_path if !File.exists?(File.join($target_path, "vcomp140.dll"))
-		          #cp File.join($vscommontools, "../../VC/bin/d3dcompiler_47.dll"), $target_path
-		          puts "Joining msvc140 libs"
-		        end
-		    end
-
-	        cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
-		    cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
-
-			possible_targets = [ $appname, 'rhosimulator', 'rhodes', 'rholaunch' ]
-			format ="Found QT Version : #{$QVersion}" 
-			targetFile = File.join($target_path, "rhodes.exe")
-
-			begin
-			possible_targets.each do |target|
-				targetFile = File.join($target_path, target + ".exe")
-				puts "checking " + targetFile
-				break if File.file?(targetFile)
-			end
-			
-			$logger.debug "Looking for app executable: #{targetFile}"                  
-			raise "#{targetFile} not found" unless File.file?(targetFile)
-			Jake.run3("#{File.join($qtdir, 'bin/windeployqt --release --no-quick-import --force')} #{targetFile}")
-			
-			rescue Exception => e
-				$logger.error "ERROR: #{e.inspect}\n#{e.backtrace}"
-			end
-
-	    end
-
-	    task :extensions => "config:win32" do
-	      next if $prebuild_win32
-
-	      extensions_lib = ''
-	      pre_targetdeps = ''
-
-	      puts "$app_extensions_list : #{$app_extensions_list}"
-	      $app_extensions_list.each do |ext, commin_ext_path |      
-	          puts "extension #{ext} [#{commin_ext_path}]"
-	          next unless commin_ext_path
-	          
-	          extpath = File.join(commin_ext_path, 'ext')
-	          ext_config_path = File.join(commin_ext_path, "ext.yml")
-	          ext_config = nil
-	          if File.exist? ext_config_path
-	            ext_config = Jake.config(File.open(ext_config_path))
-	          end
-	          
-	          project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
-	          next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
-
-	          if ext != 'openssl.so'
-	            if ext_config.has_key?('libraries')
-	              ext_config["libraries"].each { |name_lib|
-	                extensions_lib << " #{name_lib}.lib"
-	                pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
-	              }
-	            else
-	              extensions_lib << " #{ext}.lib"
-	              pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
-	            end
-	          end
-
-	          ENV['PWD'] = $startdir
-              ENV['TARGET_TEMP_DIR'] = File.join($startdir, $vcbindir, "extensions")
-              ENV['TEMP_FILES_DIR'] = File.join($startdir, $vcbindir, "extensions", ext)
-
-	          if (project_path)	              
-	              ENV['RHO_ROOT'] = $startdir
-	              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
-	              if ext.downcase() == "coreapi" && $rhosimulator_build
-	                  ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
-	              else    
-	                  ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
-	                  ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, $vcbindir)
-	              end
-	              
-	              ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
-	              ENV['RHO_EXT_NAME']=ext                
-	              Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
-	          else
-	              ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
-	              ENV['RHO_ROOT'] = ENV['PWD']
-	              
-	              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
-	              ENV['RHO_QMAKE'] = $qmake
-	              ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ""
-	              ENV['RHO_QMAKE_SPEC'] = $qmake_makespec	              
-
-	              if($debug and !$rhosimulator_build)
-	                ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release" 
-	              end
-	              runBuldBatFile('build.bat', extpath)
-	          end
-	      end 
-	      generate_extensions_pri(extensions_lib, pre_targetdeps)
-	    end
-
-	    def generate_extensions_pri(extensions_lib, pre_targetdeps)
-	      ext_dir = File.join($startdir, 'platform/win32/bin/extensions')
-	      mkdir_p ext_dir if not File.exists? ext_dir
-	      File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
-	        fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
-	LIBS += /LIBPATH:../../../win32/bin/extensions#{extensions_lib}
-	PRE_TARGETDEPS += #{pre_targetdeps}
-	})
-	      end
-	    end
-
-
-	    task :rhobundle => [] do
-	    end
-
-	    task :upgrade_package => ["build:win32:rhobundle"] do        
-	      mkdir_p $targetdir if not File.exists? $targetdir
-	      zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
-	      Jake.zip_upgrade_bundle( $bindir, zip_file_path)
-	    end
-
-	    task :set_debug_config do
-	        $buildcfg = 'Debug'
-	    end
-
-	    task :set_release_config do
-	        $buildcfg = 'Release'
-	    end
-
-	    task :devrhobundle => ["config:set_win32_platform", :set_debug_config, "build:win32:rhobundle", "config:win32:application", :after_bundle] do
-	    end
-
-	    task :after_bundle do
-	      win32rhopath = File.join($prebuild_win32 ? $tmpdir : File.join($vcbindir, "rhodes", 'rho'))
-	      mkdir_p win32rhopath
-	      namepath = File.join(win32rhopath,"name.txt")
-	      old_appname = File.read(namepath) if File.exists?(namepath)
-
-	      confpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
-	      confpath_content = File.read(confpath) if File.exists?(confpath)
-
-	      if $prebuild_win32
-	        $target_path = $tmpdir
-	        if not File.directory?($target_path)
-	          Dir.mkdir($target_path)
-	        end
-	        target_rho_dir = File.join($tmpdir, "rho")
-	        rm_rf target_rho_dir
-	        mv $srcdir, target_rho_dir
-	      else
-	        win32rhopath = win32rhopath + '/'
-	        rm_rf win32rhopath + 'lib'
-	        rm_rf win32rhopath + 'apps'
-	        rm_rf win32rhopath + 'db' if old_appname != $appname
-
-	        cp_r $srcdir + '/lib', win32rhopath
-	        cp_r $srcdir + '/apps', win32rhopath
-	        cp_r $srcdir + '/db', win32rhopath
-	      end
-
-	      File.open(namepath, "w") { |f| f.write($appname) }
-	      File.open(confpath, "w") { |f| f.write(confpath_content) }  if old_appname == $appname && confpath_content && confpath_content.length()>0
-
-	    end
-
-	    task :rhosimulator => ["clean:win32:rhosimulator", "config:rhosimulator", "config:win32", "build:rhosimulator_version", "config:win32:qt"] do
-	      $config["platform"] = $current_platform
-	      chdir $startdir
-	      init_extensions(pwd, nil)
-	      Rake::Task["build:win32:extensions"].invoke
-
-	      cp File.join($startdir,"res","icons","rhosim.png"), File.join($startdir,"platform","shared","qt","rhodes","resources","rho.png")
-
-	      ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
-
-	      set_vcvarsall()
-	      if $rhodes_as_lib
-	        if($debug)
-	          Jake.run3('rhoruby_win32_build_debug.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
-	        else
-	          Jake.run3('rhoruby_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
-	        end
-	      else
-	        if($debug && !$rhosimulator_build)
-	          Jake.run3('rhosimulator_win32_build_debug.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
-	        else
-	          Jake.run3('rhosimulator_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
-	        end
-	      end
-
-	      chdir $startdir
-
-	      $target_path = File.join( $startdir, "platform/win32/RhoSimulator/")
-	      if not File.directory?($target_path)
-	        Dir.mkdir($target_path)
-	      end
-	      cp File.join($startdir, $vcbindir, "RhoSimulator","RhoSimulator.exe"), $target_path
-
-	      Rake::Task["build:win32:deployqt"].invoke
-
-
-	      directory = $target_path
-	      $zipfile_name = File.join($target_path, "RhoSimulator.zip")
-
-	      args = []
-	      args << "a"
-	      args << "-tzip"
-	      args << $zipfile_name
-	      args << directory + "/*"
-	      puts Jake.run($zippath, args)
-	    end
-
-	    task :rhosimulator_to  => ["build:win32:rhosimulator"] do
+      next if $prebuild_win32
+
+      extensions_lib = ''
+      pre_targetdeps = ''
+
+      puts "$app_extensions_list : #{$app_extensions_list}"
+      $app_extensions_list.each do |ext, commin_ext_path |      
+          puts "extension #{ext} [#{commin_ext_path}]"
+          next unless commin_ext_path
+          
+          extpath = File.join(commin_ext_path, 'ext')
+          ext_config_path = File.join(commin_ext_path, "ext.yml")
+          ext_config = nil
+          if File.exist? ext_config_path
+            ext_config = Jake.config(File.open(ext_config_path))
+          end
+          
+          project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
+          next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
+
+          if ext != 'openssl.so'
+            if ext_config.has_key?('libraries')
+              ext_config["libraries"].each { |name_lib|
+                extensions_lib << " #{name_lib}.lib"
+                pre_targetdeps << " ../../../win32/bin/extensions/#{name_lib}.lib"
+              }
+            else
+              extensions_lib << " #{ext}.lib"
+              pre_targetdeps << " ../../../win32/bin/extensions/#{ext}.lib"
+            end
+          end
+
+          ENV['PWD'] = $startdir
+          ENV['TARGET_TEMP_DIR'] = File.join($startdir, $vcbindir, "extensions")
+          ENV['TEMP_FILES_DIR'] = File.join($startdir, $vcbindir, "extensions", ext)
+
+          if (project_path)	              
+              ENV['RHO_ROOT'] = $startdir
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
+              if ext.downcase() == "coreapi" && $rhosimulator_build
+                  ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
+              else    
+                  ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+                  ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, $vcbindir)
+              end
+              
+              ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
+              ENV['RHO_EXT_NAME']=ext                
+              Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
+          else
+              ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+              ENV['RHO_ROOT'] = ENV['PWD']
+              
+              ENV['RHO_VSPROJ_SDK_PLATFORM'] = $sdk
+              ENV['RHO_QMAKE'] = $qmake
+              ENV['RHO_QMAKE_VARS'] = $rhosimulator_build ? 'RHOSIMULATOR_BUILD=1' : ""
+              ENV['RHO_QMAKE_SPEC'] = $qmake_makespec	              
+
+              if($debug and !$rhosimulator_build)
+                ENV['RHO_QMAKE_VARS'] = ENV['RHO_QMAKE_VARS'] + " CONFIG+=debug CONFIG-=release" 
+              end
+              runBuldBatFile('build.bat', extpath)
+          end
+      end 
+      generate_extensions_pri(extensions_lib, pre_targetdeps)
+    end
+
+    def generate_extensions_pri(extensions_lib, pre_targetdeps)
+      ext_dir = File.join($startdir, 'platform/win32/bin/extensions')
+      mkdir_p ext_dir if not File.exists? ext_dir
+      File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
+        fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
+LIBS += /LIBPATH:../../../win32/bin/extensions#{extensions_lib}
+PRE_TARGETDEPS += #{pre_targetdeps}
+})
+      end
+    end
+
+
+    task :rhobundle => [] do
+    end
+
+    task :upgrade_package => ["build:win32:rhobundle"] do        
+      mkdir_p $targetdir if not File.exists? $targetdir
+      zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
+      Jake.zip_upgrade_bundle( $bindir, zip_file_path)
+    end
+
+    task :set_debug_config do
+        $buildcfg = 'Debug'
+    end
+
+    task :set_release_config do
+        $buildcfg = 'Release'
+    end
+
+    task :devrhobundle => ["config:set_win32_platform", :set_debug_config, "build:win32:rhobundle", "config:win32:application", :after_bundle] do
+    end
+
+    task :after_bundle do
+      win32rhopath = File.join($prebuild_win32 ? $tmpdir : File.join($vcbindir, "rhodes", 'rho'))
+      mkdir_p win32rhopath
+      namepath = File.join(win32rhopath,"name.txt")
+      old_appname = File.read(namepath) if File.exists?(namepath)
+
+      confpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
+      confpath_content = File.read(confpath) if File.exists?(confpath)
+
+      if $prebuild_win32
+        $target_path = $tmpdir
+        if not File.directory?($target_path)
+          Dir.mkdir($target_path)
+        end
+        target_rho_dir = File.join($tmpdir, "rho")
+        rm_rf target_rho_dir
+        mv $srcdir, target_rho_dir
+      else
+        win32rhopath = win32rhopath + '/'
+        rm_rf win32rhopath + 'lib'
+        rm_rf win32rhopath + 'apps'
+        rm_rf win32rhopath + 'db' if old_appname != $appname
+
+        cp_r $srcdir + '/lib', win32rhopath
+        cp_r $srcdir + '/apps', win32rhopath
+        cp_r $srcdir + '/db', win32rhopath
+      end
+
+      File.open(namepath, "w") { |f| f.write($appname) }
+      File.open(confpath, "w") { |f| f.write(confpath_content) }  if old_appname == $appname && confpath_content && confpath_content.length()>0
+
+    end
+
+    task :rhosimulator => ["clean:win32:rhosimulator", "config:rhosimulator", "config:win32", "build:rhosimulator_version", "config:win32:qt"] do
+      $config["platform"] = $current_platform
+      chdir $startdir
+      init_extensions(pwd, nil)
+      Rake::Task["build:win32:extensions"].invoke
+
+      cp File.join($startdir,"res","icons","rhosim.png"), File.join($startdir,"platform","shared","qt","rhodes","resources","rho.png")
+
+      ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
+
+      set_vcvarsall()
+      if $rhodes_as_lib
+        if($debug)
+          Jake.run3('rhoruby_win32_build_debug.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+        else
+          Jake.run3('rhoruby_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+        end
+      else
+        if($debug && !$rhosimulator_build)
+          Jake.run3('rhosimulator_win32_build_debug.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+        else
+          Jake.run3('rhosimulator_win32_build.bat "RHOSIMULATOR_BUILD=1"', $qt_project_dir)
+        end
+      end
+
+      chdir $startdir
+
+      $target_path = File.join( $startdir, "platform/win32/RhoSimulator/")
+      if not File.directory?($target_path)
+        Dir.mkdir($target_path)
+      end
+      cp File.join($startdir, $vcbindir, "RhoSimulator","RhoSimulator.exe"), $target_path
+
+      Rake::Task["build:win32:deployqt"].invoke
+
+
+      directory = $target_path
+      $zipfile_name = File.join($target_path, "RhoSimulator.zip")
+
+      args = []
+      args << "a"
+      args << "-tzip"
+      args << $zipfile_name
+      args << directory + "/*"
+      puts Jake.run($zippath, args)
+    end
+
+    task :rhosimulator_to  => ["build:win32:rhosimulator"] do
 	      ARGV.each { |a| task a.to_sym do ; end }
 	      targetfileName = ARGV[1]
 
@@ -612,43 +484,43 @@ namespace "build" do
 
 	#desc "Build rhodes for win32"
 	task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
-	next if $prebuild_win32
+		next if $prebuild_win32
 
-	chdir $platformdir
+		chdir $platformdir
 
-	ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
-	set_vcvarsall()
-	if ($rhodes_as_lib)
-	  if($debug)
-	    Jake.run3('rhoruby_win32_build_debug.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
-	  else
-	    Jake.run3('rhoruby_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
-	  end
-	else
-	  if($debug)
-	    Jake.run3('rhosimulator_win32_build_debug.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
-	  else
-	    Jake.run3('rhosimulator_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
-	  end
-	end
-	$target_path = File.join( $startdir, $vcbindir, 'rhodes')
-	if not File.directory?($target_path)
-	  FileUtils.mkdir_p($target_path)
-	end
-	if ($rhodes_as_lib)
+		ENV['RHO_QMAKE_SPEC'] = $qmake_makespec
+		set_vcvarsall()
+		if ($rhodes_as_lib)
+		  if($debug)
+		    Jake.run3('rhoruby_win32_build_debug.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+		  else
+		    Jake.run3('rhoruby_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+		  end
+		else
+		  if($debug)
+		    Jake.run3('rhosimulator_win32_build_debug.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+		  else
+		    Jake.run3('rhosimulator_win32_build.bat "DESKTOPAPP_BUILD=1"', $qt_project_dir)
+		  end
+		end
+		$target_path = File.join( $startdir, $vcbindir, 'rhodes')
+		if not File.directory?($target_path)
+		  FileUtils.mkdir_p($target_path)
+		end
+		if ($rhodes_as_lib)
 
-	  if($debug)
-	    cp File.join($startdir, $vcbindir, "RhoSimulator" , "rhodeslibd.dll"), File.join($target_path)
-	    cp File.join($startdir, $vcbindir, "RhoSimulator" , "rhodeslibd.lib"), File.join($target_path)
-	  else
-	    cp File.join($startdir, $vcbindir, "RhoSimulator" , "rhodeslib.dll"), File.join($target_path)
-	    cp File.join($startdir, $vcbindir, "RhoSimulator" , "rhodeslib.lib"), File.join($target_path)
-	  end
-	else
-	  cp File.join($startdir, $vcbindir, "RhoSimulator" , "RhoSimulator.exe"), File.join($target_path, 'rhodes.exe')
-	end
+		  if($debug)
+		    cp File.join($startdir, $vcbindir, "RhoSimulator" , "rhodeslibd.dll"), File.join($target_path)
+		    cp File.join($startdir, $vcbindir, "RhoSimulator" , "rhodeslibd.lib"), File.join($target_path)
+		  else
+		    cp File.join($startdir, $vcbindir, "RhoSimulator" , "rhodeslib.dll"), File.join($target_path)
+		    cp File.join($startdir, $vcbindir, "RhoSimulator" , "rhodeslib.lib"), File.join($target_path)
+		  end
+		else
+		  cp File.join($startdir, $vcbindir, "RhoSimulator" , "RhoSimulator.exe"), File.join($target_path, 'rhodes.exe')
+		end
 
-	chdir $startdir
+		chdir $startdir
 	end
 
 end
