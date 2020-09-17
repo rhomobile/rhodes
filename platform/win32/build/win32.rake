@@ -248,21 +248,23 @@ namespace "build" do
 
     task :deployqt => "config:win32:qt" do
 
-        if (false)
-	        # Visual Studio 2017
-	        puts "Deploy libs from msvc #{$vs_version}"
-	        vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.CRT")
-	        vsredistdir2 = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC140.OPENMP")
-	        if deploymsvc
-	          cp File.join(vsredistdir, "msvcp140.dll"), $target_path if !File.exists?(File.join($target_path, "msvcp140.dll"))
-	          cp File.join(vsredistdir, "concrt140.dll"), $target_path if !File.exists?(File.join($target_path, "concrt140.dll"))
-	          cp File.join(vsredistdir, "vccorlib140.dll"), $target_path if !File.exists?(File.join($target_path, "vccorlib140.dll"))
-	          cp File.join(vsredistdir, "vcruntime140.dll"), $target_path if !File.exists?(File.join($target_path, "vcruntime140.dll"))
-	          cp File.join(vsredistdir2, "vcomp140.dll"), $target_path if !File.exists?(File.join($target_path, "vcomp140.dll"))
-	          #cp File.join($vscommontools, "../../VC/bin/d3dcompiler_47.dll"), $target_path
-	          puts "Joining msvc140 libs"
-	        end
-	    end
+
+    	set_vcvarsall()
+
+    	mcvcpdlls = Dir.glob(File.join(File.dirname($vcvarsall), "..", ".." , "redist", "**", "x86", "Microsoft.*.CRT","msvcp140.dll"))
+    	mcvcpdlls.delete_if{|var| var.include? "onecore" }
+    	mcvcpdlls.delete_if{|var| var.include? "spectre" }
+    	mcvcpdlls.sort
+		if (mcvcpdlls.length() == 0)
+			puts "Can't find any C++ redistributable libraries for the current MSVC compiler. Please, install them and try again."
+			exit 1
+		end
+		
+		vcdlls = Dir.glob(File.join(File.dirname(mcvcpdlls.last()), "..", "**" ,"*.dll"))
+		vcdlls.each do |dllpath|
+			cp dllpath, $target_path if !File.exists?(File.join($target_path, File.basename(dllpath)))
+		end
+		puts "Joining msvc140 libs"
 
         cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/libeay32.dll"), $target_path
 	    cp File.join($startdir, "lib/extensions/openssl.so/ext/win32/bin/ssleay32.dll"), $target_path
