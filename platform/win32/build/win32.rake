@@ -589,10 +589,9 @@ namespace "device" do
 		  if $app_config.has_key?('vendor')
 		  	$vendorname = $app_config["vendor"]
 		  else
-		  	$vendorname = "Zebra Technologies"
+		  	$vendorname = "Tau Technologies"
 		  end
-		  puts $targetdir
-		  puts $appname
+		  puts "SCRIPT NAME: " + script_name
 		  install_script = File.read(script_name)
 		  install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
 		  install_script = install_script.gsub(/%APPNAME%/, $appname)
