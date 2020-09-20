@@ -251,7 +251,7 @@ namespace "build" do
 
     	set_vcvarsall()
 
-    	mcvcpdlls = Dir.glob(File.join(File.dirname($vcvarsall), "..", ".." , "redist", "**", "x86", "Microsoft.*.CRT","msvcp140.dll"))
+    	mcvcpdlls = Dir.glob(File.join(File.dirname($vcvarsall), "..", ".." , "**", "redist", "**", "x86", "Microsoft.*.CRT","msvcp140.dll"))
     	mcvcpdlls.delete_if{|var| var.include? "onecore" }
     	mcvcpdlls.delete_if{|var| var.include? "spectre" }
     	mcvcpdlls.sort
@@ -587,10 +587,12 @@ namespace "device" do
 		  # custumize install script for application
 		  $appdisplay_version=$app_version + '.0.0'
 		  if $app_config.has_key?('vendor')
-		   $vendorname = $app_config["vendor"]
-		   else
-		   $vendorname = "Zebra Technologies"
-		   end
+		  	$vendorname = $app_config["vendor"]
+		  else
+		  	$vendorname = "Zebra Technologies"
+		  end
+		  puts $targetdir
+		  puts $appname
 		  install_script = File.read(script_name)
 		  install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
 		  install_script = install_script.gsub(/%APPNAME%/, $appname)
