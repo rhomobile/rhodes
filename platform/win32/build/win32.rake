@@ -552,7 +552,7 @@ namespace "device" do
 		  cp File.join(out_dir , "rhodes.exe"), File.join($tmpdir, $appname + ".exe")
 		end
 
-		script_name = File.join($startdir, "platform", "wm", "build", "rhodes.nsi")
+		script_name = File.join($startdir, "platform", "win32", "build", "rhodes.nsi")
 		app_script_name = File.join($tmpdir, $appname + ".nsi")
 
 		license_filename = "LICENSE.txt"
@@ -591,7 +591,7 @@ namespace "device" do
 		  else
 		  	$vendorname = "Tau Technologies"
 		  end
-		  puts "SCRIPT NAME: " + script_name
+
 		  install_script = File.read(script_name)
 		  install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
 		  install_script = install_script.gsub(/%APPNAME%/, $appname)
