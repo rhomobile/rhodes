@@ -10,24 +10,9 @@ DEBUGGER_LOG_LEVEL_INFO  = 1
 DEBUGGER_LOG_LEVEL_WARN  = 2
 DEBUGGER_LOG_LEVEL_ERROR = 3
 
-class BreakPoint
-  def initialize(a_file, a_line)
-    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "BreakPoint: create on file: #{a_file}, #{a_file.class},  line: #{a_line}, #{a_line.class}")
-    @file = a_file
-    @line = a_line
-    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "BreakPoint created with: #{@file}, #{@file.class}, #{@line}, #{@line.class}")
-  end
-
-  def set_on?(file, line)
-    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "BreakPoint: #{@file}, #{@file.class}, #{@line}, #{@line.class} is set on file: #{file}, #{file.class}  line: #{line}, #{line.class}, #{@file == file && @line == line}")
-    @file == file && @line == line
-  end
-end
-
 class BreakPoints
 
   def initialize
-    #@break_points = Set.new
     @break_points = Hash.new
     @enabled = true
   end
@@ -46,7 +31,6 @@ class BreakPoints
 
 
   def set_on?(file, line)
-    puts "@break_points: #{@break_points}"
     unless @break_points.has_key?(file)
       return false
     end
@@ -54,11 +38,16 @@ class BreakPoints
   end
 
   def set_break_point_on(file, line)
-    puts "set_break_point_on(#{file}, #{line})"
     unless @break_points.has_key?(file)
       @break_points[file] = Set.new
     end
     @break_points[file].add(line)
+  end
+
+  def set_break_points_on(file, lines)
+    lines.each do |line|
+      set_break_point_on(file, line)
+    end
   end
 
   def delete_all_break_points
@@ -96,7 +85,7 @@ def log_command(cmd)
 end
 
 def convert_to_relative_path(path, app_path)
-  puts "convert_to_relative_path #{path} #{app_path}"
+  # puts "convert_to_relative_path #{path} #{app_path}"
   if path.include?("./")
     relative_path = "/" + path[path.index("./") + 2, path.length]
   elsif path.include?("lib")
@@ -108,7 +97,7 @@ def convert_to_relative_path(path, app_path)
   else
     relative_path = path[app_path.length, path.length - app_path.length]
   end
-  puts "relative_path #{relative_path}"
+  #puts "relative_path #{relative_path}"
   return relative_path
 end
 
@@ -142,7 +131,7 @@ def execute_cmd(cmd, advanced)
   $_s.write("EV" + (advanced ? "L:#{error}:#{cmd}:" : ':'+(error.to_i != 0 ? 'ERROR: ':'')) + result + "\n")
 end
 
-def get_variables(scope)
+def get_variables_obsolete(scope)
   if (scope =~ /^GVARS/)
     cmd = "global_variables"
     prefix = ""
@@ -166,8 +155,23 @@ def get_variables(scope)
     prefix = "self."
     vartype = "I"
   end
+
+  vars = eval(prefix + cmd, $_binding)
+  variables = vars.map { |eachVar|
+    value = eval(eachVar.to_s, $_binding)
+    {
+        :name => eachVar,
+        :type => value.class.name,
+        :value => value.inspect,
+        :variablesReference => 0
+    }
+  }
+
+  message = {:event => 'variables', :variables => variables}
+  $_s.write("#{message.to_json}\n")
+  
+=begin
   begin
-    vars = eval(prefix + cmd, $_binding)
     $_s.write("VSTART:#{vartype}\n")
     vars.each do |v|
       if v !~ /^\$(=|KCODE|-K)$/
@@ -183,6 +187,70 @@ def get_variables(scope)
     $_s.write("VEND:#{vartype}\n")
   rescue
   end
+=end
+end
+
+def get_local_variables()
+  
+end
+
+def get_variables(scope)
+  if (scope === 'global')
+    cmd = "global_variables"
+    prefix = ""
+  elsif (scope === 'local')
+    cmd = "local_variables"
+    prefix = ""
+  elsif (scope === 'instance')
+    if $_classname =~ /^\s*$/
+      return
+    end
+    cmd = "class_variables"
+    prefix = "#{$_classname}."
+  elsif (scope === 'classInstance')
+    if ($_classname =~ /^\s*$/) || ($_methodname =~ /^\s*$/)
+      return
+    end
+    cmd = "instance_variables"
+    prefix = "self."
+  end
+
+  vars = eval(prefix + cmd, $_binding)
+  variables = vars.map { |eachVar|
+    value = eval(eachVar.to_s, $_binding)
+    {
+        :name => eachVar,
+        :type => value.class.name,
+        :value => value.inspect,
+        :variablesReference => 0
+    }
+  }
+
+  return {:event => 'variables', :variables => variables}
+end 
+
+def get_treads
+  threads = Thread.list.map { |each| {:id => each.object_id, :name => each} }
+  return {:event => :threads, :threads => threads}
+end
+
+def get_stacktrace(thread_id, launched_on_rhosim)
+  thread = Thread.list.find { |each| each.object_id == thread_id }
+
+  backtrace = thread.backtrace
+  cutted_backtrace = backtrace.slice(2, backtrace.size - 1)
+  frames = cutted_backtrace.map.with_index { |each, idx|
+    parts = each.split(':')
+    {
+        :index => idx,
+        :name => parts[2],
+        :file => launched_on_rhosim ? parts[0] : convert_to_relative_path(parts[0], $_app_path),
+        :line => parts[1].to_i,
+        :column => 0
+    }
+  }
+
+  return {:event => :stacktrace, :frames => frames, :count => frames.size}
 end
 
 def debug_handle_cmd(inline)
@@ -195,6 +263,100 @@ def debug_handle_cmd(inline)
   wait = inline
 
   if cmd != ""
+    begin
+      debugger_log(DEBUGGER_LOG_LEVEL_INFO, "incoming command #{cmd}")
+      json = Rho::JSON.parse(cmd)
+      debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Command json #{json}")
+      unless json.nil?
+        if json['type'] === 'connected'
+          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Connected to debugger")
+          processed = true
+        end
+
+        if json['type'] === 'setBreakPoints'
+          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Setting BreakPoints command")
+          $_breakpoint.set_break_points_on(json['source'], json['lines'])
+          processed = true
+        end
+
+        if json['type'] === 'threads'
+          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Threads are requested")
+          response = get_treads
+          $_s.write("#{response.to_json}\n")
+          processed = true
+        end
+
+        if json['type'] === 'stacktrace'
+          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Stacktrace is requested")
+          response = get_stacktrace(json['thread'], $is_rhosim)
+          $_s.write("#{response.to_json}\n")
+          processed = true
+        end
+
+        if inline && (json['type'] === 'variables')
+          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Variables #{json['scope']} are requested")
+          response = get_variables(json['scope'])
+          $_s.write("#{response.to_json}\n")
+          processed = true
+        end
+
+        if inline && (json['type'] === 'stepIn')
+          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "StepIn command")
+          $_step = 1
+          $_step_level = -1
+          $_resumed = true
+          wait = false
+          processed = true
+        end
+
+        if inline && (json['type'] === 'stepOut')
+          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "StepOut command")
+          if $_call_stack < 1
+            $_step = 0
+            comment = ' (continue)'
+          else
+            $_step = 3
+            $_step_level = $_call_stack - 1
+            comment = ''
+          end
+          $_resumed = true
+          wait = false
+          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Step return" + comment)
+          processed = true
+        end
+
+        if inline && (json['type'] === 'stepOver')
+          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "StepOver command")
+          $_step = 2
+          $_step_level = $_call_stack
+          $_resumed = true
+          wait = false
+          processed = true
+        end
+
+        if inline && (json['type'] === 'continue')
+          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Continue command")
+          wait = false
+          $_step = 0
+          $_resumed = true
+          processed = true
+        end
+
+        if json['type'] === 'kill'
+          debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Kill command")
+          processed = true
+          System.exit
+        end
+      end
+    rescue StandardError => e
+      puts "Rescued: #{e.inspect}"
+    end
+  end
+  
+  
+
+=begin
+  if cmd != ""
 
     debugger_log(DEBUGGER_LOG_LEVEL_INFO, "cmd: #{cmd}")
 
@@ -204,40 +366,36 @@ def debug_handle_cmd(inline)
       processed = true
     elsif cmd =~/^BACKTRACE/
       thread_id = cmd.split(':').last.to_i
-
-      puts "request backtrace for thread id #{thread_id}"
-
       thread = Thread.list.find { |each| each.object_id == thread_id }
       $_s.write("BACKTRACE:START\n")
       backtrace = thread.backtrace
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, thread.backtrace)
       backtrace.slice(2, backtrace.size - 1).each do |each|
-        parts = each.split(":")
-        parts[0] = convert_to_relative_path(parts[0], $_app_path)
-        $_s.write("#{parts.join(":")}\n")
+        backtrace_line = each
+        unless $is_rhosim
+           parts = each.split(':')
+           parts[0] = convert_to_relative_path(parts[0], $_app_path)
+           backtrace_line = parts.join(':')
+        end
+        $_s.write("#{backtrace_line}\n")
       end
       $_s.write("BACKTRACE:END\n")
       processed = true
     elsif cmd =~/^THREADS/
-      $_s.write("THREADS:START\n")
-      Thread.list.each {|each| $_s.write("#{each.object_id}:#{each}\n")}
-      $_s.write("THREADS:END\n")
+      threads = Thread.list.map {|each|  {:id => each.object_id, :name => each}}
+      message = {:event => :threads, :threads => threads}
+      $_s.write("#{message.to_json}\n")
       processed = true
     elsif cmd =~/^(BP|RM):/
       log_command(cmd)
       ary = cmd.split(":")
-      file = ary[1]#[$_app_path.size, ary[1].size]
+      file = ary[1]
       line = ary[2].to_i
-      #bp = ary[1].gsub(/\|/,':') + ':' + ary[2].chomp
       if (cmd =~/^RM:/)
         $_breakpoint.delete_break_point_on(file, line)
-        #$_breakpoint.delete(bp)
-        #debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint removed: #{file}:#{line}")
         debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint removed: #{bp}")
       else
         $_breakpoint.set_break_point_on(file, line)
-        #$_breakpoint.store(bp,1)
-        #debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint added: #{bp}")
         debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint added: #{file}:#{line}")
       end
       processed = true
@@ -246,19 +404,16 @@ def debug_handle_cmd(inline)
       path = cmd.split(':')[1]
       file = path[$_app_path.size, path.size]
       $_breakpoint.delete_all_break_points_on(file)
-      #$_breakpoint.clear
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "All breakpoints removed")
       processed = true
     elsif cmd =~ /^ENABLE/
       log_command(cmd)
       $_breakpoint.be_enabled
-      #$_breakpoints_enabled = true
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoints enabled")
       processed = true
     elsif cmd =~ /^DISABLE/
       log_command(cmd)
       $_breakpoint.be_disabled
-      #$_breakpoints_enabled = false
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoints disabled")
       processed = true
     elsif inline && (cmd =~ /^STEPOVER/)
@@ -329,6 +484,7 @@ def debug_handle_cmd(inline)
       processed = true
     end
   end
+=end
 
   if processed
     $_cmd = $_cmd.sub(/^([^\n\r]*)([\n\r]+(.*)|)$/, "\\3")
@@ -395,15 +551,21 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 
         filename = convert_to_relative_path(file, $_app_path)
 
-        puts "step_stop: #{step_stop} || $_breakpoint.set_on?(#{filename}, #{line.to_i}): #{$_breakpoint.set_on?(filename, line.to_i)}"
-
         if step_stop || ($_breakpoint.enabled? && ($_breakpoint.set_on?(filename, line.to_i)))
+=begin
           $_s.write("[Debugger][3] stop on bp #{file}:#{line}\n")
+=end
 
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
           thread_id = Thread.current.object_id
+          
+          message = {:event => :stopOnBreakpoint, :threadId => Thread.current.object_id}
+          $_s.write("#{message.to_json}\n")
+          
+=begin
           $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{line - 1}:#{cl}:#{id}:#{thread_id}\n")
+=end
           debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{line}")
           $_step = 0
           $_step_level = -1
@@ -474,6 +636,10 @@ begin
   $_s = timeout(30) { TCPSocket.open(debug_host, debug_port) }
 
   debugger_log(DEBUGGER_LOG_LEVEL_WARN, "Connected: " + $_s.to_s)
+  
+  message = {:event => :connect, :host => debug_host, :port => debug_port, :debugPath => $_app_path}
+  $_s.write("#{message.to_json}\n")
+  
   $_s.write("CONNECT\nHOST=" + debug_host.to_s + "\nPORT=" + debug_port.to_s + "\n")
 
   #$_breakpoint = Hash.new
