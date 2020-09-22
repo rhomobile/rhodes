@@ -31,6 +31,7 @@ class BreakPoints
 
 
   def set_on?(file, line)
+    puts "file: #{file}, @break_points: #{@break_points}, #{@break_points.has_key?(file)}"
     unless @break_points.has_key?(file)
       return false
     end
@@ -85,7 +86,7 @@ def log_command(cmd)
 end
 
 def convert_to_relative_path(path, app_path)
-  # puts "convert_to_relative_path #{path} #{app_path}"
+  puts "convert_to_relative_path #{path} #{app_path}"
   if path.include?("./")
     relative_path = "/" + path[path.index("./") + 2, path.length]
   elsif path.include?("lib")
@@ -97,7 +98,7 @@ def convert_to_relative_path(path, app_path)
   else
     relative_path = path[app_path.length, path.length - app_path.length]
   end
-  #puts "relative_path #{relative_path}"
+  puts "relative_path #{relative_path}"
   return relative_path
 end
 
@@ -226,31 +227,44 @@ def get_variables(scope)
     }
   }
 
-  return {:event => 'variables', :variables => variables}
+  {:event => 'variables', :variables => variables}
 end 
 
 def get_treads
   threads = Thread.list.map { |each| {:id => each.object_id, :name => each} }
-  return {:event => :threads, :threads => threads}
+  {:event => :threads, :threads => threads}
 end
 
 def get_stacktrace(thread_id, launched_on_rhosim)
+  puts "[get_stacktrace] thread: #{thread_id}, launched_on_rhosim: #{launched_on_rhosim}"
   thread = Thread.list.find { |each| each.object_id == thread_id }
 
   backtrace = thread.backtrace
   cutted_backtrace = backtrace.slice(2, backtrace.size - 1)
   frames = cutted_backtrace.map.with_index { |each, idx|
+    puts "[get_stacktrace] frame: #{each}"
     parts = each.split(':')
+    if launched_on_rhosim && $is_windows
+      #'c:/Users/mva/projects/issues/debugged-app/app/Settings/controller.rb:10:in `index''
+      name = parts[3]
+      file = (parts[0] + ':' + parts[1]).gsub('/', '\\')
+      line = parts[2].to_i
+    else
+        name = parts[2]
+        file = convert_to_relative_path(parts[0], $_app_path)
+        line = parts[1].to_i
+    end
+
     {
         :index => idx,
-        :name => parts[2],
-        :file => launched_on_rhosim ? parts[0] : convert_to_relative_path(parts[0], $_app_path),
-        :line => parts[1].to_i,
+        :name => name, #parts[2]
+        :file => file, #launched_on_rhosim ? parts[0] : convert_to_relative_path(parts[0], $_app_path),
+        :line => line, #parts[1].to_i,
         :column => 0
     }
   }
 
-  return {:event => :stacktrace, :frames => frames, :count => frames.size}
+  {:event => :stacktrace, :frames => frames, :count => frames.size}
 end
 
 def debug_handle_cmd(inline)
@@ -275,7 +289,8 @@ def debug_handle_cmd(inline)
 
         if json['type'] === 'setBreakPoints'
           debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Setting BreakPoints command")
-          $_breakpoint.set_break_points_on(json['source'], json['lines'])
+          source = json['source'].gsub('\\', '/')
+          $_breakpoint.set_break_points_on(source, json['lines'])
           processed = true
         end
 
@@ -619,6 +634,8 @@ begin
   debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
 
   $is_rhosim = false
+  puts("Rho::System.platform #{Rho::System.platform}")
+  $is_windows = Rho::System.platform ===  Rho::System::PLATFORM_WINDOWS_DESKTOP
 
   if defined?(RHOSTUDIO_REMOTE_DEBUG) && RHOSTUDIO_REMOTE_DEBUG == true
     puts "[debugger] RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
