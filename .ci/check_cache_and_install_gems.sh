@@ -17,7 +17,7 @@ gem install systemu -v 2.6.4 --no-document
 gem install json -v 1.8.6 --no-document
 gem install CFPropertyList -v 2.2.8 --no-document
 gem install naturally -v 1.3.2 --no-document
-gem install simctl -v 1.5.6 --no-document
+gem install simctl -v 1.6.8 --no-document
 gem install listen -v 3.0.6 --no-document
 gem install rubyzip -v 1.2.2 --no-document
 gem install ffi -v 1.9.24 --no-document
