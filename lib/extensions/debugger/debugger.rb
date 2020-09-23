@@ -2,12 +2,12 @@ require 'set'
 require 'uri'
 require 'timeout'
 
-DEBUGGER_STEP_TYPE = ['STEP','STOVER','STRET','SUSP']
-DEBUGGER_STEP_COMMENT = ['Stepped into','Stepped over','Stepped return','Suspended']
+DEBUGGER_STEP_TYPE = ['STEP', 'STOVER', 'STRET', 'SUSP']
+DEBUGGER_STEP_COMMENT = ['Stepped into', 'Stepped over', 'Stepped return', 'Suspended']
 
-DEBUGGER_LOG_LEVEL_DEBUG  = 0
-DEBUGGER_LOG_LEVEL_INFO  = 1
-DEBUGGER_LOG_LEVEL_WARN  = 2
+DEBUGGER_LOG_LEVEL_DEBUG = 0
+DEBUGGER_LOG_LEVEL_INFO = 1
+DEBUGGER_LOG_LEVEL_WARN = 2
 DEBUGGER_LOG_LEVEL_ERROR = 3
 
 class BreakPoints
@@ -39,6 +39,7 @@ class BreakPoints
   end
 
   def set_break_point_on(file, line)
+    puts "set_break_point_on file: #{file}, line: #{line}"
     unless @break_points.has_key?(file)
       @break_points[file] = Set.new
     end
@@ -72,7 +73,6 @@ class BreakPoints
   end
 
 
-
 end
 
 def debugger_log(level, msg)
@@ -102,7 +102,7 @@ def convert_to_relative_path(path, app_path)
   return relative_path
 end
 
-def debug_read_cmd(io,wait)
+def debug_read_cmd(io, wait)
   begin
     if wait
       cmd = io.readpartial(4096)
@@ -118,7 +118,7 @@ end
 
 def execute_cmd(cmd, advanced)
   debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Executing: #{cmd.inspect}, #{advanced}")
-  cmd = URI.unescape(cmd.gsub(/\+/,' ')) if advanced
+  cmd = URI.unescape(cmd.gsub(/\+/, ' ')) if advanced
   result = ""
   error = '0';
   begin
@@ -129,7 +129,7 @@ def execute_cmd(cmd, advanced)
   end
 
   cmd = URI.escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")) if advanced
-  $_s.write("EV" + (advanced ? "L:#{error}:#{cmd}:" : ':'+(error.to_i != 0 ? 'ERROR: ':'')) + result + "\n")
+  $_s.write("EV" + (advanced ? "L:#{error}:#{cmd}:" : ':' + (error.to_i != 0 ? 'ERROR: ' : '')) + result + "\n")
 end
 
 def get_variables_obsolete(scope)
@@ -170,7 +170,7 @@ def get_variables_obsolete(scope)
 
   message = {:event => 'variables', :variables => variables}
   $_s.write("#{message.to_json}\n")
-  
+
 =begin
   begin
     $_s.write("VSTART:#{vartype}\n")
@@ -191,9 +191,7 @@ def get_variables_obsolete(scope)
 =end
 end
 
-def get_local_variables()
-  
-end
+def get_local_variables() end
 
 def get_variables(scope)
   if (scope === 'global')
@@ -228,32 +226,38 @@ def get_variables(scope)
   }
 
   {:event => 'variables', :variables => variables}
-end 
+end
 
 def get_treads
   threads = Thread.list.map { |each| {:id => each.object_id, :name => each} }
   {:event => :threads, :threads => threads}
 end
 
-def get_stacktrace(thread_id, launched_on_rhosim)
-  puts "[get_stacktrace] thread: #{thread_id}, launched_on_rhosim: #{launched_on_rhosim}"
+def get_stacktrace(thread_id, launched_on_rhosim, windows_platform)
+  puts "[get_stacktrace] thread: #{thread_id}, launched_on_rhosim: #{launched_on_rhosim}, windows: #{windows_platform}"
   thread = Thread.list.find { |each| each.object_id == thread_id }
 
   backtrace = thread.backtrace
   cutted_backtrace = backtrace.slice(2, backtrace.size - 1)
   frames = cutted_backtrace.map.with_index { |each, idx|
-    puts "[get_stacktrace] frame: #{each}"
     parts = each.split(':')
-    if launched_on_rhosim && $is_windows
-      #'c:/Users/mva/projects/issues/debugged-app/app/Settings/controller.rb:10:in `index''
-      name = parts[3]
-      file = (parts[0] + ':' + parts[1]).gsub('/', '\\')
-      line = parts[2].to_i
-    else
-        name = parts[2]
+    if launched_on_rhosim
+      if windows_platform
+        file = (parts[0] + ':' + parts[1]).gsub('/', '\\')
+        line = parts[2].to_i
+        name = parts[3]
+      else
         file = convert_to_relative_path(parts[0], $_app_path)
         line = parts[1].to_i
+        name = parts[2]
+      end
+    else
+      file = convert_to_relative_path(parts[0], $_app_path)
+      line = parts[1].to_i
+      name = parts[2]
     end
+
+    puts "parts #{parts}, file: #{file}"
 
     {
         :index => idx,
@@ -303,7 +307,7 @@ def debug_handle_cmd(inline)
 
         if json['type'] === 'stacktrace'
           debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Stacktrace is requested")
-          response = get_stacktrace(json['thread'], $is_rhosim)
+          response = get_stacktrace(json['thread'], $is_rhosim, $is_windows)
           $_s.write("#{response.to_json}\n")
           processed = true
         end
@@ -367,8 +371,7 @@ def debug_handle_cmd(inline)
       puts "Rescued: #{e.inspect}"
     end
   end
-  
-  
+
 
 =begin
   if cmd != ""
@@ -509,7 +512,7 @@ def debug_handle_cmd(inline)
   processed
 end
 
-$_tracefunc = lambda{|event, file, line, id, bind, classname|
+$_tracefunc = lambda { |event, file, line, id, bind, classname|
 
   # puts "event: #{event}"
   # puts "file: #{file}"
@@ -565,6 +568,7 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 =end
 
         filename = convert_to_relative_path(file, $_app_path)
+        puts "step_stop #{step_stop}, $_breakpoint.enabled? #{$_breakpoint.enabled?}, $_breakpoint.set_on?(filename, line.to_i) #{$_breakpoint.set_on?(filename, line.to_i)}"
 
         if step_stop || ($_breakpoint.enabled? && ($_breakpoint.set_on?(filename, line.to_i)))
 =begin
@@ -572,23 +576,24 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 =end
 
           fn = filename.gsub(/:/, '|')
-          cl = classname.to_s.gsub(/:/,'#')
+          cl = classname.to_s.gsub(/:/, '#')
           thread_id = Thread.current.object_id
-          
+
           message = {:event => :stopOnBreakpoint, :threadId => Thread.current.object_id}
           $_s.write("#{message.to_json}\n")
-          
+
 =begin
           $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{line - 1}:#{cl}:#{id}:#{thread_id}\n")
 =end
-          debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{line}")
+          debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, (step_stop ? DEBUGGER_STEP_COMMENT[$_step - 1] : "Breakpoint") + " in #{fn} at #{line}")
           $_step = 0
           $_step_level = -1
 
           app_type = ENV["APP_TYPE"]
           $_wait = true
           while $_wait
-            while debug_handle_cmd(true) do end
+            while debug_handle_cmd(true) do
+            end
 
             if app_type.eql? "rhodes"
               if Rho::System.main_window_closed
@@ -634,8 +639,8 @@ begin
   debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
 
   $is_rhosim = false
-  puts("Rho::System.platform #{Rho::System.platform}")
-  $is_windows = Rho::System.platform ===  Rho::System::PLATFORM_WINDOWS_DESKTOP
+  puts("RUBY_PLATFORM #{RUBY_PLATFORM}")
+  $is_windows = (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
 
   if defined?(RHOSTUDIO_REMOTE_DEBUG) && RHOSTUDIO_REMOTE_DEBUG == true
     puts "[debugger] RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
@@ -653,10 +658,10 @@ begin
   $_s = timeout(30) { TCPSocket.open(debug_host, debug_port) }
 
   debugger_log(DEBUGGER_LOG_LEVEL_WARN, "Connected: " + $_s.to_s)
-  
+
   message = {:event => :connect, :host => debug_host, :port => debug_port, :debugPath => $_app_path}
   $_s.write("#{message.to_json}\n")
-  
+
   $_s.write("CONNECT\nHOST=" + debug_host.to_s + "\nPORT=" + debug_port.to_s + "\n")
 
   #$_breakpoint = Hash.new
@@ -678,8 +683,9 @@ begin
 
   Thread.new {
     while true
-      debug_read_cmd($_s,true)
-      while debug_handle_cmd(false) do end
+      debug_read_cmd($_s, true)
+      while debug_handle_cmd(false) do
+      end
       if ($_cmd !~ /^\s*$/) && (Thread.main.stop?)
         $_wait = true
         Thread.main.wakeup
