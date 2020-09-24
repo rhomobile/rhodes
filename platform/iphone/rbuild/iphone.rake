@@ -1168,6 +1168,50 @@ def kill_iphone_simulator
   `killall -9 Simulator`
 end
 
+
+def get_archs_string_simulator
+    arhcs = "i386 x86_64"
+    if !$app_config["iphone"].nil?
+        archs_array = $app_config["iphone"]["ARCHS_simulator"]
+        if !archs_array.nil?
+            if archs_array.kind_of?(Array)
+                archs = ""
+                archs_array.each do |ar|
+                    if archs != ""
+                        archs = archs + " "
+                    end
+                    archs = archs + ar.to_s
+                end
+            else
+                puts "ERROR !  ARCHS_simulator parameters in build.yml must be a array !"
+            end
+        end
+    end
+    return archs
+end
+
+def get_archs_string_device
+    arhcs = "arm64 arm64e armv7 armv7s"
+    if !$app_config["iphone"].nil?
+        archs_array = $app_config["iphone"]["ARCHS_device"]
+        if !archs_array.nil?
+            if archs_array.kind_of?(Array)
+                archs = ""
+                archs_array.each do |ar|
+                    if archs != ""
+                        archs = archs + " "
+                    end
+                    archs = archs + ar.to_s
+                end
+            else
+                puts "ERROR !  ARCHS_device parameters in build.yml must be a array !"
+            end
+        end
+    end
+    return archs
+end
+
+
 namespace "config" do
 
   namespace "iphone" do
@@ -1698,10 +1742,10 @@ namespace "build" do
             rm_rf lib_aggregated_dir if File.exists? lib_aggregated_dir
 
             args = ['clean', 'build', '-scheme', libconfig[:target], '-project', libname + ".xcodeproj", "-sdk", "iphoneos", "-configuration", "Release"]
-            ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir,:string_for_add_to_command_line => ' CONFIGURATION_BUILD_DIR='+lib_iphoneos_dir+' ARCHS="arm64 arm64e armv7 armv7s"'})
+            ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir,:string_for_add_to_command_line => ' CONFIGURATION_BUILD_DIR='+lib_iphoneos_dir+' ARCHS="'+get_archs_string_device+'"'})
 
             args = ['clean', 'build', '-scheme', libconfig[:target], '-project', libname + ".xcodeproj", "-sdk", "iphonesimulator", "-configuration", "Release"]
-            ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir,:string_for_add_to_command_line => ' CONFIGURATION_BUILD_DIR='+lib_iphonesimulator_dir+' ARCHS="i386 x86_64"'})
+            ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir,:string_for_add_to_command_line => ' CONFIGURATION_BUILD_DIR='+lib_iphonesimulator_dir+' ARCHS="'+get_archs_string_simulator+'"'})
 
             mkdir_p lib_aggregated_dir
 
@@ -2315,9 +2359,9 @@ namespace "build" do
           if simulator
               #args << '-arch'
               #args << 'i386'
-              additional_string = ' CONFIGURATION_BUILD_DIR='+result_lib_folder+' ARCHS="i386 x86_64"'
+              additional_string = ' CONFIGURATION_BUILD_DIR='+result_lib_folder+' ARCHS="'+get_archs_string_simulator+'"'
           else
-              additional_string = ' CONFIGURATION_BUILD_DIR='+result_lib_folder+' ARCHS="arm64 arm64e armv7 armv7s"'
+              additional_string = ' CONFIGURATION_BUILD_DIR='+result_lib_folder+' ARCHS="'+get_archs_string_device+'"'
           end
 
           require   rootdir + '/lib/build/jake.rb'
@@ -2373,7 +2417,7 @@ namespace "build" do
       ENV["TARGET_TEMP_DIR"] ||= target_dir
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
-      ENV["ARCHS"] ||= simulator ? "i386 x86_64" : "arm64 arm64e armv7 armv7s"
+      ENV["ARCHS"] ||= simulator ? get_archs_string_simulator : get_archs_string_device
 
 
       ENV["RHO_ROOT"] = $startdir
@@ -2409,9 +2453,9 @@ namespace "build" do
                  puts 'build script in extension already executable : '+build_script
             end
             if simulator
-                ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] = ' ARCHS="i386 x86_64"'
+                ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] = ' ARCHS="'+get_archs_string_simulator+'"'
             else
-                ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] = ' ARCHS="arm64 arm64e armv7 armv7s"'
+                ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] = ' ARCHS="'+get_archs_string_device+'"'
             end
             #puts '$$$$$$$$$$$$$$$$$$     START'
             currentdir = Dir.pwd()
@@ -2624,14 +2668,14 @@ namespace "build" do
                  libbinpath = File.join($app_builddir, "extensions", ext, "lib", "lib"+libname+".a")
 
                  ENV["TARGET_TEMP_DIR"] = prebuiltpath
-                 ENV["ARCHS"] = "i386 x86_64"
+                 ENV["ARCHS"] = get_archs_string_simulator
                  ENV["SDK_NAME"] = simsdk
 
                  build_extension_lib(extpath, simsdk, prebuiltpath, xcodeproject, xcodetarget, depfile)
                  cp libpath, libsimpath
                  rm_f libpath
 
-                 ENV["ARCHS"] = "arm64 arm64e armv7 armv7s"
+                 ENV["ARCHS"] = get_archs_string_device
                  ENV["SDK_NAME"] = devsdk
                  build_extension_lib(extpath, devsdk, prebuiltpath, xcodeproject, xcodetarget, depfile)
                  cp libpath, libdevpath
@@ -2736,7 +2780,9 @@ namespace "build" do
            if simulator
            #    args << '-arch'
            #    args << 'i386 x86_64'
-               additional_string = ' ARCHS="i386 x86_64"'
+               additional_string = ' ARCHS="'+get_archs_string_simulator+'"'
+           else
+               additional_string = ' ARCHS="'+get_archs_string_device+'"'
            end
 
            require   $startdir + '/lib/build/jake.rb'
@@ -3143,7 +3189,9 @@ namespace "build" do
       if $sdk =~ /iphonesimulator/
       #   args << '-arch'
       #   args << 'i386'
-        additional_string = ' ARCHS="i386 x86_64"'
+        additional_string = ' ARCHS="'+get_archs_string_simulator+'"'
+      else
+          additional_string = ' ARCHS="'+get_archs_string_device+'"'
       end
 
       ret = 0
@@ -3873,11 +3921,11 @@ namespace "clean" do
 
       args = ['clean', '-scheme', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
 
-      additional_string = ' ARCHS="arm64 arm64e armv7 armv7s"'
+      additional_string = ' ARCHS="'+get_archs_string_device+'"'
       if simulator
       #    args << '-arch'
       #    args << 'i386'
-        additional_string = ' ARCHS="i386 x86_64"'
+        additional_string = ' ARCHS="'+get_archs_string_simulator+'"'
       end
 
       require   rootdir + '/lib/build/jake.rb'
@@ -3913,7 +3961,7 @@ namespace "clean" do
       #ENV["TARGET_TEMP_DIR"] ||= target_dir
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
-      ENV["ARCHS"] ||= simulator ? "i386 x86_64" : "arm64 arm64e armv7 armv7s"
+      ENV["ARCHS"] ||= simulator ? get_archs_string_simulator : get_archs_string_device
       ENV["RHO_ROOT"] = $startdir
 
       # added by dmitrys
