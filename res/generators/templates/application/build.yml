@@ -73,6 +73,9 @@ iphone:
   ## simulator or device detect by rake command for "rake run:iphone" is simulator, for "rake device:iphone:production" is device
   ## sdk also can be defined exactly like:  iphonesimulator10.2 or iphoneos10.2
   sdk: latest
+  ## parameters for override ARHCS option when build XCode projects
+  #ARCHS_simulator : ["i386", "x86_64"]
+  #ARCHS_device : ["arm64", "arm64e", "armv7", "armv7s"]
   ## Note: Provisioning
   ## There are two provisioning type for modern XCode: Automatic and Manual
   ## development_team must be configured for any type provisioning
