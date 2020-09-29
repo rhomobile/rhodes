@@ -86,7 +86,6 @@ def log_command(cmd)
 end
 
 def convert_to_relative_path(path, app_path)
-  puts "convert_to_relative_path #{path} #{app_path}"
   if path.include?("./")
     relative_path = "/" + path[path.index("./") + 2, path.length]
   elsif path.include?("lib")
@@ -98,7 +97,7 @@ def convert_to_relative_path(path, app_path)
   else
     relative_path = path[app_path.length, path.length - app_path.length]
   end
-  puts "relative_path #{relative_path}"
+  puts "convert path '#{path}' with app_path '#{app_path}' to relative_path '#{relative_path}'"
   return relative_path
 end
 
@@ -243,7 +242,8 @@ def get_stacktrace(thread_id, launched_on_rhosim, windows_platform)
     parts = each.split(':')
     if launched_on_rhosim
       if windows_platform
-        file = (parts[0] + ':' + parts[1]).gsub('/', '\\')
+        # C:/Users/mva/projects/rhomobile/rhodes/lib/extensions/debugger/debugger.rb:633:
+        file = convert_to_relative_path(parts[0] + ':' + parts[1], $_app_path)
         line = parts[2].to_i
         name = parts[3]
       else
