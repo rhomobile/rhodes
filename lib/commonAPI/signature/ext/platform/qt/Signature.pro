@@ -1,24 +1,38 @@
 QT += core gui widgets multimedia network
 
-lessThan(QT_VERSION, 5.6.0): {
-    QT += webkit widgets webkitwidgets multimediawidgets
-    DEFINES += RHODES_VERSION_1
-}
+message(Qt version: $$[QT_VERSION])
+isEqual(QT_MAJOR_VERSION, 5):{
+    lessThan(QT_MINOR_VERSION, 6): {
+        QT += webkit widgets webkitwidgets multimedia multimediawidgets
+        message(Deprecated webkit enabled)
+        DEFINES += RHODES_VERSION_1
+        INCLUDEPATH += oldVersion
+    }
 
-equals(QT_MAJOR_VERSION, 5) {
     equals(QT_MINOR_VERSION, 6) {
-        QT += quick
+        DEFINES += ENABLE_Q_WEB_ENGINE
+
+        !contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+            QT += webkit
+            message(Deprecated sailfish webkit enabled)
+        }
+        contains(DEFINES, ENABLE_Q_WEB_ENGINE)  {
+            QT += webengine
+        }
+
+        QT += quick multimedia dbus bluetooth
         DEFINES += OS_SAILFISH OS_LINUX
-        CONFIG += sailfishapp c++14 sailfishapp_i18n
+        CONFIG += sailfishapp c++14 sailfishapp_i18n qmlcache
+    }
+
+    greaterThan(QT_MINOR_VERSION, 6): {
+        QT += webengine webenginecore webenginewidgets multimedia multimediawidgets
+        message(Webengine enabled)
+        CONFIG += c++14
+        DEFINES += RHODES_VERSION_2 CPP_ELEVEN
+        INCLUDEPATH += newVersion
     }
 }
-
-greaterThan(QT_VERSION, 5.7.0): {
-    QT += webengine webenginecore webenginewidgets multimediawidgets
-    CONFIG += c++14
-    DEFINES += CPP_ELEVEN RHODES_VERSION_2
-}
-
 
 TARGET = Signature
 TEMPLATE = lib
@@ -45,7 +59,7 @@ macx {
 win32 {
   DESTDIR = $$RHODES_ROOT/platform/win32/bin/extensions
   OBJECTS_DIR = $$RHODES_ROOT/platform/win32/bin/extensions/signature
-  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  DEFINES += WIN32 _WINDOWS _LIB _UNICODE UNICODE _WINSOCKAPI_
   debug {
     DEFINES += _DEBUG DEBUG
   }

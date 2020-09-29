@@ -11,7 +11,6 @@ project_paths:
   wp8: ext/platform/wp8/Signature.vcxproj
   uwp: ext/platform/uwp/Signature.vcxproj
   wm: ext/platform/wm/Signature.vcproj
-  win32: ext/platform/wm/Signature.vcproj
   
 sailfish:
   proerb: ext/platform/qt/Signature.pro.erb
