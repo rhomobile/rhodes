@@ -13,6 +13,14 @@ rake --trace
 
 )
 
+if "%RHO_PLATFORM%" == "win32" (
+
+call %RHO_VSCMNTOOLS%
+cd platform\qt
+rake --trace
+
+)
+
 if "%RHO_PLATFORM%" == "sailfish" (
 
 cd platform\qt

@@ -135,9 +135,9 @@ win32 {
                     ../../../win32/bin/rholib/rholib.lib\
                     ../../../win32/bin/sqlite3/sqlite3.lib\
                     ../../../win32/bin/syncengine/syncengine.lib
-  exists("../../../win32/bin/extensions/extensions.pri") {
+  #exists("../../../win32/bin/extensions/extensions.pri") {
     include("../../../win32/bin/extensions/extensions.pri")
-  }
+  #}
 }
 
 unix:!macx {
