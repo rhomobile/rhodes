@@ -821,7 +821,7 @@ namespace "config" do
           $qmake_makespec = 'win32-msvc'
         
         unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
-          puts "\nPlease, set VS110COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio"
+          puts "\nPlease, set VS140COMNTOOLS environment variable to Common7\\Tools directory path of Visual Studio"
           exit 1
         end
       else

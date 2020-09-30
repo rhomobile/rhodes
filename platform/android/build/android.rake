@@ -26,6 +26,7 @@
 
 require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
+require File.dirname(__FILE__) + '/apk_builder.rb'
 require File.dirname(__FILE__) + '/maven_deps_extractor.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
@@ -797,8 +798,7 @@ namespace "config" do
       AndroidTools.jarsigner = $jarsigner
       AndroidTools.zipalign = $zipalign
       AndroidTools.keytool = $keytool
-
-      $sdklibjar = AndroidTools.findSdkLibJar $androidsdkpath
+      AndroidTools.apksigner = File.join(build_tools_path,'apksigner'+$bat_ext)
     end
 
     $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
@@ -2934,20 +2934,17 @@ namespace "device" do
     desc "Build debug self signed for device"
     task :debug => "package:android" do
       print_timestamp('device:android:debug START')
-      dexfile = $bindir + "/classes.dex"
-      simple_apkfile = $targetdir + "/" + $appname + "-tmp.apk"
-      signed_apkfile = $targetdir + "/" + $appname + "-tmp_signed.apk"
-      final_apkfile = $targetdir + "/" + $appname + "-debug.apk"
-      resourcepkg = $bindir + "/rhodes.ap_"
 
-      apk_build $androidsdkpath, simple_apkfile, resourcepkg, dexfile, true
+      final_apkfile = File.join $targetdir, "#{$appname}-debug.apk"
 
-      AndroidTools.signApkDebug( simple_apkfile, signed_apkfile )
-      AndroidTools.alignApk( signed_apkfile, final_apkfile )
+      builder = ApkBuilder.new
+      builder.sdk_path = $androidsdkpath
+      builder.dex_path = File.join $bindir, "classes.dex"
+      builder.output_path = final_apkfile
+      builder.res_pkg = File.join $bindir, "rhodes.ap_"
+      builder.debug = true
 
-      #remove temporary files
-      rm_rf simple_apkfile
-      rm_rf signed_apkfile
+      builder.build
 
       File.open(File.join(File.dirname(final_apkfile), "app_info.txt"), "w") do |f|
         f.puts $app_package_name
@@ -2995,25 +2992,25 @@ namespace "device" do
     desc "Build production signed for device"
     task :production => "package:android" do
       print_timestamp('device:android:production START')
-      dexfile = $bindir + "/classes.dex"
-      simple_apkfile = $targetdir + "/" + $appname + "_tmp.apk"
-      final_apkfile = $targetdir + "/" + $appname + "_signed.apk"
-      signed_apkfile = $targetdir + "/" + $appname + "_tmp_signed.apk"
-      resourcepkg = $bindir + "/rhodes.ap_"
-
-      apk_build $androidsdkpath, simple_apkfile, resourcepkg, dexfile, false
 
       if not File.exists? $keystore
         AndroidTools.generateKeystore( $keystore, $storealias, $storepass, $keypass )
       end
 
+      final_apkfile = File.join $targetdir, "#{$appname}_signed.apk"
 
-      AndroidTools.signApk( simple_apkfile, signed_apkfile, $keystore, $keypass, $storepass, $storealias )
-      AndroidTools.alignApk( signed_apkfile, final_apkfile )
+      builder = ApkBuilder.new
+      builder.sdk_path = $androidsdkpath
+      builder.dex_path = File.join $bindir,"classes.dex"      
+      builder.output_path = final_apkfile
+      builder.res_pkg = File.join $bindir, "rhodes.ap_"
+      builder.debug = false
+      builder.keystore = $keystore
+      builder.keypass = $keypass
+      builder.storepass = $storepass
+      builder.storealias = $storealias
 
-      #remove temporary files
-      rm_rf simple_apkfile
-      rm_rf signed_apkfile
+      builder.build
 
       File.open(File.join(File.dirname(final_apkfile), "app_info.txt"), "w") do |f|
         f.puts $app_package_name

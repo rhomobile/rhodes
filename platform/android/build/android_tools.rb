@@ -777,10 +777,15 @@ module_function :read_manifest_package
     @@logger=v
   end
 
+  def self.apksigner= v
+    @@apksigner=v
+  end
+
   def signApk( inputApk, outputApk, keystore, keypass, storepass, storealias  )
     @@logger.info "Signing APK file"
 
     args = []
+=begin
     args << "-sigalg"
     args << "SHA256withRSA"
     #args << "-digestalg"
@@ -794,17 +799,41 @@ module_function :read_manifest_package
     args << outputApk
     args << inputApk
     args << storealias if storealias
+=end    
+    args << 'sign'
+    args << '--ks'
+    args << keystore
+
+    if storealias
+      args << '--ks-key-alias'
+      args << storealias
+    end
+
+    args << '--ks-pass'
+    args << "pass:#{storepass}"
+
+    args << '--key-pass'
+    args << "pass:#{keypass}"
+
+    args << '--v2-signing-enabled'
+    args << 'true'
+    args << '--verbose' if Rake.application.options.trace
+    args << '--out'
+    args << outputApk
+    args << inputApk
     
-    Jake.run2(@@jarsigner, args, :hide_output => !Rake.application.options.trace )
+#    Jake.run2(@@jarsigner, args, :hide_output => !Rake.application.options.trace )
+    Jake.run2(@@apksigner, args, :hide_output => !Rake.application.options.trace )
+
     unless $?.success?
-      @@logger.error "Error running jarsigner"
+      @@logger.error "Error running apksigner"
       exit 1
     end
   end
   module_function :signApk
 
   def signApkDebug( inputApk, outputApk )
-    @@logger.info "Align Debug APK file"
+    @@logger.info "Sign Debug APK file"
 
     keystore = File.join(Dir.home,'/.android/debug.keystore')
     #Try to find debug keystore in another location
@@ -897,6 +926,26 @@ module_function :read_manifest_package
     sdklibjar
   end
   module_function :findSdkLibJar
+
+
+  def apk_build(sdk, apk_name, res_name, dex_name, debug)
+    puts "Building APK file..."
+    prev_dir = Dir.pwd
+    Dir.chdir File.join(sdk, "tools")
+
+    params = ['-Xmx1024m', '-classpath', findSdkLibJar(sdk), 'com.android.sdklib.build.ApkBuilderMain', apk_name]
+
+    params += ['-u', '-z', res_name, '-f', dex_name]
+
+    Jake.run File.join($java, "java#{HostPlatform.exe_ext}"), params
+    unless $?.success?
+        Dir.chdir prev_dir
+        raise 'Error building APK file'
+    end
+    Dir.chdir prev_dir
+  end
+  module_function :apk_build
+
 
 
 end #module AndroidTools

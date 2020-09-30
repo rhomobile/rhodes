@@ -5522,7 +5522,7 @@ rb_fdopen(int fd, const char *modestr)
 	else
 #endif
 	if (rb_gc_for_fd(errno)) {
-	    file = fpopen(fd, modestr);
+	    file = fpfdopen(fd, modestr);
 	}
 	if (!file) {
 	    int e = errno;
