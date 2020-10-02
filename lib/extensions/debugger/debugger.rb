@@ -233,7 +233,7 @@ def get_stacktrace(thread_id, launched_on_rhosim, windows_platform)
 
   backtrace = thread.backtrace
   cutted_backtrace = backtrace.slice(2, backtrace.size - 1)
-  frames = cutted_backtrace.map.with_index { |each,   idx|
+  frames = cutted_backtrace.map.with_index { |each, idx|
     parts = each.split(':')
     if launched_on_rhosim
       if windows_platform
