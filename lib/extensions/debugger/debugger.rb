@@ -166,24 +166,7 @@ def get_variables_obsolete(scope)
   message = {:event => 'variables', :variables => variables}
   $_s.write("#{message.to_json}\n")
 
-=begin
-  begin
-    $_s.write("VSTART:#{vartype}\n")
-    vars.each do |v|
-      if v !~ /^\$(=|KCODE|-K)$/
-        begin
-          result = eval(v.to_s, $_binding).inspect
-        rescue Exception => exc
-          $_s.write("get var exception\n")
-          result = "#{$!}".inspect
-        end
-        $_s.write("V:#{vartype}:#{v}:#{result}\n")
-      end
-    end
-    $_s.write("VEND:#{vartype}\n")
-  rescue
-  end
-=end
+
 end
 
 def get_local_variables() end
@@ -357,6 +340,7 @@ def debug_handle_cmd(inline)
         if json['type'] === 'kill'
           debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Kill command")
           processed = true
+          $_s.close
           System.exit
         end
       end
@@ -489,7 +473,11 @@ begin
   $_s.write("DEBUG PATH=" + $_app_path.to_s + "\n")
 
   at_exit {
-    $_s.write("QUIT\n") if !($_s.nil?)
+    begin
+      $_s.write("QUIT\n")
+      $_s.close
+    end if !($_s.nil?)
+
   }
 
   set_trace_func $_tracefunc
