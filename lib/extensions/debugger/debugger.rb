@@ -31,7 +31,6 @@ class BreakPoints
 
 
   def set_on?(file, line)
-    puts "file: #{file}, @break_points: #{@break_points}, #{@break_points.has_key?(file)}"
     unless @break_points.has_key?(file)
       return false
     end
@@ -39,7 +38,6 @@ class BreakPoints
   end
 
   def set_break_point_on(file, line)
-    puts "set_break_point_on file: #{file}, line: #{line}"
     unless @break_points.has_key?(file)
       @break_points[file] = Set.new
     end
@@ -77,7 +75,6 @@ end
 
 def debugger_log(level, msg)
   if (level >= DEBUGGER_LOG_LEVEL_DEBUG) #DEBUGGER_LOG_LEVEL_WARN)
-    puts "[Debugger] #{msg}"
   end
 end
 
@@ -97,7 +94,6 @@ def convert_to_relative_path(path, app_path)
   else
     relative_path = path[app_path.length, path.length - app_path.length]
   end
-  puts "convert path '#{path}' with app_path '#{app_path}' to relative_path '#{relative_path}'"
   return relative_path
 end
 
@@ -233,12 +229,11 @@ def get_treads
 end
 
 def get_stacktrace(thread_id, launched_on_rhosim, windows_platform)
-  puts "[get_stacktrace] thread: #{thread_id}, launched_on_rhosim: #{launched_on_rhosim}, windows: #{windows_platform}"
   thread = Thread.list.find { |each| each.object_id == thread_id }
 
   backtrace = thread.backtrace
   cutted_backtrace = backtrace.slice(2, backtrace.size - 1)
-  frames = cutted_backtrace.map.with_index { |each, idx|
+  frames = cutted_backtrace.map.with_index { |each,   idx|
     parts = each.split(':')
     if launched_on_rhosim
       if windows_platform
@@ -256,8 +251,6 @@ def get_stacktrace(thread_id, launched_on_rhosim, windows_platform)
       line = parts[1].to_i
       name = parts[2]
     end
-
-    puts "parts #{parts}, file: #{file}"
 
     {
         :index => idx,
@@ -372,138 +365,6 @@ def debug_handle_cmd(inline)
     end
   end
 
-
-=begin
-  if cmd != ""
-
-    debugger_log(DEBUGGER_LOG_LEVEL_INFO, "cmd: #{cmd}")
-
-    if cmd =~/^CONNECTED/
-      log_command(cmd)
-      debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Connected to debugger")
-      processed = true
-    elsif cmd =~/^BACKTRACE/
-      thread_id = cmd.split(':').last.to_i
-      thread = Thread.list.find { |each| each.object_id == thread_id }
-      $_s.write("BACKTRACE:START\n")
-      backtrace = thread.backtrace
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, thread.backtrace)
-      backtrace.slice(2, backtrace.size - 1).each do |each|
-        backtrace_line = each
-        unless $is_rhosim
-           parts = each.split(':')
-           parts[0] = convert_to_relative_path(parts[0], $_app_path)
-           backtrace_line = parts.join(':')
-        end
-        $_s.write("#{backtrace_line}\n")
-      end
-      $_s.write("BACKTRACE:END\n")
-      processed = true
-    elsif cmd =~/^THREADS/
-      threads = Thread.list.map {|each|  {:id => each.object_id, :name => each}}
-      message = {:event => :threads, :threads => threads}
-      $_s.write("#{message.to_json}\n")
-      processed = true
-    elsif cmd =~/^(BP|RM):/
-      log_command(cmd)
-      ary = cmd.split(":")
-      file = ary[1]
-      line = ary[2].to_i
-      if (cmd =~/^RM:/)
-        $_breakpoint.delete_break_point_on(file, line)
-        debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint removed: #{bp}")
-      else
-        $_breakpoint.set_break_point_on(file, line)
-        debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint added: #{file}:#{line}")
-      end
-      processed = true
-    elsif cmd =~ /^RMALL:/
-      log_command(cmd)
-      path = cmd.split(':')[1]
-      file = path[$_app_path.size, path.size]
-      $_breakpoint.delete_all_break_points_on(file)
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "All breakpoints removed")
-      processed = true
-    elsif cmd =~ /^ENABLE/
-      log_command(cmd)
-      $_breakpoint.be_enabled
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoints enabled")
-      processed = true
-    elsif cmd =~ /^DISABLE/
-      log_command(cmd)
-      $_breakpoint.be_disabled
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoints disabled")
-      processed = true
-    elsif inline && (cmd =~ /^STEPOVER/)
-      $_s.write("STEPOVER start\n")
-      log_command(cmd)
-      $_step = 2
-      $_step_level = $_call_stack
-      $_resumed = true
-      wait = false
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Step over")
-      processed = true
-    elsif inline && (cmd =~ /^STEPRET/)
-      log_command(cmd)
-      if $_call_stack < 1
-        $_step = 0
-        comment = ' (continue)'
-      else
-        $_step = 3
-        $_step_level = $_call_stack-1;
-        comment = ''
-      end
-      $_resumed = true
-      wait = false
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Step return" + comment)
-      processed = true
-    elsif inline && (cmd =~ /^STEP/)
-      log_command(cmd)
-      $_step = 1
-      $_step_level = -1
-      $_resumed = true
-      wait = false
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Step into")
-      processed = true
-    elsif inline && (cmd =~ /^CONT/)
-      log_command(cmd)
-      wait = false
-      $_step = 0
-      $_resumed = true
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Resuming")
-      processed = true
-    elsif cmd =~ /^SUSP/
-      log_command(cmd)
-      $_step = 4
-      $_step_level = -1
-      wait = true
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Suspend")
-      processed = true
-    elsif cmd =~ /^KILL/
-      log_command(cmd)
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Terminating...")
-      processed = true
-      $_s.write("KILL start\n")
-      System.exit
-      $_s.write("KILL end\n")
-    elsif inline && (cmd =~ /^EVL?:/)
-      log_command(cmd)
-      processed = true
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Calc evaluation...")
-      execute_cmd cmd.sub(/^EVL?:/,""), (cmd =~ /^EVL:/ ? true : false)
-    elsif inline && (cmd =~ /^[GLCI]VARS/)
-      log_command(cmd)
-      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Get variables...")
-      get_variables cmd
-      processed = true
-    elsif inline
-      log_command(cmd)
-      debugger_log(DEBUGGER_LOG_LEVEL_WARN, "Unknown command")
-      processed = true
-    end
-  end
-=end
-
   if processed
     $_cmd = $_cmd.sub(/^([^\n\r]*)([\n\r]+(.*)|)$/, "\\3")
     $_wait = wait if inline
@@ -513,14 +374,6 @@ def debug_handle_cmd(inline)
 end
 
 $_tracefunc = lambda { |event, file, line, id, bind, classname|
-
-  # puts "event: #{event}"
-  # puts "file: #{file}"
-  # puts "line: #{line}"
-  # puts "id: #{id}"
-  # puts "bind: #{bind}"
-  # puts "classname: #{classname}"
-
 
   return if eval('::Thread.current != ::Thread.main', bind)
   $_binding = bind;
@@ -537,43 +390,10 @@ $_tracefunc = lambda { |event, file, line, id, bind, classname|
       if (step_stop || ($_breakpoint.enabled? && (!($_breakpoint.empty?))))
         filename = ""
 
-=begin
-        
-        if !(file.index("./").nil?)
-          filename = "/" + file[file.index("./") + 2, file.length]
-        elsif !(file.index("lib").nil?)
-          filename = "framework/" + file[file.index("lib") + 3, file.length]
-        elsif !(file.index("framework").nil?)
-          filename = file[file.index("framework"), file.length]
-        elsif !(file.index("extensions").nil?)
-          filename = file[file.index("extensions"), file.length]
-        else
-          filename = file[$_app_path.length, file.length - $_app_path.length]
-        end
-=end
-
-
-=begin
-        if file.include?("./")
-          filename = "/" + file[file.index("./") + 2, file.length]
-        elsif file.include?("lib")
-          filename = "framework/" + file[file.index("lib") + 3, file.length]
-        elsif file.include?("framework")
-          filename = file[file.index("framework"), file.length]
-        elsif file.include?("extensions")
-          filename = file[file.index("extensions"), file.length]
-        else
-          filename = file[$_app_path.length, file.length - $_app_path.length]
-        end
-=end
 
         filename = convert_to_relative_path(file, $_app_path)
-        puts "step_stop #{step_stop}, $_breakpoint.enabled? #{$_breakpoint.enabled?}, $_breakpoint.set_on?(filename, line.to_i) #{$_breakpoint.set_on?(filename, line.to_i)}"
 
         if step_stop || ($_breakpoint.enabled? && ($_breakpoint.set_on?(filename, line.to_i)))
-=begin
-          $_s.write("[Debugger][3] stop on bp #{file}:#{line}\n")
-=end
 
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/, '#')
@@ -582,9 +402,6 @@ $_tracefunc = lambda { |event, file, line, id, bind, classname|
           message = {:event => :stopOnBreakpoint, :threadId => Thread.current.object_id}
           $_s.write("#{message.to_json}\n")
 
-=begin
-          $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{line - 1}:#{cl}:#{id}:#{thread_id}\n")
-=end
           debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, (step_stop ? DEBUGGER_STEP_COMMENT[$_step - 1] : "Breakpoint") + " in #{fn} at #{line}")
           $_step = 0
           $_step_level = -1
@@ -639,11 +456,9 @@ begin
   debug_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env
 
   $is_rhosim = false
-  puts("RUBY_PLATFORM #{RUBY_PLATFORM}")
   $is_windows = (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
 
   if defined?(RHOSTUDIO_REMOTE_DEBUG) && RHOSTUDIO_REMOTE_DEBUG == true
-    puts "[debugger] RHOSTUDIO_REMOTE_HOST=" + RHOSTUDIO_REMOTE_HOST.to_s
     debug_host = ((RHOSTUDIO_REMOTE_HOST.to_s != nil) || (RHOSTUDIO_REMOTE_HOST.to_s != "")) ? RHOSTUDIO_REMOTE_HOST.to_s : ""
     debug_path = "apps/app/"
   else
@@ -664,9 +479,7 @@ begin
 
   $_s.write("CONNECT\nHOST=" + debug_host.to_s + "\nPORT=" + debug_port.to_s + "\n")
 
-  #$_breakpoint = Hash.new
   $_breakpoint = BreakPoints.new()
-  #$_breakpoints_enabled = true
   $_step = 0
   $_step_level = -1
   $_call_stack = 0
