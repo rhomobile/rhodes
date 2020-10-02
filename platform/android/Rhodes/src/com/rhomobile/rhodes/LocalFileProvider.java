@@ -27,6 +27,8 @@
 package com.rhomobile.rhodes;
 
 import java.io.File;
+import java.util.List;
+import java.nio.file.Paths;
 
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
@@ -36,6 +38,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
+import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
@@ -108,6 +112,19 @@ public class LocalFileProvider extends ContentProvider
         }
  
         return overridedUri;
+    }
+
+    public static void grantPermissionOnSharingContentIntent(Context ctx, Intent intent, Uri uri){
+        List<ResolveInfo> resInfoList = ctx.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo resolveInfo : resInfoList) {
+            String packageName = resolveInfo.activityInfo.packageName;
+            ctx.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+    }
+
+    public static boolean isHomeDir(Context ctx, String fileName){
+        String filePath = Paths.get(ctx.getApplicationInfo().dataDir, "rhodata", "apps").toString();
+        return fileName.startsWith(filePath) || fileName.startsWith("file://" + filePath);
     }
     
     
