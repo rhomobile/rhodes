@@ -65,6 +65,7 @@
 
     <provider android:name='com.rhomobile.rhodes.LocalFileProvider' android:authorities='<%=@appPackageName%>' android:grantUriPermissions='false' <%= @androidVerMaj >= 7 ? "android:exported='true'" : "android:exported='false'" %> >
       <grant-uri-permission android:pathPrefix='/rhodes/apps/'/>
+      <grant-uri-permission android:pathPrefix='/rhodata/apps/'/>
     </provider>
 
     <!-- application tag addon templates from extensions -->
