@@ -1,77 +1,53 @@
 require 'fileutils'
 
-USE_STLPORT = true
-
 namespace "build" do
+    task :all do
+        rhorootdir = ENV['RHO_ROOT']
+        raise "RHO_ROOT is not set" if rhorootdir.nil?
 
-  task :config do
+        $targetdir = ENV['TARGET_TEMP_DIR']
+        raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
 
-    $targetdir = ENV['TARGET_TEMP_DIR']
-    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+        $configuration = ENV['CONFIGURATION']
+        raise "CONFIGURATION is not set" if $configuration.nil?
 
-    $tempdir = ENV['TEMP_FILES_DIR']
-    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+        $sdk = ENV['SDK_NAME']
+        raise "SDK_NAME is not set" if $sdk.nil?
 
-    $rootdir = ENV['RHO_ROOT']
-    raise "RHO_ROOT is not set" if $rootdir.nil?
+        require File.join(rhorootdir, 'platform','iphone','rbuild','buildextension')
 
-    $xcodebuild = ENV['XCODEBUILD']	
-    raise "XCODEBUILD is not set" if $xcodebuild.nil?
- 
-    $configuration = ENV['CONFIGURATION']	
-    raise "CONFIGURATION is not set" if $configuration.nil?
+        IPhoneBuild.load_env_for_build_rhodes_ios_extension
 
-    $sdk = ENV['SDK_NAME']	
-    raise "SDK_NAME is not set" if $sdk.nil?
 
-    $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
-    raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
-    
-    $sdkroot = ENV['SDKROOT']
-    raise "SDKROOT is not set" if $sdkroot.nil?
+        simulator = $sdk =~ /iphonesimulator/
 
-    $arch = ENV['ARCHS']
-    raise "ARCHS is not set" if $arch.nil?
-    
-    $gccbin = $bindir + '/gcc-4.2'
-    $arbin = $bindir + '/ar'
+        if $configuration == 'Distribution'
+           $configuration = 'Release'
+        end
 
-  end
+        result_dir = "#{$rootdir}/lib/extensions/openssl.so/ext/iphone/" + ( simulator ? "Release-iphonesimulator" : "Release-iphoneos")
+        result_lib = result_dir + '/libopenssl.so.a'
+        target_lib = $targetdir + '/libopenssl.so.a'
+        if !File.exists?(result_lib)
 
-  task :all => :config do
+            extension_name = "openssl.so"
+            extension_lib_name = "openssl.so"
+            extension_xcode_target_name = "openssl"
 
-    iphone_path = '.'
+            ret= IPhoneBuild.build_rhodes_ios_extension(extension_name, extension_lib_name, extension_xcode_target_name)
 
-    simulator = $sdk =~ /iphonesimulator/
+            mkdir_p result_dir
 
-    if $configuration == 'Distribution'
-       $configuration = 'Release'
+            #make cached bin
+            cp target_lib, result_lib
+
+        else
+            # copy cached bin to target
+            cp result_lib,target_lib
+        end
+
+
     end
-
-    result_dir = "#{$rootdir}/lib/extensions/openssl.so/ext/iphone/" + ( simulator ? "Release-iphonesimulator" : "Release-iphoneos")
-    result_lib = result_dir + '/libopenssl.so.a'
-    target_lib = $targetdir + '/libopenssl.so.a'
-    if !File.exists?(result_lib)
-      built_lib = "#{$rootdir}/lib/extensions/openssl.so/ext/iphone/build/" + $configuration + ( simulator ? "-iphonesimulator" : "-iphoneos") + '/libopenssl.a'
-
-      rm_rf 'build'
-      rm_rf target_lib
-
-      args = ['build', '-target', 'openssl', '-configuration', $configuration, '-sdk', $sdk]
-
-      require $rootdir + '/lib/build/jake.rb'
-
-      puts Jake.run($xcodebuild,args)
-      ret = $?
-      mkdir_p result_dir
-      cp built_lib,result_lib
-    end
-    # copy result to $targetdir
-    cp result_lib,target_lib
-
-  end
-
-
 end
 
 task :default => "build:all"

@@ -1,75 +1,20 @@
 require 'fileutils'
 
-require ENV['RHO_ROOT']+'/lib/build/jake.rb'
-
-
-USE_STLPORT = true
-
-
 namespace "build" do
-  task :config do
-    $targetdir = ENV['TARGET_TEMP_DIR']
-    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
-    $tempdir = ENV['TEMP_FILES_DIR']
-    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
-    $rootdir = ENV['RHO_ROOT']
-    raise "RHO_ROOT is not set" if $rootdir.nil?
+    task :all do
+        rhorootdir = ENV['RHO_ROOT']
+        raise "RHO_ROOT is not set" if rhorootdir.nil?
 
-    $xcodebuild = ENV['XCODEBUILD']	
-    raise "XCODEBUILD is not set" if $xcodebuild.nil?
-    
-    $configuration = ENV['CONFIGURATION']	
-    raise "CONFIGURATION is not set" if $configuration.nil?
+        require File.join(rhorootdir, 'platform','iphone','rbuild','buildextension')
 
-    $sdk = ENV['SDK_NAME']	
-    raise "SDK_NAME is not set" if $sdk.nil?
+        IPhoneBuild.load_env_for_build_rhodes_ios_extension
 
-    $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
-    raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
-    
-    $sdkroot = ENV['SDKROOT']
-    raise "SDKROOT is not set" if $sdkroot.nil?
+        extension_name = "Barcode"
+        extension_lib_name = extension_name
+        extension_xcode_target_name = extension_name
 
-    $app_path = ENV["RHO_APP_DIR"]
-    raise "RHO_APP_DIR is not set" if $app_path.nil?
-
-    $arch = ENV['ARCHS']
-    raise "ARCHS is not set" if $arch.nil?
-    
-    $gccbin = $bindir + '/gcc-4.2'
-    $arbin = $bindir + '/ar'
-
-  end
-
-  task :all => :config do
-
-    iphone_path = '.'
-
-
-    simulator = $sdk =~ /iphonesimulator/
-
-    if $configuration == 'Distribution'
-       $configuration = 'Release'
+        ret= IPhoneBuild.build_rhodes_ios_extension(extension_name, extension_lib_name, extension_xcode_target_name)
     end
-
-    chdir iphone_path
-    args = ['build', '-target', 'Barcode', '-configuration', $configuration, '-sdk', $sdk, '-quiet']
-
-    require File.join(ENV['RHO_ROOT'], 'platform','iphone','rbuild','iphonecommon')
-
-    ret = IPhoneBuild.run_and_trace($xcodebuild,args)
-
-    target_app = File.join($app_path, 'project', 'iphone', 'Resources')
-    #cp_r File.join(iphone_path, 'BarcodeViewController.xib'), target_app
-
-    # copy result to $targetdir
-    result_lib = iphone_path + '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/libBarcode.a'
-    target_lib = $targetdir + '/libBarcode.a'
-
-    mkdir_p $targetdir
-    cp result_lib,target_lib
-
-  end
 end
 
 task :default => "build:all"

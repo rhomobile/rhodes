@@ -36,7 +36,7 @@ class IPhoneBuild
         #$arbin = $bindir + '/ar'
     end
 
-    def build_rhodes_ios_extension(ext_name, ext_lib_name, xcode_project_target_name)
+    def build_rhodes_ios_extension(ext_name, ext_lib_name, xcode_project_target_name, additional_options = {})
 
         puts "Build \""+ext_name+"\" extension START"
 
@@ -48,7 +48,7 @@ class IPhoneBuild
            $configuration = 'Release'
         end
 
-        result_lib = iphone_path + '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/lib'+ext_lib_name+'.a'
+        result_lib = iphone_path + '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/lib'+xcode_project_target_name+'.a'
         target_lib = $targetdir + '/lib'+ext_lib_name+'.a'
 
         FileUtils.rm_rf 'build'
