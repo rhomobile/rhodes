@@ -27,6 +27,8 @@
 package com.rhomobile.rhodes.socket;
 
 import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,6 +58,9 @@ public class RhoSocketImpl extends SocketImpl {
 	private native void closeImpl(int sock);
 	private native Object getOptionImpl(int sock, int option);
 	private native void setOptionImpl(int sock, int option, Object value);
+
+	private FileInputStream is;
+	private FileOutputStream os;
 	
 	public RhoSocketImpl(int s, RhoSockAddr rem) {
 		Logger.D(TAG, "New socket wrapper. fd: " + s + ", host: " + rem.host + ", port: " + rem.port);
@@ -68,6 +73,9 @@ public class RhoSocketImpl extends SocketImpl {
 		sockfd = s;
 		remote = rem;
 		initImpl(sockfd);
+
+		is = new FileInputStream( this.fd );
+		os = new FileOutputStream( this.fd );
 	}
 	
 	@Override
@@ -124,14 +132,14 @@ public class RhoSocketImpl extends SocketImpl {
 	protected InputStream getInputStream() throws IOException {
 		Logger.T(TAG, "getInputStream");
 		// Ignore
-		return null;
+		return is;
 	}
 	
 	@Override
 	protected OutputStream getOutputStream() throws IOException {
 		Logger.T(TAG, "getOutputStream");
 		// Ignore
-		return null;
+		return os;
 	}
 	
 	@Override

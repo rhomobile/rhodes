@@ -644,7 +644,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
 #endif
     void *pc = dlopen(libc, RTLD_LAZY);
     if(!pc) {
-        RHO_LOG("dlopen return: %s", dlerror());
+        const char* e = dlerror();
+        RHO_ERROR_LOG("dlopen return: %s", e);
         assert(false);
     }
     assert(pc != nullptr);
