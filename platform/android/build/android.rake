@@ -317,15 +317,34 @@ namespace 'project' do
       project_app_path = File.join $app_path,'project','android_studio', 'app'
 
       cmake_template_path = File.join( project_template_path, 'app', 'CMakeLists.txt.erb' )
+
       cmake_template_ruby = File.join( $shareddir, 'ruby', 'CMakeLists.txt.erb')
+      source_template_ruby = File.join('platform', 'android', 'build', 'libruby_build.files')
+
       cmake_template_curl = File.join( $shareddir, 'curl', 'CMakeLists.txt.erb')
+      source_template_curl = File.join('platform', 'android', 'build', 'libcurl_build.files')
+
       cmake_template_db = File.join( $shareddir, 'db', 'CMakeLists.txt.erb')
+      source_template_db = File.join('platform', 'android', 'build', 'librhodb_build.files')
+
       cmake_template_common = File.join( $shareddir, 'common', 'CMakeLists.txt.erb')
+      source_template_common = File.join('platform', 'android', 'build', 'librhocommon_build.files')
+      source_template_rhomain = File.join('platform', 'android', 'build', 'librhomain_build.files')
+
       cmake_template_logging = File.join( $shareddir, 'logging', 'CMakeLists.txt.erb')
+      source_template_logging = File.join('platform', 'android', 'build', 'librholog_build.files')
+
       cmake_template_sync = File.join( $shareddir, 'sync', 'CMakeLists.txt.erb')
+      source_template_sync = File.join('platform', 'android', 'build', 'librhosync_build.files')
+
       cmake_template_json = File.join( $shareddir, 'json.new', 'CMakeLists.txt.erb')
+      source_template_json = File.join('platform', 'android', 'build', 'libjson_build.files')
+
       cmake_template_sqlite = File.join( $shareddir, 'sqlite', 'CMakeLists.txt.erb')
+      source_template_sqlite = File.join('platform', 'android', 'build', 'libsqlite_build.files')
+
       cmake_template_rhodes = File.join('platform', 'android', 'build', 'CMakeLists.txt.erb')
+      source_template_rhodes = File.join('platform', 'android', 'build', 'librhodes_build.files')
 
       $abis = $app_config['android']['abis'] if $app_config["android"]
       $abis = ['arm'] unless $abis
@@ -400,15 +419,15 @@ namespace 'project' do
 
       File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
       File.open( cmake_path_main, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_path ) }
-      File.open( cmake_path_ruby, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_ruby ) }
-      File.open( cmake_path_curl, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_curl ) }
-      File.open( cmake_path_rhodb, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_db ) }
-      File.open( cmake_path_rhocommon, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_common ) }
-      File.open( cmake_path_rhosync, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_sync ) }
-      File.open( cmake_path_sqlite, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_sqlite ) }
-      File.open( cmake_path_json, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_json ) }
-      File.open( cmake_path_rholog, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_logging ) }
-      File.open( cmake_path_rhodes, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_rhodes ) }
+      File.open( cmake_path_ruby, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_ruby, source_template_ruby ) }
+      File.open( cmake_path_curl, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_curl, source_template_curl ) }
+      File.open( cmake_path_rhodb, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_db, source_template_db ) }
+      File.open( cmake_path_rhocommon, 'w' ) { |f| f.write generator.render_app_gradle_ex2( cmake_template_common, source_template_common, source_template_rhomain ) }
+      File.open( cmake_path_rhosync, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_sync, source_template_sync ) }
+      File.open( cmake_path_sqlite, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_sqlite, source_template_sqlite ) }
+      File.open( cmake_path_json, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_json, source_template_json ) }
+      File.open( cmake_path_rholog, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_logging, source_template_logging ) }
+      File.open( cmake_path_rhodes, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_rhodes,  source_template_rhodes) }
 
       cp main_gradle_script,  project_path
       cp gradle_properties,   project_path

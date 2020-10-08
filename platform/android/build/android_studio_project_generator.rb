@@ -14,10 +14,39 @@ class AndroidStudioProjectGenerator
   attr_accessor :targetSdkVersion
   attr_accessor :versionCode
   attr_accessor :versionName
+  attr_accessor :sourceList
 
   def render_app_gradle(erbPath)
     @versionCode = @versionName.to_i
     #@compileSdkVersion = @targetSdkVersion
+
+    tpl = File.read erbPath
+    erb = ERB.new tpl
+    erb.result binding
+  end
+
+  def get_source_string_from_file(source_path)
+    f = File.open(source_path, "r")  
+    text = ''    
+    f.each_line do |line|
+      text = text + File.join(@rhoRoot, line)
+    end
+    f.close
+    return text
+  end
+
+  def render_app_gradle_ex(erbPath, source_path)
+    @versionCode = @versionName.to_i
+    @sourceList = get_source_string_from_file(source_path)
+
+    tpl = File.read erbPath
+    erb = ERB.new tpl
+    erb.result binding
+  end
+
+  def render_app_gradle_ex2(erbPath, source_path, source_path2)
+    @versionCode = @versionName.to_i
+    @sourceList = get_source_string_from_file(source_path) + "\n" + get_source_string_from_file(source_path2)
 
     tpl = File.read erbPath
     erb = ERB.new tpl
