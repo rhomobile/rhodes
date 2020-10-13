@@ -2,10 +2,12 @@ require 'erb'
 
 class AndroidStudioProjectGenerator
   attr_accessor :rhoRoot
+  attr_accessor :extdir
   attr_accessor :appincdir
   attr_accessor :buildMode
   attr_accessor :extLibs
   attr_accessor :externalDeps
+  attr_accessor :extensionsDeps
   attr_accessor :targetArch
   attr_accessor :compileSdkVersion
   attr_accessor :buildToolsVersion
@@ -15,6 +17,7 @@ class AndroidStudioProjectGenerator
   attr_accessor :versionCode
   attr_accessor :versionName
   attr_accessor :sourceList
+  attr_accessor :extName
 
   def render_app_gradle(erbPath)
     @versionCode = @versionName.to_i
@@ -25,11 +28,11 @@ class AndroidStudioProjectGenerator
     erb.result binding
   end
 
-  def get_source_string_from_file(source_path)
+  def get_source_string_from_file(source_path, root)
     f = File.open(source_path, "r")  
     text = ''    
     f.each_line do |line|
-      text = text + File.join(@rhoRoot, line)
+      text = text + File.join(root, line)
     end
     f.close
     return text
@@ -37,7 +40,16 @@ class AndroidStudioProjectGenerator
 
   def render_app_gradle_ex(erbPath, source_path)
     @versionCode = @versionName.to_i
-    @sourceList = get_source_string_from_file(source_path)
+    @sourceList = get_source_string_from_file(source_path, @rhoRoot)
+
+    tpl = File.read erbPath
+    erb = ERB.new tpl
+    erb.result binding
+  end
+
+  def render_cmake_extension(erbPath, source_path)
+    @versionCode = @versionName.to_i
+    @sourceList = get_source_string_from_file(source_path, @extdir)
 
     tpl = File.read erbPath
     erb = ERB.new tpl
@@ -46,7 +58,7 @@ class AndroidStudioProjectGenerator
 
   def render_app_gradle_ex2(erbPath, source_path, source_path2)
     @versionCode = @versionName.to_i
-    @sourceList = get_source_string_from_file(source_path) + "\n" + get_source_string_from_file(source_path2)
+    @sourceList = get_source_string_from_file(source_path, @rhoRoot) + "\n" + get_source_string_from_file(source_path2, @rhoRoot)
 
     tpl = File.read erbPath
     erb = ERB.new tpl

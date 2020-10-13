@@ -364,8 +364,12 @@ namespace 'project' do
       extlibs.each do |lib|
 
         extname = File.basename(lib).gsub('lib', '').gsub('.a', '')
-        external_string += ("add_library(#{extname} STATIC IMPORTED GLOBAL)\n" +
-            "set_property(TARGET #{extname} PROPERTY IMPORTED_LOCATION #{lib})\n")
+
+        if extname == "openssl.so"
+           external_string += ("add_library(#{extname} STATIC IMPORTED GLOBAL)\n" +
+              "set_property(TARGET #{extname} PROPERTY IMPORTED_LOCATION #{lib})\n")
+        end
+
         if extname == "coreapi"
           next
         end
@@ -373,7 +377,16 @@ namespace 'project' do
       end
       ext_libs += 'coreapi'
 
-
+      extensions_deps = ''
+      $ext_android_build_scripts.each do |ext, builddata|
+        ext_native_files = File.join(builddata[2], 'ext', 'platform', 'android', 'ext_native.files')
+        ext_native_files2 = File.join(builddata[0], 'ext_native.files')
+        ext_native_final = (File.exists? ext_native_files) ? ext_native_files : ext_native_files2
+        if(File.exists? ext_native_final)
+          mkdir_p File.join(project_app_path, ext)        
+          extensions_deps += "add_subdirectory(./#{ext})\n"
+        end
+      end
 
       cpp_stub_path = File.join( project_template_path, 'app', 'stub.cpp' )
 
@@ -390,6 +403,7 @@ namespace 'project' do
       generator.externalDeps = external_string
       generator.extLibs = ext_libs
       generator.targetArch = studio_realabi
+      generator.extensionsDeps = extensions_deps
 
       generator.compileSdkVersion = $found_api_level
       generator.versionName = $app_config["version"]
@@ -428,6 +442,20 @@ namespace 'project' do
       File.open( cmake_path_json, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_json, source_template_json ) }
       File.open( cmake_path_rholog, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_logging, source_template_logging ) }
       File.open( cmake_path_rhodes, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_rhodes,  source_template_rhodes) }
+
+      cmake_template_extension = File.join('platform', 'android', 'build', 'CMakeListsExts.txt.erb')
+      $ext_android_build_scripts.each do |ext, builddata|
+        ext_native_files = File.join(builddata[2], 'ext', 'platform', 'android', 'ext_native.files')
+        ext_native_files2 = File.join(builddata[0], 'ext_native.files')
+        ext_native_final = (File.exists? ext_native_files) ? ext_native_files : ext_native_files2
+        if(File.exists? ext_native_final)
+          cmake_path_ext = File.join( project_path, 'app', ext, 'CMakeLists.txt')
+          generator.extdir = builddata[2]
+          generator.extName = ext
+          File.open( cmake_path_ext, 'w' ) { |f| f.write generator.render_cmake_extension( cmake_template_extension, ext_native_final ) }
+        end
+      end
+
 
       cp main_gradle_script,  project_path
       cp gradle_properties,   project_path
@@ -1170,7 +1198,7 @@ namespace "config" do
           else
             rakepath = extpath
           end
-          $ext_android_build_scripts[ext] = [rakepath, 'rake']
+          $ext_android_build_scripts[ext] = [rakepath, 'rake', extpath]
 
           if prebuild_rake_task
             args = [ prebuild_rake_task ]
