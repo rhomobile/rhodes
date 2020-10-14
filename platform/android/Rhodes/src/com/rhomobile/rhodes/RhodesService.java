@@ -514,7 +514,7 @@ public class RhodesService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Logger.D(TAG, "onStartCommand");
 		// use new mechanism for foregorund service only for 9.0 and later
-		if (Build.VERSION.SDK_INT >= 28) {
+		if (Build.VERSION.SDK_INT >= 28 && intent.getStringArrayListExtra("BEACONS") == null){
 			innerStartForeground();
 		}
 		try {
