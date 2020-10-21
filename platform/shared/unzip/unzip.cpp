@@ -14,13 +14,6 @@
 #endif
 
 #include "../ruby/posixnames.h"
-#if defined(POSIXNAME)
-#define fpfileno _fileno
-#define fpmkdir _mkdir
-#else
-#define fpfileno fileno
-#define fpmkdir mkdir
-#endif
 
 #ifdef ZIP_STD
 #include <stdio.h>
@@ -34,10 +27,10 @@
 #endif
 #if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__MINGW32__)
 #include <direct.h>
-#define lumkdir(t) (fpmkdir(t))
+#define lumkdir(t) (mkdir(t))
 #else
 #include <unistd.h>
-#define lumkdir(t) (fpmkdir(t,0755))
+#define lumkdir(t) (mkdir(t,0755))
 #endif
 #include <sys/types.h>
 /* RHO BEGIN */
@@ -212,7 +205,7 @@ typedef struct tm_unz_s
 // some windows<->linux portability things
 #ifdef ZIP_STD
 DWORD GetFilePosU(HANDLE hfout)
-{ struct stat st; fstat(fpfileno(hfout),&st);
+{ struct stat st; fstat(fileno(hfout),&st);
   if ((st.st_mode&S_IFREG)==0) return 0xFFFFFFFF;
   return ftell(hfout);
 }

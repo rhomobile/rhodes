@@ -1009,7 +1009,7 @@ proc_options(long argc, char **argv, struct cmdline_options *opt, int envopt)
 	    if (envopt) goto noenvopt;
 	    opt->xflag = TRUE;
 	    s++;
-	    if (*s && fpchdir(s) < 0) {
+	    if (*s && chdir(s) < 0) {
 		rb_fatal("Can't chdir to %s", s);
 	    }
 	    break;
@@ -1020,7 +1020,7 @@ proc_options(long argc, char **argv, struct cmdline_options *opt, int envopt)
 	    if (!*++s && (!--argc || !(s = *++argv) || !*s)) {
 		rb_fatal("Can't chdir");
 	    }
-	    if (fpchdir(s) < 0) {
+	    if (chdir(s) < 0) {
 		rb_fatal("Can't chdir to %s", s);
 	    }
 	    break;
@@ -1901,7 +1901,7 @@ open_load_file(VALUE fname_v, int *xflag)
 #endif
 	if (!ruby_is_fd_loadable(fd)) {
 	    e = errno;
-	    (void)fpclose(fd);
+	    (void)close(fd);
 	    rb_load_fail(fname_v, strerror(e));
 	}
 
@@ -2184,22 +2184,22 @@ fill_standard_fds(void)
     f2 = fstat(2, &buf) == -1 && errno == EBADF;
     if (f0) {
         if (pipe(fds) == 0) {
-            fpclose(fds[1]);
+            close(fds[1]);
             if (fds[0] != 0) {
-                fpdup2(fds[0], 0);
-                fpclose(fds[0]);
+                dup2(fds[0], 0);
+                close(fds[0]);
             }
         }
     }
     if (f1 || f2) {
         if (pipe(fds) == 0) {
-            fpclose(fds[0]);
+            close(fds[0]);
             if (f1 && fds[1] != 1)
-                fpdup2(fds[1], 1);
+                dup2(fds[1], 1);
             if (f2 && fds[1] != 2)
-                fpdup2(fds[1], 2);
+                dup2(fds[1], 2);
             if (fds[1] != 1 && fds[1] != 2)
-                fpclose(fds[1]);
+                close(fds[1]);
         }
     }
 }

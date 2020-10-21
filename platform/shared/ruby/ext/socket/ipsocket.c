@@ -34,7 +34,7 @@ inetsock_cleanup(struct inetsock_arg *arg)
 	arg->local.res = 0;
     }
     if (arg->fd >= 0) {
-	fpclose(arg->fd);
+	close(arg->fd);
     }
     return Qnil;
 }
@@ -114,7 +114,7 @@ init_inetsock_internal(struct inetsock_arg *arg)
 
 	if (status < 0) {
 	    error = errno;
-	    fpclose(fd);
+	    close(fd);
 	    arg->fd = fd = -1;
 	    continue;
 	} else
@@ -140,7 +140,7 @@ init_inetsock_internal(struct inetsock_arg *arg)
 	status = listen(fd, SOMAXCONN);
 	if (status < 0) {
 	    error = errno;
-	    fpclose(fd);
+	    close(fd);
 	    rb_syserr_fail(error, "listen(2)");
 	}
     }

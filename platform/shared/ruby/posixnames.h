@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 #if defined(POSIXNAME)
 #define fpmkdir _mkdir
 #define fpstrnicmp _strnicmp
@@ -7,10 +7,8 @@
 #define fpchdir _chdir
 #define fpumask _umask
 #define fpstrdup _strdup
-#define fpfileno _fileno
 #define fpdup _dup
 #define fpsetmode _setmode
-#define fpstrdup _strdup
 #define fpclose _close
 #define fptzet _tzet
 #define fpdup2 _dup2
@@ -20,7 +18,6 @@
 #define fpexecve _execve
 #define fpwrite _write
 #define fpfptzset _fptzset
-#define fpwcsdup _wcsdup
 #define fpexecv _execv
 #define fpchmod _chmod
 #define fpfdopen _fdopen
@@ -35,10 +32,8 @@
 #define fpchdir chdir
 #define fpumask umask
 #define fpstrdup strdup
-#define fpfileno fileno
 #define fpdup dup
 #define fpsetmode setmode
-#define fpstrdup strdup
 #define fpclose close
 #define fptzet tzet
 #define fpdup2 dup2
@@ -48,11 +43,10 @@
 #define fpexecve execve
 #define fpwrite write
 #define fpfptzset fptzset
-#define fpwcsdup wcsdup
 #define fpexecv execv
 #define fpchmod chmod
 #define fpfdopen fdopen
 #define fpeof eof
 #define fpopen open
 #define fpread read
-#endif
+#endif*/
