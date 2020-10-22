@@ -27,13 +27,6 @@
 # define strncasecmp _strnicmp
 #endif
 
-#ifdef POSIXNAME
-#define fpstrdup _strdup
-#else
-#define fpstrdup strdup
-#endif // POSIXNAME
-
-
 #ifdef _MSC_VER
 // warning C4018: '<' : signed/unsigned mismatch
 #pragma warning ( disable : 4018 )

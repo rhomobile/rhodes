@@ -2962,11 +2962,11 @@ rb_file_s_umask(int argc, VALUE *argv)
     int omask = 0;
 
     if (argc == 0) {
-	omask = fpumask(0);
-	fpumask(omask);
+	omask = umask(0);
+	umask(omask);
     }
     else if (argc == 1) {
-	omask = fpumask(NUM2INT(argv[0]));
+	omask = umask(NUM2INT(argv[0]));
     }
     else {
 	rb_check_arity(argc, 0, 1);

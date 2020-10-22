@@ -83,7 +83,7 @@ dln_find_exe_r(const char *fname, const char *path, char *buf, size_t size
 
     if (!path) {
 	path = getenv(PATH_ENV);
-	if (path) path = envpath = fpstrdup(path);
+	if (path) path = envpath = strdup(path);
     }
 
     if (!path) {
