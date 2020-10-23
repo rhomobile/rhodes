@@ -24,6 +24,7 @@
 
   <supports-screens android:smallScreens='true' android:normalScreens='true' android:largeScreens='true' android:xlargeScreens='true'/>
   <application android:name='com.rhomobile.rhodes.RhodesApplication'
+                android:requestLegacyExternalStorage="true"
   <% if canRenderNetworkSecurityConfig %>
                android:networkSecurityConfig="@xml/network_security_config"
   <% end %>
