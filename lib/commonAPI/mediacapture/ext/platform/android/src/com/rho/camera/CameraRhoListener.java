@@ -37,6 +37,9 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore.Images.Thumbnails;
 import android.content.ContentResolver;
 import android.os.Handler;
+import android.content.pm.PackageManager;
+import android.Manifest;
+import android.support.v4.app.ActivityCompat;
 
 import com.rhomobile.rhodes.Base64;
 import com.rhomobile.rhodes.Logger;
@@ -837,6 +840,7 @@ IRhoListener {
 	*
 	*/
 	private String getFilePath(Uri uri){
+		verifyStoragePermissions();
 		String resultPath = null;
 		try {
 			String mImgPath = null;
@@ -892,6 +896,24 @@ private static void makeDirsForFile(String filepath) {
 }
 
 
+
+
+
+public static void verifyStoragePermissions() {
+    int permission = ActivityCompat.checkSelfPermission(RhodesActivity.safeGetInstance(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    final int REQUEST_EXTERNAL_STORAGE = 1;
+	final String[] PERMISSIONS_STORAGE = {
+	        Manifest.permission.READ_EXTERNAL_STORAGE,
+	        Manifest.permission.WRITE_EXTERNAL_STORAGE
+	};
+
+    if (permission != PackageManager.PERMISSION_GRANTED) {
+        ActivityCompat.requestPermissions(RhodesActivity.safeGetInstance(), PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+    }
+}
+
+
+
 /**
 * Copy image.
 * Function to copy image from sd card to application root path
@@ -913,6 +935,7 @@ public String copyImg(String imgPath){
 	makeDirsForFile(mediafile.getAbsolutePath());
 
 	//File mediafile  =  new File(RhoFileApi.getDbFilesPath(), rename);
+	verifyStoragePermissions();
 	FileInputStream finput= null;
 	FileOutputStream fout = null;
 	try {
@@ -959,6 +982,7 @@ public String copyImgToTarget(String srcPath, String dstPath) {
 	//File mediafile  =  new File(RhoFileApi.getDbFilesPath(), rename);
 	FileInputStream finput= null;
 	FileOutputStream fout = null;
+	verifyStoragePermissions();
 	try {
 		finput = new FileInputStream(oldFile);
 		fout = new FileOutputStream(mediafile);
@@ -1026,6 +1050,7 @@ public void copyImgAsUserChoice(String imgPath){
 
 			FileInputStream finput= null;
 			FileOutputStream fout = null;
+			verifyStoragePermissions();
 			try {
 				finput = new FileInputStream(oldFile);
 				fout = new FileOutputStream(mediafile);
@@ -1071,6 +1096,7 @@ public void copyImgAsUserChoice(String imgPath){
 *
 */
 public void deleteImage(){
+	verifyStoragePermissions();
 	String storageLocation = null;
 	storageLocation = Environment.getExternalStorageDirectory().toString();
 
@@ -1084,6 +1110,7 @@ public void deleteImage(){
 }
 
 private static void removeThumbnails(ContentResolver contentResolver, String photoId) {
+	verifyStoragePermissions();
 	Cursor thumbnails = contentResolver.query(Thumbnails.EXTERNAL_CONTENT_URI, null, Thumbnails.IMAGE_ID + "=?", null, null);
 	for (thumbnails.moveToFirst(); !thumbnails.isAfterLast(); thumbnails.moveToNext()) {
 	    long thumbnailId = thumbnails.getLong(thumbnails.getColumnIndex(Thumbnails._ID));
@@ -1097,6 +1124,7 @@ private static void removeThumbnails(ContentResolver contentResolver, String pho
 }
 
 private void deleteRecursive(File fileOrDirectory) {
+	verifyStoragePermissions();
     if (fileOrDirectory.isDirectory())
         for (File child : fileOrDirectory.listFiles())
             deleteRecursive(child);
@@ -1104,6 +1132,7 @@ private void deleteRecursive(File fileOrDirectory) {
 }
 
 private void deleteFile(File fileToDelete){
+	verifyStoragePermissions();
 	//removeThumbnails(RhodesActivity.getContext().getContentResolver(), null);
 
 	final String strFileToDelete = fileToDelete.toString();
