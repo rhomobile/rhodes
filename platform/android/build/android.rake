@@ -364,7 +364,7 @@ namespace 'project' do
       extlibs.each do |lib|
 
         extname = File.basename(lib).gsub('lib', '').gsub('.a', '')
-
+        #TODO support ${ANDROID_ABI} in cmake template
         if extname == "openssl.so"
            external_string += ("add_library(#{extname} STATIC IMPORTED GLOBAL)\n" +
               "set_property(TARGET #{extname} PROPERTY IMPORTED_LOCATION #{lib})\n")
@@ -387,8 +387,6 @@ namespace 'project' do
           extensions_deps += "add_subdirectory(./#{ext})\n"
         end
       end
-
-      cpp_stub_path = File.join( project_template_path, 'app', 'stub.cpp' )
 
       rhodes_path = File.absolute_path '.'
 
@@ -431,7 +429,6 @@ namespace 'project' do
       cmake_path_rholog = File.join( project_path, 'app', 'rholog', 'CMakeLists.txt')
       cmake_path_rhodes = File.join( project_path, 'app', 'rhodes', 'CMakeLists.txt')
 
-      File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
       File.open( cmake_path_main, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_path ) }
       File.open( cmake_path_ruby, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_ruby, source_template_ruby ) }
       File.open( cmake_path_curl, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_curl, source_template_curl ) }
@@ -455,6 +452,11 @@ namespace 'project' do
           File.open( cmake_path_ext, 'w' ) { |f| f.write generator.render_cmake_extension( cmake_template_extension, ext_native_final ) }
         end
       end
+
+      $ext_android_additional_sources.each do |extpath, list|
+        
+      end
+      File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
 
 
       cp main_gradle_script,  project_path

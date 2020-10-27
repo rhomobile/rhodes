@@ -28,6 +28,10 @@ class AndroidStudioProjectGenerator
     erb.result binding
   end
 
+  def get_source_dir_for_java(source_path, root)
+    
+  end
+
   def get_source_string_from_file(source_path, root)
     f = File.open(source_path, "r")  
     text = ''    
