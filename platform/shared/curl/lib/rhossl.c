@@ -66,6 +66,10 @@ extern ssize_t rho_ssl_send(const void *mem, size_t len, void *storage);
 extern ssize_t rho_ssl_recv(char *buf, size_t size, int *wouldblock, void *storage);
 extern bool rho_ssl_rand(unsigned char *entropy, size_t length);
 
+struct ssl_backend_data {
+    void* storage;
+};
+
 /**
  * Global SSL init
  *
@@ -94,12 +98,13 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
 
     if (connssl->state == ssl_connection_complete)
         return CURLE_OK;
-    
-    connssl->storage = rho_ssl_create_storage();
+
+    struct ssl_backend_data *backend = connssl->backend;
+    backend->storage = rho_ssl_create_storage();
 
 	sprintf(host,"%s:%d\0", conn->host.name, conn->port); 
 
-	retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->primary.verifypeer, connssl->storage, host);
+	retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->primary.verifypeer, backend->storage, host);
     if (retcode)
         return retcode;
     
@@ -150,10 +155,12 @@ void Curl_rhossl_close(struct connectdata *conn, int sockindex)
 int Curl_rhossl_shutdown(struct connectdata *conn, int sockindex)
 {
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];
-    if(connssl->storage != 0) {
-        rho_ssl_shutdown(connssl->storage);
-        rho_ssl_free_storage(connssl->storage);
-        connssl->storage = NULL;
+    struct ssl_backend_data *backend = connssl->backend;
+    if(backend->storage != 0) {
+
+        rho_ssl_shutdown(backend->storage);
+        rho_ssl_free_storage(backend->storage);
+        backend->storage = NULL;
     }
     return 0;
 }
@@ -161,21 +168,23 @@ int Curl_rhossl_shutdown(struct connectdata *conn, int sockindex)
 ssize_t Curl_rhossl_send(struct connectdata *conn, int sockindex, const void *mem, size_t len)
 {
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];
-    return rho_ssl_send(mem, len, connssl->storage);
+    struct ssl_backend_data *backend = connssl->backend;
+    return rho_ssl_send(mem, len, backend->storage);
 }
 
 ssize_t Curl_rhossl_recv(struct connectdata *conn, int sockindex, char *buf, size_t size, bool *wouldblock)
 {
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];
+    struct ssl_backend_data *backend = connssl->backend;
     int iw = *wouldblock;
-    ssize_t ret = rho_ssl_recv(buf, size, &iw, connssl->storage);
+    ssize_t ret = rho_ssl_recv(buf, size, &iw, backend->storage);
     *wouldblock = (bool)iw;
     return ret;
 }
 
 size_t Curl_rhossl_version(char *buffer, size_t size)
 {
-    return snprintf(buffer, size, "RhoSSL/1.0");
+    return snprintf(buffer, size, "RhoSSL/1.1");
 }
 
 CURLcode Curl_rhossl_random(struct Curl_easy *data, unsigned char *entropy,
@@ -185,5 +194,39 @@ CURLcode Curl_rhossl_random(struct Curl_easy *data, unsigned char *entropy,
     bool result = rho_ssl_rand(entropy, length);
 	return result ? CURLE_OK : CURLE_FAILED_INIT;
 }
+
+static void *Curl_rhossl_get_internals(struct ssl_connect_data *connssl,
+                                     CURLINFO info)
+{
+    return NULL;
+}
+
+const struct Curl_ssl Curl_ssl_rhossl = {
+  { CURLSSLBACKEND_RHOSSL, "rhossl" }, /* info */
+
+  0,
+
+  sizeof(struct ssl_backend_data),
+
+  Curl_rhossl_init,                /* init */
+  Curl_rhossl_cleanup,             /* cleanup */
+  Curl_rhossl_version,             /* version */
+  Curl_none_check_cxn,           /* check_cxn */
+  Curl_rhossl_shutdown,            /* shutdown */
+  Curl_none_data_pending,        /* data_pending */
+  Curl_rhossl_random,              /* random */
+  Curl_none_cert_status_request, /* cert_status_request */
+  Curl_rhossl_connect,             /* connect */
+  Curl_rhossl_connect_nonblocking, /* connect_nonblocking */
+  Curl_rhossl_get_internals,       /* get_internals */
+  Curl_rhossl_close,               /* close_one */
+  Curl_rhossl_close_all,           /* close_all */
+  Curl_rhossl_session_free,        /* session_free */
+  Curl_none_set_engine,          /* set_engine */
+  Curl_none_set_engine_default,  /* set_engine_default */
+  Curl_none_engines_list,        /* engines_list */
+  Curl_none_false_start,         /* false_start */
+  Curl_none_md5sum,              /* md5sum */
+};
 
 #endif /* USE_RHOSSL */

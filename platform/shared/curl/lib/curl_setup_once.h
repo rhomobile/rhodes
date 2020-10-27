@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2013, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2020, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -104,7 +104,6 @@
 #    endif
 #  endif
 #endif
-
 
 /*
  * Definition of timeval struct for platforms that don't have it.
@@ -278,25 +277,6 @@ struct timeval {
 #  define sfcntl  fcntl
 #endif
 
-/*
- * Uppercase macro versions of ANSI/ISO is*() functions/macros which
- * avoid negative number inputs with argument byte codes > 127.
- */
-
-#define ISSPACE(x)  (isspace((int)  ((unsigned char)x)))
-#define ISDIGIT(x)  (isdigit((int)  ((unsigned char)x)))
-#define ISALNUM(x)  (isalnum((int)  ((unsigned char)x)))
-#define ISXDIGIT(x) (isxdigit((int) ((unsigned char)x)))
-#define ISGRAPH(x)  (isgraph((int)  ((unsigned char)x)))
-#define ISALPHA(x)  (isalpha((int)  ((unsigned char)x)))
-#define ISPRINT(x)  (isprint((int)  ((unsigned char)x)))
-#define ISUPPER(x)  (isupper((int)  ((unsigned char)x)))
-#define ISLOWER(x)  (islower((int)  ((unsigned char)x)))
-#define ISASCII(x)  (isascii((int)  ((unsigned char)x)))
-
-#define ISBLANK(x)  (int)((((unsigned char)x) == ' ') || \
-                          (((unsigned char)x) == '\t'))
-
 #define TOLOWER(x)  (tolower((int)  ((unsigned char)x)))
 
 
@@ -351,27 +331,7 @@ struct timeval {
 #define FALSE false
 #endif
 
-
-/*
- * Macro WHILE_FALSE may be used to build single-iteration do-while loops,
- * avoiding compiler warnings. Mostly intended for other macro definitions.
- */
-
-#define WHILE_FALSE  while(0)
-
-#if defined(_MSC_VER) && !defined(__POCC__)
-#  undef WHILE_FALSE
-#  if (_MSC_VER < 1500)
-#    define WHILE_FALSE  while(1, 0)
-#  else
-#    define WHILE_FALSE \
-__pragma(warning(push)) \
-__pragma(warning(disable:4127)) \
-while(0) \
-__pragma(warning(pop))
-#  endif
-#endif
-
+#include "curl_ctype.h"
 
 /*
  * Typedef to 'int' if sig_atomic_t is not an available 'typedefed' type.
@@ -410,7 +370,7 @@ typedef int sig_atomic_t;
 #ifdef DEBUGBUILD
 #define DEBUGF(x) x
 #else
-#define DEBUGF(x) do { } WHILE_FALSE
+#define DEBUGF(x) do { } while(0)
 #endif
 
 
@@ -418,10 +378,11 @@ typedef int sig_atomic_t;
  * Macro used to include assertion code only in debug builds.
  */
 
+#undef DEBUGASSERT
 #if defined(DEBUGBUILD) && defined(HAVE_ASSERT_H)
 #define DEBUGASSERT(x) assert(x)
 #else
-#define DEBUGASSERT(x) do { } WHILE_FALSE
+#define DEBUGASSERT(x) do { } while(0)
 #endif
 
 
@@ -524,6 +485,8 @@ typedef int sig_atomic_t;
 
 #ifdef __VMS
 #define argv_item_t  __char_ptr32
+#elif defined(_UNICODE)
+#define argv_item_t wchar_t *
 #else
 #define argv_item_t  char *
 #endif
@@ -538,4 +501,3 @@ typedef int sig_atomic_t;
 
 
 #endif /* HEADER_CURL_SETUP_ONCE_H */
-

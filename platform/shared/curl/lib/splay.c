@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1997 - 2017, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1997 - 2019, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -41,7 +41,6 @@ struct Curl_tree *Curl_splay(struct curltime i,
                              struct Curl_tree *t)
 {
   struct Curl_tree N, *l, *r, *y;
-  long comp;
 
   if(t == NULL)
     return t;
@@ -49,7 +48,7 @@ struct Curl_tree *Curl_splay(struct curltime i,
   l = r = &N;
 
   for(;;) {
-    comp = compare(i, t->key);
+    long comp = compare(i, t->key);
     if(comp < 0) {
       if(t->smaller == NULL)
         break;
@@ -110,7 +109,7 @@ struct Curl_tree *Curl_splayinsert(struct curltime i,
 
   if(t != NULL) {
     t = Curl_splay(i, t);
-    if(compare(i, t->key)==0) {
+    if(compare(i, t->key) == 0) {
       /* There already exists a node in the tree with the very same key. Build
          a doubly-linked circular list of nodes. We add the new 'node' struct
          to the end of this list. */
@@ -199,7 +198,7 @@ struct Curl_tree *Curl_splaygetbest(struct curltime i,
 /* Deletes the very node we point out from the tree if it's there. Stores a
  * pointer to the new resulting tree in 'newroot'.
  *
- * Returns zero on success and non-zero on errors! TODO: document error codes.
+ * Returns zero on success and non-zero on errors!
  * When returning error, it does not touch the 'newroot' pointer.
  *
  * NOTE: when the last node of the tree is removed, there's no tree left so
@@ -275,4 +274,3 @@ int Curl_splayremovebyaddr(struct Curl_tree *t,
 
   return 0;
 }
-

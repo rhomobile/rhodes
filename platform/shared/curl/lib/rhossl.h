@@ -28,6 +28,8 @@
  * This header should only be needed to get included by sslgen.c and rhossl.c
  */
 
+extern const struct Curl_ssl Curl_ssl_rhossl;
+
 #include "urldata.h"
 CURLcode Curl_rhossl_connect(struct connectdata *conn, int sockindex);
 CURLcode Curl_rhossl_connect_nonblocking(struct connectdata *conn,

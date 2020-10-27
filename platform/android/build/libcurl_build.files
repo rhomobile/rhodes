@@ -5,6 +5,11 @@ platform/shared/curl/lib/content_encoding.c
 platform/shared/curl/lib/cookie.c
 platform/shared/curl/lib/curl_addrinfo.c
 platform/shared/curl/lib/curl_memrchr.c
+platform/shared/curl/lib/curl_ctype.c
+platform/shared/curl/lib/curl_range.c
+platform/shared/curl/lib/curl_get_line.c
+platform/shared/curl/lib/dynbuf.c
+platform/shared/curl/lib/doh.c
 platform/shared/curl/lib/rand.c
 platform/shared/curl/lib/curl_sspi.c
 platform/shared/curl/lib/dict.c
@@ -12,7 +17,6 @@ platform/shared/curl/lib/easy.c
 platform/shared/curl/lib/escape.c
 platform/shared/curl/lib/file.c
 platform/shared/curl/lib/formdata.c
-platform/shared/curl/lib/ftp.c
 platform/shared/curl/lib/getenv.c
 platform/shared/curl/lib/getinfo.c
 platform/shared/curl/lib/vtls/gtls.c
@@ -34,8 +38,10 @@ platform/shared/curl/lib/ldap.c
 platform/shared/curl/lib/llist.c
 platform/shared/curl/lib/md5.c
 platform/shared/curl/lib/memdebug.c
+platform/shared/curl/lib/mime.c
 platform/shared/curl/lib/mprintf.c
 platform/shared/curl/lib/multi.c
+platform/shared/curl/lib/mqtt.c
 platform/shared/curl/lib/netrc.c
 platform/shared/curl/lib/vtls/nss.c
 platform/shared/curl/lib/nonblock.c
@@ -54,6 +60,7 @@ platform/shared/curl/lib/socks_gssapi.c
 platform/shared/curl/lib/socks_sspi.c
 platform/shared/curl/lib/speedcheck.c
 platform/shared/curl/lib/splay.c
+platform/shared/curl/lib/sha256.c
 platform/shared/curl/lib/ssh.c
 platform/shared/curl/lib/strdup.c
 platform/shared/curl/lib/strerror.c
@@ -63,12 +70,13 @@ platform/shared/curl/lib/telnet.c
 platform/shared/curl/lib/tftp.c
 platform/shared/curl/lib/timeval.c
 platform/shared/curl/lib/transfer.c
+platform/shared/curl/lib/rename.c
 platform/shared/curl/lib/url.c
 platform/shared/curl/lib/version.c
 platform/shared/curl/lib/vtls/vtls.c
 platform/shared/curl/lib/asyn-thread.c
 platform/shared/curl/lib/strcase.c
-platform/shared/curl/lib/pipeline.c
+platform/shared/curl/lib/setopt.c
 platform/shared/curl/lib/conncache.c
 platform/shared/curl/lib/warnless.c
 platform/shared/curl/lib/wildcard.c
@@ -92,3 +100,4 @@ platform/shared/curl/lib/vauth/cram.c
 platform/shared/curl/lib/hmac.c
 platform/shared/curl/lib/curl_fnmatch.c
 platform/shared/curl/lib/curl_gethostname.c
+platform/shared/curl/lib/urlapi.c

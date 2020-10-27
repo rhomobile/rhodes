@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2015, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2019, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -77,10 +77,9 @@
 
 #define HAVE_RAND_STATUS        1
 //#define HAVE_RAND_EGD           1
+
 //#define HAVE_IOCTL              1
 //#define HAVE_IOCTL_FIONBIO      1
-#define HAVE_FCNTL_O_NONBLOCK 1
-
 #define HAVE_LONGLONG 1
 
 #define RETSIGTYPE void
@@ -117,11 +116,11 @@
 #define SEND_TYPE_ARG1 int
 #define SEND_QUAL_ARG2 const
 #define SEND_TYPE_ARG2 void *
-#define SEND_TYPE_ARG3 size_t
+#define SEND_TYPE_ARG3 size_T
 #define SEND_TYPE_ARG4 int
 #define SEND_TYPE_RETV ssize_t
 
-//#define HAVE_EXTRA_STRICMP_H 1
-//#define HAVE_EXTRA_STRDUP_H  1
+#define HAVE_EXTRA_STRICMP_H 1
+#define HAVE_EXTRA_STRDUP_H  1
 
 #endif /* HEADER_CURL_CONFIG_MAC_H */
