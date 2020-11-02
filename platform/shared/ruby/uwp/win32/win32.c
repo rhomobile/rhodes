@@ -854,7 +854,7 @@ rb_w32_sysinit(int *argc, char ***argv)
     // Now set up the correct time stuff
     //
 
-    fptzset();
+    tzset();
 //RHO
 //#if !defined(_LIB)
 #ifndef OS_UWP
@@ -1563,7 +1563,7 @@ insert(const char *path, VALUE vinfo, void *enc)
     if (!tmpcurr) return -1;
     MEMZERO(tmpcurr, NtCmdLineElement, 1);
     tmpcurr->len = strlen(path);
-    tmpcurr->str = fpstrdup(path);
+    tmpcurr->str = strdup(path);
     if (!tmpcurr->str) return -1;
     tmpcurr->flags |= NTMALLOC;
     **tail = tmpcurr;
@@ -1684,7 +1684,7 @@ w32_cmdvector(const WCHAR *cmd, char ***vec, UINT cp, rb_encoding *enc)
 	return 0;
     }
 
-    ptr = cmdline = fpwcsdup(cmd);
+    ptr = cmdline = wcsdup(cmd);
 
     //
     // Ok, parse the command line, building a list of CmdLineElements.
@@ -2638,22 +2638,22 @@ init_stdhandle(void)
 #define open_null(fd)						\
     (((nullfd < 0) ?						\
       (nullfd = open(NULL_FILE, O_RDWR)) : 0),		\
-     ((nullfd == (fd)) ? (keep = 1) : fpdup2(nullfd, fd)),	\
+     ((nullfd == (fd)) ? (keep = 1) : dup2(nullfd, fd)),	\
      (fd))
 
-    if (fpfileno(stdin) == -1) {
+    if (fileno(stdin) == -1) {
 	FILE_FILENO(stdin) = open_null(0);
     }
     else {
-	fpsetmode(fpfileno(stdin), O_BINARY);
+	setmode(fileno(stdin), O_BINARY);
     }
-    if (fpfileno(stdout) == -1) {
+    if (fileno(stdout) == -1) {
 	FILE_FILENO(stdout) = open_null(1);
     }
-    if (fpfileno(stderr) == -1) {
+    if (fileno(stderr) == -1) {
 	FILE_FILENO(stderr) = open_null(2);
     }
-    if (nullfd >= 0 && !keep) fpclose(nullfd);
+    if (nullfd >= 0 && !keep) close(nullfd);
     setvbuf(stderr, NULL, _IONBF, 0);
 }
 
@@ -6268,7 +6268,7 @@ rb_w32_dup2(int oldfd, int newfd)
     int ret;
 
     if (oldfd == newfd) return newfd;
-    ret = fpdup2(oldfd, newfd);
+    ret = dup2(oldfd, newfd);
     if (ret < 0) return ret;
     set_new_std_fd(newfd);
     return newfd;
@@ -6525,7 +6525,7 @@ w32_wopen(const WCHAR *file, int oflag, int pmode)
 int
 rb_w32_fclose(FILE *fp)
 {
-    int fd = fpfileno(fp);
+    int fd = fileno(fp);
     SOCKET sock = TO_SOCKET(fd);
     int save_errno = errno;
 
@@ -7257,7 +7257,7 @@ rb_w32_write(int fd, const void *buf, size_t size)
     }
 
     if ((_osfile(fd) & FTEXT) &&
-        (!(_osfile(fd) & FPIPE) || fd == fpfileno(stdout) || fd == fpfileno(stderr))) {
+        (!(_osfile(fd) & FPIPE) || fd == fileno(stdout) || fd == fileno(stderr))) {
 	return _write(fd, buf, size);
     }
 

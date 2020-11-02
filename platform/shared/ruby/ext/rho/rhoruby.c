@@ -971,7 +971,7 @@ rho_param *rho_param_fromvalue(VALUE v)
             for (i = 0; i < size; ++i) {
                 VALUE key = rb_ary_entry(keys, i);
                 VALUE value = rb_hash_aref(v, key);
-                p->v.hash->name[i] = fpstrdup(RSTRING_PTR(rb_String(key)));
+                p->v.hash->name[i] = strdup(RSTRING_PTR(rb_String(key)));
                 p->v.hash->value[i] = rho_param_fromvalue(value);
             }
             return p;

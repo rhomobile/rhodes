@@ -209,7 +209,7 @@ VALUE rho_cast_helper<VALUE, jobject>::getInteger(jobject jInteger)
 
 VALUE rho_cast_helper<VALUE, jobject>::getDouble(jobject jDouble)
 {
-    jboolean jRes = m_env->CallDoubleMethod(jDouble, midDoubleValue);
+    jdouble jRes = m_env->CallDoubleMethod(jDouble, midDoubleValue);
     return rho_ruby_create_double(jRes);
 }
 

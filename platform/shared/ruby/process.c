@@ -301,7 +301,7 @@ close_unless_reserved(int fd)
         rb_async_bug_errno("BUG timer thread still running", 0 /* EDOOFUS */);
         return 0;
     }
-    return fpclose(fd); /* async-signal-safe */
+    return close(fd); /* async-signal-safe */
 }
 
 /*#define DEBUG_REDIRECT*/
@@ -394,8 +394,8 @@ parent_redirect_close(int fd)
 }
 
 #else
-#define redirect_dup(oldfd) fpdup(oldfd)
-#define redirect_dup2(oldfd, newfd) fpdup2((oldfd), (newfd))
+#define redirect_dup(oldfd) dup(oldfd)
+#define redirect_dup2(oldfd, newfd) dup2((oldfd), (newfd))
 #define redirect_cloexec_dup(oldfd) rb_cloexec_dup(oldfd)
 #define redirect_cloexec_dup2(oldfd, newfd) rb_cloexec_dup2((oldfd), (newfd))
 #define redirect_close(fd) close_unless_reserved(fd)
@@ -416,7 +416,7 @@ parent_redirect_close(int fd)
 static VALUE
 get_pid(void)
 {
-    return PIDT2NUM(fpgetpid());
+    return PIDT2NUM(getpid());
 }
 
 
@@ -1259,9 +1259,9 @@ proc_exec_cmd(const char *prog, VALUE argv_str, VALUE envp_str)
 
     envp = envp_str ? (char **)RSTRING_PTR(envp_str) : NULL;
     if (envp_str)
-        fpexecve(prog, argv, envp); /* async-signal-safe */
+        execve(prog, argv, envp); /* async-signal-safe */
     else
-        fpexecv(prog, argv); /* async-signal-safe (since SUSv4) */
+        execv(prog, argv); /* async-signal-safe (since SUSv4) */
     preserving_errno(try_with_sh(prog, argv, envp)); /* try_with_sh() is async-signal-safe. */
     return -1;
 #endif
@@ -3045,7 +3045,7 @@ rb_execarg_run_options(const struct rb_execarg *eargp, struct rb_execarg *sargp,
 
     if (eargp->umask_given) {
         mode_t mask = eargp->umask_mask;
-        mode_t oldmask = fpumask(mask); /* never fail */ /* async-signal-safe */
+        mode_t oldmask = umask(mask); /* never fail */ /* async-signal-safe */
         if (sargp) {
             sargp->umask_given = 1;
             sargp->umask_mask = oldmask;

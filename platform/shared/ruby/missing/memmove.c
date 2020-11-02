@@ -3,6 +3,8 @@
 #include "ruby/missing.h"
 #include <stddef.h>
 
+#if _MSC_VER < 1910
+
 void *
 memmove(void *d, const void *s, size_t n)
 {
@@ -20,3 +22,5 @@ memmove(void *d, const void *s, size_t n)
 	    *dst++ = *src++;
     return d;
 }
+
+#endif

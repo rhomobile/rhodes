@@ -156,6 +156,7 @@ load File.join(pwd, 'lib/commonAPI/printing_zebra/ext/platform/wm/PrintingServic
 load File.join(pwd, 'platform/android/build/android.rake')
 load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
+load File.join(pwd, 'platform/win32/build/win32.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp8/build/wp.rake')
 load File.join(pwd, 'platform/uwp/build/uwp.rake')
@@ -2057,9 +2058,17 @@ namespace "config" do
     else
         puts "do not checking for encrypt/decrypt because not iOS/Android 1"
     end
-    extensions << "zlib" if $current_platform == "win32" # required by coreapi on win32 for gzip support in Network
+    if $current_platform == "win32"
+      extensions << "zlib" # required by coreapi on win32 for gzip support in Network
+      extensions << "openssl.so" if $rhosimulator_build
+      extensions << "openssl" if $rhosimulator_build
+      extensions << "digest" if $rhosimulator_build
+      extensions << "digest-sha2" if $rhosimulator_build
+    end
+
     extensions += get_extensions
     extensions << "rhoconnect-client" if $rhosimulator_build
+
     extensions << "json"
 
     # filter list of extensions with main extensions list (regardless of case!)
@@ -2173,6 +2182,7 @@ namespace "config" do
       if $current_platform == "uwp"
         $app_config['extensions'] = $app_config['extensions'] | ['barcode']
       end
+
    end
 
    if $current_platform == "android"
