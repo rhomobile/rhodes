@@ -732,4 +732,16 @@ public class SSLImpl {
                     } else
                         n = is.read(data, 0, size);
 
-                    re
+                    return n;
+                }
+			}
+		}
+		catch (Exception e) {
+			reportFail("recv", e);
+		}
+        return -1;
+    }
+
+
+
+}
