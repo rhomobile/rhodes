@@ -898,6 +898,7 @@ namespace "config" do
       end
 
       AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:25.2.0')
+      AndroidTools::MavenDepsExtractor.instance.add_dependency('org.conscrypt:conscrypt-android:2.5.1')
 
       #setup_ndk($androidndkpath, $found_api_level, 'arm')
       $abis = $app_config['android']['abis'] if $app_config["android"]
@@ -1619,7 +1620,10 @@ namespace "build" do
         "-DHAVE_CONFIG_H",
         "-I\"#{srcdir}/../include\"",
         "-I\"#{srcdir}\"",
-        "-I\"#{$shareddir}\""
+        "-I\"#{srcdir}/vtls\"",
+        "-I\"#{srcdir}/vauth\"",
+        "-I\"#{$shareddir}\"",
+        "-I\"#{$shareddir}/../../lib/extensions/openssl.so/ext/sources/include\""
       ]
       b.build
 
@@ -2167,6 +2171,15 @@ namespace "build" do
         arch = File.basename(File.dirname(lib))
         file = File.basename(lib)
         cp_r lib, File.join($applibs,arch,file)
+      end
+
+      $android_jni_libs = AndroidTools::MavenDepsExtractor.instance.jni_libs
+      $android_jni_libs.each do |lib|
+        arch = File.basename(File.dirname(lib))
+        file = File.basename(lib)
+        if Dir.exists? File.join($applibs,arch)
+          cp_r lib, File.join($applibs,arch,file)
+        end
       end
       print_timestamp('build:android:resources FINISH')
     end
