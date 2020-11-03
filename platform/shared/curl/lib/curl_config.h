@@ -1090,5 +1090,6 @@
 //#if defined(OS_IPHONE) || defined(OS_ANDROID) || defined(OS_WP8)
 #if defined(OS_IPHONE) || defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WP8) || defined(OS_UWP) || defined(OS_LINUX)
 #define USE_RHOSSL
+//#define USE_OPENSSL
 #endif
 /* RHO END */

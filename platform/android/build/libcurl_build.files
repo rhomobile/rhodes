@@ -101,3 +101,11 @@ platform/shared/curl/lib/hmac.c
 platform/shared/curl/lib/curl_fnmatch.c
 platform/shared/curl/lib/curl_gethostname.c
 platform/shared/curl/lib/urlapi.c
+platform/shared/curl/lib/vtls/openssl.c
+platform/shared/curl/lib/vtls/keylog.c
+platform/shared/curl/lib/hostcheck.c
+platform/shared/curl/lib/http_ntlm.c
+platform/shared/curl/lib/vauth/ntlm.c
+platform/shared/curl/lib/curl_ntlm_core.c
+platform/shared/curl/lib/curl_endian.c
+platform/shared/curl/lib/md4.c
