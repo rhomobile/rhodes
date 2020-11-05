@@ -115,6 +115,11 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
         configuration.mediaPlaybackRequiresUserAction = NO;
     }
 
+    if ( rho_conf_getBool("WebView.allowsInlineMediaPlayback") == 1 ) {
+        configuration.allowsInlineMediaPlayback = YES;
+    }
+
+    
     BOOL isDirectRequestActivated = NO;
     if (rho_conf_is_property_exists("ios_direct_local_requests")!=0) {
         if (rho_conf_getBool("ios_direct_local_requests")!=0 ) {
