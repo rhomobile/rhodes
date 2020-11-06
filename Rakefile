@@ -156,6 +156,7 @@ load File.join(pwd, 'lib/commonAPI/printing_zebra/ext/platform/wm/PrintingServic
 load File.join(pwd, 'platform/android/build/android.rake')
 load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
+load File.join(pwd, 'platform/win32/build/win32.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp8/build/wp.rake')
 load File.join(pwd, 'platform/uwp/build/uwp.rake')

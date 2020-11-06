@@ -9,7 +9,7 @@ equals(QT_MAJOR_VERSION, 5) {
     }
     greaterThan(QT_MINOR_VERSION, 7): {
         CONFIG += c++14
-        DEFINES += CPP_ELEVEN RHODES_VERSION_2
+        DEFINES += CPP_ELEVEN RHODES_VERSION_2 _WINSOCKAPI_
     }
 }
 

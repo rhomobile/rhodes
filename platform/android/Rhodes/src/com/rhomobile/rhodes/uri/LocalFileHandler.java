@@ -26,8 +26,10 @@
 
 package com.rhomobile.rhodes.uri;
 
+import java.lang.Exception;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
+import java.io.File;
 
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
@@ -69,26 +71,29 @@ public class LocalFileHandler implements UriHandler
             return false;
         }
 
+        boolean isHomeDir = LocalFileProvider.isHomeDir(ctx, url);
+
         Logger.D(TAG, "Handle URI externally: " + url);
 
-        int intentFlags = 0;
         Uri path = Uri.parse(url);
-
-        //Uri newUri = LocalFileProvider.overrideUri(path);
         Uri newUri = LocalFileProvider.overrideSystemUri(path);
+
         if(newUri != null) {
-            intentFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
             url = Uri.decode(newUri.toString());
         }
-        intentFlags=Intent.FLAG_GRANT_READ_URI_PERMISSION;
-        Intent intent = Intent.parseUri(url, intentFlags);
+
+        Intent intent = Intent.parseUri(url, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setAction(Intent.ACTION_VIEW);
 
-        if(newUri==null && url.contains("file://"))
-       {    	   
+        if (newUri != null && isHomeDir){
+            LocalFileProvider.grantPermissionOnSharingContentIntent(ctx, intent, newUri);
+        }
+
+        if(newUri == null && url.contains("file://"))
+        {    	   
     	    try{
-        	   String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-        	   String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
+        	    String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        	    String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
         	    if(mimeType!=null && mimeType.contains("image"))
         	    	intent.setDataAndType(path, "image/*");
         	    else if(mimeType!=null && mimeType.contains("audio"))
@@ -100,17 +105,15 @@ public class LocalFileHandler implements UriHandler
                 } else {
         	    	intent.setDataAndType(path, "*/*");
                 }
-        	   }
-        	   catch(Exception ex)
-        	   {
-        		   Logger.E(TAG, ex.getMessage());
-        		   intent.setDataAndType(path, "*/*");
-        	   }
+    	    } catch(Exception ex) {
+    		    Logger.E(TAG, ex.getMessage());
+    		    intent.setDataAndType(path, "*/*");
+            }
                
     	
-   	   }
+   	    }
         //ctx.startActivity(Intent.createChooser(intent, "Open in..."));
-       ctx.startActivity(intent);
+        ctx.startActivity(intent);
 
         return true;
     }

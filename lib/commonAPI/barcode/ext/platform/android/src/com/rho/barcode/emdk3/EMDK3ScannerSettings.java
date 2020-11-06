@@ -3110,9 +3110,10 @@ public class EMDK3ScannerSettings
 					if(values[0].endsWith("/")) value = "/" + values[1];
 					else value = values[1];
 				}
-				value = value.substring(5);
-				if(!value.equalsIgnoreCase(Environment.getExternalStorageDirectory().getAbsolutePath() + "/"+"decode.wav"))
-				config.scanParams.decodeAudioFeedbackUri = value;
+				if(value.length() >= 5)
+					value = value.substring(5);
+				if(!value.equalsIgnoreCase(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "decode.wav"))
+					config.scanParams.decodeAudioFeedbackUri = value;
 				return true;
 			}
 
