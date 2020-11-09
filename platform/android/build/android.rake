@@ -2173,9 +2173,14 @@ namespace "build" do
         cp_r lib, File.join($applibs,arch,file)
       end
 
+      abi_alter_names = { "armeabi" => "arm", "arm64-v8a" => "aarch64", "x86" => "x86", "armeabi-v7a" => "arm", "x86_64" => "x86_64" }
       $android_jni_libs = AndroidTools::MavenDepsExtractor.instance.jni_libs
       $android_jni_libs.each do |lib|
         arch = File.basename(File.dirname(lib))
+        if !$abis.include?(abi_alter_names[arch])
+          next
+        end
+
         arch = "armeabi" if arch == "armeabi-v7a"
         file = File.basename(lib)
         if Dir.exists? File.join($applibs,arch)
