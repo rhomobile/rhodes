@@ -4,9 +4,6 @@ before_install:
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
 - yes | sdkmanager "platforms;android-29"
 - yes | sdkmanager "build-tools;29.0.2"
-- sdkmanager "emulator"
-- sdkmanager "extras;android;m2repository"
-- sdkmanager "system-images;android-29;google_apis;x86"
 
 install:
 #install Ruby version specified in RHO_RUBY env var ( system Ruby by default )
@@ -16,6 +13,9 @@ install:
 # run target-specific and host-specific install scripts ( for instance download and install NDK/SDK for Android targets)
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/install.sh
+- sdkmanager "emulator"
+- sdkmanager "extras;android;m2repository"
+- sdkmanager "system-images;android-29;google_apis;x86"
 
 script:
 # start building of Rhodes gem in a separate gemset
