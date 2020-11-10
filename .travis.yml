@@ -2,9 +2,10 @@ before_install:
 #run target-specific and host-specific berfore_install scripts  
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/hosts/$TRAVIS_OS_NAME/before_install.sh
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
-- yes | sdkmanager "platforms;android-30"
-- yes | sdkmanager "build-tools;30.0.2"
-- sdkmanager "system-images;android-30;google_apis;x86"
+- yes | sdkmanager "platforms;android-29"
+- yes | sdkmanager "build-tools;29.0.2"
+- sdkmanager "system-images;android-29;default;x86"
+- sdkmanager "emulator"
 
 install:
 #install Ruby version specified in RHO_RUBY env var ( system Ruby by default )
@@ -131,13 +132,13 @@ android:
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
-  - build-tools-30.0.2
-  - android-30
+  - build-tools-29.0.2
+  - android-29
   #- android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
 #  - sys-img-x86-android-${RHO_ANDROID_LEVEL:-19}
   - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
-  - sys-img-x86-android-30
+  - sys-img-x86-android-29
   licenses:
   - 'android-sdk-preview-license-52d11cd2'
   - 'android-sdk-license-.+'
@@ -158,4 +159,4 @@ matrix:
   include:
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="30" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.6.5"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="29" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.6.5"
