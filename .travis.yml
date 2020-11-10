@@ -4,6 +4,7 @@ before_install:
 - $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/before_install.sh
 - yes | sdkmanager "platforms;android-30"
 - yes | sdkmanager "build-tools;30.0.2"
+- yes | sdkmanager --licenses
 
 install:
 #install Ruby version specified in RHO_RUBY env var ( system Ruby by default )
@@ -131,7 +132,7 @@ android:
   - extra-google-m2repository
   - extra-android-m2repository
   - build-tools-30.0.2
-  #- android-30
+  - android-30
   #- android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
 #  - sys-img-x86-android-${RHO_ANDROID_LEVEL:-19}
