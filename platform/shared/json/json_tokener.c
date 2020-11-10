@@ -477,7 +477,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 
     case json_tokener_state_object_field:
       if(c == tok->quote_char) {
-	obj_field_name = fpstrdup(tok->pb->buf);
+	obj_field_name = strdup(tok->pb->buf);
     saved_state = c == ':' ? json_tokener_state_object_value : json_tokener_state_object_field_end;
 	state = json_tokener_state_eatws;
       } else if(c == '\\') {

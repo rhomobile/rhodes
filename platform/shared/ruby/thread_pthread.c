@@ -1244,7 +1244,7 @@ static int ubf_threads_empty(void) { return 1; }
 #endif /* USE_UBF_LIST */
 
 #define TT_DEBUG 0
-#define WRITE_CONST(fd, str) (void)(fpwrite((fd),(str),sizeof(str)-1)<0)
+#define WRITE_CONST(fd, str) (void)(write((fd),(str),sizeof(str)-1)<0)
 
 /* 100ms.  10ms is too small for user level thread scheduling
  * on recent Linux (tested on 2.6.35)

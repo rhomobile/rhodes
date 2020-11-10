@@ -153,6 +153,10 @@ use_kinetic_scroll_on_windows = 1
 # disable bounce for iOS WebView
 #WebView.enableBounce = 0
 
+# enable inline media playback in iOS WKWebView
+#WebView.allowsInlineMediaPlayback = 1
+
+
 # Related to iOS applications's multitasking switcher. If you can have any private info on screen you can prevent system to use snapshot in task list UI.
 # by enable this option screenshot will be replaced by splash loading screen.
 #WebView.replaceContentBySplashWhenSnapshotBySystem = 1
