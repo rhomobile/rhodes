@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-PROJECT(rhodes)
+PROJECT(<%= @extName%>)
 
-add_library(
-             rhodes
-             SHARED
-             <%= @sourceList %>
-             )
+add_library(<%= @extName%> STATIC 
+<%= @sourceList %>
+)
 
 include_directories(<%= @appincdir %>)
+include_directories(<%= @extdir %>/ext/platform/android/generated/jni)
+include_directories(<%= @extdir %>/ext/shared)
+include_directories(<%= @extdir %>/ext/shared/include)
 include_directories(<%= @rhoRoot %>/platform/shared)
 include_directories(<%= @rhoRoot %>/platform/shared/common)
 include_directories(<%= @rhoRoot %>/platform/shared/api_generator)
@@ -16,41 +17,10 @@ include_directories(<%= @rhoRoot %>/platform/shared/sqlite)
 include_directories(<%= @rhoRoot %>/platform/shared/curl/include)
 include_directories(<%= @rhoRoot %>/platform/shared/ruby/include)
 include_directories(<%= @rhoRoot %>/platform/shared/ruby/android)
+include_directories(<%= @rhoRoot %>/platform/shared/ruby)
+include_directories(<%= @rhoRoot %>/platform/shared/ruby/generated)
 include_directories(<%= @rhoRoot %>/lib/commonAPI/coreapi/ext/shared)
 include_directories(<%= @rhoRoot %>/platform/android/Rhodes/jni/include)
 include_directories(<%= @rhoRoot %>/platform/android/Rhodes/jni/include/rhodes)
 include_directories(<%= @rhoRoot %>/platform/android/Rhodes/jni/include/rhodes/details)
 include_directories(<%= @rhoRoot %>/lib/extensions/openssl.so/ext/sources/include)
-
-find_library(android-lib android)
-find_library(log-lib log )
-find_library(z-lib z)
-
-set(CORE_LIBS
-rhocommon
-curl
-sqlite
-ruby
-json
-rholog
-rhodb
-rhosync
-)
-
-set(EXT_LIBS
-<%= @extLibs %>
-)
-
-target_link_libraries(
-                       rhodes
-                       ${CORE_LIBS}
-                       ${EXT_LIBS}
-                       rhocommon
-                       curl
-                       ${android-lib}
-                       ${log-lib}
-                       ${z-lib}
-                       ${dl-lib}
-                       ${libc-lib}
-                       ${libm-lib}
-                     )

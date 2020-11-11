@@ -353,6 +353,10 @@ class MavenDepsExtractor
   def jars
     @jars
   end
+
+  def jni_libs
+    @jni_libs
+  end
   
   def extract_packages
      require 'nokogiri'

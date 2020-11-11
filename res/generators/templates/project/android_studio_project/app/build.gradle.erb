@@ -28,15 +28,19 @@ android {
             manifest.srcFile rhoManifest
             res.srcDirs = [ rhoRes ]
             assets.srcDirs = [ rhoAssets ]
-            jniLibs.srcDirs = [ rhoJniLibs ]
+            //jniLibs.srcDirs = [ rhoJniLibs ]
 
             java {
                 srcDir Paths.get( rhoRoot, 'platform/android/Rhodes/src' ).toString()
                 srcDir rhoGen
+
+                include 'com/rhomobile/rhodes/R/R.java'
                 exclude 'com/rhomobile/rhodes/mapview/AnnotationsOverlay.java'
                 exclude 'com/rhomobile/rhodes/mapview/GoogleMapView.java'
                 exclude 'com/rhomobile/rhodes/mapview/CalloutOverlay.java'
                 exclude 'com/rhomobile/rhodes/alert/*'
+                exclude 'android/support/v7/appcompat/R.java'
+                exclude 'com/google/android/gms/R.java'
                 exclude 'com/rhomobile/rhodes/R.java'
             }
         }
@@ -59,11 +63,17 @@ android {
         ndk {
             abiFilters '<%= @targetArch %>'
         }
-        externalNativeBuild {
+       externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=gcc', '-DANDROID_ARM_MODE=<%= @targetArch.include?('arm') ? 'arm' : @targetArch %>'
+                arguments '-DANDROID_TOOLCHAIN=gcc-4.9','-D_FORTIFY_SOURCE=0'
+                cppFlags '-v','-fuse-ld=gold','-shared','-Wl,--no-whole-archive','-Wl,--no-undefined','-Wl,-z,defs','-fPIC','-lc','-lm'
             }
         }
+    }
+	
+	packagingOptions {
+        exclude 'jsr305_annotations/Jsr305_annotations.gwt.xml'
+        exclude 'build-data.properties'
     }
 
 }
@@ -104,24 +114,13 @@ tasks.whenTaskAdded { task ->
         logger.debug 'SKIPPING NDK BUILD TASK'
         task.outputs.upToDateWhen { true }
     }
-	
-	if (task.name.contains("processDebugResources") || task.name.contains("processReleaseResources"))
-    {
-        logger.debug 'DISABLED: ' + task.toString();
-        task.enabled = false;
-    }
 
-
-    if (task.name.contains("compileDebugJavaWithJavac") || task.name.contains("compileReleaseJavaWithJavac"))
-    {
-        logger.debug 'DISABLED: ' + task.toString();
-        task.enabled = false;
-    }
-
+    /*
     if (task.name.contains("externalNativeBuildDebug"))
         externalNativeBuildDebug.finalizedBy(rhoBuild);
     else if(task.name.contains("externalNativeBuildRelease"))
         externalNativeBuildRelease.finalizedBy(rhoBuild);
+    */
 
     if (task.name.contains("transformNativeLibsWithMergeJniLibsForDebug") ||
             task.name.contains("transformNativeLibsWithMergeJniLibsForRelease"))
@@ -132,7 +131,11 @@ tasks.whenTaskAdded { task ->
 }
 
 dependencies {
-    compile fileTree(include: ['**/*.jar'], exclude: ['**/Rhodes.jar'], dir: rhoOutDir )
-    compile fileTree(include: ['**/*.jar'], exclude: ['**/Rhodes.jar'], dir: rhoBuildDir )
-    provided fileTree(include: ['**/*.jar'], dir: Paths.get(rhoRoot, 'platform/android/lib').toString() )
+    implementation fileTree(include: ['**/*.jar'], exclude: ['**/Rhodes.jar'], dir: rhoOutDir )
+    implementation fileTree(include: ['**/*.jar'], exclude: ['**/Rhodes.jar', '.m2/**/*'], dir: rhoBuildDir )
+    compileOnly fileTree(include: ['**/*.jar'], dir: Paths.get(rhoRoot, 'platform/android/lib').toString() )
+
+    implementation 'com.google.android.gms:play-services-vision:9.4.0'
+    implementation 'com.android.support:appcompat-v7:25.2.0'
+
 }

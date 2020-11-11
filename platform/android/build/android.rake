@@ -26,6 +26,7 @@
 
 require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
+require File.dirname(__FILE__) + '/apk_builder.rb'
 require File.dirname(__FILE__) + '/maven_deps_extractor.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
 require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
@@ -316,15 +317,34 @@ namespace 'project' do
       project_app_path = File.join $app_path,'project','android_studio', 'app'
 
       cmake_template_path = File.join( project_template_path, 'app', 'CMakeLists.txt.erb' )
+
       cmake_template_ruby = File.join( $shareddir, 'ruby', 'CMakeLists.txt.erb')
+      source_template_ruby = File.join('platform', 'android', 'build', 'libruby_build.files')
+
       cmake_template_curl = File.join( $shareddir, 'curl', 'CMakeLists.txt.erb')
+      source_template_curl = File.join('platform', 'android', 'build', 'libcurl_build.files')
+
       cmake_template_db = File.join( $shareddir, 'db', 'CMakeLists.txt.erb')
+      source_template_db = File.join('platform', 'android', 'build', 'librhodb_build.files')
+
       cmake_template_common = File.join( $shareddir, 'common', 'CMakeLists.txt.erb')
+      source_template_common = File.join('platform', 'android', 'build', 'librhocommon_build.files')
+      source_template_rhomain = File.join('platform', 'android', 'build', 'librhomain_build.files')
+
       cmake_template_logging = File.join( $shareddir, 'logging', 'CMakeLists.txt.erb')
+      source_template_logging = File.join('platform', 'android', 'build', 'librholog_build.files')
+
       cmake_template_sync = File.join( $shareddir, 'sync', 'CMakeLists.txt.erb')
+      source_template_sync = File.join('platform', 'android', 'build', 'librhosync_build.files')
+
       cmake_template_json = File.join( $shareddir, 'json.new', 'CMakeLists.txt.erb')
+      source_template_json = File.join('platform', 'android', 'build', 'libjson_build.files')
+
       cmake_template_sqlite = File.join( $shareddir, 'sqlite', 'CMakeLists.txt.erb')
+      source_template_sqlite = File.join('platform', 'android', 'build', 'libsqlite_build.files')
+
       cmake_template_rhodes = File.join('platform', 'android', 'build', 'CMakeLists.txt.erb')
+      source_template_rhodes = File.join('platform', 'android', 'build', 'librhodes_build.files')
 
       $abis = $app_config['android']['abis'] if $app_config["android"]
       $abis = ['arm'] unless $abis
@@ -344,8 +364,12 @@ namespace 'project' do
       extlibs.each do |lib|
 
         extname = File.basename(lib).gsub('lib', '').gsub('.a', '')
-        external_string += ("add_library(#{extname} STATIC IMPORTED GLOBAL)\n" +
-            "set_property(TARGET #{extname} PROPERTY IMPORTED_LOCATION #{lib})\n")
+        #TODO support ${ANDROID_ABI} in cmake template
+        if extname == "openssl.so"
+           external_string += ("add_library(#{extname} STATIC IMPORTED GLOBAL)\n" +
+              "set_property(TARGET #{extname} PROPERTY IMPORTED_LOCATION #{lib})\n")
+        end
+
         if extname == "coreapi"
           next
         end
@@ -353,9 +377,16 @@ namespace 'project' do
       end
       ext_libs += 'coreapi'
 
-
-
-      cpp_stub_path = File.join( project_template_path, 'app', 'stub.cpp' )
+      extensions_deps = ''
+      $ext_android_build_scripts.each do |ext, builddata|
+        ext_native_files = File.join(builddata[2], 'ext', 'platform', 'android', 'ext_native.files')
+        ext_native_files2 = File.join(builddata[0], 'ext_native.files')
+        ext_native_final = (File.exists? ext_native_files) ? ext_native_files : ext_native_files2
+        if(File.exists? ext_native_final)
+          mkdir_p File.join(project_app_path, ext)        
+          extensions_deps += "add_subdirectory(./#{ext})\n"
+        end
+      end
 
       rhodes_path = File.absolute_path '.'
 
@@ -370,6 +401,7 @@ namespace 'project' do
       generator.externalDeps = external_string
       generator.extLibs = ext_libs
       generator.targetArch = studio_realabi
+      generator.extensionsDeps = extensions_deps
 
       generator.compileSdkVersion = $found_api_level
       generator.versionName = $app_config["version"]
@@ -397,17 +429,35 @@ namespace 'project' do
       cmake_path_rholog = File.join( project_path, 'app', 'rholog', 'CMakeLists.txt')
       cmake_path_rhodes = File.join( project_path, 'app', 'rhodes', 'CMakeLists.txt')
 
-      File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
       File.open( cmake_path_main, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_path ) }
-      File.open( cmake_path_ruby, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_ruby ) }
-      File.open( cmake_path_curl, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_curl ) }
-      File.open( cmake_path_rhodb, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_db ) }
-      File.open( cmake_path_rhocommon, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_common ) }
-      File.open( cmake_path_rhosync, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_sync ) }
-      File.open( cmake_path_sqlite, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_sqlite ) }
-      File.open( cmake_path_json, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_json ) }
-      File.open( cmake_path_rholog, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_logging ) }
-      File.open( cmake_path_rhodes, 'w' ) { |f| f.write generator.render_app_gradle( cmake_template_rhodes ) }
+      File.open( cmake_path_ruby, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_ruby, source_template_ruby ) }
+      File.open( cmake_path_curl, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_curl, source_template_curl ) }
+      File.open( cmake_path_rhodb, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_db, source_template_db ) }
+      File.open( cmake_path_rhocommon, 'w' ) { |f| f.write generator.render_app_gradle_ex2( cmake_template_common, source_template_common, source_template_rhomain ) }
+      File.open( cmake_path_rhosync, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_sync, source_template_sync ) }
+      File.open( cmake_path_sqlite, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_sqlite, source_template_sqlite ) }
+      File.open( cmake_path_json, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_json, source_template_json ) }
+      File.open( cmake_path_rholog, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_logging, source_template_logging ) }
+      File.open( cmake_path_rhodes, 'w' ) { |f| f.write generator.render_app_gradle_ex( cmake_template_rhodes,  source_template_rhodes) }
+
+      cmake_template_extension = File.join('platform', 'android', 'build', 'CMakeListsExts.txt.erb')
+      $ext_android_build_scripts.each do |ext, builddata|
+        ext_native_files = File.join(builddata[2], 'ext', 'platform', 'android', 'ext_native.files')
+        ext_native_files2 = File.join(builddata[0], 'ext_native.files')
+        ext_native_final = (File.exists? ext_native_files) ? ext_native_files : ext_native_files2
+        if(File.exists? ext_native_final)
+          cmake_path_ext = File.join( project_path, 'app', ext, 'CMakeLists.txt')
+          generator.extdir = builddata[2]
+          generator.extName = ext
+          File.open( cmake_path_ext, 'w' ) { |f| f.write generator.render_cmake_extension( cmake_template_extension, ext_native_final ) }
+        end
+      end
+
+      $ext_android_additional_sources.each do |extpath, list|
+        
+      end
+      File.open( app_gradle_path, 'w' ) { |f| f.write generator.render_app_gradle( app_gradle_template ) }
+
 
       cp main_gradle_script,  project_path
       cp gradle_properties,   project_path
@@ -797,8 +847,7 @@ namespace "config" do
       AndroidTools.jarsigner = $jarsigner
       AndroidTools.zipalign = $zipalign
       AndroidTools.keytool = $keytool
-
-      $sdklibjar = AndroidTools.findSdkLibJar $androidsdkpath
+      AndroidTools.apksigner = File.join(build_tools_path,'apksigner'+$bat_ext)
     end
 
     $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
@@ -849,6 +898,7 @@ namespace "config" do
       end
 
       AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:25.2.0')
+      AndroidTools::MavenDepsExtractor.instance.add_dependency('org.conscrypt:conscrypt-android:2.5.1')
 
       #setup_ndk($androidndkpath, $found_api_level, 'arm')
       $abis = $app_config['android']['abis'] if $app_config["android"]
@@ -1151,7 +1201,7 @@ namespace "config" do
           else
             rakepath = extpath
           end
-          $ext_android_build_scripts[ext] = [rakepath, 'rake']
+          $ext_android_build_scripts[ext] = [rakepath, 'rake', extpath]
 
           if prebuild_rake_task
             args = [ prebuild_rake_task ]
@@ -1570,7 +1620,10 @@ namespace "build" do
         "-DHAVE_CONFIG_H",
         "-I\"#{srcdir}/../include\"",
         "-I\"#{srcdir}\"",
-        "-I\"#{$shareddir}\""
+        "-I\"#{srcdir}/vtls\"",
+        "-I\"#{srcdir}/vauth\"",
+        "-I\"#{$shareddir}\"",
+        "-I\"#{$shareddir}/../../lib/extensions/openssl.so/ext/sources/include\""
       ]
       b.build
 
@@ -2118,6 +2171,21 @@ namespace "build" do
         arch = File.basename(File.dirname(lib))
         file = File.basename(lib)
         cp_r lib, File.join($applibs,arch,file)
+      end
+
+      abi_alter_names = { "armeabi" => "arm", "arm64-v8a" => "aarch64", "x86" => "x86", "armeabi-v7a" => "arm", "x86_64" => "x86_64" }
+      $android_jni_libs = AndroidTools::MavenDepsExtractor.instance.jni_libs
+      $android_jni_libs.each do |lib|
+        arch = File.basename(File.dirname(lib))
+        if !$abis.include?(abi_alter_names[arch])
+          next
+        end
+
+        arch = "armeabi" if arch == "armeabi-v7a"
+        file = File.basename(lib)
+        if Dir.exists? File.join($applibs,arch)
+          cp_r lib, File.join($applibs,arch,file)
+        end
       end
       print_timestamp('build:android:resources FINISH')
     end
@@ -2934,20 +3002,17 @@ namespace "device" do
     desc "Build debug self signed for device"
     task :debug => "package:android" do
       print_timestamp('device:android:debug START')
-      dexfile = $bindir + "/classes.dex"
-      simple_apkfile = $targetdir + "/" + $appname + "-tmp.apk"
-      signed_apkfile = $targetdir + "/" + $appname + "-tmp_signed.apk"
-      final_apkfile = $targetdir + "/" + $appname + "-debug.apk"
-      resourcepkg = $bindir + "/rhodes.ap_"
 
-      apk_build $androidsdkpath, simple_apkfile, resourcepkg, dexfile, true
+      final_apkfile = File.join $targetdir, "#{$appname}-debug.apk"
 
-      AndroidTools.signApkDebug( simple_apkfile, signed_apkfile )
-      AndroidTools.alignApk( signed_apkfile, final_apkfile )
+      builder = ApkBuilder.new
+      builder.sdk_path = $androidsdkpath
+      builder.dex_path = File.join $bindir, "classes.dex"
+      builder.output_path = final_apkfile
+      builder.res_pkg = File.join $bindir, "rhodes.ap_"
+      builder.debug = true
 
-      #remove temporary files
-      rm_rf simple_apkfile
-      rm_rf signed_apkfile
+      builder.build
 
       File.open(File.join(File.dirname(final_apkfile), "app_info.txt"), "w") do |f|
         f.puts $app_package_name
@@ -2995,25 +3060,25 @@ namespace "device" do
     desc "Build production signed for device"
     task :production => "package:android" do
       print_timestamp('device:android:production START')
-      dexfile = $bindir + "/classes.dex"
-      simple_apkfile = $targetdir + "/" + $appname + "_tmp.apk"
-      final_apkfile = $targetdir + "/" + $appname + "_signed.apk"
-      signed_apkfile = $targetdir + "/" + $appname + "_tmp_signed.apk"
-      resourcepkg = $bindir + "/rhodes.ap_"
-
-      apk_build $androidsdkpath, simple_apkfile, resourcepkg, dexfile, false
 
       if not File.exists? $keystore
         AndroidTools.generateKeystore( $keystore, $storealias, $storepass, $keypass )
       end
 
+      final_apkfile = File.join $targetdir, "#{$appname}_signed.apk"
 
-      AndroidTools.signApk( simple_apkfile, signed_apkfile, $keystore, $keypass, $storepass, $storealias )
-      AndroidTools.alignApk( signed_apkfile, final_apkfile )
+      builder = ApkBuilder.new
+      builder.sdk_path = $androidsdkpath
+      builder.dex_path = File.join $bindir,"classes.dex"      
+      builder.output_path = final_apkfile
+      builder.res_pkg = File.join $bindir, "rhodes.ap_"
+      builder.debug = false
+      builder.keystore = $keystore
+      builder.keypass = $keypass
+      builder.storepass = $storepass
+      builder.storealias = $storealias
 
-      #remove temporary files
-      rm_rf simple_apkfile
-      rm_rf signed_apkfile
+      builder.build
 
       File.open(File.join(File.dirname(final_apkfile), "app_info.txt"), "w") do |f|
         f.puts $app_package_name

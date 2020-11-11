@@ -59,6 +59,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import android.net.http.X509TrustManagerExtensions;
 
+import android.os.Build;
 import android.util.Base64;
 
 import com.rhomobile.rhodes.Logger;
@@ -70,6 +71,9 @@ import java.security.SecureRandom;
 import android.os.Looper;
 import com.rhomobile.rhodes.RhodesService;
 
+import org.conscrypt.BaseOpenSSLSocketAdapterFactory;
+import org.conscrypt.Conscrypt;
+import org.conscrypt.OpenSSLProvider;
 
 public class SSLImpl {
 	
@@ -418,7 +422,7 @@ public class SSLImpl {
     private static SSLSocketFactory getSecureFactory() throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException {
         Logger.I(TAG, "Creating secure SSL factory");
         
-        SSLContext context = SSLContext.getInstance("TLS");
+        SSLContext context =  Build.VERSION.SDK_INT >= 30 ? SSLContext.getInstance("TLS", new OpenSSLProvider()) : SSLContext.getInstance("TLS");
         
         // First, load all system installed certificates
         Logger.I(TAG, "Creating TrustManager for system certificates");        
@@ -505,7 +509,11 @@ public class SSLImpl {
     }
     	
 	private static SSLSocketFactory getFactory(boolean verify) throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException {
-		if (verify) {
+
+        if (Build.VERSION.SDK_INT >= 30)	    
+            Conscrypt.setUseEngineSocketByDefault(false);
+
+	    if (verify) {
 			//if ( secureFactory == null ) {
 				secureFactory = getSecureFactory();
 			//}
@@ -513,7 +521,7 @@ public class SSLImpl {
         }
 		
 		if (factory == null) {
-			SSLContext context = SSLContext.getInstance("TLS");
+			SSLContext context =  Build.VERSION.SDK_INT >= 30 ? SSLContext.getInstance("TLS", new OpenSSLProvider()) : SSLContext.getInstance("TLS");
 			TrustManager[] managers = {new MyTrustManager()};
 			context.init(null, managers, new SecureRandom());
             factory = context.getSocketFactory();
