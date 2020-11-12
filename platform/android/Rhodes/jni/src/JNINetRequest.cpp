@@ -24,48 +24,24 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#include <net/CURLNetRequest.h>
-#include <common/PosixThreadImpl.h>
-
 #include "rhodes/JNINetRequest.h"
-#include "rhodes/RhoClassFactory.h"
-#include "rhodes/sslimpl.h"
-#include "rhodes/rhocryptimpl.h"
-#include "rhodes/SecurityTokenGenerator.h"
 
-static rho::common::CRhoClassFactory g_rhoClassFactory;
-rho::common::IRhoClassFactory* rho_get_RhoClassFactory()
-{
-    return &g_rhoClassFactory;
+rho::net::INetResponse* rho::net::JNINetRequest::doRequest(const char *method, const String &strUrl, const String &strBody, IRhoSession *oSession, Hashtable<String, String> *pHeaders) {
+    return nullptr;
 }
 
-namespace rho
-{
-namespace common
-{
+void rho::net::JNINetRequest::cancel() {
 
-net::INetRequestImpl* CRhoClassFactory::createNetRequestImpl()
-{
-    //return new net::CURLNetRequest();
-    return new net::JNINetRequest();
 }
 
-IRhoThreadImpl *CRhoClassFactory::createThreadImpl()
-{
-    return new CPosixThreadImpl();
+rho::net::INetResponse* rho::net::JNINetRequest::pullFile(const String &strUrl, common::CRhoFile &oFile, IRhoSession *oSession, Hashtable<String, String> *pHeaders) {
+    return nullptr;
 }
 
-IRhoCrypt *CRhoClassFactory::createRhoCrypt()
-{
-    return new CRhoCryptImpl;
+rho::net::INetResponse* rho::net::JNINetRequest::createEmptyNetResponse() {
+    return nullptr;
 }
 
-const ISecurityTokenGenerator* CRhoClassFactory::createSecurityTokenGenerator()
-{
-    static SecurityTokenGenerator global_generator;
-    return &global_generator;
+rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const String &strUrl, VectorPtr<CMultipartItem *> &arItems, IRhoSession *oSession, Hashtable<String, String> *pHeaders) {
+    return nullptr;
 }
-
-} // namespace common
-} // namespace rho
-
