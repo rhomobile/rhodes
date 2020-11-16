@@ -39,7 +39,7 @@ namespace net
 
 class JNINetRequest : public CNetRequestBase
 {
-    //DEFINE_LOGCLASS;
+    DEFINE_LOGCLASS;
     
     //struct ProxySettings
     //{
@@ -79,6 +79,8 @@ public:
     virtual INetResponse* createEmptyNetResponse();
     
 private:
+
+    INetResponse* doPull(const char *method, const String &strUrl, const String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
 };
 
 } // namespace net
