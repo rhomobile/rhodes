@@ -26,28 +26,93 @@
 
 package com.rhomobile.rhodes;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.util.*;
 
 public class NetRequest
 {
+    private static final String TAG = "JNetRequest";
+
     private HttpURLConnection connection = null;
     private String url = null;
     private String body = null;
     private String method = null;
     private String file = null;
+    private boolean sslVerify = true;
+    private long timeout = 30;
+    HashMap<String, String> headers = null;
 
     public NetRequest()
     {
     }
 
-    public int doPull(String u, String m, String b, String f, HashMap<String, String> headers)
-    {
+    public int doPull(String u, String m, String b, String f, HashMap<String, String> h, boolean verify, long t) {
         url = u;
         body = b;
         method = m;
         file = f;
+        sslVerify = verify;
+        timeout = t;
+        headers = h;
+
+        try {
+            if(method.equals("POST")) {
+
+            }
+            else {
+               int code = getData();
+               return code;
+            }
+
+        }
+        catch (java.io.IOException e) {
+            Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+        }
+
         return 0;
     }
+
+    private void fillHeaders() {
+        for(Map.Entry<String, String> entry : headers.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            connection.setRequestProperty(key, value);
+        }
+    }
+
+    private StringBuffer readFromStream(InputStream stream) throws java.io.IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+
+        return response;
+    }
+
+    private int getData() throws java.io.IOException {
+        URL _url = new URL(url);
+        connection = (HttpURLConnection) _url.openConnection();
+        connection.setReadTimeout((int)timeout);
+        connection.setRequestMethod(method);
+        fillHeaders();
+
+        int responseCode = connection.getResponseCode();
+        StringBuffer response = null;
+        if(responseCode == HttpURLConnection.HTTP_OK) {
+            response = readFromStream(connection.getInputStream());
+        }
+        else if(responseCode >= HttpURLConnection.HTTP_BAD_REQUEST) {
+            response = readFromStream(connection.getErrorStream());
+        }
+
+        return responseCode;
+    }
+
+
 } 

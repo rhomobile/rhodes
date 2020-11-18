@@ -119,6 +119,31 @@ public:
 
 };
 
+void rho::net::JNINetRequest::ProxySettings::initFromConfig() {
+    port = 0;
+
+    if (RHOCONF().isExist("http_proxy_host")) {
+        host = RHOCONF().getString("http_proxy_host");
+
+        String strPort;
+
+        if (RHOCONF().isExist("http_proxy_port")) {
+            strPort = RHOCONF().getString("http_proxy_port");
+            port = atoi(strPort.c_str());
+        }
+
+        if (RHOCONF().isExist("http_proxy_login")) {
+            username = RHOCONF().getString ("http_proxy_login");
+        }
+
+        if (RHOCONF().isExist("http_proxy_password")) {
+            password = RHOCONF().getString("http_proxy_password");
+        }
+
+        LOG(INFO) + "PROXY: " + host + " PORT: " + strPort + " USERNAME: " + username + " PASSWORD: " + password;
+    }
+}
+
 rho::net::JNINetRequest::JNINetRequest()
 {
     JNIEnv *env = jnienv();    
@@ -167,6 +192,7 @@ rho::net::JNINetRequest::JNINetRequest()
            "Ljava/lang/String;"
            "Ljava/lang/String;"
            "Ljava/util/HashMap;"
+           "ZJ"
            ")I");
 
     if(!midDoPull)
@@ -174,6 +200,10 @@ rho::net::JNINetRequest::JNINetRequest()
         RAWLOG_ERROR("doPull method not found!");
         return;
     }
+
+    timeout = rho_conf_getInt("net_timeout");
+    if (timeout == 0)
+        timeout = 30; // 30 seconds by default
 
 }
 
@@ -214,10 +244,62 @@ rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const rho::St
 }
 
 rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, const rho::String &strUrl, const rho::String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<rho::String, rho::String> *pHeaders) {
+
+    int nRespCode = -1;
+    long nStartFrom = 0;
+    if (oFile) {
+        nStartFrom = oFile->size();
+    }
+
+    if( !RHODESAPP().isBaseUrl(strUrl.c_str()) )
+    {
+        //Log every non localhost requests
+        RAWLOG_INFO2("%s request (Pull): %s", method, strUrl.c_str());
+        rho_net_impl_network_indicator(1);
+    }
+
     JNIEnv *env = jnienv();
-    jhobject headers = pHeaders ? makeJavaHashMap(*pHeaders) : nullptr;
+
+    ProxySettings proxySettings;
+    proxySettings.initFromConfig();
+
+    Hashtable<rho::String, rho::String> empty_headers;
+    Hashtable<rho::String, rho::String>* _pHeaders = pHeaders ? pHeaders : &empty_headers;
+    set_options(strUrl, strBody, oFile, oSession, *_pHeaders);
+
+    jhobject headers = makeJavaHashMap(*_pHeaders);
     jhstring jurl = rho_cast<jstring>(env, strUrl);
     jhstring jmethod = rho_cast<jstring>(env, method);
     jhstring jbody = rho_cast<jstring>(env, strBody);
-    jint code = env->CallIntMethod(netRequestObject, midDoPull, jurl.get(), jmethod.get(), jbody.get(), nullptr, headers.get());
+    jint code = env->CallIntMethod(netRequestObject, midDoPull, jurl.get(), jmethod.get(), jbody.get(), nullptr, headers.get(), false, timeout);
+}
+
+void rho::net::JNINetRequest::set_options(const String &strUrl, const String &strBody, rho::common::CRhoFile *oFile, rho::net::IRhoSession *pSession,
+                                     rho::Hashtable<rho::String, rho::String> headers) {
+    rho::String session;
+    if (pSession)
+        session = pSession->getSession();
+
+    if (!session.empty()) {
+        //RAWTRACE1("Set cookie: %s", session.c_str());
+        //curl_easy_setopt(m_curl, CURLOPT_COOKIE, session.c_str());
+    }
+
+    if (RHODESAPP().isBaseUrl(strUrl))
+        timeout = 10*24*60*60;
+
+    headers.emplace("Expect", "");
+    headers.emplace("Connection", "Keep-Alive");
+
+    auto it = headers.find("content-type");
+    bool hasContentType = (it != headers.end());
+
+    if (!hasContentType && strBody.length() > 0) {
+        rho::String strHeader = "Content-Type";
+        if ( pSession)
+            headers.emplace(strHeader, pSession->getContentType().c_str());
+        else
+            headers.emplace(strHeader, "application/x-www-form-urlencoded");
+    }
+
 }

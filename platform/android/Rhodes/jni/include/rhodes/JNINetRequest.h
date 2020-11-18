@@ -42,15 +42,15 @@ class JNINetRequest : public CNetRequestBase
 {
     DEFINE_LOGCLASS;
     
-    //struct ProxySettings
-    //{
-    //    void initFromConfig();
+    struct ProxySettings
+    {
+        void initFromConfig();
         
-    //    String  host;
-    //    int     port;
-    //    String  username;
-    //    String  password;
-    //};
+        String  host;
+        int     port;
+        String  username;
+        String  password;
+    };
 
     //struct AuthSettings
     //{
@@ -71,25 +71,27 @@ class JNINetRequest : public CNetRequestBase
     jmethodID midDoPull = nullptr;
     jmethodID midPut = nullptr;
     jmethodID midHashMapConstructor = nullptr;
+    long timeout = 0;
     
 public:
     JNINetRequest();
     
-    virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
-    virtual INetResponse* pullFile(const String& strUrl, common::CRhoFile& oFile, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
-    virtual INetResponse* pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
+    virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders ) override ;
+    virtual INetResponse* pullFile(const String& strUrl, common::CRhoFile& oFile, IRhoSession* oSession, Hashtable<String,String>* pHeaders) override ;
+    virtual INetResponse* pushMultipartData(const String& strUrl, VectorPtr<CMultipartItem*>& arItems, IRhoSession* oSession, Hashtable<String,String>* pHeaders) override ;
 
-    virtual void cancel();
+    virtual void cancel() override;
 
-    virtual boolean getSslVerifyPeer() { return false; }
-    virtual void setSslVerifyPeer(boolean mode) {  }
+    virtual boolean getSslVerifyPeer() override { return false; }
+    virtual void setSslVerifyPeer(boolean mode) override {  }
 
-    virtual INetResponse* createEmptyNetResponse();
+    virtual INetResponse* createEmptyNetResponse() override;
     
 private:
 
     jobject makeJavaHashMap(const Hashtable<String,String>& table);
     INetResponse* doPull(const char *method, const String &strUrl, const String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
+    void set_options(const String &strUrl, const String &strBody, common::CRhoFile *oFile, IRhoSession *pSession, Hashtable<String,String> headers);
 };
 
 } // namespace net
