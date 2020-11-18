@@ -26,10 +26,11 @@
 #ifndef JIN_NET_REQUEST
 #define JIN_NET_REQUEST
 
+#include <rhodes.h>
+#include <jni.h>
 #include <net/INetRequest.h>
 #include <logging/RhoLog.h>
 #include <common/RhoFile.h>
-
 
 
 namespace rho
@@ -63,9 +64,16 @@ class JNINetRequest : public CNetRequestBase
     //    const String user;
     //    const String password;
     //};
+
+    jclass cls = nullptr;
+    jclass clsHashMap = nullptr;
+    jobject netRequestObject = nullptr;
+    jmethodID midDoPull = nullptr;
+    jmethodID midPut = nullptr;
+    jmethodID midHashMapConstructor = nullptr;
     
 public:
-    JNINetRequest() {}
+    JNINetRequest();
     
     virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders );
     virtual INetResponse* pullFile(const String& strUrl, common::CRhoFile& oFile, IRhoSession* oSession, Hashtable<String,String>* pHeaders);
@@ -80,6 +88,7 @@ public:
     
 private:
 
+    jobject makeJavaHashMap(const Hashtable<String,String>& table);
     INetResponse* doPull(const char *method, const String &strUrl, const String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
 };
 

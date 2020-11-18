@@ -24,48 +24,30 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#include <net/CURLNetRequest.h>
-#include <common/PosixThreadImpl.h>
+package com.rhomobile.rhodes;
 
-#include "rhodes/JNINetRequest.h"
-#include "rhodes/RhoClassFactory.h"
-#include "rhodes/sslimpl.h"
-#include "rhodes/rhocryptimpl.h"
-#include "rhodes/SecurityTokenGenerator.h"
+import java.net.URL;
+import java.net.HttpURLConnection;
+import java.util.*;
 
-static rho::common::CRhoClassFactory g_rhoClassFactory;
-rho::common::IRhoClassFactory* rho_get_RhoClassFactory()
+public class NetRequest
 {
-    return &g_rhoClassFactory;
-}
+    private HttpURLConnection connection = null;
+    private String url = null;
+    private String body = null;
+    private String method = null;
+    private String file = null;
 
-namespace rho
-{
-namespace common
-{
+    public NetRequest()
+    {
+    }
 
-net::INetRequestImpl* CRhoClassFactory::createNetRequestImpl()
-{
-    return new net::CURLNetRequest();
-    //return new net::JNINetRequest();
-}
-
-IRhoThreadImpl *CRhoClassFactory::createThreadImpl()
-{
-    return new CPosixThreadImpl();
-}
-
-IRhoCrypt *CRhoClassFactory::createRhoCrypt()
-{
-    return new CRhoCryptImpl;
-}
-
-const ISecurityTokenGenerator* CRhoClassFactory::createSecurityTokenGenerator()
-{
-    static SecurityTokenGenerator global_generator;
-    return &global_generator;
-}
-
-} // namespace common
-} // namespace rho
-
+    int doPull(String u, String m, String b, String f, HashMap<String, String> headers)
+    {
+        url = u;
+        body = b;
+        method = m;
+        file = f;
+        return 0;
+    }
+} 

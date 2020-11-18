@@ -30,6 +30,10 @@
 #include <common/RhoConf.h>
 #include <net/URI.h>
 
+#include "rhodes/JNIRhodes.h"
+
+#include <algorithm>
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Net"
 
@@ -115,8 +119,82 @@ public:
 
 };
 
+rho::net::JNINetRequest::JNINetRequest()
+{
+    JNIEnv *env = jnienv();    
+    if (!env) {   
+        RAWLOG_ERROR("JNI init failed: jnienv is null");   
+        return;    
+    }
+
+    cls = getJNIClass(RHODES_JAVA_CLASS_NETREQUEST);
+    if (!cls) 
+    {
+        RAWLOG_ERROR("Class com/rhomobile/rhodes/NetRequest not found!");
+        return;
+    }
+
+    clsHashMap = getJNIClass(RHODES_JAVA_CLASS_HASHMAP);
+    if (!clsHashMap) return;
+    midHashMapConstructor = getJNIClassMethod(env, clsHashMap, "<init>", "()V");
+    if (!midHashMapConstructor) return;
+    midPut = getJNIClassMethod(env, clsHashMap, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    if (!midPut) return;
+
+    jmethodID constructorNetRequest = getJNIClassMethod(env, cls, "<init>", "()V");
+    if (!constructorNetRequest) 
+    {
+        RAWLOG_ERROR("Constructor for class com/rhomobile/rhodes/NetRequest not found!");
+        return;
+    }
+
+    netRequestObject = env->NewObject(cls, constructorNetRequest);
+    if(!netRequestObject)
+    {
+        RAWLOG_ERROR("NetRequest object not created!");
+        return;
+    }
+
+    jobject _netRequestObject = env->NewGlobalRef(netRequestObject);
+    env->DeleteLocalRef(netRequestObject);
+    netRequestObject = _netRequestObject;
+
+    midDoPull = getJNIClassMethod(env, cls, 
+           "doPull", 
+           "("
+           "Ljava/lang/String;"
+           "Ljava/lang/String;"
+           "Ljava/lang/String;"
+           "Ljava/lang/String;"
+           "Ljava/lang/Object;"
+           ")I");
+
+    if(!midDoPull)
+    {
+        RAWLOG_ERROR("doPull method not found!");
+        return;
+    }
+
+}
+
+jobject rho::net::JNINetRequest::makeJavaHashMap(const Hashtable<String,String>& table)
+{
+    JNIEnv *env = jnienv();
+    jobject v = env->NewObject(clsHashMap, midHashMapConstructor);
+    if (!v) return nullptr;
+
+    for(const auto& row : table)
+    {
+        jhstring key = rho_cast<jstring>(row.first);
+        jhstring value = rho_cast<jstring>(row.second);
+        env->CallObjectMethod(v, midPut, key.get(), value.get());
+    }
+
+    return v;
+}
+
 rho::net::INetResponse* rho::net::JNINetRequest::doRequest(const char *method, const String &strUrl, const String &strBody, IRhoSession *oSession, Hashtable<String, String> *pHeaders) {
-    return nullptr;
+    return doPull(method, strUrl, strBody, nullptr, oSession, pHeaders);
 }
 
 void rho::net::JNINetRequest::cancel() {
@@ -136,5 +214,10 @@ rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const rho::St
 }
 
 rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, const rho::String &strUrl, const rho::String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<rho::String, rho::String> *pHeaders) {
-
+    JNIEnv *env = jnienv();
+    jhobject headers = makeJavaHashMap(*pHeaders);
+    jhstring jurl = rho_cast<jstring>(env, strUrl);
+    jhstring jmethod = rho_cast<jstring>(env, method);
+    jhstring jbody = rho_cast<jstring>(env, strBody);
+    jint code = env->CallIntMethod(netRequestObject, midDoPull, jurl.get(), jmethod.get(), jbody.get(), nullptr, headers.get());
 }
