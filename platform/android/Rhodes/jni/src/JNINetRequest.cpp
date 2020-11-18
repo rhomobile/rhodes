@@ -272,6 +272,7 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
     jhstring jmethod = rho_cast<jstring>(env, method);
     jhstring jbody = rho_cast<jstring>(env, strBody);
     jint code = env->CallIntMethod(netRequestObject, midDoPull, jurl.get(), jmethod.get(), jbody.get(), nullptr, headers.get(), false, timeout);
+    return nullptr;
 }
 
 void rho::net::JNINetRequest::set_options(const String &strUrl, const String &strBody, rho::common::CRhoFile *oFile, rho::net::IRhoSession *pSession,

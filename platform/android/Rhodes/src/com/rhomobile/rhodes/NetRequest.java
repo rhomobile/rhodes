@@ -27,6 +27,7 @@
 package com.rhomobile.rhodes;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -72,6 +73,9 @@ public class NetRequest
         catch (java.io.IOException e) {
             Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
         }
+        catch (java.lang.Exception e) {
+            Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+        }
 
         return 0;
     }
@@ -95,21 +99,55 @@ public class NetRequest
         return response;
     }
 
-    private int getData() throws java.io.IOException {
+    private class GetRequestThread extends Thread
+    {
+        private int code = 0;
+        private StringBuffer response = null;
+        public GetRequestThread() {
+        }
+
+        @Override
+        public void run() {
+
+            try {
+                int responseCode = connection.getResponseCode();
+                StringBuffer response = null;
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    response = readFromStream(connection.getInputStream());
+                } else if (responseCode >= HttpURLConnection.HTTP_BAD_REQUEST) {
+                    response = readFromStream(connection.getErrorStream());
+                }
+            }
+            catch (java.io.IOException e) {
+                Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+            }
+            finally {
+                connection.disconnect();
+            }
+
+        }
+
+        public StringBuffer getResponse() {
+            return response;
+        }
+
+        public int getResponseCode() {
+            return code;
+        }
+    }
+
+    private int getData() throws java.io.IOException, java.lang.InterruptedException {
         URL _url = new URL(url);
         connection = (HttpURLConnection) _url.openConnection();
         connection.setReadTimeout((int)timeout);
         connection.setRequestMethod(method);
         fillHeaders();
 
-        int responseCode = connection.getResponseCode();
-        StringBuffer response = null;
-        if(responseCode == HttpURLConnection.HTTP_OK) {
-            response = readFromStream(connection.getInputStream());
-        }
-        else if(responseCode >= HttpURLConnection.HTTP_BAD_REQUEST) {
-            response = readFromStream(connection.getErrorStream());
-        }
+        GetRequestThread get_thread = new GetRequestThread();
+        get_thread.start();
+        get_thread.join();
+        int responseCode = get_thread.getResponseCode();
+        StringBuffer response = get_thread.getResponse();
 
         return responseCode;
     }
