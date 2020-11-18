@@ -46,8 +46,8 @@ namespace common
 
 net::INetRequestImpl* CRhoClassFactory::createNetRequestImpl()
 {
-    return new net::CURLNetRequest();
-    //return new net::JNINetRequest();
+    //return new net::CURLNetRequest();
+    return new net::JNINetRequest();
 }
 
 IRhoThreadImpl *CRhoClassFactory::createThreadImpl()

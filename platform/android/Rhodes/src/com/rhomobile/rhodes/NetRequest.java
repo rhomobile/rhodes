@@ -42,7 +42,7 @@ public class NetRequest
     {
     }
 
-    int doPull(String u, String m, String b, String f, HashMap<String, String> headers)
+    public int doPull(String u, String m, String b, String f, HashMap<String, String> headers)
     {
         url = u;
         body = b;

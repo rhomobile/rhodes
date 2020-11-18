@@ -166,7 +166,7 @@ rho::net::JNINetRequest::JNINetRequest()
            "Ljava/lang/String;"
            "Ljava/lang/String;"
            "Ljava/lang/String;"
-           "Ljava/lang/Object;"
+           "Ljava/util/HashMap;"
            ")I");
 
     if(!midDoPull)
