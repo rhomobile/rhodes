@@ -215,7 +215,7 @@ rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const rho::St
 
 rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, const rho::String &strUrl, const rho::String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<rho::String, rho::String> *pHeaders) {
     JNIEnv *env = jnienv();
-    jhobject headers = makeJavaHashMap(*pHeaders);
+    jhobject headers = pHeaders ? makeJavaHashMap(*pHeaders) : nullptr;
     jhstring jurl = rho_cast<jstring>(env, strUrl);
     jhstring jmethod = rho_cast<jstring>(env, method);
     jhstring jbody = rho_cast<jstring>(env, strBody);
