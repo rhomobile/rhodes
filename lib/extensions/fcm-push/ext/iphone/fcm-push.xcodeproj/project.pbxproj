@@ -273,7 +273,7 @@
 					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
 					"$(RHO_ROOT)/lib/commonAPI/coreapi/ext/shared",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -312,7 +312,7 @@
 					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/platform/iphone/Classes/AppManager",
 					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/lib/commonAPI/coreapi/ext/shared",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
@@ -362,7 +362,7 @@
 					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/lib/commonAPI/coreapi/ext/shared",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = "fcm-push";
 				SDKROOT = iphoneos;
@@ -407,7 +407,7 @@
 					"/Users/MOHUS/tauplatform/rhodes.7-1-stable/lib/commonAPI/coreapi/ext/shared",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = "fcm-push";
 				SDKROOT = iphoneos;

@@ -492,7 +492,7 @@
 					"./ZXingObjC/ZXingObjC/**",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/ZXingObjC\"/**",
@@ -541,7 +541,7 @@
 					"./ZXingObjC/ZXingObjC/**",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/ZXingObjC\"/**",
@@ -580,7 +580,7 @@
 					/Users/MOHUS/tauplatform/rhodes/platform/shared,
 					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
@@ -610,7 +610,7 @@
 					/Users/MOHUS/tauplatform/rhodes/platform/shared,
 					/Users/MOHUS/tauplatform/rhodes/platform/iphone/Classes,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
