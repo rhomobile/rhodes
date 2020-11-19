@@ -166,7 +166,7 @@ extern int rho_nodejs_get_port();
                 loc = [_headers objectForKey:@"Location"];
             }
             if (loc != nil) {
-                NSString* escaped = [loc stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                NSString* escaped = [loc stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
                 NSURL* _url = [NSURL URLWithString:escaped];
 
                 NSMutableURLRequest* _redirReq = [NSMutableURLRequest requestWithURL:_url];

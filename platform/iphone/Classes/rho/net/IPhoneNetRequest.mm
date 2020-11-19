@@ -481,7 +481,7 @@ public:
       encodedUrl = [NSString stringWithUTF8String:url.c_str()];
 
       // encode whole URL for NSURLComponents ( url with {id} not pass by NSURLComponents)
-      encodedUrl = [encodedUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+      encodedUrl = [encodedUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
 
       NSURLComponents* components = [NSURLComponents componentsWithString:encodedUrl];
       
