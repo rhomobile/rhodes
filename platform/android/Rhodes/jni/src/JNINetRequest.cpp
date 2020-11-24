@@ -41,46 +41,49 @@ extern "C" void rho_net_impl_network_indicator(int active);
 
 IMPLEMENT_LOGCLASS(rho::net::JNINetRequest, "Net");
 
-class JNINetResponseImpl : public rho::net::INetResponse
+class JNetResponseImpl : public rho::net::INetResponse
 {
     rho::String m_data;
     int   m_nRespCode;
     rho::String m_cookies;
     rho::String m_errorMessage;
+    jcharArray body = nullptr;
 
 public:
-    JNINetResponseImpl(char const *data, size_t size, int nRespCode)
-            :m_nRespCode(nRespCode)
-    {
+    JNetResponseImpl(char const *data, size_t size, int nRespCode) : m_nRespCode(nRespCode) {
         m_data.assign(data, size);
     }
 
-    virtual const char* getCharData() const
+    JNetResponseImpl(const rho::String& body, int nRespCode) : m_nRespCode(nRespCode) {
+        m_data = std::move(body);
+    }
+
+    virtual const char* getCharData() const override
     {
         return m_data.c_str();
     }
 
-    virtual unsigned int getDataSize() const
+    virtual unsigned int getDataSize() const override
     {
         return m_data.size();
     }
 
-    virtual int getRespCode() const
+    virtual int getRespCode() const override
     {
         return m_nRespCode;
     }
 
-    virtual rho::String getCookies() const
+    virtual rho::String getCookies() const override
     {
         return m_cookies;
     }
 
-    virtual rho::String getErrorMessage() const
+    virtual rho::String getErrorMessage() const override
     {
         return m_errorMessage;
     }
 
-    virtual void setCharData(const char* szData)
+    virtual void setCharData(const char* szData) override
     {
         m_data = szData;
     }
@@ -115,6 +118,12 @@ public:
     void setCookies(rho::String s)
     {
         m_cookies = s;
+    }
+
+    virtual ~JNetResponseImpl() {
+        JNIEnv *env = jnienv();
+        if(body)
+            env->DeleteGlobalRef(body);
     }
 
 };
@@ -195,11 +204,14 @@ rho::net::JNINetRequest::JNINetRequest()
            "ZJ"
            ")I");
 
-    if(!midDoPull)
-    {
+    if(!midDoPull) {
         RAWLOG_ERROR("doPull method not found!");
         return;
     }
+
+    midgetValuesFromResponseHeaders = getJNIClassMethod(env, cls, "getValuesFromResponseHeaders", "()[Ljava/lang/String;]" );
+    midgetKeysFromResponseHeaders = getJNIClassMethod(env, cls, "getKeysFromResponseHeaders", "()[Ljava/lang/String;]" );
+    midgetResponseBody = getJNIClassMethod(env, cls, "getResponseBody", "()Ljava/lang/String;" );
 
     timeout = rho_conf_getInt("net_timeout");
     if (timeout == 0)
@@ -271,8 +283,22 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
     jhstring jurl = rho_cast<jstring>(env, strUrl);
     jhstring jmethod = rho_cast<jstring>(env, method);
     jhstring jbody = rho_cast<jstring>(env, strBody);
-    jint code = env->CallIntMethod(netRequestObject, midDoPull, jurl.get(), jmethod.get(), jbody.get(), nullptr, headers.get(), false, timeout);
-    return nullptr;
+    jint _code = env->CallIntMethod(netRequestObject, midDoPull, jurl.get(), jmethod.get(), jbody.get(), nullptr, headers.get(), false, timeout);
+    nRespCode = rho_cast<int>(env, _code);
+
+    if( !RHODESAPP().isBaseUrl(strUrl.c_str()) ) {
+        rho_net_impl_network_indicator(0);
+    }
+
+    jhstring jresponse_body = static_cast<jstring>(env->CallObjectMethod(netRequestObject, midgetResponseBody));
+    rho::String response_body = jresponse_body ? rho_cast<rho::String>(env, jresponse_body.get()) : "";
+
+    if (m_pCallback)
+    {
+
+    }
+
+    return makeResponse(response_body, nRespCode);
 }
 
 void rho::net::JNINetRequest::set_options(const String &strUrl, const String &strBody, rho::common::CRhoFile *oFile, rho::net::IRhoSession *pSession,
@@ -303,4 +329,25 @@ void rho::net::JNINetRequest::set_options(const String &strUrl, const String &st
             headers.emplace(strHeader, "application/x-www-form-urlencoded");
     }
 
+}
+
+rho::net::INetResponse* rho::net::JNINetRequest::makeResponse(const rho::Vector<char> &body, int nErrorCode) {
+    if(body.size() > 0)
+        return makeResponse(&body[0], body.size(), nErrorCode);
+    else
+        return makeResponse(0, 0, nErrorCode);
+}
+
+rho::net::INetResponse* rho::net::JNINetRequest::makeResponse(const char *body, size_t bodysize, int nErrorCode) {
+    RAWTRACE1("JNetResponseImpl::makeResponse - nErrorCode: %d", nErrorCode);
+    if (!body) {
+        body = "";
+        bodysize = 0;
+    }
+
+    return new JNetResponseImpl(body, bodysize, nErrorCode);
+}
+
+rho::net::INetResponse* rho::net::JNINetRequest::makeResponse(const rho::String &body, int nErrorCode) {
+    return makeResponse(body, nErrorCode);
 }

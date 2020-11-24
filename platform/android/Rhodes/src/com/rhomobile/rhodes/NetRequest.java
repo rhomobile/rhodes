@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class NetRequest
@@ -45,7 +46,9 @@ public class NetRequest
     private String file = null;
     private boolean sslVerify = true;
     private long timeout = 30;
+    private String responseBody = null;
     HashMap<String, String> headers = null;
+    Map<String, List<String>> response_headers = null;
 
     public NetRequest()
     {
@@ -62,7 +65,7 @@ public class NetRequest
 
         try {
             if(method.equals("POST")) {
-
+                throw new UnsupportedOperationException("POST now not implemented");
             }
             else {
                int code = getData();
@@ -88,21 +91,24 @@ public class NetRequest
         }
     }
 
-    private StringBuffer readFromStream(InputStream stream) throws java.io.IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+    private String readFromStream(InputStream stream) throws java.io.IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
         String inputLine;
-        StringBuffer response = new StringBuffer();
+
+        StringBuilder response = new StringBuilder();
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
         }
+        in.close();
 
-        return response;
+        return response.toString();
     }
 
     private class GetRequestThread extends Thread
     {
         private int code = 0;
-        private StringBuffer response = null;
+        private String response = null;
+        private Map<String, List<String>> response_headers = null;
         public GetRequestThread() {
         }
 
@@ -110,13 +116,15 @@ public class NetRequest
         public void run() {
 
             try {
-                int responseCode = connection.getResponseCode();
-                StringBuffer response = null;
-                if (responseCode == HttpURLConnection.HTTP_OK) {
+                code = connection.getResponseCode();
+                response = null;
+                if (code == HttpURLConnection.HTTP_OK) {
                     response = readFromStream(connection.getInputStream());
-                } else if (responseCode >= HttpURLConnection.HTTP_BAD_REQUEST) {
+                } else if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
                     response = readFromStream(connection.getErrorStream());
                 }
+
+                response_headers = connection.getHeaderFields();
             }
             catch (java.io.IOException e) {
                 Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
@@ -127,13 +135,39 @@ public class NetRequest
 
         }
 
-        public StringBuffer getResponse() {
+        public String getResponse() {
             return response;
         }
-
+        public Map<String, List<String>> getResponseHeaders() { return response_headers; }
         public int getResponseCode() {
             return code;
         }
+    }
+
+    public String[] getKeysFromResponseHeaders() {
+        if(response_headers == null  || response_headers.size() == 0) return null;
+
+        ArrayList<String> values = new ArrayList<String>();
+        for(Map.Entry<String, List<String>> entry : response_headers.entrySet()) {
+            for(String item : entry.getValue()) {
+                values.add(entry.getKey());
+            }
+        }
+        return (String[])values.toArray();
+    }
+
+    public String[] getValuesFromResponseHeaders() {
+        if(response_headers == null || response_headers.size() == 0) return null;
+
+        ArrayList<String> values = new ArrayList<String>();
+        for(Map.Entry<String, List<String>> entry : response_headers.entrySet()) {
+            values.addAll(entry.getValue());
+        }
+        return (String[])values.toArray();
+    }
+
+    public String getResponseBody() {
+        return responseBody;
     }
 
     private int getData() throws java.io.IOException, java.lang.InterruptedException {
@@ -147,7 +181,10 @@ public class NetRequest
         get_thread.start();
         get_thread.join();
         int responseCode = get_thread.getResponseCode();
-        StringBuffer response = get_thread.getResponse();
+        responseBody = get_thread.getResponse();
+        response_headers = get_thread.getResponseHeaders();
+
+
 
         return responseCode;
     }

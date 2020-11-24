@@ -71,6 +71,9 @@ class JNINetRequest : public CNetRequestBase
     jmethodID midDoPull = nullptr;
     jmethodID midPut = nullptr;
     jmethodID midHashMapConstructor = nullptr;
+    jmethodID midgetValuesFromResponseHeaders = nullptr;
+    jmethodID midgetKeysFromResponseHeaders = nullptr;
+    jmethodID midgetResponseBody = nullptr;
     long timeout = 0;
     
 public:
@@ -92,6 +95,10 @@ private:
     jobject makeJavaHashMap(const Hashtable<String,String>& table);
     INetResponse* doPull(const char *method, const String &strUrl, const String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<String,String>* pHeaders);
     void set_options(const String &strUrl, const String &strBody, common::CRhoFile *oFile, IRhoSession *pSession, Hashtable<String,String> headers);
+
+    INetResponse* makeResponse(rho::Vector<char> const &body, int nErrorCode);
+    INetResponse* makeResponse(char const *body, size_t bodysize, int nErrorCode);
+    INetResponse* makeResponse(rho::String const &body, int nErrorCode);
 };
 
 } // namespace net
