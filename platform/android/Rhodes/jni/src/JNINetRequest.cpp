@@ -209,8 +209,8 @@ rho::net::JNINetRequest::JNINetRequest()
         return;
     }
 
-    midgetValuesFromResponseHeaders = getJNIClassMethod(env, cls, "getValuesFromResponseHeaders", "()[Ljava/lang/String;]" );
-    midgetKeysFromResponseHeaders = getJNIClassMethod(env, cls, "getKeysFromResponseHeaders", "()[Ljava/lang/String;]" );
+    midgetValuesFromResponseHeaders = getJNIClassMethod(env, cls, "getValuesFromResponseHeaders", "()[Ljava/lang/String;" );
+    midgetKeysFromResponseHeaders = getJNIClassMethod(env, cls, "getKeysFromResponseHeaders", "()[Ljava/lang/String;" );
     midgetResponseBody = getJNIClassMethod(env, cls, "getResponseBody", "()Ljava/lang/String;" );
 
     timeout = rho_conf_getInt("net_timeout");
@@ -248,14 +248,16 @@ rho::net::INetResponse* rho::net::JNINetRequest::pullFile(const rho::String &str
 }
 
 rho::net::INetResponse* rho::net::JNINetRequest::createEmptyNetResponse() {
-    return nullptr;
+    return new JNetResponseImpl("", 0, -1);
 }
 
 rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const rho::String &strUrl, VectorPtr<CMultipartItem *> &arItems, IRhoSession *oSession, Hashtable<rho::String, rho::String> *pHeaders) {
     return nullptr;
 }
 
-rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, const rho::String &strUrl, const rho::String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<rho::String, rho::String> *pHeaders) {
+rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, const rho::String &strUrl,
+        const rho::String &strBody, common::CRhoFile *oFile, IRhoSession *oSession, Hashtable<rho::String,
+        rho::String> *pHeaders) {
 
     int nRespCode = -1;
     long nStartFrom = 0;
@@ -292,17 +294,28 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
 
     jhstring jresponse_body = static_cast<jstring>(env->CallObjectMethod(netRequestObject, midgetResponseBody));
     rho::String response_body = jresponse_body ? rho_cast<rho::String>(env, jresponse_body.get()) : "";
+    getResponseHeader(*_pHeaders);
 
     if (m_pCallback)
     {
-
+        NetResponse r = makeResponse(response_body, nRespCode);
+        m_pCallback->didReceiveData(response_body.c_str(), response_body.length());
+        m_pCallback->didReceiveResponse(r, _pHeaders);
+        if (r.isOK()) {
+            m_pCallback->didFinishLoading();
+        }
+        else {
+            m_pCallback->didFail(r);
+        }
     }
 
     return makeResponse(response_body, nRespCode);
 }
 
-void rho::net::JNINetRequest::set_options(const String &strUrl, const String &strBody, rho::common::CRhoFile *oFile, rho::net::IRhoSession *pSession,
-                                     rho::Hashtable<rho::String, rho::String> headers) {
+void rho::net::JNINetRequest::set_options(const String &strUrl, const String &strBody,
+        rho::common::CRhoFile *oFile, rho::net::IRhoSession *pSession,
+        rho::Hashtable<rho::String, rho::String> headers) {
+
     rho::String session;
     if (pSession)
         session = pSession->getSession();
@@ -349,5 +362,32 @@ rho::net::INetResponse* rho::net::JNINetRequest::makeResponse(const char *body, 
 }
 
 rho::net::INetResponse* rho::net::JNINetRequest::makeResponse(const rho::String &body, int nErrorCode) {
-    return makeResponse(body, nErrorCode);
+    return new JNetResponseImpl(body, nErrorCode);
+}
+
+void rho::net::JNINetRequest::getResponseHeader(rho::Hashtable<rho::String, rho::String> &headers) {
+    JNIEnv *env = jnienv();
+    jharray keys = static_cast<jobjectArray>(env->CallObjectMethod(netRequestObject, midgetKeysFromResponseHeaders));
+    jharray values = static_cast<jobjectArray>(env->CallObjectMethod(netRequestObject, midgetValuesFromResponseHeaders));
+
+    std::vector<rho::String> v_keys, v_values;
+    JArraytoVectorString(keys, v_keys);
+    JArraytoVectorString(values, v_values);
+
+    if(v_keys.size() == v_values.size()) {
+        for(size_t i = 0; i < v_keys.size(); ++i) {
+            headers.emplace("v_keys[i]", v_values[i]);
+        }
+    }
+
+}
+
+void rho::net::JNINetRequest::JArraytoVectorString(const jharray &array, std::vector<rho::String>& v) {
+    JNIEnv *env = jnienv();
+    jsize count = env->GetArrayLength(array.get());
+
+    for(jsize i = 0; i < count; ++i) {
+        jhstring item = static_cast<jstring>(env->GetObjectArrayElement(array.get(), i));
+        v.push_back(rho_cast<rho::String>(env, item.get()));
+    }
 }

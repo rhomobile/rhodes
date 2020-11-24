@@ -174,6 +174,7 @@ public class NetRequest
         URL _url = new URL(url);
         connection = (HttpURLConnection) _url.openConnection();
         connection.setReadTimeout((int)timeout);
+        connection.setConnectTimeout(1000);
         connection.setRequestMethod(method);
         fillHeaders();
 
@@ -183,8 +184,6 @@ public class NetRequest
         int responseCode = get_thread.getResponseCode();
         responseBody = get_thread.getResponse();
         response_headers = get_thread.getResponseHeaders();
-
-
 
         return responseCode;
     }

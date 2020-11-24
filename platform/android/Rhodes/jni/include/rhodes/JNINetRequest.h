@@ -99,6 +99,9 @@ private:
     INetResponse* makeResponse(rho::Vector<char> const &body, int nErrorCode);
     INetResponse* makeResponse(char const *body, size_t bodysize, int nErrorCode);
     INetResponse* makeResponse(rho::String const &body, int nErrorCode);
+
+    void getResponseHeader(Hashtable<String,String>& headers);
+    void JArraytoVectorString(const jharray& array, std::vector<rho::String>& v);
 };
 
 } // namespace net
