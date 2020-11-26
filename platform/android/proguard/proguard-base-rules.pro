@@ -590,3 +590,5 @@ public static final android.os.Parcelable$Creator *;
 -dontwarn org.shaded.apache.**
 -dontwarn org.ietf.jgss.**
 -keep class com.shaded.fasterxml.jackson.** { *; }
+-keep interface org.conscrypt.** { *; }
+-keep class org.conscrypt.** { *; }
