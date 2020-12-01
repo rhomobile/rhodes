@@ -19,7 +19,7 @@ environment:
 build: off
 
 install:
-  - set PATH=C:\Ruby26\bin;%PATH%
+  - set PATH=%PATH%;C:\Ruby26\bin
   - set RAKEOPT=-rdevkit
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
