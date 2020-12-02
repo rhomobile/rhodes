@@ -4,7 +4,7 @@ clone_folder: C:\TAU\rhodes
 environment:
   matrix:
     - wm_kitchensinkJS:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       QTDIR: C:\Qt\5.6\msvc2013
       testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
       test_app_folder: C:\TAU\kitchensinkJS\
@@ -19,7 +19,7 @@ environment:
 build: off
 
 install:
-  - set PATH=%PATH%;C:\Ruby26\bin
+  - set PATH=C:\Ruby25\bin;%PATH%
   - set RAKEOPT=-rdevkit
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
