@@ -15,7 +15,6 @@ environment:
       target_os: wm
       target_artefact_path: C:\TAU\kitchensinkJS\bin\target\wm\
       #target_artefact_file_name: kitchensinkJS-setup.exe
-
     
 
 build: off
@@ -49,7 +48,7 @@ before_test:
 
   - git clone https://%GITHUB_APPVEYOR_TOKEN%:x-oauth-basic@github.com/tauplatform/rho-tau-extensions.git C:\TAU\rho-tau-extensions
   - cd C:\TAU\rho-tau-extensions
-  - rake gem:make_gem
+  - rake gem
   - set /P BUILD_VERSION_RHOTAU=<version
   - gem install rho-tau-extensions-%BUILD_VERSION_RHOTAU%.gem --no-document -f
 
