@@ -47,7 +47,7 @@ before_test:
  
 
 
-  - git clone https://$GITHUB_APPVEYOR_TOKEN:x-oauth-basic@github.com/tauplatform/rho-tau-extensions.git C:\TAU\rho-tau-extensions
+  - git clone https://%GITHUB_APPVEYOR_TOKEN%:x-oauth-basic@github.com/tauplatform/rho-tau-extensions.git C:\TAU\rho-tau-extensions
   - cd C:\TAU\rho-tau-extensions
   - rake gem:make_gem
   - set /P BUILD_VERSION_RHOTAU=<version
