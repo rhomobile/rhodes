@@ -2,6 +2,8 @@ version: '{branch}.{build}'
 platform: x86
 clone_folder: C:\TAU\rhodes
 environment:
+  GITHUB_APPVEYOR_TOKEN:
+    secure: 7Vs1V9MjrPNKV9vHNkNN07BJjaAs1WEF/F9Mb+dQLGSwnFK9lpstnJvGyawWFkdJ
   matrix:
     - wm_kitchensinkJS:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
@@ -44,11 +46,12 @@ before_test:
   - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
  
 
-  - git clone -b master https://github.com/tauplatform/rho-tau-extensions.git C:\TAU\rho-tau-extensions
-  - cd C:\TAU\rhoconnect-client
+
+  - git clone https://$GITHUB_APPVEYOR_TOKEN:x-oauth-basic@github.com/tauplatform/rho-tau-extensions.git C:\TAU\rho-tau-extensions
+  - cd C:\TAU\rho-tau-extensions
   - rake gem:make_gem
   - set /P BUILD_VERSION_RHOTAU=<version
-  - gem install rhoconnect-client-%BUILD_VERSION_RHOTAU%.gem --no-document -f
+  - gem install rho-tau-extensions-%BUILD_VERSION_RHOTAU%.gem --no-document -f
 
 
 
@@ -58,6 +61,7 @@ before_test:
   - cd C:\TAU\
   - rmdir /Q /S rhodes
   - rmdir /Q /S rhoconnect-client
+  - rmdir /Q /S rho-tau-extensions
 
 test_script:
   - git clone -b master %testable_application_repository% %test_app_folder%
