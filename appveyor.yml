@@ -43,6 +43,15 @@ before_test:
   - set /P BUILD_VERSION_RHOCONNECT=<version
   - gem install rhoconnect-client-%BUILD_VERSION_RHOCONNECT%.gem --no-document -f
  
+
+  - git clone -b master https://github.com/tauplatform/rho-tau-extensions.git C:\TAU\rho-tau-extensions
+  - cd C:\TAU\rhoconnect-client
+  - rake gem:make_gem
+  - set /P BUILD_VERSION_RHOTAU=<version
+  - gem install rhoconnect-client-%BUILD_VERSION_RHOTAU%.gem --no-document -f
+
+
+
   #- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
   #- nuget restore C:\TAU\rhodes\platform\uwp\rhodes_dev.sln
 
