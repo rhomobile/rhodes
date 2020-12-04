@@ -98,6 +98,13 @@ public:
 
 	}
 
+	virtual void setScheduler( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){
+
+	}
+    virtual void removeScheduler(rho::apiGenerator::CMethodResult& oResult){
+    	
+    }
+
 private:
 #if defined(OS_WINCE)
 	CNotificationLoader* m_pNotifications;

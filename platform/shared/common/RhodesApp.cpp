@@ -437,16 +437,20 @@ void CAppCallbacksQueue::processUiCreated()
     m_pInstance = 0;
 }
 
-#if defined(WINDOWS_PLATFORM)
+#if defined(WINDOWS_PLATFORM) 
 void CRhodesApp::waitAppStarted()
 {
+    #ifndef WINCE
     std::unique_lock<std::mutex> lock(wait_mutex);
     activated_cond.wait(lock);
+    #endif
 }
 
 void CRhodesApp::notifyAppStared()
 {
+    #ifndef WINCE
     activated_cond.notify_one();
+    #endif
 }
 #endif
 
