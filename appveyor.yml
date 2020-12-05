@@ -181,9 +181,9 @@ before_test:
   - IF DEFINED target_os_wm appveyor DownloadFile http://files.tau-technologies.com/wince/30XXC50BxxPS010403.exe
   - IF DEFINED target_os_wm appveyor DownloadFile http://files.tau-technologies.com/wince/EMDK-C-020701.exe
   - IF DEFINED target_os_wm appveyor DownloadFile http://files.tau-technologies.com/wince/WM6.5ProSDK.msi
-  - IF DEFINED target_os_wm C:\TAU\EMDK-C-020701.exe /s
-  - IF DEFINED target_os_wm C:\TAU\30XXC50BxxPS010403.exe /s
-  - IF DEFINED target_os_wm C:\TAU\WM6.5ProSDK.msi /s
+  - IF DEFINED target_os_wm EMDK-C-020701.exe /s
+  - IF DEFINED target_os_wm 30XXC50BxxPS010403.exe /s
+  - IF DEFINED target_os_wm WM6.5ProSDK.msi /s
   #- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
   #- nuget restore C:\TAU\rhodes\platform\uwp\rhodes_dev.sln
 
