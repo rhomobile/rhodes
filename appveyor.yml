@@ -174,13 +174,6 @@ before_test:
   - set /P BUILD_VERSION_RHOTAU=<version
   - gem install rho-tau-extensions-%BUILD_VERSION_RHOTAU%.gem --no-document -f
 
-  - IF target_os=="wm" Invoke-WebRequest http://files.tau-technologies.com/wince/30XXC50BxxPS010403.exe -OutFile C:\TAU\30XXC50BxxPS010403.exe
-  - IF target_os=="wm" Invoke-WebRequest http://files.tau-technologies.com/wince/EMDK-C-020701.exe -OutFile C:\TAU\EMDK-C-020701.exe
-  - IF target_os=="wm" Invoke-WebRequest http://files.tau-technologies.com/wince/Windows Mobile 6.5 Standard SDK.msi -OutFile C:\TAU\WM65SDK.msi
-  - IF target_os=="wm" C:\TAU\EMDK-C-020701.exe /s
-  - IF target_os=="wm" C:\TAU\30XXC50BxxPS010403.exe /s
-  - IF target_os=="wm" C:\TAU\WM65SDK.msi /s
-
   #- appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
   #- nuget restore C:\TAU\rhodes\platform\uwp\rhodes_dev.sln
 
@@ -190,6 +183,13 @@ before_test:
   - rmdir /Q /S rho-tau-extensions
 
 test_script:
+  - IF target_os=="wm" Invoke-WebRequest http://files.tau-technologies.com/wince/30XXC50BxxPS010403.exe -OutFile C:\TAU\30XXC50BxxPS010403.exe
+  - IF target_os=="wm" Invoke-WebRequest http://files.tau-technologies.com/wince/EMDK-C-020701.exe -OutFile C:\TAU\EMDK-C-020701.exe
+  - IF target_os=="wm" Invoke-WebRequest http://files.tau-technologies.com/wince/Windows Mobile 6.5 Standard SDK.msi -OutFile C:\TAU\WM65SDK.msi
+  - IF target_os=="wm" C:\TAU\EMDK-C-020701.exe /s
+  - IF target_os=="wm" C:\TAU\30XXC50BxxPS010403.exe /s
+  - IF target_os=="wm" C:\TAU\WM65SDK.msi /s
+
   - git clone -b master %testable_application_repository% %test_app_folder%
   - cd %test_app_folder%
   - IF DEFINED test_app_subfolder cd %test_app_subfolder%
