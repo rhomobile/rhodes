@@ -376,7 +376,7 @@ void rho::net::JNINetRequest::getResponseHeader(rho::Hashtable<rho::String, rho:
 
     if(v_keys.size() == v_values.size()) {
         for(size_t i = 0; i < v_keys.size(); ++i) {
-            headers.emplace("v_keys[i]", v_values[i]);
+            headers.emplace(v_keys[i], v_values[i]);
         }
     }
 

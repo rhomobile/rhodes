@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
@@ -65,7 +66,8 @@ public class NetRequest
 
         try {
             if(method.equals("POST")) {
-                throw new UnsupportedOperationException("POST now not implemented");
+                int code = postData();
+                return code;
             }
             else {
                int code = getData();
@@ -104,11 +106,24 @@ public class NetRequest
         return response.toString();
     }
 
-    private class GetRequestThread extends Thread
+    private static class RequestThread extends Thread
     {
-        private int code = 0;
-        private String response = null;
-        private Map<String, List<String>> response_headers = null;
+        protected int code = 0;
+        protected String response = null;
+        protected Map<String, List<String>> response_headers = null;
+
+        public RequestThread() {}
+        public String getResponse() {
+            return response;
+        }
+        public Map<String, List<String>> getResponseHeaders() { return response_headers; }
+        public int getResponseCode() {
+            return code;
+        }
+    }
+
+    private class GetRequestThread extends RequestThread
+    {
         public GetRequestThread() {
         }
 
@@ -135,12 +150,36 @@ public class NetRequest
 
         }
 
-        public String getResponse() {
-            return response;
-        }
-        public Map<String, List<String>> getResponseHeaders() { return response_headers; }
-        public int getResponseCode() {
-            return code;
+    }
+
+    private class PostRequestThread extends RequestThread
+    {
+        public PostRequestThread() {}
+
+        @Override
+        public void run() {
+            try {
+
+                OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
+                writer.write(body);
+                writer.flush();
+
+                code = connection.getResponseCode();
+                response = null;
+                if (code == HttpURLConnection.HTTP_OK) {
+                    response = readFromStream(connection.getInputStream());
+                } else if (code >= HttpURLConnection.HTTP_BAD_REQUEST) {
+                    response = readFromStream(connection.getErrorStream());
+                }
+
+                response_headers = connection.getHeaderFields();
+            }
+            catch (java.io.IOException e) {
+                Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+            }
+            finally {
+                connection.disconnect();
+            }
         }
     }
 
@@ -168,6 +207,26 @@ public class NetRequest
 
     public String getResponseBody() {
         return responseBody;
+    }
+
+    private int postData() throws java.io.IOException, java.lang.InterruptedException {
+        URL _url = new URL(url);
+        connection = (HttpURLConnection) _url.openConnection();
+        connection.setReadTimeout((int)timeout);
+        connection.setConnectTimeout(1000);
+        connection.setRequestMethod(method);
+        connection.setDoOutput(true);
+        connection.setUseCaches(false);
+        fillHeaders();
+
+        PostRequestThread post_thread = new PostRequestThread();
+        post_thread.start();
+        post_thread.join();
+        int responseCode = post_thread.getResponseCode();
+        responseBody = post_thread.getResponse();
+        response_headers = post_thread.getResponseHeaders();
+
+        return responseCode;
     }
 
     private int getData() throws java.io.IOException, java.lang.InterruptedException {
