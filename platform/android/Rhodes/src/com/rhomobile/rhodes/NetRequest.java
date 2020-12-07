@@ -192,7 +192,10 @@ public class NetRequest
                 values.add(entry.getKey());
             }
         }
-        return (String[])values.toArray();
+
+
+        Object[] array_values = values.toArray();
+        return Arrays.copyOf(array_values, array_values.length, String[].class);
     }
 
     public String[] getValuesFromResponseHeaders() {
@@ -202,7 +205,9 @@ public class NetRequest
         for(Map.Entry<String, List<String>> entry : response_headers.entrySet()) {
             values.addAll(entry.getValue());
         }
-        return (String[])values.toArray();
+
+        Object[] array_values = values.toArray();
+        return Arrays.copyOf(array_values, array_values.length, String[].class);
     }
 
     public String getResponseBody() {

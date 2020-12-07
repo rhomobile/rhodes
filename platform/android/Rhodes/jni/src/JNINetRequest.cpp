@@ -371,8 +371,8 @@ void rho::net::JNINetRequest::getResponseHeader(rho::Hashtable<rho::String, rho:
     jharray values = static_cast<jobjectArray>(env->CallObjectMethod(netRequestObject, midgetValuesFromResponseHeaders));
 
     std::vector<rho::String> v_keys, v_values;
-    JArraytoVectorString(keys, v_keys);
-    JArraytoVectorString(values, v_values);
+    if(keys.get()) JArraytoVectorString(keys, v_keys);
+    if(values.get()) JArraytoVectorString(values, v_values);
 
     if(v_keys.size() == v_values.size()) {
         for(size_t i = 0; i < v_keys.size(); ++i) {
