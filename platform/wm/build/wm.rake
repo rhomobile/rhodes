@@ -589,7 +589,14 @@ def build_cab
   
   Jake.run3("cscript #{args.join(' ')}", dir)
 
+begin
   Jake.run3("\"#{$cabwiz}\" \"#{$appname}.inf\"", dir)
+rescue Exception => e
+  puts e
+  puts "Make sure that  [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\FileSystem] NtfsDisable8dot3NameCreation is set to 0"
+  exit 1
+end
+  
   Jake.run3('cscript cleanup.js', dir)
 
   mkdir_p $targetdir
