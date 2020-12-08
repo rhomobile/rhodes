@@ -335,9 +335,6 @@ void rho::net::JNINetRequest::processMultipartItems(VectorPtr<CMultipartItem*>& 
 
 rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const rho::String &strUrl, VectorPtr<CMultipartItem *> &arItems, IRhoSession *oSession, Hashtable<rho::String, rho::String> *pHeaders) {
 
-    int nRespCode = -1;
-    String strRespBody;
-
     RAWLOG_INFO1("POST request (Push): %s", strUrl.c_str());
     rho_net_impl_network_indicator(1);
 
@@ -348,7 +345,7 @@ rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const rho::St
 
     rho_net_impl_network_indicator(0);
 
-    return makeResponse(strRespBody, nRespCode);
+    return doPull("POST", strUrl, "", nullptr, oSession, pHeaders);
 }
 
 rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, const rho::String &strUrl,
