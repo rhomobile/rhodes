@@ -77,6 +77,7 @@ class JNINetRequest : public CNetRequestBase
     jmethodID midAddMultiPartData = nullptr;
     long timeout = 0;
     rho::String m_multipartBoundary = {};
+    rho::String m_multipartPostfix = {};
     
 public:
     JNINetRequest();

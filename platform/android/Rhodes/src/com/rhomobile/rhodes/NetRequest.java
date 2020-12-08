@@ -27,6 +27,8 @@
 package com.rhomobile.rhodes;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,6 +40,7 @@ import java.util.*;
 
 public class NetRequest
 {
+
     private class JCMultipartItem
     {
         public String m_strFilePath;
@@ -127,6 +130,49 @@ public class NetRequest
         return response.toString();
     }
 
+    private long getMultiPartDataSize() {
+        long size = 0;
+        String m_multipartPostfix = body;
+        for (JCMultipartItem item : multipartItems) {
+            if(!item.m_strFilePath.isEmpty()) {
+                File ofile = new File(item.m_strFilePath);
+                if(ofile.exists())
+                    size += ofile.length();
+                size += item.m_strDataPrefix.length();
+            }
+            else {
+                size += item.m_strDataPrefix.length();
+                size += item.m_strBody.length();
+            }
+        }
+        size += m_multipartPostfix.length();
+        return size;
+    }
+
+    private boolean writeMultiPartData(OutputStreamWriter stream) throws java.io.IOException {
+
+        char buffer[] = new char[4096];
+        int recv = 0;
+        String m_multipartPostfix = body;
+
+        for (JCMultipartItem item : multipartItems) {
+            if(!item.m_strFilePath.isEmpty()) {
+                stream.write(item.m_strDataPrefix);
+
+                BufferedReader in = new BufferedReader(new FileReader(item.m_strFilePath));
+                while((recv = in.read(buffer)) > 0) {
+                    stream.write(buffer, 0, recv);
+                }
+            }
+            else {
+                stream.write(item.m_strDataPrefix);
+                stream.write(item.m_strBody);
+            }
+        }
+        stream.write(m_multipartPostfix);
+        return true;
+    }
+
     private static class RequestThread extends Thread
     {
         protected int code = 0;
@@ -182,7 +228,13 @@ public class NetRequest
             try {
 
                 OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
-                writer.write(body);
+                if(multipartItems.isEmpty())
+                    writer.write(body);
+                else {
+                    long size = getMultiPartDataSize();
+                    connection.setRequestProperty("Content-Length", Long.toString(size));
+                    writeMultiPartData(writer);
+                }
                 writer.flush();
 
                 code = connection.getResponseCode();

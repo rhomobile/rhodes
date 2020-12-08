@@ -267,7 +267,7 @@ size_t rho::net::JNINetRequest::processMultipartItems(VectorPtr<CMultipartItem*>
     }
 
     m_multipartBoundary = ss.str();
-    rho::String m_multipartPostfix = "\r\n";
+    m_multipartPostfix = "\r\n";
     m_multipartPostfix += "--";
     m_multipartPostfix += m_multipartBoundary;
     m_multipartPostfix += "--\r\n";
@@ -350,7 +350,7 @@ rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const rho::St
 
     rho_net_impl_network_indicator(0);
 
-    return doPull("POST", strUrl, "", nullptr, oSession, pHeaders);
+    return doPull("POST", strUrl, m_multipartPostfix, nullptr, oSession, pHeaders);
 }
 
 rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, const rho::String &strUrl,
