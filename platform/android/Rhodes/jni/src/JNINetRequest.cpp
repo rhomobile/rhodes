@@ -254,7 +254,7 @@ rho::net::INetResponse* rho::net::JNINetRequest::createEmptyNetResponse() {
     return new JNetResponseImpl("", 0, -1);
 }
 
-void rho::net::JNINetRequest::processMultipartItems(VectorPtr<CMultipartItem*>& arItems) {
+size_t rho::net::JNINetRequest::processMultipartItems(VectorPtr<CMultipartItem*>& arItems) {
 
     JNIEnv *env = jnienv();
     std::random_device device_engine;
@@ -266,7 +266,7 @@ void rho::net::JNINetRequest::processMultipartItems(VectorPtr<CMultipartItem*>& 
         ss << std::hex << value;
     }
 
-    rho::String m_multipartBoundary = ss.str();
+    m_multipartBoundary = ss.str();
     rho::String m_multipartPostfix = "\r\n";
     m_multipartPostfix += "--";
     m_multipartPostfix += m_multipartBoundary;
@@ -331,6 +331,7 @@ void rho::net::JNINetRequest::processMultipartItems(VectorPtr<CMultipartItem*>& 
     }
 
     nSize += m_multipartPostfix.length();
+    return nSize;
 }
 
 rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const rho::String &strUrl, VectorPtr<CMultipartItem *> &arItems, IRhoSession *oSession, Hashtable<rho::String, rho::String> *pHeaders) {
@@ -342,6 +343,10 @@ rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const rho::St
     proxySettings.initFromConfig();
 
     processMultipartItems(arItems);
+
+    char multi_part_header_value[255] = {};
+    sprintf(multi_part_header_value, "multipart/form-data; boundary=%s", m_multipartBoundary.c_str());
+    pHeaders->emplace("Content-type", multi_part_header_value);
 
     rho_net_impl_network_indicator(0);
 

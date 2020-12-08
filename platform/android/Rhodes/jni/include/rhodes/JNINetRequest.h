@@ -76,6 +76,7 @@ class JNINetRequest : public CNetRequestBase
     jmethodID midgetResponseBody = nullptr;
     jmethodID midAddMultiPartData = nullptr;
     long timeout = 0;
+    rho::String m_multipartBoundary = {};
     
 public:
     JNINetRequest();
@@ -104,7 +105,7 @@ private:
     void getResponseHeader(Hashtable<String,String>& headers);
     void JArraytoVectorString(const jharray& array, std::vector<rho::String>& v);
 
-    void processMultipartItems(VectorPtr<CMultipartItem*>& arItems);
+    size_t processMultipartItems(VectorPtr<CMultipartItem*>& arItems);
 };
 
 } // namespace net
