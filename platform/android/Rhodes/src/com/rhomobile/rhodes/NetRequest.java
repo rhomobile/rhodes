@@ -38,6 +38,15 @@ import java.util.*;
 
 public class NetRequest
 {
+    private class JCMultipartItem
+    {
+        public String m_strFilePath;
+        public String m_strBody;
+        public String m_strName, m_strFileName, m_strContentType;
+        public String m_strDataPrefix;
+        public JCMultipartItem() {}
+    }
+
     private static final String TAG = "JNetRequest";
 
     private HttpURLConnection connection = null;
@@ -50,9 +59,21 @@ public class NetRequest
     private String responseBody = null;
     HashMap<String, String> headers = null;
     Map<String, List<String>> response_headers = null;
+    List<JCMultipartItem> multipartItems = new ArrayList<JCMultipartItem>();
 
     public NetRequest()
     {
+    }
+
+    public void AddMultiPartData(String strFilePath, String strBody, String strName, String strFileName, String strContentType, String strDataPrefix) {
+        JCMultipartItem item = new JCMultipartItem();
+        item.m_strFilePath = strFilePath;
+        item.m_strBody = strBody;
+        item.m_strName = strName;
+        item.m_strFileName = strFileName;
+        item.m_strContentType = strContentType;
+        item.m_strDataPrefix = strDataPrefix;
+        multipartItems.add(item);
     }
 
     public int doPull(String u, String m, String b, String f, HashMap<String, String> h, boolean verify, long t) {

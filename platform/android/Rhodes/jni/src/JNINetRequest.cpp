@@ -33,6 +33,8 @@
 #include "rhodes/JNIRhodes.h"
 
 #include <algorithm>
+#include <random>
+#include <sstream>
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Net"
@@ -212,6 +214,7 @@ rho::net::JNINetRequest::JNINetRequest()
     midgetValuesFromResponseHeaders = getJNIClassMethod(env, cls, "getValuesFromResponseHeaders", "()[Ljava/lang/String;" );
     midgetKeysFromResponseHeaders = getJNIClassMethod(env, cls, "getKeysFromResponseHeaders", "()[Ljava/lang/String;" );
     midgetResponseBody = getJNIClassMethod(env, cls, "getResponseBody", "()Ljava/lang/String;" );
+    midAddMultiPartData = getJNIClassMethod(env, cls, "AddMultiPartData", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" );
 
     timeout = rho_conf_getInt("net_timeout");
     if (timeout == 0)
@@ -251,8 +254,101 @@ rho::net::INetResponse* rho::net::JNINetRequest::createEmptyNetResponse() {
     return new JNetResponseImpl("", 0, -1);
 }
 
+void rho::net::JNINetRequest::processMultipartItems(VectorPtr<CMultipartItem*>& arItems) {
+
+    JNIEnv *env = jnienv();
+    std::random_device device_engine;
+    std::uniform_int_distribution<int> dist(0, 254);
+    std::ostringstream ss;
+
+    for(int i = 0; i < 8; i++) {
+        int value = dist(device_engine);
+        ss << std::hex << value;
+    }
+
+    rho::String m_multipartBoundary = ss.str();
+    rho::String m_multipartPostfix = "\r\n";
+    m_multipartPostfix += "--";
+    m_multipartPostfix += m_multipartBoundary;
+    m_multipartPostfix += "--\r\n";
+
+    int nSize = 0;
+    for( int i = 0; i < (int)arItems.size(); i++ ) {
+        CMultipartItem& oItem = *arItems.elementAt(i);
+
+        if ( oItem.m_strName.length() == 0 )
+            oItem.m_strName = "blob";
+
+        if ( oItem.m_strFileName.length() == 0 ) {
+            if (oItem.m_strFilePath.length() > 0)  {
+                //common::CFilePath oPath(oItem.m_strFilePath);
+                //oItem.m_strFileName = oPath.getBaseName();
+            }
+        }
+
+        oItem.m_strDataPrefix = i > 0 ? "\r\n" : "";
+        oItem.m_strDataPrefix += "--";
+        oItem.m_strDataPrefix += m_multipartBoundary;
+        oItem.m_strDataPrefix += "\r\n";
+        oItem.m_strDataPrefix += "Content-Disposition: form-data; name=\"";
+        oItem.m_strDataPrefix += oItem.m_strName + "\"";
+        if (oItem.m_strFileName.length() > 0) {
+            oItem.m_strDataPrefix += "; filename=\"" + oItem.m_strFileName + "\"";
+        }
+
+        oItem.m_strDataPrefix += "\r\n";
+        if (oItem.m_strContentType.length() > 0) {
+            oItem.m_strDataPrefix += "Content-Type: " + oItem.m_strContentType + "\r\n";
+        }
+
+        int nContentSize = 0;
+        if (oItem.m_strFilePath.length() > 0) {
+            common::CRhoFile oFile;
+            if (oFile.open(oItem.m_strFilePath.c_str(),common::CRhoFile::OpenReadOnly))
+                nContentSize = oFile.size();
+        }
+        else {
+            nContentSize = (int)oItem.m_strBody.length();
+        }
+
+        oItem.m_strDataPrefix += "Content-Length: " + common::convertToStringA(nContentSize) + "\r\n";
+        oItem.m_strDataPrefix += "\r\n";
+        nSize += oItem.m_strDataPrefix.length() + nContentSize;
+
+        jhstring j_strFilePath = rho_cast<jstring>(env, oItem.m_strFilePath);
+        jhstring j_strBody = rho_cast<jstring>(env, oItem.m_strBody);
+        jhstring j_strName = rho_cast<jstring>(env, oItem.m_strName);
+        jhstring j_strFileName = rho_cast<jstring>(env, oItem.m_strFileName);
+        jhstring j_strContentType = rho_cast<jstring>(env, oItem.m_strContentType);
+        jhstring j_strDataPrefix = rho_cast<jstring>(env, oItem.m_strDataPrefix);
+        env->CallVoidMethod(netRequestObject, midAddMultiPartData,
+                            j_strFilePath.get(),
+                            j_strBody.get(),
+                            j_strName.get(),
+                            j_strFileName.get(),
+                            j_strContentType.get(),
+                            j_strDataPrefix.get());
+    }
+
+    nSize += m_multipartPostfix.length();
+}
+
 rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const rho::String &strUrl, VectorPtr<CMultipartItem *> &arItems, IRhoSession *oSession, Hashtable<rho::String, rho::String> *pHeaders) {
-    return nullptr;
+
+    int nRespCode = -1;
+    String strRespBody;
+
+    RAWLOG_INFO1("POST request (Push): %s", strUrl.c_str());
+    rho_net_impl_network_indicator(1);
+
+    ProxySettings proxySettings;
+    proxySettings.initFromConfig();
+
+    processMultipartItems(arItems);
+
+    rho_net_impl_network_indicator(0);
+
+    return makeResponse(strRespBody, nRespCode);
 }
 
 rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, const rho::String &strUrl,
