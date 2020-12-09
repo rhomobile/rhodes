@@ -32,6 +32,9 @@ class IPhoneBuild
         $arch = ENV['ARCHS']
         raise "ARCHS is not set" if $arch.nil?
 
+        $other_cflags = ENV['RHO_OTHER_CFLAGS']
+        #, 'OTHER_CFLAGS="-fembed-bitcode"'
+
         #$gccbin = $bindir + '/gcc-4.2'
         #$arbin = $bindir + '/ar'
     end
@@ -55,6 +58,7 @@ class IPhoneBuild
         FileUtils.rm_rf target_lib
 
         args = ['build', '-target', xcode_project_target_name, '-configuration', $configuration, '-sdk', $sdk]
+        args << ('OTHER_CFLAGS="'+$other_cflags.to_s+'"') if !$other_cflags.nil?
 
         require File.join(ENV['RHO_ROOT'], 'platform','iphone','rbuild','iphonecommon')
 

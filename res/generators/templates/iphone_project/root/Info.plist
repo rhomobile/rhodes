@@ -44,6 +44,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+    	<string>application use your Bluetooth</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
     	<string>application tracks your position</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
