@@ -428,7 +428,20 @@ def set_signing_identity(identity,profile,entitlements,provisioning_style,develo
   File.open(fname,"w") { |f| f.write(buf) }
 end
 
+def update_xcodeproject_for_bitcode
+    value = "NO"
+    if $enable_bitcode
+        value = "YES"
+    end
+    fname = File.join(generate_correct_xcode_project_path, "project.pbxproj")
+    buf = ""
+    File.new(fname,"r").read.each_line do |line|
+      line.gsub!(/ENABLE_BITCODE = .*;/,"ENABLE_BITCODE = #{value};")
+      buf << line
+    end
 
+    File.open(fname,"w") { |f| f.write(buf) }
+end
 
 def make_app_info
   fname = File.join($app_path, 'bin', 'target', 'iOS', $sdk, $configuration, 'app_info.txt')
@@ -1191,7 +1204,7 @@ def get_archs_string_simulator
 end
 
 def get_archs_string_device
-    archs = "arm64"
+    archs = "arm64 armv7"
     if !$app_config["iphone"].nil?
         archs_array = $app_config["iphone"]["ARCHS_device"]
         if !archs_array.nil?
@@ -1414,6 +1427,7 @@ namespace "config" do
       $configuration = $config["env"]["iphone"]["configuration"]
       $sdk = $config["env"]["iphone"]["sdk"]
       $emulatortarget = 'iphone'
+      $enable_bitcode = true
     else
       $signidentity = $app_config["iphone"]["codesignidentity"]
       $provisionprofile = $app_config["iphone"]["provisionprofile"]
@@ -1426,7 +1440,20 @@ namespace "config" do
       if $emulatortarget == nil
          $emulatortarget = 'iphone'
       end
+      en_bitcode = $app_config["iphone"]["enable_bitcode"]
+      $enable_bitcode = true
+      if en_bitcode != nil
+          if (en_bitcode.class == TrueClass) || (en_bitcode.class == FalseClass)
+              $enable_bitcode = en_bitcode
+          else
+              if (en_bitcode == "false") || (en_bitcode == "0") || (en_bitcode == 0)
+                  $enable_bitcode = false
+              end
+          end
+      end
     end
+
+    puts "$enable_bitcode = "+$enable_bitcode.to_s
 
     if $entitlements == ""
         $entitlements = nil
@@ -1742,9 +1769,11 @@ namespace "build" do
             rm_rf lib_aggregated_dir if File.exists? lib_aggregated_dir
 
             args = ['clean', 'build', '-scheme', libconfig[:target], '-project', libname + ".xcodeproj", "-sdk", "iphoneos", "-configuration", "Release"]
+            args << 'OTHER_CFLAGS="-fembed-bitcode -DHAVE_CONFIG_H -DUSE_RHOSSL"' if $enable_bitcode
             ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir,:string_for_add_to_command_line => ' CONFIGURATION_BUILD_DIR='+lib_iphoneos_dir+' ARCHS="'+get_archs_string_device+'"'})
 
             args = ['clean', 'build', '-scheme', libconfig[:target], '-project', libname + ".xcodeproj", "-sdk", "iphonesimulator", "-configuration", "Release"]
+            args << 'OTHER_CFLAGS="-fembed-bitcode -DHAVE_CONFIG_H -DUSE_RHOSSL"' if $enable_bitcode
             ret = IPhoneBuild.run_and_trace($xcodebuild,args,{:rootdir => $startdir,:string_for_add_to_command_line => ' CONFIGURATION_BUILD_DIR='+lib_iphonesimulator_dir+' ARCHS="'+get_archs_string_simulator+'"'})
 
             mkdir_p lib_aggregated_dir
@@ -2291,6 +2320,7 @@ namespace "build" do
       bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
       sdkroot = ENV['SDKROOT']
       arch = ENV['ARCHS']
+      #other_cflags = ENV['OTHER_CFLAGS']
       gccbin = bindir + '/gcc-4.2'
       arbin = bindir + '/ar'
       #xcode_version = ENV['XCODE_VERSION_ACTUAL']
@@ -2354,6 +2384,7 @@ namespace "build" do
           rm_rf result_lib_folder
 
           args = ['build', '-scheme', xcodetarget, '-configuration', configuration, '-sdk', sdk, '-project', xcodeproject]
+          args << 'OTHER_CFLAGS="-fembed-bitcode"' if $enable_bitcode
 
           additional_string = ''
           if simulator
@@ -2419,6 +2450,10 @@ namespace "build" do
 
       ENV["ARCHS"] ||= simulator ? get_archs_string_simulator : get_archs_string_device
 
+      if $enable_bitcode
+          ENV["RHO_OTHER_CFLAGS"] ||= "-fembed-bitcode"
+      end
+
 
       ENV["RHO_ROOT"] = $startdir
 
@@ -2452,11 +2487,17 @@ namespace "build" do
             else
                  puts 'build script in extension already executable : '+build_script
             end
+            additional_string = ""
             if simulator
-                ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] = ' ARCHS="'+get_archs_string_simulator+'"'
+                additional_string = ' ARCHS="'+get_archs_string_simulator+'"'
             else
-                ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] = ' ARCHS="'+get_archs_string_device+'"'
+                additional_string = ' ARCHS="'+get_archs_string_device+'"'
             end
+            if $enable_bitcode
+                additional_string = additional_string + ' OTHER_CFLAGS="-fembed-bitcode"'
+            end
+            ENV["XCODE_BUILD_ADDITIONAL_STRING_TO_COMMAND_LINE"] = additional_string
+
             #puts '$$$$$$$$$$$$$$$$$$     START'
             currentdir = Dir.pwd()
             Dir.chdir extpath
@@ -2669,6 +2710,7 @@ namespace "build" do
 
                  ENV["TARGET_TEMP_DIR"] = prebuiltpath
                  ENV["ARCHS"] = get_archs_string_simulator
+                 ENV["RHO_OTHER_CFLAGS"] = "-fembed-bitcode" if $enable_bitcode
                  ENV["SDK_NAME"] = simsdk
 
                  build_extension_lib(extpath, simsdk, prebuiltpath, xcodeproject, xcodetarget, depfile)
@@ -2783,6 +2825,9 @@ namespace "build" do
                additional_string = ' ARCHS="'+get_archs_string_simulator+'"'
            else
                additional_string = ' ARCHS="'+get_archs_string_device+'"'
+           end
+           if $enable_bitcode
+               additional_string = additional_string + ' OTHER_CFLAGS="-fembed-bitcode"'
            end
 
            require   $startdir + '/lib/build/jake.rb'
@@ -3103,6 +3148,7 @@ namespace "build" do
 
       update_xcode_project_files_by_capabilities
       update_xcode_project_files_by_extensions
+      update_xcodeproject_for_bitcode
 
       copy_generated_sources_and_binaries
 
@@ -3192,6 +3238,11 @@ namespace "build" do
         additional_string = ' ARCHS="'+get_archs_string_simulator+'"'
       else
           additional_string = ' ARCHS="'+get_archs_string_device+'"'
+      end
+
+      if $enable_bitcode
+          puts "rhorunner build $enable_bitcode = "+$enable_bitcode.to_s
+          additional_string = additional_string + ' OTHER_CFLAGS="-fembed-bitcode -DHAVE_CONFIG_H -DUSE_RHOSSL"'
       end
 
       ret = 0

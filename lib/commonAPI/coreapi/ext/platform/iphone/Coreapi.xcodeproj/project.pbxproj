@@ -1771,6 +1771,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = "-fembed-bitcode";
 				PRODUCT_NAME = CoreAPI;
 				SDKROOT = iphoneos;
 			};
@@ -1802,6 +1803,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = "-fembed-bitcode";
 				PRODUCT_NAME = CoreAPI;
 				SDKROOT = iphoneos;
 			};

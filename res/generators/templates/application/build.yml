@@ -113,6 +113,8 @@ iphone:
   #    NSAllowsArbitraryLoads: true
   ## if you use "barcode" extension on iOS, you can switch barcode recognize engine: APPLE_BARCODE_ENGINE(default), ZXING, ZBAR
   #barcode_engine: APPLE_BARCODE_ENGINE
+  ## control of bitcode generations - true by default, but you can disable it by set false
+  #enable_bitcode: false
 
 uwp:
   productid: '<%=@productid%>'
