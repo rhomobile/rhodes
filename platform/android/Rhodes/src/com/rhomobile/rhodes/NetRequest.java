@@ -28,6 +28,8 @@ package com.rhomobile.rhodes;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +58,7 @@ public class NetRequest
     private String url = null;
     private String body = null;
     private String method = null;
-    private String file = null;
+    private int fd = -1;
     private boolean sslVerify = true;
     private long timeout = 30;
     private String responseBody = null;
@@ -79,11 +81,11 @@ public class NetRequest
         multipartItems.add(item);
     }
 
-    public int doPull(String u, String m, String b, String f, HashMap<String, String> h, boolean verify, long t) {
+    public int doPull(String u, String m, String b, int _fd, HashMap<String, String> h, boolean verify, long t) {
         url = u;
         body = b;
         method = m;
-        file = f;
+        fd = _fd;
         sslVerify = verify;
         timeout = t;
         headers = h;
@@ -231,8 +233,8 @@ public class NetRequest
                 if(multipartItems.isEmpty())
                     writer.write(body);
                 else {
-                    long size = getMultiPartDataSize();
-                    connection.setRequestProperty("Content-Length", Long.toString(size));
+                    //long size = getMultiPartDataSize();
+                    //connection.setRequestProperty("Content-Length", Long.toString(size));
                     writeMultiPartData(writer);
                 }
                 writer.flush();
@@ -248,6 +250,9 @@ public class NetRequest
                 response_headers = connection.getHeaderFields();
             }
             catch (java.io.IOException e) {
+                Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+            }
+            catch (java.lang.Exception e) {
                 Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
             }
             finally {
@@ -321,6 +326,10 @@ public class NetRequest
         int responseCode = get_thread.getResponseCode();
         responseBody = get_thread.getResponse();
         response_headers = get_thread.getResponseHeaders();
+
+        if(fd > 0) {
+            //new FileOutputStream(new File() )
+        }
 
         return responseCode;
     }

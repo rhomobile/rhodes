@@ -201,7 +201,7 @@ rho::net::JNINetRequest::JNINetRequest()
            "Ljava/lang/String;"
            "Ljava/lang/String;"
            "Ljava/lang/String;"
-           "Ljava/lang/String;"
+           "I"
            "Ljava/util/HashMap;"
            "ZJ"
            ")I");
@@ -344,7 +344,7 @@ rho::net::INetResponse* rho::net::JNINetRequest::pushMultipartData(const rho::St
 
     processMultipartItems(arItems);
 
-    char multi_part_header_value[255] = {};
+    char multi_part_header_value[128] = {};
     sprintf(multi_part_header_value, "multipart/form-data; boundary=%s", m_multipartBoundary.c_str());
     pHeaders->emplace("Content-type", multi_part_header_value);
 
@@ -382,8 +382,10 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
     jhobject headers = makeJavaHashMap(*_pHeaders);
     jhstring jurl = rho_cast<jstring>(env, strUrl);
     jhstring jmethod = rho_cast<jstring>(env, method);
+    jint jfd = rho_cast<jint>(env, oFile ? oFile->getFD() : -1);
     jhstring jbody = rho_cast<jstring>(env, strBody);
-    jint _code = env->CallIntMethod(netRequestObject, midDoPull, jurl.get(), jmethod.get(), jbody.get(), nullptr, headers.get(), false, timeout);
+    jint _code = env->CallIntMethod(netRequestObject, midDoPull, jurl.get(), jmethod.get(), jbody.get(),
+                                    jfd, headers.get(), false, timeout);
     nRespCode = rho_cast<int>(env, _code);
 
     if( !RHODESAPP().isBaseUrl(strUrl.c_str()) ) {
@@ -393,6 +395,11 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
     jhstring jresponse_body = static_cast<jstring>(env->CallObjectMethod(netRequestObject, midgetResponseBody));
     rho::String response_body = jresponse_body ? rho_cast<rho::String>(env, jresponse_body.get()) : "";
     getResponseHeader(*_pHeaders);
+
+    if(oFile) {
+        oFile->write(response_body.c_str(), response_body.length());
+        oFile->flush();
+    }
 
     if (m_pCallback)
     {
