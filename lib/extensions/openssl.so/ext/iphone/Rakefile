@@ -32,7 +32,7 @@ namespace "build" do
 
             extension_name = "openssl.so"
             extension_lib_name = "openssl.so"
-            extension_xcode_target_name = "openssl"
+            extension_xcode_target_name = "openssl" + ( simulator ? "_sim" : "")
 
             ret= IPhoneBuild.build_rhodes_ios_extension(extension_name, extension_lib_name, extension_xcode_target_name)
 

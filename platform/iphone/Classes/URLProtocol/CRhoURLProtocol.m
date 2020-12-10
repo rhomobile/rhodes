@@ -245,8 +245,8 @@ int on_http_cb(http_parser* parser) { return 0; }
         }
         NSString* loc = [self.httpHeaders objectForKey:@"location"];
         
-        NSString* escaped = [loc stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         
+        NSString* escaped = [loc stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
         url = [NSURL URLWithString:escaped];
         
         if ( url != nil )
@@ -262,7 +262,7 @@ int on_http_cb(http_parser* parser) { return 0; }
             }
               
             NSString* spath = [url path];
-            spath = [spath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            spath = [spath stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
 
               
             if (force_https) {
@@ -277,7 +277,7 @@ int on_http_cb(http_parser* parser) { return 0; }
             if ( squery != nil )
             {
                 // decode query back to original state
-                squery = [squery stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                squery = [squery stringByRemovingPercentEncoding];
                 [s appendFormat:@"?%@", squery];
             }
             

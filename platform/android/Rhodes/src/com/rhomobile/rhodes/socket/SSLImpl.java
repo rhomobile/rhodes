@@ -508,7 +508,7 @@ public class SSLImpl {
 
     }
     	
-	public static SSLSocketFactory getFactory(boolean verify) throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException {
+	private static SSLSocketFactory getFactory(boolean verify) throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException {
 
         if (Build.VERSION.SDK_INT >= 30)	    
             Conscrypt.setUseEngineSocketByDefault(false);

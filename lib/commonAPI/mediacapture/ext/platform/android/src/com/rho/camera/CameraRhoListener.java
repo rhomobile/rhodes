@@ -797,9 +797,15 @@ IRhoListener {
 							inResultMap.put("image_width",  "" + picChoosen_imagewidth);
 							inResultMap.put("image_height",  "" + picChoosen_imageheight);
 						}
-						else{
+						else if (intent != null && intent.getExtras() != null) {
 							inResultMap.put("imageWidth",  "" + intent.getExtras().get("IMAGE_WIDTH"));
 							inResultMap.put("imageHeight",  "" + intent.getExtras().get("IMAGE_HEIGHT"));
+						}else{
+							if (intent == null){
+								Logger.W(TAG, "Can't extract image size from intent (null intent)");
+							}else{
+								Logger.W(TAG, "Can't extract image size from intent (null intent extras)");
+							}
 						}
 					}
 				}

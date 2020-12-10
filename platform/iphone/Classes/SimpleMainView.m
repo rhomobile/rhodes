@@ -769,8 +769,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
     // in the same manner as with those which are not. In case if 'url' is already encoded,
     // encodedUrl will be exactly the same as original one whereas if original url was not
     // encoded, encodedUrl will contain correct encoded version
-    NSString *decodedUrl = [url stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSString *encodedUrl = [decodedUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *decodedUrl = [url stringByRemovingPercentEncoding];
+    NSString *encodedUrl = [decodedUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
     
     // additional check for anchor for file:// prefix
     if ([encodedUrl hasPrefix:@"file://"]) {

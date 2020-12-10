@@ -73,7 +73,7 @@
     
     if ( appName.length == 0 ) {
     
-        NSURL* url = [NSURL URLWithString:[uri stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSURL* url = [NSURL URLWithString:[uri stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
             res = [[UIApplication sharedApplication] openURL:url];
         }
@@ -87,8 +87,8 @@
                                   [data UTF8String]
                                   ];
         
-        NSURL* fullUrl = [NSURL URLWithString:[strFullUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         
+        NSURL* fullUrl = [NSURL URLWithString:[strFullUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
         RAWLOG_INFO1("IntentSingleton::send: %s", [strFullUrl UTF8String]);
         
         

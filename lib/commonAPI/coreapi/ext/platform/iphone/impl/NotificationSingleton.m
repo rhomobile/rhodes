@@ -411,8 +411,8 @@ static NotificationReminder* reminder = nil;
         return;
     
     NSArray *btn = [buttons objectAtIndex:buttonIndex];
-    NSString *itemId = [[btn objectAtIndex:0] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSString *itemTitle = [[btn objectAtIndex:1] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *itemId = [[btn objectAtIndex:0] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+    NSString *itemTitle = [[btn objectAtIndex:1] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
     
     NSMutableDictionary* callbackResult = [NSMutableDictionary dictionaryWithObjectsAndKeys:itemId, HK_BUTTON_ID, itemTitle, HK_BUTTON_TITLE, [NSNumber numberWithInt:buttonIndex], HK_BUTTON_INDEX, nil];
     

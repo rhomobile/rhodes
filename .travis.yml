@@ -162,7 +162,7 @@ matrix:
 
   - language: objective-c
     os: osx
-    #osx_image: xcode11.4
+    osx_image: xcode11.4
     env: RHO_TARGET="iphone"    RHO_APP="framework_spec" RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.7.0"
 
   - language: objective-c

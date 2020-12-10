@@ -1599,7 +1599,7 @@ withCompletionHandler:(void(^)())completionHandler {
     
     if ([[url scheme] isEqualToString:url0]) {
         NSString *startparams = @"";
-        NSString *fullurl = [[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *fullurl = [[url absoluteString] stringByRemovingPercentEncoding];
         
         NSRange range = [fullurl rangeOfString:@":"];
         if ((range.location > 0) && (range.length > 0)) {

@@ -10,8 +10,13 @@
 		C5089BA415AF12D700B28675 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5089BA315AF12D700B28675 /* Foundation.framework */; };
 		FA8DB5A71A7B808B00773D20 /* empty_holder.c in Sources */ = {isa = PBXBuildFile; fileRef = FA8DB5A51A7B808B00773D20 /* empty_holder.c */; };
 		FA8DB5A81A7B808B00773D20 /* empty_holder.h in Headers */ = {isa = PBXBuildFile; fileRef = FA8DB5A61A7B808B00773D20 /* empty_holder.h */; };
-		FA8DB5AB1A7D7B0F00773D20 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8DB5A91A7D7B0F00773D20 /* libcrypto.a */; };
-		FA8DB5AC1A7D7B0F00773D20 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8DB5AA1A7D7B0F00773D20 /* libssl.a */; };
+		FA9987E7256E27ED004B66D5 /* empty_holder.c in Sources */ = {isa = PBXBuildFile; fileRef = FA8DB5A51A7B808B00773D20 /* empty_holder.c */; };
+		FA9987EA256E27ED004B66D5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5089BA315AF12D700B28675 /* Foundation.framework */; };
+		FA9987ED256E27ED004B66D5 /* empty_holder.h in Headers */ = {isa = PBXBuildFile; fileRef = FA8DB5A61A7B808B00773D20 /* empty_holder.h */; };
+		FA9987F8256E287D004B66D5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9987F4256E287C004B66D5 /* libssl.a */; };
+		FA9987FB256E287D004B66D5 /* libssl_sim.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9987F5256E287C004B66D5 /* libssl_sim.a */; };
+		FA9987FC256E287D004B66D5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9987F6256E287C004B66D5 /* libcrypto.a */; };
+		FA9987FF256E287D004B66D5 /* libcrypto_sim.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9987F7256E287D004B66D5 /* libcrypto_sim.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,8 +25,11 @@
 		C5089BA715AF12D700B28675 /* openssl-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "openssl-Prefix.pch"; sourceTree = "<group>"; };
 		FA8DB5A51A7B808B00773D20 /* empty_holder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = empty_holder.c; sourceTree = "<group>"; };
 		FA8DB5A61A7B808B00773D20 /* empty_holder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = empty_holder.h; sourceTree = "<group>"; };
-		FA8DB5A91A7D7B0F00773D20 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = OpenSSl.SDK/libcrypto.a; sourceTree = "<group>"; };
-		FA8DB5AA1A7D7B0F00773D20 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = OpenSSl.SDK/libssl.a; sourceTree = "<group>"; };
+		FA9987F1256E27ED004B66D5 /* libopenssl_sim.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libopenssl_sim.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA9987F4256E287C004B66D5 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = OpenSSl.SDK/libssl.a; sourceTree = "<group>"; };
+		FA9987F5256E287C004B66D5 /* libssl_sim.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl_sim.a; path = OpenSSl.SDK/libssl_sim.a; sourceTree = "<group>"; };
+		FA9987F6256E287C004B66D5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = OpenSSl.SDK/libcrypto.a; sourceTree = "<group>"; };
+		FA9987F7256E287D004B66D5 /* libcrypto_sim.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto_sim.a; path = OpenSSl.SDK/libcrypto_sim.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,9 +37,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA8DB5AB1A7D7B0F00773D20 /* libcrypto.a in Frameworks */,
+				FA9987F8256E287D004B66D5 /* libssl.a in Frameworks */,
 				C5089BA415AF12D700B28675 /* Foundation.framework in Frameworks */,
-				FA8DB5AC1A7D7B0F00773D20 /* libssl.a in Frameworks */,
+				FA9987FC256E287D004B66D5 /* libcrypto.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA9987E8256E27ED004B66D5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA9987FF256E287D004B66D5 /* libcrypto_sim.a in Frameworks */,
+				FA9987EA256E27ED004B66D5 /* Foundation.framework in Frameworks */,
+				FA9987FB256E287D004B66D5 /* libssl_sim.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,8 +59,10 @@
 		C5089B9515AF12D700B28675 = {
 			isa = PBXGroup;
 			children = (
-				FA8DB5A91A7D7B0F00773D20 /* libcrypto.a */,
-				FA8DB5AA1A7D7B0F00773D20 /* libssl.a */,
+				FA9987F7256E287D004B66D5 /* libcrypto_sim.a */,
+				FA9987F6256E287C004B66D5 /* libcrypto.a */,
+				FA9987F5256E287C004B66D5 /* libssl_sim.a */,
+				FA9987F4256E287C004B66D5 /* libssl.a */,
 				C5089BA515AF12D700B28675 /* openssl */,
 				C5089BA215AF12D700B28675 /* Frameworks */,
 				C5089BA115AF12D700B28675 /* Products */,
@@ -53,6 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				C5089BA015AF12D700B28675 /* libopenssl.a */,
+				FA9987F1256E27ED004B66D5 /* libopenssl_sim.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -94,6 +115,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FA9987EC256E27ED004B66D5 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA9987ED256E27ED004B66D5 /* empty_holder.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -114,6 +143,23 @@
 			productReference = C5089BA015AF12D700B28675 /* libopenssl.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		FA9987E5256E27ED004B66D5 /* openssl_sim */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA9987EE256E27ED004B66D5 /* Build configuration list for PBXNativeTarget "openssl_sim" */;
+			buildPhases = (
+				FA9987E6256E27ED004B66D5 /* Sources */,
+				FA9987E8256E27ED004B66D5 /* Frameworks */,
+				FA9987EC256E27ED004B66D5 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = openssl_sim;
+			productName = openssl;
+			productReference = FA9987F1256E27ED004B66D5 /* libopenssl_sim.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -127,6 +173,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = C5089B9515AF12D700B28675;
@@ -135,6 +182,7 @@
 			projectRoot = "";
 			targets = (
 				C5089B9F15AF12D700B28675 /* openssl */,
+				FA9987E5256E27ED004B66D5 /* openssl_sim */,
 			);
 		};
 /* End PBXProject section */
@@ -145,6 +193,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA8DB5A71A7B808B00773D20 /* empty_holder.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA9987E6256E27ED004B66D5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA9987E7256E27ED004B66D5 /* empty_holder.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,7 +224,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -183,7 +239,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -230,6 +286,47 @@
 			};
 			name = Release;
 		};
+		FA9987EF256E27ED004B66D5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEAD_CODE_STRIPPING = NO;
+				DSTROOT = /tmp/openssl.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "openssl/openssl-Prefix.pch";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/OpenSSl.SDK",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+			};
+			name = Debug;
+		};
+		FA9987F0256E27ED004B66D5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEAD_CODE_STRIPPING = NO;
+				DSTROOT = /tmp/openssl.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "openssl/openssl-Prefix.pch";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/OpenSSl.SDK",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				VALIDATE_PRODUCT = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -247,6 +344,15 @@
 			buildConfigurations = (
 				C5089BAE15AF12D700B28675 /* Debug */,
 				C5089BAF15AF12D700B28675 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA9987EE256E27ED004B66D5 /* Build configuration list for PBXNativeTarget "openssl_sim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA9987EF256E27ED004B66D5 /* Debug */,
+				FA9987F0256E27ED004B66D5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
