@@ -385,7 +385,7 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
     jint jfd = rho_cast<jint>(env, oFile ? oFile->getFD() : -1);
     jhstring jbody = rho_cast<jstring>(env, strBody);
     jint _code = env->CallIntMethod(netRequestObject, midDoPull, jurl.get(), jmethod.get(), jbody.get(),
-                                    jfd, headers.get(), false, timeout);
+                                    jfd, headers.get(), m_sslVerifyper, timeout);
     nRespCode = rho_cast<int>(env, _code);
 
     if( !RHODESAPP().isBaseUrl(strUrl.c_str()) ) {

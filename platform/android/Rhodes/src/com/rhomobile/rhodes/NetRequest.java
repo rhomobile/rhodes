@@ -26,6 +26,8 @@
 
 package com.rhomobile.rhodes;
 
+import android.content.res.AssetFileDescriptor;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileDescriptor;
@@ -45,6 +47,8 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
+
+import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.socket.SSLImpl;
 
 public class NetRequest
@@ -147,6 +151,10 @@ public class NetRequest
                 File ofile = new File(item.m_strFilePath);
                 if(ofile.exists())
                     size += ofile.length();
+                else {
+                    AssetFileDescriptor asfd = RhoFileApi.openAssetFd(item.m_strFilePath);
+                    size += asfd.getLength();
+                }
                 size += item.m_strDataPrefix.length();
             }
             else {
@@ -168,10 +176,12 @@ public class NetRequest
             if(!item.m_strFilePath.isEmpty()) {
                 stream.write(item.m_strDataPrefix);
 
-                BufferedReader in = new BufferedReader(new FileReader(item.m_strFilePath));
+                InputStreamReader in = new InputStreamReader(RhoFileApi.open(item.m_strFilePath));
                 while((recv = in.read(buffer)) > 0) {
                     stream.write(buffer, 0, recv);
                 }
+
+                in.close();
             }
             else {
                 stream.write(item.m_strDataPrefix);
@@ -240,8 +250,6 @@ public class NetRequest
                 if(multipartItems.isEmpty())
                     writer.write(body);
                 else {
-                    //long size = getMultiPartDataSize();
-                    //connection.setRequestProperty("Content-Length", Long.toString(size));
                     writeMultiPartData(writer);
                 }
                 writer.flush();
@@ -307,6 +315,15 @@ public class NetRequest
         connection.setRequestMethod(method);
         connection.setDoOutput(true);
         connection.setUseCaches(false);
+        if(!multipartItems.isEmpty()) {
+            long size = getMultiPartDataSize();
+            connection.setRequestProperty("Content-Length", Long.toString(size));
+            connection.setFixedLengthStreamingMode(size);
+        }
+        else {
+            if(body.length() > 0)
+                connection.setFixedLengthStreamingMode(body.length());
+        }
         fillHeaders();
 
         PostRequestThread post_thread = new PostRequestThread();
@@ -315,6 +332,7 @@ public class NetRequest
         int responseCode = post_thread.getResponseCode();
         responseBody = post_thread.getResponse();
         response_headers = post_thread.getResponseHeaders();
+        multipartItems.clear();
 
         return responseCode;
     }
@@ -328,9 +346,9 @@ public class NetRequest
 
     private HttpURLConnection getConnection(URL u) throws java.io.IOException {
         try {
-            if (u.getProtocol().toLowerCase() == "https") {
+            if (u.getProtocol().toLowerCase().matches("https")) {
                 connection = (HttpsURLConnection) u.openConnection();
-                ((HttpsURLConnection) connection).setSSLSocketFactory(SSLImpl.getSecureClientFactory());
+                ((HttpsURLConnection) connection).setSSLSocketFactory(SSLImpl.getFactory(sslVerify));
                 ((HttpsURLConnection) connection).setHostnameVerifier(new RhoHostVerifier());
             }
             else {

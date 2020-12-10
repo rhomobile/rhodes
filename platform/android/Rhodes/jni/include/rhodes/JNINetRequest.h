@@ -76,6 +76,7 @@ class JNINetRequest : public CNetRequestBase
     jmethodID midgetResponseBody = nullptr;
     jmethodID midAddMultiPartData = nullptr;
     long timeout = 0;
+    bool m_sslVerifyper = false;
     rho::String m_multipartBoundary = {};
     rho::String m_multipartPostfix = {};
     
@@ -88,8 +89,8 @@ public:
 
     virtual void cancel() override;
 
-    virtual boolean getSslVerifyPeer() override { return false; }
-    virtual void setSslVerifyPeer(boolean mode) override {  }
+    virtual boolean getSslVerifyPeer() override { return m_sslVerifyper; }
+    virtual void setSslVerifyPeer(boolean mode) override { m_sslVerifyper = mode;  }
 
     virtual INetResponse* createEmptyNetResponse() override;
     
