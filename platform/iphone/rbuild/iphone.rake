@@ -3240,8 +3240,8 @@ namespace "build" do
           additional_string = ' ARCHS="'+get_archs_string_device+'"'
       end
 
+      puts "rhorunner build $enable_bitcode = "+$enable_bitcode.to_s
       if $enable_bitcode
-          puts "rhorunner build $enable_bitcode = "+$enable_bitcode.to_s
           additional_string = additional_string + ' OTHER_CFLAGS="-fembed-bitcode -DHAVE_CONFIG_H -DUSE_RHOSSL"'
       end
 
