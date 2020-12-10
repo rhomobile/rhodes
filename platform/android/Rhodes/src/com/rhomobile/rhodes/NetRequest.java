@@ -38,7 +38,14 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.*;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import com.rhomobile.rhodes.socket.SSLImpl;
 
 public class NetRequest
 {
@@ -294,7 +301,7 @@ public class NetRequest
 
     private int postData() throws java.io.IOException, java.lang.InterruptedException {
         URL _url = new URL(url);
-        connection = (HttpURLConnection) _url.openConnection();
+        connection = getConnection(_url);
         connection.setReadTimeout((int)timeout);
         connection.setConnectTimeout(1000);
         connection.setRequestMethod(method);
@@ -312,9 +319,34 @@ public class NetRequest
         return responseCode;
     }
 
+    class RhoHostVerifier implements HostnameVerifier {
+        @Override
+        public  boolean verify(String hostname, SSLSession session) {
+            return true;
+        }
+    }
+
+    private HttpURLConnection getConnection(URL u) throws java.io.IOException {
+        try {
+            if (u.getProtocol().toLowerCase() == "https") {
+                connection = (HttpsURLConnection) u.openConnection();
+                ((HttpsURLConnection) connection).setSSLSocketFactory(SSLImpl.getSecureClientFactory());
+                ((HttpsURLConnection) connection).setHostnameVerifier(new RhoHostVerifier());
+            }
+            else {
+                connection = (HttpURLConnection) u.openConnection();
+            }
+            return connection;
+        }
+        catch (GeneralSecurityException e) {
+            Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+            return null;
+        }
+    }
+
     private int getData() throws java.io.IOException, java.lang.InterruptedException {
         URL _url = new URL(url);
-        connection = (HttpURLConnection) _url.openConnection();
+        connection = getConnection(_url);
         connection.setReadTimeout((int)timeout);
         connection.setConnectTimeout(1000);
         connection.setRequestMethod(method);
