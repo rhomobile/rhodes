@@ -76,6 +76,9 @@ iphone:
   ## parameters for override ARHCS option when build XCode projects
   #ARCHS_simulator : ["i386", "x86_64"]
   #ARCHS_device : ["arm64", "arm64e", "armv7", "armv7s"]
+  #leave one architecture for decrease build time during development
+  ARCHS_simulator : ["x86_64"]
+  ARCHS_device : ["arm64"]
   ## Note: Provisioning
   ## There are two provisioning type for modern XCode: Automatic and Manual
   ## development_team must be configured for any type provisioning
@@ -114,7 +117,8 @@ iphone:
   ## if you use "barcode" extension on iOS, you can switch barcode recognize engine: APPLE_BARCODE_ENGINE(default), ZXING, ZBAR
   #barcode_engine: APPLE_BARCODE_ENGINE
   ## control of bitcode generations - true by default, but you can disable it by set false
-  #enable_bitcode: false
+  ## disable it for decrease build time during development
+  enable_bitcode: false
 
 uwp:
   productid: '<%=@productid%>'
