@@ -814,6 +814,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* curl */;
@@ -842,7 +843,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "LIB_NAME=\"curl\"\n\n#MY_BUILD_DIR = \"${BUILD_DIR}\"\nMY_BUILD_DIR=\"./build\"\n\nSIMULATOR_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${LIB_NAME}.a\"\n\nDEVICE_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${LIB_NAME}.a\"\n\nOUTPUT_DIR=\"./${LIB_NAME}-Aggregated\"\n\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator\"\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos\"\n\n\nARCHS=\"i386 x86_64\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator ARCHS=\"i386 x86_64\"\n\nARCHS=\"arm64 armv7 armv7s\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphoneos -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos ARCHS=\"arm64 armv7 armv7s\"\n\nrm -rf \"${OUTPUT_DIR}\"\n\nmkdir \"${OUTPUT_DIR}\"\n\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${OUTPUT_DIR}/lib${LIB_NAME}.a\"\n\n";
+			shellScript = "LIB_NAME=\"curl\"\n\n#MY_BUILD_DIR = \"${BUILD_DIR}\"\nMY_BUILD_DIR=\"./build\"\n\nSIMULATOR_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${LIB_NAME}.a\"\n\nDEVICE_LIBRARY_PATH=\"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${LIB_NAME}.a\"\n\nOUTPUT_DIR=\"./${LIB_NAME}-Aggregated\"\n\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator\"\nrm -rf \"${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos\"\n\n\nARCHS=\"x86_64\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphonesimulator ARCHS=\"x86_64\"\n\nARCHS=\"arm64 armv7\"\n\nXcodebuild -project ${PROJECT_NAME}.Xcodeproj -scheme ${LIB_NAME} -sdk iphoneos -configuration ${CONFIGURATION} install CONFIGURATION_BUILD_DIR=${MY_BUILD_DIR}/${CONFIGURATION}-iphoneos ARCHS=\"arm64 armv7\"\n\nrm -rf \"${OUTPUT_DIR}\"\n\nmkdir \"${OUTPUT_DIR}\"\n\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${OUTPUT_DIR}/lib${LIB_NAME}.a\"\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -970,6 +971,7 @@
 				OTHER_CFLAGS = (
 					"-DHAVE_CONFIG_H",
 					"-DUSE_RHOSSL",
+					"-fembed-bitcode",
 				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphoneos;
@@ -992,6 +994,7 @@
 				OTHER_CFLAGS = (
 					"-DHAVE_CONFIG_H",
 					"-DUSE_RHOSSL",
+					"-fembed-bitcode",
 				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphoneos;
@@ -1060,6 +1063,7 @@
 				OTHER_CFLAGS = (
 					"-DHAVE_CONFIG_H",
 					"-DUSE_RHOSSL",
+					"-fembed-bitcode",
 				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphoneos;
