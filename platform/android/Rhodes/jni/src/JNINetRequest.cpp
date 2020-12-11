@@ -216,6 +216,8 @@ rho::net::JNINetRequest::JNINetRequest()
     midgetResponseBody = getJNIClassMethod(env, cls, "getResponseBody", "()Ljava/lang/String;" );
     midAddMultiPartData = getJNIClassMethod(env, cls, "AddMultiPartData", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" );
 
+    midSetAuthSettings = getJNIClassMethod(env, cls, "SetAuthSettings", "(Ljava/lang/String;Ljava/lang/String;Z)V" );
+
     timeout = rho_conf_getInt("net_timeout");
     if (timeout == 0)
         timeout = 30; // 30 seconds by default
@@ -446,6 +448,21 @@ void rho::net::JNINetRequest::set_options(const String &strUrl, const String &st
         else
             headers.emplace(strHeader, "application/x-www-form-urlencoded");
     }
+
+    JNIEnv *env = jnienv();
+    switch (m_authMethod) {
+        case AUTH_DIGEST:
+        case AUTH_BASIC:
+        {
+            jhstring user = rho_cast<jstring>(env, m_authUser);
+            jhstring pwd = rho_cast<jstring>(env, m_authPassword);
+            env->CallVoidMethod(netRequestObject, midSetAuthSettings, user.get(), pwd.get(), m_authMethod == AUTH_DIGEST);
+            break;
+        }
+        default:
+            break;
+    }
+
 
 }
 
