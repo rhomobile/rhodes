@@ -51,6 +51,9 @@ import javax.net.ssl.SSLSocketFactory;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.socket.SSLImpl;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.http.impl.auth.DigestScheme;
+
 public class NetRequest
 {
 
@@ -77,8 +80,28 @@ public class NetRequest
     Map<String, List<String>> response_headers = null;
     List<JCMultipartItem> multipartItems = new ArrayList<JCMultipartItem>();
 
+    private String user = null;
+    private String pwd = null;
+    private boolean is_digest = false;
+
+
+    public void SetAuthSettings(String u, String p, boolean is_d) {
+        user = u;
+        pwd = p;
+        is_digest = is_d;
+    }
+
     public NetRequest()
     {
+    }
+
+    private void SetAuthentificationHeader(URL u) {
+        if(pwd == null || user == null) return;
+
+        if(is_digest) {
+            String ha1 = DigestUtils.md5Hex(user + ":" + u.getHost() + ":" + pwd);
+            String ha2 = DigestUtils.md5Hex(connection.getRequestMethod() + ":" + url);
+        }
     }
 
     public void AddMultiPartData(String strFilePath, String strBody, String strName, String strFileName, String strContentType, String strDataPrefix) {
@@ -310,11 +333,12 @@ public class NetRequest
     private int postData() throws java.io.IOException, java.lang.InterruptedException {
         URL _url = new URL(url);
         connection = getConnection(_url);
-        connection.setReadTimeout((int)timeout);
-        connection.setConnectTimeout(1000);
+        connection.setReadTimeout((int)30000);
+        connection.setConnectTimeout(5000);
         connection.setRequestMethod(method);
         connection.setDoOutput(true);
         connection.setUseCaches(false);
+
         if(!multipartItems.isEmpty()) {
             long size = getMultiPartDataSize();
             connection.setRequestProperty("Content-Length", Long.toString(size));
