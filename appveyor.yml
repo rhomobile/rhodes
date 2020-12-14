@@ -154,10 +154,7 @@ install:
 #  - gem install bundler --quiet --no-ri --no-rdoc -f
 #  - bundler --version
   
-before_test:
-   
-  - IF DEFINED target_os_wm dism /online /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /Quiet
-
+before_test:  
   - ruby -v
   - gem -v
   - bundle -v
@@ -177,6 +174,8 @@ before_test:
   - rake gem
   - set /P BUILD_VERSION_RHOTAU=<version
   - gem install rho-tau-extensions-%BUILD_VERSION_RHOTAU%.gem --no-document -f
+
+  - IF DEFINED target_os_wm dism /online /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /Quiet /NoRestart
 
   - md C:\TAU\downloads
   - cd C:\TAU\downloads
