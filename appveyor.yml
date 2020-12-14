@@ -158,8 +158,7 @@ before_test:
    
   #- IF DEFINED target_os_wm dism /online /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /Quiet
 
-  - md C:\TAU\downloads
-  - cd C:\TAU\downloads
+
 
   #- IF DEFINED target_os_wm curl -fsS -o aip.zip http://files.tau-technologies.com/wince/aip.zip
   #- IF DEFINED target_os_wm 7z x aip.zip -y
@@ -172,15 +171,6 @@ before_test:
   #- IF DEFINED target_os_wm curl -fsS -o EMDK-C-020701.exe http://files.tau-technologies.com/wince/EMDK-C-020701.exe
   #- IF DEFINED target_os_wm "C:\TAU\downloads\Advanced Installer 17.7 Portable\App\Advanced Installer\bin\x64\RepackagerCLI.exe" /ProductLanguage "1033" /SetupPath "EMDK-C-020701.exe" /UiAutomation /Configuration "Default"
   #- IF DEFINED target_os_wm timeout 10
-
-  - IF DEFINED target_os_wm curl -fsS -o EMDK.msi http://files.tau-technologies.com/wince/rebuild/EMDK.msi
-  - IF DEFINED target_os_wm EMDK.msi /quiet
-  - IF DEFINED target_os_wm timeout 10
-  
-  - IF DEFINED target_os_wm curl -fsS -o SDK.msi http://files.tau-technologies.com/wince/rebuild/SDK.msi
-  - IF DEFINED target_os_wm SDK.msi /quiet
-  - IF DEFINED target_os_wm timeout 10
-
 
   - ruby -v
   - gem -v
@@ -202,7 +192,16 @@ before_test:
   - set /P BUILD_VERSION_RHOTAU=<version
   - gem install rho-tau-extensions-%BUILD_VERSION_RHOTAU%.gem --no-document -f
 
-
+  - md C:\TAU\downloads
+  - cd C:\TAU\downloads
+  
+  - IF DEFINED target_os_wm curl -fsS -o EMDK.msi http://files.tau-technologies.com/wince/rebuild/EMDK.msi
+  - IF DEFINED target_os_wm EMDK.msi /passive
+  - IF DEFINED target_os_wm timeout 10
+  
+  - IF DEFINED target_os_wm curl -fsS -o SDK.msi http://files.tau-technologies.com/wince/rebuild/SDK.msi
+  - IF DEFINED target_os_wm SDK.msi /passive
+  - IF DEFINED target_os_wm timeout 10
 
   - cd C:\TAU\
   - rmdir /Q /S downloads
