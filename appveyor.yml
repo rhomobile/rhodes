@@ -159,7 +159,7 @@ before_test:
   - md C:\TAU\downloads
   - cd C:\TAU\downloads
 
-  - IF DEFINED target_os_wm dism /online /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /NoRestart /quiet
+  - IF DEFINED target_os_wm dism /online /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /NoRestart
 
   - IF DEFINED target_os_wm curl -fsS -o aip.zip http://files.tau-technologies.com/wince/aip.zip
   - IF DEFINED target_os_wm 7z x aip.zip -y
