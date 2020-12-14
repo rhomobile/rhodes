@@ -155,11 +155,11 @@ install:
 #  - bundler --version
   
 before_test:
+   
+  - IF DEFINED target_os_wm dism /online /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /Quiet
 
   - md C:\TAU\downloads
   - cd C:\TAU\downloads
-    
-  - IF DEFINED target_os_wm dism /online /Disable-Feature /FeatureName:Internet-Explorer-Optional-amd64 /Quiet
 
   - IF DEFINED target_os_wm curl -fsS -o aip.zip http://files.tau-technologies.com/wince/aip.zip
   - IF DEFINED target_os_wm 7z x aip.zip -y
