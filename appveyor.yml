@@ -185,12 +185,15 @@ before_test:
 #  - IF DEFINED target_os_wm EMDK-C-020801.exe /S /v /qn
 #  - IF DEFINED target_os_wm WM6.5ProSDK.msi /s
 
-  - IF DEFINED target_os_wm appveyor DownloadFile http://files.tau-technologies.com/wince/custom/EMDK.exe
-  - IF DEFINED target_os_wm EMDK.exe
-  - IF DEFINED target_os_wm timeout 15
-  - IF DEFINED target_os_wm appveyor DownloadFile http://files.tau-technologies.com/wince/custom/MC3000c50B.exe
-  - IF DEFINED target_os_wm MC3000c50B.exe
-  - IF DEFINED target_os_wm timeout 15
+  - IF DEFINED target_os_wm appveyor DownloadFile http://files.tau-technologies.com/wince/aip.zip
+  - IF DEFINED target_os_wm 7z e aip.zip -y
+
+  - IF DEFINED target_os_wm appveyor DownloadFile http://files.tau-technologies.com/wince/30XXC50BxxPS010403.exe
+  - IF DEFINED target_os_wm "Advanced Installer 17.7 Portable\App\Advanced Installer\bin\x64\RepackagerCLI.exe" /ProductLanguage "1033" /SetupPath "30XXC50BxxPS010403.exe" /UiAutomation /Configuration "Default"
+  - IF DEFINED target_os_wm timeout 20
+  - IF DEFINED target_os_wm appveyor DownloadFile http://files.tau-technologies.com/wince/EMDK-C-020701.exe
+  - IF DEFINED target_os_wm "Advanced Installer 17.7 Portable\App\Advanced Installer\bin\x64\RepackagerCLI.exe" /ProductLanguage "1033" /SetupPath "EMDK-C-020701.exe" /UiAutomation /Configuration "Default"
+  - IF DEFINED target_os_wm timeout 20
 
   - cd C:\TAU\
   - rmdir /Q /S downloads
