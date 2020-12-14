@@ -164,12 +164,12 @@ before_test:
   - IF DEFINED target_os_wm timeout 10  
   
   - IF DEFINED target_os_wm curl -fsS -o 30XXC50BxxPS010403.exe http://files.tau-technologies.com/wince/30XXC50BxxPS010403.exe
-  - IF DEFINED target_os_wm START "" "C:\TAU\downloads\Advanced Installer 17.7 Portable\App\Advanced Installer\bin\x64\RepackagerCLI.exe" /ProductLanguage "1033" /SetupPath "C:\TAU\downloads\30XXC50BxxPS010403.exe" /UiAutomation /Configuration "Default"
-  - IF DEFINED target_os_wm timeout 300
+  - IF DEFINED target_os_wm START "/B" "C:\TAU\downloads\Advanced Installer 17.7 Portable\App\Advanced Installer\bin\x64\RepackagerCLI.exe" /ProductLanguage "1033" /SetupPath "C:\TAU\downloads\30XXC50BxxPS010403.exe" /UiAutomation /Configuration "Default"
+  - IF DEFINED target_os_wm timeout 180
   
   - IF DEFINED target_os_wm curl -fsS -o EMDK-C-020701.exe http://files.tau-technologies.com/wince/EMDK-C-020701.exe
-  - IF DEFINED target_os_wm START "" "C:\TAU\downloads\Advanced Installer 17.7 Portable\App\Advanced Installer\bin\x64\RepackagerCLI.exe" /ProductLanguage "1033" /SetupPath "EMDK-C-020701.exe" /UiAutomation /Configuration "Default"
-  - IF DEFINED target_os_wm timeout 300
+  - IF DEFINED target_os_wm START "/B" "C:\TAU\downloads\Advanced Installer 17.7 Portable\App\Advanced Installer\bin\x64\RepackagerCLI.exe" /ProductLanguage "1033" /SetupPath "EMDK-C-020701.exe" /UiAutomation /Configuration "Default"
+  - IF DEFINED target_os_wm timeout 180
 
 
   - ruby -v
