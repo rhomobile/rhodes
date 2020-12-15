@@ -27,6 +27,7 @@
 package com.rhomobile.rhodes;
 
 import android.content.res.AssetFileDescriptor;
+import android.net.wifi.WifiConfiguration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,6 +43,7 @@ import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.Principal;
 import java.util.*;
 
 import javax.net.ssl.HostnameVerifier;
@@ -53,7 +55,27 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.socket.SSLImpl;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.auth.DigestScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHttpRequest;
+
+import java.text.SimpleDateFormat;
 
 public class NetRequest
 {
@@ -83,7 +105,10 @@ public class NetRequest
 
     private String user = null;
     private String pwd = null;
+    private String realm = null;
+    private String nonce = null;
     private boolean is_digest = false;
+    private String authHeader = null;
 
 
     public void SetAuthSettings(String u, String p, boolean is_d) {
@@ -152,6 +177,9 @@ public class NetRequest
             String value = entry.getValue();
             connection.setRequestProperty(key, value);
         }
+
+        if(authHeader != null)
+            connection.setRequestProperty("Authorization", authHeader);
     }
 
     private String readFromStream(InputStream stream) throws java.io.IOException {
@@ -331,21 +359,67 @@ public class NetRequest
         return responseBody;
     }
 
+    private String calculateNonce() {
+        Date d = new Date();
+        SimpleDateFormat f = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
+        String fmtDate = f.format(d);
+        Random rand = new Random(100000);
+        Integer randomInt = rand.nextInt();
+        return DigestUtils.md5Hex(fmtDate + randomInt.toString());
+    }
+
+    private HashMap<String, String> parseHeader(String headerString) {
+        String headerStringWithoutScheme = headerString.substring(headerString.indexOf(" ") + 1).trim();
+        HashMap<String, String> values = new HashMap<String, String>();
+        String keyValueArray[] = headerStringWithoutScheme.split(",");
+        for (String keyval : keyValueArray) {
+            if (keyval.contains("=")) {
+                String key = keyval.substring(0, keyval.indexOf("="));
+                String value = keyval.substring(keyval.indexOf("=") + 1);
+                values.put(key.trim(), value.replaceAll("\"", "").trim());
+            }
+        }
+        return values;
+    }
+
     private int Authetentificate() throws java.io.IOException, java.lang.InterruptedException {
 
         //Digest qop="auth",algorithm=MD5-sess,
         // nonce="+Upgraded+v110e5c1019d7e15ac4ea605de1a43fdafcbd03c299dcfd601738c8110930acd477bdd716537f1c33d98690cdbecc6abd95524aa967f3a0342",
         // charset=utf-8,realm="Digest"
 
-        List<String> values = response_headers.get("WWW-Authenticate");
+        List<String> headers = response_headers.get("WWW-Authenticate");
+        HashMap<String, String> values = null;
+        if(!headers.isEmpty())
+            values = parseHeader(headers.get(0));
+        else
+            return 0;
+
+        URL _url = new URL(url);
+        String method = connection.getRequestMethod();
+        String nonce = values.get("nonce");
+        String opaque = values.get("opaque");
+        String algo = values.get("algorithm");
+        String cnonce = calculateNonce();
+        String ha1 = DigestUtils.md5Hex(DigestUtils.md5Hex(user + ":" + realm + ":" + pwd) + ":" + nonce + ":" + cnonce);
+        String qop = values.get("qop");
+        String uri = _url.getPath();
+        String ha2 = DigestUtils.md5Hex(method + ":" + uri);
+        String nc = "00000001";
+        String serverResponse = DigestUtils.md5Hex(ha1 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":" + ha2);
+
+        authHeader = String.format("Digest username=\"%s\" realm=\"%s\", " +
+                "nonce=\"%s\", uri=\"%s\", qop=auth, nc=%s, cnonce=\"%s\", " +
+                "response=\"%s\", opaque=\"%s, algorithm=\"%s\" ",
+                user, realm, nonce, uri, nc, cnonce, serverResponse, opaque, algo);
 
         if(method.equals("POST")) {
-            int code = postData(true);
-            return code;
+           int code = postData(true);
+           return code;
         }
         else {
-            int code = getData(true);
-            return code;
+           int code = getData(true);
+           return code;
         }
     }
 
