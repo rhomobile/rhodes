@@ -38,42 +38,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.Principal;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
 
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.socket.SSLImpl;
-
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthenticationException;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.auth.DigestScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicHttpRequest;
 
 import java.text.SimpleDateFormat;
 
@@ -359,13 +340,31 @@ public class NetRequest
         return responseBody;
     }
 
-    private String calculateNonce() {
+    private String byteToHex(byte num) {
+        char[] hexDigits = new char[2];
+        hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
+        hexDigits[1] = Character.forDigit((num & 0xF), 16);
+        return new String(hexDigits);
+    }
+
+    public String encodeHexString(byte[] byteArray) {
+        StringBuffer hexStringBuffer = new StringBuffer();
+        for (int i = 0; i < byteArray.length; i++) {
+            hexStringBuffer.append(byteToHex(byteArray[i]));
+        }
+        return hexStringBuffer.toString();
+    }
+
+    private String calculateNonce() throws NoSuchAlgorithmException, UnsupportedEncodingException {
         Date d = new Date();
         SimpleDateFormat f = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
         String fmtDate = f.format(d);
         Random rand = new Random(100000);
         Integer randomInt = rand.nextInt();
-        return DigestUtils.md5Hex(fmtDate + randomInt.toString());
+
+        MessageDigest hash = MessageDigest.getInstance("MD5");
+        byte[] cnonce = hash.digest((fmtDate + randomInt.toString()).getBytes("UTF-8"));
+        return encodeHexString(cnonce);
     }
 
     private HashMap<String, String> parseHeader(String headerString) {
@@ -383,11 +382,6 @@ public class NetRequest
     }
 
     private int Authetentificate() throws java.io.IOException, java.lang.InterruptedException {
-
-        //Digest qop="auth",algorithm=MD5-sess,
-        // nonce="+Upgraded+v110e5c1019d7e15ac4ea605de1a43fdafcbd03c299dcfd601738c8110930acd477bdd716537f1c33d98690cdbecc6abd95524aa967f3a0342",
-        // charset=utf-8,realm="Digest"
-
         List<String> headers = response_headers.get("WWW-Authenticate");
         HashMap<String, String> values = null;
         if(!headers.isEmpty())
@@ -400,18 +394,56 @@ public class NetRequest
         String nonce = values.get("nonce");
         String opaque = values.get("opaque");
         String algo = values.get("algorithm");
-        String cnonce = calculateNonce();
-        String ha1 = DigestUtils.md5Hex(DigestUtils.md5Hex(user + ":" + realm + ":" + pwd) + ":" + nonce + ":" + cnonce);
         String qop = values.get("qop");
+        String cnonce = null;
         String uri = _url.getPath();
-        String ha2 = DigestUtils.md5Hex(method + ":" + uri);
         String nc = "00000001";
-        String serverResponse = DigestUtils.md5Hex(ha1 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":" + ha2);
+
+        String ha1 = null, ha2 = null, serverResponse = null;
+
+        try {
+            cnonce = calculateNonce();
+
+            MessageDigest hash = MessageDigest.getInstance("MD5");
+            hash.update((user + ":" + realm + ":" + pwd).getBytes("UTF-8"));
+            hash.update((":" + nonce + ":" + cnonce).getBytes("UTF-8"));
+            byte[] ha1_ = hash.digest();
+
+            hash.reset();
+            byte[] ha2_ = hash.digest((method + ":" + uri).getBytes("UTF-8"));
+
+            hash.reset();
+            hash.update(ha1_);
+            hash.update(( ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":").getBytes("UTF-8"));
+            hash.update(ha2_);
+            byte[] response = hash.digest();
+
+            ha1 = encodeHexString(ha1_);
+            ha2 = encodeHexString(ha2_);
+            serverResponse = encodeHexString(response);
+
+        }
+        catch (NoSuchAlgorithmException e) {
+            Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+            return 0;
+        }
+
+
+
+        //String ha1 = DigestUtils.md5Hex(DigestUtils.md5Hex(user + ":" + realm + ":" + pwd) + ":" + nonce + ":" + cnonce);
+        //String ha2 = DigestUtils.md5Hex(method + ":" + uri);
+        //String serverResponse = DigestUtils.md5Hex(ha1 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":" + ha2);
+
 
         authHeader = String.format("Digest username=\"%s\" realm=\"%s\", " +
                 "nonce=\"%s\", uri=\"%s\", qop=auth, nc=%s, cnonce=\"%s\", " +
-                "response=\"%s\", opaque=\"%s, algorithm=\"%s\" ",
-                user, realm, nonce, uri, nc, cnonce, serverResponse, opaque, algo);
+                "response=\"%s\"",
+                user, realm, nonce, uri, nc, cnonce, serverResponse);
+
+        if(opaque != null)
+            authHeader += String.format(", opaque=\"%s\"", opaque);
+        if(algo != null)
+            authHeader += String.format(", algorithm=\"%s\"", algo);
 
         if(method.equals("POST")) {
            int code = postData(true);
