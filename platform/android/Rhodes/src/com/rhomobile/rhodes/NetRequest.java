@@ -39,6 +39,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.HttpURLConnection;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.*;
@@ -126,11 +127,11 @@ public class NetRequest
 
         try {
             if(method.equals("POST")) {
-                int code = postData();
+                int code = postData(false);
                 return code;
             }
             else {
-               int code = getData();
+               int code = getData(false);
                return code;
             }
 
@@ -330,7 +331,25 @@ public class NetRequest
         return responseBody;
     }
 
-    private int postData() throws java.io.IOException, java.lang.InterruptedException {
+    private int Authetentificate() throws java.io.IOException, java.lang.InterruptedException {
+
+        //Digest qop="auth",algorithm=MD5-sess,
+        // nonce="+Upgraded+v110e5c1019d7e15ac4ea605de1a43fdafcbd03c299dcfd601738c8110930acd477bdd716537f1c33d98690cdbecc6abd95524aa967f3a0342",
+        // charset=utf-8,realm="Digest"
+
+        List<String> values = response_headers.get("WWW-Authenticate");
+
+        if(method.equals("POST")) {
+            int code = postData(true);
+            return code;
+        }
+        else {
+            int code = getData(true);
+            return code;
+        }
+    }
+
+    private int postData(boolean auth) throws java.io.IOException, java.lang.InterruptedException {
         URL _url = new URL(url);
         connection = getConnection(_url);
         connection.setReadTimeout((int)30000);
@@ -356,6 +375,11 @@ public class NetRequest
         int responseCode = post_thread.getResponseCode();
         responseBody = post_thread.getResponse();
         response_headers = post_thread.getResponseHeaders();
+
+        if(responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && !auth) {
+            responseCode = Authetentificate();
+        }
+
         multipartItems.clear();
 
         return responseCode;
@@ -370,15 +394,16 @@ public class NetRequest
 
     private HttpURLConnection getConnection(URL u) throws java.io.IOException {
         try {
+            HttpURLConnection conn = null;
             if (u.getProtocol().toLowerCase().matches("https")) {
-                connection = (HttpsURLConnection) u.openConnection();
-                ((HttpsURLConnection) connection).setSSLSocketFactory(SSLImpl.getFactory(sslVerify));
-                ((HttpsURLConnection) connection).setHostnameVerifier(new RhoHostVerifier());
+                conn = (HttpsURLConnection) u.openConnection();
+                ((HttpsURLConnection) conn).setSSLSocketFactory(SSLImpl.getFactory(sslVerify));
+                ((HttpsURLConnection) conn).setHostnameVerifier(new RhoHostVerifier());
             }
             else {
-                connection = (HttpURLConnection) u.openConnection();
+                conn = (HttpURLConnection) u.openConnection();
             }
-            return connection;
+            return conn;
         }
         catch (GeneralSecurityException e) {
             Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
@@ -386,7 +411,7 @@ public class NetRequest
         }
     }
 
-    private int getData() throws java.io.IOException, java.lang.InterruptedException {
+    private int getData(boolean auth) throws java.io.IOException, java.lang.InterruptedException {
         URL _url = new URL(url);
         connection = getConnection(_url);
         connection.setReadTimeout((int)timeout);
@@ -400,6 +425,10 @@ public class NetRequest
         int responseCode = get_thread.getResponseCode();
         responseBody = get_thread.getResponse();
         response_headers = get_thread.getResponseHeaders();
+
+        if(responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && !auth) {
+            responseCode = Authetentificate();
+        }
 
         if(fd > 0) {
             //new FileOutputStream(new File() )
