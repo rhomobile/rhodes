@@ -441,7 +441,7 @@ public class NetRequest
         URL _url = new URL(url);
         connection = getConnection(_url);
         connection.setReadTimeout((int)30000);
-        connection.setConnectTimeout(5000);
+        connection.setConnectTimeout(30000);
         connection.setRequestMethod(method);
         connection.setDoOutput(true);
         connection.setUseCaches(false);
@@ -502,8 +502,8 @@ public class NetRequest
     private int getData(boolean auth) throws java.io.IOException, java.lang.InterruptedException {
         URL _url = new URL(url);
         connection = getConnection(_url);
-        connection.setReadTimeout((int)timeout);
-        connection.setConnectTimeout(1000);
+        connection.setReadTimeout(30000);
+        connection.setConnectTimeout(30000);
         connection.setRequestMethod(method);
         fillHeaders();
 
