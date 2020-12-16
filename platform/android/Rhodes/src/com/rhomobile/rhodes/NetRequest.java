@@ -55,6 +55,11 @@ import java.text.SimpleDateFormat;
 public class NetRequest
 {
 
+    private static final char[] HEXADECIMAL = {
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
+            'e', 'f'
+    };
+
     private class JCMultipartItem
     {
         public String m_strFilePath;
@@ -62,6 +67,31 @@ public class NetRequest
         public String m_strName, m_strFileName, m_strContentType;
         public String m_strDataPrefix;
         public JCMultipartItem() {}
+    }
+
+    private static class AuthSettings {
+        private static final int QOP_MISSING = 0;
+        private static final int QOP_AUTH_INT = 1;
+        private static final int QOP_AUTH = 2;
+
+        public static int qopVariant = QOP_MISSING;
+        public static String method = null;
+        public static String nonce = null;
+        public static String opaque = null;
+        public static String algo = null;
+        public static String qop = null;
+        public static String realm = null;
+        public static String cnonce = null;
+        public static String charset = null;
+        public static String uri = null;
+        public static String nc = "00000001";
+        public static String serverResponse = null;
+
+        public static String user = null;
+        public static String pwd = null;
+        public static String authHeader = null;
+
+        public AuthSettings() {}
     }
 
     private static final String TAG = "JNetRequest";
@@ -78,16 +108,11 @@ public class NetRequest
     Map<String, List<String>> response_headers = null;
     List<JCMultipartItem> multipartItems = new ArrayList<JCMultipartItem>();
 
-    private String user = null;
-    private String pwd = null;
-    private boolean is_digest = false;
-    private String authHeader = null;
-
 
     public void SetAuthSettings(String u, String p, boolean is_d) {
-        user = u;
-        pwd = p;
-        is_digest = is_d;
+        AuthSettings.user = u;
+        AuthSettings.pwd = p;
+        //is_digest = is_d;
     }
 
     public NetRequest()
@@ -95,7 +120,7 @@ public class NetRequest
     }
 
     private void SetAuthentificationHeader(URL u) {
-        if(pwd == null || user == null) return;
+
     }
 
     public void AddMultiPartData(String strFilePath, String strBody, String strName, String strFileName, String strContentType, String strDataPrefix) {
@@ -146,8 +171,8 @@ public class NetRequest
             connection.setRequestProperty(key, value);
         }
 
-        if(authHeader != null)
-            connection.setRequestProperty("Authorization", authHeader);
+        if(AuthSettings.authHeader != null)
+            connection.setRequestProperty("Authorization", AuthSettings.authHeader);
     }
 
     private String readFromStream(InputStream stream) throws java.io.IOException {
@@ -327,31 +352,42 @@ public class NetRequest
         return responseBody;
     }
 
-    private String byteToHex(byte num) {
-        char[] hexDigits = new char[2];
-        hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
-        hexDigits[1] = Character.forDigit((num & 0xF), 16);
-        return new String(hexDigits);
-    }
-
-    public String encodeHexString(byte[] byteArray) {
-        StringBuffer hexStringBuffer = new StringBuffer();
-        for (int i = 0; i < byteArray.length; i++) {
-            hexStringBuffer.append(byteToHex(byteArray[i]));
+    /**
+     * Encodes the 128 bit (16 bytes) MD5 digest into a 32 characters long
+     * <CODE>String</CODE> according to RFC 2617.
+     *
+     * @param binaryData array containing the digest
+     * @return encoded MD5, or <CODE>null</CODE> if encoding failed
+     */
+    private static String encode(byte[] binaryData) {
+        if (binaryData.length != 16) {
+            return null;
         }
-        return hexStringBuffer.toString();
+        char[] buffer = new char[32];
+        for (int i = 0; i < 16; i++) {
+            int low = (binaryData[i] & 0x0f);
+            int high = ((binaryData[i] & 0xf0) >> 4);
+            buffer[i * 2] = HEXADECIMAL[high];
+            buffer[(i * 2) + 1] = HEXADECIMAL[low];
+        }
+        return new String(buffer);
     }
 
-    private String calculateNonce() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        Date d = new Date();
-        SimpleDateFormat f = new SimpleDateFormat("yyyy:MM:dd:hh:mm:ss");
-        String fmtDate = f.format(d);
-        Random rand = new Random(100000);
-        Integer randomInt = rand.nextInt();
+    public static byte[] getAsciiBytes(final String data) {
+        if (data == null) {
+            throw new IllegalArgumentException("Parameter may not be null");
+        }
+
+        return data.getBytes(StandardCharsets.US_ASCII);
+    }
+
+
+    public static String calculateNonce() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        String date = Long.toString(System.currentTimeMillis());
 
         MessageDigest hash = MessageDigest.getInstance("MD5");
-        byte[] cnonce = hash.digest((fmtDate + randomInt.toString()).getBytes("UTF-8"));
-        return encodeHexString(cnonce);
+        byte[] cnonce = hash.digest(date.getBytes("UTF-8"));
+        return encode(cnonce);
     }
 
     private HashMap<String, String> parseHeader(String headerString) {
@@ -368,7 +404,167 @@ public class NetRequest
         return values;
     }
 
+    private String getQopVariantString() {
+        String qopOption;
+        if (AuthSettings.qopVariant == AuthSettings.QOP_AUTH_INT) {
+            qopOption = "auth-int";
+        } else {
+            qopOption = "auth";
+        }
+        return qopOption;
+    }
+
+
+    private String CreateDigest() throws NoSuchAlgorithmException, UnsupportedEncodingException, IllegalStateException {
+        String uri = AuthSettings.uri;
+        String realm = AuthSettings.realm;
+        String nonce = AuthSettings.nonce;
+        String method = AuthSettings.method;
+        String algorithm = AuthSettings.algo;
+        if (uri == null) {
+            throw new IllegalStateException("URI may not be null");
+        }
+        if (realm == null) {
+            throw new IllegalStateException("Realm may not be null");
+        }
+        if (nonce == null) {
+            throw new IllegalStateException("Nonce may not be null");
+        }
+
+        // If an algorithm is not specified, default to MD5.
+        if (algorithm == null) {
+            algorithm = "MD5";
+        }
+        // If an charset is not specified, default to ISO-8859-1.
+        String charset = AuthSettings.charset;
+        if (charset == null) {
+            charset = "ISO-8859-1";
+        }
+
+        if (AuthSettings.qopVariant == AuthSettings.QOP_AUTH_INT) {
+            throw new IllegalStateException("Unsupported qop in HTTP Digest authentication");
+        }
+
+        MessageDigest md5Helper =  MessageDigest.getInstance("MD5");
+        String uname = AuthSettings.user;
+        String pwd = AuthSettings.pwd;
+
+        StringBuilder tmp = new StringBuilder(uname.length() + realm.length() + pwd.length() + 2);
+        tmp.append(uname);
+        tmp.append(':');
+        tmp.append(realm);
+        tmp.append(':');
+        tmp.append(pwd);
+
+        String a1 = tmp.toString();
+
+        if(algorithm.equalsIgnoreCase("MD5-sess")) { // android-changed: ignore case
+            // H( unq(username-value) ":" unq(realm-value) ":" passwd )
+            //      ":" unq(nonce-value)
+            //      ":" unq(cnonce-value)
+            String cnonce = AuthSettings.cnonce;
+
+            String tmp2 = encode(md5Helper.digest(a1.getBytes(charset)));
+            StringBuilder tmp3 = new StringBuilder(tmp2.length() + nonce.length() + cnonce.length() + 2);
+            tmp3.append(tmp2);
+            tmp3.append(':');
+            tmp3.append(nonce);
+            tmp3.append(':');
+            tmp3.append(cnonce);
+            a1 = tmp3.toString();
+        } else if (!algorithm.equalsIgnoreCase("MD5")) { // android-changed: ignore case
+            throw new IllegalStateException("Unhandled algorithm " + algorithm + " requested");
+        }
+
+        String md5a1 = encode(md5Helper.digest(a1.getBytes(charset)));
+        String a2 = null;
+        if (AuthSettings.qopVariant == AuthSettings.QOP_AUTH_INT) {
+            // Unhandled qop auth-int
+            //we do not have access to the entity-body or its hash
+            //TODO: add Method ":" digest-uri-value ":" H(entity-body)
+        } else {
+            a2 = method + ':' + uri;
+        }
+
+        String md5a2 = encode(md5Helper.digest(getAsciiBytes(a2)));
+
+        String serverDigestValue;
+        if (AuthSettings.qopVariant == AuthSettings.QOP_MISSING) {
+            StringBuilder tmp2 = new StringBuilder(md5a1.length() + nonce.length() + md5a2.length());
+            tmp2.append(md5a1);
+            tmp2.append(':');
+            tmp2.append(nonce);
+            tmp2.append(':');
+            tmp2.append(md5a2);
+            serverDigestValue = tmp2.toString();
+        } else {
+            String qopOption = getQopVariantString();
+            String cnonce = AuthSettings.cnonce;
+
+            StringBuilder tmp2 = new StringBuilder(md5a1.length() + nonce.length()
+                    + AuthSettings.nc.length() + cnonce.length() + qopOption.length() + md5a2.length() + 5);
+            tmp2.append(md5a1);
+            tmp2.append(':');
+            tmp2.append(nonce);
+            tmp2.append(':');
+            tmp2.append(AuthSettings.nc);
+            tmp2.append(':');
+            tmp2.append(cnonce);
+            tmp2.append(':');
+            tmp2.append(qopOption);
+            tmp2.append(':');
+            tmp2.append(md5a2);
+            serverDigestValue = tmp2.toString();
+        }
+
+        String serverDigest =
+                encode(md5Helper.digest(getAsciiBytes(serverDigestValue)));
+        return serverDigest;
+
+    }
+
+    private void AuthInit(URL _url, HashMap<String, String> values) throws NoSuchAlgorithmException, UnsupportedEncodingException, IllegalStateException  {
+        AuthSettings.method = connection.getRequestMethod();
+        AuthSettings.nonce = values.get("nonce");
+        AuthSettings.opaque = values.get("opaque");
+        AuthSettings.algo = values.get("algorithm");
+        AuthSettings.qop = values.get("qop");
+        AuthSettings.realm = values.get("realm");
+        AuthSettings.cnonce =  calculateNonce();;
+        AuthSettings.uri = _url.getPath();
+        AuthSettings.charset = values.get("charset");
+
+        boolean unsupportedQop = false;
+        if (AuthSettings.qop != null) {
+            StringTokenizer tok = new StringTokenizer(AuthSettings.qop,",");
+            while (tok.hasMoreTokens()) {
+                String variant = tok.nextToken().trim();
+                if (variant.equals("auth")) {
+                    AuthSettings.qopVariant = AuthSettings.QOP_AUTH;
+                    break; //that's our favourite, because auth-int is unsupported
+                } else if (variant.equals("auth-int")) {
+                    AuthSettings.qopVariant = AuthSettings.QOP_AUTH_INT;
+                } else {
+                    unsupportedQop = true;
+                }
+            }
+        }
+
+        if (unsupportedQop && (AuthSettings.qopVariant == AuthSettings.QOP_MISSING)) {
+            throw new IllegalStateException("None of the qop methods is supported");
+        }
+
+        if (AuthSettings.realm == null) {
+            throw new IllegalStateException("missing realm in realm");
+        }
+
+        if (AuthSettings.nonce == null) {
+            throw new IllegalStateException("missing nonce in realm");
+        }
+    }
+
     private int Authetentificate() throws java.io.IOException, java.lang.InterruptedException {
+
         List<String> headers = response_headers.get("WWW-Authenticate");
         HashMap<String, String> values = null;
         if(!headers.isEmpty())
@@ -376,56 +572,31 @@ public class NetRequest
         else
             return 0;
 
-        URL _url = new URL(url);
-        String method = connection.getRequestMethod();
-        String nonce = values.get("nonce");
-        String opaque = values.get("opaque");
-        String algo = values.get("algorithm");
-        String qop = values.get("qop");
-        String realm = values.get("realm");
-        String cnonce = null;
-        String uri = _url.getPath();
-        String nc = "00000001";
-
-        String ha1 = null, ha2 = null, serverResponse = null;
-
         try {
-            cnonce = calculateNonce();
 
-            MessageDigest hash = MessageDigest.getInstance("MD5");
-            byte[] sub_ha1 = hash.digest((user + ":" + realm + ":" + pwd).getBytes("UTF-8"));
-
-            hash.reset();
-            byte[] ha1_ = hash.digest((encodeHexString(sub_ha1) + ":" + nonce + ":" + cnonce).getBytes("UTF-8"));
-
-            hash.reset();
-            byte[] ha2_ = hash.digest((method + ":" + uri).getBytes("UTF-8"));
-
-            ha1 = encodeHexString(ha1_);
-            ha2 = encodeHexString(ha2_);
-
-            hash.reset();
-            byte[] response = hash.digest((ha1 + ":" + nonce + ":" + nc + ":" +
-                    cnonce + ":" + qop + ":" + ha2).getBytes("UTF-8"));
-
-            serverResponse = encodeHexString(response);
-
+            URL _url = new URL(url);
+            AuthInit(_url, values);
+            AuthSettings.serverResponse = CreateDigest();
         }
         catch (NoSuchAlgorithmException e) {
             Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
             return 0;
         }
+        catch (IllegalStateException e) {
+            Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+            return 0;
+        }
 
 
-        authHeader = String.format("Digest username=\"%s\", realm=\"%s\", " +
+        AuthSettings.authHeader = String.format("Digest username=\"%s\", realm=\"%s\", " +
                 "nonce=\"%s\", uri=\"%s\", qop=auth, nc=%s, cnonce=\"%s\", " +
                 "response=\"%s\"",
-                user, realm, nonce, uri, nc, cnonce, serverResponse);
+                AuthSettings.user, AuthSettings.realm, AuthSettings.nonce, AuthSettings.uri, AuthSettings.nc, AuthSettings.cnonce, AuthSettings.serverResponse);
 
-        if(opaque != null)
-            authHeader += String.format(", opaque=\"%s\"", opaque);
-        if(algo != null)
-            authHeader += String.format(", algorithm=\"%s\"", algo);
+        if(AuthSettings.opaque != null)
+            AuthSettings.authHeader += String.format(", opaque=\"%s\"", AuthSettings.opaque);
+        if(AuthSettings.algo != null)
+            AuthSettings.authHeader += String.format(", algorithm=\"%s\"", AuthSettings.algo);
 
         if(method.equals("POST")) {
            int code = postData(true);
