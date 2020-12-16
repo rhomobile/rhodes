@@ -634,7 +634,7 @@ end
 namespace "config" do
   task :set_wince_platform do
     $current_platform = "wm" unless $current_platform
-    $sdk = "MC3000c50b (ARMV4I)"
+    $sdk = "MC3000c50b (ARMV4I)" unless $sdk
   end
 
   task :set_wm_platform do
