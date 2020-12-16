@@ -63,9 +63,9 @@ end
 
 module WM
   def self.config
+    $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
     unless $sdk
       #$sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
-      #$sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
       #value = ENV['rho_wm_sdk']
       #$sdk = value if value
       $sdk = "MC3000c50b (ARMV4I)"
