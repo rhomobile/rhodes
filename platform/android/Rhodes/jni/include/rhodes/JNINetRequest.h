@@ -83,6 +83,7 @@ class JNINetRequest : public CNetRequestBase
     
 public:
     JNINetRequest();
+    virtual ~JNINetRequest();
     
     virtual INetResponse* doRequest( const char* method, const String& strUrl, const String& strBody, IRhoSession* oSession, Hashtable<String,String>* pHeaders ) override ;
     virtual INetResponse* pullFile(const String& strUrl, common::CRhoFile& oFile, IRhoSession* oSession, Hashtable<String,String>* pHeaders) override ;

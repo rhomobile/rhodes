@@ -507,6 +507,11 @@ void rho::net::JNINetRequest::getResponseHeader(rho::Hashtable<rho::String, rho:
 
 }
 
+rho::net::JNINetRequest::~JNINetRequest() noexcept {
+    JNIEnv *env = jnienv();
+    if(netRequestObject) env->DeleteGlobalRef(netRequestObject);
+}
+
 void rho::net::JNINetRequest::JArraytoVectorString(const jharray &array, std::vector<rho::String>& v) {
     JNIEnv *env = jnienv();
     jsize count = env->GetArrayLength(array.get());
