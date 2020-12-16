@@ -80,8 +80,6 @@ public class NetRequest
 
     private String user = null;
     private String pwd = null;
-    private String realm = null;
-    private String nonce = null;
     private boolean is_digest = false;
     private String authHeader = null;
 
@@ -384,7 +382,7 @@ public class NetRequest
         String opaque = values.get("opaque");
         String algo = values.get("algorithm");
         String qop = values.get("qop");
-        realm = values.get("realm");
+        String realm = values.get("realm");
         String cnonce = null;
         String uri = _url.getPath();
         String nc = "00000001";
@@ -396,10 +394,8 @@ public class NetRequest
 
             MessageDigest hash = MessageDigest.getInstance("MD5");
             byte[] sub_ha1 = hash.digest((user + ":" + realm + ":" + pwd).getBytes("UTF-8"));
+
             hash.reset();
-            //hash.update(sub_ha1);
-            //byte[] ha1_ = hash.digest((":" + nonce + ":" + cnonce).getBytes("UTF-8"));
-            //byte[] ha1_ = hash.digest();
             byte[] ha1_ = hash.digest((encodeHexString(sub_ha1) + ":" + nonce + ":" + cnonce).getBytes("UTF-8"));
 
             hash.reset();
@@ -407,15 +403,11 @@ public class NetRequest
 
             ha1 = encodeHexString(ha1_);
             ha2 = encodeHexString(ha2_);
+
             hash.reset();
-            //hash.update(ha1_);
             byte[] response = hash.digest((ha1 + ":" + nonce + ":" + nc + ":" +
                     cnonce + ":" + qop + ":" + ha2).getBytes("UTF-8"));
-            //hash.update(ha2_);
-            //byte[] response = hash.digest();
 
-            ha1 = encodeHexString(ha1_);
-            ha2 = encodeHexString(ha2_);
             serverResponse = encodeHexString(response);
 
         }
@@ -423,10 +415,6 @@ public class NetRequest
             Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
             return 0;
         }
-
-        //String ha1 = DigestUtils.md5Hex(DigestUtils.md5Hex(user + ":" + realm + ":" + pwd) + ":" + nonce + ":" + cnonce);
-        //String ha2 = DigestUtils.md5Hex(method + ":" + uri);
-        //String serverResponse = DigestUtils.md5Hex(ha1 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":" + ha2);
 
 
         authHeader = String.format("Digest username=\"%s\", realm=\"%s\", " +
