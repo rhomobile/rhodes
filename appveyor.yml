@@ -147,12 +147,7 @@ build: off
 install:
   - set PATH=C:\Ruby26\bin;%PATH%
   - set RAKEOPT=-rdevkit
-  - md C:\TAU\downloads
-  - cd C:\TAU\downloads
 
-  - curl -fsS -o WM6.5ProSDK.msi http://files.tau-technologies.com/wince/WM6.5ProSDK.msi
-  - msiexec /a WM6.5ProSDK.msi /qn /quiet /norestart
-  - timeout 300
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
 #  - gem install zip --no-document -f
@@ -206,6 +201,12 @@ before_test:
   - set /P BUILD_VERSION_RHOTAU=<version
   - gem install rho-tau-extensions-%BUILD_VERSION_RHOTAU%.gem --no-document -f
 
+  - md C:\TAU\downloads
+  - cd C:\TAU\downloads
+
+  - curl -fsS -o WM6.5ProSDK.msi http://files.tau-technologies.com/wince/WM6.5ProSDK.msi
+  - msiexec /a WM6.5ProSDK.msi /qn /quiet /norestart
+  - timeout 300
 
 
   - cd C:\TAU\
