@@ -673,7 +673,7 @@ namespace "build" do
         $current_platform = "wm"
       elsif ( args.sdk == 'WinCE' ) 
         $current_platform = "wm"
-        $sdk = "MC3000c50b (ARMV4I)"
+        $sdk = "MC3000c50b (ARMV4I)" unless $sdk
       else
         throw "You must pass in sdk(Win32, WM, WinCE)"
       end
