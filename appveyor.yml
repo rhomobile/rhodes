@@ -210,7 +210,7 @@ before_test:
 
   - curl -fsS -o EMDK.msi http://files.tau-technologies.com/wince/rebuild/EMDK.msi
   - msiexec /a EMDK.msi /qn /quiet /norestart
-  - target_os_wm timeout 60
+  - timeout 60
   
   - curl -fsS -o SDK.msi http://files.tau-technologies.com/wince/rebuild/SDK.msi
   - msiexec /a SDK.msi /qn /quiet /norestart
