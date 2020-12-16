@@ -147,7 +147,15 @@ build: off
 install:
   - set PATH=C:\Ruby26\bin;%PATH%
   - set RAKEOPT=-rdevkit
-  - dir
+
+  - md C:\TAU\downloads
+  - cd C:\TAU\downloads
+
+  - curl -fsS -o WM6ProSDK.msi http://files.tau-technologies.com/wince/WM6ProSDK.msi
+  - msiexec /a WM6ProSDK.msi /quiet
+  - timeout 200
+
+
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
 #  - gem install zip --no-document -f
@@ -184,6 +192,8 @@ before_test:
   - ruby -v
   - gem -v
   - bundle -v
+  
+  - cd C:\TAU\rhodes
   - cp rhobuild.yml.example rhobuild.yml
   - ruby C:\TAU\rhodes\lib\build\buildgem.rb
   - set /P BUILD_VERSION=<version
@@ -200,13 +210,6 @@ before_test:
   - rake gem
   - set /P BUILD_VERSION_RHOTAU=<version
   - gem install rho-tau-extensions-%BUILD_VERSION_RHOTAU%.gem --no-document -f
-
-  - md C:\TAU\downloads
-  - cd C:\TAU\downloads
-
-  - curl -fsS -o WM6ProSDK.msi http://files.tau-technologies.com/wince/WM6ProSDK.msi
-  - msiexec /a WM6ProSDK.msi /quiet
-  - timeout 200
 
   - cd C:\TAU\
   - rmdir /Q /S downloads
