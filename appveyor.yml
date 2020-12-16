@@ -151,7 +151,7 @@ install:
   - cd C:\TAU\downloads
 
   - IF DEFINED target_os_wm curl -fsS -o WM6.5ProSDK.msi http://files.tau-technologies.com/wince/WM6.5ProSDK.msi
-  - IF DEFINED target_os_wm WM6.5ProSDK.msi /qn /quiet /norestart
+  - IF DEFINED target_os_wm WM6.5ProSDK.msi /qn /passive /fa /norestart
   - IF DEFINED target_os_wm timeout 300
 #  - gem install rest-client --no-document -f
 #  - gem install listen --no-document -f
