@@ -416,6 +416,9 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
         }
     }
 
+    if(oSession && nRespCode == 401)
+        oSession->logout();
+
     return makeResponse(response_body, nRespCode);
 }
 

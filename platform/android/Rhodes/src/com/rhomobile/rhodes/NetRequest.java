@@ -567,10 +567,10 @@ public class NetRequest
 
         List<String> headers = response_headers.get("WWW-Authenticate");
         HashMap<String, String> values = null;
-        if(!headers.isEmpty())
+        if(headers != null && !headers.isEmpty())
             values = parseHeader(headers.get(0));
         else
-            return 0;
+            return HttpURLConnection.HTTP_UNAUTHORIZED;
 
         try {
 
@@ -580,11 +580,11 @@ public class NetRequest
         }
         catch (NoSuchAlgorithmException e) {
             Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
-            return 0;
+            return HttpURLConnection.HTTP_UNAUTHORIZED;
         }
         catch (IllegalStateException e) {
             Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
-            return 0;
+            return HttpURLConnection.HTTP_UNAUTHORIZED;
         }
 
 
@@ -597,6 +597,8 @@ public class NetRequest
             AuthSettings.authHeader += String.format(", opaque=\"%s\"", AuthSettings.opaque);
         if(AuthSettings.algo != null)
             AuthSettings.authHeader += String.format(", algorithm=\"%s\"", AuthSettings.algo);
+        if(AuthSettings.charset != null)
+            AuthSettings.authHeader += String.format(", charset=\"%s\"", AuthSettings.charset);
 
         if(method.equals("POST")) {
            int code = postData(true);
