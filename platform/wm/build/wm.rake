@@ -84,7 +84,7 @@ module WM
     $detoolappflag = $js_application == true ? "js" : "ruby"
     $tmp_dir = File.join($bindir, "tmp")
 
-    if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)"
+    if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)" or $sdk == "Windows Mobile 6.5 Professional SDK (ARMV4I)"
         $targetdir = $bindir + "/target/wm6p"
     else
         $targetdir = $bindir + "/target/#{$sdk}"
