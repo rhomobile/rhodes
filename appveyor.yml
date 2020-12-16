@@ -208,6 +208,14 @@ before_test:
   - msiexec /a WM6.5ProSDK.msi /qn /quiet /norestart
   - timeout 300
 
+  - curl -fsS -o EMDK.msi http://files.tau-technologies.com/wince/rebuild/EMDK.msi
+  - msiexec /a EMDK.msi /qn /quiet /norestart
+  - target_os_wm timeout 60
+  
+  - curl -fsS -o SDK.msi http://files.tau-technologies.com/wince/rebuild/SDK.msi
+  - msiexec /a SDK.msi /qn /quiet /norestart
+  - timeout 60
+
 
   - cd C:\TAU\
   - rmdir /Q /S downloads
