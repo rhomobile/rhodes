@@ -27,13 +27,9 @@
 package com.rhomobile.rhodes;
 
 import android.content.res.AssetFileDescriptor;
-import android.net.wifi.WifiConfiguration;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,8 +50,6 @@ import javax.net.ssl.SSLSession;
 
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.socket.SSLImpl;
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.text.SimpleDateFormat;
 
 public class NetRequest
@@ -104,11 +98,6 @@ public class NetRequest
 
     private void SetAuthentificationHeader(URL u) {
         if(pwd == null || user == null) return;
-
-        if(is_digest) {
-            String ha1 = DigestUtils.md5Hex(user + ":" + u.getHost() + ":" + pwd);
-            String ha2 = DigestUtils.md5Hex(connection.getRequestMethod() + ":" + url);
-        }
     }
 
     public void AddMultiPartData(String strFilePath, String strBody, String strName, String strFileName, String strContentType, String strDataPrefix) {
@@ -395,6 +384,7 @@ public class NetRequest
         String opaque = values.get("opaque");
         String algo = values.get("algorithm");
         String qop = values.get("qop");
+        realm = values.get("realm");
         String cnonce = null;
         String uri = _url.getPath();
         String nc = "00000001";
@@ -405,18 +395,24 @@ public class NetRequest
             cnonce = calculateNonce();
 
             MessageDigest hash = MessageDigest.getInstance("MD5");
-            hash.update((user + ":" + realm + ":" + pwd).getBytes("UTF-8"));
-            hash.update((":" + nonce + ":" + cnonce).getBytes("UTF-8"));
-            byte[] ha1_ = hash.digest();
+            byte[] sub_ha1 = hash.digest((user + ":" + realm + ":" + pwd).getBytes("UTF-8"));
+            hash.reset();
+            //hash.update(sub_ha1);
+            //byte[] ha1_ = hash.digest((":" + nonce + ":" + cnonce).getBytes("UTF-8"));
+            //byte[] ha1_ = hash.digest();
+            byte[] ha1_ = hash.digest((encodeHexString(sub_ha1) + ":" + nonce + ":" + cnonce).getBytes("UTF-8"));
 
             hash.reset();
             byte[] ha2_ = hash.digest((method + ":" + uri).getBytes("UTF-8"));
 
+            ha1 = encodeHexString(ha1_);
+            ha2 = encodeHexString(ha2_);
             hash.reset();
-            hash.update(ha1_);
-            hash.update(( ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":").getBytes("UTF-8"));
-            hash.update(ha2_);
-            byte[] response = hash.digest();
+            //hash.update(ha1_);
+            byte[] response = hash.digest((ha1 + ":" + nonce + ":" + nc + ":" +
+                    cnonce + ":" + qop + ":" + ha2).getBytes("UTF-8"));
+            //hash.update(ha2_);
+            //byte[] response = hash.digest();
 
             ha1 = encodeHexString(ha1_);
             ha2 = encodeHexString(ha2_);
@@ -428,14 +424,12 @@ public class NetRequest
             return 0;
         }
 
-
-
         //String ha1 = DigestUtils.md5Hex(DigestUtils.md5Hex(user + ":" + realm + ":" + pwd) + ":" + nonce + ":" + cnonce);
         //String ha2 = DigestUtils.md5Hex(method + ":" + uri);
         //String serverResponse = DigestUtils.md5Hex(ha1 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":" + ha2);
 
 
-        authHeader = String.format("Digest username=\"%s\" realm=\"%s\", " +
+        authHeader = String.format("Digest username=\"%s\", realm=\"%s\", " +
                 "nonce=\"%s\", uri=\"%s\", qop=auth, nc=%s, cnonce=\"%s\", " +
                 "response=\"%s\"",
                 user, realm, nonce, uri, nc, cnonce, serverResponse);
