@@ -205,8 +205,8 @@ before_test:
   - cd C:\TAU\downloads
 
   - curl -fsS -o WM6ProSDK.msi http://files.tau-technologies.com/wince/WM6ProSDK.msi
-  - msiexec /a WM6ProSDK.msi /qn /quiet /norestart
-  - timeout 300
+  - msiexec /a WM6ProSDK.msi /passive
+  - timeout 200
 
   - cd C:\TAU\
   - rmdir /Q /S downloads
