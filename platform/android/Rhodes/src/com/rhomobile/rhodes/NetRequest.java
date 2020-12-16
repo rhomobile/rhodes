@@ -612,6 +612,7 @@ public class NetRequest
 
     private int postData(boolean auth) throws java.io.IOException, java.lang.InterruptedException {
         URL _url = new URL(url);
+        response_headers = null;
         connection = getConnection(_url);
         connection.setReadTimeout((int)30000);
         connection.setConnectTimeout(30000);
@@ -639,9 +640,11 @@ public class NetRequest
 
         if(responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && !auth) {
             responseCode = Authetentificate();
+            AuthSettings.authHeader = null;
         }
 
         multipartItems.clear();
+        headers.clear();
 
         return responseCode;
     }
@@ -674,6 +677,7 @@ public class NetRequest
 
     private int getData(boolean auth) throws java.io.IOException, java.lang.InterruptedException {
         URL _url = new URL(url);
+        response_headers = null;
         connection = getConnection(_url);
         connection.setReadTimeout(30000);
         connection.setConnectTimeout(30000);
@@ -689,11 +693,10 @@ public class NetRequest
 
         if(responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && !auth) {
             responseCode = Authetentificate();
+            AuthSettings.authHeader = null;
         }
 
-        if(fd > 0) {
-            //new FileOutputStream(new File() )
-        }
+        headers.clear();
 
         return responseCode;
     }
