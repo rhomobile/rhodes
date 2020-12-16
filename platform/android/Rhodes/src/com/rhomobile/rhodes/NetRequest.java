@@ -30,14 +30,12 @@ import android.content.res.AssetFileDescriptor;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.HttpURLConnection;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -50,7 +48,6 @@ import javax.net.ssl.SSLSession;
 
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.socket.SSLImpl;
-import java.text.SimpleDateFormat;
 
 public class NetRequest
 {
@@ -69,27 +66,27 @@ public class NetRequest
         public JCMultipartItem() {}
     }
 
-    private static class AuthSettings {
+    private class AuthSettings {
         private static final int QOP_MISSING = 0;
         private static final int QOP_AUTH_INT = 1;
         private static final int QOP_AUTH = 2;
 
-        public static int qopVariant = QOP_MISSING;
-        public static String method = null;
-        public static String nonce = null;
-        public static String opaque = null;
-        public static String algo = null;
-        public static String qop = null;
-        public static String realm = null;
-        public static String cnonce = null;
-        public static String charset = null;
-        public static String uri = null;
-        public static String nc = "00000001";
-        public static String serverResponse = null;
+        public int qopVariant = QOP_MISSING;
+        public String method = null;
+        public String nonce = null;
+        public String opaque = null;
+        public String algo = null;
+        public String qop = null;
+        public String realm = null;
+        public String cnonce = null;
+        public String charset = null;
+        public String uri = null;
+        public String nc = "00000001";
+        public String serverResponse = null;
 
-        public static String user = null;
-        public static String pwd = null;
-        public static String authHeader = null;
+        public String user = null;
+        public String pwd = null;
+        public String authHeader = null;
 
         public AuthSettings() {}
     }
@@ -108,15 +105,18 @@ public class NetRequest
     Map<String, List<String>> response_headers = null;
     List<JCMultipartItem> multipartItems = new ArrayList<JCMultipartItem>();
 
+    AuthSettings auth_storage = null;
+
 
     public void SetAuthSettings(String u, String p, boolean is_d) {
-        AuthSettings.user = u;
-        AuthSettings.pwd = p;
+        auth_storage.user = u;
+        auth_storage.pwd = p;
         //is_digest = is_d;
     }
 
     public NetRequest()
     {
+        auth_storage = new AuthSettings();
     }
 
     private void SetAuthentificationHeader(URL u) {
@@ -171,8 +171,8 @@ public class NetRequest
             connection.setRequestProperty(key, value);
         }
 
-        if(AuthSettings.authHeader != null)
-            connection.setRequestProperty("Authorization", AuthSettings.authHeader);
+        if(auth_storage.authHeader != null)
+            connection.setRequestProperty("Authorization", auth_storage.authHeader);
     }
 
     private String readFromStream(InputStream stream) throws java.io.IOException {
@@ -406,7 +406,7 @@ public class NetRequest
 
     private String getQopVariantString() {
         String qopOption;
-        if (AuthSettings.qopVariant == AuthSettings.QOP_AUTH_INT) {
+        if (auth_storage.qopVariant == AuthSettings.QOP_AUTH_INT) {
             qopOption = "auth-int";
         } else {
             qopOption = "auth";
@@ -416,11 +416,11 @@ public class NetRequest
 
 
     private String CreateDigest() throws NoSuchAlgorithmException, UnsupportedEncodingException, IllegalStateException {
-        String uri = AuthSettings.uri;
-        String realm = AuthSettings.realm;
-        String nonce = AuthSettings.nonce;
-        String method = AuthSettings.method;
-        String algorithm = AuthSettings.algo;
+        String uri = auth_storage.uri;
+        String realm = auth_storage.realm;
+        String nonce = auth_storage.nonce;
+        String method = auth_storage.method;
+        String algorithm = auth_storage.algo;
         if (uri == null) {
             throw new IllegalStateException("URI may not be null");
         }
@@ -436,18 +436,18 @@ public class NetRequest
             algorithm = "MD5";
         }
         // If an charset is not specified, default to ISO-8859-1.
-        String charset = AuthSettings.charset;
+        String charset = auth_storage.charset;
         if (charset == null) {
             charset = "ISO-8859-1";
         }
 
-        if (AuthSettings.qopVariant == AuthSettings.QOP_AUTH_INT) {
+        if (auth_storage.qopVariant == AuthSettings.QOP_AUTH_INT) {
             throw new IllegalStateException("Unsupported qop in HTTP Digest authentication");
         }
 
         MessageDigest md5Helper =  MessageDigest.getInstance("MD5");
-        String uname = AuthSettings.user;
-        String pwd = AuthSettings.pwd;
+        String uname = auth_storage.user;
+        String pwd = auth_storage.pwd;
 
         StringBuilder tmp = new StringBuilder(uname.length() + realm.length() + pwd.length() + 2);
         tmp.append(uname);
@@ -462,7 +462,7 @@ public class NetRequest
             // H( unq(username-value) ":" unq(realm-value) ":" passwd )
             //      ":" unq(nonce-value)
             //      ":" unq(cnonce-value)
-            String cnonce = AuthSettings.cnonce;
+            String cnonce = auth_storage.cnonce;
 
             String tmp2 = encode(md5Helper.digest(a1.getBytes(charset)));
             StringBuilder tmp3 = new StringBuilder(tmp2.length() + nonce.length() + cnonce.length() + 2);
@@ -478,7 +478,7 @@ public class NetRequest
 
         String md5a1 = encode(md5Helper.digest(a1.getBytes(charset)));
         String a2 = null;
-        if (AuthSettings.qopVariant == AuthSettings.QOP_AUTH_INT) {
+        if (auth_storage.qopVariant == AuthSettings.QOP_AUTH_INT) {
             // Unhandled qop auth-int
             //we do not have access to the entity-body or its hash
             //TODO: add Method ":" digest-uri-value ":" H(entity-body)
@@ -489,7 +489,7 @@ public class NetRequest
         String md5a2 = encode(md5Helper.digest(getAsciiBytes(a2)));
 
         String serverDigestValue;
-        if (AuthSettings.qopVariant == AuthSettings.QOP_MISSING) {
+        if (auth_storage.qopVariant == AuthSettings.QOP_MISSING) {
             StringBuilder tmp2 = new StringBuilder(md5a1.length() + nonce.length() + md5a2.length());
             tmp2.append(md5a1);
             tmp2.append(':');
@@ -499,15 +499,15 @@ public class NetRequest
             serverDigestValue = tmp2.toString();
         } else {
             String qopOption = getQopVariantString();
-            String cnonce = AuthSettings.cnonce;
+            String cnonce = auth_storage.cnonce;
 
             StringBuilder tmp2 = new StringBuilder(md5a1.length() + nonce.length()
-                    + AuthSettings.nc.length() + cnonce.length() + qopOption.length() + md5a2.length() + 5);
+                    + auth_storage.nc.length() + cnonce.length() + qopOption.length() + md5a2.length() + 5);
             tmp2.append(md5a1);
             tmp2.append(':');
             tmp2.append(nonce);
             tmp2.append(':');
-            tmp2.append(AuthSettings.nc);
+            tmp2.append(auth_storage.nc);
             tmp2.append(':');
             tmp2.append(cnonce);
             tmp2.append(':');
@@ -524,41 +524,41 @@ public class NetRequest
     }
 
     private void AuthInit(URL _url, HashMap<String, String> values) throws NoSuchAlgorithmException, UnsupportedEncodingException, IllegalStateException  {
-        AuthSettings.method = connection.getRequestMethod();
-        AuthSettings.nonce = values.get("nonce");
-        AuthSettings.opaque = values.get("opaque");
-        AuthSettings.algo = values.get("algorithm");
-        AuthSettings.qop = values.get("qop");
-        AuthSettings.realm = values.get("realm");
-        AuthSettings.cnonce =  calculateNonce();;
-        AuthSettings.uri = _url.getPath();
-        AuthSettings.charset = values.get("charset");
+        auth_storage.method = connection.getRequestMethod();
+        auth_storage.nonce = values.get("nonce");
+        auth_storage.opaque = values.get("opaque");
+        auth_storage.algo = values.get("algorithm");
+        auth_storage.qop = values.get("qop");
+        auth_storage.realm = values.get("realm");
+        auth_storage.cnonce =  calculateNonce();;
+        auth_storage.uri = _url.getPath();
+        auth_storage.charset = values.get("charset");
 
         boolean unsupportedQop = false;
-        if (AuthSettings.qop != null) {
-            StringTokenizer tok = new StringTokenizer(AuthSettings.qop,",");
+        if (auth_storage.qop != null) {
+            StringTokenizer tok = new StringTokenizer(auth_storage.qop,",");
             while (tok.hasMoreTokens()) {
                 String variant = tok.nextToken().trim();
                 if (variant.equals("auth")) {
-                    AuthSettings.qopVariant = AuthSettings.QOP_AUTH;
+                    auth_storage.qopVariant = AuthSettings.QOP_AUTH;
                     break; //that's our favourite, because auth-int is unsupported
                 } else if (variant.equals("auth-int")) {
-                    AuthSettings.qopVariant = AuthSettings.QOP_AUTH_INT;
+                    auth_storage.qopVariant = AuthSettings.QOP_AUTH_INT;
                 } else {
                     unsupportedQop = true;
                 }
             }
         }
 
-        if (unsupportedQop && (AuthSettings.qopVariant == AuthSettings.QOP_MISSING)) {
+        if (unsupportedQop && (auth_storage.qopVariant == AuthSettings.QOP_MISSING)) {
             throw new IllegalStateException("None of the qop methods is supported");
         }
 
-        if (AuthSettings.realm == null) {
+        if (auth_storage.realm == null) {
             throw new IllegalStateException("missing realm in realm");
         }
 
-        if (AuthSettings.nonce == null) {
+        if (auth_storage.nonce == null) {
             throw new IllegalStateException("missing nonce in realm");
         }
     }
@@ -576,7 +576,7 @@ public class NetRequest
 
             URL _url = new URL(url);
             AuthInit(_url, values);
-            AuthSettings.serverResponse = CreateDigest();
+            auth_storage.serverResponse = CreateDigest();
         }
         catch (NoSuchAlgorithmException e) {
             Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
@@ -588,17 +588,17 @@ public class NetRequest
         }
 
 
-        AuthSettings.authHeader = String.format("Digest username=\"%s\", realm=\"%s\", " +
+        auth_storage.authHeader = String.format("Digest username=\"%s\", realm=\"%s\", " +
                 "nonce=\"%s\", uri=\"%s\", qop=auth, nc=%s, cnonce=\"%s\", " +
                 "response=\"%s\"",
-                AuthSettings.user, AuthSettings.realm, AuthSettings.nonce, AuthSettings.uri, AuthSettings.nc, AuthSettings.cnonce, AuthSettings.serverResponse);
+                auth_storage.user, auth_storage.realm, auth_storage.nonce, auth_storage.uri, auth_storage.nc, auth_storage.cnonce, auth_storage.serverResponse);
 
-        if(AuthSettings.opaque != null)
-            AuthSettings.authHeader += String.format(", opaque=\"%s\"", AuthSettings.opaque);
-        if(AuthSettings.algo != null)
-            AuthSettings.authHeader += String.format(", algorithm=\"%s\"", AuthSettings.algo);
-        if(AuthSettings.charset != null)
-            AuthSettings.authHeader += String.format(", charset=\"%s\"", AuthSettings.charset);
+        if(auth_storage.opaque != null)
+            auth_storage.authHeader += String.format(", opaque=\"%s\"", auth_storage.opaque);
+        if(auth_storage.algo != null)
+            auth_storage.authHeader += String.format(", algorithm=\"%s\"", auth_storage.algo);
+        if(auth_storage.charset != null)
+            auth_storage.authHeader += String.format(", charset=\"%s\"", auth_storage.charset);
 
         if(method.equals("POST")) {
            int code = postData(true);
@@ -640,7 +640,7 @@ public class NetRequest
 
         if(responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && !auth) {
             responseCode = Authetentificate();
-            AuthSettings.authHeader = null;
+            auth_storage.authHeader = null;
         }
 
         multipartItems.clear();
@@ -693,7 +693,7 @@ public class NetRequest
 
         if(responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && !auth) {
             responseCode = Authetentificate();
-            AuthSettings.authHeader = null;
+            auth_storage.authHeader = null;
         }
 
         headers.clear();
