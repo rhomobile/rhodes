@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Array;
 import java.util.*;
 
 import javax.net.ssl.HostnameVerifier;
@@ -179,11 +180,12 @@ public class NetRequest
 
     private String readFromStream(InputStream stream) throws java.io.IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-        String inputLine;
+        char[] buffer = new char[4096];
 
         StringBuilder response = new StringBuilder();
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
+        int recv = 0;
+        while ((recv = in.read(buffer)) > 0) {
+            response.append(buffer, 0, recv);
         }
         in.close();
 
@@ -226,6 +228,7 @@ public class NetRequest
                 InputStream in = RhoFileApi.open(item.m_strFilePath);
                 while((recv = in.read(buffer)) > 0) {
                     stream.write(buffer, 0, recv);
+                    Arrays.fill(buffer, (byte)0);
                 }
 
                 in.close();
