@@ -151,9 +151,9 @@ install:
   - md C:\TAU\downloads
   - cd C:\TAU\downloads
 
-  - curl -fsS -o WM6ProSDK.msi http://files.tau-technologies.com/wince/WM6ProSDK.msi
-  - msiexec /a WM6ProSDK.msi /quiet
-  - timeout 200
+  - curl -fsS -o MotorolaSDK.msi http://files.tau-technologies.com/wince/rebuild/MotorolaSDK.msi
+  - msiexec /a MotorolaSDK.msi /quiet
+  - timeout 100
 
 
 #  - gem install rest-client --no-document -f
@@ -192,7 +192,7 @@ before_test:
   - ruby -v
   - gem -v
   - bundle -v
-  
+
   - cd C:\TAU\rhodes
   - cp rhobuild.yml.example rhobuild.yml
   - ruby C:\TAU\rhodes\lib\build\buildgem.rb
