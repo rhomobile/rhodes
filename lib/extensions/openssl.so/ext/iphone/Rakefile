@@ -28,7 +28,7 @@ namespace "build" do
         result_dir = "#{$rootdir}/lib/extensions/openssl.so/ext/iphone/" + ( simulator ? "Release-iphonesimulator" : "Release-iphoneos")
         result_lib = result_dir + '/libopenssl.so.a'
         target_lib = $targetdir + '/libopenssl.so.a'
-        if !File.exists?(result_lib)
+        #if !File.exists?(result_lib)
 
             extension_name = "openssl.so"
             extension_lib_name = "openssl.so"
@@ -41,10 +41,10 @@ namespace "build" do
             #make cached bin
             cp target_lib, result_lib
 
-        else
-            # copy cached bin to target
-            cp result_lib,target_lib
-        end
+        #else
+        #    # copy cached bin to target
+        #    cp result_lib,target_lib
+        #end
 
 
     end
