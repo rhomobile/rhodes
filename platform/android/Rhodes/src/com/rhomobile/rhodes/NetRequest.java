@@ -32,6 +32,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -95,7 +96,8 @@ public class NetRequest
 
     private HttpURLConnection connection = null;
     private String url = null;
-    private String body = null;
+    //private String body = null;
+    private byte[] body = null;
     private String method = null;
     private int fd = -1;
     private boolean sslVerify = true;
@@ -134,7 +136,7 @@ public class NetRequest
         multipartItems.add(item);
     }
 
-    public int doPull(String u, String m, String b, int _fd, HashMap<String, String> h, boolean verify, long t) {
+    public int doPull(String u, String m, byte[] b, int _fd, HashMap<String, String> h, boolean verify, long t) {
         url = u;
         body = b;
         method = m;
@@ -190,7 +192,7 @@ public class NetRequest
 
     private long getMultiPartDataSize() {
         long size = 0;
-        String m_multipartPostfix = body;
+        byte[] m_multipartPostfix = body;
         for (JCMultipartItem item : multipartItems) {
             if(!item.m_strFilePath.isEmpty()) {
                 File ofile = new File(item.m_strFilePath);
@@ -207,21 +209,21 @@ public class NetRequest
                 size += item.m_strBody.length();
             }
         }
-        size += m_multipartPostfix.length();
+        size += m_multipartPostfix.length;
         return size;
     }
 
-    private boolean writeMultiPartData(OutputStreamWriter stream) throws java.io.IOException {
+    private boolean writeMultiPartData(OutputStream stream) throws java.io.IOException {
 
-        char buffer[] = new char[4096];
+        byte buffer[] = new byte[4096];
         int recv = 0;
-        String m_multipartPostfix = body;
+        byte[] m_multipartPostfix = body;
 
         for (JCMultipartItem item : multipartItems) {
             if(!item.m_strFilePath.isEmpty()) {
-                stream.write(item.m_strDataPrefix);
+                stream.write(item.m_strDataPrefix.getBytes());
 
-                InputStreamReader in = new InputStreamReader(RhoFileApi.open(item.m_strFilePath));
+                InputStream in = RhoFileApi.open(item.m_strFilePath);
                 while((recv = in.read(buffer)) > 0) {
                     stream.write(buffer, 0, recv);
                 }
@@ -229,8 +231,8 @@ public class NetRequest
                 in.close();
             }
             else {
-                stream.write(item.m_strDataPrefix);
-                stream.write(item.m_strBody);
+                stream.write(item.m_strDataPrefix.getBytes());
+                stream.write(item.m_strBody.getBytes());
             }
         }
         stream.write(m_multipartPostfix);
@@ -293,9 +295,10 @@ public class NetRequest
 
                 OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
                 if(multipartItems.isEmpty())
-                    writer.write(body);
+                    //writer.write(body);
+                    connection.getOutputStream().write(body);
                 else {
-                    writeMultiPartData(writer);
+                    writeMultiPartData(connection.getOutputStream());
                 }
                 writer.flush();
 
@@ -626,8 +629,8 @@ public class NetRequest
             connection.setFixedLengthStreamingMode(size);
         }
         else {
-            if(body.length() > 0)
-                connection.setFixedLengthStreamingMode(body.length());
+            if(body.length > 0)
+                connection.setFixedLengthStreamingMode(body.length);
         }
         fillHeaders();
 

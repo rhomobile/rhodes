@@ -200,7 +200,7 @@ rho::net::JNINetRequest::JNINetRequest()
            "("
            "Ljava/lang/String;"
            "Ljava/lang/String;"
-           "Ljava/lang/String;"
+           "[B"
            "I"
            "Ljava/util/HashMap;"
            "ZJ"
@@ -385,7 +385,11 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
     jhstring jurl = rho_cast<jstring>(env, strUrl);
     jhstring jmethod = rho_cast<jstring>(env, method);
     jint jfd = rho_cast<jint>(env, oFile ? oFile->getFD() : -1);
-    jhstring jbody = rho_cast<jstring>(env, strBody);
+    //jhstring jbody = rho_cast<jstring>(env, strBody);
+
+    jholder<jbyteArray> jbody = env->NewByteArray(strBody.length());
+    env->SetByteArrayRegion(jbody.get(), 0, strBody.length(), (jbyte const *)strBody.c_str());
+
     jint _code = env->CallIntMethod(netRequestObject, midDoPull, jurl.get(), jmethod.get(), jbody.get(),
                                     jfd, headers.get(), m_sslVerifyper, timeout);
     nRespCode = rho_cast<int>(env, _code);
