@@ -73,6 +73,11 @@ public class NetRequest
         private static final int QOP_AUTH_INT = 1;
         private static final int QOP_AUTH = 2;
 
+        private static final int HTTP_NONE = 0;
+        private static final int HTTP_BASIC = 1;
+        private static final int HTTP_DIGEST = 2;
+
+        public int authType = HTTP_NONE;
         public int qopVariant = QOP_MISSING;
         public String method = null;
         public String nonce = null;
@@ -109,15 +114,13 @@ public class NetRequest
     List<JCMultipartItem> multipartItems = new ArrayList<JCMultipartItem>();
 
     AuthSettings auth_storage = null;
-
-    private String unique_id = null;
     private long opaque_object = 0;
 
 
-    public void SetAuthSettings(String u, String p, boolean is_d) {
+    public void SetAuthSettings(String u, String p, int type) {
         auth_storage.user = u;
         auth_storage.pwd = p;
-        //is_digest = is_d;
+        auth_storage.authType = type;
     }
 
     public void SetOpaqueObject(long value) {
@@ -126,26 +129,9 @@ public class NetRequest
 
     public NetRequest() {
         auth_storage = new AuthSettings();
-        try {
-            unique_id = calculateNonce();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            unique_id = null;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            unique_id = null;
-        }
     }
 
     private native void CallbackData(long opaque, byte[] data, int size);
-
-    public String getNetRequestUniqueId() {
-        return unique_id;
-    }
-
-    private void SetAuthentificationHeader(URL u) {
-
-    }
 
     public void AddMultiPartData(String strFilePath, String strBody, String strName, String strFileName, String strContentType, String strDataPrefix) {
         JCMultipartItem item = new JCMultipartItem();
@@ -590,6 +576,38 @@ public class NetRequest
         }
     }
 
+    private boolean DigestAuth(HashMap<String, String> values) throws java.io.IOException, java.lang.InterruptedException {
+        try {
+
+            URL _url = new URL(url);
+            AuthInit(_url, values);
+            auth_storage.serverResponse = CreateDigest();
+        }
+        catch (NoSuchAlgorithmException e) {
+            Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+            return false;
+        }
+        catch (IllegalStateException e) {
+            Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+            return false;
+        }
+
+
+        auth_storage.authHeader = String.format("Digest username=\"%s\", realm=\"%s\", " +
+                        "nonce=\"%s\", uri=\"%s\", qop=auth, nc=%s, cnonce=\"%s\", " +
+                        "response=\"%s\"",
+                auth_storage.user, auth_storage.realm, auth_storage.nonce, auth_storage.uri, auth_storage.nc, auth_storage.cnonce, auth_storage.serverResponse);
+
+        if(auth_storage.opaque != null)
+            auth_storage.authHeader += String.format(", opaque=\"%s\"", auth_storage.opaque);
+        if(auth_storage.algo != null)
+            auth_storage.authHeader += String.format(", algorithm=\"%s\"", auth_storage.algo);
+        if(auth_storage.charset != null)
+            auth_storage.authHeader += String.format(", charset=\"%s\"", auth_storage.charset);
+
+        return true;
+    }
+
     private int Authetentificate() throws java.io.IOException, java.lang.InterruptedException {
 
         List<String> headers = response_headers.get("WWW-Authenticate");
@@ -599,33 +617,15 @@ public class NetRequest
         else
             return HttpURLConnection.HTTP_UNAUTHORIZED;
 
-        try {
-
-            URL _url = new URL(url);
-            AuthInit(_url, values);
-            auth_storage.serverResponse = CreateDigest();
+        if(auth_storage.authType == AuthSettings.HTTP_DIGEST) {
+            if(!DigestAuth(values))
+                return HttpURLConnection.HTTP_UNAUTHORIZED;
         }
-        catch (NoSuchAlgorithmException e) {
-            Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+        else if(auth_storage.authType == AuthSettings.HTTP_BASIC) {
+
+        }
+        else
             return HttpURLConnection.HTTP_UNAUTHORIZED;
-        }
-        catch (IllegalStateException e) {
-            Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
-            return HttpURLConnection.HTTP_UNAUTHORIZED;
-        }
-
-
-        auth_storage.authHeader = String.format("Digest username=\"%s\", realm=\"%s\", " +
-                "nonce=\"%s\", uri=\"%s\", qop=auth, nc=%s, cnonce=\"%s\", " +
-                "response=\"%s\"",
-                auth_storage.user, auth_storage.realm, auth_storage.nonce, auth_storage.uri, auth_storage.nc, auth_storage.cnonce, auth_storage.serverResponse);
-
-        if(auth_storage.opaque != null)
-            auth_storage.authHeader += String.format(", opaque=\"%s\"", auth_storage.opaque);
-        if(auth_storage.algo != null)
-            auth_storage.authHeader += String.format(", algorithm=\"%s\"", auth_storage.algo);
-        if(auth_storage.charset != null)
-            auth_storage.authHeader += String.format(", charset=\"%s\"", auth_storage.charset);
 
         if(method.equals("POST")) {
            int code = postData(true);

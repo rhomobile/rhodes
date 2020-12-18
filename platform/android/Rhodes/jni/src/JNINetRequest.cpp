@@ -224,7 +224,7 @@ rho::net::JNINetRequest::JNINetRequest()
     midgetResponseBody = getJNIClassMethod(env, cls, "getResponseBody", "()[B" );
     midAddMultiPartData = getJNIClassMethod(env, cls, "AddMultiPartData", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" );
 
-    midSetAuthSettings = getJNIClassMethod(env, cls, "SetAuthSettings", "(Ljava/lang/String;Ljava/lang/String;Z)V" );
+    midSetAuthSettings = getJNIClassMethod(env, cls, "SetAuthSettings", "(Ljava/lang/String;Ljava/lang/String;I)V" );
     midSetOpaqueObject = getJNIClassMethod(env, cls, "SetOpaqueObject", "(J)V" );
 
     env->CallVoidMethod(netRequestObject, midSetOpaqueObject, (jlong)this);
@@ -488,7 +488,7 @@ void rho::net::JNINetRequest::set_options(const String &strUrl, const String &st
         {
             jhstring user = rho_cast<jstring>(env, m_authUser);
             jhstring pwd = rho_cast<jstring>(env, m_authPassword);
-            env->CallVoidMethod(netRequestObject, midSetAuthSettings, user.get(), pwd.get(), m_authMethod == AUTH_DIGEST);
+            env->CallVoidMethod(netRequestObject, midSetAuthSettings, user.get(), pwd.get(), (jint)m_authMethod);
             break;
         }
         default:
