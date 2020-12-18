@@ -35,6 +35,8 @@
 #include <algorithm>
 #include <random>
 #include <sstream>
+#include <unordered_map>
+#include <mutex>
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Net"
@@ -130,6 +132,32 @@ public:
 
 };
 
+class MapNetRequests
+{
+    std::unordered_map<rho::String , rho::net::JNINetRequest*> map;
+    std::mutex guard;
+    MapNetRequests() {}
+public:
+    static MapNetRequests* instance() {
+        static MapNetRequests mapNetRequests;
+        return &mapNetRequests;
+    }
+
+    void AddNetRequest(const rho::String& key, rho::net::JNINetRequest* netRequest) {
+        std::lock_guard<std::mutex> lock(guard);
+        map.emplace(key, netRequest);
+    }
+
+    void RemoveNetRequest(const rho::String& key) {
+        std::lock_guard<std::mutex> lock(guard);
+        auto it = map.find(key);
+        if(it != map.end()) {
+            map.erase(it);
+        }
+    }
+
+};
+
 void rho::net::JNINetRequest::ProxySettings::initFromConfig() {
     port = 0;
 
@@ -217,6 +245,10 @@ rho::net::JNINetRequest::JNINetRequest()
     midAddMultiPartData = getJNIClassMethod(env, cls, "AddMultiPartData", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" );
 
     midSetAuthSettings = getJNIClassMethod(env, cls, "SetAuthSettings", "(Ljava/lang/String;Ljava/lang/String;Z)V" );
+    midgetNetRequestUniqueId = getJNIClassMethod(env, cls, "getNetRequestUniqueId", "()Ljava/lang/String;" );
+
+    jhstring unique_id = static_cast<jstring>(env->CallObjectMethod(netRequestObject, midgetNetRequestUniqueId));
+    MapNetRequests::instance()->AddNetRequest(rho_cast<rho::String>(env, unique_id), this);
 
     timeout = rho_conf_getInt("net_timeout");
     if (timeout == 0)

@@ -110,6 +110,8 @@ public class NetRequest
 
     AuthSettings auth_storage = null;
 
+    private String unique_id = null;
+
 
     public void SetAuthSettings(String u, String p, boolean is_d) {
         auth_storage.user = u;
@@ -117,9 +119,21 @@ public class NetRequest
         //is_digest = is_d;
     }
 
-    public NetRequest()
-    {
+    public NetRequest() {
         auth_storage = new AuthSettings();
+        try {
+            unique_id = calculateNonce();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            unique_id = null;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            unique_id = null;
+        }
+    }
+
+    public String getNetRequestUniqueId() {
+        return unique_id;
     }
 
     private void SetAuthentificationHeader(URL u) {
