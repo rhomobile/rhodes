@@ -29,6 +29,7 @@ package com.rhomobile.rhodes;
 import android.content.res.AssetFileDescriptor;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,7 +42,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Array;
 import java.util.*;
 
 import javax.net.ssl.HostnameVerifier;
@@ -103,7 +103,7 @@ public class NetRequest
     private int fd = -1;
     private boolean sslVerify = true;
     private long timeout = 30;
-    private String responseBody = null;
+    private byte[] responseBody = null;
     HashMap<String, String> headers = null;
     Map<String, List<String>> response_headers = null;
     List<JCMultipartItem> multipartItems = new ArrayList<JCMultipartItem>();
@@ -178,18 +178,17 @@ public class NetRequest
             connection.setRequestProperty("Authorization", auth_storage.authHeader);
     }
 
-    private String readFromStream(InputStream stream) throws java.io.IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-        char[] buffer = new char[4096];
+    private byte[] readFromStream(InputStream stream) throws java.io.IOException {
+        byte[] buffer = new byte[4096];
 
-        StringBuilder response = new StringBuilder();
+        ByteArrayOutputStream response = new ByteArrayOutputStream();
         int recv = 0;
-        while ((recv = in.read(buffer)) > 0) {
-            response.append(buffer, 0, recv);
+        while ((recv = stream.read(buffer)) > 0) {
+            response.write(buffer, 0, recv);
         }
-        in.close();
+        stream.close();
 
-        return response.toString();
+        return response.toByteArray();
     }
 
     private long getMultiPartDataSize() {
@@ -245,11 +244,11 @@ public class NetRequest
     private static class RequestThread extends Thread
     {
         protected int code = 0;
-        protected String response = null;
+        protected byte[] response = null;
         protected Map<String, List<String>> response_headers = null;
 
         public RequestThread() {}
-        public String getResponse() {
+        public byte[] getResponse() {
             return response;
         }
         public Map<String, List<String>> getResponseHeaders() { return response_headers; }
@@ -354,7 +353,7 @@ public class NetRequest
         return Arrays.copyOf(array_values, array_values.length, String[].class);
     }
 
-    public String getResponseBody() {
+    public byte[] getResponseBody() {
         return responseBody;
     }
 

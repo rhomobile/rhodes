@@ -213,7 +213,7 @@ rho::net::JNINetRequest::JNINetRequest()
 
     midgetValuesFromResponseHeaders = getJNIClassMethod(env, cls, "getValuesFromResponseHeaders", "()[Ljava/lang/String;" );
     midgetKeysFromResponseHeaders = getJNIClassMethod(env, cls, "getKeysFromResponseHeaders", "()[Ljava/lang/String;" );
-    midgetResponseBody = getJNIClassMethod(env, cls, "getResponseBody", "()Ljava/lang/String;" );
+    midgetResponseBody = getJNIClassMethod(env, cls, "getResponseBody", "()[B" );
     midAddMultiPartData = getJNIClassMethod(env, cls, "AddMultiPartData", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" );
 
     midSetAuthSettings = getJNIClassMethod(env, cls, "SetAuthSettings", "(Ljava/lang/String;Ljava/lang/String;Z)V" );
@@ -385,7 +385,6 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
     jhstring jurl = rho_cast<jstring>(env, strUrl);
     jhstring jmethod = rho_cast<jstring>(env, method);
     jint jfd = rho_cast<jint>(env, oFile ? oFile->getFD() : -1);
-    //jhstring jbody = rho_cast<jstring>(env, strBody);
 
     jholder<jbyteArray> jbody = env->NewByteArray(strBody.length());
     env->SetByteArrayRegion(jbody.get(), 0, strBody.length(), (jbyte const *)strBody.c_str());
@@ -398,19 +397,26 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
         rho_net_impl_network_indicator(0);
     }
 
-    jhstring jresponse_body = static_cast<jstring>(env->CallObjectMethod(netRequestObject, midgetResponseBody));
-    rho::String response_body = jresponse_body ? rho_cast<rho::String>(env, jresponse_body.get()) : "";
+    jholder<jbyteArray> jresponse_body = static_cast<jbyteArray>(env->CallObjectMethod(netRequestObject, midgetResponseBody));
+    rho::Vector<char> response_body;
+
+    jsize size = jresponse_body.get() ? env->GetArrayLength(jresponse_body.get()) : 0;
+    if(size > 0) {
+        response_body.resize(size);
+        env->GetByteArrayRegion(jresponse_body.get(), 0, size, (jbyte*)response_body.data());
+    }
+
     getResponseHeader(*_pHeaders);
 
     if(oFile) {
-        oFile->write(response_body.c_str(), response_body.length());
+        oFile->write(response_body.data(), response_body.size());
         oFile->flush();
     }
 
     if (m_pCallback)
     {
         NetResponse r = makeResponse(response_body, nRespCode);
-        m_pCallback->didReceiveData(response_body.c_str(), response_body.length());
+        m_pCallback->didReceiveData(response_body.data(), response_body.size());
         m_pCallback->didReceiveResponse(r, _pHeaders);
         if (r.isOK()) {
             m_pCallback->didFinishLoading();
