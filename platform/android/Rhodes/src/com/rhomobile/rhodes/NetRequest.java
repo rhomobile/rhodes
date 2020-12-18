@@ -43,6 +43,7 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.Base64;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -576,6 +577,28 @@ public class NetRequest
         }
     }
 
+    private boolean BasiAuth(HashMap<String, String> values) throws java.io.IOException, java.lang.InterruptedException {
+        try {
+
+            URL _url = new URL(url);
+            auth_storage.realm = values.get("realm");
+            if(auth_storage.user == null)
+                return false;
+            if(auth_storage.pwd == null)
+                return false;
+
+            String str = auth_storage.user + ":" + auth_storage.pwd;
+            String str64 = Base64.getEncoder().encodeToString(str.getBytes());
+
+            auth_storage.authHeader = String.format("Basic %s", str64);
+            return true;
+        }
+        catch (IllegalStateException e) {
+            Logger.E( TAG,  e.getClass().getSimpleName() + ": " + e.getMessage() );
+            return false;
+        }
+    }
+
     private boolean DigestAuth(HashMap<String, String> values) throws java.io.IOException, java.lang.InterruptedException {
         try {
 
@@ -622,7 +645,8 @@ public class NetRequest
                 return HttpURLConnection.HTTP_UNAUTHORIZED;
         }
         else if(auth_storage.authType == AuthSettings.HTTP_BASIC) {
-
+            if(!BasiAuth(values))
+                return HttpURLConnection.HTTP_UNAUTHORIZED;
         }
         else
             return HttpURLConnection.HTTP_UNAUTHORIZED;
