@@ -151,9 +151,12 @@ install:
   - md C:\TAU\downloads
   - cd C:\TAU\downloads
 
-  - curl -fsS -o MotorolaSDK.msi http://files.tau-technologies.com/wince/rebuild/MotorolaSDK.msi
-  - msiexec /a MotorolaSDK.msi /quiet
+  - cd C:\
+  - dir
   - timeout 100
+  #- curl -fsS -o MotorolaSDK.msi http://files.tau-technologies.com/wince/rebuild/MotorolaSDK.msi
+  #- msiexec /a MotorolaSDK.msi /passive
+  #- timeout 100
 
 
 #  - gem install rest-client --no-document -f
