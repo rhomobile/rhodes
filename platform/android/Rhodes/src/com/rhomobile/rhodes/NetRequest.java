@@ -132,6 +132,8 @@ public class NetRequest
         }
     }
 
+    private native void CallbackData(String uid, byte[] data, int size);
+
     public String getNetRequestUniqueId() {
         return unique_id;
     }
@@ -198,7 +200,9 @@ public class NetRequest
         ByteArrayOutputStream response = new ByteArrayOutputStream();
         int recv = 0;
         while ((recv = stream.read(buffer)) > 0) {
-            response.write(buffer, 0, recv);
+            CallbackData(unique_id, buffer, recv);
+            if(fd < 0)
+                response.write(buffer, 0, recv);
         }
         stream.close();
 
@@ -241,7 +245,6 @@ public class NetRequest
                 InputStream in = RhoFileApi.open(item.m_strFilePath);
                 while((recv = in.read(buffer)) > 0) {
                     stream.write(buffer, 0, recv);
-                    Arrays.fill(buffer, (byte)0);
                 }
 
                 in.close();

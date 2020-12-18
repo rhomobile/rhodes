@@ -135,8 +135,8 @@ public:
 class MapNetRequests
 {
     std::unordered_map<rho::String , rho::net::JNINetRequest*> map;
-    std::mutex guard;
-    MapNetRequests() {}
+    mutable std::mutex guard;
+    MapNetRequests() = default;
 public:
     static MapNetRequests* instance() {
         static MapNetRequests mapNetRequests;
@@ -156,7 +156,29 @@ public:
         }
     }
 
+    rho::net::JNINetRequest* GetNetRequest(const rho::String& key) const {
+        std::lock_guard<std::mutex> lock(guard);
+        auto it = map.find(key);
+        if(it != map.end()) {
+            return it->second;
+        }
+
+        return nullptr;
+    }
+
 };
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_NetRequest_CallbackData
+        (JNIEnv* env, jobject, jstring uid, jbyteArray data, jint size) {
+
+    jhstring _uid = uid;
+    jholder<jbyteArray> _data = data;
+    rho::String key = rho_cast<rho::String>(env, _uid.get());
+    rho::net::JNINetRequest* netRequest = MapNetRequests::instance()->GetNetRequest(key);
+    jbyte* jdata = env->GetByteArrayElements(_data.get(), nullptr);
+    netRequest->CallbackData((const char*)jdata, (size_t)size);
+    env->ReleaseByteArrayElements(data, jdata, 0);
+}
 
 void rho::net::JNINetRequest::ProxySettings::initFromConfig() {
     port = 0;
@@ -247,8 +269,9 @@ rho::net::JNINetRequest::JNINetRequest()
     midSetAuthSettings = getJNIClassMethod(env, cls, "SetAuthSettings", "(Ljava/lang/String;Ljava/lang/String;Z)V" );
     midgetNetRequestUniqueId = getJNIClassMethod(env, cls, "getNetRequestUniqueId", "()Ljava/lang/String;" );
 
-    jhstring unique_id = static_cast<jstring>(env->CallObjectMethod(netRequestObject, midgetNetRequestUniqueId));
-    MapNetRequests::instance()->AddNetRequest(rho_cast<rho::String>(env, unique_id), this);
+    jhstring _unique_id = static_cast<jstring>(env->CallObjectMethod(netRequestObject, midgetNetRequestUniqueId));
+    unique_id = rho_cast<rho::String>(env, _unique_id);
+    MapNetRequests::instance()->AddNetRequest(unique_id, this);
 
     timeout = rho_conf_getInt("net_timeout");
     if (timeout == 0)
@@ -420,10 +443,12 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
 
     jholder<jbyteArray> jbody = env->NewByteArray(strBody.length());
     env->SetByteArrayRegion(jbody.get(), 0, strBody.length(), (jbyte const *)strBody.c_str());
+    currentFile = oFile;
 
     jint _code = env->CallIntMethod(netRequestObject, midDoPull, jurl.get(), jmethod.get(), jbody.get(),
                                     jfd, headers.get(), m_sslVerifyper, timeout);
     nRespCode = rho_cast<int>(env, _code);
+    currentFile = nullptr;
 
     if( !RHODESAPP().isBaseUrl(strUrl.c_str()) ) {
         rho_net_impl_network_indicator(0);
@@ -439,11 +464,6 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
     }
 
     getResponseHeader(*_pHeaders);
-
-    if(oFile) {
-        oFile->write(response_body.data(), response_body.size());
-        oFile->flush();
-    }
 
     if (m_pCallback)
     {
@@ -462,6 +482,18 @@ rho::net::INetResponse* rho::net::JNINetRequest::doPull(const char *method, cons
         oSession->logout();
 
     return makeResponse(response_body, nRespCode);
+}
+
+void rho::net::JNINetRequest::CallbackData(const char *data, size_t size) {
+
+    if(currentFile) {
+        currentFile->write(data, size);
+        currentFile->flush();
+    }
+
+    if (m_pCallback != 0) {
+        m_pCallback->didReceiveData(data, size);
+    }
 }
 
 void rho::net::JNINetRequest::set_options(const String &strUrl, const String &strBody,
@@ -550,6 +582,7 @@ void rho::net::JNINetRequest::getResponseHeader(rho::Hashtable<rho::String, rho:
 }
 
 rho::net::JNINetRequest::~JNINetRequest() noexcept {
+    MapNetRequests::instance()->RemoveNetRequest(unique_id);
     JNIEnv *env = jnienv();
     if(netRequestObject) env->DeleteGlobalRef(netRequestObject);
 }

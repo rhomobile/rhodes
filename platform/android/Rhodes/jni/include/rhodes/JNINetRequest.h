@@ -81,6 +81,9 @@ class JNINetRequest : public CNetRequestBase
     bool m_sslVerifyper = false;
     rho::String m_multipartBoundary = {};
     rho::String m_multipartPostfix = {};
+    rho::String unique_id;
+
+    common::CRhoFile* currentFile = nullptr;
     
 public:
     JNINetRequest();
@@ -96,6 +99,7 @@ public:
     virtual void setSslVerifyPeer(boolean mode) override { m_sslVerifyper = mode;  }
 
     virtual INetResponse* createEmptyNetResponse() override;
+    void CallbackData(const char* data, size_t size);
     
 private:
 
