@@ -76,12 +76,11 @@ class JNINetRequest : public CNetRequestBase
     jmethodID midgetResponseBody = nullptr;
     jmethodID midAddMultiPartData = nullptr;
     jmethodID midSetAuthSettings = nullptr;
-    jmethodID midgetNetRequestUniqueId = nullptr;
+    jmethodID midSetOpaqueObject = nullptr;
     long timeout = 0;
     bool m_sslVerifyper = false;
     rho::String m_multipartBoundary = {};
     rho::String m_multipartPostfix = {};
-    rho::String unique_id;
 
     common::CRhoFile* currentFile = nullptr;
     

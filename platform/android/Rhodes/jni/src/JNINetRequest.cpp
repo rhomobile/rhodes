@@ -51,7 +51,6 @@ class JNetResponseImpl : public rho::net::INetResponse
     int   m_nRespCode;
     rho::String m_cookies;
     rho::String m_errorMessage;
-    jcharArray body = nullptr;
 
 public:
     JNetResponseImpl(char const *data, size_t size, int nRespCode) : m_nRespCode(nRespCode) {
@@ -125,59 +124,18 @@ public:
     }
 
     virtual ~JNetResponseImpl() {
-        JNIEnv *env = jnienv();
-        if(body)
-            env->DeleteGlobalRef(body);
-    }
-
-};
-
-class MapNetRequests
-{
-    std::unordered_map<rho::String , rho::net::JNINetRequest*> map;
-    mutable std::mutex guard;
-    MapNetRequests() = default;
-public:
-    static MapNetRequests* instance() {
-        static MapNetRequests mapNetRequests;
-        return &mapNetRequests;
-    }
-
-    void AddNetRequest(const rho::String& key, rho::net::JNINetRequest* netRequest) {
-        std::lock_guard<std::mutex> lock(guard);
-        map.emplace(key, netRequest);
-    }
-
-    void RemoveNetRequest(const rho::String& key) {
-        std::lock_guard<std::mutex> lock(guard);
-        auto it = map.find(key);
-        if(it != map.end()) {
-            map.erase(it);
-        }
-    }
-
-    rho::net::JNINetRequest* GetNetRequest(const rho::String& key) const {
-        std::lock_guard<std::mutex> lock(guard);
-        auto it = map.find(key);
-        if(it != map.end()) {
-            return it->second;
-        }
-
-        return nullptr;
     }
 
 };
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_NetRequest_CallbackData
-        (JNIEnv* env, jobject, jstring uid, jbyteArray data, jint size) {
+        (JNIEnv* env, jobject, jlong opaque, jbyteArray data, jint size) {
 
-    jhstring _uid = uid;
-    jholder<jbyteArray> _data = data;
-    rho::String key = rho_cast<rho::String>(env, _uid.get());
-    rho::net::JNINetRequest* netRequest = MapNetRequests::instance()->GetNetRequest(key);
-    jbyte* jdata = env->GetByteArrayElements(_data.get(), nullptr);
-    netRequest->CallbackData((const char*)jdata, (size_t)size);
+    rho::net::JNINetRequest* netRequest = (rho::net::JNINetRequest*)opaque;
+    jbyte* jdata = env->GetByteArrayElements(data, nullptr);
+    netRequest->CallbackData((const char*)jdata, size);
     env->ReleaseByteArrayElements(data, jdata, 0);
+    env->DeleteLocalRef(data);
 }
 
 void rho::net::JNINetRequest::ProxySettings::initFromConfig() {
@@ -267,12 +225,9 @@ rho::net::JNINetRequest::JNINetRequest()
     midAddMultiPartData = getJNIClassMethod(env, cls, "AddMultiPartData", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" );
 
     midSetAuthSettings = getJNIClassMethod(env, cls, "SetAuthSettings", "(Ljava/lang/String;Ljava/lang/String;Z)V" );
-    midgetNetRequestUniqueId = getJNIClassMethod(env, cls, "getNetRequestUniqueId", "()Ljava/lang/String;" );
+    midSetOpaqueObject = getJNIClassMethod(env, cls, "SetOpaqueObject", "(J)V" );
 
-    jhstring _unique_id = static_cast<jstring>(env->CallObjectMethod(netRequestObject, midgetNetRequestUniqueId));
-    unique_id = rho_cast<rho::String>(env, _unique_id);
-    MapNetRequests::instance()->AddNetRequest(unique_id, this);
-
+    env->CallVoidMethod(netRequestObject, midSetOpaqueObject, (jlong)this);
     timeout = rho_conf_getInt("net_timeout");
     if (timeout == 0)
         timeout = 30; // 30 seconds by default
@@ -582,7 +537,6 @@ void rho::net::JNINetRequest::getResponseHeader(rho::Hashtable<rho::String, rho:
 }
 
 rho::net::JNINetRequest::~JNINetRequest() noexcept {
-    MapNetRequests::instance()->RemoveNetRequest(unique_id);
     JNIEnv *env = jnienv();
     if(netRequestObject) env->DeleteGlobalRef(netRequestObject);
 }

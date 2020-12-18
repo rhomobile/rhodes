@@ -111,12 +111,17 @@ public class NetRequest
     AuthSettings auth_storage = null;
 
     private String unique_id = null;
+    private long opaque_object = 0;
 
 
     public void SetAuthSettings(String u, String p, boolean is_d) {
         auth_storage.user = u;
         auth_storage.pwd = p;
         //is_digest = is_d;
+    }
+
+    public void SetOpaqueObject(long value) {
+        opaque_object = value;
     }
 
     public NetRequest() {
@@ -132,7 +137,7 @@ public class NetRequest
         }
     }
 
-    private native void CallbackData(String uid, byte[] data, int size);
+    private native void CallbackData(long opaque, byte[] data, int size);
 
     public String getNetRequestUniqueId() {
         return unique_id;
@@ -200,7 +205,7 @@ public class NetRequest
         ByteArrayOutputStream response = new ByteArrayOutputStream();
         int recv = 0;
         while ((recv = stream.read(buffer)) > 0) {
-            CallbackData(unique_id, buffer, recv);
+            CallbackData(opaque_object, buffer, recv);
             if(fd < 0)
                 response.write(buffer, 0, recv);
         }
