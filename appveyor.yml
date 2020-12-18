@@ -152,7 +152,7 @@ install:
   - cd C:\TAU\downloads
 
   - cd C:\
-  - dir
+  - dir /s
   - timeout 100
   #- curl -fsS -o MotorolaSDK.msi http://files.tau-technologies.com/wince/rebuild/MotorolaSDK.msi
   #- msiexec /a MotorolaSDK.msi /passive
