@@ -5,16 +5,16 @@ environment:
   GITHUB_APPVEYOR_TOKEN:
     secure: 7Vs1V9MjrPNKV9vHNkNN07BJjaAs1WEF/F9Mb+dQLGSwnFK9lpstnJvGyawWFkdJ
   matrix:
-    - wm_kitchensinkJS:
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-      QTDIR: C:\Qt\5.6\msvc2013
-      testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
-      test_app_folder: C:\TAU\kitchensinkJS\
-      build_command: "device:wm:production"
-      app_name: KitchensinkJS
-      target_os: wm
-      target_artefact_path: C:\TAU\kitchensinkJS\bin\target\wm\
-      target_os_wm: wm
+    #- wm_kitchensinkJS:
+    #  APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #  QTDIR: C:\Qt\5.6\msvc2013
+    #  testable_application_repository: https://github.com/tauplatform/kitchensinkJS.git
+    #  test_app_folder: C:\TAU\kitchensinkJS\
+    #  build_command: "device:wm:production"
+    #  app_name: KitchensinkJS
+    #  target_os: wm
+    #  target_artefact_path: C:\TAU\kitchensinkJS\bin\target\wm\
+    #  target_os_wm: wm
       
     - win32_rhosimulator:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -152,8 +152,7 @@ install:
   - cd C:\TAU\downloads
 
   - cd C:\
-  - dir /s
-  - timeout 100
+  - dir
   #- curl -fsS -o MotorolaSDK.msi http://files.tau-technologies.com/wince/rebuild/MotorolaSDK.msi
   #- msiexec /a MotorolaSDK.msi /passive
   #- timeout 100
