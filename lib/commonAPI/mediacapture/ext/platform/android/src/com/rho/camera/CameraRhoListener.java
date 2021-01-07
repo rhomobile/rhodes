@@ -305,17 +305,23 @@ IRhoListener {
 
 					if (getActualPropertyMap().get("dataURI") == null) {
 						Logger.T(TAG, "getActualPropertyMap().get(dataURI) == null");
-						
-						try {
-							imgPath = getFilePath(curUri);
-						}
-						catch (Exception e) {
-							e.printStackTrace();
-						}
 						Logger.T(TAG, "curUri ["+curUri+"]");
-						Logger.T(TAG, "imgPath ["+imgPath+"]");
+
+						String captureUriFilePath = getActualPropertyMap().get("captureUriFilePath");
+						if (captureUriFilePath != null) {
+							imgPath = captureUriFilePath;
+						}
+						else {
+							try {
+								imgPath = getFilePath(curUri);
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
 						//Utils.platformLog("################", "intent.getData() ["+intent.getData()+"]");
 						if (imgPath == null) {
+							Logger.T(TAG, "imgPath is null !");
 							try {
 								imgPath = getFilePath(intent.getData());
 							}
@@ -323,6 +329,7 @@ IRhoListener {
 								e.printStackTrace();
 							}
 						}
+						Logger.T(TAG, "imgPath ["+imgPath+"]");
 
 
 						if (fromGallery) {
