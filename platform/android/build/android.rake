@@ -897,12 +897,16 @@ namespace "config" do
         $google_classpath = AndroidTools::get_addon_classpath('Google APIs', $found_api_level)
       end
 
-      AndroidTools::MavenDepsExtractor.instance.add_dependency('com.android.support:support-v4:25.2.0')
-      AndroidTools::MavenDepsExtractor.instance.add_dependency('org.conscrypt:conscrypt-android:2.5.1')
-
       #setup_ndk($androidndkpath, $found_api_level, 'arm')
       $abis = $app_config['android']['abis'] if $app_config["android"]
       $abis = ['arm'] unless $abis
+
+      #build config
+      core_build_cfg = YAML.load_file(File.join( $builddir, 'config.yml '))
+
+      core_build_cfg['maven_deps'].each { |d|
+        AndroidTools::MavenDepsExtractor.instance.add_dependency( d )      
+      }
     end
     
     unless $debug
@@ -1226,12 +1230,6 @@ namespace "config" do
       puts "Extensions' java source lists: #{$ext_android_additional_sources.inspect}"
 
       AndroidTools::MavenDepsExtractor.instance.extract_all
-
-      if !AndroidTools::MavenDepsExtractor.instance.have_v4_support_lib?
-        v4jar = Dir.glob(File.join($androidsdkpath,'extras','android','**','v4','android-support-v4.jar'))
-        raise "Support-v4 library was not found neither in SDK extras nor in m2 repository" if v4jar.size !=1
-        $v4support_classpath = v4jar.first
-      end
 
 
       print_timestamp('android:extensions FINISH')
@@ -1895,16 +1893,7 @@ namespace "build" do
           args << "-L\"#{File.dirname(lib)}\""
         end
 
-        libandroid_support = File.join($androidndkpath, "sources", "cxx-stl", "llvm-libc++", "libs", realabi)
-        
-        if File.exists? libandroid_support
-          args << "-L\"#{libandroid_support}\""
-          args << "-landroid_support"
-          puts "libandroid_support exists"
-        end
-
-
-        
+       
         deps = []
         libs = []
 
@@ -2450,7 +2439,6 @@ namespace "build" do
       classpath = $androidjar
       classpath += $path_separator + $google_classpath if $google_classpath
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
-      classpath += $path_separator + $v4support_classpath if $v4support_classpath
       classpath += $path_separator + AndroidTools::MavenDepsExtractor.instance.classpath($path_separator)
 
       javalibsdir = Jake.get_absolute("platform/android/lib")
@@ -2484,7 +2472,6 @@ namespace "build" do
       classpath += $path_separator + $google_classpath if $google_classpath
       #######################################################################
 
-      classpath += $path_separator + $v4support_classpath if $v4support_classpath
       classpath += $path_separator + AndroidTools::MavenDepsExtractor.instance.classpath($path_separator)
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       Dir.glob(File.join($app_builddir, '**', '*.jar')).each do |jar|
@@ -2525,7 +2512,6 @@ namespace "build" do
       end
 
       print_timestamp('build:android:extensions_java FINISH')
-      $android_jars << $v4support_classpath if $v4support_classpath
       $android_jars += AndroidTools::MavenDepsExtractor.instance.jars
     end
 

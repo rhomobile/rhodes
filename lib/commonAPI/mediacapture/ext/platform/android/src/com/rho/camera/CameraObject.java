@@ -31,8 +31,7 @@ import android.provider.MediaStore;
 import android.view.SurfaceHolder;
 import android.database.Cursor;
 
-//import androidx.core.content.FileProvider;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 import com.rhomobile.rhodes.Base64;
 import com.rhomobile.rhodes.Logger;

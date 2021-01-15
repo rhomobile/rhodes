@@ -18,8 +18,8 @@ import com.rhomobile.rhodes.Logger;
 import android.os.SystemClock;
 
 import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 import android.media.RingtoneManager;
 import android.content.SharedPreferences;
 
