@@ -741,14 +741,14 @@ namespace "config" do
       # TODO: add ruby executable for Linux
     end
 
+    build_tools_path = nil
+
+    if !$skip_checking_Android_SDK
+
     AndroidTools::MavenDepsExtractor.instance.set_logger($logger)
     AndroidTools::MavenDepsExtractor.instance.set_temp_dir($tmpdir)
     AndroidTools::MavenDepsExtractor.instance.set_java_home($java)
 
-
-    build_tools_path = nil
-
-    if !$skip_checking_Android_SDK
       if File.exist?(File.join($androidsdkpath, "build-tools"))
 
 
