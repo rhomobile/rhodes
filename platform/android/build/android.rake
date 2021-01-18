@@ -902,9 +902,14 @@ namespace "config" do
       $abis = ['arm'] unless $abis
 
       #build config
-      core_build_cfg = YAML.load_file(File.join( $builddir, 'config.yml '))
+      core_build_cfg = {}
 
-      core_build_cfg['maven_deps'].each { |d|
+      begin
+        core_build_cfg = YAML.load_file(File.join( $builddir, 'config.yml '))
+      rescue
+      end
+
+      core_build_cfg['maven_deps']&.each { |d|
         AndroidTools::MavenDepsExtractor.instance.add_dependency( d )      
       }
     end
