@@ -24,6 +24,8 @@ end
 
 
 
+SimCtl.default_timeout = 60
+
 
 sdk_ver = ARGV[2]
 

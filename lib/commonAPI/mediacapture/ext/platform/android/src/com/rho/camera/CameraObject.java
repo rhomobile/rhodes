@@ -31,6 +31,9 @@ import android.provider.MediaStore;
 import android.view.SurfaceHolder;
 import android.database.Cursor;
 
+//import androidx.core.content.FileProvider;
+import android.support.v4.content.FileProvider;
+
 import com.rhomobile.rhodes.Base64;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -642,6 +645,29 @@ public class CameraObject extends CameraBase implements ICameraObject {
         //WM only
     }
 
+
+
+    String currentPhotoPath;
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date(System.currentTimeMillis()));
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = RhodesActivity.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+            imageFileName,  /* prefix */
+            ".jpg",         /* suffix */
+            storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+
+
+
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
         if (!hasPermission()) {
@@ -713,15 +739,46 @@ public class CameraObject extends CameraBase implements ICameraObject {
                         Logger.T(TAG, "Output filePath: " + filePath);
                     }
 
-                    fileUri = RhodesActivity.getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values); 
+                    //fileUri = RhodesActivity.getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+
+
+
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                    } catch (IOException ex) {
+                        // Error occurred while creating the File
+                        Logger.E(TAG, "$$$ Failed to create temporary file !!!");
+                    }
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        fileUri = FileProvider.getUriForFile(RhodesActivity.getContext(),
+                                                              RhodesActivity.getContext().getPackageName() + ".fileprovider",
+                                                              photoFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+                        //startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                    }
+
 
                     actualPropertyMap.put("captureUri", fileUri.toString());
+                    actualPropertyMap.put("captureUriFilePath", currentPhotoPath);
                     propertyMap.put("dataURI", "");
                     Logger.T(TAG, "Output fileUri: " + fileUri.toString());
-                    
+
                     // intent is null with MediaStore.EXTRA_OUTPUT so adding fileuri to map and get it with same key
                     // if instead of MediaStore.EXTRA_OUTPUT any other key is used then the bitmap is null though the file is getting created
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+
+
+
+
+                    //Uri fff = Uri.fromFile(new File(filePath));
+                    //intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+                    //intent.putExtra(MediaStore.EXTRA_OUTPUT, fff);
+
+
+
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 } else if (outputFormat.equalsIgnoreCase("dataUri")) {}
             } else {
                 intent = new Intent(ContextFactory.getUiContext(), CameraActivity.class);

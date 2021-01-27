@@ -12,6 +12,9 @@ android:
   manifest_changes:
   - ext/platform/android/AndroidManifest_rhomobile.xml
   - ext/platform/android/ApplicationCameraActivity.erb
+  - ext/platform/android/ApplicationFileProvider.erb
+#  maven_deps:
+#    - 'androidx.core:core:1.0.0'
   adds: ext/platform/android/adds
   exttype: rakefile
 
