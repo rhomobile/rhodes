@@ -273,8 +273,11 @@ public static final android.os.Parcelable$Creator *;
 -dontwarn java.**
 -keep class java.**
 
+-keep class javax.* {*;}
 -dontwarn javax.**
 -keep class javax.**
+-keep class * implements javax.*
+-keep public interface javax.* {*;}
 
 -dontwarn android.**
 -keep class android.**
@@ -378,6 +381,16 @@ public static final android.os.Parcelable$Creator *;
 
 -keep class com.rhomobile.rhodes.socket.RhoSocketImpl {
     <fields>;
+}
+
+-keep class com.rhomobile.rhodes.NetRequest {
+    <fields>;
+    <methods>;
+}
+
+-keep class com.rhomobile.rhodes.NetRequest.** {
+    <fields>;
+    <methods>;
 }
 
 
@@ -573,6 +586,7 @@ public static final android.os.Parcelable$Creator *;
     <fields>;
     <methods>;
 }
+
 
 
 
