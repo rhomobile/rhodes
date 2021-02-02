@@ -315,6 +315,15 @@ public static final android.os.Parcelable$Creator *;
     static ** CREATOR;
 }
 
+-keep class * implements javax.net.ssl.HostnameVerifier {
+    public *;
+}
+
+-keep class com.rhomobile.rhodes.NetRequest$RhoHostVerifier {
+    *;
+}
+
+
 -keepclassmembers class * implements javax.net.ssl.X509TrustManager {
     public *;
 }
@@ -382,17 +391,6 @@ public static final android.os.Parcelable$Creator *;
 -keep class com.rhomobile.rhodes.socket.RhoSocketImpl {
     <fields>;
 }
-
--keep class com.rhomobile.rhodes.NetRequest {
-    <fields>;
-    <methods>;
-}
-
--keep class com.rhomobile.rhodes.NetRequest.** {
-    <fields>;
-    <methods>;
-}
-
 
 -keep class com.rhomobile.rhoelements.ans.ANSFacade {
     <fields>;
@@ -587,9 +585,6 @@ public static final android.os.Parcelable$Creator *;
     <methods>;
 }
 
-
-
-
 -keepclasseswithmembernames class * {
     native <methods>;
 }
@@ -606,3 +601,15 @@ public static final android.os.Parcelable$Creator *;
 -keep class com.shaded.fasterxml.jackson.** { *; }
 -keep interface org.conscrypt.** { *; }
 -keep class org.conscrypt.** { *; }
+
+
+-keep interface android.support.v4.** { *; }
+-keep interface android.support.v7.** { *; }
+-keep class android.support.** { *; }
+-keep class com.google.firebase.** { *; }
+-keep class com.rhomobile.rhodes.NetRequest.* {*; }
+-keep class javax.net.ssl.* {*; }
+
+-dontwarn android.support.design.internal.**
+-dontwarn com.google.android.gms.**
+-dontwarn android.support.v4.**
