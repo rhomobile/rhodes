@@ -4,19 +4,19 @@
 
 # Current state of Rhomobile solution
 
-Currently Rhomobile solution supported and improved by TAU Technologies (partner of Zebra Technologies).
-For questions on commercial support contact [contact mail](mailto:info@tau-technologies.com) or reach out to the [TAU Technologies website](http://www.tau-technologies.com).
+Currently Rhomobile solution supported and improved by TAU Technologies Inc (partner of Zebra Technologies).
+For questions on commercial support contact [contact mail](mailto:info@tau-platform.com) or reach out to the [TAU Technologies website](http://www.tau-platform.com).
 
-Current actual version is Rhomobile Suite 7.0. [Download RMS 7.0](http://tau-technologies.com/developers/downloads/)
+Current actual version is Rhomobile Suite 7.0. [Download RMS 7.0](http://tau-platform.com/developers/downloads/)
 
-Actual documentation located on [RMS 7.0 documentation](http://docs.tau-technologies.com/en/7.0/home)
+Actual documentation located on [RMS 7.0 documentation](http://docs.tau-platform.com/en/7.0/home)
 
 
 # RhoMobile Open Source Documentation
 
-This page contains links to documentation and source-code repositories for the RhoMobile Suite, which has been released by Zebra Technologies to the open source community. 
+This page contains links to documentation and source-code repositories for the RhoMobile Suite, which has been released by Zebra Technologies to the open source community.
 
-For access to prior documentation, please visit **[Zebra's RhoMobile documentation site](http://docs.rhomobile.com/en/5.4/guide/welcome)**. 
+For access to prior documentation, please visit **[Zebra's RhoMobile documentation site](http://docs.rhomobile.com/en/5.4/guide/welcome)**.
 
 
 ## Getting RhoMobile source code
@@ -63,46 +63,46 @@ Example of RhoMobile release tree ( just for reference, it may not correspond to
 
 ## Installation
 
-[Windows First-time Install (32- and 64-bit)](http://docs.tau-technologies.com/en/7.0/guide/rhomobile-install#windows-first-time-install-32--and-64-bit) - How to install RhoMobile Suite on Windows (32- and 64-bit).
+[Windows First-time Install (32- and 64-bit)](http://docs.tau-platform.com/en/7.0/guide/rhomobile-install#windows-first-time-install-32--and-64-bit) - How to install RhoMobile Suite on Windows (32- and 64-bit).
 
-[Mac OS X First-time Install](http://docs.tau-technologies.com/en/7.0/guide/rhomobile-install#mac-os-x-first-time-install) - How to install RhoMobile Suite on Mac OS.
+[Mac OS X First-time Install](http://docs.tau-platform.com/en/7.0/guide/rhomobile-install#mac-os-x-first-time-install) - How to install RhoMobile Suite on Mac OS.
 
 ## Building apps
- 
-[Build for Android](http://docs.tau-technologies.com/en/7.0/guide/build_android) - How to build apps for Android.
 
-[Build for iOS](http://docs.tau-technologies.com/en/7.0/guide/build_ios) - How to build apps for iOS.
+[Build for Android](http://docs.tau-platform.com/en/7.0/guide/build_android) - How to build apps for Android.
 
-[Building for Windows](http://docs.tau-technologies.com/en/7.0/guide/build_win) - How to build apps for Windows.
+[Build for iOS](http://docs.tau-platform.com/en/7.0/guide/build_ios) - How to build apps for iOS.
 
-[Building for Windows ME/CE](http://docs.tau-technologies.com/en/7.0/guide/build_wm) - How to build apps for Windows Mobile.
+[Building for Windows](http://docs.tau-platform.com/en/7.0/guide/build_win) - How to build apps for Windows.
 
-[Building for Windows 10(UWP)](http://docs.tau-technologies.com/en/7.0/guide/build_uwp) - How to build apps for Windows 10(UWP).
+[Building for Windows ME/CE](http://docs.tau-platform.com/en/7.0/guide/build_wm) - How to build apps for Windows Mobile.
+
+[Building for Windows 10(UWP)](http://docs.tau-platform.com/en/7.0/guide/build_uwp) - How to build apps for Windows 10(UWP).
 
 
-## RhoConnect Push Synchronization 
-[Introduction to Push](http://docs.tau-technologies.com/en/7.0/rhoconnect/push)
+## RhoConnect Push Synchronization
+[Introduction to Push](http://docs.tau-platform.com/en/7.0/rhoconnect/push)
 
-[Set up Google Cloud Messaging on client and server for Rhodes Android Device](http://docs.tau-technologies.com/en/7.0/rhoconnect/push-client-setup-android) - Setting Up RhoConnect Push-Based Synchronization with Google Cloud Messaging.
+[Set up Google Cloud Messaging on client and server for Rhodes Android Device](http://docs.tau-platform.com/en/7.0/rhoconnect/push-client-setup-android) - Setting Up RhoConnect Push-Based Synchronization with Google Cloud Messaging.
 
-[Set up Apple Push Notification Service on client and server for Rhodes iOS Device](http://docs.tau-technologies.com/en/7.0/rhoconnect/push-client-setup-ios) - Setting Up RhoConnect Push-Based Synchronization with Apple Push Notification Service.
+[Set up Apple Push Notification Service on client and server for Rhodes iOS Device](http://docs.tau-platform.com/en/7.0/rhoconnect/push-client-setup-ios) - Setting Up RhoConnect Push-Based Synchronization with Apple Push Notification Service.
 
-[Set up RhoConnect Push Service on client and server for Rhodes Android and Windows Mobile/CE Devices](http://docs.tau-technologies.com/en/7.0/rhoconnect/push-client-setup-rps) - Setting Up for RhoConnect Push Service on Client Application for Windows Mobile/CE Devices.
+[Set up RhoConnect Push Service on client and server for Rhodes Android and Windows Mobile/CE Devices](http://docs.tau-platform.com/en/7.0/rhoconnect/push-client-setup-rps) - Setting Up for RhoConnect Push Service on Client Application for Windows Mobile/CE Devices.
 
 
 ## Windows Mobile/CE Docs
 
-[Dependent Include Files](https://github.com/rhomobile/rhodes/blob/master/doc/oss/WM_CE_Dependent_Include_Files.md) - Critical files that must be present for successfully targeting Windows Mobile/CE devices, and where and how to get them. 
+[Dependent Include Files](https://github.com/rhomobile/rhodes/blob/master/doc/oss/WM_CE_Dependent_Include_Files.md) - Critical files that must be present for successfully targeting Windows Mobile/CE devices, and where and how to get them.
 
 
 ## Android Docs
 
-[Guidelines To Support Barcode API On Android JellyBean Devices](https://github.com/rhomobile/rhodes/blob/master/doc/oss/Barcode_support_doc.md) - Lists the Zebra Android devices capable of barcode scanning, their OS image versions and steps for activating the feature. 
+[Guidelines To Support Barcode API On Android JellyBean Devices](https://github.com/rhomobile/rhodes/blob/master/doc/oss/Barcode_support_doc.md) - Lists the Zebra Android devices capable of barcode scanning, their OS image versions and steps for activating the feature.
 
 
 ## Repositories Released as Open Source
 
-Clone these repo(s) as required for your needs to generate a copy of the open source code to the local development machine. 
+Clone these repo(s) as required for your needs to generate a copy of the open source code to the local development machine.
 
 [Rhodes](https://github.com/rhomobile/rhodes/)
 
@@ -119,4 +119,3 @@ Clone these repo(s) as required for your needs to generate a copy of the open so
 [RhoInstaller](https://github.com/rhomobile/rhoinstaller/)
 
 [RMS-Testing](https://github.com/rhomobile/RMS-Testing)
-
