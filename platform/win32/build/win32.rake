@@ -128,19 +128,32 @@ namespace "build" do
 	def set_vcvarsall()
 		if $vcvarsall == nil
 			$vs_version = nil
-			Jake.run2(File.join($qtdir, 'bin', 'qtdiag'), [' '], {:directory => File.join($qtdir, 'bin'), :nowait => false}) do |line|
-			  if line == nil
-		      elsif line.include? "MSVC 2015"
-		      	$vs_version = 2015
-		      	break
-		      elsif line.include? "MSVC 2017"
-		      	$vs_version = 2017
-		      	break
-		      elsif line.include? "MSVC 2019"
-		      	$vs_version = 2019
-		      	break
-		      end
-		    end
+
+			msvc_version = $app_config["win32"]["msvc"] if $app_config && $app_config["win32"] && $app_config["win32"]["msvc"]
+			if (msvc_version == "2015" or msvc_version == "2017" or msvc_version == "2019")
+				$vs_version = msvc_version.to_i
+			elsif (msvc_version != nil)
+				puts "MSVC version " + msvc_version + " is not supported"
+				exit 1
+			end
+
+			if ($vs_version == nil)
+				puts "Searching for MSVC version from the qtdiag output"
+				Jake.run2(File.join($qtdir, 'bin', 'qtdiag'), [' '], {:directory => File.join($qtdir, 'bin'), :nowait => false}) do |line|
+				  if line == nil
+			      elsif line.include? "MSVC 2015"
+			      	$vs_version = 2015
+			      	break
+			      elsif line.include? "MSVC 2017"
+			      	$vs_version = 2017
+			      	break
+			      elsif line.include? "MSVC 2019"
+			      	$vs_version = 2019
+			      	break
+			      end
+			    end
+			end
+
 		    puts $vs_version
 		    if ($vs_version == nil)
 		      	puts "Using QT with unsupported VS version!"
