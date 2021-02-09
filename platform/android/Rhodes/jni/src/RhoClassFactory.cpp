@@ -27,6 +27,7 @@
 #include <net/CURLNetRequest.h>
 #include <common/PosixThreadImpl.h>
 
+#include "rhodes/JNINetRequest.h"
 #include "rhodes/RhoClassFactory.h"
 #include "rhodes/sslimpl.h"
 #include "rhodes/rhocryptimpl.h"
@@ -45,7 +46,8 @@ namespace common
 
 net::INetRequestImpl* CRhoClassFactory::createNetRequestImpl()
 {
-    return new net::CURLNetRequest();
+    //return new net::CURLNetRequest();
+    return new net::JNINetRequest();
 }
 
 IRhoThreadImpl *CRhoClassFactory::createThreadImpl()
