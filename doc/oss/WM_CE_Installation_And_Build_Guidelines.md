@@ -99,7 +99,7 @@
 User-managed **Webkit** options:
 
 * Provide/develop their own **Webkit** replacement 
-* Engage with a partner that is developing **Webkit** options, such as **[Tau Technologies](http://tau-technologies.com/)** or **[Kutir](http://kutirtech.com/)**
+* Engage with a partner that is developing **Webkit** options, such as **[Tau Technologies](http://tau-platform.com/)** or **[Kutir](http://kutirtech.com/)**
 
 [Learn more about RMS open sourcing](https://developer.zebra.com/community/rhomobile-suite/rhomobile-community/rhomobile-blogs/blog/2016/03/25/announcement-rhomobile-transitioning-to-open-source?et=watches.email.blog) and licensing options.
 

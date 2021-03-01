@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * http://tau-technologies.com
+ * http://tau-platform.com
  *------------------------------------------------------------------------*/
 
 
@@ -67,26 +67,26 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
     {
         dumpClassInfo(superClass, (inheritanceDepth + 1));
     }
-    
+
     int i = 0;
     unsigned int mc = 0;
-    
+
     const char* className = class_getName(c);
-    
+
     Method* mlist = class_copyMethodList(c, &mc);
     for (i = 0; i < mc; i++)
     {
         Method method = mlist[i];
         SEL methodSelector = method_getName(method);
         const char* methodName = sel_getName(methodSelector);
-        
+
         const char *typeEncodings = method_getTypeEncoding(method);
-        
+
         char returnType[80];
         method_getReturnType(method, returnType, 80);
-        
+
         NSLog(@"%2.2d %s ==> %s (%s)", inheritanceDepth, className, methodName, (typeEncodings == Nil) ? "" : typeEncodings);
-        
+
         int ac = method_getNumberOfArguments(method);
         int a = 0;
         for (a = 0; a < ac; a++) {
@@ -109,7 +109,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 
 - (id)initWithFrame:(CGRect)frame {
     [self init];
-    
+
     WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
     if ( rho_conf_getBool("enable_media_playback_without_gesture") == 1 ) {
         configuration.mediaPlaybackRequiresUserAction = NO;
@@ -119,7 +119,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
         configuration.allowsInlineMediaPlayback = YES;
     }
 
-    
+
     BOOL isDirectRequestActivated = NO;
     if (rho_conf_is_property_exists("ios_direct_local_requests")!=0) {
         if (rho_conf_getBool("ios_direct_local_requests")!=0 ) {
@@ -135,8 +135,8 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
         Method bogusHandle = class_getClassMethod([WKWebView class], @selector(bogushandlesURLScheme:));
         Method handleOriginal = class_getClassMethod([WKWebView class], @selector(handlesURLScheme:));
         method_exchangeImplementations(bogusHandle, handleOriginal);
-    
-    
+
+
         [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"http"];
         [configuration setURLSchemeHandler:schemeHandler forURLScheme:@"https"];
 
@@ -147,7 +147,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 #endif
     }
     WKWebView* w = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
-    
+
     //w.scalesPageToFit = YES;
     if ( !rho_conf_getBool("WebView.enableBounce") )
         [[w scrollView] setBounces:NO];
@@ -161,12 +161,12 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
     //w.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
-    
+
     //assert([w retainCount] == 1);
     self.webview = w;
-    
-    
-    
+
+
+
     return self;
 }
 
@@ -194,7 +194,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 - (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script {
         __block NSString *resultString = nil;
         __block BOOL finished = NO;
-        
+
         [webview evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
             if (error == nil) {
                 if (result != nil) {
@@ -205,12 +205,12 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
             }
             finished = YES;
         }];
-        
+
         while (!finished)
         {
             [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
         }
-        
+
         return resultString;
 }
 
@@ -249,9 +249,9 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
 //     shouldStartLoadWithRequest => decidePolicyForNavigationAction
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-    
+
     //NSLog(@"$$$$$ NavigationAction with URL = %@", [[navigationAction request] URL]);
-    
+
     BOOL result = YES;
     if (delegate != nil) {
         result = [delegate shouldStartLoadWithRequest:self request:navigationAction.request];
@@ -272,7 +272,7 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
     // force Ajax CommonAPI calls
     NSString* jscode = @"window['__rho_nativeBridgeType']='ajax'";
     [self stringByEvaluatingJavaScriptFromString:jscode];
-    
+
     [delegate webViewDidFinishLoad:self];
 }
 
@@ -287,11 +287,11 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
                                                                    message:message
                                                             preferredStyle:UIAlertControllerStyleAlert];
-    
+
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
         completionHandler();
     }]];
-    
+
     [[[[Rhodes sharedInstance] mainView] getMainViewController] presentViewController:alert animated:YES completion:nil];
 }
 
@@ -300,15 +300,15 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
                                                                    message:message
                                                             preferredStyle:UIAlertControllerStyleAlert];
-    
+
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
         completionHandler(NO);
     }]];
-    
+
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         completionHandler(YES);
     }]];
-    
+
     [[[[Rhodes sharedInstance] mainView] getMainViewController] presentViewController:alert animated:YES completion:nil];
 }
 
@@ -317,24 +317,23 @@ static void dumpClassInfo(Class c, int inheritanceDepth)
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
                                                                    message:prompt
                                                             preferredStyle:UIAlertControllerStyleAlert];
-    
+
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
         textField.placeholder = prompt;
         textField.secureTextEntry = NO;
         textField.text = defaultText;
     }];
-    
+
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
         completionHandler(nil);
     }]];
-    
+
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         completionHandler([alert.textFields.firstObject text]);
     }]];
-    
+
     [[[[Rhodes sharedInstance] mainView] getMainViewController] presentViewController:alert animated:YES completion:nil];
 }
 
 
 @end
-

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * http://tau-technologies.com
+ * http://tau-platform.com
  *------------------------------------------------------------------------*/
 
 #import "RhoWebViewFabrique.h"
@@ -46,7 +46,7 @@
 @implementation RhoWebViewFabrique
 
 + (id<RhoWebView,NSObject>)createRhoWebViewWithFrame:(CGRect)frame {
-    
+
     BOOL shouldMakeWkWebView = YES;
     BOOL isDirectRequestActivated = NO;
     BOOL isWKWebViewCLassExist = NO;
@@ -67,9 +67,9 @@
     if (NSClassFromString(@"WKWebView")) {
         isWKWebViewCLassExist = YES;
     }
-    
+
     id<RhoWebView,NSObject> webView = nil;
-    
+
     if (shouldMakeWkWebView) {
         RAWLOG_INFO("Try to create WKWebView ...");
         if (isDirectRequestActivated) {

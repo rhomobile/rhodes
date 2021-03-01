@@ -56,6 +56,8 @@ public:
     bool isEnd() const;
     unsigned int size() const;
     void truncate(unsigned int);
+    int getFD() const { return fileno(m_file); }
+    const String & getPath() const { return m_strPath; }
 
     void readString(String& strData);
     void readStringW(StringW& strTextW);

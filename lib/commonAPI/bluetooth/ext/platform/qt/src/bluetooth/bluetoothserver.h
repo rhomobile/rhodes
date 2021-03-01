@@ -53,7 +53,7 @@ private slots:
 
         serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceName, "BT message sender");
         serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceDescription, "Message sender");
-        serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceProvider, "tau-technologies.com");
+        serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceProvider, "tau-platform.com");
         serviceInfo.setServiceUuid(QBluetoothUuid(QBluetoothUuid::SerialPort));
 
         QBluetoothServiceInfo::Sequence publicBrowse;

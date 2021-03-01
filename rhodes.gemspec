@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.date = Time.now
   s.platform = Gem::Platform::RUBY
   s.description = 'Rhodes mobile framework'
-  s.email = 'info@tau-technologies.com'
+  s.email = 'info@tau-platform.com'
   s.extra_rdoc_files = ["README.md", "LICENSE"]
 
   if File.file?("Manifest.txt") # manifest may be missing when running bundle install
@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
     s.files =  files
   end
 
-  s.homepage = 'http://tau-technologies.com/'
+  s.homepage = 'http://tau-platform.com/'
   s.rdoc_options = ["--inline-source", "--charset=UTF-8", '--exclude=bin', '--exclude=doc', '--exclude=ext', '--exclude=installer', '--exclude=lib/build', '--exclude=lib/commonAPI', '--exclude=lib/extensions', '--exclude=lib/rhodes', '--exclude=lib/test', '--exclude=lib/rhodes.rb', '--exclude=platform', '--exclude=res', '--exclude=spec']
   s.require_paths = ["lib"]
   s.required_ruby_version = '>= 2.3'
@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   s.add_dependency('deep_merge','1.1.1')
   s.add_dependency('nokogiri', '1.10.10')
 
-  s.post_install_message = "Thanks for installing Rhodes ! Please visit our website: http://tau-technologies.com" if s.respond_to? :post_install_message=
+  s.post_install_message = "Thanks for installing Rhodes ! Please visit our website: http://tau-platform.com" if s.respond_to? :post_install_message=
   s.executables << 'rhogen'
   s.executables << 'rhodes'
   s.executables << 'upgrade-rhodes-app'

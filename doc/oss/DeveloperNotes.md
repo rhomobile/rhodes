@@ -54,7 +54,7 @@ RE = RhoElements
 User-managed **webkit** options:
 
 * Provide or develop your own **webkit**  
-* Engage with a partner that is developing **webkit** options, such as **[Tau Technologies](http://tau-technologies.com/)** or **[Kutir](http://kutirtech.com/)** 
+* Engage with a partner that is developing **webkit** options, such as **[Tau Technologies](http://tau-platform.com/)** or **[Kutir](http://kutirtech.com/)** 
 
 ##OTHER KNOWN ISSUES 
 
