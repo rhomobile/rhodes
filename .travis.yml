@@ -129,14 +129,14 @@ android:
   - extra-google-m2repository
   - extra-android-m2repository
   - extra-android-support
-  #- build-tools-30.0.2
-  #- android-30
+  - add-on
+  - extra
+  - build-tools-30.0.2
+  - android-30
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
 #  - sys-img-x86-android-${RHO_ANDROID_LEVEL:-19}
   - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
-  - build-tools-25.0.3
-  - android-25
 
 env:
   global:
