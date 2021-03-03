@@ -38,7 +38,7 @@ script:
 #- rvm gemset use rhodes
 
 # install Rhodes gem to clean gemset. All dependencies should be installed automatically
-- travis_wait 30 gem install --no-document ./rhodes-$(cat ./version).gem
+- travis_wait 90 gem install --no-document ./rhodes-$(cat ./version).gem
 
 # check rhodes path is valid
 - |
