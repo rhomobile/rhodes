@@ -128,6 +128,7 @@ android:
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
+  - extra-android-support
   - build-tools-30.0.2
   - android-30
   - android-${RHO_ANDROID_LEVEL:-19}
@@ -258,7 +259,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android_native_lib"    RHO_APP="rhodes_lib_examples" RHO_ANDROID_LEVEL="21" NDK_NUMBER="21" SKIP_TESTS=1 RHO_RUBY="ruby-2.3.8"
+    env: RHO_TARGET="android_native_lib"    RHO_APP="rhodes_lib_examples" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1 RHO_RUBY="ruby-2.3.8"
     dist: bionic
 
   - language: android
