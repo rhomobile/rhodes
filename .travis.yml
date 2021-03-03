@@ -263,12 +263,6 @@ matrix:
     os: linux
     env: RHO_TARGET="android_native_lib"    RHO_APP="rhodes_lib_examples" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1 RHO_RUBY="ruby-2.3.8" MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
     dist: focal
-    addons:
-      apt:
-        sources:
-          - ubuntu-toolchain-r-test
-        packages:
-          - g++-4.9
 
   - language: android
     os: linux
