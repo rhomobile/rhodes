@@ -135,8 +135,8 @@ android:
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
 #  - sys-img-x86-android-${RHO_ANDROID_LEVEL:-19}
   - sys-img-armeabi-v7a-android-${RHO_ANDROID_LEVEL:-19}
-  - build-tools-23.0.2
-  - android-30
+  - build-tools-25.0.3
+  - android-25
 
 env:
   global:
