@@ -111,14 +111,14 @@ deploy:
   on:
     all_branches: true
 
-cache:
-  directories:
-  - /home/travis/.rvm/    
+#cache:
+#  directories:
+#  - /home/travis/.rvm/    
 
-before_cache:
-  - gem uninstall rhodes -a -x --force
-  - gem uninstall rhoconnect-client -a -x --force
-  - gem uninstall rho-tau-extensions -a -x --force
+#before_cache:
+#  - gem uninstall rhodes -a -x --force
+#  - gem uninstall rhoconnect-client -a -x --force
+#  - gem uninstall rho-tau-extensions -a -x --force
 
 android:
   components:
