@@ -262,7 +262,7 @@ matrix:
   - language: android
     os: linux
     env: RHO_TARGET="android_native_lib"    RHO_APP="rhodes_lib_examples" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1 RHO_RUBY="ruby-2.3.8"
-    dist: bionic
+    dist: focal
 
   - language: android
     os: linux
