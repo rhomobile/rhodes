@@ -2354,7 +2354,7 @@ namespace "build" do
         require 'nokogiri'
         FormatManifestToAarCompat($appmanifest)
         Jake.run($aapt2, args)
-        raise 'Error in AAPT: R.java' + $aapt2 + " " + args.join(' ') unless $?.success?
+        raise 'Error in AAPT: ' + $aapt2 + " " + args.join(' ') unless $?.success?
 
         if(File.exists?(File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')))
           cp_r File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
