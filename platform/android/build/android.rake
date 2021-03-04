@@ -2353,7 +2353,7 @@ namespace "build" do
       if ($rhodes_as_lib)
         require 'nokogiri'
         FormatManifestToAarCompat($appmanifest)
-        puts Jake.run($aapt2, args)
+        Jake.run($aapt2, args)
         raise 'Error in AAPT: R.java' + $aapt2 + " " + args unless $?.success?
 
         if(File.exists?(File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')))
