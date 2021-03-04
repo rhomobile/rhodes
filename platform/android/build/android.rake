@@ -2353,7 +2353,8 @@ namespace "build" do
       if ($rhodes_as_lib)
         require 'nokogiri'
         FormatManifestToAarCompat($appmanifest)
-        Jake.run($aapt2, args)
+        puts Jake.run($aapt2, args)
+        raise 'Error in AAPT: R.java' + $aapt2 + " " + args unless $?.success?
 
         if(File.exists?(File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')))
           cp_r File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
@@ -2365,10 +2366,10 @@ namespace "build" do
         
       else
         Jake.run($aapt, args)
+        raise 'Error in AAPT: R.java' unless $?.success?
       end
 
-      raise 'Error in AAPT: R.java' unless $?.success?
-
+      
       @packs = AndroidTools::MavenDepsExtractor.instance.extract_packages
       @packs.each do |p|
         path_to_p = File.join $tmpdir, 'gen', p.split('.')
