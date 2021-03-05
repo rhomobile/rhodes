@@ -38,7 +38,7 @@ script:
 #- rvm gemset use rhodes
 
 # install Rhodes gem to clean gemset. All dependencies should be installed automatically
-- travis_wait 30 gem install --no-document ./rhodes-$(cat ./version).gem
+- travis_wait 90 gem install --no-document ./rhodes-$(cat ./version).gem
 
 # check rhodes path is valid
 - |
@@ -128,8 +128,11 @@ android:
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
-  - build-tools-30.0.2
-  - android-30
+  - extra-android-support
+  - add-on
+  - extra
+  - build-tools-26.0.2
+  - android-26
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
 #  - sys-img-x86-android-${RHO_ANDROID_LEVEL:-19}
@@ -258,8 +261,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android_native_lib"    RHO_APP="rhodes_lib_examples" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  SKIP_TESTS=1
-    dist: bionic
+    env: RHO_TARGET="android_native_lib"    RHO_APP="rhodes_lib_examples" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1 RHO_RUBY="ruby-2.3.8"
 
   - language: android
     os: linux
