@@ -1319,6 +1319,7 @@ namespace "build" do
       $rhodes_as_lib = true
       Rake::Task["package:android"].invoke
       target_path = args[:target_path]
+      mkdir_p target_path if not File.exists? target_path
       cp_r File.join($bindir, "#{$appname}-#{$app_config["version"]}.aar"), target_path
       print_timestamp('build:android:rhodeslib_lib FINISH')
     end
@@ -2348,6 +2349,7 @@ namespace "build" do
         require 'nokogiri'
         FormatManifestToAarCompat($appmanifest)
         Jake.run($aapt2, args)
+        raise 'Error in AAPT: ' + $aapt2 + " " + args.join(' ') unless $?.success?
 
         if(File.exists?(File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java')))
           cp_r File.join($app_rjava_dir, 'com', $vendor, $appname, 'R.java'), File.join($app_rjava_dir, 'R.java')
@@ -2359,10 +2361,10 @@ namespace "build" do
         
       else
         Jake.run($aapt, args)
+        raise 'Error in AAPT: R.java' unless $?.success?
       end
 
-      raise 'Error in AAPT: R.java' unless $?.success?
-
+      
       @packs = AndroidTools::MavenDepsExtractor.instance.extract_packages
       @packs.each do |p|
         path_to_p = File.join $tmpdir, 'gen', p.split('.')

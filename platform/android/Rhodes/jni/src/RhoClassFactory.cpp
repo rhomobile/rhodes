@@ -46,8 +46,14 @@ namespace common
 
 net::INetRequestImpl* CRhoClassFactory::createNetRequestImpl()
 {
-    //return new net::CURLNetRequest();
-    return new net::JNINetRequest();
+    bool prop_exists = rho_conf_is_property_exists("android_net_curl");
+    if(!prop_exists)
+        rho_conf_setInt("android_net_curl", 1);
+        
+    if (rho_conf_getInt("android_net_curl")) 
+        return new net::CURLNetRequest();
+    else
+        return new net::JNINetRequest();
 }
 
 IRhoThreadImpl *CRhoClassFactory::createThreadImpl()

@@ -5,9 +5,9 @@ set -x
 rake build:android:rhodeslib_lib["$HOME/$RHO_APP/Native_Android/MyApplication/app/libs/"]
 
 if [ $? -eq 0 ]; then
-    echo RHo: rhodes lib builded OK !
+    echo RHO: rhodes lib built ok !
 else
-    echo RHO: rhodes lib failed !
+    echo RHO: rhodes lib built failed !
     exit -1
 fi
 
