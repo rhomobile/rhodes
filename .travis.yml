@@ -250,7 +250,7 @@ matrix:
   - language: android
     os: linux
     env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="30" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.7.1"
-    dist: bionic
+#    dist: bionic
 
   - language: android
     os: linux
