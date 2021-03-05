@@ -128,8 +128,11 @@ android:
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
-  - build-tools-30.0.2
-  - android-30
+  - extra-android-support
+  - add-on
+  - extra
+  - build-tools-26.0.2
+  - android-26
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
 #  - sys-img-x86-android-${RHO_ANDROID_LEVEL:-19}

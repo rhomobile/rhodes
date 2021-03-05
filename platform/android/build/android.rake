@@ -1316,6 +1316,7 @@ namespace "build" do
       $rhodes_as_lib = true
       Rake::Task["package:android"].invoke
       target_path = args[:target_path]
+      mkdir_p target_path if not File.exists? target_path
       cp_r File.join($bindir, "#{$appname}-#{$app_config["version"]}.aar"), target_path
       print_timestamp('build:android:rhodeslib_lib FINISH')
     end
