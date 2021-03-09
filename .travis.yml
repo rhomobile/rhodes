@@ -240,6 +240,7 @@ matrix:
     env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.5.7" ANDROID_ABIS="arm,x86"
 
   - language: android
+    jdk: oraclejdk8
     os: linux
     env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.6.5"
 
