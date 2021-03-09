@@ -24,7 +24,7 @@ script:
 - gem list
 
 
-- sudo find / - name *google_play_services*
+- sudo find / -name *google_play_services*
 #TODO: build RhoRuby executable for host platform
 #- .ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh
 
