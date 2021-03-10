@@ -23,8 +23,6 @@ script:
 - bundle install
 - gem list
 
-
-- sudo find / -name *google_play_services*
 #TODO: build RhoRuby executable for host platform
 #- .ci/hosts/$TRAVIS_OS_NAME/build_rhoruby.sh
 
@@ -54,7 +52,7 @@ script:
   fi
 
 # run target-specific rhodes-setup command
-- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
+- $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
 
 # clone and install rhoconnect-client gem
 - .ci/install_rhoconnect-client.sh
@@ -66,7 +64,7 @@ script:
   fi
 
 # run target-specific script after all Rhodes build environment has been setup  
-- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/post_gem.sh || travis_terminate 1
+- $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/post_gem.sh || travis_terminate 1
 
 - gem list
 - cd $HOME
@@ -90,12 +88,12 @@ script:
 # build testable app binary artefact unless otherwise specified by matrix config
 - |
   if [[ -z $SKIP_BUILD ]]; then
-    $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh;
+    $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh;
   fi
 #TODO: change this to run specs in auto mode and collect results
 - |
   if [[ -z $SKIP_TESTS ]]; then
-    travis_wait 45 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/$RHO_RUNNER_SCRIPT;
+    travis_wait 45 $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/$RHO_RUNNER_SCRIPT;
   fi
 
 before_deploy:
@@ -136,8 +134,8 @@ android:
   - extra-android-support
   - add-on
   - extra
-  - build-tools-26.0.1
-  - android-26
+  - build-tools-28.0.1
+  - android-28
   - android-${RHO_ANDROID_LEVEL:-19}
   - addon-google_apis-google-${RHO_ANDROID_LEVEL:-19}
 #  - sys-img-x86-android-${RHO_ANDROID_LEVEL:-19}
@@ -242,7 +240,6 @@ matrix:
     env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.5.7" ANDROID_ABIS="arm,x86"
 
   - language: android
-    jdk: oraclejdk8
     os: linux
     env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.6.5"
 
@@ -254,7 +251,7 @@ matrix:
   - language: android
     os: linux
     env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="28" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.7.1"
-    dist: bionic
+    dist: focal
 
   - language: android
     os: linux
