@@ -245,7 +245,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"  RHO_RUBY="ruby-2.7.0 CC=gcc-4.8.2 && CXX=g++-4.8.2"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"  RHO_RUBY="ruby-2.7.0" CC=gcc-4.8.2 && CXX=g++-4.8.2
     dist: focal
     addons:
       apt:
@@ -256,7 +256,7 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="28" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.7.1 CC=gcc-4.9 && CXX=g++-4.9"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="28" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.7.1" CC=gcc-4.9 && CXX=g++-4.9
     dist: focal
     addons:
       apt:
