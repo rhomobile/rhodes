@@ -52,7 +52,7 @@ script:
   fi
 
 # run target-specific rhodes-setup command
-- $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/rho_setup.sh
 
 # clone and install rhoconnect-client gem
 - .ci/install_rhoconnect-client.sh
@@ -64,7 +64,7 @@ script:
   fi
 
 # run target-specific script after all Rhodes build environment has been setup  
-- $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/post_gem.sh || travis_terminate 1
+- $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/post_gem.sh || travis_terminate 1
 
 - gem list
 - cd $HOME
@@ -86,14 +86,12 @@ script:
   fi
 
 # build testable app binary artefact unless otherwise specified by matrix config
-- |
-  if [[ -z $SKIP_BUILD ]]; then
-    $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh;
-  fi
+- $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh;
+
 #TODO: change this to run specs in auto mode and collect results
 - |
   if [[ -z $SKIP_TESTS ]]; then
-    travis_wait 45 $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/$RHO_RUNNER_SCRIPT;
+    travis_wait 45 $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/$RHO_RUNNER_SCRIPT;
   fi
 
 before_deploy:
