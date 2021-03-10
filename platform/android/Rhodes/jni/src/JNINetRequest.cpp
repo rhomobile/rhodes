@@ -27,6 +27,7 @@
 #include "rhodes/JNINetRequest.h"
 
 #include <common/RhodesApp.h>
+#include <common/RhoFilePath.h>
 #include <common/RhoConf.h>
 #include <net/URI.h>
 
@@ -293,8 +294,8 @@ size_t rho::net::JNINetRequest::processMultipartItems(VectorPtr<CMultipartItem*>
 
         if ( oItem.m_strFileName.length() == 0 ) {
             if (oItem.m_strFilePath.length() > 0)  {
-                //common::CFilePath oPath(oItem.m_strFilePath);
-                //oItem.m_strFileName = oPath.getBaseName();
+                common::CFilePath oPath(oItem.m_strFilePath);
+                oItem.m_strFileName = oPath.getBaseName();
             }
         }
 
