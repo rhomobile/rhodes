@@ -86,8 +86,10 @@ script:
   fi
 
 # build testable app binary artefact unless otherwise specified by matrix config
-- $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh
-
+- |
+  if [[ -z $SKIP_BUILD ]]; then
+    $TRAVIS_BUILD_DIR/.ci/safe_run.sh $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh;
+  fi
 #TODO: change this to run specs in auto mode and collect results
 - |
   if [[ -z $SKIP_TESTS ]]; then
@@ -243,13 +245,26 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"  RHO_RUBY="ruby-2.7.0"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"  RHO_RUBY="ruby-2.7.0 CC=gcc-4.8.2 && CXX=g++-4.8.2"
     dist: focal
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-4.8.2
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="28" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.7.1"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="28" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.7.1 CC=gcc-4.9 && CXX=g++-4.9"
     dist: focal
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-4.9
+
 
   - language: android
     os: linux
