@@ -86,7 +86,7 @@ script:
   fi
 
 # build testable app binary artefact unless otherwise specified by matrix config
-- $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh;
+- $TRAVIS_BUILD_DIR/.ci/targets/$RHO_TARGET/build_artefact_for_deploy.sh
 
 #TODO: change this to run specs in auto mode and collect results
 - |
