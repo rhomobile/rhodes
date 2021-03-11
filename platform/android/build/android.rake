@@ -745,9 +745,9 @@ namespace "config" do
 
     if !$skip_checking_Android_SDK
 
-    AndroidTools::MavenDepsExtractor.instance.set_logger($logger)
-    AndroidTools::MavenDepsExtractor.instance.set_temp_dir($tmpdir)
-    AndroidTools::MavenDepsExtractor.instance.set_java_home($java)
+      AndroidTools::MavenDepsExtractor.instance.set_logger($logger)
+      AndroidTools::MavenDepsExtractor.instance.set_temp_dir($tmpdir)
+      AndroidTools::MavenDepsExtractor.instance.set_java_home($java)
 
       if File.exist?(File.join($androidsdkpath, "build-tools"))
 
@@ -907,6 +907,7 @@ namespace "config" do
       begin
         core_build_cfg = YAML.load_file(File.join( $builddir, 'config.yml '))
       rescue
+        puts "Error while loading config file with maven dependencies " + File.join( $builddir, 'config.yml ')
       end
 
       core_build_cfg['maven_deps']&.each { |d|
