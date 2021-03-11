@@ -905,9 +905,9 @@ namespace "config" do
       core_build_cfg = {}
 
       begin
-        core_build_cfg = YAML.load_file(File.join( $builddir, 'config.yml '))
+        core_build_cfg = YAML.load_file(File.join( $builddir, 'config.yml'))
       rescue
-        puts "Error while loading config file with maven dependencies " + File.join( $builddir, 'config.yml ')
+        puts "Error while loading config file with maven dependencies " + File.join( $builddir, 'config.yml')
       end
 
       core_build_cfg['maven_deps']&.each { |d|

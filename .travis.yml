@@ -85,7 +85,6 @@ script:
     cd $HOME/$RHO_APP/$($TRAVIS_BUILD_DIR/.ci/app_build_root.rb);
   fi
 
-- sudo find / -name *config.yml
 # build testable app binary artefact unless otherwise specified by matrix config
 - |
   if [[ -z $SKIP_BUILD ]]; then
@@ -247,12 +246,10 @@ matrix:
   - language: android
     os: linux
     env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"  RHO_RUBY="ruby-2.7.0"
-    dist: focal
 
   - language: android
     os: linux
     env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="28" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.7.1"
-    dist: focal
 
   - language: android
     os: linux
