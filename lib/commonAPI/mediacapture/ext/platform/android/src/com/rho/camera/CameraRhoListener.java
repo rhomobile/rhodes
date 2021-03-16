@@ -52,8 +52,7 @@ import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.file.RhoFileApi;
 
-public class CameraRhoListener extends AbstractRhoListener implements
-IRhoListener {
+public class CameraRhoListener extends AbstractRhoListener implements IRhoListener {
 
 	private static final String TAG = CameraRhoListener.class.getSimpleName();
 
@@ -91,7 +90,7 @@ IRhoListener {
 		CameraFactorySingleton.setInstance(new CameraFactory(this));
 		extManager.addRhoListener(this);
 		extManager.registerExtension("RhoCameraApi", new CameraExtension());
-		resultMap=new HashMap<String,Object>();
+		resultMap = new HashMap<String,Object>();
 	}
 
 
@@ -104,10 +103,6 @@ IRhoListener {
         Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         Canvas c = new Canvas(bmpGrayscale);
         Paint paint = new Paint();
-
-		//ColorMatrix cm = new ColorMatrix();
-        //cm.setSaturation(0);
-        //ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
 
 		float[] mat = new float[]{
 	            0.3f, 0.59f, 0.11f, 0, 0,
@@ -319,7 +314,7 @@ IRhoListener {
 								e.printStackTrace();
 							}
 						}
-						//Utils.platformLog("################", "intent.getData() ["+intent.getData()+"]");
+
 						if (imgPath == null) {
 							Logger.T(TAG, "imgPath is null !");
 							try {
@@ -483,7 +478,7 @@ IRhoListener {
 
 			try {
 
-				ExifInterface exif=new ExifInterface(bitmapPath);
+				ExifInterface exif = new ExifInterface(bitmapPath);
 				String or_tag = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
 
 				if (or_tag != null) {
@@ -705,22 +700,18 @@ IRhoListener {
 	{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
 		{
-			MediaScannerConnection.scanFile(RhodesActivity.getContext(), new String[] {absoluteRenamedPath }, null, new MediaScannerConnection.OnScanCompletedListener() {
-
-				public void onScanCompleted(String path, Uri uri)
-				{
-				}
+			MediaScannerConnection.scanFile(RhodesActivity.getContext(), new String[] {absoluteRenamedPath }, 
+				null, new MediaScannerConnection.OnScanCompletedListener() {
+				public void onScanCompleted(String path, Uri uri){}
 			});
 
 		}
 		else
 		{
-			RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+			RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, 
+				Uri.parse("file://" + Environment.getExternalStorageDirectory())));
 		}
-
-
 	}
-
 
 	void setMethodResult(IMethodResult result) {
 		mMethodResult = result;
@@ -729,9 +720,6 @@ IRhoListener {
 	void releaseMethodResult() {
 		mMethodResult = null;
 		resultMap.clear();
-		//mActualPropertyMap.clear();
-		//getActualPropertyMap().put("DeviceGallery_Key", "");
-		//getActualPropertyMap().put("ChoosePicture_Key", "");
 	}
 
 	void setActualPropertyMap(Map<String, String> propertyMap) {
@@ -776,35 +764,20 @@ IRhoListener {
 				}
 				else{
 					inResultMap.put("status","ok");
-					if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
-						inResultMap.put("image_uri",  "db/db-files/"+ imgPath.substring(imgPath.lastIndexOf("/")+1, imgPath.length()));
-						inResultMap.put("image_format",   "jpg");
+					if((getActualPropertyMap().get("default_camera_key_path") != null) && (getActualPropertyMap().get("default_camera_key_path") != "")){
+						inResultMap.put("imageUri",  imgPath);
+						inResultMap.put("imageFormat",   "jpg");
+					}else{
+						inResultMap.put("imageUri",  curUri.toString());
+						inResultMap.put("imageFormat",   "jpg");
 					}
-					else{
-						if((getActualPropertyMap().get("default_camera_key_path") != null) && (getActualPropertyMap().get("default_camera_key_path") != "")){
-							inResultMap.put("imageUri",  imgPath);
-							inResultMap.put("imageFormat",   "jpg");
-						}else{
-							inResultMap.put("imageUri",  curUri.toString());
-							inResultMap.put("imageFormat",   "jpg");
-						}
-					}
+				
 					if(picChoosen_imagewidth > 0){
-						if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
-							inResultMap.put("image_width",  "" + picChoosen_imagewidth);
-							inResultMap.put("image_height",  "" + picChoosen_imageheight);
-						}
-						else{
-							inResultMap.put("imageWidth",  "" + picChoosen_imagewidth);
-							inResultMap.put("imageHeight",  "" + picChoosen_imageheight);
-						}
+						inResultMap.put("imageWidth",  "" + picChoosen_imagewidth);
+						inResultMap.put("imageHeight",  "" + picChoosen_imageheight);
 					}
 					else{
-						if(CameraSingletonObject.deprecated_choose_pic || CameraObject.deprecated_take_pic){
-							inResultMap.put("image_width",  "" + picChoosen_imagewidth);
-							inResultMap.put("image_height",  "" + picChoosen_imageheight);
-						}
-						else if (intent != null && intent.getExtras() != null) {
+						if (intent != null && intent.getExtras() != null) {
 							inResultMap.put("imageWidth",  "" + intent.getExtras().get("IMAGE_WIDTH"));
 							inResultMap.put("imageHeight",  "" + intent.getExtras().get("IMAGE_HEIGHT"));
 						}else{
@@ -857,11 +830,9 @@ IRhoListener {
 		String resultPath = null;
 		try {
 			String mImgPath = null;
-			Cursor imageCursor = RhodesActivity.getContext().getContentResolver().query(
-			uri, null, null, null, null);
+			Cursor imageCursor = RhodesActivity.getContext().getContentResolver().query(uri, null, null, null, null);
 			if(imageCursor.moveToFirst()){
-				mImgPath = imageCursor.getString(imageCursor
-				.getColumnIndex(MediaColumns.DATA));
+				mImgPath = imageCursor.getString(imageCursor.getColumnIndex(MediaColumns.DATA));
 				imageCursor.close();
 			}
 			resultPath = mImgPath;
@@ -871,12 +842,10 @@ IRhoListener {
 		}
 		try {
 			if (resultPath == null) {
-
 				Uri selectedImage = uri;
 				String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-				Cursor cursor = RhodesActivity.getContext().getContentResolver().query(selectedImage,
-				filePathColumn, null, null, null);
+				Cursor cursor = RhodesActivity.getContext().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
 				cursor.moveToFirst();
 
 				int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
@@ -908,10 +877,6 @@ private static void makeDirsForFile(String filepath) {
 
 }
 
-
-
-
-
 public static void verifyStoragePermissions() {
     int permission = ActivityCompat.checkSelfPermission(RhodesActivity.safeGetInstance(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
     final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -927,27 +892,7 @@ public static void verifyStoragePermissions() {
 
 
 
-/**
-* Copy image.
-* Function to copy image from sd card to application root path
-*
-* @param photo
-*			the photo
-* @return the string
-*/
-public String copyImg(String imgPath){
-
-	File oldFile = new File(imgPath);
-
-	int lastIndex  = rename.lastIndexOf("/");
-
-	String file_name= rename.substring(lastIndex+1, rename.length());
-
-	File mediafile  =  new File(RhoFileApi.getDbFilesPath(), file_name);
-
-	makeDirsForFile(mediafile.getAbsolutePath());
-
-	//File mediafile  =  new File(RhoFileApi.getDbFilesPath(), rename);
+String copy(File oldFile, File mediafile){
 	verifyStoragePermissions();
 	FileInputStream finput= null;
 	FileOutputStream fout = null;
@@ -984,130 +929,52 @@ public String copyImg(String imgPath){
 	return mediafile.getAbsolutePath();
 }
 
-
-public String copyImgToTarget(String srcPath, String dstPath) {
-
-	File oldFile = new File(srcPath);
-	File mediafile  =  new File(dstPath);
-
+public String copyImg(String imgPath){
+	File oldFile = new File(imgPath);
+	int lastIndex  = rename.lastIndexOf("/");
+	String file_name= rename.substring(lastIndex+1, rename.length());
+    File mediafile  =  new File(RhoFileApi.getDbFilesPath(), file_name);
 	makeDirsForFile(mediafile.getAbsolutePath());
 
-	//File mediafile  =  new File(RhoFileApi.getDbFilesPath(), rename);
-	FileInputStream finput= null;
-	FileOutputStream fout = null;
-	verifyStoragePermissions();
-	try {
-		finput = new FileInputStream(oldFile);
-		fout = new FileOutputStream(mediafile);
-		byte[] b = new byte[1024];
-		int read = 0;
-		while ((read = finput.read(b)) != -1) {
-			fout.write(b, 0, read);
-		}
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	} catch (IOException e) {
-		e.printStackTrace();
-	} finally {
-		if(finput != null){
-			try {
-				finput.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+	return copy(oldFile, mediafile);
+}
 
-		if(fout != null){
-			try {
-				fout.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
-	return mediafile.getAbsolutePath();
+public String copyImgToTarget(String srcPath, String dstPath) {
+	File oldFile = new File(srcPath);
+	File mediafile  =  new File(dstPath);
+	makeDirsForFile(mediafile.getAbsolutePath());
+
+	return copy(oldFile, mediafile);
 }
 
 /**
 * copyImgAsUserChoice image.
 * Function to copy image from sd card to User specific path
-*  Provided in TestCam.html file.
-* @param photo
-*			the photo
-*
 */
 public void copyImgAsUserChoice(String imgPath){
 	if(rename.contains("sdcard")){
-
 		Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
-
 
 		if(isSDPresent)
 		{
-
 			File oldFile = new File(imgPath);
-
 			int lastIndex = rename.lastIndexOf("/");
 
 			String subfolderName = rename.replaceAll("/sdcard", "");
 			String folderName = subfolderName.substring(subfolderName.indexOf("/")+1,subfolderName.lastIndexOf("/"));
-
 			String file_name= rename.substring(lastIndex+1, rename.length());
-
 			File directory = new File(Environment.getExternalStorageDirectory()+File.separator + folderName);
 			boolean flag = directory.mkdirs();
 
 			File mediafile  =  new File(directory +File.separator  + file_name);
 
-
-			FileInputStream finput= null;
-			FileOutputStream fout = null;
-			verifyStoragePermissions();
-			try {
-				finput = new FileInputStream(oldFile);
-				fout = new FileOutputStream(mediafile);
-				byte[] b = new byte[1024];
-				int read = 0;
-				while ((read = finput.read(b)) != -1) {
-					fout.write(b, 0, read);
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if(finput != null){
-					try {
-						finput.close();
-
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-
-				if(fout != null){
-					try {
-						fout.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+			copy(oldFile, mediafile);
 			deleteImage();
 		}
-
-
 	}
 }
 
-/**
-* deleteImage image.
-* Function for Deleting the Image from SD card.
-* And maintain a copy of same Image at user specific Path
-* @param nothing
-*
-*/
 public void deleteImage(){
 	verifyStoragePermissions();
 	String storageLocation = null;
@@ -1176,21 +1043,15 @@ private void deleteFile(File fileToDelete){
 		RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(fileToDelete)));
 		if(!fileToDelete.exists()){
 			Logger.T(TAG, fileToDelete.getName() + " is deleted.");
-			
-			if (Build.VERSION.SDK_INT >= 14) {
-	            MediaScannerConnection.scanFile(RhodesActivity.getContext(), new String[]{
-	            	strFileToDelete}, 
-	            	null, new MediaScannerConnection.OnScanCompletedListener() {
-	                public void onScanCompleted(String path, Uri uri) {
-	                    Logger.T(TAG, "ExternalStorage Scanned " + path + ":");
-	                    Logger.T(TAG, "ExternalStorage -> uri=" + uri);
-	                }
-	            });
-	        } else {
-	            RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, 
-				Uri.parse("file://" + new File(Environment.getExternalStorageDirectory(),"RhoImages"))));
-	        }
-
+		
+            MediaScannerConnection.scanFile(RhodesActivity.getContext(), new String[]{
+            	strFileToDelete}, 
+            	null, new MediaScannerConnection.OnScanCompletedListener() {
+                public void onScanCompleted(String path, Uri uri) {
+                    Logger.T(TAG, "ExternalStorage Scanned " + path + ":");
+                    Logger.T(TAG, "ExternalStorage -> uri=" + uri);
+                }
+            });
 		}else{
 			Logger.T(TAG, "All delete operations is failed.");
 		}

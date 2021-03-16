@@ -27,27 +27,24 @@ import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.ui.FileList;
 
-public class CameraSingletonObject implements ICameraSingletonObject {
-    private static final String TAG = CameraSingletonObject.class.getSimpleName();
-    public static boolean deprecated_choose_pic;
-    private int mId;
+public class CameraSingleton implements ICameraSingleton {
+    private static final String TAG = CameraSingleton.class.getSimpleName();
+    private int mId = 0;
 
     static int getCameraIndex(String id) {
         return Integer.valueOf(id.substring(7)).intValue();
     }
+
     static String getCameraId(int idx) {
         return "camera#" + String.valueOf(idx);
     }
 
-    @Override
     public int getCameraCount() {
         Logger.T(TAG, "getCameraCount");
         return 1;
     }
 
-    public CameraSingletonObject() {
-        mId = 0;
-    }
+    public CameraSingleton() {}
 
     @Override
     public String getDefaultID() {
@@ -84,15 +81,7 @@ public class CameraSingletonObject implements ICameraSingletonObject {
         CameraObject.CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
     	CameraObject.CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
 
-    	if(propertyMap.get("deprecated") == null || propertyMap.get("deprecated").equalsIgnoreCase("false")){
-
-        CameraObject.deprecated_take_pic = false;
-
-    		propertyMap.put("deprecated", "false");
-    		deprecated_choose_pic = false;
-    	}
-    	else
-    		deprecated_choose_pic = true;
+		propertyMap.put("deprecated", "false");
 
         // set default values
         if(propertyMap.get("useSystemViewfinder") == null) {
@@ -193,15 +182,6 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 
     }
     */
-
-    @Override
-    public ICameraObject createCameraObject(String id) {
-        Logger.T(TAG, "createCameraObject: " + id);
-        return new CameraObject(id);
-    }
-
-
-
     private static String insertImage(ContentResolver cr, String imageFullPath) {
 
             String filename =  imageFullPath.substring(imageFullPath.lastIndexOf("/")+1, imageFullPath.length());
