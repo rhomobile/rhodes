@@ -4,9 +4,14 @@
 #include <QTimer>
 
 QtWebEnginePage::QtWebEnginePage(QtWebEngineView *webView) : QWebEnginePage(webView), webView(webView){
+    #ifdef DISABLE_WEB_SECURITY
     settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessFileUrls, true);
     settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, true);
     settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
+    #endif
+    if (RHOCONF().isExist("force_webview_stop_before_navigation_request") && (RHOCONF().getInt("force_webview_stop_before_navigation_request") != 0)){
+        stopBeforeNavigationRequest = true;
+    }
 }
 
 IMPLEMENT_LOGCLASS(QtWebEnginePage,"JavaScript");
@@ -46,7 +51,7 @@ void QtWebEnginePage::triggerAction(QWebEnginePage::WebAction action, bool check
 
 bool QtWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
 {
-#ifdef DEBUG
+#ifdef _DEBUG
     switch (type) {
     case QWebEnginePage::NavigationTypeLinkClicked:
         qDebug() << "acceptNavigationRequest" << "NavigationTypeLinkClicked" << url.toString();
@@ -66,26 +71,21 @@ bool QtWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::N
     case QWebEnginePage::NavigationTypeOther:
         qDebug() << "acceptNavigationRequest" << "NavigationTypeOther" << url.toString();
         break;
-    case QWebEnginePage::NavigationTypeRedirect:
-        qDebug() << "acceptNavigationRequest"  << "NavigationTypeRedirect" << url.toString();
-        break;
     default:
+        qDebug() << "acceptNavigationRequest" << url.toString();
         break;
     }
 #endif
 
-
-
-    if (type == QWebEnginePage::NavigationTypeLinkClicked){
+    if (stopBeforeNavigationRequest && (type == QWebEnginePage::NavigationTypeLinkClicked || type == QWebEnginePage::NavigationTypeBackForward)){
         QTimer::singleShot(1, this, [url, this](){
-            LOG(INFO) + "Request to url has been manualy reconfigured from link clicked to loading link in webview";
+            LOG(INFO) + "Request to url has been manualy reconfigured to loading link in webview";
             webView->stop();
             webView->load(url);
         });
         return false;
-        //emit onLinkClicked(url);
     }
-    //emit linkClicked();
+
     bool flag = QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
     return flag;
 }
