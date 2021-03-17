@@ -111,8 +111,10 @@ char* parseToken(const char* start)
     return value;
 }
 
+
 int main(int argc, char *argv[])
 {   
+#ifdef DISABLE_WEB_SECURITY
     char ARG_DISABLE_WEB_SECURITY[] = "--disable-web-security";
     int newArgc = argc + 1;
     char** newArgv = new char*[newArgc];
@@ -121,6 +123,9 @@ int main(int argc, char *argv[])
     }
     newArgv[argc] = ARG_DISABLE_WEB_SECURITY;
     QApplication app(newArgc, newArgv);
+#else
+    QApplication app(argc, argv);
+#endif
 
 #ifdef RHODES_MAC_BUILD
     qputenv("QTWEBENGINE_REMOTE_DEBUGGING", QString::number(QtMainWindow::getDebPort()).toLocal8Bit());

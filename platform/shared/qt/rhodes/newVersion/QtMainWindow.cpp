@@ -207,7 +207,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) : QMainWindow(parent), mainWindowCal
     profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
 
     webView->setContextMenuPolicy(Qt::NoContextMenu);
-    webView->setPage(new QtWebEnginePage(this));
+    webView->setPage(new QtWebEnginePage(webView));
     webView->setAttribute(Qt::WA_AcceptTouchEvents, false);
     this->main_webView = webView;
 
@@ -640,7 +640,7 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         wv->setParent(centralWidget());
         wv->setAttribute(Qt::WA_AcceptTouchEvents, false);
         verticalLayout->addWidget(wv);
-        wv->setPage(new QtWebEnginePage(this));
+        wv->setPage(new QtWebEnginePage(wv));
         setUpWebPage(wv->page());
         if (web_bkg_color && (web_bkg_color->name().length()>0))
             wv->setHtml( QString("<!DOCTYPE html><html><body style=\"background:") + web_bkg_color->name() +
