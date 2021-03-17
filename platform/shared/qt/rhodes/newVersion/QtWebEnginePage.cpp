@@ -1,7 +1,10 @@
 #include "QtWebEnginePage.h"
+#include <QWebEngineSettings>
 
 QtWebEnginePage::QtWebEnginePage(QObject *parent) : QWebEnginePage(parent){
-
+    settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessFileUrls, true);
+    settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, true);
+    settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
 }
 
 IMPLEMENT_LOGCLASS(QtWebEnginePage,"JavaScript");

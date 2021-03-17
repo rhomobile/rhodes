@@ -524,6 +524,7 @@ void QtMainWindow::slotNavigate(QString url, int index)
             wv->page()->runJavaScript(url);
 
         } else if (!internalUrlProcessing(url)) {
+            wv->stop();
             if (mainWindowCallback) {
                 const QByteArray asc_url = url.toLatin1();
                 mainWindowCallback->onWebViewUrlChanged(std::string(asc_url.constData(),
@@ -542,19 +543,24 @@ void QtMainWindow::slotNavigate(QString url, int index)
 void QtMainWindow::GoBack(int index)
 {
     QtWebEngineView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : webView;
+    wv->stop();
     if (wv)
         wv->back();
 }
 
 void QtMainWindow::GoForward(void)
 {
-    if (webView) webView->forward();
+    if (webView) {
+        webView->stop();
+        webView->forward();
+    }
 }
 
 void QtMainWindow::Refresh(int index)
 {
     QtWebEngineView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : webView;
     if (wv) {
+        wv->stop();
         if (mainWindowCallback) {
             const QByteArray asc_url = wv->url().toString().toLatin1();
             mainWindowCallback->onWebViewUrlChanged(::std::string(asc_url.constData(), asc_url.length()));

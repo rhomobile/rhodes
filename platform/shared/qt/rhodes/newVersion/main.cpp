@@ -99,7 +99,7 @@ char* parseToken(const char* start)
     const char* szValue = start + i+1;
     int nValueLen = 0;
 
-    while (*szValue==' ' || *szValue=='\'' || *szValue=='"' && nValueLen >= 0) { szValue++; }
+    while ((*szValue==' ' || *szValue=='\'' || *szValue=='"') && nValueLen >= 0) { szValue++; }
     while (szValue[nValueLen] && szValue[nValueLen] !='\'' && szValue[nValueLen] != '"') { nValueLen++; }
 
     //while (nValueLen > 0 && (szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"')) nValueLen--;
@@ -112,8 +112,16 @@ char* parseToken(const char* start)
 }
 
 int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
+{   
+    char ARG_DISABLE_WEB_SECURITY[] = "--disable-web-security";
+    int newArgc = argc + 1;
+    char** newArgv = new char*[newArgc];
+    for(int i = 0; i < argc; i++) {
+        newArgv[i] = argv[i];
+    }
+    newArgv[argc] = ARG_DISABLE_WEB_SECURITY;
+    QApplication app(newArgc, newArgv);
+
 #ifdef RHODES_MAC_BUILD
     qputenv("QTWEBENGINE_REMOTE_DEBUGGING", QString::number(QtMainWindow::getDebPort()).toLocal8Bit());
 #endif
