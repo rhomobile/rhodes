@@ -28,6 +28,7 @@ void QtWebEnginePage::javaScriptConsoleMessage(QWebEnginePage::JavaScriptConsole
     LOG(INFO) + str_message.c_str();
 }
 
+#ifdef _DEBUG
 void QtWebEnginePage::triggerAction(QWebEnginePage::WebAction action, bool checked)
 {
     switch (action) {
@@ -48,6 +49,7 @@ void QtWebEnginePage::triggerAction(QWebEnginePage::WebAction action, bool check
     }
     QWebEnginePage::triggerAction(action, checked);
 }
+#endif
 
 bool QtWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
 {

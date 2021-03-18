@@ -12,16 +12,14 @@ class QtWebEnginePage : public QWebEnginePage
     DEFINE_LOGCLASS
 public:
     explicit QtWebEnginePage(QtWebEngineView *webView);
+#ifdef _DEBUG
     void triggerAction(QWebEnginePage::WebAction action, bool checked = false) override;
+#endif
 protected:
     bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override;
     void javaScriptConsoleMessage(QWebEnginePage::JavaScriptConsoleMessageLevel level, const QString &message, int lineNumber, const QString &sourceID) override;
     QtWebEngineView *webView;
     bool stopBeforeNavigationRequest = false;
-/*signals:
-    void linkClicked();
-    void onLinkClicked(QUrl);*/
-public slots:
 };
 
 #endif // QTWEBENGINEPAGE_H
