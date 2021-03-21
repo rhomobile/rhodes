@@ -307,15 +307,13 @@ private static Bitmap storeThumbnail(
 
 
     @Override
-    public void copyImageToDeviceGallery(String pathToImage,
-    IMethodResult result) {
+    public void copyImageToDeviceGallery(String pathToImage, IMethodResult result) {
         copyImageFileToDeviceGallery(pathToImage);
     }
 
 
 
-    public void copyImageToDeviceGalleryOld(String pathToImage,
-    IMethodResult result) {
+    public void copyImageToDeviceGalleryOld(String pathToImage, IMethodResult result) {
         // TODO Auto-generated method stub
         String imageName = pathToImage.substring(pathToImage.lastIndexOf("/")+1, pathToImage.length());
         String abspath = copyImageToDesired(pathToImage, imageName);

@@ -173,9 +173,33 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 	}
 
 
-	@SuppressLint("NewApi")
 	@Override
 	public void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent) {
+		RhoExtManager.getInstance().dropActivityResultRequestCode(requestCode);
+		Logger.T(TAG, "CameraRhoListener.onActivityResult() START");
+
+		try{
+
+		    if (resultCode == RESULT_OK) {
+		        Bundle extras = data.getExtras();
+		        Bitmap imageBitmap = (Bitmap) extras.get("data");
+		        File mediaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+		        	File.separator + "IMG_" + timeStamp + ".jpg");
+	    	}
+
+	    }catch(Exception e){
+	    	Logger.T(TAG, "CameraRhoListener.onActivityResult() exception " + e.toString());
+	    }
+
+
+
+		Logger.T(TAG, "CameraRhoListener.onActivityResult() END");
+	}
+
+
+
+	@SuppressLint("NewApi")
+	private void onActivityResultOld(RhodesActivity activity, int requestCode, int resultCode, Intent intent) {
 		RhoExtManager.getInstance().dropActivityResultRequestCode(requestCode);
 		Map<String, String> propertyMap = getActualPropertyMap();
 		if (mMethodResult == null) {
@@ -892,7 +916,7 @@ public static void verifyStoragePermissions() {
 
 
 
-String copy(File oldFile, File mediafile){
+public static String copy(File oldFile, File mediafile){
 	verifyStoragePermissions();
 	FileInputStream finput= null;
 	FileOutputStream fout = null;
@@ -932,7 +956,7 @@ String copy(File oldFile, File mediafile){
 public String copyImg(String imgPath){
 	File oldFile = new File(imgPath);
 	int lastIndex  = rename.lastIndexOf("/");
-	String file_name= rename.substring(lastIndex+1, rename.length());
+	String file_name= rename.substring(lastIndex + 1, rename.length());
     File mediafile  =  new File(RhoFileApi.getDbFilesPath(), file_name);
 	makeDirsForFile(mediafile.getAbsolutePath());
 
@@ -981,9 +1005,9 @@ public void deleteImage(){
 	storageLocation = Environment.getExternalStorageDirectory().toString();
 
 	int lastIndex = rename.lastIndexOf("/");
-	String file_name= rename.substring(lastIndex+1, rename.length());
+	String file_name= rename.substring(lastIndex + 1, rename.length());
 
-	File file = new File(storageLocation + "/Pictures/"+file_name);
+	File file = new File(storageLocation + "/Pictures/" + file_name);
 	if(file.exists()){
 		file.delete();
 	}

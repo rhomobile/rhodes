@@ -207,22 +207,11 @@ public class CameraObject extends CameraBase implements ICamera{
         }
     }
 
-
-    String currentPhotoPath;
-
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date(System.currentTimeMillis()));
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = RhodesActivity.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-            imageFileName,  /* prefix */
-            ".jpg",         /* suffix */
-            storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = image.getAbsolutePath();
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         return image;
     }
 
@@ -251,14 +240,13 @@ public class CameraObject extends CameraBase implements ICamera{
             setActualPropertyMap(actualPropertyMap);
 
             String outputFormat = actualPropertyMap.get("outputFormat");
-            String filePath = null;
 
-            String fdir = "/sdcard/DCIM/Camera/";
-            fdir = storageDir.getAbsolutePath();
-            String fname = actualPropertyMap.get("fileName");
-
-            fname = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
-            filePath = fdir + "/" + fname + ".jpg";
+            String fileDir = storageDir.getAbsolutePath();
+            String fileName = actualPropertyMap.get("fileName");
+            if (fileName == null || fileName.isEmpty()){
+               fileName = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
+            }
+            String filePath = fileDir + "/" + fileName + ".jpg";
 
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (outputFormat.equalsIgnoreCase("image")) {
@@ -282,14 +270,11 @@ public class CameraObject extends CameraBase implements ICamera{
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                     actualPropertyMap.put("captureUri", fileUri.toString());
                     Logger.T(TAG, "Output fileUri: " + fileUri.toString());
+                    actualPropertyMap.put("captureUriFilePath", photoFile.getAbsolutePath());
                 }
 
-
-
-                actualPropertyMap.put("captureUriFilePath", currentPhotoPath);
                 propertyMap.put("dataURI", "");
                 
-
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } else if (outputFormat.equalsIgnoreCase("dataUri")) {}
 
@@ -297,7 +282,8 @@ public class CameraObject extends CameraBase implements ICamera{
             ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
             ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setActualPropertyMap(actualPropertyMap);
 
-            RhodesActivity.safeGetInstance().startActivityForResult(intent, RhoExtManager.getInstance().getActivityResultNextRequestCode(CameraRhoListener.getInstance()));
+            RhodesActivity.safeGetInstance().startActivityForResult(intent, 
+                RhoExtManager.getInstance().getActivityResultNextRequestCode(CameraRhoListener.getInstance()));
         } catch (RuntimeException e) {
             Logger.E(TAG, e);
             result.setError(e.getMessage());
@@ -322,6 +308,7 @@ public class CameraObject extends CameraBase implements ICamera{
 
     @Override
     public void getSupportedSizeList(IMethodResult result) {
+        //TODO
     }
 
     public void finalize() {
@@ -330,47 +317,6 @@ public class CameraObject extends CameraBase implements ICamera{
         }
     }
 
-
-    /*@Override
-    public void setDisplayOrientation(int rotate) {
-        Camera camera = getCamera();
-        camera.setDisplayOrientation(rotate);
-    }*/
-
-
-    /**
-    * Checks the device if it has
-    * auto focus feature and sets auto focus
-    * @param Preview Activity
-    *
-    */
-
-    /*@Override
-    public void setFocus(final Activity preview) {
-        openCamera();
-        if (hasAutoFocus()) {
-            getCamera().autoFocus(new Camera.AutoFocusCallback() {
-                public void onAutoFocus(boolean success, Camera camera) {
-                }
-            });
-
-        }
-        closeCamera();
-    }*/
-
-    private boolean hasAutoFocus() {
-        if (!hasPermission()) {
-            Logger.E(TAG, "Application has no permission to Camera access !!!");
-            return false;
-        }
-        String focusMode = getCamera().getParameters().getFocusMode();
-        boolean supported = false;
-        if (focusMode != null) {
-            supported = (focusMode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO)) || (focusMode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_MACRO));
-        }
-        return supported;
-
-    }
 
     public boolean hasPermission() {
         //Logger.E(TAG, "Application has permission to Camera access DAFAULT !!!");
