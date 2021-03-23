@@ -77,6 +77,7 @@ class JNINetRequest : public CNetRequestBase
     jmethodID midAddMultiPartData = nullptr;
     jmethodID midSetAuthSettings = nullptr;
     jmethodID midSetOpaqueObject = nullptr;
+    jmethodID midgetCookies = nullptr;
     long timeout = 0;
     bool m_sslVerifyper = false;
     rho::String m_multipartBoundary = {};

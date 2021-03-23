@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
@@ -52,6 +53,8 @@ import javax.net.ssl.SSLSession;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.socket.SSLImpl;
 
+import org.apache.http.protocol.HTTP;
+
 public class NetRequest
 {
 
@@ -59,6 +62,8 @@ public class NetRequest
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
             'e', 'f'
     };
+
+    private static final String COOKIES_HEADER = "Set-Cookie";
 
     private class JCMultipartItem
     {
@@ -264,6 +269,23 @@ public class NetRequest
         public int getResponseCode() {
             return code;
         }
+    }
+
+    public String getCookies() {
+        if(response_headers == null) return null;
+        List<String> cookies = response_headers.get(COOKIES_HEADER);
+        if(cookies == null) return null;
+
+        String str_cookies = "";
+
+        for(String cookie : cookies) {
+            List<HttpCookie> values = HttpCookie.parse(cookie);
+            for(HttpCookie value : values) {
+                str_cookies += (value.getName() + "=" + value.getValue() + ";");
+            }
+        }
+
+        return str_cookies;
     }
 
     private class GetRequestThread extends RequestThread

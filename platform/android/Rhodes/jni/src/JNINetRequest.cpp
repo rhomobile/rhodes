@@ -227,6 +227,7 @@ rho::net::JNINetRequest::JNINetRequest()
 
     midSetAuthSettings = getJNIClassMethod(env, cls, "SetAuthSettings", "(Ljava/lang/String;Ljava/lang/String;I)V" );
     midSetOpaqueObject = getJNIClassMethod(env, cls, "SetOpaqueObject", "(J)V" );
+    midgetCookies = getJNIClassMethod(env, cls, "getCookies", "()Ljava/lang/String;");
 
     env->CallVoidMethod(netRequestObject, midSetOpaqueObject, (jlong)this);
     timeout = rho_conf_getInt("net_timeout");
@@ -512,8 +513,18 @@ rho::net::INetResponse* rho::net::JNINetRequest::makeResponse(const char *body, 
         body = "";
         bodysize = 0;
     }
+    
+    std::unique_ptr<JNetResponseImpl> resp = std::make_unique<JNetResponseImpl>(body, bodysize, nErrorCode);
+    if(resp->isSuccess()) {
+        JNIEnv *env = jnienv();
+        jhstring jstr = static_cast<jstring>(env->CallObjectMethod(netRequestObject, midgetCookies));
+        if(jstr.get()) {
+            rho::String str = rho_cast<rho::String>(env, jstr.get());
+            resp->setCookies(str);
+        }
+    }
 
-    return new JNetResponseImpl(body, bodysize, nErrorCode);
+    return resp.release();
 }
 
 rho::net::INetResponse* rho::net::JNINetRequest::makeResponse(const rho::String &body, int nErrorCode) {
