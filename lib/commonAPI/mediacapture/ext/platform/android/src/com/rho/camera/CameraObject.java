@@ -106,27 +106,7 @@ public class CameraObject extends CameraBase implements ICamera{
         }
     	result.set(props);
 	}
-	
-   
-    /*private void saveToDeviceGallery(Bitmap bitmap){
-        ContentResolver contentResolver = ContextFactory.getContext().getContentResolver();
-        Logger.T(TAG, "Image size: " + bitmap.getWidth() + "X" + bitmap.getHeight());
-        propertyMap.put("DeviceGallery_Key", "DeviceGallery_Value");
-        String strUri = null;
-        if (!propertyMap.containsKey("fileName")){
-            strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, 
-                "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis())), "Camera");
-        }else{
-            strUri = MediaStore.Images.Media.insertImage(contentResolver, bitmap, 
-                new File(propertyMap.get("fileName")).getName(), "Camera");
-        }
-        if (strUri != null) {
-            resultUri = Uri.parse(strUri);
-        } else {
-            throw new RuntimeException("Failed to save camera image to Gallery");
-        }
-    }*/
-
+	 
     private void playMusic(String musicPath) {
         MediaPlayer mp = new MediaPlayer();
         try {
@@ -144,7 +124,6 @@ public class CameraObject extends CameraBase implements ICamera{
             mp = null;
         }
     }
-    
 
     protected Camera getCamera() { return mCamera; }
     protected void setCamera(Camera camera) { mCamera = camera; }

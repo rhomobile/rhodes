@@ -39,6 +39,7 @@ import android.content.ContentResolver;
 import android.os.Handler;
 import android.content.pm.PackageManager;
 import android.Manifest;
+import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 
 import com.rhomobile.rhodes.Base64;
@@ -78,7 +79,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 		picChoosen_imageheight = 0;
 		curUri = null;
 		storedUri = null;
-		resultMap=new HashMap<String,Object>();
+		resultMap = new HashMap<String,Object>();
 		imgPath = null;
 		mBitmap = null;
 		rename = null;
@@ -176,73 +177,43 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 	@Override
 	public void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent) {
 		RhoExtManager.getInstance().dropActivityResultRequestCode(requestCode);
-		Logger.T(TAG, "CameraRhoListener.onActivityResult() START");
-
-		try{
-
-		    if (resultCode == RESULT_OK) {
-		        Bundle extras = data.getExtras();
-		        Bitmap imageBitmap = (Bitmap) extras.get("data");
-		        File mediaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-		        	File.separator + "IMG_" + timeStamp + ".jpg");
-	    	}
-
-	    }catch(Exception e){
-	    	Logger.T(TAG, "CameraRhoListener.onActivityResult() exception " + e.toString());
-	    }
-
-
-
-		Logger.T(TAG, "CameraRhoListener.onActivityResult() END");
-	}
-
-
-
-	@SuppressLint("NewApi")
-	private void onActivityResultOld(RhodesActivity activity, int requestCode, int resultCode, Intent intent) {
-		RhoExtManager.getInstance().dropActivityResultRequestCode(requestCode);
 		Map<String, String> propertyMap = getActualPropertyMap();
 		if (mMethodResult == null) {
 			return;
 		}
 		Uri captureUri = null;
-		String targetPath = " ";		
-		ByteArrayOutputStream stream = null;
+		String targetPath = " ";
+		
 		Logger.T(TAG, "CameraRhoListener.onActivityResult() START");
-		Logger.T(TAG, "ActualProperties: ["+getActualPropertyMap()+"]");
+		Logger.T(TAG, "ActualProperties: [" + getActualPropertyMap() + "]");
 		boolean fromGallery = (getActualPropertyMap().get("fromGallery") == "true");
 		try {
-			if (resultCode == Activity.RESULT_OK)
-			{
+			if (resultCode == Activity.RESULT_OK){
 				Logger.T(TAG, "resultCode == Activity.RESULT_OK");
 				getActualPropertyMap().put("default_camera_key_path", "");
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
-				rename = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()))+".jpg";
+				rename = "IMG_" + dateFormat.format(new Date(System.currentTimeMillis()))+".jpg";
 				if(propertyMap.containsKey("fileName")){
-					rename = propertyMap.get("fileName")+ ".jpg";
+					rename = propertyMap.get("fileName") + ".jpg";
 				}
 
 				BitmapFactory.Options options_only_size = new BitmapFactory.Options();
 				options_only_size.inJustDecodeBounds = true;
 
-				String curPath = null;
 				String strCaptureUri = getActualPropertyMap().get("captureUri");
 				if (strCaptureUri != null)
 				{
 					captureUri = Uri.parse(getActualPropertyMap().get("captureUri"));
 					getActualPropertyMap().put("default_camera_key_path", "");
 				}
+
 				if (intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT))
 				{
-					Logger.T(TAG, "intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT)");
-					// used system Camera activity
-					if(intent.hasExtra(MediaStore.EXTRA_OUTPUT)){
-						Logger.T(TAG, "Intent extras: "+ intent.getExtras().keySet());
-						curUri = (Uri) intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
-						storedUri = curUri;
-					}
-					if (curUri == null)
-					{
+					Logger.T(TAG, "Intent extras: "+ intent.getExtras().keySet());
+					curUri = (Uri) intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+					storedUri = curUri;
+
+					if (curUri == null){
 						curUri = intent.getData();
 					}
 					try {
@@ -259,72 +230,39 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 							if( outputToDataUri() ){
 								mBitmap = BitmapFactory.decodeFile(imgPath);
 							}
-							File f= new File(imgPath);
+
+							File f = new File(imgPath);
 							imgPath = copyImg(imgPath);
-							//[PT 98935816]Fixing the extra black image issue in KitKat devices.
 							fixTheGalleryIssue(imgPath);
-							f.renameTo(new File(f.getParentFile(), rename));
-							String pathAfterRename = f.getParentFile().getAbsolutePath() +"/"+rename;
-							fixTheGalleryIssue(pathAfterRename);
-							// RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-							//			  Uri.parse(curUri.getPath())));
+							renameFile(f);
 							getActualPropertyMap().put("default_camera_key_path", "default_camera_key_path_value");
 						}
 
 					} catch (OutOfMemoryError e1) {
 						e1.printStackTrace();
 					}
-					File file = null;
+
 					if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){
-						file= new File(curUri.getPath());
-						file.renameTo(new File(file.getParentFile(), rename));
-						String pathAfterRename = file.getParentFile().getAbsolutePath() +"/"+rename;
-						fixTheGalleryIssue(pathAfterRename);
-						// RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-						//			  Uri.parse(curUri.getPath())));
+						File file = new File(curUri.getPath());
+						renameFile(file);
 					}
 					//picChoosen_imagewidth = mBitmap.getWidth();
 					//picChoosen_imageheight = mBitmap.getHeight();
 					picChoosen_imagewidth = options_only_size.outWidth;
 					picChoosen_imageheight = options_only_size.outHeight;
 
-
 					if( outputToDataUri() ){
-						stream = new ByteArrayOutputStream();
-						mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-						byte[] byteArray = stream.toByteArray();
-						StringBuilder dataBuilder = new StringBuilder();
-						dataBuilder.append("data:image/jpeg;base64,");
-						try {
-							System.gc();
-							dataBuilder.append(Base64.encodeToString(byteArray, false));
-						} catch (Exception e) {
-							// TODO: handle exception
-							e.printStackTrace();
-						}
-						catch(OutOfMemoryError e){
-							stream = new ByteArrayOutputStream();
-							mBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-							byteArray = stream.toByteArray();
-							dataBuilder.append(Base64.encodeToString(byteArray, false));
-						}
-						getActualPropertyMap().put("curUri", dataBuilder.toString());
-						curUri=Uri.parse(dataBuilder.toString());
+						curUri = makeDataUri();
 						mBitmap.recycle();
 					}
 					Logger.T(TAG, "Photo is captured: " + curUri);
-					//mBitmap.recycle();
 				}else if (captureUri != null ){
-					// not used system activity ?!
-					// unreacheable ?
-
 					Logger.T(TAG, "captureUri != null");
-
 					curUri = captureUri;
 
 					if (getActualPropertyMap().get("dataURI") == null) {
 						Logger.T(TAG, "getActualPropertyMap().get(dataURI) == null");
-						Logger.T(TAG, "curUri ["+curUri+"]");
+						Logger.T(TAG, "curUri [" + curUri + "]");
 
 						String captureUriFilePath = getActualPropertyMap().get("captureUriFilePath");
 						if (captureUriFilePath != null) {
@@ -348,7 +286,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 								e.printStackTrace();
 							}
 						}
-						Logger.T(TAG, "imgPath ["+imgPath+"]");
+						Logger.T(TAG, "imgPath [" + imgPath + "]");
 
 
 						if (fromGallery) {
@@ -360,24 +298,11 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 								}
 								Logger.T(TAG, "Path before copy: " + imgPath);
 								imgPath = copyImg(imgPath);
-							}catch(Exception e){}
-							File f= new File(imgPath);
-							Logger.T(TAG, "Path after copy: " + imgPath);
-							getActualPropertyMap().put("default_camera_key_path", "default_camera_key_path_value");
-							BitmapFactory.Options options = new BitmapFactory.Options();
-							options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-							try {
-								BitmapFactory.decodeStream(new FileInputStream(f), null, options_only_size);
-								if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){
-									f.renameTo(new File(f.getParentFile(), rename));
-									String pathAfterRename = f.getParentFile().getAbsolutePath() +"/"+rename;
-									fixTheGalleryIssue(pathAfterRename);
-								}
-							} catch (FileNotFoundException e) {
-								e.printStackTrace();
+							}catch(Exception e){
+
 							}
-							picChoosen_imagewidth = options_only_size.outWidth;
-							picChoosen_imageheight = options_only_size.outHeight;
+
+							renameFile(options_only_size);
 						} else {
 							Logger.T(TAG, "Not from Gallery");
 							Logger.T(TAG, "Path before copy: " + imgPath);
@@ -389,44 +314,18 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 								deleteFile(fileToDelete);
 						    }
 
-							File f= new File(imgPath);
-							Logger.T(TAG, "Path after copy: " + imgPath);
-							getActualPropertyMap().put("default_camera_key_path", "default_camera_key_path_value");
-							BitmapFactory.Options options = new BitmapFactory.Options();
-							options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-							try {
-								BitmapFactory.decodeStream(new FileInputStream(f), null, options_only_size);
-								if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){
-									f.renameTo(new File(f.getParentFile(), rename));
-									String pathAfterRename = f.getParentFile().getAbsolutePath() +"/"+rename;
-									fixTheGalleryIssue(pathAfterRename);
-									// RhodesActivity.getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-									//			  Uri.parse(f.getAbsolutePath())));
-								}
-							} catch (FileNotFoundException e) {
-								e.printStackTrace();
-							}
-							picChoosen_imagewidth = options_only_size.outWidth;
-							picChoosen_imageheight = options_only_size.outHeight;
-							//mBitmap.recycle();
+							renameFile(options_only_size);
 						}
 					}
 
-				}
-				else if ( outputToDataUri() ) {
+				}else if ( outputToDataUri() ) {
 					Logger.T( TAG, "Making image URI from intent data" );
 					mBitmap = (Bitmap)intent.getExtras().get("data");
 					curUri = makeDataUri();
 					mBitmap.recycle();
 					Logger.T(TAG, "Photo is captured: " + curUri);
 				}
-				else
-				{
-					Logger.T(TAG, "else(2)");
-					curUri = intent.getData();
-					Logger.T(TAG, "Check intent data: " + curUri);
-				}
-
+				
 				if (curUri == null) {
 					curUri = intent.getData();
 				}
@@ -434,25 +333,24 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 				if (curUri.getScheme().equals("file"))
 				{
 					Logger.T(TAG, "curUri.getScheme().equals(file)");
-					curPath = curUri.getPath();
-					Logger.T(TAG, "curPath["+curPath+"]");
-					String dataDir=RhodesActivity.safeGetInstance().getApplicationInfo().dataDir;
-					dataDir=dataDir+curPath.substring(curPath.lastIndexOf("/") );
+					String curPath = curPath = curUri.getPath();
+					Logger.T(TAG, "curPath[" + curPath + "]");
+					String dataDir = RhodesActivity.safeGetInstance().getApplicationInfo().dataDir;
+					dataDir = dataDir + curPath.substring(curPath.lastIndexOf("/") );
 
-					if(getActualPropertyMap().get("fileName")==null)
+					if(getActualPropertyMap().get("fileName") == null)
 					{
-						getActualPropertyMap().put("fileName",dataDir);
+						getActualPropertyMap().put("fileName", dataDir);
 					}
-					if(getActualPropertyMap().get("fileName").contains(".jpg"))
+
 					targetPath = getActualPropertyMap().get("fileName");
-					else
-					targetPath = getActualPropertyMap().get("fileName")+".jpg";
+					if (!getActualPropertyMap().get("fileName").contains(".jpg")){
+						targetPath = targetPath + ".jpg";
+					}
+
 					File curFile = new File(curPath);
 
-					if (!curPath.equals(targetPath))
-					{
-						//	Utils.copy(curPath, targetPath);
-						//	curFile.delete();
+					if (!curPath.equals(targetPath)) {
 						Logger.T(TAG, "File copied to " + targetPath);
 						curUri = Uri.fromFile(new File(targetPath));
 					}
@@ -460,28 +358,22 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 					curUri = Uri.parse(imgPath);
 					copyImgAsUserChoice(curPath);
 
-					Logger.T(TAG, "imgPath ["+imgPath+"]");
-					Logger.T(TAG, "curUri ["+curUri+"]");
-					Logger.T(TAG, "curPath ["+curPath+"]");
-					Logger.T(TAG, "targetPath["+targetPath+"]");
+					Logger.T(TAG, "imgPath [" + imgPath + "]");
+					Logger.T(TAG, "curUri [" + curUri + "]");
+					Logger.T(TAG, "curPath [" + curPath + "]");
+					Logger.T(TAG, "targetPath[" + targetPath + "]");
 				}
 
-                if (!outputToDataUri()) {applyPostCaptureTransforms(options_only_size);}
+                if (!outputToDataUri()) {
+                	applyPostCaptureTransforms(options_only_size);
+                }
 
-				try{
-					DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent, resultCode);
-					async.execute();
-				}
-				catch(Exception ex)
-				{
-					ex.printStackTrace();
-				}
+                executeDefaultCameraAsyncTask(intent, resultCode);
 			}
 			else if (resultCode == Activity.RESULT_CANCELED)
 			{
 				getActualPropertyMap().put("default_camera_key_path", "");
-				DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent,resultCode);
-				async.execute();
+				executeDefaultCameraAsyncTask(intent, resultCode);
 			} else {
 				mMethodResult.setError("Unknown error");
 			}
@@ -492,6 +384,71 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 
 	}
 
+	private void executeDefaultCameraAsyncTask(Intent intent, int resultCode){
+		try{
+			DefaultCameraAsyncTask async = new DefaultCameraAsyncTask(mMethodResult, resultMap, intent, resultCode);
+			async.execute();
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+
+	private void renameFile(BitmapFactory.Options options_only_size){
+		File f = new File(imgPath);
+		Logger.T(TAG, "Path after copy: " + imgPath);
+		getActualPropertyMap().put("default_camera_key_path", "default_camera_key_path_value");
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+		try {
+			BitmapFactory.decodeStream(new FileInputStream(f), null, options_only_size);
+			if (!getActualPropertyMap().containsKey("fileName") && getActualPropertyMap().get("ChoosePicture_Key") == null){
+				renameFile(f);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		picChoosen_imagewidth = options_only_size.outWidth;
+		picChoosen_imageheight = options_only_size.outHeight;
+	}
+
+	private void renameFile(File f){
+		f.renameTo(new File(f.getParentFile(), rename));
+		String pathAfterRename = f.getParentFile().getAbsolutePath() + "/" + rename;
+		fixTheGalleryIssue(pathAfterRename);
+	}
+
+
+	private void saveTransformedBitmap(String bitmapPath, Bitmap transforedBitmap, Bitmap oldBitmap, int rotate_angle){
+		if (rotate_angle != 0) {
+			Bitmap savedBitmap = transforedBitmap;
+			transforedBitmap = rotateBitmap(savedBitmap, rotate_angle);
+			savedBitmap.recycle();
+			savedBitmap = null;
+			rotate_angle = 0;
+		}
+
+		savedBitmap(bitmapPath, transforedBitmap, oldBitmap);
+	}
+
+	private void savedBitmap(String bitmapPath, Bitmap transforedBitmap, Bitmap oldBitmap){
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		transforedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, bos);
+		bitmap.recycle();
+		bitmap = null;
+		OutputStream out;
+		out = new FileOutputStream(bitmapPath + "_tmp");
+		bos.writeTo(out);
+		bos.flush();
+
+		File file = new File(bitmapPath + "_tmp");
+		File file_old = new File(bitmapPath);
+		file_old.delete();
+		file.renameTo(new File(bitmapPath));
+		fixTheGalleryIssue(bitmapPath);
+	}
+
 	private void applyPostCaptureTransforms(BitmapFactory.Options options_only_size) {
 		int rotate_angle = 0;
 
@@ -499,14 +456,12 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 		if ((strExifRotation != null) && (Boolean.parseBoolean(strExifRotation))) {
 			// detect original exif rotation
 			String bitmapPath = imgPath;
-
 			try {
-
 				ExifInterface exif = new ExifInterface(bitmapPath);
 				String or_tag = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
 
 				if (or_tag != null) {
-					Logger.T(TAG, "$$$ EXIF TAG_ORIENTATION = "+or_tag+" $$$");
+					Logger.T(TAG, "$$$ EXIF TAG_ORIENTATION = " + or_tag + " $$$");
 
 			        if(or_tag.equalsIgnoreCase("6")){
 			            rotate_angle = 90;
@@ -523,7 +478,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 			}
 		}
 		if (rotate_angle != 0) {
-			Logger.T(TAG, "$$$ Image should be rotated by EXIF !!! angle = "+rotate_angle+" $$$");
+			Logger.T(TAG, "$$$ Image should be rotated by EXIF !!! angle = " + rotate_angle + " $$$");
 		}
 
 
@@ -533,10 +488,9 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 			try {
 				// resize to preffered size
 
-				Logger.T(TAG, "imgPath ["+imgPath+"]");
-				Logger.T(TAG, "rename ["+rename+"]");
+				Logger.T(TAG, "imgPath [" + imgPath + "]");
+				Logger.T(TAG, "rename [" + rename + "]");
 				String bitmapPath = imgPath;
-
 
 				BitmapFactory.decodeFile(bitmapPath, options_only_size);
 				picChoosen_imagewidth = options_only_size.outWidth;
@@ -550,11 +504,12 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 				if (getActualPropertyMap().get("desiredHeight") != null) {
 					idesiredHeight = Integer.valueOf(getActualPropertyMap().get("desiredHeight"));
 				}
-				Logger.T(TAG, " FILE ["+bitmapPath+"]	 orig["+picChoosen_imagewidth+"x"+picChoosen_imageheight+"] scaleto ["+idesiredHeight+"x"+idesiredHeight+"]");
+				Logger.T(TAG, " FILE [" + bitmapPath + "]	 orig[" + picChoosen_imagewidth + "x" + picChoosen_imageheight +
+					"] scaleto [" + idesiredHeight + "x" + idesiredHeight + "]");
 				if ((idesiredHeight > 0) && (idesiredWidth > 0)) {
 					// process resize
-					Logger.T(TAG, "Do SCALE  orig["+picChoosen_imagewidth+"x"+picChoosen_imageheight+"] scaleto ["+idesiredHeight+"x"+idesiredHeight+"]");
-
+					Logger.T(TAG, "Do SCALE  orig[" + picChoosen_imagewidth + "x" + picChoosen_imageheight +
+						"] scaleto [" + idesiredHeight + "x" + idesiredHeight + "]");
 
 					float fcurWidth = picChoosen_imagewidth;
 					float fcurHeight = picChoosen_imageheight;
@@ -597,39 +552,14 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 					picChoosen_imagewidth = newWidth;
 					picChoosen_imageheight = newHeight;
 
-
 					Logger.T(TAG, "Load samle scale ["+bmOptions.inSampleSize+"]");
 
 					bmOptions.inPurgeable = true;
 
 					Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath, bmOptions);
+					Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
 
-					Bitmap scaledBitmap=Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
-
-					if (rotate_angle != 0) {
-						Bitmap savedBitmap = scaledBitmap;
-						scaledBitmap = rotateBitmap(savedBitmap, rotate_angle);
-						savedBitmap.recycle();
-						savedBitmap = null;
-						rotate_angle = 0;
-					}
-
-					ByteArrayOutputStream bos=new ByteArrayOutputStream();
-					scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, bos);
-					bitmap.recycle();
-					bitmap=null;
-					OutputStream out;
-					out = new FileOutputStream(bitmapPath+"_tmp");
-					bos.writeTo(out);
-					bos.flush();
-
-					File file= new File(bitmapPath+"_tmp");
-					File file_old = new File(bitmapPath);
-					file_old.delete();
-					file.renameTo(new File(bitmapPath));
-					fixTheGalleryIssue(bitmapPath);
-
-
+					saveTransformedBitmap(bitmapPath, scaledBitmap, bitmap, rotate_angle);
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -650,28 +580,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 
 				Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath);
 				Bitmap gray = toGrayscale(bitmap);
-				if (rotate_angle != 0) {
-					Bitmap savedBitmap = gray;
-					gray = rotateBitmap(savedBitmap, rotate_angle);
-					savedBitmap.recycle();
-					savedBitmap = null;
-					rotate_angle = 0;
-				}
-				ByteArrayOutputStream bos=new ByteArrayOutputStream();
-				gray.compress(Bitmap.CompressFormat.JPEG, 75, bos);
-				bitmap.recycle();
-				bitmap=null;
-				OutputStream out;
-				out = new FileOutputStream(bitmapPath+"_tmp");
-				bos.writeTo(out);
-				bos.flush();
-
-				File file= new File(bitmapPath+"_tmp");
-				File file_old = new File(bitmapPath);
-				file_old.delete();
-				file.renameTo(new File(bitmapPath));
-				fixTheGalleryIssue(bitmapPath);
-
+				saveTransformedBitmap(bitmapPath, gray, bitmap, rotate_angle);
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
@@ -688,25 +597,10 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 				Logger.T(TAG, "imgPath ["+imgPath+"]");
 				Logger.T(TAG, "rename ["+rename+"]");
 				String bitmapPath = imgPath;
-
 				Bitmap bitmap = BitmapFactory.decodeFile(bitmapPath);
-
 				Bitmap rotated = rotateBitmap(bitmap, rotate_angle);
 
-				ByteArrayOutputStream bos=new ByteArrayOutputStream();
-				rotated.compress(Bitmap.CompressFormat.JPEG, 75, bos);
-				bitmap.recycle();
-				bitmap=null;
-				OutputStream out;
-				out = new FileOutputStream(bitmapPath+"_tmp");
-				bos.writeTo(out);
-				bos.flush();
-
-				File file= new File(bitmapPath+"_tmp");
-				File file_old = new File(bitmapPath);
-				file_old.delete();
-				file.renameTo(new File(bitmapPath));
-				fixTheGalleryIssue(bitmapPath);
+				savedBitmap(bitmapPath, rotated, bitmap);
 
 
 			} catch (Exception e) {
@@ -728,7 +622,6 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 				null, new MediaScannerConnection.OnScanCompletedListener() {
 				public void onScanCompleted(String path, Uri uri){}
 			});
-
 		}
 		else
 		{
@@ -781,7 +674,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 
 			if(resCode == -1){
 				if (intent != null && intent.hasExtra("error")) {
-					inResultMap.put("message", ""+intent.getStringExtra("error"));
+					inResultMap.put("message", (String) intent.getStringExtra("error"));
 					if(intent.getStringExtra("error").contains("\\"))
 					inResultMap.put("message", "File path is invalid.");
 					inResultMap.put("status", "error");
@@ -797,13 +690,13 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 					}
 				
 					if(picChoosen_imagewidth > 0){
-						inResultMap.put("imageWidth",  "" + picChoosen_imagewidth);
-						inResultMap.put("imageHeight",  "" + picChoosen_imageheight);
+						inResultMap.put("imageWidth",  String.valueOf(picChoosen_imagewidth));
+						inResultMap.put("imageHeight",  String.valueOf(picChoosen_imageheight));
 					}
 					else{
 						if (intent != null && intent.getExtras() != null) {
-							inResultMap.put("imageWidth",  "" + intent.getExtras().get("IMAGE_WIDTH"));
-							inResultMap.put("imageHeight",  "" + intent.getExtras().get("IMAGE_HEIGHT"));
+							inResultMap.put("imageWidth",  String.valueOf(intent.getExtras().get("IMAGE_WIDTH")));
+							inResultMap.put("imageHeight",  String.valueOf(intent.getExtras().get("IMAGE_HEIGHT")));
 						}else{
 							if (intent == null){
 								Logger.W(TAG, "Can't extract image size from intent (null intent)");
@@ -818,7 +711,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 
 				inResultMap.put("message", "User canceled operation.");
 				if (intent != null && intent.hasExtra("error")) {
-					inResultMap.put("message", ""+intent.getStringExtra("error"));
+					inResultMap.put("message", (String) intent.getStringExtra("error"));
 					if(intent.getStringExtra("error").contains("\\"))
 					inResultMap.put("message", "File path is invalid.");
 					inResultMap.put("status", "error");
@@ -904,10 +797,7 @@ private static void makeDirsForFile(String filepath) {
 public static void verifyStoragePermissions() {
     int permission = ActivityCompat.checkSelfPermission(RhodesActivity.safeGetInstance(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
     final int REQUEST_EXTERNAL_STORAGE = 1;
-	final String[] PERMISSIONS_STORAGE = {
-	        Manifest.permission.READ_EXTERNAL_STORAGE,
-	        Manifest.permission.WRITE_EXTERNAL_STORAGE
-	};
+	final String[] PERMISSIONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     if (permission != PackageManager.PERMISSION_GRANTED) {
         ActivityCompat.requestPermissions(RhodesActivity.safeGetInstance(), PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
@@ -918,7 +808,7 @@ public static void verifyStoragePermissions() {
 
 public static String copy(File oldFile, File mediafile){
 	verifyStoragePermissions();
-	FileInputStream finput= null;
+	FileInputStream finput = null;
 	FileOutputStream fout = null;
 	try {
 		finput = new FileInputStream(oldFile);
@@ -956,8 +846,8 @@ public static String copy(File oldFile, File mediafile){
 public String copyImg(String imgPath){
 	File oldFile = new File(imgPath);
 	int lastIndex  = rename.lastIndexOf("/");
-	String file_name= rename.substring(lastIndex + 1, rename.length());
-    File mediafile  =  new File(RhoFileApi.getDbFilesPath(), file_name);
+	String file_name = rename.substring(lastIndex + 1, rename.length());
+    File mediafile  = new File(RhoFileApi.getDbFilesPath(), file_name);
 	makeDirsForFile(mediafile.getAbsolutePath());
 
 	return copy(oldFile, mediafile);
@@ -966,7 +856,7 @@ public String copyImg(String imgPath){
 
 public String copyImgToTarget(String srcPath, String dstPath) {
 	File oldFile = new File(srcPath);
-	File mediafile  =  new File(dstPath);
+	File mediafile  = new File(dstPath);
 	makeDirsForFile(mediafile.getAbsolutePath());
 
 	return copy(oldFile, mediafile);
@@ -987,11 +877,11 @@ public void copyImgAsUserChoice(String imgPath){
 
 			String subfolderName = rename.replaceAll("/sdcard", "");
 			String folderName = subfolderName.substring(subfolderName.indexOf("/")+1,subfolderName.lastIndexOf("/"));
-			String file_name= rename.substring(lastIndex+1, rename.length());
+			String file_name = rename.substring(lastIndex+1, rename.length());
 			File directory = new File(Environment.getExternalStorageDirectory()+File.separator + folderName);
 			boolean flag = directory.mkdirs();
 
-			File mediafile  =  new File(directory +File.separator  + file_name);
+			File mediafile  = new File(directory +File.separator  + file_name);
 
 			copy(oldFile, mediafile);
 			deleteImage();
@@ -1005,7 +895,7 @@ public void deleteImage(){
 	storageLocation = Environment.getExternalStorageDirectory().toString();
 
 	int lastIndex = rename.lastIndexOf("/");
-	String file_name= rename.substring(lastIndex + 1, rename.length());
+	String file_name = rename.substring(lastIndex + 1, rename.length());
 
 	File file = new File(storageLocation + "/Pictures/" + file_name);
 	if(file.exists()){
@@ -1015,13 +905,13 @@ public void deleteImage(){
 
 private static void removeThumbnails(ContentResolver contentResolver, String photoId) {
 	verifyStoragePermissions();
-	Cursor thumbnails = contentResolver.query(Thumbnails.EXTERNAL_CONTENT_URI, null, Thumbnails.IMAGE_ID + "=?", null, null);
+	Cursor thumbnails = contentResolver.query(Thumbnails.EXTERNAL_CONTENT_URI, null, Thumbnails.IMAGE_ID + " = ?", null, null);
 	for (thumbnails.moveToFirst(); !thumbnails.isAfterLast(); thumbnails.moveToNext()) {
 	    long thumbnailId = thumbnails.getLong(thumbnails.getColumnIndex(Thumbnails._ID));
 	    String path = thumbnails.getString(thumbnails.getColumnIndex(Thumbnails.DATA));
 	    File file = new File(path);
 	    if (file.delete()) {
-	        contentResolver.delete(Thumbnails.EXTERNAL_CONTENT_URI, Thumbnails._ID + "=?", new String[]{String.valueOf(thumbnailId)});
+	        contentResolver.delete(Thumbnails.EXTERNAL_CONTENT_URI, Thumbnails._ID + " = ?", new String[]{String.valueOf(thumbnailId)});
 	    }
 
 	}
@@ -1073,7 +963,7 @@ private void deleteFile(File fileToDelete){
             	null, new MediaScannerConnection.OnScanCompletedListener() {
                 public void onScanCompleted(String path, Uri uri) {
                     Logger.T(TAG, "ExternalStorage Scanned " + path + ":");
-                    Logger.T(TAG, "ExternalStorage -> uri=" + uri);
+                    Logger.T(TAG, "ExternalStorage -> uri = " + uri);
                 }
             });
 		}else{

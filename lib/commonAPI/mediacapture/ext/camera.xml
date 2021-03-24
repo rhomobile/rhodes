@@ -379,7 +379,7 @@ Be sure to review the [Ruby API Usage](/guide/api_ruby) guide for important info
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
 					     <PLATFORM>Android, WM, CE, UWP, iOS</PLATFORM>
                         <DESC>
-                          Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE,Android and WP8 devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel,  enableEditing.
+                          Provide a set of properties to configure an image, for example to specify the image size or color mode. In WM/CE,Android and WP8 devices user can only specify the outputFormat in the property bag. In iOS devices user can specify next options: compressionFormat, desiredWidth, desiredHeight, outputFormat, colorModel, enableEditing.
                           In UWP dataUri shall provide the thumbnail for the picture taken, It is recommended to use Image over dataUri.On wp8, wm when 'outputFormat' is 'image' then imageUri or image_uri shall have Image name with \ sign, on WP8 ImageName shall be suffixed by DTF when 'outputFormat' is 'image'</DESC>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previously set on the Camera instance.</DESC>

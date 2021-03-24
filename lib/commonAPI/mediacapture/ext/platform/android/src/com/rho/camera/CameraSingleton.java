@@ -81,12 +81,7 @@ public class CameraSingleton implements ICameraSingleton {
         CameraObject.CURRENT_SCREEN_AUTO_ROTATE_MODE = RhodesActivity.safeGetInstance().getScreenAutoRotateMode();
     	CameraObject.CURRENT_FULL_SCREEN_MODE = RhodesActivity.safeGetInstance().getFullScreenMode();
 
-		propertyMap.put("deprecated", "false");
 
-        // set default values
-        if(propertyMap.get("useSystemViewfinder") == null) {
-            propertyMap.put("useSystemViewfinder", "true");
-        }
         if(propertyMap.get("useRealBitmapResize") == null) {
             propertyMap.put("useRealBitmapResize", "true");
         }
@@ -98,37 +93,33 @@ public class CameraSingleton implements ICameraSingleton {
         String outputFormat = null;
         if(propertyMap.get("outputFormat") == null){
             propertyMap.put("outputFormat", "image");
-            outputFormat = propertyMap.get("outputFormat");
         }
-        else{
-            outputFormat = propertyMap.get("outputFormat");
-        }
+        outputFormat = propertyMap.get("outputFormat");
+
         CameraFactory factory = (CameraFactory)CameraFactorySingleton.getInstance();
         factory.getRhoListener().setMethodResult(result);
         factory.getRhoListener().setActualPropertyMap(propertyMap);
         RhodesActivity ra = RhodesActivity.safeGetInstance();
        
 
-        if ( Boolean.parseBoolean(propertyMap.get("useSystemViewfinder")) ) {
-            /*
-            Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            getIntent.setType("image/*");
 
-            Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            pickIntent.setType("image/*");
+        /*
+        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        getIntent.setType("image/*");
 
-            Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
+        Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        pickIntent.setType("image/*");
 
-            intent =  chooserIntent;
-            */
+        Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
 
-            intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            intent.setType("image/*");
+        intent =  chooserIntent;
+        */
 
-        }else{
-            intent = new Intent(ra, FileList.class);
-        }
+        intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+
+
 
         propertyMap.put("fromGallery", "true");
         String fileName = null;
@@ -252,13 +243,8 @@ public class CameraSingleton implements ICameraSingleton {
          * @see android.provider.MediaStore.Images.Media (StoreThumbnail private method)
          */
 
-private static Bitmap storeThumbnail(
-                ContentResolver cr,
-                Bitmap source,
-                long id,
-                float width,
-                float height,
-                int kind) {
+    private static Bitmap storeThumbnail(ContentResolver cr, Bitmap source, long id,
+                float width, float height, int kind) {
 
             // create the matrix to scale it
             Matrix matrix = new Matrix();
@@ -294,8 +280,6 @@ private static Bitmap storeThumbnail(
             }
 
     }
-
-
 
     public static void copyImageFileToDeviceGallery(String imageFullPath) {
 
