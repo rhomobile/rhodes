@@ -420,7 +420,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 	}
 
 
-	private void saveTransformedBitmap(String bitmapPath, Bitmap transforedBitmap, Bitmap oldBitmap, int rotate_angle){
+	private void saveTransformedBitmap(String bitmapPath, Bitmap transforedBitmap, Bitmap oldBitmap, int rotate_angle) throws IOException {
 		if (rotate_angle != 0) {
 			Bitmap savedBitmap = transforedBitmap;
 			transforedBitmap = rotateBitmap(savedBitmap, rotate_angle);
@@ -432,11 +432,11 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 		savedBitmap(bitmapPath, transforedBitmap, oldBitmap);
 	}
 
-	private void savedBitmap(String bitmapPath, Bitmap transforedBitmap, Bitmap oldBitmap){
+	private void savedBitmap(String bitmapPath, Bitmap transforedBitmap, Bitmap oldBitmap) throws IOException{
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		transforedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, bos);
-		bitmap.recycle();
-		bitmap = null;
+		oldBitmap.recycle();
+		oldBitmap = null;
 		OutputStream out;
 		out = new FileOutputStream(bitmapPath + "_tmp");
 		bos.writeTo(out);
@@ -601,8 +601,6 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
 				Bitmap rotated = rotateBitmap(bitmap, rotate_angle);
 
 				savedBitmap(bitmapPath, rotated, bitmap);
-
-
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();

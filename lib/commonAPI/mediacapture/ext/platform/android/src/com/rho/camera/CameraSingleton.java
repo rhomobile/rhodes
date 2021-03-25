@@ -41,10 +41,22 @@ public class CameraSingleton implements ICameraSingleton {
 
     public int getCameraCount() {
         Logger.T(TAG, "getCameraCount");
-        return 1;
+        return android.hardware.Camera.getNumberOfCameras();
     }
 
-    public CameraSingleton() {}
+
+    public CameraSingleton() {
+        int camera_count = getCameraCount();
+        for (int i = 0 ; i < camera_count; i++) {
+            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+            android.hardware.Camera.getCameraInfo(i, info);
+            if (info.facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK) {
+                setDefaultIndex(i);
+                return;
+            }
+        }
+
+    }
 
     @Override
     public String getDefaultID() {
@@ -73,7 +85,29 @@ public class CameraSingleton implements ICameraSingleton {
 
     @Override
     public void getCameraByType(String cameraType, IMethodResult result) {
-        result.set(getDefaultID());
+        int cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
+        if (cameraType.equalsIgnoreCase("front")) {
+            Logger.T(TAG, "Requesting front camera.");
+            cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
+        } else if (cameraType.equalsIgnoreCase("back")) {
+            Logger.T(TAG, "Requesting back camera.");
+            cameraTypeId = android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
+        } else {
+            Logger.E(TAG, "Unknown camera type requested: " + cameraType);
+            result.setArgError("Unknown camera type requested: " + cameraType);
+            return;
+        }
+
+        int cameraCount = getCameraCount();
+        int i;
+        for (i = 0 ; i < cameraCount; i++) {
+            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+            android.hardware.Camera.getCameraInfo(i, info);
+            if (info.facing == cameraTypeId) {
+                result.set(getCameraId(i));
+                return;
+            }
+        }
     }
 
     @Override
@@ -390,5 +424,4 @@ public class CameraSingleton implements ICameraSingleton {
 
         return mediafile.getAbsolutePath();
     }
-
 }

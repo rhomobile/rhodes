@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import java.util.ArrayList;
+ 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -30,6 +31,11 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.SurfaceHolder;
 import android.database.Cursor;
+import android.content.pm.PackageManager;
+
+import androidx.core.content.PermissionChecker;
+import androidx.core.content.ContextCompat;
+import android.Manifest;
 
 import androidx.core.content.FileProvider;
 
@@ -45,61 +51,76 @@ public class CameraObject extends CameraBase implements ICamera{
     private static final String TAG = CameraObject.class.getSimpleName();
     private Map<String, String> mActualPropertyMap;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmmss");
-    void setActualPropertyMap(Map<String, String> props) { mActualPropertyMap = props; }
-    Map<String, String> getActualPropertyMap() { return mActualPropertyMap; }
 
+    void setActualPropertyMap(Map<String, String> props) { 
+        mActualPropertyMap = props; 
+    }
+
+    Map<String, String> getActualPropertyMap() { 
+        return mActualPropertyMap; 
+    }
 
     private Camera mCamera = null;
     private int mCameraUsers;   
     public static String userFilePath = null;
     private File storageDir = null;
+        private List<Camera.Size> mSupportedPictureSizes;
 
     public static boolean CURRENT_SCREEN_AUTO_ROTATE_MODE;
     public static boolean CURRENT_FULL_SCREEN_MODE;
 
+    interface ISize {
+        int getWidth();
+        int getHeight();
+        int D2();
+    }
+
+    static class CameraSize implements ISize {
+        private Camera.Size mSize;
+        CameraSize(Camera.Size size) { mSize = size; }
+        @Override public int getWidth() { return mSize.width; }
+        @Override public int getHeight() { return mSize.height; }
+        @Override public int D2() { return mSize.width * mSize.width + mSize.height * mSize.height; }
+        @Override public String toString() { return "" + mSize.width + "X" + mSize.height; }
+    }
+
+    static class RawSize implements ISize {
+        private int width;
+        private int height;
+        RawSize(int width, int height) { this.width = width; this.height = height; }
+        @Override public int getWidth() { return this.width; }
+        @Override public int getHeight() { return this.height; }
+        @Override public int D2() { return width * width + height * height; }
+        @Override public String toString() { return "" + width + "X" + height; }
+    }
+
     int getCameraIndex() {
         return CameraSingleton.getCameraIndex(getId());
     }
+
     @Override
     public void setProperties(Map<String, String> propertyMap, IMethodResult result) {
-        // TODO Auto-generated method stub
-        Map<String, String> temp = getPropertiesMap();
-        temp.putAll(propertyMap);
+        getPropertiesMap().putAll(propertyMap);
         result.set(true);
     }
+
     @Override
     public void getProperties(List<String> arrayofNames, IMethodResult result) {
-        //super.getProperties(arrayofNames, result);
         Map<String, Object> props = new HashMap<String, Object>();
         for (String name: arrayofNames)
         {
             props.put(name, cameraPropGet(name));
         }
         result.set(props);
-
     }
 
     private String cameraPropGet(String name)
     {
-        String propValue="";
-        Map<String, String> temp=getPropertiesMap();
-        if(temp.containsKey(name))
-        {
-
-            try{
-                propValue = String.valueOf(temp.get(name));
-            }
-            catch(Exception ex)
-            {
-
-            }
-        }
-        return propValue;
+        return getPropertiesMap().getOrDefault(name, "");
     }
 
     @Override
 	public void getAllProperties(IMethodResult result) {
-		// TODO Auto-generated method stub
     	Map<String, Object> props = new HashMap<String, Object>();
     	for (String key: getPropertiesMap().keySet()) {
     		 props.put(key, cameraPropGet(key));
@@ -107,70 +128,62 @@ public class CameraObject extends CameraBase implements ICamera{
     	result.set(props);
 	}
 	 
-    private void playMusic(String musicPath) {
-        MediaPlayer mp = new MediaPlayer();
-        try {
-            mp.setDataSource(RhoFileApi.openFd(musicPath));
-            mp.prepare();
-            mp.start();
-            Thread.sleep(3000);
-            mp.stop();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        if(mp != null){
-            mp.release();
-            mp = null;
-        }
-    }
-
     protected Camera getCamera() { return mCamera; }
     protected void setCamera(Camera camera) { mCamera = camera; }
-
-    synchronized protected void openCamera() {
-        if (mCameraUsers == 0) {
-            setCamera(android.hardware.Camera.open());
-        }
-        mCameraUsers++;
-    }
-    synchronized protected void closeCamera() {
-        mCameraUsers--;
-        if (mCameraUsers == 0) {
-            getCamera().release();
-        }
-    }
 
     CameraObject(String id) {
         super(id);
 
         getPropertiesMap().put("ChoosePicture_Key", "");
-        getPropertiesMap().put("cameraType", "back");
         getPropertiesMap().put("compressionFormat", "jpg");
         getPropertiesMap().put("outputFormat", "image");
         getPropertiesMap().put("colorModel", "rgb");
         getPropertiesMap().put("useRealBitmapResize", "true");
         getPropertiesMap().put("useRotationBitmapByEXIF", "true");
         getPropertiesMap().put("saveToDeviceGallery", "false");
+
+        storageDir = new File(Environment.getExternalStorageDirectory(), "RhoImages");
+        createRhoCacheFolder();
+
+        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(getCameraIndex(), info);
+        switch (info.facing) {
+        case android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK:
+            getPropertiesMap().put("cameraType", "back");
+            break;
+        case android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT:
+            getPropertiesMap().put("cameraType", "front");
+            break;
+        default:
+            getPropertiesMap().put("cameraType", "unknown");
+            break;
+        }
+
         if (hasPermission()) {
             openCamera();
             Camera.Parameters params = getCamera().getParameters();
             closeCamera();
 
-            getPropertiesMap().put("maxWidth", String.valueOf(params.getPictureSize().width));
-            getPropertiesMap().put("maxHeight", String.valueOf(params.getPictureSize().height));
+            mSupportedPictureSizes = params.getSupportedPictureSizes();
+            ISize maxSize = null;
+            for(android.hardware.Camera.Size curSize: mSupportedPictureSizes) {
+                Logger.D(TAG, "Possible picture size: " + curSize.width + "X" + curSize.height);
+                if ((maxSize == null) || (curSize.width > maxSize.getWidth())) {
+                    maxSize = new CameraSize(curSize);
+                }
+            }
+
+            getPropertiesMap().put("maxWidth", String.valueOf(maxSize.getWidth()));
+            getPropertiesMap().put("maxHeight", String.valueOf(maxSize.getHeight()));
         }
         else {
             Logger.E(TAG, "Application has no permission to Camera access !!!");
             getPropertiesMap().put("maxWidth", String.valueOf(0));
             getPropertiesMap().put("maxHeight", String.valueOf(0));
         }
+
         getPropertiesMap().put("desiredWidth", "0");
         getPropertiesMap().put("desiredHeight", "0");
-
-        storageDir = new File(Environment.getExternalStorageDirectory(), "RhoImages");
-        createRhoCacheFolder();
-
     }
 
     public void createRhoCacheFolder(){
@@ -187,14 +200,12 @@ public class CameraObject extends CameraBase implements ICamera{
     }
 
     private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date(System.currentTimeMillis()));
+        String timeStamp = dateFormat.format(new Date(System.currentTimeMillis()));
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = RhodesActivity.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         return image;
     }
-
-
 
 
     @Override
@@ -223,7 +234,7 @@ public class CameraObject extends CameraBase implements ICamera{
             String fileDir = storageDir.getAbsolutePath();
             String fileName = actualPropertyMap.get("fileName");
             if (fileName == null || fileName.isEmpty()){
-               fileName = "IMG_"+ dateFormat.format(new Date(System.currentTimeMillis()));
+               fileName = "IMG_" + dateFormat.format(new Date(System.currentTimeMillis()));
             }
             String filePath = fileDir + "/" + fileName + ".jpg";
 
@@ -244,8 +255,7 @@ public class CameraObject extends CameraBase implements ICamera{
                 
                 if (photoFile != null) {
                     Uri fileUri = FileProvider.getUriForFile(RhodesActivity.getContext(),
-                                                          RhodesActivity.getContext().getPackageName() + ".fileprovider",
-                                                          photoFile);
+                        RhodesActivity.getContext().getPackageName() + ".fileprovider", photoFile);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                     actualPropertyMap.put("captureUri", fileUri.toString());
                     Logger.T(TAG, "Output fileUri: " + fileUri.toString());
@@ -269,25 +279,16 @@ public class CameraObject extends CameraBase implements ICamera{
         }
     }
 
-    protected String getTemporaryPath(String targetPath) {
-        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            File externalRoot = Environment.getExternalStorageDirectory();
-            if (! externalRoot.exists()){
-                if (! externalRoot.mkdirs()){
-                    Logger.E(TAG, "Failed to create directory: " + externalRoot);
-                    return null;
-                }
-            }
-            String filename = new File(targetPath).getName();
-            return new File(externalRoot, filename).getAbsolutePath();
-        } else {
-            return null;
-        }
-    }
-
     @Override
     public void getSupportedSizeList(IMethodResult result) {
-        //TODO
+        List<Object> res = new ArrayList<Object>();
+        for(Camera.Size size: mSupportedPictureSizes) {
+            Map<String, Integer> resSize = new HashMap<String, Integer>();
+            resSize.put("width", Integer.valueOf(size.width));
+            resSize.put("height", Integer.valueOf(size.height));
+            res.add(resSize);
+        }
+        result.set(res);
     }
 
     public void finalize() {
@@ -298,9 +299,135 @@ public class CameraObject extends CameraBase implements ICamera{
 
 
     public boolean hasPermission() {
-        //Logger.E(TAG, "Application has permission to Camera access DAFAULT !!!");
-        return true;
+        boolean res = (PermissionChecker.checkSelfPermission(RhodesActivity.getContext(), Manifest.permission.CAMERA) == 
+            PackageManager.PERMISSION_GRANTED);
+        if (!res) {
+            Logger.E(TAG, "Application has no permission to Camera access !!!");
+        }
+        return res;
     }
+
+    protected ISize getDesiredSize() {
+        String strDesiredWidth = getActualPropertyMap().get("desiredWidth");
+        String strDesiredHeight = getActualPropertyMap().get("desiredHeight");
+
+        if (Boolean.parseBoolean(getActualPropertyMap().get("useRealBitmapResize"))) {
+            return null;
+        }
+
+        if (Integer.valueOf(strDesiredWidth) <= 0) {
+            strDesiredWidth = null;
+        }
+        if (Integer.valueOf(strDesiredHeight) <= 0) {
+            strDesiredHeight = null;
+        }
+
+        int minDiff = Integer.MAX_VALUE;
+        ISize selectedSize = null;
+
+        if (strDesiredWidth != null && strDesiredHeight != null) {
+            ISize desiredSize = new RawSize(Integer.valueOf(strDesiredWidth),
+                                            Integer.valueOf(strDesiredHeight));
+            Logger.T(TAG, "Desired picture size: " + desiredSize);
+            for(Camera.Size size: mSupportedPictureSizes) {
+                ISize curSize = new CameraSize(size);
+                int curDiff = Math.abs(curSize.D2() - desiredSize.D2());
+                if (curDiff < minDiff) {
+                    minDiff = curDiff;
+                    selectedSize = curSize;
+                }
+            }
+        } else if (strDesiredWidth != null) {
+            int desiredWidth = Integer.valueOf(strDesiredWidth);
+            Logger.T(TAG, "Desired picture width: " + desiredWidth);
+            for(Camera.Size size: mSupportedPictureSizes) {
+                int curDiff = Math.abs(size.width - desiredWidth);
+                if (curDiff < minDiff) {
+                    minDiff = curDiff;
+                    selectedSize = new CameraSize(size);
+                }
+            }
+        } else if (strDesiredHeight != null) {
+            int desiredHeight = Integer.valueOf(strDesiredHeight);
+            Logger.T(TAG, "Desired picture width: " + desiredHeight);
+            for(Camera.Size size: mSupportedPictureSizes) {
+                int curDiff = Math.abs(size.height - desiredHeight);
+                if (curDiff < minDiff) {
+                    minDiff = curDiff;
+                    selectedSize = new CameraSize(size);
+                }
+            }
+        }
+        Logger.T(TAG, "Selected picture size: " + selectedSize);
+        return selectedSize;
+    }
+
+    protected boolean hasAutoFocus() {
+        if (!hasPermission()) {
+            Logger.D(TAG, "Application has no permission to Camera access !!!");
+            return false;
+        }
+        String focusMode = getCamera().getParameters().getFocusMode();
+        boolean supported = false;
+        if (focusMode != null) {
+            supported = (focusMode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO)) || (focusMode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_MACRO));
+        }
+        return supported;
+
+    }
+
+    protected String getFlashMode() {
+        String flashParam = getActualPropertyMap().get("flashMode");
+        String flashMode = Camera.Parameters.FLASH_MODE_AUTO;
+        if (flashParam != null) {
+            if (flashParam.equals("on")) {
+                flashMode = Camera.Parameters.FLASH_MODE_ON;
+            } else
+                if (flashParam.equals("off")) {
+                    flashMode = Camera.Parameters.FLASH_MODE_OFF;
+                } else
+                    if (flashParam.equals("redEye")) {
+                        flashMode = Camera.Parameters.FLASH_MODE_RED_EYE;
+                    } else
+                        if (flashParam.equals("torch")) {
+                            flashMode = Camera.Parameters.FLASH_MODE_TORCH;
+                        }
+        }
+        Logger.T(TAG, "Flash mode: " + flashMode);
+        return flashMode;
+    }
+
+    protected String getColorMode() {
+        String colorParam = getActualPropertyMap().get("colorModel");
+        String colorMode = Camera.Parameters.EFFECT_NONE;
+        if (colorParam != null) {
+            if (colorParam.equals("grayscale")) {
+                colorMode = Camera.Parameters.EFFECT_MONO;
+            }
+        }
+        Logger.T(TAG, "Color effect: " + colorMode);
+        return colorMode;
+    }
+
+    synchronized protected void openCamera() {
+        if (hasPermission()) {
+            if (mCameraUsers == 0) {
+                setCamera(Camera.open(getCameraIndex()));
+            }
+            mCameraUsers++;
+        }
+    }
+
+    synchronized protected void closeCamera() {
+        if (hasPermission()) {
+            mCameraUsers--;
+            if (mCameraUsers == 0) {
+                getCamera().release();
+            }
+        }
+    }
+
+
 
     @Override
     public void getCameraType(IMethodResult result){
@@ -499,4 +626,7 @@ public class CameraObject extends CameraBase implements ICamera{
     public void setPreviewTop(int previewTop, IMethodResult result) {
         //NOT SUPPORTED
     }
+
+    
+
 }
