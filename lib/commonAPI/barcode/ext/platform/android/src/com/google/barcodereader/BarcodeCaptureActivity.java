@@ -66,7 +66,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rho.barcode.BarcodeFactory;
 import com.rho.barcode.BarcodeCommon;
 import android.content.pm.ActivityInfo;
-import android.support.v7.widget.AppCompatImageButton;
+import androidx.appcompat.widget.AppCompatImageButton;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;

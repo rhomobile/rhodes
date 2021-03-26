@@ -50,8 +50,6 @@ TARGETLIB_x86 = File.join(TARGETDIR_x86,'libcoreapi.a')
 TARGETLIB_MIPS = File.join(TARGETDIR_MIPS,'libcoreapi.a')
 TARGETLIB_AARCH64 = File.join(TARGETDIR_AARCH64,'libcoreapi.a')
 
-V4JAR = File.join(TARGETDIR, 'android-support-v4.jar')
-
 cd '../../..'
 
 namespace 'config' do
@@ -123,16 +121,6 @@ end
 multitask TARGETLIB_AARCH64 => OBJ_AARCH64
 
 multitask TARGETLIB_MIPS => OBJ_MIPS
-file V4JAR => [TARGETDIR] do
-    v4jar = Dir.glob(File.join(ENV['ANDROID_SDK'],'extras','android','**','v4','android-support-v4.jar'))
-
-    if v4jar.size != 1
-      puts "Cannot locate android-support-v4.jar, check Android SDK (#{v4jar})" if v4jar.size != 1
-    else
-      v4jar = v4jar.first
-      cp v4jar, TARGETDIR
-    end
-end
 
 namespace 'arch' do
   task :arm => [TARGETLIB_ARM]
