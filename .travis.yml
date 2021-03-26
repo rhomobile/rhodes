@@ -237,27 +237,27 @@ matrix:
 #android targets
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.5.7" ANDROID_ABIS="arm,x86"
+    env: RHO_TARGET="android"    RHO_APP="framework_spec" RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.5.7" ANDROID_ABIS="arm,x86,aarch64"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.6.5"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec"  RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.6.5" ANDROID_ABIS="arm,x86,aarch64"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"  RHO_RUBY="ruby-2.7.0"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh"  RHO_RUBY="ruby-2.7.0" ANDROID_ABIS="arm,x86,aarch64"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="28" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.7.1"
+    env: RHO_TARGET="android"    RHO_APP="auto_common_spec" RHO_ANDROID_LEVEL="28" NDK_NUMBER="21"  RHO_RUNNER_SCRIPT="run_test_on_simulator.sh" RHO_RUBY="ruby-2.7.1" ANDROID_ABIS="arm,x86"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="sas" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  SKIP_TESTS=1  RHO_RUBY="ruby-2.3.8"
+    env: RHO_TARGET="android"    RHO_APP="sas" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21"  SKIP_TESTS=1  RHO_RUBY="ruby-2.3.8" ANDROID_ABIS="arm,x86"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="rhodes_fcm_test" RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  SKIP_TESTS=1
+    env: RHO_TARGET="android"    RHO_APP="rhodes_fcm_test" RHO_ANDROID_LEVEL="21" NDK_NUMBER="21"  SKIP_TESTS=1 ANDROID_ABIS="arm,x86"
 
 #  - language: android
 #    os: linux
@@ -265,8 +265,8 @@ matrix:
 
   - language: android
     os: linux
-    env: RHO_TARGET="android_native_lib"    RHO_APP="rhodes_lib_examples" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1 RHO_RUBY="ruby-2.3.8"
+    env: RHO_TARGET="android_native_lib"    RHO_APP="rhodes_lib_examples" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1 RHO_RUBY="ruby-2.3.8" ANDROID_ABIS="arm,x86,aarch64"
 
   - language: android
     os: linux
-    env: RHO_TARGET="android"    RHO_APP="inventory_demo" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1
+    env: RHO_TARGET="android"    RHO_APP="inventory_demo" RHO_ANDROID_LEVEL="24" NDK_NUMBER="21" SKIP_TESTS=1 ANDROID_ABIS="x86"
